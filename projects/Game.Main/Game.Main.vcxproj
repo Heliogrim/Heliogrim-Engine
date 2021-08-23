@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{a92086f7-448f-449d-8ff6-5fd6ff3a37b3}</ProjectGuid>
+    <RootNamespace>GameMain</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Engine.Common.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Build.Debug.props" />
+    <Import Project="..\Build.__Any__.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Build.__Any__.props" />
+    <Import Project="..\Build.Release.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Engine.Common.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>$(SolutionName)</TargetName>
+    <CopyLocalProjectReference>true</CopyLocalProjectReference>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>$(SolutionName)</TargetName>
+    <CopyLocalProjectReference>true</CopyLocalProjectReference>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableModules>false</EnableModules>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <Profile>true</Profile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableModules>false</EnableModules>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <OmitFramePointers>false</OmitFramePointers>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <EnableModules>false</EnableModules>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <AdditionalOptions>
+      </AdditionalOptions>
+      <Profile>true</Profile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <OmitFramePointers>false</OmitFramePointers>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <EnableModules>false</EnableModules>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ember\Ember.vcxproj">
+      <Project>{8d01b7e3-273a-4a0b-8099-ad227fbdaf9c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Assets\Engine.Assets.vcxproj">
+      <Project>{02a28ec5-5e8a-4ca4-ad1d-673df3b995f5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
+      <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.ECS\Engine.ECS.vcxproj">
+      <Project>{bdd7b57f-5aee-4ddb-95fd-e0f89bb25ec7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Env\Engine.Env.vcxproj">
+      <Project>{f73e4ef6-247e-42e0-bd0a-04d104e6837d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX\Engine.GFX.vcxproj">
+      <Project>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Network\Engine.Network.vcxproj">
+      <Project>{813c849e-7ee6-4241-ae94-a7d0a7abf9bc}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.PFX\Engine.PFX.vcxproj">
+      <Project>{9e26faad-2541-4e80-a913-cc87a40bb745}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Proxy\Engine.Proxy.vcxproj">
+      <Project>{6cd674b5-80b9-4af0-8fb9-c1ef8adc6a5a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Resource\Engine.Resource.vcxproj">
+      <Project>{b0e77d6c-45d7-4254-8630-d10fdf6ca290}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Scene\Engine.Scene.vcxproj">
+      <Project>{114192e3-04b1-4ae7-86f5-1d055f7526d4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
+      <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.SFX\Engine.SFX.vcxproj">
+      <Project>{9f2b4b6e-1de8-4b52-b2e4-f7c44df0d3b9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Utils\Engine.Utils.vcxproj">
+      <Project>{3977a969-6595-4086-a6cc-97dea9935877}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Game.Main\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Materials\ForestGround.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Materials\GrassWildGround.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Materials\Inc.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MetalBare.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MossGround.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\World\Entities\Components\CameraComponent.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\World\Entities\DebugCamera.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\resources\shader\compile_shaders.cmd" />
+    <None Include="..\..\resources\shader\depthpass.frag.spv" />
+    <None Include="..\..\resources\shader\depthpass.fs" />
+    <None Include="..\..\resources\shader\depthpass_skeletal.vert.spv" />
+    <None Include="..\..\resources\shader\depthpass_skeletal.vs" />
+    <None Include="..\..\resources\shader\depthpass_static.vert.spv" />
+    <None Include="..\..\resources\shader\depthpass_static.vs" />
+    <None Include="..\..\resources\shader\finalpass.frag.spv" />
+    <None Include="..\..\resources\shader\finalpass.fs" />
+    <None Include="..\..\resources\shader\finalpass.vert.spv" />
+    <None Include="..\..\resources\shader\finalpass.vs" />
+    <None Include="..\..\resources\shader\gui.fs" />
+    <None Include="..\..\resources\shader\gui.vs" />
+    <None Include="..\..\resources\shader\light.directional.glsl" />
+    <None Include="..\..\resources\shader\link.fs" />
+    <None Include="..\..\resources\shader\link.vs" />
+    <None Include="..\..\resources\shader\obj.fs" />
+    <None Include="..\..\resources\shader\obj.vs" />
+    <None Include="..\..\resources\shader\sky.fs" />
+    <None Include="..\..\resources\shader\sky.vs" />
+    <None Include="..\..\resources\shader\terra.fs" />
+    <None Include="..\..\resources\shader\terra.vs" />
+    <None Include="light.spotlight.glsl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

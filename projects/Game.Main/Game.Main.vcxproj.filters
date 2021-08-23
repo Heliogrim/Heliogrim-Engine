@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\Assets">
+      <UniqueIdentifier>{4c63073f-c214-4cd3-b7d4-0c9dd146e395}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Assets\Materials">
+      <UniqueIdentifier>{7512bf6a-c29c-4dbf-b4ca-d8c45ac97c51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ressourcendateien\Shader">
+      <UniqueIdentifier>{8fc29749-28e1-472c-bcb9-b4a6ba6a83e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\World">
+      <UniqueIdentifier>{0b9403f7-07af-4a75-b5ef-74ed9797c12d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\World\Entities">
+      <UniqueIdentifier>{1b03a5ce-f708-4991-8306-42f51ffd8bc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\World\Entities\Components">
+      <UniqueIdentifier>{2931f318-55a4-4a28-8553-7a8c72b00363}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Game.Main\main.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Materials\ForestGround.hpp">
+      <Filter>Headerdateien\Assets\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Materials\GrassWildGround.hpp">
+      <Filter>Headerdateien\Assets\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Materials\Inc.hpp">
+      <Filter>Headerdateien\Assets\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MetalBare.hpp">
+      <Filter>Headerdateien\Assets\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MossGround.hpp">
+      <Filter>Headerdateien\Assets\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\World\Entities\DebugCamera.hpp">
+      <Filter>Headerdateien\World\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\World\Entities\Components\CameraComponent.hpp">
+      <Filter>Headerdateien\World\Entities\Components</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\resources\shader\compile_shaders.cmd">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\sky.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\sky.fs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\gui.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\link.fs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\link.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\obj.fs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\obj.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\terra.fs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\terra.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\gui.fs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\light.directional.glsl">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="light.spotlight.glsl">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\depthpass.fs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\depthpass.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\depthpass_static.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\depthpass_static.vert.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\depthpass_skeletal.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\depthpass_skeletal.vert.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\finalpass.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\finalpass.fs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\finalpass.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\finalpass.vert.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+  </ItemGroup>
+</Project>
