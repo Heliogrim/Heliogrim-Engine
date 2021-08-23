@@ -1,0 +1,49 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+#*.obj
+[Bb]in/
+![Ll]ibrary/[Bb]in/
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+![Ll]ibrary/*.so
+*.dylib
+![Ll]ibrary/*.dylib
+*.dll
+![Ll]ibrary/*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+![Ll]ibrary/*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Custom
+*.log
+*.tlog
+*.idb
+.vs
+.tmp
+*.TMP
+
+/.idea
+/cmake-build-debug
+/cmake-build-release
+[Bb]uild/
+[Dd]ist/

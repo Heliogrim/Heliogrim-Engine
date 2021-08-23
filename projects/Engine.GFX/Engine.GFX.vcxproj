@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</ProjectGuid>
+    <RootNamespace>EngineGFX</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Engine.Common.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Build.Debug.props" />
+    <Import Project="..\Build.__Any__.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Build.__Any__.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Engine.Common.props" />
+    <Import Project="..\Build.Release.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)dist\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)dist\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)dist\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile />
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
+      <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
+      <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX\API\VkTranslate.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Application\Application.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Camera\Camera.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Camera\CameraFrustum.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Color\Color.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Command\CommandBatch.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Command\CommandBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Command\CommandPool.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Command\CommandQueue.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Device\Device.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\FixedPipeline.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Framebuffer\Attachment.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Framebuffer\Framebuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Generator\MipMap.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Geometry\Cube.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Geometry\Geometry.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Geometry\Mesh.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Geometry\Plane.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Geometry\PolygonMesh.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Geometry\Sphere.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPassPipeline.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\DepthModelPassProcessor.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\DepthPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\DepthPassSkeletalStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\DepthPassStaticStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\FinalPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\FinalPassCompositeStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\LightPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\PbrPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\PbrPassSkeletalStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\PbrPassStaticStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\ProbePass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPipeline.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Graphics.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicsDep.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Loader\TextureLoader.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\ModelPassProcessor.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\FragmentStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\GeometryStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\RasterizationStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\RenderPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\VertexStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\ProcessedModelBatch.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\Binding.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\BindingGroup.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\Factory.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\Prototype.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\PrototypeBinding.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\Shader.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\ShaderSlot.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\ShaderStorage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Surface\Surface.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Swapchain\Swapchain.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\TextureFormat.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureSampler.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\Texture.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureFactory.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\VirtualTexture.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Viewport.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\VkFixedPipeline.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX\API\VkTranslate.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Application\Application.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\Buffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Camera\Camera.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Camera\CameraFrustum.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Color\Color.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Command\CommandBatch.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Command\CommandBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Command\CommandPool.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Command\CommandQueue.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\ComputePipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Device\Device.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\FixedPipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\FixedPipelineInput.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Framebuffer\Attachment.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Framebuffer\Framebuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Generator\MipMap.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\Cube.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\Geometry.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\Mesh.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\Plane.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\PolygonMesh.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\Sphere.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\SubdivisionMesh.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\Vertex.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPassResult.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPassStageContext.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\DepthModelPassProcessor.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\DepthPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\DepthPassSkeletalStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\DepthPassStaticStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\FinalPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\FinalPassCompositeStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\LightPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\PbrPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\PbrPassSkeletalStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\PbrPassStaticStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\ProbePass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Graphics.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicsDep.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Handle\HandledObject.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Handle\LoopHandler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Handle\MaterialHandler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Handle\ModelHandler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Handle\TextureHandler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Inc.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\InputAttribute.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\InputRate.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Library\ObjStagedBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Library\Quad.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Library\RenderCache.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Library\RenderObject.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Library\Types.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Light\LightAtlas.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Loader\GeometryLoader.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Loader\TextureLoader.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Material\Material.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMapFlags.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMeta.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\MeshPipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\ModelBatch.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\ModelPassProcessor.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\ModelState.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\FragmentStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\GeometryStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\RasterizationStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\RenderPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\VertexStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\PrimitiveTopology.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\ProcessedModelBatch.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\RasterCullFace.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\RasterPolyFront.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\RasterPolyMode.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\RasterSamples.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\RayTracePipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPassMask.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPassPipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPassPipelineStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\Binding.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\BindingGroup.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\Factory.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\Prototype.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\PrototypeBinding.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\Shader.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\ShaderSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\ShaderStorage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\Type.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Skybox\Skybox.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Surface\Surface.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Swapchain\Swapchain.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\TextureFormat.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\Texture.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureFactory.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureSampler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureType.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\Utility.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTexture.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Viewport.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\VkFixedPipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\vkinc.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\__macro.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX\todo.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

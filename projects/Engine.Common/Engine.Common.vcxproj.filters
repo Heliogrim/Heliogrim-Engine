@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\Collection">
+      <UniqueIdentifier>{74bfb58c-71f8-48e0-9333-91bc391f5443}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Exception">
+      <UniqueIdentifier>{3010830f-0a9d-4593-811e-aa8c169c94a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Math">
+      <UniqueIdentifier>{44b20a02-8be3-40a6-a70a-3c6f9a2e2ed9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Concurrent">
+      <UniqueIdentifier>{2c15f327-ea2d-4fcf-b2cc-71b929214358}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Event">
+      <UniqueIdentifier>{37c5f927-b189-4505-82eb-6bcb69d47bee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Memory">
+      <UniqueIdentifier>{d7fb70d8-697c-46fd-97c7-24301cbf6ad0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Meta">
+      <UniqueIdentifier>{3556a693-c1b9-4075-b27f-475f5c97cdcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Sort">
+      <UniqueIdentifier>{c0dad4f4-afa7-43d7-835f-8b61106c5166}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Memory">
+      <UniqueIdentifier>{4bd6b834-5eb4-4f2e-9b7c-ab802610be6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Functional">
+      <UniqueIdentifier>{fbedbf98-3b66-4700-9f5d-5d95e0df2796}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Hash">
+      <UniqueIdentifier>{d4b064d0-691e-4441-a541-a167182377bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Hash">
+      <UniqueIdentifier>{4effee8b-e06c-4053-8f7a-1f259460f4a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Concurrent\Collection">
+      <UniqueIdentifier>{e7721333-3325-4cb0-a029-a5c2bd8a77b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Concurrent">
+      <UniqueIdentifier>{f9fb3b2c-3845-4c93-8964-694c93a5729f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Concurrent\Collection">
+      <UniqueIdentifier>{26dc9526-fbc9-4a81-85ea-0914b05cf471}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Math">
+      <UniqueIdentifier>{9ae07cad-741e-4bb9-badc-846df0bdcc2e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Common\stdafx.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\stddg.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\Array.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\List.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Exception\NotImplementedException.hpp">
+      <Filter>Headerdateien\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Bezier.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Complex.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Extent.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Hash.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\MathDefaultDefine.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Matrix.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Quaternion.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Transformation.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Vector.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Concurrent\Future.hpp">
+      <Filter>Headerdateien\Concurrent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Concurrent\Promise.hpp">
+      <Filter>Headerdateien\Concurrent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Event\Event.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Event\EventEmitter.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Memory\DbgMemoryStats.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Meta\CoreState.hpp">
+      <Filter>Headerdateien\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Meta\TypeId.hpp">
+      <Filter>Headerdateien\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Concurrent\SpinLock.hpp">
+      <Filter>Headerdateien\Concurrent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Flag.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Inc.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Make.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Result.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\RingBuffer.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Singleton.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Stream.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\String.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Uuid.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Exception\__macro.hpp">
+      <Filter>Headerdateien\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\__macro.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\__macro.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\__const.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Functional\Function.hpp">
+      <Filter>Headerdateien\Functional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Hash\Murmur3.hpp">
+      <Filter>Headerdateien\Hash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Types.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Concurrent\Collection\RingBuffer.hpp">
+      <Filter>Headerdateien\Concurrent\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Memory\allocator.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Wrapper.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Bounding.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Memory\DbgMemoryStats.cpp">
+      <Filter>Quelldateien\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Uuid.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Hash\Murmur3.cpp">
+      <Filter>Quelldateien\Hash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Concurrent\Collection\RingBuffer.cpp">
+      <Filter>Quelldateien\Concurrent\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Concurrent\SpinLock.cpp">
+      <Filter>Quelldateien\Concurrent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Math\Bounding.cpp">
+      <Filter>Quelldateien\Math</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

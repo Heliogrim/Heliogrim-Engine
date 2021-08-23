@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\World">
+      <UniqueIdentifier>{1f79d1b3-c584-488c-8a14-577c65a4b5c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\World">
+      <UniqueIdentifier>{616e5afc-77ff-4b6a-818d-aacb9b056476}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Component">
+      <UniqueIdentifier>{ab047d90-3814-46ce-a9d0-ad2f2c11f45d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Component">
+      <UniqueIdentifier>{de55f3e7-a08a-4e21-be66-dba0a4e076dd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Ember\World\World.hpp">
+      <Filter>Headerdateien\World</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\World\Level.hpp">
+      <Filter>Headerdateien\World</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\World\Entity.hpp">
+      <Filter>Headerdateien\World</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Component\LogicComponent.hpp">
+      <Filter>Headerdateien\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Component\EntityComponent.hpp">
+      <Filter>Headerdateien\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Component\SceneComponent.hpp">
+      <Filter>Headerdateien\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Component\LightComponent.hpp">
+      <Filter>Headerdateien\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Component\ModelComponent.hpp">
+      <Filter>Headerdateien\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Component\SkinnedModelComponent.hpp">
+      <Filter>Headerdateien\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Component\SkeletalModelComponent.hpp">
+      <Filter>Headerdateien\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Component\CollisionComponent.hpp">
+      <Filter>Headerdateien\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Component\ComponentHandle.hpp">
+      <Filter>Headerdateien\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Texture.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\TextureBuffer.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\GfxMaterial.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\PfxMaterial.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\TextureFormat.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\AudioFormat.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Ember.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Graphics.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Audio.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Network.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Scheduler.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Traits.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\World\TypedEntity.hpp">
+      <Filter>Headerdateien\World</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Ember\World\World.cpp">
+      <Filter>Quelldateien\World</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\World\Level.cpp">
+      <Filter>Quelldateien\World</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\World\Entity.cpp">
+      <Filter>Quelldateien\World</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\AudioFormat.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\GfxMaterial.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\PfxMaterial.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Texture.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\TextureBuffer.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\TextureFormat.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Component\ModelComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Component\SceneComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Component\LogicComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Component\CollisionComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Component\EntityComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Component\LightComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Component\SkeletalModelComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Component\SkinnedModelComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Component\ComponentHandle.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Ember.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

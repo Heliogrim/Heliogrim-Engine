@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\Register">
+      <UniqueIdentifier>{a1fc43c5-d220-44de-b45b-78b9f78a42d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Reflection">
+      <UniqueIdentifier>{42b8f695-fefe-46d3-aef7-0b33536012e2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Subsystem.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Register\LogicComponentRegister.hpp">
+      <Filter>Headerdateien\Register</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Register\SceneComponentRegister.hpp">
+      <Filter>Headerdateien\Register</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Register\EntityComponentRegister.hpp">
+      <Filter>Headerdateien\Register</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Components\ComponentCustomRegister.hpp">
+      <Filter>Headerdateien\Register</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Reflection\EntityReflection.hpp">
+      <Filter>Headerdateien\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Reflection\EntityReflector.hpp">
+      <Filter>Headerdateien\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Reflection\ComponentReflector.hpp">
+      <Filter>Headerdateien\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Reflection\ComponentReflection.hpp">
+      <Filter>Headerdateien\Reflection</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.ECS.Subsystem\Subsystem.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

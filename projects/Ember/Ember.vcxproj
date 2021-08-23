@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Ember\Audio.hpp" />
+    <ClInclude Include="..\..\src\Ember\AudioFormat.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\CollisionComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\ComponentHandle.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\EntityComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\LightComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\LogicComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\ModelComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\SceneComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\SkeletalModelComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\SkinnedModelComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Ember.hpp" />
+    <ClInclude Include="..\..\src\Ember\GfxMaterial.hpp" />
+    <ClInclude Include="..\..\src\Ember\Graphics.hpp" />
+    <ClInclude Include="..\..\src\Ember\Network.hpp" />
+    <ClInclude Include="..\..\src\Ember\PfxMaterial.hpp" />
+    <ClInclude Include="..\..\src\Ember\Scheduler.hpp" />
+    <ClInclude Include="..\..\src\Ember\Texture.hpp" />
+    <ClInclude Include="..\..\src\Ember\TextureBuffer.hpp" />
+    <ClInclude Include="..\..\src\Ember\TextureFormat.hpp" />
+    <ClInclude Include="..\..\src\Ember\Traits.hpp" />
+    <ClInclude Include="..\..\src\Ember\World\Entity.hpp" />
+    <ClInclude Include="..\..\src\Ember\World\Level.hpp" />
+    <ClInclude Include="..\..\src\Ember\World\TypedEntity.hpp" />
+    <ClInclude Include="..\..\src\Ember\World\World.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Ember\AudioFormat.cpp" />
+    <ClCompile Include="..\..\src\Ember\Component\CollisionComponent.cpp" />
+    <ClCompile Include="..\..\src\Ember\Component\ComponentHandle.cpp" />
+    <ClCompile Include="..\..\src\Ember\Component\EntityComponent.cpp" />
+    <ClCompile Include="..\..\src\Ember\Component\LightComponent.cpp" />
+    <ClCompile Include="..\..\src\Ember\Component\LogicComponent.cpp" />
+    <ClCompile Include="..\..\src\Ember\Component\ModelComponent.cpp" />
+    <ClCompile Include="..\..\src\Ember\Component\SceneComponent.cpp" />
+    <ClCompile Include="..\..\src\Ember\Component\SkeletalModelComponent.cpp" />
+    <ClCompile Include="..\..\src\Ember\Component\SkinnedModelComponent.cpp" />
+    <ClCompile Include="..\..\src\Ember\Ember.cpp" />
+    <ClCompile Include="..\..\src\Ember\GfxMaterial.cpp" />
+    <ClCompile Include="..\..\src\Ember\PfxMaterial.cpp" />
+    <ClCompile Include="..\..\src\Ember\Texture.cpp" />
+    <ClCompile Include="..\..\src\Ember\TextureBuffer.cpp" />
+    <ClCompile Include="..\..\src\Ember\TextureFormat.cpp" />
+    <ClCompile Include="..\..\src\Ember\World\Entity.cpp" />
+    <ClCompile Include="..\..\src\Ember\World\Level.cpp" />
+    <ClCompile Include="..\..\src\Ember\World\World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Engine.Assets\Engine.Assets.vcxproj">
+      <Project>{02a28ec5-5e8a-4ca4-ad1d-673df3b995f5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
+      <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.ECS\Engine.ECS.vcxproj">
+      <Project>{bdd7b57f-5aee-4ddb-95fd-e0f89bb25ec7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Env\Engine.Env.vcxproj">
+      <Project>{f73e4ef6-247e-42e0-bd0a-04d104e6837d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX\Engine.GFX.vcxproj">
+      <Project>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Network\Engine.Network.vcxproj">
+      <Project>{813c849e-7ee6-4241-ae94-a7d0a7abf9bc}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.PFX\Engine.PFX.vcxproj">
+      <Project>{9e26faad-2541-4e80-a913-cc87a40bb745}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Proxy\Engine.Proxy.vcxproj">
+      <Project>{6cd674b5-80b9-4af0-8fb9-c1ef8adc6a5a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Resource\Engine.Resource.vcxproj">
+      <Project>{b0e77d6c-45d7-4254-8630-d10fdf6ca290}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Scene\Engine.Scene.vcxproj">
+      <Project>{114192e3-04b1-4ae7-86f5-1d055f7526d4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
+      <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.SFX\Engine.SFX.vcxproj">
+      <Project>{9f2b4b6e-1de8-4b52-b2e4-f7c44df0d3b9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Utils\Engine.Utils.vcxproj">
+      <Project>{3977a969-6595-4086-a6cc-97dea9935877}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{8d01b7e3-273a-4a0b-8099-ad227fbdaf9c}</ProjectGuid>
+    <RootNamespace>Ember</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Build.__Any__.props" />
+    <Import Project="..\Build.Debug.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Engine.Common.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Build.__Any__.props" />
+    <Import Project="..\Build.Debug.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Engine.Common.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Build.__Any__.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Engine.Common.props" />
+    <Import Project="..\Build.Debug.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Build.__Any__.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Engine.Common.props" />
+    <Import Project="..\Build.Release.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

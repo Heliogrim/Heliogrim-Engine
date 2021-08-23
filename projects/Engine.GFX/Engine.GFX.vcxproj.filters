@@ -1,0 +1,663 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\Buffer">
+      <UniqueIdentifier>{8a585315-9e2b-4649-9a90-7be5703a3708}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Camera">
+      <UniqueIdentifier>{cf44672c-d597-4552-b738-275d4fd46bd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Color">
+      <UniqueIdentifier>{f7e77427-8c7d-45f2-a539-4cde11cf50f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Geometry">
+      <UniqueIdentifier>{96bd00ef-35de-42b2-acbc-33df681168fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Handle">
+      <UniqueIdentifier>{ba26f054-9928-49ec-945b-75db9d5e7a72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Library">
+      <UniqueIdentifier>{8c32f7ed-07ae-47e0-b2d9-c570f9eab5b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Loader">
+      <UniqueIdentifier>{bcd7bbd1-c6fe-4ae6-8d18-0e4e3e097919}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Material">
+      <UniqueIdentifier>{6d166ae2-2939-4d35-88c7-91f3d8f87203}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Skybox">
+      <UniqueIdentifier>{e5100701-7526-4012-84d9-8e2c47c484b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Texture">
+      <UniqueIdentifier>{d027d163-1b6f-4fa0-881a-7a8a5f406b25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Loader">
+      <UniqueIdentifier>{a730dd52-b83a-4680-9b02-d745be7668db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Skybox">
+      <UniqueIdentifier>{d2ae031a-11a5-43cf-acae-3539f6b39dec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Application">
+      <UniqueIdentifier>{6fc896d9-81f1-4a5b-912b-b2bae5b31792}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Application">
+      <UniqueIdentifier>{edaa601f-ff93-451f-a655-22097e4f3028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Surface">
+      <UniqueIdentifier>{971f3a2c-016e-4013-80af-76db1fe94376}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Surface">
+      <UniqueIdentifier>{ba9a03f3-4ca4-49f6-bbe0-e5ab995668e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Swapchain">
+      <UniqueIdentifier>{9b0a088f-02dc-4245-ae03-651a26a72dd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Swapchain">
+      <UniqueIdentifier>{90786307-4c72-44f2-8dd5-baa6fc285e3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Device">
+      <UniqueIdentifier>{c2be014c-507c-448e-8e48-404d7a586bfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Device">
+      <UniqueIdentifier>{89142d85-5d9c-4ee6-a609-e5c5bf3019a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Shader">
+      <UniqueIdentifier>{4c1bc746-d494-4380-a23e-4660a1bf87d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Pipeline">
+      <UniqueIdentifier>{cec41822-7154-4849-a17d-111e431db06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Color">
+      <UniqueIdentifier>{eee60cbc-cd9e-44a8-a224-5a0a304b055a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Texture">
+      <UniqueIdentifier>{1f570538-2014-4ad6-bf1c-104d8e1b1708}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Light">
+      <UniqueIdentifier>{d244fa4a-177d-4c78-9c4d-29dbb7318bb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Camera">
+      <UniqueIdentifier>{092bd610-1a15-4791-bd79-0a41ab4bca13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Framebuffer">
+      <UniqueIdentifier>{e953bfe0-37fa-4b62-b4ff-e1a47a7b79a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Command">
+      <UniqueIdentifier>{b67beffb-4369-42dd-91de-96112a489f36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Command">
+      <UniqueIdentifier>{e3d83973-1986-4072-9865-9730eb78bb88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Generator">
+      <UniqueIdentifier>{358db5bb-9759-4632-b014-4c6682f026c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Generator">
+      <UniqueIdentifier>{6dff6c67-7ebb-4efb-afa6-3e7431d5a625}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Shader">
+      <UniqueIdentifier>{193d1791-312d-4a83-a3e4-03971343a7cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Pipeline">
+      <UniqueIdentifier>{6fa17356-0c45-47fd-a055-726679bb1734}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Framebuffer">
+      <UniqueIdentifier>{d64314e4-5d65-47b7-89d3-5c05fcf3d19a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Geometry">
+      <UniqueIdentifier>{0bc5e57f-9991-4bde-8e95-059b49172e20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\API">
+      <UniqueIdentifier>{714b8ab6-4b81-4ab3-b1d4-d1871a3ba761}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\API">
+      <UniqueIdentifier>{1826aadb-1472-4854-aa2e-be13b39e0c1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\GraphicPass">
+      <UniqueIdentifier>{79f32a9f-f0aa-40e8-a0c9-50fa0223ad20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\GraphicPass">
+      <UniqueIdentifier>{13ee54d2-2de3-4d8b-b76c-7f0aa059b3e6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX\Inc.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\vkinc.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\Buffer.hpp">
+      <Filter>Headerdateien\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Camera\Camera.hpp">
+      <Filter>Headerdateien\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Color\Color.hpp">
+      <Filter>Headerdateien\Color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\Cube.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\Geometry.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\Plane.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\PolygonMesh.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\Sphere.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Handle\HandledObject.hpp">
+      <Filter>Headerdateien\Handle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Handle\LoopHandler.hpp">
+      <Filter>Headerdateien\Handle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Handle\MaterialHandler.hpp">
+      <Filter>Headerdateien\Handle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Handle\ModelHandler.hpp">
+      <Filter>Headerdateien\Handle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Handle\TextureHandler.hpp">
+      <Filter>Headerdateien\Handle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Library\ObjStagedBuffer.hpp">
+      <Filter>Headerdateien\Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Library\Quad.hpp">
+      <Filter>Headerdateien\Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Library\RenderCache.hpp">
+      <Filter>Headerdateien\Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Library\RenderObject.hpp">
+      <Filter>Headerdateien\Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Library\Types.hpp">
+      <Filter>Headerdateien\Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Loader\GeometryLoader.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Loader\TextureLoader.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Material\Material.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\Texture.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Skybox\Skybox.hpp">
+      <Filter>Headerdateien\Skybox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicsDep.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Graphics.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Application\Application.hpp">
+      <Filter>Headerdateien\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Surface\Surface.hpp">
+      <Filter>Headerdateien\Surface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Swapchain\Swapchain.hpp">
+      <Filter>Headerdateien\Swapchain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Device\Device.hpp">
+      <Filter>Headerdateien\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\Binding.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\Prototype.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\Shader.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\__macro.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Light\LightAtlas.hpp">
+      <Filter>Headerdateien\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\Vertex.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTexture.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\Utility.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureBuffer.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Framebuffer\Framebuffer.hpp">
+      <Filter>Headerdateien\Framebuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Framebuffer\Attachment.hpp">
+      <Filter>Headerdateien\Framebuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Command\CommandQueue.hpp">
+      <Filter>Headerdateien\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Command\CommandBatch.hpp">
+      <Filter>Headerdateien\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Command\CommandBuffer.hpp">
+      <Filter>Headerdateien\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Command\CommandPool.hpp">
+      <Filter>Headerdateien\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\Type.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Generator\MipMap.hpp">
+      <Filter>Headerdateien\Generator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\PrototypeBinding.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\Factory.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\BindingGroup.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\VertexStage.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\FragmentStage.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\GeometryStage.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Viewport.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\RasterizationStage.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\RenderPass.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\ShaderStorage.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\ShaderSlot.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureFactory.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\todo.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMapFlags.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMeta.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\ModelState.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\ModelBatch.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\ModelPassProcessor.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\TextureFormat.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureType.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPipeline.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\ComputePipeline.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\FixedPipeline.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\MeshPipeline.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\RayTracePipeline.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\ProcessedModelBatch.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\PrimitiveTopology.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\InputRate.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\InputAttribute.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\FixedPipelineInput.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\RasterCullFace.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\RasterSamples.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\RasterPolyMode.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\RasterPolyFront.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\VkFixedPipeline.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\API\VkTranslate.hpp">
+      <Filter>Headerdateien\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPassMask.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPassPipeline.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPassPipelineStage.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\DepthPass.hpp">
+      <Filter>Headerdateien\GraphicPass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\FinalPass.hpp">
+      <Filter>Headerdateien\GraphicPass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\FinalPassCompositeStage.hpp">
+      <Filter>Headerdateien\GraphicPass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\LightPass.hpp">
+      <Filter>Headerdateien\GraphicPass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\PbrPass.hpp">
+      <Filter>Headerdateien\GraphicPass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\PbrPassSkeletalStage.hpp">
+      <Filter>Headerdateien\GraphicPass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\PbrPassStaticStage.hpp">
+      <Filter>Headerdateien\GraphicPass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\ProbePass.hpp">
+      <Filter>Headerdateien\GraphicPass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.hpp">
+      <Filter>Headerdateien\Swapchain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Camera\CameraFrustum.hpp">
+      <Filter>Headerdateien\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureSampler.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\DepthPassStaticStage.hpp">
+      <Filter>Headerdateien\GraphicPass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\DepthPassSkeletalStage.hpp">
+      <Filter>Headerdateien\GraphicPass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPassStageContext.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPassResult.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\Mesh.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Geometry\SubdivisionMesh.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\DepthModelPassProcessor.hpp">
+      <Filter>Headerdateien\GraphicPass</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
+      <Filter>Quelldateien\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Loader\TextureLoader.cpp">
+      <Filter>Quelldateien\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp">
+      <Filter>Quelldateien\Skybox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Graphics.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Application\Application.cpp">
+      <Filter>Quelldateien\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Surface\Surface.cpp">
+      <Filter>Quelldateien\Surface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Swapchain\Swapchain.cpp">
+      <Filter>Quelldateien\Swapchain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Device\Device.cpp">
+      <Filter>Quelldateien\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Color\Color.cpp">
+      <Filter>Quelldateien\Color</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\Texture.cpp">
+      <Filter>Quelldateien\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Camera\Camera.cpp">
+      <Filter>Quelldateien\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Command\CommandQueue.cpp">
+      <Filter>Quelldateien\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Command\CommandBatch.cpp">
+      <Filter>Quelldateien\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Command\CommandBuffer.cpp">
+      <Filter>Quelldateien\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Command\CommandPool.cpp">
+      <Filter>Quelldateien\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Generator\MipMap.cpp">
+      <Filter>Quelldateien\Generator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\PrototypeBinding.cpp">
+      <Filter>Quelldateien\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\Prototype.cpp">
+      <Filter>Quelldateien\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\Shader.cpp">
+      <Filter>Quelldateien\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\Binding.cpp">
+      <Filter>Quelldateien\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\Factory.cpp">
+      <Filter>Quelldateien\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\BindingGroup.cpp">
+      <Filter>Quelldateien\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\RenderPass.cpp">
+      <Filter>Quelldateien\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\ShaderStorage.cpp">
+      <Filter>Quelldateien\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\ShaderSlot.cpp">
+      <Filter>Quelldateien\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Framebuffer\Framebuffer.cpp">
+      <Filter>Quelldateien\Framebuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureFactory.cpp">
+      <Filter>Quelldateien\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.cpp">
+      <Filter>Quelldateien\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureBuffer.cpp">
+      <Filter>Quelldateien\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Viewport.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Framebuffer\Attachment.cpp">
+      <Filter>Quelldateien\Framebuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\FragmentStage.cpp">
+      <Filter>Quelldateien\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\GeometryStage.cpp">
+      <Filter>Quelldateien\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\VertexStage.cpp">
+      <Filter>Quelldateien\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.cpp">
+      <Filter>Quelldateien\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\RasterizationStage.cpp">
+      <Filter>Quelldateien\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\VirtualTexture.cpp">
+      <Filter>Quelldateien\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Geometry\Geometry.cpp">
+      <Filter>Quelldateien\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\ModelPassProcessor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\API\VkTranslate.cpp">
+      <Filter>Quelldateien\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\VkFixedPipeline.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\FinalPassCompositeStage.cpp">
+      <Filter>Quelldateien\GraphicPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\PbrPassStaticStage.cpp">
+      <Filter>Quelldateien\GraphicPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\PbrPassSkeletalStage.cpp">
+      <Filter>Quelldateien\GraphicPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\ProbePass.cpp">
+      <Filter>Quelldateien\GraphicPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\PbrPass.cpp">
+      <Filter>Quelldateien\GraphicPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\LightPass.cpp">
+      <Filter>Quelldateien\GraphicPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\FinalPass.cpp">
+      <Filter>Quelldateien\GraphicPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\DepthPass.cpp">
+      <Filter>Quelldateien\GraphicPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.cpp">
+      <Filter>Quelldateien\Swapchain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Camera\CameraFrustum.cpp">
+      <Filter>Quelldateien\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPipeline.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\FixedPipeline.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureSampler.cpp">
+      <Filter>Quelldateien\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\TextureFormat.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPassPipeline.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\DepthPassStaticStage.cpp">
+      <Filter>Quelldateien\GraphicPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\DepthPassSkeletalStage.cpp">
+      <Filter>Quelldateien\GraphicPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\ProcessedModelBatch.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicsDep.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Geometry\Mesh.cpp">
+      <Filter>Quelldateien\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Geometry\PolygonMesh.cpp">
+      <Filter>Quelldateien\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Geometry\Plane.cpp">
+      <Filter>Quelldateien\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Geometry\Cube.cpp">
+      <Filter>Quelldateien\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Geometry\Sphere.cpp">
+      <Filter>Quelldateien\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\DepthModelPassProcessor.cpp">
+      <Filter>Quelldateien\GraphicPass</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

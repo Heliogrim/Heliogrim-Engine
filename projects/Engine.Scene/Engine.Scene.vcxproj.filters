@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\Storage">
+      <UniqueIdentifier>{99469f95-0514-4897-a37b-452bbfa08b4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Node">
+      <UniqueIdentifier>{5a283217-2134-494b-bf8e-6214ffbf6db5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Graph">
+      <UniqueIdentifier>{d77df969-8179-4bf8-bc05-367f41e4e48e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Storage">
+      <UniqueIdentifier>{167bb390-745b-4ce9-ba27-02809639bf5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Graph">
+      <UniqueIdentifier>{073ca8fd-4087-4a20-bbc3-8950565d00a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Node">
+      <UniqueIdentifier>{b94ee3d0-9074-4778-8cb6-1f1fe8889e15}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Scene\SceneElement.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Scene.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Storage\SceneNodeStorage.hpp">
+      <Filter>Headerdateien\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeHead.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Graph\SceneGraph.hpp">
+      <Filter>Headerdateien\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Storage\EmberSceneNodeStorage.hpp">
+      <Filter>Headerdateien\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeVersion.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeHeadContainer.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeFactory.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeElement.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\SceneTraits.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeId.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeConsumer.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\LoosySceneNode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\NaturalSceneNode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\ShadowSceneNode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SpartialSceneNode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeSubBase.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\SceneElement.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\SceneNode.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Storage\SceneNodeStorage.cpp">
+      <Filter>Quelldateien\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNode.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeHead.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Graph\SceneGraph.cpp">
+      <Filter>Quelldateien\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeHeadContainer.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeFactory.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Node\ShadowSceneNode.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Node\NaturalSceneNode.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Node\SpartialSceneNode.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Node\LoosySceneNode.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,52 @@
+build:
+    stage: build
+    tags:
+        - win
+        - vulkan
+
+    # Preparation
+    before_script:
+        #     - apt update && apt install make autoconf cmake -yqq
+        - mkdir build
+        - cd build
+        - cmake .. -G "Visual Studio 16 2019" "-DUSE_64BIT_BUILD=ON" "-DCMAKE_BUILD_TYPE=Release"
+        - cd ..
+    # Currently: Failed to find: cl.exe        - cmake .. -G "NMake Makefiles JOM" "-DUSE_64_BIT_BUILD=ON"
+
+    # Process
+    script:
+        #        - mkdir build
+        #        - cd build
+        #        - cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER=clang-11 -D CMAKE_CXX_COMPILER=clang++-11 ..
+        #        - cmake --build .
+        - cmake --build ./build --config Release
+
+        # Copying
+        - mkdir -p dist/Debug
+        - mkdir -p dist/Release
+        - cmake -E copy_if_different library/bin/assimp/Debug/assimp-vc142-mtd.dll dist/Debug/
+        - cmake -E copy_if_different "$VULKAN_SDK/Third-Party/Bin/SDL2.dll" dist/Debug/
+        - cmake -E copy_if_different library/bin/assimp/Release/assimp-vc142-mt.dll dist/Release/
+        - cmake -E copy_if_different "$VULKAN_SDK/Third-Party/Bin/SDL2.dll" dist/Release/
+
+        # Linking Resources
+        - rm -rf dist/Debug/resources
+        - rm -rf dist/Release/resources
+        - ln -sfrn resources dist/Debug/resources
+        - ln -sfrn resources dist/Release/resources
+
+    artifacts:
+        name: Firefly-$CI_COMMIT_REF_NAME
+        paths:
+            - dist/Release/
+        expire_in: 15min
+
+test:
+    stage: test
+    script:
+        - echo "Test"
+
+#deploy:
+#    stage: deploy
+#    script:
+#        - echo "Deploy"
