@@ -24,12 +24,14 @@
     <ClInclude Include="..\..\src\Ember\Component\CollisionComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Component\ComponentHandle.hpp" />
     <ClInclude Include="..\..\src\Ember\Component\EntityComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\Gfx\MeshComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\Gfx\SkeletalMeshComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\Gfx\SkinnedMeshComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Component\Gfx\StaticMeshComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Component\LightComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Component\LogicComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Component\ModelComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Component\SceneComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\SkeletalModelComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\SkinnedModelComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Ember.hpp" />
     <ClInclude Include="..\..\src\Ember\GfxMaterial.hpp" />
     <ClInclude Include="..\..\src\Ember\Graphics.hpp" />
@@ -54,8 +56,6 @@
     <ClCompile Include="..\..\src\Ember\Component\LogicComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\Component\ModelComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\Component\SceneComponent.cpp" />
-    <ClCompile Include="..\..\src\Ember\Component\SkeletalModelComponent.cpp" />
-    <ClCompile Include="..\..\src\Ember\Component\SkinnedModelComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\Ember.cpp" />
     <ClCompile Include="..\..\src\Ember\GfxMaterial.cpp" />
     <ClCompile Include="..\..\src\Ember\PfxMaterial.cpp" />

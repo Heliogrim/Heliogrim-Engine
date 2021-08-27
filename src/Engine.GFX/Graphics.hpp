@@ -178,6 +178,12 @@ namespace ember::engine {
 
     private:
         /**
+         * Graphic Scene Graph
+         */
+        ptr<scene::SceneGraph> _graph;
+
+    private:
+        /**
          * Graphic Passes
          */
         vector<ptr<gfx::GraphicPass>> _graphicPasses;

@@ -70,6 +70,6 @@ namespace ember::engine::scene {
 
     private:
         // Temporary
-        mutable _STD atomic_uint32_t _nodeIdGen = _STD atomic_uint32_t(1);
+        inline static _STD atomic_uint32_t _nodeIdGen { _STD atomic_uint32_t(1) };
     };
 }

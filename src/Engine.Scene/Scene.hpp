@@ -1,5 +1,6 @@
 #pragma once
-#include "./Graph/SceneGraph.hpp"
+#include "Graph/SceneGraph.hpp"
+#include "Graph/SceneGraphTag.hpp"
 
 namespace ember::engine::scene {
     class Scene {
@@ -60,31 +61,6 @@ namespace ember::engine::scene {
          */
         ~Scene() noexcept;
 
-    private:
-        /**
-         * Sets up the graphics scene
-         *
-         * @author Julius
-         * @date 16.08.2021
-         */
-        void setupGfxScene();
-
-        /**
-         * Sets up the physics scene
-         *
-         * @author Julius
-         * @date 16.08.2021
-         */
-        void setupPfxScene();
-
-        /**
-         * Sets up the sounds scene
-         *
-         * @author Julius
-         * @date 16.08.2021
-         */
-        void setupSfxScene();
-
     public:
         /**
          * Setups this 
@@ -120,5 +96,62 @@ namespace ember::engine::scene {
          * @returns A ref&lt;vector&lt;uptr&lt;SceneGraph&gt;&gt;&gt;
          */
         [[nodiscard]] ref<vector<uptr<SceneGraph>>> graphs() noexcept;
+
+    private:
+        /**
+         * The tagged graphs
+         */
+        vector<_STD pair<SceneGraphTagBase, ptr<SceneGraph>>> _taggedGraphs;
+
+    public:
+        /**
+         * Gets a SceneGraph via the linked tag_
+         *
+         * @author Julius
+         * @date 27.08.2021
+         *
+         * @param  tag_ The tag.
+         *
+         * @returns A pointer to the linked graph or nullptr
+         */
+        [[nodiscard]] ptr<SceneGraph> getGraph(cref<SceneGraphTagBase> tag_) noexcept;
+
+        /**
+         * Gets a SceneGraph via the linked tag_
+         *
+         * @tparam TagType_ Type of the tag type.
+         * @param  tag_ The tag.
+         *
+         * @returns A pointer to the linked graph or nullptr
+         */
+        template <HasType TagType_> requires _STD is_convertible_v<TagType_, SceneGraphTagBase>
+        [[nodiscard]] ptr<SceneGraph> getGraph(cref<TagType_> tag_) noexcept {
+            return getGraph(static_cast<SceneGraphTagBase>(tag_));
+        }
+
+        /**
+         * Gets or create a SceneGraph and link with given tag_
+         *
+         * @author Julius
+         * @date 27.08.2021
+         *
+         * @param  tag_ The tag.
+         *
+         * @returns A pointer to the created SceneGraph
+         */
+        ptr<SceneGraph> getOrCreateGraph(cref<SceneGraphTagBase> tag_);
+
+        /**
+         * Gets or create a SceneGraph and link with given tag_
+         *
+         * @tparam TagType_ Type of the tag type.
+         * @param  tag_ The tag.
+         *
+         * @returns A pointer to the created SceneGraph
+         */
+        template <HasType TagType_> requires _STD is_convertible_v<TagType_, SceneGraphTagBase>
+        ptr<SceneGraph> getOrCreateGraph(cref<TagType_> tag_) {
+            return getOrCreateGraph(static_cast<SceneGraphTagBase>(tag_));
+        }
     };
 }
