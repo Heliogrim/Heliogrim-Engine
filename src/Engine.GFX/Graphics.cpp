@@ -11,6 +11,7 @@
 #include "GraphicPass/LightPass.hpp"
 #include "GraphicPass/ProbePass.hpp"
 #include "Loader/TextureLoader.hpp"
+#include "Scene/SceneGraphTag.hpp"
 #include "Shader/ShaderStorage.hpp"
 #include "Swapchain/Swapchain.hpp"
 #include "Swapchain/VkSwapchain.hpp"
@@ -141,6 +142,12 @@ ptr<Graphics> Graphics::make() {
 Graphics::~Graphics() = default;
 
 void Graphics::setup() {
+
+    /**
+     * Prepare other modules
+     */
+    _graph = scene::Scene::make()->getOrCreateGraph(GfxSceneGraphTag {});
+
     /**
      * Create a new application
      */
@@ -373,7 +380,7 @@ void Graphics::_tick() {
     auto finalPass = _graphicPasses[static_cast<u8>(GraphicPassMask::eFinalPass)];
 
     batch.reset();
-    finalPass->process(*scene::Scene::get()->graphs().front(), batch);
+    finalPass->process(*_graph, batch);
 
     /**
      * Execute Command Batch
@@ -420,7 +427,7 @@ void Graphics::_tick() {
 }
 
 void Graphics::processGraphicPasses() {
-    ref<scene::SceneGraph> graph = *scene::Scene::get()->graphs().front();
+    ref<scene::SceneGraph> graph = *_graph;
 
     constexpr GraphicPassMask masks[] {
         GraphicPassMask::eDepthPass,

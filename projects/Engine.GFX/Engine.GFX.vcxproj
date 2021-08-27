@@ -299,6 +299,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPassPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPassPipelineStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneElement.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneGraphTag.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Shader\Binding.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Shader\BindingGroup.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Shader\Factory.hpp" />

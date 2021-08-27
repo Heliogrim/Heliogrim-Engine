@@ -10,51 +10,11 @@ using namespace ember;
 
 ptr<Scene> Scene::_instance = nullptr;
 
-sptr<EmberSceneNodeStorage> tmp_build_storage() {
-    return make_sptr<EmberSceneNodeStorage>();
-}
-
 Scene::Scene() noexcept = default;
 
 Scene::~Scene() noexcept = default;
 
-void Scene::setupGfxScene() {
-    auto storage = make_sptr<EmberSceneNodeStorage>();
-    auto factory = SceneNodeFactory(storage);
-
-    auto result = factory.assembleRoot();
-
-    auto graph = make_uptr<SceneGraph>(result.head, storage);
-
-    _graphs.push_back(_STD move(graph));
-}
-
-void Scene::setupPfxScene() {
-    auto storage = make_sptr<EmberSceneNodeStorage>();
-    auto factory = SceneNodeFactory(storage);
-
-    auto result = factory.assembleRoot();
-
-    auto graph = make_uptr<SceneGraph>(result.head, storage);
-
-    _graphs.push_back(_STD move(graph));
-}
-
-void Scene::setupSfxScene() {
-    auto storage = make_sptr<EmberSceneNodeStorage>();
-    auto factory = SceneNodeFactory(storage);
-
-    auto result = factory.assembleRoot();
-
-    auto graph = make_uptr<SceneGraph>(result.head, storage);
-
-    _graphs.push_back(_STD move(graph));
-}
-
 void Scene::setup() {
-    setupGfxScene();
-    // setupPfxScene();
-    // setupSfxScene();
 }
 
 ptr<Scene> Scene::get() noexcept {
@@ -81,4 +41,39 @@ cref<vector<uptr<SceneGraph>>> Scene::graphs() const noexcept {
 
 ref<vector<uptr<SceneGraph>>> Scene::graphs() noexcept {
     return _graphs;
+}
+
+ptr<SceneGraph> Scene::getGraph(cref<SceneGraphTagBase> tag_) noexcept {
+
+    const auto entry = _STD find_if(_taggedGraphs.begin(), _taggedGraphs.end(), [&tag_](const auto& entry) {
+        return entry.first == tag_;
+    });
+
+    if (entry != _taggedGraphs.end()) {
+        return entry->second;
+    }
+
+    return nullptr;
+}
+
+ptr<SceneGraph> Scene::getOrCreateGraph(cref<SceneGraphTagBase> tag_) {
+
+    auto result = getGraph(tag_);
+
+    if (result == nullptr) {
+
+        auto storage = make_sptr<EmberSceneNodeStorage>();
+
+        const auto factory = SceneNodeFactory(storage);
+        auto root = factory.assembleRoot();
+
+        result = _graphs.insert(
+            _graphs.cend(),
+            _STD move(make_uptr<SceneGraph>(root.head, storage))
+        )->get();
+
+        _taggedGraphs.push_back({ tag_, result });
+    }
+
+    return result;
 }

@@ -1,9 +1,10 @@
+#include <Windows.h>
+
 #define DEBUG_CPP
+#include <Ember/Ember.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Common/Concurrent/Promise.hpp>
-
-#include "Ember/Ember.hpp"
-#include "Engine.Scheduler/Thread/Thread.hpp"
+#include <Engine.Scheduler/Thread/Thread.hpp>
 
 #if FALSE
 #define DR_WAV_IMPLEMENTATION
@@ -70,10 +71,12 @@ int main() {
 
     bool interrupt = false;
     while (!interrupt) {
-        MSG msg {};
-        while (GetMessage(&msg, NULL, 0, 0)) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+        if constexpr (true) {
+            MSG msg {};
+            while (GetMessage(&msg, NULL, 0, 0)) {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
         }
 
         SDL_Event poll = SDL_Event();

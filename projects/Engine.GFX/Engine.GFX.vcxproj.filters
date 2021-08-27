@@ -465,6 +465,9 @@
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneElement.hpp">
       <Filter>Headerdateien\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneGraphTag.hpp">
+      <Filter>Headerdateien\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">

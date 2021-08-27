@@ -87,6 +87,9 @@
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeSubBase.hpp">
       <Filter>Headerdateien\Node</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Graph\SceneGraphTag.hpp">
+      <Filter>Headerdateien\Graph</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp">

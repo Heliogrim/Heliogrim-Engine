@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Headerdateien\Manage">
+      <UniqueIdentifier>{403f5930-ae7b-4c50-b702-522486a7d30c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Resource\FileResource.hpp">
@@ -32,6 +35,24 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\File.hpp">
       <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\Resource.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\StreamResource.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\SharedResource.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\CopyOnWriteResource.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\UniqueResource.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\Guard.hpp">
+      <Filter>Headerdateien\Manage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Scene\Graph\SceneGraph.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\Graph\SceneGraphTag.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\LoosySceneNode.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\NaturalSceneNode.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNode.hpp" />

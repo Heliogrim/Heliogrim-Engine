@@ -148,7 +148,9 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
 
             } else {
 
-                bindings.push_back(bp);
+                auto v {bp};
+                v.shaderType() = sp.type();
+                bindings.emplace_back(v);
             }
 
         }

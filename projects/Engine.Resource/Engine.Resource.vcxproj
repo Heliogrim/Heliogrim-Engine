@@ -21,6 +21,12 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Resource\File.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\FileResource.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\CopyOnWriteResource.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\Guard.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\Resource.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\SharedResource.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\StreamResource.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\UniqueResource.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Resources.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\StreamUtils.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\tmp.hpp" />
