@@ -192,6 +192,12 @@
     <ClInclude Include="..\..\src\Engine.Common\Math\Bounding.hpp">
       <Filter>Headerdateien\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\ProxyVector.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Helper.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">

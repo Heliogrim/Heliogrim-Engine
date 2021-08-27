@@ -4,14 +4,14 @@ using namespace ember::engine::gfx;
 using namespace ember;
 
 Viewport::Viewport() noexcept :
-    _extent({ 0, 0 }),
-    _depthExtent({ 0, 0 }),
-    _offset({ 0, 0 }) {}
+    _extent(0, 0),
+    _depthExtent(0, 0),
+    _offset(0, 0) {}
 
 Viewport::Viewport(const u32 width_, const u32 height_, const float minDepth_, const float maxDepth_) :
-    _extent({ width_, height_ }),
-    _depthExtent({ minDepth_, maxDepth_ }),
-    _offset({ 0, 0 }) {}
+    _extent(width_, height_),
+    _depthExtent(minDepth_, maxDepth_),
+    _offset(0, 0) {}
 
 u32 Viewport::width() const noexcept {
     return _extent.x;

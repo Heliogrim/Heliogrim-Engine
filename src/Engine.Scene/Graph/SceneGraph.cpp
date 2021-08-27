@@ -83,6 +83,24 @@ SceneGraph::SceneGraph(
 
 SceneGraph::~SceneGraph() noexcept = default;
 
+SceneGraph::reference_type SceneGraph::operator=(const_reference_type other_) noexcept {
+    if (this != _STD addressof(other_)) {
+        _root = other_._root;
+        _storage = other_._storage;
+    }
+
+    return *this;
+}
+
+SceneGraph::reference_type SceneGraph::operator=(mref<value_type> other_) noexcept {
+    if (this != _STD addressof(other_)) {
+        _root = _STD move(other_._root);
+        _storage = _STD move(other_._storage);
+    }
+
+    return *this;
+}
+
 cref<_STD remove_reference_t<SceneGraph::root_type>> SceneGraph::root() const noexcept {
     return _root;
 }

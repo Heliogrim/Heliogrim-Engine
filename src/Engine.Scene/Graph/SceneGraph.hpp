@@ -255,7 +255,7 @@ namespace ember::engine::scene {
          *
          * @returns A shallow copy of this.
          */
-        reference_type operator=(const_reference_type other_) noexcept = default;
+        reference_type operator=(const_reference_type other_) noexcept;
 
         /**
          * Move Assignment operator
@@ -267,7 +267,7 @@ namespace ember::engine::scene {
          *
          * @returns A shallow copy of this.
          */
-        reference_type operator=(mref<value_type> other_) noexcept = default;
+        reference_type operator=(mref<value_type> other_) noexcept;
 
     private:
         /**

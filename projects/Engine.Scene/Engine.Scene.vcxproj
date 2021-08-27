@@ -33,7 +33,6 @@
     <ClInclude Include="..\..\src\Engine.Scene\Node\ShadowSceneNode.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SpartialSceneNode.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Scene.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\SceneElement.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeConsumer.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\SceneTraits.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Storage\EmberSceneNodeStorage.hpp" />
@@ -55,7 +54,6 @@
     <ClCompile Include="..\..\src\Engine.Scene\Node\ShadowSceneNode.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Node\SpartialSceneNode.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp" />
-    <ClCompile Include="..\..\src\Engine.Scene\SceneElement.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\SceneNode.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -72,19 +70,19 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">

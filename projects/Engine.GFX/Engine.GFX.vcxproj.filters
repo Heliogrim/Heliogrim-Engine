@@ -16,9 +16,6 @@
     <Filter Include="Headerdateien\Buffer">
       <UniqueIdentifier>{8a585315-9e2b-4649-9a90-7be5703a3708}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Camera">
-      <UniqueIdentifier>{cf44672c-d597-4552-b738-275d4fd46bd0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Color">
       <UniqueIdentifier>{f7e77427-8c7d-45f2-a539-4cde11cf50f0}</UniqueIdentifier>
     </Filter>
@@ -129,6 +126,15 @@
     </Filter>
     <Filter Include="Quelldateien\GraphicPass">
       <UniqueIdentifier>{13ee54d2-2de3-4d8b-b76c-7f0aa059b3e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Camera">
+      <UniqueIdentifier>{cf44672c-d597-4552-b738-275d4fd46bd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Scene">
+      <UniqueIdentifier>{27d4be3c-23a0-448b-a799-0adea3cbe60b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Scene">
+      <UniqueIdentifier>{aa4814d5-61de-446f-a2b8-6abd2cd6d35e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -456,6 +462,9 @@
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\DepthModelPassProcessor.hpp">
       <Filter>Headerdateien\GraphicPass</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneElement.hpp">
+      <Filter>Headerdateien\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
@@ -658,6 +667,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\DepthModelPassProcessor.cpp">
       <Filter>Quelldateien\GraphicPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneElement.cpp">
+      <Filter>Quelldateien\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

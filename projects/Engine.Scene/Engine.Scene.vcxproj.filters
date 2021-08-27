@@ -33,9 +33,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Scene\SceneElement.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Scene\Scene.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -93,9 +90,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scene\SceneElement.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scene\SceneNode.cpp">

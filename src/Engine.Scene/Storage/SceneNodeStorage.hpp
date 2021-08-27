@@ -1893,7 +1893,7 @@ namespace ember::engine::scene {
             using value_type = ValueType;
 
             using storage_page_type = _STD conditional_t<Const, const storage_page_type, storage_page_type>;
-            using storage_page_iterator_type = storage_page_type::page_key_value_iterator;
+            using storage_page_iterator_type = typename storage_page_type::page_key_value_iterator;
 
         public:
             using iterator_category = _STD forward_iterator_tag;

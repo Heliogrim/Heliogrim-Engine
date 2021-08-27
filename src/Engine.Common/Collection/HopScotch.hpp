@@ -50,7 +50,7 @@ namespace ember {
              *
              * @returns A size_t.
              */
-            [[maybe_unused, nodiscard]] FORCEINLINE _STD size_t bucket_idx(const _STD size_t hash_) const noexcept {
+            [[maybe_unused, nodiscard]] FORCE_INLINE _STD size_t bucket_idx(const _STD size_t hash_) const noexcept {
                 return hash_ & _mask;
             }
 
@@ -62,7 +62,7 @@ namespace ember {
              *
              * @returns A size_t.
              */
-            [[maybe_unused, nodiscard]] FORCEINLINE _STD size_t next_bucket_count() const {
+            [[maybe_unused, nodiscard]] FORCE_INLINE _STD size_t next_bucket_count() const {
                 return (_mask + 1) * GrowthFactor;
             }
 
@@ -74,7 +74,7 @@ namespace ember {
              *
              * @returns A size_t.
              */
-            [[maybe_unused, nodiscard]] FORCEINLINE _STD size_t max_bucket_count() const {
+            [[maybe_unused, nodiscard]] FORCE_INLINE _STD size_t max_bucket_count() const {
                 return (_STD numeric_limits<_STD size_t>::max() / 2) + 1uLL;
             }
 
@@ -813,7 +813,7 @@ namespace ember {
              *
              * @returns A size_t.
              */
-            [[nodiscard]] FORCEINLINE _STD size_t hash(const value_type& value_) const {
+            [[nodiscard]] FORCE_INLINE _STD size_t hash(const value_type& value_) const {
                 return hasher_type::operator()(value_);
             }
 
@@ -828,7 +828,7 @@ namespace ember {
              *
              * @returns True if it succeeds, false if it fails.
              */
-            [[nodiscard]] FORCEINLINE bool compare(const hash_type& left_, const hash_type& right_) const {
+            [[nodiscard]] FORCE_INLINE bool compare(const hash_type& left_, const hash_type& right_) const {
                 return key_equal::operator()(left_, right_);
             }
 
@@ -930,7 +930,7 @@ namespace ember {
              *
              * @returns If succeed index of empty bucket or if failed collection size
              */
-            [[nodiscard]] FORCEINLINE index_type find_empty_bucket(index_type from_) const {
+            [[nodiscard]] FORCE_INLINE index_type find_empty_bucket(index_type from_) const {
                 const index_type limit = _STD min(from_ + NeighborhoodSize, _buckets.size());
 
                 for (; from_ < limit; ++from_) {
@@ -951,7 +951,7 @@ namespace ember {
              *
              * @returns True if it succeeds, false if it fails.
              */
-            [[nodiscard]] FORCEINLINE bool move_empty_bucket_lower(IN OUT index_type& empty_) {
+            [[nodiscard]] FORCE_INLINE bool move_empty_bucket_lower(IN OUT index_type& empty_) {
                 const index_type start = empty_ - NeighborhoodSize + 1u;
                 for (index_type idx = start; idx < empty_; ++idx) {
 
@@ -1183,7 +1183,7 @@ namespace ember {
              *
              * @returns A pair&lt;iterator,bool&gt;
              */
-            [[nodiscard]] FORCEINLINE _STD pair<iterator, bool> insert_value(index_type idx_, const hash_type& hash_,
+            [[nodiscard]] FORCE_INLINE _STD pair<iterator, bool> insert_value(index_type idx_, const hash_type& hash_,
                 value_type&& value_) {
                 if (_element_count >= _max_load_threshold) {
                     rehash(GrowthPolicy::next_bucket_count());
@@ -1236,7 +1236,7 @@ namespace ember {
              * @returns A pair&lt;iterator,bool&gt;
              */
             template <typename PayloadType>
-            [[nodiscard]] FORCEINLINE _STD pair<iterator, bool> insert_impl(PayloadType&& payload_) {
+            [[nodiscard]] FORCE_INLINE _STD pair<iterator, bool> insert_impl(PayloadType&& payload_) {
                 const hash_type h = hash(payload_);
                 const index_type idx = bucket_idx(h);
 
@@ -1258,7 +1258,7 @@ namespace ember {
              * @returns A pair&lt;iterator,bool&gt;
              */
             template <typename PayloadType>
-            [[nodiscard]] FORCEINLINE _STD pair<iterator, bool> try_emplace_impl(PayloadType&& payload_) {
+            [[nodiscard]] FORCE_INLINE _STD pair<iterator, bool> try_emplace_impl(PayloadType&& payload_) {
                 const hash_type h = hash(payload_);
                 const index_type idx = bucket_idx(h);
 
@@ -1280,7 +1280,7 @@ namespace ember {
              * @returns A pair&lt;iterator,bool&gt;
              */
             template <typename PayloadType>
-            [[nodiscard]] FORCEINLINE _STD pair<iterator, bool> insert_or_assign_impl(PayloadType&& payload_) {
+            [[nodiscard]] FORCE_INLINE _STD pair<iterator, bool> insert_or_assign_impl(PayloadType&& payload_) {
                 auto it = try_emplace_impl(_STD forward<PayloadType>(payload_));
                 return it.second ? it : it.first.value() = _STD forward<PayloadType>(payload_);
             }
@@ -1290,7 +1290,7 @@ namespace ember {
              *
              * @param  count_ Number of requested elements.
              */
-            FORCEINLINE void rehash_impl(const size_type count_) {
+            FORCE_INLINE void rehash_impl(const size_type count_) {
                 this_type new_hh = deduce(count_);
 
                 try {
@@ -1333,7 +1333,7 @@ namespace ember {
              *
              * @returns A this_type.
              */
-            FORCEINLINE this_type deduce(size_type buckets_) const {
+            FORCE_INLINE this_type deduce(size_type buckets_) const {
                 return this_type(buckets_, static_cast<const hasher_type&>(*this), static_cast<const key_equal&>(*this),
                     allocator(), _max_load_factor);
             }

@@ -1,9 +1,11 @@
 #pragma once
+
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/List.hpp>
-#include <Engine.GFX/GraphicPassMask.hpp>
-#include <Engine.GFX/ModelBatch.hpp>
-#include <Engine.GFX/ModelState.hpp>
+
+#include "../GraphicPassMask.hpp"
+#include "../ModelBatch.hpp"
+#include "../ModelState.hpp"
 
 namespace ember::engine::proxy {
     /**
@@ -12,7 +14,8 @@ namespace ember::engine::proxy {
     class SceneProxiedRef;
 }
 
-namespace ember::engine::scene {
+namespace ember::engine::gfx {
+
     class SceneElement {
     private:
         /**
@@ -35,7 +38,7 @@ namespace ember::engine::scene {
         /**
          * Batches
          */
-        vector<gfx::ModelBatch> _batches;
+        vector<ModelBatch> _batches;
 
     public:
         /**
@@ -48,7 +51,7 @@ namespace ember::engine::scene {
          *
          * @returns A cref&lt;ember::engine::gfx::ModelBatch&gt;
          */
-        [[nodiscard]] cref<gfx::ModelBatch> batch(cref<gfx::GraphicPassMask> mask_) const;
+        [[nodiscard]] cref<ModelBatch> batch(cref<GraphicPassMask> mask_) const;
 
         /**
          * Query for stored batch by given GraphicPassMask
@@ -60,13 +63,13 @@ namespace ember::engine::scene {
          *
          * @returns A ref&lt;ember::engine::gfx::ModelBatch&gt;
          */
-        [[nodiscard]] ref<gfx::ModelBatch> batch(cref<gfx::GraphicPassMask> mask_);
+        [[nodiscard]] ref<ModelBatch> batch(cref<GraphicPassMask> mask_);
 
     private:
         /**
          * Model State
          */
-        ptr<gfx::IModelState> _state;
+        ptr<IModelState> _state;
 
     public:
         /**
@@ -77,7 +80,7 @@ namespace ember::engine::scene {
          *
          * @returns A ptr<const gfx::IModelState>
          */
-        [[nodiscard]] ptr<const gfx::IModelState> state() const noexcept;
+        [[nodiscard]] ptr<const IModelState> state() const noexcept;
 
         /**
          * Query for stored mutable ModelState
@@ -87,6 +90,6 @@ namespace ember::engine::scene {
          *
          * @returns A ptr<gfx::IModelState>
          */
-        [[nodiscard]] ptr<gfx::IModelState> state() noexcept;
+        [[nodiscard]] ptr<IModelState> state() noexcept;
     };
 }
