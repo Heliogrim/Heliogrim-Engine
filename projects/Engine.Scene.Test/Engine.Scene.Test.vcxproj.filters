@@ -7,4 +7,7 @@
     <ClCompile Include="..\..\src\Engine.Scene.Test\test.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene.Test\pch.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 #include "DepthModelPassProcessor.hpp"
 
 #include "../GraphicPass.hpp"
+#include "../Scene/SceneElement.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -20,17 +21,18 @@ bool DepthModelPassProcessor::operator()(cref<scene::SceneNode> node_) noexcept 
     /**
      * Check whether scene node as stored valid element reference; otherwise drop iteration
      */
-    auto wpse = node_.element();
+    auto& el = node_.element<SceneElement>();
+    auto wppl = el.payload();
 
-    if (wpse.expired()) {
+    if (wppl.expired()) {
         return true;
     }
 
     /**
      *
      */
-    auto nse = wpse.lock();
-    ref<scene::SceneElement> se = *nse;
+    auto nse = wppl.lock();
+    ref<SceneElement> se = *nse;
 
     /**
      *

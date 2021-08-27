@@ -1,6 +1,7 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Scene/SceneElement.hpp>
+#include <Engine.Scene/Node/SceneNodeElement.hpp>
+
 #include "SceneProxy.hpp"
 
 namespace ember::engine::proxy {
@@ -113,7 +114,7 @@ namespace ember::engine::proxy {
         /**
          * Scene Element
          */
-        sptr<scene::SceneElement> _element;
+        sptr<scene::SceneNodeElementBase> _element;
 
     public:
         /**
@@ -124,7 +125,7 @@ namespace ember::engine::proxy {
          *
          * @returns A ptr&lt;SceneElement&gt;
          */
-        [[nodiscard]] wptr<scene::SceneElement> element() const noexcept;
+        [[nodiscard]] wptr<scene::SceneNodeElementBase> element() const noexcept;
 
     private:
         /**
@@ -138,7 +139,7 @@ namespace ember::engine::proxy {
          * @param  element_ The element.
          */
         SceneProxiedRef(wptr<SceneComponent> owner_, ptr<SceneProxy> proxy_,
-            wptr<scene::SceneElement> element_) noexcept;
+            wptr<scene::SceneNodeElementBase> element_) noexcept;
 
     public:
         /**

@@ -15,8 +15,7 @@ namespace ember::engine::scene {
 
         constexpr SceneNodeVersion() noexcept;
 
-        constexpr SceneNodeVersion(cref<invalid_node_version>)
-        noexcept;
+        constexpr SceneNodeVersion(invalid_node_version) noexcept;
 
         constexpr SceneNodeVersion(cref<decltype(data)> data_) noexcept :
             data(data_) {}
@@ -34,9 +33,9 @@ namespace ember::engine::scene {
 
         static constexpr decltype(SceneNodeVersion::data) bit_sequence = 0;
 
-        constexpr invalid_node_version() {}
+        constexpr invalid_node_version() = default;
 
-        constexpr operator SceneNodeVersion() const noexcept {
+        explicit constexpr operator SceneNodeVersion() const noexcept {
             return SceneNodeVersion { bit_sequence };
         }
 
@@ -48,7 +47,7 @@ namespace ember::engine::scene {
     constexpr SceneNodeVersion::SceneNodeVersion() noexcept :
         data(invalid_node_version::bit_sequence) { }
 
-    constexpr SceneNodeVersion::SceneNodeVersion(cref<invalid_node_version>) noexcept :
+    constexpr SceneNodeVersion::SceneNodeVersion(invalid_node_version) noexcept :
         data(invalid_node_version::bit_sequence) { }
 
     constexpr SceneNodeVersion::SceneNodeVersion(mref<SceneNodeVersion> other_) noexcept :

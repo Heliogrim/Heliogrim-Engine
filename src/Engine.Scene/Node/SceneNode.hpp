@@ -149,12 +149,36 @@ namespace ember::engine::scene {
         /**
          * Gets the element
          *
+         * @tparam PayloadType_ Type of the payload type.
+         *
+         * @returns A cref&lt;SceneNodeElement&lt;PayloadType_&gt;&gt;
+         */
+        template <typename PayloadType_>
+        [[nodiscard]] cref<SceneNodeElement<PayloadType_>> element() const noexcept {
+            return *static_cast<const SceneNodeElement<PayloadType_>*>(&_element);
+        }
+
+        /**
+         * Gets the element
+         *
          * @author Julius
          * @date 16.08.2021
          *
          * @returns A ref&lt;SceneNodeElementBase&gt;
          */
         [[nodiscard]] ref<SceneNodeElementBase> element() noexcept;
+
+        /**
+         * Gets the element
+         *
+         * @tparam PayloadType_ Type of the payload type.
+         *
+         * @returns A ref&lt;SceneNodeElement&lt;PayloadType_&gt;&gt;
+         */
+        template <typename PayloadType_>
+        [[nodiscard]] ref<SceneNodeElement<PayloadType_>> element() noexcept {
+            return static_cast<SceneNodeElement<PayloadType_>>(_element);
+        }
 
     protected:
         /** The state */
@@ -346,7 +370,7 @@ namespace ember::engine::scene {
          *
          * @returns True if the parameters are considered equivalent.
          */
-        [[nodiscard]] friend bool operator ==(cref<SceneNode> left_, cref<SceneNode> right_) noexcept;
+        friend bool operator ==(cref<SceneNode> left_, cref<SceneNode> right_) noexcept;
 
         /**
          * Inequality operator
@@ -359,7 +383,7 @@ namespace ember::engine::scene {
          *
          * @returns True if the parameters are not considered equivalent.
          */
-        [[nodiscard]] friend bool operator !=(cref<SceneNode> left_, cref<SceneNode> right_) noexcept;
+        friend bool operator !=(cref<SceneNode> left_, cref<SceneNode> right_) noexcept;
     };
 
     /**
@@ -413,20 +437,20 @@ namespace ember::engine::scene {
         }
 
     public:
-        pull_result_type() noexcept :
+        constexpr pull_result_type() noexcept :
             result(false),
             value(nullptr) { }
 
-        pull_result_type(cref<value_type> value_) noexcept(_STD is_nothrow_copy_constructible_v<value_type>) :
+        constexpr pull_result_type(cref<value_type> value_) noexcept(_STD is_nothrow_copy_constructible_v<value_type>) :
             result(true),
             value(value_) {}
 
-        pull_result_type(mref<value_type> value_) noexcept(_STD is_nothrow_move_constructible_v<value_type>) :
+        constexpr pull_result_type(mref<value_type> value_) noexcept(_STD is_nothrow_move_constructible_v<value_type>) :
             result(true),
             value(_STD move(value_)) {}
 
         template <typename PTy_>
-        [[nodiscard]] constexpr static pull_result_type make(
+        [[nodiscard]] static pull_result_type make(
             mref<PTy_> value_) noexcept(_STD is_nothrow_move_constructible_v<PTy_>) {
             return pull_result_type {
                 new PTy_(_STD forward<PTy_>(value_))

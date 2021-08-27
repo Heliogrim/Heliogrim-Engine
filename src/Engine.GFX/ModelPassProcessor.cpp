@@ -1,6 +1,7 @@
 #include "ModelPassProcessor.hpp"
 
 #include "GraphicPass.hpp"
+#include "Scene/SceneElement.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -22,8 +23,8 @@ bool ModelPassProcessor::operator()(cref<scene::SceneNode> node_) noexcept {
     /**
      *
      */
-    auto nse = node_.element().payload().lock();
-    ref<scene::SceneElement> se = *nse;
+    auto nse = node_.element<SceneElement>().payload().lock();
+    ref<SceneElement> se = *nse;
 
     /**
      *

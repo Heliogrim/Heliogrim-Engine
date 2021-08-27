@@ -178,7 +178,7 @@ namespace ember::math {
          * \param other_ 
          * \return 
          */
-        reference_type operator =(const reference_type other_) {
+        reference_type operator =(const_reference_type other_) {
             _rotation = other_._rotation;
             _matrix = other_._matrix;
             _quaternion = other_._quaternion;

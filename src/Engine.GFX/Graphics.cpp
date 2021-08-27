@@ -373,7 +373,7 @@ void Graphics::_tick() {
     auto finalPass = _graphicPasses[static_cast<u8>(GraphicPassMask::eFinalPass)];
 
     batch.reset();
-    finalPass->process(scene::Scene::get()->graph(), batch);
+    finalPass->process(*scene::Scene::get()->graphs().front(), batch);
 
     /**
      * Execute Command Batch
@@ -420,7 +420,7 @@ void Graphics::_tick() {
 }
 
 void Graphics::processGraphicPasses() {
-    ref<scene::SceneGraph> graph = scene::Scene::get()->graph();
+    ref<scene::SceneGraph> graph = *scene::Scene::get()->graphs().front();
 
     constexpr GraphicPassMask masks[] {
         GraphicPassMask::eDepthPass,

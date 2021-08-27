@@ -36,12 +36,40 @@ namespace ember::engine::scene {
         /**
          * Gets the payload
          *
+         * @tparam PayloadType_ Type of the payload type.
+         *
+         * @returns A cref&lt;wptr&lt;_STD remove_reference_t&lt;PayloadType_&gt;&gt;&gt;
+         */
+        template <typename PayloadType_>
+        [[nodiscard]] cref<wptr<_STD remove_reference_t<PayloadType_>>> payload() const noexcept {
+            return *static_cast<ptr<const wptr<_STD remove_reference_t<PayloadType_>>>>(
+                static_cast<ptr<const void>>(&_payload)
+            );
+        }
+
+        /**
+         * Gets the payload
+         *
          * @author Julius
          * @date 16.08.2021
          *
          * @returns A ref&lt;payload_type&gt;
          */
         [[nodiscard]] ref<payload_type> payload() noexcept;
+
+        /**
+         * Gets the payload
+         *
+         * @tparam PayloadType_ Type of the payload type.
+         *
+         * @returns A ref&lt;wptr&lt;_STD remove_reference_t&lt;PayloadType_&gt;&gt;&gt;
+         */
+        template <typename PayloadType_>
+        [[nodiscard]] ref<wptr<_STD remove_reference_t<PayloadType_>>> payload() noexcept {
+            return *static_cast<ptr<wptr<_STD remove_reference_t<PayloadType_>>>>(
+                static_cast<ptr<void>>(&_payload)
+            );
+        }
     };
 
     template <typename PayloadType_>
@@ -66,7 +94,11 @@ namespace ember::engine::scene {
          *
          * @returns A cref&lt;payload_type&gt;
          */
-        [[nodiscard]] cref<payload_type> payload() const noexcept;
+        [[nodiscard]] cref<payload_type> payload() const noexcept {
+            return *static_cast<ptr<const payload_type>>(
+                static_cast<ptr<const void>>(&_payload)
+            );
+        }
 
         /**
          * Gets the payload
@@ -76,6 +108,10 @@ namespace ember::engine::scene {
          *
          * @returns A ref&lt;payload_type&gt;
          */
-        [[nodiscard]] ref<payload_type> payload() noexcept;
+        [[nodiscard]] ref<payload_type> payload() noexcept {
+            return *static_cast<ptr<payload_type>>(
+                static_cast<ptr<void>>(&_payload)
+            );
+        }
     };
 }

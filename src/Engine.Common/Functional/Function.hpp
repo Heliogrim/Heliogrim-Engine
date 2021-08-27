@@ -70,6 +70,11 @@ namespace ember {
         static Return_ unsafe_launch_pad(ptr<void> self_, Args_&&... args_) {
             return (static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
         }
+
+        template <Return_(Type_::*Fnc)(Args_ ...)>
+        static void unsafe_void_launch_pad(ptr<void> self_, Args_&&... args_) {
+            (void)(static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
+        }
     };
 
     template <typename Type_, typename Return_, typename ...Args_>
@@ -83,6 +88,11 @@ namespace ember {
         template <Return_(Type_::*Fnc)(Args_ ...) noexcept>
         static Return_ unsafe_launch_pad(ptr<void> self_, Args_&&... args_) noexcept {
             return (static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
+        }
+
+        template <Return_(Type_::*Fnc)(Args_ ...) noexcept>
+        static void unsafe_void_launch_pad(ptr<void> self_, Args_&&... args_) noexcept {
+            (void)(static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
         }
     };
 
@@ -98,6 +108,11 @@ namespace ember {
         static Return_ unsafe_launch_pad(ptr<void> self_, Args_&&... args_) {
             return (static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
         }
+
+        template <Return_(Type_::*Fnc)(Args_ ...) const>
+        static void unsafe_void_launch_pad(ptr<void> self_, Args_&&... args_) {
+            (void)(static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
+        }
     };
 
     template <typename Type_, typename Return_, typename ...Args_>
@@ -111,6 +126,11 @@ namespace ember {
         template <Return_(Type_::*Fnc)(Args_ ...) const noexcept>
         static Return_ unsafe_launch_pad(ptr<void> self_, Args_&&... args_) noexcept {
             return (static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
+        }
+
+        template <Return_(Type_::*Fnc)(Args_ ...) const noexcept>
+        static void unsafe_void_launch_pad(ptr<void> self_, Args_&&... args_) noexcept {
+            (void)(static_cast<Type_*>(self_)->*Fnc)(_STD forward<Args_>(args_)...);
         }
     };
 }
