@@ -4,6 +4,10 @@
 #include <Engine.Scene/Scene.hpp>
 #include <Engine.Scheduler/Async.hpp>
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "todo.h"
 #include "Command/CommandBatch.hpp"
 #include "GraphicPass/DepthPass.hpp"
@@ -139,9 +143,20 @@ ptr<Graphics> Graphics::make() {
     return _instance;
 }
 
-Graphics::~Graphics() = default;
+void Graphics::destroy() {
+    if (_instance) {
+        delete _instance;
+        _instance = nullptr;
+    }
+}
+
+Graphics::~Graphics() {
+    tidy();
+}
 
 void Graphics::setup() {
+
+    SCOPED_STOPWATCH
 
     /**
      * Prepare other modules
@@ -260,18 +275,62 @@ void Graphics::setup() {
             _graphicsQueue->submit(CommandBatch {}, _onFlightSync.cpuGpuSync[idx]);
         }
     }
+
+    _scheduled.store(0);
 }
 
 void Graphics::schedule() {
+
+    u8 expect = { 0 };
+    if (!_scheduled.compare_exchange_strong(expect, 1)) {
+        throw _STD runtime_error("Tried to schedule already running graphics handle.");
+    }
+
+    /**
+     *
+     */
     scheduler::exec(
         make_repetitive_task([this]() {
-            _tick();
-            return true;
+
+            u8 expect { 1 };
+            if (_scheduled.load(_STD memory_order_relaxed) == expect) {
+                _tick();
+                return true;
+            }
+
+            expect = { 2 };
+            _scheduled.compare_exchange_strong(expect, 0);
+            return false;
+
         }, scheduler::task::TaskMask::eCritical)
     );
 }
 
-void Graphics::destroy() {
+void Graphics::tidy() {
+
+    SCOPED_STOPWATCH
+
+    /**
+     * Wait until schedule stopped execution
+     */
+    u8 expect { 1 };
+    _scheduled.compare_exchange_strong(expect, 2);
+
+    expect = 0;
+    while (_scheduled.load() != expect) {
+        scheduler::thread::self::yield();
+    }
+
+    /**
+     * Wait until graphics queues stopped execution
+     */
+    _device->computeQueue()->vkQueue().waitIdle();
+    _device->graphicsQueue()->vkQueue().waitIdle();
+    _device->transferQueue()->vkQueue().waitIdle();
+
+    _computeQueue->destroy();
+    _graphicsQueue->destroy();
+    _transferQueue->destroy();
 
     /**
      *
@@ -309,6 +368,8 @@ void Graphics::destroy() {
     delete _swapchain;
     _swapchain = nullptr;
 
+    ShaderStorage::destroy();
+
     /**
      * Device
      */
@@ -342,6 +403,9 @@ CommandQueue::reference_type Graphics::getTransferQueue() const noexcept {
 static u64 frame = 0;
 
 void Graphics::_tick() {
+
+    SCOPED_STOPWATCH
+
     /**
      * 
      */
@@ -427,6 +491,9 @@ void Graphics::_tick() {
 }
 
 void Graphics::processGraphicPasses() {
+
+    SCOPED_STOPWATCH
+
     ref<scene::SceneGraph> graph = *_graph;
 
     constexpr GraphicPassMask masks[] {

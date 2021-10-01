@@ -1,4 +1,9 @@
 #include "VkFixedPipeline.hpp"
+
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "API/VkTranslate.hpp"
 
 using namespace ember::engine::gfx::api;
@@ -28,6 +33,9 @@ VkFixedPipeline::~VkFixedPipeline() noexcept {
 }
 
 void VkFixedPipeline::setup() {
+
+    SCOPED_STOPWATCH
+
     assert(_device);
     assert(_renderPass->vkRenderPass());
 
@@ -339,6 +347,9 @@ void VkFixedPipeline::setup() {
 }
 
 void VkFixedPipeline::destroy() noexcept {
+
+    SCOPED_STOPWATCH
+
     if (_renderPass->vkRenderPass()) {
         _renderPass->destroy();
     }

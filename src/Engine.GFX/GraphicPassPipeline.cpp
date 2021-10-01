@@ -1,9 +1,15 @@
 #include "GraphicPassPipeline.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 using namespace ember::engine::gfx;
 using namespace ember;
 
 void GraphicPassPipeline::process(ptr<const ModelPassProcessor> processor_, ref<CommandBatch> batch_) {
+
+    SCOPED_STOPWATCH
 
     for (auto* stage : _stages) {
 

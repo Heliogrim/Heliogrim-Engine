@@ -1,6 +1,7 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
 
+#include "AssetDatabase.hpp"
 #include "Audio.hpp"
 #include "Graphics.hpp"
 #include "Network.hpp"
@@ -24,6 +25,22 @@ namespace ember {
          * @returns A ref&lt;Audio&gt;
          */
         [[nodiscard]] static ref<Audio> audio() noexcept;
+
+    private:
+        /**
+         * Assets
+         */
+
+    public:
+        /**
+         * Gets the Assets Module Interface
+         *
+         * @author Julius
+         * @date 27.09.2021
+         *
+         * @returns An AssetDatabase.
+         */
+        [[nodiscard]] static AssetDatabase assets() noexcept;
 
     private:
         /**

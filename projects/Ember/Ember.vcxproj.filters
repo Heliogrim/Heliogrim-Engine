@@ -126,6 +126,9 @@
     <ClInclude Include="..\..\src\Ember\Component\Gfx\SkinnedMeshComponent.hpp">
       <Filter>Headerdateien\Component\Gfx</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Ember\AssetDatabase.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember\World\World.cpp">
@@ -177,6 +180,9 @@
       <Filter>Quelldateien\Component</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\Ember.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\AssetDatabase.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

@@ -11,7 +11,6 @@ namespace ember::engine {
 
     class Graphics {
     public:
-
         using value_type = Graphics;
         using reference_type = Graphics&;
         using const_reference_type = const Graphics&;
@@ -23,7 +22,6 @@ namespace ember::engine {
         static ptr<Graphics> _instance;
 
     public:
-
         /**
          * Gets static store instance
          *
@@ -44,6 +42,14 @@ namespace ember::engine {
          */
         [[nodiscard]] static ptr<Graphics> make();
 
+        /**
+         * Destroys the static stored instance
+         *
+         * @author Julius
+         * @date 13.09.2021
+         */
+        static void destroy();
+
     private:
         /**
          * Default constructor
@@ -54,7 +60,6 @@ namespace ember::engine {
         Graphics() = default;
 
     public:
-
         /**
          * Destructor
          *
@@ -63,6 +68,7 @@ namespace ember::engine {
          */
         ~Graphics();
 
+    public:
         /**
          * Setups this 
          *
@@ -79,13 +85,20 @@ namespace ember::engine {
          */
         void schedule();
 
+    private:
         /**
-         * Destroys this 
+         * Tidy this up
          *
          * @author Julius
-         * @date 10.11.2020
+         * @date 13.09.2021
          */
-        void destroy();
+        void tidy();
+
+    private:
+        /**
+         * The internal state of scheduler
+         */
+        _STD atomic_uint8_t _scheduled { 0 };
 
     private:
         gfx::Application _application;

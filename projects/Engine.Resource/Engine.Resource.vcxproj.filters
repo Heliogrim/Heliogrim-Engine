@@ -16,15 +16,33 @@
     <Filter Include="Headerdateien\Manage">
       <UniqueIdentifier>{403f5930-ae7b-4c50-b702-522486a7d30c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Loader">
+      <UniqueIdentifier>{96969696-d6a4-4814-9940-563fecb79473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Loader">
+      <UniqueIdentifier>{95e5363d-87eb-4161-b876-a82eaf91c34a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Source">
+      <UniqueIdentifier>{ac08f5fa-b075-4928-94ef-43068d5a3b30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Source">
+      <UniqueIdentifier>{7822a374-37c8-4c8b-a080-6d2ed619a04d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Importer">
+      <UniqueIdentifier>{c7a6bd63-8ca3-4c05-8382-44e82142936e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Indexer">
+      <UniqueIdentifier>{75b8b7b9-6baf-41d0-8d26-90a818870f03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Indexer">
+      <UniqueIdentifier>{44058363-9546-4cd5-a450-31a8391340f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Resource\FileResource.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\tmp.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Resources.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\Url.hpp">
@@ -54,12 +72,93 @@
     <ClInclude Include="..\..\src\Engine.Resource\Manage\Guard.hpp">
       <Filter>Headerdateien\Manage</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\ResourceUsageFlag.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\ResourceManager.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\LoaderManager.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\Loader.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderStages.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Locator.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Source\Source.hpp">
+      <Filter>Headerdateien\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Source\FileSource.hpp">
+      <Filter>Headerdateien\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Source\BufferSource.hpp">
+      <Filter>Headerdateien\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Source\NetworkSource.hpp">
+      <Filter>Headerdateien\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Source\ParallelSource.hpp">
+      <Filter>Headerdateien\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Importer\Importer.hpp">
+      <Filter>Headerdateien\Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\FileTypeId.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\ImporterManager.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Indexer\Indexer.hpp">
+      <Filter>Headerdateien\Indexer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Indexer\Watcher.hpp">
+      <Filter>Headerdateien\Indexer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Indexer\MetaFile.hpp">
+      <Filter>Headerdateien\Indexer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Resource\FileResource.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Resource\Resources.cpp">
+    <ClCompile Include="..\..\src\Engine.Resource\Source\BufferSource.cpp">
+      <Filter>Quelldateien\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\Source\FileSource.cpp">
+      <Filter>Quelldateien\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\Source\NetworkSource.cpp">
+      <Filter>Quelldateien\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\Source\ParallelSource.cpp">
+      <Filter>Quelldateien\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\Locator.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\ImporterManager.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\ResourceManager.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\LoaderManager.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\Indexer\Indexer.cpp">
+      <Filter>Quelldateien\Indexer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\Indexer\Watcher.cpp">
+      <Filter>Quelldateien\Indexer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\FileTypeId.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

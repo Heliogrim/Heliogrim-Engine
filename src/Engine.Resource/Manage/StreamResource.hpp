@@ -1,7 +1,7 @@
 #pragma once
 #include "UniqueResource.hpp"
 
-namespace ember::engine::resource {
+namespace ember::engine::res {
     class StreamResource :
         public UniqueResource { };
 }

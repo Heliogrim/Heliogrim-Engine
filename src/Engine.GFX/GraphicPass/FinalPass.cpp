@@ -1,5 +1,9 @@
 #include "FinalPass.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "FinalPassCompositeStage.hpp"
 #include "../Graphics.hpp"
 #include "../Texture/TextureFactory.hpp"
@@ -11,6 +15,8 @@ FinalPass::FinalPass() :
     GraphicPass(GraphicPassMask::eFinalPass) {}
 
 void FinalPass::setup() {
+
+    SCOPED_STOPWATCH
 
     auto finalStage = new FinalPassCompositeStage { this };
     finalStage->setup();
@@ -71,6 +77,9 @@ void FinalPass::destroy() {
 }
 
 void FinalPass::process(cref<scene::SceneGraph> graph_, ref<CommandBatch> batch_) {
+
+    SCOPED_STOPWATCH
+
     _pipeline.process(nullptr, batch_);
 }
 

@@ -1,5 +1,10 @@
 #include "Device.hpp"
 #include <unordered_set>
+
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "../Command/CommandQueue.hpp"
 #include "../Library/Types.hpp"
 #include "../Surface/Surface.hpp"
@@ -31,6 +36,9 @@ Device::Device(Application::const_reference_type application_, ptr<Surface> surf
 Device::~Device() {}
 
 void Device::setup() {
+
+    SCOPED_STOPWATCH
+
     // Device
     std::vector<vk::PhysicalDevice, std::allocator<vk::PhysicalDevice>> physicalCandidates = _application->
         enumeratePhysicalDevices();

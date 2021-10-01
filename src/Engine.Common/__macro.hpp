@@ -24,6 +24,10 @@
 #define OUT
 #endif
 
+#if !defined(__FUNCSIG__) && defined(__PRETTY_FUNCTION__)
+#define __FUNCSIG__ __PRETTY_FUNCTION__
+#endif
+
 // Windows Environment Check
 #if defined(_MSC_VER) || _WIN32 || _WIN64
 
@@ -79,6 +83,8 @@
 #define DEPRECATED(fnc) fnc __attribute__ ((deprecated))
 #elif defined(_MSC_VER)
 #define DEPRECATED(fnc) __declspec(deprecated) fnc
+#elif __clang__
+#define DEPRECTATED(fnc) __declspec(deprecated) fnc
 #else
 #pragma message("WARNING: You need to implement DEPRECATED for this compiler")
 #define DEPRECATED(fnc) fnc
@@ -136,9 +142,23 @@
 #endif
 
 #if ENV_CLANG && not defined(RESTRICT)
+#define RESTRICT __restrict__
 #endif
 
 #if not defined(RESTRICT)
-#define restrict
+#define RESTRICT
 #endif
+#endif
+
+// Profiling
+#ifdef _PROFILING
+#define SCOPED_STOPWATCH_V(var_) ember::profiling::ScopedStopwatch var_ {__FUNCSIG__};
+#define SCOPED_STOPWATCH SCOPED_STOPWATCH_V(DOUBLE(__stopwatch__, __LINE__))
+#else
+#define SCOPED_STOPWATCH_V(var_)
+#define SCOPED_STOPWATCH
+#endif
+
+#if defined(_DEBUG) || defined(_PROFILING)
+#define _EDITOR
 #endif

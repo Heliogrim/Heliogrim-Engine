@@ -18,13 +18,13 @@ size_t get_memory_page_size() {
 
 #include <unistd.h>
 
-size_t clockwork::__internal::env::get_memory_page_size() {
-	retunr sysconf(_SC_PAGESIZE);
+size_t ember::env::get_memory_page_size() {
+	return sysconf(_SC_PAGESIZE);
 }
 
 #else
 
-size_t clockwork::__internal::env::get_memory_page_size() {
+size_t ember::env::get_memory_page_size() {
 	size_t n;
 	char* ptr;
 	int u;

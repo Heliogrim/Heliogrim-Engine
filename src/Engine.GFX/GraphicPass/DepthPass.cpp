@@ -1,5 +1,9 @@
 #include "DepthPass.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "DepthPassSkeletalStage.hpp"
 #include "DepthPassStaticStage.hpp"
 #include "../Graphics.hpp"
@@ -13,6 +17,8 @@ DepthPass::DepthPass() :
     _processor({ this }) {}
 
 void DepthPass::setup() {
+
+    SCOPED_STOPWATCH
 
     auto depthStage = new DepthPassStaticStage { this };
     depthStage->setup();

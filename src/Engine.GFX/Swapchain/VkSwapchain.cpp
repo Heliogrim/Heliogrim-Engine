@@ -1,5 +1,9 @@
 #include "VkSwapchain.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "../API/VkTranslate.hpp"
 #include "../Texture/TextureFactory.hpp"
 
@@ -16,6 +20,8 @@ VkSwapchain::~VkSwapchain() {
 }
 
 void VkSwapchain::setup() {
+
+    SCOPED_STOPWATCH
 
     assert(_device);
     assert(/*_surface*/true);
@@ -100,11 +106,17 @@ void VkSwapchain::setup() {
 }
 
 void VkSwapchain::destroy() {
+
+    SCOPED_STOPWATCH
+
     for (auto& entry : _images) {
         entry->destroy();
     }
 
     _images.clear();
+
+    _device->vkDevice().destroySwapchainKHR(_vkSwapchain);
+    _vkSwapchain = nullptr;
 }
 
 cref<vk::SwapchainKHR> VkSwapchain::vkSwapchain() const noexcept {

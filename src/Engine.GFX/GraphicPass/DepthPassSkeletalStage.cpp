@@ -1,5 +1,9 @@
 #include "DepthPassSkeletalStage.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "DepthPass.hpp"
 #include "../Graphics.hpp"
 #include "../VkFixedPipeline.hpp"
@@ -12,6 +16,9 @@ DepthPassSkeletalStage::DepthPassSkeletalStage(ptr<DepthPass> graphicPass_) :
     _graphicPass(graphicPass_) {}
 
 void DepthPassSkeletalStage::setup() {
+
+    SCOPED_STOPWATCH
+
     auto device = Graphics::get()->getCurrentDevice();
     const auto* swapchain = Graphics::get()->getCurrentSwapchain();
 
@@ -84,6 +91,9 @@ void DepthPassSkeletalStage::setup() {
 }
 
 void DepthPassSkeletalStage::destroy() noexcept {
+
+    SCOPED_STOPWATCH
+
     /**
      *
      */
@@ -113,6 +123,9 @@ bool DepthPassSkeletalStage::check(ptr<const ProcessedModelBatch> batch_) noexce
 }
 
 void DepthPassSkeletalStage::before(cref<GraphicPassStageContext> ctx_) {
+
+    SCOPED_STOPWATCH
+
     /**
      * Prepare Command Buffer
      */
@@ -122,6 +135,9 @@ void DepthPassSkeletalStage::before(cref<GraphicPassStageContext> ctx_) {
 }
 
 void DepthPassSkeletalStage::process(cref<GraphicPassStageContext> ctx_, ptr<const ProcessedModelBatch> batch_) {
+
+    SCOPED_STOPWATCH
+
     if (batch_->empty()) {
         return;
     }
@@ -141,6 +157,9 @@ void DepthPassSkeletalStage::process(cref<GraphicPassStageContext> ctx_, ptr<con
 }
 
 void DepthPassSkeletalStage::after(cref<GraphicPassStageContext> ctx_) {
+
+    SCOPED_STOPWATCH
+
     /**
      * End Command Buffer
      */

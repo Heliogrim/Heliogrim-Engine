@@ -1,5 +1,9 @@
 #include "PbrPassStaticStage.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "PbrPass.hpp"
 #include "../VkFixedPipeline.hpp"
 #include "../Graphics.hpp"
@@ -12,6 +16,9 @@ PbrPassStaticStage::PbrPassStaticStage(ptr<PbrPass> graphicPass_) :
     _graphicPass(graphicPass_) {}
 
 void PbrPassStaticStage::setup() {
+
+    SCOPED_STOPWATCH
+
     sptr<Device> device = Graphics::get()->getCurrentDevice();
 
     /**
@@ -99,6 +106,9 @@ void PbrPassStaticStage::setup() {
 }
 
 void PbrPassStaticStage::destroy() noexcept {
+
+    SCOPED_STOPWATCH
+
     /**
      *
      */
@@ -128,6 +138,9 @@ bool PbrPassStaticStage::check(ptr<const ProcessedModelBatch> batch_) noexcept {
 }
 
 void PbrPassStaticStage::before(cref<GraphicPassStageContext> ctx_) {
+
+    SCOPED_STOPWATCH
+
     /**
      * Prepare Command Buffer
      */
@@ -137,6 +150,9 @@ void PbrPassStaticStage::before(cref<GraphicPassStageContext> ctx_) {
 }
 
 void PbrPassStaticStage::process(cref<GraphicPassStageContext> ctx_, ptr<const ProcessedModelBatch> batch_) {
+
+    SCOPED_STOPWATCH
+
     if (batch_->empty()) {
         return;
     }
@@ -156,6 +172,9 @@ void PbrPassStaticStage::process(cref<GraphicPassStageContext> ctx_, ptr<const P
 }
 
 void PbrPassStaticStage::after(cref<GraphicPassStageContext> ctx_) {
+
+    SCOPED_STOPWATCH
+
     /**
      * End Command Buffer
      */

@@ -13,51 +13,129 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Headerdateien\Types">
+      <UniqueIdentifier>{a8c09f10-63df-4318-87c2-5f9a4b3cbdbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Types">
+      <UniqueIdentifier>{d39617aa-0662-4a7b-aca4-26d414bda2de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Database">
+      <UniqueIdentifier>{254349d3-154a-44fa-8807-324725f64d4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Database">
+      <UniqueIdentifier>{790f722f-1f39-4305-8d5c-6d65c29f4fe3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Assets\Asset.hpp">
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Image.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\ImageLayout.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\AssetGuid.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Data.hpp">
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Asset.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Data.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\DataLayout.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Entity.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\EntityLayout.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Level.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\LevelLayout.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Material.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Sound.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\SoundLayout.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Texture.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\TextureLayout.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\GfxMaterial.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\PfxMaterial.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\SfxMaterial.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\GfxMaterialLayout.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\PfxMaterialLayout.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\SfxMaterialLayout.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Geometry.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\GeometryLayout.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\AssetTypeId.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\DataLayout.hpp">
+    <ClInclude Include="..\..\src\Engine.Assets\Database\AssetDatabase.hpp">
+      <Filter>Headerdateien\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Database\AssetDatabaseEntry.hpp">
+      <Filter>Headerdateien\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Database\AssetDatabaseQuery.hpp">
+      <Filter>Headerdateien\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\AssetInputStream.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\MaterialLayout.hpp">
+    <ClInclude Include="..\..\src\Engine.Assets\AssetOutputStream.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\TextureLayout.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\SoundLayout.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\LevelLayout.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\EntityLayout.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Material.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Entity.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Texture.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Sound.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Level.hpp">
+    <ClInclude Include="..\..\src\Engine.Assets\AssetIOStream.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Assets\Asset.cpp">
-      <Filter>Quelldateien</Filter>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Asset.cpp">
+      <Filter>Quelldateien\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabase.cpp">
+      <Filter>Quelldateien\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabaseEntry.cpp">
+      <Filter>Quelldateien\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Texture.cpp">
+      <Filter>Quelldateien\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\GfxMaterial.cpp">
+      <Filter>Quelldateien\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Image.cpp">
+      <Filter>Quelldateien\Types</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

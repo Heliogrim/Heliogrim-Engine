@@ -61,6 +61,12 @@
     <Filter Include="Quelldateien\Math">
       <UniqueIdentifier>{9ae07cad-741e-4bb9-badc-846df0bdcc2e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Profiling">
+      <UniqueIdentifier>{b9b94d5b-8e5a-4ff0-98e5-48bc8b613a43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Profiling">
+      <UniqueIdentifier>{c3472840-be14-470d-b92d-bc18239ac3b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Common\stdafx.h">
@@ -198,6 +204,18 @@
     <ClInclude Include="..\..\src\Engine.Common\Math\Helper.hpp">
       <Filter>Headerdateien\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Buffer.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Cast.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Profiling\Stopwatch.hpp">
+      <Filter>Headerdateien\Profiling</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Profiling\Profiler.hpp">
+      <Filter>Headerdateien\Profiling</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">
@@ -220,6 +238,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Common\Math\Bounding.cpp">
       <Filter>Quelldateien\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Profiling\Profiler.cpp">
+      <Filter>Quelldateien\Profiling</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Profiling\Stopwatch.cpp">
+      <Filter>Quelldateien\Profiling</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

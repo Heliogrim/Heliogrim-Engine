@@ -1,0 +1,135 @@
+#pragma once
+
+#include <Engine.Common/Wrapper.hpp>
+
+#include "ImporterManager.hpp"
+#include "LoaderManager.hpp"
+#include "Locator.hpp"
+
+#ifdef _EDITOR
+#include "Indexer/Indexer.hpp"
+#endif
+
+namespace ember::engine {
+
+    class ResourceManager {
+    public:
+        using value_type = ResourceManager;
+        using reference_type = ref<value_type>;
+        using const_reference_type = cref<value_type>;
+
+    private:
+        /**
+         * Singleton Instance
+         */
+        static ptr<ResourceManager> _instance;
+
+    public:
+        /**
+         * Gets the static internal stored instance
+         *
+         * @author Julius
+         * @date 30.08.2021
+         *
+         * @returns A ptr&lt;ResourceManager&gt;
+         */
+        [[nodiscard]] static ptr<ResourceManager> get() noexcept;
+
+        /**
+         * Gets a static internal stored instance of ResourceManager or creates one
+         *
+         * @author Julius
+         * @date 30.08.2021
+         *
+         * @returns A ptr&lt;ResourceManager&gt;
+         */
+        [[nodiscard]] static ptr<ResourceManager> make();
+
+        /**
+         * Destroys this and flushes static internal stored instance
+         *
+         * @author Julius
+         * @date 30.08.2021
+         */
+        static void destroy() noexcept;
+
+    private:
+        /**
+         * Default constructor
+         *
+         * @author Julius
+         * @date 30.08.2021
+         */
+        ResourceManager() noexcept;
+
+    public:
+        /**
+         * Destructor
+         *
+         * @author Julius
+         * @date 30.08.2021
+         */
+        ~ResourceManager() noexcept;
+
+    public:
+        /**
+         * Run setup routine for resource module
+         *
+         * @author Julius
+         * @date 30.08.2021
+         */
+        void setup();
+
+        /**
+         * Schedules this
+         *
+         * @author Julius
+         * @date 22.09.2021
+         */
+        void schedule();
+
+    private:
+        uptr<res::ImporterManager> _importer;
+
+    public:
+        [[nodiscard]] cref<res::ImporterManager> importer() const;
+
+        [[nodiscard]] ptr<const res::ImporterManager> importer(_STD nothrow_t) const noexcept;
+
+        [[nodiscard]] ref<res::ImporterManager> importer();
+
+        [[nodiscard]] ptr<res::ImporterManager> importer(_STD nothrow_t) noexcept;
+
+        #ifdef _EDITOR
+    private:
+        uptr<res::Indexer> _indexer;
+
+    public:
+        [[nodiscard]] ptr<res::Indexer> indexer() const noexcept;
+        #endif
+
+    private:
+        uptr<res::LoaderManager> _loader;
+
+    public:
+        [[nodiscard]] cref<res::LoaderManager> loader() const;
+
+        [[nodiscard]] ptr<const res::LoaderManager> loader(_STD nothrow_t) const noexcept;
+
+        [[nodiscard]] ref<res::LoaderManager> loader();
+
+        [[nodiscard]] ptr<res::LoaderManager> loader(_STD nothrow_t) noexcept;
+
+    private:
+        uptr<res::Locator> _locator;
+
+    public:
+        [[nodiscard]] cref<res::Locator> locator() const;
+
+        [[nodiscard]] ptr<const res::Locator> locator(_STD nothrow_t) const noexcept;
+
+        [[nodiscard]] ref<res::Locator> locator();
+
+        [[nodiscard]] ptr<res::Locator> locator(_STD nothrow_t) noexcept;
+    };
+}

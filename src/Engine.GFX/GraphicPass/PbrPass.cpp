@@ -1,5 +1,9 @@
 #include "PbrPass.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "DepthPass.hpp"
 #include "PbrPassSkeletalStage.hpp"
 #include "PbrPassStaticStage.hpp"
@@ -13,6 +17,8 @@ PbrPass::PbrPass() :
     GraphicPass(GraphicPassMask::ePbrPass) {}
 
 void PbrPass::setup() {
+
+    SCOPED_STOPWATCH
 
     auto pbrStatic = new PbrPassStaticStage { this };
     pbrStatic->setup();

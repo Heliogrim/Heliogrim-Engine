@@ -2,6 +2,9 @@
 
 #include <concepts>
 
+#include "Engine.Common/Types.hpp"
+#include "Engine.Common/Hash/Murmur3.hpp"
+
 namespace ember {
 
     /**
@@ -10,7 +13,42 @@ namespace ember {
      * @author Julius
      * @date 06.09.2020
      */
-    typedef size_t type_id;
+    //typedef size_t type_id;
+    struct type_id {
+
+        constexpr type_id() noexcept :
+            data(0) {}
+
+        explicit constexpr type_id(const u64 value_) :
+            data(value_) {}
+
+        [[nodiscard]] FORCE_INLINE bool operator>(const type_id& other_) const noexcept {
+            return data > other_.data;
+        }
+
+        [[nodiscard]] FORCE_INLINE bool operator<(const type_id& other_) const noexcept {
+            return data < other_.data;
+        }
+
+        [[nodiscard]] FORCE_INLINE bool operator>=(const type_id& other_) const noexcept {
+            return data >= other_.data;
+        }
+
+        [[nodiscard]] FORCE_INLINE bool operator<=(const type_id& other_) const noexcept {
+            return data <= other_.data;
+        }
+
+        [[nodiscard]] FORCE_INLINE bool operator==(const type_id& other_) const noexcept {
+            return data == other_.data;
+        }
+
+        [[nodiscard]] FORCE_INLINE bool operator!=(const type_id& other_) const noexcept {
+            return data != other_.data;
+        }
+
+        // TODO: Check whether data could be const to make type_id immutable
+        u64 data;
+    };
 
     namespace {
         /**
@@ -25,9 +63,11 @@ namespace ember {
          * @returns A type_id.
          */
         constexpr type_id fnv1a_86(const char* str_, const _STD size_t count_) {
-            return (
-                (count_ ? fnv1a_86(str_, count_ - 1) : 2166136261u) ^ str_[count_]
-            ) * 16777619u;
+            return type_id {
+                (
+                    (count_ ? fnv1a_86(str_, count_ - 1).data : 2166136261u) ^ str_[count_]
+                ) * 16777619u
+            };
         }
     }
 
@@ -50,7 +90,7 @@ namespace ember {
      * Type has static type identifier
      * 
      */
-    template <typename Ty>
+    template <typename Ty, typename TypeIdType_ = type_id>
     concept HasStaticType = requires(Ty) {
         { Ty::type_id };
     };
@@ -59,15 +99,67 @@ namespace ember {
      * Type has dynamic type identifier
      * 
      */
-    template <typename Ty>
+    template <typename Ty, typename TypeIdType_ = type_id>
     concept HasDynamicType = requires(Ty obj) {
-        { obj.get_typeId() } -> std::same_as<type_id>;
+        { obj.get_typeId() } -> _STD same_as<TypeIdType_>;
     };
 
     /**
      * Type has static and a dynamic type identifier
      * 
      */
-    template <typename Ty>
-    concept HasType = HasStaticType<Ty> && HasDynamicType<Ty>;
+    template <typename Ty, typename TypeIdType_ = type_id>
+    concept HasType = HasStaticType<Ty, TypeIdType_> && HasDynamicType<Ty, TypeIdType_>;
+}
+
+namespace std {
+
+    /**
+     * Specific equality check for type_id
+     *
+     * @author Julius
+     * @date 13.09.2021
+     */
+    template <>
+    struct equal_to<ember::type_id> {
+        [[nodiscard]] bool operator()(const ember::type_id& left_, const ember::type_id& right_) const noexcept {
+            return left_.data == right_.data;
+        }
+    };
+
+    /**
+     * Specific less check for type_id
+     *
+     * @author Julius
+     * @date 13.09.2021
+     */
+    template <>
+    struct less<ember::type_id> {
+        [[nodiscard]] bool operator()(const ember::type_id& left_, const ember::type_id& right_) const noexcept {
+            return left_.data < right_.data;
+        }
+    };
+
+    /**
+     * Specific hash of type_id
+     *
+     * @author Julius
+     * @date 13.09.2021
+     */
+    template <>
+    struct hash<ember::type_id> {
+        [[nodiscard]] _STD size_t operator()(const ember::type_id& value_) const noexcept {
+            /**
+             * !important! don't use identity
+             */
+            ember::u64 dst[2];
+            ember::hash::murmur3_x64_128(
+                &value_,
+                sizeof(decltype(ember::type_id::data)),
+                0x9FB21C651E98DF25ui32,
+                &dst
+            );
+            return dst[0];
+        }
+    };
 }

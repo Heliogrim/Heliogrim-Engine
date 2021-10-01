@@ -1,4 +1,7 @@
 #pragma once
+
+#include <cmath>
+
 namespace ember {
 
 	typedef signed char s8;

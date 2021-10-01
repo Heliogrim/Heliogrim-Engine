@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -19,27 +15,49 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Assets\Asset.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Data.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\DataLayout.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Entity.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\EntityLayout.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Level.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\LevelLayout.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Material.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\MaterialLayout.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Sound.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\SoundLayout.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Texture.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\TextureLayout.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Assets\Asset.cpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\AssetGuid.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\AssetInputStream.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\AssetIOStream.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\AssetOutputStream.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\AssetTypeId.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Database\AssetDatabase.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Database\AssetDatabaseEntry.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Database\AssetDatabaseQuery.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Asset.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Data.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\DataLayout.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Entity.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\EntityLayout.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Geometry.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\GeometryLayout.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\GfxMaterial.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\GfxMaterialLayout.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Image.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\ImageLayout.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Level.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\LevelLayout.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Material.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\PfxMaterial.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\PfxMaterialLayout.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\SfxMaterial.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\SfxMaterialLayout.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Sound.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\SoundLayout.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Texture.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\TextureLayout.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
       <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabase.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabaseEntry.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Asset.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Types\GfxMaterial.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Image.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Texture.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -49,14 +67,6 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>ClangCL</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>ClangCL</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>ClangCL</PlatformToolset>
@@ -65,16 +75,14 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>ClangCL</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -85,22 +93,18 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\Engine.__Any__.props" />
     <Import Project="..\Engine.Common.props" />
-    <Import Project="..\Build.__Any__.props" />
+    <Import Project="..\Engine.__Any__.props" />
     <Import Project="..\Build.Release.props" />
+    <Import Project="..\Build.__Any__.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="..\Engine.Common.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Build.Profiling.props" />
+    <Import Project="..\Build.__Any__.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)dist\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)dist\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)dist\$(Configuration)\$(ProjectName)\</OutDir>
@@ -111,28 +115,6 @@
     <OutDir>$(SolutionDir)dist\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <Link>
-      <SubSystem>
-      </SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <Link>
-      <SubSystem>
-      </SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
