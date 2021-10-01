@@ -1,0 +1,139 @@
+#pragma once
+
+#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/HopScotch.hpp>
+#include <Engine.Utils/_CTRL.hpp>
+
+#include "AssetDatabaseEntry.hpp"
+#include "../AssetGuid.hpp"
+#include "../Types/Asset.hpp"
+
+namespace ember::engine::assets {
+
+    /**
+     * An asset database.
+     *
+     * @author Julius
+     * @date 27.09.2021
+     *
+     * @note AssetDatabase is a central query point for asset <=> guid mapping and is meant to be thread-safe.
+     *       This will implicitly enforce operation to be atomic, so referencing memory sequences outside of guarded scope will cause undefined behaviour.
+     */
+    class AssetDatabase {
+    public:
+        using value_type = AssetDatabase;
+        using reference_type = ref<value_type>;
+        using const_reference_type = cref<value_type>;
+
+        using mapping_container = hopscotch_set<
+            AssetDatabaseEntry,
+            _STD hash<AssetDatabaseEntry>,
+            _STD equal_to<AssetDatabaseEntry>,
+            _STD less<AssetDatabaseEntry>,
+            _STD allocator<AssetDatabaseEntry>,
+            4,
+            true,
+            hopscotch::exp2_growth_policy<>
+        >;
+
+    public:
+        friend class AssetDatabaseQuery;
+
+    public:
+        /**
+         * Default constructor
+         *
+         * @author Julius
+         * @date 23.09.2021
+         */
+        AssetDatabase() noexcept;
+
+        /**
+         * Destructor
+         *
+         * @author Julius
+         * @date 23.09.2021
+         */
+        ~AssetDatabase() noexcept;
+
+    public:
+        /**
+         * Tidies this
+         *
+         * @author Julius
+         * @date 23.09.2021
+         */
+        void tidy();
+
+    private:
+        mutable _SCTRL_OBJ(_mtx);
+        mapping_container _mapping;
+
+    public:
+        /**
+         * Check for a stored entry by given guid_
+         *
+         * @author Julius
+         * @date 27.09.2021
+         *
+         * @param  guid_ Unique identifier.
+         *
+         * @returns True if entry exists, otherwise false.
+         */
+        [[nodiscard]] bool has(cref<asset_guid> guid_) const noexcept;
+
+    public:
+        /**
+         * Database access via guid indexing
+         *
+         * @author Julius
+         * @date 27.09.2021
+         *
+         * @param  guid_ Unique identifier.
+         *
+         * @returns The indexed value.
+         */
+        [[nodiscard]] ptr<Asset> operator[](cref<asset_guid> guid_) const;
+
+    public:
+        /**
+         * Inserts a new database entry
+         *
+         * @author Julius
+         * @date 27.09.2021
+         *
+         * @param  guid_ Unique identifier.
+         * @param  asset_ The asset.
+         *
+         * @returns True if it succeeds, false if it fails.
+         */
+        bool insert(cref<asset_guid> guid_, ptr<Asset> asset_) noexcept;
+
+    public:
+        /**
+         * Removes a database entry and returns the stored element
+         *
+         * @author Julius
+         * @date 27.09.2021
+         *
+         * @param  guid_ The Unique identifier to remove.
+         *
+         * @returns A ptr&lt;Asset&gt;
+         */
+        ptr<Asset> remove(cref<asset_guid> guid_) noexcept;
+
+    public:
+        /**
+         * Creates a database query with a fixed asset guid_
+         *
+         * @author Julius
+         * @date 27.09.2021
+         *
+         * @param  guid_ Unique identifier.
+         *
+         * @returns An AssetDatabaseQuery.
+         */
+        [[nodiscard]] AssetDatabaseQuery query(cref<asset_guid> guid_) const noexcept;
+    };
+
+}

@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -26,24 +22,12 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>true</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -52,16 +36,14 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -77,63 +59,29 @@
     <Import Project="..\Engine.__Any__.props" />
     <Import Project="..\Engine.Common.props" />
   </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="..\Engine.Common.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Build.Profiling.props" />
+    <Import Project="..\Build.__Any__.props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>$(SolutionName)</TargetName>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)build\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>$(SolutionName)</TargetName>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <EnableModules>false</EnableModules>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <Profile>true</Profile>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <EnableModules>false</EnableModules>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
+    <TargetName>$(SolutionName)</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -174,7 +122,16 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -222,14 +179,67 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\GrassWild01.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Cavity.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Displacement.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Gloss.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Normal.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Roughness.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Specular.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Albedo.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\GrassWild01AO.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Cavity.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Displacement.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Gloss.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Normal.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Roughness.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Specular.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\dar.hpp" />
     <ClCompile Include="..\..\src\Game.Main\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\GrassWild01.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Albedo.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01AO.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Cavity.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Displacement.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Gloss.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Normal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Roughness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Specular.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Albedo.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01AO.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Cavity.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Displacement.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Gloss.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Normal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Roughness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Specular.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\ForestGround.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\GrassWildGround.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\Inc.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MetalBare.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MossGround.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Albedo.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01AO.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Cavity.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Displacement.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Gloss.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Normal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Roughness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Specular.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Albedo.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01AO.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Cavity.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Displacement.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Gloss.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Normal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Roughness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Specular.hpp" />
     <ClInclude Include="..\..\src\Game.Main\World\Entities\Components\CameraComponent.hpp" />
     <ClInclude Include="..\..\src\Game.Main\World\Entities\DebugCamera.hpp" />
   </ItemGroup>

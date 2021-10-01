@@ -1,5 +1,9 @@
 #include "VkTextureFactory.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "../API/VkTranslate.hpp"
 
 using namespace ember::engine::gfx;
@@ -77,6 +81,8 @@ VkTextureFactory::VkTextureFactory(cref<sptr<Device>> device_) :
 VkTextureFactory::~VkTextureFactory() noexcept { }
 
 Texture VkTextureFactory::build(const TextureBuildPayload& payload_) const {
+
+    SCOPED_STOPWATCH
 
     vk::ImageCreateFlags create;
     u32 layers = 1;
@@ -170,6 +176,8 @@ Texture VkTextureFactory::build(const TextureBuildPayload& payload_) const {
 
 Texture& VkTextureFactory::buildView(Texture& texture_) const {
 
+    SCOPED_STOPWATCH
+
     /**
      * Prepare
      */
@@ -208,6 +216,8 @@ Texture& VkTextureFactory::buildView(Texture& texture_) const {
 }
 
 VirtualTexture VkTextureFactory::buildVirtual(const TextureType type_) const {
+
+    SCOPED_STOPWATCH
 
     return VirtualTexture {};
 }

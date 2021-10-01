@@ -8,6 +8,7 @@
 #include <memory>
 #include <sstream>
 #include <stdexcept>
+#include <stddef.h>
 #include <string>
 #include <thread>
 #include <type_traits>

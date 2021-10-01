@@ -164,7 +164,7 @@ pull_result_type ShadowSceneNode::pull(cref<SceneNodeId> nodeId_) noexcept {
         // Attention: This will invalidate the target iterator cause we modify the underlying container memory sequence
         ASSERT(_children.remove(iter))
         #else
-        _children.remove(iter)
+        _children.remove(iter);
         #endif
     }
 

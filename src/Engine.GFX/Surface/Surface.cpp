@@ -1,5 +1,9 @@
 #include "Surface.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "../__macro.hpp"
 
 using namespace ember::engine::gfx;
@@ -13,6 +17,8 @@ Surface::Surface(ptr<Application> application_) :
     _window(nullptr) {}
 
 void Surface::setup() {
+
+    SCOPED_STOPWATCH
 
     const uint32_t width = 1920, height = 1080;
 
@@ -30,15 +36,17 @@ void Surface::setup() {
 }
 
 void Surface::destroy() {
+
+    SCOPED_STOPWATCH
+
     if (_surface) {
         (*_application)->destroySurfaceKHR(_surface);
     }
 
     if (_window) {
         SDL_DestroyWindow(_window);
+        _window = nullptr;
     }
-
-    free(_window);
 }
 
 TextureFormat Surface::getImageFormat(const Device& device_) const {
@@ -70,20 +78,20 @@ vk::SurfaceKHR Surface::createApiSurface() {
 }
 
 SDL_Window* Surface::createWindow(const uint32_t width_, const uint32_t height_) {
+
+    SCOPED_STOPWATCH
+
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cout << "Could not initialize SDL." << std::endl;
         return nullptr;
     }
 
-    SDL_Window* dst = SDL_CreateWindow("Project Game - Vulkan C++", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        width_, height_, SDL_WINDOW_VULKAN);
-    if (dst == nullptr) {
+    _window = SDL_CreateWindow("Project Game - Vulkan C++", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_,
+        height_, SDL_WINDOW_VULKAN);
+    if (_window == nullptr) {
         std::cout << "Could not create SDL window." << std::endl;
         return nullptr;
     }
-
-    _window = static_cast<SDL_Window*>(malloc(sizeof(dst)));
-    _window = dst;
 
     return _window;
 }

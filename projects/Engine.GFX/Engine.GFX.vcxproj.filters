@@ -136,6 +136,9 @@
     <Filter Include="Quelldateien\Scene">
       <UniqueIdentifier>{aa4814d5-61de-446f-a2b8-6abd2cd6d35e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Importer">
+      <UniqueIdentifier>{91a073d2-e12b-4c75-8e06-b29e9994cfd6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX\Inc.hpp">
@@ -467,6 +470,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneGraphTag.hpp">
       <Filter>Headerdateien\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Importer\ImageImporter.hpp">
+      <Filter>Headerdateien\Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Importer\ModelImporter.hpp">
+      <Filter>Headerdateien\Importer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,8 +4,9 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "Guard.hpp"
+#include "../ResourceUsageFlag.hpp"
 
-namespace ember::engine::resource {
+namespace ember::engine::res {
 
     class Resource {
     public:
@@ -61,9 +62,12 @@ namespace ember::engine::resource {
          * @author Julius
          * @date 28.08.2021
          *
+         * @param  flags_ (Optional) The flags.
+         *
          * @returns A ManageGuard&lt;value_type&gt;
          */
-        [[nodiscard]] virtual ManageGuard<value_type> acquire() = 0;
+        [[nodiscard]] virtual ManageGuard<value_type> acquire(
+            const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault) = 0;
 
         /**
          * Attempts to acquire this resource to use
@@ -72,10 +76,12 @@ namespace ember::engine::resource {
          * @date 28.08.2021
          *
          * @param  guard_ The guard.
+         * @param  flags_ (Optional) The flags.
          *
          * @returns True if it succeeds, false if it fails.
          */
-        [[nodiscard]] virtual bool try_acquire(ptr<ManageGuard<value_type>> guard_) noexcept = 0;
+        [[nodiscard]] virtual bool try_acquire(ptr<ManageGuard<value_type>> guard_,
+            const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault) noexcept = 0;
 
         /**
          * Releases this resource of use
@@ -83,7 +89,7 @@ namespace ember::engine::resource {
          * @author Julius
          * @date 28.08.2021
          */
-        virtual void release() = 0;
+        virtual void release(const ResourceUsageFlags flags_) = 0;
     };
 
 }

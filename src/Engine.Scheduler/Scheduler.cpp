@@ -1,5 +1,9 @@
 #include "Scheduler.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 using namespace ember::engine::scheduler;
 
 Scheduler* Scheduler::_instance = nullptr;
@@ -27,6 +31,9 @@ size_t Scheduler::getWorkerCount() const {
 }
 
 void Scheduler::tidy() {
+
+    SCOPED_STOPWATCH
+
     if (_workerCount) {
         /**
          * Destroy workers and transitive destroy threads
@@ -60,6 +67,8 @@ void Scheduler::tidy() {
 }
 
 void Scheduler::setup(u32 workers_) {
+
+    SCOPED_STOPWATCH
 
     if (workers_ == 0) {
         workers_ = MAX(thread::getNativeThreadCount() - 1, 1);

@@ -4,12 +4,20 @@
 #include <Ember/Ember.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Common/Concurrent/Promise.hpp>
+#include <Engine.Resource/File.hpp>
+#include <Engine.Resource/ResourceManager.hpp>
+#include <Engine.Resource/Source/FileSource.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
-#if FALSE
-#define DR_WAV_IMPLEMENTATION
-#include <Engine.SFX/Library/Source/Data/dr_wav.hpp>
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Profiler.hpp>
+#include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
+
+#include <Engine.SFX/Importer/AudioFileTypes.hpp>
+#include <Engine.SFX/Importer/SoundImportType.hpp>
+
+#include "dar.hpp"
 
 using namespace ember;
 
@@ -23,6 +31,30 @@ using namespace ember;
  */
 int main() {
 
+    #ifdef _PROFILING
+    profiling::Profiler::make().startSession("main");
+    SCOPED_STOPWATCH_V(__main__stopwatch)
+    #endif
+
+    /**
+     * Test Case - Files
+     */
+    const string path {
+        "R:\\Development\\C++\\Vulkan API\\Game\\resources\\assets\\audio"
+    };
+    File root { path };
+    const bool exists = root.exists();
+    const bool dir = root.isDirectory();
+    const auto files = root.files();
+
+    const auto& ff = files.front();
+    ptr<engine::res::Source> src = new engine::res::FileSource(ff);
+
+    char buffer[1024];
+    u64 size = 0;
+
+    const auto success = src->get(0, 1024, buffer, size);
+
     /**
      * Test Case 01 - Promise
      */
@@ -31,30 +63,22 @@ int main() {
     });
 
     p.then<int>([](uint32_t) {
-         return 2;
-     })
-     .then<int>([](int) {
-         return 3;
-     })
-     .then<int8_t>([](int) {
-         return 4;
-     })
-     .then<int16_t>([](int) {
-         return 5;
-     })
-     .then<int32_t>([](int) {
-         return 6;
-     })
-     .then<uint8_t>([](int) {
-         return 7;
-     })
-     .then<uint16_t>([](int) {
-         return 8;
-     })
-     .then<uint32_t>([](int) {
-         return 9;
-     })
-     .finally([](int) {});
+        return 2;
+    }).then<int>([](int) {
+        return 3;
+    }).then<int8_t>([](int) {
+        return 4;
+    }).then<int16_t>([](int) {
+        return 5;
+    }).then<int32_t>([](int) {
+        return 6;
+    }).then<uint8_t>([](int) {
+        return 7;
+    }).then<uint16_t>([](int) {
+        return 8;
+    }).then<uint32_t>([](int) {
+        return 9;
+    }).finally([](int) {});
 
     /**
      * Start Application
@@ -69,9 +93,51 @@ int main() {
      */
     Ember::start();
 
+    engine::scheduler::thread::self::sleepFor(5000);
+
+    /**
+     *
+     */
+    push();
+
+    /**
+     * Test Case - Watcher
+     */
+    {
+        const string path = R"(R:\\Development\\C++\\Vulkan API\\Game\\resources\\assets\\audio)";
+        File file { path };
+
+        auto rm = engine::ResourceManager::get();
+        auto idx = rm->indexer();
+
+        idx->on([&](cref<File> file_) {
+
+            const auto type = engine::res::FileTypeRegister::get().getByExt(
+                _STD filesystem::path { file_.url() }.extension().string());
+
+            if (!type.valid()) {
+                return false;
+            }
+
+            if (type == engine::sfx::AudioFileType::Wav) {
+
+                auto fr = rm->importer().import<engine::sfx::SoundImportType>(type, file_);
+                auto result { _STD move(fr.get()) };
+
+                delete result.buffer.mem;
+            }
+
+            return true;
+        });
+
+        idx->scan(file);
+    }
+
+    engine::scheduler::thread::self::sleepFor(5000);
+
     bool interrupt = false;
     while (!interrupt) {
-        if constexpr (true) {
+        if constexpr (false) {
             MSG msg {};
             while (GetMessage(&msg, NULL, 0, 0)) {
                 TranslateMessage(&msg);
@@ -79,20 +145,28 @@ int main() {
             }
         }
 
-        SDL_Event poll = SDL_Event();
-        while (SDL_PollEvent(&poll)) {
-            switch (poll.type) {
+        if constexpr (false) {
+            SDL_Event poll = SDL_Event();
+            while (SDL_PollEvent(&poll)) {
+                switch (poll.type) {
 
-                case SDL_QUIT: {
-                    interrupt = true;
-                    break;
+                    case SDL_QUIT: {
+                        interrupt = true;
+                        break;
+                    }
+
+                    default: break;
                 }
-
-                default: break;
             }
         }
 
         ember::engine::scheduler::thread::self::yield();
+
+        if constexpr (true) {
+            _STD this_thread::sleep_for(_STD chrono::milliseconds { 15000 });
+            ember::engine::scheduler::thread::self::yield();
+            interrupt = true;
+        }
     }
 
     /**
@@ -117,6 +191,11 @@ int main() {
      * @see GameCore::wait()
      */
     Ember::wait();
+
+    #ifdef _PROFILING
+    __main__stopwatch.stop();
+    profiling::Profiler::destroy();
+    #endif
 
     /** Return successful result, so application closes without error */
     return 0;

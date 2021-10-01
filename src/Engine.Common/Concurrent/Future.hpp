@@ -17,7 +17,7 @@ namespace ember::concurrent {
             future_state() :
                 _returned(false),
                 _value(
-                    _STD is_nothrow_default_constructible<Ty>::value ? new Ty() : _STD move(allocate())
+                    _STD is_nothrow_default_constructible_v<Ty> ? new Ty() : _STD move(allocate())
                 ) {}
 
             /**
@@ -28,7 +28,11 @@ namespace ember::concurrent {
              */
             ~future_state() {
                 _mtx.lock();
-                _STD is_nothrow_default_constructible<Ty>::value ? delete _value : deallocate(_value);
+                if constexpr (_STD is_nothrow_default_constructible_v<Ty>) {
+                    delete _value;
+                } else {
+                    deallocate(_value);
+                }
                 _mtx.unlock();
             }
 
@@ -37,7 +41,7 @@ namespace ember::concurrent {
              *
              * @exception _STD Thrown when a Standard error condition occurs.
              */
-            FORCEINLINE void complete() const {
+            FORCE_INLINE void complete() const {
                 bool ex = false;
                 if (!_returned.compare_exchange_strong(ex, true, _STD memory_order_relaxed))
                     throw _STD runtime_error("Try to complete a already returned future state.");
@@ -52,7 +56,7 @@ namespace ember::concurrent {
              * @param  val_ The value.
              */
             template <typename = _STD enable_if_t<_STD is_nothrow_default_constructible_v<Ty>>>
-            FORCEINLINE void set(Ty&& val_) {
+            FORCE_INLINE void set(Ty&& val_) {
                 bool ex = false;
                 if (!_returned.compare_exchange_strong(ex, true, _STD memory_order_relaxed))
                     throw _STD runtime_error("Try to assign value to already assigned future state.");
@@ -66,7 +70,7 @@ namespace ember::concurrent {
              *
              * @returns A reference to a Ty*.
              */
-            FORCEINLINE Ty*& mem() const noexcept {
+            FORCE_INLINE Ty*& mem() const noexcept {
                 return _value;
             }
 
@@ -75,7 +79,7 @@ namespace ember::concurrent {
              *
              * @returns True if it succeeds, false if it fails.
              */
-            FORCEINLINE bool returned() const {
+            FORCE_INLINE bool returned() const {
                 return _returned;
             }
 
@@ -84,12 +88,12 @@ namespace ember::concurrent {
              *
              * @returns A reference to a Ty&amp;
              */
-            FORCEINLINE Ty&& value() const {
+            FORCE_INLINE Ty&& value() const {
                 return _STD forward<Ty&&>(*_value);
             }
 
             /** Waits this  */
-            FORCEINLINE void wait() const {
+            FORCE_INLINE void wait() const {
                 if (_returned)
                     return;
                 _STD unique_lock<_STD mutex> lck(_mtx);
@@ -140,7 +144,7 @@ namespace ember::concurrent {
              *
              * @exception _STD Thrown when a Standard error condition occurs.
              */
-            FORCEINLINE void complete() const {
+            FORCE_INLINE void complete() const {
                 bool ex = false;
                 if (!_returned.compare_exchange_strong(ex, true, _STD memory_order_relaxed))
                     throw _STD runtime_error("Try to complete a already returned future state.");
@@ -152,7 +156,7 @@ namespace ember::concurrent {
              *
              * @exception _STD Thrown when a Standard error condition occurs.
              */
-            FORCEINLINE void set() {
+            FORCE_INLINE void set() {
                 bool ex = false;
                 if (!_returned.compare_exchange_strong(ex, true, _STD memory_order_relaxed))
                     throw _STD runtime_error("Try to assign value to already assigned future state.");
@@ -164,12 +168,12 @@ namespace ember::concurrent {
              *
              * @returns True if it succeeds, false if it fails.
              */
-            FORCEINLINE bool returned() const {
+            FORCE_INLINE bool returned() const {
                 return _returned;
             }
 
             /** Waits this  */
-            FORCEINLINE void wait() const {
+            FORCE_INLINE void wait() const {
                 if (_returned)
                     return;
                 _STD unique_lock<_STD mutex> lck(_mtx);

@@ -1,6 +1,7 @@
 #pragma once
 #include "../stdafx.h"
 
+#include <limits>
 #include <memory>
 
 namespace ember {
@@ -75,7 +76,7 @@ namespace ember {
              * @returns A size_t.
              */
             [[maybe_unused, nodiscard]] FORCE_INLINE _STD size_t max_bucket_count() const {
-                return (_STD numeric_limits<_STD size_t>::max() / 2) + 1uLL;
+                return (limits<size_t>::max / 2) + 1uLL;
             }
 
             /**
@@ -306,7 +307,7 @@ namespace ember {
              * @param  other_ The other.
              */
             hopscotch_bucket(const this_type& other_) noexcept(_STD is_nothrow_copy_constructible<value_type>::value) :
-                hashstore(static_cast<hashstore&>(other_)),
+                hashstore(static_cast<const hashstore&>(other_)),
                 _neighbor(other_._neighbor) {
 
                 if (!other_.empty()) {
@@ -662,6 +663,11 @@ namespace ember {
                  */
                 hopscotch_iterator(hopscotch_iterator&& other_) noexcept = default;
 
+                template <bool Const_ = Const, typename = _STD enable_if_t<Const_>>
+                hopscotch_iterator(const hopscotch_iterator<!Const_>& other_) noexcept :
+                    _bucket_iterator(other_._bucket_iterator),
+                    _bucket_iterator_end(other_._bucket_iterator_end) {}
+
                 /**
                  * Copy Assignment operator
                  *
@@ -731,9 +737,15 @@ namespace ember {
                  * @returns The result of the operation.
                  */
                 this_type& operator++() {
+                    /*
                     if (_bucket_iterator == _bucket_iterator_end) {
                         ++_bucket_iterator;
                     }
+                     */
+                    do {
+                        ++_bucket_iterator;
+                    } while (_bucket_iterator != _bucket_iterator_end && _bucket_iterator->empty());
+
                     return *this;
                 }
 
@@ -844,7 +856,7 @@ namespace ember {
              */
             [[nodiscard]] static bool use_stored_hash(const size_type count_) {
                 /* (count_ - 1) <= _STD numeric_limits<hash_trunc_type>::max() */
-                return count_ < _STD numeric_limits<hash_trunc_type>::max();
+                return count_ < limits<hash_trunc_type>::max;
             }
 
             /**
@@ -931,7 +943,7 @@ namespace ember {
              * @returns If succeed index of empty bucket or if failed collection size
              */
             [[nodiscard]] FORCE_INLINE index_type find_empty_bucket(index_type from_) const {
-                const index_type limit = _STD min(from_ + NeighborhoodSize, _buckets.size());
+                const index_type limit = _STD min<index_type>(from_ + NeighborhoodSize, _buckets.size());
 
                 for (; from_ < limit; ++from_) {
                     if (_buckets_ptr[from_].empty())
@@ -1282,7 +1294,11 @@ namespace ember {
             template <typename PayloadType>
             [[nodiscard]] FORCE_INLINE _STD pair<iterator, bool> insert_or_assign_impl(PayloadType&& payload_) {
                 auto it = try_emplace_impl(_STD forward<PayloadType>(payload_));
-                return it.second ? it : it.first.value() = _STD forward<PayloadType>(payload_);
+                if (!it.second) {
+                    it.first.value() = _STD forward<PayloadType>(payload_);
+                }
+
+                return it;
             }
 
             /**
@@ -1378,9 +1394,9 @@ namespace ember {
              * @param  other_ The other.
              */
             hopscotch_hash(const this_type& other_) :
-                Hash(static_cast<hasher_type&>(other_)),
-                KeyEqual(static_cast<key_equal&>(other_)),
-                GrowthPolicy(static_cast<GrowthPolicy&>(other_)),
+                Hash(static_cast<const hasher_type&>(other_)),
+                KeyEqual(static_cast<const key_equal&>(other_)),
+                GrowthPolicy(static_cast<const GrowthPolicy&>(other_)),
                 _buckets(other_._buckets),
                 _buckets_ptr(other_._buckets_ptr),
                 _element_count(other_._element_count),
@@ -1397,9 +1413,9 @@ namespace ember {
              * @param [in,out] other_ The other.
              */
             hopscotch_hash(this_type&& other_) noexcept :
-                Hash(_STD move(static_cast<hasher_type&>(other_))),
-                KeyEqual(_STD move(static_cast<key_equal&>(other_))),
-                GrowthPolicy(_STD move(static_cast<GrowthPolicy&>(other_))),
+                Hash(_STD move(static_cast<hasher_type&&>(other_))),
+                KeyEqual(_STD move(static_cast<key_equal&&>(other_))),
+                GrowthPolicy(_STD move(static_cast<GrowthPolicy&&>(other_))),
                 _buckets(_STD move(other_._buckets)),
                 _buckets_ptr(_buckets.empty() ? this_type::static_empty_bucket() : _buckets.data()),
                 _element_count(_STD exchange(other_._element_count, 0)),
@@ -1437,16 +1453,19 @@ namespace ember {
              * @returns A shallow copy of this.
              */
             hopscotch_hash& operator=(this_type&& other_) noexcept {
-                static_cast<hasher_type&>(*this) = _STD move(static_cast<hasher_type&>(other_));
-                static_cast<key_equal&>(*this) = _STD move(static_cast<key_equal&>(other_));
-                static_cast<GrowthPolicy&>(*this) = _STD move(static_cast<GrowthPolicy&>(other_));
 
-                _buckets = _STD move(other_._buckets);
-                _buckets_ptr = _STD exchange(other_._buckets_ptr, nullptr);
-                _element_count = _STD exchange(other_._element_count, 0);
-                _max_load_factor = _STD exchange(other_._max_load_factor, 0);
-                _min_load_threshold = _STD exchange(other_._min_load_threshold, 0);
-                _max_load_threshold = _STD exchange(other_._max_load_threshold, 0);
+                if (this != _STD addressof(other_)) {
+                    static_cast<hasher_type&>(*this) = _STD move(static_cast<hasher_type&&>(other_));
+                    static_cast<key_equal&>(*this) = _STD move(static_cast<key_equal&&>(other_));
+                    static_cast<GrowthPolicy&>(*this) = _STD move(static_cast<GrowthPolicy&&>(other_));
+
+                    _buckets = _STD move(other_._buckets);
+                    _buckets_ptr = _STD exchange(other_._buckets_ptr, nullptr);
+                    _element_count = _STD exchange(other_._element_count, 0);
+                    _max_load_factor = _STD exchange(other_._max_load_factor, 0);
+                    _min_load_threshold = _STD exchange(other_._min_load_threshold, 0);
+                    _max_load_threshold = _STD exchange(other_._max_load_threshold, 0);
+                }
 
                 return *this;
             }
@@ -1538,6 +1557,47 @@ namespace ember {
             }
 
             /**
+             * Inserts an or assigns described by value_
+             *
+             * @author Julius
+             * @date 12.09.2021
+             *
+             * @param  value_ The value.
+             *
+             * @returns A pair&lt;iterator,bool&gt;
+             */
+            [[nodiscard]] _STD pair<iterator, bool> insert_or_assign(const value_type& value_) {
+                return insert_or_assign_impl(value_);
+            }
+
+            /**
+             * Inserts an or assign described by value_
+             *
+             * @tparam ValueType_ Type of the value type.
+             * @param [in,out] value_ The value.
+             *
+             * @returns A pair&lt;it4erator,bool&gt;
+             */
+            template <class ValueType_, typename = _STD enable_if_t<_STD is_constructible_v<value_type, ValueType_&&>>>
+            [[nodiscard]] _STD pair<iterator, bool> insert_or_assign(ValueType_&& value_) {
+                return insert_or_assign_impl(value_type { _STD forward<value_type>(value_) });
+            }
+
+            /**
+             * Inserts an or assign described by value_
+             *
+             * @author Julius
+             * @date 12.09.2021
+             *
+             * @param  value_ The value.
+             *
+             * @returns A pair&lt;iterator,bool&gt;
+             */
+            [[nodiscard]] _STD pair<iterator, bool> insert_or_assign(value_type&& value_) {
+                return insert_or_assign_impl(_STD move(value_));
+            }
+
+            /**
              * Emplaces the given value
              *
              * @author Julius
@@ -1559,7 +1619,7 @@ namespace ember {
              *
              * @returns A pair&lt;iterator,bool&gt;
              */
-            template <class ValueType_ = ValueType, _STD enable_if_t<_STD is_move_constructible_v<ValueType_>>>
+            template <class ValueType_, typename = _STD enable_if_t<_STD is_constructible_v<value_type, ValueType_&&>>>
             [[nodiscard]] _STD pair<iterator, bool> emplace(value_type&& value_) {
                 return insert_impl(value_type { _STD forward<value_type>(value_) });
             }
@@ -1633,8 +1693,8 @@ namespace ember {
             iterator erase(const_iterator position_) {
                 const index_type idx = bucket_idx(hash(*position_));
 
-                auto b = _buckets.begin() + _STD distance(_buckets.cbegin(), position_._buckets_iterator);
-                bucket_erase(b, idx);
+                auto b = _buckets.begin() + _STD distance(_buckets.cbegin(), position_._bucket_iterator);
+                bucket_erase(*b, idx);
 
                 return ++iterator(b, _buckets.end());
             }
@@ -1931,7 +1991,7 @@ namespace ember {
              * @returns A size_type.
              */
             [[nodiscard]] size_type max_bucket_count() const {
-                const size_type mc = _STD min(GrowthPolicy::max_bucket_count(), _buckets.max_size());
+                const size_type mc = _STD min<size_type>(GrowthPolicy::max_bucket_count(), _buckets.max_size());
                 return mc - NeighborhoodSize + 1u;
             }
 
@@ -1971,7 +2031,7 @@ namespace ember {
              * @param  count_ Number of.
              */
             void rehash(size_type count_) {
-                const auto nc = _STD max(
+                const auto nc = _STD max<size_type>(
                     count_,
                     static_cast<size_type>(
                         _STD ceil(
@@ -2179,6 +2239,7 @@ namespace ember {
         using insert_result_type = emplace_result_type;
         using insert_or_assign_result_type = emplace_result_type;
 
+    public:
         /**
          * Default constructor
          *
@@ -2234,6 +2295,30 @@ namespace ember {
          */
         ~hopscotch_set() = default;
 
+    public:
+        /**
+         * Copy Assignment operator
+         *
+         * @author Julius
+         * @date 12.09.2021
+         *
+         * @returns A shallow copy of this.
+         */
+        reference_type operator=(const_reference_type) = delete;
+
+        /**
+         * Move assignment operator
+         *
+         * @author Julius
+         * @date 12.09.2021
+         *
+         * @param [in,out] other_ The other.
+         *
+         * @returns A shallow copy of this.
+         */
+        reference_type operator=(hopscotch_set&& other_) noexcept = default;
+
+    public:
         /**
          * Gets the begin
          *
@@ -2381,7 +2466,7 @@ namespace ember {
          * @returns An insert_or_assign_result_type.
          */
         insert_or_assign_result_type insert_or_assign(key_type&& value_) {
-            return _ht.insert_or_assign(_STD forward<key_type>(value_));
+            return _ht.insert_or_assign(_STD move(value_));
         }
 
         /**

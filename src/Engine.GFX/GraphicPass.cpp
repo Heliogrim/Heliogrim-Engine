@@ -1,5 +1,9 @@
 #include "GraphicPass.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 using namespace ember::engine::gfx;
 using namespace ember;
 
@@ -7,6 +11,8 @@ GraphicPass::GraphicPass(cref<GraphicPassMask> mask_) :
     _mask(mask_) {}
 
 void GraphicPass::process(cref<scene::SceneGraph> graph_, ref<CommandBatch> batch_) {
+
+    SCOPED_STOPWATCH
 
     ptr<ModelPassProcessor> processor = this->processor();
     if (processor) {

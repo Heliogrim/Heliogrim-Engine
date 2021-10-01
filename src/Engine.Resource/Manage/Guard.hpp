@@ -3,7 +3,9 @@
 #include <mutex>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::resource {
+#include "../ResourceUsageFlag.hpp"
+
+namespace ember::engine::res {
 
     template <typename Type_>
     concept IsManageType = true;
@@ -28,7 +30,7 @@ namespace ember::engine::resource {
          */
         constexpr ManageGuard() noexcept :
             _ptr(nullptr),
-            _owns(false) {}
+            _owned_flags(ResourceUsageFlag::eNone) {}
 
         /**
          * Constructor
@@ -40,7 +42,7 @@ namespace ember::engine::resource {
          */
         [[nodiscard]] explicit ManageGuard(reference_type value_) :
             _ptr(_STD addressof(value_)),
-            _owns(false) {
+            _owned_flags(ResourceUsageFlag::eNone) {
             acquire();
         }
 
@@ -51,33 +53,12 @@ namespace ember::engine::resource {
          * @date 28.08.2021
          *
          * @param [in,out] value_ The value.
-         * @param          adopt_lock_t The adopt lock t.
+         * @param          owned_flags_ The owned flags.
          */
-        ManageGuard(reference_type value_, _STD adopt_lock_t) noexcept :
+        ManageGuard(reference_type value_, const ResourceUsageFlags owned_flags_) noexcept :
             _ptr(_STD addressof(value_)),
-            _owns(true) {}
+            _owned_flags(owned_flags_) {}
 
-        /**
-         * Constructor
-         *
-         * @author Julius
-         * @date 28.08.2021
-         *
-         * @param [in,out] value_ The value.
-         * @param          defer_lock_t The defer lock t.
-         */
-        [[nodiscard]] ManageGuard(reference_type value_, _STD defer_lock_t) noexcept :
-            _ptr(_STD addressof(value_)),
-            _owns(false) {}
-
-    private:
-        [[nodiscard]] ManageGuard(reference_type value_, _STD try_to_lock_t) noexcept :
-            _ptr(_STD addressof(value_)),
-            _owns(false) {
-            try_acquire();
-        }
-
-    public:
         /**
          * Copy Constructor
          *
@@ -96,10 +77,18 @@ namespace ember::engine::resource {
          */
         [[nodiscard]] ManageGuard(mref<this_type> other_) noexcept :
             _ptr(_STD exchange(other_._ptr, nullptr)),
-            _owns(_STD exchange(other_._owns, false)) {}
+            _owned_flags(_STD exchange(other_._owned_flags, ResourceUsageFlag::eNone)) {}
 
+        /**
+         * Destructor
+         *
+         * @author Julius
+         * @date 28.08.2021
+         */
         ~ManageGuard() noexcept {
-            release();
+            if (_owned_flags != ResourceUsageFlag::eNone) {
+                release();
+            }
         }
 
     public:
@@ -125,12 +114,12 @@ namespace ember::engine::resource {
          */
         reference_this_type operator=(mref<this_type> other_) {
             if (this != _STD addressof(other_)) {
-                if (_owns) {
+                if (_owned_flags != ResourceUsageFlag::eNone) {
                     release();
                 }
 
                 _ptr = _STD exchange(other_._ptr, nullptr);
-                _owns = _STD exchange(other_._owns, false);
+                _owned_flags = _STD exchange(other_._owned_flags, ResourceUsageFlag::eNone);
             }
 
             return *this;
@@ -138,40 +127,44 @@ namespace ember::engine::resource {
 
     private:
         ptr<value_type> _ptr;
-        bool _owns;
+        ResourceUsageFlags _owned_flags;
 
     private:
         void swap(reference_this_type other_) noexcept {
             _STD swap(_ptr, other_._ptr);
-            _STD swap(_owns, other_._owns);
+            _STD swap(_owned_flags, other_._owned_flags);
         }
 
     public:
         [[nodiscard]] bool try_acquire() noexcept {
-            _owns = _ptr->try_acquire(this);
+            return _ptr->try_acquire(this, _owned_flags);
         }
 
-        void acquire() noexcept {
-            swap(_ptr->acquire());
+        void acquire(const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault) noexcept {
+            swap(_ptr->acquire(flags_));
         }
 
-        reference_this_type acquire(reference_type value_) {
-            swap(_STD forward<value_type>(value_.acquire()));
+        reference_this_type acquire(reference_type value_, const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault) {
+            swap(_STD forward<value_type>(value_.acquire(flags_)));
             return *this;
         }
 
         reference_this_type release() {
-            _ptr->release();
-            _owns = false;
+            _ptr->release(_owned_flags);
+            _owned_flags = ResourceUsageFlag::eNone;
         }
 
     public:
         [[nodiscard]] bool owns() const noexcept {
-            return _owns;
+            return _owned_flags != ResourceUsageFlag::eNone;
         }
 
         explicit operator bool() const noexcept {
-            return _owns;
+            return _owned_flags != ResourceUsageFlag::eNone;
+        }
+
+        [[nodiscard]] const ResourceUsageFlags owned_flags() const noexcept {
+            return _owned_flags;
         }
 
     public:

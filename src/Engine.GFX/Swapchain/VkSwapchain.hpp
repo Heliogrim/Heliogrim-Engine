@@ -5,7 +5,6 @@ namespace ember::engine::gfx {
     class VkSwapchain :
         public Swapchain {
     public:
-
         /**
          * Constructor
          *
@@ -31,7 +30,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 30.01.2021
          */
-        virtual void setup() override;
+        void setup() override;
 
         /**
          * Destroys this 
@@ -39,7 +38,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 30.01.2021
          */
-        virtual void destroy() override;
+        void destroy() override;
 
     private:
         /**

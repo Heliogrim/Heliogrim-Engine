@@ -18,7 +18,7 @@ namespace ember::engine::scene {
      * @returns A ptr&lt;Ty&gt;
      */
     template <typename Ty, typename Alloc_ = _STD allocator<Ty>>
-    FORCEINLINE constexpr ptr<Ty> construct_inplace(ptr<void> dst_, Alloc_ allocator_ = Alloc_ {}) {
+    FORCE_INLINE constexpr ptr<Ty> construct_inplace(ptr<void> dst_, Alloc_ allocator_ = Alloc_ {}) {
         using allocator_trait = _STD allocator_traits<Alloc_>;
         allocator_trait::construct(allocator_, static_cast<ptr<Ty>>(dst_));
         return static_cast<ptr<Ty>>(dst_);
@@ -36,7 +36,7 @@ namespace ember::engine::scene {
      * @returns A ptr&lt;Ty&gt;
      */
     template <typename Ty, typename Alloc_ = _STD allocator<Ty>>
-    FORCEINLINE constexpr ptr<Ty> construct_inplace(ptr<void> dst_, cref<Ty> src_, Alloc_ allocator_ = Alloc_ {}) {
+    FORCE_INLINE constexpr ptr<Ty> construct_inplace(ptr<void> dst_, cref<Ty> src_, Alloc_ allocator_ = Alloc_ {}) {
         using allocator_trait = _STD allocator_traits<Alloc_>;
         allocator_trait::construct(allocator_, static_cast<ptr<Ty>>(dst_), _STD forward<cref<Ty>>(src_));
         return static_cast<ptr<Ty>>(dst_);
@@ -54,7 +54,7 @@ namespace ember::engine::scene {
      * @returns A ptr&lt;Ty&gt;
      */
     template <typename Ty, typename Alloc_ = _STD allocator<Ty>>
-    FORCEINLINE constexpr ptr<Ty> construct_inplace(ptr<void> dst_, mref<Ty> src_, Alloc_ allocator_ = Alloc_ {}) {
+    FORCE_INLINE constexpr ptr<Ty> construct_inplace(ptr<void> dst_, mref<Ty> src_, Alloc_ allocator_ = Alloc_ {}) {
         using allocator_trait = _STD allocator_traits<Alloc_>;
         allocator_trait::construct(allocator_, static_cast<ptr<Ty>>(dst_), _STD forward<Ty>(src_));
         return static_cast<ptr<Ty>>(dst_);
@@ -69,7 +69,7 @@ namespace ember::engine::scene {
      * @param  allocator_ (Optional) The allocator.
      */
     template <typename Ty, typename Alloc_ = _STD allocator<Ty>>
-    FORCEINLINE constexpr void destruct_inplace(
+    FORCE_INLINE constexpr void destruct_inplace(
         ptr<Ty> dst_,
         Alloc_ allocator_ = Alloc_ {}
     ) noexcept(_STD is_nothrow_destructible_v<Ty>) {

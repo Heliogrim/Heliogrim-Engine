@@ -24,9 +24,12 @@ void CommandQueue::setup() {
 }
 
 void CommandQueue::destroy() {
-    _pool->destroy();
-    delete _pool;
-    _pool = nullptr;
+    if (_pool) {
+        _pool->destroy();
+
+        delete _pool;
+        _pool = nullptr;
+    }
 
     _vkQueue = nullptr;
 }

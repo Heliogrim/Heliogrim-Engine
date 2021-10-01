@@ -38,6 +38,13 @@ Texture::operator bool() const noexcept {
 }
 
 void Texture::destroy() {
+
+    // We expect vkDevice to be defined, otherwise it might be a swapchain image -> texture
+    // TODO: make identifier for swapchain images
+    if (!_buffer.vkDevice()) {
+        return;
+    }
+
     if (_view) {
         _buffer.vkDevice().destroy(_view);
     }

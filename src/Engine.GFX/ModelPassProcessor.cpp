@@ -1,5 +1,9 @@
 #include "ModelPassProcessor.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "GraphicPass.hpp"
 #include "Scene/SceneElement.hpp"
 
@@ -10,6 +14,9 @@ ModelPassProcessor::ModelPassProcessor(ptr<const GraphicPass> graphicPass_) :
     _graphicPass(graphicPass_) {}
 
 bool ModelPassProcessor::operator()(cref<scene::SceneNode> node_) noexcept {
+
+    SCOPED_STOPWATCH
+
     /**
      * TODO: Check whether node is used for current RenderPass
      */

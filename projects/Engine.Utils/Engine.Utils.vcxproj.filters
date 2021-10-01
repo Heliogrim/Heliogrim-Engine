@@ -33,6 +33,33 @@
     <ClInclude Include="..\..\src\Engine.Utils\Pipeline\PipelineStage.hpp">
       <Filter>Headerdateien\Pipeline</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Utils\Pipeline\AdaptivePipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Utils\Pipeline\AdaptivePipelineStage.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Utils\Pipeline\AtomicPipelineStage.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Utils\Pipeline\StatelessPipelineStage.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Utils\Pipeline\StatelessPipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Utils\Pipeline\SelectivePipelineStage.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Utils\Pipeline\ParallelPipelineStage.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Utils\Pipeline\AdaptivePipelineResult.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Utils\Pipeline\AdaptivePipelineNext.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Utils\Pipeline\Pipeline.cpp">

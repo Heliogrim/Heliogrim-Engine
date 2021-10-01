@@ -26,7 +26,7 @@ bool ShaderStorage::exists(const shader::ShaderType& scope_, const string& name_
         name_
     };
 
-    return _storage.contains(key);
+    return _storage.find(key) != _storage.cend();
 }
 
 ptr<Shader> ShaderStorage::get(const shader::ShaderType& scope_, const string& name_) const {
@@ -63,4 +63,13 @@ ref<ShaderStorage> ShaderStorage::get() noexcept {
 void ShaderStorage::destroy() {
     delete _instance;
     _instance = nullptr;
+}
+
+void ShaderStorage::tidy() {
+    // TODO: Delete stored shaders
+    /*
+    for (auto& entry : _storage) {
+        delete entry.second;
+    }
+     */
 }

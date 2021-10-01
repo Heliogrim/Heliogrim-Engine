@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <unordered_map>
 #include <Engine.Common/Wrapper.hpp>
 
 #include "Shader.hpp"
@@ -35,8 +36,7 @@ namespace ember::engine::gfx {
         /**
          * Storage
          */
-        _STD unordered_map<ShaderStorageKey, ptr<Shader>, _STD hash<ember::engine::gfx::ShaderStorageKey>>
-        _storage;
+        _STD unordered_map<ShaderStorageKey, ptr<Shader>, _STD hash<ShaderStorageKey>> _storage;
 
     public:
         /**
@@ -135,6 +135,9 @@ namespace ember::engine::gfx {
          * @date 03.12.2020
          */
         ~ShaderStorage() noexcept = default;
+
+    private:
+        void tidy();
     };
 
 }

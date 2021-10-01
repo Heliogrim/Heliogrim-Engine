@@ -3,6 +3,10 @@
 #include <cassert>
 #include <Engine.Common/Make.hpp>
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "FinalPass.hpp"
 #include "../PrimitiveTopology.hpp"
 #include "../RasterCullFace.hpp"
@@ -18,6 +22,9 @@ FinalPassCompositeStage::FinalPassCompositeStage(ptr<FinalPass> graphicPass_) :
     _graphicPass(graphicPass_) {}
 
 void FinalPassCompositeStage::setup() {
+
+    SCOPED_STOPWATCH
+
     auto device = Graphics::get()->getCurrentDevice();
     const auto* swapchain = Graphics::get()->getCurrentSwapchain();
 
@@ -89,6 +96,9 @@ void FinalPassCompositeStage::setup() {
 }
 
 void FinalPassCompositeStage::destroy() noexcept {
+
+    SCOPED_STOPWATCH
+
     /**
      *
      */
@@ -118,6 +128,9 @@ bool FinalPassCompositeStage::check(ptr<const ProcessedModelBatch> batch_) noexc
 }
 
 void FinalPassCompositeStage::before(cref<GraphicPassStageContext> ctx_) {
+
+    SCOPED_STOPWATCH
+
     /**
      * Prepare Command Buffer
      */
@@ -128,11 +141,16 @@ void FinalPassCompositeStage::before(cref<GraphicPassStageContext> ctx_) {
 
 void FinalPassCompositeStage::process(cref<GraphicPassStageContext> ctx_, ptr<const ProcessedModelBatch> batch_) {
 
+    SCOPED_STOPWATCH
+
     // TODO: cmd.bindDescriptor(...);
     _cmd->draw(1, 0, 6, 0);
 }
 
 void FinalPassCompositeStage::after(cref<GraphicPassStageContext> ctx_) {
+
+    SCOPED_STOPWATCH
+
     /**
      * End Command Buffer
      */

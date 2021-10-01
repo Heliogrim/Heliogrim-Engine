@@ -1,5 +1,9 @@
 #include "DepthModelPassProcessor.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "../GraphicPass.hpp"
 #include "../Scene/SceneElement.hpp"
 
@@ -10,6 +14,8 @@ DepthModelPassProcessor::DepthModelPassProcessor(ptr<const GraphicPass> graphicP
     ModelPassProcessor(graphicPass_) {}
 
 bool DepthModelPassProcessor::operator()(cref<scene::SceneNode> node_) noexcept {
+
+    SCOPED_STOPWATCH
 
     /**
      * Precheck whether node has state or children

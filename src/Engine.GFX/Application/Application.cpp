@@ -1,5 +1,9 @@
 #include "Application.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 using namespace ember::engine::gfx;
 using namespace ember;
 
@@ -16,6 +20,9 @@ Application::~Application() {
 }
 
 void Application::setup() {
+
+    SCOPED_STOPWATCH
+
     uint32_t count = 0;
     vkEnumerateInstanceLayerProperties(&count, nullptr);
 
@@ -79,6 +86,7 @@ void Application::setup() {
 
 void Application::destroy() {
     _instance.destroy();
+    _instance = nullptr;
 }
 
 std::vector<const char*> Application::getExtensions() {

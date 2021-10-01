@@ -1,9 +1,10 @@
 #pragma once
 
 #include <direct.h>
+#include <filesystem>
 #include <fstream>
-
 #include <Engine.Common/String.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/List.hpp>
 
 namespace ember {
@@ -17,49 +18,54 @@ namespace ember {
 
     class File {
     public:
-
         /** Default constructor */
         File() :
-            _url(std::string()) { }
+            _url(string()) { }
 
         /**
          * Constructor
          *
          * @param url_ The file.
          */
-        File(const std::string& url_) :
+        File(cref<string> url_) :
             _url(url_) { }
+
+        /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 16.09.2021
+         *
+         * @param  url_ URL_ of the resource.
+         */
+        File(cref<string_view> url_) :
+            _url(_STD string(url_)) {}
 
         /**
          * Gets the file
          *
          * @return The file.
          */
-        std::string url() const {
+        cref<string> url() const {
             return _url;
         }
 
         /**
-         * Check whether file exists
+         * Check whether file or directory exists
          *
          * @return A const bool.
          */
         bool exists() const {
-            // TODO: check existents even for directories
-            struct stat buffer;
-            return (stat(_url.c_str(), &buffer) == 0);
+            return _STD filesystem::exists(_url);
         }
 
         /**
          * Check whether URL is a directory or a file
-         *	Could be problematic cause binary handle is equal between directory and file
          *
          * @return A const bool.
          */
         bool isDirectory() const {
-            struct stat buffer;
-            stat(_url.c_str(), &buffer);
-            return (buffer.st_mode & S_IFDIR);
+            return _STD filesystem::is_directory(_url);
         }
 
         /**
@@ -68,8 +74,7 @@ namespace ember {
          * @return A const size_t.
          */
         size_t size() const {
-            // TODO: evaluate size of file or directory
-            return 0;
+            return _STD filesystem::file_size(_url);
         }
 
         /**
@@ -79,7 +84,7 @@ namespace ember {
          */
         File parent() const {
             const size_t posx = _url.find_last_of(seperator);
-            const std::string parentUrl = _url.substr(0, posx);
+            const string parentUrl = _url.substr(0, posx);
             return File(parentUrl);
         }
 
@@ -90,12 +95,20 @@ namespace ember {
          *
          * @return A const std::vector&lt;File&gt;
          */
-        [[nodiscard]] std::vector<File> files() const {
+        [[nodiscard]] vector<File> files() const {
             // Could return without effect
-            if (!isDirectory())
+            if (!isDirectory()) {
                 throw std::exception("URL is not a directory. Can not fetch files.");
+            }
 
-            std::vector<File> files = std::vector<File>(0);
+            vector<File> files = vector<File>(0);
+            const auto iter = _STD filesystem::directory_iterator { _url };
+
+            for (const auto& entry : iter) {
+                if (entry.is_regular_file()) {
+                    files.push_back(File { entry.path().string() });
+                }
+            }
 
             return files;
         }
@@ -111,8 +124,6 @@ namespace ember {
 
         /**
          * Make directory
-         *
-         * @return A const void.
          */
         void mkdir() const {
             if (exists())
@@ -124,8 +135,6 @@ namespace ember {
 
         /**
          * Make directories
-         *
-         * @return A const void.
          */
         void mkdirs() const {
             // Generate parent URLs from current file URL
@@ -160,8 +169,6 @@ namespace ember {
 
         /**
          * Creates the file
-         *
-         * @return The new file.
          */
         void createFile() const {
             if (exists() || isDirectory())
@@ -179,8 +186,6 @@ namespace ember {
          * @exception std::exception Thrown when an exception error condition occurs.
          *
          * @param dst_ Destination for the.
-         *
-         * @return A const void.
          */
         void move(const File& dst_) {
             if (!dst_.exists() || !dst_.isDirectory())
@@ -194,7 +199,7 @@ namespace ember {
          *
          * @return The result of the operation.
          */
-        operator std::string() const {
+        [[nodiscard]] operator string() const noexcept {
             return _url;
         }
 
@@ -202,5 +207,31 @@ namespace ember {
 
     protected:
         std::string _url;
+
+    public:
+        [[nodiscard]] bool operator==(cref<File> other_) const noexcept {
+            return _url == other_._url;
+        }
+
+        [[nodiscard]] bool operator!=(cref<File> other_) const noexcept {
+            return _url != other_._url;
+        }
+    };
+}
+
+namespace std {
+
+    template <>
+    struct hash<ember::File> {
+        [[nodiscard]] size_t operator()(const ember::File& value_) const noexcept {
+            return _STD hash<string> {}(value_.url());
+        }
+    };
+
+    template <>
+    struct less<ember::File> {
+        [[nodiscard]] bool operator()(const ember::File& left_, const ember::File& right_) const noexcept {
+            return _STD less<string> {}(left_.url(), right_.url());
+        }
     };
 }

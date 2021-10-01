@@ -18,8 +18,10 @@ void CommandPool::setup() {
 }
 
 void CommandPool::destroy() {
-    _queue->device()->vkDevice().destroyCommandPool(_vkPool);
-    _vkPool = nullptr;
+    if (_vkPool) {
+        _queue->device()->vkDevice().destroyCommandPool(_vkPool);
+        _vkPool = nullptr;
+    }
 }
 
 CommandBuffer CommandPool::make() {

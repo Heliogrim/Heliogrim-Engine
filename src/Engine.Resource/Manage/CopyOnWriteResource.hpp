@@ -1,7 +1,7 @@
 #pragma once
 #include "Resource.hpp"
 
-namespace ember::engine::resource {
+namespace ember::engine::res {
     class CopyOnWriteResource :
         public Resource { };
 }
