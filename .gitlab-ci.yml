@@ -1,7 +1,7 @@
 variables:
     GIT_DEPTH: 10
 
-build.windows.mscv:
+build.windows.msvc:
     stage: build
     tags:
         - windows
@@ -14,9 +14,9 @@ build.windows.mscv:
         - touch cmdlet.cmd
         - chmod +x cmdlet.cmd
         
-        - echo $'for /f "usebackq delims=#" %a in (`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere" -latest -property installationPath`) do "%a\\Common7\\Tools\\VsDevCmd.bat"' > cmdlet.cmd
-        - echo $'msbuild -version' > cmdlet.cmd
-        - echo $'devenv Game.sln /Clean' > cmdlet.cmd
+        - echo $'for /f "usebackq delims=#" %a in (`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere" -latest -property installationPath`) do "%a\\Common7\\Tools\\VsDevCmd.bat"' >> cmdlet.cmd
+        - echo $'msbuild -version' >> cmdlet.cmd
+        - echo $'devenv Game.sln /Clean' >> cmdlet.cmd
 
         - cmd /c cmdlet.cmd
     
@@ -65,20 +65,26 @@ build.windows.mscv:
         - touch cmdlet.cmd
         - chmod +x cmdlet.cmd
 
-        - echo $'for /f "usebackq delims=#" %a in (`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere" -latest -property installationPath`) do "%a\\Common7\\Tools\\VsDevCmd.bat"' > cmdlet.cmd
-        - echo $'devenv Game.sln /Build "Debug|x64"' > cmdlet.cmd
-        - echo $'devenv Game.sln /Build "Profile|x64"' > cmdlet.cmd
-        - echo $'devenv Game.sln /Build "Release|x64"' > cmdlet.cmd
+        - echo $'for /f "usebackq delims=#" %a in (`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere" -latest -property installationPath`) do "%a\\Common7\\Tools\\VsDevCmd.bat"' >> cmdlet.cmd
+        - echo $'devenv Game.sln /Build "Debug|x64"' >> cmdlet.cmd
+        - echo $'devenv Game.sln /Build "Profile|x64"' >> cmdlet.cmd
+        - echo $'devenv Game.sln /Build "Release|x64"' >> cmdlet.cmd
 
         - cmd /c cmdlet.cmd
 
         # Linkin Resources
-        - rm -rf dist/Debug/resources
-        - rm -rf dist/Profile/resources
-        - rm -rf dist/Release/resources
-        - ln -sfrn resources dist/Debug/resources
-        - ln -sfrn resources dist/Profile/resources
-        - ln -sfrn resources dist/Release/resources
+        #- rm -rf dist/Debug/resources
+        - cmd /c "IF EXIST .\dist\Debug\resources del /f /q /s .\dist\Debug\resources && rmdir /q /s .\dist\Debug\resources"
+        #- rm -rf dist/Profile/resources
+        - cmd /c "IF EXIST .\dist\Profile\resources del /f /q /s .\dist\Profile\resources && rmdir /q /s .\dist\Profile\resources"
+        #- rm -rf dist/Release/resources
+        - cmd /c "IF EXIST .\dist\Release\resources del /f /q /s .\dist\Release\resources && rmdir /q /s .\dist\Release\resources"
+        #- ln -sfrn resources dist/Debug/resources
+        - cmd /c "mklink /j .\dist\Debug\resources .\resources"
+        #- ln -sfrn resources dist/Profile/resources
+        - cmd /c "mklink /j .\dist\Profile\resources .\resources"
+        #- ln -sfrn resources dist/Release/resources
+        - cmd /c "mklink /j .\dist\Release\resources .\resources"
     
     artifacts:
         name: Ember-$CI_COMMIT_REF_NAME
