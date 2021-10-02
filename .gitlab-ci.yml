@@ -30,15 +30,15 @@ build.windows.mscv:
         # Copying - Debug
         - cmake -E copy_if_different "$VULKAN_SDK/Third-Party/Bin/SDL2.dll" dist/Debug/
         - cmake -E copy_if_different library/bin/assimp/Debug/assimp-vc142-mtd.dll dist/Debug/
-        - cmake -E copy_if_different library/bin/assimp/Debug/assimp-vc142-mtd.dpb dist/Debug/
+        - cmake -E copy_if_different library/bin/assimp/Debug/assimp-vc142-mtd.pdb dist/Debug/
         - cmake -E copy_if_different library/bin/vorbis/Debug/ogg.dll dist/Debug/
-        - cmake -E copy_if_different library/bin/vorbis/Debug/ogg.dpb dist/Debug/
+        - cmake -E copy_if_different library/bin/vorbis/Debug/ogg.pdb dist/Debug/
         - cmake -E copy_if_different library/bin/vorbis/Debug/vorbis.dll dist/Debug/
-        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbis.dpb dist/Debug/
+        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbis.pdb dist/Debug/
         - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisenc.dll dist/Debug/
-        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisenc.dpb dist/Debug/
+        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisenc.pdb dist/Debug/
         - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisfile.dll dist/Debug/
-        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisfile.dpb dist/Debug/
+        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisfile.pdb dist/Debug/
         - cmake -E copy_if_different library/bin/gtest/Debug/gtestd.pdb dist/Debug/
         - cmake -E copy_if_different library/bin/gtest/Debug/gtest_maind.pdb dist/Debug/
         - cmake -E copy_if_different library/bin/gtest/Debug/gmockd.pdb dist/Debug/
