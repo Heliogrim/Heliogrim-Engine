@@ -1,44 +1,91 @@
-build:
+variables:
+    GIT_DEPTH: 10
+
+build.windows.mscv:
     stage: build
     tags:
-        - win
+        - windows
         - vulkan
-
+        - amd64
+    
     # Preparation
     before_script:
-        #     - apt update && apt install make autoconf cmake -yqq
-        - mkdir build
-        - cd build
-        - cmake .. -G "Visual Studio 16 2019" "-DUSE_64BIT_BUILD=ON" "-DCMAKE_BUILD_TYPE=Release"
-        - cd ..
-    # Currently: Failed to find: cl.exe        - cmake .. -G "NMake Makefiles JOM" "-DUSE_64_BIT_BUILD=ON"
+        - '[ -e cmdlet.cmd ] && rm cmdlet.cmd'
+        - touch cmdlet.cmd
+        - chmod +x cmdlet.cmd
+        
+        - echo $'for /f "usebackq delims=#" %a in (`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere" -latest -property installationPath`) do "%a\\Common7\\Tools\\VsDevCmd.bat"' > cmdlet.cmd
+        - echo $'msbuild -version' > cmdlet.cmd
+        - echo $'devenv Game.sln /Clean' > cmdlet.cmd
 
+        - cmd /c cmdlet.cmd
+    
     # Process
     script:
-        #        - mkdir build
-        #        - cd build
-        #        - cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER=clang-11 -D CMAKE_CXX_COMPILER=clang++-11 ..
-        #        - cmake --build .
-        - cmake --build ./build --config Release
-
         # Copying
         - mkdir -p dist/Debug
+        - mkdir -p dist/Profile
         - mkdir -p dist/Release
-        - cmake -E copy_if_different library/bin/assimp/Debug/assimp-vc142-mtd.dll dist/Debug/
-        - cmake -E copy_if_different "$VULKAN_SDK/Third-Party/Bin/SDL2.dll" dist/Debug/
-        - cmake -E copy_if_different library/bin/assimp/Release/assimp-vc142-mt.dll dist/Release/
-        - cmake -E copy_if_different "$VULKAN_SDK/Third-Party/Bin/SDL2.dll" dist/Release/
 
-        # Linking Resources
+        # Copying - Debug
+        - cmake -E copy_if_different "$VULKAN_SDK/Third-Party/Bin/SDL2.dll" dist/Debug/
+        - cmake -E copy_if_different library/bin/assimp/Debug/assimp-vc142-mtd.dll dist/Debug/
+        - cmake -E copy_if_different library/bin/assimp/Debug/assimp-vc142-mtd.dpb dist/Debug/
+        - cmake -E copy_if_different library/bin/vorbis/Debug/ogg.dll dist/Debug/
+        - cmake -E copy_if_different library/bin/vorbis/Debug/ogg.dpb dist/Debug/
+        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbis.dll dist/Debug/
+        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbis.dpb dist/Debug/
+        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisenc.dll dist/Debug/
+        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisenc.dpb dist/Debug/
+        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisfile.dll dist/Debug/
+        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisfile.dpb dist/Debug/
+        - cmake -E copy_if_different library/bin/gtest/Debug/gtestd.pdb dist/Debug/
+        - cmake -E copy_if_different library/bin/gtest/Debug/gtest_maind.pdb dist/Debug/
+        - cmake -E copy_if_different library/bin/gtest/Debug/gmockd.pdb dist/Debug/
+        - cmake -E copy_if_different library/bin/gtest/Debug/gmock_maind.pdb dist/Debug/
+        
+        # Copying - Profile
+        - cmake -E copy_if_different "$VULKAN_SDK/Third-Party/Bin/SDL2.dll" dist/Profile/
+        - cmake -E copy_if_different library/bin/assimp/Profile/assimp-vc142-mt.dll dist/Profile/
+        - cmake -E copy_if_different library/bin/vorbis/Profile/ogg.dll dist/Profile/
+        - cmake -E copy_if_different library/bin/vorbis/Profile/vorbis.dll dist/Profile/
+        - cmake -E copy_if_different library/bin/vorbis/Profile/vorbisenc.dll dist/Profile/
+        - cmake -E copy_if_different library/bin/vorbis/Profile/vorbisfile.dll dist/Profile/
+
+        # Copying - Release
+        - cmake -E copy_if_different "$VULKAN_SDK/Third-Party/Bin/SDL2.dll" dist/Release/
+        - cmake -E copy_if_different library/bin/assimp/Release/assimp-vc142-mt.dll dist/Release/
+        - cmake -E copy_if_different library/bin/vorbis/Release/ogg.dll dist/Release/
+        - cmake -E copy_if_different library/bin/vorbis/Release/vorbis.dll dist/Release/
+        - cmake -E copy_if_different library/bin/vorbis/Release/vorbisenc.dll dist/Release/
+        - cmake -E copy_if_different library/bin/vorbis/Release/vorbisfile.dll dist/Release/
+
+        # Building
+        - '[ -e cmdlet.cmd ] && rm cmdlet.cmd'
+        - touch cmdlet.cmd
+        - chmod +x cmdlet.cmd
+
+        - echo $'for /f "usebackq delims=#" %a in (`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere" -latest -property installationPath`) do "%a\\Common7\\Tools\\VsDevCmd.bat"' > cmdlet.cmd
+        - echo $'devenv Game.sln /Build "Debug|x64"' > cmdlet.cmd
+        - echo $'devenv Game.sln /Build "Profile|x64"' > cmdlet.cmd
+        - echo $'devenv Game.sln /Build "Release|x64"' > cmdlet.cmd
+
+        - cmd /c cmdlet.cmd
+
+        # Linkin Resources
         - rm -rf dist/Debug/resources
+        - rm -rf dist/Profile/resources
         - rm -rf dist/Release/resources
         - ln -sfrn resources dist/Debug/resources
+        - ln -sfrn resources dist/Profile/resources
         - ln -sfrn resources dist/Release/resources
-
+    
     artifacts:
-        name: Firefly-$CI_COMMIT_REF_NAME
+        name: Ember-$CI_COMMIT_REF_NAME
         paths:
+            - dist/Debug/
             - dist/Release/
+            - dist/Profile/
         expire_in: 15min
 
 test:
