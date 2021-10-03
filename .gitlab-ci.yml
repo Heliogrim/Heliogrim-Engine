@@ -16,7 +16,8 @@ build.windows.msvc:
         
         - echo $'for /f "usebackq delims=#" %%a in (`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere" -latest -property installationPath`) do call "%%a\\Common7\\Tools\\VsDevCmd.bat"' >> cmdlet.cmd
         - echo $'msbuild -version' >> cmdlet.cmd
-        - echo $'devenv Game.sln /Clean' >> cmdlet.cmd
+        - echo $'msbuild Game.sln -t:Clean' >> cmdlet.cmd
+        #- echo $'devenv Game.sln /Clean' >> cmdlet.cmd
 
         - cmd //c cmdlet.cmd
     
@@ -66,9 +67,12 @@ build.windows.msvc:
         - chmod +x cmdlet.cmd
 
         - echo $'for /f "usebackq delims=#" %%a in (`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere" -latest -property installationPath`) do call "%%a\\Common7\\Tools\\VsDevCmd.bat"' >> cmdlet.cmd
-        - echo $'devenv Game.sln /Build "Debug|x64"' >> cmdlet.cmd
-        - echo $'devenv Game.sln /Build "Profile|x64"' >> cmdlet.cmd
-        - echo $'devenv Game.sln /Build "Release|x64"' >> cmdlet.cmd
+        #- echo $'devenv Game.sln /Build "Debug|x64"' >> cmdlet.cmd
+        - echo $'msbuild Game.sln -t:Build -p:Configuration=Debug;Platform=x64' >> cmdlet.cmd
+        #- echo $'devenv Game.sln /Build "Profile|x64"' >> cmdlet.cmd
+        - echo $'msbuild Game.sln -t:Build -p:Configuration=Profile;Platform=x64' >> cmdlet.cmd
+        #- echo $'devenv Game.sln /Build "Release|x64"' >> cmdlet.cmd
+        - echo $'msbuild Game.sln -t:Build -p:Configuration=Release;Platform=x64' >> cmdlet.cmd
 
         - cmd //c cmdlet.cmd
 
