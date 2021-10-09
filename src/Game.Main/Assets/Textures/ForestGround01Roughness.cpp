@@ -9,7 +9,7 @@ using namespace ember;
 const asset_guid ForestGround01Roughness::guid = generate_asset_guid();
 
 ForestGround01Roughness::ForestGround01Roughness() :
-    Texture(
+    TextureAsset(
         ForestGround01Roughness::guid,
         game::assets::image::ForestGround01Roughness::guid,
         {},

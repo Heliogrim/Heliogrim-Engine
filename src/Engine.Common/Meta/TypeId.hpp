@@ -2,8 +2,8 @@
 
 #include <concepts>
 
-#include "Engine.Common/Types.hpp"
-#include "Engine.Common/Hash/Murmur3.hpp"
+#include "../Types.hpp"
+#include "../Hash/Murmur3.hpp"
 
 namespace ember {
 
@@ -101,7 +101,7 @@ namespace ember {
      */
     template <typename Ty, typename TypeIdType_ = type_id>
     concept HasDynamicType = requires(Ty obj) {
-        { obj.get_typeId() } -> _STD same_as<TypeIdType_>;
+        { obj.get_typeId() } -> std::same_as<TypeIdType_>;
     };
 
     /**

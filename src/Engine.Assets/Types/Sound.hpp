@@ -9,6 +9,9 @@
 namespace ember::engine::assets {
     class Sound :
         public Data<SoundLayout> {
+    public:
+        inline static const asset_type_id type_id { "Sound"_typeId };
+
     protected:
         Sound(cref<asset_guid> guid_);
 

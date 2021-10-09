@@ -7,6 +7,7 @@
 #include <Engine.Resource/File.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Resource/Source/FileSource.hpp>
+#include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
 #ifdef _PROFILING
@@ -14,10 +15,13 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.SFX/Importer/AudioFileTypes.hpp>
 #include <Engine.SFX/Importer/SoundImportType.hpp>
 
 #include "dar.hpp"
+#include "Engine.Event/TickEvent.hpp"
+#include "Engine.Scheduler/Async.hpp"
 
 using namespace ember;
 
@@ -35,6 +39,11 @@ int main() {
     profiling::Profiler::make().startSession("main");
     SCOPED_STOPWATCH_V(__main__stopwatch)
     #endif
+
+    /**
+     *
+     */
+    GlobalEventEmitter::make();
 
     /**
      * Test Case - Files
@@ -93,12 +102,53 @@ int main() {
      */
     Ember::start();
 
+    auto task = engine::scheduler::task::make_repetitive_task([]() {
+
+        // static constexpr double delayFrac = 1. / 60.;
+        static constexpr double delayFrac = 1. / .2;
+        static constexpr u64 delay = delayFrac * 1000000ui64;
+
+        static u64 tmpTick = 0;
+        static _STD chrono::high_resolution_clock::time_point tmpNextTick {
+            _STD chrono::high_resolution_clock::now()
+        };
+
+        const auto now { _STD chrono::high_resolution_clock::now() };
+        if (now >= tmpNextTick) {
+
+            const TickEvent event { tmpTick };
+            GlobalEventEmitter::get()->emit(event);
+
+            tmpNextTick = now + _STD chrono::nanoseconds { delay };
+        }
+
+        return true;
+    });
+
+    engine::scheduler::exec(task);
+
     engine::scheduler::thread::self::sleepFor(5000);
+
+    GlobalEventEmitter::get()->on<TickEvent>([](cref<TickEvent> event_) {
+        DEBUG_MSG("TickEvent")
+    });
 
     /**
      *
      */
     push();
+
+    /**
+     *
+     */
+    {
+        //
+        auto wdb = Ember::assets();
+        auto result = wdb.operator[]<TextureAsset>(game::assets::texture::GrassWild01Albedo::guid);
+
+        assert(result);
+        ptr<TextureAsset> asset = result.value;
+    }
 
     /**
      * Test Case - Watcher
@@ -191,6 +241,11 @@ int main() {
      * @see GameCore::wait()
      */
     Ember::wait();
+
+    /**
+     *
+     */
+    GlobalEventEmitter::destroy();
 
     #ifdef _PROFILING
     __main__stopwatch.stop();

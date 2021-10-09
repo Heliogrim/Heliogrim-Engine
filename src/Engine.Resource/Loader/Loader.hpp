@@ -9,12 +9,12 @@
 
 namespace ember::engine::res {
 
-    template <IsAsset Type_>
+    template <assets::IsAsset Type_>
     struct LoaderOptions;
 
     class __declspec(novtable) LoaderBase {
     public:
-        template <IsAsset AssetType_>
+        template <assets::IsAsset AssetType_>
         friend class Loader;
 
     public:
@@ -59,7 +59,7 @@ namespace ember::engine::res {
         [[nodiscard]] virtual result_type operator()(cref<asset_guid> guid_, ptr<void> options_ = nullptr) = 0;
     };
 
-    template <IsAsset AssetType_>
+    template <assets::IsAsset AssetType_>
     class Loader :
         public LoaderBase {
     public:

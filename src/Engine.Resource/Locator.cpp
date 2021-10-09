@@ -14,14 +14,14 @@ Locator::reference_type Locator::operator=(mref<value_type> other_) noexcept {
 ptr<Source> Locator::get(cref<asset_guid> guid_) const noexcept {
     const auto entry = _mapping.find({ guid_ });
     if (entry != _mapping.cend()) {
-        return entry.value().source;
+        return entry->second;
     }
     return nullptr;
 }
 
 ptr<Source> Locator::insert(cref<asset_guid> guid_, ptr<Source> source_) noexcept {
     const auto entry = static_cast<const map_type>(_mapping).find({ guid_ });
-    const auto prev = entry != _mapping.cend() ? entry.value().source : nullptr;
-    _mapping.insert_or_assign({ guid_, source_ });
+    const auto prev = entry != _mapping.cend() ? entry->second : nullptr;
+    _mapping.insert_or_assign(guid_, source_);
     return prev;
 }

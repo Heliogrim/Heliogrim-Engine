@@ -54,9 +54,24 @@ namespace ember::engine::assets {
          * @date 27.09.2021
          *
          * @param  guid_ Unique identifier.
+         * @param  type_ The type identifier.
          * @param  asset_ (Optional) The asset.
          */
-        AssetDatabaseEntry(cref<asset_guid> guid_, ptr<Asset> asset_ = nullptr) noexcept;
+        AssetDatabaseEntry(cref<asset_guid> guid_, cref<asset_type_id> type_, ptr<Asset> asset_ = nullptr) noexcept;
+
+        /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 03.10.2021
+         *
+         * @tparam AssetType_ Type of the asset.
+         * @param  guid_ Unique identifier.
+         * @param  asset_ (Optional) The asset.
+         */
+        template <IsAsset AssetType_>
+        AssetDatabaseEntry(cref<asset_guid> guid_, ptr<AssetType_> asset_ = nullptr) noexcept :
+            AssetDatabaseEntry(guid_, AssetType_::type_id, asset_) {}
 
         /**
          * Destructor
@@ -102,6 +117,20 @@ namespace ember::engine::assets {
          * @returns A cref&lt;asset_guid&gt;
          */
         [[nodiscard]] cref<asset_guid> guid() const noexcept;
+
+    private:
+        asset_type_id _type;
+
+    public:
+        /**
+         * Get the type identifier
+         *
+         * @author Julius
+         * @date 03.10.2021
+         *
+         * @returns A cref&lt;asset_type_id&gt;
+         */
+        [[nodiscard]] cref<asset_type_id> typeId() const noexcept;
 
     private:
         ptr<Asset> _asset;

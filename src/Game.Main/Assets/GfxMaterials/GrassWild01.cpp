@@ -15,7 +15,7 @@ using namespace ember;
 const asset_guid GrassWild01::guid = generate_asset_guid();
 
 GrassWild01::GrassWild01() :
-    GfxMaterial(
+    GfxMaterialAsset(
         GrassWild01::guid,
         image::GrassWild01Albedo::guid,
         image::GrassWild01AO::guid,

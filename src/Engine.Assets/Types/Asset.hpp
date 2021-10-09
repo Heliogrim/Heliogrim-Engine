@@ -6,7 +6,7 @@
 #include "../AssetGuid.hpp"
 #include "../AssetTypeId.hpp"
 
-namespace ember {
+namespace ember::engine::assets {
 
     /*
                                 Level   Entity	    Serialized<Component>	GfxMaterial	PfxMaterial	SfxMaterial	Texture     Image	    Sound	    Geometry
@@ -44,8 +44,9 @@ namespace ember {
          * @date 09.01.2021
          *
          * @param  guid_ Unique identifier.
+         * @param  type_ The type.
          */
-        Asset(cref<asset_guid> guid_);
+        Asset(cref<asset_guid> guid_, cref<asset_type_id> type_);
 
     public:
         /**
@@ -72,5 +73,22 @@ namespace ember {
          * @returns The unique identifier.
          */
         [[nodiscard]] asset_guid get_guid() const noexcept;
+
+    protected:
+        /**
+         * Type Identifier
+         */
+        asset_type_id _type;
+
+    public:
+        /**
+         * Gets type identifier
+         *
+         * @author Julius
+         * @date 03.10.2021
+         *
+         * @returns The type identifier.
+         */
+        [[nodiscard]] asset_type_id get_typeId() const noexcept;
     };
 }

@@ -57,7 +57,7 @@ namespace ember::engine::assets {
         asset_guid _guid;
 
     private:
-        AssetDatabase::mapping_container::hash_type _hash;
+        _STD size_t _hash;
 
     public:
         /**
@@ -137,15 +137,25 @@ namespace ember::engine::assets {
         /**
          * Inserts a new database entry associated with stored guid
          *
-         * @author Julius
-         * @date 27.09.2021
+         * @param  type_ The type identifier.
+         * @param  asset_ The asset.
+         *
+         * @returns True if it succeeds, false if it fails.
+         */
+        bool insert(cref<asset_type_id> type_, ptr<Asset> asset_) noexcept {
+            return _database->insert(_guid, type_, asset_);
+        }
+
+        /**
+         * Inserts a new database entry associated with stored guid
          *
          * @param  asset_ The asset.
          *
          * @returns True if it succeeds, false if it fails.
          */
+        template <IsAsset AssetType_>
         bool insert(ptr<Asset> asset_) noexcept {
-            return _database->insert(_guid, asset_);
+            return insert(AssetType_::type_id, asset_);
         }
 
     public:

@@ -3,6 +3,6 @@
 
 namespace ember::engine::assets {
 
-    class GeometryLayout :
+    class LandscapeGeometryLayout :
         public DataLayout { };
 }

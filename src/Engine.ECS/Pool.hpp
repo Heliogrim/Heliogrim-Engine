@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "Traits.hpp"
 #include "Storage.hpp"
 
@@ -132,7 +134,6 @@ namespace ember::engine::ecs {
         }
 
     public:
-
         /**
          * Destroys the static instance
          *

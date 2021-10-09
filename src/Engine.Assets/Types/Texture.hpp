@@ -14,9 +14,13 @@ namespace ember::engine::assets {
     public:
         friend class TextureLayout;
 
+    public:
+        inline static const asset_type_id type_id { "Texture"_typeId };
+
     protected:
         Texture(cref<asset_guid> guid_);
 
+    public:
         Texture(cref<asset_guid> guid_, cref<asset_guid> baseImage_, mref<vector<asset_guid>> images_,
             cref<math::uivec3> extent_, cref<gfx::TextureFormat> format_, cref<u32> mipLevel_,
             cref<gfx::TextureType> type_);

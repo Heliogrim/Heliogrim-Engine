@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Ember/Ember.hpp>
 
 #include "Assets/GfxMaterials/ForestGround01.hpp"
@@ -42,48 +43,47 @@ inline void push() {
 
     //
     auto wdb = Ember::assets();
-    auto& db = wdb.__tmp__internal();
 
     //
     using namespace ember::game::assets;
 
     //
-    db.insert(image::ForestGround01Albedo::guid, new image::ForestGround01Albedo {});
-    db.insert(image::ForestGround01AO::guid, new image::ForestGround01AO {});
-    db.insert(image::ForestGround01Cavity::guid, new image::ForestGround01Cavity {});
-    db.insert(image::ForestGround01Displacement::guid, new image::ForestGround01Displacement {});
-    db.insert(image::ForestGround01Gloss::guid, new image::ForestGround01Gloss {});
-    db.insert(image::ForestGround01Normal::guid, new image::ForestGround01Normal {});
-    db.insert(image::ForestGround01Roughness::guid, new image::ForestGround01Roughness {});
-    db.insert(image::ForestGround01Specular::guid, new image::ForestGround01Specular {});
+    wdb.insert(new image::ForestGround01Albedo {});
+    wdb.insert(new image::ForestGround01AO {});
+    wdb.insert(new image::ForestGround01Cavity {});
+    wdb.insert(new image::ForestGround01Displacement {});
+    wdb.insert(new image::ForestGround01Gloss {});
+    wdb.insert(new image::ForestGround01Normal {});
+    wdb.insert(new image::ForestGround01Roughness {});
+    wdb.insert(new image::ForestGround01Specular {});
 
-    db.insert(image::GrassWild01Albedo::guid, new image::GrassWild01Albedo {});
-    db.insert(image::GrassWild01AO::guid, new image::GrassWild01AO {});
-    db.insert(image::GrassWild01Cavity::guid, new image::GrassWild01Cavity {});
-    db.insert(image::GrassWild01Displacement::guid, new image::GrassWild01Displacement {});
-    db.insert(image::GrassWild01Gloss::guid, new image::GrassWild01Gloss {});
-    db.insert(image::GrassWild01Normal::guid, new image::GrassWild01Normal {});
-    db.insert(image::GrassWild01Roughness::guid, new image::GrassWild01Roughness {});
-    db.insert(image::GrassWild01Specular::guid, new image::GrassWild01Specular {});
+    wdb.insert(new image::GrassWild01Albedo {});
+    wdb.insert(new image::GrassWild01AO {});
+    wdb.insert(new image::GrassWild01Cavity {});
+    wdb.insert(new image::GrassWild01Displacement {});
+    wdb.insert(new image::GrassWild01Gloss {});
+    wdb.insert(new image::GrassWild01Normal {});
+    wdb.insert(new image::GrassWild01Roughness {});
+    wdb.insert(new image::GrassWild01Specular {});
 
-    db.insert(texture::ForestGround01Albedo::guid, new texture::ForestGround01Albedo {});
-    db.insert(texture::ForestGround01AO::guid, new texture::ForestGround01AO {});
-    db.insert(texture::ForestGround01Cavity::guid, new texture::ForestGround01Cavity {});
-    db.insert(texture::ForestGround01Displacement::guid, new texture::ForestGround01Displacement {});
-    db.insert(texture::ForestGround01Gloss::guid, new texture::ForestGround01Gloss {});
-    db.insert(texture::ForestGround01Normal::guid, new texture::ForestGround01Normal {});
-    db.insert(texture::ForestGround01Roughness::guid, new texture::ForestGround01Roughness {});
-    db.insert(texture::ForestGround01Specular::guid, new texture::ForestGround01Specular {});
+    wdb.insert(new texture::ForestGround01Albedo {});
+    wdb.insert(new texture::ForestGround01AO {});
+    wdb.insert(new texture::ForestGround01Cavity {});
+    wdb.insert(new texture::ForestGround01Displacement {});
+    wdb.insert(new texture::ForestGround01Gloss {});
+    wdb.insert(new texture::ForestGround01Normal {});
+    wdb.insert(new texture::ForestGround01Roughness {});
+    wdb.insert(new texture::ForestGround01Specular {});
 
-    db.insert(texture::GrassWild01Albedo::guid, new texture::GrassWild01Albedo {});
-    db.insert(texture::GrassWild01AO::guid, new texture::GrassWild01AO {});
-    db.insert(texture::GrassWild01Cavity::guid, new texture::GrassWild01Cavity {});
-    db.insert(texture::GrassWild01Displacement::guid, new texture::GrassWild01Displacement {});
-    db.insert(texture::GrassWild01Gloss::guid, new texture::GrassWild01Gloss {});
-    db.insert(texture::GrassWild01Normal::guid, new texture::GrassWild01Normal {});
-    db.insert(texture::GrassWild01Roughness::guid, new texture::GrassWild01Roughness {});
-    db.insert(texture::GrassWild01Specular::guid, new texture::GrassWild01Specular {});
+    wdb.insert(new texture::GrassWild01Albedo {});
+    wdb.insert(new texture::GrassWild01AO {});
+    wdb.insert(new texture::GrassWild01Cavity {});
+    wdb.insert(new texture::GrassWild01Displacement {});
+    wdb.insert(new texture::GrassWild01Gloss {});
+    wdb.insert(new texture::GrassWild01Normal {});
+    wdb.insert(new texture::GrassWild01Roughness {});
+    wdb.insert(new texture::GrassWild01Specular {});
 
-    db.insert(material::ForestGround01::guid, new material::ForestGround01 {});
-    db.insert(material::GrassWild01::guid, new material::GrassWild01 {});
+    wdb.insert(new material::ForestGround01 {});
+    wdb.insert(new material::GrassWild01 {});
 }

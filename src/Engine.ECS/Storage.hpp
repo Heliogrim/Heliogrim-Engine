@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Common/Collection/HopScotch.hpp>
+#include <unordered_set>
 #include <Engine.Common/Collection/List.hpp>
 #include "Component.hpp"
 #include "Traits.hpp"
@@ -8,22 +8,22 @@
 namespace ember::engine::ecs {
 
     template <typename Ty>
-    FORCEINLINE Ty* construct_inplace(void* destination_) {
+    FORCE_INLINE Ty* construct_inplace(void* destination_) {
         return new(destination_) Ty;
     }
 
     template <typename Ty>
-    FORCEINLINE Ty* construct_inplace(void* destination_, const Ty& source_) {
+    FORCE_INLINE Ty* construct_inplace(void* destination_, const Ty& source_) {
         return new(destination_) Ty(source_);
     }
 
     template <typename Ty>
-    FORCEINLINE Ty* construct_inplace(void* destination_, Ty&& source_) {
+    FORCE_INLINE Ty* construct_inplace(void* destination_, Ty&& source_) {
         return new(destination_) Ty(_STD forward<Ty>(source_));
     }
 
     template <typename Ty>
-    FORCEINLINE void destruct_inplace(Ty* destination_) {
+    FORCE_INLINE void destruct_inplace(Ty* destination_) {
         delete destination_;
     }
 
@@ -1012,7 +1012,7 @@ namespace ember::engine::ecs {
          *
          * @returns An index_type.
          */
-        [[nodiscard]] FORCEINLINE index_type pop_slot() {
+        [[nodiscard]] FORCE_INLINE index_type pop_slot() {
             /**
              * Check whether sequence is available
              */
@@ -1049,7 +1049,7 @@ namespace ember::engine::ecs {
          *
          * @param  idx_ Zero-based index of the.
          */
-        FORCEINLINE void pop_slot(const index_type& idx_) {
+        FORCE_INLINE void pop_slot(const index_type& idx_) {
             /**
              * Find sequence
              */
@@ -1115,7 +1115,7 @@ namespace ember::engine::ecs {
          * @param 		   key_ The key.
          * @param [in,out] value_ The value.
          */
-        FORCEINLINE void place(const index_type& idx_, const key_type& key_, IN value_type&& value_) noexcept {
+        FORCE_INLINE void place(const index_type& idx_, const key_type& key_, IN value_type&& value_) noexcept {
             _keys[idx_] = key_;
             construct_inplace<value_type>(&_values[idx_], _STD forward<value_type>(value_));
         }
@@ -1130,7 +1130,7 @@ namespace ember::engine::ecs {
          * @param 		   key_ The key.
          * @param [in,out] value_ The value.
          */
-        FORCEINLINE void replace(const index_type& idx_, const key_type& key_, IN value_type&& value_) noexcept {
+        FORCE_INLINE void replace(const index_type& idx_, const key_type& key_, IN value_type&& value_) noexcept {
             _keys[idx_] = key_;
             destruct_inplace<value_type>(&_values[idx_]);
             construct_inplace<value_type>(&_values[idx_], _STD forward<value_type>(value_));
@@ -1281,8 +1281,7 @@ namespace ember::engine::ecs {
         };
 
     public:
-        using mapping_container = hopscotch_set<storage_guid_idx_pair, guid_idx_hasher, guid_idx_equal,
-            guid_idx_less, _STD allocator<storage_guid_idx_pair>, 4, true>;
+        using mapping_container = _STD unordered_set<storage_guid_idx_pair, guid_idx_hasher, guid_idx_equal>;
 
     private:
         /**
@@ -1298,7 +1297,6 @@ namespace ember::engine::ecs {
         template <bool Const>
         class storage_key_value_iterator final {
         private:
-
             using this_type = storage_key_value_iterator<Const>;
 
             using key_type = entity_guid;
@@ -2147,7 +2145,7 @@ namespace ember::engine::ecs {
          *
          * @returns A size_t.
          */
-        FORCEINLINE static page_index_type unmask_page_index(const uint64_t masked_) {
+        FORCE_INLINE static page_index_type unmask_page_index(const uint64_t masked_) {
             return static_cast<page_index_type>((masked_ & index_page_mask) >> index_page_shift);
         }
 
@@ -2161,7 +2159,7 @@ namespace ember::engine::ecs {
          *
          * @returns A size_t.
          */
-        FORCEINLINE static value_index_type unmask_value_index(const uint64_t masked_) {
+        FORCE_INLINE static value_index_type unmask_value_index(const uint64_t masked_) {
             return static_cast<value_index_type>(masked_ & index_value_mask);
         }
 
@@ -2175,7 +2173,7 @@ namespace ember::engine::ecs {
          * @param [in,out] page_ The page.
          * @param [in,out] value_ The value.
          */
-        FORCEINLINE static void unmask(IN const uint64_t masked_, OUT uint64_t& page_, OUT uint64_t& value_) {
+        FORCE_INLINE static void unmask(IN const uint64_t masked_, OUT uint64_t& page_, OUT uint64_t& value_) {
             page_ = (masked_ & index_page_mask) >> index_page_shift;
             value_ = (masked_ & index_value_mask);
         }

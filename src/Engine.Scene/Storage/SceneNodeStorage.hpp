@@ -1,8 +1,8 @@
 #pragma once
 
+#include <map>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/HopScotch.hpp>
 #include <Engine.Common/Collection/List.hpp>
 
 namespace ember::engine::scene {
@@ -1451,115 +1451,21 @@ namespace ember::engine::scene {
 
         using storage_page_type = scene_node_storage_page<ValueType, KeyType, value_index_type>;
 
-    private:
-        /**
-         * A storage unique key index pair.
-         *
-         * @author Julius
-         * @date 04.08.2021
-         */
-        struct storage_key_idx_pair {
-            KeyType key;
-            index_type idx;
-        };
-
-        /**
-         * A unique key index hasher.
-         *
-         * @author Julius
-         * @date 04.08.2021
-         */
-        struct key_idx_hasher :
-            private _STD hash<KeyType> {
-            /**
-             * Forward hashing call to KeyType specific hash function
-             *
-             * @author Julius
-             * @date 04.08.2021
-             *
-             * @param  value_ The value.
-             *
-             * @returns The result of the operation.
-             */
-            [[nodiscard]] _STD size_t operator()(cref<storage_key_idx_pair> value_) const {
-                return static_cast<cref<_STD hash<KeyType>>>(*this)(value_.key);
-            }
-        };
-
-        /**
-         * A unique key index equal comparator.
-         *
-         * @author Julius
-         * @date 04.08.2021
-         */
-        struct key_idx_equal :
-            private _STD equal_to<KeyType> {
-
-            /**
-             * Forward equal to call to KeyType specific equality comparison
-             *
-             * @author Julius
-             * @date 16.08.2021
-             *
-             * @param  left_ The left.
-             * @param  right_ The right.
-             *
-             * @returns The result of the operation.
-             */
-            [[nodiscard]] bool operator()(
-                cref<storage_key_idx_pair> left_,
-                cref<storage_key_idx_pair> right_
-            ) const noexcept {
-                return static_cast<cref<_STD equal_to<KeyType>>>(*this)(left_.key, right_.key);
-            }
-        };
-
-        /**
-         * A unique key index less comparator.
-         *
-         * @author Julius
-         * @date 04.08.2021
-         */
-        struct key_idx_less :
-            private _STD less<KeyType> {
-            /**
-             * Forward less call to KeyType specific less comparison
-             *
-             * @author Julius
-             * @date 16.08.2021
-             *
-             * @param  value_ The value.
-             *
-             * @returns The result of the operation.
-             */
-            [[nodiscard]] bool operator()(cref<storage_key_idx_pair> value_) const noexcept {
-                return static_cast<cref<_STD less<KeyType>>>(*this)(value_.key);
-            }
-        };
-
     public:
-        using storage_map_container = hopscotch_set<
-            storage_key_idx_pair,
-            key_idx_hasher,
-            key_idx_equal,
-            key_idx_less,
-            _STD allocator<storage_key_idx_pair>,
-            4,
-            true
-        >;
+        using storage_map_container = _STD map<KeyType, index_type>;
 
     private:
         vector<storage_page_type> _pages;
 
-        constexpr FORCEINLINE static page_index_type unmask_page_index(cref<index_type> masked_) noexcept {
+        constexpr FORCE_INLINE static page_index_type unmask_page_index(cref<index_type> masked_) noexcept {
             return static_cast<page_index_type>((masked_ & index_page_mask) >> index_page_shift);
         }
 
-        constexpr FORCEINLINE static value_index_type unmask_value_index(cref<index_type> masked_) noexcept {
+        constexpr FORCE_INLINE static value_index_type unmask_value_index(cref<index_type> masked_) noexcept {
             return static_cast<value_index_type>(masked_ & index_value_mask);
         }
 
-        constexpr FORCEINLINE static void unmask(
+        constexpr FORCE_INLINE static void unmask(
             IN cref<index_type> masked_,
             OUT ref<page_index_type> page_,
             OUT ref<value_index_type> value_
@@ -1686,12 +1592,9 @@ namespace ember::engine::scene {
     public:
         template <typename ValueType_ = ValueType, _STD enable_if_t<_STD is_default_constructible_v<ValueType_>>>
         [[nodiscard]] _STD pair<ptr<ValueType>, bool> insert(cref<KeyType> key_) {
-            auto ir = _mapping.emplace(storage_key_idx_pair {
-                key_,
-                0
-            });
+            auto ir = _mapping.insert({ key_, 0 });
 
-            ref<storage_key_idx_pair> skip = ir.first.value();
+            auto& skip = *(ir.first);
 
             /**
              * Check whether emplace at mapping failed
@@ -1701,7 +1604,7 @@ namespace ember::engine::scene {
                 /**
                  * If emplace failed, get reference to already existing element
                  */
-                pptr = _pages[unmask_page_index(skip.idx)].value_at(unmask_value_index(skip.idx));
+                pptr = _pages[unmask_page_index(skip.second)].value_at(unmask_value_index(skip.second));
             } else {
                 /**
                  * If emplace succeeded, default construct element in page compressed storage
@@ -1711,24 +1614,21 @@ namespace ember::engine::scene {
                 /**
                  * Store pidx to mapping entry
                  */
-                skip.idx = pidx;
+                skip.second = pidx;
 
                 /**
                  * Get reference to existing element
                  */
-                pptr = _pages[unmask_page_index(skip.idx)].value_at(unmask_value_index(skip.idx));
+                pptr = _pages[unmask_page_index(skip.second)].value_at(unmask_value_index(skip.second));
             }
 
             return _STD make_pair(pptr, ir.second);
         }
 
         [[nodiscard]] _STD pair<ptr<ValueType>, bool> insert(cref<KeyType> key_, mref<ValueType> value_) {
-            auto ir = _mapping.emplace(storage_key_idx_pair {
-                key_,
-                0
-            });
+            auto ir = _mapping.insert({ key_, 0 });
 
-            ref<storage_key_idx_pair> skip = ir.first.value();
+            auto& skip = *(ir.first);
 
             /**
              * Check whether emplace at mapping failed
@@ -1738,7 +1638,7 @@ namespace ember::engine::scene {
                 /**
                  * If emplace failed, get reference to already existing element
                  */
-                pptr = _pages[unmask_page_index(skip.idx)].value_at(unmask_value_index(skip.idx));
+                pptr = _pages[unmask_page_index(skip.second)].value_at(unmask_value_index(skip.second));
             } else {
                 /**
                  * If emplace succeeded, move construct element in page compressed storage
@@ -1748,24 +1648,21 @@ namespace ember::engine::scene {
                 /**
                  * Store pidx to mapping entry
                  */
-                skip.idx = pidx;
+                skip.second = pidx;
 
                 /**
                  * Get reference to stored element
                  */
-                pptr = _pages[unmask_page_index(skip.idx)].value_at(unmask_value_index(skip.idx));
+                pptr = _pages[unmask_page_index(skip.second)].value_at(unmask_value_index(skip.second));
             }
 
             return _STD make_pair(pptr, ir.second);
         }
 
         [[nodiscard]] ref<ValueType> insert_or_assign(cref<KeyType> key_, mref<ValueType> value_) {
-            auto ir = _mapping.emplace(storage_key_idx_pair {
-                key_,
-                0
-            });
+            auto ir = _mapping.insert({ key_, 0 });
 
-            ref<storage_key_idx_pair> skip = ir.first.value();
+            auto& skip = *(ir.first);
 
             /**
              * Check whether emplace at mapping failed
@@ -1775,17 +1672,17 @@ namespace ember::engine::scene {
                 /**
                  * If emplace failed, replace already existing element
                  */
-                ref<storage_page_type> page = _pages[unmask_page_index(skip.idx)];
+                ref<storage_page_type> page = _pages[unmask_page_index(skip.second)];
 
                 /**
                  * Replace existing key-value pair
                  */
-                page.replace(unmask_value_index(skip.idx), key_, _STD forward<ValueType>(value_));
+                page.replace(unmask_value_index(skip.second), key_, _STD forward<ValueType>(value_));
 
                 /**
                  * Get reference to stored element
                  */
-                pptr = page.value_at(unmask_value_index(skip.idx));
+                pptr = page.value_at(unmask_value_index(skip.second));
             } else {
                 /**
                  * If emplace succeeded, move construct element in page compressed storage
@@ -1795,12 +1692,12 @@ namespace ember::engine::scene {
                 /**
                  * Store pidx to mapping entry
                  */
-                skip.idx = pidx;
+                skip.second = pidx;
 
                 /**
                  * Get reference to stored element
                  */
-                pptr = _pages[unmask_page_index(skip.idx)].value_at(unmask_value_index(skip.idx));
+                pptr = _pages[unmask_page_index(skip.second)].value_at(unmask_value_index(skip.second));
             }
 
             return *pptr;
@@ -1817,13 +1714,13 @@ namespace ember::engine::scene {
          * @returns A const ptr&lt;ValueType&gt;
          */
         [[nodiscard]] const ptr<ValueType> get(cref<KeyType> key_) const noexcept {
-            typename storage_map_container::const_iterator it = _mapping.find(storage_key_idx_pair { key_, 0 });
+            typename storage_map_container::const_iterator it = _mapping.find(key_);
 
             if (it == _mapping.cend()) {
                 return nullptr;
             }
 
-            return _pages[unmask_page_index(it.value().idx)].value_at(unmask_value_index(it.value().idx));
+            return _pages[unmask_page_index((*it).second)].value_at(unmask_value_index((*it).second));
         }
 
         /**
@@ -1837,13 +1734,13 @@ namespace ember::engine::scene {
          * @returns A ptr&lt;ValueType&gt;
          */
         [[nodiscard]] ptr<ValueType> get(cref<KeyType> key_) noexcept {
-            typename storage_map_container::const_iterator it = _mapping.find(storage_key_idx_pair { key_, 0 });
+            typename storage_map_container::const_iterator it = _mapping.find(key_);
 
             if (it == _mapping.end()) {
                 return nullptr;
             }
 
-            return _pages[unmask_page_index(it.value().idx)].value_at(unmask_value_index(it.value().idx));
+            return _pages[unmask_page_index(it.value().second)].value_at(unmask_value_index(it.value().second));
         }
 
         /**
@@ -1857,7 +1754,7 @@ namespace ember::engine::scene {
          * @param  key_ The key.
          */
         void erase(cref<KeyType> key_) {
-            typename storage_map_container::const_iterator it = _mapping.find(storage_key_idx_pair { key_, 0 });
+            typename storage_map_container::const_iterator it = _mapping.find(key_);
 
             /**
              * If key_ does not exist, throw
@@ -1870,12 +1767,12 @@ namespace ember::engine::scene {
             /**
              * Get mutation reference to storage page
              */
-            ref<storage_page_type> page = _pages[unmask_page_index(it.value().idx)];
+            ref<storage_page_type> page = _pages[unmask_page_index(it.value().second)];
 
             /**
              * Erase key-value pair from storage page
              */
-            page.erase(unmask_value_index(it.value().idx));
+            page.erase(unmask_value_index(it.value().second));
 
             /**
              * Tidy mapping

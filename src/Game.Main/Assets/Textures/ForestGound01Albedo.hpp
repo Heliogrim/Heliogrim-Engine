@@ -1,10 +1,10 @@
 #pragma once
-#include <Engine.Assets/Types/Texture.hpp>
+#include <Ember/TextureAsset.hpp>
 
 namespace ember::game::assets::texture {
 
     class ForestGround01Albedo :
-        public engine::assets::Texture {
+        public TextureAsset {
     public:
         static const asset_guid guid;
 

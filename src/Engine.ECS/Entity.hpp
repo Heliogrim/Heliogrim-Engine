@@ -299,7 +299,7 @@ namespace ember::engine::ecs {
          * @tparam _First Type of the first.
          */
         template <typename _First>
-        FORCEINLINE void record_unpack() {
+        FORCE_INLINE void record_unpack() {
             DynamicEntity::record<_First>();
         }
 
@@ -311,7 +311,7 @@ namespace ember::engine::ecs {
          * @tparam Pack Type of the pack.
          */
         template <typename _First, typename _Second, typename... Pack>
-        FORCEINLINE void record_unpack() {
+        FORCE_INLINE void record_unpack() {
             DynamicEntity::record<_First>();
             value_type::template record_unpack<_Second, Pack...>();
         }
