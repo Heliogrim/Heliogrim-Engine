@@ -25,9 +25,6 @@
     <Filter Include="Headerdateien\Concurrent">
       <UniqueIdentifier>{2c15f327-ea2d-4fcf-b2cc-71b929214358}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Event">
-      <UniqueIdentifier>{37c5f927-b189-4505-82eb-6bcb69d47bee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Memory">
       <UniqueIdentifier>{d7fb70d8-697c-46fd-97c7-24301cbf6ad0}</UniqueIdentifier>
     </Filter>
@@ -67,6 +64,9 @@
     <Filter Include="Quelldateien\Profiling">
       <UniqueIdentifier>{c3472840-be14-470d-b92d-bc18239ac3b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Collection\HopScotch">
+      <UniqueIdentifier>{0d4e1ae5-9e9b-4918-b843-4a0bedd0e682}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Common\stdafx.h">
@@ -76,9 +76,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\Collection\Array.hpp">
-      <Filter>Headerdateien\Collection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch.hpp">
       <Filter>Headerdateien\Collection</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\Collection\List.hpp">
@@ -119,12 +116,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Promise.hpp">
       <Filter>Headerdateien\Concurrent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Common\Event\Event.hpp">
-      <Filter>Headerdateien\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Common\Event\EventEmitter.hpp">
-      <Filter>Headerdateien\Event</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\Memory\DbgMemoryStats.hpp">
       <Filter>Headerdateien\Memory</Filter>
@@ -215,6 +206,30 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\Profiling\Profiler.hpp">
       <Filter>Headerdateien\Profiling</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\GrowthPolicy.hpp">
+      <Filter>Headerdateien\Collection\HopScotch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Hash.hpp">
+      <Filter>Headerdateien\Collection\HopScotch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Set.hpp">
+      <Filter>Headerdateien\Collection\HopScotch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Map.hpp">
+      <Filter>Headerdateien\Collection\HopScotch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Bucket.hpp">
+      <Filter>Headerdateien\Collection\HopScotch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\HopScotch.hpp">
+      <Filter>Headerdateien\Collection\HopScotch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\BytellHashMap.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\FlatHashMap.hpp">
+      <Filter>Headerdateien\Collection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

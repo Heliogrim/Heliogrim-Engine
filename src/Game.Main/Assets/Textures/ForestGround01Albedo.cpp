@@ -10,7 +10,7 @@ using namespace ember;
 const asset_guid ForestGround01Albedo::guid = generate_asset_guid();
 
 ForestGround01Albedo::ForestGround01Albedo() :
-    Texture(
+    TextureAsset(
         ForestGround01Albedo::guid,
         game::assets::image::ForestGround01Albedo::guid,
         {},

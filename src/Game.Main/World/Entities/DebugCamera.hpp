@@ -1,7 +1,6 @@
 #pragma once
 #include <Ember/World/TypedEntity.hpp>
-
-#include "Engine.ECS.Subsystem/Reflection/EntityReflector.hpp"
+#include <Engine.ECS.Subsystem/Reflection/EntityReflector.hpp>
 
 using namespace ember;
 

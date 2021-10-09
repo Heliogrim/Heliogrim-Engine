@@ -1,8 +1,8 @@
 ﻿#pragma once
 
+#include <map>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/HopScotch.hpp>
 
 #include "Source/Source.hpp"
 
@@ -102,10 +102,7 @@ namespace ember::engine::res {
         reference_type operator=(mref<value_type> other_) noexcept;
 
     private:
-        using map_type = hopscotch_set<
-            key_value_pair, kv_hasher, kv_equal, kv_less,
-            _STD allocator<key_value_pair>, 4, true
-        >;
+        using map_type = _STD map<asset_guid, ptr<Source>>;
 
         map_type _mapping;
 

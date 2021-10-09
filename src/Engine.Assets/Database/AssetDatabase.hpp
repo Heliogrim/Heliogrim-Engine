@@ -1,7 +1,7 @@
 #pragma once
 
+#include <unordered_set>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/HopScotch.hpp>
 #include <Engine.Utils/_CTRL.hpp>
 
 #include "AssetDatabaseEntry.hpp"
@@ -25,15 +25,11 @@ namespace ember::engine::assets {
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
-        using mapping_container = hopscotch_set<
+        using mapping_container = _STD unordered_set<
             AssetDatabaseEntry,
             _STD hash<AssetDatabaseEntry>,
             _STD equal_to<AssetDatabaseEntry>,
-            _STD less<AssetDatabaseEntry>,
-            _STD allocator<AssetDatabaseEntry>,
-            4,
-            true,
-            hopscotch::exp2_growth_policy<>
+            _STD allocator<AssetDatabaseEntry>
         >;
 
     public:
@@ -103,11 +99,39 @@ namespace ember::engine::assets {
          * @date 27.09.2021
          *
          * @param  guid_ Unique identifier.
+         * @param  type_ The type identifier.
          * @param  asset_ The asset.
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool insert(cref<asset_guid> guid_, ptr<Asset> asset_) noexcept;
+        bool insert(cref<asset_guid> guid_, cref<asset_type_id> type_, ptr<Asset> asset_) noexcept;
+
+        /**
+         * Inserts a new database entry
+         *
+         * @tparam AssetType_ Type of the asset type.
+         * @param  guid_ Unique identifier.
+         * @param  asset_ (Optional) The asset.
+         *
+         * @returns True if it succeeds, false if it fails.
+         */
+        template <IsAsset AssetType_>
+        bool insert(cref<asset_guid> guid_, const ptr<AssetType_> asset_ = nullptr) noexcept {
+            return insert(guid_, AssetType_::type_id, asset_);
+        }
+
+        /**
+         * Inserts a new database entry
+         *
+         * @tparam AssetType_ Type of the asset type.
+         * @param  asset_ The asset.
+         *
+         * @returns True if it succeeds, false if it fails.
+         */
+        template <IsAsset AssetType_>
+        bool insert(ptr<AssetType_> asset_) noexcept {
+            return insert(asset_->get_guid(), AssetType_::type_id, asset_);
+        }
 
     public:
         /**

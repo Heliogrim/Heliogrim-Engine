@@ -9,9 +9,13 @@ namespace ember::engine::assets {
     public:
         friend class GfxMaterialLayout;
 
+    public:
+        inline static const asset_type_id type_id { "GfxMaterial"_typeId };
+
     protected:
         GfxMaterial(cref<asset_guid> guid_);
 
+    public:
         GfxMaterial(cref<asset_guid> guid_, cref<asset_guid> albedo_, cref<asset_guid> ao_, cref<asset_guid> cavity_,
             cref<asset_guid> displacement_, cref<asset_guid> gloss_, cref<asset_guid> normal_,
             cref<asset_guid> roughness_, cref<asset_guid> specular_);

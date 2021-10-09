@@ -15,7 +15,7 @@ using namespace ember;
 const asset_guid ForestGround01::guid = generate_asset_guid();
 
 ForestGround01::ForestGround01() :
-    GfxMaterial(
+    GfxMaterialAsset(
         ForestGround01::guid,
         image::ForestGround01Albedo::guid,
         image::ForestGround01AO::guid,

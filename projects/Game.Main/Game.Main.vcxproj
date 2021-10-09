@@ -67,7 +67,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
     <TargetName>$(SolutionName)</TargetName>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
@@ -101,7 +100,6 @@
       <SubSystem>Console</SubSystem>
       <AdditionalOptions>
       </AdditionalOptions>
-      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

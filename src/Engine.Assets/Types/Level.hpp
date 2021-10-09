@@ -11,6 +11,9 @@ namespace ember::engine::assets {
     public:
         friend class LevelLayout;
 
+    public:
+        inline static const asset_type_id type_id { "Level"_typeId };
+
     protected:
         Level(cref<asset_guid> guid_);
 

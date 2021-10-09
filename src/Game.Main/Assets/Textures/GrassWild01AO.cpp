@@ -9,7 +9,7 @@ using namespace ember;
 const asset_guid GrassWild01AO::guid = generate_asset_guid();
 
 GrassWild01AO::GrassWild01AO() :
-    Texture(
+    TextureAsset(
         GrassWild01AO::guid,
         game::assets::image::GrassWild01AO::guid,
         {},

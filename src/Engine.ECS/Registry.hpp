@@ -1,4 +1,8 @@
 #pragma once
+
+#include <Engine.Common/Collection/BytellHashMap.hpp>
+#include <Engine.Common/Make.hpp>
+
 #include "Traits.hpp"
 #include "Pool.hpp"
 
@@ -144,7 +148,6 @@ namespace ember::engine::ecs {
         }
 
     public:
-
         /**
          * Unsafe get of a component reference
          *
@@ -205,6 +208,6 @@ namespace ember::engine::ecs {
 
     private:
         static this_type _this;
-        _STD unordered_map<type_id, void*> _pools;
+        ska::bytell_hash_map<type_id, void*> _pools;
     };
 }

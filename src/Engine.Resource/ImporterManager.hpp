@@ -1,43 +1,12 @@
 #pragma once
+#include <map>
 #include <Engine.Common/Cast.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/HopScotch.hpp>
 
 #include "FileTypeId.hpp"
 #include "Importer/Importer.hpp"
 
 namespace ember::engine::res {
-
-    namespace {
-
-        struct fileType_importer_pair {
-            FileTypeId fileTypeId;
-            ptr<ImporterBase> importer;
-        };
-
-        struct fileType_importer_hasher :
-            private _STD hash<FileTypeId> {
-            [[nodiscard]] _STD size_t operator()(cref<fileType_importer_pair> value_) const {
-                return static_cast<cref<_STD hash<FileTypeId>>>(*this)(value_.fileTypeId);
-            }
-        };
-
-        struct fileType_importer_equal :
-            private _STD equal_to<FileTypeId> {
-            [[nodiscard]] bool operator()(cref<fileType_importer_pair> left_,
-                cref<fileType_importer_pair> right_) const {
-                return static_cast<cref<_STD equal_to<FileTypeId>>>(*this)(left_.fileTypeId, right_.fileTypeId);
-            }
-        };
-
-        struct fileType_importer_less :
-            private _STD less<FileTypeId> {
-            [[nodiscard]] bool operator()(cref<fileType_importer_pair> left_,
-                cref<fileType_importer_pair> right_) const {
-                return static_cast<cref<_STD less<FileTypeId>>>(*this)(left_.fileTypeId, right_.fileTypeId);
-            }
-        };
-    }
 
     class ImporterManager {
     public:
@@ -72,9 +41,9 @@ namespace ember::engine::res {
         void tidy();
 
     private:
-        using map_type = hopscotch_set<
-            fileType_importer_pair, fileType_importer_hasher, fileType_importer_equal, fileType_importer_less,
-            _STD allocator<fileType_importer_pair>, 4, true
+        using map_type = std::map<
+            FileTypeId,
+            ptr<ImporterBase>
         >;
 
         map_type _mapping;

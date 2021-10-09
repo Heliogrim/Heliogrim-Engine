@@ -1,11 +1,16 @@
 #include "AssetDatabase.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "AssetDatabaseQuery.hpp"
 
 using namespace ember::engine::assets;
 using namespace ember;
 
-AssetDatabase::AssetDatabase() noexcept = default;
+AssetDatabase::AssetDatabase() noexcept :
+    _mapping() {}
 
 AssetDatabase::~AssetDatabase() noexcept {
 
@@ -22,7 +27,7 @@ bool AssetDatabase::has(cref<asset_guid> guid_) const noexcept {
     SCOPED_STOPWATCH
     _SCTRL_SGATE(_mtx);
 
-    const auto pos = _mapping.find({ guid_ });
+    const auto pos = _mapping.find({ guid_, asset_type_id { 0 }, nullptr });
     return pos != _mapping.cend();
 }
 
@@ -31,20 +36,20 @@ ptr<Asset> AssetDatabase::operator[](cref<asset_guid> guid_) const {
     SCOPED_STOPWATCH
     _SCTRL_SGATE(_mtx);
 
-    const auto pos = _mapping.find({ guid_ });
+    const auto pos = _mapping.find({ guid_, asset_type_id { 0 } });
     if (pos == _mapping.cend()) {
         throw _STD runtime_error(R"(Can not find AssetDatabaseEntry by given asset_guid.)");
     }
-    return pos.value().asset();
+    return (*pos).asset();
 }
 
-bool AssetDatabase::insert(cref<asset_guid> guid_, const ptr<Asset> asset_) noexcept {
+bool AssetDatabase::insert(cref<asset_guid> guid_, cref<asset_type_id> type_, const ptr<Asset> asset_) noexcept {
 
     SCOPED_STOPWATCH
     _SCTRL_GATE(_mtx);
 
-    AssetDatabaseEntry entry { guid_, asset_ };
-    const auto pos = _mapping.insert_or_assign(_STD move(entry));
+    AssetDatabaseEntry entry { guid_, type_, asset_ };
+    const auto pos = _mapping.insert(_STD move(entry));
 
     // TODO: Rewrite
     return true;
@@ -55,13 +60,13 @@ ptr<Asset> AssetDatabase::remove(cref<asset_guid> guid_) noexcept {
     SCOPED_STOPWATCH
     _SCTRL_GATE(_mtx);
 
-    const auto pos = _mapping.find({ guid_ });
+    auto pos = _mapping.find({ guid_, asset_type_id { 0 }, nullptr });
 
     if (pos == _mapping.end()) {
         return nullptr;
     }
 
-    const auto old { _STD move(pos.value()) };
+    const auto old { _STD move(*const_cast<ptr<AssetDatabaseEntry>>(pos.operator->())) };
     _mapping.erase(pos);
 
     return old.asset();

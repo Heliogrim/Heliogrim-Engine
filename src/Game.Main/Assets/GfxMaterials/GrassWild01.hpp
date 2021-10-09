@@ -1,10 +1,12 @@
 #pragma once
-#include <Engine.Assets/Types/GfxMaterial.hpp>
+
+#include <Ember/GfxMaterialAsset.hpp>
+#include <Engine.Assets/AssetGuid.hpp>
 
 namespace ember::game::assets::material {
 
     class GrassWild01 :
-        public engine::assets::GfxMaterial {
+        public GfxMaterialAsset {
     public:
         static const asset_guid guid;
 

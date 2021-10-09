@@ -1,16 +1,16 @@
 #pragma once
-#include <Engine.Assets/Types/Image.hpp>
+#include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
 
     class ForestGround01Albedo :
-        public engine::assets::Image {
+        public ImageAsset {
     public:
         inline static const asset_guid guid = generate_asset_guid();
 
     public:
         ForestGround01Albedo() :
-            Image(ForestGround01Albedo::guid) {}
+            ImageAsset(ForestGround01Albedo::guid) {}
     };
 
 }

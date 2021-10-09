@@ -48,7 +48,7 @@ namespace ember {
          *
          * @param  initial_ The initial.
          */
-        Flag(const Ty& initial_) noexcept :
+        constexpr Flag(const Ty& initial_) noexcept :
             unwrap(static_cast<value_type>(initial_)) {}
 
         /**
@@ -174,6 +174,20 @@ namespace ember {
         Flag& operator=(const Ty& other_) noexcept {
             unwrap = static_cast<value_type>(other_);
             return *this;
+        }
+
+        /**
+         * Equality operator
+         *
+         * @author Julius
+         * @date 06.10.2021
+         *
+         * @param  value_ The value.
+         *
+         * @returns True if the parameters are considered equivalent.
+         */
+        [[nodiscard]] bool operator==(const Ty& value_) noexcept {
+            return value_ == static_cast<Ty>(unwrap);
         }
 
         /** The unwrap */

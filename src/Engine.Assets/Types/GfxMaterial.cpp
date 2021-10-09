@@ -4,12 +4,12 @@ using namespace ember::engine::assets;
 using namespace ember;
 
 GfxMaterial::GfxMaterial(cref<asset_guid> guid_) :
-    Data(guid_) {}
+    Data(guid_, GfxMaterial::type_id) {}
 
 GfxMaterial::GfxMaterial(cref<asset_guid> guid_, cref<asset_guid> albedo_, cref<asset_guid> ao_,
     cref<asset_guid> cavity_, cref<asset_guid> displacement_, cref<asset_guid> gloss_, cref<asset_guid> normal_,
     cref<asset_guid> roughness_, cref<asset_guid> specular_) :
-    Data(guid_),
+    Data(guid_, GfxMaterial::type_id),
     _albedo(albedo_),
     _ao(ao_),
     _cavity(cavity_),

@@ -10,6 +10,7 @@
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.SFX/Audio.hpp>
 #include <Engine.Assets/Database/AssetDatabase.hpp>
+#include <Engine.Assets/AssetFactory.hpp>
 
 using namespace ember;
 
@@ -45,6 +46,7 @@ void Ember::start() {
 
     {
         static_assets = make_sptr<engine::assets::AssetDatabase>();
+        engine::assets::AssetFactory::make(static_assets.get());
     }
 
     /*

@@ -10,14 +10,14 @@ ImporterManager::~ImporterManager() noexcept {
 void ImporterManager::tidy() {
 
     for (const auto& entry : _mapping) {
-        delete entry.importer;
+        delete entry.second;
     }
 
     _mapping.clear();
 }
 
 bool ImporterManager::registerImporter(cref<FileTypeId> fileTypeId_, ptr<ImporterBase> importer_) noexcept {
-    return _mapping.emplace({ fileTypeId_, importer_ }).second;
+    return _mapping.insert({ fileTypeId_, importer_ }).second;
 }
 
 bool ImporterManager::unregisterImporter(ptr<ImporterBase> importer_) noexcept {
@@ -30,13 +30,13 @@ bool ImporterManager::unregisterImporter(cref<FileTypeId> fileTypeId_) noexcept 
 
 ptr<ImporterBase> ImporterManager::importer(cref<FileTypeId> fileType_, cref<File> file_) const {
 
-    auto mapped = _mapping.find({ fileType_, nullptr });
+    auto mapped = _mapping.find(fileType_);
     if (mapped == _mapping.cend()) {
         return nullptr;
     }
 
-    if (mapped.value().importer->canImport(fileType_, file_)) {
-        return mapped.value().importer;
+    if (mapped->second->canImport(fileType_, file_)) {
+        return mapped->second;
     }
 
     return nullptr;
