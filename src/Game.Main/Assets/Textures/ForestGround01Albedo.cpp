@@ -4,15 +4,13 @@
 
 #include "ForestGound01Albedo.hpp"
 
-using namespace ember::game::assets::texture;
+using namespace ember::game::assets;
 using namespace ember;
 
-const asset_guid ForestGround01Albedo::guid = generate_asset_guid();
-
-ForestGround01Albedo::ForestGround01Albedo() :
+texture::ForestGround01Albedo::ForestGround01Albedo() :
     TextureAsset(
-        ForestGround01Albedo::guid,
-        game::assets::image::ForestGround01Albedo::guid,
+        texture::ForestGround01Albedo::auto_guid(),
+        game::assets::image::ForestGround01Albedo::auto_guid(),
         {},
         { 0, 0, 0 },
         TextureFormat::eR8G8B8Unorm,

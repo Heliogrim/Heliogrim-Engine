@@ -1,35 +1,38 @@
 #include "Ember.hpp"
 
+#include <Engine.Assets/AssetFactory.hpp>
+#include <Engine.Assets/Database/AssetDatabase.hpp>
 #include <Engine.Common/Exception/NotImplementedException.hpp>
 #include <Engine.ECS/Registry.hpp>
+#include <Engine.Event/BootEvent.hpp>
+#include <Engine.Event/GlobalEventEmitter.hpp>
+#include <Engine.Event/SchedulerBootEvent.hpp>
+#include <Engine.Event/ShutdownEvent.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Network/Network.hpp>
+#include <Engine.PFX/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene/Scene.hpp>
-#include <Engine.Scheduler/Async.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
+#include <Engine.Session/Session.hpp>
 #include <Engine.SFX/Audio.hpp>
-#include <Engine.Assets/Database/AssetDatabase.hpp>
-#include <Engine.Assets/AssetFactory.hpp>
 
 using namespace ember;
-
-static sptr<ember::engine::Audio> static_audio = nullptr;
-static sptr<ember::engine::assets::AssetDatabase> static_assets = nullptr;
-static sptr<ember::engine::Graphics> static_graphics = nullptr;
-static sptr<ember::engine::Network> static_network = nullptr;
-static sptr<ember::engine::ResourceManager> static_resources = nullptr;
 
 ref<Audio> Ember::audio() noexcept {
     throw NotImplementedException();
 }
 
 AssetDatabase Ember::assets() noexcept {
-    return AssetDatabase { static_cast<sptr<void>>(static_assets) };
+    return AssetDatabase {
+        engine::Session::get()->assetDatabase()
+    };
 }
 
-ref<Graphics> Ember::graphics() noexcept {
-    throw NotImplementedException();
+Graphics Ember::graphics() noexcept {
+    return Graphics {
+        engine::Session::get()->graphics()
+    };
 }
 
 ref<Network> Ember::network() noexcept {
@@ -41,91 +44,89 @@ ref<Scheduler> Ember::scheduler() noexcept {
 }
 
 void Ember::start() {
-    engine::scheduler::Scheduler::make();
-    engine::scheduler::Scheduler::get().setup(0);
 
-    {
-        static_assets = make_sptr<engine::assets::AssetDatabase>();
-        engine::assets::AssetFactory::make(static_assets.get());
-    }
-
-    /*
-    engine::scheduler::exec({
-        []() {
-            const auto ptr = ember::engine::ResourceManager::make();
-            static_resources = make_sptr<ember::engine::ResourceManager>(ptr);
-            static_resources->setup();
-            static_resources->schedule();
-        }
-    });
+    /**
+     *
      */
-    // TODO: Refactor so we can execute Resource Setup before rest
-    {
-        const auto ptr = ember::engine::ResourceManager::make();
-        static_resources = sptr<ember::engine::ResourceManager>(ptr);
-        static_resources->setup();
-        static_resources->schedule();
-    }
+    auto session = engine::Session::get();
 
-    engine::scheduler::exec({
-        []() {
-            const auto ptr = ember::engine::Audio::make();
-            static_audio = sptr<ember::engine::Audio>(ptr);
-            static_audio->setup();
-            static_audio->schedule();
-        }
-    });
+    /**
+     *
+     */
+    auto audio = make_ptr<engine::Audio>(session);
+    session->setAudio(audio);
 
-    engine::scheduler::exec({
-        []() {
-            const auto ptr = ember::engine::Graphics::make();
-            static_graphics = sptr<ember::engine::Graphics>(ptr);
-            static_graphics->setup();
-            static_graphics->schedule();
-        }
-    });
+    // auto graphics = make_sptr<engine::Graphics>(static_session.get());
+    auto graphics = engine::Graphics::make(session);
+    session->setGraphics(graphics);
 
-    engine::scheduler::exec({
-        []() {
-            static_network = make_sptr<ember::engine::Network>();
-            static_network->setup();
-            static_network->schedule();
-        }
-    });
+    auto network = make_ptr<engine::Network>(session);
+    session->setNetwork(network);
 
-    engine::scheduler::exec({
-        []() {
-            ember::engine::ecs::registry::make();
-        }
-    });
+    auto scene = make_ptr<engine::scene::Scene>(session);
+    session->setScene(scene);
 
-    engine::scheduler::exec({
-        []() {
-            ember::engine::scene::Scene::make();
-        }
-    });
+    // auto ecs = make_sptr<engine::ecs::registry>(static_session.get());
+    auto ecs = _STD addressof(engine::ecs::registry::make());
+    session->setEcs(ecs);
+
+    auto physics = make_ptr<engine::Physics>(session);
+    session->setPhysics(physics);
+
+    /**
+     *
+     */
+    audio->setup();
+    audio->schedule();
+
+    scene->setup();
+
+    graphics->setup();
+    graphics->schedule();
+
+    physics->setup();
+    physics->schedule();
+
+    network->setup();
+    network->schedule();
 }
 
 void Ember::stop() {
-    engine::scheduler::exec({
-        []() {
-            static_graphics.reset();
-            static_audio.reset();
-            static_network.reset();
-            static_resources.reset();
-            static_assets.reset();
-            ember::engine::scene::Scene::destroy();
-            ember::engine::ecs::registry::destroy();
-        }
-    });
+    /**
+     *
+     */
+    auto session = engine::Session::get();
 
-    // Wait until every task to destruct finished
-    wait();
+    /**
+     *
+     */
+    session->emitter().emit<ShutdownEvent>();
 
-    engine::scheduler::Scheduler::destroy();
+    delete static_cast<ptr<engine::Network>>(session->network());
+    session->setNetwork(nullptr);
+
+    engine::Graphics::destroy();
+    session->setGraphics(nullptr);
+
+    delete static_cast<ptr<engine::Audio>>(session->audio());
+    session->setAudio(nullptr);
+
+    delete static_cast<ptr<engine::Physics>>(session->physics());
+    session->setPhysics(nullptr);
+
+    delete static_cast<ptr<engine::scene::Scene>>(session->scene());
+    session->setScene(nullptr);
+
+    engine::ecs::registry::destroy();
+    session->setEcs(nullptr);
 }
 
-void Ember::wait() { }
+void Ember::wait() {
+    /**
+     *
+     */
+    engine::Session::get()->wait();
+}
 
 ref<world::World> Ember::world() noexcept {
     throw NotImplementedException();

@@ -7,12 +7,10 @@
 using namespace ember::game::assets::texture;
 using namespace ember;
 
-const asset_guid ForestGround01Normal::guid = generate_asset_guid();
-
 ForestGround01Normal::ForestGround01Normal() :
     TextureAsset(
-        ForestGround01Normal::guid,
-        game::assets::image::ForestGround01Normal::guid,
+        ForestGround01Normal::auto_guid(),
+        game::assets::image::ForestGround01Normal::auto_guid(),
         {},
         {},
         TextureFormat::eR8G8B8Unorm,

@@ -6,6 +6,8 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Engine.Session/Session.hpp>
+
 #include "Importer/AudioFileTypes.hpp"
 #include "Importer/FlacImporter.hpp"
 #include "Importer/VorbisImporter.hpp"
@@ -14,27 +16,8 @@
 using namespace ember::engine;
 using namespace ember;
 
-ptr<Audio> Audio::_instance = nullptr;
-
-ptr<Audio> Audio::get() noexcept {
-    return _instance;
-}
-
-ptr<Audio> Audio::make() {
-    if (!_instance) {
-        _instance = new Audio();
-    }
-    return _instance;
-}
-
-void Audio::destroy() noexcept {
-    if (_instance) {
-        delete _instance;
-        _instance = nullptr;
-    }
-}
-
-Audio::Audio() noexcept {}
+Audio::Audio(cref<sptr<Session>> session_) noexcept :
+    _session(session_) {}
 
 Audio::~Audio() noexcept {}
 
@@ -43,7 +26,7 @@ void Audio::setupImporter() {
     SCOPED_STOPWATCH
 
     //
-    auto manager = ResourceManager::make();
+    auto* manager { static_cast<ptr<ResourceManager>>(_session->resourceManager()) };
 
     //
     manager->importer().registerImporter(sfx::AudioFileType::Flac, new sfx::FlacImporter());
@@ -59,3 +42,7 @@ void Audio::setup() {
 }
 
 void Audio::schedule() {}
+
+sptr<Session> Audio::session() const noexcept {
+    return _session;
+}

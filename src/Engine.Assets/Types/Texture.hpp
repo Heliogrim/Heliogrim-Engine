@@ -39,6 +39,6 @@ namespace ember::engine::assets {
         u32 _mipLevel;
 
     private:
-        gfx::TextureType _type;
+        gfx::TextureType _textureType;
     };
 }

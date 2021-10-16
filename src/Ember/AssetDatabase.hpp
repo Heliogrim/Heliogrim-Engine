@@ -20,17 +20,17 @@ namespace ember {
         friend class Ember;
 
     private:
-        AssetDatabase(managed<void> internal_);
+        AssetDatabase(const ptr<void> internal_);
 
     public:
         ~AssetDatabase();
 
     private:
-        managed<void> _internal;
+        const ptr<void> _internal;
 
     public:
         ref<engine::assets::AssetDatabase> __tmp__internal() {
-            return *static_cast<ptr<engine::assets::AssetDatabase>>(_internal.get());
+            return *static_cast<const ptr<engine::assets::AssetDatabase>>(_internal);
         }
 
     public:
@@ -47,7 +47,7 @@ namespace ember {
         [[nodiscard]] bool contains(cref<asset_guid> guid_) const noexcept;
 
     public:
-        [[nodiscard]] AssetDatabaseResult<> operator[](cref<asset_guid> guid_) const;
+        [[nodiscard]] AssetDatabaseResult<Asset> operator[](cref<asset_guid> guid_) const;
 
         template <typename Type_> requires _STD is_base_of_v<Asset, Type_>
         [[nodiscard]] AssetDatabaseResult<Type_> operator[](cref<asset_guid> guid_) const {
@@ -57,11 +57,14 @@ namespace ember {
 
             // Warning: we can't check future state, cause we can't intercept chain
             if (result.flags == AssetDatabaseResultType::eSuccess) {
-                auto* par { static_cast<ptr<Type_>>(result.value) };
-                DEBUG_ASSERT(par->isValidType(), "Invalid type cast.");
+                auto& value { result.value };
+                auto& par { static_cast<Type_&>(value) };
+                DEBUG_ASSERT(par.isValidType(), "Invalid type cast.");
             }
 
-            return result;
+            // TODO: Replace with better solution
+            // Warning: Replace with better solution
+            return *reinterpret_cast<AssetDatabaseResult<Type_>*>(&result);
 
             #else
 
@@ -82,6 +85,18 @@ namespace ember {
          * @returns True if it succeeds, false if it fails.
          */
         bool insert(ptr<Asset> asset_) noexcept;
+
+        /**
+         * Inserts the given asset to database
+         *
+         * @author Julius
+         * @date 06.10.2021
+         *
+         * @param  asset_ The asset.
+         *
+         * @returns True if it succeeds, false if it fails.
+         */
+        static bool autoInsert(ptr<Asset> asset_) noexcept;
 
         /**
          * Erases the given asset from the database and erases internal states

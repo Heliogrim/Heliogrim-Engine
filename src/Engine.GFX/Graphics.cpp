@@ -1,6 +1,5 @@
 #include "Graphics.hpp"
 
-#include <Engine.Resource/FileResource.hpp>
 #include <Engine.Scene/Scene.hpp>
 #include <Engine.Scheduler/Async.hpp>
 
@@ -136,19 +135,20 @@ ptr<Graphics> Graphics::get() noexcept {
     return Graphics::_instance;
 }
 
-ptr<Graphics> Graphics::make() {
+ptr<Graphics> Graphics::make(cref<sptr<Session>> session_) {
     if (!Graphics::_instance) {
-        _instance = new Graphics();
+        _instance = make_ptr<Graphics>(session_);
     }
     return _instance;
 }
 
 void Graphics::destroy() {
-    if (_instance) {
-        delete _instance;
-        _instance = nullptr;
-    }
+    delete _instance;
+    _instance = nullptr;
 }
+
+Graphics::Graphics(cref<sptr<Session>> session_) noexcept :
+    _session(session_) {}
 
 Graphics::~Graphics() {
     tidy();
@@ -161,7 +161,7 @@ void Graphics::setup() {
     /**
      * Prepare other modules
      */
-    _graph = scene::Scene::make()->getOrCreateGraph(GfxSceneGraphTag {});
+    _graph = static_cast<ptr<scene::Scene>>(_session->scene())->getOrCreateGraph(GfxSceneGraphTag {});
 
     /**
      * Create a new application
@@ -172,7 +172,7 @@ void Graphics::setup() {
     /**
      * Create a new Surface (aka. Window)
      */
-    _surface = { &_application };
+    _surface = { _session, &_application };
     _surface.setup();
 
     /**
@@ -378,6 +378,10 @@ void Graphics::tidy() {
 
     _surface.destroy();
     _application.destroy();
+}
+
+sptr<Session> Graphics::session() const noexcept {
+    return _session;
 }
 
 sptr<Device> Graphics::getCurrentDevice() const noexcept {

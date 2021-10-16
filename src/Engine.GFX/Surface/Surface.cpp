@@ -7,12 +7,14 @@
 #include "../__macro.hpp"
 
 using namespace ember::engine::gfx;
+using namespace ember;
 
 Surface::Surface() noexcept :
     _application(nullptr),
     _window(nullptr) {}
 
-Surface::Surface(ptr<Application> application_) :
+Surface::Surface(sptr<Session> session_, ptr<Application> application_) :
+    _session(session_),
     _application(application_),
     _window(nullptr) {}
 
@@ -20,7 +22,8 @@ void Surface::setup() {
 
     SCOPED_STOPWATCH
 
-    const uint32_t width = 1920, height = 1080;
+    // const uint32_t width = 1920, height = 1080;
+    const uint32_t width = 1280, height = 720;
 
     try {
         createWindow(width, height);
@@ -44,7 +47,7 @@ void Surface::destroy() {
     }
 
     if (_window) {
-        SDL_DestroyWindow(_window);
+        _window->destroy().get();
         _window = nullptr;
     }
 }
@@ -69,27 +72,20 @@ Surface::operator vk::SurfaceKHR() const {
 }
 
 vk::SurfaceKHR Surface::createApiSurface() {
-    VkSurfaceKHR surface;
-    if (!SDL_Vulkan_CreateSurface(_window, _application->operator vk::Instance(), &surface)) {
-        throw _STD exception();
-    }
-
-    return surface;
+    return _window->createSurface(*_application);
 }
 
-SDL_Window* Surface::createWindow(const uint32_t width_, const uint32_t height_) {
+ptr<engine::session::Window> Surface::createWindow(const uint32_t width_, const uint32_t height_) {
 
     SCOPED_STOPWATCH
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        std::cout << "Could not initialize SDL." << std::endl;
-        return nullptr;
-    }
+    constexpr auto title = "Project Game - Vulkan C++";
 
-    _window = SDL_CreateWindow("Project Game - Vulkan C++", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_,
-        height_, SDL_WINDOW_VULKAN);
+    _window = _session->makeWindow(title, { width_, height_ });
+    _window->create().get();
+
     if (_window == nullptr) {
-        std::cout << "Could not create SDL window." << std::endl;
+        std::cout << "Could not create window." << std::endl;
         return nullptr;
     }
 

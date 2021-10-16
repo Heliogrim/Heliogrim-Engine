@@ -1,8 +1,10 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Session/Session.hpp>
+
+#include "../TextureFormat.hpp"
 #include "../Application/Application.hpp"
 #include "../Device/Device.hpp"
-#include "../TextureFormat.hpp"
 
 namespace ember::engine::gfx {
 
@@ -26,9 +28,10 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 09.11.2020
          *
+         * @param  session_ The session.
          * @param  application_ The application.
          */
-        Surface(ptr<Application> application_);
+        Surface(sptr<Session> session_, ptr<Application> application_);
 
         /**
          * Destructor
@@ -75,9 +78,10 @@ namespace ember::engine::gfx {
         operator vk::SurfaceKHR() const;
 
     private:
+        sptr<Session> _session;
         ptr<Application> _application;
 
-        SDL_Window* _window;
+        ptr<session::Window> _window;
 
         vk::SurfaceKHR _surface;
 
@@ -102,6 +106,6 @@ namespace ember::engine::gfx {
          *
          * @returns Null if it fails, else the new window.
          */
-        SDL_Window* createWindow(const uint32_t width_, const uint32_t height_);
+        ptr<session::Window> createWindow(const uint32_t width_, const uint32_t height_);
     };
 }

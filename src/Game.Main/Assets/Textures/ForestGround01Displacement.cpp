@@ -7,12 +7,10 @@
 using namespace ember::game::assets::texture;
 using namespace ember;
 
-const asset_guid ForestGround01Displacement::guid = generate_asset_guid();
-
 ForestGround01Displacement::ForestGround01Displacement() :
     TextureAsset(
-        ForestGround01Displacement::guid,
-        game::assets::image::ForestGround01Displacement::guid,
+        ForestGround01Displacement::auto_guid(),
+        game::assets::image::ForestGround01Displacement::auto_guid(),
         {},
         {},
         TextureFormat::eR8G8B8Unorm,

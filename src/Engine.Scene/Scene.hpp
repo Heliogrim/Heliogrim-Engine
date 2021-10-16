@@ -1,4 +1,7 @@
 #pragma once
+
+#include <Engine.Session/Session.hpp>
+
 #include "Graph/SceneGraph.hpp"
 #include "Graph/SceneGraphTag.hpp"
 
@@ -9,49 +12,16 @@ namespace ember::engine::scene {
         using reference_type = ref<Scene>;
         using const_reference_type = ref<const Scene>;
 
-    private:
-        /**
-         * Singleton Instance
-         */
-        static ptr<Scene> _instance;
-
     public:
-        /**
-         * Gets the static internal stored instance
-         *
-         * @author Julius
-         * @date 09.01.2021
-         *
-         * @returns A ptr&lt;Scene&gt;
-         */
-        [[nodiscard]] static ptr<Scene> get() noexcept;
-
-        /**
-         * Gets a static internal stored instance of Scene or creates one
-         *
-         * @author Julius
-         * @date 08.01.2021
-         *
-         * @returns A ptr&lt;Scene&gt;
-         */
-        [[nodiscard]] static ptr<Scene> make();
-
-        /**
-         * Destroys this and flushes static internal stored instance
-         *
-         * @author Julius
-         * @date 08.01.2021
-         */
-        static void destroy() noexcept;
-
-    private:
         /**
          * Default constructor
          *
          * @author Julius
          * @date 22.03.2021
+         *
+         * @param  session_ The session.
          */
-        Scene() noexcept;
+        Scene(cref<sptr<Session>> session_) noexcept;
 
         /**
          * Destructor
@@ -69,6 +39,23 @@ namespace ember::engine::scene {
          * @date 16.08.2021
          */
         void setup();
+
+    private:
+        /**
+         * The session this module is associated with
+         */
+        sptr<Session> _session;
+
+    public:
+        /**
+         * Gets the session this module is associated with
+         *
+         * @author Julius
+         * @date 14.10.2021
+         *
+         * @returns A sptr<Session>
+         */
+        [[nodiscard]] sptr<Session> session() const noexcept;
 
     private:
         /**

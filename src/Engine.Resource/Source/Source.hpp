@@ -104,6 +104,6 @@ namespace ember::engine::res {
          *  
          *  TODO: could be defaulted with promise wrapping sync get call.
          */
-        [[nodiscard]] virtual concurrent::future<async_result_value> get(IN u64 offset_, IN u64 size_) = 0;
+        [[nodiscard]] virtual ember::concurrent::future<async_result_value> get(IN u64 offset_, IN u64 size_) = 0;
     };
 }

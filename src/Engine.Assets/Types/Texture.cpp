@@ -13,4 +13,4 @@ Texture::Texture(cref<asset_guid> guid_, cref<asset_guid> baseImage_, mref<vecto
     _extent(extent_),
     _format(format_),
     _mipLevel(mipLevel_),
-    _type(type_) {}
+    _textureType(type_) {}

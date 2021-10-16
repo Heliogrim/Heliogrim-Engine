@@ -6,12 +6,10 @@
 using namespace ember::game::assets::texture;
 using namespace ember;
 
-const asset_guid ForestGround01Roughness::guid = generate_asset_guid();
-
 ForestGround01Roughness::ForestGround01Roughness() :
     TextureAsset(
-        ForestGround01Roughness::guid,
-        game::assets::image::ForestGround01Roughness::guid,
+        ForestGround01Roughness::auto_guid(),
+        game::assets::image::ForestGround01Roughness::auto_guid(),
         {},
         {},
         TextureFormat::eR8G8B8Unorm,

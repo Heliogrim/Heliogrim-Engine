@@ -12,17 +12,15 @@
 using namespace ember::game::assets::material;
 using namespace ember;
 
-const asset_guid GrassWild01::guid = generate_asset_guid();
-
 GrassWild01::GrassWild01() :
     GfxMaterialAsset(
-        GrassWild01::guid,
-        image::GrassWild01Albedo::guid,
-        image::GrassWild01AO::guid,
-        image::GrassWild01Cavity::guid,
-        image::GrassWild01Displacement::guid,
-        image::GrassWild01Gloss::guid,
-        image::GrassWild01Normal::guid,
-        image::GrassWild01Roughness::guid,
-        image::GrassWild01Specular::guid
+        GrassWild01::auto_guid(),
+        image::GrassWild01Albedo::auto_guid(),
+        image::GrassWild01AO::auto_guid(),
+        image::GrassWild01Cavity::auto_guid(),
+        image::GrassWild01Displacement::auto_guid(),
+        image::GrassWild01Gloss::auto_guid(),
+        image::GrassWild01Normal::auto_guid(),
+        image::GrassWild01Roughness::auto_guid(),
+        image::GrassWild01Specular::auto_guid()
     ) {}

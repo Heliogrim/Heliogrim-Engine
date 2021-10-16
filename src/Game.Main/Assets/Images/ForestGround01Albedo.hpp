@@ -4,13 +4,12 @@
 namespace ember::game::assets::image {
 
     class ForestGround01Albedo :
-        public ImageAsset {
-    public:
-        inline static const asset_guid guid = generate_asset_guid();
-
+        public ImageAsset,
+        public AssetAutoGuid<ForestGround01Albedo> {
     public:
         ForestGround01Albedo() :
-            ImageAsset(ForestGround01Albedo::guid) {}
+            ImageAsset(ForestGround01Albedo::auto_guid()) {}
     };
 
+    AUTO_REGISTER_ASSET(ForestGround01Albedo)
 }

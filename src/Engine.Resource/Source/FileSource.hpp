@@ -118,6 +118,6 @@ namespace ember::engine::res {
     public:
         [[nodiscard]] bool get(u64 offset_, u64 size_, ptr<void> dst_, ref<u64> actualSize_) override;
 
-        [[nodiscard]] concurrent::future<async_result_value> get(u64 offset_, u64 size_) override;
+        [[nodiscard]] ember::concurrent::future<async_result_value> get(u64 offset_, u64 size_) override;
     };
 }

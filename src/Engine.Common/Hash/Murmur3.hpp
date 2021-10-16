@@ -44,7 +44,6 @@ namespace ember::hash {
      * @param 		   seed_ The seed.
      * @param [in,out] dst_ If non-null, destination for the.
      */
-    void murmur3_x64_128(IN const void* RESTRICT data_, IN const u32 length_, IN const u32 seed_,
-        OUT void* RESTRICT dst_);
+    void murmur3_x64_128(IN const void* data_, IN const u32 length_, IN const u32 seed_, OUT void* dst_);
 
 }

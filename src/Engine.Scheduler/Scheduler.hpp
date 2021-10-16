@@ -1,4 +1,5 @@
 #pragma once
+#include "Task/SignaledQueue.hpp"
 #include "Task/Task.hpp"
 #include "Thread/Worker.hpp"
 
@@ -7,6 +8,7 @@ namespace ember::engine::scheduler {
     private:
         using aligned_worker = ALIGNED(thread::Worker, CACHE_LINE_SIZE);
 
+    public:
         /**
          * Default constructor
          *
@@ -15,7 +17,6 @@ namespace ember::engine::scheduler {
          */
         Scheduler() noexcept;
 
-    public:
         /**
          * Destructor
          *
@@ -24,6 +25,50 @@ namespace ember::engine::scheduler {
          */
         ~Scheduler();
 
+    private:
+        /** The instance */
+        static ptr<Scheduler> _instance;
+
+    public:
+        /**
+         * Gets the instance
+         *
+         * @author Julius
+         * @date 13.11.2020
+         *
+         * @returns A reference to a Scheduler.
+         */
+        [[nodiscard]] static Scheduler& get();
+
+        /**
+         * Gets the singleton instance pointer
+         *
+         * @author Julius
+         * @date 13.10.2021
+         *
+         * @returns A pointer to a Scheduler, otherwise nullptr
+         */
+        [[nodiscard]] static ptr<Scheduler> get(_STD nothrow_t) noexcept;
+
+        /**
+         * Create a instance of scheduler and stores it's global static instance
+         *
+         * @author Julius
+         * @date 16.11.2020
+         *
+         * @returns A pointer to a Scheduler.
+         */
+        static ptr<Scheduler> make();
+
+        /**
+         * Destroys this and flushes static internal stored instance
+         *
+         * @author Julius
+         * @date 22.07.2021
+         */
+        static void destroy() noexcept;
+
+    public:
         /**
          * Delays a task_ for ticks_
          *
@@ -81,42 +126,11 @@ namespace ember::engine::scheduler {
          */
         void wait() const;
 
-        /**
-         * Gets the instance
-         *
-         * @author Julius
-         * @date 13.11.2020
-         *
-         * @returns A reference to a Scheduler.
-         */
-        [[nodiscard]] static Scheduler& get();
-
-        /**
-         * Create a instance of scheduler and stores it's global static instance
-         *
-         * @author Julius
-         * @date 16.11.2020
-         *
-         * @returns A reference to a Scheduler.
-         */
-        static Scheduler& make();
-
-        /**
-         * Destroys this and flushes static internal stored instance
-         *
-         * @author Julius
-         * @date 22.07.2021
-         */
-        static void destroy() noexcept;
-
     private:
         /** The shared tasks */
         task::SharedQueue _sharedTasks;
 
         u32 _workerCount;
         aligned_worker* _workers;
-
-        /** The instance */
-        static Scheduler* _instance;
     };
 }

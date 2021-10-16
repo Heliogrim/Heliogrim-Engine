@@ -78,6 +78,9 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Task\TaskType.hpp">
       <Filter>Headerdateien\Task</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Task\SignaledQueue.hpp">
+      <Filter>Headerdateien\Task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scheduler\Queue\SharedTaskPool.cpp">
@@ -102,6 +105,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Task\Task.cpp">
+      <Filter>Quelldateien\Task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Task\SignaledQueue.cpp">
       <Filter>Quelldateien\Task</Filter>
     </ClCompile>
   </ItemGroup>

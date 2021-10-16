@@ -4,10 +4,8 @@
 namespace ember::game::assets::texture {
 
     class ForestGround01Roughness :
-        public TextureAsset {
-    public:
-        static const asset_guid guid;
-
+        public TextureAsset,
+        public AssetAutoGuid<ForestGround01Roughness> {
     public:
         ForestGround01Roughness();
     };

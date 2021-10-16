@@ -2,49 +2,71 @@
 
 #include <Engine.Assets/Database/AssetDatabaseQuery.hpp>
 
+#include "Engine.Session/Session.hpp"
+
 using namespace ember;
 
-AssetDatabase::AssetDatabase(managed<void> internal_) :
+AssetDatabase::AssetDatabase(const ptr<void> internal_) :
     _internal(internal_) {}
 
 AssetDatabase::~AssetDatabase() = default;
 
 bool AssetDatabase::contains(cref<asset_guid> guid_) const noexcept {
 
-    auto& idb { *static_cast<ptr<engine::assets::AssetDatabase>>(_internal.get()) };
+    auto& idb { *static_cast<const ptr<engine::assets::AssetDatabase>>(_internal) };
     auto query { idb.query(guid_) };
 
     return query.exists();
 }
 
-AssetDatabaseResult<> AssetDatabase::operator[](cref<asset_guid> guid_) const {
+AssetDatabaseResult<Asset> AssetDatabase::operator[](cref<asset_guid> guid_) const {
 
-    auto& idb { *static_cast<ptr<engine::assets::AssetDatabase>>(_internal.get()) };
+    auto& idb { *static_cast<const ptr<engine::assets::AssetDatabase>>(_internal) };
     auto query { idb.query(guid_) };
 
     if (!query.exists()) {
-        return AssetDatabaseResult<> { { AssetDatabaseResultType::eFailed }, nullptr };
+        return AssetDatabaseResult<Asset> {
+            { AssetDatabaseResultType::eFailed },
+            { invalid_asset_guid, asset_type_id { 0 }, nullptr }
+        };
     }
 
-    return AssetDatabaseResult<> {
+    auto value = query.get();
+    return AssetDatabaseResult<Asset> {
         { AssetDatabaseResultType::eSuccess },
-        query.get()
+        {
+            value->get_guid(),
+            value->get_typeId(),
+            value
+        }
     };
 }
 
 bool AssetDatabase::insert(ptr<Asset> asset_) noexcept {
 
-    DEBUG_ASSERT(asset_->_internal != nullptr, "Asset should have internal state representation.");
+    DEBUG_ASSERT(asset_->_internal != nullptr, "Asset should have internal state representation.")
 
-    auto& idb { *static_cast<ptr<engine::assets::AssetDatabase>>(_internal.get()) };
+    auto& idb { *static_cast<const ptr<engine::assets::AssetDatabase>>(_internal) };
     auto query { idb.query(asset_->guid()) };
 
     return query.insert(asset_->typeId(), static_cast<ptr<engine::assets::Asset>>(asset_->_internal));
 }
 
+bool AssetDatabase::autoInsert(ptr<Asset> asset_) noexcept {
+
+    DEBUG_ASSERT(asset_->_internal != nullptr, "Asset should have internal state representation.")
+
+    const ptr<engine::assets::AssetDatabase> idb {
+        static_cast<const ptr<engine::assets::AssetDatabase>>(engine::Session::get()->assetDatabase())
+    };
+    DEBUG_ASSERT(idb != nullptr, "Asset Database should be present while accessing auto insertation.")
+
+    return idb->insert(asset_->guid(), asset_->typeId(), static_cast<ptr<engine::assets::Asset>>(asset_->_internal));
+}
+
 bool AssetDatabase::erase(ptr<Asset> asset_) noexcept {
 
-    auto& idb { *static_cast<ptr<engine::assets::AssetDatabase>>(_internal.get()) };
+    auto& idb { *static_cast<const ptr<engine::assets::AssetDatabase>>(_internal) };
     auto query { idb.query(asset_->guid()) };
 
     return query.remove();

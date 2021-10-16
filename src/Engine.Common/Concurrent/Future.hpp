@@ -301,27 +301,20 @@ namespace ember::concurrent {
          *
          * @author Julius
          * @date 20.08.2020
-         *
-         * @returns A reference to a Ty&amp;
+         *       
          */
-        [[maybe_unused]] void retrieve() const noexcept {
-            // return _STD move(_state->value());
-            return;
-        }
+        [[maybe_unused]] void retrieve() const noexcept { }
 
         /**
          * Will wait until the future returned, returns the value and invalidates the state
          *
          * @author Julius
          * @date 20.08.2020
-         *
-         * @returns A reference to a Ty&amp;
+         *       
          */
         void get() const {
             if (!_state->returned())
                 _state->wait();
-            // return _STD move(_state->value());
-            return;
         }
 
         /**

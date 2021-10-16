@@ -3,6 +3,8 @@
 #include <Engine.Common/String.hpp>
 
 #include "Asset.hpp"
+#include "AssetAutoGuid.hpp"
+#include "AssetAutoRegister.hpp"
 
 namespace ember {
 

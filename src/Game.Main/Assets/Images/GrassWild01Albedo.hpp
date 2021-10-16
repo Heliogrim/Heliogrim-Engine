@@ -4,13 +4,17 @@
 namespace ember::game::assets::image {
 
     class GrassWild01Albedo :
-        public ImageAsset {
+        public ImageAsset,
+        public AssetAutoGuid<GrassWild01Albedo> {
     public:
-        inline static const asset_guid guid = generate_asset_guid();
-
-    public:
-        GrassWild01Albedo() :
-            ImageAsset(GrassWild01Albedo::guid) {}
+        /**
+         * Default constructor
+         *
+         * @author Julius
+         * @date 16.10.2021
+         */
+        GrassWild01Albedo();
     };
 
+    AUTO_REGISTER_ASSET(GrassWild01Albedo)
 }

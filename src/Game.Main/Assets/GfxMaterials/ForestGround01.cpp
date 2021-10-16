@@ -12,17 +12,15 @@
 using namespace ember::game::assets::material;
 using namespace ember;
 
-const asset_guid ForestGround01::guid = generate_asset_guid();
-
 ForestGround01::ForestGround01() :
     GfxMaterialAsset(
-        ForestGround01::guid,
-        image::ForestGround01Albedo::guid,
-        image::ForestGround01AO::guid,
-        image::ForestGround01Cavity::guid,
-        image::ForestGround01Displacement::guid,
-        image::ForestGround01Gloss::guid,
-        image::ForestGround01Normal::guid,
-        image::ForestGround01Roughness::guid,
-        image::ForestGround01Specular::guid
+        ForestGround01::auto_guid(),
+        image::ForestGround01Albedo::auto_guid(),
+        image::ForestGround01AO::auto_guid(),
+        image::ForestGround01Cavity::auto_guid(),
+        image::ForestGround01Displacement::auto_guid(),
+        image::ForestGround01Gloss::auto_guid(),
+        image::ForestGround01Normal::auto_guid(),
+        image::ForestGround01Roughness::auto_guid(),
+        image::ForestGround01Specular::auto_guid()
     ) {}

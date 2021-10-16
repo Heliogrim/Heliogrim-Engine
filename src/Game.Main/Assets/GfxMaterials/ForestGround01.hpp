@@ -1,15 +1,13 @@
 #pragma once
 
+#include <Ember/AssetAutoGuid.hpp>
 #include <Ember/GfxMaterialAsset.hpp>
-#include <Engine.Assets/AssetGuid.hpp>
 
 namespace ember::game::assets::material {
 
     class ForestGround01 :
-        public GfxMaterialAsset {
-    public:
-        static const asset_guid guid;
-
+        public GfxMaterialAsset,
+        public AssetAutoGuid<ForestGround01> {
     public:
         ForestGround01();
     };

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Session/Session.hpp>
+
 #include "GraphicPass.hpp"
 #include "Application/Application.hpp"
 #include "Command/CommandQueue.hpp"
@@ -38,9 +40,11 @@ namespace ember::engine {
          * @author Julius
          * @date 29.01.2021
          *
+         * @param  session_ The session.
+         *
          * @returns A ptr&lt;Graphics&gt;
          */
-        [[nodiscard]] static ptr<Graphics> make();
+        [[nodiscard]] static ptr<Graphics> make(cref<sptr<Session>> session_);
 
         /**
          * Destroys the static stored instance
@@ -50,16 +54,17 @@ namespace ember::engine {
          */
         static void destroy();
 
-    private:
+    public:
         /**
-         * Default constructor
+         * Constructor
          *
          * @author Julius
          * @date 09.11.2020
+         *
+         * @param  session_ The session.
          */
-        Graphics() = default;
+        Graphics(cref<sptr<Session>> session_) noexcept;
 
-    public:
         /**
          * Destructor
          *
@@ -93,6 +98,23 @@ namespace ember::engine {
          * @date 13.09.2021
          */
         void tidy();
+
+    private:
+        /**
+         * The session this module is associated with
+         */
+        sptr<Session> _session;
+
+    public:
+        /**
+         * Gets the session this module is associated with
+         *
+         * @author Julius
+         * @date 14.10.2021
+         *
+         * @returns A ptr<Session>
+         */
+        [[nodiscard]] sptr<Session> session() const noexcept;
 
     private:
         /**

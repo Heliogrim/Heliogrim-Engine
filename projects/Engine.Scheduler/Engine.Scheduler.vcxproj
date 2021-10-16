@@ -33,6 +33,7 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Scheduler\Scheduler.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Task\SharedQueue.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scheduler\Task\SignaledQueue.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Task\Task.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Task\TaskMask.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Task\TaskType.hpp" />
@@ -55,6 +56,7 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Scheduler.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Task\SharedQueue.cpp" />
+    <ClCompile Include="..\..\src\Engine.Scheduler\Task\SignaledQueue.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Task\Task.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Thread\Thread.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Thread\Worker.cpp" />

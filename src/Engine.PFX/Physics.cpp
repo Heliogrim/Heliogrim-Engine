@@ -6,7 +6,15 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Engine.Session/Session.hpp>
+
 using namespace ember::engine;
+using namespace ember;
+
+Physics::Physics(cref<sptr<Session>> session_) noexcept :
+    _session(session_) {}
+
+Physics::~Physics() = default;
 
 void Physics::setup() {
 
@@ -14,3 +22,7 @@ void Physics::setup() {
 }
 
 void Physics::schedule() { }
+
+sptr<Session> Physics::session() const noexcept {
+    return _session;
+}
