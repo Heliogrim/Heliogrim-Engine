@@ -58,6 +58,9 @@
     <Filter Include="Quelldateien\Assets\GfxMaterials">
       <UniqueIdentifier>{fd854255-40c4-4998-b243-d9932b46c581}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Assets\Images">
+      <UniqueIdentifier>{baa8c914-b467-417e-83e8-10cab2eeca4c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game.Main\main.cpp">
@@ -117,8 +120,8 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\GrassWild01.cpp">
       <Filter>Quelldateien\Assets\GfxMaterials</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Game.Main\dar.hpp">
-      <Filter>Headerdateien</Filter>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\GrassWild01Albedo.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

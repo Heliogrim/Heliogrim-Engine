@@ -8,31 +8,15 @@
 using namespace ember::engine::scene;
 using namespace ember;
 
-ptr<Scene> Scene::_instance = nullptr;
-
-Scene::Scene() noexcept = default;
+Scene::Scene(cref<sptr<Session>> session_) noexcept :
+    _session(session_) {}
 
 Scene::~Scene() noexcept = default;
 
-void Scene::setup() {
-}
+void Scene::setup() {}
 
-ptr<Scene> Scene::get() noexcept {
-    return _instance;
-}
-
-ptr<Scene> Scene::make() {
-
-    if (!_instance) {
-        _instance = new Scene();
-    }
-
-    return _instance;
-}
-
-void Scene::destroy() noexcept {
-    delete _instance;
-    _instance = nullptr;
+sptr<engine::Session> Scene::session() const noexcept {
+    return _session;
 }
 
 cref<vector<uptr<SceneGraph>>> Scene::graphs() const noexcept {

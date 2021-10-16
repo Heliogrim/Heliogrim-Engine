@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Session/Session.hpp>
 
 namespace ember::engine {
 
@@ -9,51 +10,17 @@ namespace ember::engine {
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
-    private:
-        /**
-         * Singleton Instance
-         */
-        static ptr<Audio> _instance;
-
     public:
-        /**
-         * Gets the static internal stored instance
-         *
-         * @author Julius
-         * @date 12.09.2021
-         *
-         * @returns A ptr&lt;Audio&gt;
-         */
-        [[nodiscard]] static ptr<Audio> get() noexcept;
-
-        /**
-         * Gets a static internal stored instance of Audio or creates one
-         *
-         * @author Julius
-         * @date 12.09.2021
-         *
-         * @returns A ptr&lt;Audio&gt;
-         */
-        [[nodiscard]] static ptr<Audio> make();
-
-        /**
-         * Destroys this
-         *
-         * @author Julius
-         * @date 12.09.2021
-         */
-        static void destroy() noexcept;
-
-    private:
         /**
          * Default constructor
          *
          * @author Julius
          * @date 12.09.2021
+         *
+         * @param  session_ The session.
          */
-        Audio() noexcept;
+        Audio(cref<sptr<Session>> session_) noexcept;
 
-    public:
         /**
          * Destructor
          *
@@ -87,5 +54,22 @@ namespace ember::engine {
          * @date 12.09.2021
          */
         void schedule();
+
+    private:
+        /**
+         * The session this module is associated with
+         */
+        sptr<Session> _session;
+
+    public:
+        /**
+         * Gets the session this module is associated with
+         *
+         * @author Julius
+         * @date 14.10.2021
+         *
+         * @returns A sptr<Session>
+         */
+        [[nodiscard]] sptr<Session> session() const noexcept;
     };
 }

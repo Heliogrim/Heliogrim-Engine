@@ -65,7 +65,7 @@ namespace ember::engine::res {
         using import_type = ImportType_;
 
         template <typename Type_, typename = _STD enable_if_t<!_STD is_void_v<Type_>>>
-        using wrapper_type = concurrent::future<Type_>;
+        using wrapper_type = ember::concurrent::future<Type_>;
         using import_result_type = wrapper_type<import_type>;
 
     protected:

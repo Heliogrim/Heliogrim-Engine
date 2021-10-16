@@ -54,9 +54,9 @@ namespace ember {
          * @author Julius
          * @date 08.01.2021
          *
-         * @returns A ref&lt;Graphics&gt;
+         * @returns The Graphics.
          */
-        [[nodiscard]] static ref<Graphics> graphics() noexcept;
+        [[nodiscard]] static Graphics graphics() noexcept;
 
     private:
         /**
@@ -113,7 +113,7 @@ namespace ember {
 
     public:
         /**
-         * Starts this 
+         * Starts the ember engine
          *
          * @author Julius
          * @date 08.01.2021
@@ -121,7 +121,7 @@ namespace ember {
         static void start();
 
         /**
-         * Stops this 
+         * Stops the ember engine
          *
          * @author Julius
          * @date 08.01.2021
@@ -129,7 +129,7 @@ namespace ember {
         static void stop();
 
         /**
-         * Waits this 
+         * Waits until engine stopped
          *
          * @author Julius
          * @date 08.01.2021

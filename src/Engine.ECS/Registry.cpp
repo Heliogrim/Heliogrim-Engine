@@ -1,7 +1,10 @@
 #include "Registry.hpp"
+
 #include <Engine.Common/Make.hpp>
+#include <Engine.Event/GlobalEventEmitter.hpp>
 
 using namespace ember::engine::ecs;
+using namespace ember;
 
 registry::this_type registry::_this = nullptr;
 

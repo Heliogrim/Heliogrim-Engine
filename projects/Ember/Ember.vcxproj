@@ -16,6 +16,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Ember\Asset.hpp" />
+    <ClInclude Include="..\..\src\Ember\AssetAutoGuid.hpp" />
+    <ClInclude Include="..\..\src\Ember\AssetAutoRegister.hpp" />
     <ClInclude Include="..\..\src\Ember\AssetDatabase.hpp" />
     <ClInclude Include="..\..\src\Ember\AssetDatabaseResult.hpp" />
     <ClInclude Include="..\..\src\Ember\Audio.hpp" />
@@ -133,6 +135,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
       <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Session\Engine.Session.vcxproj">
+      <Project>{bba6c152-0160-4156-a5ac-cd3068df2311}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.SFX\Engine.SFX.vcxproj">
       <Project>{9f2b4b6e-1de8-4b52-b2e4-f7c44df0d3b9}</Project>

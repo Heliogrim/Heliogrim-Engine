@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Session/Session.hpp>
 
 #include "ImporterManager.hpp"
 #include "LoaderManager.hpp"
@@ -18,51 +19,17 @@ namespace ember::engine {
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
-    private:
-        /**
-         * Singleton Instance
-         */
-        static ptr<ResourceManager> _instance;
-
     public:
-        /**
-         * Gets the static internal stored instance
-         *
-         * @author Julius
-         * @date 30.08.2021
-         *
-         * @returns A ptr&lt;ResourceManager&gt;
-         */
-        [[nodiscard]] static ptr<ResourceManager> get() noexcept;
-
-        /**
-         * Gets a static internal stored instance of ResourceManager or creates one
-         *
-         * @author Julius
-         * @date 30.08.2021
-         *
-         * @returns A ptr&lt;ResourceManager&gt;
-         */
-        [[nodiscard]] static ptr<ResourceManager> make();
-
-        /**
-         * Destroys this and flushes static internal stored instance
-         *
-         * @author Julius
-         * @date 30.08.2021
-         */
-        static void destroy() noexcept;
-
-    private:
         /**
          * Default constructor
          *
          * @author Julius
          * @date 30.08.2021
+         *
+         * @param  session_ The session.
          */
-        ResourceManager() noexcept;
+        ResourceManager(cref<ptr<Session>> session_) noexcept;
 
-    public:
         /**
          * Destructor
          *
@@ -87,6 +54,23 @@ namespace ember::engine {
          * @date 22.09.2021
          */
         void schedule();
+
+    private:
+        /**
+         * The session this module is associated with
+         */
+        ptr<Session> _session;
+
+    public:
+        /**
+         * Gets the session this module is associated with
+         *
+         * @author Julius
+         * @date 14.10.2021
+         *
+         * @returns A ptr<Session>
+         */
+        [[nodiscard]] ptr<Session> session() const noexcept;
 
     private:
         uptr<res::ImporterManager> _importer;

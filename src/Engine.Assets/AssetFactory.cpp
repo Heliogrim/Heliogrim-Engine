@@ -14,26 +14,6 @@
 using namespace ember::engine::assets;
 using namespace ember;
 
-ptr<AssetFactory> AssetFactory::_instance = nullptr;
-
-ptr<AssetFactory> AssetFactory::get() noexcept {
-    return _instance;
-}
-
-ptr<AssetFactory> AssetFactory::make(ptr<AssetDatabase> database_) noexcept {
-
-    if (!_instance) {
-        _instance = new AssetFactory(database_);
-    }
-
-    return _instance;
-}
-
-void AssetFactory::destroy() noexcept {
-    delete _instance;
-    _instance = nullptr;
-}
-
 AssetFactory::AssetFactory(ptr<AssetDatabase> database_) noexcept :
     _database(database_) {}
 

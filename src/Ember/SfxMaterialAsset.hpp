@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Asset.hpp"
+#include "AssetAutoGuid.hpp"
+#include "AssetAutoRegister.hpp"
 
 namespace ember {
 

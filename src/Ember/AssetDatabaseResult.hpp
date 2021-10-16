@@ -14,12 +14,12 @@ namespace ember {
 
     using AssetDatabaseResultFlags = Flag<AssetDatabaseResultType>;
 
-    template <typename ValueType_ = void>
+    template <typename ValueType_ = ptr<void>>
     struct AssetDatabaseResult {
 
-        using value_type = ptr<_STD remove_all_extents_t<ValueType_>>;
+        using value_type = _STD remove_cvref_t<ValueType_>;
 
-        constexpr explicit AssetDatabaseResult(cref<AssetDatabaseResultFlags> flags_, const value_type value_):
+        constexpr explicit AssetDatabaseResult(cref<AssetDatabaseResultFlags> flags_, cref<value_type> value_):
             flags(flags_),
             value(value_) {}
 
@@ -38,7 +38,7 @@ namespace ember {
             return flags & AssetDatabaseResultType::eSuccess;
         }
 
-        template <typename DstValueType_ = void>
+        template <typename DstValueType_ = ptr<void>>
         [[nodiscard]] operator AssetDatabaseResult<DstValueType_>() const noexcept {
             return AssetDatabaseResult<DstValueType_> {
                 flags,

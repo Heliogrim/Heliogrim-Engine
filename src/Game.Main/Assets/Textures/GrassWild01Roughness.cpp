@@ -6,12 +6,10 @@
 using namespace ember::game::assets::texture;
 using namespace ember;
 
-const asset_guid GrassWild01Roughness::guid = generate_asset_guid();
-
 GrassWild01Roughness::GrassWild01Roughness() :
     TextureAsset(
-        GrassWild01Roughness::guid,
-        game::assets::image::GrassWild01Roughness::guid,
+        GrassWild01Roughness::auto_guid(),
+        game::assets::image::GrassWild01Roughness::auto_guid(),
         {},
         {},
         TextureFormat::eR8G8B8Unorm,

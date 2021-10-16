@@ -19,9 +19,11 @@
 #include <Engine.SFX/Importer/AudioFileTypes.hpp>
 #include <Engine.SFX/Importer/SoundImportType.hpp>
 
-#include "dar.hpp"
+#include "Ember/TextureAsset.hpp"
 #include "Engine.Event/TickEvent.hpp"
 #include "Engine.Scheduler/Async.hpp"
+#include "Engine.Session/Session.hpp"
+#include "Assets/Textures/GrassWild01Albedo.hpp"
 
 using namespace ember;
 
@@ -41,13 +43,9 @@ int main() {
     #endif
 
     /**
-     *
-     */
-    GlobalEventEmitter::make();
-
-    /**
      * Test Case - Files
      */
+    /*
     const string path {
         "R:\\Development\\C++\\Vulkan API\\Game\\resources\\assets\\audio"
     };
@@ -63,10 +61,12 @@ int main() {
     u64 size = 0;
 
     const auto success = src->get(0, 1024, buffer, size);
+     */
 
     /**
      * Test Case 01 - Promise
      */
+    /*
     concurrent::promise<uint32_t> p([]() {
         return static_cast<uint32_t>(1);
     });
@@ -88,17 +88,15 @@ int main() {
     }).then<uint32_t>([](int) {
         return 9;
     }).finally([](int) {});
+     */
 
     /**
-     * Start Application
-     *  Create Scheduler
-     *  Setup Scheduler
-     *  Schedule Construction Calls
+     * Start the engine framework
      *
      * @author Julius
      * @date 08.01.2021
      *
-     * @see static void Ember::stop()
+     * @see static void Ember::start()
      */
     Ember::start();
 
@@ -106,19 +104,22 @@ int main() {
 
         // static constexpr double delayFrac = 1. / 60.;
         static constexpr double delayFrac = 1. / .2;
-        static constexpr u64 delay = delayFrac * 1000000ui64;
+        static constexpr u64 delay = delayFrac * 1000000000ui64;
 
         static u64 tmpTick = 0;
         static _STD chrono::high_resolution_clock::time_point tmpNextTick {
             _STD chrono::high_resolution_clock::now()
         };
 
+        static ref<GlobalEventEmitter> emitter = engine::Session::get()->emitter();
+
         const auto now { _STD chrono::high_resolution_clock::now() };
         if (now >= tmpNextTick) {
 
             const TickEvent event { tmpTick };
-            GlobalEventEmitter::get()->emit(event);
+            emitter.emit(event);
 
+            ++tmpTick;
             tmpNextTick = now + _STD chrono::nanoseconds { delay };
         }
 
@@ -127,16 +128,9 @@ int main() {
 
     engine::scheduler::exec(task);
 
-    engine::scheduler::thread::self::sleepFor(5000);
-
-    GlobalEventEmitter::get()->on<TickEvent>([](cref<TickEvent> event_) {
+    engine::Session::get()->emitter().on<TickEvent>([](cref<TickEvent> event_) {
         DEBUG_MSG("TickEvent")
     });
-
-    /**
-     *
-     */
-    push();
 
     /**
      *
@@ -144,15 +138,16 @@ int main() {
     {
         //
         auto wdb = Ember::assets();
-        auto result = wdb.operator[]<TextureAsset>(game::assets::texture::GrassWild01Albedo::guid);
+        auto result = wdb.operator[]<TextureAsset>(game::assets::texture::GrassWild01Albedo::auto_guid());
 
         assert(result);
-        ptr<TextureAsset> asset = result.value;
+        TextureAsset asset = result.value;
     }
 
     /**
      * Test Case - Watcher
      */
+    #if FALSE
     {
         const string path = R"(R:\\Development\\C++\\Vulkan API\\Game\\resources\\assets\\audio)";
         File file { path };
@@ -182,35 +177,12 @@ int main() {
 
         idx->scan(file);
     }
+    #endif
 
     engine::scheduler::thread::self::sleepFor(5000);
 
     bool interrupt = false;
     while (!interrupt) {
-        if constexpr (false) {
-            MSG msg {};
-            while (GetMessage(&msg, NULL, 0, 0)) {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-            }
-        }
-
-        if constexpr (false) {
-            SDL_Event poll = SDL_Event();
-            while (SDL_PollEvent(&poll)) {
-                switch (poll.type) {
-
-                    case SDL_QUIT: {
-                        interrupt = true;
-                        break;
-                    }
-
-                    default: break;
-                }
-            }
-        }
-
-        ember::engine::scheduler::thread::self::yield();
 
         if constexpr (true) {
             _STD this_thread::sleep_for(_STD chrono::milliseconds { 15000 });
@@ -220,10 +192,7 @@ int main() {
     }
 
     /**
-     * Stop Application
-     *  Schedule Destruction Calls
-     *  Wait for Module Destruction
-     *  Destroy Scheduler
+     * Stops the engine framework
      *
      * @author Julius
      * @date 08.01.2021
@@ -241,11 +210,6 @@ int main() {
      * @see GameCore::wait()
      */
     Ember::wait();
-
-    /**
-     *
-     */
-    GlobalEventEmitter::destroy();
 
     #ifdef _PROFILING
     __main__stopwatch.stop();

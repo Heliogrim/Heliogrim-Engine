@@ -1,10 +1,29 @@
 #pragma once
 
+#ifdef _DEBUG
+#include <cassert>
+#endif
+
 #include <Engine.Common/Collection/BytellHashMap.hpp>
+#include <Engine.Scheduler/Scheduler.hpp>
 
 #include "EventEmitter.hpp"
 
 namespace ember {
+
+    namespace {
+
+        template <IsStatelessEvent EventType_>
+        struct GlobalStatelessEventExecutor :
+            public StatelessEventExecutor<EventType_> {
+            FORCE_INLINE void operator()(cref<_STD function<void(cref<EventType_>)>> fnc_, cref<EventType_> event_) {
+                ember::engine::scheduler::Scheduler::get().exec(ember::engine::scheduler::task::make_task([&]() {
+                    fnc_(event_);
+                }));
+            }
+        };
+
+    };
 
     class GlobalEventEmitter {
     public:
@@ -13,15 +32,20 @@ namespace ember {
         using const_reference_type = cref<value_type>;
 
         using emitter_mtx_value_type = _STD recursive_mutex;
-        using emitter_mtx_type = ref<emitter_mtx_value_type>;
+        using emitter_mtx_type = emitter_mtx_value_type;
 
         template <IsStatefulEvent EventType_>
         using stateful_emitter_type = StatefulEventEmitterBase<EventType_, emitter_mtx_type, true>;
 
         template <IsStatelessEvent EventType_>
-        using stateless_emitter_type = StatelessEventEmitterBase<EventType_, emitter_mtx_type, true>;
+        using stateless_emitter_type = StatelessEventEmitterBase<
+            EventType_,
+            emitter_mtx_type,
+            true
+            // TODO: GlobalStatelessEventExecutor<EventType_>
+        >;
 
-    private:
+    public:
         /**
          * Default constructor
          *
@@ -31,12 +55,49 @@ namespace ember {
         GlobalEventEmitter() noexcept;
 
         /**
+         * Copy Constructor
+         *
+         * @author Julius
+         * @date 16.10.2021
+         */
+        GlobalEventEmitter(const_reference_type) = delete;
+
+        /**
+         * Move Constructor
+         *
+         * @author Julius
+         * @date 16.10.2021
+         */
+        GlobalEventEmitter(mref<value_type>) noexcept = delete;
+
+        /**
          * Destructor
          *
          * @author Julius
          * @date 07.10.2021
          */
         ~GlobalEventEmitter() noexcept;
+
+    public:
+        /**
+         * Copy Assignment operator
+         *
+         * @author Julius
+         * @date 16.10.2021
+         *
+         * @returns A shallow copy of this.
+         */
+        reference_type operator=(const_reference_type) = delete;
+
+        /**
+         * Move Assignment operator
+         *
+         * @author Julius
+         * @date 16.10.2021
+         *
+         * @returns A shallow copy of this.
+         */
+        reference_type operator=(mref<value_type>) noexcept = delete;
 
     private:
         /**
@@ -46,41 +107,6 @@ namespace ember {
          * @date 07.10.2021
          */
         void tidy() noexcept;
-
-    private:
-        /**
-         * The singleton instance
-         */
-        static ptr<value_type> _instance;
-
-    public:
-        /**
-         * Gets the singleton instance
-         *
-         * @author Julius
-         * @date 07.10.2021
-         *
-         * @returns A const ptr&lt;value_type&gt;
-         */
-        [[nodiscard]] static const ptr<value_type> get() noexcept;
-
-        /**
-         * Makes a singleton instance if not exist and returns a pointer
-         *
-         * @author Julius
-         * @date 07.10.2021
-         *
-         * @returns A const ptr&lt;value_type&gt;
-         */
-        static const ptr<value_type> make() noexcept;
-
-        /**
-         * Destroys this 
-         *
-         * @author Julius
-         * @date 07.10.2021
-         */
-        static void destroy() noexcept;
 
     private:
         /**
@@ -117,6 +143,32 @@ namespace ember {
             static_cast<ptr<stateful_emitter_type<EventType_>>>(it->second)->emit(event_);
         }
 
+        template <IsStatefulEvent EventType_> requires _STD is_trivially_default_constructible_v<EventType_>
+        void emit() {
+
+            const auto it = _emitter.find(EventType_::type_id);
+            if (it == _emitter.end()) {
+                return;
+            }
+
+            static_cast<ptr<stateful_emitter_type<EventType_>>>(it->second)->emit(EventType_ {});
+        }
+
+        template <IsStatefulEvent EventType_, typename Arg0_, typename... Args_> requires _STD is_constructible_v<
+            EventType_, Arg0_, Args_...>
+        void emit(Arg0_&& arg0_, Args_&&... args_) {
+
+            const auto it = _emitter.find(EventType_::type_id);
+            if (it == _emitter.end()) {
+                return;
+            }
+
+            static_cast<ptr<stateful_emitter_type<EventType_>>>(it->second)->emit(EventType_ {
+                _STD forward<Arg0_>(arg0_),
+                _STD forward<Args_>(args_)...
+            });
+        }
+
         template <IsStatelessEvent EventType_>
         void emit(cref<EventType_> event_) {
 
@@ -126,6 +178,32 @@ namespace ember {
             }
 
             static_cast<ptr<stateless_emitter_type<EventType_>>>(it->second)->emit(event_);
+        }
+
+        template <IsStatelessEvent EventType_> requires _STD is_trivially_default_constructible_v<EventType_>
+        void emit() {
+
+            const auto it = _emitter.find(EventType_::type_id);
+            if (it == _emitter.end()) {
+                return;
+            }
+
+            static_cast<ptr<stateless_emitter_type<EventType_>>>(it->second)->emit(EventType_ {});
+        }
+
+        template <IsStatelessEvent EventType_, typename Arg0_, typename... Args_> requires _STD is_constructible_v<
+            EventType_, Arg0_, Args_...>
+        void emit(Arg0_&& arg0_, Args_&&... args_) {
+
+            const auto it = _emitter.find(EventType_::type_id);
+            if (it == _emitter.end()) {
+                return;
+            }
+
+            static_cast<ptr<stateless_emitter_type<EventType_>>>(it->second)->emit(EventType_ {
+                _STD forward<Arg0_>(arg0_),
+                _STD forward<Args_>(args_)...
+            });
         }
 
         template <IsEvent EventType_>

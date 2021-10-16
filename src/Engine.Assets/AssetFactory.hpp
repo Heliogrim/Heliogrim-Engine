@@ -17,44 +17,7 @@ namespace ember::engine::assets {
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
-    private:
-        /**
-         * Singleton Instance
-         */
-        static ptr<AssetFactory> _instance;
-
     public:
-        /**
-         * Gets the static internal stored instance
-         *
-         * @author Julius
-         * @date 06.10.2021
-         *
-         * @returns A ptr&lt;AssetFactory&gt;
-         */
-        [[nodiscard]] static ptr<AssetFactory> get() noexcept;
-
-        /**
-         * Gets the static internal stored instance or creates one
-         *
-         * @author Julius
-         * @date 06.10.2021
-         *
-         * @param  database_ The database.
-         *
-         * @returns A ptr&lt;AssetFactory&gt;
-         */
-        static ptr<AssetFactory> make(ptr<AssetDatabase> database_) noexcept;
-
-        /**
-         * Destroys this and flushes the static internal stored instance
-         *
-         * @author Julius
-         * @date 06.10.2021
-         */
-        static void destroy() noexcept;
-
-    private:
         /**
          * Constructor
          *

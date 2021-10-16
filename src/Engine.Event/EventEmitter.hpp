@@ -1,6 +1,7 @@
 #pragma once
 #include <shared_mutex>
 #include <unordered_map>
+#include <type_traits>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Functional/Function.hpp>
 
@@ -17,6 +18,13 @@ namespace ember {
         using handle_type = u64;
     };
 
+    template <IsStatefulEvent EventType_>
+    struct StatefulEventExecutor {
+        FORCE_INLINE void operator()(cref<_STD function<void(ref<EventType_>)>> fnc_, ref<EventType_> event_) const {
+            fnc_(event_);
+        }
+    };
+
     /**
      * A stateful event emitter.
      *
@@ -27,10 +35,12 @@ namespace ember {
         IsStatefulEvent EventType_,
         class MtxType_,
         bool ExternalMtx_ = false,
+        typename ExecutorType_ = StatefulEventExecutor<EventType_>,
         class EmitLockType_ = _STD unique_lock<_STD remove_cvref_t<MtxType_>>,
         class MutateLockType_ = _STD unique_lock<_STD remove_cvref_t<MtxType_>>>
     class StatefulEventEmitterBase :
-        public EventEmitter {
+        public EventEmitter,
+        private ExecutorType_ {
     public:
         using mtx_type = _STD conditional_t<ExternalMtx_,
             ref<_STD remove_cvref_t<MtxType_>>,
@@ -110,7 +120,7 @@ namespace ember {
             EmitLockType_ lck { _mtx };
 
             for (const auto& entry : _listener) {
-                (entry.second)(event_);
+                ExecutorType_::operator()(entry.second, event_);
 
                 if (event_.canceled()) {
                     break;
@@ -133,6 +143,13 @@ namespace ember {
         mtx_type _mtx;
     };
 
+    template <IsStatelessEvent EventType_>
+    struct StatelessEventExecutor {
+        FORCE_INLINE void operator()(cref<_STD function<void(cref<EventType_>)>> fnc_, cref<EventType_> event_) const {
+            fnc_(event_);
+        }
+    };
+
     /**
      * The stateless event emitter base.
      *
@@ -143,11 +160,22 @@ namespace ember {
         IsStatelessEvent EventType_,
         class MtxType_,
         bool ExternalMtx_ = false,
+        typename ExecutorType_ = StatelessEventExecutor<EventType_>,
         class EmitLockType_ = _STD unique_lock<_STD remove_cvref_t<MtxType_>>,
         class MutateLockType_ = _STD unique_lock<_STD remove_cvref_t<MtxType_>>>
     class StatelessEventEmitterBase :
-        public EventEmitter {
+        public EventEmitter,
+        private ExecutorType_ {
     public:
+        using this_type = StatelessEventEmitterBase<
+            EventType_,
+            MtxType_,
+            ExternalMtx_,
+            ExecutorType_,
+            EmitLockType_,
+            MutateLockType_
+        >;
+
         using mtx_type = _STD conditional_t<ExternalMtx_,
             ref<_STD remove_cvref_t<MtxType_>>,
             _STD remove_cvref_t<MtxType_>
@@ -160,17 +188,58 @@ namespace ember {
         using function_type = _STD function<void(cref<EventType_>)>;
 
     public:
+        /*
         template <typename MtxType = MtxType_, typename = _STD enable_if_t<!ExternalMtx_>>
         StatelessEventEmitterBase() :
             _lhc(0),
             _listener(),
             _mtx() {}
+         */
 
+        /*
         template <typename MtxType = MtxType_, typename = _STD enable_if_t<ExternalMtx_>>
         StatelessEventEmitterBase(ref<_STD remove_cvref_t<MtxType>> mtx_) :
             _lhc(0),
             _listener(),
             _mtx(mtx_) {}
+         */
+
+        StatelessEventEmitterBase() :
+            _lhc(0),
+            _listener(),
+            _mtx() {}
+
+        StatelessEventEmitterBase(
+            _STD conditional_t<ExternalMtx_, ref<_STD remove_cvref_t<MtxType_>>, _STD remove_cvref_t<MtxType_>> mtx_
+        ) :
+            _lhc(0),
+            _listener(),
+            _mtx(mtx_) {}
+
+    public:
+        /**
+         * Copy Assignment operator
+         *
+         * @author Julius
+         * @date 12.10.2021
+         *
+         * @param  other_ The other.
+         *
+         * @returns A shallow copy of this.
+         */
+        ref<this_type> operator=(cref<this_type> other_) = delete;
+
+        /**
+         * Move Assignment operator
+         *
+         * @author Julius
+         * @date 12.10.2021
+         *
+         * @param  other_ The other.
+         *
+         * @returns A shallow copy of this.
+         */
+        ref<this_type> operator=(mref<this_type> other_) noexcept = delete;
 
     public:
         /**
@@ -227,7 +296,7 @@ namespace ember {
             EmitLockType_ lck { _mtx };
 
             for (const auto& entry : _listener) {
-                (entry.second)(event_);
+                ExecutorType_::operator()(entry.second, event_);
             }
         }
 

@@ -177,6 +177,12 @@
     <ClInclude Include="..\..\src\Ember\TextureType.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Ember\AssetAutoRegister.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\AssetAutoGuid.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember\World\World.cpp">

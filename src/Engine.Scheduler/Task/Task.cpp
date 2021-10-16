@@ -32,7 +32,7 @@ void TaskDelegate::delegate() const {
                 /**
                  * If invocation returns success, re-scheduler the task
                  */
-                scheduler::Scheduler::get().exec(this);
+                scheduler::Scheduler::get(_STD nothrow_t {})->exec(this);
             } else {
                 // TODO: destruct
                 /* TODO: Temporary */

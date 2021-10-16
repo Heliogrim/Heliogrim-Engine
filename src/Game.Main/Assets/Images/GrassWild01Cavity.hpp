@@ -4,13 +4,11 @@
 namespace ember::game::assets::image {
 
     class GrassWild01Cavity :
-        public ImageAsset {
-    public:
-        inline static const asset_guid guid = generate_asset_guid();
-
+        public ImageAsset,
+        public AssetAutoGuid<GrassWild01Cavity> {
     public:
         GrassWild01Cavity() :
-            ImageAsset(GrassWild01Cavity::guid) {}
+            ImageAsset(GrassWild01Cavity::auto_guid()) {}
     };
 
 }

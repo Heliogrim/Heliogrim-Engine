@@ -23,7 +23,7 @@ namespace ember::engine::res {
         using const_reference_type = cref<value_type>;
 
         template <typename Type_>
-        using result_wrapper_type = concurrent::future<Type_>;
+        using result_wrapper_type = ember::concurrent::future<Type_>;
         using result_type = result_wrapper_type<ptr<Resource>>;
 
     private:

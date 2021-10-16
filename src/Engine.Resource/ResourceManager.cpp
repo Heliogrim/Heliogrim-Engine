@@ -4,34 +4,19 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Engine.Session/Session.hpp>
+
 using namespace ember::engine::res;
+using namespace ember::engine;
 using namespace ember;
 
-ptr<engine::ResourceManager> engine::ResourceManager::_instance = nullptr;
-
-engine::ResourceManager::ResourceManager() noexcept :
+engine::ResourceManager::ResourceManager(cref<ptr<Session>> session_) noexcept :
+    _session(session_),
     _importer(nullptr),
     _loader(nullptr),
     _locator(nullptr) {}
 
 engine::ResourceManager::~ResourceManager() noexcept = default;
-
-ptr<engine::ResourceManager> engine::ResourceManager::get() noexcept {
-    return _instance;
-}
-
-ptr<engine::ResourceManager> engine::ResourceManager::make() {
-    if (_instance == nullptr) {
-        _instance = new ResourceManager();
-    }
-
-    return _instance;
-}
-
-void engine::ResourceManager::destroy() noexcept {
-    delete _instance;
-    _instance = nullptr;
-}
 
 void engine::ResourceManager::setup() {
 
@@ -57,6 +42,10 @@ void engine::ResourceManager::setup() {
 }
 
 void engine::ResourceManager::schedule() {}
+
+ptr<engine::Session> engine::ResourceManager::session() const noexcept {
+    return _session;
+}
 
 cref<ImporterManager> engine::ResourceManager::importer() const {
     return *_importer;

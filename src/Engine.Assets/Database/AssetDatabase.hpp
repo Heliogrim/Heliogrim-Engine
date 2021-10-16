@@ -2,6 +2,7 @@
 
 #include <unordered_set>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/BytellHashMap.hpp>
 #include <Engine.Utils/_CTRL.hpp>
 
 #include "AssetDatabaseEntry.hpp"
@@ -25,11 +26,10 @@ namespace ember::engine::assets {
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
-        using mapping_container = _STD unordered_set<
+        using mapping_container = ska::bytell_hash_set<
             AssetDatabaseEntry,
             _STD hash<AssetDatabaseEntry>,
-            _STD equal_to<AssetDatabaseEntry>,
-            _STD allocator<AssetDatabaseEntry>
+            _STD equal_to<AssetDatabaseEntry>
         >;
 
     public:

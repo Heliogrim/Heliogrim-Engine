@@ -15,7 +15,7 @@ namespace ember::engine::res {
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
-        using load_result = concurrent::future<ptr<Resource>>;
+        using load_result = ember::concurrent::future<ptr<Resource>>;
 
     public:
         /**

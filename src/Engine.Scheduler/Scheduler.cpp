@@ -1,12 +1,15 @@
 #include "Scheduler.hpp"
 
+#include <Engine.Common/Make.hpp>
+
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
 using namespace ember::engine::scheduler;
+using namespace ember;
 
-Scheduler* Scheduler::_instance = nullptr;
+ptr<Scheduler> Scheduler::_instance = nullptr;
 
 Scheduler::Scheduler() noexcept :
     _sharedTasks(),
@@ -15,6 +18,32 @@ Scheduler::Scheduler() noexcept :
 
 Scheduler::~Scheduler() {
     tidy();
+}
+
+Scheduler& Scheduler::get() {
+    return *_instance;
+}
+
+ptr<Scheduler> Scheduler::get(_STD nothrow_t) noexcept {
+    return _instance;
+}
+
+ptr<Scheduler> Scheduler::make() {
+    if (_instance != nullptr) {
+        return _instance;
+    }
+
+    _instance = make_ptr<Scheduler>();
+    return _instance;
+}
+
+void Scheduler::destroy() noexcept {
+
+    if (_instance == nullptr)
+        return;
+
+    delete _instance;
+    _instance = nullptr;
 }
 
 void Scheduler::delay(task::__TaskDelegate task_, const u32 ticks_) {
@@ -147,28 +176,6 @@ void Scheduler::wait() const {
         _workers[i].join();
         #endif
     }
-}
-
-Scheduler& Scheduler::get() {
-    return *Scheduler::_instance;
-}
-
-Scheduler& Scheduler::make() {
-    if (Scheduler::_instance != nullptr) {
-        return *Scheduler::_instance;
-    }
-
-    Scheduler::_instance = new Scheduler();
-    return *Scheduler::_instance;
-}
-
-void Scheduler::destroy() noexcept {
-
-    if (Scheduler::_instance == nullptr)
-        return;
-
-    delete Scheduler::_instance;
-    Scheduler::_instance = nullptr;
 }
 
 #if 0

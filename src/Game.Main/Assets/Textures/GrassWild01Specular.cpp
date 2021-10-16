@@ -6,12 +6,10 @@
 using namespace ember::game::assets::texture;
 using namespace ember;
 
-const asset_guid GrassWild01Specular::guid = generate_asset_guid();
-
 GrassWild01Specular::GrassWild01Specular() :
     TextureAsset(
-        GrassWild01Specular::guid,
-        game::assets::image::GrassWild01Specular::guid,
+        GrassWild01Specular::auto_guid(),
+        game::assets::image::GrassWild01Specular::auto_guid(),
         {},
         {},
         TextureFormat::eR8G8B8Unorm,

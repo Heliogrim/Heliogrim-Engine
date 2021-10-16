@@ -5,6 +5,7 @@
 #endif
 
 #include "AssetDatabaseQuery.hpp"
+#include "../AssetFactory.hpp"
 
 using namespace ember::engine::assets;
 using namespace ember;
@@ -13,14 +14,21 @@ AssetDatabase::AssetDatabase() noexcept :
     _mapping() {}
 
 AssetDatabase::~AssetDatabase() noexcept {
+    tidy();
+}
+
+void AssetDatabase::tidy() {
 
     SCOPED_STOPWATCH
     _SCTRL_GATE(_mtx);
 
-    tidy();
-}
+    for (auto& entry : _mapping) {
+        delete const_cast<ptr<Asset>>(entry.asset());
+    }
 
-void AssetDatabase::tidy() {}
+    _mapping.clear();
+
+}
 
 bool AssetDatabase::has(cref<asset_guid> guid_) const noexcept {
 
@@ -51,8 +59,15 @@ bool AssetDatabase::insert(cref<asset_guid> guid_, cref<asset_type_id> type_, co
     AssetDatabaseEntry entry { guid_, type_, asset_ };
     const auto pos = _mapping.insert(_STD move(entry));
 
+    auto s = _mapping.size();
+    auto b = _mapping.bucket_count();
+    auto ml = _mapping.max_load_factor();
+    auto l = _mapping.load_factor();
+    auto ms = _mapping.max_size();
+    auto mb = _mapping.max_bucket_count();
+
     // TODO: Rewrite
-    return true;
+    return pos.second;
 }
 
 ptr<Asset> AssetDatabase::remove(cref<asset_guid> guid_) noexcept {
@@ -66,7 +81,7 @@ ptr<Asset> AssetDatabase::remove(cref<asset_guid> guid_) noexcept {
         return nullptr;
     }
 
-    const auto old { _STD move(*const_cast<ptr<AssetDatabaseEntry>>(pos.operator->())) };
+    const auto old { _STD move(*pos) };
     _mapping.erase(pos);
 
     return old.asset();

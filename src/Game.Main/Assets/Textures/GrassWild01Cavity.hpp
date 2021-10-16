@@ -4,10 +4,8 @@
 namespace ember::game::assets::texture {
 
     class GrassWild01Cavity :
-        public TextureAsset {
-    public:
-        static const asset_guid guid;
-
+        public TextureAsset,
+        public AssetAutoGuid<GrassWild01Cavity> {
     public:
         GrassWild01Cavity();
     };

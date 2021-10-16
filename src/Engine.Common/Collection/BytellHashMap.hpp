@@ -14,6 +14,7 @@
 #include "FlatHashMap.hpp"
 #include <vector>
 #include <array>
+#include <stdexcept>
 
 namespace ska {
 

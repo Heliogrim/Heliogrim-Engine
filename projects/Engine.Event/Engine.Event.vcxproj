@@ -11,10 +11,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Event\AudioStartupEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Event\BootEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Event\EcsStartupEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Event\Event.hpp" />
     <ClInclude Include="..\..\src\Engine.Event\EventEmitter.hpp" />
     <ClInclude Include="..\..\src\Engine.Event\EventTypeId.hpp" />
     <ClInclude Include="..\..\src\Engine.Event\GlobalEventEmitter.hpp" />
+    <ClInclude Include="..\..\src\Engine.Event\GraphicStartupEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Event\NetworkStartupEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Event\SceneStartupEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Event\SchedulerBootEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Event\ShutdownEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Event\TickEvent.hpp" />
   </ItemGroup>
   <ItemGroup>

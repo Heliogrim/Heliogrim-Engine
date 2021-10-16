@@ -7,12 +7,10 @@
 using namespace ember::game::assets::texture;
 using namespace ember;
 
-const asset_guid ForestGround01Cavity::guid = generate_asset_guid();
-
 ForestGround01Cavity::ForestGround01Cavity() :
     TextureAsset(
-        ForestGround01Cavity::guid,
-        game::assets::image::ForestGround01Cavity::guid,
+        ForestGround01Cavity::auto_guid(),
+        game::assets::image::ForestGround01Cavity::auto_guid(),
         {},
         {},
         TextureFormat::eR8G8B8Unorm,

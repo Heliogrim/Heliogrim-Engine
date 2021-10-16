@@ -82,17 +82,34 @@ namespace std {
     template <>
     struct hash<ember::asset_guid> {
         _STD size_t operator()(const ember::asset_guid& value_) const noexcept {
+
+            constexpr ember::u64 size = sizeof(ember::asset_guid);
+
             /**
              * Warning: Don't use identity
              */
             ember::u64 dst[2];
             ember::hash::murmur3_x64_128(
                 &value_,
-                sizeof(ember::asset_guid),
+                static_cast<ember::u32>(size),
                 0x9FB21C651E98DF25ui32,
                 &dst
             );
             return dst[0];
+        }
+    };
+
+    template <>
+    struct equal_to<ember::asset_guid> {
+        bool operator()(const ember::asset_guid& left_, const ember::asset_guid& right_) const noexcept {
+            return left_.as_uint64() == right_.as_uint64();
+        }
+    };
+
+    template <>
+    struct less<ember::asset_guid> {
+        bool operator()(const ember::asset_guid& left_, const ember::asset_guid& right_) const noexcept {
+            return left_.as_uint64() < right_.as_uint64();
         }
     };
 }
