@@ -216,9 +216,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Skybox\Skybox.hpp">
       <Filter>Headerdateien\Skybox</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\GraphicsDep.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Graphics.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -657,9 +654,6 @@
       <Filter>Quelldateien\GraphicPass</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\ProcessedModelBatch.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\GraphicsDep.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Geometry\Mesh.cpp">

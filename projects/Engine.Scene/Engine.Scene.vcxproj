@@ -51,11 +51,6 @@
     <ClCompile Include="..\..\src\Engine.Scene\Node\ShadowSceneNode.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Node\SpartialSceneNode.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp" />
-    <ClCompile Include="..\..\src\Engine.Scene\SceneNode.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scene\Storage\SceneNodeStorage.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
