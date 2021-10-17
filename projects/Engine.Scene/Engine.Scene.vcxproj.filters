@@ -95,9 +95,6 @@
     <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scene\SceneNode.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scene\Storage\SceneNodeStorage.cpp">
       <Filter>Quelldateien\Storage</Filter>
     </ClCompile>

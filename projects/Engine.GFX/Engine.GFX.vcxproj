@@ -130,11 +130,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\ProbePass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\GraphicPipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Graphics.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\GraphicsDep.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Loader\TextureLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\ModelPassProcessor.cpp" />
@@ -209,11 +204,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\ProbePass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Graphics.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\GraphicsDep.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Handle\HandledObject.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Handle\LoopHandler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Handle\MaterialHandler.hpp" />

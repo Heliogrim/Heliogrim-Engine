@@ -19,12 +19,6 @@
     <Filter Include="Quelldateien\Tick">
       <UniqueIdentifier>{d3997d69-8e59-49db-a0f2-44e8df1ebc93}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Queue">
-      <UniqueIdentifier>{6d765c9d-91be-4ca0-9b89-d5f9765b9cd2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Queue">
-      <UniqueIdentifier>{f3dd1a77-db57-451d-9a44-0c34c50ecbca}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Thread">
       <UniqueIdentifier>{515df51d-0ec8-4223-8fa7-f18fe4baba16}</UniqueIdentifier>
     </Filter>
@@ -44,15 +38,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Scheduler\Tick\TickTaskQueue.hpp">
       <Filter>Headerdateien\Tick</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\SharedTaskPool.hpp">
-      <Filter>Headerdateien\Queue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\TaskPool.hpp">
-      <Filter>Headerdateien\Queue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\TaskQueue.hpp">
-      <Filter>Headerdateien\Queue</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Scheduler\Thread\Thread.hpp">
       <Filter>Headerdateien\Thread</Filter>
@@ -83,12 +68,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\SharedTaskPool.cpp">
-      <Filter>Quelldateien\Queue</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\TaskQueue.cpp">
-      <Filter>Quelldateien\Queue</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Thread\Thread.cpp">
       <Filter>Quelldateien\Thread</Filter>
     </ClCompile>
