@@ -10,4 +10,6 @@ namespace ember::game::assets::texture {
         ForestGround01Roughness();
     };
 
+    AUTO_REGISTER_ASSET(ForestGround01Roughness)
+
 }

@@ -2,7 +2,7 @@
 
 #include <Ember/TextureFormat.hpp>
 
-#include "ForestGound01Cavity.hpp"
+#include "ForestGround01Cavity.hpp"
 
 using namespace ember::game::assets::texture;
 using namespace ember;

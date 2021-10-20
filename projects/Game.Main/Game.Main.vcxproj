@@ -27,7 +27,6 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableASAN>true</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -83,14 +82,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <OmitFramePointers>false</OmitFramePointers>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <EnableModules>false</EnableModules>
@@ -133,47 +130,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Ember.Main\Ember.Main.vcxproj">
+      <Project>{cdc04280-5f97-45d3-9c47-8b60219d8578}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Ember\Ember.vcxproj">
       <Project>{8d01b7e3-273a-4a0b-8099-ad227fbdaf9c}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Assets\Engine.Assets.vcxproj">
-      <Project>{02a28ec5-5e8a-4ca4-ad1d-673df3b995f5}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
-      <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.ECS\Engine.ECS.vcxproj">
-      <Project>{bdd7b57f-5aee-4ddb-95fd-e0f89bb25ec7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Env\Engine.Env.vcxproj">
-      <Project>{f73e4ef6-247e-42e0-bd0a-04d104e6837d}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.GFX\Engine.GFX.vcxproj">
-      <Project>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Network\Engine.Network.vcxproj">
-      <Project>{813c849e-7ee6-4241-ae94-a7d0a7abf9bc}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.PFX\Engine.PFX.vcxproj">
-      <Project>{9e26faad-2541-4e80-a913-cc87a40bb745}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Proxy\Engine.Proxy.vcxproj">
-      <Project>{6cd674b5-80b9-4af0-8fb9-c1ef8adc6a5a}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Resource\Engine.Resource.vcxproj">
-      <Project>{b0e77d6c-45d7-4254-8630-d10fdf6ca290}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Scene\Engine.Scene.vcxproj">
-      <Project>{114192e3-04b1-4ae7-86f5-1d055f7526d4}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
-      <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.SFX\Engine.SFX.vcxproj">
-      <Project>{9f2b4b6e-1de8-4b52-b2e4-f7c44df0d3b9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Utils\Engine.Utils.vcxproj">
-      <Project>{3977a969-6595-4086-a6cc-97dea9935877}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -222,14 +183,14 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\Inc.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MetalBare.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MossGround.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Albedo.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01AO.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Cavity.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Displacement.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Gloss.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Normal.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Roughness.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Specular.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Cavity.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Displacement.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Gloss.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Normal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Roughness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Specular.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Albedo.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01AO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Cavity.hpp" />

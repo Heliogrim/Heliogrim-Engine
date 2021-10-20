@@ -51,20 +51,14 @@ ptr<Asset> AssetDatabase::operator[](cref<asset_guid> guid_) const {
     return (*pos).asset();
 }
 
-bool AssetDatabase::insert(cref<asset_guid> guid_, cref<asset_type_id> type_, const ptr<Asset> asset_) noexcept {
+bool AssetDatabase::insert(cref<asset_guid> guid_, cref<asset_type_id> type_,
+    const ptr<Asset> asset_) noexcept {
 
     SCOPED_STOPWATCH
     _SCTRL_GATE(_mtx);
 
     AssetDatabaseEntry entry { guid_, type_, asset_ };
     const auto pos = _mapping.insert(_STD move(entry));
-
-    auto s = _mapping.size();
-    auto b = _mapping.bucket_count();
-    auto ml = _mapping.max_load_factor();
-    auto l = _mapping.load_factor();
-    auto ms = _mapping.max_size();
-    auto mb = _mapping.max_bucket_count();
 
     // TODO: Rewrite
     return pos.second;

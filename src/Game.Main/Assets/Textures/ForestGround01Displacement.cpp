@@ -2,7 +2,7 @@
 
 #include <Ember/TextureFormat.hpp>
 
-#include "ForestGound01Displacement.hpp"
+#include "ForestGround01Displacement.hpp"
 
 using namespace ember::game::assets::texture;
 using namespace ember;

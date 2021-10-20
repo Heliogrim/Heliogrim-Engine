@@ -5,6 +5,7 @@
 namespace ember::engine::assets {
     class AssetDatabase;
     class AssetFactory;
+    class AssetSeeder;
 }
 
 namespace ember::engine::session {
@@ -50,6 +51,14 @@ namespace ember::engine::session {
         void setup();
 
     public:
+        /**
+         * Starts this
+         *
+         * @author Julius
+         * @date 20.10.2021
+         */
+        void start();
+
         /**
          * Waits until every late constructed module is cleared
          *
@@ -109,6 +118,12 @@ namespace ember::engine::session {
 
     public:
         [[nodiscard]] const ptr<engine::assets::AssetFactory> assetFactory() const;
+
+    private:
+        ptr<engine::assets::AssetSeeder> _assetSeeder;
+
+    public:
+        [[nodiscard]] const ptr<engine::assets::AssetSeeder> assetSeeder() const;
 
     private:
         ptr<void> _resourceManager;

@@ -11,4 +11,6 @@ namespace ember::game::assets::image {
             ImageAsset(GrassWild01AO::auto_guid()) {}
     };
 
+    AUTO_REGISTER_ASSET(GrassWild01AO)
+
 }

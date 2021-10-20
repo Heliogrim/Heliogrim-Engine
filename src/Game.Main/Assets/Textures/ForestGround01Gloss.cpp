@@ -2,7 +2,7 @@
 
 #include <Ember/TextureFormat.hpp>
 
-#include "ForestGound01Gloss.hpp"
+#include "ForestGround01Gloss.hpp"
 
 using namespace ember::game::assets::texture;
 using namespace ember;

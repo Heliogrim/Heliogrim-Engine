@@ -12,4 +12,6 @@ namespace ember::game::assets::material {
     public:
         GrassWild01();
     };
+
+    AUTO_REGISTER_ASSET(GrassWild01)
 }

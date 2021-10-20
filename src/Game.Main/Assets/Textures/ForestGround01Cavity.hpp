@@ -10,4 +10,5 @@ namespace ember::game::assets::texture {
         ForestGround01Cavity();
     };
 
+    AUTO_REGISTER_ASSET(ForestGround01Cavity)
 }

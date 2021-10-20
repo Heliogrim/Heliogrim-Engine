@@ -11,4 +11,5 @@ namespace ember::game::assets::image {
             ImageAsset(GrassWild01Roughness::auto_guid()) {}
     };
 
+    AUTO_REGISTER_ASSET(GrassWild01Roughness)
 }

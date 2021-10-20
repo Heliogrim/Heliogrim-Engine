@@ -80,7 +80,14 @@ namespace ember::engine::concurrent {
             const size_type h = _head.load(_STD memory_order::seq_cst);
             const size_type n = inc(t);
 
-            if (h > t || (h >= n && h < t)) {
+            /**
+             * Head [7] > Tail [2] => Pass
+             * Head [8] = Tail [8] => Fail
+             * Head [3] < Tail [27] => Fail
+             * Head [3] < Tail [27] && n[28] > Tail [27] => Pass
+             * Head [3] < Tail [31] && Head [3] >= n[0] => Pass
+             */
+            if (h > t || (h < t && (h >= n || n > t))) {
                 value_ = _STD move(_container[n]);
                 _tail.store(n, _STD memory_order::seq_cst);
                 return true;

@@ -19,13 +19,13 @@ AssetFactory::AssetFactory(ptr<AssetDatabase> database_) noexcept :
 
 AssetFactory::~AssetFactory() noexcept = default;
 
-ptr<Asset> AssetFactory::createGfxMaterialAsset() {
+ptr<engine::assets::Asset> AssetFactory::createGfxMaterialAsset() {
 
     auto guid = generate_asset_guid();
     return createGfxMaterialAsset(guid);
 }
 
-ptr<Asset> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) {
+ptr<engine::assets::Asset> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) {
 
     auto* instance = new GfxMaterial {
         guid_,
@@ -44,7 +44,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) {
     return instance;
 }
 
-ptr<Asset> AssetFactory::createGfxMaterialAsset(
+ptr<engine::assets::Asset> AssetFactory::createGfxMaterialAsset(
     cref<asset_guid> guid_,
     cref<asset_guid> albedo_,
     cref<asset_guid> ao_,
@@ -73,13 +73,13 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(
     return instance;
 }
 
-ptr<Asset> AssetFactory::createImageAsset() {
+ptr<engine::assets::Asset> AssetFactory::createImageAsset() {
 
     auto guid = generate_asset_guid();
     return createImageAsset(guid);
 }
 
-ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_) {
+ptr<engine::assets::Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_) {
 
     auto* instance = new Image {
         guid_,
@@ -91,7 +91,7 @@ ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_) {
     return instance;
 }
 
-ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> url_) {
+ptr<engine::assets::Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> url_) {
 
     auto* instance = new Image {
         guid_,
@@ -103,13 +103,13 @@ ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> u
     return instance;
 }
 
-ptr<Asset> AssetFactory::createTextureAsset() {
+ptr<engine::assets::Asset> AssetFactory::createTextureAsset() {
 
     auto guid = generate_asset_guid();
     return createTextureAsset(guid);
 }
 
-ptr<Asset> AssetFactory::createTextureAsset(cref<asset_guid> guid_) {
+ptr<engine::assets::Asset> AssetFactory::createTextureAsset(cref<asset_guid> guid_) {
 
     auto* instance = new Texture {
         guid_,
@@ -126,7 +126,7 @@ ptr<Asset> AssetFactory::createTextureAsset(cref<asset_guid> guid_) {
     return instance;
 }
 
-ptr<Asset> AssetFactory::createTextureAsset(
+ptr<engine::assets::Asset> AssetFactory::createTextureAsset(
     cref<asset_guid> guid_,
     cref<asset_guid> baseImage_,
     mref<vector<asset_guid>> images_,

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/__macro.hpp>
@@ -8,7 +9,22 @@
 
 namespace ember {
 
-    template <typename AssetType_>
+    namespace {
+        template <class AssetType_>
+        struct AssetAutoRegisterConstructor {
+            /*
+            template <typename... Args_>
+            ptr<AssetType_> operator()(Args_ ... args_) const {
+                return new AssetType_(_STD forward<Args_>(args_)...);
+            }
+             */
+            static ptr<Asset> make() {
+                return new AssetType_();
+            }
+        };
+    }
+
+    template <class AssetType_>
     class AssetAutoRegister {
     public:
         using value_type = AssetAutoRegister<AssetType_>;
@@ -22,9 +38,7 @@ namespace ember {
             "Pointer of type 'AssetCrtpType_' should be convertible to pointer of type 'Asset'.");
 
     public:
-        inline static const bool auto_handle = AssetDatabase::autoInsert(
-            static_cast<ptr<Asset>>(make_ptr<AssetType_>())
-        );
+        inline static const bool auto_handle = AssetDatabase::autoRegister(&AssetAutoRegisterConstructor<AssetType_>::make);
     };
 
 }

@@ -1,8 +1,8 @@
 #include "AssetDatabase.hpp"
 
 #include <Engine.Assets/Database/AssetDatabaseQuery.hpp>
-
-#include "Engine.Session/Session.hpp"
+#include <Engine.Assets/Database/AssetSeeder.hpp>
+#include <Engine.Session/Session.hpp>
 
 using namespace ember;
 
@@ -27,7 +27,7 @@ AssetDatabaseResult<Asset> AssetDatabase::operator[](cref<asset_guid> guid_) con
     if (!query.exists()) {
         return AssetDatabaseResult<Asset> {
             { AssetDatabaseResultType::eFailed },
-            { invalid_asset_guid, asset_type_id { 0 }, nullptr }
+            ember::Asset { invalid_asset_guid, asset_type_id { 0 }, nullptr }
         };
     }
 
@@ -52,16 +52,14 @@ bool AssetDatabase::insert(ptr<Asset> asset_) noexcept {
     return query.insert(asset_->typeId(), static_cast<ptr<engine::assets::Asset>>(asset_->_internal));
 }
 
-bool AssetDatabase::autoInsert(ptr<Asset> asset_) noexcept {
+bool AssetDatabase::autoRegister(ptr<ember::Asset> (* fncPtr_)()) noexcept {
 
-    DEBUG_ASSERT(asset_->_internal != nullptr, "Asset should have internal state representation.")
+    DEBUG_ASSERT(fncPtr_ != nullptr, "Give function pointer (constructor) should not be nullptr.")
 
-    const ptr<engine::assets::AssetDatabase> idb {
-        static_cast<const ptr<engine::assets::AssetDatabase>>(engine::Session::get()->assetDatabase())
-    };
-    DEBUG_ASSERT(idb != nullptr, "Asset Database should be present while accessing auto insertation.")
+    auto* seeder { engine::Session::get()->assetSeeder() };
+    DEBUG_ASSERT(seeder != nullptr, "Asset Seeder should be present while accessing auto insertation.")
 
-    return idb->insert(asset_->guid(), asset_->typeId(), static_cast<ptr<engine::assets::Asset>>(asset_->_internal));
+    return seeder->autoRegister(fncPtr_);
 }
 
 bool AssetDatabase::erase(ptr<Asset> asset_) noexcept {

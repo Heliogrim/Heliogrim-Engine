@@ -1,7 +1,9 @@
 #pragma once
 
+#include <stdexcept>
 #include <unordered_set>
 #include <Engine.Common/Collection/List.hpp>
+
 #include "Component.hpp"
 #include "Traits.hpp"
 

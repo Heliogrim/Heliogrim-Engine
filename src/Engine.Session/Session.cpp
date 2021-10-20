@@ -1,6 +1,8 @@
 #include "Session.hpp"
 
+#include <Ember/Ember.hpp>
 #include <Engine.Common/stdafx.h>
+#include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
 #include "Win32Window.hpp"
@@ -71,7 +73,27 @@ void Session::setup() {
                 /**
                  * Poll events to stay responsive
                  */
-                while (SDL_PollEvent(&event)) { }
+                while (SDL_PollEvent(&event)) {
+                    // TODO: Replace
+                    switch (event.type) {
+                        case SDL_EventType::SDL_KEYDOWN: {
+                            if (event.key.keysym.sym != SDLK_ESCAPE) {
+                                break;
+                            }
+
+                            // Warning: We need to call stop via scheduler, cause this thread will deadlock itself (recursive) due to window ownership and close behavior
+                            // Warning: Undefined behavior if called multiple times
+                            scheduler::Scheduler::get().exec(scheduler::task::make_task(Ember::stop));
+                            break;
+                        }
+                        case SDL_EventType::SDL_QUIT: {
+                            // Warning: We need to call stop via scheduler, cause this thread will deadlock itself (recursive) due to window ownership and close behavior
+                            // Warning: Undefined behavior if called multiple times
+                            scheduler::Scheduler::get().exec(scheduler::task::make_task(Ember::stop));
+                            break;
+                        }
+                    }
+                }
 
                 /**
                  * Check for signaled queue

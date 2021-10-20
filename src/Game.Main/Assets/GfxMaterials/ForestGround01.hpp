@@ -11,4 +11,6 @@ namespace ember::game::assets::material {
     public:
         ForestGround01();
     };
+
+    AUTO_REGISTER_ASSET(ForestGround01)
 }
