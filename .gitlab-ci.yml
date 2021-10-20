@@ -13,70 +13,30 @@ build.windows.msvc:
         - '[ -e cmdlet.cmd ] && rm cmdlet.cmd'
         - touch cmdlet.cmd
         - chmod +x cmdlet.cmd
-        
-        - echo $'for /f "usebackq delims=#" %%a in (`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere" -latest -property installationPath`) do call "%%a\\Common7\\Tools\\VsDevCmd.bat"' >> cmdlet.cmd
-        - echo $'msbuild -version' >> cmdlet.cmd
-        - echo $'msbuild Game.sln -t:Clean' >> cmdlet.cmd
-        #- echo $'devenv Game.sln /Clean' >> cmdlet.cmd
+
+        - echo $'cmake --version' >> cmdlet.cmd
+        - echo $'cmake -E capabilities' >> cmdlet.cmd
 
         - cmd //c cmdlet.cmd
     
     # Process
     script:
-        # Copying
-        - mkdir -p dist/Debug
-        - mkdir -p dist/Profile
-        - mkdir -p dist/Release
-
-        # Copying - Debug
-        - cmake -E copy_if_different "$VULKAN_SDK/Third-Party/Bin/SDL2.dll" dist/Debug/
-        - cmake -E copy_if_different library/bin/assimp/Debug/assimp-vc142-mtd.dll dist/Debug/
-        - cmake -E copy_if_different library/bin/assimp/Debug/assimp-vc142-mtd.pdb dist/Debug/
-        - cmake -E copy_if_different library/bin/vorbis/Debug/ogg.dll dist/Debug/
-        - cmake -E copy_if_different library/bin/vorbis/Debug/ogg.pdb dist/Debug/
-        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbis.dll dist/Debug/
-        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbis.pdb dist/Debug/
-        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisenc.dll dist/Debug/
-        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisenc.pdb dist/Debug/
-        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisfile.dll dist/Debug/
-        - cmake -E copy_if_different library/bin/vorbis/Debug/vorbisfile.pdb dist/Debug/
-        - cmake -E copy_if_different library/bin/gtest/Debug/gtestd.pdb dist/Debug/
-        - cmake -E copy_if_different library/bin/gtest/Debug/gtest_maind.pdb dist/Debug/
-        - cmake -E copy_if_different library/bin/gtest/Debug/gmockd.pdb dist/Debug/
-        - cmake -E copy_if_different library/bin/gtest/Debug/gmock_maind.pdb dist/Debug/
-        
-        # Copying - Profile
-        - cmake -E copy_if_different "$VULKAN_SDK/Third-Party/Bin/SDL2.dll" dist/Profile/
-        - cmake -E copy_if_different library/bin/assimp/Profile/assimp-vc142-mt.dll dist/Profile/
-        - cmake -E copy_if_different library/bin/vorbis/Profile/ogg.dll dist/Profile/
-        - cmake -E copy_if_different library/bin/vorbis/Profile/vorbis.dll dist/Profile/
-        - cmake -E copy_if_different library/bin/vorbis/Profile/vorbisenc.dll dist/Profile/
-        - cmake -E copy_if_different library/bin/vorbis/Profile/vorbisfile.dll dist/Profile/
-
-        # Copying - Release
-        - cmake -E copy_if_different "$VULKAN_SDK/Third-Party/Bin/SDL2.dll" dist/Release/
-        - cmake -E copy_if_different library/bin/assimp/Release/assimp-vc142-mt.dll dist/Release/
-        - cmake -E copy_if_different library/bin/vorbis/Release/ogg.dll dist/Release/
-        - cmake -E copy_if_different library/bin/vorbis/Release/vorbis.dll dist/Release/
-        - cmake -E copy_if_different library/bin/vorbis/Release/vorbisenc.dll dist/Release/
-        - cmake -E copy_if_different library/bin/vorbis/Release/vorbisfile.dll dist/Release/
-
         # Building
-        - '[ -e cmdlet.cmd ] && rm cmdlet.cmd'
-        - touch cmdlet.cmd
-        - chmod +x cmdlet.cmd
 
-        - echo $'for /f "usebackq delims=#" %%a in (`"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere" -latest -property installationPath`) do call "%%a\\Common7\\Tools\\VsDevCmd.bat"' >> cmdlet.cmd
-        #- echo $'devenv Game.sln /Build "Debug|x64"' >> cmdlet.cmd
-        - echo $'msbuild Game.sln -t:Build -p:Configuration=Debug;Platform=x64' >> cmdlet.cmd
-        #- echo $'devenv Game.sln /Build "Profile|x64"' >> cmdlet.cmd
-        - echo $'msbuild Game.sln -t:Build -p:Configuration=Profile;Platform=x64' >> cmdlet.cmd
-        #- echo $'devenv Game.sln /Build "Release|x64"' >> cmdlet.cmd
-        - echo $'msbuild Game.sln -t:Build -p:Configuration=Release;Platform=x64' >> cmdlet.cmd
+        # CMake - Debug
+        - cmake -S . -B build/Debug -A x64 -D CMAKE_BUILD_TYPE=Debug
+        - cmake --build build/Debug -t Game --clean-first
 
-        - cmd //c cmdlet.cmd
+        # CMake - Profile
+        - cmake -S . -B build/Profile -A x64 -D CMAKE_BUILD_TYPE=Profile
+        - cmake --build build/Profile -t Game --clean-first
 
-        # Linkin Resources
+        # CMake - Release
+        - cmake -S . -B build/Release -A x64 -D CMAKE_BUILD_TYPE=Release
+        - cmake --build build/Release -t Game --clean-first
+
+        # Linking Resources
+
         #- rm -rf dist/Debug/resources
         - cmd //c "IF EXIST .\dist\Debug\resources del /f /q /s .\dist\Debug\resources && rmdir /q /s .\dist\Debug\resources"
         #- rm -rf dist/Profile/resources
