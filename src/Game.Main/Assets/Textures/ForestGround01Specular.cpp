@@ -1,6 +1,6 @@
 #include <Ember/TextureFormat.hpp>
 
-#include "ForestGound01Specular.hpp"
+#include "ForestGround01Specular.hpp"
 #include "../Images/ForestGround01Specular.hpp"
 
 using namespace ember::game::assets::texture;

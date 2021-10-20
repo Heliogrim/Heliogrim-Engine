@@ -89,6 +89,11 @@ void Ember::start() {
 
     network->setup();
     network->schedule();
+
+    /**
+     *
+     */
+    session->start();
 }
 
 void Ember::stop() {

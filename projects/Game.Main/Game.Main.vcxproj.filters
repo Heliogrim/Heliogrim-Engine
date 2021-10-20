@@ -194,28 +194,28 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Specular.hpp">
       <Filter>Headerdateien\Assets\Images</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Albedo.hpp">
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01AO.hpp">
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Cavity.hpp">
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Cavity.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Displacement.hpp">
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Displacement.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Gloss.hpp">
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Gloss.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Normal.hpp">
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Normal.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Roughness.hpp">
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Roughness.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGound01Specular.hpp">
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Specular.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Albedo.hpp">

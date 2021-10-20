@@ -2,6 +2,7 @@
 
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Database/AssetDatabase.hpp>
+#include <Engine.Assets/Database/AssetSeeder.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 
@@ -48,6 +49,7 @@ void SessionModules::setup() {
      */
     _assetDatabase = make_ptr<assets::AssetDatabase>();
     _assetFactory = make_ptr<assets::AssetFactory>(_assetDatabase);
+    _assetSeeder = make_ptr<assets::AssetSeeder>();
 
     /**
      * Prepare - Resources
@@ -61,39 +63,93 @@ void SessionModules::setup() {
 
     static_cast<ptr<ResourceManager>>(_resourceManager)->setup();
     static_cast<ptr<ResourceManager>>(_resourceManager)->schedule();
+}
 
+void SessionModules::start() {
+    /**
+     *
+     */
+    _assetSeeder->seed(_scheduler);
 }
 
 void SessionModules::wait() const {
 
+    /**
+     *
+     */
+
+    // TODO: Make better destroy check
+    u8 counter { 0 };
     while (_audio) {
+
+        if (counter > 8ui8) {
+            scheduler::thread::self::sleepFor(1000);
+        }
+
         // Wait until empty
         scheduler::thread::self::yield();
+        ++counter;
     }
 
+    counter = 0;
     while (_ecs) {
+
+        if (counter > 8ui8) {
+            scheduler::thread::self::sleepFor(1000);
+        }
+
         // Wait until empty
         scheduler::thread::self::yield();
+        ++counter;
     }
 
+    counter = 0;
     while (_graphics) {
+
+        if (counter > 8ui8) {
+            scheduler::thread::self::sleepFor(1000);
+        }
+
         // Wait until empty
         scheduler::thread::self::yield();
+        ++counter;
     }
 
+    counter = 0;
     while (_network) {
+
+        if (counter > 8ui8) {
+            scheduler::thread::self::sleepFor(1000);
+        }
+
         // Wait until empty
         scheduler::thread::self::yield();
+
+        ++counter;
     }
 
+    counter = 0;
     while (_physics) {
+
+        if (counter > 8ui8) {
+            scheduler::thread::self::sleepFor(1000);
+        }
+
         // Wait until empty
         scheduler::thread::self::yield();
+        ++counter;
     }
 
+    counter = 0;
     while (_scene) {
+
+        if (counter > 8ui8) {
+            scheduler::thread::self::sleepFor(1000);
+        }
+
         // Wait until empty
         scheduler::thread::self::yield();
+        ++counter;
     }
 }
 
@@ -143,6 +199,10 @@ const ptr<engine::assets::AssetDatabase> SessionModules::assetDatabase() const {
 
 const ptr<engine::assets::AssetFactory> SessionModules::assetFactory() const {
     return _assetFactory;
+}
+
+const ptr<engine::assets::AssetSeeder> SessionModules::assetSeeder() const {
+    return _assetSeeder;
 }
 
 const ptr<void> SessionModules::resourceManager() const {

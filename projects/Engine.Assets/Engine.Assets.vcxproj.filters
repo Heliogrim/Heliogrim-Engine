@@ -135,6 +135,9 @@
     <ClInclude Include="..\..\src\Engine.Assets\AssetFactory.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Database\AssetSeeder.hpp">
+      <Filter>Headerdateien\Database</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Asset.cpp">
@@ -160,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\AssetFactory.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Database\AssetSeeder.cpp">
+      <Filter>Quelldateien\Database</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

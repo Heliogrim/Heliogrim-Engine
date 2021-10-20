@@ -10,4 +10,5 @@ namespace ember::game::assets::texture {
         GrassWild01Normal();
     };
 
+    AUTO_REGISTER_ASSET(GrassWild01Normal)
 }

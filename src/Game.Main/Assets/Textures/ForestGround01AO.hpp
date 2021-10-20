@@ -10,4 +10,5 @@ namespace ember::game::assets::texture {
         ForestGround01AO();
     };
 
+    AUTO_REGISTER_ASSET(ForestGround01AO)
 }

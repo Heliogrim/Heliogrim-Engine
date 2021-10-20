@@ -1,6 +1,6 @@
 #include <Ember/TextureFormat.hpp>
 
-#include "ForestGound01Roughness.hpp"
+#include "ForestGround01Roughness.hpp"
 #include "../Images/ForestGround01Roughness.hpp"
 
 using namespace ember::game::assets::texture;

@@ -13,7 +13,6 @@ namespace ember::engine::gfx {
     class DepthPassSkeletalStage final :
         public GraphicPassPipelineStage {
     public:
-
         /**
          * Constructor
          *
@@ -65,7 +64,7 @@ namespace ember::engine::gfx {
          */
         void process(cref<GraphicPassStageContext> ctx_, ptr<const ProcessedModelBatch> batch_) override;
 
-        void after(cref<GraphicPassStageContext> ctx_);
+        void after(cref<GraphicPassStageContext> ctx_) override;
 
     private:
         /**
@@ -86,7 +85,6 @@ namespace ember::engine::gfx {
         sptr<pipeline::RenderPass> _renderPass;
 
     public:
-
         /**
          * Renders the pass
          *
@@ -104,7 +102,6 @@ namespace ember::engine::gfx {
         sptr<FixedPipeline> _pipeline;
 
     public:
-
         /**
          * Gets the internal Graphics Pipeline
          *

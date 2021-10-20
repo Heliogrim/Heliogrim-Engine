@@ -10,4 +10,5 @@ namespace ember::game::assets::texture {
         GrassWild01Roughness();
     };
 
+    AUTO_REGISTER_ASSET(GrassWild01Roughness)
 }

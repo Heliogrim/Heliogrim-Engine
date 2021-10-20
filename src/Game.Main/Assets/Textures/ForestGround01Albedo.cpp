@@ -2,7 +2,7 @@
 
 #include <Ember/TextureFormat.hpp>
 
-#include "ForestGound01Albedo.hpp"
+#include "ForestGround01Albedo.hpp"
 
 using namespace ember::game::assets;
 using namespace ember;

@@ -10,4 +10,6 @@ namespace ember::game::assets::texture {
         ForestGround01Displacement();
     };
 
+    AUTO_REGISTER_ASSET(ForestGround01Displacement)
+
 }

@@ -87,16 +87,16 @@ namespace ember {
         bool insert(ptr<Asset> asset_) noexcept;
 
         /**
-         * Inserts the given asset to database
+         * Automatic register the given asset to database
          *
          * @author Julius
-         * @date 06.10.2021
+         * @date 20.10.2021
          *
-         * @param  asset_ The asset.
+         * @param fncPtr_ If non-null, the function pointer to a constructor.
          *
          * @returns True if it succeeds, false if it fails.
          */
-        static bool autoInsert(ptr<Asset> asset_) noexcept;
+        static bool autoRegister(ptr<Asset> (*fncPtr_)(void)) noexcept;
 
         /**
          * Erases the given asset from the database and erases internal states
