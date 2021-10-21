@@ -28,34 +28,34 @@ build.windows.msvc:
         - cmake --build build/Debug -t Game --clean-first
 
         # CMake - Profile
-        - cmake -S . -B build/Profile -A x64 -D CMAKE_BUILD_TYPE=Profile
-        - cmake --build build/Profile -t Game --clean-first
+        #- cmake -S . -B build/Profile -A x64 -D CMAKE_BUILD_TYPE=Profile
+        #- cmake --build build/Profile -t Game --clean-first
 
         # CMake - Release
-        - cmake -S . -B build/Release -A x64 -D CMAKE_BUILD_TYPE=Release
-        - cmake --build build/Release -t Game --clean-first
+        #- cmake -S . -B build/Release -A x64 -D CMAKE_BUILD_TYPE=Release
+        #- cmake --build build/Release -t Game --clean-first
 
         # Linking Resources
 
         #- rm -rf dist/Debug/resources
         - cmd //c "IF EXIST .\dist\Debug\resources del /f /q /s .\dist\Debug\resources && rmdir /q /s .\dist\Debug\resources"
         #- rm -rf dist/Profile/resources
-        - cmd //c "IF EXIST .\dist\Profile\resources del /f /q /s .\dist\Profile\resources && rmdir /q /s .\dist\Profile\resources"
+        #- cmd //c "IF EXIST .\dist\Profile\resources del /f /q /s .\dist\Profile\resources && rmdir /q /s .\dist\Profile\resources"
         #- rm -rf dist/Release/resources
-        - cmd //c "IF EXIST .\dist\Release\resources del /f /q /s .\dist\Release\resources && rmdir /q /s .\dist\Release\resources"
+        #- cmd //c "IF EXIST .\dist\Release\resources del /f /q /s .\dist\Release\resources && rmdir /q /s .\dist\Release\resources"
         #- ln -sfrn resources dist/Debug/resources
         - cmd //c "mklink /j .\dist\Debug\resources .\resources"
         #- ln -sfrn resources dist/Profile/resources
-        - cmd //c "mklink /j .\dist\Profile\resources .\resources"
+        #- cmd //c "mklink /j .\dist\Profile\resources .\resources"
         #- ln -sfrn resources dist/Release/resources
-        - cmd //c "mklink /j .\dist\Release\resources .\resources"
+        #- cmd //c "mklink /j .\dist\Release\resources .\resources"
     
     artifacts:
         name: Ember-$CI_COMMIT_REF_NAME
         paths:
             - dist/Debug/
-            - dist/Release/
-            - dist/Profile/
+            #- dist/Release/
+            #- dist/Profile/
         expire_in: 15min
 
 test:
