@@ -1,6 +1,7 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.21)
 
 # CMake Tools
+include(cmake/Tools.cmake)
 include(cmake/HealthCheck.cmake)
 include(cmake/MakeLibraryProject.cmake)
 include(cmake/MakeTestProject.cmake)
@@ -59,14 +60,18 @@ include(cmake/PreprocDefinitions.cmake)
 include(cmake/CompileOptions.cmake)
 
 # Modules
-file(GLOB libraries LIST_DIRECTORIES true ${META_PROJECT_SUB_DIR}/*)
-file(GLOB tests LIST_DIRECTORIES true ${META_PROJECT_SUB_DIR}/*.Test)
+set(libraries "")
+list_directories("libraries" "${META_PROJECT_SUB_DIR}")
+
+set(tests ${libraries})
 
 list(FILTER libraries EXCLUDE REGEX "\\.Test")
+list(FILTER libraries EXCLUDE REGEX "Game")
+list(FILTER tests INCLUDE REGEX "\\.Test")
 
 foreach (lib IN LISTS libraries tests)
     message(STATUS "${lib}")
     add_subdirectory(${lib})
 endforeach ()
 
-add_subdirectory(${META_PROJECT_ROOT_DIR}/Game)
+add_subdirectory("${META_PROJECT_SUB_DIR}/Game.Main")
