@@ -51,17 +51,95 @@ build.windows.msvc:
         #- cmd //c "mklink /j .\dist\Release\resources .\resources"
     
     artifacts:
-        name: Ember-$CI_COMMIT_REF_NAME
+        name: Ember-Win-MSVC-$CI_COMMIT_REF_NAME
         paths:
             - dist/Debug/
             #- dist/Release/
             #- dist/Profile/
         expire_in: 15min
 
-test:
-    stage: test
+build.linux.gcc:
+    stage: build
+    tags:
+        - linux
+        - gcc11
+        - vulkan
+        - amd64
+    
+    # Preparation
+    before_script:
+        - cmake --version
+        - cmake -E capabilities
+    
+    # Process
     script:
-        - echo "Test"
+        # Building
+
+        # CMake - Debug
+        - cmake -S . -B build/Debug -A x64 -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Debug
+        - cmake --build build/Debug -t Game --clean-first
+
+        # CMake - Profile
+        #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Profile
+        #- cmake --build build/Profile -t Game --clean-first
+
+        # CMake - Release
+        #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Release
+        #- cmake --build build/Release -t Game --clean-first
+
+        # Linking Resources
+    
+    artifacts:
+        name: Ember-Unix-GCC-$CI_COMMIT_REF_NAME
+        paths:
+            - dist/Debug/
+            #- dist/Release/
+            #- dist/Profile/
+        expire_in: 15min
+
+build.linux.clang:
+    stage: build
+    tags:
+        - linux
+        - clang13
+        - vulkan
+        - amd64
+    
+    # Preparation
+    before_script:
+        - cmake --version
+        - cmake -E capabilities
+    
+    # Process
+    script:
+        # Building
+
+        # CMake - Debug
+        - cmake -S . -B build/Debug -A x64 -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Debug
+        - cmake --build build/Debug -t Game --clean-first
+
+        # CMake - Profile
+        #- cmake -S . -B build/Profile -A x64 -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Profile
+        #- cmake --build build/Profile -t Game --clean-first
+
+        # CMake - Release
+        #- cmake -S . -B build/Release -A x64 -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Release
+        #- cmake --build build/Release -t Game --clean-first
+
+        # Linking Resources
+    
+    artifacts:
+        name: Ember-Unix-Clang-$CI_COMMIT_REF_NAME
+        paths:
+            - dist/Debug/
+            #- dist/Release/
+            #- dist/Profile/
+        expire_in: 15min
+
+#test:
+#    stage: test
+#    script:
+#        - echo "Test"
 
 #deploy:
 #    stage: deploy

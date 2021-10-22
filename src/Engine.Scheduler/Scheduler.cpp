@@ -14,7 +14,8 @@ ptr<Scheduler> Scheduler::_instance = nullptr;
 Scheduler::Scheduler() noexcept :
     _sharedTasks(),
     _workerCount(0),
-    _workers(nullptr) {}
+    _workers(nullptr),
+    _fiberPool(0) {}
 
 Scheduler::~Scheduler() {
     tidy();
@@ -135,7 +136,7 @@ void Scheduler::setup(u32 workers_) {
      */
     u32 offset { 0 };
     for (u32 i = 0; i < critCount; ++i) {
-        ::new(&_workers[offset + i]) aligned_worker(&_sharedTasks, task::TaskMask::eCritical);
+        ::new(&_workers[offset + i]) aligned_worker(&_sharedTasks, &_fiberPool, task::TaskMask::eCritical);
     }
 
     /**
@@ -143,7 +144,7 @@ void Scheduler::setup(u32 workers_) {
      */
     offset += critCount;
     for (u32 i = 0; i < ioCount; ++i) {
-        ::new(&_workers[offset + i]) aligned_worker(&_sharedTasks, task::TaskMask::eIO);
+        ::new(&_workers[offset + i]) aligned_worker(&_sharedTasks, &_fiberPool, task::TaskMask::eIO);
     }
 
     /**
@@ -151,7 +152,7 @@ void Scheduler::setup(u32 workers_) {
      */
     offset += ioCount;
     for (u32 i = 0; i < allCount; ++i) {
-        ::new(&_workers[offset + i]) aligned_worker(&_sharedTasks, task::TaskMask::eAll);
+        ::new(&_workers[offset + i]) aligned_worker(&_sharedTasks, &_fiberPool, task::TaskMask::eAll);
     }
 
     /**

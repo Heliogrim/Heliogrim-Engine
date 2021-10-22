@@ -1,12 +1,13 @@
 #pragma once
 #include "Task/SignaledQueue.hpp"
 #include "Task/Task.hpp"
-#include "Thread/Worker.hpp"
+#include "Worker/Worker.hpp"
 
 namespace ember::engine::scheduler {
     class Scheduler final {
     private:
-        using aligned_worker = ALIGNED(thread::Worker, CACHE_LINE_SIZE);
+        using aligned_worker = ALIGNED(worker::Worker, CACHE_LINE_SIZE);
+        using fiber_pool_type = fiber::FiberPool;
 
     public:
         /**
@@ -132,5 +133,9 @@ namespace ember::engine::scheduler {
 
         u32 _workerCount;
         aligned_worker* _workers;
+
+    private:
+        /** The fiber pool */
+        fiber_pool_type _fiberPool;
     };
 }

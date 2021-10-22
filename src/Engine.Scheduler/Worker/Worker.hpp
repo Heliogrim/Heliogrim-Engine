@@ -1,10 +1,12 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include "Thread.hpp"
+#include "../Thread/Thread.hpp"
 #include "../Task/SharedQueue.hpp"
+#include "../Fiber/Fiber.hpp"
+#include "../Fiber/FiberPool.hpp"
 
-namespace ember::engine::scheduler::thread {
+namespace ember::engine::scheduler::worker {
 
     class Worker final {
     public:
@@ -15,9 +17,11 @@ namespace ember::engine::scheduler::thread {
          * @date 14.11.2020
          *
          * @param  queue_ The queue.
+         * @param  fiberPool_ The fiber pool.
          * @param  mask_ The mask.
          */
-        Worker(IN ptr<task::SharedQueue> queue_, IN task::TaskMask mask_) noexcept;
+        Worker(_In_ ptr<task::SharedQueue> queue_, _In_ ptr<fiber::FiberPool> fiberPool_,
+            IN task::TaskMask mask_) noexcept;
 
         /**
          * Destructor
@@ -135,7 +139,7 @@ namespace ember::engine::scheduler::thread {
         /** The interrupt pointer */
         ptr<volatile bool> _interrupt_ptr = nullptr;
 
-    public:
+    private:
         /**
          * Sets interrupt pointer
          *
@@ -147,8 +151,39 @@ namespace ember::engine::scheduler::thread {
         void setInterruptPtr(ptr<volatile bool> pointer_) noexcept;
 
     private:
+        fiber::Fiber::handle_type _fiber;
+
+    private:
+        /**
+         * Sets fiber handle
+         *
+         * @author Julius
+         * @date 21.10.2021
+         *
+         * @param  fiber_ The fiber.
+         */
+        void setFiberHandle(fiber::Fiber::handle_type fiber_) noexcept;
+
+    private:
+        ptr<fiber::FiberPool> _fiberPool;
+
+    public:
+        /**
+         * Get the fiber pool
+         *
+         * @author Julius
+         * @date 21.10.2021
+         *
+         * @returns A ptr&lt;fiber::FiberPool&gt;
+         */
+        [[nodiscard]] ptr<fiber::FiberPool> fiberPool() const noexcept;
+
+    private:
         ptr<task::SharedQueue> _queue;
-        Thread _thread;
+        thread::Thread _thread;
         task::TaskMask _mask;
+
+    private:
+        static void __stdcall handle(void* args_);
     };
 }

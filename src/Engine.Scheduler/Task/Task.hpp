@@ -2,10 +2,15 @@
 
 #include <functional>
 #include <Engine.Common/Types.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/__macro.hpp>
 
 #include "TaskMask.hpp"
 #include "TaskType.hpp"
+
+namespace ember::engine::scheduler::fiber {
+    class Fiber;
+}
 
 namespace ember::engine::scheduler::task {
 
@@ -54,6 +59,32 @@ namespace ember::engine::scheduler::task {
         /** The mask */
         const TaskMask _mask;
 
+    protected:
+        /** The fiber */
+        ptr<fiber::Fiber> _fiber;
+
+    public:
+        /**
+         * Gets the fiber
+         *
+         * @author Julius
+         * @date 22.10.2021
+         *
+         * @returns A ptr&lt;fiber::Fiber&gt;
+         */
+        [[nodiscard]] ptr<fiber::Fiber> fiber() const noexcept;
+
+        /**
+         * Gets the fiber
+         *
+         * @author Julius
+         * @date 22.10.2021
+         *
+         * @returns A ref&lt;ptr&lt;fiber::Fiber&gt;&gt;
+         */
+        [[nodiscard]] ref<ptr<fiber::Fiber>> fiber() noexcept;
+
+    protected:
         /**
          * Constructor
          *
@@ -81,6 +112,11 @@ namespace ember::engine::scheduler::task {
         TaskDelegate(const TaskDelegate&) noexcept = default;
 
         TaskDelegate(TaskDelegate&&) noexcept = default;
+
+    private:
+        ref<TaskDelegate> operator=(cref<TaskDelegate>) = delete;
+
+        ref<TaskDelegate> operator=(mref<TaskDelegate>) noexcept = delete;
     };
 
     typedef const TaskDelegate* __TaskDelegate;
