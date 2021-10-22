@@ -31,6 +31,18 @@
     <Filter Include="Quelldateien\Task">
       <UniqueIdentifier>{e61a665c-1129-409c-b4c0-6c86e301740d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Worker">
+      <UniqueIdentifier>{4b540d42-0133-413c-847b-4f76eeba079d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Worker">
+      <UniqueIdentifier>{e454e148-acd7-4f00-9e7a-ad34e24d50cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Fiber">
+      <UniqueIdentifier>{63001a84-3085-4c50-b98d-1f74a788f497}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Fiber">
+      <UniqueIdentifier>{24a81973-9414-4b57-b8e6-3c1f40769eb9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Scheduler\Tick\Tick.hpp">
@@ -51,9 +63,6 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Async.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scheduler\Thread\Worker.hpp">
-      <Filter>Headerdateien\Thread</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Scheduler\Task\SharedQueue.hpp">
       <Filter>Headerdateien\Task</Filter>
     </ClInclude>
@@ -66,6 +75,18 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Task\SignaledQueue.hpp">
       <Filter>Headerdateien\Task</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Worker\Worker.hpp">
+      <Filter>Headerdateien\Worker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\Fiber.hpp">
+      <Filter>Headerdateien\Fiber</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberPool.hpp">
+      <Filter>Headerdateien\Fiber</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberLaunchPad.hpp">
+      <Filter>Headerdateien\Fiber</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scheduler\Thread\Thread.cpp">
@@ -73,9 +94,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Scheduler.cpp">
       <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scheduler\Thread\Worker.cpp">
-      <Filter>Quelldateien\Thread</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Task\SharedQueue.cpp">
       <Filter>Quelldateien\Task</Filter>
@@ -88,6 +106,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Task\SignaledQueue.cpp">
       <Filter>Quelldateien\Task</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Worker\Worker.cpp">
+      <Filter>Quelldateien\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\Fiber.cpp">
+      <Filter>Quelldateien\Fiber</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\FiberPool.cpp">
+      <Filter>Quelldateien\Fiber</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

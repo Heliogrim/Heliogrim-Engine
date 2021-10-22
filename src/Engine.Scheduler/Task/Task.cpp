@@ -6,7 +6,8 @@ using namespace ember::engine::scheduler::task;
 
 TaskDelegate::TaskDelegate(const TaskType type_, const TaskMask mask_) noexcept :
     _type(type_),
-    _mask(mask_) {}
+    _mask(mask_),
+    _fiber(nullptr) {}
 
 void TaskDelegate::delegate() const {
     switch (_type) {
@@ -76,6 +77,14 @@ TaskType TaskDelegate::type() const noexcept {
 
 TaskMask TaskDelegate::mask() const noexcept {
     return _mask;
+}
+
+ember::ptr<ember::engine::scheduler::fiber::Fiber> TaskDelegate::fiber() const noexcept {
+    return _fiber;
+}
+
+ember::ref<ember::ptr<ember::engine::scheduler::fiber::Fiber>> TaskDelegate::fiber() noexcept {
+    return _fiber;
 }
 
 Task::Task(Task::function_type&& fnc_, const TaskMask mask_) noexcept :
