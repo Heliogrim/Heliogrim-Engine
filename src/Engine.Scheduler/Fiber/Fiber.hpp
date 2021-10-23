@@ -58,6 +58,16 @@ namespace ember::engine::scheduler::fiber {
          * @date 21.10.2021
          */
         void yield();
+
+        /**
+         * Awaits the given awaitable_ with this fiber
+         *
+         * @author Julius
+         * @date 23.10.2021
+         *
+         * @param  awaitable_ The awaitable.
+         */
+        void await(_Inout_ mref<FiberAwaitable> awaitable_);
     };
 
     namespace self {
@@ -69,6 +79,48 @@ namespace ember::engine::scheduler::fiber {
          * @date 21.10.2021
          */
         void yield();
+
+        /**
+         * Awaits the given awaitable_ with current fiber
+         *
+         * @author Julius
+         * @date 23.10.2021
+         *
+         * @param  awaitable_ The awaitable.
+         */
+        extern void await(_Inout_ mref<FiberAwaitable> awaitable_);
+
+        template <IsAwaitableSignal AwaitableType_>
+        FORCE_INLINE void await_signal(_In_ const ptr<AwaitableType_> awaitable_) {
+            await({
+                .mask = FiberAwaitableBits::eSignal,
+                .signal = awaitable_
+            });
+        }
+
+        template <IsAwaitableSignalCall AwaitableType_>
+        FORCE_INLINE void await_signal_call(cref<AwaitableType_> awaitable_) {
+            await({
+                .mask = FiberAwaitableBits::eSignalCall,
+                .call = awaitable_
+            });
+        }
+
+        template <IsAwaitable AwaitableType_>
+        FORCE_INLINE void await(
+            _In_ _STD conditional_t<IsAwaitableSignal<AwaitableType_>, const ptr<AwaitableType_>, cref<AwaitableType_>>
+            awaitable_
+        ) {
+            if constexpr (IsAwaitableSignal<AwaitableType_>) {
+                return await_signal<AwaitableType_>(awaitable_);
+            } else if (IsAwaitableSignalRet<AwaitableType_>) {
+                return await_signal<await_signal_type>(awaitable_.await());
+            } else if (IsAwaitableSignalCall<AwaitableType_>) {
+                return await_signal_call<AwaitableType_>(awaitable_);
+            } else {
+                __ud2();
+            }
+        }
     }
 
     /**
@@ -96,43 +148,4 @@ namespace ember::engine::scheduler::fiber {
      * @date 23.10.2021
      */
     extern void switch_fiber_to_thread();
-
-    /**
-     * Awaits the given awaitable_ with current fiber
-     *
-     * @author Julius
-     * @date 23.10.2021
-     *
-     * @param  awaitable_ The awaitable.
-     */
-    extern void await(_In_ mref<FiberAwaitable> awaitable_);
-
-    template <IsAwaitableSignal AwaitableType_>
-    FORCE_INLINE void await_signal(cref<AwaitableType_> awaitable_) {
-        await({
-            .mask = FiberAwaitableBits::eSignal,
-            .signal = awaitable_
-        });
-    }
-
-    template <IsAwaitableSignalCall AwaitableType_>
-    FORCE_INLINE void await_signal_call(cref<AwaitableType_> awaitable_) {
-        await({
-            .mask = FiberAwaitableBits::eSignalCall,
-            .call = awaitable_
-        });
-    }
-
-    template <IsAwaitable AwaitableType_>
-    FORCE_INLINE void await(cref<AwaitableType_> awaitable_) {
-        if constexpr (IsAwaitableSignal<AwaitableType_>) {
-            return await_signal<AwaitableType_>(awaitable_);
-        } else if (IsAwaitableSignalRet<AwaitableType_>) {
-            return await_signal<await_signal_type>(awaitable_.await());
-        } else if (IsAwaitableSignalCall<AwaitableType_>) {
-            return await_signal_call<AwaitableType_>(awaitable_);
-        } else {
-            __ud2();
-        }
-    }
 }

@@ -183,6 +183,9 @@
     <ClInclude Include="..\..\src\Ember\AssetAutoGuid.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Inbuilt.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember\World\World.cpp">
@@ -279,6 +282,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\TextureAsset.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Inbuilt.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

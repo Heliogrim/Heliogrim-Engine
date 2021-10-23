@@ -111,10 +111,53 @@ void Worker::handle(void* args_) {
          * Process Task
          */
         if (task != nullptr) {
-            launcher.assign(worker->_fiber, pool.acquire(), task);
+
+            launcher.self = task->fiber();
+
+            /**
+             * Check for new task
+             */
+            if (launcher.self == nullptr) {
+                launcher.self = pool.acquire();
+                launcher.self->task = task;
+                const_cast<ptr<task::TaskDelegate>>(task)->fiber() = launcher.self;
+            }
+
+            /**
+             *
+             */
+            DEBUG_ASSERT(launcher.self->parent == nullptr, "")
+            DEBUG_ASSERT(launcher.self->task != nullptr, "")
+            DEBUG_ASSERT(launcher.self->task->fiber() != nullptr, "")
+            launcher.self->parent = fiber;
+
+            /**
+             *
+             */
             launcher();
 
-            pool.release(_STD move(launcher.self));
+            /**
+             * Check whether task suspended execution
+             */
+            if (launcher.self->task != nullptr) {
+                /**
+                 * Reschedule suspended task
+                 */
+                worker->queue()->push(_STD move(task));
+
+            } else {
+
+                DEBUG_ASSERT(launcher.self->parent == nullptr, "")
+                DEBUG_ASSERT(launcher.self->task == nullptr, "")
+                DEBUG_ASSERT(static_cast<u8>(launcher.self->awaiter.mask) == 0, "")
+                DEBUG_ASSERT(launcher.self->awaiter.self == nullptr, "")
+                DEBUG_ASSERT(launcher.self->awaiter.call == nullptr, "")
+
+                /**
+                 * Release execution context
+                 */
+                pool.release(_STD move(launcher.self));
+            }
         }
 
         /**

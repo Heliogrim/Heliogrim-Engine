@@ -38,6 +38,7 @@
     <ClInclude Include="..\..\src\Ember\GfxMaterialAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\Graphics.hpp" />
     <ClInclude Include="..\..\src\Ember\ImageAsset.hpp" />
+    <ClInclude Include="..\..\src\Ember\Inbuilt.hpp" />
     <ClInclude Include="..\..\src\Ember\LandscapeMeshAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\LevelAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\Network.hpp" />
@@ -77,6 +78,7 @@
     <ClCompile Include="..\..\src\Ember\GfxMaterial.cpp" />
     <ClCompile Include="..\..\src\Ember\GfxMaterialAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\ImageAsset.cpp" />
+    <ClCompile Include="..\..\src\Ember\Inbuilt.cpp" />
     <ClCompile Include="..\..\src\Ember\LandscapeMeshAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\LevelAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\PfxMaterial.cpp" />

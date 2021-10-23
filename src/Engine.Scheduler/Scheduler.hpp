@@ -89,7 +89,7 @@ namespace ember::engine::scheduler {
          *
          * @param [in] task_ The task.
          */
-        void exec(IN task::__TaskDelegate task_);
+        void exec(_Inout_ task::__TaskDelegate task_);
 
         /**
          * Gets worker count
