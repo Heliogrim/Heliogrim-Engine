@@ -75,6 +75,8 @@ void ember_main_entry() {
             tmpNextTick = now + _STD chrono::nanoseconds { delay };
         }
 
+        static _STD atomic_bool testflag { false };
+
         return true;
     });
 
