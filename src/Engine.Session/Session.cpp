@@ -65,6 +65,10 @@ void Session::setup() {
     _thread = _STD thread {
         [&, this]() {
 
+            #ifdef WIN32
+            SetThreadDescription(GetCurrentThread(), L"Session Thread");
+            #endif
+
             SDL_Event event;
             _STD function<void()> fnc;
 

@@ -17,7 +17,7 @@ namespace ember::engine::scheduler::fiber {
 
     template <typename AwaitableType_>
     concept IsAwaitableSignalRet = requires(const AwaitableType_ obj) {
-        { obj.await() } -> std::same_as<await_signal_type&>;
+        { obj.await() } -> std::same_as<const ptr<await_signal_type>>;
     };
 
     template <typename AwaitableType_>

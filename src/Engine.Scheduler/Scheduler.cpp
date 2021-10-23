@@ -102,9 +102,9 @@ void Scheduler::setup(u32 workers_) {
 
     if (workers_ == 0) {
         workers_ = MAX(thread::getNativeThreadCount() - 1, 1);
-        // TODO:
-        workers_ = MIN(workers_, 8);
     }
+
+    workers_ = 8;
 
     /**
      * Prepare shared task collection

@@ -33,6 +33,7 @@ void TaskDelegate::delegate() const {
                 /**
                  * If invocation returns success, re-scheduler the task
                  */
+                const_cast<ptr<TaskDelegate>>(this)->_fiber = nullptr;
                 scheduler::Scheduler::get(_STD nothrow_t {})->exec(this);
             } else {
                 // TODO: destruct

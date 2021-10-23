@@ -9,7 +9,7 @@
 #include "TaskType.hpp"
 
 namespace ember::engine::scheduler::fiber {
-    class Fiber;
+    struct Fiber;
 }
 
 namespace ember::engine::scheduler::task {

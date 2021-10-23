@@ -85,6 +85,27 @@ void Fiber::yield() {
     #endif
 }
 
+void Fiber::await(mref<FiberAwaitable> awaitable_) {
+
+    DEBUG_ASSERT(parent != nullptr, "Dynamic Fiber requires parent to await payload.")
+    DEBUG_ASSERT(handle != parent, "Current fiber and next fiber must never be the same.")
+
+    /**
+     *
+     */
+    awaiter = _STD move(awaitable_);
+
+    /**
+     *
+     */
+    yield();
+
+    /**
+     *
+     */
+    awaiter.reset();
+}
+
 void self::yield() {
 
     #ifdef ENV_MSVC
@@ -105,6 +126,28 @@ void self::yield() {
      */
     throw {};
 
+    #endif
+}
+
+void self::await(mref<FiberAwaitable> awaitable_) {
+
+    #ifdef ENV_MSVC
+    /**
+     *
+     */
+    #ifdef _DEBUG
+    auto* entry = ::GetFiberData();
+    DEBUG_ASSERT(entry != nullptr, "")
+    static_cast<ptr<Fiber>>(entry)->await(_STD forward<FiberAwaitable>(awaitable_));
+    #else
+    static_cast<ptr<Fiber>>(::GetFiberData())->await(_STD forward<FiberAwaitable>(awaitable_));
+    #endif
+
+    #else
+    /**
+     *
+     */
+    throw {};
     #endif
 }
 
