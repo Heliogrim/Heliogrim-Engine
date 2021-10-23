@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Scheduler\Async.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\Awaitable.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\Fiber.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberLaunchPad.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberPool.hpp" />

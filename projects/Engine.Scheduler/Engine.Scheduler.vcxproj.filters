@@ -87,6 +87,9 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberLaunchPad.hpp">
       <Filter>Headerdateien\Fiber</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\Awaitable.hpp">
+      <Filter>Headerdateien\Fiber</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scheduler\Thread\Thread.cpp">

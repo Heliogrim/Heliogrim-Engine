@@ -27,7 +27,7 @@ void FiberPool::tidy() {
     while (!_pool.empty()) {
         _pool.try_pop(entry);
 
-        entry->destroy_external();
+        entry->destroy();
         delete entry;
     }
 }
@@ -96,16 +96,13 @@ ptr<Fiber> FiberPool::acquireNew() noexcept {
     /**
      *
      */
-    fiber->handle = ::CreateFiber(
-        default_fiber_stack_size(),
-        &FiberLaunchPad::launch,
-        fiber
-    );
+    Fiber::create(fiber, &FiberLaunchPad::launch, fiber);
 
     /**
      *
      */
     if (fiber->handle == NULL) {
+        fiber->destroy();
         delete fiber;
         fiber = nullptr;
     }
