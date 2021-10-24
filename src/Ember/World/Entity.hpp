@@ -157,6 +157,22 @@ namespace ember::world {
         Entity() = delete;
 
         /**
+         * Copy Constructor
+         *
+         * @author Julius
+         * @date 24.10.2021
+         */
+        Entity(cref<Entity>) = delete;
+
+        /**
+         * Move Constructor
+         *
+         * @author Julius
+         * @date 24.10.2021
+         */
+        Entity(mref<Entity>) noexcept = delete;
+
+        /**
          * Destructor
          *
          * @author Julius
@@ -164,18 +180,38 @@ namespace ember::world {
          */
         ~Entity() noexcept = default;
 
+    public:
+        /**
+         * Assignment operator
+         *
+         * @author Julius
+         * @date 24.10.2021
+         *
+         * @returns A shallow copy of this.
+         */
+        ref<Entity> operator=(cref<Entity>) = delete;
+
+        /**
+         * Move Assignment operator
+         *
+         * @author Julius
+         * @date 24.10.2021
+         *
+         * @returns A shallow copy of this.
+         */
+        ref<Entity> operator=(mref<Entity>) noexcept = delete;
+
+    public:
         /**
          * Object allocation operator
          *
          * @author Julius
          * @date 20.08.2021
          *
-         * @param  size_ The size.
-         *
          * @returns The result of the operation.
          */
         template <typename ...Args_>
-        ptr<void> operator new(_STD size_t size_, Args_ ...) = delete;
+        ptr<void> operator new(_STD size_t, Args_ ...) = delete;
 
         /**
          * Object de-allocation operator
@@ -183,11 +219,9 @@ namespace ember::world {
          * @author Julius
          * @date 20.08.2021
          *
-         * @param  dst_ Destination for the.
-         *
          * @returns The result of the operation.
          */
         template <typename ...Args_>
-        void operator delete(ptr<void> dst_, Args_ ...) = delete;
+        void operator delete(ptr<void>, Args_ ...) = delete;
     };
 }
