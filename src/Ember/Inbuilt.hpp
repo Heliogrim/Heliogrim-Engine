@@ -2,8 +2,9 @@
 
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
-#include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Concurrent/Future.hpp>
+#include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Scheduler/Fiber/Awaitable.hpp>
 
 namespace ember {
@@ -15,6 +16,59 @@ namespace ember {
     /**
      * Section: Specific Data Types
      */
+
+    /**
+     * Subsection: Suspension
+     */
+    using await_signal_type = engine::scheduler::fiber::await_signal_type;
+
+    /**
+     * Subsection: Results
+     */
+    template <typename Type_>
+    class future :
+        protected concurrent::future<Type_> {
+    public:
+        using underlying_type = concurrent::future<Type_>;
+
+    public:
+        /**
+         * Check whether this future has taken part
+         *
+         * @author Julius
+         * @date 25.10.2021
+         *
+         * @returns True if future as taken part, otherwise false.
+         */
+        [[nodiscard]] _Success_(return == true) bool ready() const noexcept {
+            return underlying_type::ready();
+        }
+
+        /**
+         * Get the stored value of this future state
+         *
+         * @author Julius
+         * @date 25.10.2021
+         *
+         * @returns A reference to the value to move from
+         */
+        [[nodiscard]] Type_&& get() const {
+            return _STD forward<Type_>(underlying_type::retrieve());
+        }
+
+    public:
+        /**
+         * Get the underlying awaitable signal of this future
+         *
+         * @author Julius
+         * @date 25.10.2021
+         *
+         * @returns A pointer to the awaitable signal.
+         */
+        [[nodiscard]] operator ptr<await_signal_type>() const noexcept {
+            return underlying_type::operator ptr<await_signal_type>();
+        }
+    };
 
     /**
      * Subsection: Ticks
@@ -86,8 +140,6 @@ namespace ember {
     /**
      * Subsection: Suspension
      */
-
-    using await_signal_type = engine::scheduler::fiber::await_signal_type;
 
     /**
      * Yields the current execution context at least for given milliseconds

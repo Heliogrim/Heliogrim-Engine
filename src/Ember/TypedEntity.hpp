@@ -5,7 +5,7 @@
 
 #include "Entity.hpp"
 
-namespace ember::world {
+namespace ember {
 
     namespace {
 
@@ -42,7 +42,7 @@ namespace ember::world {
              * @author Julius
              * @date 21.08.2021
              */
-            [[nodiscard]] operator ember::world::Entity() const noexcept;
+            [[nodiscard]] operator ember::Entity() const noexcept;
 
             /**
              * Cast this typed entity to a general entity
@@ -52,7 +52,7 @@ namespace ember::world {
              * @author Julius
              * @date 21.08.2021
              */
-            [[nodiscard]] operator ember::world::Entity() noexcept;
+            [[nodiscard]] operator ember::Entity() noexcept;
         };
     }
 

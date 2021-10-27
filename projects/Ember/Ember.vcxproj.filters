@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Headerdateien\World">
-      <UniqueIdentifier>{1f79d1b3-c584-488c-8a14-577c65a4b5c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\World">
-      <UniqueIdentifier>{616e5afc-77ff-4b6a-818d-aacb9b056476}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Component">
       <UniqueIdentifier>{ab047d90-3814-46ce-a9d0-ad2f2c11f45d}</UniqueIdentifier>
     </Filter>
@@ -45,15 +39,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Ember\World\World.hpp">
-      <Filter>Headerdateien\World</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\World\Level.hpp">
-      <Filter>Headerdateien\World</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\World\Entity.hpp">
-      <Filter>Headerdateien\World</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Ember\Component\LogicComponent.hpp">
       <Filter>Headerdateien\Component</Filter>
     </ClInclude>
@@ -110,9 +95,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\Traits.hpp">
       <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\World\TypedEntity.hpp">
-      <Filter>Headerdateien\World</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\Component\Gfx\MeshComponent.hpp">
       <Filter>Headerdateien\Component\Gfx</Filter>
@@ -186,17 +168,20 @@
     <ClInclude Include="..\..\src\Ember\Inbuilt.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Entity.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Level.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\TypedEntity.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\World.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Ember\World\World.cpp">
-      <Filter>Quelldateien\World</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Ember\World\Level.cpp">
-      <Filter>Quelldateien\World</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Ember\World\Entity.cpp">
-      <Filter>Quelldateien\World</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Ember\AudioFormat.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -285,6 +270,15 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\Inbuilt.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Entity.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Level.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\World.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

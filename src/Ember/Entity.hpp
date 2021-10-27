@@ -3,9 +3,11 @@
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.ECS/Traits.hpp>
 
-#include "../Traits.hpp"
+#include "Inbuilt.hpp"
 
-namespace ember::world {
+#include "Traits.hpp"
+
+namespace ember {
 
     namespace {
         /**
@@ -154,23 +156,27 @@ namespace ember::world {
          * @author Julius
          * @date 20.08.2021
          */
-        Entity() = delete;
+        Entity() noexcept;
 
         /**
          * Copy Constructor
          *
          * @author Julius
          * @date 24.10.2021
+         *
+         * @param  other_ The other.
          */
-        Entity(cref<Entity>) = delete;
+        Entity(_In_ cref<Entity> other_) noexcept;
 
         /**
          * Move Constructor
          *
          * @author Julius
          * @date 24.10.2021
+         *
+         * @param  other_ The other.
          */
-        Entity(mref<Entity>) noexcept = delete;
+        Entity(_Inout_ mref<Entity> other_) noexcept;
 
         /**
          * Destructor
@@ -182,14 +188,16 @@ namespace ember::world {
 
     public:
         /**
-         * Assignment operator
+         * Copy Assignment operator
          *
          * @author Julius
          * @date 24.10.2021
          *
+         * @param  other_ The source entity.
+         *
          * @returns A shallow copy of this.
          */
-        ref<Entity> operator=(cref<Entity>) = delete;
+        ref<Entity> operator=(_In_ cref<Entity> other_) noexcept;
 
         /**
          * Move Assignment operator
@@ -197,31 +205,56 @@ namespace ember::world {
          * @author Julius
          * @date 24.10.2021
          *
+         * @param  other_ The source entity.
+         *
          * @returns A shallow copy of this.
          */
-        ref<Entity> operator=(mref<Entity>) noexcept = delete;
-
-    public:
-        /**
-         * Object allocation operator
-         *
-         * @author Julius
-         * @date 20.08.2021
-         *
-         * @returns The result of the operation.
-         */
-        template <typename ...Args_>
-        ptr<void> operator new(_STD size_t, Args_ ...) = delete;
-
-        /**
-         * Object de-allocation operator
-         *
-         * @author Julius
-         * @date 20.08.2021
-         *
-         * @returns The result of the operation.
-         */
-        template <typename ...Args_>
-        void operator delete(ptr<void>, Args_ ...) = delete;
+        ref<Entity> operator=(_Inout_ mref<Entity> other_) noexcept;
     };
+
+    namespace entity {
+        /**
+         * Check whether given entity has underlying object
+         *
+         * @author Julius
+         * @date 25.10.2021
+         *
+         * @param  entity_ The entity to check.
+         */
+        [[nodiscard]] _Success_(return == true) extern bool valid(_In_ cref<Entity> entity_) noexcept;
+
+        /**
+         * Creates a new entity with underlying object
+         *
+         * @author Julius
+         * @date 25.10.2021
+         *
+         * @returns A future, containing the newly created entity if succeeded, otherwise invalid entity.
+         */
+        [[nodiscard]] _Success_(valid(return.get())) extern future<Entity> create() noexcept;
+
+        /**
+         * Create a new entity with underlying object equivalent to given entity_
+         *
+         * @author Julius
+         * @date 25.10.2021
+         *
+         * @param  entity_ The entity to clone from.
+         *
+         * @returns A future, containing the newly created entity if succeeded, otherwise invalid entity.
+         */
+        [[nodiscard]] _Success_(valid(return.get())) extern future<Entity> clone(_In_ cref<Entity> entity_) noexcept;
+
+        /**
+         * Destroy the given entity and underlying object
+         *
+         * @author Julius
+         * @date 25.10.2021
+         *
+         * @param  entity_ The entity to destroy.
+         *
+         * @returns A future, representing whether the entity was successfully destroyed.
+         */
+        [[nodiscard]] _Success_(return.get() == true) extern future<bool> destroy(_Inout_ mref<Entity> entity_) noexcept;
+    }
 }

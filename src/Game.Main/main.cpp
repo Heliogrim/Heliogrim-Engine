@@ -12,16 +12,19 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Ember/Inbuilt.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
+#include "Ember/Entity.hpp"
+#include "Ember/Level.hpp"
 #include "Ember/TextureAsset.hpp"
 #include "Engine.Event/TickEvent.hpp"
 #include "Engine.Scheduler/Async.hpp"
 #include "Engine.Session/Session.hpp"
 
-#include <Ember/Inbuilt.hpp>
-
 using namespace ember;
+
+void test();
 
 void ember_block_main() {
 
@@ -84,4 +87,74 @@ void ember_main_entry() {
      * Schedule the tick event
      */
     engine::scheduler::exec(task);
+
+    /**
+     *
+     */
+    test();
+}
+
+void test() {
+
+    /**
+     *
+     */
+    {
+        Entity entity {};
+        auto val = entity::valid(entity);
+    }
+
+    /**
+     *
+     */
+    {
+        auto possible = entity::create();
+        await(possible);
+
+        Entity entity = possible.get();
+        auto val = entity::valid(entity);
+
+        await(entity::destroy(_STD move(entity)));
+    }
+
+    /**
+     *
+     */
+    {
+        auto possible = level::create();
+        await(possible);
+
+        Level level = possible.get();
+        auto val = level::valid(level);
+
+        await(level::destroy(_STD move(level)));
+    }
+
+    /**
+     *
+     */
+    {
+        auto possible = level::create();
+        await(possible);
+
+        Level level = possible.get();
+        auto val = level::valid(level);
+
+        vector<future<Entity>> flist {};
+        for (u8 c = 0; c < 128ui8; ++c) {
+            flist.push_back(entity::create());
+        }
+
+        for (auto& entry : flist) {
+            while (!entry.ready()) {
+                yield();
+            }
+        }
+
+        for (auto& entry : flist) {
+            level.addEntity(entry.get());
+        }
+
+        await(level::destroy(_STD move(level)));
+    }
 }
