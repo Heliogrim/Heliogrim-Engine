@@ -34,12 +34,14 @@
     <ClInclude Include="..\..\src\Ember\Component\ModelComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Component\SceneComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Ember.hpp" />
+    <ClInclude Include="..\..\src\Ember\Entity.hpp" />
     <ClInclude Include="..\..\src\Ember\GfxMaterial.hpp" />
     <ClInclude Include="..\..\src\Ember\GfxMaterialAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\Graphics.hpp" />
     <ClInclude Include="..\..\src\Ember\ImageAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\Inbuilt.hpp" />
     <ClInclude Include="..\..\src\Ember\LandscapeMeshAsset.hpp" />
+    <ClInclude Include="..\..\src\Ember\Level.hpp" />
     <ClInclude Include="..\..\src\Ember\LevelAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\Network.hpp" />
     <ClInclude Include="..\..\src\Ember\PfxMaterial.hpp" />
@@ -58,10 +60,8 @@
     <ClInclude Include="..\..\src\Ember\TextureFormat.hpp" />
     <ClInclude Include="..\..\src\Ember\TextureType.hpp" />
     <ClInclude Include="..\..\src\Ember\Traits.hpp" />
-    <ClInclude Include="..\..\src\Ember\World\Entity.hpp" />
-    <ClInclude Include="..\..\src\Ember\World\Level.hpp" />
-    <ClInclude Include="..\..\src\Ember\World\TypedEntity.hpp" />
-    <ClInclude Include="..\..\src\Ember\World\World.hpp" />
+    <ClInclude Include="..\..\src\Ember\TypedEntity.hpp" />
+    <ClInclude Include="..\..\src\Ember\World.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember\Asset.cpp" />
@@ -75,11 +75,13 @@
     <ClCompile Include="..\..\src\Ember\Component\ModelComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\Component\SceneComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\Ember.cpp" />
+    <ClCompile Include="..\..\src\Ember\Entity.cpp" />
     <ClCompile Include="..\..\src\Ember\GfxMaterial.cpp" />
     <ClCompile Include="..\..\src\Ember\GfxMaterialAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\ImageAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\Inbuilt.cpp" />
     <ClCompile Include="..\..\src\Ember\LandscapeMeshAsset.cpp" />
+    <ClCompile Include="..\..\src\Ember\Level.cpp" />
     <ClCompile Include="..\..\src\Ember\LevelAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\PfxMaterial.cpp" />
     <ClCompile Include="..\..\src\Ember\PfxMaterialAsset.cpp" />
@@ -94,9 +96,7 @@
     <ClCompile Include="..\..\src\Ember\TextureAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\TextureBuffer.cpp" />
     <ClCompile Include="..\..\src\Ember\TextureFormat.cpp" />
-    <ClCompile Include="..\..\src\Ember\World\Entity.cpp" />
-    <ClCompile Include="..\..\src\Ember\World\Level.cpp" />
-    <ClCompile Include="..\..\src\Ember\World\World.cpp" />
+    <ClCompile Include="..\..\src\Ember\World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Assets\Engine.Assets.vcxproj">

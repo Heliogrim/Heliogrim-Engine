@@ -2,11 +2,11 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-#include "Entity.hpp"
+#include "Level.hpp"
 
-namespace ember::world {
+namespace ember {
 
-    class Level {
+    class World {
     public:
         /**
          * Default constructor
@@ -14,7 +14,7 @@ namespace ember::world {
          * @author Julius
          * @date 24.10.2021
          */
-        Level() = delete;
+        World() = delete;
 
         /**
          * Copy Constructor
@@ -22,7 +22,7 @@ namespace ember::world {
          * @author Julius
          * @date 24.10.2021
          */
-        Level(cref<Level>) = delete;
+        World(cref<World>) = delete;
 
         /**
          * Move Constructor
@@ -30,7 +30,7 @@ namespace ember::world {
          * @author Julius
          * @date 24.10.2021
          */
-        Level(mref<Level>) noexcept = delete;
+        World(mref<World>) noexcept = delete;
 
         /**
          * Destructor
@@ -38,7 +38,7 @@ namespace ember::world {
          * @author Julius
          * @date 24.10.2021
          */
-        ~Level() noexcept = delete;
+        ~World() noexcept = delete;
 
     public:
         /**
@@ -49,7 +49,7 @@ namespace ember::world {
          *
          * @returns A shallow copy of this.
          */
-        ref<Level> operator=(cref<Level>) = delete;
+        ref<World> operator=(cref<World>) = delete;
 
         /**
          * Move Assignment operator
@@ -59,7 +59,7 @@ namespace ember::world {
          *
          * @returns A shallow copy of this.
          */
-        ref<Level> operator=(mref<Level>) noexcept = delete;
+        ref<World> operator=(mref<World>) noexcept = delete;
 
     public:
         /**
@@ -86,46 +86,27 @@ namespace ember::world {
 
     public:
         /**
-         * Static instantiation of a new level
-         *
-         * @author Julius
-         * @date 24.10.2021
-         */
-        [[nodiscard]] _Success_(return != nullptr) static ptr<Level> create();
-
-        /**
-         * Static destruction of the given level
+         * Tries to add the given level to this world
          *
          * @author Julius
          * @date 24.10.2021
          *
-         * @param  level_ The level to destroy.
-         */
-        _Success_(return == true) static bool destroy(_Inout_ const ptr<Level> level_);
-
-    public:
-        /**
-         * Tries to add the given entity to this level
-         *
-         * @author Julius
-         * @date 24.10.2021
-         *
-         * @param  entity_ The entity to add.
+         * @param  level_ The level.
          *
          * @returns True if it succeeds, false if it fails.
          */
-        _Success_(return == true) bool addEntity(_In_ const ptr<Entity> entity_);
+        _Success_(return == true) bool addLevel(_In_ const ptr<Level> level_);
 
         /**
-         * Removes the entity from this level
+         * Removes the level from this world
          *
          * @author Julius
          * @date 24.10.2021
          *
-         * @param  entity_ The entity to remove.
+         * @param  level_ The level.
          *
          * @returns True if it succeeds, false if it fails.
          */
-        _Success_(return == true) bool removeEntity(_In_ const ptr<Entity> entity_);
+        _Success_(return == true) bool removeLevel(_In_ const ptr<Level> level_);
     };
 }
