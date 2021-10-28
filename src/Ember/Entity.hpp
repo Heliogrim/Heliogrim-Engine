@@ -1,11 +1,10 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Concurrent/Promise.hpp>
+#include <Engine.ECS/Entity.hpp>
+#include <Engine.ECS/Registry.hpp>
 #include <Engine.ECS/Traits.hpp>
 
 #include "Inbuilt.hpp"
-
-#include "Traits.hpp"
 
 namespace ember {
 
@@ -16,7 +15,11 @@ namespace ember {
          * @author Julius
          * @date 20.08.2021
          */
-        class EntityBase {
+        class EntityBase :
+            protected engine::ecs::DynamicEntity {
+        public:
+            using underlying_type = engine::ecs::DynamicEntity;
+
         public:
             /**
              * Default constructor
@@ -24,7 +27,28 @@ namespace ember {
              * @author Julius
              * @date 20.08.2021
              */
-            EntityBase() = delete;
+            EntityBase() noexcept :
+                engine::ecs::DynamicEntity(engine::ecs::invalid_entity_guid) {}
+
+            /**
+             * Copy Constructor
+             *
+             * @author Julius
+             * @date 28.10.2021
+             *
+             * @param  other_ The other.
+             */
+            EntityBase(cref<EntityBase> other_) = default;
+
+            /**
+             * Move Constructor
+             *
+             * @author Julius
+             * @date 28.10.2021
+             *
+             * @param  other_ The other.
+             */
+            EntityBase(mref<EntityBase> other_) noexcept = default;
 
             /**
              * Destructor
@@ -34,52 +58,18 @@ namespace ember {
              */
             ~EntityBase() noexcept = default;
 
-        protected:
-            /**
-             * Entity Id
-             */
-            engine::ecs::entity_guid _guid;
-
         public:
             /**
              * Gets the unique identifier
              *
              * @author Julius
-             * @date 07.01.2021
-             *
-             * @returns A cref&lt;engine::ecs::entity_guid&gt;
-             */
-            [[nodiscard]] cref<engine::ecs::entity_guid> guid() const noexcept;
-
-            /**
-             * Gets the unique identifier
-             *
-             * @author Julius
-             * @date 07.01.2021
+             * @date 28.10.2021
              *
              * @returns An engine::ecs::entity_guid.
              */
-            [[nodiscard]] engine::ecs::entity_guid guid() noexcept;
-
-            /**
-             * Cast that converts the given to an entity_guid
-             *
-             * @author Julius
-             * @date 07.01.2021
-             *
-             * @returns The result of the operation.
-             */
-            [[nodiscard]] operator ember::engine::ecs::entity_guid() const noexcept;
-
-            /**
-             * Cast that converts the given to an entity_guid
-             *
-             * @author Julius
-             * @date 07.01.2021
-             *
-             * @returns The result of the operation.
-             */
-            [[nodiscard]] operator ember::engine::ecs::entity_guid() noexcept;
+            [[nodiscard]] engine::ecs::entity_guid guid() const noexcept {
+                return underlying_type::get_guid();
+            }
 
         protected:
             /**
@@ -92,58 +82,76 @@ namespace ember {
              *
              * @returns A ref&lt;const Ty&gt; which is a immutable reference to a component
              */
-            template <class Ty>
-            [[nodiscard]] ref<const Ty> get() const;
+            template <class ComponentType_>
+            [[nodiscard]] ref<const _STD remove_cvref_t<ComponentType_>> get() const {
+                return underlying_type::get<ComponentType_>();
+            }
 
             /**
              * Gets a component from internal storage related to entity
              *
              * @returns A ref&lt;Ty&gt; which is a mutable reference to a component
              */
-            template <class Ty>
-            [[nodiscard]] ref<Ty> get();
+            template <class ComponentType_>
+            [[nodiscard]] ref<_STD remove_cvref_t<ComponentType_>> get() {
+                return underlying_type::get<ComponentType_>();
+            }
 
             /**
              * Check whether entity has component
              *
              * @returns True if it succeeds, false if it fails.
              */
-            template <class Ty>
-            [[nodiscard]] bool has() const noexcept;
+            template <class ComponentType_>
+            [[nodiscard]] bool has() const noexcept {
+                return underlying_type::get<ComponentType_>();
+            }
 
             /**
              * Check whether entity has component
              *
              * @returns True if it succeeds, false if it fails.
              */
-            template <class Ty>
-            [[nodiscard]] bool has() noexcept;
+            template <class ComponentType_>
+            [[nodiscard]] bool has() noexcept {
+                return underlying_type::get<ComponentType_>();
+            }
 
             /**
              * Records a component to internal storage
              *
              * @returns A ref&lt;Ty&gt; which is mutable reference to a component
              */
-            template <class Ty>
-            [[nodiscard]] ref<Ty> record() noexcept;
+            template <class ComponentType_>
+            [[nodiscard]] ref<_STD remove_cvref_t<ComponentType_>> record() noexcept {
+                // TODO: Replace
+                engine::ecs::registry::get().getOrCreatePool<ComponentType_>();
+                underlying_type::record<ComponentType_>();
+                return *underlying_type::get<ComponentType_>();
+            }
 
             /**
              * Records a component to internal storage
              *
-             * @param  obj_ Source Component to clone
+             * @param  obj_ Source Component to use
              *
              * @returns A ref&lt;Ty&gt; which is mutable reference to a component.
              */
-            template <class Ty>
-            [[nodiscard]] ref<Ty> record(cref<Ty> obj_) noexcept;
+            template <class ComponentType_>
+            [[nodiscard]] ref<_STD remove_cvref_t<ComponentType_>> record(_Inout_ mref<ComponentType_> obj_) noexcept {
+                // TODO: Replace
+                engine::ecs::registry::get().getOrCreatePool<ComponentType_>();
+                underlying_type::record<ComponentType_>(obj_);
+                return *underlying_type::get<ComponentType_>();
+            }
 
             /**
              * Removes a component from internal storage
              *
              * @returns True if it succeeds, false if it fails.
              */
-            template <class Ty>
-            [[nodiscard]] bool remove() noexcept;
+            template <class ComponentType_>
+            [[nodiscard]] bool remove() noexcept = delete;
         };
     }
 
@@ -255,6 +263,7 @@ namespace ember {
          *
          * @returns A future, representing whether the entity was successfully destroyed.
          */
-        [[nodiscard]] _Success_(return.get() == true) extern future<bool> destroy(_Inout_ mref<Entity> entity_) noexcept;
+        [[nodiscard]] _Success_(return.get() == true) extern future<bool>
+        destroy(_Inout_ mref<Entity> entity_) noexcept;
     }
 }

@@ -9,23 +9,23 @@
 
 namespace ember::engine::ecs {
 
-    template <typename Ty>
-    FORCE_INLINE Ty* construct_inplace(void* destination_) {
+    template<typename Ty>
+    FORCE_INLINE Ty *construct_inplace(void *destination_) {
         return new(destination_) Ty;
     }
 
-    template <typename Ty>
-    FORCE_INLINE Ty* construct_inplace(void* destination_, const Ty& source_) {
+    template<typename Ty>
+    FORCE_INLINE Ty *construct_inplace(void *destination_, const Ty &source_) {
         return new(destination_) Ty(source_);
     }
 
-    template <typename Ty>
-    FORCE_INLINE Ty* construct_inplace(void* destination_, Ty&& source_) {
+    template<typename Ty>
+    FORCE_INLINE Ty *construct_inplace(void *destination_, Ty &&source_) {
         return new(destination_) Ty(_STD forward<Ty>(source_));
     }
 
-    template <typename Ty>
-    FORCE_INLINE void destruct_inplace(Ty* destination_) {
+    template<typename Ty>
+    FORCE_INLINE void destruct_inplace(Ty *destination_) {
         delete destination_;
     }
 
@@ -37,7 +37,7 @@ namespace ember::engine::ecs {
      *
      * @tparam ComponentType Type of the component type.
      */
-    template <IsComponent ComponentType>
+    template<IsComponent ComponentType>
     class hybrid_storage;
 
     /**
@@ -52,15 +52,15 @@ namespace ember::engine::ecs {
      * @tparam ValueType Type of the component type.
      * @tparam KeyType Type of the entity identifier type.
      */
-    template <IsComponent ValueType, typename KeyType, typename IndexType = size_t>
+    template<IsComponent ValueType, typename KeyType, typename IndexType = size_t>
     class hybrid_storage_page final {
 
         friend class hybrid_storage<ValueType>;
 
     public:
         using this_type = hybrid_storage_page<ValueType, KeyType, IndexType>;
-        using this_reference_type = this_type&;
-        using this_const_reference_type = const this_type&;
+        using this_reference_type = this_type &;
+        using this_const_reference_type = const this_type &;
 
         using index_type = IndexType;
         using key_type = KeyType;
@@ -82,11 +82,11 @@ namespace ember::engine::ecs {
          *
          * @param [in,out] other_ The other.
          */
-        hybrid_storage_page(this_type&& other_) noexcept :
-            _mem(_STD exchange(other_._mem, nullptr)),
-            _keys(_STD exchange(other_._keys, nullptr)),
-            _values(_STD exchange(other_._values, nullptr)),
-            _seq(_STD move(other_._seq)) {}
+        hybrid_storage_page(this_type &&other_) noexcept:
+                _mem(_STD exchange(other_._mem, nullptr)),
+                _keys(_STD exchange(other_._keys, nullptr)),
+                _values(_STD exchange(other_._values, nullptr)),
+                _seq(_STD move(other_._seq)) {}
 
         /**
          * Copy Constructor
@@ -132,7 +132,7 @@ namespace ember::engine::ecs {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool emplace(IN const key_type& key_, IN value_type&& value_, OUT index_type& idx_) {
+        bool emplace(IN const key_type &key_, IN value_type &&value_, OUT index_type &idx_) {
             /**
              * Gets empty slot
              */
@@ -159,10 +159,10 @@ namespace ember::engine::ecs {
          *
          * @returns A pair&lt;const key_type&amp;,const value_type&amp;&gt;
          */
-        [[nodiscard]] _STD pair<const key_type&, const value_type&> get(const index_type& idx_) const {
+        [[nodiscard]] _STD pair<const key_type &, const value_type &> get(const index_type &idx_) const {
             return {
-                _keys[idx_],
-                _values[idx_]
+                    _keys[idx_],
+                    _values[idx_]
             };
         }
 
@@ -176,10 +176,10 @@ namespace ember::engine::ecs {
          *
          * @returns A pair&lt;const key_type&amp;,value_type&amp;&gt;
          */
-        [[nodiscard]] _STD pair<const key_type&, value_type&> get(const index_type& idx_) {
+        [[nodiscard]] _STD pair<const key_type &, value_type &> get(const index_type &idx_) {
             return {
-                _keys[idx_],
-                _values[idx_]
+                    _keys[idx_],
+                    _values[idx_]
             };
         }
 
@@ -193,7 +193,7 @@ namespace ember::engine::ecs {
          *
          * @returns The key.
          */
-        [[nodiscard]] const key_type& get_key(const index_type& idx_) const {
+        [[nodiscard]] const key_type &get_key(const index_type &idx_) const {
             return _keys[idx_];
         }
 
@@ -207,7 +207,7 @@ namespace ember::engine::ecs {
          *
          * @returns The key.
          */
-        [[nodiscard]] key_type& get_key(const index_type& idx_) {
+        [[nodiscard]] key_type &get_key(const index_type &idx_) {
             return _keys[idx_];
         }
 
@@ -221,7 +221,7 @@ namespace ember::engine::ecs {
          *
          * @returns The value.
          */
-        [[nodiscard]] const value_type& get_value(const index_type& idx_) const {
+        [[nodiscard]] const value_type &get_value(const index_type &idx_) const {
             return _values[idx_];
         }
 
@@ -235,7 +235,7 @@ namespace ember::engine::ecs {
          *
          * @returns The value.
          */
-        [[nodiscard]] value_type& get_value(const index_type& idx_) {
+        [[nodiscard]] value_type &get_value(const index_type &idx_) {
             return _values[idx_];
         }
 
@@ -249,7 +249,7 @@ namespace ember::engine::ecs {
          * @param 		   key_ The key.
          * @param [in,out] value_ The value.
          */
-        void insert(const index_type& idx_, const key_type& key_, IN value_type&& value_) {
+        void insert(const index_type &idx_, const key_type &key_, IN value_type &&value_) {
             /**
              * Check if key exists
              */
@@ -279,7 +279,7 @@ namespace ember::engine::ecs {
          *
          * @param  idx_ The key.
          */
-        void erase(const index_type& idx_) {
+        void erase(const index_type &idx_) {
             // destruct_inplace<key_type>(&_keys[idx_]);
             _keys[idx_] = invalid_entity_guid;
             destruct_inplace<value_type>(&_values[idx_]);
@@ -287,7 +287,7 @@ namespace ember::engine::ecs {
             /**
              * Find valid minimal sequence where index can merge
              */
-            auto fi = _STD find_if(_seq.rbegin(), _seq.rend(), [&idx_](const page_sequence& entry_) {
+            auto fi = _STD find_if(_seq.rbegin(), _seq.rend(), [&idx_](const page_sequence &entry_) {
                 return entry_.mergable(idx_);
             });
 
@@ -295,14 +295,14 @@ namespace ember::engine::ecs {
              * If no mergable sequence, create a new one
              */
             if (fi == _seq.rend()) {
-                _seq.push_back({ idx_, idx_ });
+                _seq.push_back({idx_, idx_});
                 _STD sort(_seq.begin(), _seq.end(), page_sequence_range_comparator());
             }
 
             /**
              * Find valid maximal sequence where index can merge
              */
-            auto ri = _STD find_if(_seq.begin(), _seq.end(), [&idx_](const page_sequence& entry_) {
+            auto ri = _STD find_if(_seq.begin(), _seq.end(), [&idx_](const page_sequence &entry_) {
                 return entry_.mergable(idx_);
             });
 
@@ -352,26 +352,26 @@ namespace ember::engine::ecs {
          */
         class hybrid_value_iterator final {
         public:
-            hybrid_value_iterator() noexcept :
-                _ptr(nullptr) {}
+            hybrid_value_iterator() noexcept:
+                    _ptr(nullptr) {}
 
-            hybrid_value_iterator(IN value_type* ptr_) noexcept :
-                _ptr(ptr_) {}
+            hybrid_value_iterator(IN value_type *ptr_) noexcept:
+                    _ptr(ptr_) {}
 
-            hybrid_value_iterator(IN value_type* ptr_, const size_t idx_) noexcept :
-                _ptr(&ptr_[idx_]) {}
+            hybrid_value_iterator(IN value_type *ptr_, const size_t idx_) noexcept:
+                    _ptr(&ptr_[idx_]) {}
 
-            hybrid_value_iterator(IN hybrid_value_iterator&& other_) noexcept :
-                _ptr(_STD exchange(other_._ptr, nullptr)) {}
+            hybrid_value_iterator(IN hybrid_value_iterator &&other_) noexcept:
+                    _ptr(_STD exchange(other_._ptr, nullptr)) {}
 
-            hybrid_value_iterator(IN const hybrid_value_iterator& other_) noexcept :
-                _ptr(other_._ptr) {}
+            hybrid_value_iterator(IN const hybrid_value_iterator &other_) noexcept:
+                    _ptr(other_._ptr) {}
 
-            hybrid_value_iterator& operator++() noexcept {
+            hybrid_value_iterator &operator++() noexcept {
                 return ++_ptr, *this;
             }
 
-            hybrid_value_iterator& operator--() noexcept {
+            hybrid_value_iterator &operator--() noexcept {
                 return --_ptr, *this;
             }
 
@@ -385,75 +385,75 @@ namespace ember::engine::ecs {
                 return --_ptr, last;
             }
 
-            [[nodiscard]] hybrid_value_iterator operator+(const index_type& range_) const noexcept {
-                return hybrid_value_iterator { (_ptr + range_) };
+            [[nodiscard]] hybrid_value_iterator operator+(const index_type &range_) const noexcept {
+                return hybrid_value_iterator{(_ptr + range_)};
             }
 
-            [[nodiscard]] hybrid_value_iterator operator-(const index_type& range_) const noexcept {
-                return hybrid_value_iterator { (_ptr - range_) };
+            [[nodiscard]] hybrid_value_iterator operator-(const index_type &range_) const noexcept {
+                return hybrid_value_iterator{(_ptr - range_)};
             }
 
-            hybrid_value_iterator& operator+=(const index_type& range_) const noexcept {
+            hybrid_value_iterator &operator+=(const index_type &range_) const noexcept {
                 return (_ptr += range_), *this;
             }
 
-            hybrid_value_iterator& operator-=(const index_type& range_) const noexcept {
+            hybrid_value_iterator &operator-=(const index_type &range_) const noexcept {
                 return (_ptr -= range_), *this;
             }
 
-            [[nodiscard]] bool operator==(const hybrid_value_iterator& other_) const noexcept {
+            [[nodiscard]] bool operator==(const hybrid_value_iterator &other_) const noexcept {
                 return other_._ptr == _ptr;
             }
 
-            [[nodiscard]] bool operator!=(const hybrid_value_iterator& other_) const noexcept {
+            [[nodiscard]] bool operator!=(const hybrid_value_iterator &other_) const noexcept {
                 return other_._ptr != _ptr;
             }
 
-            [[nodiscard]] bool operator<(const hybrid_value_iterator& other_) const noexcept {
+            [[nodiscard]] bool operator<(const hybrid_value_iterator &other_) const noexcept {
                 return other_._ptr < _ptr;
             }
 
-            [[nodiscard]] bool operator>(const hybrid_value_iterator& other_) const noexcept {
+            [[nodiscard]] bool operator>(const hybrid_value_iterator &other_) const noexcept {
                 return other_._ptr > _ptr;
             }
 
-            [[nodiscard]] bool operator<=(const hybrid_value_iterator& other_) const noexcept {
+            [[nodiscard]] bool operator<=(const hybrid_value_iterator &other_) const noexcept {
                 return other_._ptr <= _ptr;
             }
 
-            [[nodiscard]] bool operator>=(const hybrid_value_iterator& other_) const noexcept {
+            [[nodiscard]] bool operator>=(const hybrid_value_iterator &other_) const noexcept {
                 return other_._ptr >= _ptr;
             }
 
-            hybrid_value_iterator& operator=(IN hybrid_value_iterator&& other_) noexcept {
+            hybrid_value_iterator &operator=(IN hybrid_value_iterator &&other_) noexcept {
                 return (_ptr = _STD exchange(other_._ptr, nullptr)), *this;
             }
 
-            hybrid_value_iterator& operator=(const hybrid_value_iterator& other_) noexcept {
+            hybrid_value_iterator &operator=(const hybrid_value_iterator &other_) noexcept {
                 if (this == &other_) {
                     return *this;
                 }
                 return (_ptr = other_._ptr), *this;
             }
 
-            const value_type& operator*() const {
+            const value_type &operator*() const {
                 return *_ptr;
             }
 
-            value_type& operator*() {
+            value_type &operator*() {
                 return *_ptr;
             }
 
-            const value_type* operator->() const {
+            const value_type *operator->() const {
                 return _ptr;
             }
 
-            value_type* operator->() {
+            value_type *operator->() {
                 return _ptr;
             }
 
         private:
-            value_type* _ptr;
+            value_type *_ptr;
         };
 
         /**
@@ -462,7 +462,7 @@ namespace ember::engine::ecs {
          * @author Julius
          * @date 25.10.2020
          */
-        template <bool Const>
+        template<bool Const>
         class hybrid_key_value_iterator final {
         public:
             using iterator_key_type = const key_type;
@@ -474,9 +474,9 @@ namespace ember::engine::ecs {
              * @author Julius
              * @date 02.11.2020
              */
-            hybrid_key_value_iterator() noexcept :
-                _keys(nullptr),
-                _values(nullptr) {}
+            hybrid_key_value_iterator() noexcept:
+                    _keys(nullptr),
+                    _values(nullptr) {}
 
             /**
              * Constructor
@@ -487,9 +487,9 @@ namespace ember::engine::ecs {
              * @param [in,out] keys_ If non-null, the keys.
              * @param [in,out] values_ If non-null, the values.
              */
-            hybrid_key_value_iterator(IN key_type* keys_, IN value_type* values_) noexcept :
-                _keys(keys_),
-                _values(values_) {}
+            hybrid_key_value_iterator(IN key_type *keys_, IN value_type *values_) noexcept:
+                    _keys(keys_),
+                    _values(values_) {}
 
             /**
              * Constructor
@@ -501,9 +501,9 @@ namespace ember::engine::ecs {
              * @param [in,out] values_ If non-null, the values.
              * @param 		   idx_ Zero-based index of the.
              */
-            hybrid_key_value_iterator(IN key_type* keys_, IN value_type* values_, const index_type idx_) noexcept :
-                _keys(&keys_[idx_]),
-                _values(&values_[idx_]) {}
+            hybrid_key_value_iterator(IN key_type *keys_, IN value_type *values_, const index_type idx_) noexcept:
+                    _keys(&keys_[idx_]),
+                    _values(&values_[idx_]) {}
 
             /**
              * Move Constructor
@@ -513,9 +513,9 @@ namespace ember::engine::ecs {
              *
              * @param [in,out] other_ The other.
              */
-            hybrid_key_value_iterator(IN hybrid_key_value_iterator&& other_) noexcept :
-                _keys(_STD exchange(other_._keys, nullptr)),
-                _values(_STD exchange(other_._values, nullptr)) {}
+            hybrid_key_value_iterator(IN hybrid_key_value_iterator &&other_) noexcept:
+                    _keys(_STD exchange(other_._keys, nullptr)),
+                    _values(_STD exchange(other_._values, nullptr)) {}
 
             /**
              * Copy Constructor
@@ -525,15 +525,15 @@ namespace ember::engine::ecs {
              *
              * @param  other_ The other.
              */
-            hybrid_key_value_iterator(IN const hybrid_key_value_iterator& other_) :
-                _keys(other_._keys),
-                _values(other_._values) {}
+            hybrid_key_value_iterator(IN const hybrid_key_value_iterator &other_) :
+                    _keys(other_._keys),
+                    _values(other_._values) {}
 
-            hybrid_key_value_iterator& operator++() noexcept {
+            hybrid_key_value_iterator &operator++() noexcept {
                 return ++_keys, ++_values, *this;
             }
 
-            hybrid_key_value_iterator& operator--() noexcept {
+            hybrid_key_value_iterator &operator--() noexcept {
                 return --_keys, --_values, *this;
             }
 
@@ -547,53 +547,53 @@ namespace ember::engine::ecs {
                 return --_keys, --_values, *this;
             }
 
-            [[nodiscard]] hybrid_key_value_iterator operator+(const index_type& range_) const noexcept {
-                return hybrid_key_value_iterator { _keys + range_, _values + range_ };
+            [[nodiscard]] hybrid_key_value_iterator operator+(const index_type &range_) const noexcept {
+                return hybrid_key_value_iterator{_keys + range_, _values + range_};
             }
 
-            [[nodiscard]] hybrid_key_value_iterator operator-(const index_type& range_) const noexcept {
-                return hybrid_key_value_iterator { _keys - range_, _values - range_ };
+            [[nodiscard]] hybrid_key_value_iterator operator-(const index_type &range_) const noexcept {
+                return hybrid_key_value_iterator{_keys - range_, _values - range_};
             }
 
-            hybrid_key_value_iterator& operator+=(const index_type& range_) noexcept {
+            hybrid_key_value_iterator &operator+=(const index_type &range_) noexcept {
                 return (_keys += range_), (_values += range_), *this;
             }
 
-            hybrid_key_value_iterator& operator-=(const index_type& range_) noexcept {
+            hybrid_key_value_iterator &operator-=(const index_type &range_) noexcept {
                 return (_keys -= range_), (_values -= range_), *this;
             }
 
-            [[nodiscard]] bool operator==(const hybrid_key_value_iterator& other_) const noexcept {
+            [[nodiscard]] bool operator==(const hybrid_key_value_iterator &other_) const noexcept {
                 return other_._keys == _keys && other_._values == _values;
             }
 
-            [[nodiscard]] bool operator!=(const hybrid_key_value_iterator& other_) const noexcept {
+            [[nodiscard]] bool operator!=(const hybrid_key_value_iterator &other_) const noexcept {
                 return other_._keys != _keys || other_._values != _values;
             }
 
-            [[nodiscard]] bool operator<(const hybrid_key_value_iterator& other_) const noexcept {
+            [[nodiscard]] bool operator<(const hybrid_key_value_iterator &other_) const noexcept {
                 return other_._keys < _keys && other_._values < _values;
             }
 
-            [[nodiscard]] bool operator>(const hybrid_key_value_iterator& other_) const noexcept {
+            [[nodiscard]] bool operator>(const hybrid_key_value_iterator &other_) const noexcept {
                 return other_._keys > _keys && other_._values > _values;
             }
 
-            [[nodiscard]] bool operator<=(const hybrid_key_value_iterator& other_) const noexcept {
+            [[nodiscard]] bool operator<=(const hybrid_key_value_iterator &other_) const noexcept {
                 return other_._keys <= _keys && other_._values <= _values;
             }
 
-            [[nodiscard]] bool operator>=(const hybrid_key_value_iterator& other_) const noexcept {
+            [[nodiscard]] bool operator>=(const hybrid_key_value_iterator &other_) const noexcept {
                 return other_._keys >= _keys && other_._values >= _values;
             }
 
-            hybrid_key_value_iterator& operator=(IN hybrid_key_value_iterator&& other_) noexcept {
+            hybrid_key_value_iterator &operator=(IN hybrid_key_value_iterator &&other_) noexcept {
                 _keys = _STD exchange(other_._keys, nullptr);
                 _values = _STD exchange(other_._values, nullptr);
                 return *this;
             }
 
-            hybrid_key_value_iterator& operator=(const hybrid_key_value_iterator& other_) noexcept {
+            hybrid_key_value_iterator &operator=(const hybrid_key_value_iterator &other_) noexcept {
                 if (this == &other_) {
                     return *this;
                 }
@@ -611,10 +611,10 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            [[nodiscard]] _STD pair<iterator_key_type&, iterator_value_type&> operator*() const {
-                return _STD pair<iterator_key_type&, iterator_value_type&> {
-                    *_keys,
-                    *_values
+            [[nodiscard]] _STD pair<iterator_key_type &, iterator_value_type &> operator*() const {
+                return _STD pair<iterator_key_type &, iterator_value_type &>{
+                        *_keys,
+                        *_values
                 };
             }
 
@@ -626,10 +626,10 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            [[nodiscard]] _STD pair<iterator_key_type&, iterator_value_type&> operator*() {
-                return _STD pair<iterator_key_type&, iterator_value_type&> {
-                    *_keys,
-                    *_values
+            [[nodiscard]] _STD pair<iterator_key_type &, iterator_value_type &> operator*() {
+                return _STD pair<iterator_key_type &, iterator_value_type &>{
+                        *_keys,
+                        *_values
                 };
             }
 
@@ -641,10 +641,10 @@ namespace ember::engine::ecs {
              *
              * @returns The dereferenced object.
              */
-            [[nodiscard]] _STD pair<iterator_key_type&, iterator_value_type&> operator->() const {
-                return _STD pair<iterator_key_type&, iterator_value_type&> {
-                    *_keys,
-                    *_values
+            [[nodiscard]] _STD pair<iterator_key_type &, iterator_value_type &> operator->() const {
+                return _STD pair<iterator_key_type &, iterator_value_type &>{
+                        *_keys,
+                        *_values
                 };
             }
 
@@ -656,10 +656,10 @@ namespace ember::engine::ecs {
              *
              * @returns The dereferenced object.
              */
-            [[nodiscard]] _STD pair<iterator_key_type&, iterator_value_type&> operator->() {
-                return _STD pair<iterator_key_type&, iterator_value_type&> {
-                    *_keys,
-                    *_values
+            [[nodiscard]] _STD pair<iterator_key_type &, iterator_value_type &> operator->() {
+                return _STD pair<iterator_key_type &, iterator_value_type &>{
+                        *_keys,
+                        *_values
                 };
             }
 
@@ -673,13 +673,13 @@ namespace ember::engine::ecs {
              *
              * @returns A size_t.
              */
-            [[nodiscard]] _STD size_t diff(const this_type& other_) const {
-                return _STD max(_keys, other_._keys) - _STD min(_keys, other_._keys);
+            [[nodiscard]] _STD size_t diff(const this_type &other_) const {
+                return MAX(_keys, other_._keys) - MIN(_keys, other_._keys);
             }
 
         private:
-            key_type* _keys;
-            value_type* _values;
+            key_type *_keys;
+            value_type *_values;
         };
 
         using iterator = hybrid_key_value_iterator<false>;
@@ -694,9 +694,9 @@ namespace ember::engine::ecs {
          * @returns An iterator.
          */
         [[nodiscard]] iterator begin() noexcept {
-            return iterator {
-                _keys,
-                _values
+            return iterator{
+                    _keys,
+                    _values
             };
         }
 
@@ -709,10 +709,10 @@ namespace ember::engine::ecs {
          * @returns An iterator.
          */
         [[nodiscard]] iterator end() noexcept {
-            return iterator {
-                _keys,
-                _values,
-                this_type::per_page - 1u
+            return iterator{
+                    _keys,
+                    _values,
+                    this_type::per_page - 1u
             };
         }
 
@@ -725,9 +725,9 @@ namespace ember::engine::ecs {
          * @returns A const_iterator.
          */
         [[nodiscard]] const_iterator begin() const noexcept {
-            return const_iterator {
-                _keys,
-                _values
+            return const_iterator{
+                    _keys,
+                    _values
             };
         }
 
@@ -740,10 +740,10 @@ namespace ember::engine::ecs {
          * @returns A const_iterator.
          */
         [[nodiscard]] const_iterator end() const noexcept {
-            return const_iterator {
-                _keys,
-                _values,
-                this_type::per_page - 1u
+            return const_iterator{
+                    _keys,
+                    _values,
+                    this_type::per_page - 1u
             };
         }
 
@@ -756,9 +756,9 @@ namespace ember::engine::ecs {
          * @returns A const_iterator.
          */
         [[nodiscard]] const_iterator cbegin() const noexcept {
-            return const_iterator {
-                _keys,
-                _values
+            return const_iterator{
+                    _keys,
+                    _values
             };
         }
 
@@ -771,10 +771,10 @@ namespace ember::engine::ecs {
          * @returns A const_iterator.
          */
         [[nodiscard]] const_iterator cend() const noexcept {
-            return const_iterator {
-                _keys,
-                _values,
-                this_type::per_page - 1u
+            return const_iterator{
+                    _keys,
+                    _values,
+                    this_type::per_page - 1u
             };
         }
 
@@ -798,7 +798,7 @@ namespace ember::engine::ecs {
              *
              * @returns A reference to a page_sequence.
              */
-            page_sequence& merge(const index_type& index_) {
+            page_sequence &merge(const index_type &index_) {
                 return index_ < begin ? begin-- : end++, *this;
             }
 
@@ -812,7 +812,7 @@ namespace ember::engine::ecs {
              *
              * @returns A reference to a page_sequence.
              */
-            page_sequence& merge(const page_sequence& other_) {
+            page_sequence &merge(const page_sequence &other_) {
                 begin = MIN(begin, other_.begin);
                 end = MAX(end, other_.end);
                 return *this;
@@ -828,7 +828,7 @@ namespace ember::engine::ecs {
              *
              * @returns True if it succeeds, false if it fails.
              */
-            [[nodiscard]] bool mergable(const index_type& index_) const {
+            [[nodiscard]] bool mergable(const index_type &index_) const {
                 return (end + 1u <= index_) || (begin - 1u >= index_);
             }
 
@@ -842,7 +842,7 @@ namespace ember::engine::ecs {
              *
              * @returns True if it succeeds, false if it fails.
              */
-            [[nodiscard]] bool mergable(const page_sequence& other_) const {
+            [[nodiscard]] bool mergable(const page_sequence &other_) const {
                 return (end + 1u <= other_.begin) || (begin - 1u >= other_.end);
             }
 
@@ -873,7 +873,7 @@ namespace ember::engine::ecs {
              *
              * @returns True if the object is in this collection, false if not.
              */
-            [[nodiscard]] bool contains(const index_type& idx_) const {
+            [[nodiscard]] bool contains(const index_type &idx_) const {
                 return idx_ >= begin && idx_ <= end;
             }
 
@@ -885,7 +885,7 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            page_sequence& operator++() noexcept {
+            page_sequence &operator++() noexcept {
                 return ++begin, *this;
             }
 
@@ -897,7 +897,7 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            page_sequence& operator--() noexcept {
+            page_sequence &operator--() noexcept {
                 return --begin, *this;
             }
 
@@ -909,7 +909,7 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            page_sequence& operator++(int) noexcept {
+            page_sequence &operator++(int) noexcept {
                 return ++end, *this;
             }
 
@@ -921,7 +921,7 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            page_sequence& operator--(int) noexcept {
+            page_sequence &operator--(int) noexcept {
                 return --end, *this;
             }
 
@@ -961,10 +961,10 @@ namespace ember::engine::ecs {
              *
              * @returns A pair<page_sequence ~ lower,page_sequence ~ upper>
              */
-            [[nodiscard]] _STD pair<page_sequence, page_sequence> resect(const index_type& exclude_) const {
+            [[nodiscard]] _STD pair<page_sequence, page_sequence> resect(const index_type &exclude_) const {
                 return {
-                    { begin, exclude_ - 1u },
-                    { exclude_ + 1u, end }
+                        {begin,         exclude_ - 1u},
+                        {exclude_ + 1u, end}
                 };
             }
         };
@@ -977,7 +977,7 @@ namespace ember::engine::ecs {
          * @date 25.10.2020
          */
         struct page_sequence_range_comparator {
-            bool operator()(const page_sequence& left_, const page_sequence& right_) {
+            bool operator()(const page_sequence &left_, const page_sequence &right_) {
                 return left_.size() > right_.size();
             }
         };
@@ -990,19 +990,19 @@ namespace ember::engine::ecs {
          * @date 23.10.2020
          */
         explicit hybrid_storage_page() noexcept:
-            _mem(allocate_safe()),
-            _keys(static_cast<KeyType*>(static_cast<void*>(static_cast<ValueType*>(_mem) + per_page))),
-            _values(static_cast<ValueType*>(_mem)),
-            _seq(vector<page_sequence>({ page_sequence { 0, per_page } })) {}
+                _mem(allocate_safe()),
+                _keys(static_cast<KeyType *>(static_cast<void *>(static_cast<ValueType *>(_mem) + per_page))),
+                _values(static_cast<ValueType *>(_mem)),
+                _seq(vector<page_sequence>({page_sequence{0, per_page}})) {}
 
     private:
         /**
          * The managed and containing memory block
          */
-        void* _mem;
+        void *_mem;
 
-        key_type* _keys;// _mem[per_page * sizeof(value_type)]
-        value_type* _values;// _mem[0]
+        key_type *_keys;// _mem[per_page * sizeof(value_type)]
+        value_type *_values;// _mem[0]
 
         vector<page_sequence> _seq;
 
@@ -1026,7 +1026,7 @@ namespace ember::engine::ecs {
             /**
              * Get back of sorted list ( smallest element )
              */
-            auto& s = _seq.back();
+            auto &s = _seq.back();
 
             /**
              * Get front index and remove from sequence
@@ -1051,11 +1051,11 @@ namespace ember::engine::ecs {
          *
          * @param  idx_ Zero-based index of the.
          */
-        FORCE_INLINE void pop_slot(const index_type& idx_) {
+        FORCE_INLINE void pop_slot(const index_type &idx_) {
             /**
              * Find sequence
              */
-            auto s = _STD find_if(_seq.rbegin(), _seq.rend(), [&idx_](const page_sequence& entry_) {
+            auto s = _STD find_if(_seq.rbegin(), _seq.rend(), [&idx_](const page_sequence &entry_) {
                 return entry_.contains(idx_);
             });
 
@@ -1117,7 +1117,7 @@ namespace ember::engine::ecs {
          * @param 		   key_ The key.
          * @param [in,out] value_ The value.
          */
-        FORCE_INLINE void place(const index_type& idx_, const key_type& key_, IN value_type&& value_) noexcept {
+        FORCE_INLINE void place(const index_type &idx_, const key_type &key_, IN value_type &&value_) noexcept {
             _keys[idx_] = key_;
             construct_inplace<value_type>(&_values[idx_], _STD forward<value_type>(value_));
         }
@@ -1132,7 +1132,7 @@ namespace ember::engine::ecs {
          * @param 		   key_ The key.
          * @param [in,out] value_ The value.
          */
-        FORCE_INLINE void replace(const index_type& idx_, const key_type& key_, IN value_type&& value_) noexcept {
+        FORCE_INLINE void replace(const index_type &idx_, const key_type &key_, IN value_type &&value_) noexcept {
             _keys[idx_] = key_;
             destruct_inplace<value_type>(&_values[idx_]);
             construct_inplace<value_type>(&_values[idx_], _STD forward<value_type>(value_));
@@ -1146,18 +1146,18 @@ namespace ember::engine::ecs {
          *
          * @returns Null if it fails, else a pointer to a void.
          */
-        static void* allocate_safe() noexcept {
-            void* page = malloc(page_size);
+        static void *allocate_safe() noexcept {
+            void *page = malloc(page_size);
 
             /**
              * 
              */
             constexpr size_t key_length = key_size * per_page;
 
-            auto* key_ptr = static_cast<KeyType*>(
-                static_cast<void*>(
-                    static_cast<ValueType*>(page) + per_page
-                )
+            auto *key_ptr = static_cast<KeyType *>(
+                    static_cast<void *>(
+                            static_cast<ValueType *>(page) + per_page
+                    )
             );
 
             /**
@@ -1180,7 +1180,7 @@ namespace ember::engine::ecs {
      *
      * @tparam ComponentType Type of the component type.
      */
-    template <IsComponent ComponentType>
+    template<IsComponent ComponentType>
     class hybrid_storage final {
     public:
         using this_type = hybrid_storage<ComponentType>;
@@ -1216,7 +1216,7 @@ namespace ember::engine::ecs {
          * @date 30.10.2020
          */
         struct guid_idx_hasher :
-            private _STD hash<entity_guid> {
+                private _STD hash<entity_guid> {
             /**
              * Function call operator
              *
@@ -1227,8 +1227,8 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            [[nodiscard]] _STD size_t operator()(const storage_guid_idx_pair& value_) const {
-                return static_cast<const _STD hash<entity_guid>&>(*this)(value_.guid);
+            [[nodiscard]] _STD size_t operator()(const storage_guid_idx_pair &value_) const {
+                return static_cast<const _STD hash<entity_guid> &>(*this)(value_.guid);
             }
         };
 
@@ -1239,7 +1239,7 @@ namespace ember::engine::ecs {
          * @date 30.10.2020
          */
         struct guid_idx_equal :
-            private _STD equal_to<entity_guid> {
+                private _STD equal_to<entity_guid> {
             /**
              * Function call operator
              *
@@ -1251,9 +1251,9 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            [[nodiscard]] bool operator()(const storage_guid_idx_pair& left_,
-                const storage_guid_idx_pair& right_) const {
-                return static_cast<const _STD equal_to<entity_guid>&>(*this)(left_.guid, right_.guid);
+            [[nodiscard]] bool operator()(const storage_guid_idx_pair &left_,
+                                          const storage_guid_idx_pair &right_) const {
+                return static_cast<const _STD equal_to<entity_guid> &>(*this)(left_.guid, right_.guid);
             }
         };
 
@@ -1264,7 +1264,7 @@ namespace ember::engine::ecs {
          * @date 30.10.2020
          */
         struct guid_idx_less :
-            private _STD less<entity_guid> {
+                private _STD less<entity_guid> {
             /**
              * Function call operator
              *
@@ -1276,14 +1276,15 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            [[nodiscard]] bool operator()(const storage_guid_idx_pair& left_,
-                const storage_guid_idx_pair& right_) const {
-                return static_cast<const _STD less<entity_guid>&>(*this)(left_.guid, right_.guid);
+            [[nodiscard]] bool operator()(const storage_guid_idx_pair &left_,
+                                          const storage_guid_idx_pair &right_) const {
+                return static_cast<const _STD less<entity_guid> &>(*this)(left_.guid, right_.guid);
             }
         };
 
     public:
         using mapping_container = _STD unordered_set<storage_guid_idx_pair, guid_idx_hasher, guid_idx_equal>;
+        using hash_type = size_t;
 
     private:
         /**
@@ -1296,7 +1297,7 @@ namespace ember::engine::ecs {
          *
          * @tparam Const Type of the constant.
          */
-        template <bool Const>
+        template<bool Const>
         class storage_key_value_iterator final {
         private:
             using this_type = storage_key_value_iterator<Const>;
@@ -1304,13 +1305,12 @@ namespace ember::engine::ecs {
             using key_type = entity_guid;
             using value_type = ComponentType;
 
-            using storage_page_type = typename _STD conditional<Const, const storage_page_type, storage_page_type>::type
-            ;
+            using storage_page_type = typename _STD conditional<Const, const storage_page_type, storage_page_type>::type;
             using storage_page_iterator_type = typename storage_page_type::hybrid_key_value_iterator;
 
             using page_collection_type = vector<storage_page_type>;
             using page_iterator_type = typename _STD conditional<Const, typename page_collection_type::const_iterator,
-                typename page_collection_type::iterator>::type;
+                    typename page_collection_type::iterator>::type;
 
         public:
             using iterator_category = _STD forward_iterator_tag;
@@ -1339,7 +1339,7 @@ namespace ember::engine::ecs {
              *
              * @returns A reference to a storage_page_type.
              */
-            [[nodiscard]] storage_page_type& page() const {
+            [[nodiscard]] storage_page_type &page() const {
                 return *_pageIterator;
             }
 
@@ -1351,7 +1351,7 @@ namespace ember::engine::ecs {
              *
              * @returns A reference to a storage_page_type.
              */
-            [[nodiscard]] storage_page_type& page() {
+            [[nodiscard]] storage_page_type &page() {
                 return *_pageIterator;
             }
 
@@ -1363,7 +1363,7 @@ namespace ember::engine::ecs {
              *
              * @returns The key.
              */
-            [[nodiscard]] const key_type& get_key() const {
+            [[nodiscard]] const key_type &get_key() const {
                 return (*_pairIterator).first;
             }
 
@@ -1375,7 +1375,7 @@ namespace ember::engine::ecs {
              *
              * @returns The key.
              */
-            [[nodiscard]] const key_type& get_key() {
+            [[nodiscard]] const key_type &get_key() {
                 return (*_pairIterator).first;
             }
 
@@ -1387,7 +1387,7 @@ namespace ember::engine::ecs {
              *
              * @returns The value.
              */
-            [[nodiscard]] const value_type& get_value() const {
+            [[nodiscard]] const value_type &get_value() const {
                 return (*_pairIterator).second;
             }
 
@@ -1399,7 +1399,7 @@ namespace ember::engine::ecs {
              *
              * @returns The value.
              */
-            [[nodiscard]] value_type& get_value() {
+            [[nodiscard]] value_type &get_value() {
                 return (*_pairIterator).second;
             }
 
@@ -1411,7 +1411,7 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            _STD pair<const entity_guid&, const value_type&> operator*() const {
+            _STD pair<const entity_guid &, const value_type &> operator*() const {
                 return *_pairIterator;
             }
 
@@ -1423,7 +1423,7 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            _STD pair<const entity_guid&, value_type&> operator*() {
+            _STD pair<const entity_guid &, value_type &> operator*() {
                 return *_pairIterator;
             }
 
@@ -1435,7 +1435,7 @@ namespace ember::engine::ecs {
              *
              * @returns The dereferenced object.
              */
-            _STD pair<const entity_guid&, const value_type&> operator->() const {
+            _STD pair<const entity_guid &, const value_type &> operator->() const {
                 return *_pairIterator;
             }
 
@@ -1447,7 +1447,7 @@ namespace ember::engine::ecs {
              *
              * @returns The dereferenced object.
              */
-            _STD pair<const entity_guid&, value_type&> operator->() {
+            _STD pair<const entity_guid &, value_type &> operator->() {
                 return *_pairIterator;
             }
 
@@ -1459,7 +1459,7 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            this_type& operator++() {
+            this_type &operator++() {
                 if (++(_pairIterator) == _pairEndIterator) {
                     ++_pageIterator;
 
@@ -1504,7 +1504,7 @@ namespace ember::engine::ecs {
              * @returns The result of the operation.
              */
             this_type operator+(const index_type range_) const {
-                auto target { *this };
+                auto target{*this};
                 target += range_;
                 return target;
             }
@@ -1527,7 +1527,7 @@ namespace ember::engine::ecs {
              *
              * @returns The result of the operation.
              */
-            this_type& operator+=(const index_type range_) {
+            this_type &operator+=(const index_type range_) {
                 /**
                  * Get total offset of on-page iterator plus requested range
                  */
@@ -1570,7 +1570,7 @@ namespace ember::engine::ecs {
              *
              * @returns True if the parameters are considered equivalent.
              */
-            friend bool operator==(const this_type& left_, const this_type& right_) {
+            friend bool operator==(const this_type &left_, const this_type &right_) {
                 return left_._pairIterator == right_._pairIterator && left_._pageIterator == right_._pageIterator;
             }
 
@@ -1585,7 +1585,7 @@ namespace ember::engine::ecs {
              *
              * @returns True if the parameters are not considered equivalent.
              */
-            friend bool operator!=(const this_type& left_, const this_type& right_) {
+            friend bool operator!=(const this_type &left_, const this_type &right_) {
                 return left_._pairIterator != right_._pairIterator || left_._pageIterator != right_._pageIterator;
             }
 
@@ -1609,8 +1609,8 @@ namespace ember::engine::ecs {
          * @date 25.10.2020
          */
         hybrid_storage() :
-            _pages(),
-            _indirection() {}
+                _pages(),
+                _indirection() {}
 
         /**
          * Move Constructor
@@ -1620,9 +1620,9 @@ namespace ember::engine::ecs {
          *
          * @param [in,out] other_ The other.
          */
-        hybrid_storage(hybrid_storage&& other_) noexcept :
-            _pages(_STD move(other_._pages)),
-            _indirection(_STD move(other_._indirection)) {}
+        hybrid_storage(hybrid_storage &&other_) noexcept:
+                _pages(_STD move(other_._pages)),
+                _indirection(_STD move(other_._indirection)) {}
 
         /**
          * Explicitly deleted Copy Constructor
@@ -1632,7 +1632,7 @@ namespace ember::engine::ecs {
          *
          * @param  other_ The other.
          */
-        hybrid_storage(const hybrid_storage& other_) = delete;
+        hybrid_storage(const hybrid_storage &other_) = delete;
 
         /**
          * Destructor
@@ -1652,17 +1652,17 @@ namespace ember::engine::ecs {
          *
          * @returns A pair&lt;ComponentType&amp;,bool&gt;
          */
-        [[nodiscard]] _STD pair<ComponentType*, bool> emplace(const entity_guid& guid_) {
-            typename mapping_container::emplace_result_type er = _indirection.emplace(storage_guid_idx_pair {
-                guid_,
-                0
+        [[nodiscard]] _STD pair<ComponentType *, bool> emplace(const entity_guid &guid_) {
+            _STD pair<typename mapping_container::iterator, bool> er = _indirection.emplace(storage_guid_idx_pair{
+                    guid_,
+                    0
             });
-            storage_guid_idx_pair& inp = er.first.value();
+            storage_guid_idx_pair &inp = const_cast<storage_guid_idx_pair &>(*er.first);
 
             /**
              * Check whether emplace at indirection failed
              */
-            ComponentType* ptr;
+            ComponentType *ptr;
             if (er.second == false) {
                 /**
                  * If emplace failed, get reference of already existing element
@@ -1699,17 +1699,17 @@ namespace ember::engine::ecs {
          *
          * @returns A pair&lt;ComponentType&amp;,bool&gt;
          */
-        [[nodiscard]] _STD pair<ComponentType*, bool> emplace(const entity_guid& guid_, ComponentType&& component_) {
-            typename mapping_container::emplace_result_type er = _indirection.emplace(storage_guid_idx_pair {
-                guid_,
-                0
+        [[nodiscard]] _STD pair<ComponentType *, bool> emplace(const entity_guid &guid_, ComponentType &&component_) {
+            typename mapping_container::emplace_result_type er = _indirection.emplace(storage_guid_idx_pair{
+                    guid_,
+                    0
             });
-            storage_guid_idx_pair& inp = er.first.value();
+            storage_guid_idx_pair &inp = er.first.value();
 
             /**
              * Check whether emplace at indirection failed
              */
-            ComponentType* ptr;
+            ComponentType *ptr;
             if (er.second == false) {
                 /**
                  * If emplace failed, get reference of already existing element
@@ -1745,7 +1745,7 @@ namespace ember::engine::ecs {
          *
          * @returns A pair&lt;ComponentType&amp;,bool&gt;
          */
-        [[nodiscard]] _STD pair<ComponentType*, bool> insert(const entity_guid& guid_) {
+        [[nodiscard]] _STD pair<ComponentType *, bool> insert(const entity_guid &guid_) {
             return emplace(guid_);
         }
 
@@ -1760,7 +1760,7 @@ namespace ember::engine::ecs {
          *
          * @returns A pair&lt;ComponentType&amp;,bool&gt;
          */
-        [[nodiscard]] _STD pair<ComponentType*, bool> insert(const entity_guid& guid_, ComponentType&& component_) {
+        [[nodiscard]] _STD pair<ComponentType *, bool> insert(const entity_guid &guid_, ComponentType &&component_) {
             return emplace(guid_, _STD forward<ComponentType>(component_));
         }
 
@@ -1775,24 +1775,24 @@ namespace ember::engine::ecs {
          *
          * @returns A reference to a ComponentType.
          */
-        ComponentType& insert_or_assign(const entity_guid& guid_, ComponentType&& component_) {
+        ComponentType &insert_or_assign(const entity_guid &guid_, ComponentType &&component_) {
             /**
              * Don't insert_or_assign, cause we need old indirection idx from inserted element to override old value
              *	-> This also guarantees, that component constructed by entity_guid is reference stable
              */
             typename mapping_container::insert_or_assign_result_type ioar = _indirection.emplace(
-                storage_guid_idx_pair { guid_, 0 });
-            storage_guid_idx_pair& inp = ioar.first.value();
+                    storage_guid_idx_pair{guid_, 0});
+            storage_guid_idx_pair &inp = ioar.first.value();
 
             /**
              * Check whether emplace failed
              */
-            ComponentType* ptr;
+            ComponentType *ptr;
             if (inp.second == false) {
                 /**
                  * If emplace failed, replace existing value
                  */
-                storage_page_type& page = _pages[unmask_page_index(inp.idx)];
+                storage_page_type &page = _pages[unmask_page_index(inp.idx)];
 
                 /**
                  * Replace existing value and key at storage page
@@ -1835,12 +1835,12 @@ namespace ember::engine::ecs {
          *
          * @returns A reference to a const ComponentType.
          */
-        const ComponentType& unsafe_get(const entity_guid& guid_) const {
-            typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 });
+        const ComponentType &unsafe_get(const entity_guid &guid_) const {
+            typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair{guid_, 0});
 
             if (cit == _indirection.cend()) {
                 throw _STD out_of_range(
-                    "Can not get constant reference to component, while guid_ does not link to one.");
+                        "Can not get constant reference to component, while guid_ does not link to one.");
             }
 
             return _pages[unmask_page_index(cit.value().idx)].get_value(unmask_value_index(cit.value().idx));
@@ -1859,14 +1859,13 @@ namespace ember::engine::ecs {
          *
          * @returns A reference to a const ComponentType.
          */
-        const ComponentType& unsafe_get(const entity_guid& guid_,
-            const typename mapping_container::hash_type hash_) const {
-            typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 },
-                hash_);
+        const ComponentType &unsafe_get(const entity_guid &guid_, const hash_type hash_) const {
+            typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair{guid_, 0},
+                                                                               hash_);
 
             if (cit == _indirection.cend()) {
                 throw _STD out_of_range(
-                    "Can not get constant reference to component, while guid_ does not link to one.");
+                        "Can not get constant reference to component, while guid_ does not link to one.");
             }
 
             return _pages[unmask_page_index(cit.value().idx)].get_value(unmask_value_index(cit.value().idx));
@@ -1884,8 +1883,8 @@ namespace ember::engine::ecs {
          *
          * @returns A reference to a ComponentType.
          */
-        ComponentType& unsafe_get(const entity_guid& guid_) {
-            typename mapping_container::iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 });
+        ComponentType &unsafe_get(const entity_guid &guid_) {
+            typename mapping_container::iterator cit = _indirection.find(storage_guid_idx_pair{guid_, 0});
 
             if (cit == _indirection.end()) {
                 throw _STD out_of_range("Can not get reference to component, while guid_ does not link to one.");
@@ -1907,9 +1906,9 @@ namespace ember::engine::ecs {
          *
          * @returns A reference to a ComponentType.
          */
-        ComponentType& unsafe_get(const entity_guid& guid_, const typename mapping_container::hash_type hash_) {
+        ComponentType &unsafe_get(const entity_guid &guid_, const hash_type hash_) {
             typename mapping_container::iterator cit = _indirection.
-                find(storage_guid_idx_pair { guid_, 0 }, hash_);
+                    find(storage_guid_idx_pair{guid_, 0}, hash_);
 
             if (cit == _indirection.end()) {
                 throw _STD out_of_range("Can not get reference to component, while guid_ does not link to one.");
@@ -1928,8 +1927,8 @@ namespace ember::engine::ecs {
          *
          * @returns Null if it fails, else a pointer to a const ComponentType.
          */
-        const ComponentType* get(const entity_guid& guid_) const {
-            typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 });
+        const ComponentType *get(const entity_guid &guid_) const {
+            typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair{guid_, 0});
 
             if (cit == _indirection.cend()) {
                 return nullptr;
@@ -1949,10 +1948,9 @@ namespace ember::engine::ecs {
          *
          * @returns Null if it fails, else a pointer to a const ComponentType.
          */
-        const ComponentType* get(const entity_guid& guid_,
-            const typename mapping_container::hash_type hash_) const {
-            typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 },
-                hash_);
+        const ComponentType *get(const entity_guid &guid_, const hash_type hash_) const {
+            typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair{guid_, 0},
+                                                                               hash_);
 
             if (cit == _indirection.cend()) {
                 return nullptr;
@@ -1971,14 +1969,14 @@ namespace ember::engine::ecs {
          *
          * @returns Null if it fails, else a pointer to a ComponentType.
          */
-        ComponentType* get(const entity_guid& guid_) {
-            typename mapping_container::iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 });
+        ComponentType *get(const entity_guid &guid_) {
+            typename mapping_container::iterator cit = _indirection.find(storage_guid_idx_pair{guid_, 0});
 
             if (cit == _indirection.end()) {
                 return nullptr;
             }
 
-            return &_pages[unmask_page_index(cit.value().idx)].get_value(unmask_value_index(cit.value().idx));
+            return &_pages[unmask_page_index(cit->idx)].get_value(unmask_value_index(cit->idx));
         }
 
         /**
@@ -1992,15 +1990,15 @@ namespace ember::engine::ecs {
          *
          * @returns Null if it fails, else a pointer to a ComponentType.
          */
-        ComponentType* get(const entity_guid& guid_, const typename mapping_container::hash_type hash_) {
+        ComponentType *get(const entity_guid &guid_, const hash_type hash_) {
             typename mapping_container::iterator cit = _indirection.
-                find(storage_guid_idx_pair { guid_, 0 }, hash_);
+                    find(storage_guid_idx_pair{guid_, 0}, hash_);
 
             if (cit == _indirection.end()) {
                 return nullptr;
             }
 
-            return &_pages[unmask_page_index(cit.value().idx)].get_value(unmask_value_index(cit.value().idx));
+            return &_pages[unmask_page_index(cit->idx)].get_value(unmask_value_index(cit->idx));
         }
 
         /**
@@ -2013,8 +2011,8 @@ namespace ember::engine::ecs {
          *
          * @param  guid_ Unique identifier.
          */
-        void erase(const entity_guid& guid_) {
-            typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 });
+        void erase(const entity_guid &guid_) {
+            typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair{guid_, 0});
             // TODO: check whether we should just return without mutation
             // TODO: if immutable check, could optimize for concurrent locking, cause existing check is read only, and does not require to lock whole structure
 
@@ -2028,12 +2026,12 @@ namespace ember::engine::ecs {
             /**
              * Get mutation reference to storage page
              */
-            storage_page_type& page = _pages[unmask_page_index(cit.value().idx)];
+            storage_page_type &page = _pages[unmask_page_index(cit->idx)];
 
             /**
              * Erase value and key pair form storage page
              */
-            page.erase(unmask_value_index(cit.value().idx));
+            page.erase(unmask_value_index(cit->idx));
 
             /**
              * Cleanup key storage
@@ -2050,8 +2048,8 @@ namespace ember::engine::ecs {
          * @returns An iterator.
          */
         [[nodiscard]] iterator begin() noexcept {
-            return iterator {
-                _pages.begin()
+            return iterator{
+                    _pages.begin()
             };
         }
 
@@ -2066,9 +2064,9 @@ namespace ember::engine::ecs {
         [[nodiscard]] iterator end() noexcept {
             auto pe = _pages.end();
 
-            return iterator {
-                pe,
-                pe->end()
+            return iterator{
+                    pe,
+                    pe->end()
             };
         }
 
@@ -2081,8 +2079,8 @@ namespace ember::engine::ecs {
          * @returns A const_iterator.
          */
         [[nodiscard]] const_iterator begin() const noexcept {
-            return const_iterator {
-                _pages.cbegin()
+            return const_iterator{
+                    _pages.cbegin()
             };
         }
 
@@ -2097,9 +2095,9 @@ namespace ember::engine::ecs {
         [[nodiscard]] const_iterator end() const noexcept {
             auto pe = _pages.cend();
 
-            return const_iterator {
-                pe,
-                pe->end()
+            return const_iterator{
+                    pe,
+                    pe->end()
             };
         }
 
@@ -2112,8 +2110,8 @@ namespace ember::engine::ecs {
          * @returns A const_iterator.
          */
         [[nodiscard]] const_iterator cbegin() const noexcept {
-            return const_iterator {
-                _pages.cbegin()
+            return const_iterator{
+                    _pages.cbegin()
             };
         }
 
@@ -2128,9 +2126,9 @@ namespace ember::engine::ecs {
         [[nodiscard]] const_iterator cend() const noexcept {
             auto pe = _pages.cend();
 
-            return const_iterator {
-                pe,
-                pe->end()
+            return const_iterator{
+                    pe,
+                    pe->end()
             };
         }
 
@@ -2175,7 +2173,7 @@ namespace ember::engine::ecs {
          * @param [in,out] page_ The page.
          * @param [in,out] value_ The value.
          */
-        FORCE_INLINE static void unmask(IN const uint64_t masked_, OUT uint64_t& page_, OUT uint64_t& value_) {
+        FORCE_INLINE static void unmask(IN const uint64_t masked_, OUT uint64_t &page_, OUT uint64_t &value_) {
             page_ = (masked_ & index_page_mask) >> index_page_shift;
             value_ = (masked_ & index_value_mask);
         }
@@ -2192,7 +2190,7 @@ namespace ember::engine::ecs {
          *
          * @returns A list of.
          */
-        const mapping_container& keys() const noexcept {
+        const mapping_container &keys() const noexcept {
             return _indirection;
         }
 
@@ -2208,9 +2206,9 @@ namespace ember::engine::ecs {
          *
          * @returns An index_type.
          */
-        [[nodiscard]] index_type pages_insert_pair(const entity_guid& guid_, const ComponentType& component_) {
+        [[nodiscard]] index_type pages_insert_pair(const entity_guid &guid_, const ComponentType &component_) {
             // TODO: optimize way to find storage page with empty sequence
-            auto s = _STD find_if(_pages.begin(), _pages.end(), [](const storage_page_type& page_) {
+            auto s = _STD find_if(_pages.begin(), _pages.end(), [](const storage_page_type &page_) {
                 return page_.can_store();
             });
 
@@ -2222,7 +2220,7 @@ namespace ember::engine::ecs {
                 /**
                  * If no space found, create new page and try again
                  */
-                _pages.push_back(storage_page_type {});
+                _pages.push_back(storage_page_type{});
 
                 /**
                  * Recursive try again
@@ -2233,7 +2231,7 @@ namespace ember::engine::ecs {
             /**
              * Get mutation reference to storage page
              */
-            storage_page_type& page = *s;
+            storage_page_type &page = *s;
 
             /**
              * Emplace data to page
@@ -2260,9 +2258,9 @@ namespace ember::engine::ecs {
          *
          * @returns An index_type.
          */
-        [[nodiscard]] index_type pages_insert_pair(const entity_guid& guid_, ComponentType&& component_) {
+        [[nodiscard]] index_type pages_insert_pair(const entity_guid &guid_, ComponentType &&component_) {
             // TODO: optimize way to find storage page with empty sequence
-            auto s = _STD find_if(_pages.begin(), _pages.end(), [](const storage_page_type& page_) {
+            auto s = _STD find_if(_pages.begin(), _pages.end(), [](const storage_page_type &page_) {
                 return page_.can_store();
             });
 
@@ -2274,7 +2272,7 @@ namespace ember::engine::ecs {
                 /**
                  * If no space found, create new page and try again
                  */
-                _pages.push_back(storage_page_type {});
+                _pages.push_back(storage_page_type{});
 
                 /**
                  * Recursive try again
@@ -2285,7 +2283,7 @@ namespace ember::engine::ecs {
             /**
              * Get mutation reference to storage page
              */
-            storage_page_type& page = *s;
+            storage_page_type &page = *s;
 
             /**
              * Emplace data to page
@@ -2298,7 +2296,7 @@ namespace ember::engine::ecs {
             /**
              * Composite index_type
              */
-            return (index_type { vidx } | (index_type { pidx } << index_page_shift));
+            return (index_type{vidx} | (index_type{pidx} << index_page_shift));
         }
     };
 }

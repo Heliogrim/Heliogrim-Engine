@@ -6,7 +6,9 @@ namespace ember {
     struct asset_type_id :
         type_id {
 
-        explicit constexpr asset_type_id(const type_id& other_) :
+        constexpr asset_type_id() noexcept = default;
+
+        explicit constexpr asset_type_id(const type_id& other_):
             type_id(other_) {}
 
         explicit constexpr asset_type_id(const decltype(type_id::data) value_) :

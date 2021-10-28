@@ -18,6 +18,9 @@ namespace ember {
     template <class Ty>
     using pointer = Ty*;
 
+    template<typename Type_>
+    using non_owning_rptr = Type_*;
+
     template <class Ty>
     using sptr = _STD shared_ptr<Ty>;
 

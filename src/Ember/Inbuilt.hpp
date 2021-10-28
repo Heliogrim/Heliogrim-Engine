@@ -32,6 +32,10 @@ namespace ember {
         using underlying_type = concurrent::future<Type_>;
 
     public:
+        future(_Inout_ mref<underlying_type> other_) noexcept :
+            underlying_type(_STD move(other_)) {}
+
+    public:
         /**
          * Check whether this future has taken part
          *
@@ -66,7 +70,7 @@ namespace ember {
          * @returns A pointer to the awaitable signal.
          */
         [[nodiscard]] operator ptr<await_signal_type>() const noexcept {
-            return underlying_type::operator ptr<await_signal_type>();
+            return underlying_type::signal();
         }
     };
 

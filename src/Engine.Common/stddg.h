@@ -3,35 +3,33 @@
 #include <mutex>
 
 namespace ember {
-	static _STD chrono::high_resolution_clock::time_point processStartTime = _STD chrono::high_resolution_clock::now();
+    static _STD chrono::high_resolution_clock::time_point processStartTime = _STD chrono::high_resolution_clock::now();
 }
 
 #ifdef _DEBUG
 
 namespace ember::debug {
-	static _STD recursive_mutex outMtx {};
+    static _STD recursive_mutex outMtx {};
 }
 
-template<typename Ty>
-void printSet(const Ty*& ptr_, const size_t count_)
-{
-	if (count_ < 1)
-	{
-		std::cout << "[ ]" << std::endl;
-	}
+template <typename Ty>
+void printSet(const Ty*& ptr_, const size_t count_) {
+    if (count_ < 1) {
+        std::cout << "[ ]" << std::endl;
+    }
 
-	std::stringstream ss = std::stringstream();
+    std::stringstream ss = std::stringstream();
 
-	// Open
-	ss << "[ ";
+    // Open
+    ss << "[ ";
 
-	for (size_t i = 1; i < count_; i ++)
-		ss << ", " << ptr_[i];
+    for (size_t i = 1; i < count_; i ++)
+        ss << ", " << ptr_[i];
 
-	// Close
-	ss << " ]";
+    // Close
+    ss << " ]";
 
-	std::cout << ss.str() << std::endl;
+    std::cout << ss.str() << std::endl;
 }
 
 #define DEBUG_OUT(x) do { ember::debug::outMtx.lock(); SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15); std::cout << _STD to_string(_STD chrono::duration_cast<_STD chrono::milliseconds>(_STD chrono::high_resolution_clock::now() - ember::processStartTime).count()) << " | " << x << std::endl; ember::debug::outMtx.unlock(); } while (0);

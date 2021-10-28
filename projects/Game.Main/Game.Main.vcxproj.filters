@@ -61,6 +61,9 @@
     <Filter Include="Quelldateien\Assets\Images">
       <UniqueIdentifier>{baa8c914-b467-417e-83e8-10cab2eeca4c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Assets\Meshes">
+      <UniqueIdentifier>{2e8f1c04-7acf-49a4-8925-cbe1522ea6e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game.Main\main.cpp">
@@ -247,6 +250,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.hpp">
       <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.hpp">
+      <Filter>Headerdateien\Assets\Meshes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

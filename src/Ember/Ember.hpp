@@ -6,7 +6,7 @@
 #include "Graphics.hpp"
 #include "Network.hpp"
 #include "Scheduler.hpp"
-#include "World/World.hpp"
+#include "World.hpp"
 
 namespace ember {
     class Ember {
@@ -102,9 +102,9 @@ namespace ember {
          * @author Julius
          * @date 08.01.2021
          *
-         * @returns A ref&lt;world::World&gt;
+         * @returns A ref&lt;World&gt;
          */
-        [[nodiscard]] static ref<world::World> world() noexcept;
+        [[nodiscard]] static ref<World> world() noexcept;
 
     private:
         /**

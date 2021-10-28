@@ -12,19 +12,25 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Ember/Entity.hpp>
 #include <Ember/Inbuilt.hpp>
+#include <Ember/Level.hpp>
+#include <Ember/TextureAsset.hpp>
+#include <Ember/Component/Gfx/StaticMeshComponent.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
+#include <Engine.Event/TickEvent.hpp>
+#include <Engine.Scheduler/Async.hpp>
+#include <Engine.Session/Session.hpp>
 
-#include "Ember/Entity.hpp"
-#include "Ember/Level.hpp"
-#include "Ember/TextureAsset.hpp"
-#include "Engine.Event/TickEvent.hpp"
-#include "Engine.Scheduler/Async.hpp"
-#include "Engine.Session/Session.hpp"
+#include "Assets/GfxMaterials/ForestGround01.hpp"
+#include "Assets/Meshes/PlaneD128.hpp"
+#include "World/Entities/Components/CameraComponent.hpp"
 
 using namespace ember;
 
 void test();
+
+void buildEntity();
 
 void ember_block_main() {
 
@@ -91,7 +97,8 @@ void ember_main_entry() {
     /**
      *
      */
-    test();
+    // test();
+    buildEntity();
 }
 
 void test() {
@@ -157,4 +164,18 @@ void test() {
 
         await(level::destroy(_STD move(level)));
     }
+}
+
+void buildEntity() {
+
+    auto possible = entity::create();
+    // await(possible);
+
+    Entity entity = possible.get();
+    auto val = entity::valid(entity);
+
+    auto& comp = entity.record<component::StaticMeshComponent>();
+
+    comp.setMesh(ember::game::assets::meshes::PlaneD128::auto_guid());
+    comp.setMaterial(ember::game::assets::material::ForestGround01::auto_guid());
 }

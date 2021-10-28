@@ -15,7 +15,7 @@ namespace ember::concurrent {
         class future_state {
         public:
             future_state() :
-                _returned(false),
+                _returned(),
                 _value(
                     _STD is_nothrow_default_constructible_v<Ty> ? new Ty() : _STD move(allocate())
                 ) {}
@@ -42,8 +42,7 @@ namespace ember::concurrent {
              * @exception _STD Thrown when a Standard error condition occurs.
              */
             FORCE_INLINE void complete() const {
-                bool ex = false;
-                if (!_returned.compare_exchange_strong(ex, true, _STD memory_order_relaxed))
+                if (_returned.test_and_set(_STD memory_order::acq_rel))
                     throw _STD runtime_error("Try to complete a already returned future state.");
                 _cv.notify_all();
             }
@@ -55,13 +54,17 @@ namespace ember::concurrent {
              *
              * @param  val_ The value.
              */
-            template <typename = _STD enable_if_t<_STD is_nothrow_default_constructible_v<Ty>>>
-            FORCE_INLINE void set(Ty&& val_) {
-                bool ex = false;
-                if (!_returned.compare_exchange_strong(ex, true, _STD memory_order_relaxed))
+            template <typename Type_ = Ty, typename = _STD enable_if_t<_STD is_nothrow_default_constructible_v<Type_> || _STD is_nothrow_move_constructible_v<Type_>>>
+            FORCE_INLINE void set(Type_&& val_) {
+                if (_returned.test_and_set(_STD memory_order::acq_rel))
                     throw _STD runtime_error("Try to assign value to already assigned future state.");
 
-                (*_value) = _STD move(val_);
+                if constexpr (_STD is_nothrow_default_constructible_v<Type_>) {
+                    (*_value) = _STD move(val_);
+                } else {
+                    new(_value) Type_(_STD move(val_));
+                }
+
                 _cv.notify_all();
             }
 
@@ -80,7 +83,7 @@ namespace ember::concurrent {
              * @returns True if it succeeds, false if it fails.
              */
             FORCE_INLINE bool returned() const {
-                return _returned;
+                return _returned.test(_STD memory_order::relaxed);
             }
 
             /**
@@ -94,16 +97,21 @@ namespace ember::concurrent {
 
             /** Waits this  */
             FORCE_INLINE void wait() const {
-                if (_returned)
+                if (_returned.test(_STD memory_order::acquire))
                     return;
                 _STD unique_lock<_STD mutex> lck(_mtx);
                 _cv.wait(lck);
             }
 
+        public:
+            [[nodiscard]] non_owning_rptr<_STD atomic_flag> signal() const {
+                return &_returned;
+            }
+
         private:
             mutable _STD condition_variable _cv;
             mutable _STD mutex _mtx;
-            mutable _STD atomic_bool _returned;
+            mutable _STD atomic_flag _returned;
             mutable Ty* _value;
 
             /**
@@ -129,7 +137,7 @@ namespace ember::concurrent {
         class future_state<void> {
         public:
             future_state() :
-                _returned(false) {}
+                _returned() {}
 
             /**
              * Destructor
@@ -145,8 +153,7 @@ namespace ember::concurrent {
              * @exception _STD Thrown when a Standard error condition occurs.
              */
             FORCE_INLINE void complete() const {
-                bool ex = false;
-                if (!_returned.compare_exchange_strong(ex, true, _STD memory_order_relaxed))
+                if (_returned.test_and_set(_STD memory_order::acq_rel))
                     throw _STD runtime_error("Try to complete a already returned future state.");
                 _cv.notify_all();
             }
@@ -157,8 +164,7 @@ namespace ember::concurrent {
              * @exception _STD Thrown when a Standard error condition occurs.
              */
             FORCE_INLINE void set() {
-                bool ex = false;
-                if (!_returned.compare_exchange_strong(ex, true, _STD memory_order_relaxed))
+                if (_returned.test_and_set(_STD memory_order::acq_rel))
                     throw _STD runtime_error("Try to assign value to already assigned future state.");
                 _cv.notify_all();
             }
@@ -169,21 +175,26 @@ namespace ember::concurrent {
              * @returns True if it succeeds, false if it fails.
              */
             FORCE_INLINE bool returned() const {
-                return _returned;
+                return _returned.test(_STD memory_order::relaxed);
             }
 
             /** Waits this  */
             FORCE_INLINE void wait() const {
-                if (_returned)
+                if (_returned.test(_STD memory_order::acquire))
                     return;
                 _STD unique_lock<_STD mutex> lck(_mtx);
                 _cv.wait(lck);
             }
 
+        public:
+            [[nodiscard]] non_owning_rptr<_STD atomic_flag> signal() const {
+                return &_returned;
+            }
+
         private:
             mutable _STD condition_variable _cv;
             mutable _STD mutex _mtx;
-            mutable _STD atomic_bool _returned;
+            mutable _STD atomic_flag _returned;
         };
     }
 
@@ -264,6 +275,11 @@ namespace ember::concurrent {
             return _state;
         }
 
+    public:
+        [[nodiscard]] non_owning_rptr<_STD atomic_flag> signal() const {
+            return _state->signal();
+        }
+
     private:
         state_type _state;
     };
@@ -335,6 +351,11 @@ namespace ember::concurrent {
          */
         [[maybe_unused]] const state_type& state() const {
             return _state;
+        }
+
+    public:
+        [[nodiscard]] non_owning_rptr<_STD atomic_flag> signal() const {
+            return _state->signal();
         }
 
     private:

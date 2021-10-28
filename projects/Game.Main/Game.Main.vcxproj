@@ -231,6 +231,7 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\Inc.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MetalBare.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MossGround.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Cavity.hpp" />

@@ -66,7 +66,7 @@ list_directories("libraries" "${META_PROJECT_SUB_DIR}")
 set(tests ${libraries})
 
 list(FILTER libraries EXCLUDE REGEX "\\.Test")
-list(FILTER libraries EXCLUDE REGEX "Game")
+list(FILTER libraries EXCLUDE REGEX "Game([^/]+)")
 list(FILTER tests INCLUDE REGEX "\\.Test")
 
 foreach (lib IN LISTS libraries tests)
