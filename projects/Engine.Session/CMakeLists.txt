@@ -7,4 +7,4 @@ set(link_libraries
         ${META_PROJECT_NAME}::Engine.Scheduler)
 
 # Setup
-make_library_project(${target} ${link_libraries})
+make_library_project(${target} "${link_libraries}")

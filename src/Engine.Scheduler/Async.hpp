@@ -55,9 +55,8 @@ namespace ember::engine::scheduler {
      */
     template <typename Ty>
     ember::concurrent::future<Ty> async(IN _STD function<Ty()>&& fnc_) {
-        using namespace ember::concurrent;
-        promise<Ty> p { fnc_ };
-        future<Ty> f = p.get();
+        ember::concurrent::promise<Ty> p { fnc_ };
+        ember::concurrent::future<Ty> f = p.get();
 
         exec({ p });
 
@@ -75,9 +74,8 @@ namespace ember::engine::scheduler {
      */
     template <typename Ty>
     ember::concurrent::future<Ty> async(IN _STD function<Ty()>&& fnc_, ember::u32 ticks_) {
-        using namespace ember::concurrent;
-        promise<Ty> p { fnc_ };
-        future<Ty> f = p.get();
+        ember::concurrent::promise<Ty> p { fnc_ };
+        ember::concurrent::future<Ty> f = p.get();
 
         delay({ p }, ticks_);
 

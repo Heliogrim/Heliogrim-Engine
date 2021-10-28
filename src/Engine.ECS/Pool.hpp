@@ -17,7 +17,7 @@ namespace ember::engine::ecs {
         using assign_hasher = _STD hash<assign_key_type>;
 
         using size_type = _STD size_t;
-        using hash_type = typename storage_type::mapping_container::hash_type;
+        using hash_type = typename storage_type::hash_type;
 
         using value_type = pool<ComponentType>;
         using reference_type = pool<ComponentType>&;

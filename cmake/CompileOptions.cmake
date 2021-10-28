@@ -62,11 +62,7 @@ set(TEST_LIBRARIES
 if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     set(DEFAULT_LIBRARIES
             ${DEFAULT_LIBRARIES}
-            "${META_PROJECT_LIB_DIR}/bin/assimp/${CMAKE_BUILD_TYPE}/assimp-vc142-mtd.lib"
-            "${META_PROJECT_LIB_DIR}/bin/gtest/${CMAKE_BUILD_TYPE}/gtestd.lib"
-            "${META_PROJECT_LIB_DIR}/bin/gtest/${CMAKE_BUILD_TYPE}/gtest_maind.lib"
-            "${META_PROJECT_LIB_DIR}/bin/gtest/${CMAKE_BUILD_TYPE}/gmockd.lib"
-            "${META_PROJECT_LIB_DIR}/bin/gtest/${CMAKE_BUILD_TYPE}/gmock_maind.lib")
+            "${META_PROJECT_LIB_DIR}/bin/assimp/${CMAKE_BUILD_TYPE}/assimp-vc142-mtd.lib")
 
 else ()
     set(DEFAULT_LIBRARIES
@@ -110,6 +106,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
             /Qpar
             /GR-
             /Gd
+            /GT         # -> Fiber safe thread local storage
 
             /Zc:wchar_t
             /Zc:inline

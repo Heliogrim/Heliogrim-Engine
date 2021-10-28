@@ -53,12 +53,12 @@ namespace ember::engine::concurrent {
          * @returns True if it succeeds, false if it fails.
          */
         bool try_push(Ty&& value_) {
-            const size_type h = _head.load(_STD memory_order::seq_cst);
+            const size_type h = _head.load(_STD memory_order::acquire);
             const size_type n = inc(h);
 
             if (n != _tail.load()) {
                 _container[n] = value_;
-                _head.store(n, std::memory_order::seq_cst);
+                _head.store(n, std::memory_order::release);
                 return true;
             }
 
@@ -89,7 +89,7 @@ namespace ember::engine::concurrent {
              */
             if (h > t || (h < t && (h >= n || n > t))) {
                 value_ = _STD move(_container[n]);
-                _tail.store(n, _STD memory_order::seq_cst);
+                _tail.store(n, _STD memory_order::release);
                 return true;
             }
 
@@ -105,7 +105,7 @@ namespace ember::engine::concurrent {
          * @returns True if it succeeds, false if it fails.
          */
         [[nodiscard]] bool empty() const {
-            const size_t h = _head.load(_STD memory_order::seq_cst), t = _tail.load(_STD memory_order::seq_cst);
+            const size_t h = _head.load(_STD memory_order::acquire), t = _tail.load(_STD memory_order::acquire);
             return (h - t) == 0;
         }
 
@@ -118,7 +118,7 @@ namespace ember::engine::concurrent {
          * @returns True if it succeeds, false if it fails.
          */
         [[nodiscard]] bool full() const {
-            const size_type h = _head.load(_STD memory_order::seq_cst), t = _tail.load(_STD memory_order::seq_cst);
+            const size_type h = _head.load(_STD memory_order::acquire), t = _tail.load(_STD memory_order::acquire);
             return (h - t) != 0 && (h + t) % (reserved() - 1) == 0;
         }
 
@@ -149,8 +149,8 @@ namespace ember::engine::concurrent {
     private:
         container_type _container;
 
-        _STD atomic<size_type> _head;
-        _STD atomic<size_type> _tail;
+        ALIGNED(_STD atomic<size_type>, CACHE_LINE_SIZE) _head;
+        ALIGNED(_STD atomic<size_type>, CACHE_LINE_SIZE) _tail;
 
         /**
          * Increments the given value

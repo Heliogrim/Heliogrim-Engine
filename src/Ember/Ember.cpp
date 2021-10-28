@@ -133,6 +133,6 @@ void Ember::wait() {
     engine::Session::get()->wait();
 }
 
-ref<world::World> Ember::world() noexcept {
+ref<World> Ember::world() noexcept {
     throw NotImplementedException();
 }
