@@ -3,16 +3,64 @@
 #include <Engine.Common/Collection/BytellHashMap.hpp>
 #include <Engine.Common/Make.hpp>
 
+#include "ComponentTypeId.hpp"
 #include "Traits.hpp"
 #include "Pool.hpp"
+#include "Registry.hpp"
 
 namespace ember::engine::ecs {
+
+    // TODO: Replace / Reconcider
+    struct __declspec(novtable) pool_adapter {
+
+        void* self;
+
+        virtual void insert(_In_ cref<entity_guid> key_) = 0;
+
+        virtual void* get(_In_ cref<entity_guid> key_) = 0;
+    };
+
+    template <IsComponent ComponentType_>
+    struct pool_adapter_impl final :
+        public pool_adapter {
+
+        pool_adapter_impl() noexcept = default;
+
+        pool_adapter_impl(_In_ ptr<pool<ComponentType_>> pool_) noexcept :
+            pool_adapter() {
+            self = pool_;
+        }
+
+        void insert(cref<entity_guid> key_) override {
+            auto* cp { static_cast<pool<ComponentType_>*>(self) };
+            cp->insert(key_);
+        }
+
+        void* get(cref<entity_guid> key_) override {
+            auto* cp { static_cast<pool<ComponentType_>*>(self) };
+            return cp->get(key_);
+        }
+    };
+
     // TODO: Remove registry and dereference 
     class registry {
     public:
         using this_type = _STD unique_ptr<registry>;
         using size_type = size_t;
 
+    public:
+        /**
+         * Destructor
+         *
+         * @author Julius
+         * @date 29.10.2021
+         */
+        ~registry();
+
+    private:
+        static this_type _this;
+
+    public:
         /**
          * Destroys this 
          *
@@ -60,9 +108,19 @@ namespace ember::engine::ecs {
             if (ptr == nullptr) {
                 ptr = &ecs::pool<ComponentType>::getOrCreate();
                 _pools[typeId] = ptr;
+                _adapters[typeId] = new pool_adapter_impl<ComponentType> { ptr };
             }
             return *ptr;
         }
+
+        /**
+         * Get a pool_adapter
+         *
+         * @param typeId_ The type identifier related to the queried pool
+         *
+         * @returns A pointer to a acknowledged pool_adapter, otherwise false
+         */
+        _Success_(return != nullptr) pool_adapter* get_pool_adapter(_In_ cref<component_type_id> typeId_);
 
         /**
          * Gets the pool
@@ -207,7 +265,7 @@ namespace ember::engine::ecs {
         }
 
     private:
-        static this_type _this;
+        ska::bytell_hash_map<type_id, pool_adapter*> _adapters;
         ska::bytell_hash_map<type_id, void*> _pools;
     };
 }

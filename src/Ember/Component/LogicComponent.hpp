@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ComponentTypeId.hpp"
+#include <Engine.ECS/ComponentTypeId.hpp>
 #include "ComponentAssetHandle.hpp"
 
 namespace ember::component {

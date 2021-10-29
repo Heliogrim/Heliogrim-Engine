@@ -36,6 +36,9 @@
     <ClInclude Include="..\..\src\Engine.ECS\View.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS\ComponentTypeId.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.ECS\Entity.cpp">

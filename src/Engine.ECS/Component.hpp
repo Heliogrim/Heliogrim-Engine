@@ -70,10 +70,10 @@ namespace ember::engine::ecs {
     template <typename Ty>
     concept IsComponent = ember::HasStaticType<Ty> &&
     _STD is_object_v<Ty> &&
-    _STD is_nothrow_default_constructible_v<Ty>
-    /* This will require the default constructor for a object to be noexcept attributed */ &&
-    _STD is_trivially_move_assignable_v<Ty> &&
-    _STD is_trivially_move_constructible_v<Ty>;
+    _STD is_nothrow_default_constructible_v<Ty>;
+    /* This will require the default constructor for a object to be noexcept attributed */ //&&
+    //_STD is_trivially_move_assignable_v<Ty> &&
+    //_STD is_trivially_move_constructible_v<Ty>;
 
     /**
      * A component handle which will be force by type cast of component reference using undefined behaviour to control pooled references.

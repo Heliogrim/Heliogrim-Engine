@@ -7,26 +7,26 @@
 
 namespace ember::engine::ecs::subsystem {
 
-	class StaticMeshComponent {
-	public:
-		constexpr static component_type_id type_id{"StaticMeshComponent"_typeId};
+    class StaticMeshComponent {
+    public:
+        constexpr static component_type_id type_id { "StaticMeshComponent"_typeId };
 
-	public:
-		StaticMeshComponent() noexcept = default;
+    public:
+        StaticMeshComponent() noexcept = default;
 
-	private:
-		asset_guid _meshGuid;
+    private:
+        asset_guid _meshGuid;
 
-	public:
-		[[nodiscard]] cref<asset_guid> mesh() const noexcept;
+    public:
+        [[nodiscard]] cref<asset_guid> mesh() const noexcept;
 
-	private:
-		asset_guid _materialGuid;
+    private:
+        asset_guid _materialGuid;
 
-	public:
-		[[nodiscard]] cref<asset_guid> material() const noexcept;
+    public:
+        [[nodiscard]] cref<asset_guid> material() const noexcept;
 
-	private:
-		sptr<proxy::StaticModelSceneProxy> _proxy = nullptr;
-	};
+    private:
+        sptr<proxy::StaticModelSceneProxy> _proxy = nullptr;
+    };
 }

@@ -89,11 +89,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Components\ComponentCustomRegister.hpp" />
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Components\StaticMeshComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Reflection\ComponentReflection.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Reflection\ComponentReflector.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Reflection\EntityReflection.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Reflection\EntityReflector.hpp" />
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Register\ComponentCustomRegister.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Register\EntityComponentRegister.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Register\LogicComponentRegister.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Register\SceneComponentRegister.hpp" />

@@ -19,6 +19,12 @@
     <Filter Include="Headerdateien\Reflection">
       <UniqueIdentifier>{42b8f695-fefe-46d3-aef7-0b33536012e2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Components">
+      <UniqueIdentifier>{ca8e23ef-f73b-42ad-bde5-554cc90c848a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Components">
+      <UniqueIdentifier>{8f16de5a-7b40-4ccf-ae77-728936d6e129}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Subsystem.hpp">
@@ -33,9 +39,6 @@
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Register\EntityComponentRegister.hpp">
       <Filter>Headerdateien\Register</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Components\ComponentCustomRegister.hpp">
-      <Filter>Headerdateien\Register</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Reflection\EntityReflection.hpp">
       <Filter>Headerdateien\Reflection</Filter>
     </ClInclude>
@@ -47,6 +50,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Reflection\ComponentReflection.hpp">
       <Filter>Headerdateien\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Components\StaticMeshComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Register\ComponentCustomRegister.hpp">
+      <Filter>Headerdateien\Register</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

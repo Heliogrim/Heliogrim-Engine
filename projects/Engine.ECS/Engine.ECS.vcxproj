@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.ECS\Component.hpp" />
+    <ClInclude Include="..\..\src\Engine.ECS\ComponentTypeId.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS\Entity.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS\Pool.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS\Registry.hpp" />
