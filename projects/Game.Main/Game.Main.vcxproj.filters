@@ -64,6 +64,9 @@
     <Filter Include="Headerdateien\Assets\Meshes">
       <UniqueIdentifier>{2e8f1c04-7acf-49a4-8925-cbe1522ea6e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Assets\Meshes">
+      <UniqueIdentifier>{71eed777-e8c5-4b11-bc50-3a92b1cfb9f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game.Main\main.cpp">
@@ -125,6 +128,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Game.Main\Assets\Images\GrassWild01Albedo.cpp">
       <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

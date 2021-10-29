@@ -70,6 +70,7 @@
     <ClCompile Include="..\..\src\Ember\Component\CollisionComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\Component\ComponentHandle.cpp" />
     <ClCompile Include="..\..\src\Ember\Component\EntityComponent.cpp" />
+    <ClCompile Include="..\..\src\Ember\Component\Gfx\StaticMeshComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\Component\LightComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\Component\LogicComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\Component\ModelComponent.cpp" />

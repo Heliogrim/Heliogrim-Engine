@@ -1,159 +1,200 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.ECS/Entity.hpp>
-#include <Engine.ECS/Registry.hpp>
+#include <Engine.ECS/ComponentTypeId.hpp>
 #include <Engine.ECS/Traits.hpp>
 
 #include "Inbuilt.hpp"
 
 namespace ember {
 
-    namespace {
+    /**
+     * An entity base.
+     *
+     * @author Julius
+     * @date 20.08.2021
+     */
+    class EntityBase {
+    public:
+        using this_type = EntityBase;
+
+    public:
         /**
-         * An entity base.
+         * Default constructor
          *
          * @author Julius
          * @date 20.08.2021
          */
-        class EntityBase :
-            protected engine::ecs::DynamicEntity {
-        public:
-            using underlying_type = engine::ecs::DynamicEntity;
+        EntityBase() noexcept :
+            _guid(engine::ecs::invalid_entity_guid) {}
 
-        public:
-            /**
-             * Default constructor
-             *
-             * @author Julius
-             * @date 20.08.2021
-             */
-            EntityBase() noexcept :
-                engine::ecs::DynamicEntity(engine::ecs::invalid_entity_guid) {}
+        /**
+         * Copy Constructor
+         *
+         * @author Julius
+         * @date 28.10.2021
+         *
+         * @param  other_ The other.
+         */
+        EntityBase(cref<EntityBase> other_) = default;
 
-            /**
-             * Copy Constructor
-             *
-             * @author Julius
-             * @date 28.10.2021
-             *
-             * @param  other_ The other.
-             */
-            EntityBase(cref<EntityBase> other_) = default;
+        /**
+         * Move Constructor
+         *
+         * @author Julius
+         * @date 28.10.2021
+         *
+         * @param  other_ The other.
+         */
+        EntityBase(mref<EntityBase> other_) noexcept = default;
 
-            /**
-             * Move Constructor
-             *
-             * @author Julius
-             * @date 28.10.2021
-             *
-             * @param  other_ The other.
-             */
-            EntityBase(mref<EntityBase> other_) noexcept = default;
+        /**
+         * Destructor
+         *
+         * @author Julius
+         * @date 20.08.2021
+         */
+        ~EntityBase() noexcept = default;
 
-            /**
-             * Destructor
-             *
-             * @author Julius
-             * @date 20.08.2021
-             */
-            ~EntityBase() noexcept = default;
+    protected:
+        /**
+         * The entity identifier
+         */
+        engine::ecs::entity_guid _guid;
 
-        public:
-            /**
-             * Gets the unique identifier
-             *
-             * @author Julius
-             * @date 28.10.2021
-             *
-             * @returns An engine::ecs::entity_guid.
-             */
-            [[nodiscard]] engine::ecs::entity_guid guid() const noexcept {
-                return underlying_type::get_guid();
-            }
+    public:
+        /**
+         * Gets the unique identifier
+         *
+         * @author Julius
+         * @date 28.10.2021
+         *
+         * @returns An engine::ecs::entity_guid.
+         */
+        [[nodiscard]] engine::ecs::entity_guid guid() const noexcept;
 
-        protected:
-            /**
-             * Components
-             */
+    protected:
+        /**
+         * Components
+         */
 
-        public:
-            /**
-             * Gets a component from internal storage related to entity
-             *
-             * @returns A ref&lt;const Ty&gt; which is a immutable reference to a component
-             */
-            template <class ComponentType_>
-            [[nodiscard]] ref<const _STD remove_cvref_t<ComponentType_>> get() const {
-                return underlying_type::get<ComponentType_>();
-            }
+    private:
+        /**
+         * Query for a component recorded by this entity
+         *
+         * @param componentTypeId_ The type identifier for the component to query for.
+         *
+         * @returns A pointer to the component if it exists, otherwise nullptr.
+         */
+        [[nodiscard]] _Success_(return != nullptr) ptr<void> get(
+            _In_ cref<component_type_id> componentTypeId_) const noexcept;
 
-            /**
-             * Gets a component from internal storage related to entity
-             *
-             * @returns A ref&lt;Ty&gt; which is a mutable reference to a component
-             */
-            template <class ComponentType_>
-            [[nodiscard]] ref<_STD remove_cvref_t<ComponentType_>> get() {
-                return underlying_type::get<ComponentType_>();
-            }
+    public:
+        /**
+         * Gets a component from internal storage related to entity
+         *
+         * @returns A ref&lt;const Ty&gt; which is a immutable reference to a component
+         */
+        template <class ComponentType_>
+        [[nodiscard]] ref<const _STD remove_cvref_t<ComponentType_>> get() const {
+            #ifdef _DEBUG
+            auto* ptr = get(ComponentType_::type_id);
+            DEBUG_ASSERT(ptr != nullptr, "")
+            return *static_cast<ComponentType_>(ptr);
+            #else
+            return *static_cast<ComponentType_>(get(ComponentType_::type_id));
+            #endif
+        }
 
-            /**
-             * Check whether entity has component
-             *
-             * @returns True if it succeeds, false if it fails.
-             */
-            template <class ComponentType_>
-            [[nodiscard]] bool has() const noexcept {
-                return underlying_type::get<ComponentType_>();
-            }
+        /**
+         * Gets a component from internal storage related to entity
+         *
+         * @returns A ref&lt;Ty&gt; which is a mutable reference to a component
+         */
+        template <class ComponentType_>
+        [[nodiscard]] ref<_STD remove_cvref_t<ComponentType_>> get() {
+            #ifdef _DEBUG
+            auto* ptr = get(ComponentType_::type_id);
+            DEBUG_ASSERT(ptr != nullptr, "")
+            return *static_cast<ComponentType_*>(ptr);
+            #else
+            return *static_cast<ComponentType_>(get(ComponentType_::type_id));
+            #endif
+        }
 
-            /**
-             * Check whether entity has component
-             *
-             * @returns True if it succeeds, false if it fails.
-             */
-            template <class ComponentType_>
-            [[nodiscard]] bool has() noexcept {
-                return underlying_type::get<ComponentType_>();
-            }
+    private:
+        /**
+         * Check whether this entity has a certain component recorded
+         *
+         * @param componentTypeId_ The type identifier for the internal component.
+         *
+         * @returns True is component is present, false if not.
+         */
+        [[nodiscard]] _Success_(return == true) bool has(
+            _In_ cref<component_type_id> componentTypeId_) const noexcept;
 
-            /**
-             * Records a component to internal storage
-             *
-             * @returns A ref&lt;Ty&gt; which is mutable reference to a component
-             */
-            template <class ComponentType_>
-            [[nodiscard]] ref<_STD remove_cvref_t<ComponentType_>> record() noexcept {
-                // TODO: Replace
-                engine::ecs::registry::get().getOrCreatePool<ComponentType_>();
-                underlying_type::record<ComponentType_>();
-                return *underlying_type::get<ComponentType_>();
-            }
+    public:
+        /**
+         * Check whether entity has component
+         *
+         * @returns True if it succeeds, false if it fails.
+         */
+        template <class ComponentType_>
+        [[nodiscard]] bool has() const noexcept {
+            return has(ComponentType_::type_id);
+        }
 
-            /**
-             * Records a component to internal storage
-             *
-             * @param  obj_ Source Component to use
-             *
-             * @returns A ref&lt;Ty&gt; which is mutable reference to a component.
-             */
-            template <class ComponentType_>
-            [[nodiscard]] ref<_STD remove_cvref_t<ComponentType_>> record(_Inout_ mref<ComponentType_> obj_) noexcept {
-                // TODO: Replace
-                engine::ecs::registry::get().getOrCreatePool<ComponentType_>();
-                underlying_type::record<ComponentType_>(obj_);
-                return *underlying_type::get<ComponentType_>();
-            }
+        /**
+         * Check whether entity has component
+         *
+         * @returns True if it succeeds, false if it fails.
+         */
+        template <class ComponentType_>
+        [[nodiscard]] bool has() noexcept {
+            return has(ComponentType_::type_id);
+        }
 
-            /**
-             * Removes a component from internal storage
-             *
-             * @returns True if it succeeds, false if it fails.
-             */
-            template <class ComponentType_>
-            [[nodiscard]] bool remove() noexcept = delete;
-        };
-    }
+    private:
+        /**
+         * Records a internal component related to this entity
+         *
+         * @param componentTypeId_ The type identifier for the internal component.
+         */
+        void record(_In_ cref<component_type_id> componentTypeId_) noexcept;
+
+    public:
+        /**
+         * Records a component to internal storage
+         *
+         * @returns A ref&lt;Ty&gt; which is mutable reference to a component
+         */
+        template <typename ComponentType_> requires HasStaticType<ComponentType_, ember::component_type_id>
+        [[nodiscard]] ref<_STD remove_cvref_t<ComponentType_>> record() noexcept {
+            record(ComponentType_::type_id);
+            return get<ComponentType_>();
+        }
+
+        /**
+         * Records a component to internal storage
+         *
+         * @param  obj_ Source Component to use
+         *
+         * @returns A ref&lt;Ty&gt; which is mutable reference to a component.
+         */
+        template <class ComponentType_>
+        [[nodiscard]] ref<_STD remove_cvref_t<ComponentType_>> record(_Inout_ mref<ComponentType_> obj_) noexcept {
+            // record(ComponentType_::type_id, &obj_);
+            throw NotImplementedException();
+            return get<ComponentType_>();
+        }
+
+        /**
+         * Removes a component from internal storage
+         *
+         * @returns True if it succeeds, false if it fails.
+         */
+        template <class ComponentType_>
+        [[nodiscard]] bool remove() noexcept = delete;
+    };
 
     class Entity final :
         public EntityBase {

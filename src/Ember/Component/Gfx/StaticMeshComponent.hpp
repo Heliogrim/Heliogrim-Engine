@@ -5,77 +5,82 @@
 #include "../../GfxMaterialAsset.hpp"
 #include "../../StaticMeshAsset.hpp"
 
-#include <Engine.ECS/Component.hpp>
-
 namespace ember::component {
-	class StaticMeshComponent :
-			public MeshComponent {
-	private:
-		ComponentAssetHandle<StaticMeshAsset> _mesh;
+    class StaticMeshComponent :
+        public MeshComponent {
+    public:
+        static const component_type_id type_id;
 
-	public:
-		/**
-		 * Gets the mesh
-		 *
-		 * @author Julius
-		 * @date 28.10.2021
-		 *
-		 * @returns A cref&lt;decltype(_mesh)&gt;
-		 */
-		[[nodiscard]] cref<decltype(_mesh)> mesh() const noexcept;
+    public:
+        constexpr StaticMeshComponent() noexcept = default;
 
-		/**
-		 * Sets a mesh
-		 *
-		 * @author Julius
-		 * @date 28.10.2021
-		 *
-		 * @param  mesh_ The mesh.
-		 */
-		void setMesh(_In_ cref<StaticMeshAsset> mesh_);
+        constexpr explicit StaticMeshComponent(_In_ ptr<void> internal_) noexcept :
+            MeshComponent(),
+            _internal(internal_) {}
 
-		/**
-		 * Sets a mesh
-		 *
-		 * @author Julius
-		 * @date 28.10.2021
-		 *
-		 * @param  meshGuid_ Unique identifier for the mesh.
-		 */
-		void setMesh(_In_ cref<asset_guid> meshGuid_);
+    private:
+        ptr<void> _internal;
 
-	private:
-		ComponentAssetHandle<GfxMaterialAsset> _material;
+    public:
+        /**
+         * Gets the mesh associated with this instance
+         *
+         * @author Julius
+         * @date 28.10.2021
+         *
+         * @returns A unique identifier of the mesh
+         */
+        [[nodiscard]] asset_guid meshGuid() const noexcept;
 
-	public:
-		/**
-		 * Gets the material
-		 *
-		 * @author Julius
-		 * @date 28.10.2021
-		 *
-		 * @returns A cref&lt;decltype(_material)&gt;
-		 */
-		[[nodiscard]] cref<decltype(_material)> material() const noexcept;
+        /**
+         * Sets a mesh
+         *
+         * @author Julius
+         * @date 28.10.2021
+         *
+         * @param  mesh_ The mesh.
+         */
+        void setMesh(_In_ cref<StaticMeshAsset> mesh_);
 
-		/**
-		 * Sets a material
-		 *
-		 * @author Julius
-		 * @date 28.10.2021
-		 *
-		 * @param  material_ The material.
-		 */
-		void setMaterial(_In_ cref<GfxMaterialAsset> material_);
+        /**
+         * Sets a mesh
+         *
+         * @author Julius
+         * @date 28.10.2021
+         *
+         * @param  meshGuid_ Unique identifier for the mesh.
+         */
+        void setMesh(_In_ cref<asset_guid> meshGuid_);
 
-		/**
-		 * Sets a material
-		 *
-		 * @author Julius
-		 * @date 28.10.2021
-		 *
-		 * @param  materialGuid_ Unique identifier for the material.
-		 */
-		void setMaterial(_In_ cref<asset_guid> materialGuid_);
-	};
+    public:
+        /**
+         * Gets the material associated with this instance
+         *
+         * @author Julius
+         * @date 28.10.2021
+         *
+         * @returns A unique identifier of the gfx material
+         */
+        [[nodiscard]] asset_guid materialGuid() const noexcept;
+
+        /**
+         * Sets a material
+         *
+         * @author Julius
+         * @date 28.10.2021
+         *
+         * @param  material_ The material.
+         */
+        void setMaterial(_In_ cref<GfxMaterialAsset> material_);
+
+        /**
+         * Sets a material
+         *
+         * @author Julius
+         * @date 28.10.2021
+         *
+         * @param  materialGuid_ Unique identifier for the material.
+         */
+        void setMaterial(_In_ cref<asset_guid> materialGuid_);
+    };
 }

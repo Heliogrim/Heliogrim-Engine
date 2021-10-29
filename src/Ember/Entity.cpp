@@ -1,6 +1,25 @@
 #include "Entity.hpp"
 
+#include <Engine.ECS/Entity.hpp>
+#include <Engine.ECS/Registry.hpp>
+
 using namespace ember;
+
+engine::ecs::entity_guid EntityBase::guid() const noexcept {
+    return _guid;
+}
+
+ptr<void> EntityBase::get(cref<component_type_id> componentTypeId_) const noexcept {
+    return engine::ecs::registry::get().get_pool_adapter(componentTypeId_)->get(_guid);
+}
+
+bool EntityBase::has(cref<component_type_id> componentTypeId_) const noexcept {
+    return engine::ecs::registry::get().get_pool_adapter(componentTypeId_)->get(_guid) != nullptr;
+}
+
+void EntityBase::record(cref<component_type_id> componentTypeId_) noexcept {
+    engine::ecs::registry::get().get_pool_adapter(componentTypeId_)->insert(_guid);
+}
 
 Entity::Entity() noexcept :
     EntityBase() {}
@@ -11,16 +30,14 @@ Entity::Entity(mref<Entity> other_) noexcept = default;
 
 ref<Entity> Entity::operator=(cref<Entity> other_) noexcept {
     if (_STD addressof(other_) != this) {
-        auto& old = const_cast<engine::ecs::entity_guid&>(static_cast<const Entity*>(this)->get_guid());
-        old = other_.get_guid();
+        _guid = other_._guid;
     }
     return *this;
 }
 
 ref<Entity> Entity::operator=(mref<Entity> other_) noexcept {
     if (_STD addressof(other_) != this) {
-        auto& old = const_cast<engine::ecs::entity_guid&>(static_cast<const Entity*>(this)->get_guid());
-        old = other_.get_guid();
+        _guid = other_._guid;
     }
     return *this;
 }

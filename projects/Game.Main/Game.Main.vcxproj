@@ -189,6 +189,7 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\GrassWild01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Images\GrassWild01Albedo.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Cavity.cpp" />

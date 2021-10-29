@@ -281,5 +281,8 @@
     <ClCompile Include="..\..\src\Ember\World.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Component\Gfx\StaticMeshComponent.cpp">
+      <Filter>Quelldateien\Component\Gfx</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
