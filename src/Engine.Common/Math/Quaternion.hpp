@@ -36,7 +36,6 @@ namespace ember::math {
     template <typename T>
     class quaternion_t {
     public:
-
         /** Defines an alias representing type of the value */
         typedef T value_type;
         /** Defines an alias representing the type */
@@ -66,7 +65,7 @@ namespace ember::math {
          * @author Julius
          * @date 16.01.2020
          */
-        quaternion_t() noexcept :
+        constexpr quaternion_t() noexcept :
             _quat() { }
 
         /**

@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Proxy\RigSceneProxy.cpp" />
+    <ClCompile Include="..\..\src\Engine.Proxy\SceneProxiedRef.cpp" />
     <ClCompile Include="..\..\src\Engine.Proxy\SceneProxy.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -58,7 +58,6 @@ namespace ember::math {
     template <typename T>
     class vec2_t {
     public:
-
         /** Defines an alias representing type of the value */
         typedef T value_type;
         /** Defines an alias representing the type */
@@ -470,7 +469,6 @@ namespace ember::math {
     template <typename T>
     class vec3_t {
     public:
-
         /** Defines an alias representing type of the value */
         typedef T value_type;
         /** Defines an alias representing the type */
@@ -486,10 +484,10 @@ namespace ember::math {
          * @author Julius
          * @date 16.01.2020
          */
-        vec3_t() noexcept :
-            x(static_cast<value_type>(0)),
-            y(static_cast<value_type>(0)),
-            z(static_cast<value_type>(0)) { }
+        constexpr vec3_t() noexcept :
+            x(0),
+            y(0),
+            z(0) { }
 
         /**
          * Constructor
@@ -1014,7 +1012,6 @@ namespace ember::math {
     template <typename T>
     class vec4_t {
     public:
-
         /** Defines an alias representing type of the value */
         typedef T value_type;
         /** Defines an alias representing the type */
@@ -1030,11 +1027,11 @@ namespace ember::math {
          * @author Julius
          * @date 16.01.2020
          */
-        vec4_t() :
-            x(static_cast<value_type>(0)),
-            y(static_cast<value_type>(0)),
-            z(static_cast<value_type>(0)),
-            w(static_cast<value_type>(0)) { }
+        constexpr vec4_t() :
+            x(0),
+            y(0),
+            z(0),
+            w(0) { }
 
         /**
          * Constructor

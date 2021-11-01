@@ -90,8 +90,26 @@
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
       <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.ECS.Subsystem\Engine.ECS.Subsystem.vcxproj">
+      <Project>{eb2eee00-69a8-44bb-8ab5-5c4b7cdd81e9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.ECS\Engine.ECS.vcxproj">
+      <Project>{bdd7b57f-5aee-4ddb-95fd-e0f89bb25ec7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Proxy\Engine.Proxy.vcxproj">
+      <Project>{6cd674b5-80b9-4af0-8fb9-c1ef8adc6a5a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Resource\Engine.Resource.vcxproj">
+      <Project>{b0e77d6c-45d7-4254-8630-d10fdf6ca290}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Scene\Engine.Scene.vcxproj">
+      <Project>{114192e3-04b1-4ae7-86f5-1d055f7526d4}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
       <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Session\Engine.Session.vcxproj">
+      <Project>{bba6c152-0160-4156-a5ac-cd3068df2311}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -57,10 +57,22 @@
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Register\ComponentCustomRegister.hpp">
       <Filter>Headerdateien\Register</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Components\TransformComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Components\SceneComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.ECS.Subsystem\Subsystem.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.ECS.Subsystem\Components\StaticMeshComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.ECS.Subsystem\Components\TransformComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

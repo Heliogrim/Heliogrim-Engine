@@ -3,7 +3,7 @@
 #include <Engine.Common/Hash/Murmur3.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 
-namespace ember::engine::ecs {
+namespace ember {
 
     /**
      * An guid entity identifier.
@@ -124,9 +124,9 @@ namespace std {
      * @date 30.10.2020
      */
     template <>
-    struct equal_to<ember::engine::ecs::entity_guid> {
-        bool operator()(const ember::engine::ecs::entity_guid& left_,
-            const ember::engine::ecs::entity_guid& right_) const noexcept {
+    struct equal_to<ember::entity_guid> {
+        bool operator()(const ember::entity_guid& left_,
+            const ember::entity_guid& right_) const noexcept {
             return left_.as_uint64() == right_.as_uint64();
         }
     };
@@ -138,9 +138,9 @@ namespace std {
      * @date 30.10.2020
      */
     template <>
-    struct less<ember::engine::ecs::entity_guid> {
-        bool operator()(const ember::engine::ecs::entity_guid& left_,
-            const ember::engine::ecs::entity_guid& right_) const noexcept {
+    struct less<ember::entity_guid> {
+        bool operator()(const ember::entity_guid& left_,
+            const ember::entity_guid& right_) const noexcept {
             return left_.as_uint64() < right_.as_uint64();
         }
     };
@@ -152,15 +152,15 @@ namespace std {
      * @date 29.10.2020
      */
     template <>
-    struct hash<ember::engine::ecs::entity_guid> {
-        _STD size_t operator()(const ember::engine::ecs::entity_guid& value_) const noexcept {
+    struct hash<ember::entity_guid> {
+        _STD size_t operator()(const ember::entity_guid& value_) const noexcept {
             /**
              * !important! don't use identity
              */
             ember::u64 dst[2];
             ember::hash::murmur3_x64_128(
                 &value_,
-                sizeof(ember::engine::ecs::entity_guid),
+                sizeof(ember::entity_guid),
                 0x9FB21C651E98DF25ui32,
                 &dst
             );

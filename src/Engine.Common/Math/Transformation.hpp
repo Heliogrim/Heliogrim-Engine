@@ -13,6 +13,19 @@ namespace ember::math {
         using const_reference_type = cref<value_type>;
 
         /**
+         * Default Constructor
+         *
+         * @author Julius
+         * @date 30.10.2021
+         */
+        constexpr Transformation() noexcept :
+            _rotation(),
+            _matrix(),
+            _quaternion(),
+            _position(),
+            _scale() {}
+
+        /**
          * \brief 
          * \param position_ 
          * \param rotation_ 

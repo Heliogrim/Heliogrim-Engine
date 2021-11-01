@@ -18,6 +18,8 @@ namespace ember::engine::ecs {
         virtual void insert(_In_ cref<entity_guid> key_) = 0;
 
         virtual void* get(_In_ cref<entity_guid> key_) = 0;
+
+        virtual void erase(_In_ cref<entity_guid> key_) = 0;
     };
 
     template <IsComponent ComponentType_>
@@ -40,12 +42,16 @@ namespace ember::engine::ecs {
             auto* cp { static_cast<pool<ComponentType_>*>(self) };
             return cp->get(key_);
         }
+
+        void erase(cref<entity_guid> key_) override {
+            auto* cp { static_cast<pool<ComponentType_>*>(self) };
+            cp->erase(key_);
+        }
     };
 
     // TODO: Remove registry and dereference 
-    class registry {
+    class Registry {
     public:
-        using this_type = _STD unique_ptr<registry>;
         using size_type = size_t;
 
     public:
@@ -55,39 +61,7 @@ namespace ember::engine::ecs {
          * @author Julius
          * @date 29.10.2021
          */
-        ~registry();
-
-    private:
-        static this_type _this;
-
-    public:
-        /**
-         * Destroys this 
-         *
-         * @author Julius
-         * @date 05.09.2020
-         */
-        static void destroy() noexcept;
-
-        /**
-         * Get the internal stored instance of registry
-         *
-         * @author Julius
-         * @date 05.09.2020
-         *
-         * @returns A reference to a registry.
-         */
-        [[nodiscard]] static registry& get() noexcept;
-
-        /**
-         * Gets a internal stored instance of registry or create one
-         *
-         * @author Julius
-         * @date 05.09.2020
-         *
-         * @returns A reference to a registry.
-         */
-        static registry& make() noexcept;
+        ~Registry();
 
     public:
         /**

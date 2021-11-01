@@ -5,6 +5,7 @@
 #include <Engine.Assets/Database/AssetSeeder.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
+#include <Engine.Scene/Scene.hpp>
 
 using namespace ember::engine::session;
 using namespace ember;
@@ -185,11 +186,11 @@ void SessionModules::setPhysics(ptr<void> physics_) {
     _physics = physics_;
 }
 
-ptr<void> SessionModules::scene() const {
+ptr<engine::scene::Scene> SessionModules::scene() const {
     return _scene;
 }
 
-void SessionModules::setScene(ptr<void> scene_) {
+void SessionModules::setScene(ptr<scene::Scene> scene_) {
     _scene = scene_;
 }
 
@@ -209,12 +210,20 @@ const ptr<void> SessionModules::resourceManager() const {
     return _resourceManager;
 }
 
-ptr<void> SessionModules::ecs() const {
+ptr<engine::ecs::System> SessionModules::ecs() const {
     return _ecs;
 }
 
-void SessionModules::setEcs(ptr<void> ecs_) {
+void SessionModules::setEcs(ptr<engine::ecs::System> ecs_) {
     _ecs = ecs_;
+}
+
+ptr<engine::ecs::Subsystem> SessionModules::subsystem() const {
+    return _subsystem;
+}
+
+void SessionModules::setSubsystem(ptr<ecs::Subsystem> subsystem_) {
+    _subsystem = subsystem_;
 }
 
 const ptr<void> SessionModules::scheduler() const {

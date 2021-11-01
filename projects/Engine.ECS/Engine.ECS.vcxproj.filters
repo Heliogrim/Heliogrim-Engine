@@ -39,12 +39,21 @@
     <ClInclude Include="..\..\src\Engine.ECS\ComponentTypeId.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS\System.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ECS\SystemComponentReflection.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.ECS\Entity.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.ECS\Registry.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.ECS\System.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

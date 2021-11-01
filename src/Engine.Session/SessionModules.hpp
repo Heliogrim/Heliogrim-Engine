@@ -8,6 +8,15 @@ namespace ember::engine::assets {
     class AssetSeeder;
 }
 
+namespace ember::engine::ecs {
+    class System;
+    class Subsystem;
+}
+
+namespace ember::engine::scene {
+    class Scene;
+}
+
 namespace ember::engine::session {
 
     class SessionModules {
@@ -100,12 +109,12 @@ namespace ember::engine::session {
         void setPhysics(ptr<void> physics_);
 
     private:
-        ptr<void> _scene;
+        ptr<scene::Scene> _scene;
 
     public:
-        [[nodiscard]] ptr<void> scene() const;
+        [[nodiscard]] ptr<scene::Scene> scene() const;
 
-        void setScene(ptr<void> scene_);
+        void setScene(ptr<scene::Scene> scene_);
 
     private:
         ptr<engine::assets::AssetDatabase> _assetDatabase;
@@ -132,12 +141,20 @@ namespace ember::engine::session {
         [[nodiscard]] const ptr<void> resourceManager() const;
 
     private:
-        ptr<void> _ecs;
+        ptr<engine::ecs::System> _ecs;
 
     public:
-        [[nodiscard]] ptr<void> ecs() const;
+        [[nodiscard]] ptr<engine::ecs::System> ecs() const;
 
-        void setEcs(ptr<void> ecs_);
+        void setEcs(ptr<engine::ecs::System> ecs_);
+
+    private:
+        ptr<ecs::Subsystem> _subsystem;
+
+    public:
+        [[nodiscard]] ptr<ecs::Subsystem> subsystem() const;
+
+        void setSubsystem(ptr<ecs::Subsystem> subsystem_);
 
     private:
         ptr<void> _scheduler;
