@@ -1,18 +1,21 @@
 #include "Subsystem.hpp"
 
 #include "Components/StaticMeshComponent.hpp"
+#include "Components/TransformComponent.hpp"
+#include "Engine.ECS/System.hpp"
 
 using namespace ember::engine::ecs;
 using namespace ember;
 
-Subsystem::Subsystem(cref<sptr<Session>> session_, ptr<ecs::registry> registry_) noexcept :
+Subsystem::Subsystem(cref<sptr<Session>> session_, ptr<ecs::System> system_) noexcept :
     _session(session_),
-    _registry(registry_) {}
+    _system(system_) {}
 
 Subsystem::~Subsystem() noexcept = default;
 
 void Subsystem::setupComponents() {
-    _registry->getOrCreatePool<subsystem::StaticMeshComponent>();
+    _system->registerComponent<subsystem::StaticMeshComponent>();
+    _system->registerComponent<subsystem::TransformComponent>();
 }
 
 void Subsystem::setup() {

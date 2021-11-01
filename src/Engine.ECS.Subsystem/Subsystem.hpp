@@ -6,36 +6,36 @@
 
 namespace ember::engine::ecs {
 
-	class Subsystem {
-	public:
-		using value_type = Subsystem;
-		using reference_type = ref<value_type>;
-		using const_reference_type = cref<value_type>;
+    class Subsystem {
+    public:
+        using value_type = Subsystem;
+        using reference_type = ref<value_type>;
+        using const_reference_type = cref<value_type>;
 
-	public:
-		Subsystem(cref<sptr<Session>> session_, ptr<registry> registry_ = &registry::make()) noexcept;
+    public:
+        Subsystem(cref<sptr<Session>> session_, ptr<System> system_) noexcept;
 
-		~Subsystem() noexcept;
+        ~Subsystem() noexcept;
 
-	private:
-		void setupComponents();
+    private:
+        void setupComponents();
 
-	public:
-		void setup();
+    public:
+        void setup();
 
-		void schedule();
+        void schedule();
 
-	private:
-		sptr<Session> _session;
+    private:
+        sptr<Session> _session;
 
-	public:
-		[[nodiscard]] sptr<Session> session() const noexcept;
+    public:
+        [[nodiscard]] sptr<Session> session() const noexcept;
 
-	private:
-		ptr<registry> _registry;
+    private:
+        ptr<System> _system;
 
-	public:
-		[[nodiscard]] ptr<registry> registry() const noexcept;
-	};
+    public:
+        [[nodiscard]] ptr<System> system() const noexcept;
+    };
 
 }

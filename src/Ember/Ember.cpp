@@ -3,7 +3,7 @@
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Database/AssetDatabase.hpp>
 #include <Engine.Common/Exception/NotImplementedException.hpp>
-#include <Engine.ECS/Registry.hpp>
+#include <Engine.ECS/System.hpp>
 #include <Engine.Event/BootEvent.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Event/SchedulerBootEvent.hpp>
@@ -16,6 +16,8 @@
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Session/Session.hpp>
 #include <Engine.SFX/Audio.hpp>
+
+#include "Engine.ECS.Subsystem/Subsystem.hpp"
 
 using namespace ember;
 
@@ -66,9 +68,12 @@ void Ember::start() {
     auto scene = make_ptr<engine::scene::Scene>(session);
     session->setScene(scene);
 
-    // auto ecs = make_sptr<engine::ecs::registry>(static_session.get());
-    auto ecs = _STD addressof(engine::ecs::registry::make());
+    // auto ecs = make_sptr<engine::ecs::Registry>(static_session.get());
+    auto ecs = make_ptr<engine::ecs::System>();
     session->setEcs(ecs);
+
+    auto subsystem = make_ptr<engine::ecs::Subsystem>(session, ecs);
+    session->setSubsystem(subsystem);
 
     auto physics = make_ptr<engine::Physics>(session);
     session->setPhysics(physics);
@@ -76,6 +81,9 @@ void Ember::start() {
     /**
      *
      */
+    subsystem->setup();
+    subsystem->schedule();
+
     audio->setup();
     audio->schedule();
 
@@ -122,7 +130,10 @@ void Ember::stop() {
     delete static_cast<ptr<engine::scene::Scene>>(session->scene());
     session->setScene(nullptr);
 
-    engine::ecs::registry::destroy();
+    delete session->subsystem();
+    session->setSubsystem(nullptr);
+
+    delete session->ecs();
     session->setEcs(nullptr);
 }
 

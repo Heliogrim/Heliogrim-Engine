@@ -47,5 +47,8 @@
     <ClCompile Include="..\..\src\Engine.Proxy\RigSceneProxy.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Proxy\SceneProxiedRef.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

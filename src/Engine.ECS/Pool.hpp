@@ -227,6 +227,7 @@ namespace ember::engine::ecs {
             return _storage.insert_or_assign(key_, _STD forward<ComponentType>(component_));
         }
 
+    public:
         /**
          * Unsafe get for const component reference
          *	Will throw an error if key_ is not present
@@ -345,6 +346,19 @@ namespace ember::engine::ecs {
          */
         ComponentType* get(const assign_key_type& key_, const hash_type hash_) {
             return _storage.get(key_, hash_);
+        }
+
+    public:
+        /**
+         * Erase a component from this pool by given key
+         *
+         * @author Julius
+         * @date 30.10.2021
+         *
+         * @param   key_ The key to erase
+         */
+        void erase(cref<assign_key_type> key_) {
+            _storage.erase(key_);
         }
     };
 

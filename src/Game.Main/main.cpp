@@ -174,7 +174,8 @@ void buildEntity() {
     Entity entity = possible.get();
     auto val = entity::valid(entity);
 
-    auto& comp = entity.record<component::StaticMeshComponent>();
+    auto& transform = entity.transform();
+    auto comp = entity.record<component::StaticMeshComponent>();
 
     comp.setMesh(ember::game::assets::meshes::PlaneD128::auto_guid());
     comp.setMaterial(ember::game::assets::material::ForestGround01::auto_guid());

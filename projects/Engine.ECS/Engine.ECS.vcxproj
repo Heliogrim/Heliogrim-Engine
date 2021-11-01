@@ -21,12 +21,15 @@
     <ClInclude Include="..\..\src\Engine.ECS\Pool.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS\Registry.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS\Storage.hpp" />
+    <ClInclude Include="..\..\src\Engine.ECS\System.hpp" />
+    <ClInclude Include="..\..\src\Engine.ECS\SystemComponentReflection.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS\Traits.hpp" />
     <ClInclude Include="..\..\src\Engine.ECS\View.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.ECS\Entity.cpp" />
     <ClCompile Include="..\..\src\Engine.ECS\Registry.cpp" />
+    <ClCompile Include="..\..\src\Engine.ECS\System.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">

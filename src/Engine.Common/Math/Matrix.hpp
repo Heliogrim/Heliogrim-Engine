@@ -17,7 +17,6 @@ namespace ember::math {
     class matq2_t :
         public matq_t<T, 2> {
     public:
-
         using value_type = T;
         typedef vec2_t<T> col_type;
         using row_type = col_type;
@@ -62,7 +61,6 @@ namespace ember::math {
     class matq3_t :
         public matq_t<T, 3> {
     public:
-
         using value_type = T;
         typedef vec3_t<T> col_type;
         using row_type = col_type;
@@ -108,7 +106,6 @@ namespace ember::math {
     class matq4_t :
         public matq_t<T, 4> {
     public:
-
         using value_type = T;
         typedef vec4_t<T> col_type;
         using row_type = col_type;
@@ -160,7 +157,7 @@ namespace ember::math {
          *
          * @param scalar_ The scalar.
          */
-        matq4_t(const T& scalar_) :
+        constexpr matq4_t(const T& scalar_) :
             value {
                 row_type(scalar_, 0, 0, 0),
                 row_type(0, scalar_, 0, 0),
@@ -169,8 +166,8 @@ namespace ember::math {
             } { }
 
         /** Default constructor */
-        matq4_t() :
-            matq4_t(static_cast<T>(0)) { }
+        constexpr matq4_t() :
+            matq4_t(0) { }
 
         /**
          * Scales the given scalar

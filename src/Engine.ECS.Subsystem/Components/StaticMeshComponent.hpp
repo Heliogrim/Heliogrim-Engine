@@ -3,16 +3,25 @@
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.ECS/ComponentTypeId.hpp>
+#include <Engine.ECS/Traits.hpp>
 #include <Engine.Proxy/StaticModelSceneProxy.hpp>
+
+#include "SceneComponent.hpp"
 
 namespace ember::engine::ecs::subsystem {
 
-    class StaticMeshComponent {
+    class StaticMeshComponent :
+        public SceneComponent {
     public:
         constexpr static component_type_id type_id { "StaticMeshComponent"_typeId };
 
     public:
         StaticMeshComponent() noexcept = default;
+
+    public:
+        void mantle(_In_ cref<entity_guid> entity_);
+
+        void dismantle(_In_ cref<entity_guid> entity_);
 
     private:
         asset_guid _meshGuid;

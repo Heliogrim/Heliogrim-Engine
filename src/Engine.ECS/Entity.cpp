@@ -1,6 +1,7 @@
 #include "Entity.hpp"
 
 using namespace ember::engine::ecs;
+using namespace ember;
 
 const entity_guid& Entity::get_guid() const {
     return _guid;
