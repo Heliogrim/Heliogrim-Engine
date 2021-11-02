@@ -1,12 +1,16 @@
 #include "StaticMeshComponent.hpp"
 
 #include <Engine.Common/stdafx.h>
+#include <Engine.ECS/Pool.hpp>
 #include <Engine.GFX/Scene/SceneElement.hpp>
+#include <Engine.GFX/Scene/SceneGraphTag.hpp>
+#include <Engine.Proxy/StaticModelSceneProxy.hpp>
+#include <Engine.Scene/Scene.hpp>
+#include <Engine.Scene/Graph/MutableSceneGraph.hpp>
 #include <Engine.Scene/Node/SceneNode.hpp>
+#include <Engine.Session/Session.hpp>
 
-#include "Engine.Proxy/SceneProxiedRef.hpp"
-#include "Engine.Scene/Scene.hpp"
-#include "Engine.Session/Session.hpp"
+#include "TransformComponent.hpp"
 
 using namespace ember::engine::ecs::subsystem;
 using namespace ember;
@@ -14,16 +18,29 @@ using namespace ember;
 void StaticMeshComponent::mantle(cref<entity_guid> entity_) {
     DEBUG_MSG("Mantle entity with StaticMeshComponent.")
 
-    gfx::SceneElement se {};
-    scene::SceneNodeElementBase sneb;
-    scene::SceneNode sn {};
-
-    auto* prx = new proxy::StaticModelSceneProxy();
-    auto spr = proxy::SceneProxiedRef::make_proxied_ref(prx, this);
-
-    sn.element() = sneb;
+    auto prx = make_uptr<proxy::StaticModelSceneProxy>();
+    auto spr = proxy::SceneProxiedRef::make_proxied_ref(_STD move(prx), this);
 
     ptr<scene::Scene> scene = Session::get()->scene();
+    auto* graph = scene->getGraph<gfx::GfxSceneGraphTag>();
+    auto mgraph { graph->asMutable() };
+
+    auto sceneElement = make_sptr<engine::gfx::SceneElement>();
+    auto payload = engine::proxy::OwningProxiedScenePayload(sceneElement);
+
+    auto tc = pool<TransformComponent>::get().get(entity_);
+    if (tc == nullptr) {
+        DEBUG_SNMSG(false, "LOG",
+            "Instantiating StaticMeshProxy without related TransformComponent. Fallback to ZeroTransformation...")
+    }
+
+    [[maybe_unused]] const auto* node = mgraph.push(engine::scene::SceneNodeCreateData {
+        .payload = payload,
+        .transformation = tc != nullptr ? tc->transformation() : math::ZeroTransformation {},
+        .bounding = {}
+    });
+
+    spr->payload() = _STD move(payload);
 
     /**
      * 1. create a static model scene proxy
@@ -38,10 +55,15 @@ void StaticMeshComponent::mantle(cref<entity_guid> entity_) {
      * Component -> [Data | Proxy]
      * Proxy ~> [{Component} | SceneProxy | {SceneNodeElement}]
      */
+    _proxy = _STD move(spr);
 }
 
-void StaticMeshComponent::dismantle(cref<entity_guid> entity_) {
+void StaticMeshComponent::dismantle([[maybe_unused]] cref<entity_guid> entity_) {
     DEBUG_MSG("Dismantle entity with StaticMeshComponent.")
+
+    if (_proxy.use_count() > 0) {
+        _proxy.reset();
+    }
 }
 
 cref<asset_guid> StaticMeshComponent::mesh() const noexcept {

@@ -15,12 +15,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Scene\Graph\MutableSceneGraph.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Graph\SceneGraph.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Graph\SceneGraphTag.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\LoosySceneNode.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\NaturalSceneNode.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNode.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeElement.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeCreateData.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeHead.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeHeadContainer.hpp" />
@@ -41,6 +42,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Scene\Graph\MutableSceneGraph.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Graph\SceneGraph.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Node\LoosySceneNode.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Node\NaturalSceneNode.cpp" />

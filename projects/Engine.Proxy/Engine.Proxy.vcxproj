@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Proxy\InstancedStaticModelSceneProxy.hpp" />
+    <ClInclude Include="..\..\src\Engine.Proxy\ProxiedScenePayload.hpp" />
     <ClInclude Include="..\..\src\Engine.Proxy\RigSceneProxy.hpp" />
     <ClInclude Include="..\..\src\Engine.Proxy\SceneProxiedRef.hpp" />
     <ClInclude Include="..\..\src\Engine.Proxy\SceneProxy.hpp" />
@@ -42,6 +43,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Proxy\ProxiedScenePayload.cpp" />
     <ClCompile Include="..\..\src\Engine.Proxy\RigSceneProxy.cpp" />
     <ClCompile Include="..\..\src\Engine.Proxy\SceneProxiedRef.cpp" />
     <ClCompile Include="..\..\src\Engine.Proxy\SceneProxy.cpp" />

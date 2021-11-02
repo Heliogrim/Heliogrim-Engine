@@ -60,9 +60,6 @@
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeFactory.hpp">
       <Filter>Headerdateien\Node</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeElement.hpp">
-      <Filter>Headerdateien\Node</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Scene\SceneTraits.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -88,6 +85,12 @@
       <Filter>Headerdateien\Node</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Scene\Graph\SceneGraphTag.hpp">
+      <Filter>Headerdateien\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeCreateData.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Graph\MutableSceneGraph.hpp">
       <Filter>Headerdateien\Graph</Filter>
     </ClInclude>
   </ItemGroup>
@@ -124,6 +127,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scene\Node\LoosySceneNode.cpp">
       <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Graph\MutableSceneGraph.cpp">
+      <Filter>Quelldateien\Graph</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

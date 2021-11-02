@@ -1,8 +1,8 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.ECS.Subsystem/Components/SceneComponent.hpp>
-#include <Engine.Scene/Node/SceneNodeElement.hpp>
 
+#include "ProxiedScenePayload.hpp"
 #include "SceneProxy.hpp"
 
 namespace ember::engine::proxy {
@@ -83,7 +83,7 @@ namespace ember::engine::proxy {
         /**
          * Scene Proxy
          */
-        ptr<SceneProxy> _proxy;
+        uptr<SceneProxy> _proxy;
 
     public:
         /**
@@ -98,20 +98,22 @@ namespace ember::engine::proxy {
 
     private:
         /**
-         * Scene Element
+         * Scene Payload
          */
-        sptr<scene::SceneNodeElementBase> _element;
+        OwningProxiedScenePayload _payload;
 
     public:
         /**
-         * Get a pointer to the SceneElement
+         * Get a pointer to the payload
          *
          * @author Julius
          * @date 07.01.2021
          *
          * @returns A ptr&lt;SceneElement&gt;
          */
-        [[nodiscard]] wptr<scene::SceneNodeElementBase> element() const noexcept;
+        [[nodiscard]] cref<OwningProxiedScenePayload> payload() const noexcept;
+
+        [[nodiscard, deprecated]] ref<OwningProxiedScenePayload> payload() noexcept;
 
     private:
         /**
@@ -120,12 +122,13 @@ namespace ember::engine::proxy {
          * @author Julius
          * @date 08.01.2021
          *
-         * @param  owner_ The owner.
-         * @param  proxy_ The proxy.
-         * @param  element_ The element.
+         * @param   owner_ The owner.
+         * @param   proxy_ The proxy.
+         * @param   payload_ The scene payload.
          */
-        SceneProxiedRef(non_owning_rptr<ecs::subsystem::SceneComponent> owner_, ptr<SceneProxy> proxy_,
-            wptr<scene::SceneNodeElementBase> element_) noexcept;
+        SceneProxiedRef(_In_ non_owning_rptr<ecs::subsystem::SceneComponent> owner_,
+            _Inout_ mref<uptr<SceneProxy>> proxy_,
+            _Inout_ mref<OwningProxiedScenePayload> payload_) noexcept;
 
     public:
         /**
@@ -150,7 +153,7 @@ namespace ember::engine::proxy {
          *
          * @returns A managed&lt;SceneProxiedRef&gt;
          */
-        static managed<SceneProxiedRef> make_proxied_ref(ptr<SceneProxy> proxy_);
+        static managed<SceneProxiedRef> make_proxied_ref(_Inout_ mref<uptr<SceneProxy>> proxy_);
 
         /**
          * Managed Construction call to SceneProxiedRef without substitution of SceneProxy by SceneComponent
@@ -163,7 +166,7 @@ namespace ember::engine::proxy {
          *
          * @returns A managed&lt;SceneProxiedRef&gt;
          */
-        static managed<SceneProxiedRef> make_proxied_ref(ptr<SceneProxy> proxy_,
+        static managed<SceneProxiedRef> make_proxied_ref(_Inout_ mref<uptr<SceneProxy>> proxy_,
             non_owning_rptr<ecs::subsystem::SceneComponent> owner_);
     };
 }

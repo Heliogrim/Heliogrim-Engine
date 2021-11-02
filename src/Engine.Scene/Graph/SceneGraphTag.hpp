@@ -66,7 +66,7 @@ namespace ember::engine::scene {
          * @author Julius
          * @date 27.08.2021
          */
-        constexpr SceneGraphTag() :
+        constexpr SceneGraphTag() noexcept :
             SceneGraphTagBase(DerivedType_::type_id) {}
     };
 }

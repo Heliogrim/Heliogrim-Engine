@@ -3,8 +3,8 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/Bounding.hpp>
 #include <Engine.Common/Math/Transformation.hpp>
+#include <Engine.Proxy/ProxiedScenePayload.hpp>
 
-#include "SceneNodeElement.hpp"
 #include "SceneNodeHeadContainer.hpp"
 #include "SceneNodeVersion.hpp"
 
@@ -131,54 +131,30 @@ namespace ember::engine::scene {
 
     protected:
         /**
-         * The stored element
+         * The stored payload_
          */
-        SceneNodeElementBase _element;
+        proxy::ProxiedScenePayload _payload;
 
     public:
         /**
-         * Gets the element
+         * Gets the payload
          *
          * @author Julius
          * @date 16.08.2021
          *
-         * @returns A cref&lt;SceneNodeElementBase&gt;
+         * @returns A cref&lt;proxy::ProxiedScenePayload&gt;
          */
-        [[nodiscard]] cref<SceneNodeElementBase> element() const noexcept;
+        [[nodiscard]] cref<proxy::ProxiedScenePayload> payload() const noexcept;
 
         /**
-         * Gets the element
-         *
-         * @tparam PayloadType_ Type of the payload type.
-         *
-         * @returns A cref&lt;SceneNodeElement&lt;PayloadType_&gt;&gt;
-         */
-        template <typename PayloadType_>
-        [[nodiscard]] cref<SceneNodeElement<PayloadType_>> element() const noexcept {
-            return *static_cast<const SceneNodeElement<PayloadType_>*>(&_element);
-        }
-
-        /**
-         * Gets the element
+         * Gets the payload
          *
          * @author Julius
          * @date 16.08.2021
          *
-         * @returns A ref&lt;SceneNodeElementBase&gt;
+         * @returns A ref&lt;proxy::ProxiedScenePayload&gt;
          */
-        [[nodiscard]] ref<SceneNodeElementBase> element() noexcept;
-
-        /**
-         * Gets the element
-         *
-         * @tparam PayloadType_ Type of the payload type.
-         *
-         * @returns A ref&lt;SceneNodeElement&lt;PayloadType_&gt;&gt;
-         */
-        template <typename PayloadType_>
-        [[nodiscard]] ref<SceneNodeElement<PayloadType_>> element() noexcept {
-            return static_cast<SceneNodeElement<PayloadType_>>(_element);
-        }
+        [[nodiscard]] ref<proxy::ProxiedScenePayload> payload() noexcept;
 
     protected:
         /** The state */
@@ -350,6 +326,15 @@ namespace ember::engine::scene {
     protected:
         math::Transformation _transformation;
         math::Bounding _bounding;
+
+    public:
+        [[nodiscard, deprecated]] ref<math::Transformation> transform() noexcept {
+            return _transformation;
+        }
+
+        [[nodiscard, deprecated]] ref<math::Bounding> bounding() noexcept {
+            return _bounding;
+        }
 
     public:
         [[nodiscard]] bool intersects(const_reference_type node_) const noexcept;

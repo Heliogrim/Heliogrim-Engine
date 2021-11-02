@@ -117,6 +117,22 @@ namespace ember::engine::scene {
         }
 
         /**
+         * Gets a SceneGraph via the linked tag
+         *
+         * @author Julius
+         * @date 01.11.2021
+         *
+         * @tparam TagType_ Type of the tag type and source of substituted tag id.
+         *
+         * @returns A pointer to the linked graph or nullptr
+         */
+        template <HasType TagType_> requires _STD is_nothrow_convertible_v<TagType_, SceneGraphTagBase> &&
+            _STD is_nothrow_default_constructible_v<TagType_>
+        [[nodiscard]] _Success_(return != nullptr) ptr<SceneGraph> getGraph() noexcept {
+            return getGraph(static_cast<SceneGraphTagBase>(TagType_ {}));
+        }
+
+        /**
          * Gets or create a SceneGraph and link with given tag_
          *
          * @author Julius
@@ -139,6 +155,22 @@ namespace ember::engine::scene {
         template <HasType TagType_> requires _STD is_convertible_v<TagType_, SceneGraphTagBase>
         ptr<SceneGraph> getOrCreateGraph(cref<TagType_> tag_) {
             return getOrCreateGraph(static_cast<SceneGraphTagBase>(tag_));
+        }
+
+        /**
+         * Get or create a SceneGraph and link with given tag
+         *
+         * @author Julius
+         * @date 02.11.2021
+         *
+         * @tparam TagType_ Type of the tag type and source of substituted tag id.
+         *
+         * @returns A pointer to the linked graph or nullptr
+         */
+        template <HasType TagType_> requires _STD is_nothrow_convertible_v<TagType_, SceneGraphTagBase> &&
+            _STD is_nothrow_default_constructible_v<TagType_>
+        _Success_(return != nullptr) ptr<SceneGraph> getOrCreateGraph() {
+            return getOrCreateGraph(static_cast<SceneGraphTagBase>(TagType_ {}));
         }
     };
 }
