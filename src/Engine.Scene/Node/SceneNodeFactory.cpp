@@ -21,8 +21,12 @@ SceneNodeFactory::factory_assemble_result SceneNodeFactory::assembleRoot() const
         throw _STD bad_alloc();
     }
 
+    // TODO: Replace, this is only temporary
+    SceneNodeHead head { nodeId };
+    head.storage = _storage.get();
+
     return {
-        { nodeId },
+        _STD move(head),
         stored.first
     };
 }

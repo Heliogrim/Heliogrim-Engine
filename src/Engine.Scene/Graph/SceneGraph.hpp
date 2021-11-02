@@ -9,6 +9,11 @@
 
 namespace ember::engine::scene {
 
+    /**
+     * Forward Declaration
+     */
+    class MutableSceneGraph;
+
     class RefSceneGraph {
     public:
         using value_type = RefSceneGraph;
@@ -269,7 +274,7 @@ namespace ember::engine::scene {
          */
         reference_type operator=(mref<value_type> other_) noexcept;
 
-    private:
+    protected:
         /**
          * Scene Graph Root
          */
@@ -296,7 +301,7 @@ namespace ember::engine::scene {
          */
         [[nodiscard]] ref<_STD remove_reference_t<root_type>> root() noexcept;
 
-    private:
+    protected:
         /**
          * Scene Graph Storage
          */
@@ -333,6 +338,27 @@ namespace ember::engine::scene {
          * @returns A RefSceneGraph.
          */
         [[nodiscard]] RefSceneGraph asRefSceneGraph();
+
+    public:
+        /**
+         * Converts this to a mutable scene graph
+         *
+         * @author Julius
+         * @date 01.11.2021
+         *
+         * @returns A const reference to this as mutable scene graph
+         */
+        [[nodiscard]] cref<MutableSceneGraph> asMutable() const noexcept;
+
+        /**
+         * Converts this to a mutable scene graph
+         *
+         * @author Julius
+         * @date 01.11.2021
+         *
+         * @returns A reference to this as mutable scene graph
+         */
+        [[nodiscard]] ref<MutableSceneGraph> asMutable() noexcept;
 
     public:
         /**

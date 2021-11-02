@@ -27,8 +27,8 @@ bool DepthModelPassProcessor::operator()(cref<scene::SceneNode> node_) noexcept 
     /**
      * Check whether scene node as stored valid element reference; otherwise drop iteration
      */
-    auto& el = node_.element<SceneElement>();
-    auto wppl = el.payload();
+    auto& stored = node_.payload();
+    auto wppl = stored.payload<SceneElement>();
 
     if (wppl.expired()) {
         return true;

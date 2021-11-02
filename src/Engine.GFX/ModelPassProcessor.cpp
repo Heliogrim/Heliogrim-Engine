@@ -30,7 +30,7 @@ bool ModelPassProcessor::operator()(cref<scene::SceneNode> node_) noexcept {
     /**
      *
      */
-    auto nse = node_.element<SceneElement>().payload().lock();
+    auto nse = node_.payload().payload<SceneElement>().lock();
     ref<SceneElement> se = *nse;
 
     /**

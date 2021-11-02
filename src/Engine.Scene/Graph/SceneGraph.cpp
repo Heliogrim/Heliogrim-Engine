@@ -6,6 +6,8 @@
 #include <cassert>
 #endif
 
+#include "MutableSceneGraph.hpp"
+
 using namespace ember::engine::scene;
 using namespace ember;
 
@@ -125,6 +127,14 @@ RefSceneGraph SceneGraph::asRefSceneGraph() {
         _root,
         *_storage.get()
     };
+}
+
+cref<MutableSceneGraph> SceneGraph::asMutable() const noexcept {
+    return *static_cast<ptr<const MutableSceneGraph>>(this);
+}
+
+ref<MutableSceneGraph> SceneGraph::asMutable() noexcept {
+    return *static_cast<ptr<MutableSceneGraph>>(this);
 }
 
 void SceneGraph::traversal(cref<_STD function<bool(cref<SceneNode>)>> consumer_) const {

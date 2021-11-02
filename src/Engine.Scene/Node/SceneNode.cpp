@@ -11,7 +11,7 @@ using namespace ember;
 SceneNode::SceneNode() noexcept :
     _version(),
     _children(),
-    _element(),
+    _payload(),
     _state(SceneNodeState::eShadow),
     _transformation(math::ZeroTransformation {}),
     _bounding() {}
@@ -19,7 +19,7 @@ SceneNode::SceneNode() noexcept :
 SceneNode::SceneNode(mref<value_type> other_) noexcept :
     _version(_STD exchange(other_._version, invalid_node_version {})),
     _children(_STD move(other_._children)),
-    _element(_STD move(other_._element)),
+    _payload(_STD move(other_._payload)),
     _state(_STD exchange(other_._state, SceneNodeState::eShadow)),
     _transformation(math::ZeroTransformation {}),
     _bounding() {}
@@ -43,12 +43,12 @@ ref<SceneNode::container_type> SceneNode::children() noexcept {
     return _children;
 }
 
-cref<SceneNodeElementBase> SceneNode::element() const noexcept {
-    return _element;
+cref<engine::proxy::ProxiedScenePayload> SceneNode::payload() const noexcept {
+    return _payload;
 }
 
-ref<SceneNodeElementBase> SceneNode::element() noexcept {
-    return _element;
+ref<engine::proxy::ProxiedScenePayload> SceneNode::payload() noexcept {
+    return _payload;
 }
 
 cref<SceneNodeState> SceneNode::nodeState() const noexcept {

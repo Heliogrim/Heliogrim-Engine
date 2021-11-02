@@ -9,7 +9,7 @@ namespace ember::engine::gfx {
 
         static constexpr type_id type_id = "GfxSceneGraphTag"_typeId;
 
-        constexpr GfxSceneGraphTag() = default;
+        constexpr GfxSceneGraphTag() noexcept = default;
     };
 
 }

@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.GFX/Scene/SceneGraphTag.hpp>
 
 #include "./Node/SceneNodeFactory.hpp"
 
@@ -13,7 +14,11 @@ Scene::Scene(cref<sptr<Session>> session_) noexcept :
 
 Scene::~Scene() noexcept = default;
 
-void Scene::setup() {}
+void Scene::setup() {
+
+    // TODO: Replace
+    getOrCreateGraph<gfx::GfxSceneGraphTag>();
+}
 
 sptr<engine::Session> Scene::session() const noexcept {
     return _session;

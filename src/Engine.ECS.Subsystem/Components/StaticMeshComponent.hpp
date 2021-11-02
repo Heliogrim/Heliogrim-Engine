@@ -4,7 +4,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.ECS/ComponentTypeId.hpp>
 #include <Engine.ECS/Traits.hpp>
-#include <Engine.Proxy/StaticModelSceneProxy.hpp>
+#include <Engine.Proxy/SceneProxiedRef.hpp>
 
 #include "SceneComponent.hpp"
 
@@ -36,6 +36,6 @@ namespace ember::engine::ecs::subsystem {
         [[nodiscard]] cref<asset_guid> material() const noexcept;
 
     private:
-        sptr<proxy::StaticModelSceneProxy> _proxy = nullptr;
+        sptr<proxy::SceneProxiedRef> _proxy = nullptr;
     };
 }
