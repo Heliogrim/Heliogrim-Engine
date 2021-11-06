@@ -24,13 +24,16 @@
 
 #include "Assets/GfxMaterials/ForestGround01.hpp"
 #include "Assets/Meshes/PlaneD128.hpp"
+#include "Engine.Common/Math/Coordinates.hpp"
 #include "World/Entities/Components/CameraComponent.hpp"
+
+#include <Engine.GFX/GraphicPass.cpp>
 
 using namespace ember;
 
 void test();
 
-void buildEntity();
+void buildEntity(const u64 idx_, const u64 rows_, const u64 cols_);
 
 void ember_block_main() {
 
@@ -98,7 +101,40 @@ void ember_main_entry() {
      *
      */
     // test();
-    buildEntity();
+#ifndef _DEBUG
+    constexpr u64 rows { 1ui64 << 11 };
+    constexpr u64 cols { 1ui64 << 11 };
+    constexpr u64 count { rows * cols };
+#else
+    constexpr u64 rows { 1ui64 << 8 };
+    constexpr u64 cols { 1ui64 << 8 };
+    constexpr u64 count { rows * cols };
+#endif
+
+    /**
+     * [ 5 - 5 ]    : 77MiB
+     * [ 6 - 6 ]    : 80MiB
+     * [ 7 - 7 ]    : 92MiB
+     * [ 8 - 8 ]    : 153MiB
+     * [ 9 - 9 ]    : 331MiB
+     * [ 10 - 10 ]  : 1,1GiB
+     * [ 11 - 11 ]  : 4,1GiB
+     * [ 12 - 12 ]  : 16,4GiB
+     */
+
+    constexpr u64 progLogThres { count >= (1 << 7) ? count >> 7 : 1 };
+
+    for (u64 idx = 0, log = 0; idx < count; ++idx) {
+        buildEntity(idx, rows, cols);
+
+        if (log * progLogThres == idx) {
+            std::cout << "Created " << std::to_string(idx) << " entities." << std::endl;
+            ++log;
+        }
+    }
+
+    std::cout << "Created " << std::to_string(count) << " entities." << std::endl;
+    created.test_and_set(_STD memory_order::release);
 }
 
 void test() {
@@ -166,7 +202,28 @@ void test() {
     }
 }
 
-void buildEntity() {
+void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const u64 cols_,
+    _Inout_ ref<ember::math::vec3> position_) {
+
+    const u64 rowCount = idx_ / cols_;
+    const u64 colCount = idx_ - (cols_ * rowCount);
+
+    constexpr float padding { 0.25F };
+    const float rcf { static_cast<float>(rowCount) };
+    const float ccf { static_cast<float>(colCount) };
+    const float x = ccf + ccf * padding;
+    const float y = rcf + rcf * padding;
+
+    const float rf { static_cast<float>(rows_) };
+    const float cf { static_cast<float>(cols_) };
+    const float gx = cf * cf * padding * .5F;
+    const float gy = rf * rf * padding * .5F;
+
+    position_ += math::vec3_right * (gx - x);
+    position_ += math::vec3_forward * (gy - y);
+}
+
+void buildEntity(const u64 idx_, const u64 rows_, const u64 cols_) {
 
     auto possible = entity::create();
     // await(possible);
@@ -174,7 +231,14 @@ void buildEntity() {
     Entity entity = possible.get();
     auto val = entity::valid(entity);
 
-    auto& transform = entity.transform();
+    auto transform = entity.transform();
+
+    randomPaddedPosition(idx_, rows_, cols_, transform.position());
+    transform.scale() = math::vec3_one;
+
+    transform.resolveMatrix();
+    entity.setTransform(transform);
+
     auto comp = entity.record<component::StaticMeshComponent>();
 
     comp.setMesh(ember::game::assets::meshes::PlaneD128::auto_guid());

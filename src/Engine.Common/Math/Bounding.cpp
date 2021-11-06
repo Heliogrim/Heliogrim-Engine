@@ -8,6 +8,11 @@ Bounding::Bounding() :
     _extent(vec3 { 0.F }),
     _extent_length(0.F) {}
 
+Bounding::Bounding(cref<vec3> center_, cref<vec3> extent_) noexcept :
+    _center(center_),
+    _extent(extent_),
+    _extent_length() {}
+
 bool Bounding::intersectsSpherical(cref<vec3> position_) const noexcept {
     const auto distance = (_center - position_).sqrLength();
     return MAX(distance, -distance) <= _extent_length * _extent_length;

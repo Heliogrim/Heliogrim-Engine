@@ -61,7 +61,7 @@ cref<SceneNodeId> SceneNodeHead::nodeId() const noexcept {
 }
 
 ptr<SceneNode> SceneNodeHead::get(cref<EmberSceneNodeStorage> storage_) const {
-    if (_cachedPtr == nullptr || _cachedPtr->_version != _cacheVersion) {
+    if (_cachedPtr == nullptr/* || _cachedPtr->_version != _cacheVersion*/) {
         _cachedPtr = storage_.get(_nodeId);
 
         if (_cachedPtr == nullptr) {
@@ -75,7 +75,7 @@ ptr<SceneNode> SceneNodeHead::get(cref<EmberSceneNodeStorage> storage_) const {
 }
 
 ptr<SceneNode> SceneNodeHead::get(cref<EmberSceneNodeStorage> storage_, _STD nothrow_t) const noexcept {
-    if (_cachedPtr == nullptr || _cachedPtr->_version != _cacheVersion) {
+    if (_cachedPtr == nullptr/* || _cachedPtr->_version != _cacheVersion*/) {
         _cachedPtr = storage_.get(_nodeId);
 
         if (_cachedPtr == nullptr) {

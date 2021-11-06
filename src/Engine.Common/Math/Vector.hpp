@@ -73,9 +73,9 @@ namespace ember::math {
          * @author Julius
          * @date 16.01.2020
          */
-        vec2_t() :
-            x(static_cast<value_type>(0)),
-            y(static_cast<value_type>(0)) { }
+        constexpr vec2_t() noexcept :
+            x(0),
+            y(0) { }
 
         /**
          * Constructor
@@ -85,7 +85,7 @@ namespace ember::math {
          *
          * @param  value_ The x and y coordinate.
          */
-        vec2_t(const value_type& value_) :
+        explicit constexpr vec2_t(const value_type& value_) noexcept :
             x(value_),
             y(value_) {}
 
@@ -98,9 +98,22 @@ namespace ember::math {
          * @param  x_ The x coordinate.
          * @param  y_ The y coordinate.
          */
-        vec2_t(const value_type& x_, const value_type& y_) :
+        constexpr vec2_t(const value_type& x_, const value_type& y_) noexcept :
             x(x_),
             y(y_) { }
+
+        /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 03.11.2021
+         *
+         * @param x_ The x coordinate.
+         * @param y_ The y coordinate.
+         */
+        constexpr vec2_t(value_type&& x_, value_type&& y_) noexcept :
+            x(x_),
+            y(y_) {}
 
         /**
          * Constructor
@@ -110,7 +123,7 @@ namespace ember::math {
          *
          * @param  xyz_ The xyz.
          */
-        vec2_t(const vec3_t<T>& xyz_) :
+        constexpr vec2_t(const vec3_t<T>& xyz_) noexcept :
             x(xyz_.x),
             y(xyz_.y) { }
 
@@ -122,7 +135,7 @@ namespace ember::math {
          *
          * @param  xyzw_ The xyzw.
          */
-        vec2_t(const vec4_t<T>& xyzw_) :
+        constexpr vec2_t(const vec4_t<T>& xyzw_) noexcept :
             x(xyzw_.x),
             y(xyzw_.y) { }
 
@@ -497,7 +510,7 @@ namespace ember::math {
          *
          * @param  value_ The x, y and z coordinate.
          */
-        vec3_t(const value_type& value_) noexcept :
+        explicit constexpr vec3_t(const value_type& value_) noexcept :
             x(value_),
             y(value_),
             z(value_) {}
@@ -512,10 +525,25 @@ namespace ember::math {
          * @param  y_ The y coordinate.
          * @param  z_ The z coordinate.
          */
-        vec3_t(const value_type& x_, const value_type& y_, const value_type& z_) :
+        constexpr vec3_t(const value_type& x_, const value_type& y_, const value_type& z_) noexcept :
             x(x_),
             y(y_),
             z(z_) { }
+
+        /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 03.11.2021
+         *
+         * @param x_ The x coordinate.
+         * @param y_ The y coordinate.
+         * @param z_ The z coordinate.
+         */
+        constexpr vec3_t(value_type&& x_, value_type&& y_, value_type&& z_) noexcept :
+            x(x_),
+            y(y_),
+            z(z_) {}
 
         /**
          * Constructor
@@ -526,7 +554,7 @@ namespace ember::math {
          * @param  xy_ The xy.
          * @param  z_  The z coordinate.
          */
-        vec3_t(typename vec2_t<value_type>::const_reference_type xy_, const value_type& z_) :
+        constexpr vec3_t(typename vec2_t<value_type>::const_reference_type xy_, const value_type& z_) noexcept :
             x(xy_.x),
             y(xy_.y),
             z(z_) { }
@@ -539,7 +567,7 @@ namespace ember::math {
          *
          * @param  xyzw_ The xyzw.
          */
-        vec3_t(const vec4_t<value_type>& xyzw_) :
+        constexpr vec3_t(const vec4_t<value_type>& xyzw_) noexcept :
             x(xyzw_.x),
             y(xyzw_.y),
             z(xyzw_.z) { }
@@ -1027,7 +1055,7 @@ namespace ember::math {
          * @author Julius
          * @date 16.01.2020
          */
-        constexpr vec4_t() :
+        constexpr vec4_t() noexcept :
             x(0),
             y(0),
             z(0),
@@ -1044,7 +1072,8 @@ namespace ember::math {
          * @param  z_ The z coordinate.
          * @param  w_ The w.
          */
-        vec4_t(const value_type& x_, const value_type& y_, const value_type& z_, const value_type& w_) :
+        constexpr vec4_t(const value_type& x_, const value_type& y_, const value_type& z_,
+            const value_type& w_) noexcept :
             x(x_),
             y(y_),
             z(z_),
@@ -1058,7 +1087,7 @@ namespace ember::math {
          *
          * @param  scalar_ The scalar.
          */
-        vec4_t(const value_type& scalar_) :
+        explicit constexpr vec4_t(const value_type& scalar_) noexcept :
             x(scalar_),
             y(scalar_),
             z(scalar_),
@@ -1073,12 +1102,12 @@ namespace ember::math {
          * @param  xy_ The xy.
          * @param  zw_ The zw.
          */
-        vec4_t(typename vec2_t<value_type>::const_reference_type xy_,
-            typename vec2_t<value_type>::const_reference_type zw_) :
+        constexpr vec4_t(typename vec2_t<value_type>::const_reference_type xy_,
+            typename vec2_t<value_type>::const_reference_type zw_) noexcept :
             x(xy_.x),
             y(xy_.y),
             z(zw_.x),
-            w(zw_.x) { }
+            w(zw_.y) { }
 
         /**
          * Constructor
@@ -1089,7 +1118,7 @@ namespace ember::math {
          * @param  xyz_ The xy.
          * @param  w_   The z coordinate.
          */
-        vec4_t(typename vec3_t<value_type>::const_reference_type& xyz_, const value_type& w_) :
+        constexpr vec4_t(typename vec3_t<value_type>::const_reference_type& xyz_, const value_type& w_) noexcept:
             x(xyz_.x),
             y(xyz_.y),
             z(xyz_.z),

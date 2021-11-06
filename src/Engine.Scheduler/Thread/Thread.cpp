@@ -17,6 +17,9 @@ FORCE_INLINE thread_id cast_ntid_tid(const std::thread::id& ntid_) {
     }
 }
 
+// Warning: This function is called multiple times each round trip. Should be readable as fast as possible.
+thread_local static thread_id __threadId { cast_ntid_tid(_STD this_thread::get_id()) };
+
 FORCE_INLINE bool set_priority(HANDLE handle_, priority priority_) {
     #if defined(_WIN32) || defined(_WIN64)
     auto tr = 0;
@@ -106,8 +109,7 @@ void self::sleepFor(u64 milliseconds_) {
     _STD this_thread::sleep_for(_STD chrono::milliseconds(milliseconds_));
 }
 
-thread_id self::getId() {
-    thread_local static thread_id __threadId { cast_ntid_tid(_STD this_thread::get_id()) };
+thread_id self::getId() noexcept {
     return __threadId;
 }
 

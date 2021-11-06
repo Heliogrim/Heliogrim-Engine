@@ -1,11 +1,13 @@
 #include "ShadowSceneNode.hpp"
 
+#include "SceneNodeFactory.hpp"
 #include "SceneNodeHeadContainer.hpp"
 
 using namespace ember::engine::scene;
 using namespace ember;
 
 bool ShadowSceneNode::contains(SceneNode::const_reference_type other_) const noexcept {
+
     if (isLeaf()) {
         return false;
     }
@@ -32,10 +34,11 @@ bool ShadowSceneNode::contains(SceneNode::const_reference_type other_) const noe
 }
 
 template <typename ContainerType_, typename NodeIdType_>
-FORCE_INLINE constexpr bool contains_by_id(
+FORCE_INLINE bool contains_by_id(
     cref<_STD remove_reference_t<ContainerType_>> container_,
     NodeIdType_ id_
 ) noexcept {
+
     if (container_.empty()) {
         return false;
     }
@@ -62,7 +65,8 @@ bool ShadowSceneNode::contains(cref<SceneNodeId> nodeId_) const noexcept {
     return contains_by_id<SceneNodeHeadContainer, SceneNodeId>(_children, nodeId_);
 }
 
-bool ShadowSceneNode::push(mref<SceneNodeHead> node_) {
+bool ShadowSceneNode::push(_Inout_ mref<SceneNodeCreateData> data_, _In_ const ptr<const SceneNodeFactory> factory_) {
+
     #ifdef _DEBUG
     if (_children.empty() && _children.unsafe_base() == nullptr) {
         throw _STD runtime_error("Node Container does not contain a valid or pre-allocated memory sequence.");
@@ -80,12 +84,13 @@ bool ShadowSceneNode::push(mref<SceneNodeHead> node_) {
                 continue;
 
             if constexpr (type_trait::distinct_intersect) {
-                if (resolved->intersectsFully(*node_.get())) {
-                    return resolved->push(_STD move(node_));
+                if (resolved->intersectsFully(data_)) {
+                    return resolved->push(_STD move(data_), factory_), ++_size;
                 }
             } else {
                 // TODO: consider memory pressure
-                if (resolved->intersectsFully(*node_.get()) && resolved->push(_STD move(node_))) {
+                if (resolved->intersectsFully(data_) && resolved->push(_STD move(data_), factory_)) {
+                    ++_size;
                     return true;
                 }
             }
@@ -115,11 +120,83 @@ bool ShadowSceneNode::push(mref<SceneNodeHead> node_) {
         }
 
         // TODO: consider memory pressure
-        return cur->get()->push(_STD move(node_));
+        return cur->get()->push(_STD move(data_), factory_), ++_size;
     }
 
     // Container has some space left -> insert directly
-    return _children.push(_STD move(node_));
+    auto result = factory_->assembleShadow();
+    result.body->transform() = _STD move(data_.transformation);
+    result.body->bounding() = _STD move(data_.bounding);
+    result.body->payload() = _STD move(data_.payload);
+
+    return _children.push(_STD move(result.head)), ++_size;
+}
+
+bool ShadowSceneNode::push(const ptr<SceneNodeCreateData> data_, const ptr<const SceneNodeFactory> factory_) {
+
+    #ifdef _DEBUG
+    if (_children.empty() && _children.unsafe_base() == nullptr) {
+        throw _STD runtime_error("Node Container does not contain a valid or pre-allocated memory sequence.");
+    }
+    #endif
+
+    // Container is full -> need to insert into descendant
+    if (_children.size() >= type_trait::max_nodes_per_layer) {
+
+        // Preference every other node than shadow node
+        for (auto& entry : _children) {
+            auto resolved = entry.get();
+
+            if (resolved->isShadowNode())
+                continue;
+
+            if constexpr (type_trait::distinct_intersect) {
+                if (resolved->intersectsFully(*data_)) {
+                    return resolved->push(data_, factory_), ++_size;
+                }
+            } else {
+                // TODO: consider memory pressure
+                if (resolved->intersectsFully(*data_) && resolved->push(data_, factory_)) {
+                    ++_size;
+                    return true;
+                }
+            }
+        }
+
+        // Fallback to shadow node
+        u64 lowestSize = ~0;
+        container_type::iterator cur = _children.end();
+
+        const container_type::iterator end = _children.end();
+        container_type::iterator iter = _children.begin();
+
+        for (; iter != end; ++iter) {
+            if (!iter->get()->isShadowNode())
+                continue;
+
+            const auto testSize = iter->get()->size();
+            if (testSize <= 1ui64) {
+                cur = iter;
+                break;
+            }
+
+            if (testSize < lowestSize) {
+                cur = iter;
+                lowestSize = testSize;
+            }
+        }
+
+        // TODO: consider memory pressure
+        return cur->get()->push(data_, factory_), ++_size;
+    }
+
+    // Container has some space left -> insert directly
+    auto result = factory_->assembleShadow();
+    result.body->transform() = _STD move(data_->transformation);
+    result.body->bounding() = _STD move(data_->bounding);
+    result.body->payload() = _STD move(data_->payload);
+
+    return _children.push(_STD move(result.head)), ++_size;
 }
 
 pull_result_type ShadowSceneNode::pull(cref<SceneNodeId> nodeId_) noexcept {
@@ -142,6 +219,7 @@ pull_result_type ShadowSceneNode::pull(cref<SceneNodeId> nodeId_) noexcept {
         pull_result_type result {};
         for (iter = _children.begin(); iter != last; ++iter) {
             if (result = iter->get()->pull(nodeId_)) {
+                --_size;
                 return result;
             }
         }
@@ -168,10 +246,14 @@ pull_result_type ShadowSceneNode::pull(cref<SceneNodeId> nodeId_) noexcept {
         #endif
     }
 
+    if (result.result) {
+        --_size;
+    }
     return result;
 }
 
 bool ShadowSceneNode::pullChained(SceneNode::const_reference_type parent_, IN OUT ptr<SceneNodeHead> pos_) noexcept {
+
     if (isLeaf()) {
         return false;
     }
@@ -244,6 +326,7 @@ bool ShadowSceneNode::pullChained(SceneNode::const_reference_type parent_, IN OU
      *   D   -[E]
      */
     targetNode.children() = _STD move(_children);
+    --_size;
     return true;
 }
 
@@ -252,8 +335,18 @@ bool ShadowSceneNode::intersects(SceneNode::const_reference_type node_) const no
     return true;
 }
 
+bool ShadowSceneNode::intersects(cref<SceneNodeCreateData> data_) const noexcept {
+    // Any bounding and transform will intersect with shadow node
+    return true;
+}
+
 bool ShadowSceneNode::intersectsFully(SceneNode::const_reference_type node_) const noexcept {
     // Any node_ will intersect with shadow node
+    return true;
+}
+
+bool ShadowSceneNode::intersectsFully(cref<SceneNodeCreateData> data_) const noexcept {
+    // Any bounding and transform will intersect with shadow node
     return true;
 }
 

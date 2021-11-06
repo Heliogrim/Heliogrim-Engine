@@ -1,9 +1,17 @@
 #include "NaturalSceneNode.hpp"
 
+#include "SceneNodeFactory.hpp"
+
 using namespace ember::engine::scene;
 using namespace ember;
 
-bool NaturalSceneNode::contains(SceneNode::const_reference_type node_) const noexcept {
+NaturalSceneNode::NaturalSceneNode() noexcept :
+    SceneNodeSubBase<NaturalSceneNode>() {
+    _state = SceneNodeState::eNatural;
+}
+
+bool NaturalSceneNode::contains(SceneNode::const_reference_type other_) const noexcept {
+
     if (isLeaf()) {
         return false;
     }
@@ -12,16 +20,16 @@ bool NaturalSceneNode::contains(SceneNode::const_reference_type node_) const noe
     for (const auto& entry : _children) {
         auto resolved = entry.get();
 
-        if (*resolved == node_) {
+        if (*resolved == other_) {
             return true;
         }
 
         if constexpr (type_trait::distinct_intersect) {
-            if (resolved->intersects(node_))
-                return resolved->contains(node_);
+            if (resolved->intersects(other_))
+                return resolved->contains(other_);
         } else {
-            if (resolved->intersects(node_) &&
-                resolved->contains(node_)) {
+            if (resolved->intersects(other_) &&
+                resolved->contains(other_)) {
                 return true;
             }
         }
@@ -61,8 +69,126 @@ bool NaturalSceneNode::contains(cref<SceneNodeId> nodeId_) const noexcept {
     return contains_by_id<SceneNodeHeadContainer, SceneNodeId>(_children, nodeId_);
 }
 
-bool NaturalSceneNode::push(mref<SceneNodeHead> node_) {
-    throw NotImplementedException();
+bool NaturalSceneNode::push(_Inout_ mref<SceneNodeCreateData> data_, _In_ const ptr<const SceneNodeFactory> factory_) {
+
+    #ifdef _DEBUG
+    if (_children.empty() && _children.unsafe_base() == nullptr) {
+        throw _STD runtime_error("Node Container does not contain a valid or pre-allocated memory sequence.");
+    }
+    #endif
+
+    if (isLeaf()) {
+
+        // If this is empty, push payload to this node
+        if (_payload.empty()) {
+            _payload = _STD move(data_.payload);
+
+            ++_size;
+            return true;
+
+        } else {
+
+            const auto halfs = _bounding.extent() / 2.0F;
+            const auto& center = _bounding.center();
+
+            // If this is not empty, split this node into childs
+            for (u8 i = 0; i < 8ui8; ++i) {
+
+                const math::vec3 dir {
+                    i & 0b0001 ? -1.F : 1.F,
+                    i & 0b0010 ? -1.F : 1.F,
+                    i & 0b0100 ? -1.F : 1.F
+                };
+
+                auto result = factory_->assembleNatural();
+
+                // TODO: result.body->transform() = _transformation;
+                result.body->bounding() = {
+                    center + (halfs * dir),
+                    halfs
+                };
+
+                _children.push(_STD move(result.head));
+            }
+
+            // Recursive push due to changed leaf state
+            return push(_STD move(data_), factory_);
+        }
+
+    } else {
+
+        for (auto& entry : _children) {
+            auto resolved = entry.get();
+
+            if (resolved->intersectsFully(data_)) {
+                return resolved->push(_STD move(data_), factory_), ++_size;
+            }
+        }
+
+        throw _STD runtime_error("Unable to sustain natural scene tree.");
+
+    }
+}
+
+bool NaturalSceneNode::push(const ptr<SceneNodeCreateData> data_, const ptr<const SceneNodeFactory> factory_) {
+
+    #ifdef _DEBUG
+    if (_children.empty() && _children.unsafe_base() == nullptr) {
+        throw _STD runtime_error("Node Container does not contain a valid or pre-allocated memory sequence.");
+    }
+    #endif
+
+    if (isLeaf()) {
+
+        // If this is empty, push payload to this node
+        if (_payload.empty()) {
+            _payload = _STD move(data_->payload);
+
+            ++_size;
+            return true;
+
+        } else {
+
+            const auto halfs = _bounding.extent() / 2.0F;
+            const auto& center = _bounding.center();
+
+            // If this is not empty, split this node into childs
+            for (u8 i = 0; i < 8ui8; ++i) {
+
+                const math::vec3 dir {
+                    i & 0b0001 ? -1.F : 1.F,
+                    i & 0b0010 ? -1.F : 1.F,
+                    i & 0b0100 ? -1.F : 1.F
+                };
+
+                auto result = factory_->assembleNatural();
+
+                // TODO: result.body->transform() = _transformation;
+                result.body->bounding() = {
+                    center + (halfs * dir),
+                    halfs
+                };
+
+                _children.push(_STD move(result.head));
+            }
+
+            // Recursive push due to changed leaf state
+            return push(data_, factory_);
+        }
+
+    } else {
+
+        for (auto& entry : _children) {
+            auto resolved = entry.get();
+
+            if (resolved->intersectsFully(*data_)) {
+                return resolved->push(data_, factory_), ++_size;
+            }
+        }
+
+        throw _STD runtime_error("Unable to sustain natural scene tree.");
+
+    }
 }
 
 pull_result_type NaturalSceneNode::pull(cref<SceneNodeId> nodeId_) noexcept {
@@ -77,8 +203,16 @@ bool NaturalSceneNode::intersects(SceneNode::const_reference_type node_) const n
     return true;
 }
 
+bool NaturalSceneNode::intersects(cref<SceneNodeCreateData> data_) const noexcept {
+    return _bounding.intersectsAaBb(data_.bounding);
+}
+
 bool NaturalSceneNode::intersectsFully(SceneNode::const_reference_type node_) const noexcept {
     return true;
+}
+
+bool NaturalSceneNode::intersectsFully(cref<SceneNodeCreateData> data_) const noexcept {
+    return _bounding.containsAaBb(data_.bounding.extent(), data_.bounding.extent());
 }
 
 bool NaturalSceneNode::intersectedFully(SceneNode::const_reference_type node_) const noexcept {

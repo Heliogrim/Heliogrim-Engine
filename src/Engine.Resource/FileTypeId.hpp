@@ -83,7 +83,7 @@ namespace ember::engine::res {
 
         [[nodiscard]] static const ptr<FileTypeRegister> get(_STD nothrow_t) noexcept;
 
-        [[nodiscard]] static void destroy();
+        static void destroy();
 
     private:
         vector<FileTypeId> _list;

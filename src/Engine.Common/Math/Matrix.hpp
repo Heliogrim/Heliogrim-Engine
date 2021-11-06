@@ -205,7 +205,21 @@ namespace ember::math {
          *
          * @return A matq4_t&lt;T&gt;
          */
-        matq4_t<T> rotate(const T& angle_, const vec3_t<T> vec_) const {
+        matq4_t<T>& rotate(const T& angle_, const vec3_t<T> vec_) {
+            auto rm = rotated(angle_, vec_);
+            *this = _STD move(rm);
+            return *this;
+        }
+
+        /**
+         * Rotates
+         *
+         * @param angle_ The angle.
+         * @param vec_   The vector.
+         *
+         * @return A matq4_t&lt;T&gt;
+         */
+        matq4_t<T> rotated(const T& angle_, const vec3_t<T> vec_) const {
             const T a = angle_;
             const T c = _STD cos(a);
             const T s = _STD sin(a);

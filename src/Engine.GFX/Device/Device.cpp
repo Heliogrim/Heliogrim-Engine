@@ -146,9 +146,15 @@ void Device::setup() {
         dCi.ppEnabledLayerNames = validationLayers.data();
     }
 
+    #ifdef _DEBUG
     assert(_physicalDevice.createDevice(&dCi, nullptr, &_device) == vk::Result::eSuccess);
     assert(_physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface));
     DEBUG_SNMSG(true, "VK", "Created vk::Device successfully.")
+
+    #else
+    _physicalDevice.createDevice(&dCi, nullptr, &_device);
+    _physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface);
+    #endif
 
     /**
      * Setup Queues

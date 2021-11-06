@@ -12,7 +12,7 @@
 
 namespace ember::engine::scheduler::thread {
 
-    using thread_id = _STD conditional<sizeof(_STD thread::id) == sizeof(u64), u64, u32>::type;
+    using thread_id = _STD conditional_t<sizeof(_STD thread::id) == sizeof(u64), u64, u32>;
     typedef u64 affinity_mask;
 
     typedef _STD thread* thread_handle;
@@ -26,7 +26,6 @@ namespace ember::engine::scheduler::thread {
 
     class Thread final {
     public:
-
         /**
          * Default constructor
          *
@@ -152,7 +151,7 @@ namespace ember::engine::scheduler::thread {
          *
          * @returns The identifier.
          */
-        [[nodiscard]] thread_id getId();
+        [[nodiscard]] thread_id getId() noexcept;
 
     }
 

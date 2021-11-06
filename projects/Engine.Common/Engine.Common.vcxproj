@@ -42,6 +42,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Math\Bezier.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Bounding.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Complex.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Math\Coordinates.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Extent.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Hash.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Helper.hpp" />
@@ -75,6 +76,7 @@
     <ClCompile Include="..\..\src\Engine.Common\Concurrent\SpinLock.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Hash\Murmur3.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Math\Bounding.cpp" />
+    <ClCompile Include="..\..\src\Engine.Common\Math\Coordinates.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Memory\DbgMemoryStats.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Profiler.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Stopwatch.cpp" />

@@ -416,10 +416,14 @@ void Graphics::_tick() {
     static u32 syncIdx = 0;
 
     // TODO: Make timeout as small as possible to skip blocking request -> if failed, return an reschedule tick task
+    #ifdef _DEBUG
     assert(
         _device->vkDevice().waitForFences(1, &_onFlightSync.cpuGpuSync[syncIdx], VK_TRUE, UINT64_MAX) ==
         vk::Result::eSuccess
     );
+    #else
+    _device->vkDevice().waitForFences(1, &_onFlightSync.cpuGpuSync[syncIdx], VK_TRUE, UINT64_MAX);
+    #endif
     _device->vkDevice().resetFences(1, &_onFlightSync.cpuGpuSync[syncIdx]);
 
     /**
@@ -470,7 +474,12 @@ void Graphics::_tick() {
         &static_cast<ptr<VkSwapchain>>(_swapchain)->vkSwapchain(),
         &swapIdx
     };
+
+    #ifdef _DEBUG
     assert(_graphicsQueue->vkQueue().presentKHR(present) == vk::Result::eSuccess);
+    #else
+    _graphicsQueue->vkQueue().presentKHR(present);
+    #endif
 
     /**
      * Flip-Flop Sync Idx

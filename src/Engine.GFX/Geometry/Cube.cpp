@@ -31,56 +31,56 @@ ptr<Mesh> Cube::convert() const {
 
     vp[0] = vertex {
         { 0.5F, 0.5F, 0.5F },
-        { 0ui8 },
+        math::vec3_t<u8> { 0ui8 },
         { 0.F, 1.F, 0 },
         { 1.F, 1.F, 1.F }
     };
 
     vp[1] = vertex {
         { 0.5F, -0.5F, 0.5F },
-        { 0ui8 },
+        math::vec3_t<u8> { 0ui8 },
         { 0.F, 0.F, 0 },
         { 1.F, -1.F, 1.F }
     };
 
     vp[2] = vertex {
         { -0.5F, -0.5F, 0.5F },
-        { 0ui8 },
+        math::vec3_t<u8> { 0ui8 },
         { 1.F, 0.F, 0 },
         { -1.F, -1.F, 1.F }
     };
 
     vp[3] = vertex {
         { -0.5F, 0.5F, -0.5F },
-        { 0ui8 },
+        math::vec3_t<u8> { 0ui8 },
         { 1.F, 1.F, 0 },
         { -1.F, 1.F, -1.F }
     };
 
     vp[4] = vertex {
         { 0.5F, 0.5F, -0.5F },
-        { 0ui8 },
+        math::vec3_t<u8> { 0ui8 },
         { 1.F, 1.F, 0 },
         { 1.F, 1.F, -1.F }
     };
 
     vp[5] = vertex {
         { 0.5F, -0.5F, -0.5F },
-        { 0ui8 },
+        math::vec3_t<u8> { 0ui8 },
         { 1.F, 0.F, 0 },
         { 1.F, -1.F, -1.F }
     };
 
     vp[6] = vertex {
         { -0.5F, -0.5F, -0.5F },
-        { 0ui8 },
+        math::vec3_t<u8> { 0ui8 },
         { 0.F, 0.F, 0 },
         { -1.F, -1.F, -1.F }
     };
 
     vp[7] = vertex {
         { -0.5F, 0.5F, -0.5F },
-        { 0ui8 },
+        math::vec3_t<u8> { 0ui8 },
         { 0.F, 1.F, 0 },
         { -1.F, 1.F, -1.F }
     };

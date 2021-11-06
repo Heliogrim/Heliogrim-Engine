@@ -38,6 +38,10 @@ ref<ProxiedScenePayload::payload_type> ProxiedScenePayload::payload() noexcept {
     return _payload;
 }
 
+bool ProxiedScenePayload::empty() const noexcept {
+    return _payload.expired();
+}
+
 OwningProxiedScenePayload::OwningProxiedScenePayload(mref<payload_type> payload_) noexcept :
     _payload(_STD move(payload_)) {}
 
