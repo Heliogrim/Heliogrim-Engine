@@ -59,7 +59,11 @@ void Watcher::setup() {
         }
 
         static_cast<ptr<Watcher>>(self_)->notify();
+        #ifdef _DEBUG
         assert(FindNextChangeNotification(static_cast<ptr<Watcher>>(self_)->_handle));
+        #else
+        FindNextChangeNotification(static_cast<ptr<Watcher>>(self_)->_handle);
+        #endif
 
     }, this, INFINITE, WT_EXECUTEDEFAULT);
 

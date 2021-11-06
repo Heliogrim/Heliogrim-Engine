@@ -1551,14 +1551,16 @@ namespace ember::engine::scene {
         [[nodiscard]] index_type pages_insert_pair(cref<KeyType> key_, mref<ValueType> value_) noexcept(
             _STD is_nothrow_move_constructible_v<ValueType>
         ) {
-            auto possiblePage = _STD find_if(_pages.begin(), _pages.end(), [](cref<storage_page_type> page_) {
+            // TODO: Replace
+            // Warning: Using reverse iterator will speed up linear insertion but slow down reusage or pages
+            auto possiblePage = _STD find_if(_pages.rbegin(), _pages.rend(), [](cref<storage_page_type> page_) {
                 return page_.can_store();
             });
 
             /**
              * Check whether there is a page with space left to store data
              */
-            if (possiblePage == _pages.end()) {
+            if (possiblePage == _pages.rend()) {
 
                 /**
                  * If no page was found, create a new page and retry
@@ -1582,7 +1584,7 @@ namespace ember::engine::scene {
             value_index_type vidx;
             [[maybe_unused]] const bool succeeded = page.insert(key_, _STD forward<ValueType>(value_), vidx);
 
-            const page_index_type pidx = _STD distance(_pages.begin(), possiblePage);
+            const page_index_type pidx = _STD distance(_pages.begin(), possiblePage.base()) - 1;
 
             /**
              * Compose masked index_type

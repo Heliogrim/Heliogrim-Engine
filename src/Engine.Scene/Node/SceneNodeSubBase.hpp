@@ -7,6 +7,9 @@ namespace ember::engine::scene {
     class SceneNodeSubBase :
         public SceneNode {
     public:
+        SceneNodeSubBase() noexcept = default;
+
+    public:
         template <class OtherType> requires std::is_base_of_v<SceneNode, OtherType>
         static ptr<const SubType> castFrom(ptr<const OtherType> other_) {
             if (other_->nodeState() == SubType::type_trait::value) {

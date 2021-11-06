@@ -19,8 +19,8 @@ Profiler::~Profiler() noexcept {
     }
 }
 
-Profiler::reference_type Profiler::get() {
-    return *_instance;
+const ptr<Profiler> Profiler::get() {
+    return _instance;
 }
 
 const ptr<Profiler::value_type> Profiler::get(std::nothrow_t) noexcept {

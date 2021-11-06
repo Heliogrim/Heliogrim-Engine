@@ -12,7 +12,7 @@ bool SharedSubQueue::try_acquire() {
     const auto tid = thread::self::getId();
 
     thread::thread_id expect { 0 };
-    return owner.compare_exchange_strong(expect, tid, _STD memory_order::seq_cst);
+    return owner.compare_exchange_weak(expect, tid, _STD memory_order::relaxed, _STD memory_order::relaxed);
 }
 
 void SharedSubQueue::acquire() {
@@ -20,7 +20,7 @@ void SharedSubQueue::acquire() {
 
     u8 tries { 0 };
     thread::thread_id expect { 0 };
-    while (!owner.compare_exchange_strong(expect, tid, _STD memory_order::seq_cst)) {
+    while (!owner.compare_exchange_weak(expect, tid, _STD memory_order::release, _STD memory_order::relaxed)) {
         expect = 0;
 
         if (++tries > retry_threshold) {
@@ -32,10 +32,10 @@ void SharedSubQueue::acquire() {
 void SharedSubQueue::release() {
     #if _DEBUG
     auto expect { thread::self::getId() };
-    const auto result = owner.compare_exchange_strong(expect, thread::thread_id { 0 }, _STD memory_order::seq_cst);
+    const auto result = owner.compare_exchange_strong(expect, thread::thread_id { 0 }, _STD memory_order::release, _STD memory_order::acquire);
     assert(result);
     #else
-	owner.store(thread::thread_id { 0 }, _STD memory_order::seq_cst);
+    owner.store(thread::thread_id { 0 }, _STD memory_order::relaxed);
     #endif
 }
 

@@ -91,7 +91,7 @@ namespace ember::profiling {
          *
          * @returns A reference_type.
          */
-        static reference_type get();
+        static const ptr<Profiler> get();
 
         /**
          * Gets a pointer to the internal stored singleton instance

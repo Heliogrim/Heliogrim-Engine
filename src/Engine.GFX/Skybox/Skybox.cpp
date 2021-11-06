@@ -15,8 +15,8 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
     _device(device_) {
 
     Cube cube {};
-    cube.scale() = { 1.F };
-    cube.segments() = { 1ui32 };
+    cube.scale() = math::fvec2 { 1.F };
+    cube.segments() = math::uivec2 { 1ui32 };
 
     _geometry = cube.convert();
 

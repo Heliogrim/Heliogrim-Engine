@@ -280,6 +280,7 @@ namespace ember::engine::ecs {
          * @param  idx_ The key.
          */
         void erase(const index_type& idx_) {
+
             // destruct_inplace<key_type>(&_keys[idx_]);
             _keys[idx_] = invalid_entity_guid;
             destruct_inplace<value_type>(&_values[idx_]);
@@ -1044,6 +1045,7 @@ namespace ember::engine::ecs {
          * @returns An index_type.
          */
         [[nodiscard]] FORCE_INLINE index_type pop_slot() {
+
             /**
              * Check whether sequence is available
              */
@@ -1081,6 +1083,7 @@ namespace ember::engine::ecs {
          * @param  idx_ Zero-based index of the.
          */
         FORCE_INLINE void pop_slot(const index_type& idx_) {
+
             /**
              * Find sequence
              */
@@ -1176,6 +1179,7 @@ namespace ember::engine::ecs {
          * @returns Null if it fails, else a pointer to a void.
          */
         static void* allocate_safe() noexcept {
+
             void* page = malloc(page_size);
 
             /**
@@ -1683,6 +1687,7 @@ namespace ember::engine::ecs {
          * @returns A pair&lt;ComponentType&amp;,bool&gt;
          */
         [[nodiscard]] _STD pair<ComponentType*, bool> emplace(const entity_guid& guid_) {
+
             _STD pair<typename mapping_container::iterator, bool> er = _indirection.emplace(storage_guid_idx_pair {
                 guid_,
                 0
@@ -1730,6 +1735,7 @@ namespace ember::engine::ecs {
          * @returns A pair&lt;ComponentType&amp;,bool&gt;
          */
         [[nodiscard]] _STD pair<ComponentType*, bool> emplace(const entity_guid& guid_, ComponentType&& component_) {
+
             typename mapping_container::emplace_result_type er = _indirection.emplace(storage_guid_idx_pair {
                 guid_,
                 0
@@ -1806,6 +1812,7 @@ namespace ember::engine::ecs {
          * @returns A reference to a ComponentType.
          */
         ComponentType& insert_or_assign(const entity_guid& guid_, ComponentType&& component_) {
+
             /**
              * Don't insert_or_assign, cause we need old indirection idx from inserted element to override old value
              *	-> This also guarantees, that component constructed by entity_guid is reference stable
@@ -1866,6 +1873,7 @@ namespace ember::engine::ecs {
          * @returns A reference to a const ComponentType.
          */
         const ComponentType& unsafe_get(const entity_guid& guid_) const {
+
             typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 });
 
             if (cit == _indirection.cend()) {
@@ -1890,6 +1898,7 @@ namespace ember::engine::ecs {
          * @returns A reference to a const ComponentType.
          */
         const ComponentType& unsafe_get(const entity_guid& guid_, const hash_type hash_) const {
+
             typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 },
                 hash_);
 
@@ -1914,6 +1923,7 @@ namespace ember::engine::ecs {
          * @returns A reference to a ComponentType.
          */
         ComponentType& unsafe_get(const entity_guid& guid_) {
+
             typename mapping_container::iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 });
 
             if (cit == _indirection.end()) {
@@ -1937,6 +1947,7 @@ namespace ember::engine::ecs {
          * @returns A reference to a ComponentType.
          */
         ComponentType& unsafe_get(const entity_guid& guid_, const hash_type hash_) {
+
             typename mapping_container::iterator cit = _indirection.
                 find(storage_guid_idx_pair { guid_, 0 }, hash_);
 
@@ -1958,6 +1969,7 @@ namespace ember::engine::ecs {
          * @returns Null if it fails, else a pointer to a const ComponentType.
          */
         const ComponentType* get(const entity_guid& guid_) const {
+
             typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 });
 
             if (cit == _indirection.cend()) {
@@ -1979,6 +1991,7 @@ namespace ember::engine::ecs {
          * @returns Null if it fails, else a pointer to a const ComponentType.
          */
         const ComponentType* get(const entity_guid& guid_, const hash_type hash_) const {
+
             typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 },
                 hash_);
 
@@ -2000,6 +2013,7 @@ namespace ember::engine::ecs {
          * @returns Null if it fails, else a pointer to a ComponentType.
          */
         ComponentType* get(const entity_guid& guid_) {
+
             typename mapping_container::iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 });
 
             if (cit == _indirection.end()) {
@@ -2021,6 +2035,7 @@ namespace ember::engine::ecs {
          * @returns Null if it fails, else a pointer to a ComponentType.
          */
         ComponentType* get(const entity_guid& guid_, const hash_type hash_) {
+
             typename mapping_container::iterator cit = _indirection.
                 find(storage_guid_idx_pair { guid_, 0 }, hash_);
 
@@ -2043,6 +2058,7 @@ namespace ember::engine::ecs {
          */
         void erase(const entity_guid& guid_) {
             typename mapping_container::const_iterator cit = _indirection.find(storage_guid_idx_pair { guid_, 0 });
+
             // TODO: check whether we should just return without mutation
             // TODO: if immutable check, could optimize for concurrent locking, cause existing check is read only, and does not require to lock whole structure
 
@@ -2237,15 +2253,17 @@ namespace ember::engine::ecs {
          * @returns An index_type.
          */
         [[nodiscard]] index_type pages_insert_pair(const entity_guid& guid_, const ComponentType& component_) {
+
             // TODO: optimize way to find storage page with empty sequence
-            auto s = _STD find_if(_pages.begin(), _pages.end(), [](const storage_page_type& page_) {
+            // TODO: optimize way reusage of pages / using reverse iterator will speed up linear insert, but slow down on reusage
+            auto s = _STD find_if(_pages.rbegin(), _pages.rend(), [](const storage_page_type& page_) {
                 return page_.can_store();
             });
 
             /**
              * Check whether there is a page with empty space to store data
              */
-            if (s == _pages.end()) {
+            if (s == _pages.rend()) {
 
                 /**
                  * If no space found, create new page and try again
@@ -2269,7 +2287,7 @@ namespace ember::engine::ecs {
             index_type vidx;
             [[maybe_unused]] const bool success = page.emplace(guid_, component_, vidx);
 
-            const index_type pidx = _STD distance(_pages.begin(), s);
+            const index_type pidx = _STD distance(_pages.begin(), s.base()) - 1;
 
             /**
              * Composite index_type
@@ -2289,15 +2307,17 @@ namespace ember::engine::ecs {
          * @returns An index_type.
          */
         [[nodiscard]] index_type pages_insert_pair(const entity_guid& guid_, ComponentType&& component_) {
+
             // TODO: optimize way to find storage page with empty sequence
-            auto s = _STD find_if(_pages.begin(), _pages.end(), [](const storage_page_type& page_) {
+            // TODO: optimize way reusage of pages / using reverse iterator will speed up linear insert, but slow down on reusage
+            auto s = _STD find_if(_pages.rbegin(), _pages.rend(), [](const storage_page_type& page_) {
                 return page_.can_store();
             });
 
             /**
              * Check whether there is a page with empty space to store data
              */
-            if (s == _pages.end()) {
+            if (s == _pages.rend()) {
 
                 /**
                  * If no space found, create new page and try again
@@ -2321,7 +2341,7 @@ namespace ember::engine::ecs {
             value_index_type vidx;
             [[maybe_unused]] const bool success = page.emplace(guid_, _STD forward<ComponentType>(component_), vidx);
 
-            const page_index_type pidx = _STD distance(_pages.begin(), s);
+            const page_index_type pidx = _STD distance(_pages.begin(), s.base()) - 1;
 
             /**
              * Composite index_type

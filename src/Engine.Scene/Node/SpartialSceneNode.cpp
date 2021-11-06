@@ -61,7 +61,11 @@ bool SpartialSceneNode::contains(cref<SceneNodeId> nodeId_) const noexcept {
     return contains_by_id<SceneNodeHeadContainer, SceneNodeId>(_children, nodeId_);
 }
 
-bool SpartialSceneNode::push(mref<SceneNodeHead> node_) {
+bool SpartialSceneNode::push(mref<SceneNodeCreateData> data_, const ptr<const SceneNodeFactory> factory_) {
+    throw NotImplementedException();
+}
+
+bool SpartialSceneNode::push(const ptr<SceneNodeCreateData> data_, const ptr<const SceneNodeFactory> factory_) {
     throw NotImplementedException();
 }
 
@@ -77,8 +81,16 @@ bool SpartialSceneNode::intersects(SceneNode::const_reference_type node_) const 
     return true;
 }
 
+bool SpartialSceneNode::intersects(cref<SceneNodeCreateData> data_) const noexcept {
+    return false;
+}
+
 bool SpartialSceneNode::intersectsFully(SceneNode::const_reference_type node_) const noexcept {
     return true;
+}
+
+bool SpartialSceneNode::intersectsFully(cref<SceneNodeCreateData> data_) const noexcept {
+    return false;
 }
 
 bool SpartialSceneNode::intersectedFully(SceneNode::const_reference_type node_) const noexcept {

@@ -12,7 +12,7 @@ namespace ember::engine::gfx {
         /**
          * Extent ( Width | Height | Depth )
          */
-        math::uivec3 extent = { 0ui32 };
+        math::uivec3 extent { 0ui32 };
 
         /**
          * Format
@@ -63,7 +63,6 @@ namespace ember::engine::gfx {
 
     class TextureFactory {
     public:
-
         /**
          * Gets the singleton instance
          *
@@ -82,7 +81,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 04.12.2020
          */
-        [[nodiscard]] static void destroy();
+        static void destroy();
 
     protected:
         /**

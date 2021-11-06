@@ -16,7 +16,6 @@ using namespace ember::engine::ecs::subsystem;
 using namespace ember;
 
 void StaticMeshComponent::mantle(cref<entity_guid> entity_) {
-    DEBUG_MSG("Mantle entity with StaticMeshComponent.")
 
     auto prx = make_uptr<proxy::StaticModelSceneProxy>();
     auto spr = proxy::SceneProxiedRef::make_proxied_ref(_STD move(prx), this);
@@ -34,11 +33,23 @@ void StaticMeshComponent::mantle(cref<entity_guid> entity_) {
             "Instantiating StaticMeshProxy without related TransformComponent. Fallback to ZeroTransformation...")
     }
 
-    [[maybe_unused]] const auto* node = mgraph.push(engine::scene::SceneNodeCreateData {
+    #ifdef _DEBUG
+
+    auto result = mgraph.push(engine::scene::SceneNodeCreateData {
         .payload = payload,
         .transformation = tc != nullptr ? tc->transformation() : math::ZeroTransformation {},
         .bounding = {}
     });
+
+    DEBUG_ASSERT(result, "Failed to push data to scene graph.")
+
+    #else
+    mgraph.push(engine::scene::SceneNodeCreateData {
+        .payload = payload,
+        .transformation = tc != nullptr ? tc->transformation() : math::ZeroTransformation {},
+        .bounding = {}
+    });
+    #endif
 
     spr->payload() = _STD move(payload);
 
@@ -59,6 +70,7 @@ void StaticMeshComponent::mantle(cref<entity_guid> entity_) {
 }
 
 void StaticMeshComponent::dismantle([[maybe_unused]] cref<entity_guid> entity_) {
+
     DEBUG_MSG("Dismantle entity with StaticMeshComponent.")
 
     if (_proxy.use_count() > 0) {

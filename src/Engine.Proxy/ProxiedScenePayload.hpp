@@ -88,6 +88,9 @@ namespace ember::engine::proxy {
                 static_cast<ptr<void>>(&_payload)
             );
         }
+
+    public:
+        [[nodiscard]] _Success_(return == true) bool empty() const noexcept;
     };
 
     class OwningProxiedScenePayload {

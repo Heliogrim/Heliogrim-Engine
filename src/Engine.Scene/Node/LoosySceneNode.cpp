@@ -61,7 +61,11 @@ bool LoosySceneNode::contains(cref<SceneNodeId> nodeId_) const noexcept {
     return contains_by_id<SceneNodeHeadContainer, SceneNodeId>(_children, nodeId_);
 }
 
-bool LoosySceneNode::push(mref<SceneNodeHead> node_) {
+bool LoosySceneNode::push(mref<SceneNodeCreateData> data_, const ptr<const SceneNodeFactory> factory_) {
+    throw NotImplementedException();
+}
+
+bool LoosySceneNode::push(const ptr<SceneNodeCreateData> data_, const ptr<const SceneNodeFactory> factory_) {
     throw NotImplementedException();
 }
 
@@ -77,8 +81,16 @@ bool LoosySceneNode::intersects(SceneNode::const_reference_type node_) const noe
     return true;
 }
 
+bool LoosySceneNode::intersects(cref<SceneNodeCreateData> data_) const noexcept {
+    return false;
+}
+
 bool LoosySceneNode::intersectsFully(SceneNode::const_reference_type node_) const noexcept {
     return true;
+}
+
+bool LoosySceneNode::intersectsFully(cref<SceneNodeCreateData> data_) const noexcept {
+    return false;
 }
 
 bool LoosySceneNode::intersectedFully(SceneNode::const_reference_type node_) const noexcept {

@@ -4,6 +4,7 @@
 #include "../Wrapper.hpp"
 
 namespace ember::math {
+
     class Bounding {
     public:
         using value_type = Bounding;
@@ -17,6 +18,17 @@ namespace ember::math {
          * @date 27.03.2021
          */
         Bounding();
+
+        /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 04.11.2021
+         *
+         * @param center_ The center position of this bounding.
+         * @param extent_ The extent from the center.
+         */
+        Bounding(_In_ cref<vec3> center_, _In_ cref<vec3> extent_) noexcept;
 
         /**
          * Destructor
@@ -138,7 +150,6 @@ namespace ember::math {
         vec3 _center;
 
     public:
-
         /**
          * Gets a immutable reference to the center
          *

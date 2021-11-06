@@ -50,7 +50,10 @@ void Stopwatch::stop() noexcept {
 
     const u64 tid = _STD hash<_STD thread::id> {}(_STD this_thread::get_id());
 
-    Profiler::get() << ProfileResult { _name, start, end, tid };
+    auto* profiler = Profiler::get();
+    if (profiler) {
+        *profiler << ProfileResult { _name, start, end, tid };
+    }
 
     _stopped = true;
 }

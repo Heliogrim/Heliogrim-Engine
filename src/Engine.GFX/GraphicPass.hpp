@@ -54,7 +54,7 @@ namespace ember::engine::gfx {
          * @param  graph_ The SceneGraph to traverse.
          * @param  batch_ The batch.
          */
-        [[nodiscard]] virtual void process(cref<scene::SceneGraph> graph_, IN OUT ref<CommandBatch> batch_);
+        virtual void process(cref<scene::SceneGraph> graph_, IN OUT ref<CommandBatch> batch_);
 
     private:
         /**

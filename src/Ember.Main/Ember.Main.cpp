@@ -2,6 +2,11 @@
 
 #include <Ember/Ember.hpp>
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Profiler.hpp>
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 using namespace ember;
 
 /**

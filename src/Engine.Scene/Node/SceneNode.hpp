@@ -5,6 +5,7 @@
 #include <Engine.Common/Math/Transformation.hpp>
 #include <Engine.Proxy/ProxiedScenePayload.hpp>
 
+#include "SceneNodeCreateData.hpp"
 #include "SceneNodeHeadContainer.hpp"
 #include "SceneNodeVersion.hpp"
 
@@ -24,6 +25,8 @@ namespace ember::engine::scene {
     class LoosySceneNode;
     class SpartialSceneNode;
     class NaturalSceneNode;
+
+    class SceneNodeFactory;
 
     class SceneNode {
     public:
@@ -248,6 +251,11 @@ namespace ember::engine::scene {
          */
         [[nodiscard]] u64 depth() const noexcept;
 
+    protected:
+        // TODO: Recheck
+        [[deprecated]] u64 _size;
+
+    public:
         /**
          * Traces the accumulated count of elements in graph from current node
          *
@@ -284,16 +292,32 @@ namespace ember::engine::scene {
 
     public:
         /**
-         * Pushes an object onto this node container
+         * Pushes an object onto this node or sub graph
          *
          * @author Julius
-         * @date 02.08.2021
+         * @date 04.11.2021
          *
-         * @param  node_ The node to push.
+         * @param data_ The data to construct from.
+         * @param factory_ The factory to construct nodes.
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool push(mref<SceneNodeHead> node_);
+        _Success_(return == true) bool push(_Inout_ mref<SceneNodeCreateData> data_,
+            _In_ const ptr<const SceneNodeFactory> factory_);
+
+        /**
+         * Pushes an object onto this node or sub graph
+         *
+         * @author Julius
+         * @date 04.11.2021
+         *
+         * @param data_ The data to construct from.
+         * @param factory_ The factory to construct nodes.
+         *
+         * @returns True if it succeeds, false if it fails.
+         */
+        _Success_(return == true) bool push(_In_ const ptr<SceneNodeCreateData> data_,
+            _In_ const ptr<const SceneNodeFactory> factory_);
 
         /**
          * Pulls this
@@ -339,7 +363,12 @@ namespace ember::engine::scene {
     public:
         [[nodiscard]] bool intersects(const_reference_type node_) const noexcept;
 
+        [[nodiscard]] _Success_(return == true) bool intersects(_In_ cref<SceneNodeCreateData> data_) const noexcept;
+
         [[nodiscard]] bool intersectsFully(const_reference_type node_) const noexcept;
+
+        [[nodiscard]] _Success_(return == true) bool intersectsFully(
+            _In_ cref<SceneNodeCreateData> data_) const noexcept;
 
         [[nodiscard]] bool intersectedFully(const_reference_type node_) const noexcept;
 

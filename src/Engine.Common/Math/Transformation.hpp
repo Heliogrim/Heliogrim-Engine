@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../stdafx.h"
+#include "Coordinates.hpp"
 #include "Quaternion.hpp"
+#include "../stdafx.h"
 
 namespace ember::math {
     class Transformation {
@@ -80,9 +81,9 @@ namespace ember::math {
             /**
              * Resolve Values ( Reverse Order )
              */
-            _matrix.rotate(glm::radians(_rotation.x), vec3(1.F, 0.F, 0.F))
-                   .rotate(glm::radians(_rotation.y), vec3(0.F, 1.F, 0.F))
-                   .rotate(glm::radians(_rotation.z), vec3(0.F, 0.F, 1.F))
+            _matrix.rotate(glm::radians(_rotation.x), vec3_pitch)
+                   .rotate(glm::radians(_rotation.y), vec3_yaw)
+                   .rotate(glm::radians(_rotation.z), vec3_roll)
                    .translate(_position)
                    .scale(_scale.x);
         }

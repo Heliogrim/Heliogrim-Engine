@@ -4,7 +4,7 @@ using namespace ember::engine::gfx;
 
 Texture::Texture() noexcept :
     _buffer(),
-    _extent(0i32),
+    _extent(0ui32),
     _format(TextureFormat::eUndefined),
     _mipLevels(0),
     _type(TextureType::eUndefined),
@@ -12,7 +12,7 @@ Texture::Texture() noexcept :
 
 Texture::Texture(value_type&& other_) noexcept :
     _buffer(_STD exchange(other_._buffer, {})),
-    _extent(_STD exchange(other_._extent, { 0ui32 })),
+    _extent(_STD exchange(other_._extent, math::uivec3 { 0ui32 })),
     _format(_STD exchange(other_._format, TextureFormat::eUndefined)),
     _mipLevels(_STD exchange(other_._mipLevels, 0)),
     _type(_STD exchange(other_._type, TextureType::eUndefined)),
@@ -23,7 +23,7 @@ Texture::~Texture() noexcept = default;
 Texture& Texture::operator=(value_type&& other_) noexcept {
     if (this != &other_) {
         _buffer = _STD exchange(other_._buffer, {});
-        _extent = _STD exchange(other_._extent, { 0i32 });
+        _extent = _STD exchange(other_._extent, math::uivec3 { 0ui32 });
         _format = _STD exchange(other_._format, TextureFormat::eUndefined);
         _mipLevels = _STD exchange(other_._mipLevels, 0);
         _type = _STD exchange(other_._type, TextureType::eUndefined);

@@ -5,6 +5,10 @@
 #include "SpartialSceneNode.hpp"
 #include "NaturalSceneNode.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 using namespace ember::engine::scene;
 using namespace ember;
 
@@ -13,6 +17,7 @@ SceneNode::SceneNode() noexcept :
     _children(),
     _payload(),
     _state(SceneNodeState::eShadow),
+    _size(1ui64),
     _transformation(math::ZeroTransformation {}),
     _bounding() {}
 
@@ -21,6 +26,7 @@ SceneNode::SceneNode(mref<value_type> other_) noexcept :
     _children(_STD move(other_._children)),
     _payload(_STD move(other_._payload)),
     _state(_STD exchange(other_._state, SceneNodeState::eShadow)),
+    _size(other_._size),
     _transformation(math::ZeroTransformation {}),
     _bounding() {}
 
@@ -30,6 +36,7 @@ SceneNode::reference_type SceneNode::operator=(mref<value_type> other_) noexcept
     if (this != &other_) {
         _children = _STD move(other_._children);
         _version = _STD exchange(other_._version, _version);
+        _size = _STD exchange(other_._size, _size);
     }
 
     return *this;
@@ -124,6 +131,7 @@ u64 SceneNode::depth() const noexcept {
 
 u64 SceneNode::size() const noexcept {
 
+    /*
     if (isLeaf()) {
         return 1ui64;
     }
@@ -134,6 +142,8 @@ u64 SceneNode::size() const noexcept {
     }
 
     return tmp;
+    */
+    return _size;
 }
 
 #define advanced_proxy_macro(FNC_, ...) \
@@ -162,8 +172,12 @@ bool SceneNode::contains(const_reference_type other_) const noexcept {
     advanced_proxy_macro(contains, other_)
 }
 
-bool SceneNode::push(mref<SceneNodeHead> node_) {
-    advanced_proxy_macro(push, _STD forward<SceneNodeHead>(node_))
+bool SceneNode::push(_Inout_ mref<SceneNodeCreateData> data_, _In_ const ptr<const SceneNodeFactory> factory_) {
+    advanced_proxy_macro(push, _STD forward<SceneNodeCreateData>(data_), factory_)
+}
+
+bool SceneNode::push(_In_ const ptr<SceneNodeCreateData> data_, _In_ const ptr<const SceneNodeFactory> factory_) {
+    advanced_proxy_macro(push, data_, factory_)
 }
 
 pull_result_type SceneNode::pull(cref<SceneNodeId> nodeId_) noexcept {
@@ -178,8 +192,16 @@ bool SceneNode::intersects(const_reference_type node_) const noexcept {
     advanced_proxy_macro(intersects, node_)
 }
 
+bool SceneNode::intersects(cref<SceneNodeCreateData> data_) const noexcept {
+    advanced_proxy_macro(intersects, data_)
+}
+
 bool SceneNode::intersectsFully(const_reference_type node_) const noexcept {
     advanced_proxy_macro(intersectsFully, node_)
+}
+
+bool SceneNode::intersectsFully(cref<SceneNodeCreateData> data_) const noexcept {
+    advanced_proxy_macro(intersectsFully, data_)
 }
 
 bool SceneNode::intersectedFully(const_reference_type node_) const noexcept {

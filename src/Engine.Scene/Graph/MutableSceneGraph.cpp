@@ -7,20 +7,12 @@ SceneNodeFactory MutableSceneGraph::factory() const noexcept {
     return SceneNodeFactory { _storage };
 }
 
-const ptr<SceneNode> MutableSceneGraph::push(mref<SceneNodeCreateData> data_) {
-
+bool MutableSceneGraph::push(mref<SceneNodeCreateData> data_) {
     const auto nodeFactory { factory() };
-    auto result = nodeFactory.assembleRoot();
-
-    result.body->payload() = data_.payload;
-    result.body->transform() = data_.transformation;
-    result.body->bounding() = data_.bounding;
-
-    _root.get()->push(_STD move(result.head));
-    return result.body;
+    return _root.get()->push(&data_, &nodeFactory);
 }
 
-const ptr<SceneNode> MutableSceneGraph::push(ptr<SceneNode> node_) {
+bool MutableSceneGraph::push(ptr<SceneNode> node_) {
     throw NotImplementedException();
 }
 

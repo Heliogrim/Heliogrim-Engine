@@ -53,16 +53,32 @@ namespace ember::engine::scene {
         [[nodiscard]] bool contains(SceneNode::const_reference_type other_) const noexcept;
 
         /**
-         * Pushes an object onto this node container
+         * Pushes an object onto this node or sub graph
          *
          * @author Julius
-         * @date 16.08.2021
+         * @date 04.11.2021
          *
-         * @param  node_ The node to push.
+         * @param data_ The data to construct from.
+         * @param factory_ The factory to construct nodes.
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool push(mref<SceneNodeHead> node_);
+        _Success_(return == true) bool push(_Inout_ mref<SceneNodeCreateData> data_,
+            _In_ const ptr<const SceneNodeFactory> factory_);
+
+        /**
+         * Pushes an object onto this node or sub graph
+         *
+         * @author Julius
+         * @date 04.11.2021
+         *
+         * @param data_ The data to construct from.
+         * @param factory_ The factory to construct nodes.
+         *
+         * @returns True if it succeeds, false if it fails.
+         */
+        _Success_(return == true) bool push(_In_ const ptr<SceneNodeCreateData> data_,
+            _In_ const ptr<const SceneNodeFactory> factory_);
 
         /**
          * Pulls the given nodeId_
@@ -89,10 +105,15 @@ namespace ember::engine::scene {
          */
         bool pullChained(SceneNode::const_reference_type parent_, IN OUT ptr<SceneNodeHead> pos_) noexcept;
 
-        [[nodiscard]] bool intersects(SceneNode::const_reference_type node_) const noexcept;
+        [[nodiscard]] bool intersects(cref<SceneNode> node_) const noexcept;
 
-        [[nodiscard]] bool intersectsFully(SceneNode::const_reference_type node_) const noexcept;
+        [[nodiscard]] _Success_(return == true) bool intersects(_In_ cref<SceneNodeCreateData> data_) const noexcept;
 
-        [[nodiscard]] bool intersectedFully(SceneNode::const_reference_type node_) const noexcept;
+        [[nodiscard]] bool intersectsFully(cref<SceneNode> node_) const noexcept;
+
+        [[nodiscard]] _Success_(return == true) bool intersectsFully(
+            _In_ cref<SceneNodeCreateData> data_) const noexcept;
+
+        [[nodiscard]] bool intersectedFully(cref<SceneNode> node_) const noexcept;
     };
 }
