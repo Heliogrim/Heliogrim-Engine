@@ -47,6 +47,7 @@
     <ClCompile Include="..\..\src\Engine.Proxy\RigSceneProxy.cpp" />
     <ClCompile Include="..\..\src\Engine.Proxy\SceneProxiedRef.cpp" />
     <ClCompile Include="..\..\src\Engine.Proxy\SceneProxy.cpp" />
+    <ClCompile Include="..\..\src\Engine.Proxy\StaticModelSceneProxy.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

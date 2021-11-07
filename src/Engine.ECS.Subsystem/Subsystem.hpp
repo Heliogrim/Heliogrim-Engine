@@ -4,6 +4,8 @@
 #include <Engine.ECS/Registry.hpp>
 #include <Engine.Session/Session.hpp>
 
+#include "Staged/StagedComponentProcessor.hpp"
+
 namespace ember::engine::ecs {
 
     class Subsystem {
@@ -36,6 +38,9 @@ namespace ember::engine::ecs {
 
     public:
         [[nodiscard]] ptr<System> system() const noexcept;
+
+    private:
+        subsystem::StagedComponentProcessor _stagedProcessor;
     };
 
 }

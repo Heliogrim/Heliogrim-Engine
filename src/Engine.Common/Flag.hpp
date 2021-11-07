@@ -2,6 +2,7 @@
 
 #include <type_traits>
 #include "Types.hpp"
+#include "Wrapper.hpp"
 
 namespace ember {
 
@@ -18,7 +19,7 @@ namespace ember {
          * @author Julius
          * @date 20.12.2020
          */
-        Flag() noexcept = default;
+        constexpr Flag() noexcept = default;
 
         /**
          * Copy constructor
@@ -28,7 +29,7 @@ namespace ember {
          *
          * @param  other_ The other.
          */
-        Flag(const Flag& other_) noexcept = default;
+        constexpr Flag(const Flag& other_) noexcept = default;
 
         /**
          * Move constructor
@@ -173,6 +174,44 @@ namespace ember {
          */
         Flag& operator=(const Ty& other_) noexcept {
             unwrap = static_cast<value_type>(other_);
+            return *this;
+        }
+
+        /**
+         * Copy Assignment operator
+         *
+         * @author Julius
+         * @date 07.11.2021
+         *
+         * @param other_ The other flag.
+         *
+         * @returns A shallow copy of this.
+         */
+        ref<Flag> operator=(_In_ cref<Flag> other_) noexcept {
+
+            if (_STD addressof(other_) != this) {
+                unwrap = other_.unwrap;
+            }
+
+            return *this;
+        }
+
+        /**
+         * Move Assignment operator
+         *
+         * @author Julius
+         * @date 07.11.2021
+         *
+         * @param other_ The other flag.
+         *
+         * @returns A shallow copy of this.
+         */
+        ref<Flag> operator=(_In_ mref<Flag> other_) noexcept {
+
+            if (_STD addressof(other_) != this) {
+                unwrap = other_.unwrap;
+            }
+
             return *this;
         }
 

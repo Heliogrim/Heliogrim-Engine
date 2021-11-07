@@ -1,6 +1,13 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
 
+namespace ember::engine::ecs::subsystem {
+    /**
+     * Forward Declaration
+     */
+    struct SceneComponent;
+}
+
 namespace ember::engine::proxy {
 
     /**
@@ -12,11 +19,6 @@ namespace ember::engine::proxy {
      * Forward Declaration
      */
     struct IModelState;
-
-    /**
-     * Forward Declaration
-     */
-    struct SceneComponent;
 
     struct StatedSceneProxy {
         ptr<const SceneProxy> proxy;
@@ -35,6 +37,6 @@ namespace ember::engine::proxy {
          *
          * @returns A pair&lt;bool,ptr&lt;const IModelState&gt;&gt;
          */
-        _STD pair<bool, ptr<const IModelState>> transit(ptr<const SceneComponent> obj_) const;
+        _STD pair<bool, ptr<const IModelState>> transit(ptr<const ecs::subsystem::SceneComponent> obj_) const;
     };
 }
