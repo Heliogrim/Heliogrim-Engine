@@ -56,5 +56,8 @@
     <ClCompile Include="..\..\src\Engine.Proxy\ProxiedScenePayload.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Proxy\StaticModelSceneProxy.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

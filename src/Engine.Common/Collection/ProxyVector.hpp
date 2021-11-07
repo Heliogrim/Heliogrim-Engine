@@ -168,7 +168,6 @@ namespace ember {
         }
 
     public:
-
         /**
          * Creates a instance of ProxyVector<..> with provided proxy_
          *  and pushed vardiac parameters as elements

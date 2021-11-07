@@ -21,6 +21,7 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberLaunchPad.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberPool.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Scheduler.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scheduler\Stage\ScheduleStage.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Task\SharedQueue.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Task\SignaledQueue.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Task\Task.hpp" />
