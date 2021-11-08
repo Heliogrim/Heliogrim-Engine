@@ -4,6 +4,7 @@
 #include "Buffer/Buffer.hpp"
 
 namespace ember::engine::gfx {
+
     class ModelBatch {
     public:
     private:
