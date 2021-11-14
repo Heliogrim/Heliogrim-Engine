@@ -3,49 +3,115 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Scheduler/Stage/ScheduleStage.hpp>
 
-#include "Engine.Common/Collection/List.hpp"
-
 namespace ember::engine::ecs::subsystem {
 
     class StagedComponentSubmit {
     public:
         constexpr StagedComponentSubmit() noexcept;
 
-        constexpr StagedComponentSubmit(
-            _Inout_ mref<vector<ptr<void>>> data_,
-            _In_ scheduler::ScheduleStage srcStage_,
-            _In_ scheduler::ScheduleStage dstStage_
-        ) noexcept;
+        constexpr StagedComponentSubmit(_In_ u32 pageIdx_, _In_ non_owning_rptr<void> data_) noexcept;
 
-        constexpr StagedComponentSubmit(_Inout_ mref<StagedComponentSubmit> other_) noexcept;
+        StagedComponentSubmit(_In_ mref<StagedComponentSubmit> other_) noexcept;
 
-        StagedComponentSubmit(cref<StagedComponentSubmit>) = delete;
+        StagedComponentSubmit(_In_ cref<StagedComponentSubmit> other_) noexcept;
 
         ~StagedComponentSubmit() noexcept;
 
     public:
-        ref<StagedComponentSubmit> operator=(_Inout_ mref<StagedComponentSubmit> other_) noexcept;
+        ref<StagedComponentSubmit> operator=(_In_ mref<StagedComponentSubmit> other_) noexcept;
 
-        ref<StagedComponentSubmit> operator=(cref<StagedComponentSubmit>) = delete;
-
-    private:
-        scheduler::ScheduleStage _srcStage;
-
-    public:
-        [[nodiscard]] scheduler::ScheduleStage srcStage() const noexcept;
+        ref<StagedComponentSubmit> operator=(_In_ cref<StagedComponentSubmit> other_) noexcept;
 
     private:
-        scheduler::ScheduleStage _dstStage;
+        u32 _pageIdx;
+        non_owning_rptr<void> _data;
 
     public:
-        [[nodiscard]] scheduler::ScheduleStage dstStage() const noexcept;
+        [[nodiscard]] u32 pageIdx() const noexcept;
 
-    private:
-        vector<ptr<void>> _data;
+        [[nodiscard]] const non_owning_rptr<void> data() const noexcept;
 
     public:
-        [[nodiscard]] u64 count() const noexcept;
+        constexpr bool operator<(cref<StagedComponentSubmit> other_) const noexcept {
 
-        [[nodiscard]] cref<vector<ptr<void>>> data() const noexcept;
+            if (_pageIdx < other_._pageIdx) {
+                return true;
+            }
+
+            if (_pageIdx > other_._pageIdx) {
+                return false;
+            }
+
+            return _data < other_._data;
+        }
+
+        constexpr bool operator>(cref<StagedComponentSubmit> other_) const noexcept {
+
+            if (_pageIdx > other_._pageIdx) {
+                return true;
+            }
+
+            if (_pageIdx < other_._pageIdx) {
+                return false;
+            }
+
+            return _data > other_._data;
+        }
+
+        constexpr bool operator==(cref<StagedComponentSubmit> other_) const noexcept {
+            return _pageIdx == other_._pageIdx && _data == other_._data;
+        }
+
+        constexpr bool operator!=(cref<StagedComponentSubmit> other_) const noexcept {
+            return _pageIdx != other_._pageIdx || _data != other_._data;
+        }
+
+        constexpr bool operator<=(cref<StagedComponentSubmit> other_) const noexcept {
+
+            if (_pageIdx < other_._pageIdx) {
+                return true;
+            }
+
+            if (_pageIdx > other_._pageIdx) {
+                return false;
+            }
+
+            return _data <= other_._data;
+        }
+
+        constexpr bool operator>=(cref<StagedComponentSubmit> other_) const noexcept {
+
+            if (_pageIdx > other_._pageIdx) {
+                return true;
+            }
+
+            if (_pageIdx < other_._pageIdx) {
+                return false;
+            }
+
+            return _data >= other_._data;
+        }
     };
+}
+
+namespace std {
+
+    template <>
+    struct less<ember::engine::ecs::subsystem::StagedComponentSubmit> {
+        [[nodiscard]] FORCE_INLINE bool operator()(
+            ember::cref<ember::engine::ecs::subsystem::StagedComponentSubmit> left_,
+            ember::cref<ember::engine::ecs::subsystem::StagedComponentSubmit> right_) const noexcept {
+
+            if (left_.pageIdx() < right_.pageIdx()) {
+                return true;
+            }
+
+            if (left_.pageIdx() > right_.pageIdx()) {
+                return false;
+            }
+
+            return left_.data() < right_.data();
+        }
+    };
+
 }

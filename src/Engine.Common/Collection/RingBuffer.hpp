@@ -1,13 +1,12 @@
 #pragma once
 
-#include <atomic>
-#include "../../Types.hpp"
-#include "../../Collection/List.hpp"
+#include "../Types.hpp"
+#include "../Collection/List.hpp"
 
-namespace ember::engine::concurrent {
+namespace ember {
 
     /**
-     * A Single-Producer, Single-Consumer - Ring Buffer
+     * Ring Buffer
      *
      * @author Julius
      * @date 15.11.2020
@@ -16,7 +15,7 @@ namespace ember::engine::concurrent {
      * @tparam Allocator Type of the allocator.
      * @tparam ContainerType Type of the container type.
      */
-    template <class Ty, class Allocator = _STD allocator<Ty>, class ContainerType = ember::vector<Ty, Allocator>>
+    template <class Ty, class Allocator = std::allocator<Ty>, class ContainerType = ember::vector<Ty, Allocator>>
     class RingBuffer {
     public:
         using size_type = u32;
@@ -53,12 +52,12 @@ namespace ember::engine::concurrent {
          * @returns True if it succeeds, false if it fails.
          */
         bool try_push(Ty&& value_) {
-            const size_type h = _head.load(_STD memory_order::acquire);
+            const size_type h { _head };
             const size_type n = inc(h);
 
-            if (n != _tail.load(_STD memory_order_consume)) {
+            if (n != _tail) {
                 _container[n] = value_;
-                _head.store(n, std::memory_order::release);
+                _head = n;
                 return true;
             }
 
@@ -76,8 +75,8 @@ namespace ember::engine::concurrent {
          * @returns True if it succeeds, false if it fails.
          */
         bool try_pop(Ty& value_) {
-            const size_type t = _tail.load(_STD memory_order_consume);
-            const size_type h = _head.load(_STD memory_order_consume);
+            const size_type t { _tail };
+            const size_type h { _head };
             const size_type n = inc(t);
 
             /**
@@ -89,7 +88,7 @@ namespace ember::engine::concurrent {
              */
             if (h > t || (h < t && (h >= n || n > t))) {
                 value_ = _STD move(_container[n]);
-                _tail.store(n, _STD memory_order::release);
+                _tail = n;
                 return true;
             }
 
@@ -105,7 +104,7 @@ namespace ember::engine::concurrent {
          * @returns True if it succeeds, false if it fails.
          */
         [[nodiscard]] bool empty() const {
-            const size_t h = _head.load(_STD memory_order::consume), t = _tail.load(_STD memory_order::consume);
+            const size_t h { _head }, t { _tail };
             return (h - t) == 0;
         }
 
@@ -118,7 +117,7 @@ namespace ember::engine::concurrent {
          * @returns True if it succeeds, false if it fails.
          */
         [[nodiscard]] bool full() const {
-            const size_type h = _head.load(_STD memory_order::consume), t = _tail.load(_STD memory_order::consume);
+            const size_t h { _head }, t { _tail };
             return (h - t) != 0 && (h + t) % (reserved() - 1) == 0;
         }
 
@@ -149,8 +148,8 @@ namespace ember::engine::concurrent {
     private:
         container_type _container;
 
-        ALIGNED(_STD atomic<size_type>, CACHE_LINE_SIZE) _head;
-        ALIGNED(_STD atomic<size_type>, CACHE_LINE_SIZE) _tail;
+        size_type _head;
+        size_type _tail;
 
         /**
          * Increments the given value

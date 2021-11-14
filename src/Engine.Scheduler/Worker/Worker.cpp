@@ -7,12 +7,13 @@
 
 using namespace ember::engine::scheduler::worker;
 using namespace ember::engine::scheduler::thread;
+using namespace ember::engine::scheduler;
 using namespace ember;
 
-Worker::Worker(ptr<task::SharedQueue> queue_, ptr<fiber::FiberPool> fiberPool_, task::TaskMask mask_) noexcept :
+Worker::Worker(ptr<SchedulePipeline> pipeline_, ptr<fiber::FiberPool> fiberPool_, task::TaskMask mask_) noexcept :
     _fiber(nullptr),
     _fiberPool(fiberPool_),
-    _queue(queue_),
+    _pipeline(pipeline_),
     _thread(),
     _mask(mask_) {}
 
@@ -54,8 +55,8 @@ bool Worker::destroy() {
     return _thread.destroy();
 }
 
-ptr<engine::scheduler::task::SharedQueue> Worker::queue() const noexcept {
-    return _queue;
+ptr<SchedulePipeline> Worker::pipeline() const noexcept {
+    return _pipeline;
 }
 
 engine::scheduler::task::TaskMask Worker::mask() const {
@@ -93,7 +94,7 @@ void Worker::handle(void* args_) {
      */
     fiber::FiberPool& pool { *worker->_fiberPool };
     fiber::FiberLaunchPad launcher;
-    task::__TaskDelegate task;
+    task::__TaskDelegate task = nullptr;
 
     /**
      * Prepare worker sync variables
@@ -105,7 +106,8 @@ void Worker::handle(void* args_) {
         /**
          * Acquire next task or nullptr
          */
-        worker->queue()->pop(worker->mask(), task);
+        task = nullptr;
+        worker->pipeline()->pop(worker->mask(), task);
 
         /**
          * Process Task
@@ -143,7 +145,7 @@ void Worker::handle(void* args_) {
                 /**
                  * Reschedule suspended task
                  */
-                worker->queue()->push(_STD move(task));
+                worker->pipeline()->push(_STD move(task));
 
             } else {
 

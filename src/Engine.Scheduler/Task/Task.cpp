@@ -4,10 +4,17 @@
 
 using namespace ember::engine::scheduler::task;
 
-TaskDelegate::TaskDelegate(const TaskType type_, const TaskMask mask_) noexcept :
+TaskDelegate::TaskDelegate(
+    const TaskType type_,
+    const TaskMask mask_,
+    const ScheduleStageBarrier srcStage_,
+    const ScheduleStageBarrier dstStage_
+) noexcept :
     _type(type_),
     _mask(mask_),
-    _fiber(nullptr) {}
+    _fiber(nullptr),
+    _srcStage(srcStage_),
+    _dstStage(dstStage_) {}
 
 void TaskDelegate::delegate() const {
     switch (_type) {
@@ -88,8 +95,21 @@ ember::ref<ember::ptr<ember::engine::scheduler::fiber::Fiber>> TaskDelegate::fib
     return _fiber;
 }
 
-Task::Task(Task::function_type&& fnc_, const TaskMask mask_) noexcept :
-    TaskDelegate(TaskType::eTask, mask_),
+ember::engine::scheduler::ScheduleStageBarrier TaskDelegate::srcStage() const noexcept {
+    return _srcStage;
+}
+
+ember::engine::scheduler::ScheduleStageBarrier TaskDelegate::dstStage() const noexcept {
+    return _dstStage;
+}
+
+Task::Task(
+    Task::function_type&& fnc_,
+    const TaskMask mask_,
+    const ScheduleStageBarrier srcStage_,
+    const ScheduleStageBarrier dstStage_
+) noexcept :
+    TaskDelegate(TaskType::eTask, mask_, srcStage_, dstStage_),
     _fnc(_STD move(fnc_)) {}
 
 Task::~Task() noexcept = default;
@@ -98,12 +118,24 @@ void Task::invoke() const {
     (_fnc)();
 }
 
-__TaskDelegate ember::engine::scheduler::task::make_task(Task::function_type&& fnc_, const TaskMask mask_) {
-    return static_cast<__TaskDelegate>(new Task(_STD forward<Task::function_type>(fnc_), mask_));
+__TaskDelegate ember::engine::scheduler::task::make_task(
+    Task::function_type&& fnc_,
+    const TaskMask mask_,
+    const ScheduleStageBarrier srcStage_,
+    const ScheduleStageBarrier dstStage_
+) {
+    return static_cast<__TaskDelegate>(
+        new Task(_STD forward<Task::function_type>(fnc_), mask_, srcStage_, dstStage_)
+    );
 }
 
-RepetitiveTask::RepetitiveTask(RepetitiveTask::function_type&& fnc_, const TaskMask mask_) noexcept :
-    TaskDelegate(TaskType::eRepetitive, mask_),
+RepetitiveTask::RepetitiveTask(
+    RepetitiveTask::function_type&& fnc_,
+    const TaskMask mask_,
+    const ScheduleStageBarrier srcStage_,
+    const ScheduleStageBarrier dstStage_
+) noexcept :
+    TaskDelegate(TaskType::eRepetitive, mask_, srcStage_, dstStage_),
     _fnc(_STD move(fnc_)) {}
 
 RepetitiveTask::~RepetitiveTask() noexcept = default;
@@ -112,13 +144,24 @@ bool RepetitiveTask::invoke() const {
     return (_fnc)();
 }
 
-__TaskDelegate ember::engine::scheduler::task::make_repetitive_task(RepetitiveTask::function_type&& fnc_,
-    const TaskMask mask_) {
-    return static_cast<__TaskDelegate>(new RepetitiveTask(_STD forward<RepetitiveTask::function_type>(fnc_), mask_));
+__TaskDelegate ember::engine::scheduler::task::make_repetitive_task(
+    RepetitiveTask::function_type&& fnc_,
+    const TaskMask mask_,
+    const ScheduleStageBarrier srcStage_,
+    const ScheduleStageBarrier dstStage_
+) {
+    return static_cast<__TaskDelegate>(
+        new RepetitiveTask(_STD forward<RepetitiveTask::function_type>(fnc_), mask_, srcStage_, dstStage_)
+    );
 }
 
-BatchTask::BatchTask(BatchTask::function_type&& fnc_, const TaskMask mask_) noexcept :
-    TaskDelegate(TaskType::eBatch, mask_),
+BatchTask::BatchTask(
+    BatchTask::function_type&& fnc_,
+    const TaskMask mask_,
+    const ScheduleStageBarrier srcStage_,
+    const ScheduleStageBarrier dstStage_
+) noexcept :
+    TaskDelegate(TaskType::eBatch, mask_, srcStage_, dstStage_),
     _fnc(_STD move(fnc_)) {}
 
 BatchTask::~BatchTask() noexcept = default;
@@ -128,7 +171,13 @@ void BatchTask::invoke() const {
     _fnc(0);
 }
 
-__TaskDelegate ember::engine::scheduler::task::make_batch_task(BatchTask::function_type&& fnc_,
-    const TaskMask mask_) {
-    return static_cast<__TaskDelegate>(new BatchTask(_STD forward<BatchTask::function_type>(fnc_), mask_));
+__TaskDelegate ember::engine::scheduler::task::make_batch_task(
+    BatchTask::function_type&& fnc_,
+    const TaskMask mask_,
+    const ScheduleStageBarrier srcStage_,
+    const ScheduleStageBarrier dstStage_
+) {
+    return static_cast<__TaskDelegate>(
+        new BatchTask(_STD forward<BatchTask::function_type>(fnc_), mask_, srcStage_, dstStage_)
+    );
 }

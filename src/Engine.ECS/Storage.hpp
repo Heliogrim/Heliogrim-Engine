@@ -1338,13 +1338,12 @@ namespace ember::engine::ecs {
             using key_type = entity_guid;
             using value_type = ComponentType;
 
-            using storage_page_type = typename _STD conditional<Const, const storage_page_type, storage_page_type>::type
-            ;
+            using storage_page_type = _STD conditional_t<Const, const storage_page_type, storage_page_type>;
             using storage_page_iterator_type = typename storage_page_type::hybrid_key_value_iterator;
 
             using page_collection_type = vector<storage_page_type>;
-            using page_iterator_type = typename _STD conditional<Const, typename page_collection_type::const_iterator,
-                typename page_collection_type::iterator>::type;
+            using page_iterator_type = _STD conditional_t<Const, typename page_collection_type::const_iterator,
+                typename page_collection_type::iterator>;
 
         public:
             using iterator_category = _STD forward_iterator_tag;
