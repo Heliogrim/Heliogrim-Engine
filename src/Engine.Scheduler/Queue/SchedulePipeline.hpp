@@ -35,7 +35,7 @@ namespace ember::engine::scheduler {
         ProcessingQueue _processing;
 
     private:
-        _STD atomic_uint_fast16_t _guarantees[sizeof(_distinctStages) / sizeof(ScheduleStage)];
+        _STD atomic_uint_fast16_t _guarantees[sizeof(_distinctStages) / sizeof(ScheduleStage) * 2];
         StagedQueue _staged[sizeof(_distinctStages) / sizeof(ScheduleStage)];
 
     private:
@@ -44,6 +44,11 @@ namespace ember::engine::scheduler {
         u8 _guaranteeIdx;
         u8 _stageIdx;
 
+    private:
+        void try_next();
+
+        void next();
+
     public:
         void push(_Inout_ mref<task::__TaskDelegate> task_);
 
@@ -51,8 +56,6 @@ namespace ember::engine::scheduler {
         void pop(_In_ const task::TaskMask mask_, _Out_ ref<task::__TaskDelegate> task_) noexcept;
 
     public:
-        void next();
-
         void decrementGuarantee(_In_ const ScheduleStage stage_) noexcept;
     };
 }

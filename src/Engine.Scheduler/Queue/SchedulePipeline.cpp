@@ -13,8 +13,14 @@ SchedulePipeline::SchedulePipeline() :
     _guarantees {},
     _staged { { &_pool }, { &_pool }, { &_pool }, { &_pool }, { &_pool }, { &_pool }, { &_pool } },
     _stepping(),
-    _guaranteeIdx(),
-    _stageIdx() {}
+    _guaranteeIdx(0),
+    _stageIdx() {
+
+    for (auto i = 0; i < (sizeof(_guarantees) / sizeof(_STD atomic_uint_fast16_t)); ++i) {
+        _guarantees[i].store(0, _STD memory_order_relaxed);
+    }
+
+}
 
 SchedulePipeline::~SchedulePipeline() = default;
 
@@ -31,9 +37,8 @@ void SchedulePipeline::push(mref<task::__TaskDelegate> task_) {
         return;
     }
 
-    // This operation is considered lock free, not wait free
-    // Could spin for some amount of cycles and yield thread
-    while (_stepping.test(_STD memory_order_consume)) {
+    // TODO
+    while (_stepping.test_and_set(_STD memory_order_acq_rel)) {
         ;// Spinning
     }
 
@@ -136,6 +141,8 @@ void SchedulePipeline::push(mref<task::__TaskDelegate> task_) {
         // * * x * ' * * p <> * => c + offset if ordered => will push x
         // * * x * ' * * p <> * => c + offset + offset if roundtrip => will push p
 
+        const auto roundtrip = srcStageIdx > dstStageIdx;
+
         /**
          * Check whether dstStageIdx should be in upper double guarantees
          */
@@ -146,7 +153,7 @@ void SchedulePipeline::push(mref<task::__TaskDelegate> task_) {
         /**
          * Check whether task carries dependencies with roundtrip
          */
-        if (dstStageIdx > _stageIdx && srcStageIdx < _stageIdx) {
+        if (_stageIdx > srcStageIdx || (roundtrip && _stageIdx <= srcStageIdx)) {
 
             /**
              * Push to next stage
@@ -181,21 +188,37 @@ void SchedulePipeline::push(mref<task::__TaskDelegate> task_) {
      * Push task to desired staged queue
      */
     _staged[srcStageIdx].push(_STD move(task_));
+
+    /**
+     *
+     */
+    _stepping.clear(_STD memory_order_release);
 }
 
 void SchedulePipeline::pop(const task::TaskMask mask_, ref<task::__TaskDelegate> task_) noexcept {
+
+    // TODO:
+    if (!_stepping.test_and_set(_STD memory_order_release)) {
+        try_next();
+        _stepping.clear(_STD memory_order_release);
+    }
+
+    /**
+     *
+     */
     _processing.pop(mask_, task_);
 }
 
-void SchedulePipeline::next() {
+void SchedulePipeline::try_next() {
 
-    /**
-     * Publish stepping
-     */
-    if (_stepping.test_and_set(_STD memory_order_acq_rel)) {
-        DEBUG_ASSERT(false, "Double invocation of next function at schedule pipeline.")
+    if (_guarantees[_guaranteeIdx].load(_STD memory_order_consume) > 0) {
         return;
     }
+
+    next();
+}
+
+void SchedulePipeline::next() {
 
     const auto lastStageIdx = _stageIdx;
     const auto lastGuaranteeIdx = _guaranteeIdx;
@@ -213,28 +236,26 @@ void SchedulePipeline::next() {
     /**
      * Forward indexes
      */
-    constexpr u8 stageEndIdx = sizeof(_distinctStages) / sizeof(ScheduleStage);
-    if (++_stageIdx > stageEndIdx) {
-        _stageIdx -= stageEndIdx;
+    constexpr u8 stageEnd = sizeof(_distinctStages) / sizeof(ScheduleStage);
+    if (++_stageIdx >= stageEnd) {
+        _stageIdx -= stageEnd;
     }
 
-    constexpr u8 guaranteeEndIdx = (sizeof(_distinctStages) / sizeof(ScheduleStage)) * 2;
-    if (++_guaranteeIdx > guaranteeEndIdx) {
-        _guaranteeIdx -= guaranteeEndIdx;
+    constexpr u8 guaranteeEnd = sizeof(_guarantees) / sizeof(_STD atomic_uint_fast16_t);
+    if (++_guaranteeIdx >= guaranteeEnd) {
+        _guaranteeIdx -= guaranteeEnd;
     }
 
-    /**
-     * Release stepping
-     */
-    _stepping.clear(_STD memory_order_release);
+    DEBUG_ASSERT(_guaranteeIdx < guaranteeEnd, "Failed to hold boundaries for guarantee index.")
 }
 
 void SchedulePipeline::decrementGuarantee(const ScheduleStage stage_) noexcept {
 
-    // This operation is considered lock free, not wait free
-    // Could spin for some amount of cycles and yield thread
-    while (_stepping.test(_STD memory_order_consume)) {
-        ;// Spinning
+    /**
+     *
+     */
+    if (stage_ == ScheduleStage::eAll || stage_ == ScheduleStage::eUndefined) {
+        return;
     }
 
     /**
@@ -273,6 +294,12 @@ void SchedulePipeline::decrementGuarantee(const ScheduleStage stage_) noexcept {
             [[unlikely]] default: {}
     }
 
+    // This operation is considered lock free, not wait free
+    // Could spin for some amount of cycles and yield thread
+    while (_stepping.test(_STD memory_order_consume)) {
+        ;// Spinning
+    }
+
     /**
      *
      */
@@ -303,9 +330,9 @@ void SchedulePipeline::decrementGuarantee(const ScheduleStage stage_) noexcept {
     /**
      * Check if dstStageIdx should be rebound
      */
-    constexpr u8 endIdx = sizeof(_distinctStages) / sizeof(ScheduleStage) * 2;
-    if (guaranteeIdx >= endIdx) {
-        guaranteeIdx -= endIdx;
+    constexpr u8 end = sizeof(_guarantees) / sizeof(_STD atomic_uint_fast16_t);
+    if (guaranteeIdx >= end) {
+        guaranteeIdx -= end;
     }
 
     /**
@@ -314,7 +341,14 @@ void SchedulePipeline::decrementGuarantee(const ScheduleStage stage_) noexcept {
      * Check whether this decrement will release barrier to step forward
      */
     if (_guarantees[guaranteeIdx].fetch_sub(1, _STD memory_order_release) == 1 && dstStageIdx == _stageIdx) {
-        next();
+
+        /**
+         *
+         */
+        if (!_stepping.test_and_set(_STD memory_order_release)) {
+            try_next();
+            _stepping.clear(_STD memory_order_release);
+        }
     }
 }
 

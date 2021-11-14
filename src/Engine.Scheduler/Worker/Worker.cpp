@@ -114,6 +114,9 @@ void Worker::handle(void* args_) {
          */
         if (task != nullptr) {
 
+            // Temporary
+            auto dst = task->dstStage();
+
             launcher.self = task->fiber();
 
             /**
@@ -123,6 +126,11 @@ void Worker::handle(void* args_) {
                 launcher.self = pool.acquire();
                 launcher.self->task = task;
                 const_cast<ptr<task::TaskDelegate>>(task)->fiber() = launcher.self;
+
+                // Temporary
+                if (dst.weak()) {
+                    worker->pipeline()->decrementGuarantee(static_cast<ScheduleStage>(dst.stage));
+                }
             }
 
             /**
@@ -159,6 +167,11 @@ void Worker::handle(void* args_) {
                  * Release execution context
                  */
                 pool.release(_STD move(launcher.self));
+
+                // Temporary
+                if (dst.strong()) {
+                    worker->pipeline()->decrementGuarantee(static_cast<ScheduleStage>(dst.stage));
+                }
             }
         }
 

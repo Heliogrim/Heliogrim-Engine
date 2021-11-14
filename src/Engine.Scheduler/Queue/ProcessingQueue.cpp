@@ -1,6 +1,6 @@
 #include "ProcessingQueue.hpp"
 
-#include <iostream>
+#include <Engine.Common/stdafx.h>
 
 using namespace ember::engine::scheduler;
 using namespace ember;
@@ -97,6 +97,7 @@ void ProcessingQueue::grow() {
      * Free old resources
      */
     free(pages);
+    DEBUG_SNMSG(false, "WARN", "Increased page count of processing queue.")
 }
 
 void ProcessingQueue::push(mref<task::__TaskDelegate> task_) {
