@@ -100,7 +100,7 @@ void StagedQueue::grow(const u8 lastUsage_) {
         auto* const buffers = _buffers.load(_STD memory_order_consume);
         buffers[used] = _pool->acquire();
 
-        --_bufferCount;
+        ++_bufferCount;
 
         /**
          * Release
@@ -126,12 +126,12 @@ void StagedQueue::push(mref<task::__TaskDelegate> task_) {
      */
     for (auto i = _bufferCount.load(_STD memory_order_consume); i > 0; --i) {
 
-        auto* const buffer = _buffers.load(_STD memory_order_consume)[i];
+        auto* const buffer = _buffers.load(_STD memory_order_consume)[i - 1];
 
         /**
          * Try to use current queue
          */
-        if (!buffer->full()) {
+        if (buffer->full()) {
             continue;
         }
 

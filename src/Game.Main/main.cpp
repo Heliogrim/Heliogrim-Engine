@@ -68,29 +68,33 @@ void ember_main_entry() {
      */
     auto task = engine::scheduler::task::make_repetitive_task([]() {
 
-        // static constexpr double delayFrac = 1. / 60.;
-        static constexpr double delayFrac = 1. / .2;
-        static constexpr u64 delay = delayFrac * 1000000000ui64;
+            // static constexpr double delayFrac = 1. / 60.;
+            static constexpr double delayFrac = 1. / .2;
+            static constexpr u64 delay = delayFrac * 1000000000ui64;
 
-        static u64 tmpTick = 0;
-        static _STD chrono::high_resolution_clock::time_point tmpNextTick {
-            _STD chrono::high_resolution_clock::now()
-        };
+            static u64 tmpTick = 0;
+            static _STD chrono::high_resolution_clock::time_point tmpNextTick {
+                _STD chrono::high_resolution_clock::now()
+            };
 
-        static ref<GlobalEventEmitter> emitter = engine::Session::get()->emitter();
+            static ref<GlobalEventEmitter> emitter = engine::Session::get()->emitter();
 
-        const auto now { _STD chrono::high_resolution_clock::now() };
-        if (now >= tmpNextTick) {
+            const auto now { _STD chrono::high_resolution_clock::now() };
+            if (now >= tmpNextTick) {
 
-            const TickEvent event { tmpTick };
-            emitter.emit(event);
+                const TickEvent event { tmpTick };
+                emitter.emit(event);
 
-            ++tmpTick;
-            tmpNextTick = now + _STD chrono::nanoseconds { delay };
-        }
+                ++tmpTick;
+                tmpNextTick = now + _STD chrono::nanoseconds { delay };
+            }
 
-        return true;
-    });
+            return true;
+        },
+        engine::scheduler::task::TaskMask::eNormal,
+        engine::scheduler::ScheduleStageBarriers::eBottomStrong,
+        engine::scheduler::ScheduleStageBarriers::eTopStrong
+    );
 
     /**
      * Schedule the tick event
@@ -101,15 +105,15 @@ void ember_main_entry() {
      *
      */
     // test();
-#ifndef _DEBUG
+    #ifndef _DEBUG
     constexpr u64 rows { 1ui64 << 11 };
     constexpr u64 cols { 1ui64 << 11 };
     constexpr u64 count { rows * cols };
-#else
+    #else
     constexpr u64 rows { 1ui64 << 8 };
     constexpr u64 cols { 1ui64 << 8 };
     constexpr u64 count { rows * cols };
-#endif
+    #endif
 
     /**
      * [ 5 - 5 ]    : 77MiB
