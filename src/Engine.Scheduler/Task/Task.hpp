@@ -7,6 +7,7 @@
 
 #include "TaskMask.hpp"
 #include "TaskType.hpp"
+#include "../Stage/ScheduleStage.hpp"
 
 namespace ember::engine::scheduler::fiber {
     struct Fiber;
@@ -32,6 +33,18 @@ namespace ember::engine::scheduler::task {
          */
         void delegate() const;
 
+    protected:
+        /**
+         * Type definition of the task
+         */
+
+        /** The type */
+        const TaskType _type;
+
+        /** The mask */
+        const TaskMask _mask;
+
+    public:
         /**
          * Gets the type
          *
@@ -53,13 +66,10 @@ namespace ember::engine::scheduler::task {
         [[nodiscard]] TaskMask mask() const noexcept;
 
     protected:
-        /** The type */
-        const TaskType _type;
+        /**
+         * Execution state of the task
+         */
 
-        /** The mask */
-        const TaskMask _mask;
-
-    protected:
         /** The fiber */
         ptr<fiber::Fiber> _fiber;
 
@@ -86,6 +96,37 @@ namespace ember::engine::scheduler::task {
 
     protected:
         /**
+         * Execution order and timing
+         */
+
+        /** The schedule stage barrier, describing the start point for this task */
+        const ScheduleStageBarrier _srcStage;
+        /** The schedule stage barrier, describing the latest completion for this task */
+        const ScheduleStageBarrier _dstStage;
+
+    public:
+        /**
+         * Get the source schedule stage
+         *
+         * @author Julius
+         * @date 11.11.2021
+         *
+         * @returns The schedule stage barrier, used as source.
+         */
+        [[nodiscard]] ScheduleStageBarrier srcStage() const noexcept;
+
+        /**
+         * Get the destination schedule stage
+         *
+         * @author Julius
+         * @date 11.11.2021
+         *
+         * @returns The schedule stage barrier, used as destination.
+         */
+        [[nodiscard]] ScheduleStageBarrier dstStage() const noexcept;
+
+    protected:
+        /**
          * Constructor
          *
          * @author Julius
@@ -93,8 +134,12 @@ namespace ember::engine::scheduler::task {
          *
          * @param  type_ The type.
          * @param  mask_ The mask.
+         * @param srcStage_ The schedule stage barrier, when to execute the task.
+         * @param dstStage_ The schedule stage barrier, when the task should be completed.
          */
-        TaskDelegate(const TaskType type_, const TaskMask mask_) noexcept;
+        TaskDelegate(const TaskType type_, const TaskMask mask_,
+            _In_ const ScheduleStageBarrier srcStage_,
+            _In_ const ScheduleStageBarrier dstStage_) noexcept;
 
         /**
          * Destructor
@@ -148,7 +193,9 @@ namespace ember::engine::scheduler::task {
          */
         function_type _fnc;
 
-        friend __TaskDelegate make_task(function_type&&, TaskMask);
+        friend __TaskDelegate make_task(function_type&&, TaskMask,
+            const ScheduleStageBarrier,
+            const ScheduleStageBarrier);
 
         /**
          * Constructor
@@ -158,8 +205,12 @@ namespace ember::engine::scheduler::task {
          *
          * @param [in] fnc_ The function.
          * @param 	   mask_ The mask.
+         * @param srcStage_ (Optional) The schedule stage barrier, when to execute the task.
+         * @param dstStage_ (Optional) The schedule stage barrier, when the task should be completed.
          */
-        Task(IN _STD function<void()>&& fnc_, TaskMask mask_) noexcept;
+        Task(IN _STD function<void()>&& fnc_, TaskMask mask_,
+            _In_ const ScheduleStageBarrier srcStage_,
+            _In_ const ScheduleStageBarrier dstStage_) noexcept;
     };
 
     /**
@@ -170,8 +221,12 @@ namespace ember::engine::scheduler::task {
      *
      * @param [in,out] fnc_ The function.
      * @param 		   mask_ (Optional) The mask.
+     * @param srcStage_ (Optional) The schedule stage barrier, when to execute the task.
+     * @param dstStage_ (Optional) The schedule stage barrier, when the task should be completed.
      */
-    __TaskDelegate make_task(Task::function_type&& fnc_, TaskMask mask_ = TaskMask::eNormal);
+    __TaskDelegate make_task(Task::function_type&& fnc_, TaskMask mask_ = TaskMask::eNormal,
+        _In_ const ScheduleStageBarrier srcStage_ = ScheduleStageBarriers::eAll,
+        _In_ const ScheduleStageBarrier dstStage_ = ScheduleStageBarriers::eUndefined);
 
     class RepetitiveTask :
         public TaskDelegate {
@@ -202,7 +257,9 @@ namespace ember::engine::scheduler::task {
          */
         function_type _fnc;
 
-        friend __TaskDelegate make_repetitive_task(function_type&&, TaskMask);
+        friend __TaskDelegate make_repetitive_task(function_type&&, TaskMask,
+            const ScheduleStageBarrier,
+            const ScheduleStageBarrier);
 
         /**
          * Constructor
@@ -212,8 +269,12 @@ namespace ember::engine::scheduler::task {
          *
          * @param [in,out] fnc_ The function.
          * @param 		   mask_ The mask.
+         * @param srcStage_ (Optional) The schedule stage barrier, when to execute the task.
+         * @param dstStage_ (Optional) The schedule stage barrier, when the task should be completed.
          */
-        RepetitiveTask(function_type&& fnc_, TaskMask mask_) noexcept;
+        RepetitiveTask(function_type&& fnc_, TaskMask mask_,
+            _In_ const ScheduleStageBarrier srcStage_,
+            _In_ const ScheduleStageBarrier dstStage_) noexcept;
     };
 
     /**
@@ -224,8 +285,12 @@ namespace ember::engine::scheduler::task {
      *
      * @param [in,out] fnc_ The function.
      * @param 		   mask_ (Optional) The mask.
+     * @param srcStage_ (Optional) The schedule stage barrier, when to execute the task.
+     * @param dstStage_ (Optional) The schedule stage barrier, when the task should be completed.
      */
-    __TaskDelegate make_repetitive_task(RepetitiveTask::function_type&& fnc_, TaskMask mask_ = TaskMask::eNormal);
+    __TaskDelegate make_repetitive_task(RepetitiveTask::function_type&& fnc_, TaskMask mask_ = TaskMask::eNormal,
+        _In_ const ScheduleStageBarrier srcStage_ = ScheduleStageBarriers::eAll,
+        _In_ const ScheduleStageBarrier dstStage_ = ScheduleStageBarriers::eUndefined);
 
     class BatchTask :
         public TaskDelegate {
@@ -254,7 +319,9 @@ namespace ember::engine::scheduler::task {
          */
         function_type _fnc;
 
-        friend __TaskDelegate make_batch_task(function_type&&, TaskMask);
+        friend __TaskDelegate make_batch_task(function_type&&, TaskMask,
+            const ScheduleStageBarrier,
+            const ScheduleStageBarrier);
 
         /**
          * Constructor
@@ -264,8 +331,12 @@ namespace ember::engine::scheduler::task {
          *
          * @param [in,out] fnc_ The function.
          * @param 		   mask_ The mask.
+         * @param srcStage_ (Optional) The schedule stage barrier, when to execute the task.
+         * @param dstStage_ (Optional) The schedule stage barrier, when the task should be completed.
          */
-        BatchTask(function_type&& fnc_, TaskMask mask_) noexcept;
+        BatchTask(function_type&& fnc_, TaskMask mask_,
+            _In_ const ScheduleStageBarrier srcStage_,
+            _In_ const ScheduleStageBarrier dstStage_) noexcept;
     };
 
     /**
@@ -276,6 +347,10 @@ namespace ember::engine::scheduler::task {
      *
      * @param [in,out] fnc_ The function.
      * @param 		   mask_ (Optional) The mask.
+     * @param srcStage_ (Optional) The schedule stage barrier, when to execute the task.
+     * @param dstStage_ (Optional) The schedule stage barrier, when the task should be completed.
      */
-    __TaskDelegate make_batch_task(BatchTask::function_type&& fnc_, TaskMask mask_ = TaskMask::eNormal);
+    __TaskDelegate make_batch_task(BatchTask::function_type&& fnc_, TaskMask mask_ = TaskMask::eNormal,
+        _In_ const ScheduleStageBarrier srcStage_ = ScheduleStageBarriers::eAll,
+        _In_ const ScheduleStageBarrier dstStage_ = ScheduleStageBarriers::eUndefined);
 }

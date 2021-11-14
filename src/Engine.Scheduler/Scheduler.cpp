@@ -1,6 +1,7 @@
 #include "Scheduler.hpp"
 
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/stdafx.h>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
@@ -12,7 +13,7 @@ using namespace ember;
 ptr<Scheduler> Scheduler::_instance = nullptr;
 
 Scheduler::Scheduler() noexcept :
-    _sharedTasks(),
+    _pipeline(),
     _workerCount(0),
     _workers(nullptr),
     _fiberPool(0) {}
@@ -47,13 +48,51 @@ void Scheduler::destroy() noexcept {
     _instance = nullptr;
 }
 
+#ifdef _DEBUG
+void validate_task_ordering(task::__TaskDelegate task_) {
+    const auto src { task_->srcStage() };
+    const auto dst { task_->dstStage() };
+
+    DEBUG_ASSERT(src.stage != ScheduleStage::eUndefined,
+        "`ScheduleStage::eUndefined` is not allowed as src stage for task.")
+    DEBUG_ASSERT(dst.stage != ScheduleStage::eAll,
+        "`ScheduleStage::eAll` is not allowed as dst stage for task.")
+
+    /**
+     * Warning: Using io masked tasks with strong barrier guarantee can cause unexpected holding time for scheduler.
+     * Warning: If io task blocks while having strong guarantee, the barrier release is enforced to wait for io task to complete.
+     * Warning: IO tasks are most common not guaranteed to return immediatly, causing unpredictable latency for other tasks.
+     */
+    if (src.strong() && task_->mask() == task::TaskMask::eIO) {
+        DEBUG_SNMSG(false, "WARN",
+            "Scheduled task with strong barrier guarantee and `TaskMask::eIO`. Could block scheduler for unexpected time...")
+    }
+
+    /**
+     * Warning: Using low(est) priority tasks with strong barrier guarantee will enforce scheduler to cycle at current stage barrier even if it's the last task
+     * Warning: It might be common, that low(est) priority tasks will be at the bottom of execution queue for current barrier.
+     * Warning: This might enforce serialized execution order, breaking parallel execution performance.
+     */
+    if (src.strong() && task_->mask() == task::TaskMask::eLower) {
+        DEBUG_SNMSG(false, "WARN",
+            "Scheduled task with strong barrier guarantee and `TaskMask::eLower`. Low(est) priority tasks should most likly be scheduled with weak guarantee...")
+    }
+}
+#endif
+
 void Scheduler::delay(task::__TaskDelegate task_, const u32 ticks_) {
     // TODO:
+    #ifdef _DEBUG
+    validate_task_ordering(task_);
+    #endif
 }
 
 void Scheduler::exec(task::__TaskDelegate task_) {
     // TODO:
-    _sharedTasks.push(_STD forward<task::__TaskDelegate>(task_));
+    #ifdef _DEBUG
+    validate_task_ordering(task_);
+    #endif
+    _pipeline.push(_STD forward<task::__TaskDelegate>(task_));
 }
 
 size_t Scheduler::getWorkerCount() const {
@@ -104,12 +143,12 @@ void Scheduler::setup(u32 workers_) {
         workers_ = MAX(thread::getNativeThreadCount() - 1, 1);
     }
 
-    workers_ = 8;
+    workers_ = 4;
 
     /**
      * Prepare shared task collection
      */
-    _sharedTasks.setup(workers_);
+    //_sharedTasks.setup(workers_);
     _workers = static_cast<aligned_worker*>(malloc(sizeof(aligned_worker) * workers_));
 
     /**
@@ -136,7 +175,7 @@ void Scheduler::setup(u32 workers_) {
      */
     u32 offset { 0 };
     for (u32 i = 0; i < critCount; ++i) {
-        ::new(&_workers[offset + i]) aligned_worker(&_sharedTasks, &_fiberPool, task::TaskMask::eCritical);
+        ::new(&_workers[offset + i]) aligned_worker(&_pipeline, &_fiberPool, task::TaskMask::eCritical);
     }
 
     /**
@@ -144,7 +183,7 @@ void Scheduler::setup(u32 workers_) {
      */
     offset += critCount;
     for (u32 i = 0; i < ioCount; ++i) {
-        ::new(&_workers[offset + i]) aligned_worker(&_sharedTasks, &_fiberPool, task::TaskMask::eIO);
+        ::new(&_workers[offset + i]) aligned_worker(&_pipeline, &_fiberPool, task::TaskMask::eIO);
     }
 
     /**
@@ -152,7 +191,7 @@ void Scheduler::setup(u32 workers_) {
      */
     offset += ioCount;
     for (u32 i = 0; i < allCount; ++i) {
-        ::new(&_workers[offset + i]) aligned_worker(&_sharedTasks, &_fiberPool, task::TaskMask::eAll);
+        ::new(&_workers[offset + i]) aligned_worker(&_pipeline, &_fiberPool, task::TaskMask::eAll);
     }
 
     /**
@@ -178,96 +217,3 @@ void Scheduler::wait() const {
         #endif
     }
 }
-
-#if 0
-
-Scheduler::Scheduler() :
-	_shared(),
-	_threads(std::vector<types::Thread::__Thread>(0)) {
-	_instance = this;
-}
-
-Scheduler::~Scheduler() {
-	if (Scheduler::_instance == this) {
-		Scheduler::_instance = nullptr;
-	}
-
-	for (const types::Thread::__Thread& entry : _threads)
-		entry->interrupt();
-	for (size_t i = 0; i < _threads.size(); i++)
-		addTask([]() {});
-	for (types::Thread::__Thread& entry : _threads)
-		entry.reset();
-}
-
-void Scheduler::addTask(subroutine::Task&& task_) {
-	_shared.enqueue(_STD move(task_));
-}
-
-void Scheduler::addTask(const subroutine::Task& task_) {
-	_shared.enqueue(task_);
-}
-
-void Scheduler::addTask(const _STD function<void()>& fnc_) {
-	_shared.enqueue(subroutine::make_task(fnc_));
-}
-
-void Scheduler::addTask(const batch_fnc_t& fnc_, uint32_t parallels) { }
-
-void Scheduler::addCondTask(const std::function<bool()>& cnd_, const std::function<void()>& fnc_) {
-	_shared.enqueue(subroutine::make_task(fnc_, cnd_));
-}
-
-void Scheduler::addCondTask(const batch_cnd_t& cond_, const batch_fnc_t& fnc_, uint32_t parallels_) { }
-
-void Scheduler::addRepeatTask(const ::std::function<bool()>& cnd_, const ::std::function<void()>& fnc_) {
-	_shared.enqueue(subroutine::make_task(fnc_, cnd_, subroutine::TaskType::eRepetitive));
-}
-
-void Scheduler::addRepeatTask(const batch_cnd_t& cnd_, const batch_fnc_t& fnc_, uint32_t parallels_) { }
-
-size_t Scheduler::getWorkerCount() const {
-	return _threads.size();
-}
-
-void Scheduler::setup(const size_t workers_) {
-	/**
-	 * Scale up threads to a certain level
-	 */
-	scale(workers_);
-}
-
-void Scheduler::wait() const {
-	// TODO: make mutex lock for tasking
-}
-
-void Scheduler::scale(const size_t size_) {
-	if (size_ < 1 || size_ == _threads.size())
-		return;
-
-	if (size_ > _threads.size()) {
-		/**
-		 * Reserve and allocate memory to get stable object references
-		 */
-		_shared.reserve(size_);
-		_threads.reserve(size_);
-
-		for (size_t i = 0; i < size_; i++) {
-			/**
-			 * Create new thread for thread pool and reference internal worker queue from shared queue.
-			 */
-			_threads.push_back(
-				__internal::types::unique<types::Thread>(GetCurrentThreadId(), _shared.sharedFromPool())
-			);
-		}
-	}
-
-	if (size_ < _threads.size()) {
-#if FALSE
-		throw std::runtime_error("Can not shrink thread pool of tasking.");
-#endif
-		_Throw_system_error(_STD errc::operation_not_supported);
-	}
-}
-
-#endif

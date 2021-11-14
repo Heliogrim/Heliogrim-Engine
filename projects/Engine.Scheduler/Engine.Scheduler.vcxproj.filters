@@ -46,6 +46,12 @@
     <Filter Include="Headerdateien\Stage">
       <UniqueIdentifier>{85b444c2-d6b9-4583-a467-c4ec428c6d1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Queue">
+      <UniqueIdentifier>{031366d3-1220-4296-9fa0-9e374efbb374}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Queue">
+      <UniqueIdentifier>{b8b4c422-767f-4567-b29c-21af91629b18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Scheduler\Tick\Tick.hpp">
@@ -96,6 +102,24 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Stage\ScheduleStage.hpp">
       <Filter>Headerdateien\Stage</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\SchedulePipeline.hpp">
+      <Filter>Headerdateien\Queue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\SharedQueue.hpp">
+      <Filter>Headerdateien\Queue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\StagedQueue.hpp">
+      <Filter>Headerdateien\Queue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueue.hpp">
+      <Filter>Headerdateien\Queue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\SharedBufferPool.hpp">
+      <Filter>Headerdateien\Queue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueueGuard.hpp">
+      <Filter>Headerdateien\Queue</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scheduler\Thread\Thread.cpp">
@@ -124,6 +148,24 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\FiberPool.cpp">
       <Filter>Quelldateien\Fiber</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\SchedulePipeline.cpp">
+      <Filter>Quelldateien\Queue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\StagedQueue.cpp">
+      <Filter>Quelldateien\Queue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\SharedBufferPool.cpp">
+      <Filter>Quelldateien\Queue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\SharedQueue.cpp">
+      <Filter>Quelldateien\Queue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueue.cpp">
+      <Filter>Quelldateien\Queue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueueGuard.cpp">
+      <Filter>Quelldateien\Queue</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

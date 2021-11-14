@@ -20,6 +20,12 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\Fiber.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberLaunchPad.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberPool.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueue.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueueGuard.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\SchedulePipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\SharedQueue.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\SharedBufferPool.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\StagedQueue.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Scheduler.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Stage\ScheduleStage.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Task\SharedQueue.hpp" />
@@ -36,6 +42,12 @@
     <ClCompile Include="..\..\src\Engine.Scheduler\Async.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\Fiber.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\FiberPool.cpp" />
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueue.cpp" />
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueueGuard.cpp" />
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\SchedulePipeline.cpp" />
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\SharedQueue.cpp" />
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\SharedBufferPool.cpp" />
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\StagedQueue.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Scheduler.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Task\SharedQueue.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Task\SignaledQueue.cpp" />

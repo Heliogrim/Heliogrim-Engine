@@ -2,9 +2,9 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include "../Thread/Thread.hpp"
-#include "../Task/SharedQueue.hpp"
 #include "../Fiber/Fiber.hpp"
 #include "../Fiber/FiberPool.hpp"
+#include "../Queue/SchedulePipeline.hpp"
 
 namespace ember::engine::scheduler::worker {
 
@@ -16,11 +16,11 @@ namespace ember::engine::scheduler::worker {
          * @author Julius
          * @date 14.11.2020
          *
-         * @param  queue_ The queue.
+         * @param  pipeline_ The pipeline to work with.
          * @param  fiberPool_ The fiber pool.
          * @param  mask_ The mask.
          */
-        Worker(_In_ ptr<task::SharedQueue> queue_, _In_ ptr<fiber::FiberPool> fiberPool_,
+        Worker(_In_ ptr<SchedulePipeline> pipeline_, _In_ ptr<fiber::FiberPool> fiberPool_,
             IN task::TaskMask mask_) noexcept;
 
         /**
@@ -116,14 +116,14 @@ namespace ember::engine::scheduler::worker {
         [[nodiscard]] bool destroy();
 
         /**
-         * Gets the queue
+         * Gets the pipeline
          *
          * @author Julius
          * @date 15.12.2020
          *
-         * @returns A ptr&lt;task::SharedQueue&gt;
+         * @returns A pointer to the used pipeline
          */
-        [[nodiscard]] ptr<task::SharedQueue> queue() const noexcept;
+        [[nodiscard]] ptr<SchedulePipeline> pipeline() const noexcept;
 
         /**
          * Gets the mask
@@ -179,7 +179,7 @@ namespace ember::engine::scheduler::worker {
         [[nodiscard]] ptr<fiber::FiberPool> fiberPool() const noexcept;
 
     private:
-        ptr<task::SharedQueue> _queue;
+        ptr<SchedulePipeline> _pipeline;
         thread::Thread _thread;
         task::TaskMask _mask;
 

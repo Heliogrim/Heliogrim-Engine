@@ -34,16 +34,25 @@ void Subsystem::schedule() {
 
     auto* shd = static_cast<const ptr<scheduler::Scheduler>>(_session->scheduler());
 
-    auto repetitive = scheduler::task::make_repetitive_task(
-        [_stagedProcessor = &_stagedProcessor, shd = shd]() {
+    #if FALSE
+    constexpr scheduler::ScheduleStageBarrier barriers[] {
+        scheduler::ScheduleStageBarriers::eTopStrong,
+        scheduler::ScheduleStageBarriers::eUserUpdateStrong,
+        scheduler::ScheduleStageBarriers::eNetworkFetchStrong,
+        scheduler::ScheduleStageBarriers::ePhysicsSimulateStrong,
+        scheduler::ScheduleStageBarriers::eNetworkPushStrong,
+        scheduler::ScheduleStageBarriers::eGraphicNodeCollectStrong,
+        scheduler::ScheduleStageBarriers::eBottomStrong
+    };
 
-            // TODO: Iterate through schedule stages
-
-            _stagedProcessor->schedule(shd, scheduler::ScheduleStage::eUndefined);
-            return true;
-        });
-
-    shd->exec(repetitive);
+    for (const auto& entry : barriers) {
+        shd->exec(scheduler::task::make_repetitive_task(
+            [_stagedProcessor = &_stagedProcessor, shd = shd, barrier = entry]() {
+                _stagedProcessor->schedule(shd, static_cast<scheduler::ScheduleStage>(barrier.stage));
+                return true;
+            }, scheduler::task::TaskMask::eNormal, entry, entry));
+    }
+    #endif
 }
 
 sptr<engine::Session> Subsystem::session() const noexcept {

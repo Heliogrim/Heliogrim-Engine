@@ -28,6 +28,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Set.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\List.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\ProxyVector.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\RingBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Collection\RingBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Future.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Promise.hpp" />

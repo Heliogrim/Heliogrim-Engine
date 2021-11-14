@@ -1,4 +1,5 @@
 #pragma once
+#include "Queue/SchedulePipeline.hpp"
 #include "Task/SignaledQueue.hpp"
 #include "Task/Task.hpp"
 #include "Worker/Worker.hpp"
@@ -128,8 +129,7 @@ namespace ember::engine::scheduler {
         void wait() const;
 
     private:
-        /** The shared tasks */
-        task::SharedQueue _sharedTasks;
+        SchedulePipeline _pipeline;
 
         u32 _workerCount;
         aligned_worker* _workers;
