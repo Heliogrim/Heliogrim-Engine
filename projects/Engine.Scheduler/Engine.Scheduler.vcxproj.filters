@@ -120,6 +120,9 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueueGuard.hpp">
       <Filter>Headerdateien\Queue</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\AtomicCtrlBlockPage.hpp">
+      <Filter>Headerdateien\Queue</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scheduler\Thread\Thread.cpp">
