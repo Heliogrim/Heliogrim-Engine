@@ -20,6 +20,7 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\Fiber.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberLaunchPad.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberPool.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\AtomicCtrlBlockPage.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueue.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueueGuard.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Queue\SchedulePipeline.hpp" />
