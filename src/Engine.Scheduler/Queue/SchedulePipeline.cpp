@@ -24,6 +24,14 @@ SchedulePipeline::SchedulePipeline() :
 
 SchedulePipeline::~SchedulePipeline() = default;
 
+void SchedulePipeline::setup(const u64 workerCount_, const u64 maxSharedTasks_, const u64 maxTasks_) {
+
+    /**
+     * Setup processing queue
+     */
+    _processing.setup(workerCount_, maxSharedTasks_);
+}
+
 void SchedulePipeline::push(mref<task::__TaskDelegate> task_) {
 
     const auto srcStage = task_->srcStage();
@@ -32,10 +40,10 @@ void SchedulePipeline::push(mref<task::__TaskDelegate> task_) {
     /**
      * If task carries no dependencies, enqueue directly
      */
-    if (srcStage.stage == ScheduleStage::eAll && dstStage.stage == ScheduleStage::eUndefined) {
-        _processing.push(_STD move(task_));
-        return;
-    }
+    //if (srcStage.stage == ScheduleStage::eAll && dstStage.stage == ScheduleStage::eUndefined) {
+    _processing.push(_STD move(task_));
+    return;
+    //}
 
     // TODO
     while (_stepping.test_and_set(_STD memory_order_acq_rel)) {
@@ -340,16 +348,16 @@ void SchedulePipeline::decrementGuarantee(const ScheduleStage stage_) noexcept {
      *
      * Check whether this decrement will release barrier to step forward
      */
-    if (_guarantees[guaranteeIdx].fetch_sub(1, _STD memory_order_release) == 1 && dstStageIdx == _stageIdx) {
-
-        /**
-         *
-         */
-        if (!_stepping.test_and_set(_STD memory_order_release)) {
-            try_next();
-            _stepping.clear(_STD memory_order_release);
-        }
-    }
+    // if (_guarantees[guaranteeIdx].fetch_sub(1, _STD memory_order_release) == 1 && dstStageIdx == _stageIdx) {
+    // 
+    //     /**
+    //      *
+    //      */
+    //     if (!_stepping.test_and_set(_STD memory_order_release)) {
+    //         try_next();
+    //         _stepping.clear(_STD memory_order_release);
+    //     }
+    // }
 }
 
 #if FALSE

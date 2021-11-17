@@ -153,6 +153,17 @@ namespace ember::engine::scheduler::thread {
          */
         [[nodiscard]] thread_id getId() noexcept;
 
+        /**
+         * Get the process thread index
+         *  Warning: This is not guaranteed unique. It is just intended for speedup purpose using sparse start indexes for mapped access.
+         *
+         * @author Julius
+         * @date 17.11.2021
+         *
+         * @returns The index of this thread.
+         */
+        [[nodiscard]] u64 getIdx() noexcept;
+
     }
 
     /**

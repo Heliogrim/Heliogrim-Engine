@@ -18,6 +18,20 @@ namespace ember::engine::scheduler {
 
         ~SchedulePipeline();
 
+    public:
+        /**
+         * Setup schedule pipeline optimized for given parameters
+         *
+         * @author Julius
+         * @date 17.11.2021
+         *
+         * @param workerCount_ The amount of workers concurrent sharing this pipeline.
+         * @param maxSharedTasks_ The maximum amount of unconstrained shared tasks to execute. (Default: 496ui64 | 31 Tasks per Queue, 16 Queues per Page)
+         * @param maxTasks_ The maximum amount of tasks to handle in parallel. (Default 0ui64 | 0 ~ unlimited)
+         */
+        void setup(_In_ const u64 workerCount_, _In_ const u64 maxSharedTasks_ = 496ui64,
+            _In_ const u64 maxTasks_ = 0ui64);
+
     private:
         SharedBufferPool _pool;
 

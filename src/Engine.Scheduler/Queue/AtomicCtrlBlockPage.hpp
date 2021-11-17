@@ -7,17 +7,28 @@
 
 namespace ember::engine::scheduler {
 
-    constexpr uint64_t packed_shift = 16ui64;
-    constexpr uint64_t packed_ref_mask = 0x0000'0000'0000'FFFF;
-    constexpr uint64_t packed_ptr_mask = 0xFFFF'FFFF'FFFF'0000;
-
+    /**
+     * Enforce atomic resource with release function to erase specular `delete` problem
+     */
     template <typename PayloadType_>
+    concept IsAtomicPayload = requires(PayloadType_ obj_) {
+        { obj_.release() } -> std::same_as<void>;
+    } || requires(ptr<PayloadType_> ptr_) {
+        { PayloadType_::release(ptr_) } -> std::same_as<void>;
+    };
+
+    constexpr uint64_t packed_shift = 16ui64;
+    constexpr uint64_t packed_ref_mask = 0b00000000'00000000'00000000'00000000'00000000'00000000'11111111'11111111;
+    constexpr uint64_t packed_ptr_mask = 0b11111111'11111111'11111111'11111111'11111111'11111111'00000000'00000000;
+
+    template <IsAtomicPayload PayloadType_>
     class AtomicCtrlBlock;
 
-    template <typename PayloadType_>
+    template <IsAtomicPayload PayloadType_>
     class AtomicCtrlPtr {
     public:
         using value_type = ptr<PayloadType_>;
+        using this_type = AtomicCtrlPtr<PayloadType_>;
 
     public:
         /**
@@ -49,7 +60,7 @@ namespace ember::engine::scheduler {
          * @author Julius
          * @date 15.11.2021
          */
-        AtomicCtrlPtr(cref<AtomicCtrlPtr>) = delete;
+        AtomicCtrlPtr(cref<this_type>) = delete;
 
         /**
          * Move Constructor
@@ -59,9 +70,9 @@ namespace ember::engine::scheduler {
          *
          * @param other_ The other atomic ctrl ptr to move from.
          */
-        AtomicCtrlPtr(_Inout_ mref<AtomicCtrlPtr> other_) noexcept :
+        AtomicCtrlPtr(_Inout_ mref<this_type> other_) noexcept :
             _ctrlBlock(_STD exchange(other_._ctrlBlock, nullptr)),
-            _packed(_STD exchange(other_._packed, nullptr)) {}
+            _packed(_STD exchange(other_._packed, 0)) {}
 
         /**
          * Destructor
@@ -82,7 +93,7 @@ namespace ember::engine::scheduler {
          * @author Julius
          * @date 15.11.2021
          */
-        ref<AtomicCtrlPtr> operator=(cref<AtomicCtrlPtr>) = delete;
+        ref<AtomicCtrlPtr> operator=(cref<this_type>) = delete;
 
         /**
          * Move Assignment Operator
@@ -94,7 +105,7 @@ namespace ember::engine::scheduler {
          *
          * @returns A shallow copy of this
          */
-        ref<AtomicCtrlPtr> operator=(_Inout_ mref<AtomicCtrlPtr> other_) noexcept {
+        ref<AtomicCtrlPtr> operator=(_Inout_ mref<this_type> other_) noexcept {
             if (_STD addressof(other_) != this) {
                 _STD swap(_ctrlBlock, other_._ctrlBlock);
                 _STD swap(_packed, other_._packed);
@@ -102,6 +113,10 @@ namespace ember::engine::scheduler {
 
             return *this;
         }
+
+    private:
+        ptr<AtomicCtrlBlock<PayloadType_>> _ctrlBlock;
+        _STD uint64_t _packed;
 
     public:
         /**
@@ -125,7 +140,7 @@ namespace ember::engine::scheduler {
          * @returns The stored pointer or nullptr.
          */
         [[nodiscard]] value_type unwrap() const noexcept {
-            return reinterpret_cast<ptr<void>>(_packed >> packed_shift);
+            return reinterpret_cast<value_type>(_packed >> packed_shift);
         }
 
         /**
@@ -137,15 +152,20 @@ namespace ember::engine::scheduler {
          * @returns True is any state is present, otherwise false
          */
         [[nodiscard]] _Success_(return == true) bool empty() const noexcept {
-            return _ctrlBlock != nullptr;
+            return _ctrlBlock == nullptr;
         }
 
-    private:
-        ptr<AtomicCtrlBlock<PayloadType_>> _ctrlBlock;
-        _STD uint64_t _packed;
+    public:
+        [[nodiscard]] value_type operator*() const noexcept {
+            return unwrap();
+        }
+
+        [[nodiscard]] value_type operator->() const noexcept {
+            return unwrap();
+        }
     };
 
-    template <typename PayloadType_>
+    template <IsAtomicPayload PayloadType_>
     class AtomicCtrlBlock {
     public:
         using atomic_ctrl_ptr = AtomicCtrlPtr<PayloadType_>;
@@ -229,7 +249,7 @@ namespace ember::engine::scheduler {
             /**
              *
              */
-            if (reinterpret_cast<ptr<void>>(packed >> packed_shift) == nullptr) {
+            if ((packed >> packed_shift) == 0) {
                 return {};
             }
 
@@ -252,17 +272,46 @@ namespace ember::engine::scheduler {
             /**
              * Check if this was last reference
              */
-            if (packed & packed_ref_mask == 1) {
+            // if (packed & 0x1)
+            if ((packed & packed_ref_mask) == 1) {
                 /**
                  *
                  */
-                _packed.fetch_and(packed_ref_mask, _STD memory_order_release);
+                auto expect = _packed.fetch_and(packed_ref_mask, _STD memory_order_release);
 
                 /**
-                 *
+                 * Check whether another execution acquired reference in the mean time
                  */
-                auto* ctrlp = reinterpret_cast<value_type>(packed >> packed_shift);
-                delete ctrlp;
+                if ((expect & packed_ref_mask) != 0) {
+                    /**
+                     * Loop fallback strategy
+                     */
+                    const auto maskedPtr = packed & packed_ptr_mask;
+
+                    /**
+                     * Restore packed state and release responsibility from this execution to other acquirer if present
+                     *
+                     * Releasing responsibility for releasing underlying resource will prevent starvation problem, if other execution suspend with acquired resource
+                     */
+                    while (
+                        (expect & packed_ref_mask) != 0 &&
+                        !_packed.compare_exchange_weak(expect, (expect & packed_ref_mask) | maskedPtr,
+                            _STD memory_order_release, _STD memory_order_relaxed)
+                    ) { }
+
+                }
+
+                /**
+                 * Check whether this is last reference ( or fallback took place )
+                 */
+                // if (expect & packed_ref_mask)
+                if ((expect & packed_ref_mask) == 0) {
+                    /**
+                     *
+                     */
+                    auto* ctrlp = reinterpret_cast<value_type>(packed >> packed_shift);
+                    delete ctrlp;
+                }
             }
         }
 
@@ -281,7 +330,7 @@ namespace ember::engine::scheduler {
             DEBUG_ASSERT(original == (packed >> packed_shift), "Exceeded addressable memory of shifted memory address.")
 
             _packed.fetch_and(packed_ref_mask, _STD memory_order_release);
-            _packed.fetch_or(original, _STD memory_order_release);
+            _packed.fetch_or(packed, _STD memory_order_release);
         }
 
         /**
@@ -301,7 +350,7 @@ namespace ember::engine::scheduler {
         _STD atomic_uint64_t _packed;
     };
 
-    template <typename PayloadType_>
+    template <IsAtomicPayload PayloadType_>
     class AtomicCtrlBlockPage {
     public:
         using atomic_ctrl_block = AtomicCtrlBlock<PayloadType_>;
@@ -322,7 +371,7 @@ namespace ember::engine::scheduler {
             /**
              * Cleanup ctrl block indirection
              */
-            for (auto i = 0; i < sizeof(_blocks); ++i) {
+            for (auto i = 0; i < sizeof(_blocks) / sizeof(ptr<atomic_ctrl_block>); ++i) {
                 _blocks[i].store(0, _STD memory_order_relaxed);
             }
 
@@ -362,6 +411,7 @@ namespace ember::engine::scheduler {
 
             auto ctrlp = ctrlb->acq();
             return ctrlp;
+            return {};
         }
 
         /**

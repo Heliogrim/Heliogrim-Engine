@@ -15,6 +15,7 @@ using namespace ember;
 
 ProcessingQueue::ProcessingQueue(const ptr<SharedBufferPool> pool_) noexcept :
     _pool(pool_),
+    _sharedCtrlBlockPage(),
     _pages(nullptr),
     _pageCount(0),
     _resizing() {}
@@ -24,6 +25,13 @@ ProcessingQueue::~ProcessingQueue() {
 }
 
 void ProcessingQueue::tidy() {
+
+    /**
+     * Signal every ctrl block of shared task queue
+     */
+    for (auto i = 0; i < 16; ++i) {
+        _sharedCtrlBlockPage.retire(i);
+    }
 
     if (_pages.load(_STD memory_order_relaxed) != nullptr) {
         return;
@@ -40,6 +48,19 @@ void ProcessingQueue::tidy() {
 
     _pages.store(nullptr, _STD memory_order_relaxed);
     _pageCount.store(0, _STD memory_order_relaxed);
+}
+
+void ProcessingQueue::setup(const u64 workerCount_, const u64 maxSharedTasks_) {
+
+    const auto sharedPageCount = maxSharedTasks_ / (31ui64 * 16ui64);
+    DEBUG_ASSERT(sharedPageCount <= 1, "Currently unsuported amount of shared tasks.")
+
+    /**
+     * Setup shared task queues
+     */
+    for (auto i = 0; i < 16; ++i) {
+        _sharedCtrlBlockPage.store(i, _pool->acquire());
+    }
 }
 
 cref<ProcessingQueue::atomic_size_type> ProcessingQueue::pageCount() const noexcept {
@@ -102,6 +123,34 @@ void ProcessingQueue::grow() {
 
 void ProcessingQueue::push(mref<task::__TaskDelegate> task_) {
 
+    #define inc(var_, limit_) ((++var_) >= limit_ ? var_ -= limit_ : var_)
+    auto threadIdx = thread::self::getIdx();
+    while (threadIdx > 16ui64) {
+        threadIdx -= 16ui64;
+    }
+
+    /**
+     * Loop shared storage from current thread index to current thread index by rountrip
+     */
+    u64 i = threadIdx;
+    bool succeeded = false;
+    for (i = inc(i, 16ui64); !succeeded && i != threadIdx; i = inc(i, 16ui64)) {
+        /**
+         * Get managed queue
+         */
+        auto managed = _sharedCtrlBlockPage.get(i);
+
+        /**
+         *
+         */
+        if (!managed.empty()) {
+            succeeded = managed->try_push(_STD move(task_));
+        }
+    }
+
+    #undef inc
+
+    #if FALSE
     while (true) {
         /**
          * Loop over every available queue, but enforce valid index range
@@ -139,6 +188,8 @@ void ProcessingQueue::push(mref<task::__TaskDelegate> task_) {
          */
         grow();
     }
+    #endif
+
 }
 
 void ProcessingQueue::pushStaged(mref<ptr<aligned_buffer>> buffer_) {
@@ -341,4 +392,31 @@ void ProcessingQueue::pop(const task::TaskMask mask_, ref<task::__TaskDelegate> 
 
         }
     }
+
+    #define inc(var_, limit_) ((++var_) >= limit_ ? var_ -= limit_ : var_)
+    auto threadIdx = thread::self::getIdx();
+    while (threadIdx > 16ui64) {
+        threadIdx -= 16ui64;
+    }
+
+    /**
+     * Loopup shared task queues
+     */
+    u64 i = threadIdx;
+    bool succeeded = false;
+    for (i = inc(i, 16ui64); !succeeded && i != threadIdx; i = inc(i, 16ui64)) {
+        /**
+         * Get managed queue
+         */
+        auto managed = _sharedCtrlBlockPage.get(i);
+
+        /**
+         *
+         */
+        if (!managed.empty()) {
+            succeeded = managed->try_pop(task_);
+        }
+    }
+
+    #undef inc
 }

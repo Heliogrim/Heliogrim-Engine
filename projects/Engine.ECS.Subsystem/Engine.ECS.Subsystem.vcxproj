@@ -120,6 +120,9 @@
     <ProjectReference Include="..\Engine.Scene\Engine.Scene.vcxproj">
       <Project>{114192e3-04b1-4ae7-86f5-1d055f7526d4}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
+      <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Session\Engine.Session.vcxproj">
       <Project>{bba6c152-0160-4156-a5ac-cd3068df2311}</Project>
     </ProjectReference>
