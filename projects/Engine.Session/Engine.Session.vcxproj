@@ -28,6 +28,14 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Session\SessionModules.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
+      <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
+      <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

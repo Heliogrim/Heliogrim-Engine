@@ -51,7 +51,7 @@ ptr<SharedBufferPool::aligned_buffer> SharedBufferPool::acquire() {
      * Precheck for available reusage
      */
     if (_poolSize.load(_STD memory_order_consume) <= 0) {
-        return new aligned_buffer {};
+        return new aligned_buffer { this };
     }
 
     /**
@@ -169,7 +169,7 @@ bool SharedBufferPool::reserve(const size_type size_) {
      * Create requested elements
      */
     for (size_type ci = size_; ci > 0 && _poolSize.load(_STD memory_order_relaxed) < size_; --ci) {
-        release(_STD move(new aligned_buffer {}));
+        release(_STD move(new aligned_buffer { this }));
     }
 
     return true;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AtomicCtrlBlockPage.hpp"
 #include "ProcessingQueueGuard.hpp"
 #include "../Thread/Thread.hpp"
 #include "SharedBufferPool.hpp"
@@ -41,8 +42,23 @@ namespace ember::engine::scheduler {
     private:
         void tidy();
 
+    public:
+        /**
+         * Setup this processing queue optimized for given parameters
+         *
+         * @author Julius
+         * @date 17.11.2021
+         *
+         * @param workerCount_ The amount of workers concurrently accessing this.
+         * @param maxSharedTasks_ The maximum amount of unconstrained tasks to handle.
+         */
+        void setup(_In_ const u64 workerCount_, _In_ const u64 maxSharedTasks_ = 496ui64);
+
     private:
         ptr<SharedBufferPool> _pool;
+
+    private:
+        AtomicCtrlBlockPage<aligned_buffer> _sharedCtrlBlockPage;
 
     private:
         _STD atomic<ptr<slot_page_type>> _pages;
@@ -58,6 +74,14 @@ namespace ember::engine::scheduler {
         void grow();
 
     public:
+        /**
+         * Pushed a task without constrains to shared task queues
+         *
+         * @author Julius
+         * @date 17.11.2021
+         *
+         * @param task_ The task to handle.
+         */
         void push(_Inout_ mref<task::__TaskDelegate> task_);
 
         void pushStaged(_Inout_ mref<ptr<aligned_buffer>> buffer_);

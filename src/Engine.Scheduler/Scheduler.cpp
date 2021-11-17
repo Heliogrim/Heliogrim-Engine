@@ -146,10 +146,10 @@ void Scheduler::setup(u32 workers_) {
     workers_ = 4;
 
     /**
-     * Prepare shared task collection
+     * Prepare pipeline and workers
      */
-    //_sharedTasks.setup(workers_);
-    _workers = static_cast<aligned_worker*>(malloc(sizeof(aligned_worker) * workers_));
+    _pipeline.setup(workers_);
+    _workers = static_cast<aligned_worker*>(calloc(workers_, sizeof(aligned_worker)));
 
     /**
      * Construct every worker

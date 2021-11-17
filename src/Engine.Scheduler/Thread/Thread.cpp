@@ -20,6 +20,13 @@ FORCE_INLINE thread_id cast_ntid_tid(const std::thread::id& ntid_) {
 // Warning: This function is called multiple times each round trip. Should be readable as fast as possible.
 thread_local static thread_id __threadId { cast_ntid_tid(_STD this_thread::get_id()) };
 
+[[nodiscard]] uint64_t generate_thread_idx() {
+    static _STD atomic_uint64_t idx = { 0 };
+    return idx.fetch_add(1, _STD memory_order_relaxed);
+}
+
+thread_local static uint64_t __threadIdx {};
+
 FORCE_INLINE bool set_priority(HANDLE handle_, priority priority_) {
     #if defined(_WIN32) || defined(_WIN64)
     auto tr = 0;
@@ -111,6 +118,10 @@ void self::sleepFor(u64 milliseconds_) {
 
 thread_id self::getId() noexcept {
     return __threadId;
+}
+
+ember::u64 self::getIdx() noexcept {
+    return __threadIdx;
 }
 
 ember::u32 ember::engine::scheduler::thread::getNativeThreadCount() {

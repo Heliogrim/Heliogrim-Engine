@@ -7,7 +7,7 @@ namespace ember::engine::scheduler {
 
     class ProcessingQueueGuard {
     public:
-        using aligned_buffer = ALIGNED(concurrent::RingBuffer<task::__TaskDelegate>, CACHE_LINE_SIZE);
+        using aligned_buffer = SharedBufferPool::aligned_buffer;
 
     public:
         ProcessingQueueGuard() = delete;
