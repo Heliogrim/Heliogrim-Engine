@@ -16,8 +16,8 @@ using namespace ember;
 ProcessingQueue::ProcessingQueue(const ptr<SharedBufferPool> pool_) noexcept :
     _pool(pool_),
     _sharedCtrlBlockPage(),
-    _pages(nullptr),
-    _pageCount(0),
+    _currentPage(nullptr),
+    _pageCtrl {},
     _resizing() {}
 
 ProcessingQueue::~ProcessingQueue() {
@@ -33,21 +33,28 @@ void ProcessingQueue::tidy() {
         _sharedCtrlBlockPage.retire(i);
     }
 
-    if (_pages.load(_STD memory_order_relaxed) != nullptr) {
-        return;
+    /**
+     * Tidy dynamic pages
+     */
+    auto pagePtr = _pageCtrl[0].acq();
+    if (!pagePtr.empty()) {
+        pagePtr->tidy(true);
+
+        if (_currentPage.load(_STD memory_order_relaxed) != &_pageCtrl[0]) {
+            _pageCtrl[0].rel();
+        }
     }
 
-    auto* pages = _pages.load(_STD memory_order_relaxed);
-    auto count = _pageCount.load(_STD memory_order_relaxed);
+    pagePtr = _pageCtrl[1].acq();
+    if (!pagePtr.empty()) {
+        pagePtr->tidy(true);
 
-    for (size_type i = 0; i < count; ++i) {
-        delete[] pages[i];
+        if (_currentPage.load(_STD memory_order_relaxed) != &_pageCtrl[1]) {
+            _pageCtrl[1].rel();
+        }
     }
 
-    free(pages);
-
-    _pages.store(nullptr, _STD memory_order_relaxed);
-    _pageCount.store(0, _STD memory_order_relaxed);
+    pagePtr.reset();
 }
 
 void ProcessingQueue::setup(const u64 workerCount_, const u64 maxSharedTasks_) {
@@ -61,64 +68,76 @@ void ProcessingQueue::setup(const u64 workerCount_, const u64 maxSharedTasks_) {
     for (auto i = 0; i < 16; ++i) {
         _sharedCtrlBlockPage.store(i, _pool->acquire());
     }
-}
 
-cref<ProcessingQueue::atomic_size_type> ProcessingQueue::pageCount() const noexcept {
-    return _pageCount;
+    /**
+     * Prepare dynamic pages
+     */
+    constexpr u64 initialDynamicPages = 1;
+    auto newPages = new DynamicBufferPages(initialDynamicPages, &_resizing);
+
+    for (auto i = 0; i < initialDynamicPages; ++i) {
+        newPages->page(i) = new DynamicBufferPages::page_value_type {};
+    }
+
+    _pageCtrl[0].push(newPages);
+    _currentPage.store(&_pageCtrl[0], _STD memory_order_release);
 }
 
 void ProcessingQueue::grow() {
 
     /**
-     * Acquire
+     * Check if resize is in progress
      */
-    const auto threadId { thread::self::getId() };
-    thread::thread_id expect { 0 };
-    while (!_resizing.compare_exchange_weak(expect, threadId, _STD memory_order_release,
-        _STD memory_order_relaxed)) {
-        expect = 0;// Spinning
+    if (_resizing.test_and_set(_STD memory_order_release)) {
+        return;
     }
 
-    auto* const pages = _pages.load(_STD memory_order_consume);
-    const size_type count = _pageCount.load(_STD memory_order_consume);
-
-    auto newCount = count + 1;
-    auto* newPages { static_cast<ptr<slot_page_type>>(calloc(newCount, sizeof(slot_page_type))) };
+    auto* currentCtrl = _currentPage.load(_STD memory_order_relaxed);
+    /**
+     * Get current pages and bump reference count
+     *
+     * @see AtomicCtrlBlockPage::retire(...)
+     */
+    auto currentPages = currentCtrl->acq();
+    const auto currentPageCount = currentPages->size();
 
     /**
-     * Translocate old pages
+     * Make new dynamic pages
      */
-    for (size_type i = 0; i < count; ++i) {
-        newPages[i] = pages[i];
+    const auto nextPageCount = currentPageCount + 1;
+    auto newPages = new DynamicBufferPages(nextPageCount, &_resizing);
+
+    /**
+     * Copy current state
+     */
+    for (u64 i = 0; i < currentPageCount; ++i) {
+        newPages->page(i) = currentPages->page(i);
     }
 
     /**
-     * Create new page
+     * Fill empty new state
      */
-    auto* page { static_cast<slot_page_type>(calloc(page_size, sizeof(slot_type))) };
-    for (size_type i = 0; i < page_size; ++i) {
-        new(&page[i]) slot_type { _pool };
-
+    for (auto i = currentPageCount; i < nextPageCount; ++i) {
+        newPages->page(i) = new DynamicBufferPages::page_value_type {};
     }
 
-    newPages[count] = page;
+    /**
+     * Store new pages
+     */
+    const auto storeIdx = _pageCtrl/* &_pageCtrl[0] */ == currentCtrl ? 1 : 0;
+    _pageCtrl[storeIdx].push(newPages);
 
     /**
-     * Swap resources
+     * Publish change
      */
-    _pages.store(newPages, _STD memory_order_release);
-    _pageCount.store(newCount, _STD memory_order_release);
+    _currentPage.store(&_pageCtrl[storeIdx], _STD memory_order_release);
 
     /**
-     * Release
+     * Retire previous state
+     *
+     * @see AtomicCtrlBlockPage::retire(...)
      */
-    _resizing.store(0, _STD memory_order_release);
-
-    /**
-     * Free old resources
-     */
-    free(pages);
-    DEBUG_SNMSG(false, "WARN", "Increased page count of processing queue.")
+    currentCtrl->rel();
 }
 
 void ProcessingQueue::push(mref<task::__TaskDelegate> task_) {
@@ -197,80 +216,39 @@ void ProcessingQueue::pushStaged(mref<ptr<aligned_buffer>> buffer_) {
     /**
      * First try pushing stage without waiting
      */
-    {
-        /**
-         * Loop over every available queue, but enforce valid index range
-         */
-        const auto available = _pageCount.load(_STD memory_order_relaxed);
-        for (size_type i = 0; i < available; ++i) {
-
-            // TODO: Eliminate race condition...
-            const auto threadId { thread::self::getId() };
-            thread::thread_id expect { 0 };
-            while (!_resizing.compare_exchange_weak(expect, threadId, _STD memory_order_release,
-                _STD memory_order_relaxed)) {
-                expect = 0;// Spinning
-            }
-
-            const auto* const pages = _pages.load(_STD memory_order_consume);
-            auto* const page { pages[i] };
-
-            _resizing.store(0, _STD memory_order_release);
-
-            /**
-             * Try to use current page
-             */
-            for (size_type j = 0; j < page_size; ++j) {
-
-                if (page[j].try_store(_STD move(buffer_))) {
-                    return;
-                }
-
-            }
-        }
-    }
-
-    /**
-     * Force pushing stage
-     */
     while (true) {
         /**
          * Loop over every available queue, but enforce valid index range
          */
-        const auto available = _pageCount.load(_STD memory_order_relaxed);
-        for (size_type i = 0; i < available; ++i) {
+        auto* dynamicPagesCtrl = _currentPage.load(_STD memory_order_relaxed);
+        const auto dynamicPages = dynamicPagesCtrl->acq();
+        const auto dynamicPageCount = dynamicPages->size();
 
-            // TODO: Eliminate race condition...
-            const auto threadId { thread::self::getId() };
-            thread::thread_id expect { 0 };
-            while (!_resizing.compare_exchange_weak(expect, threadId, _STD memory_order_release,
-                _STD memory_order_relaxed)) {
-                expect = 0;// Spinning
-            }
+        for (size_type i = 0; i < dynamicPageCount; ++i) {
 
-            const auto* const pages = _pages.load(_STD memory_order_consume);
-            auto* const page { pages[i] };
-
-            _resizing.store(0, _STD memory_order_release);
+            /**
+             * Get current dynamic page
+             */
+            const auto& page = dynamicPages->page(i);
 
             /**
              * Try to use current page
              */
             for (size_type j = 0; j < page_size; ++j) {
-
-                if (page[j].store(_STD move(buffer_))) {
+                /**
+                 * Will already check if empty internally and faster than acquiring a managed pointer to check
+                 */
+                if (page->try_store(j, _STD move(buffer_))) {
                     return;
                 }
-
             }
         }
 
         /**
          * Failed to push task to current available slots
          */
-        grow();
+        // grow();
     }
-
 }
 
 #if FALSE
@@ -360,44 +338,47 @@ void ProcessingQueue::erase(const size_type hint_, const ptr<aligned_queue> queu
 void ProcessingQueue::pop(const task::TaskMask mask_, ref<task::__TaskDelegate> task_) noexcept {
 
     /**
-     * Loop over every available queue, but enforce valid index range
+     * Speedup spread
      */
-    for (
-        size_type ci = _pageCount.load(_STD memory_order_relaxed);
-        ci <= _pageCount.load(_STD memory_order_relaxed) && ci > 0;
-        --ci
-    ) {
-
-        // TODO: Eliminate race condition...
-        const auto threadId { thread::self::getId() };
-        thread::thread_id expect { 0 };
-        while (!_resizing.compare_exchange_weak(expect, threadId, _STD memory_order_release,
-            _STD memory_order_relaxed)) {
-            expect = 0;// Spinning
-        }
-
-        const auto* const pages = _pages.load(_STD memory_order_consume);
-        auto* const page { pages[ci - 1] };
-
-        _resizing.store(0, _STD memory_order_release);
-
-        /**
-         * Try to use current page
-         */
-        for (size_type i = 0; i < page_size; ++i) {
-
-            if (page[i].try_pop(mask_, task_)) {
-                return;
-            }
-
-        }
-    }
-
-    #define inc(var_, limit_) ((++var_) >= limit_ ? var_ -= limit_ : var_)
     auto threadIdx = thread::self::getIdx();
     while (threadIdx > 16ui64) {
         threadIdx -= 16ui64;
     }
+
+    /**
+     * Loop over every available queue, but enforce valid index range
+     */
+    auto* dynamicPagesCtrl = _currentPage.load(_STD memory_order_acquire);
+    const auto dynamicPages = dynamicPagesCtrl->acq();
+    const auto dynamicPageCount = dynamicPages->size();
+
+    for (u64 i = 0; i < dynamicPageCount; ++i) {
+
+        /**
+         * Get current dynamic page
+         */
+        const auto& page = dynamicPages->page(i);
+
+        /**
+         * Try to use current page
+         */
+        for (u64 j = 0; j < page_size; ++j) {
+
+            const auto bufferPtr = page->get(j);
+            if (!bufferPtr.empty()) {
+
+                if (bufferPtr->try_pop(task_)) {
+                    return;
+                }
+
+                if (bufferPtr->empty()) {
+                    page->retire(j);
+                }
+            }
+        }
+    }
+
+    #define inc(var_, limit_) ((++var_) >= limit_ ? var_ -= limit_ : var_)
 
     /**
      * Loopup shared task queues

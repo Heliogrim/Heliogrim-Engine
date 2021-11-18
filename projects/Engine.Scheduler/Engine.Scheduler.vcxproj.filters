@@ -126,6 +126,9 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Queue\PooledBuffer.hpp">
       <Filter>Headerdateien\Queue</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\DynamicBufferPages.hpp">
+      <Filter>Headerdateien\Queue</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scheduler\Thread\Thread.cpp">
@@ -174,6 +177,9 @@
       <Filter>Quelldateien\Queue</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Queue\PooledBuffer.cpp">
+      <Filter>Quelldateien\Queue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\DynamicBufferPages.cpp">
       <Filter>Quelldateien\Queue</Filter>
     </ClCompile>
   </ItemGroup>

@@ -16,7 +16,7 @@ SchedulePipeline::SchedulePipeline() :
     _guaranteeIdx(0),
     _stageIdx() {
 
-    for (auto i = 0; i < (sizeof(_guarantees) / sizeof(_STD atomic_uint_fast16_t)); ++i) {
+    for (u64 i = 0; i < (sizeof(_guarantees) / sizeof(_STD atomic_uint_fast16_t)); ++i) {
         _guarantees[i].store(0, _STD memory_order_relaxed);
     }
 
@@ -40,10 +40,10 @@ void SchedulePipeline::push(mref<task::__TaskDelegate> task_) {
     /**
      * If task carries no dependencies, enqueue directly
      */
-    //if (srcStage.stage == ScheduleStage::eAll && dstStage.stage == ScheduleStage::eUndefined) {
-    _processing.push(_STD move(task_));
-    return;
-    //}
+    if (srcStage.stage == ScheduleStage::eAll && dstStage.stage == ScheduleStage::eUndefined) {
+        _processing.push(_STD move(task_));
+        return;
+    }
 
     // TODO
     while (_stepping.test_and_set(_STD memory_order_acq_rel)) {
@@ -189,6 +189,7 @@ void SchedulePipeline::push(mref<task::__TaskDelegate> task_) {
      */
     if (srcStage.stage == ScheduleStage::eAll) {
         _processing.push(_STD move(task_));
+        _stepping.clear(_STD memory_order_release);
         return;
     }
 
@@ -348,16 +349,16 @@ void SchedulePipeline::decrementGuarantee(const ScheduleStage stage_) noexcept {
      *
      * Check whether this decrement will release barrier to step forward
      */
-    // if (_guarantees[guaranteeIdx].fetch_sub(1, _STD memory_order_release) == 1 && dstStageIdx == _stageIdx) {
-    // 
-    //     /**
-    //      *
-    //      */
-    //     if (!_stepping.test_and_set(_STD memory_order_release)) {
-    //         try_next();
-    //         _stepping.clear(_STD memory_order_release);
-    //     }
-    // }
+    if (_guarantees[guaranteeIdx].fetch_sub(1, _STD memory_order_release) == 1 && dstStageIdx == _stageIdx) {
+
+        /**
+         *
+         */
+        if (!_stepping.test_and_set(_STD memory_order_release)) {
+            try_next();
+            _stepping.clear(_STD memory_order_release);
+        }
+    }
 }
 
 #if FALSE

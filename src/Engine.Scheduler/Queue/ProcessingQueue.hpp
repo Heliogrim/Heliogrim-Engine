@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AtomicCtrlBlockPage.hpp"
+#include "DynamicBufferPages.hpp"
 #include "ProcessingQueueGuard.hpp"
 #include "../Thread/Thread.hpp"
 #include "SharedBufferPool.hpp"
@@ -61,14 +62,11 @@ namespace ember::engine::scheduler {
         AtomicCtrlBlockPage<aligned_buffer> _sharedCtrlBlockPage;
 
     private:
-        _STD atomic<ptr<slot_page_type>> _pages;
-        atomic_size_type _pageCount;
-
-    public:
-        [[nodiscard]] cref<atomic_size_type> pageCount() const noexcept;
+        _STD atomic<ptr<AtomicCtrlBlock<DynamicBufferPages>>> _currentPage;
+        AtomicCtrlBlock<DynamicBufferPages> _pageCtrl[2];
 
     private:
-        _STD atomic<thread::thread_id> _resizing;
+        _STD atomic_flag _resizing;
 
     private:
         void grow();

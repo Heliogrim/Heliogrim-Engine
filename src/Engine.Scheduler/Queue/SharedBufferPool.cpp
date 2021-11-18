@@ -1,5 +1,9 @@
 #include "SharedBufferPool.hpp"
 
+#ifdef _DEBUG
+#include <cassert>
+#endif
+
 using namespace ember::engine::scheduler;
 using namespace ember;
 
@@ -111,6 +115,12 @@ void SharedBufferPool::release(mref<ptr<aligned_buffer>> buffer_) {
         pooled[used] = _STD move(buffer_);
 
         ++_poolSize;
+
+        #ifdef _DEBUG
+        for (auto i = 0; i < used; ++i) {
+            DEBUG_ASSERT(pooled[i] != buffer_, "Collision by double releasing buffer to pool.")
+        }
+        #endif
 
         /**
          * Release
