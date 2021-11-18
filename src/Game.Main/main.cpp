@@ -129,7 +129,7 @@ void ember_main_entry() {
     constexpr u64 progLogThres { count >= (1 << 7) ? count >> 7 : 1 };
 
     for (u64 idx = 0, log = 0; idx < count; ++idx) {
-        buildEntity(idx, rows, cols);
+        //buildEntity(idx, rows, cols);
 
         if (log * progLogThres == idx) {
             std::cout << "Created " << std::to_string(idx) << " entities." << std::endl;

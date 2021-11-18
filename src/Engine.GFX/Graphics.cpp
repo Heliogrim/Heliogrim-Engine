@@ -292,17 +292,21 @@ void Graphics::schedule() {
     scheduler::exec(
         make_repetitive_task([this]() {
 
-            u8 expect { 1 };
-            if (_scheduled.load(_STD memory_order_relaxed) == expect) {
-                _tick();
-                return true;
-            }
+                u8 expect { 1 };
+                if (_scheduled.load(_STD memory_order_relaxed) == expect) {
+                    _tick();
+                    return true;
+                }
 
-            expect = { 2 };
-            _scheduled.compare_exchange_strong(expect, 0);
-            return false;
+                expect = { 2 };
+                _scheduled.compare_exchange_strong(expect, 0);
+                return false;
 
-        }, scheduler::task::TaskMask::eCritical)
+            },
+            scheduler::task::TaskMask::eCritical,
+            scheduler::ScheduleStageBarriers::eGraphicNodeCollectWeak,
+            scheduler::ScheduleStageBarriers::eBottomStrong
+        )
     );
 }
 

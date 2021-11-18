@@ -17,6 +17,11 @@ namespace ember::engine::scheduler {
         { PayloadType_::release(ptr_) } -> std::same_as<void>;
     };
 
+    template <typename PayloadType_>
+    concept IsAtomicPayloadStatic = requires(ptr<PayloadType_> ptr_) {
+        { PayloadType_::release(ptr_) } -> std::same_as<void>;
+    };
+
     constexpr uint64_t packed_shift = 16ui64;
     constexpr uint64_t packed_ref_mask = 0b00000000'00000000'00000000'00000000'00000000'00000000'11111111'11111111;
     constexpr uint64_t packed_ptr_mask = 0b11111111'11111111'11111111'11111111'11111111'11111111'00000000'00000000;
@@ -163,6 +168,16 @@ namespace ember::engine::scheduler {
         [[nodiscard]] value_type operator->() const noexcept {
             return unwrap();
         }
+
+    public:
+        void reset() {
+            if (_ctrlBlock != nullptr) {
+                _ctrlBlock->rel();
+            }
+
+            _ctrlBlock = nullptr;
+            _packed = 0;
+        }
     };
 
     template <IsAtomicPayload PayloadType_>
@@ -193,6 +208,10 @@ namespace ember::engine::scheduler {
             _packed(0) {
             push(ptr_);
         }
+
+        AtomicCtrlBlock(cref<AtomicCtrlBlock>) = delete;
+
+        AtomicCtrlBlock(mref<AtomicCtrlBlock>) noexcept = delete;
 
         /**
          * Destructor
@@ -242,14 +261,13 @@ namespace ember::engine::scheduler {
          */
         [[nodiscard]] atomic_ctrl_ptr acq() {
 
-            auto packed = _packed.fetch_add(1, _STD memory_order_acq_rel);
-
-            DEBUG_ASSERT((packed & packed_ref_mask) != 0, "Erroneous reference counting...")
+            auto packed = _packed.fetch_add(1, _STD memory_order_release);
 
             /**
              *
              */
             if ((packed >> packed_shift) == 0) {
+                rel();
                 return {};
             }
 
@@ -267,17 +285,17 @@ namespace ember::engine::scheduler {
          */
         void rel() {
 
-            const auto packed = _packed.fetch_sub(1, _STD memory_order_acq_rel);
+            const auto packed = _packed.fetch_sub(1, _STD memory_order_release);
 
             /**
              * Check if this was last reference
              */
-            // if (packed & 0x1)
-            if ((packed & packed_ref_mask) == 1) {
+            if ((packed & packed_ref_mask) == 0x1) {
                 /**
                  *
                  */
                 auto expect = _packed.fetch_and(packed_ref_mask, _STD memory_order_release);
+                const auto maskedPtr = packed & packed_ptr_mask;
 
                 /**
                  * Check whether another execution acquired reference in the mean time
@@ -286,7 +304,6 @@ namespace ember::engine::scheduler {
                     /**
                      * Loop fallback strategy
                      */
-                    const auto maskedPtr = packed & packed_ptr_mask;
 
                     /**
                      * Restore packed state and release responsibility from this execution to other acquirer if present
@@ -305,12 +322,16 @@ namespace ember::engine::scheduler {
                  * Check whether this is last reference ( or fallback took place )
                  */
                 // if (expect & packed_ref_mask)
-                if ((expect & packed_ref_mask) == 0) {
+                if ((expect & packed_ref_mask) == 0 && maskedPtr) {
                     /**
                      *
                      */
                     auto* ctrlp = reinterpret_cast<value_type>(packed >> packed_shift);
-                    delete ctrlp;
+                    if constexpr (IsAtomicPayloadStatic<PayloadType_>) {
+                        PayloadType_::release(ctrlp);
+                    } else {
+                        ctrlp->release();
+                    }
                 }
             }
         }
@@ -346,6 +367,28 @@ namespace ember::engine::scheduler {
             store(ptr_);
         }
 
+        /**
+         * Will try to store pointer internally and bumping reference count atomically
+         *
+         * @author Julius
+         * @date 15.11.2021
+         *
+         * @param ptr_ The pointer to store into the ctrl block
+         *
+         * @returns True if succeeded, otherwise false
+         */
+        [[nodiscard]] bool try_push(_In_ const value_type ptr_) {
+
+            const auto original = reinterpret_cast<uint64_t>(ptr_);
+            const auto packed = (original << packed_shift) | 0x1;
+
+            DEBUG_ASSERT(original == (packed >> packed_shift), "Exceeded adressable memory of shifted memory address.")
+
+            uint64_t expect { 0 };
+            return _packed.compare_exchange_strong(expect, packed, _STD memory_order_release,
+                _STD memory_order_relaxed);
+        }
+
     private:
         _STD atomic_uint64_t _packed;
     };
@@ -376,6 +419,10 @@ namespace ember::engine::scheduler {
             }
 
         }
+
+        AtomicCtrlBlockPage(cref<AtomicCtrlBlockPage>) = delete;
+
+        AtomicCtrlBlockPage(mref<AtomicCtrlBlockPage>) noexcept = delete;
 
         /**
          * Destructor
@@ -409,9 +456,10 @@ namespace ember::engine::scheduler {
                 return {};
             }
 
-            auto ctrlp = ctrlb->acq();
-            return ctrlp;
-            return {};
+            /**
+             *
+             */
+            return ctrlb->acq();
         }
 
         /**
@@ -438,7 +486,7 @@ namespace ember::engine::scheduler {
             /**
              * Bump reference rount
              */
-            auto ptr = ctrlb->acq();
+            auto ctrlPtr = ctrlb->acq();
 
             /**
              * Force double release to retire
@@ -493,6 +541,38 @@ namespace ember::engine::scheduler {
              * Override if ctrl block is occupied
              */
             ctrlb->store(ptr_);
+        }
+
+        [[nodiscard]] bool try_store(_In_ const uint64_t idx_, _In_ const value_type ptr_) {
+
+            DEBUG_ASSERT(idx_ < 16, "Index out of bound.")
+
+            const auto* ctrlb = _blocks[idx_].load(_STD memory_order_consume);
+
+            /**
+             * Check if ctrl block is empty
+             */
+            if (ctrlb == nullptr) {
+                /**
+                 * Get ctrl block to address
+                 */
+                auto& nb = _ctrls[idx_];
+
+                /**
+                 * First store data to ctrl block
+                 */
+                if (!nb.try_push(ptr_)) {
+                    return false;
+                }
+
+                /**
+                 * Mount ctrl block to addressing space
+                 */
+                _blocks[idx_].store(&nb, _STD memory_order_release);
+                return true;
+            }
+
+            return false;
         }
 
     private:
