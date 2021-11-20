@@ -19,15 +19,11 @@
 #include <Ember/Component/Gfx/StaticMeshComponent.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Event/TickEvent.hpp>
-#include <Engine.Scheduler/Async.hpp>
 #include <Engine.Session/Session.hpp>
 
 #include "Assets/GfxMaterials/ForestGround01.hpp"
 #include "Assets/Meshes/PlaneD128.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
-#include "World/Entities/Components/CameraComponent.hpp"
-
-#include <Engine.GFX/GraphicPass.cpp>
 
 using namespace ember;
 
@@ -66,11 +62,12 @@ void ember_main_entry() {
     /**
      * Make a repetitive task to emit TickEvent
      */
-    auto task = engine::scheduler::task::make_repetitive_task([]() {
+    RepetitiveTask task {
+        []() {
 
             // static constexpr double delayFrac = 1. / 60.;
             static constexpr double delayFrac = 1. / .2;
-            static constexpr u64 delay = delayFrac * 1000000000ui64;
+            static constexpr u64 delay = (u64)(delayFrac * 1000000000.0);
 
             static u64 tmpTick = 0;
             static _STD chrono::high_resolution_clock::time_point tmpNextTick {
@@ -90,16 +87,13 @@ void ember_main_entry() {
             }
 
             return true;
-        },
-        engine::scheduler::task::TaskMask::eNormal,
-        engine::scheduler::ScheduleStageBarriers::eBottomStrong,
-        engine::scheduler::ScheduleStageBarriers::eTopStrong
-    );
+        }
+    };
 
-    /**
-     * Schedule the tick event
-     */
-    engine::scheduler::exec(task);
+    task.srcStage() = TaskStages::eBottomStrong;
+    task.dstStage() = TaskStages::eTopStrong;
+
+    execute(_STD move(task));
 
     /**
      *
@@ -126,19 +120,41 @@ void ember_main_entry() {
      * [ 12 - 12 ]  : 16,4GiB
      */
 
-    constexpr u64 progLogThres { count >= (1 << 7) ? count >> 7 : 1 };
+    //const u64 perCycle = static_cast<u64>(_STD log10(count));// `_STD log10` is not constexpr
+    constexpr u64 perCycle = count;
 
-    for (u64 idx = 0, log = 0; idx < count; ++idx) {
-        //buildEntity(idx, rows, cols);
+    RepetitiveTask buildTask {
+        [count = count, perCycle = perCycle]() {
 
-        if (log * progLogThres == idx) {
-            std::cout << "Created " << std::to_string(idx) << " entities." << std::endl;
-            ++log;
+            auto timestamp = _STD chrono::high_resolution_clock::now();
+
+            static u64 static_idx = 0;
+            static u64 static_log = 0;
+
+            u64& idx = static_idx;
+            u64& log = static_log;
+
+            const u64 nextCycleLimit = _STD min(idx + perCycle, count);
+            for (; idx < nextCycleLimit; ++idx) {
+                buildEntity(idx, rows, cols);
+            }
+
+            if (idx >= count) {
+                std::cout << "Finished creating " << std::to_string(count) << " entities." << std::endl;
+            }
+
+            auto end = _STD chrono::high_resolution_clock::now();
+            std::cout << "Creating cycle took " << _STD chrono::duration_cast<
+                _STD chrono::microseconds>(end - timestamp) << "" << std::endl;
+
+            return idx < count;
         }
-    }
+    };
 
-    std::cout << "Created " << std::to_string(count) << " entities." << std::endl;
-    created.test_and_set(_STD memory_order::release);
+    buildTask.srcStage() = TaskStages::eUserUpdateStrong;
+    buildTask.dstStage() = TaskStages::eUserUpdateStrong;
+
+    execute(_STD move(buildTask));
 }
 
 void test() {
@@ -148,48 +164,48 @@ void test() {
      */
     {
         Entity entity {};
-        auto val = entity::valid(entity);
+        auto val = Valid(entity);
     }
 
     /**
      *
      */
     {
-        auto possible = entity::create();
+        auto possible = CreateEntity();
         await(possible);
 
         Entity entity = possible.get();
-        auto val = entity::valid(entity);
+        auto val = Valid(entity);
 
-        await(entity::destroy(_STD move(entity)));
+        await(Destroy(_STD move(entity)));
     }
 
     /**
      *
      */
     {
-        auto possible = level::create();
+        auto possible = CreateLevel();
         await(possible);
 
         Level level = possible.get();
-        auto val = level::valid(level);
+        auto val = Valid(level);
 
-        await(level::destroy(_STD move(level)));
+        await(Destroy(_STD move(level)));
     }
 
     /**
      *
      */
     {
-        auto possible = level::create();
+        auto possible = CreateLevel();
         await(possible);
 
         Level level = possible.get();
-        auto val = level::valid(level);
+        auto val = Valid(level);
 
         vector<future<Entity>> flist {};
         for (u8 c = 0; c < 128ui8; ++c) {
-            flist.push_back(entity::create());
+            flist.push_back(CreateEntity());
         }
 
         for (auto& entry : flist) {
@@ -202,7 +218,7 @@ void test() {
             level.addEntity(entry.get());
         }
 
-        await(level::destroy(_STD move(level)));
+        await(Destroy(_STD move(level)));
     }
 }
 
@@ -229,11 +245,11 @@ void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const 
 
 void buildEntity(const u64 idx_, const u64 rows_, const u64 cols_) {
 
-    auto possible = entity::create();
+    auto possible = CreateEntity();
     // await(possible);
 
     Entity entity = possible.get();
-    auto val = entity::valid(entity);
+    auto val = Valid(entity);
 
     auto transform = entity.transform();
 

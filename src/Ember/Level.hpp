@@ -95,38 +95,35 @@ namespace ember {
         _Success_(return == true) bool removeEntity(_In_ cref<Entity> entity_);
     };
 
-    namespace level {
+    /**
+     * Check whether given level has underlying object
+     *
+     * @author Julius
+     * @date 25.10.2021
+     *
+     * @returns level_ The level to check.
+     */
+    [[nodiscard]] extern bool Valid(cref<Level> level_) noexcept;
 
-        /**
-         * Check whether given level has underlying object
-         *
-         * @author Julius
-         * @date 25.10.2021
-         *
-         * @returns level_ The level to check.
-         */
-        [[nodiscard]] _Success_(return == true) extern bool valid(_In_ cref<Level> level_) noexcept;
+    /**
+     * Creates a new level with underlying object
+     *
+     * @author Julius
+     * @date 25.10.2021
+     *
+     * @returns A future, containing the newly created level if succeeded, otherwise invalid level.
+     */
+    [[nodiscard]] extern future<Level> CreateLevel() noexcept;
 
-        /**
-         * Creates a new level with underlying object
-         *
-         * @author Julius
-         * @date 25.10.2021
-         *
-         * @returns A future, containing the newly created level if succeeded, otherwise invalid level.
-         */
-        [[nodiscard]] _Success_(valid(return.get())) extern future<Level> create() noexcept;
-
-        /**
-         * Destroy the given level and underlying object
-         *
-         * @author Julius
-         * @date 25.10.2021
-         *
-         * @param  level_ The Level to destroy.
-         *
-         * @returns A future, representing whether the entity was successfully destroyed.
-         */
-        [[nodiscard]] _Success_(return.get() == true) extern future<bool> destroy(_Inout_ mref<Level> level_) noexcept;
-    }
+    /**
+     * Destroy the given level and underlying object
+     *
+     * @author Julius
+     * @date 25.10.2021
+     *
+     * @param  level_ The Level to destroy.
+     *
+     * @returns A future, representing whether the entity was successfully destroyed.
+     */
+    [[nodiscard]] extern future<bool> Destroy(mref<Level> level_) noexcept;
 }

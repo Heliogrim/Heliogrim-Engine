@@ -13,52 +13,49 @@ namespace ember {
      */
     class Entity;
 
-    namespace entity {
-        /**
-         * Check whether given entity has underlying object
-         *
-         * @author Julius
-         * @date 25.10.2021
-         *
-         * @param  entity_ The entity to check.
-         */
-        [[nodiscard]] _Success_(return == true) extern bool valid(_In_ cref<Entity> entity_) noexcept;
+    /**
+     * Creates a new entity with underlying object
+     *
+     * @author Julius
+     * @date 25.10.2021
+     *
+     * @returns A future, containing the newly created entity if succeeded, otherwise invalid entity.
+     */
+    [[nodiscard]] extern future<Entity> CreateEntity() noexcept;
 
-        /**
-         * Creates a new entity with underlying object
-         *
-         * @author Julius
-         * @date 25.10.2021
-         *
-         * @returns A future, containing the newly created entity if succeeded, otherwise invalid entity.
-         */
-        [[nodiscard]] _Success_(valid(return.get())) extern future<Entity> create() noexcept;
+    /**
+     * Create a new entity with underlying object equivalent to given entity_
+     *
+     * @author Julius
+     * @date 25.10.2021
+     *
+     * @param  entity_ The entity to clone from.
+     *
+     * @returns A future, containing the newly created entity if succeeded, otherwise invalid entity.
+     */
+    [[nodiscard]] extern future<Entity> CloneEntity(cref<Entity> entity_) noexcept;
 
-        /**
-         * Create a new entity with underlying object equivalent to given entity_
-         *
-         * @author Julius
-         * @date 25.10.2021
-         *
-         * @param  entity_ The entity to clone from.
-         *
-         * @returns A future, containing the newly created entity if succeeded, otherwise invalid entity.
-         */
-        [[nodiscard]] _Success_(valid(return.get())) extern future<Entity> clone(_In_ cref<Entity> entity_) noexcept;
+    /**
+     * Destroy the given entity and underlying object
+     *
+     * @author Julius
+     * @date 25.10.2021
+     *
+     * @param  entity_ The entity to destroy.
+     *
+     * @returns A future, representing whether the entity was successfully destroyed.
+     */
+    [[nodiscard]] extern future<bool> Destroy(mref<Entity> entity_) noexcept;
 
-        /**
-         * Destroy the given entity and underlying object
-         *
-         * @author Julius
-         * @date 25.10.2021
-         *
-         * @param  entity_ The entity to destroy.
-         *
-         * @returns A future, representing whether the entity was successfully destroyed.
-         */
-        [[nodiscard]] _Success_(return.get() == true) extern future<bool>
-        destroy(_Inout_ mref<Entity> entity_) noexcept;
-    }
+    /**
+     * Check whether given entity has underlying object
+     *
+     * @author Julius
+     * @date 25.10.2021
+     *
+     * @param  entity_ The entity to check.
+     */
+    [[nodiscard]] extern bool Valid(cref<Entity> entity_) noexcept;
 
     /**
      * An entity base.
@@ -101,7 +98,7 @@ namespace ember {
         EntityBase(mref<EntityBase> other_) noexcept = default;
 
     protected:
-        explicit EntityBase(_In_ cref<entity_guid> guid_) noexcept;
+        explicit EntityBase(cref<entity_guid> guid_) noexcept;
 
     public:
         /**
@@ -142,8 +139,7 @@ namespace ember {
          *
          * @returns A pointer to the component if it exists, otherwise nullptr.
          */
-        [[nodiscard]] _Success_(return != nullptr) ptr<void> get(
-            _In_ cref<component_type_id> componentTypeId_) const noexcept;
+        [[nodiscard]] ptr<void> get(cref<component_type_id> componentTypeId_) const noexcept;
 
     public:
         /**
@@ -186,8 +182,7 @@ namespace ember {
          *
          * @returns True is component is present, false if not.
          */
-        [[nodiscard]] _Success_(return == true) bool has(
-            _In_ cref<component_type_id> componentTypeId_) const noexcept;
+        [[nodiscard]] bool has(cref<component_type_id> componentTypeId_) const noexcept;
 
     public:
         /**
@@ -216,7 +211,7 @@ namespace ember {
          *
          * @param componentTypeId_ The type identifier for the internal component.
          */
-        void record(_In_ cref<component_type_id> componentTypeId_) noexcept;
+        void record(cref<component_type_id> componentTypeId_) noexcept;
 
     public:
         /**
@@ -238,7 +233,7 @@ namespace ember {
          * @returns A ref&lt;Ty&gt; which is mutable reference to a component.
          */
         template <class ComponentType_>
-        [[nodiscard]] _STD remove_cvref_t<ComponentType_> record(_Inout_ mref<ComponentType_> obj_) noexcept {
+        [[nodiscard]] _STD remove_cvref_t<ComponentType_> record(mref<ComponentType_> obj_) noexcept {
             // record(ComponentType_::type_id, &obj_);
             throw NotImplementedException();
             return get<ComponentType_>();
@@ -256,7 +251,7 @@ namespace ember {
     class Entity final :
         public EntityBase {
     public:
-        friend future<Entity> entity::create() noexcept;
+        friend future<Entity> CreateEntity() noexcept;
 
     public:
         /**
@@ -275,7 +270,7 @@ namespace ember {
          *
          * @param  other_ The other.
          */
-        Entity(_In_ cref<Entity> other_) noexcept;
+        Entity(cref<Entity> other_) noexcept;
 
         /**
          * Move Constructor
@@ -285,10 +280,10 @@ namespace ember {
          *
          * @param  other_ The other.
          */
-        Entity(_Inout_ mref<Entity> other_) noexcept;
+        Entity(mref<Entity> other_) noexcept;
 
     protected:
-        explicit Entity(_In_ cref<entity_guid> guid_) noexcept;
+        explicit Entity(cref<entity_guid> guid_) noexcept;
 
     public:
         /**
@@ -310,7 +305,7 @@ namespace ember {
          *
          * @returns A shallow copy of this.
          */
-        ref<Entity> operator=(_In_ cref<Entity> other_) noexcept;
+        ref<Entity> operator=(cref<Entity> other_) noexcept;
 
         /**
          * Move Assignment operator
@@ -322,11 +317,11 @@ namespace ember {
          *
          * @returns A shallow copy of this.
          */
-        ref<Entity> operator=(_Inout_ mref<Entity> other_) noexcept;
+        ref<Entity> operator=(mref<Entity> other_) noexcept;
 
     public:
         [[nodiscard]] cref<math::Transformation> transform() const noexcept;
 
-        void setTransform(_In_ cref<math::Transformation> transformation_);
+        void setTransform(cref<math::Transformation> transformation_);
     };
 }

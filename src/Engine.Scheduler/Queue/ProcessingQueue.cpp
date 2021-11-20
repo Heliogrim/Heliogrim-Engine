@@ -168,47 +168,6 @@ void ProcessingQueue::push(mref<task::__TaskDelegate> task_) {
     }
 
     #undef inc
-
-    #if FALSE
-    while (true) {
-        /**
-         * Loop over every available queue, but enforce valid index range
-         */
-        const auto available = _pageCount.load(_STD memory_order_relaxed);
-        for (size_type i = 0; i < available; ++i) {
-
-            // TODO: Eliminate race condition...
-            const auto threadId { thread::self::getId() };
-            thread::thread_id expect { 0 };
-            while (!_resizing.compare_exchange_weak(expect, threadId, _STD memory_order_release,
-                _STD memory_order_relaxed)) {
-                expect = 0;// Spinning
-            }
-
-            const auto* const pages = _pages.load(_STD memory_order_consume);
-            auto* const page { pages[i] };
-
-            _resizing.store(0, _STD memory_order_release);
-
-            /**
-             * Try to use current page
-             */
-            for (size_type j = 0; j < page_size; ++j) {
-
-                if (page[j].try_push(_STD move(task_))) {
-                    return;
-                }
-
-            }
-        }
-
-        /**
-         * Failed to push task to current available slots
-         */
-        grow();
-    }
-    #endif
-
 }
 
 void ProcessingQueue::pushStaged(mref<ptr<aligned_buffer>> buffer_) {
@@ -250,90 +209,6 @@ void ProcessingQueue::pushStaged(mref<ptr<aligned_buffer>> buffer_) {
         // grow();
     }
 }
-
-#if FALSE
-void ProcessingQueue::erase(const size_type hint_, const ptr<aligned_queue> queue_) {
-
-    /**
-     * Acquire
-     */
-    const auto threadId { thread::self::getId() };
-    thread::thread_id expect { 0 };
-    while (!_resizing.compare_exchange_weak(expect, threadId, _STD memory_order_release, _STD memory_order_relaxed)) {
-        expect = 0;// Spinning
-    }
-
-    /**
-     * Check whether hint is valid and matching
-     */
-    const auto* const queues = _queues.load(_STD memory_order_relaxed);
-    if (
-        hint_ < _queueCount.load(_STD memory_order_relaxed) && queues[hint_] == queue_
-    ) {
-
-        /**
-         * Replace in structure
-         */
-        const auto size = _queueCount.load(_STD memory_order_relaxed);
-        if (size > 0 && hint_ < (size - 1)) {
-            _queues[hint_] = _queues[size - 1];
-            _queues[size - 1] = nullptr;
-        } else {
-            _queues[0] = nullptr;
-        }
-
-        DEBUG_ASSERT(size > 0, "Failed to evaluate queue count correctly. Possibly caused by race condition...")
-        if (size < 1) {
-            throw _STD runtime_error("");
-        }
-        std::cout << thread::self::getId() << " | Dec (1)" << std::endl;
-        thread::self::yield();
-        --_queueCount;
-
-    } else {
-
-        /**
-         * Find queue to erase
-         */
-        const size_type size = _queueCount.load(_STD memory_order_relaxed);
-
-        auto ci = size;
-        for (; ci > 0 && _queues[ci - 1] == queue_; --ci) { }
-
-        // Warning: Could possible corrupt state if queue to erase does not exist anymore
-
-        /**
-         * Replace in structure
-         */
-        if (size > 0 && ci > 0 && ci < size) {
-            _queues[ci - 1] = _queues[size - 1];
-            _queues[size - 1] = nullptr;
-        } else {
-            _queues[0] = nullptr;
-        }
-
-        DEBUG_ASSERT(size > 0, "Failed to evaluate queue count correctly. Possibly caused by race condition...")
-        if (size < 1) {
-            throw _STD runtime_error("");
-        }
-        std::cout << thread::self::getId() << " | Dec (2)" << std::endl;
-        thread::self::yield();
-        --_queueCount;
-    }
-
-    /**
-     * Release queue
-     */
-    std::cout << thread::self::getId() << " | Release " << queue_ << std::endl;
-    thread::self::yield();
-    _pool->release(_STD move(const_cast<ptr<aligned_queue>>(queue_)));
-
-    /**
-     * Release
-     */
-    _resizing.store(0, _STD memory_order_release);
-}
-#endif
 
 void ProcessingQueue::pop(const task::TaskMask mask_, ref<task::__TaskDelegate> task_) noexcept {
 

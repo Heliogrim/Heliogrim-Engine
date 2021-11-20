@@ -180,6 +180,8 @@ namespace ember::engine::scene {
         using root_type = SceneNodeHead;
         using storage_type = sptr<EmberSceneNodeStorage>;
 
+        using batched_consumer_fnc_type = _STD function<bool(u32, cref<SceneNode>)>;
+
     public:
         /**
          * Default constructor
@@ -381,6 +383,22 @@ namespace ember::engine::scene {
          * @param  consumer_ The consumer.
          */
         void traversal(cref<_STD function<bool(cref<SceneNode>)>> consumer_) const;
+
+    private:
+        void traversalBatchedSingle(u32 batchIdx_, cref<batched_consumer_fnc_type> consumer_,
+            ptr<const SceneNodeHead> parent_) const;
+
+        void traversalBatchedPartition(u32 firstBatchIdx_, u32 lastBatchIdx_,
+            cref<_STD function<bool(u32, cref<SceneNode>)>> consumer_, ptr<const SceneNodeHead> parent_) const;
+
+    public:
+        template <typename BatchConsumer> requires IsSceneNodeBatchConsumer<BatchConsumer>
+        void traversalBatched(u32 maxBatches_, cref<BatchConsumer> consumer_) const {
+            return traversalBatched(maxBatches_, static_cast<_STD function<bool(u32, cref<SceneNode>)>>(consumer_));
+        }
+
+        void traversalBatched(u32 maxBatches_, cref<_STD function<bool(u32, cref<SceneNode>)>> consumer_) const;
+
     };
 
 }

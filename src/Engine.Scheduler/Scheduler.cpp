@@ -143,7 +143,9 @@ void Scheduler::setup(u32 workers_) {
         workers_ = MAX(thread::getNativeThreadCount() - 1, 1);
     }
 
-    workers_ = 4;
+    #ifdef USE_WORKER_COUNT
+    workers_ = USE_WORKER_COUNT;
+    #endif
 
     /**
      * Prepare pipeline and workers

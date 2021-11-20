@@ -7,6 +7,8 @@
 #include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Scheduler/Fiber/Awaitable.hpp>
 
+#include "Task.hpp"
+
 namespace ember {
 
     /**
@@ -44,7 +46,7 @@ namespace ember {
          *
          * @returns True if future as taken part, otherwise false.
          */
-        [[nodiscard]] _Success_(return == true) bool ready() const noexcept {
+        [[nodiscard]] _Success_(return) bool ready() const noexcept {
             return underlying_type::ready();
         }
 
@@ -140,6 +142,36 @@ namespace ember {
      * @param  function_ The function to execute.
      */
     extern void execute(_In_ execute_function_pointer_type function_);
+
+    /**
+     * Executes the given task asynchronously
+     *
+     * @author Julius
+     * @date 23.10.2021
+     *
+     * @param  task_ The task to execute.
+     */
+    extern void execute(_Inout_ mref<Task> task_);
+
+    /**
+     * Executes the given repetitive task asynchronously
+     *
+     * @author Julius
+     * @date 23.10.2021
+     *
+     * @param  task_ The task to execute repetitively.
+     */
+    extern void execute(_Inout_ mref<RepetitiveTask> task_);
+
+    /**
+     * Executes the given tick task asynchronously
+     *
+     * @author Julius
+     * @date 23.10.2021
+     *
+     * @param  task_ The task to execute tick based.
+     */
+    extern void execute(_Inout_ mref<TickTask> task_);
 
     /**
      * Subsection: Suspension

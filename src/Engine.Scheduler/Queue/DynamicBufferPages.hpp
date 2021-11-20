@@ -53,13 +53,47 @@ namespace ember::engine::scheduler {
         u64 _size;
 
     private:
+        /**
+         * Will acquire a memory sequence to at least store the requested amount of indirection pointers
+         *
+         * @author Julius
+         * @date 17.11.2021
+         */
         void allocate();
 
     public:
+        /**
+         * Get a pointer to the indexed page
+         *
+         * @author Julius
+         * @date 17.11.2021
+         *
+         * @param idx_ The index of the requested page.
+         *
+         * @returns A pointer of the requested page
+         */
         [[nodiscard]] page_type page(_In_ const u64 idx_) const noexcept;
 
+        /**
+         * Get a reference to the pointer of the indexed page
+         *
+         * @author Julius
+         * @date 17.11.2021
+         *
+         * @param idx_ The index of the requested page.
+         *
+         * @returns A reference to the pointer stored page.
+         */
         [[nodiscard]] ref<page_type> page(_In_ const u64 idx_) noexcept;
 
+        /**
+         * Get the current amount of pages stored
+         *
+         * @author Julius
+         * @date 17.11.2021
+         *
+         * @returns The amount of stored pages, otherwise 0.
+         */
         [[nodiscard]] u64 size() const noexcept;
     };
 }

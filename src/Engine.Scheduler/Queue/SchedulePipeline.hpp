@@ -10,6 +10,10 @@ namespace ember::engine::scheduler {
 
     class SchedulePipeline {
     public:
+        using aligned_barrier_type = ALIGNED(_STD atomic_uint_fast16_t, CACHE_LINE_SIZE);
+        using aligned_staged_queue_type = ALIGNED(StagedQueue, CACHE_LINE_SIZE);
+
+    public:
         SchedulePipeline();
 
         SchedulePipeline(cref<SchedulePipeline>) = delete;
@@ -38,8 +42,9 @@ namespace ember::engine::scheduler {
     private:
         inline static constexpr ScheduleStage _distinctStages[] {
             ScheduleStage::eTop,
-            ScheduleStage::eUserUpdate,
             ScheduleStage::eNetworkFetch,
+            ScheduleStage::eUserUpdate,
+            ScheduleStage::ePublish,
             ScheduleStage::ePhysicsSimulate,
             ScheduleStage::eNetworkPush,
             ScheduleStage::eGraphicNodeCollect,
@@ -49,8 +54,8 @@ namespace ember::engine::scheduler {
         ProcessingQueue _processing;
 
     private:
-        _STD atomic_uint_fast16_t _guarantees[sizeof(_distinctStages) / sizeof(ScheduleStage) * 2];
-        StagedQueue _staged[sizeof(_distinctStages) / sizeof(ScheduleStage)];
+        aligned_barrier_type _guarantees[sizeof(_distinctStages) / sizeof(ScheduleStage) * 2];
+        aligned_staged_queue_type _staged[sizeof(_distinctStages) / sizeof(ScheduleStage)];
 
     private:
         _STD atomic_flag _stepping;
@@ -70,6 +75,6 @@ namespace ember::engine::scheduler {
         void pop(_In_ const task::TaskMask mask_, _Out_ ref<task::__TaskDelegate> task_) noexcept;
 
     public:
-        void decrementGuarantee(_In_ const ScheduleStage stage_) noexcept;
+        void decBarrier(_In_ const _STD uint_fast16_t idx_) noexcept;
     };
 }

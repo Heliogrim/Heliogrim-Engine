@@ -69,13 +69,10 @@
     <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Components\SceneComponent.hpp">
       <Filter>Headerdateien\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Staged\StagedComponentProcessor.hpp">
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Staged\Submit.hpp">
       <Filter>Headerdateien\Staged</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Staged\StagedComponentQueue.hpp">
-      <Filter>Headerdateien\Staged</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Staged\StagedComponentSubmit.hpp">
+    <ClInclude Include="..\..\src\Engine.ECS.Subsystem\Staged\Collection.hpp">
       <Filter>Headerdateien\Staged</Filter>
     </ClInclude>
   </ItemGroup>
@@ -89,13 +86,7 @@
     <ClCompile Include="..\..\src\Engine.ECS.Subsystem\Components\TransformComponent.cpp">
       <Filter>Quelldateien\Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.ECS.Subsystem\Staged\StagedComponentSubmit.cpp">
-      <Filter>Quelldateien\Staged</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.ECS.Subsystem\Staged\StagedComponentQueue.cpp">
-      <Filter>Quelldateien\Staged</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.ECS.Subsystem\Staged\StagedComponentProcessor.cpp">
+    <ClCompile Include="..\..\src\Engine.ECS.Subsystem\Staged\Collection.cpp">
       <Filter>Quelldateien\Staged</Filter>
     </ClCompile>
   </ItemGroup>

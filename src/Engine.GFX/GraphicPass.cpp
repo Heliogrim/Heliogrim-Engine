@@ -7,9 +7,6 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-#include <atomic>
-inline static _STD atomic_flag created;
-
 GraphicPass::GraphicPass(cref<GraphicPassMask> mask_) :
     _mask(mask_) {}
 
@@ -18,20 +15,20 @@ void GraphicPass::process(cref<scene::SceneGraph> graph_, ref<CommandBatch> batc
     SCOPED_STOPWATCH
 
     ptr<ModelPassProcessor> processor = this->processor();
-    if (processor && created.test(_STD memory_order::acquire)) {
+    if (processor) {
         struct ConsumerWrapper {
 
             ref<ModelPassProcessor> obj;
 
-            bool (ModelPassProcessor::*fnc)(cref<scene::SceneNode>);
+            bool (ModelPassProcessor::*fnc)(u32, cref<scene::SceneNode>);
 
-            [[nodiscard]] bool operator()(cref<scene::SceneNode> node_) const noexcept {
-                return (obj.*fnc)(node_);
+            [[nodiscard]] bool operator()(u32 batchIdx_, cref<scene::SceneNode> node_) const noexcept {
+                return (obj.*fnc)(batchIdx_, node_);
             }
         };
 
         const ConsumerWrapper consumer { *processor, &ModelPassProcessor::operator() };
-        graph_.traversal(consumer);
+        graph_.traversalBatched(0, consumer);
     }
     _pipeline.process(processor, batch_);
 }

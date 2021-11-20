@@ -70,6 +70,57 @@ void ember::execute(const execute_function_pointer_type function_) {
     engine::scheduler::Scheduler::get().exec(task);
 }
 
+void ember::execute(mref<Task> task_) {
+    /**
+     * Generate task to schedule
+     */
+    auto task = engine::scheduler::task::make_task(
+        _STD forward<Task::function_type>(task_.fnc()),
+        engine::scheduler::task::TaskMask::eNormal,
+        task_.srcStage(),
+        task_.dstStage()
+    );
+
+    /**
+     * Schedule task
+     */
+    engine::scheduler::Scheduler::get().exec(task);
+}
+
+void ember::execute(mref<RepetitiveTask> task_) {
+    /**
+     * Generate task to schedule
+     */
+    auto task = engine::scheduler::task::make_repetitive_task(
+        _STD forward<RepetitiveTask::function_type>(task_.fnc()),
+        engine::scheduler::task::TaskMask::eNormal,
+        task_.srcStage(),
+        task_.dstStage()
+    );
+
+    /**
+     * Schedule task
+     */
+    engine::scheduler::Scheduler::get().exec(task);
+}
+
+void ember::execute(mref<TickTask> task_) {
+    /**
+     * Generate task to schedule
+     */
+    auto task = engine::scheduler::task::make_task(
+        _STD forward<TickTask::function_type>(task_.fnc()),
+        engine::scheduler::task::TaskMask::eNormal,
+        task_.srcStage(),
+        task_.dstStage()
+    );
+
+    /**
+     * Schedule task
+     */
+    engine::scheduler::Scheduler::get().exec(task);
+}
+
 void ember::sleep(const u64 milliseconds_) {
 
     #ifdef _DEBUG

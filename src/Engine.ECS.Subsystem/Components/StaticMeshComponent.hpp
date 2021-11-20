@@ -19,9 +19,9 @@ namespace ember::engine::ecs::subsystem {
         StaticMeshComponent() noexcept = default;
 
     public:
-        void mantle(_In_ cref<entity_guid> entity_);
+        void materialize(_In_ cref<entity_guid> entity_);
 
-        void dismantle(_In_ cref<entity_guid> entity_);
+        void dematerialize(_In_ cref<entity_guid> entity_);
 
     private:
         asset_guid _meshGuid;

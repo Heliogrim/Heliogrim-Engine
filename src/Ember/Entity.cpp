@@ -5,11 +5,12 @@
 #include <Engine.ECS.Subsystem/Components/TransformComponent.hpp>
 #include <Engine.Session/Session.hpp>
 
+#include "Engine.ECS.Subsystem/Subsystem.hpp"
 #include "Engine.ECS/System.hpp"
 
 using namespace ember;
 
-bool entity::valid(cref<Entity> entity_) noexcept {
+bool ember::Valid(cref<Entity> entity_) noexcept {
     if (entity_.guid() == invalid_entity_guid) {
         return false;
     }
@@ -17,7 +18,7 @@ bool entity::valid(cref<Entity> entity_) noexcept {
     return true;
 }
 
-future<Entity> entity::create() noexcept {
+future<Entity> ember::CreateEntity() noexcept {
 
     // TODO: Replace ~ Temporary
     auto e { engine::ecs::Entity::from(generate_entity_guid()) };
@@ -37,11 +38,11 @@ future<Entity> entity::create() noexcept {
     return { _STD move(f) };
 }
 
-future<Entity> entity::clone(cref<Entity> entity_) noexcept {
+future<Entity> ember::CloneEntity(cref<Entity> entity_) noexcept {
     throw NotImplementedException {};
 }
 
-future<bool> entity::destroy(mref<Entity> entity_) noexcept {
+future<bool> ember::Destroy(mref<Entity> entity_) noexcept {
     throw NotImplementedException {};
 }
 
@@ -61,7 +62,7 @@ bool EntityBase::has(cref<component_type_id> componentTypeId_) const noexcept {
 }
 
 void EntityBase::record(cref<component_type_id> componentTypeId_) noexcept {
-    return engine::Session::get()->ecs()->mantleComponent(componentTypeId_, _guid);
+    return engine::Session::get()->ecs()->makeComponent(componentTypeId_, _guid);
 }
 
 Entity::Entity() noexcept :
@@ -101,6 +102,21 @@ cref<math::Transformation> Entity::transform() const noexcept {
 }
 
 void Entity::setTransform(cref<math::Transformation> transformation_) {
-    auto& it = transform();
-    const_cast<math::Transformation&>(it) = transformation_;
+    /**
+     * Get Component
+     */
+    auto* component = get(engine::ecs::subsystem::TransformComponent::type_id);
+
+    /**
+     * Update Component
+     */
+    const_cast<math::Transformation&>(
+        static_cast<ptr<engine::ecs::subsystem::TransformComponent>>(component)->transformation()
+    ) = transformation_;
+
+    /**
+     * Signal Staged
+     */
+    engine::Session::get()->subsystem()->signalUpdate(_guid, engine::ecs::subsystem::TransformComponent::type_id,
+        component);
 }

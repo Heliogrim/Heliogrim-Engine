@@ -163,3 +163,121 @@ void SceneGraph::traversal(cref<_STD function<bool(cref<SceneNode>)>> consumer_)
         }
     }
 }
+
+void SceneGraph::traversalBatchedSingle(u32 batchIdx_, cref<batched_consumer_fnc_type> consumer_,
+    ptr<const SceneNodeHead> parent_) const {
+    // Using stack instead of queue will cause graph to traverse primary vertical and secondary horizontal
+    // We assume that memory coherency is stronger when traversing vertical
+    stack<ptr<const SceneNodeHead>> backlog {};
+    backlog.push(parent_);
+
+    ref<EmberSceneNodeStorage> storage = *_storage;
+    constexpr _STD nothrow_t nothrow {};
+
+    while (!backlog.empty()) {
+        DEBUG_ASSERT(backlog.top() != nullptr, "Cursor element should never be nullptr or undefined")
+
+        // Important: pop() will invalidate top but, we dereference before we make reference to object, so indirection is not modified
+        cref<SceneNodeHead> cursor = *backlog.top();
+        backlog.pop();
+
+        // Only move into sub-graph if consumer_ intersects and node isn't leaf
+        auto payload = cursor.get(storage, nothrow);
+
+        if (payload && consumer_(batchIdx_, *payload) && !payload->isLeaf()) {
+            for (const auto& children = payload->children(); const auto& child : children) {
+                backlog.push(&child);
+            }
+        }
+    }
+}
+
+void SceneGraph::traversalBatchedPartition(u32 firstBatchIdx_, u32 lastBatchIdx_,
+    cref<std::function<bool(u32, cref<SceneNode>)>> consumer_, ptr<const SceneNodeHead> parent_) const {
+
+    if (firstBatchIdx_ == lastBatchIdx_) {
+        traversalBatchedSingle(firstBatchIdx_, consumer_, parent_);
+        return;
+    }
+
+    stack<ptr<const SceneNodeHead>> backlog {};
+    backlog.push(parent_);
+
+    ref<EmberSceneNodeStorage> storage = *_storage;
+    constexpr _STD nothrow_t nothrow {};
+
+    while (!backlog.empty() && firstBatchIdx_ != lastBatchIdx_) {
+        DEBUG_ASSERT(backlog.top() != nullptr, "Cursor element should never be nullptr or undefined")
+
+        // Important: pop() will invalidate top but, we dereference before we make reference to object, so indirection is not modified
+        cref<SceneNodeHead> cursor = *backlog.top();
+        backlog.pop();
+
+        // Only move into sub-graph if consumer_ intersects and node isn't leaf
+        auto payload = cursor.get(storage, nothrow);
+
+        if (payload && consumer_(0, *payload) && !payload->isLeaf()) {
+            for (const auto& children = payload->children(); const auto& child : children) {
+                backlog.push(&child);
+            }
+        }
+
+        /**
+         *
+         */
+        if (backlog.size() > 1) {
+            const u32 shareable = backlog.size() - 1;
+            const u32 leftBatches = lastBatchIdx_ - firstBatchIdx_;
+
+            const u32 partitions = MIN(shareable, leftBatches);
+            const u32 perShare = leftBatches / partitions;
+
+            for (u32 i = 0; i < partitions; ++i) {
+
+                auto* cur = backlog.top();
+                backlog.pop();
+
+                if (perShare > 1) {
+
+                    // scheduler::Scheduler::get().exec(scheduler::task::make_task(
+                    //     [&, first = lastBatchIdx_ - perShare, last = lastBatchIdx_, consumer = consumer_, parent = cur
+                    //     ]() {
+                    //         traversalBatchedPartition(first, last, consumer, parent);
+                    //     }, scheduler::task::TaskMask::eNormal,
+                    //     engine::scheduler::ScheduleStageBarriers::eGraphicNodeCollectStrong,
+                    //     engine::scheduler::ScheduleStageBarriers::eGraphicNodeCollectStrong));
+                    // 
+                    // lastBatchIdx_ -= perShare;
+
+                } else {
+
+                    // scheduler::Scheduler::get().exec(scheduler::task::make_task(
+                    //     [&, idx = lastBatchIdx_--, consumer = consumer_, parent = cur]() {
+                    //         traversalBatchedSingle(idx, consumer, parent);
+                    //     }, scheduler::task::TaskMask::eNormal,
+                    //     engine::scheduler::ScheduleStageBarriers::eGraphicNodeCollectStrong,
+                    //     engine::scheduler::ScheduleStageBarriers::eGraphicNodeCollectStrong));
+                }
+
+            }
+        }
+    }
+
+    while (!backlog.empty()) {
+
+        auto* cursor = backlog.top();
+        backlog.pop();
+
+        traversalBatchedSingle(firstBatchIdx_, consumer_, cursor);
+    }
+}
+
+void SceneGraph::traversalBatched(u32 maxBatches_, cref<std::function<bool(u32, cref<SceneNode>)>> consumer_) const {
+
+    if (maxBatches_ <= 1) {
+        traversalBatchedSingle(0, consumer_, &_root);
+        return;
+    }
+
+    traversalBatchedPartition(0, maxBatches_ - 1, consumer_, &_root);
+}

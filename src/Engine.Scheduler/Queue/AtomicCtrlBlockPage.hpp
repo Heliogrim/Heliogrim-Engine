@@ -295,7 +295,7 @@ namespace ember::engine::scheduler {
                  *
                  */
                 auto expect = _packed.fetch_and(packed_ref_mask, _STD memory_order_release);
-                const auto maskedPtr = packed & packed_ptr_mask;
+                const auto maskedPtr = expect & packed_ptr_mask;
 
                 /**
                  * Check whether another execution acquired reference in the mean time

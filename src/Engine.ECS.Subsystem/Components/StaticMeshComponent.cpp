@@ -15,7 +15,7 @@
 using namespace ember::engine::ecs::subsystem;
 using namespace ember;
 
-void StaticMeshComponent::mantle(cref<entity_guid> entity_) {
+void StaticMeshComponent::materialize(cref<entity_guid> entity_) {
 
     auto prx = make_uptr<proxy::StaticModelSceneProxy>();
     auto spr = proxy::SceneProxiedRef::make_proxied_ref(_STD move(prx), this);
@@ -69,9 +69,9 @@ void StaticMeshComponent::mantle(cref<entity_guid> entity_) {
     _proxy = _STD move(spr);
 }
 
-void StaticMeshComponent::dismantle([[maybe_unused]] cref<entity_guid> entity_) {
+void StaticMeshComponent::dematerialize([[maybe_unused]] cref<entity_guid> entity_) {
 
-    DEBUG_MSG("Dismantle entity with StaticMeshComponent.")
+    DEBUG_MSG("Dematerialize entity with StaticMeshComponent.")
 
     if (_proxy.use_count() > 0) {
         _proxy.reset();
