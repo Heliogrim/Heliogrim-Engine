@@ -6,7 +6,6 @@ namespace ember::engine::gfx {
     class DepthModelPassProcessor :
         public ModelPassProcessor {
     public:
-
         /**
          * Constructor
          *
@@ -23,11 +22,12 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 22.03.2021
          *
+         * @param batchIdx_ The current batch index.
          * @param  node_ The node.
          *
          * @returns The result of the operation.
          */
-        [[nodiscard]] bool operator()(cref<scene::SceneNode> node_) noexcept override;
+        [[nodiscard]] bool operator()(u32 batchIdx_, cref<scene::SceneNode> node_) noexcept override;
 
         // Temporary test solution; Might be moved to base class and enforced to derived ones
         void reset();

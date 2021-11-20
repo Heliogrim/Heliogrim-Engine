@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Types.hpp>
 

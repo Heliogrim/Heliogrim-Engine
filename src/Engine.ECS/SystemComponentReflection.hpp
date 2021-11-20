@@ -11,15 +11,15 @@ namespace ember::engine::ecs {
     struct SystemComponentReflectionDummy {};
 
     template <typename ComponentType_>
-    concept IsMantleableComponent = IsComponent<ComponentType_> && requires(ComponentType_ obj,
+    concept IsMaterializeableComponent = IsComponent<ComponentType_> && requires(ComponentType_ obj,
     cref<entity_guid> entity_) {
-        { obj.mantle(entity_) } -> std::same_as<void>;
+        { obj.materialize(entity_) } -> std::same_as<void>;
     };
 
     template <typename ComponentType_>
-    concept IsDismantleableComponent = IsComponent<ComponentType_> && requires(ComponentType_ obj,
+    concept IsDematerializeableComponent = IsComponent<ComponentType_> && requires(ComponentType_ obj,
     cref<entity_guid> entity_) {
-        { obj.dismantle(entity_) } -> std::same_as<void>;
+        { obj.dematerialize(entity_) } -> std::same_as<void>;
     };
 
     struct SystemComponentReflection {
@@ -41,20 +41,20 @@ namespace ember::engine::ecs {
         constructor_fnc_type constructor = nullptr;
 
         /**
-         * Type of the mantle function
+         * Type of the materialize function
          *
-         *  @see Component.hpp [Mantle]
+         *  @see Component.hpp [Materialize]
          */
-        using mantle_fnc_type = void (SystemComponentReflectionDummy::*)(_In_ cref<entity_guid> entity_);
-        mantle_fnc_type mantle = nullptr;
+        using materialize_fnc_type = void (SystemComponentReflectionDummy::*)(_In_ cref<entity_guid> entity_);
+        materialize_fnc_type materialize = nullptr;
 
         /**
-         * Type of the dismantle function
+         * Type of the dematerialize function
          *
-         * @see Component.hpp [Dismantle]
+         * @see Component.hpp [Dematerialize]
          */
-        using dismantle_fnc_type = void (SystemComponentReflectionDummy::*)(_In_ cref<entity_guid> entity_);
-        dismantle_fnc_type dismantle = nullptr;
+        using dematerialize_fnc_type = void (SystemComponentReflectionDummy::*)(_In_ cref<entity_guid> entity_);
+        dematerialize_fnc_type dematerialize = nullptr;
 
         /**
          * Type of the destructor function

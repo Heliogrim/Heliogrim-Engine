@@ -23,20 +23,20 @@ namespace ember::engine::ecs::subsystem {
         constructor_fnc_type constructor = nullptr;
 
         /**
-         * Type of the mantle function
+         * Type of the materialize function
          *
-         *  @see Component.hpp [Mantle]
+         *  @see Component.hpp [Materialize]
          */
-        using mantle_fnc_type = void (*)(Entity::const_reference_type);
-        mantle_fnc_type mantle = nullptr;
+        using materialize_fnc_type = void (*)(Entity::const_reference_type);
+        materialize_fnc_type materialize = nullptr;
 
         /**
-         * Type of the dismantle function
+         * Type of the dematerialize function
          *
-         * @see Component.hpp [Dismantle]
+         * @see Component.hpp [Dematerialize]
          */
-        using dismantle_fnc_type = void (*)(Entity::const_reference_type);
-        dismantle_fnc_type dismantle = nullptr;
+        using dematerialize_fnc_type = void (*)(Entity::const_reference_type);
+        dematerialize_fnc_type dematerialize = nullptr;
 
         /**
          * Type of the destructor function

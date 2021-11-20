@@ -9,7 +9,7 @@ using namespace ember;
 DepthModelPassProcessor::DepthModelPassProcessor(ptr<const GraphicPass> graphicPass_) :
     ModelPassProcessor(graphicPass_) {}
 
-bool DepthModelPassProcessor::operator()(cref<scene::SceneNode> node_) noexcept {
+bool DepthModelPassProcessor::operator()(u32 batchIdx_, cref<scene::SceneNode> node_) noexcept {
 
     /**
      * Precheck whether node has state or children

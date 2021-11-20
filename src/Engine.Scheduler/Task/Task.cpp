@@ -14,7 +14,8 @@ TaskDelegate::TaskDelegate(
     _mask(mask_),
     _fiber(nullptr),
     _srcStage(srcStage_),
-    _dstStage(dstStage_) {}
+    _dstStage(dstStage_),
+    _dstBarrierIdx(~0) {}
 
 void TaskDelegate::delegate() const {
     switch (_type) {
@@ -101,6 +102,14 @@ ember::engine::scheduler::ScheduleStageBarrier TaskDelegate::srcStage() const no
 
 ember::engine::scheduler::ScheduleStageBarrier TaskDelegate::dstStage() const noexcept {
     return _dstStage;
+}
+
+std::uint_fast16_t TaskDelegate::dstBarrierIdx() const noexcept {
+    return _dstBarrierIdx;
+}
+
+ember::ref<_STD uint_fast16_t> TaskDelegate::dstBarrierIdx() noexcept {
+    return _dstBarrierIdx;
 }
 
 Task::Task(

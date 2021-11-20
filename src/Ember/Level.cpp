@@ -34,14 +34,14 @@ bool Level::removeEntity(cref<Entity> entity_) {
     throw NotImplementedException {};
 }
 
-bool level::valid(cref<Level> level_) noexcept {
+bool ember::Valid(cref<Level> level_) noexcept {
     throw NotImplementedException {};
 }
 
-future<Level> level::create() noexcept {
+future<Level> ember::CreateLevel() noexcept {
     throw NotImplementedException {};
 }
 
-future<bool> level::destroy(mref<Level> level_) noexcept {
+future<bool> ember::Destroy(mref<Level> level_) noexcept {
     throw NotImplementedException {};
 }

@@ -9,19 +9,19 @@ namespace ember::engine::ecs {
      * [ Pool<Type> ] | [ Entity<Guid> ]
      *
      *	__								-> [Null]			: Component does not exist
-     *	Entity<Guid>::make() {mantle()}	-> [Constructed]	: Component is created at Pool<Type>
-     *	Entity<Guid>::mantle()			-> [Mantled]		: Component is created at Pool<Type> and bound with Entity<Guid>
-     *	Entity<Guid>::dismantle()		-> [Dismantled]		: {Constructed}
+     *	Entity<Guid>::make()            -> [Constructed]	: Component is created at Pool<Type>
+     *	Entity<Guid>::materialize() 	-> [Materialized]   : Component is created at Pool<Type> and bound with Entity<Guid>
+     *	Entity<Guid>::dematerialize()	-> [Dematerialized]	: {Constructed}
      *	Entity<Guid>::destroy()			-> [Destructed]		: {Null}
      *
      *	In general, a component does not compose with entity, cause component will always be stable without others.
      *	A component should be atomic relative to a entity attribution.
      *	A component is not guaranteed to handle always the same entity.
-     *	If required, a component can be dismantled and mantled to be reused by another entity.
+     *	If required, a component can be dematerialized and materialized to be reused by another entity.
      *	A component should only exist on the pooled stack memory and will get handled by ECS.
      *
-     *	While creating a component to present a entity, the component is firstly created and then mantled.
-     *	The order of component invocation while creating or mantling is not guaranteed.
+     *	While creating a component to present a entity, the component is firstly created, but not materialized.
+     *	The order of component invocation while creating or materializing is not guaranteed.
      *
      *	[Creating]
      *		e := Entity<Type, Guid>::make();  
@@ -30,29 +30,27 @@ namespace ember::engine::ecs {
      *					Component<Type>::constructor()
      *			end
      *
-     *			[Mantle( e )]
-     *
      *	[]
      *
-     *	[Mantle]
-     *		e := Entity<Type, Guid>::mantle()
+     *	[Materialize]
+     *		e := Entity<Type, Guid>::materialize()
      *			for Type of ...Types do
      *				Pool<Type>::get(Guid)
-     *					Component<Type>::mantle(Entity<Type>)
+     *					Component<Type>::materialize(Entity<Type>)
      *			end
      *
      *	[]
      *	
-     *	[Dismantle]
-     *		e := Entity<Type, Guid>::dismantle()
+     *	[Dematerialize]
+     *		e := Entity<Type, Guid>::dematerialize()
      *			for Type of ...Types do	
      *				Pool<Type>::get(Guid)
-     *					Component<Type>::dismantle(Entity<Type>)
+     *					Component<Type>::dematerialize(Entity<Type>)
      *			end
      *	
      *	[Destroy]
      *		e := Entity<Type, Guid>::destroy()
-     *			[Dismantle( e )]
+     *			[Dematerialize( e )]
      *
      *			for Type of ...Types do
      *				Pool<Type>::erase(Guid)
@@ -71,7 +69,7 @@ namespace ember::engine::ecs {
     concept IsComponent = ember::HasStaticType<Ty> &&
     _STD is_object_v<Ty> &&
     _STD is_nothrow_default_constructible_v<Ty>;
-    /* This will require the default constructor for a object to be noexcept attributed */ //&&
+    /* This will require the default constructor for a object to be noexcept attributed *///&&
     //_STD is_trivially_move_assignable_v<Ty> &&
     //_STD is_trivially_move_constructible_v<Ty>;
 

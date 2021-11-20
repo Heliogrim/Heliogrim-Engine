@@ -26,7 +26,7 @@ bool PooledBuffer::try_pop(ref<task::__TaskDelegate> value_) {
     /**
      *
      */
-    if (_reader.test_and_set(_STD memory_order_acq_rel)) {
+    if (_reader.test_and_set(_STD memory_order_release)) {
         return false;
     }
 
@@ -43,7 +43,7 @@ bool PooledBuffer::try_push(mref<task::__TaskDelegate> value_) {
     /**
      *
      */
-    if (_writer.test_and_set(_STD memory_order_acq_rel)) {
+    if (_writer.test_and_set(_STD memory_order_release)) {
         return false;
     }
 

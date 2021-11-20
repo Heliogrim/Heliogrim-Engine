@@ -4,7 +4,7 @@
 #include <Engine.ECS/Registry.hpp>
 #include <Engine.Session/Session.hpp>
 
-#include "Staged/StagedComponentProcessor.hpp"
+#include "Staged/Collection.hpp"
 
 namespace ember::engine::ecs {
 
@@ -40,7 +40,21 @@ namespace ember::engine::ecs {
         [[nodiscard]] ptr<System> system() const noexcept;
 
     private:
-        subsystem::StagedComponentProcessor _stagedProcessor;
+        subsystem::staged::Collection _signalMaterialize;
+        subsystem::staged::Collection _signalUpdate;
+
+    public:
+        void signalMaterialize(cref<entity_guid> guid_, const component_type_id typeId_,
+            const non_owning_rptr<void> ptr_);
+
+        void signalUpdate(cref<entity_guid> guid_, const component_type_id typeId_, const non_owning_rptr<void> ptr_);
+
+        // void signalDematerialize();
+
+    private:
+        void batchSignaledUpdates();
+
+        void batchSignaledMaterializes();
     };
 
 }

@@ -13,7 +13,7 @@ using namespace ember;
 ModelPassProcessor::ModelPassProcessor(ptr<const GraphicPass> graphicPass_) :
     _graphicPass(graphicPass_) {}
 
-bool ModelPassProcessor::operator()(cref<scene::SceneNode> node_) noexcept {
+bool ModelPassProcessor::operator()(u32 batchIdx_, cref<scene::SceneNode> node_) noexcept {
 
     SCOPED_STOPWATCH
 

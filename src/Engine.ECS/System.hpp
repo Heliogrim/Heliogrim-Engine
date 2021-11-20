@@ -11,6 +11,11 @@
 
 namespace ember::engine::ecs {
 
+    /**
+     * Forward Declaration
+     */
+    class Subsystem;
+
     class System {
     public:
         using this_type = System;
@@ -78,23 +83,22 @@ namespace ember::engine::ecs {
         ska::bytell_hash_map<component_type_id, SystemComponentReflection> _reflections;
 
     public:
+        [[nodiscard]] ref<decltype(_reflections)> reflections() noexcept;
+
+    public:
         [[nodiscard]] ptr<void> getComponent(_In_ cref<component_type_id> typeId_,
             _In_ cref<entity_guid> entity_) const noexcept;
 
     public:
-        void makeComponent(_In_ cref<component_type_id> typeId_) = delete;
+        void makeComponent(_In_ cref<component_type_id> typeId_, _In_ cref<entity_guid> entity_);
 
-        void makeComponent(_In_ cref<component_type_id> typeId_, _In_ const ptr<void> source_) = delete;
+        void materializeComponent(_In_ cref<component_type_id> typeId_, _In_ cref<entity_guid> entity_);
 
-        void makeComponents(_In_ cref<component_type_id> typeId_, _In_ cref<pool_entry_size_type> count_) = delete;
+        void materializeComponents(_In_ cref<component_type_id> typeId_, _In_ cref<vector<entity_guid>> entities_);
 
-        void mantleComponent(_In_ cref<component_type_id> typeId_, _In_ cref<entity_guid> entity_);
+        void dematerializeComponent(_In_ cref<component_type_id> typeId_, _In_ cref<entity_guid> entity_) = delete;
 
-        void mantleComponents(_In_ cref<component_type_id> typeId_, _In_ cref<vector<entity_guid>> entities_);
-
-        void dismantleComponent(_In_ cref<component_type_id> typeId_, _In_ cref<entity_guid> entity_) = delete;
-
-        void dismantleComponents(_In_ cref<component_type_id> typeId_, _In_ cref<vector<entity_guid>> entities_)
+        void dematerializeComponents(_In_ cref<component_type_id> typeId_, _In_ cref<vector<entity_guid>> entities_)
         = delete;
 
         void destroyComponent(_In_ cref<component_type_id> typeId_, _In_ cref<entity_guid> entity_);
@@ -120,20 +124,28 @@ namespace ember::engine::ecs {
                 ComponentType_::type_id,
                 sizeof(ComponentType_),
                 nullptr/* &ComponentType_::ComponentType_ */,
-                nullptr/* &ComponentType_::mantle */,
-                nullptr/* &ComponentType_::dismantle */,
+                nullptr/* &ComponentType_::materialize */,
+                nullptr/* &ComponentType_::dematerialize */,
                 nullptr/* &ComponentType_::~ComponentType_ */
             };
 
-            if constexpr (IsMantleableComponent<ComponentType_>) {
-                refl.mantle = reinterpret_cast<SystemComponentReflection::mantle_fnc_type>(&ComponentType_::mantle);
+            if constexpr (IsMaterializeableComponent<ComponentType_>) {
+                refl.materialize = reinterpret_cast<SystemComponentReflection::materialize_fnc_type>(&
+                    ComponentType_::materialize);
             }
 
-            if constexpr (IsDismantleableComponent<ComponentType_>) {
-                refl.dismantle = reinterpret_cast<SystemComponentReflection::dismantle_fnc_type>(&ComponentType_::dismantle);
+            if constexpr (IsDematerializeableComponent<ComponentType_>) {
+                refl.dematerialize = reinterpret_cast<SystemComponentReflection::dematerialize_fnc_type>(&
+                    ComponentType_::dematerialize);
             }
 
             _reflections.insert(_STD make_pair(ComponentType_::type_id, refl));
         }
+
+    private:
+        ptr<Subsystem> _subsystem;
+
+    public:
+        ref<ptr<Subsystem>> subsystem() noexcept;
     };
 }

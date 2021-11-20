@@ -33,7 +33,8 @@ bool Worker::start() {
     }
 
     if (_mask & task::TaskMask::eCritical) {
-        _thread.setPriority(eTimeCritical);
+        // _thread.setPriority(eTimeCritical);
+        _thread.setPriority(eHigh);
     }
 
     return true;
@@ -116,6 +117,7 @@ void Worker::handle(void* args_) {
 
             // Temporary
             auto dst = task->dstStage();
+            const auto dstIdx = task->dstBarrierIdx();
 
             launcher.self = task->fiber();
 
@@ -129,7 +131,7 @@ void Worker::handle(void* args_) {
 
                 // Temporary
                 if (dst.weak()) {
-                    worker->pipeline()->decrementGuarantee(static_cast<ScheduleStage>(dst.stage));
+                    worker->pipeline()->decBarrier(dstIdx);
                 }
             }
 
@@ -170,7 +172,7 @@ void Worker::handle(void* args_) {
 
                 // Temporary
                 if (dst.strong()) {
-                    worker->pipeline()->decrementGuarantee(static_cast<ScheduleStage>(dst.stage));
+                    worker->pipeline()->decBarrier(dstIdx);
                 }
             }
         }

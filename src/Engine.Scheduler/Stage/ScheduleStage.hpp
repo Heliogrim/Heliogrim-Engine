@@ -13,9 +13,11 @@ namespace ember::engine::scheduler {
         //
         eTop = 0b0000'0000'0000'0001,
         //
-        eUserUpdate = 0b0000'0000'0000'1000,
+        eNetworkFetch = 0b0000'0000'0000'1000,
+        eUserUpdate = 0b0000'0000'0001'0000,
         //
-        eNetworkFetch = 0b0000'0000'0001'0000,
+        ePublish = 0b0000'0000'0010'0000,
+        //
         ePhysicsSimulate = 0b0000'0000'0100'0000,
         eNetworkPush = 0b0000'0001'0000'0000,
         eGraphicNodeCollect = 0b0000'0100'0000'0000,
@@ -101,6 +103,9 @@ namespace ember::engine::scheduler {
      * | `eStrong`      | `Stage (2) :: F`  | `eWeak`       | `Stage (2) :: T`  | `-`               | `-`       | `F`           | End of `T`    | `Undefined`           |
      * | `eStrong`      | `Stage (2) :: F`  | `eStrong`     | `Stage (2) :: T`  | `-`               | `-`       | `F`           | `T`           | End of `T`            |
      *
+     * Attention: Currently scheduling with strong guarantee like current stage will only apply to non-repetitive tasks
+     * Attention: Repetitive tasks will be scheduled for next UPCOMMING stage
+     *
      * Warning: `eAll` is not allowed as dst stage
      * Warning: `eUndefined` is not allowed as src stage
      *
@@ -125,10 +130,12 @@ namespace ember::engine::scheduler {
          */
         constexpr ScheduleStageBarrier eTopStrong { ScheduleStage::eTop, true };
         constexpr ScheduleStageBarrier eTopWeak { ScheduleStage::eTop, false };
-        constexpr ScheduleStageBarrier eUserUpdateStrong { ScheduleStage::eUserUpdate, true };
-        constexpr ScheduleStageBarrier eUserUpdateWeak { ScheduleStage::eUserUpdate, false };
         constexpr ScheduleStageBarrier eNetworkFetchStrong { ScheduleStage::eNetworkFetch, true };
         constexpr ScheduleStageBarrier eNetworkFetchWeak { ScheduleStage::eNetworkFetch, false };
+        constexpr ScheduleStageBarrier eUserUpdateStrong { ScheduleStage::eUserUpdate, true };
+        constexpr ScheduleStageBarrier eUserUpdateWeak { ScheduleStage::eUserUpdate, false };
+        constexpr ScheduleStageBarrier ePublishStrong { ScheduleStage::ePublish, true };
+        constexpr ScheduleStageBarrier ePublishWeak { ScheduleStage::ePublish, false };
         constexpr ScheduleStageBarrier ePhysicsSimulateStrong { ScheduleStage::ePhysicsSimulate, true };
         constexpr ScheduleStageBarrier ePhysicsSimulateWeak { ScheduleStage::ePhysicsSimulate, false };
         constexpr ScheduleStageBarrier eNetworkPushStrong { ScheduleStage::eNetworkPush, true };

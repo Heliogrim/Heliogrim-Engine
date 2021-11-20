@@ -103,6 +103,7 @@ namespace ember::engine::scheduler::task {
         const ScheduleStageBarrier _srcStage;
         /** The schedule stage barrier, describing the latest completion for this task */
         const ScheduleStageBarrier _dstStage;
+        _STD uint_fast16_t _dstBarrierIdx;
 
     public:
         /**
@@ -124,6 +125,26 @@ namespace ember::engine::scheduler::task {
          * @returns The schedule stage barrier, used as destination.
          */
         [[nodiscard]] ScheduleStageBarrier dstStage() const noexcept;
+
+        /**
+         * Get the index of the destination barrier
+         *
+         * @author Julius
+         * @date 18.11.2021
+         *
+         * @returns The stored destination barrier index.
+         */
+        [[nodiscard]] _STD uint_fast16_t dstBarrierIdx() const noexcept;
+
+        /**
+         * Get the index of the destination barrier
+         *
+         * @author Julius
+         * @date 18.11.2021
+         *
+         * @returns A reference to the stored destination barrier index.
+         */
+        [[nodiscard]] ref<_STD uint_fast16_t> dstBarrierIdx() noexcept;
 
     protected:
         /**

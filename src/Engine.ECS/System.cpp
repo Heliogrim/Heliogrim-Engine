@@ -3,6 +3,8 @@
 #include <cassert>
 #include <Engine.Common/Exception/NotImplementedException.hpp>
 
+#include "Engine.ECS.Subsystem/Subsystem.hpp"
+
 using namespace ember::engine::ecs;
 using namespace ember;
 
@@ -17,6 +19,10 @@ non_owning_rptr<Registry> System::registry() const noexcept {
     return _registry.get();
 }
 
+ref<decltype(System::_reflections)> System::reflections() noexcept {
+    return _reflections;
+}
+
 ptr<void> System::getComponent(cref<component_type_id> typeId_, cref<entity_guid> entity_) const noexcept {
 
     auto* pool = _registry->get_pool_adapter(typeId_);
@@ -25,7 +31,19 @@ ptr<void> System::getComponent(cref<component_type_id> typeId_, cref<entity_guid
     return inst;
 }
 
-void System::mantleComponent(cref<component_type_id> typeId_, cref<entity_guid> entity_) {
+void System::makeComponent(cref<component_type_id> typeId_, cref<entity_guid> entity_) {
+
+    auto* pool = _registry->get_pool_adapter(typeId_);
+    pool->insert(entity_);
+
+    auto* inst = pool->get(entity_);
+    DEBUG_ASSERT(inst != nullptr, "")
+
+    // TODO:
+    _subsystem->signalMaterialize(entity_, typeId_, inst);
+}
+
+void System::materializeComponent(cref<component_type_id> typeId_, cref<entity_guid> entity_) {
 
     auto* pool = _registry->get_pool_adapter(typeId_);
     pool->insert(entity_);
@@ -36,18 +54,18 @@ void System::mantleComponent(cref<component_type_id> typeId_, cref<entity_guid> 
     const auto refl = _reflections.at(typeId_);
 
     /**
-     * Check whether component implements mantle life-cycle callback
+     * Check whether component implements materialize life-cycle callback
      */
-    if (refl.mantle != nullptr) {
-        void (SystemComponentReflectionDummy::*mantle)(cref<entity_guid>) = refl.mantle;
-        (static_cast<ptr<SystemComponentReflectionDummy>>(inst)->*mantle)(entity_);
+    if (refl.materialize != nullptr) {
+        void (SystemComponentReflectionDummy::*materialize)(cref<entity_guid>) = refl.materialize;
+        (static_cast<ptr<SystemComponentReflectionDummy>>(inst)->*materialize)(entity_);
     }
 }
 
-void System::mantleComponents(cref<component_type_id> typeId_, cref<vector<entity_guid>> entities_) {
+void System::materializeComponents(cref<component_type_id> typeId_, cref<vector<entity_guid>> entities_) {
 
     for (const auto& entry : entities_) {
-        mantleComponent(typeId_, entry);
+        materializeComponent(typeId_, entry);
     }
 }
 
@@ -61,11 +79,11 @@ void System::destroyComponent(cref<component_type_id> typeId_, cref<entity_guid>
     const auto refl = _reflections.at(typeId_);
 
     /**
-     * Check whether component implements dismantle life-cycle callback
+     * Check whether component implements dematerialize life-cycle callback
      */
-    if (refl.dismantle != nullptr) {
-        void (SystemComponentReflectionDummy::*dismantle)(cref<entity_guid>) = refl.dismantle;
-        (static_cast<ptr<SystemComponentReflectionDummy>>(inst)->*dismantle)(entity_);
+    if (refl.dematerialize != nullptr) {
+        void (SystemComponentReflectionDummy::*dematerialize)(cref<entity_guid>) = refl.dematerialize;
+        (static_cast<ptr<SystemComponentReflectionDummy>>(inst)->*dematerialize)(entity_);
     }
 
     /**
@@ -88,7 +106,7 @@ void System::destroyAllComponents(cref<component_type_id> typeId_) {
 void System::compose(cref<entity_guid> guid_, std::initializer_list<component_type_id> typeIds_) {
 
     for (const auto& entry : typeIds_) {
-        mantleComponent(entry, guid_);
+        makeComponent(entry, guid_);
     }
 }
 
@@ -104,4 +122,8 @@ void System::compose(cref<entity_guid> guid_,
     }
 
     compose(guid_, _STD initializer_list(nl.data(), nl.data() + nl.size()));
+}
+
+ref<ptr<Subsystem>> System::subsystem() noexcept {
+    return _subsystem;
 }
