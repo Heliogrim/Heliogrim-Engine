@@ -12,11 +12,10 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-#include <Ember/Entity.hpp>
+#include <Ember/Actor.hpp>
 #include <Ember/Inbuilt.hpp>
 #include <Ember/Level.hpp>
 #include <Ember/TextureAsset.hpp>
-#include <Ember/Component/Gfx/StaticMeshComponent.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Event/TickEvent.hpp>
 #include <Engine.Session/Session.hpp>
@@ -29,7 +28,7 @@ using namespace ember;
 
 void test();
 
-void buildEntity(const u64 idx_, const u64 rows_, const u64 cols_);
+void buildActor(const u64 idx_, const u64 rows_, const u64 cols_);
 
 void ember_block_main() {
 
@@ -136,7 +135,7 @@ void ember_main_entry() {
 
             const u64 nextCycleLimit = _STD min(idx + perCycle, count);
             for (; idx < nextCycleLimit; ++idx) {
-                buildEntity(idx, rows, cols);
+                buildActor(idx, rows, cols);
             }
 
             if (idx >= count) {
@@ -163,21 +162,11 @@ void test() {
      *
      */
     {
-        Entity entity {};
-        auto val = Valid(entity);
-    }
-
-    /**
-     *
-     */
-    {
-        auto possible = CreateEntity();
+        auto possible = CreateActor();
         await(possible);
 
-        Entity entity = possible.get();
-        auto val = Valid(entity);
-
-        await(Destroy(_STD move(entity)));
+        Actor* actor = possible.get();
+        await(Destroy(_STD move(actor)));
     }
 
     /**
@@ -203,9 +192,9 @@ void test() {
         Level level = possible.get();
         auto val = Valid(level);
 
-        vector<future<Entity>> flist {};
+        vector<future<ptr<Actor>>> flist {};
         for (u8 c = 0; c < 128ui8; ++c) {
-            flist.push_back(CreateEntity());
+            flist.push_back(CreateActor());
         }
 
         for (auto& entry : flist) {
@@ -214,9 +203,11 @@ void test() {
             }
         }
 
+        /*
         for (auto& entry : flist) {
             level.addEntity(entry.get());
         }
+         */
 
         await(Destroy(_STD move(level)));
     }
@@ -243,16 +234,16 @@ void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const 
     position_ += math::vec3_forward * (gy - y);
 }
 
-void buildEntity(const u64 idx_, const u64 rows_, const u64 cols_) {
+void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
 
-    auto possible = CreateEntity();
+    auto possible = CreateActor();
     // await(possible);
 
-    Entity entity = possible.get();
-    auto val = Valid(entity);
+    Actor* actor = possible.get();
 
-    auto transform = entity.transform();
+    auto transform { actor->getWorldTransform() };
 
+    /*
     randomPaddedPosition(idx_, rows_, cols_, transform.position());
     transform.scale() = math::vec3_one;
 
@@ -263,4 +254,5 @@ void buildEntity(const u64 idx_, const u64 rows_, const u64 cols_) {
 
     comp.setMesh(ember::game::assets::meshes::PlaneD128::auto_guid());
     comp.setMaterial(ember::game::assets::material::ForestGround01::auto_guid());
+     */
 }

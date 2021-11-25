@@ -1,11 +1,16 @@
 #pragma once
 
+#include <concepts>
+
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Math/__default.inl>
 #include <Engine.Common/Concurrent/Future.hpp>
 #include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Scheduler/Fiber/Awaitable.hpp>
+#include <Engine.Reflect/EmberObject.hpp>
 
 #include "Task.hpp"
 
@@ -178,6 +183,16 @@ namespace ember {
      */
 
     /**
+     * Awaits the current execution context until signal arise
+     *
+     * @author Julius
+     * @date 23.10.2021
+     *
+     * @param  signal_ The signal to wait for.
+     */
+    extern void await(_In_ const ptr<await_signal_type> signal_);
+
+    /**
      * Yields the current execution context at least for given milliseconds
      *
      * @author Julius
@@ -196,12 +211,26 @@ namespace ember {
     extern void yield();
 
     /**
-     * Awaits the current execution context until signal arise
+     * Try to remove the execution guarantee of this context if exists
      *
      * @author Julius
-     * @date 23.10.2021
+     * @date 22.11.2021
      *
-     * @param  signal_ The signal to wait for.
+     * @note Could fail if context is marked with ctrl token
+     *
+     * @returns True if guarantee was removed, otherwise false.
      */
-    extern void await(_In_ const ptr<await_signal_type> signal_);
+    extern bool desync();
+
+    /**
+     * Try to sync this context to scheduling with given guarantees
+     *
+     * @author Julius
+     * @date 22.11.2021
+     *
+     * @node Could fail is context is marked with ctrl token
+     *
+     * @returns True if context enforced guarantees, otherwise false.
+     */
+    extern bool sync(_In_ cref<TaskStage> src_, _In_ cref<TaskStage> dst_);
 }

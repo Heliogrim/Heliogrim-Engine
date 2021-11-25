@@ -13,53 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Headerdateien\Component">
-      <UniqueIdentifier>{ab047d90-3814-46ce-a9d0-ad2f2c11f45d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Component">
-      <UniqueIdentifier>{de55f3e7-a08a-4e21-be66-dba0a4e076dd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headerdateien\Component\Gfx">
-      <UniqueIdentifier>{8bb7213b-f284-48ad-86f2-669e5b7afc91}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headerdateien\Component\Pfx">
-      <UniqueIdentifier>{db91c9e4-de7b-42ba-bfd1-e29f9169aa98}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headerdateien\Component\Sfx">
-      <UniqueIdentifier>{65f28da4-5e0d-40f6-aff9-4e64730644ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Component\Gfx">
-      <UniqueIdentifier>{c55fcd75-e4a2-4c55-aa55-75653f061176}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Component\Sfx">
-      <UniqueIdentifier>{9e449f8e-23bf-4fda-9061-7b0f4c4b1661}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Component\Pfx">
-      <UniqueIdentifier>{c2f751a1-9838-4ae7-8840-3f01d8e58d77}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Ember\Component\LogicComponent.hpp">
-      <Filter>Headerdateien\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Component\EntityComponent.hpp">
-      <Filter>Headerdateien\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Component\SceneComponent.hpp">
-      <Filter>Headerdateien\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Component\LightComponent.hpp">
-      <Filter>Headerdateien\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Component\ModelComponent.hpp">
-      <Filter>Headerdateien\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Component\CollisionComponent.hpp">
-      <Filter>Headerdateien\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Component\ComponentHandle.hpp">
-      <Filter>Headerdateien\Component</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Ember\Texture.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -95,18 +50,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\Traits.hpp">
       <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Component\Gfx\MeshComponent.hpp">
-      <Filter>Headerdateien\Component\Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Component\Gfx\StaticMeshComponent.hpp">
-      <Filter>Headerdateien\Component\Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Component\Gfx\SkeletalMeshComponent.hpp">
-      <Filter>Headerdateien\Component\Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Component\Gfx\SkinnedMeshComponent.hpp">
-      <Filter>Headerdateien\Component\Gfx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\AssetDatabase.hpp">
       <Filter>Headerdateien</Filter>
@@ -168,9 +111,6 @@
     <ClInclude Include="..\..\src\Ember\Inbuilt.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Entity.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Ember\Level.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -181,6 +121,39 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\Task.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Actor.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\ActorInitializer.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\ActorComponent.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\LogicComponent.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\SceneComponent.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\ModelComponent.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\StaticMeshComponent.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\LightComponent.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\CollisionComponent.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\SkeletalMeshComponent.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\SkinnedMeshComponent.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -202,27 +175,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\TextureFormat.cpp">
       <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Ember\Component\ModelComponent.cpp">
-      <Filter>Quelldateien\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Ember\Component\SceneComponent.cpp">
-      <Filter>Quelldateien\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Ember\Component\LogicComponent.cpp">
-      <Filter>Quelldateien\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Ember\Component\CollisionComponent.cpp">
-      <Filter>Quelldateien\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Ember\Component\EntityComponent.cpp">
-      <Filter>Quelldateien\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Ember\Component\LightComponent.cpp">
-      <Filter>Quelldateien\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Ember\Component\ComponentHandle.cpp">
-      <Filter>Quelldateien\Component</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\Ember.cpp">
       <Filter>Quelldateien</Filter>
@@ -275,19 +227,19 @@
     <ClCompile Include="..\..\src\Ember\Inbuilt.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Ember\Entity.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Ember\Level.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\World.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Ember\Component\Gfx\StaticMeshComponent.cpp">
-      <Filter>Quelldateien\Component\Gfx</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Ember\Task.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Actor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\ActorComponent.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

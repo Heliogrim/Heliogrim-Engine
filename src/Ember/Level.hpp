@@ -1,12 +1,14 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
-
-#include "Entity.hpp"
+#include "Inbuilt.hpp"
 
 namespace ember {
 
-    class Level {
+    class Level :
+        public EmberObject {
+    public:
+        using this_type = Level;
+        using underlying_type = EmberObject;
     public:
         /**
          * Default constructor
@@ -68,31 +70,6 @@ namespace ember {
          * @returns A shallow copy of this.
          */
         ref<Level> operator=(_Inout_ mref<Level> other_) noexcept;
-
-    public:
-        /**
-         * Tries to add the given entity to this level
-         *
-         * @author Julius
-         * @date 24.10.2021
-         *
-         * @param  entity_ The entity to add.
-         *
-         * @returns True if it succeeds, false if it fails.
-         */
-        _Success_(return == true) bool addEntity(_In_ cref<Entity> entity_);
-
-        /**
-         * Removes the entity from this level
-         *
-         * @author Julius
-         * @date 24.10.2021
-         *
-         * @param  entity_ The entity to remove.
-         *
-         * @returns True if it succeeds, false if it fails.
-         */
-        _Success_(return == true) bool removeEntity(_In_ cref<Entity> entity_);
     };
 
     /**

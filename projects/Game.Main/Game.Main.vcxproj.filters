@@ -67,6 +67,15 @@
     <Filter Include="Quelldateien\Assets\Meshes">
       <UniqueIdentifier>{71eed777-e8c5-4b11-bc50-3a92b1cfb9f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\World\Actors">
+      <UniqueIdentifier>{564f3c89-53fa-49a4-b755-5c50f6d48276}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\World">
+      <UniqueIdentifier>{7b8b188a-39bd-4f9f-b57f-bdd81442a925}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\World\Actors">
+      <UniqueIdentifier>{c582479d-90a2-4e9c-ae63-81c7055f6be4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game.Main\main.cpp">
@@ -131,6 +140,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.cpp">
       <Filter>Quelldateien\Assets\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\World\Actors\WoodenTable.cpp">
+      <Filter>Quelldateien\World\Actors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +271,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.hpp">
       <Filter>Headerdateien\Assets\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\World\Actors\EditorCamera.hpp">
+      <Filter>Headerdateien\World\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\World\Actors\WoodenTable.hpp">
+      <Filter>Headerdateien\World\Actors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -121,6 +121,10 @@ void ember::execute(mref<TickTask> task_) {
     engine::scheduler::Scheduler::get().exec(task);
 }
 
+void ember::await(const ptr<await_signal_type> signal_) {
+    engine::scheduler::fiber::self::await_signal(signal_);
+}
+
 void ember::sleep(const u64 milliseconds_) {
 
     #ifdef _DEBUG
@@ -139,6 +143,10 @@ void ember::yield() {
     engine::scheduler::fiber::self::yield();
 }
 
-void ember::await(const ptr<await_signal_type> signal_) {
-    engine::scheduler::fiber::self::await_signal(signal_);
+bool ember::desync() {
+    throw NotImplementedException {};
+}
+
+bool ember::sync(cref<TaskStage> src_, cref<TaskStage> dst_) {
+    throw NotImplementedException {};
 }
