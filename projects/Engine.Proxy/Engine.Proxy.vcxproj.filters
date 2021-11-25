@@ -36,10 +36,19 @@
     <ClInclude Include="..\..\src\Engine.Proxy\SkeletalModelSceneProxy.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Proxy\StatedSceneProxy.hpp">
+    <ClInclude Include="..\..\src\Engine.Proxy\ProxiedScenePayload.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Proxy\ProxiedScenePayload.hpp">
+    <ClInclude Include="..\..\src\Engine.Proxy\Proxy.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Proxy\SignaledStagedCollection.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Proxy\ProxyTypeRegister.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Proxy\ProxyCategory.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -57,6 +66,15 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Proxy\StaticModelSceneProxy.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Proxy\SignaledStagedCollection.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Proxy\Proxy.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Proxy\ProxyTypeRegister.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

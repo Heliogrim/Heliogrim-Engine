@@ -15,6 +15,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Ember\Actor.hpp" />
+    <ClInclude Include="..\..\src\Ember\ActorComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\ActorInitializer.hpp" />
     <ClInclude Include="..\..\src\Ember\Asset.hpp" />
     <ClInclude Include="..\..\src\Ember\AssetAutoGuid.hpp" />
     <ClInclude Include="..\..\src\Ember\AssetAutoRegister.hpp" />
@@ -22,19 +25,8 @@
     <ClInclude Include="..\..\src\Ember\AssetDatabaseResult.hpp" />
     <ClInclude Include="..\..\src\Ember\Audio.hpp" />
     <ClInclude Include="..\..\src\Ember\AudioFormat.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\CollisionComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\ComponentHandle.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\EntityComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\Gfx\MeshComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\Gfx\SkeletalMeshComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\Gfx\SkinnedMeshComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\Gfx\StaticMeshComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\LightComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\LogicComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\ModelComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Component\SceneComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\CollisionComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Ember.hpp" />
-    <ClInclude Include="..\..\src\Ember\Entity.hpp" />
     <ClInclude Include="..\..\src\Ember\GfxMaterial.hpp" />
     <ClInclude Include="..\..\src\Ember\GfxMaterialAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\Graphics.hpp" />
@@ -43,15 +35,22 @@
     <ClInclude Include="..\..\src\Ember\LandscapeMeshAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\Level.hpp" />
     <ClInclude Include="..\..\src\Ember\LevelAsset.hpp" />
+    <ClInclude Include="..\..\src\Ember\LightComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\LogicComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\ModelComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Network.hpp" />
     <ClInclude Include="..\..\src\Ember\PfxMaterial.hpp" />
     <ClInclude Include="..\..\src\Ember\PfxMaterialAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\RenderableAsset.hpp" />
+    <ClInclude Include="..\..\src\Ember\SceneComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Scheduler.hpp" />
     <ClInclude Include="..\..\src\Ember\SfxMaterialAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\SkeletalMeshAsset.hpp" />
+    <ClInclude Include="..\..\src\Ember\SkeletalMeshComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\SkinnedMeshComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\SoundAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\StaticMeshAsset.hpp" />
+    <ClInclude Include="..\..\src\Ember\StaticMeshComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\StreamableAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\StreamableRenderableAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\Task.hpp" />
@@ -65,23 +64,19 @@
     <ClInclude Include="..\..\src\Ember\World.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Ember\Actor.cpp" />
+    <ClCompile Include="..\..\src\Ember\ActorComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\Asset.cpp" />
     <ClCompile Include="..\..\src\Ember\AssetDatabase.cpp" />
     <ClCompile Include="..\..\src\Ember\AudioFormat.cpp" />
-    <ClCompile Include="..\..\src\Ember\Component\CollisionComponent.cpp" />
-    <ClCompile Include="..\..\src\Ember\Component\ComponentHandle.cpp" />
-    <ClCompile Include="..\..\src\Ember\Component\EntityComponent.cpp" />
-    <ClCompile Include="..\..\src\Ember\Component\Gfx\StaticMeshComponent.cpp" />
-    <ClCompile Include="..\..\src\Ember\Component\LightComponent.cpp" />
-    <ClCompile Include="..\..\src\Ember\Component\LogicComponent.cpp" />
-    <ClCompile Include="..\..\src\Ember\Component\ModelComponent.cpp" />
-    <ClCompile Include="..\..\src\Ember\Component\SceneComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\Ember.cpp" />
-    <ClCompile Include="..\..\src\Ember\Entity.cpp" />
     <ClCompile Include="..\..\src\Ember\GfxMaterial.cpp" />
     <ClCompile Include="..\..\src\Ember\GfxMaterialAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\ImageAsset.cpp" />
-    <ClCompile Include="..\..\src\Ember\Inbuilt.cpp" />
+    <ClCompile Include="..\..\src\Ember\Inbuilt.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Inbuilt.hpp</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="..\..\src\Ember\LandscapeMeshAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\Level.cpp" />
     <ClCompile Include="..\..\src\Ember\LevelAsset.cpp" />
@@ -102,17 +97,14 @@
     <ClCompile Include="..\..\src\Ember\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Engine.ACS\Engine.ACS.vcxproj">
+      <Project>{bdd7b57f-5aee-4ddb-95fd-e0f89bb25ec7}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Assets\Engine.Assets.vcxproj">
       <Project>{02a28ec5-5e8a-4ca4-ad1d-673df3b995f5}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
       <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.ECS.Subsystem\Engine.ECS.Subsystem.vcxproj">
-      <Project>{eb2eee00-69a8-44bb-8ab5-5c4b7cdd81e9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.ECS\Engine.ECS.vcxproj">
-      <Project>{bdd7b57f-5aee-4ddb-95fd-e0f89bb25ec7}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Env\Engine.Env.vcxproj">
       <Project>{f73e4ef6-247e-42e0-bd0a-04d104e6837d}</Project>
@@ -131,6 +123,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine.Proxy\Engine.Proxy.vcxproj">
       <Project>{6cd674b5-80b9-4af0-8fb9-c1ef8adc6a5a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Reflect\Engine.Reflect.vcxproj">
+      <Project>{9058623e-8475-4683-8131-0845fa5aa877}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Resource\Engine.Resource.vcxproj">
       <Project>{b0e77d6c-45d7-4254-8630-d10fdf6ca290}</Project>

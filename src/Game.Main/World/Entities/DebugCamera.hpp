@@ -21,5 +21,5 @@ namespace game::world::entity {
         void destruct() noexcept;
     };
 
-    inline auto test = engine::ecs::subsystem::EntityReflector {}.operator()<DebugCamera>();
+    inline auto test = engine::acs::subsystem::EntityReflector {}.operator()<DebugCamera>();
 }

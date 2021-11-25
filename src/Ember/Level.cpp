@@ -26,14 +26,6 @@ ref<Level> Level::operator=(mref<Level> other_) noexcept {
     throw NotImplementedException {};
 }
 
-bool Level::addEntity(cref<Entity> entity_) {
-    throw NotImplementedException {};
-}
-
-bool Level::removeEntity(cref<Entity> entity_) {
-    throw NotImplementedException {};
-}
-
 bool ember::Valid(cref<Level> level_) noexcept {
     throw NotImplementedException {};
 }

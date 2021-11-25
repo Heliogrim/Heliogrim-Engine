@@ -1,6 +1,6 @@
 #pragma once
+#include <Ember/ActorComponent.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.ECS.Subsystem/Components/SceneComponent.hpp>
 
 #include "ProxiedScenePayload.hpp"
 #include "SceneProxy.hpp"
@@ -54,9 +54,9 @@ namespace ember::engine::proxy {
 
     private:
         /**
-         * Scene Component / Owner
+         * Owner
          */
-        non_owning_rptr<ecs::subsystem::SceneComponent> _owner;
+        non_owning_rptr<ActorComponent> _owner;
 
     public:
         /**
@@ -67,7 +67,7 @@ namespace ember::engine::proxy {
          *
          * @returns A pointer to the owning scene component
          */
-        [[nodiscard]] non_owning_rptr<ecs::subsystem::SceneComponent> owner() const noexcept;
+        [[nodiscard]] non_owning_rptr<ActorComponent> owner() const noexcept;
 
         /**
          * Gets the owner
@@ -77,7 +77,7 @@ namespace ember::engine::proxy {
          *
          * @returns A pointer to the owning scene component
          */
-        [[nodiscard]] non_owning_rptr<ecs::subsystem::SceneComponent> owner() noexcept;
+        [[nodiscard]] non_owning_rptr<ActorComponent> owner() noexcept;
 
     private:
         /**
@@ -126,7 +126,7 @@ namespace ember::engine::proxy {
          * @param   proxy_ The proxy.
          * @param   payload_ The scene payload.
          */
-        SceneProxiedRef(_In_ non_owning_rptr<ecs::subsystem::SceneComponent> owner_,
+        SceneProxiedRef(_In_ non_owning_rptr<ActorComponent> owner_,
             _Inout_ mref<uptr<SceneProxy>> proxy_,
             _Inout_ mref<OwningProxiedScenePayload> payload_) noexcept;
 
@@ -141,7 +141,7 @@ namespace ember::engine::proxy {
          *
          * @returns A managed&lt;SceneProxiedRef&gt;
          */
-        static managed<SceneProxiedRef> make_proxied_ref(non_owning_rptr<ecs::subsystem::SceneComponent> owner_);
+        static managed<SceneProxiedRef> make_proxied_ref(non_owning_rptr<ActorComponent> owner_);
 
         /**
          * Managed Construction call to SceneProxiedRef without initial state and owner
@@ -167,6 +167,6 @@ namespace ember::engine::proxy {
          * @returns A managed&lt;SceneProxiedRef&gt;
          */
         static managed<SceneProxiedRef> make_proxied_ref(_Inout_ mref<uptr<SceneProxy>> proxy_,
-            non_owning_rptr<ecs::subsystem::SceneComponent> owner_);
+            non_owning_rptr<ActorComponent> owner_);
     };
 }

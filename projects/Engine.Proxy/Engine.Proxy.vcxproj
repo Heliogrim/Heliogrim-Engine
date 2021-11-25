@@ -17,11 +17,14 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Proxy\InstancedStaticModelSceneProxy.hpp" />
     <ClInclude Include="..\..\src\Engine.Proxy\ProxiedScenePayload.hpp" />
+    <ClInclude Include="..\..\src\Engine.Proxy\Proxy.hpp" />
+    <ClInclude Include="..\..\src\Engine.Proxy\ProxyCategory.hpp" />
+    <ClInclude Include="..\..\src\Engine.Proxy\ProxyTypeRegister.hpp" />
     <ClInclude Include="..\..\src\Engine.Proxy\RigSceneProxy.hpp" />
     <ClInclude Include="..\..\src\Engine.Proxy\SceneProxiedRef.hpp" />
     <ClInclude Include="..\..\src\Engine.Proxy\SceneProxy.hpp" />
+    <ClInclude Include="..\..\src\Engine.Proxy\SignaledStagedCollection.hpp" />
     <ClInclude Include="..\..\src\Engine.Proxy\SkeletalModelSceneProxy.hpp" />
-    <ClInclude Include="..\..\src\Engine.Proxy\StatedSceneProxy.hpp" />
     <ClInclude Include="..\..\src\Engine.Proxy\StaticModelSceneProxy.hpp" />
     <ClInclude Include="..\..\src\Engine.Proxy\TerrainModelSceneProxy.hpp" />
   </ItemGroup>
@@ -44,9 +47,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Proxy\ProxiedScenePayload.cpp" />
+    <ClCompile Include="..\..\src\Engine.Proxy\Proxy.cpp" />
+    <ClCompile Include="..\..\src\Engine.Proxy\ProxyTypeRegister.cpp" />
     <ClCompile Include="..\..\src\Engine.Proxy\RigSceneProxy.cpp" />
     <ClCompile Include="..\..\src\Engine.Proxy\SceneProxiedRef.cpp" />
     <ClCompile Include="..\..\src\Engine.Proxy\SceneProxy.cpp" />
+    <ClCompile Include="..\..\src\Engine.Proxy\SignaledStagedCollection.cpp" />
     <ClCompile Include="..\..\src\Engine.Proxy\StaticModelSceneProxy.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

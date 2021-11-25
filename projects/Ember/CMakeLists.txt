@@ -6,8 +6,7 @@ set(
         link_libraries
         ${META_PROJECT_NAME}::Engine.Assets
         ${META_PROJECT_NAME}::Engine.Common
-        ${META_PROJECT_NAME}::Engine.ECS
-        ${META_PROJECT_NAME}::Engine.ECS.Subsystem
+        ${META_PROJECT_NAME}::Engine.ACS
         ${META_PROJECT_NAME}::Engine.Env
         ${META_PROJECT_NAME}::Engine.Event
         ${META_PROJECT_NAME}::Engine.GFX

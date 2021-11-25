@@ -84,6 +84,9 @@
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Uuid.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\Engine.Common\Math\__default.inl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

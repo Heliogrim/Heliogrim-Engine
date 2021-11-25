@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Common/Wrapper.hpp>
-
 #include "Level.hpp"
 
 namespace ember {

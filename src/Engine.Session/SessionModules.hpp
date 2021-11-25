@@ -2,15 +2,18 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
+namespace ember::engine {
+    class Proxy;
+}
+
 namespace ember::engine::assets {
     class AssetDatabase;
     class AssetFactory;
     class AssetSeeder;
 }
 
-namespace ember::engine::ecs {
-    class System;
-    class Subsystem;
+namespace ember::engine::acs {
+    class Registry;
 }
 
 namespace ember::engine::scene {
@@ -109,6 +112,14 @@ namespace ember::engine::session {
         void setPhysics(ptr<void> physics_);
 
     private:
+        ptr<engine::Proxy> _proxy;
+
+    public:
+        [[nodiscard]] ptr<engine::Proxy> proxy() const;
+
+        void setProxy(ptr<engine::Proxy> proxy_);
+
+    private:
         ptr<scene::Scene> _scene;
 
     public:
@@ -141,20 +152,12 @@ namespace ember::engine::session {
         [[nodiscard]] const ptr<void> resourceManager() const;
 
     private:
-        ptr<engine::ecs::System> _ecs;
+        ptr<acs::Registry> _registry;
 
     public:
-        [[nodiscard]] ptr<engine::ecs::System> ecs() const;
+        [[nodiscard]] const ptr<acs::Registry> registry() const;
 
-        void setEcs(ptr<engine::ecs::System> ecs_);
-
-    private:
-        ptr<ecs::Subsystem> _subsystem;
-
-    public:
-        [[nodiscard]] ptr<ecs::Subsystem> subsystem() const;
-
-        void setSubsystem(ptr<ecs::Subsystem> subsystem_);
+        void setRegistry(ptr<acs::Registry> registry_);
 
     private:
         ptr<void> _scheduler;

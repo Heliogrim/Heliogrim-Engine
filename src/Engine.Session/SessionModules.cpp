@@ -93,7 +93,7 @@ void SessionModules::wait() const {
     }
 
     counter = 0;
-    while (_ecs) {
+    while (_registry) {
 
         if (counter > 8ui8) {
             scheduler::thread::self::sleepFor(1000);
@@ -186,6 +186,14 @@ void SessionModules::setPhysics(ptr<void> physics_) {
     _physics = physics_;
 }
 
+ptr<engine::Proxy> SessionModules::proxy() const {
+    return _proxy;
+}
+
+void SessionModules::setProxy(ptr<engine::Proxy> proxy_) {
+    _proxy = proxy_;
+}
+
 ptr<engine::scene::Scene> SessionModules::scene() const {
     return _scene;
 }
@@ -210,20 +218,12 @@ const ptr<void> SessionModules::resourceManager() const {
     return _resourceManager;
 }
 
-ptr<engine::ecs::System> SessionModules::ecs() const {
-    return _ecs;
+const ptr<engine::acs::Registry> SessionModules::registry() const {
+    return _registry;
 }
 
-void SessionModules::setEcs(ptr<engine::ecs::System> ecs_) {
-    _ecs = ecs_;
-}
-
-ptr<engine::ecs::Subsystem> SessionModules::subsystem() const {
-    return _subsystem;
-}
-
-void SessionModules::setSubsystem(ptr<ecs::Subsystem> subsystem_) {
-    _subsystem = subsystem_;
+void SessionModules::setRegistry(ptr<acs::Registry> registry_) {
+    _registry = registry_;
 }
 
 const ptr<void> SessionModules::scheduler() const {

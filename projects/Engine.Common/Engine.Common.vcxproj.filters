@@ -270,4 +270,9 @@
       <Filter>Quelldateien\Math</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\Engine.Common\Math\__default.inl">
+      <Filter>Headerdateien\Math</Filter>
+    </None>
+  </ItemGroup>
 </Project>
