@@ -10,7 +10,7 @@ ImageAsset::ImageAsset(cref<asset_guid> guid_) noexcept :
     Asset(
         guid_,
         engine::assets::Image::type_id,
-        engine::Session::get()->assetFactory()->createImageAsset(guid_)
+        engine::Session::get()->modules().assetFactory()->createImageAsset(guid_)
     ) {}
 
 ImageAsset::~ImageAsset() noexcept = default;

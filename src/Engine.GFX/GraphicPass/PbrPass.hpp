@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DepthPass.hpp"
 #include "../GraphicPass.hpp"
 #include "../Framebuffer/Framebuffer.hpp"
 
@@ -8,12 +9,16 @@ namespace ember::engine::gfx {
         public GraphicPass {
     public:
         /**
-         * Default constructor
+         * Constructor
          *
          * @author Julius
-         * @date 30.01.2021
+         * @date 27.11.2021
+         *
+         * @param depthPass_ The previous depth pass to use
+         *
+         * @see GraphicPass::GraphicPass(...)
          */
-        PbrPass();
+        PbrPass(cref<sptr<Device>> device_, const ptr<Swapchain> swapchain_, const ptr<DepthPass> depthPass_);
 
         /**
          * Setups this 
@@ -40,6 +45,9 @@ namespace ember::engine::gfx {
          * @returns A ModelPassProcessor.
          */
         ptr<ModelPassProcessor> processor() noexcept override;
+
+    private:
+        ptr<DepthPass> _depthPass;
 
     private:
         /**

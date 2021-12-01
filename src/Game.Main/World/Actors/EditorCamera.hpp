@@ -17,7 +17,7 @@ namespace ember::game::actors {
          *
          * @see Actor::Actor
          */
-        EditorCamera(const ptr<ActorInitializer> initializer_);
+        EditorCamera();
     };
 
 }

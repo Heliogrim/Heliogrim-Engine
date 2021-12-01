@@ -133,6 +133,8 @@ namespace ember {
          *
          * @author Julius
          * @date 08.01.2021
+         *
+         * @warning Maybe race condition (Use after delete)
          */
         static void wait();
     };

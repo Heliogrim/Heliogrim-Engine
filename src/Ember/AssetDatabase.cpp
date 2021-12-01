@@ -56,7 +56,7 @@ bool AssetDatabase::autoRegister(ptr<ember::Asset> (* fncPtr_)()) noexcept {
 
     DEBUG_ASSERT(fncPtr_ != nullptr, "Give function pointer (constructor) should not be nullptr.")
 
-    auto* seeder { engine::Session::get()->assetSeeder() };
+    auto* seeder { engine::Session::get()->modules().assetSeeder() };
     DEBUG_ASSERT(seeder != nullptr, "Asset Seeder should be present while accessing auto insertation.")
 
     return seeder->autoRegister(fncPtr_);

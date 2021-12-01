@@ -26,7 +26,7 @@ void Audio::setupImporter() {
     SCOPED_STOPWATCH
 
     //
-    auto* manager { static_cast<ptr<ResourceManager>>(_session->resourceManager()) };
+    auto* manager { _session->modules().resourceManager() };
 
     //
     manager->importer().registerImporter(sfx::AudioFileType::Flac, new sfx::FlacImporter());

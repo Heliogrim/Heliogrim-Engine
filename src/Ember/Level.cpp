@@ -18,22 +18,10 @@ Level::~Level() noexcept {
     throw NotImplementedException {};
 }
 
-ref<Level> Level::operator=(cref<Level> other_) noexcept {
+Future<ptr<Level>> ember::CreateLevel() noexcept {
     throw NotImplementedException {};
 }
 
-ref<Level> Level::operator=(mref<Level> other_) noexcept {
-    throw NotImplementedException {};
-}
-
-bool ember::Valid(cref<Level> level_) noexcept {
-    throw NotImplementedException {};
-}
-
-future<Level> ember::CreateLevel() noexcept {
-    throw NotImplementedException {};
-}
-
-future<bool> ember::Destroy(mref<Level> level_) noexcept {
+Future<bool> ember::Destroy(mref<ptr<Level>> level_) noexcept {
     throw NotImplementedException {};
 }

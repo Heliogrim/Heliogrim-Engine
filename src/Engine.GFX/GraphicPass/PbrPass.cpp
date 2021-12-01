@@ -13,8 +13,9 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-PbrPass::PbrPass() :
-    GraphicPass(GraphicPassMask::ePbrPass) {}
+PbrPass::PbrPass(cref<sptr<Device>> device_, const ptr<Swapchain> swapchain_, const ptr<DepthPass> depthPass_) :
+    GraphicPass(device_, swapchain_, GraphicPassMask::ePbrPass),
+    _depthPass(depthPass_) {}
 
 void PbrPass::setup() {
 
@@ -28,21 +29,18 @@ void PbrPass::setup() {
     pbrSkeletal->setup();
     _pipeline.add(pbrSkeletal);
 
-    const auto device = Graphics::get()->getCurrentDevice();
-    const auto swapchain = Graphics::get()->getCurrentSwapchain();
     const auto factory = TextureFactory::get();
-    auto depthPass = static_cast<ptr<DepthPass>>(Graphics::get()->graphicPass(GraphicPassMask::eDepthPass));
 
     _framebuffers.clear();
-    _framebuffers.reserve(swapchain->length());
+    _framebuffers.reserve(_swapchain->length());
 
-    for (u32 i = 0; i < swapchain->length(); ++i) {
+    for (u32 i = 0; i < _swapchain->length(); ++i) {
         /**
          *
          */
-        Framebuffer buffer { device };
+        Framebuffer buffer { _device };
 
-        buffer.setExtent(math::uivec3 { swapchain->extent(), 1ui32 });
+        buffer.setExtent(math::uivec3 { _swapchain->extent(), 1ui32 });
         buffer.setRenderPass(pbrStatic->renderPass());
 
         /**
@@ -88,7 +86,7 @@ void PbrPass::setup() {
         /**
          *
          */
-        auto& depthFrame = depthPass->framebuffer(i);
+        auto& depthFrame = _depthPass->framebuffer(i);
         cref<FramebufferAttachment> depth = depthFrame.attachments()[0];
 
         /**
@@ -136,5 +134,5 @@ cref<Framebuffer> PbrPass::framebuffer(u32 idx_) const {
 }
 
 cref<Framebuffer> PbrPass::currentFramebuffer() const noexcept {
-    return _framebuffers[Graphics::get()->getCurrentSwapchain()->currentIdx()];
+    return _framebuffers[_swapchain->currentIdx()];
 }

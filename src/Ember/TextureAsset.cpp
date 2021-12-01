@@ -10,7 +10,7 @@ TextureAsset::TextureAsset(cref<asset_guid> guid_) noexcept :
     StreamableRenderableAsset(
         guid_,
         engine::assets::Texture::type_id,
-        engine::Session::get()->assetFactory()->createTextureAsset(guid_)
+        engine::Session::get()->modules().assetFactory()->createTextureAsset(guid_)
     ) {}
 
 TextureAsset::TextureAsset(
@@ -25,7 +25,7 @@ TextureAsset::TextureAsset(
     StreamableRenderableAsset(
         guid_,
         engine::assets::Texture::type_id,
-        engine::Session::get()->assetFactory()->createTextureAsset(
+        engine::Session::get()->modules().assetFactory()->createTextureAsset(
             guid_,
             baseImage_,
             _STD forward<vector<asset_guid>>(images_),

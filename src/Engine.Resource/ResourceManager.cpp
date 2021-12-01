@@ -10,15 +10,15 @@ using namespace ember::engine::res;
 using namespace ember::engine;
 using namespace ember;
 
-engine::ResourceManager::ResourceManager(cref<ptr<Session>> session_) noexcept :
+ResourceManager::ResourceManager(cref<sptr<Session>> session_) noexcept :
     _session(session_),
     _importer(nullptr),
     _loader(nullptr),
     _locator(nullptr) {}
 
-engine::ResourceManager::~ResourceManager() noexcept = default;
+ResourceManager::~ResourceManager() noexcept = default;
 
-void engine::ResourceManager::setup() {
+void ResourceManager::setup() {
 
     SCOPED_STOPWATCH
 
@@ -41,28 +41,28 @@ void engine::ResourceManager::setup() {
     }
 }
 
-void engine::ResourceManager::schedule() {}
+void ResourceManager::schedule() {}
 
-ptr<engine::Session> engine::ResourceManager::session() const noexcept {
+sptr<Session> ResourceManager::session() const noexcept {
     return _session;
 }
 
-cref<ImporterManager> engine::ResourceManager::importer() const {
+cref<ImporterManager> ResourceManager::importer() const {
     return *_importer;
 }
 
-ptr<const ImporterManager> engine::ResourceManager::importer(std::nothrow_t) const noexcept {
+ptr<const ImporterManager> ResourceManager::importer(std::nothrow_t) const noexcept {
     return _importer.get();
 }
 
-ref<ImporterManager> engine::ResourceManager::importer() {
+ref<ImporterManager> ResourceManager::importer() {
     return *_importer;
 }
 
-ptr<ImporterManager> engine::ResourceManager::importer(std::nothrow_t) noexcept {
+ptr<ImporterManager> ResourceManager::importer(std::nothrow_t) noexcept {
     return _importer.get();
 }
 
-ptr<Indexer> engine::ResourceManager::indexer() const noexcept {
+ptr<Indexer> ResourceManager::indexer() const noexcept {
     return _indexer.get();
 }

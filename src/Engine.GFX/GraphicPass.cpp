@@ -7,10 +7,12 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-GraphicPass::GraphicPass(cref<GraphicPassMask> mask_) :
+GraphicPass::GraphicPass(cref<sptr<Device>> device_, const ptr<Swapchain> swapchain_, cref<GraphicPassMask> mask_) :
+    _device(device_),
+    _swapchain(swapchain_),
     _mask(mask_) {}
 
-void GraphicPass::process(cref<scene::SceneGraph> graph_, ref<CommandBatch> batch_) {
+void GraphicPass::process(const ptr<scene::SceneGraph> graph_, ref<CommandBatch> batch_) {
 
     SCOPED_STOPWATCH
 
@@ -28,9 +30,17 @@ void GraphicPass::process(cref<scene::SceneGraph> graph_, ref<CommandBatch> batc
         };
 
         const ConsumerWrapper consumer { *processor, &ModelPassProcessor::operator() };
-        graph_.traversalBatched(0, consumer);
+        graph_->traversalBatched(0, consumer);
     }
     _pipeline.process(processor, batch_);
+}
+
+const sptr<Device> GraphicPass::device() const noexcept {
+    return _device;
+}
+
+const ptr<Swapchain> GraphicPass::swapchain() const noexcept {
+    return _swapchain;
 }
 
 GraphicPassMask GraphicPass::mask() const noexcept {

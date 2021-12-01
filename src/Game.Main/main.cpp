@@ -22,6 +22,7 @@
 
 #include "Assets/GfxMaterials/ForestGround01.hpp"
 #include "Assets/Meshes/PlaneD128.hpp"
+#include "Ember/World.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
 
 using namespace ember;
@@ -51,18 +52,13 @@ void ember_main_entry() {
     SCOPED_STOPWATCH
 
     /**
-     * Generic log of TickEvent
-     */
-    engine::Session::get()->emitter().on<TickEvent>([](cref<TickEvent> event_) {
-        constexpr auto raw { R"(Cycle tick '$0')" };
-        DEBUG_NMSG("TickEvent", string(raw).replace(12, 2, _STD to_string(event_.tick)))
-    });
-
-    /**
      * Make a repetitive task to emit TickEvent
      */
     RepetitiveTask task {
         []() {
+
+            static u64 markCounter = 0ui64;
+            ++markCounter;
 
             // static constexpr double delayFrac = 1. / 60.;
             static constexpr double delayFrac = 1. / .2;
@@ -81,8 +77,15 @@ void ember_main_entry() {
                 const TickEvent event { tmpTick };
                 emitter.emit(event);
 
+                constexpr auto raw { R"(Counted ticks '{}' with '{}' cycles)" };
+                auto formatted = std::string("Counted ticks '") + _STD to_string(event.tick) + "' with '" +
+                    _STD to_string(markCounter) + "' cycles";
+                DEBUG_NMSG("TickEvent", formatted)
+
                 ++tmpTick;
                 tmpNextTick = now + _STD chrono::nanoseconds { delay };
+
+                markCounter = 0;
             }
 
             return true;
@@ -162,10 +165,7 @@ void test() {
      *
      */
     {
-        auto possible = CreateActor();
-        await(possible);
-
-        Actor* actor = possible.get();
+        Actor* actor = await(CreateActor());
         await(Destroy(_STD move(actor)));
     }
 
@@ -173,12 +173,7 @@ void test() {
      *
      */
     {
-        auto possible = CreateLevel();
-        await(possible);
-
-        Level level = possible.get();
-        auto val = Valid(level);
-
+        ptr<Level> level = await(CreateLevel());
         await(Destroy(_STD move(level)));
     }
 
@@ -186,13 +181,9 @@ void test() {
      *
      */
     {
-        auto possible = CreateLevel();
-        await(possible);
+        ptr<Level> level = await(CreateLevel());
 
-        Level level = possible.get();
-        auto val = Valid(level);
-
-        vector<future<ptr<Actor>>> flist {};
+        vector<Future<ptr<Actor>>> flist {};
         for (u8 c = 0; c < 128ui8; ++c) {
             flist.push_back(CreateActor());
         }
@@ -242,6 +233,9 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
     Actor* actor = possible.get();
 
     auto transform { actor->getWorldTransform() };
+
+    const ptr<World> world { GetWorld() };
+    world->addActor(actor);
 
     /*
     randomPaddedPosition(idx_, rows_, cols_, transform.position());

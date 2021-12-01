@@ -15,18 +15,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Session\EmberModuleManager.hpp" />
     <ClInclude Include="..\..\src\Engine.Session\Session.hpp" />
-    <ClInclude Include="..\..\src\Engine.Session\SessionModules.hpp" />
     <ClInclude Include="..\..\src\Engine.Session\Win32Window.hpp" />
     <ClInclude Include="..\..\src\Engine.Session\Window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Session\EmberModuleManager.cpp" />
     <ClCompile Include="..\..\src\Engine.Session\Session.cpp" />
     <ClCompile Include="..\..\src\Engine.Session\Win32Window.cpp" />
     <ClCompile Include="..\..\src\Engine.Session\Window.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Session\SessionModules.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">

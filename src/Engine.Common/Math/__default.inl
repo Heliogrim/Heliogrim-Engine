@@ -9,5 +9,5 @@
 #include "Hash.hpp"
 #include "Matrix.hpp"
 #include "Quaternion.hpp"
-#include "Transformation.hpp"
+#include "Transform.hpp"
 #include "Vector.hpp"

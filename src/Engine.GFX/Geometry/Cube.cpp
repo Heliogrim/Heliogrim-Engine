@@ -9,6 +9,7 @@ using namespace ember;
 Cube::~Cube() {}
 
 ptr<Mesh> Cube::convert() const {
+    #if FALSE
     auto device = Graphics::get()->getCurrentDevice();
 
     /*
@@ -208,6 +209,8 @@ ptr<Mesh> Cube::convert() const {
     delete[] ipt;
 
     return mesh;
+    #endif
+    return nullptr;
 }
 
 ref<math::uivec2> Cube::segments() noexcept {

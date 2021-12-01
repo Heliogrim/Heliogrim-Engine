@@ -25,8 +25,8 @@ void FinalPassCompositeStage::setup() {
 
     SCOPED_STOPWATCH
 
-    auto device = Graphics::get()->getCurrentDevice();
-    const auto* swapchain = Graphics::get()->getCurrentSwapchain();
+    auto device = _graphicPass->device();
+    const auto* swapchain = _graphicPass->swapchain();
 
     /**
      * Command Buffer

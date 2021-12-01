@@ -17,7 +17,7 @@ namespace ember {
         struct GlobalStatelessEventExecutor :
             public StatelessEventExecutor<EventType_> {
             FORCE_INLINE void operator()(cref<_STD function<void(cref<EventType_>)>> fnc_, cref<EventType_> event_) {
-                ember::engine::scheduler::Scheduler::get().exec(ember::engine::scheduler::task::make_task([&]() {
+                ember::engine::Scheduler::get().exec(ember::engine::scheduler::task::make_task([&]() {
                     fnc_(event_);
                 }));
             }

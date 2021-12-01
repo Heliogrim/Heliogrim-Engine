@@ -199,7 +199,7 @@ namespace ember::engine::acs {
 
             const auto guid = generate_actor_guid();
 
-            _defaultActorPool->insert(guid, Actor { nullptr });
+            _defaultActorPool->insert(guid, Actor {});
             return _defaultActorPool->get(guid);
         }
     };

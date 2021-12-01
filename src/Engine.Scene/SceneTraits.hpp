@@ -7,26 +7,26 @@ namespace ember::engine::scene {
      *
      *  [Shadow] : Nullable State
      *
-     *      -> has no transformation itself
+     *      -> has no transform itself
      *      -> has no bounding itself
      * 
      *  [Loosy] : Loosy Tree ( e.g. Loosy Octree )
      *
-     *      -> has transformation itself
+     *      -> has transform itself
      *      -> has bounding itself
      *      -> children are possibly double referenced
      *      -> children share some bounding
      * 
      *  [Spartial] : Spartial Tree ( e.g. Custom Octree )
      *
-     *      -> has transformation itself
+     *      -> has transform itself
      *      -> has bounding itself
      *      -> children are unique referenced
      *      -> children have distinct bounding
      * 
      *  [Natural] : Natural Tree ( e.g. Strict Octree with Center-Split )
      *
-     *      -> has transformation itself
+     *      -> has transform itself
      *      -> has bounding itself
      *      -> children are unique referenced
      *      -> children have distinct and even bounding

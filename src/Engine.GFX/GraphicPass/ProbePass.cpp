@@ -7,8 +7,8 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-ProbePass::ProbePass() :
-    GraphicPass(GraphicPassMask::eProbePass) {}
+ProbePass::ProbePass(cref<sptr<Device>> device_, const ptr<Swapchain> swapchain_) :
+    GraphicPass(device_, swapchain_, GraphicPassMask::eProbePass) {}
 
 void ProbePass::setup() {
 

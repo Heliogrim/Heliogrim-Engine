@@ -14,6 +14,7 @@ Plane::Plane() :
 Plane::~Plane() = default;
 
 ptr<Mesh> Plane::convert() const {
+    #if FALSE
     const auto device = Graphics::get()->getCurrentDevice().get();
 
     const u64 gridCount = _grid.u * _grid.v;
@@ -148,6 +149,8 @@ ptr<Mesh> Plane::convert() const {
     delete[] ipt;
 
     return mesh;
+    #endif
+    return nullptr;
 }
 
 ref<math::uivec2> Plane::grid() noexcept {

@@ -26,9 +26,9 @@ namespace ember::engine {
          * @author Julius
          * @date 30.08.2021
          *
-         * @param  session_ The session.
+         * @param session_ (Optional) The session related.
          */
-        ResourceManager(cref<ptr<Session>> session_) noexcept;
+        ResourceManager(cref<sptr<Session>> session_ = Session::get()) noexcept;
 
         /**
          * Destructor
@@ -59,7 +59,7 @@ namespace ember::engine {
         /**
          * The session this module is associated with
          */
-        ptr<Session> _session;
+        sptr<Session> _session;
 
     public:
         /**
@@ -68,9 +68,9 @@ namespace ember::engine {
          * @author Julius
          * @date 14.10.2021
          *
-         * @returns A ptr<Session>
+         * @returns A sptr<Session>
          */
-        [[nodiscard]] ptr<Session> session() const noexcept;
+        [[nodiscard]] sptr<Session> session() const noexcept;
 
     private:
         uptr<res::ImporterManager> _importer;

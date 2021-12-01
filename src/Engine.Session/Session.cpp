@@ -2,6 +2,7 @@
 
 #include <Ember/Ember.hpp>
 #include <Engine.Common/stdafx.h>
+#include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
@@ -10,17 +11,22 @@
 using namespace ember::engine;
 using namespace ember;
 
-Session::Session() {
-    setup();
-}
+Session::Session() = default;
 
 Session::~Session() {
-    SessionModules::~SessionModules();
     tidy();
 }
 
 void Session::tidy() {
 
+    /**
+     *
+     */
+    _moduleManager.tidy();
+
+    /**
+     *
+     */
     for (auto entry : _windows) {
         entry->destroy();
     }
@@ -35,11 +41,6 @@ void Session::tidy() {
     }
 
     SDL_Quit();
-
-    /**
-     *
-     */
-    SessionModules::tidy();
 }
 
 void Session::setup() {
@@ -47,8 +48,11 @@ void Session::setup() {
     /**
      *
      */
-    SessionModules::setup();
+    _moduleManager.setup();
 
+    /**
+     *
+     */
     #ifdef _DEBUG
     auto code = SDL_Init(SDL_INIT_VIDEO);
     if (code != 0) {
@@ -87,13 +91,13 @@ void Session::setup() {
 
                             // Warning: We need to call stop via scheduler, cause this thread will deadlock itself (recursive) due to window ownership and close behavior
                             // Warning: Undefined behavior if called multiple times
-                            scheduler::Scheduler::get().exec(scheduler::task::make_task(Ember::stop));
+                            Scheduler::get().exec(scheduler::task::make_task(Ember::stop));
                             break;
                         }
                         case SDL_EventType::SDL_QUIT: {
                             // Warning: We need to call stop via scheduler, cause this thread will deadlock itself (recursive) due to window ownership and close behavior
                             // Warning: Undefined behavior if called multiple times
-                            scheduler::Scheduler::get().exec(scheduler::task::make_task(Ember::stop));
+                            Scheduler::get().exec(scheduler::task::make_task(Ember::stop));
                             break;
                         }
                     }
@@ -123,8 +127,100 @@ void Session::setup() {
     };
 }
 
+void Session::start() {
+    /**
+     *
+     */
+    _moduleManager.start();
+
+    auto p {
+        ember::concurrent::promise<void>([core = &_core]() {
+            /**
+             * Invoke core function
+             *
+             * @see Core::start()
+             */
+            core->start();
+        })
+    };
+
+    auto f = p.get();
+
+    /**
+     * Start Game Core
+     */
+    _moduleManager.scheduler()->exec(scheduler::task::make_task(
+        p,
+        TaskMask::eCritical,
+        scheduler::ScheduleStageBarriers::eAll,
+        scheduler::ScheduleStageBarriers::eUndefined
+    ));
+
+    /**
+     * Await Game Core started
+     */
+    f.get();
+    // await(f.signal());
+}
+
+void Session::stop() {
+
+    auto p {
+        ember::concurrent::promise<void>([core = &_core]() {
+            /**
+             * Invoke core function
+             *
+             * @see Core::stop()
+             */
+            core->stop();
+        })
+    };
+
+    auto f = p.get();
+
+    /**
+     * Stop Game Core
+     */
+    _moduleManager.scheduler()->exec(scheduler::task::make_task(
+        p,
+        TaskMask::eCritical,
+        scheduler::ScheduleStageBarriers::eAll,
+        scheduler::ScheduleStageBarriers::eUndefined
+    ));
+
+    /**
+     * Await Game Core stopped
+     */
+    f.get();
+    // await(f.signal());
+
+    /**
+     *
+     */
+    _moduleManager.stop();
+}
+
+void Session::wait() {
+    _moduleManager.wait();
+}
+
+cref<session::EmberModuleManager> Session::modules() const noexcept {
+    return _moduleManager;
+}
+
+cref<Core> Session::core() const noexcept {
+    return _core;
+}
+
 cref<sptr<Session::value_type>> Session::get() noexcept {
-    static sptr<Session> session = make_sptr<Session>();
+    static sptr<Session> session = nullptr;
+
+    if (!session) {
+        auto ns { make_sptr<Session>() };
+        session.swap(ns);
+        session->setup();
+    }
+
     return session;
 }
 

@@ -4,11 +4,12 @@
 #include "Task/Task.hpp"
 #include "Worker/Worker.hpp"
 
-namespace ember::engine::scheduler {
+namespace ember::engine {
+
     class Scheduler final {
     private:
-        using aligned_worker = ALIGNED(worker::Worker, CACHE_LINE_SIZE);
-        using fiber_pool_type = fiber::FiberPool;
+        using aligned_worker = ALIGNED(scheduler::worker::Worker, CACHE_LINE_SIZE);
+        using fiber_pool_type = scheduler::fiber::FiberPool;
 
     public:
         /**
@@ -80,7 +81,7 @@ namespace ember::engine::scheduler {
          * @param [in] task_ The task.
          * @param 	   ticks_ The ticks.
          */
-        void delay(IN task::__TaskDelegate task_, const u32 ticks_);
+        void delay(IN scheduler::task::__TaskDelegate task_, const u32 ticks_);
 
         /**
          * Executes the given task
@@ -90,7 +91,7 @@ namespace ember::engine::scheduler {
          *
          * @param [in] task_ The task.
          */
-        void exec(_Inout_ task::__TaskDelegate task_);
+        void exec(_Inout_ scheduler::task::__TaskDelegate task_);
 
         /**
          * Gets worker count
@@ -129,7 +130,7 @@ namespace ember::engine::scheduler {
         void wait() const;
 
     private:
-        SchedulePipeline _pipeline;
+        scheduler::SchedulePipeline _pipeline;
 
         u32 _workerCount;
         aligned_worker* _workers;

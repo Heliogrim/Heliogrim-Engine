@@ -4,14 +4,15 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Scheduler/Task/SignaledQueue.hpp>
+#include <Engine.Core/Core.hpp>
 
-#include "SessionModules.hpp"
+#include "EmberModuleManager.hpp"
 #include "Window.hpp"
 
 namespace ember::engine {
 
     class Session :
-        public session::SessionModules {
+        _STD enable_shared_from_this<Session> {
     public:
         using value_type = Session;
         using reference_type = ref<Session>;
@@ -71,10 +72,29 @@ namespace ember::engine {
          */
         reference_type operator=(mref<value_type>) noexcept = delete;
 
-    private:
+    public:
         void tidy();
 
         void setup();
+
+    public:
+        void start();
+
+        void stop();
+
+        void wait();
+
+    private:
+        session::EmberModuleManager _moduleManager;
+
+    public:
+        [[nodiscard]] cref<session::EmberModuleManager> modules() const noexcept;
+
+    private:
+        Core _core;
+
+    public:
+        [[nodiscard]] cref<Core> core() const noexcept;
 
     public:
         /**

@@ -17,6 +17,6 @@ namespace ember::game::actors {
          *
          * @see Actor::Actor
          */
-        WoodenTable(const ptr<ActorInitializer> initializer_);
+        WoodenTable();
     };
 }

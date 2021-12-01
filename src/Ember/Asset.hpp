@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Engine.Assets/AssetGuid.hpp>
+#include "Inbuilt.hpp"
+
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Common/Wrapper.hpp>
 

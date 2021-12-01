@@ -1,13 +1,11 @@
 #pragma once
+
+#include <Engine.Session/Session.hpp>
+
 #include "ProxyTypeRegister.hpp"
 #include "SignaledStagedCollection.hpp"
 
 namespace ember::engine {
-
-    /**
-     * Forward Declaration
-     */
-    class Session;
 
     class Proxy {
     public:
@@ -19,8 +17,10 @@ namespace ember::engine {
          *
          * @author Julius
          * @date 21.11.2021
+         *
+         * @param session_ (Optional) The session related.
          */
-        Proxy(cref<sptr<Session>> session_) noexcept;
+        Proxy(cref<sptr<Session>> session_ = Session::get()) noexcept;
 
         /**
          * Destructor

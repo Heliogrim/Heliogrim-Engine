@@ -27,13 +27,13 @@ ref<Audio> Ember::audio() noexcept {
 
 AssetDatabase Ember::assets() noexcept {
     return AssetDatabase {
-        engine::Session::get()->assetDatabase()
+        engine::Session::get()->modules().assetDatabase()
     };
 }
 
 Graphics Ember::graphics() noexcept {
     return Graphics {
-        engine::Session::get()->graphics()
+        engine::Session::get()->modules().graphics()
     };
 }
 
@@ -51,55 +51,6 @@ void Ember::start() {
      *
      */
     auto session = engine::Session::get();
-
-    /**
-     *
-     */
-    auto audio = make_ptr<engine::Audio>(session);
-    session->setAudio(audio);
-
-    // auto graphics = make_sptr<engine::Graphics>(static_session.get());
-    auto graphics = engine::Graphics::make(session);
-    session->setGraphics(graphics);
-
-    auto network = make_ptr<engine::Network>(session);
-    session->setNetwork(network);
-
-    auto scene = make_ptr<engine::scene::Scene>(session);
-    session->setScene(scene);
-
-    auto registry = make_ptr<engine::acs::Registry>();
-    session->setRegistry(registry);
-
-    auto physics = make_ptr<engine::Physics>(session);
-    session->setPhysics(physics);
-
-    auto proxy = make_ptr<engine::Proxy>(session);
-    session->setProxy(proxy);
-
-    /**
-     *
-     */
-    proxy->setup();
-    proxy->schedule();
-
-    audio->setup();
-    audio->schedule();
-
-    scene->setup();
-
-    graphics->setup();
-    graphics->schedule();
-
-    physics->setup();
-    physics->schedule();
-
-    network->setup();
-    network->schedule();
-
-    /**
-     *
-     */
     session->start();
 }
 
@@ -113,34 +64,16 @@ void Ember::stop() {
      *
      */
     session->emitter().emit<ShutdownEvent>();
-
-    delete static_cast<ptr<engine::Network>>(session->network());
-    session->setNetwork(nullptr);
-
-    engine::Graphics::destroy();
-    session->setGraphics(nullptr);
-
-    delete static_cast<ptr<engine::Audio>>(session->audio());
-    session->setAudio(nullptr);
-
-    delete static_cast<ptr<engine::Physics>>(session->physics());
-    session->setPhysics(nullptr);
-
-    delete session->proxy();
-    session->setProxy(nullptr);
-
-    delete static_cast<ptr<engine::scene::Scene>>(session->scene());
-    session->setScene(nullptr);
-
-    delete session->registry();
-    session->setRegistry(nullptr);
+    session->stop();
 }
 
 void Ember::wait() {
     /**
      *
      */
-    engine::Session::get()->wait();
+    if (auto session = engine::Session::get()) {
+        session->wait();
+    }
 }
 
 ref<World> Ember::world() noexcept {
