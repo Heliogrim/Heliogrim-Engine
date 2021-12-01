@@ -16,7 +16,7 @@ void Proxy::setup() {}
 
 void Proxy::schedule() {
 
-    auto* shd { static_cast<const ptr<scheduler::Scheduler>>(_session->scheduler()) };
+    auto* shd { _session->modules().scheduler() };
 
     shd->exec(make_repetitive_task([this]() {
             batchSignaled();

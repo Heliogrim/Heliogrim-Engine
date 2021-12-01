@@ -10,6 +10,9 @@ namespace ember {
         using this_type = StaticMeshComponent;
         using underlying_type = ModelComponent;
 
+    private:
+        asset_guid _staticMesh;
+
     public:
         [[nodiscard]] asset_guid getStaticMeshGuid() const noexcept;
 

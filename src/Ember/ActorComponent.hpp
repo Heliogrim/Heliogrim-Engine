@@ -14,6 +14,9 @@ namespace ember {
         using this_type = ActorComponent;
         using underlying_type = LogicComponent;
 
+    private:
+        ptr<ActorComponent> _parent;
+
     public:
         [[nodiscard]] ptr<Actor> getRootActor() const noexcept;
 
@@ -21,12 +24,25 @@ namespace ember {
 
         [[nodiscard]] ptr<ActorComponent> getParentComponent() const noexcept;
 
+    private:
+        math::Bounding _boundaries;
+
     public:
         [[nodiscard]] cref<math::Bounding> getBoundaries() const noexcept;
 
-        [[nodiscard]] cref<math::Transformation> getWorldTransform() const noexcept;
+    private:
+        Vector3 _localPosition;
+        Quatern _localRotation;
+        Vector3 _localScale;
 
-        [[nodiscard]] cref<math::Transformation> getLocalTransform() const noexcept;
+    public:
+        [[nodiscard]] Transform getLocalTransform() const noexcept;
+
+    private:
+        Transform _worldTransform;
+
+    public:
+        [[nodiscard]] cref<Transform> getWorldTransform() const noexcept;
     };
 
 }

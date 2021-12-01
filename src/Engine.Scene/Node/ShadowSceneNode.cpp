@@ -125,7 +125,7 @@ bool ShadowSceneNode::push(_Inout_ mref<SceneNodeCreateData> data_, _In_ const p
 
     // Container has some space left -> insert directly
     auto result = factory_->assembleShadow();
-    result.body->transform() = _STD move(data_.transformation);
+    result.body->transform() = _STD move(data_.transform);
     result.body->bounding() = _STD move(data_.bounding);
     result.body->payload() = _STD move(data_.payload);
 
@@ -192,7 +192,7 @@ bool ShadowSceneNode::push(const ptr<SceneNodeCreateData> data_, const ptr<const
 
     // Container has some space left -> insert directly
     auto result = factory_->assembleShadow();
-    result.body->transform() = _STD move(data_->transformation);
+    result.body->transform() = _STD move(data_->transform);
     result.body->bounding() = _STD move(data_->bounding);
     result.body->payload() = _STD move(data_->payload);
 

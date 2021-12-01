@@ -54,7 +54,8 @@ namespace ember::concurrent {
              *
              * @param  val_ The value.
              */
-            template <typename Type_ = Ty, typename = _STD enable_if_t<_STD is_nothrow_default_constructible_v<Type_> || _STD is_nothrow_move_constructible_v<Type_>>>
+            template <typename Type_ = Ty, typename = _STD enable_if_t<_STD is_nothrow_default_constructible_v<Type_> ||
+                _STD is_nothrow_move_constructible_v<Type_>>>
             FORCE_INLINE void set(Type_&& val_) {
                 if (_returned.test_and_set(_STD memory_order::acq_rel))
                     throw _STD runtime_error("Try to assign value to already assigned future state.");

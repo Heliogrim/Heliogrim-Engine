@@ -12,9 +12,9 @@ namespace ember::engine {
          * @author Julius
          * @date 14.10.2021
          *
-         * @param  session_ The session.
+         * @param session_ (Optional) The session.
          */
-        Network(cref<sptr<Session>> session_) noexcept;
+        Network(cref<sptr<Session>> session_ = Session::get()) noexcept;
 
         /**
          * Destructor

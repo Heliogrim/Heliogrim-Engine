@@ -1,6 +1,6 @@
 #include "Graphics.hpp"
 
-#include <Engine.Scene/Scene.hpp>
+#include <Engine.Scene/IRenderScene.hpp>
 #include <Engine.Scheduler/Async.hpp>
 
 #ifdef _PROFILING
@@ -9,9 +9,11 @@
 
 #include "todo.h"
 #include "Command/CommandBatch.hpp"
+#include "Engine.Common/Cast.hpp"
 #include "GraphicPass/DepthPass.hpp"
 #include "GraphicPass/FinalPass.hpp"
 #include "GraphicPass/LightPass.hpp"
+#include "GraphicPass/PbrPass.hpp"
 #include "GraphicPass/ProbePass.hpp"
 #include "Loader/TextureLoader.hpp"
 #include "Scene/SceneGraphTag.hpp"
@@ -24,131 +26,14 @@ using namespace ember::engine::gfx;
 using namespace ember::engine;
 using namespace ember;
 
-ptr<Graphics> Graphics::_instance = nullptr;
-
-/*
-void tmp_load_material(string url_, cref<sptr<Device>> device_, Texture& dst_, u32 layer_) {
-
-    auto src = loader::TextureLoader::get().load(url_);
-    src.finally([&, layer_ = layer_](Texture&& texture_) -> void {
-
-        auto pool = device_->transferQueue()->pool();
-
-        pool->lck().acquire();
-        CommandBuffer cmd = pool->make();
-
-        cmd.begin();
-
-        vk::ImageMemoryBarrier simb {
-            vk::AccessFlags(),
-            vk::AccessFlags(),
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            vk::ImageLayout::eTransferDstOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            dst_.buffer().image(),
-            {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                dst_.mipLevels(),
-                0,
-                dst_.layer()
-            }
-        };
-
-        dst_.buffer()._vkLayout = vk::ImageLayout::eTransferDstOptimal;
-
-        cmd.vkCommandBuffer().pipelineBarrier(
-            vk::PipelineStageFlagBits::eAllCommands,
-            vk::PipelineStageFlagBits::eAllCommands,
-            vk::DependencyFlags(),
-            0, nullptr,
-            0, nullptr,
-            1, &simb
-        );
-
-        for (u32 level = 0; level < dst_.mipLevels(); ++level) {
-            cmd.copyImage(texture_.buffer(), dst_.buffer(), {
-                {
-                    vk::ImageAspectFlagBits::eColor,
-                    level,
-                    0,
-                    1
-                },
-                {},
-                {
-                    vk::ImageAspectFlagBits::eColor,
-                    level,
-                    layer_,
-                    1
-                },
-                {},
-                {
-                    texture_.width() >> level,
-                    texture_.height() >> level,
-                    texture_.depth()
-                }
-            });
-        }
-
-        vk::ImageMemoryBarrier eimb {
-            vk::AccessFlags(),
-            vk::AccessFlags(),
-            vk::ImageLayout::eTransferDstOptimal,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            dst_.buffer().image(),
-            {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                dst_.mipLevels(),
-                0,
-                dst_.layer()
-            }
-        };
-
-        cmd.vkCommandBuffer().pipelineBarrier(
-            vk::PipelineStageFlagBits::eAllCommands,
-            vk::PipelineStageFlagBits::eAllCommands,
-            vk::DependencyFlags(),
-            0, nullptr,
-            0, nullptr,
-            1, &eimb
-        );
-
-        cmd.end();
-        cmd.submitWait();
-        cmd.release();
-
-        pool->lck().release();
-
-        dst_.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-        texture_.destroy();
-    });
-
-    scheduler::exec(scheduler::task::make_task(src));
-}
- */
-
-ptr<Graphics> Graphics::get() noexcept {
-    return Graphics::_instance;
-}
-
-ptr<Graphics> Graphics::make(cref<sptr<Session>> session_) {
-    if (!Graphics::_instance) {
-        _instance = make_ptr<Graphics>(session_);
-    }
-    return _instance;
-}
-
-void Graphics::destroy() {
-    delete _instance;
-    _instance = nullptr;
-}
-
 Graphics::Graphics(cref<sptr<Session>> session_) noexcept :
-    _session(session_) {}
+    _session(session_),
+    _swapchain(nullptr),
+    _computeQueue(nullptr),
+    _graphicsQueue(nullptr),
+    _transferQueue(nullptr),
+    _renderScene(nullptr),
+    _uiRenderScene(nullptr) {}
 
 Graphics::~Graphics() {
     tidy();
@@ -157,11 +42,6 @@ Graphics::~Graphics() {
 void Graphics::setup() {
 
     SCOPED_STOPWATCH
-
-    /**
-     * Prepare other modules
-     */
-    _graph = static_cast<ptr<scene::Scene>>(_session->scene())->getOrCreateGraph(GfxSceneGraphTag {});
 
     /**
      * Create a new application
@@ -210,11 +90,14 @@ void Graphics::setup() {
      */
     _graphicPasses.resize(static_cast<u32>(GraphicPassMask::eFinalPass) + 1, nullptr);
 
-    _graphicPasses[static_cast<u8>(GraphicPassMask::eDepthPass)] = new DepthPass();
-    _graphicPasses[static_cast<u8>(GraphicPassMask::eLightPass)] = new LightPass();
-    _graphicPasses[static_cast<u8>(GraphicPassMask::eProbePass)] = new ProbePass();
-    _graphicPasses[static_cast<u8>(GraphicPassMask::ePbrPass)] = new ProbePass();
-    _graphicPasses[static_cast<u8>(GraphicPassMask::eFinalPass)] = new FinalPass();
+    ptr<DepthPass> depthPass;
+
+    _graphicPasses[static_cast<u8>(GraphicPassMask::eDepthPass)] = (depthPass = new DepthPass(_device, _swapchain));
+    _graphicPasses[static_cast<u8>(GraphicPassMask::eLightPass)] = new LightPass(_device, _swapchain);
+    _graphicPasses[static_cast<u8>(GraphicPassMask::eProbePass)] = new ProbePass(_device, _swapchain);
+    //_graphicPasses[static_cast<u8>(GraphicPassMask::ePbrPass)] = new PbrPass(_device, _swapchain, depthPass);
+    _graphicPasses[static_cast<u8>(GraphicPassMask::ePbrPass)] = new ProbePass(_device, _swapchain);
+    _graphicPasses[static_cast<u8>(GraphicPassMask::eFinalPass)] = new FinalPass(_device, _swapchain);
 
     /**
      *
@@ -286,28 +169,7 @@ void Graphics::schedule() {
         throw _STD runtime_error("Tried to schedule already running graphics handle.");
     }
 
-    /**
-     *
-     */
-    scheduler::exec(
-        make_repetitive_task([this]() {
-
-                u8 expect { 1 };
-                if (_scheduled.load(_STD memory_order_relaxed) == expect) {
-                    _tick();
-                    return true;
-                }
-
-                expect = { 2 };
-                _scheduled.compare_exchange_strong(expect, 0);
-                return false;
-
-            },
-            scheduler::task::TaskMask::eCritical,
-            scheduler::ScheduleStageBarriers::eGraphicNodeCollectWeak,
-            scheduler::ScheduleStageBarriers::eBottomStrong
-        )
-    );
+    reschedule();
 }
 
 void Graphics::tidy() {
@@ -410,7 +272,7 @@ CommandQueue::reference_type Graphics::getTransferQueue() const noexcept {
 
 static u64 frame = 0;
 
-void Graphics::_tick() {
+void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
 
     SCOPED_STOPWATCH
 
@@ -447,7 +309,7 @@ void Graphics::_tick() {
     /**
      *
      */
-    processGraphicPasses();
+    processGraphicPasses(scene_);
 
     /**
      * 
@@ -456,7 +318,7 @@ void Graphics::_tick() {
     auto finalPass = _graphicPasses[static_cast<u8>(GraphicPassMask::eFinalPass)];
 
     batch.reset();
-    finalPass->process(*_graph, batch);
+    finalPass->process(scene_->renderGraph(), batch);
 
     /**
      * Execute Command Batch
@@ -507,11 +369,9 @@ void Graphics::_tick() {
     ++frames;
 }
 
-void Graphics::processGraphicPasses() {
+void Graphics::processGraphicPasses(ptr<scene::IRenderScene> scene_) {
 
     SCOPED_STOPWATCH
-
-    ref<scene::SceneGraph> graph = *_graph;
 
     constexpr GraphicPassMask masks[] {
         GraphicPassMask::eDepthPass,
@@ -562,7 +422,7 @@ void Graphics::processGraphicPasses() {
         /**
          * Invoke and Store GraphicsPass
          */
-        graphicPass->process(graph, batch);
+        graphicPass->process(scene_->renderGraph(), batch);
 
         /**
          * Submit Batch to Queue
@@ -575,4 +435,52 @@ void Graphics::processGraphicPasses() {
      */
     [[maybe_unused]] auto waitAllResult = _device->vkDevice().waitForFences(_graphicPassFences.size(),
         _graphicPassFences.data(), VK_TRUE, UINT64_MAX);
+}
+
+void Graphics::reschedule() {
+
+    /**
+     * Guard already stopped scheduling
+     */
+    if (_scheduled.load(_STD memory_order_relaxed) != 1ui8) {
+        return;
+    }
+
+    scheduler::exec(
+        make_repetitive_task([this]() {
+
+                u8 expect { 1 };
+                if (_scheduled.load(_STD memory_order_relaxed) == expect) {
+
+                    /**
+                     * TODO: Replace Guard
+                     */
+                    if (_renderScene) {
+                        _tick(_renderScene);
+                    }
+
+                    return true;
+                }
+
+                expect = { 2 };
+                _scheduled.compare_exchange_strong(expect, 0);
+                return false;
+
+            },
+            scheduler::task::TaskMask::eCritical,
+            scheduler::ScheduleStageBarriers::eGraphicNodeCollectWeak,
+            scheduler::ScheduleStageBarriers::eBottomStrong
+        )
+    );
+
+}
+
+bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
+    _renderScene = scene_;
+    return true;
+}
+
+bool Graphics::useAsUIRenderScene(const ptr<scene::IRenderScene> scene_) {
+    _uiRenderScene = scene_;
+    return true;
 }

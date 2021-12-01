@@ -8,13 +8,16 @@ namespace ember::engine::gfx {
         public GraphicPass {
     public:
         /**
-         * Default constructor
+         * Constructor
          *
          * @author Julius
-         * @date 30.01.2021
+         * @date 27.11.2021
+         *
+         * @see GraphicPass::GraphicPass(...)
          */
-        DepthPass();
+        DepthPass(cref<sptr<Device>> device_, const ptr<Swapchain> swapchain_);
 
+    public:
         /**
          * Setups this 
          *

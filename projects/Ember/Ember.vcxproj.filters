@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Headerdateien\Actors">
+      <UniqueIdentifier>{8aa1b8d4-5b35-49c2-a7cc-b74ee06633c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Components">
+      <UniqueIdentifier>{f55b11d3-c54d-41ba-91e6-8ecd102f150a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Actors">
+      <UniqueIdentifier>{508fa095-6038-4afa-897b-4badbe6a4d6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Ember\Texture.hpp">
@@ -123,37 +132,46 @@
     <ClInclude Include="..\..\src\Ember\Task.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Actor.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Ember\ActorInitializer.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\ActorComponent.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\LogicComponent.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\SceneComponent.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\ModelComponent.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\StaticMeshComponent.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\LightComponent.hpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>Headerdateien\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\CollisionComponent.hpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\LightComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\LogicComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\ModelComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\SceneComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\SkeletalMeshComponent.hpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>Headerdateien\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\SkinnedMeshComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\StaticMeshComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Actor.hpp">
+      <Filter>Headerdateien\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\StaticMeshActor.hpp">
+      <Filter>Headerdateien\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Scene.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\IComponentRegisterContext.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -236,11 +254,17 @@
     <ClCompile Include="..\..\src\Ember\Task.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Ember\Actor.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Ember\ActorComponent.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\StaticMeshComponent.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Actor.cpp">
+      <Filter>Quelldateien\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\StaticMeshActor.cpp">
+      <Filter>Quelldateien\Actors</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

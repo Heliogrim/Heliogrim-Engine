@@ -19,7 +19,7 @@ void PbrPassStaticStage::setup() {
 
     SCOPED_STOPWATCH
 
-    sptr<Device> device = Graphics::get()->getCurrentDevice();
+    auto device = _graphicPass->device();
 
     /**
      * Command Buffer

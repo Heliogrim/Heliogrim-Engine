@@ -7,21 +7,30 @@ ptr<Actor> ActorComponent::getRootActor() const noexcept {
 }
 
 ptr<ActorComponent> ActorComponent::getRootComponent() const noexcept {
+
+    if (_parent) {
+        return _parent->getRootComponent();
+    }
+
     return nullptr;
 }
 
 ptr<ActorComponent> ActorComponent::getParentComponent() const noexcept {
-    return nullptr;
+    return _parent;
 }
 
 cref<math::Bounding> ActorComponent::getBoundaries() const noexcept {
-    return math::Bounding {};
+    return _boundaries;
 }
 
-cref<math::Transformation> ActorComponent::getWorldTransform() const noexcept {
-    return math::ZeroTransformation {};
+Transform ActorComponent::getLocalTransform() const noexcept {
+    return Transform {
+        _localPosition,
+        _localRotation,
+        _localScale
+    };
 }
 
-cref<math::Transformation> ActorComponent::getLocalTransform() const noexcept {
-    return math::ZeroTransformation {};
+cref<Transform> ActorComponent::getWorldTransform() const noexcept {
+    return _worldTransform;
 }

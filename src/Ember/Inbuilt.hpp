@@ -2,11 +2,14 @@
 
 #include <concepts>
 
+#include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/__default.inl>
+#include <Engine.Common/Collection/Array.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
 #include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Scheduler/Fiber/Awaitable.hpp>
@@ -19,6 +22,20 @@ namespace ember {
     /**
      * Section: Basic Data Types
      */
+    using Color3 = math::fvec3;
+    using Color4 = math::fvec4;
+
+    using Mat2 = math::fmat2;
+    using Mat3 = math::fmat3;
+    using Mat4 = math::fmat4;
+
+    using Quatern = math::fquaternion;
+
+    using Transform = math::Transform;
+
+    using Vector2 = math::fvec2;
+    using Vector3 = math::fvec3;
+    using Vector4 = math::fvec4;
 
     /**
      * Section: Specific Data Types
@@ -33,13 +50,13 @@ namespace ember {
      * Subsection: Results
      */
     template <typename Type_>
-    class future :
+    class Future :
         protected concurrent::future<Type_> {
     public:
         using underlying_type = concurrent::future<Type_>;
 
     public:
-        future(_Inout_ mref<underlying_type> other_) noexcept :
+        Future(_Inout_ mref<underlying_type> other_) noexcept :
             underlying_type(_STD move(other_)) {}
 
     public:
@@ -191,6 +208,22 @@ namespace ember {
      * @param  signal_ The signal to wait for.
      */
     extern void await(_In_ const ptr<await_signal_type> signal_);
+
+    /**
+     * Awaits the given future and returns the stored value
+     *
+     * @author Julius
+     * @date 26.11.2021
+     *
+     * @param future_ The future to wait for and resolved value from.
+     *
+     * @returns The stored value instance of the future.
+     */
+    template <typename Type_>
+    Type_&& await(_In_ mref<Future<Type_>> future_) {
+        await(future_);
+        return future_.get();
+    }
 
     /**
      * Yields the current execution context at least for given milliseconds

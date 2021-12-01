@@ -11,9 +11,9 @@ namespace ember::engine {
          * @author Julius
          * @date 14.10.2021
          *
-         * @param  session_ The session.
+         * @param session_ (Optional) The session.
          */
-        Physics(cref<sptr<Session>> session_) noexcept;
+        Physics(cref<sptr<Session>> session_ = Session::get()) noexcept;
 
         /**
          * Destructor

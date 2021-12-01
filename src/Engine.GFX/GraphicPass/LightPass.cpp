@@ -7,8 +7,8 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-LightPass::LightPass() :
-    GraphicPass(GraphicPassMask::eLightPass) {}
+LightPass::LightPass(cref<sptr<Device>> device_, const ptr<Swapchain> swapchain_) :
+    GraphicPass(device_, swapchain_, GraphicPassMask::eLightPass) {}
 
 void LightPass::setup() {
 

@@ -6,6 +6,7 @@
 #include "GraphicPassPipeline.hpp"
 #include "GraphicPassResult.hpp"
 #include "ModelPassProcessor.hpp"
+#include "Swapchain/Swapchain.hpp"
 
 namespace ember::engine::gfx {
     class GraphicPass {
@@ -16,9 +17,11 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 31.01.2021
          *
-         * @param  mask_ The mask.
+         * @param device_ The device this pass is related to.
+         * @param swapchain_ The swapchain this pass is related to.
+         * @param mask_ The mask.
          */
-        GraphicPass(cref<GraphicPassMask> mask_);
+        GraphicPass(cref<sptr<Device>> device_, const ptr<Swapchain> swapchain_, cref<GraphicPassMask> mask_);
 
     public:
         /**
@@ -54,7 +57,35 @@ namespace ember::engine::gfx {
          * @param  graph_ The SceneGraph to traverse.
          * @param  batch_ The batch.
          */
-        virtual void process(cref<scene::SceneGraph> graph_, IN OUT ref<CommandBatch> batch_);
+        virtual void process(const ptr<scene::SceneGraph> graph_, IN OUT ref<CommandBatch> batch_);
+
+    protected:
+        sptr<Device> _device;
+
+    public:
+        /**
+         * Returns the device this graphics pass is related to
+         *
+         * @author Julius
+         * @date 27.11.2021
+         *
+         * @returns A pointer to the related device.
+         */
+        [[nodiscard]] const sptr<Device> device() const noexcept;
+
+    protected:
+        ptr<Swapchain> _swapchain;
+
+    public:
+        /**
+         * Returns the swapchain this graphics pass is related to
+         *
+         * @author Julius
+         * @date 27.11.2021
+         *
+         * @returns A pointer to the related swapchain.
+         */
+        [[nodiscard]] const ptr<Swapchain> swapchain() const noexcept;
 
     private:
         /**

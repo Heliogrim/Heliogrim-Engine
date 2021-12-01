@@ -8,6 +8,7 @@
 #endif
 
 using namespace ember::engine::scheduler;
+using namespace ember::engine;
 using namespace ember;
 
 ptr<Scheduler> Scheduler::_instance = nullptr;

@@ -16,7 +16,7 @@ bool engine::assets::AssetSeeder::autoRegister(ptr<Asset> (* fncPtr_)()) {
 
 void engine::assets::AssetSeeder::seed(ptr<void> scheduler_) {
 
-    scheduler::Scheduler& scheduler { *static_cast<ptr<scheduler::Scheduler>>(scheduler_) };
+    Scheduler& scheduler { *static_cast<ptr<Scheduler>>(scheduler_) };
 
     /**
      * Iterate over registered constructors

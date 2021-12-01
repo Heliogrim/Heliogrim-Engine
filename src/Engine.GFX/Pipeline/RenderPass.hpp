@@ -18,7 +18,6 @@ namespace ember::engine::gfx::pipeline {
 
     class RenderPass {
     public:
-
         /**
          * Constructor
          *

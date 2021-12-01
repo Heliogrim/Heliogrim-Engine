@@ -237,6 +237,12 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\RingBuffer.hpp">
       <Filter>Headerdateien\Collection</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\Vector.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Transform.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">

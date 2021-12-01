@@ -3,10 +3,11 @@
 
 #include "GraphicPassStageContext.hpp"
 #include "ProcessedModelBatch.hpp"
+#include "Swapchain/Swapchain.hpp"
 
 namespace ember::engine::gfx {
 
-    class GraphicPassPipelineStage {
+    class __declspec(novtable) GraphicPassPipelineStage {
     public:
         /**
          * Destructor

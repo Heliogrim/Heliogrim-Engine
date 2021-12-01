@@ -29,6 +29,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\List.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\ProxyVector.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\RingBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\Vector.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Collection\RingBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Future.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Promise.hpp" />
@@ -50,6 +51,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Math\MathDefaultDefine.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Matrix.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Quaternion.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Math\Transform.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Transformation.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Vector.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\__const.hpp" />

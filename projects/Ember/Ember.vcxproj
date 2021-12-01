@@ -26,6 +26,7 @@
     <ClInclude Include="..\..\src\Ember\Audio.hpp" />
     <ClInclude Include="..\..\src\Ember\AudioFormat.hpp" />
     <ClInclude Include="..\..\src\Ember\CollisionComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\IComponentRegisterContext.hpp" />
     <ClInclude Include="..\..\src\Ember\Ember.hpp" />
     <ClInclude Include="..\..\src\Ember\GfxMaterial.hpp" />
     <ClInclude Include="..\..\src\Ember\GfxMaterialAsset.hpp" />
@@ -42,6 +43,7 @@
     <ClInclude Include="..\..\src\Ember\PfxMaterial.hpp" />
     <ClInclude Include="..\..\src\Ember\PfxMaterialAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\RenderableAsset.hpp" />
+    <ClInclude Include="..\..\src\Ember\Scene.hpp" />
     <ClInclude Include="..\..\src\Ember\SceneComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Scheduler.hpp" />
     <ClInclude Include="..\..\src\Ember\SfxMaterialAsset.hpp" />
@@ -49,6 +51,7 @@
     <ClInclude Include="..\..\src\Ember\SkeletalMeshComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\SkinnedMeshComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\SoundAsset.hpp" />
+    <ClInclude Include="..\..\src\Ember\StaticMeshActor.hpp" />
     <ClInclude Include="..\..\src\Ember\StaticMeshAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\StaticMeshComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\StreamableAsset.hpp" />
@@ -86,7 +89,9 @@
     <ClCompile Include="..\..\src\Ember\SfxMaterialAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\SkeletalMeshAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\SoundAsset.cpp" />
+    <ClCompile Include="..\..\src\Ember\StaticMeshActor.cpp" />
     <ClCompile Include="..\..\src\Ember\StaticMeshAsset.cpp" />
+    <ClCompile Include="..\..\src\Ember\StaticMeshComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\StreamableAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\StreamableRenderableAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\Task.cpp" />
@@ -105,6 +110,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
       <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Core\Engine.Core.vcxproj">
+      <Project>{c4a9ab6d-512c-472a-ae8d-5242e7ba4ec3}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Env\Engine.Env.vcxproj">
       <Project>{f73e4ef6-247e-42e0-bd0a-04d104e6837d}</Project>

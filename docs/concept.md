@@ -1,5 +1,6 @@
 ## Ember Engine
 
+* [World / Level / Scene](#world-/-level-/-scene)
 * [Material](#material)
 * [Scheduling](#scheduling)
     + [Stage Pipeline](#scheduling-pipeline)
@@ -619,6 +620,40 @@ classDiagram
     }
 ```
 
+## World / Level / Scene
+
+```mermaid
+classDiagram
+    class Scene
+    Scene : -ptr~World~ world
+    Scene : +addNode(ActorComponent* obj) bool
+    Scene : +addNodeCached(ActorComponent* obj) bool
+    Scene : +removeNode(ActorComponent* obj) bool
+    Scene : +removeNodeCached(ActorComponent* obj) bool
+
+    Scene <.. World
+    class World
+    World : -wptr~Scene~ scene
+    World : -Collection~ptr<Level>~ levels
+    World : +addActor(Actor* obj) bool
+    World : +removeActor(Actor* obj) bool
+
+    World o-- Level
+    class Level
+    Level : -wptr~World~ world
+    Level : +addActor(Actor* obj) bool
+    Level : +removeActor(Actor* obj) bool
+
+    class Actor
+    Actor : +getRoot() ptr~ActorComponent~
+
+    Actor *-- ActorComponent
+    Scene .. ActorComponent
+    class ActorComponent
+    ActorComponent : +getRoot() ptr~ActorComponent~
+    ActorComponent : +getParent() ptr~ActorComponent~
+```
+
 #### game::world
 > `World` contains 1..N levels\
 > `World` contains 1 level : GlobalLevel\
@@ -771,7 +806,9 @@ classDiagram
 
 ```mermaid
 graph LR
-    subgraph engine::graphics
+    subgraph gfx
+        Graphics
+
         RenderPass
         ModelPassProcessor
         ModelBatch
@@ -780,7 +817,9 @@ graph LR
         CommandBatch
     end
 
-    subgraph engine::scene
+    subgraph scene
+        Scene
+
         SceneGraph
         SceneNode
         SceneNodeId[[Scene Node Id]]
@@ -790,30 +829,39 @@ graph LR
         SceneElementRef[[SceneElementRef]]
     end
 
-    subgraph engine::proxy
+    subgraph proxy
         SceneProxy
         SceneProxiedRef[[SceneProxiedRef]]
     end
 
-    subgraph engine::game
+    subgraph acs
         Registry
 
-        HybridStorage
-        HybridStoragePage
+        ActorPool
 
-        EntityId[[Entity Id]]
-        SceneComponentId[[Scene Component Id]]
+        ActorComponentPool
+
+        AHybridStorage[[Hybrid Storage]]
+        ACHybridStorage[[Hybrid Storage]]
+
+        AHybridStoragePage[[Hybrid Storage Page]]
+        ACHybridStoragePage[[Hybrid Storage Page]]
+
+        ActorGuid[[Actor Guid]]
+        ActorComponentId[[Actor Component Id]]
     end
 
     subgraph game
-        Entity
-        SceneComponent
+        Actor
+        ActorComponent
     end
+
+    Graphics --> RenderPass
+    Graphics --> Scene
 
     RenderPass --> ModelPassProcessor
 
     ModelPassProcessor --> CommandBatch
-    ModelPassProcessor --> SceneGraph
 
     SceneGraph --> SceneNode
 
@@ -827,18 +875,29 @@ graph LR
     SceneElement --> ModelState
     SceneElement --> SceneProxiedRef
 
-    Entity --> HybridStoragePage
+    Registry --> ActorPool
+    Registry --> ActorComponentPool
 
-    Registry --> HybridStorage
+    ActorPool --> AHybridStorage
 
-    HybridStorage --> HybridStoragePage
-    HybridStorage --> EntityId
+    AHybridStorage --> AHybridStoragePage
+    AHybridStorage -.-> ActorGuid
 
-    HybridStoragePage --> SceneComponent
-    HybridStoragePage --> EntityId
+    AHybridStoragePage --> ActorGuid
+    AHybridStoragePage --> Actor
 
-    SceneComponent --> SceneComponentId
-    SceneComponent --> SceneProxiedRef
+    ActorComponentPool --> ACHybridStorage
+
+    ACHybridStorage --> ACHybridStoragePage
+    ACHybridStorage -.-> ActorGuid
+    ACHybridStorage -.-> ActorComponentId;
+
+    ACHybridStoragePage --> ActorComponent
+    ACHybridStoragePage --> ActorGuid
+
+    ActorComponentId -.-> ActorComponent
+
+    ActorComponent --> SceneProxiedRef
 
     SceneProxiedRef --> SceneProxy
     SceneProxiedRef --> SceneElement

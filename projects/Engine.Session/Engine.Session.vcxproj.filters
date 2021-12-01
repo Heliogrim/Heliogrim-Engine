@@ -24,7 +24,7 @@
     <ClInclude Include="..\..\src\Engine.Session\Session.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Session\SessionModules.hpp">
+    <ClInclude Include="..\..\src\Engine.Session\EmberModuleManager.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClCompile Include="..\..\src\Engine.Session\Session.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Session\SessionModules.cpp">
+    <ClCompile Include="..\..\src\Engine.Session\EmberModuleManager.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

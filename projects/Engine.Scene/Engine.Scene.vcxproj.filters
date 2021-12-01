@@ -93,6 +93,15 @@
     <ClInclude Include="..\..\src\Engine.Scene\Graph\MutableSceneGraph.hpp">
       <Filter>Headerdateien\Graph</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\RevScene.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\PreviewScene.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\IRenderScene.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp">
@@ -130,6 +139,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scene\Graph\MutableSceneGraph.cpp">
       <Filter>Quelldateien\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\RevScene.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -21,7 +21,7 @@ namespace ember::engine::gfx {
          *
          * @param  graphicPass_ The graphic pass.
          */
-        DepthPassStaticStage(ptr<DepthPass> graphicPass_);
+        DepthPassStaticStage(const ptr<DepthPass> graphicPass_);
 
         /**
          * Setups this 

@@ -7,12 +7,14 @@ namespace ember::engine::gfx {
         public GraphicPass {
     public:
         /**
-         * Default constructor
+         * Constructor
          *
          * @author Julius
-         * @date 30.01.2021
+         * @date 27.11.2021
+         *
+         * @see GraphicPass::GraphicPass(...)
          */
-        FinalPass();
+        FinalPass(cref<sptr<Device>> device_, const ptr<Swapchain> swapchain_);
 
         /**
          * Setups this 
@@ -30,7 +32,8 @@ namespace ember::engine::gfx {
          */
         void destroy() override;
 
-        [[nodiscard]] void process([[maybe_unused]] cref<scene::SceneGraph> graph_, ref<CommandBatch> batch_) override;
+        void process([[maybe_unused]] const ptr<scene::SceneGraph> graph_,
+            ref<CommandBatch> batch_) override;
 
         /**
          * Creates a ModelPassProcessor

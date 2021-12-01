@@ -9,50 +9,18 @@
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
 
+/**
+ * Forward Declaration
+ */
+namespace ember::engine::scene {
+    class IRenderScene;
+}
+
 namespace ember::engine {
 
     class Graphics {
     public:
-        using value_type = Graphics;
-        using reference_type = Graphics&;
-        using const_reference_type = const Graphics&;
-
-    private:
-        /**
-         * Singleton Instance
-         */
-        static ptr<Graphics> _instance;
-
-    public:
-        /**
-         * Gets static store instance
-         *
-         * @author Julius
-         * @date 29.01.2021
-         *
-         * @returns A ptr&lt;Graphics&gt;
-         */
-        [[nodiscard]] static ptr<Graphics> get() noexcept;
-
-        /**
-         * Gets or create static stored instance
-         *
-         * @author Julius
-         * @date 29.01.2021
-         *
-         * @param  session_ The session.
-         *
-         * @returns A ptr&lt;Graphics&gt;
-         */
-        [[nodiscard]] static ptr<Graphics> make(cref<sptr<Session>> session_);
-
-        /**
-         * Destroys the static stored instance
-         *
-         * @author Julius
-         * @date 13.09.2021
-         */
-        static void destroy();
+        using this_type = Graphics;
 
     public:
         /**
@@ -61,9 +29,9 @@ namespace ember::engine {
          * @author Julius
          * @date 09.11.2020
          *
-         * @param  session_ The session.
+         * @param session_ (Optional) The session.
          */
-        Graphics(cref<sptr<Session>> session_) noexcept;
+        Graphics(cref<sptr<Session>> session_ = Session::get()) noexcept;
 
         /**
          * Destructor
@@ -213,12 +181,6 @@ namespace ember::engine {
 
     private:
         /**
-         * Graphic Scene Graph
-         */
-        ptr<scene::SceneGraph> _graph;
-
-    private:
-        /**
          * Graphic Passes
          */
         vector<ptr<gfx::GraphicPass>> _graphicPasses;
@@ -258,15 +220,34 @@ namespace ember::engine {
          *
          * @author Julius
          * @date 13.12.2020
+         *
+         * @param scene_ The scene to render.
          */
-        void _tick();
+        void _tick(ptr<scene::IRenderScene> scene_);
 
         /**
          * Process the graphic passes
          *
          * @author Julius
          * @date 31.01.2021
+         *
+         * @param scene_ The scene to render.
          */
-        void processGraphicPasses();
+        void processGraphicPasses(ptr<scene::IRenderScene> scene_);
+
+    private:
+        void reschedule();
+
+    private:
+        ptr<scene::IRenderScene> _renderScene;
+
+    public:
+        bool useAsRenderScene(const ptr<scene::IRenderScene> scene_);
+
+    private:
+        ptr<scene::IRenderScene> _uiRenderScene;
+
+    public:
+        bool useAsUIRenderScene(const ptr<scene::IRenderScene> scene_);
     };
 }

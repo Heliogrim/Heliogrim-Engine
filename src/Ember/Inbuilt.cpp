@@ -19,7 +19,7 @@ void ember::delay(mref<execute_function_type> function_, ticks delay_) {
     /**
      * Schedule task
      */
-    engine::scheduler::Scheduler::get().exec(task);
+    engine::Scheduler::get().exec(task);
 }
 
 void ember::delay(execute_function_pointer_type function_, ticks delay_) {
@@ -37,7 +37,7 @@ void ember::delay(execute_function_pointer_type function_, ticks delay_) {
     /**
      * Schedule task
      */
-    engine::scheduler::Scheduler::get().exec(task);
+    engine::Scheduler::get().exec(task);
 }
 
 void ember::execute(mref<execute_function_type> function_) {
@@ -52,7 +52,7 @@ void ember::execute(mref<execute_function_type> function_) {
     /**
      * Schedule task
      */
-    engine::scheduler::Scheduler::get().exec(task);
+    engine::Scheduler::get().exec(task);
 }
 
 void ember::execute(const execute_function_pointer_type function_) {
@@ -67,7 +67,7 @@ void ember::execute(const execute_function_pointer_type function_) {
     /**
      * Schedule task
      */
-    engine::scheduler::Scheduler::get().exec(task);
+    engine::Scheduler::get().exec(task);
 }
 
 void ember::execute(mref<Task> task_) {
@@ -84,7 +84,7 @@ void ember::execute(mref<Task> task_) {
     /**
      * Schedule task
      */
-    engine::scheduler::Scheduler::get().exec(task);
+    engine::Scheduler::get().exec(task);
 }
 
 void ember::execute(mref<RepetitiveTask> task_) {
@@ -101,7 +101,7 @@ void ember::execute(mref<RepetitiveTask> task_) {
     /**
      * Schedule task
      */
-    engine::scheduler::Scheduler::get().exec(task);
+    engine::Scheduler::get().exec(task);
 }
 
 void ember::execute(mref<TickTask> task_) {
@@ -118,7 +118,7 @@ void ember::execute(mref<TickTask> task_) {
     /**
      * Schedule task
      */
-    engine::scheduler::Scheduler::get().exec(task);
+    engine::Scheduler::get().exec(task);
 }
 
 void ember::await(const ptr<await_signal_type> signal_) {

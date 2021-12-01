@@ -12,8 +12,8 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-DepthPass::DepthPass() :
-    GraphicPass(GraphicPassMask::eDepthPass),
+DepthPass::DepthPass(cref<sptr<Device>> device_, const ptr<Swapchain> swapchain_) :
+    GraphicPass(device_, swapchain_, GraphicPassMask::eDepthPass),
     _processor({ this }) {}
 
 void DepthPass::setup() {
@@ -28,20 +28,18 @@ void DepthPass::setup() {
     depthStageSkeletal->setup();
     _pipeline.add(depthStageSkeletal);
 
-    const auto device = Graphics::get()->getCurrentDevice();
-    const auto swapchain = Graphics::get()->getCurrentSwapchain();
     const auto factory = TextureFactory::get();
 
     _framebuffers.clear();
-    _framebuffers.reserve(swapchain->length());
+    _framebuffers.reserve(_swapchain->length());
 
-    for (u32 i = 0; i < swapchain->length(); ++i) {
+    for (u32 i = 0; i < _swapchain->length(); ++i) {
         /**
          *
          */
-        Framebuffer buffer { device };
+        Framebuffer buffer { _device };
 
-        buffer.setExtent(math::uivec3 { swapchain->extent(), 1ui32 });
+        buffer.setExtent(math::uivec3 { _swapchain->extent(), 1ui32 });
         buffer.setRenderPass(depthStage->renderPass());
 
         /**
@@ -107,5 +105,5 @@ cref<Framebuffer> DepthPass::framebuffer(u32 idx_) const {
 }
 
 cref<Framebuffer> DepthPass::currentFramebuffer() const noexcept {
-    return _framebuffers[Graphics::get()->getCurrentSwapchain()->currentIdx()];
+    return _framebuffers[_swapchain->currentIdx()];
 }

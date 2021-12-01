@@ -17,9 +17,9 @@ namespace ember::engine {
          * @author Julius
          * @date 12.09.2021
          *
-         * @param  session_ The session.
+         * @param session_ (Optional) The session.
          */
-        Audio(cref<sptr<Session>> session_) noexcept;
+        Audio(cref<sptr<Session>> session_ = Session::get()) noexcept;
 
         /**
          * Destructor
