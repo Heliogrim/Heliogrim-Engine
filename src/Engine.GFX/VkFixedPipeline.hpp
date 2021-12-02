@@ -58,7 +58,7 @@ namespace ember::engine::gfx {
         /**
          * Blend Post-Process
          */
-        vector<vk::PipelineColorBlendAttachmentState> _blending;
+        Vector<vk::PipelineColorBlendAttachmentState> _blending;
 
     public:
 
@@ -70,7 +70,7 @@ namespace ember::engine::gfx {
          *
          * @returns A ref&lt;vector&lt;vk::PipelineColorBlendAttachmentState&gt;&gt;
          */
-        [[nodiscard]] ref<vector<vk::PipelineColorBlendAttachmentState>> blending() noexcept;
+        [[nodiscard]] ref<Vector<vk::PipelineColorBlendAttachmentState>> blending() noexcept;
 
     private:
         /**

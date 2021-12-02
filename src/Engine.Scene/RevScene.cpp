@@ -30,6 +30,7 @@ void RevScene::update() {
     auto& graph { _graph.asMutable() };
 
     const auto list { _STD move(_cachedNew) };
+    /*
     for (auto entry : list) {
         graph.push({
             nullptr,
@@ -37,6 +38,7 @@ void RevScene::update() {
             entry->getBoundaries()
         });
     }
+     */
 }
 
 const ember::ptr<SceneGraph> RevScene::renderGraph() noexcept {
@@ -60,7 +62,7 @@ bool RevScene::removeNodeCached(const ptr<ActorComponent> node_) noexcept {
 }
 
 ember::ptr<ember::IComponentRegisterContext> RevScene::registerContext() noexcept {
-    return this;
+    return static_cast<ember::ptr<ember::IComponentRegisterContext>>(this);
 }
 
 void RevScene::add(const ptr<ActorComponent> component_) {

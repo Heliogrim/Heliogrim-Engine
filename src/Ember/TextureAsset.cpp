@@ -16,7 +16,7 @@ TextureAsset::TextureAsset(cref<asset_guid> guid_) noexcept :
 TextureAsset::TextureAsset(
     cref<asset_guid> guid_,
     cref<asset_guid> baseImage_,
-    mref<vector<asset_guid>> images_,
+    mref<Vector<asset_guid>> images_,
     cref<math::uivec3> extent_,
     cref<TextureFormat> format_,
     cref<u32> mipLevel_,
@@ -28,7 +28,7 @@ TextureAsset::TextureAsset(
         engine::Session::get()->modules().assetFactory()->createTextureAsset(
             guid_,
             baseImage_,
-            _STD forward<vector<asset_guid>>(images_),
+            _STD forward<Vector<asset_guid>>(images_),
             extent_,
             format_,
             mipLevel_,

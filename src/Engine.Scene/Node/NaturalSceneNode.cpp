@@ -102,7 +102,7 @@ bool NaturalSceneNode::push(_Inout_ mref<SceneNodeCreateData> data_, _In_ const 
 
                 auto result = factory_->assembleNatural();
 
-                // TODO: result.body->transform() = _transformation;
+                // TODO: result.body->transform() = _transform;
                 result.body->bounding() = {
                     center + (halfs * dir),
                     halfs
@@ -163,7 +163,7 @@ bool NaturalSceneNode::push(const ptr<SceneNodeCreateData> data_, const ptr<cons
 
                 auto result = factory_->assembleNatural();
 
-                // TODO: result.body->transform() = _transformation;
+                // TODO: result.body->transform() = _transform;
                 result.body->bounding() = {
                     center + (halfs * dir),
                     halfs

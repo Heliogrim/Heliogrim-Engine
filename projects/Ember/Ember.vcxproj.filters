@@ -22,6 +22,9 @@
     <Filter Include="Quelldateien\Actors">
       <UniqueIdentifier>{508fa095-6038-4afa-897b-4badbe6a4d6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Components">
+      <UniqueIdentifier>{92a6a43e-1161-4dbb-8b33-fd4d3f2fa4af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Ember\Texture.hpp">
@@ -174,6 +177,9 @@
     <ClInclude Include="..\..\src\Ember\IComponentRegisterContext.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Ember\CachedActorPointer.hpp">
+      <Filter>Headerdateien\Actors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember\AudioFormat.cpp">
@@ -254,17 +260,26 @@
     <ClCompile Include="..\..\src\Ember\Task.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Ember\ActorComponent.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Ember\StaticMeshComponent.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Ember\Actor.cpp">
       <Filter>Quelldateien\Actors</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\StaticMeshActor.cpp">
       <Filter>Quelldateien\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\ActorInitializer.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\ModelComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\SceneComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\ActorComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\StaticMeshComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

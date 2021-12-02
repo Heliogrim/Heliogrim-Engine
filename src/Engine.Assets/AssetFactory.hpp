@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/String.hpp>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.GFX/TextureFormat.hpp>
 #include <Engine.GFX/Texture/TextureType.hpp>
@@ -173,7 +173,7 @@ namespace ember::engine::assets {
         [[nodiscard]] ptr<Asset> createTextureAsset(
             cref<asset_guid> guid_,
             cref<asset_guid> baseImage_,
-            mref<vector<asset_guid>> images_,
+            mref<Vector<asset_guid>> images_,
             cref<math::uivec3> extent_,
             cref<gfx::TextureFormat> format_,
             cref<u32> mipLevel_,

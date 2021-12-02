@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include "CommandBuffer.hpp"
 #include "../vkinc.hpp"
 
@@ -46,7 +46,7 @@ namespace ember::engine::gfx {
         /**
          * Buffers
          */
-        vector<CommandBuffer> _buffers;
+        Vector<CommandBuffer> _buffers;
 
     public:
         /**
@@ -57,7 +57,7 @@ namespace ember::engine::gfx {
          *
          * @returns A list of.
          */
-        [[nodiscard]] const vector<CommandBuffer>& buffers() const noexcept;
+        [[nodiscard]] const Vector<CommandBuffer>& buffers() const noexcept;
 
         /**
          * Pushes an object onto this fifo
@@ -83,7 +83,7 @@ namespace ember::engine::gfx {
         /**
          * Barriers ( Fence, Signal )
          */
-        vector<vk::Semaphore> _barriers;
+        Vector<vk::Semaphore> _barriers;
 
     public:
         /**
@@ -94,7 +94,7 @@ namespace ember::engine::gfx {
          *
          * @returns A list of.
          */
-        [[nodiscard]] const vector<vk::Semaphore>& barriers() const noexcept;
+        [[nodiscard]] const Vector<vk::Semaphore>& barriers() const noexcept;
 
         /**
          * Pushes a barrier
@@ -137,7 +137,7 @@ namespace ember::engine::gfx {
         /**
          * Signals ( Fence, Signal )
          */
-        vector<vk::Semaphore> _signals;
+        Vector<vk::Semaphore> _signals;
 
     public:
         /**
@@ -148,7 +148,7 @@ namespace ember::engine::gfx {
          *
          * @returns A list of.
          */
-        [[nodiscard]] const vector<vk::Semaphore>& signals() const noexcept;
+        [[nodiscard]] const Vector<vk::Semaphore>& signals() const noexcept;
 
         /**
          * Pushes a signal

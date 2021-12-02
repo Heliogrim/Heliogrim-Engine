@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "Command/CommandBuffer.hpp"
 
@@ -10,6 +10,6 @@ namespace ember::engine::gfx {
         /**
          *
          */
-        vector<CommandBuffer> recordedBuffer;
+        Vector<CommandBuffer> recordedBuffer;
     };
 }

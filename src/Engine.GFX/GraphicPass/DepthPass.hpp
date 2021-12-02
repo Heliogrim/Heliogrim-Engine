@@ -55,7 +55,7 @@ namespace ember::engine::gfx {
         /**
          * Framebuffers
          */
-        vector<Framebuffer> _framebuffers;
+        Vector<Framebuffer> _framebuffers;
 
     public:
         /**

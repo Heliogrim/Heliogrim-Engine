@@ -3,7 +3,6 @@
 #include <Engine.ACS/Traits.hpp>
 
 #include "ActorComponent.hpp"
-#include "ActorInitializer.hpp"
 #include "Inbuilt.hpp"
 
 namespace ember {
@@ -79,6 +78,38 @@ namespace ember {
         [[nodiscard]] ptr<ActorComponent> getRootComponent() const noexcept;
 
         [[nodiscard]] cref<math::Transform> getWorldTransform() const noexcept;
+
+    private:
+        CompactSet<ptr<ActorComponent>> _components;
+
+    private:
+        template <typename Fnc_>
+        void eachComponent(mref<Fnc_> fnc_) const {
+            /**
+             *
+             */
+            for (auto& entry : _components) {
+                fnc_(entry);
+            }
+        }
+
+    public:
+        [[nodiscard]] cref<CompactSet<ptr<ActorComponent>>> getComponents() const noexcept;
+
+        template <typename Selector_>
+        [[nodiscard]] Vector<ptr<ActorComponent>> selectComponents(mref<Selector_> selector_) const {
+
+            Vector<ptr<ActorComponent>> result {};
+            eachComponent([&](const ptr<ActorComponent> component_) {
+                if (selector_(component_)) {
+                    result.push_back(component_);
+                }
+            });
+
+            return result;
+        }
+
+        void addComponent(const ptr<ActorComponent> component_);
 
     public:
         /**

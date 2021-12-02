@@ -49,7 +49,7 @@ namespace ember::engine::gfx {
         /**
          * Process Model Batches
          */
-        vector<ProcessedModelBatch> _consumed;
+        Vector<ProcessedModelBatch> _consumed;
 
     public:
         /**
@@ -60,7 +60,7 @@ namespace ember::engine::gfx {
          *
          * @returns A cref&lt;vector&lt;ProcessedModelBatch&gt;&gt;
          */
-        [[nodiscard]] cref<vector<ProcessedModelBatch>> models() const noexcept;
+        [[nodiscard]] cref<Vector<ProcessedModelBatch>> models() const noexcept;
 
     protected:
         /**

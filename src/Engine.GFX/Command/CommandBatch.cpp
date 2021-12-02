@@ -1,6 +1,7 @@
 #include "CommandBatch.hpp"
 
 using namespace ember::engine::gfx;
+using namespace ember;
 
 void CommandBatch::reset() {
     _barriers.clear();
@@ -21,7 +22,7 @@ void CommandBatch::push(const CommandBuffer& buffer_) {
     _buffers.push_back(buffer_);
 }
 
-const std::vector<vk::Semaphore>& CommandBatch::barriers() const noexcept {
+const Vector<vk::Semaphore>& CommandBatch::barriers() const noexcept {
     return _barriers;
 }
 
@@ -37,7 +38,7 @@ vk::PipelineStageFlags& CommandBatch::barrierStages() noexcept {
     return _barrierStages;
 }
 
-const std::vector<vk::Semaphore>& CommandBatch::signals() const noexcept {
+const Vector<vk::Semaphore>& CommandBatch::signals() const noexcept {
     return _signals;
 }
 

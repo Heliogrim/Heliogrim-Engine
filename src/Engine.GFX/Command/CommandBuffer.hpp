@@ -54,7 +54,7 @@ namespace ember::engine::gfx {
         void beginRenderPass(const pipeline::RenderPass& renderPass_, const Framebuffer& framebuffer_,
             bool inline_ = true);
 
-        void bindDescriptor(const vector<vk::DescriptorSet>& descriptors_);
+        void bindDescriptor(const Vector<vk::DescriptorSet>& descriptors_);
 
         /**
          * Bind index buffer

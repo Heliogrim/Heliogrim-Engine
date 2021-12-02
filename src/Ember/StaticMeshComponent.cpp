@@ -2,6 +2,9 @@
 
 using namespace ember;
 
+StaticMeshComponent::StaticMeshComponent(mref<CachedActorPointer> owner_, const ptr<ActorComponent> parent_) :
+    ModelComponent(_STD move(owner_), parent_) {}
+
 asset_guid StaticMeshComponent::getStaticMeshGuid() const noexcept {
     return _staticMesh;
 }

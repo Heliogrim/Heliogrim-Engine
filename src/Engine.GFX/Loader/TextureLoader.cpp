@@ -252,7 +252,7 @@ Texture load_impl(const Url& url_,
     /**
      * Fetch Region per Layer
      */
-    vector<vk::BufferImageCopy> regions {};
+    Vector<vk::BufferImageCopy> regions {};
     uint32_t offset = 0;
 
     if (create & vk::ImageCreateFlagBits::eCubeCompatible) {

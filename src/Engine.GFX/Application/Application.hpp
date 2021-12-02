@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/stdafx.h>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 namespace ember::engine::gfx {
 
@@ -66,7 +66,7 @@ namespace ember::engine::gfx {
     private:
         vk::Instance _instance;
 
-        static vector<const char*> _validation;
+        static Vector<const char*> _validation;
 
         /**
          * Get available extensions for api driver
@@ -74,7 +74,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 09.11.2020
          */
-        static vector<const char*> getExtensions();
+        static Vector<const char*> getExtensions();
 
     };
 }

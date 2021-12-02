@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 namespace ember::engine::scene {
 
@@ -140,7 +140,7 @@ namespace ember::engine::scene {
             _mem(allocate_safe()),
             _keys(static_cast<ptr<key_type>>(static_cast<ptr<void>>(static_cast<ptr<value_type>>(_mem) + per_page))),
             _values(static_cast<ptr<value_type>>(_mem)),
-            _seq(vector<sequence> { sequence { 0, per_page } }) { }
+            _seq(Vector<sequence> { sequence { 0, per_page } }) { }
 
     public:
         /**
@@ -476,7 +476,7 @@ namespace ember::engine::scene {
         /**
          * Empty sequences within page
          */
-        vector<sequence> _seq;
+        Vector<sequence> _seq;
 
     public:
         /**
@@ -1456,7 +1456,7 @@ namespace ember::engine::scene {
         using storage_map_container = _STD map<KeyType, index_type>;
 
     private:
-        vector<storage_page_type> _pages;
+        Vector<storage_page_type> _pages;
 
         constexpr FORCE_INLINE static page_index_type unmask_page_index(cref<index_type> masked_) noexcept {
             return static_cast<page_index_type>((masked_ & index_page_mask) >> index_page_shift);

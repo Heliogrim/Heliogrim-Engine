@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Types.hpp>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "../TextureFormat.hpp"
 #include "../Device/Device.hpp"
@@ -120,7 +120,7 @@ namespace ember::engine::gfx {
         /**
          * Swap Images
          */
-        vector<sptr<Texture>> _images;
+        Vector<sptr<Texture>> _images;
 
     public:
 

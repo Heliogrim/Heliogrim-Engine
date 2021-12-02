@@ -1,6 +1,6 @@
 #include "SceneGraph.hpp"
 
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Stack.hpp>
 
 #ifdef _DEBUG
 #include <cassert>

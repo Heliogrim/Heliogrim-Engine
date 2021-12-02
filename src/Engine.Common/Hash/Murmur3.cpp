@@ -52,7 +52,7 @@ FORCE_INLINE u64 fmix_64(u64 value_) {
     return value_;
 }
 
-void hash::murmur3_x86_32(const void* RESTRICT data_, const u32 length_, const u32 seed_, u32* RESTRICT dst_) {
+void hash::murmur3_x86_32(const void* data_, const u32 length_, const u32 seed_, u32* dst_) {
     const u8* block = (const u8*)data_;
     const u32 nblocks = length_ / 4i32;
 
@@ -96,7 +96,7 @@ void hash::murmur3_x86_32(const void* RESTRICT data_, const u32 length_, const u
     *dst_ = h1;
 }
 
-void hash::murmur3_x64_64(const void* RESTRICT data_, const u32 length_, const u32 seed_, u64* RESTRICT dst_) {
+void hash::murmur3_x64_64(const void* data_, const u32 length_, const u32 seed_, u64* dst_) {
     u64 tmp[2];
     murmur3_x64_128(data_, length_, seed_, tmp);
     *dst_ = tmp[0];

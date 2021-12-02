@@ -183,17 +183,17 @@ namespace ember::engine {
         /**
          * Graphic Passes
          */
-        vector<ptr<gfx::GraphicPass>> _graphicPasses;
+        Vector<ptr<gfx::GraphicPass>> _graphicPasses;
 
         /**
          * Graphic Pass Fences[GraphicPassMask:: ...]
          */
-        vector<vk::Fence> _graphicPassFences;
+        Vector<vk::Fence> _graphicPassFences;
 
         /**
          * Graphic Pass Batches
          */
-        vector<gfx::CommandBatch> _graphicPassBatches;
+        Vector<gfx::CommandBatch> _graphicPassBatches;
 
     public:
         /**
@@ -210,9 +210,9 @@ namespace ember::engine {
 
     private:
         struct {
-            vector<vk::Semaphore> image;
-            vector<vk::Semaphore> finish;
-            vector<vk::Fence> cpuGpuSync;
+            Vector<vk::Semaphore> image;
+            Vector<vk::Semaphore> finish;
+            Vector<vk::Fence> cpuGpuSync;
         } _onFlightSync;
 
         /**

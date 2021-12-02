@@ -10,7 +10,7 @@ BindingGroup::BindingGroup(const BindingUpdateInterval interval_, const vk::Desc
     _vkSet(vkSet_),
     _vkSetLayout(vkSetLayout_) {}
 
-void BindingGroup::store(const vector<BindingUpdate>& updates_) {
+void BindingGroup::store(const Vector<BindingUpdate>& updates_) {
 
     /**
      * Loop over update
@@ -65,7 +65,7 @@ BindingUpdateInterval BindingGroup::interval() const noexcept {
     return _interval;
 }
 
-const vector<Binding>& BindingGroup::bindings() const noexcept {
+const Vector<Binding>& BindingGroup::bindings() const noexcept {
     return _bindings;
 }
 

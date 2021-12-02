@@ -1,5 +1,7 @@
 #include "Indexer.hpp"
 
+#include <Engine.Common/Collection/Queue.hpp>
+
 using namespace ember::engine::res;
 using namespace ember;
 

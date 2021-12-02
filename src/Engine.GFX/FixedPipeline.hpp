@@ -51,7 +51,7 @@ namespace ember::engine::gfx {
         /**
          * Inputs
          */
-        vector<FixedPipelineInput> _inputs;
+        Vector<FixedPipelineInput> _inputs;
 
     public:
         /**
@@ -62,7 +62,7 @@ namespace ember::engine::gfx {
          *
          * @returns A cref&lt;vector&lt;FixedPipelineInput&gt;&gt;
          */
-        [[nodiscard]] cref<vector<FixedPipelineInput>> inputs() const noexcept;
+        [[nodiscard]] cref<Vector<FixedPipelineInput>> inputs() const noexcept;
 
         /**
          * Gets the inputs
@@ -72,7 +72,7 @@ namespace ember::engine::gfx {
          *
          * @returns A ref&lt;vector&lt;FixedPipelineInput&gt;&gt;
          */
-        [[nodiscard]] ref<vector<FixedPipelineInput>> inputs() noexcept;
+        [[nodiscard]] ref<Vector<FixedPipelineInput>> inputs() noexcept;
 
     protected:
         /**

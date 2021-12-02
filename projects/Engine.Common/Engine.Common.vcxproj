@@ -19,6 +19,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Cast.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Array.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\BytellHashMap.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\Deque.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\FlatHashMap.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Bucket.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\GrowthPolicy.hpp" />
@@ -28,7 +29,10 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Set.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\List.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\ProxyVector.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\Queue.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\RingBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\Set.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\Stack.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Vector.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Collection\RingBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Future.hpp" />
@@ -80,6 +84,7 @@
     <ClCompile Include="..\..\src\Engine.Common\Hash\Murmur3.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Math\Bounding.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Math\Coordinates.cpp" />
+    <ClCompile Include="..\..\src\Engine.Common\Math\Transform.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Memory\DbgMemoryStats.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Profiler.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Stopwatch.cpp" />

@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "GraphicPassPipelineStage.hpp"
 #include "ModelPassProcessor.hpp"
@@ -26,7 +26,7 @@ namespace ember::engine::gfx {
         /**
          * Collection of Stages
          */
-        vector<ptr<GraphicPassPipelineStage>> _stages;
+        Vector<ptr<GraphicPassPipelineStage>> _stages;
 
     public:
 
@@ -59,7 +59,7 @@ namespace ember::engine::gfx {
          *
          * @returns A cref&lt;vector&lt;ptr&lt;GraphicPassPipelineStage&gt;&gt;&gt;
          */
-        [[nodiscard]] cref<vector<ptr<GraphicPassPipelineStage>>> stages() const noexcept;
+        [[nodiscard]] cref<Vector<ptr<GraphicPassPipelineStage>>> stages() const noexcept;
 
         /**
          * Gets the stages
@@ -69,6 +69,6 @@ namespace ember::engine::gfx {
          *
          * @returns A ref&lt;vector&lt;ptr&lt;GraphicPassPipelineStage&gt;&gt;&gt;
          */
-        [[nodiscard]] ref<vector<ptr<GraphicPassPipelineStage>>> stages() noexcept;
+        [[nodiscard]] ref<Vector<ptr<GraphicPassPipelineStage>>> stages() noexcept;
     };
 }

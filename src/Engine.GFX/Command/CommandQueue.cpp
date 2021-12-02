@@ -42,7 +42,7 @@ void CommandQueue::submit(const CommandBatch& batch_, const vk::Fence& fence_) {
 
     assert(fence_);
 
-    vector<vk::CommandBuffer> buffers {};
+    Vector<vk::CommandBuffer> buffers {};
     buffers.resize(batch_.buffers().size());
 
     for (u32 idx = 0; idx < batch_.buffers().size(); ++idx) {

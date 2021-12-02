@@ -1,7 +1,7 @@
 #pragma once
 
-#include <set>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Set.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 #include "Watcher.hpp"
@@ -43,7 +43,7 @@ namespace ember::engine::res {
         void tidy();
 
     private:
-        vector<File> _roots;
+        Vector<File> _roots;
 
     public:
         /**
@@ -88,7 +88,7 @@ namespace ember::engine::res {
         void scan();
 
     private:
-        vector<ptr<Watcher>> _watcher;
+        Vector<ptr<Watcher>> _watcher;
 
     public:
         /**
@@ -111,7 +111,7 @@ namespace ember::engine::res {
 
     private:
         _STD vector<_STD function<bool(cref<File>)>> _callbacks;
-        _STD set<File> _ack;
+        CompactSet<File> _ack;
 
     public:
         void on(cref<std::function<bool(cref<File> file_)>> callback_);

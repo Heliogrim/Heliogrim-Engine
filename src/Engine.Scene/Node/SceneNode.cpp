@@ -18,7 +18,7 @@ SceneNode::SceneNode() noexcept :
     _payload(),
     _state(SceneNodeState::eShadow),
     _size(1ui64),
-    _transformation(math::ZeroTransformation {}),
+    _transform(),
     _bounding() {}
 
 SceneNode::SceneNode(mref<value_type> other_) noexcept :
@@ -27,7 +27,7 @@ SceneNode::SceneNode(mref<value_type> other_) noexcept :
     _payload(_STD move(other_._payload)),
     _state(_STD exchange(other_._state, SceneNodeState::eShadow)),
     _size(other_._size),
-    _transformation(math::ZeroTransformation {}),
+    _transform(),
     _bounding() {}
 
 SceneNode::~SceneNode() noexcept = default;

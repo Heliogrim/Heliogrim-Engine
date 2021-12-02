@@ -243,6 +243,18 @@
     <ClInclude Include="..\..\src\Engine.Common\Math\Transform.hpp">
       <Filter>Headerdateien\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\Set.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\Stack.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\Queue.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\Deque.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">
@@ -273,6 +285,9 @@
       <Filter>Quelldateien\Profiling</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Common\Math\Coordinates.cpp">
+      <Filter>Quelldateien\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Math\Transform.cpp">
       <Filter>Quelldateien\Math</Filter>
     </ClCompile>
   </ItemGroup>

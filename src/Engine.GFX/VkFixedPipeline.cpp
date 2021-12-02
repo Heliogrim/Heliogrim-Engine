@@ -10,7 +10,7 @@ using namespace ember::engine::gfx::api;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-void collectLayoutsUnique(const Shader& shader_, vector<vk::DescriptorSetLayout>& collection_) {
+void collectLayoutsUnique(const Shader& shader_, Vector<vk::DescriptorSetLayout>& collection_) {
     for (const auto& entry : shader_.bindings()) {
         const auto& layout = entry.vkSetLayout();
 
@@ -47,8 +47,8 @@ void VkFixedPipeline::setup() {
     /**
      * Collect Shaders and ShaderStages
      */
-    vector<vk::PipelineShaderStageCreateInfo> stages {};
-    vector<vk::DescriptorSetLayout> descriptorLayouts {};
+    Vector<vk::PipelineShaderStageCreateInfo> stages {};
+    Vector<vk::DescriptorSetLayout> descriptorLayouts {};
 
     if (_vertexStage.shaderSlot().shader(true)) {
         const auto& vertexShader = _vertexStage.shaderSlot().shader();
@@ -104,8 +104,8 @@ void VkFixedPipeline::setup() {
     /**
      * Input
      */
-    vector<vk::VertexInputBindingDescription> vibds {};
-    vector<vk::VertexInputAttributeDescription> viads {};
+    Vector<vk::VertexInputBindingDescription> vibds {};
+    Vector<vk::VertexInputAttributeDescription> viads {};
 
     {
         for (const auto& binding : _inputs) {
@@ -272,7 +272,7 @@ void VkFixedPipeline::setup() {
     /**
      * Dynamics
      */
-    vector<vk::DynamicState> ds {
+    Vector<vk::DynamicState> ds {
         vk::DynamicState::eScissor,
         vk::DynamicState::eViewport
     };
@@ -365,7 +365,7 @@ void VkFixedPipeline::destroy() noexcept {
     }
 }
 
-ref<vector<vk::PipelineColorBlendAttachmentState>> VkFixedPipeline::blending() noexcept {
+ref<Vector<vk::PipelineColorBlendAttachmentState>> VkFixedPipeline::blending() noexcept {
     return _blending;
 }
 

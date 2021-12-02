@@ -35,7 +35,7 @@ void Framebuffer::setup() {
     /**
      * Prepare
      */
-    vector<vk::ImageView> attachments {};
+    Vector<vk::ImageView> attachments {};
 
     for (const auto& entry : _attachments) {
         attachments.push_back(entry->vkView());
@@ -57,11 +57,11 @@ void Framebuffer::setup() {
     _vkFramebuffer = _device->vkDevice().createFramebuffer(info);
 }
 
-const vector<FramebufferAttachment>& Framebuffer::attachments() const noexcept {
+const Vector<FramebufferAttachment>& Framebuffer::attachments() const noexcept {
     return _attachments;
 }
 
-ref<vector<FramebufferAttachment>> Framebuffer::attachments() noexcept {
+ref<Vector<FramebufferAttachment>> Framebuffer::attachments() noexcept {
     return _attachments;
 }
 

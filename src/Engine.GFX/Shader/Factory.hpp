@@ -8,8 +8,8 @@
 namespace ember::engine::gfx::shader {
 
     struct FactoryBuildResult {
-        vector<BindingGroup> groups;
-        vector<ptr<Shader>> shaders;
+        Vector<BindingGroup> groups;
+        Vector<ptr<Shader>> shaders;
     };
 
     class Factory {

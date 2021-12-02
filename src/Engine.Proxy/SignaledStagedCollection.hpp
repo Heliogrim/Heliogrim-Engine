@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.ACS/ComponentTypeId.hpp>
 
 #include "SceneProxiedRef.hpp"
@@ -27,7 +27,7 @@ namespace ember::engine::proxy {
         ~SignaledStagedCollection() noexcept;
 
     private:
-        vector<SignaledEntry> _signaled;
+        Vector<SignaledEntry> _signaled;
 
     public:
         void signal(cref<component_type_id> typeId_, cref<sptr<SceneProxiedRef>> proxy_);

@@ -1023,7 +1023,7 @@ namespace ember::engine::acs {
             _mem(allocate_safe()),
             _keys(static_cast<KeyType*>(static_cast<void*>(static_cast<ValueType*>(_mem) + per_page))),
             _values(static_cast<ValueType*>(_mem)),
-            _seq(vector<page_sequence>({ page_sequence { 0, per_page } })) {}
+            _seq(Vector<page_sequence>({ page_sequence { 0, per_page } })) {}
 
     private:
         /**
@@ -1034,7 +1034,7 @@ namespace ember::engine::acs {
         key_type* _keys;// _mem[per_page * sizeof(value_type)]
         value_type* _values;// _mem[0]
 
-        vector<page_sequence> _seq;
+        Vector<page_sequence> _seq;
 
         /**
          * Pops the slot
@@ -1343,7 +1343,7 @@ namespace ember::engine::acs {
             using storage_page_type = _STD conditional_t<Const, const storage_page_type, storage_page_type>;
             using storage_page_iterator_type = typename storage_page_type::hybrid_key_value_iterator;
 
-            using page_collection_type = vector<storage_page_type>;
+            using page_collection_type = Vector<storage_page_type>;
             using page_iterator_type = _STD conditional_t<Const, typename page_collection_type::const_iterator,
                 typename page_collection_type::iterator>;
 
@@ -2181,7 +2181,7 @@ namespace ember::engine::acs {
         }
 
     private:
-        vector<storage_page_type> _pages;
+        Vector<storage_page_type> _pages;
 
         /**
          * Unmask page index
