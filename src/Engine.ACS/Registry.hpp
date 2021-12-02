@@ -11,45 +11,6 @@
 
 namespace ember::engine::acs {
 
-    // TODO: Replace / Reconcider
-    struct __declspec(novtable) pool_adapter {
-
-        void* self;
-
-        virtual void insert(_In_ cref<actor_guid> key_) = 0;
-
-        virtual void* get(_In_ cref<actor_guid> key_) = 0;
-
-        virtual void erase(_In_ cref<actor_guid> key_) = 0;
-    };
-
-    template <typename PoolType_>
-    struct pool_adapter_impl final :
-        public pool_adapter {
-
-        pool_adapter_impl() noexcept = default;
-
-        pool_adapter_impl(_In_ ptr<PoolType_> pool_) noexcept :
-            pool_adapter() {
-            self = pool_;
-        }
-
-        void insert(cref<actor_guid> key_) override {
-            auto* cp { static_cast<PoolType_*>(self) };
-            cp->insert(key_);
-        }
-
-        void* get(cref<actor_guid> key_) override {
-            auto* cp { static_cast<PoolType_*>(self) };
-            return cp->get(key_);
-        }
-
-        void erase(cref<actor_guid> key_) override {
-            auto* cp { static_cast<PoolType_*>(self) };
-            cp->erase(key_);
-        }
-    };
-
     class Registry {
     public:
         using size_type = size_t;
@@ -91,20 +52,10 @@ namespace ember::engine::acs {
 
             if (mapped == nullptr) {
                 _pools[typeId] = ptr;
-                _adapters[typeId] = new pool_adapter_impl<pool_type> { ptr };
             }
 
             return *ptr;
         }
-
-        /**
-         * Get a pool_adapter
-         *
-         * @param typeId_ The type identifier related to the queried pool
-         *
-         * @returns A pointer to a acknowledged pool_adapter, otherwise false
-         */
-        _Success_(return != nullptr) pool_adapter* get_pool_adapter(_In_ cref<component_type_id> typeId_);
 
         /**
          * Gets the pool
@@ -188,8 +139,17 @@ namespace ember::engine::acs {
         }
 
     private:
-        ska::bytell_hash_map<type_id, pool_adapter*> _adapters;
         ska::bytell_hash_map<type_id, void*> _pools;
+
+    public:
+        template <class ValueType_, typename... Args_>
+        [[nodiscard]] ptr<ValueType_> acquireActorComponent(cref<actor_guid> guid_, Args_&& ...args_) {
+
+            auto& pool { getOrCreatePool<ValueType_>() };
+            const auto result = pool.emplace(guid_, _STD forward<Args_>(args_)...);
+
+            return result.second ? result.first : nullptr;
+        }
 
     private:
         ptr<pool_type<Actor>> _defaultActorPool = &pool_type<Actor>::getOrCreate();

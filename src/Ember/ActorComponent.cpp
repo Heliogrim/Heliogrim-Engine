@@ -2,10 +2,10 @@
 
 using namespace ember;
 
-ActorComponent::ActorComponent(mref<CachedActorPointer> owner_, const ptr<ActorComponent> parent_) :
+ActorComponent::ActorComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_) :
     LogicComponent(),
     _owner(_STD move(owner_)),
-    _parent(parent_) {}
+    _parent(_STD move(parent_)) {}
 
 ptr<Actor> ActorComponent::getOwner() const noexcept {
     return _owner.cached;

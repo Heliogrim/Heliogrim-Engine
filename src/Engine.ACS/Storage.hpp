@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 #include <unordered_set>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 namespace ember::engine::acs {
 
@@ -124,27 +124,30 @@ namespace ember::engine::acs {
          * Emplaces a element by the given key
          *
          * @author Julius
-         * @date 23.10.2020
+         * @date 02.12.2021
          *
-         * @param 		   key_ The key.
-         * @param [in,out] value_ The value.
-         * @param [in,out] idx_ Zero-based index of the.
+         * @tparam Args_ The packed parameter type list to construct stored type.
+         *
+         * @param key_ The key to emplace.
+         * @param args_ The typed packed parameter list to construct stored type.
+         * @param idx_ Zero-based index of the.
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool emplace(const key_type& key_, value_type&& value_, index_type& idx_) {
+        template <typename... Args_>
+        bool emplace(const key_type& key_, Args_&& ...args_, index_type& idx_) {
             /**
-             * Gets empty slot
+             * Get empty slot
              */
             idx_ = pop_slot();
 
             /**
-             * Place the new key and value to local storage
+             * Place new key value relation to local storage
              */
-            place(idx_, key_, _STD forward<value_type>(value_));
+            place<Args_...>(idx_, key_, _STD forward<Args_>(args_)...);
 
             /**
-             * return if idx_ is valid
+             * Return whether successful
              */
             return idx_ > per_page;
         }
@@ -1140,18 +1143,26 @@ namespace ember::engine::acs {
         }
 
         /**
-         * Emplaces a key value pair to the indexed storage
+         * Inplace construct a stored type element by given index
          *
          * @author Julius
-         * @date 24.10.2020
+         * @date 02.12.2021
          *
-         * @param 		   idx_ Zero-based index of the.
-         * @param 		   key_ The key.
-         * @param [in,out] value_ The value.
+         * @param idx_ The index where to store.
+         * @param key_ The related key to store.
+         * @param args_ The packed parameter list to construct element.
          */
-        FORCE_INLINE void place(const index_type& idx_, const key_type& key_, IN value_type&& value_) noexcept {
+        template <typename... Args_>
+        FORCE_INLINE void place(const index_type& idx_, const key_type& key_, Args_&& ...args_) {
+            /**
+             *
+             */
             _keys[idx_] = key_;
-            construct_inplace<value_type>(&_values[idx_], _STD forward<value_type>(value_));
+
+            /**
+             *
+             */
+            new(_values + idx_) value_type(_STD forward<Args_>(args_)...);
         }
 
         /**
@@ -1708,7 +1719,7 @@ namespace ember::engine::acs {
                 /**
                  * If emplace succeeded, construct element in pages compressed storage
                  */
-                const index_type cidx = pages_insert_pair(key_, {});
+                const index_type cidx = pages_insert_default(key_);
 
                 /**
                  * Store cidx to indirection entry
@@ -1725,39 +1736,42 @@ namespace ember::engine::acs {
         }
 
         /**
-         * Emplaces a move constructed element by the given key_
+         * Emplaces a stored type relative to the given key by inplace construction
          *
          * @author Julius
-         * @date 02.11.2020
+         * @date 02.12.2021
          *
-         * @param 		   key_ The key to emplace at.
-         * @param [in,out] value_ The value to store.
+         * @tpara Args_ The packed parameter type list to construct stored type.
+         *
+         * @param key_ The key where to store the element.
+         * @param args_ The packed typed parameter list to construct stored type.
          *
          * @returns A pair of a pointer of the stored value and a boolean
          */
-        [[nodiscard]] _STD pair<StoredType_*, bool> emplace(const KeyType_& key_, StoredType_&& value_) {
+        template <typename... Args_>
+        [[nodiscard]] _STD pair<StoredType_*, bool> emplace(const KeyType_& key_, Args_&& ...args_) {
 
             auto er = _indirection.emplace(storage_kv_pair {
                 key_,
                 0
             });
 
-            storage_kv_pair& inp = const_cast<storage_kv_pair&>(*er.first);
+            storage_kv_pair& inp { const_cast<storage_kv_pair&>(*er.first) };
 
             /**
              * Check whether emplace at indirection failed
              */
-            StoredType_* ptr;
+            StoredType_* stp;
             if (er.second == false) {
                 /**
-                 * If emplace failed, get reference of already existing element
+                 * If emplace failed, lookup existing element and return pointer
                  */
-                ptr = &_pages[unmask_page_index(inp.idx)].get_value(unmask_value_index(inp.idx));
+                stp = &_pages[unmask_page_index(inp.idx)].get_value(unmask_value_index(inp.idx));
             } else {
                 /**
-                 * If emplace succeeded, move construct element in pages compressed storage
+                 * If emplace succeeded, construct element inplace at page
                  */
-                const index_type cidx = pages_insert_pair(key_, _STD forward<StoredType_>(value_));
+                const index_type cidx { pages_insert_pair<Args_...>(key_, _STD forward<Args_>(args_)...) };
 
                 /**
                  * Store cidx to indirection entry
@@ -1767,10 +1781,10 @@ namespace ember::engine::acs {
                 /**
                  * Get reference to existing element
                  */
-                ptr = &_pages[unmask_page_index(cidx)].get_value(unmask_value_index(cidx));
+                stp = &_pages[unmask_page_index(cidx)].get_value(unmask_value_index(cidx));
             }
 
-            return _STD make_pair(ptr, er.second);
+            return _STD make_pair(stp, er.second);
         }
 
         /**
@@ -2297,18 +2311,7 @@ namespace ember::engine::acs {
             return (vidx | (pidx << index_page_shift));
         }
 
-        /**
-         * Insert key value pair to storage pages
-         *
-         * @author Julius
-         * @date 30.10.2020
-         *
-         * @param 		   key_ The indexing key.
-         * @param [in,out] value_ The indexed value.
-         *
-         * @returns An index_type.
-         */
-        [[nodiscard]] index_type pages_insert_pair(const KeyType_& key_, StoredType_&& value_) {
+        [[nodiscard]] index_type pages_insert_default(const KeyType_& key_) {
 
             // TODO: optimize way to find storage page with empty sequence
             // TODO: optimize way reusage of pages / using reverse iterator will speed up linear insert, but slow down on reusage
@@ -2329,7 +2332,7 @@ namespace ember::engine::acs {
                 /**
                  * Recursive try again
                  */
-                return pages_insert_pair(key_, _STD forward<StoredType_>(value_));
+                return pages_insert_default(key_);
             }
 
             /**
@@ -2341,7 +2344,51 @@ namespace ember::engine::acs {
              * Emplace data to page
              */
             value_index_type vidx;
-            [[maybe_unused]] const bool success = page.emplace(key_, _STD forward<StoredType_>(value_), vidx);
+            [[maybe_unused]] const bool success = page.template emplace<>(key_, vidx);
+
+            const page_index_type pidx = _STD distance(_pages.begin(), s.base()) - 1;
+
+            /**
+             * Composite index_type
+             */
+            return (index_type { vidx } | (index_type { pidx } << index_page_shift));
+        }
+
+        template <typename... Args_>
+        [[nodiscard]] index_type pages_insert_pair(const KeyType_& key_, Args_&& ...args_) {
+
+            // TODO: optimize way to find storage page with empty sequence
+            // TODO: optimize way reusage of pages / using reverse iterator will speed up linear insert, but slow down on reusage
+            auto s = _STD find_if(_pages.rbegin(), _pages.rend(), [](const storage_page_type& page_) {
+                return page_.can_store();
+            });
+
+            /**
+             * Check whether there is a page with empty space to store data
+             */
+            if (s == _pages.rend()) {
+
+                /**
+                 * If no space found, create new page and try again
+                 */
+                _pages.push_back(storage_page_type {});
+
+                /**
+                 * Recursive try again
+                 */
+                return pages_insert_pair(key_, _STD forward<Args_>(args_)...);
+            }
+
+            /**
+             * Get mutation reference to storage page
+             */
+            storage_page_type& page = *s;
+
+            /**
+             * Emplace data to page
+             */
+            value_index_type vidx;
+            [[maybe_unused]] const bool r = page.template emplace<Args_...>(key_, _STD forward<Args_>(args_)..., vidx);
 
             const page_index_type pidx = _STD distance(_pages.begin(), s.base()) - 1;
 
