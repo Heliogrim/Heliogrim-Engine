@@ -24,7 +24,11 @@ void Core::start() {
     /**
      * Use current scene
      */
-    session->modules().graphics()->useAsRenderScene(static_cast<scene::RevScene*>(_currentMainScene));
+    session->modules().graphics()->useAsRenderScene(
+        static_cast<ptr<scene::IRenderScene>>(
+            static_cast<scene::RevScene*>(_currentMainScene)
+        )
+    );
 
     /**
      * Pseudo workload
@@ -40,7 +44,10 @@ void Core::stop() {
     /**
      * Unuse current scene
      */
-    session->modules().graphics()->useAsRenderScene(nullptr);
+    auto graphics { session->modules().graphics() };
+    if (graphics) {
+        graphics->useAsRenderScene(nullptr);
+    }
 
     /**
      * Pseudo workload

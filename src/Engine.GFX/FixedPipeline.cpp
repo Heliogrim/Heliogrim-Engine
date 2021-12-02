@@ -3,11 +3,11 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-cref<vector<FixedPipelineInput>> FixedPipeline::inputs() const noexcept {
+cref<Vector<FixedPipelineInput>> FixedPipeline::inputs() const noexcept {
     return _inputs;
 }
 
-ref<vector<FixedPipelineInput>> FixedPipeline::inputs() noexcept {
+ref<Vector<FixedPipelineInput>> FixedPipeline::inputs() noexcept {
     return _inputs;
 }
 

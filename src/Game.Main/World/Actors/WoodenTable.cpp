@@ -2,14 +2,16 @@
 
 #include <Ember/StaticMeshComponent.hpp>
 
+#include "Ember/ActorInitializer.hpp"
+
 using namespace ember::game::actors;
 using namespace ember;
 
 WoodenTable::WoodenTable() :
     Actor() {
 
-    const ptr<ActorInitializer> initializer_ = nullptr;
+    auto& initializer { ActorInitializer::get() };
 
-    auto* rootComp = initializer_->createComponent<ActorComponent>(this);
-    auto* meshComp = initializer_->createSubComponent<StaticMeshComponent>(rootComp);
+    initializer.createComponent<ActorComponent>(this);
+    initializer.createSubComponent<StaticMeshComponent>(this, _rootComponent);
 }

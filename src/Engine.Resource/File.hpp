@@ -5,7 +5,7 @@
 #include <fstream>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 namespace ember {
     /** Values that represent file types */
@@ -95,13 +95,13 @@ namespace ember {
          *
          * @return A const std::vector&lt;File&gt;
          */
-        [[nodiscard]] vector<File> files() const {
+        [[nodiscard]] Vector<File> files() const {
             // Could return without effect
             if (!isDirectory()) {
                 throw std::exception("URL is not a directory. Can not fetch files.");
             }
 
-            vector<File> files = vector<File>(0);
+            Vector<File> files = Vector<File>(0);
             const auto iter = _STD filesystem::directory_iterator { _url };
 
             for (const auto& entry : iter) {

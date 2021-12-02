@@ -2,7 +2,7 @@
 
 #include <atomic>
 #include "../../Types.hpp"
-#include "../../Collection/List.hpp"
+#include "../../Collection/Vector.hpp"
 
 namespace ember::engine::concurrent {
 
@@ -16,7 +16,7 @@ namespace ember::engine::concurrent {
      * @tparam Allocator Type of the allocator.
      * @tparam ContainerType Type of the container type.
      */
-    template <class Ty, class Allocator = _STD allocator<Ty>, class ContainerType = ember::vector<Ty, Allocator>>
+    template <class Ty, class Allocator = _STD allocator<Ty>, class ContainerType = ember::Vector<Ty, Allocator>>
     class RingBuffer {
     public:
         using size_type = u32;

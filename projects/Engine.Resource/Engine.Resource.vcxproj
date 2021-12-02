@@ -62,9 +62,6 @@
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
       <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Engine.Tasking\Engine.Tasking.vcxproj">
-      <Project>{ec35f998-e7f8-40bb-ae53-4a8a43972f22}</Project>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

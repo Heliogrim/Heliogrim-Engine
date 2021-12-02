@@ -348,12 +348,12 @@ namespace ember::engine::scene {
         ) noexcept;
 
     protected:
-        math::Transformation _transformation;
+        math::Transform _transform;
         math::Bounding _bounding;
 
     public:
-        [[nodiscard, deprecated]] ref<math::Transformation> transform() noexcept {
-            return _transformation;
+        [[nodiscard, deprecated]] ref<math::Transform> transform() noexcept {
+            return _transform;
         }
 
         [[nodiscard, deprecated]] ref<math::Bounding> bounding() noexcept {

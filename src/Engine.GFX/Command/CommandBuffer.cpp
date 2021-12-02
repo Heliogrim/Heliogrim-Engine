@@ -30,7 +30,7 @@ void CommandBuffer::beginRenderPass(const pipeline::RenderPass& renderPass_, con
         inline_ ? vk::SubpassContents::eInline : vk::SubpassContents::eSecondaryCommandBuffers);
 }
 
-void CommandBuffer::bindDescriptor(const vector<vk::DescriptorSet>& descriptors_) {
+void CommandBuffer::bindDescriptor(const Vector<vk::DescriptorSet>& descriptors_) {
     _vkCmd.bindDescriptorSets(
         vk::PipelineBindPoint::eGraphics,
         _pipelineLayout,

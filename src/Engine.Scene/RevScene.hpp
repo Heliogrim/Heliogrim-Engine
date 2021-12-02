@@ -28,7 +28,7 @@ namespace ember::engine::scene {
         [[nodiscard]] const ptr<SceneGraph> renderGraph() noexcept override;
 
     private:
-        vector<const ptr<ActorComponent>> _cachedNew;
+        Vector<ptr<ActorComponent>> _cachedNew;
 
     public:
         bool addNode(const ptr<ActorComponent> node_) override final;

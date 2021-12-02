@@ -183,7 +183,7 @@ void test() {
     {
         ptr<Level> level = await(CreateLevel());
 
-        vector<Future<ptr<Actor>>> flist {};
+        Vector<Future<ptr<Actor>>> flist {};
         for (u8 c = 0; c < 128ui8; ++c) {
             flist.push_back(CreateActor());
         }

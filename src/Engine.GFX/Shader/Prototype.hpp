@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include "PrototypeBinding.hpp"
 
 namespace ember::engine::gfx::shader {
@@ -74,7 +74,7 @@ namespace ember::engine::gfx::shader {
         /**
          * Prototype Bindings
          */
-        vector<PrototypeBinding> _bindings;
+        Vector<PrototypeBinding> _bindings;
 
     public:
         /**
@@ -85,7 +85,7 @@ namespace ember::engine::gfx::shader {
          *
          * @returns A list of.
          */
-        [[nodiscard]] const vector<PrototypeBinding>& bindings() const noexcept;
+        [[nodiscard]] const Vector<PrototypeBinding>& bindings() const noexcept;
 
         /**
          * Adds a binding

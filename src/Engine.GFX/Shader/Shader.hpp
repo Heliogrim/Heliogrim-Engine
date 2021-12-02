@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/String.hpp>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "Binding.hpp"
 #include "Type.hpp"
@@ -33,7 +33,7 @@ namespace ember::engine::gfx {
          * @param  vkShader_ The shader.
          */
         Shader(const shader::ShaderType type_, const string& name_,
-            const vector<shader::Binding>& bindings_,
+            const Vector<shader::Binding>& bindings_,
             vk::ShaderModule vkShader_);
 
     public:
@@ -123,7 +123,7 @@ namespace ember::engine::gfx {
         /**
          * Bindings
          */
-        vector<shader::Binding> _bindings;
+        Vector<shader::Binding> _bindings;
 
     public:
         /**
@@ -134,7 +134,7 @@ namespace ember::engine::gfx {
          *
          * @returns A list of.
          */
-        [[nodiscard]] const vector<shader::Binding>& bindings() const noexcept;
+        [[nodiscard]] const Vector<shader::Binding>& bindings() const noexcept;
 
     private:
         /**

@@ -10,6 +10,9 @@ namespace ember {
         using this_type = StaticMeshComponent;
         using underlying_type = ModelComponent;
 
+    public:
+        StaticMeshComponent(mref<CachedActorPointer> owner_, const ptr<ActorComponent> parent_);
+
     private:
         asset_guid _staticMesh;
 

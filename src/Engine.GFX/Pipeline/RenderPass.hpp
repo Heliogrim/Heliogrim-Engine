@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Types.hpp>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include "../Device/Device.hpp"
 
 namespace ember::engine::gfx {
@@ -66,8 +66,8 @@ namespace ember::engine::gfx::pipeline {
         /**
          * Attachments
          */
-        vector<vk::AttachmentDescription> _attachments;
-        vector<vk::AttachmentReference> _references;
+        Vector<vk::AttachmentDescription> _attachments;
+        Vector<vk::AttachmentReference> _references;
 
     public:
         /**
@@ -78,7 +78,7 @@ namespace ember::engine::gfx::pipeline {
          *
          * @returns A list of.
          */
-        [[nodiscard]] const vector<vk::AttachmentDescription>& attachments() const noexcept;
+        [[nodiscard]] const Vector<vk::AttachmentDescription>& attachments() const noexcept;
 
         /**
          * Attachments the given index
@@ -107,7 +107,7 @@ namespace ember::engine::gfx::pipeline {
         /**
          * Dependencies
          */
-        vector<vk::SubpassDependency> _dependencies;
+        Vector<vk::SubpassDependency> _dependencies;
 
     public:
         /**
@@ -118,7 +118,7 @@ namespace ember::engine::gfx::pipeline {
          *
          * @returns A reference to a collection::vector&lt;vk::SubpassDependency&gt;
          */
-        [[nodiscard]] vector<vk::SubpassDependency>& dependencies() noexcept;
+        [[nodiscard]] Vector<vk::SubpassDependency>& dependencies() noexcept;
 
     private:
         /**
@@ -186,7 +186,7 @@ namespace ember::engine::gfx::pipeline {
          * Vulkan API
          */
         vk::RenderPassBeginInfo _vkBeginInfo;
-        vector<vk::ClearValue> _clearValues;
+        Vector<vk::ClearValue> _clearValues;
 
     public:
         /**

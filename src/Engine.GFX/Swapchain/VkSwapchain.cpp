@@ -148,7 +148,7 @@ math::uivec2 VkSwapchain::clampExtent(math::uivec2 extent_, cref<vk::SurfaceCapa
     return extent_;
 }
 
-vk::PresentModeKHR VkSwapchain::selectPresentMode(cref<vector<vk::PresentModeKHR>> modes_) const noexcept {
+vk::PresentModeKHR VkSwapchain::selectPresentMode(cref<Vector<vk::PresentModeKHR>> modes_) const noexcept {
     vk::PresentModeKHR pm { vk::PresentModeKHR::eFifo };
 
     for (u32 i = 0; i < modes_.size(); ++i) {

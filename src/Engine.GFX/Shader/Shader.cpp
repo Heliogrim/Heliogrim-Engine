@@ -32,7 +32,7 @@ vk::ShaderStageFlagBits vkTranslate(const ShaderType type_) {
     }
 }
 
-Shader::Shader(const ShaderType type_, const string& name_, const vector<Binding>& bindings_,
+Shader::Shader(const ShaderType type_, const string& name_, const Vector<Binding>& bindings_,
     vk::ShaderModule vkShader_) :
     _type(type_),
     _name(name_),

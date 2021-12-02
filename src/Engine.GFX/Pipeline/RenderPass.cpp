@@ -14,9 +14,9 @@ void RenderPass::setup() {
     /**
      * Prepare
      */
-    vector<vk::AttachmentReference> colors {};
-    vector<vk::AttachmentReference> depthStencils {};
-    vector<vk::AttachmentReference> preserves {};
+    Vector<vk::AttachmentReference> colors {};
+    Vector<vk::AttachmentReference> depthStencils {};
+    Vector<vk::AttachmentReference> preserves {};
 
     _clearValues.clear();
 
@@ -222,7 +222,7 @@ void RenderPass::set(const u32 idx_, const vk::AttachmentDescription& attachment
     set(idx_, attachment_);
 }
 
-const vector<vk::AttachmentDescription>& RenderPass::attachments() const noexcept {
+const Vector<vk::AttachmentDescription>& RenderPass::attachments() const noexcept {
     return _attachments;
 }
 
@@ -230,7 +230,7 @@ vk::AttachmentDescription& RenderPass::attachment(const u32 idx_) {
     return _attachments.at(idx_);
 }
 
-vector<vk::SubpassDependency>& RenderPass::dependencies() noexcept {
+Vector<vk::SubpassDependency>& RenderPass::dependencies() noexcept {
     return _dependencies;
 }
 

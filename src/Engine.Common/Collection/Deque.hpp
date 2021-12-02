@@ -2,11 +2,11 @@
 
 #include "../__macro.hpp"
 
-#include <list>
+#include <deque>
 
 namespace ember {
 
     template <class Type_, class Allocator_ = _STD allocator<Type_>>
-    using list = _STD list<Type_, Allocator_>;
+    using deque = _STD deque<Type_, Allocator_>;
 
 }

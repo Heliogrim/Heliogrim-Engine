@@ -69,12 +69,12 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
     /**
      * Create pool information
      */
-    vector<vk::DescriptorPoolSize> sizes {};
+    Vector<vk::DescriptorPoolSize> sizes {};
 
     /**
      * Intervals, Sets and Layouts will be aligned
      */
-    vector<BindingUpdateInterval> intervals {};
+    Vector<BindingUpdateInterval> intervals {};
 
     /**
      * Loop over every prototype
@@ -119,9 +119,9 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
     /**
      * Create Descriptor Sets
      */
-    vector<BindingGroup> groups {};
+    Vector<BindingGroup> groups {};
 
-    vector<PrototypeBinding> bindings {};
+    Vector<PrototypeBinding> bindings {};
     for (const auto& sp : list_) {
         for (const auto& bp : sp.bindings()) {
 
@@ -160,7 +160,7 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
         /**
          * Collect Layout Bindings
          */
-        vector<vk::DescriptorSetLayoutBinding> layoutBindings {};
+        Vector<vk::DescriptorSetLayoutBinding> layoutBindings {};
 
         for (const auto& binding : bindings) {
 
@@ -213,14 +213,14 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
     /**
      * Create Shader
      */
-    vector<ptr<Shader>> shaders {};
+    Vector<ptr<Shader>> shaders {};
 
     for (const auto& prototype : list_) {
 
         /**
          * Create Bindings
          */
-        vector<Binding> bindings {};
+        Vector<Binding> bindings {};
 
         for (const auto& prototypeBinding : prototype.bindings()) {
 

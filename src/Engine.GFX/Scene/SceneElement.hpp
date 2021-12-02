@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "../GraphicPassMask.hpp"
 #include "../ModelBatch.hpp"
@@ -38,7 +38,7 @@ namespace ember::engine::gfx {
         /**
          * Batches
          */
-        vector<ModelBatch> _batches;
+        Vector<ModelBatch> _batches;
 
     public:
         /**

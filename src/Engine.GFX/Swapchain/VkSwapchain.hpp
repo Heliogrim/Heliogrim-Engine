@@ -94,6 +94,6 @@ namespace ember::engine::gfx {
          *
          * @returns A vk::PresentModeKHR.
          */
-        [[nodiscard]] vk::PresentModeKHR selectPresentMode(cref<vector<vk::PresentModeKHR>> modes_) const noexcept;
+        [[nodiscard]] vk::PresentModeKHR selectPresentMode(cref<Vector<vk::PresentModeKHR>> modes_) const noexcept;
     };
 }

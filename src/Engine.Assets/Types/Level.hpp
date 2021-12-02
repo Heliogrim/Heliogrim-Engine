@@ -18,6 +18,6 @@ namespace ember::engine::assets {
         Level(cref<asset_guid> guid_);
 
     private:
-        vector<asset_guid> _entities;
+        Vector<asset_guid> _entities;
     };
 }

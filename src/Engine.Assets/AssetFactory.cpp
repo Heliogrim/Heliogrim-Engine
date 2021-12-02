@@ -129,7 +129,7 @@ ptr<engine::assets::Asset> AssetFactory::createTextureAsset(cref<asset_guid> gui
 ptr<engine::assets::Asset> AssetFactory::createTextureAsset(
     cref<asset_guid> guid_,
     cref<asset_guid> baseImage_,
-    mref<vector<asset_guid>> images_,
+    mref<Vector<asset_guid>> images_,
     cref<math::uivec3> extent_,
     cref<gfx::TextureFormat> format_,
     cref<u32> mipLevel_,
@@ -138,7 +138,7 @@ ptr<engine::assets::Asset> AssetFactory::createTextureAsset(
     auto* instance = new Texture {
         guid_,
         baseImage_,
-        _STD forward<vector<asset_guid>>(images_),
+        _STD forward<Vector<asset_guid>>(images_),
         extent_,
         format_,
         mipLevel_,

@@ -18,6 +18,7 @@
     <ClInclude Include="..\..\src\Ember\Actor.hpp" />
     <ClInclude Include="..\..\src\Ember\ActorComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\ActorInitializer.hpp" />
+    <ClInclude Include="..\..\src\Ember\CachedActorPointer.hpp" />
     <ClInclude Include="..\..\src\Ember\Asset.hpp" />
     <ClInclude Include="..\..\src\Ember\AssetAutoGuid.hpp" />
     <ClInclude Include="..\..\src\Ember\AssetAutoRegister.hpp" />
@@ -69,6 +70,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember\Actor.cpp" />
     <ClCompile Include="..\..\src\Ember\ActorComponent.cpp" />
+    <ClCompile Include="..\..\src\Ember\ActorInitializer.cpp" />
     <ClCompile Include="..\..\src\Ember\Asset.cpp" />
     <ClCompile Include="..\..\src\Ember\AssetDatabase.cpp" />
     <ClCompile Include="..\..\src\Ember\AudioFormat.cpp" />
@@ -83,9 +85,11 @@
     <ClCompile Include="..\..\src\Ember\LandscapeMeshAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\Level.cpp" />
     <ClCompile Include="..\..\src\Ember\LevelAsset.cpp" />
+    <ClCompile Include="..\..\src\Ember\ModelComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\PfxMaterial.cpp" />
     <ClCompile Include="..\..\src\Ember\PfxMaterialAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\RenderableAsset.cpp" />
+    <ClCompile Include="..\..\src\Ember\SceneComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\SfxMaterialAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\SkeletalMeshAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\SoundAsset.cpp" />

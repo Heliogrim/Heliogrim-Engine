@@ -33,7 +33,7 @@ void GraphicPassPipeline::process(ptr<const ModelPassProcessor> processor_, ref<
          * // TODO: If large sequence, check whether we can divide object stack into parallel 
          */
 
-        vector<ProcessedModelBatch> dummy { 0 };
+        Vector<ProcessedModelBatch> dummy { 0 };
         bool untouched = true;
 
         for (cref<ProcessedModelBatch> model : /*processor_.models()*/dummy) {
@@ -77,10 +77,10 @@ void GraphicPassPipeline::add(cref<ptr<GraphicPassPipelineStage>> stage_, u32 id
     _stages.insert(at, stage_);
 }
 
-cref<vector<ptr<GraphicPassPipelineStage>>> GraphicPassPipeline::stages() const noexcept {
+cref<Vector<ptr<GraphicPassPipelineStage>>> GraphicPassPipeline::stages() const noexcept {
     return _stages;
 }
 
-ref<vector<ptr<GraphicPassPipelineStage>>> GraphicPassPipeline::stages() noexcept {
+ref<Vector<ptr<GraphicPassPipelineStage>>> GraphicPassPipeline::stages() noexcept {
     return _stages;
 }

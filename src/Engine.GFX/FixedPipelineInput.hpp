@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Types.hpp>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "InputAttribute.hpp"
 #include "InputRate.hpp"
@@ -26,6 +26,6 @@ namespace ember::engine::gfx {
         /**
          * Data Attributes / Fields
          */
-        vector<InputAttribute> attributes;
+        Vector<InputAttribute> attributes;
     };
 }

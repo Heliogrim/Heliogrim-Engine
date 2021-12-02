@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)library\dr_flac\;$(SolutionDir)library\dr_wav\;$(SolutionDir)library\gli\;$(SolutionDir)library\glm\;$(SolutionDir)library\vorbis\;$(VK_SDK_PATH)\Third-Party\Include\;$(VK_SDK_PATH)\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)library\dr_flac\;$(SolutionDir)library\dr_wav\;$(SolutionDir)library\gli\;$(SolutionDir)library\glm\;$(SolutionDir)library\tsl\;$(SolutionDir)library\vorbis\;$(VK_SDK_PATH)\Third-Party\Include\;$(VK_SDK_PATH)\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>

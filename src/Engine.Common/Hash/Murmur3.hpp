@@ -16,8 +16,7 @@ namespace ember::hash {
      * @param 		   seed_ The seed.
      * @param [in,out] dst_ If non-null, destination for the.
      */
-    void murmur3_x86_32(IN const void* RESTRICT data_, IN const u32 length_, IN const u32 seed_,
-        OUT u32* RESTRICT dst_);
+    void murmur3_x86_32(IN const void* data_, IN const u32 length_, IN const u32 seed_, OUT u32* dst_);
 
     /**
      * Murmur Hash 3 (x64 Platform) (64Bit Output)
@@ -30,8 +29,7 @@ namespace ember::hash {
      * @param          seed_ The seed.
      * @param [in,out] dst_ If non-null, destination for the.
      */
-    void murmur3_x64_64(IN const void* RESTRICT data_, IN const u32 length_, IN const u32 seed_,
-        OUT u64* RESTRICT dst_);
+    void murmur3_x64_64(IN const void* data_, IN const u32 length_, IN const u32 seed_, OUT u64* dst_);
 
     /**
      * Murmur Hash 3 (x64 Platform) (128Bit Output)

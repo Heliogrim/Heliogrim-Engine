@@ -65,6 +65,31 @@ namespace ember::math {
          */
         ~Transform() = default;
 
+    public:
+        /**
+         * Move Assignment
+         *
+         * @author Julius
+         * @date 02.12.2021
+         *
+         * @param other_ The transform to move from.
+         *
+         * @returns A shallow copy of this.
+         */
+        ref<Transform> operator=(mref<Transform> other_) noexcept;
+
+        /**
+         * Copy Assignment
+         *
+         * @author Julius
+         * @date 02.12.2021
+         *
+         * @param other_ The transform to copy from.
+         *
+         * @returns A shallow copy of this.
+         */
+        ref<Transform> operator=(cref<Transform> other_) = default;
+
     private:
         vec3 _position;
 

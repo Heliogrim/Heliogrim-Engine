@@ -7,7 +7,7 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-vector<const char*> Application::_validation = {
+Vector<const char*> Application::_validation = {
     #ifdef _DEBUG
     "VK_LAYER_KHRONOS_validation"
     #endif

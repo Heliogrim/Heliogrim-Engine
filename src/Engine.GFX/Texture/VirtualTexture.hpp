@@ -84,6 +84,6 @@ namespace ember::engine::gfx {
         ~VirtualTexture() noexcept;
 
     private:
-        vector<VirtualTexturePage> _pages;
+        Vector<VirtualTexturePage> _pages;
     };
 }

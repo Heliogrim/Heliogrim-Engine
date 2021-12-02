@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 
 namespace ember::engine::res {
@@ -86,7 +86,7 @@ namespace ember::engine::res {
         static void destroy();
 
     private:
-        vector<FileTypeId> _list;
+        Vector<FileTypeId> _list;
 
     public:
         [[nodiscard]] FileTypeId getByTypeId(cref<type_id> id_) const noexcept;

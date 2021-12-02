@@ -48,7 +48,7 @@ namespace ember {
         TextureAsset(
             cref<asset_guid> guid_,
             cref<asset_guid> baseImage_,
-            mref<vector<asset_guid>> images_,
+            mref<Vector<asset_guid>> images_,
             cref<math::uivec3> extent_,
             cref<TextureFormat> format_,
             cref<u32> mipLevel_,
@@ -80,9 +80,9 @@ namespace ember {
 
         [[nodiscard]] cref<asset_guid> baseImageGuid() const noexcept;
 
-        [[nodiscard]] vector<const ptr<const ImageAsset>> images() const noexcept;
+        [[nodiscard]] Vector<const ptr<const ImageAsset>> images() const noexcept;
 
-        [[nodiscard]] vector<asset_guid> imagesGuids() const noexcept;
+        [[nodiscard]] Vector<asset_guid> imagesGuids() const noexcept;
 
         [[nodiscard]] cref<math::uivec3> extent() const noexcept;
 

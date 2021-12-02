@@ -404,11 +404,11 @@ void Graphics::processGraphicPasses(ptr<scene::IRenderScene> scene_) {
         /**
          * Wait for Dependencies
          */
-        vector<GraphicPassMask> dependencies {};
+        Vector<GraphicPassMask> dependencies {};
 
         if (dependencies.size() >= 1) {
             // TODO: get back dependencies for RenderPass finish
-            vector<vk::Fence> waitFences {};
+            Vector<vk::Fence> waitFences {};
 
             waitFences.reserve(dependencies.size());
             for (const auto& mask : dependencies) {

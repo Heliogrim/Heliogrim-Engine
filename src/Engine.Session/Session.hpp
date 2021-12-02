@@ -112,7 +112,7 @@ namespace ember::engine {
         scheduler::task::SignaledQueue _queue;
 
     private:
-        vector<ptr<session::Window>> _windows;
+        Vector<ptr<session::Window>> _windows;
 
     public:
         /**

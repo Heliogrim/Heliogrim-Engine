@@ -1,11 +1,12 @@
 #pragma once
 #include <atomic>
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "./Dispatchable.hpp"
 #include "PipelineStage.hpp"
 
 namespace ember::engine::utils {
+
     class Pipeline {
     public:
         /**
@@ -22,7 +23,7 @@ namespace ember::engine::utils {
         /**
          * Pipeline Stages
          */
-        vector<PipelineStage> _stages;
+        Vector<PipelineStage> _stages;
 
     public:
         void addStage(const PipelineStage& stage_);

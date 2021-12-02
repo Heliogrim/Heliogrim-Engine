@@ -34,7 +34,7 @@ namespace ember::engine::gfx::shader {
          *
          * @param  updates_ The updates to store.
          */
-        void store(const vector<BindingUpdate>& updates_);
+        void store(const Vector<BindingUpdate>& updates_);
 
     private:
         /**
@@ -57,7 +57,7 @@ namespace ember::engine::gfx::shader {
         /**
          * Bindings 
          */
-        vector<Binding> _bindings;
+        Vector<Binding> _bindings;
 
     public:
         /**
@@ -68,7 +68,7 @@ namespace ember::engine::gfx::shader {
          *
          * @returns A list of.
          */
-        [[nodiscard]] const vector<Binding>& bindings() const noexcept;
+        [[nodiscard]] const Vector<Binding>& bindings() const noexcept;
 
         /**
          * Adds binding_

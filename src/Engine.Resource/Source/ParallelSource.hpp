@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine.Common/Collection/List.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "Source.hpp"
 
@@ -77,7 +77,7 @@ namespace ember::engine::res {
         reference_type operator=(mref<value_type> other_) noexcept;
 
     private:
-        vector<ptr<Source>> _sources;
+        Vector<ptr<Source>> _sources;
 
     public:
         [[nodiscard]] bool isAsync() const noexcept override;

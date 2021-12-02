@@ -70,7 +70,7 @@ void DepthPassStaticStage::setup() {
         0ui8,
         InputRate::ePerVertex,
         sizeof(vertex),
-        vector<InputAttribute> {
+        Vector<InputAttribute> {
             { 0ui32, TextureFormat::eR32G32B32Sfloat, offsetof(vertex, position) },
             { 1ui32, TextureFormat::eR8G8B8Unorm, offsetof(vertex, color) },
             { 2ui32, TextureFormat::eR32G32B32Sfloat, offsetof(vertex, uvm) },

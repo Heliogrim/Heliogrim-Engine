@@ -1,4 +1,5 @@
 #pragma once
+#include "CachedActorPointer.hpp"
 #include "LogicComponent.hpp"
 
 namespace ember {
@@ -13,6 +14,15 @@ namespace ember {
     public:
         using this_type = ActorComponent;
         using underlying_type = LogicComponent;
+
+    public:
+        ActorComponent(mref<CachedActorPointer> owner_, const ptr<ActorComponent> parent_);
+
+    private:
+        CachedActorPointer _owner;
+
+    public:
+        [[nodiscard]] ptr<Actor> getOwner() const noexcept;
 
     private:
         ptr<ActorComponent> _parent;
