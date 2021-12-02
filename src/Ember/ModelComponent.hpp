@@ -10,6 +10,6 @@ namespace ember {
         using underlying_type = SceneComponent;
 
     public:
-        ModelComponent(mref<CachedActorPointer> owner_, const ptr<ActorComponent> parent_);
+        ModelComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_);
     };
 }

@@ -2,5 +2,5 @@
 
 using namespace ember;
 
-ModelComponent::ModelComponent(mref<CachedActorPointer> owner_, const ptr<ActorComponent> parent_) :
-    SceneComponent(_STD move(owner_), parent_) {}
+ModelComponent::ModelComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_) :
+    SceneComponent(_STD move(owner_), _STD move(parent_)) {}

@@ -4,6 +4,7 @@
 
 #include "Actor.hpp"
 #include "Inbuilt.hpp"
+#include "Engine.ACS/Registry.hpp"
 
 namespace ember {
 
@@ -31,9 +32,17 @@ namespace ember {
             /**
              *
              */
-            auto session { engine::Session::get() };
+            const auto& session { engine::Session::get() };
+            auto* registry { session->modules().acsRegistry() };
 
-            auto* component { new Component({ actor_->guid(), actor_ }, nullptr) };
+            auto* component {
+                registry->acquireActorComponent<
+                    Component,
+                    CachedActorPointer,
+                    ptr<ActorComponent>
+                >(actor_->guid(), { actor_->guid(), actor_ }, nullptr)
+            };
+            assert(component != nullptr && "Failed to ensure successful created component.");
 
             /**
              *
@@ -46,15 +55,25 @@ namespace ember {
         }
 
         template <std::derived_from<ActorComponent> Component>
-        ptr<Component> createSubComponent(const ptr<Actor> actor_, const ptr<ActorComponent> parent_) {
+        ptr<Component> createSubComponent(const ptr<Actor> actor_, ptr<ActorComponent> parent_) {
 
             /**
              *
              */
-            auto session { engine::Session::get() };
+            const auto& session { engine::Session::get() };
+            auto* registry { session->modules().acsRegistry() };
+
             auto* actor { actor_ ? actor_ : parent_->getOwner() };
 
-            auto* component { new Component({ actor_->guid(), actor }, parent_) };
+            auto* component {
+                registry->acquireActorComponent<
+                    Component,
+                    CachedActorPointer,
+                    ptr<ActorComponent>
+                >(actor->guid(), { actor_->guid(), actor },
+                    _STD move(ptr<ActorComponent> { parent_ }))
+            };
+            assert(component != nullptr && "Failed to ensure successful created component.");
 
             /**
              *

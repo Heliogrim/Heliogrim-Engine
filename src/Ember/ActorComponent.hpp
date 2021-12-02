@@ -16,7 +16,11 @@ namespace ember {
         using underlying_type = LogicComponent;
 
     public:
-        ActorComponent(mref<CachedActorPointer> owner_, const ptr<ActorComponent> parent_);
+        ActorComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_);
+
+        ActorComponent(mref<ActorComponent> other_) noexcept = default;
+
+        ActorComponent(cref<ActorComponent>) = delete;
 
     private:
         CachedActorPointer _owner;

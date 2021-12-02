@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <Engine.Common/Wrapper.hpp>
 
 #include "Storage.hpp"
 
@@ -9,7 +10,7 @@ namespace ember::engine::acs {
     template <typename KeyType, typename PooledType, KeyType InvalidKey>
     class Pool {
     public:
-        using storage_type = typename hybrid_storage<KeyType, PooledType, InvalidKey>::this_type;
+        using storage_type = hybrid_storage<KeyType, PooledType, InvalidKey>;
 
         using assign_key_type = KeyType;
         using assign_value_type = PooledType;
@@ -173,6 +174,24 @@ namespace ember::engine::acs {
          */
         PooledType& insert_or_assign(const KeyType& key_, PooledType&& value_) {
             return _storage.insert_or_assign(key_, _STD forward<PooledType>(value_));
+        }
+
+        /**
+         * Tries to emplace the given pooled type to pool constructed by args
+         *
+         * @author Julius
+         * @date 02.12.2021
+         *
+         * @tparam Args_ The packed parameter type list to construct pooled type
+         *
+         * @param key_ The key where to insert.
+         * @param args_ The packed typed parameter list to construct pooled type
+         *
+         * @returns A pointer to the keyed target element and expression whether it was newly constructed
+         */
+        template <typename... Args_>
+        _STD pair<ptr<PooledType>, bool> emplace(cref<KeyType> key_, Args_&& ...args_) {
+            return _storage.emplace(key_, _STD forward<Args_>(args_)...);
         }
 
     public:
