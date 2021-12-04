@@ -3,16 +3,16 @@
 #include "SceneNodeSubBase.hpp"
 
 namespace ember::engine::scene {
+
+    template <class PayloadType_>
     class NaturalSceneNode final :
-        public SceneNodeSubBase<NaturalSceneNode> {
+        public SceneNodeSubBase<PayloadType_, NaturalSceneNode<PayloadType_>> {
     public:
         using type_trait = scene_node_traits<SceneNodeState::eNatural>;
 
-        using base_type = SceneNode;
-
-        using value_type = NaturalSceneNode;
-        using reference_type = ref<value_type>;
-        using const_reference_type = cref<value_type>;
+        using this_type = NaturalSceneNode<PayloadType_>;
+        using underlying_type = SceneNodeSubBase<PayloadType_, this_type>;
+        using base_type = SceneNode<PayloadType_>;
 
     public:
         /**
@@ -21,7 +21,10 @@ namespace ember::engine::scene {
          * @author Julius
          * @date 05.11.2021
          */
-        NaturalSceneNode() noexcept;
+        NaturalSceneNode() noexcept :
+            underlying_type() {
+            base_type::_state = SceneNodeState::eNatural;
+        }
 
     public:
         /**
@@ -37,95 +40,141 @@ namespace ember::engine::scene {
         }
 
     public:
-        /**
-         * Query if this contains the given id_ as descendant
-         *
-         * @author Julius
-         * @date 16.08.2021
-         *
-         * @param  nodeId_ The cref&lt;SceneNodeId&gt; to test for containment.
-         *
-         * @returns True if the object is in this collection, false if not.
-         */
-        [[nodiscard]] bool contains(cref<SceneNodeId> nodeId_) const noexcept;
+        [[nodiscard]] bool contains(cref<SceneNodeId> nodeId_) const noexcept {
+            throw NotImplementedException();
+        }
 
-        /**
-         * Query if this contains the given other_ as descendant
-         *
-         * @author Julius
-         * @date 16.08.2021
-         *
-         * @param  other_ The SceneNode::const_reference_type to test for containment.
-         *
-         * @returns True if the object is in this collection, false if not.
-         */
-        [[nodiscard]] bool contains(SceneNode::const_reference_type other_) const noexcept;
+        [[nodiscard]] bool contains(cref<base_type> other_) const noexcept {
+            #if FALSE
+            if (isLeaf()) {
+                return false;
+            }
 
-        /**
-         * Pushes an object onto this node or sub graph
-         *
-         * @author Julius
-         * @date 04.11.2021
-         *
-         * @param data_ The data to construct from.
-         * @param factory_ The factory to construct nodes.
-         *
-         * @returns True if it succeeds, false if it fails.
-         */
-        _Success_(return == true) bool push(_Inout_ mref<SceneNodeCreateData> data_,
-            _In_ const ptr<const SceneNodeFactory> factory_);
+            // TODO: Replace
+            for (const auto& entry : _children) {
+                auto resolved = entry.get();
 
-        /**
-         * Pushes an object onto this node or sub graph
-         *
-         * @author Julius
-         * @date 04.11.2021
-         *
-         * @param data_ The data to construct from.
-         * @param factory_ The factory to construct nodes.
-         *
-         * @returns True if it succeeds, false if it fails.
-         */
-        _Success_(return == true) bool push(_In_ const ptr<SceneNodeCreateData> data_,
-            _In_ const ptr<const SceneNodeFactory> factory_);
+                if (*resolved == other_) {
+                    return true;
+                }
 
-        /**
-         * Pulls the given nodeId_
-         *
-         * @author Julius
-         * @date 16.08.2021
-         *
-         * @param  nodeId_ Identifier for the node.
-         *
-         * @returns A pull_result_type.
-         */
-        [[nodiscard]] pull_result_type pull(cref<SceneNodeId> nodeId_) noexcept;
+                if constexpr (type_trait::distinct_intersect) {
+                    if (resolved->intersects(other_))
+                        return resolved->contains(other_);
+                } else {
+                    if (resolved->intersects(other_) &&
+                        resolved->contains(other_)) {
+                        return true;
+                    }
+                }
+            }
 
-        /**
-         * Pulls this chained
-         *
-         * @author Julius
-         * @date 16.08.2021
-         *
-         * @param  parent_ The parent.
-         * @param  pos_ The position.
-         *
-         * @returns True if it succeeds, false if it fails.
-         */
-        bool pullChained(
-            SceneNode::const_reference_type parent_,
-            IN OUT ptr<SceneNodeHead> pos_
-        ) noexcept;
+            return false;
+            #endif
 
-        [[nodiscard]] bool intersects(cref<SceneNode> node_) const noexcept;
+            throw NotImplementedException();
+        }
 
-        [[nodiscard]] _Success_(return == true) bool intersects(_In_ cref<SceneNodeCreateData> data_) const noexcept;
+        template <class FactoryType_>
+        bool push(const ptr<PayloadType_> element_, cref<math::Bounding> boundary_,
+            const ptr<const FactoryType_> factory_) {
 
-        [[nodiscard]] bool intersectsFully(cref<SceneNode> node_) const noexcept;
+            #if FALSE
+            #ifdef _DEBUG
+            if (_children.empty() && _children.unsafe_base() == nullptr) {
+                throw _STD runtime_error("Node Container does not contain a valid or pre-allocated memory sequence.");
+            }
+            #endif
 
-        [[nodiscard]] _Success_(return == true) bool intersectsFully(
-            _In_ cref<SceneNodeCreateData> data_) const noexcept;
+            if (isLeaf()) {
 
-        [[nodiscard]] bool intersectedFully(cref<SceneNode> node_) const noexcept;
+                // If this is empty, push payload to this node
+                if (_payload.empty()) {
+                    _payload = _STD move(data_.payload);
+
+                    ++_size;
+                    return true;
+
+                } else {
+
+                    const auto halfs = _bounding.extent() / 2.0F;
+                    const auto& center = _bounding.center();
+
+                    // If this is not empty, split this node into childs
+                    for (u8 i = 0; i < 8ui8; ++i) {
+
+                        const math::vec3 dir {
+                            i & 0b0001 ? -1.F : 1.F,
+                            i & 0b0010 ? -1.F : 1.F,
+                            i & 0b0100 ? -1.F : 1.F
+                        };
+
+                        auto result = factory_->assembleNatural();
+
+                        // TODO: result.body->transform() = _transform;
+                        result.body->bounding() = {
+                            center + (halfs * dir),
+                            halfs
+                        };
+
+                        _children.push(_STD move(result.head));
+                    }
+
+                    // Recursive push due to changed leaf state
+                    return push(_STD move(data_), factory_);
+                }
+
+            } else {
+
+                for (auto& entry : _children) {
+                    auto resolved = entry.get();
+
+                    if (resolved->intersectsFully(data_)) {
+                        return resolved->push(_STD move(data_), factory_), ++_size;
+                    }
+                }
+
+                throw _STD runtime_error("Unable to sustain natural scene tree.");
+
+            }
+            #endif
+
+            throw NotImplementedException();
+        }
+
+        [[nodiscard]] pull_result_type pull(cref<SceneNodeId> nodeId_) noexcept {
+            throw NotImplementedException();
+        }
+
+        bool pullChained(cref<base_type> parent_, ptr<SceneNodeHead> pos_) noexcept {
+            throw NotImplementedException();
+        }
+
+        [[nodiscard]] bool intersects(cref<base_type> node_) const noexcept {
+            throw NotImplementedException();
+        }
+
+        [[nodiscard]] bool intersects(cref<math::Bounding> boundary_) const noexcept {
+            throw NotImplementedException();
+        }
+
+        [[nodiscard]] bool intersectsFully(cref<base_type> node_) const noexcept {
+            throw NotImplementedException();
+        }
+
+        [[nodiscard]] bool intersectsFully(cref<math::Bounding> boundary_) const noexcept {
+            throw NotImplementedException();
+        }
     };
+
+    template <class PayloadType_>
+    ptr<const typename SceneNode<PayloadType_>::natural_type> SceneNode<PayloadType_>::asNatural() const noexcept {
+        return NaturalSceneNode<PayloadType_>::castFrom(this);
+    }
+
+    template <class PayloadType_>
+    ptr<typename SceneNode<PayloadType_>::natural_type> SceneNode<PayloadType_>::asNatural() noexcept {
+        return NaturalSceneNode<PayloadType_>::castFrom(this);
+    }
+
 }

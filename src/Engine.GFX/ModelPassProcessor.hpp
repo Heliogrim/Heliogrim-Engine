@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Scene/Node/SceneNode.hpp>
+#include <Engine.Scene/RenderGraph.hpp>
 
 #include "ProcessedModelBatch.hpp"
 
@@ -43,7 +43,7 @@ namespace ember::engine::gfx {
          *
          * @returns The result of the operation.
          */
-        [[nodiscard]] virtual bool operator()(u32 batchIdx_, cref<scene::SceneNode> node_) noexcept;
+        [[nodiscard]] virtual bool operator()(u32 batchIdx_, cref<scene::RenderGraph::node_type> node_) noexcept;
 
     protected:
         /**

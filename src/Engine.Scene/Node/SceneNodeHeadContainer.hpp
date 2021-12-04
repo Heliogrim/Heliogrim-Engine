@@ -1,4 +1,5 @@
 #pragma once
+#include <concepts>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/__macro.hpp>
 
@@ -164,7 +165,8 @@ namespace ember::engine::scene {
              * @returns A shallow copy of this.
              */
             reference_type operator=(cref<this_type> other_) {
-                if (&other_ != this) {
+
+                if (_STD addressof(other_) != this) {
                     _ptr = other_._ptr;
                 }
 
@@ -182,7 +184,8 @@ namespace ember::engine::scene {
              * @returns A shallow copy of this.
              */
             reference_type operator=(mref<this_type> other_) noexcept {
-                if (&other_ != this) {
+
+                if (_STD addressof(other_) != this) {
                     _ptr = _STD exchange(other_._ptr, nullptr);
                 }
 
@@ -626,7 +629,7 @@ namespace ember::engine::scene {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool push(IN mref<value_type> node_);
+        bool push(mref<value_type> node_);
 
         /**
          * Pulls the last element from this container
@@ -634,11 +637,11 @@ namespace ember::engine::scene {
          * @author Julius
          * @date 01.08.2021
          *
-         * @param  pulled_ The pulled.
+         * @param pulled_ The pulled.
          *
          * @returns True if it succeeds, false if it fails.
          */
-        [[nodiscard]] bool pull(OUT pointer_type pulled_) noexcept;
+        [[nodiscard]] bool pull(pointer_type pulled_) noexcept;
 
         /**
          * Pulls an element from container
@@ -646,12 +649,12 @@ namespace ember::engine::scene {
          * @author Julius
          * @date 13.07.2021
          *
-         * @param  nodeId_ Identifier for the node.
-         * @param  pulled The element pulled.
+         * @param nodeId_ Identifier for the node.
+         * @param pulled The element pulled.
          *
          * @returns True if it succeeds, false if it fails.
          */
-        [[nodiscard]] bool pull(cref<value_id_type> nodeId_, OUT pointer_type pulled);
+        [[nodiscard]] bool pull(cref<value_id_type> nodeId_, pointer_type pulled);
 
         /**
          * Removes a certain element at pos_ from container

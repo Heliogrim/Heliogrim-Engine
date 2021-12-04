@@ -1,5 +1,6 @@
 #pragma once
 #include "IRenderScene.hpp"
+#include "RenderGraph.hpp"
 #include "Scene.hpp"
 #include "Ember/IComponentRegisterContext.hpp"
 
@@ -22,10 +23,10 @@ namespace ember::engine::scene {
         void update() override final;
 
     private:
-        SceneGraph _graph;
+        RenderGraph _renderGraph;
 
     public:
-        [[nodiscard]] const ptr<SceneGraph> renderGraph() noexcept override;
+        [[nodiscard]] const ptr<RenderGraph> renderGraph() noexcept override;
 
     private:
         Vector<ptr<ActorComponent>> _cachedNew;

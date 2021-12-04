@@ -85,7 +85,7 @@ constexpr SceneNodeHeadContainer::size_type SceneNodeHeadContainer::max_size() c
 
 cref<SceneNodeHeadContainer::value_type> SceneNodeHeadContainer::operator[](size_t pos_) const {
     #if _CONTAINER_DEBUG_LEVEL > 0
-    _STL_VERIFY(pos_ < static_cast<size_type>(_last - _base), "container subscription out of range");
+    _STL_VERIFY(pos_ < static_cast<size_type>(_last - _base), "container subscription of range");
     #endif
 
     return _base[pos_];
@@ -93,7 +93,7 @@ cref<SceneNodeHeadContainer::value_type> SceneNodeHeadContainer::operator[](size
 
 ref<SceneNodeHeadContainer::value_type> SceneNodeHeadContainer::operator[](size_t pos_) {
     #if _CONTAINER_DEBUG_LEVEL > 0
-    _STL_VERIFY(pos_ < static_cast<size_type>(_last - _base), "container subscription out of range");
+    _STL_VERIFY(pos_ < static_cast<size_type>(_last - _base), "container subscription of range");
     #endif
 
     return _base[pos_];
@@ -103,7 +103,7 @@ void SceneNodeHeadContainer::clear() {
     tidy();
 }
 
-void SceneNodeHeadContainer::swap(value_type::pointer_type left_, value_type::pointer_type right_) noexcept {
+void SceneNodeHeadContainer::swap(ptr<value_type> left_, ptr<value_type> right_) noexcept {
     // Make copy from left_
     value_type tmp { _STD forward<value_type>(*left_) };
     left_->value_type::~value_type();
@@ -120,7 +120,7 @@ bool SceneNodeHeadContainer::push(mref<value_type> node_) {
     return emplace<value_type>(_STD move(node_));
 }
 
-bool SceneNodeHeadContainer::pull(OUT value_type::pointer_type pulled_) noexcept {
+bool SceneNodeHeadContainer::pull(ptr<value_type> pulled_) noexcept {
     if (empty()) {
         return false;
     }
@@ -131,7 +131,7 @@ bool SceneNodeHeadContainer::pull(OUT value_type::pointer_type pulled_) noexcept
     return true;
 }
 
-bool SceneNodeHeadContainer::pull(cref<value_id_type> nodeId_, OUT value_type::pointer_type pulled) {
+bool SceneNodeHeadContainer::pull(cref<value_id_type> nodeId_, ptr<value_type> pulled) {
 
     const auto last = end();
     const auto lv = _last - size_type { 1 };
@@ -151,7 +151,7 @@ bool SceneNodeHeadContainer::pull(cref<value_id_type> nodeId_, OUT value_type::p
         swap(iter._ptr, lv);
     }
 
-    return pull(_STD forward<value_type::pointer_type>(pulled));
+    return pull(_STD forward<ptr<value_type>>(pulled));
 }
 
 bool SceneNodeHeadContainer::remove(iterator pos_) noexcept {

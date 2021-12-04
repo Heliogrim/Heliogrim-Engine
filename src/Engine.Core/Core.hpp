@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 /**
@@ -19,6 +21,14 @@ namespace ember::engine {
         Core() noexcept;
 
         ~Core();
+
+    private:
+        /**
+         * Atomic flag to signal stopped game core for synchronization
+         *
+         * @details Use stopped flag, cause read operations without negation are cheaper; Expect more reads than writes
+         */
+        _STD atomic_flag _stopped;
 
     public:
         void start();

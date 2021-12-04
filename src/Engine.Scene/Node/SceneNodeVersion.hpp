@@ -13,20 +13,19 @@ namespace ember::engine::scene {
     struct SceneNodeVersion {
         uint_fast64_t data;
 
-        constexpr SceneNodeVersion() noexcept;
+        SceneNodeVersion() noexcept;
 
-        constexpr SceneNodeVersion(invalid_node_version) noexcept;
+        SceneNodeVersion(invalid_node_version) noexcept;
 
-        constexpr SceneNodeVersion(cref<decltype(data)> data_) noexcept :
-            data(data_) {}
+        SceneNodeVersion(cref<decltype(data)> data_) noexcept;
 
-        constexpr SceneNodeVersion(cref<SceneNodeVersion> other_) noexcept = default;
+        SceneNodeVersion(cref<SceneNodeVersion> other_) noexcept;
 
-        constexpr SceneNodeVersion(mref<SceneNodeVersion> other_) noexcept;
+        SceneNodeVersion(mref<SceneNodeVersion> other_) noexcept;
 
-        constexpr ref<SceneNodeVersion> operator=(cref<SceneNodeVersion> other_) noexcept = default;
+        ref<SceneNodeVersion> operator=(cref<SceneNodeVersion> other_) noexcept;
 
-        constexpr ref<SceneNodeVersion> operator=(mref<SceneNodeVersion> other_) noexcept;
+        ref<SceneNodeVersion> operator=(mref<SceneNodeVersion> other_) noexcept;
     };
 
     struct invalid_node_version {
@@ -35,7 +34,7 @@ namespace ember::engine::scene {
 
         constexpr invalid_node_version() = default;
 
-        explicit constexpr operator SceneNodeVersion() const noexcept {
+        explicit operator SceneNodeVersion() const noexcept {
             return SceneNodeVersion { bit_sequence };
         }
 
@@ -43,23 +42,6 @@ namespace ember::engine::scene {
             return bit_sequence;
         }
     };
-
-    constexpr SceneNodeVersion::SceneNodeVersion() noexcept :
-        data(invalid_node_version::bit_sequence) { }
-
-    constexpr SceneNodeVersion::SceneNodeVersion(invalid_node_version) noexcept :
-        data(invalid_node_version::bit_sequence) { }
-
-    constexpr SceneNodeVersion::SceneNodeVersion(mref<SceneNodeVersion> other_) noexcept :
-        data(_STD exchange(other_.data, invalid_node_version::bit_sequence)) { }
-
-    constexpr ref<SceneNodeVersion> SceneNodeVersion::operator=(mref<SceneNodeVersion> other_) noexcept {
-        if (this != &other_) {
-            data = _STD exchange(other_.data, invalid_node_version::bit_sequence);
-        }
-
-        return *this;
-    }
 
     [[nodiscard]] constexpr bool operator==(cref<invalid_node_version>, cref<invalid_node_version>) noexcept {
         return true;

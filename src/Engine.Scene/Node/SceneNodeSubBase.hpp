@@ -3,27 +3,27 @@
 #include "SceneNode.hpp"
 
 namespace ember::engine::scene {
-    template <typename SubType>
+    template <class PayloadType_, typename NodeSubType_>
     class SceneNodeSubBase :
-        public SceneNode {
+        public SceneNode<PayloadType_> {
     public:
         SceneNodeSubBase() noexcept = default;
 
     public:
-        template <class OtherType> requires std::is_base_of_v<SceneNode, OtherType>
-        static ptr<const SubType> castFrom(ptr<const OtherType> other_) {
-            if (other_->nodeState() == SubType::type_trait::value) {
-                return static_cast<ptr<const SubType>>(
+        template <class OtherType> requires std::is_base_of_v<SceneNode<PayloadType_>, OtherType>
+        static ptr<const NodeSubType_> castFrom(ptr<const OtherType> other_) {
+            if (other_->nodeState() == NodeSubType_::type_trait::value) {
+                return static_cast<ptr<const NodeSubType_>>(
                     static_cast<ptr<const void>>(other_)
                 );
             }
             return nullptr;
         }
 
-        template <class OtherType> requires std::is_base_of_v<SceneNode, OtherType>
-        static ptr<SubType> castFrom(ptr<OtherType> other_) {
-            if (other_->nodeState() == SubType::type_trait::value) {
-                return static_cast<ptr<SubType>>(
+        template <class OtherType> requires std::is_base_of_v<SceneNode<PayloadType_>, OtherType>
+        static ptr<NodeSubType_> castFrom(ptr<OtherType> other_) {
+            if (other_->nodeState() == NodeSubType_::type_trait::value) {
+                return static_cast<ptr<NodeSubType_>>(
                     static_cast<ptr<void>>(other_)
                 );
             }

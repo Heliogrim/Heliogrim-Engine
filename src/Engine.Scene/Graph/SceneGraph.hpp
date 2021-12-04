@@ -1,186 +1,47 @@
 #pragma once
 
+#ifdef _DEBUG
+#include <cassert>
+#endif
+
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Collection/Stack.hpp>
 
 #include "../Node/SceneNodeConsumer.hpp"
 #include "../Node/SceneNodeHead.hpp"
-#include "../Storage/EmberSceneNodeStorage.hpp"
+#include "../Node/Traits.hpp"
+#include "../Storage/SceneElementStorage.hpp"
+#include "../Storage/SceneNodeStorage.hpp"
+
+#include "../Node/LoosySceneNode.hpp"
+#include "../Node/NaturalSceneNode.hpp"
+#include "../Node/ShadowSceneNode.hpp"
+#include "../Node/SpartialSceneNode.hpp"
 
 namespace ember::engine::scene {
 
     /**
      * Forward Declaration
      */
+    template <class PayloadType_>
     class MutableSceneGraph;
 
-    class RefSceneGraph {
-    public:
-        using value_type = RefSceneGraph;
-        using reference_type = ref<value_type>;
-        using const_reference_type = cref<value_type>;
-        using pointer_type = ptr<value_type>;
-
-        using root_type = ref<SceneNodeHead>;
-        using storage_type = ref<EmberSceneNodeStorage>;
-
-    public:
-        /**
-         * Default constructor
-         *
-         * @author Julius
-         * @date 15.08.2021
-         */
-        RefSceneGraph() = delete;
-
-        /**
-         * Value Copy Constructor
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @param [in,out] root_ The root.
-         * @param [in,out] storage_ The storage.
-         */
-        RefSceneGraph(
-            ref<_STD remove_reference_t<root_type>> root_,
-            ref<_STD remove_reference_t<storage_type>> storage_) noexcept (
-            _STD is_nothrow_copy_constructible_v<root_type> &&
-            _STD is_nothrow_copy_constructible_v<storage_type>
-        );
-
-        /**
-         * Value Move Constructor
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @param  root_ The root.
-         * @param  storage_ The storage.
-         */
-        RefSceneGraph(
-            mref<_STD remove_reference_t<root_type>> root_,
-            mref<_STD remove_reference_t<storage_type>> storage_) noexcept (
-            _STD is_nothrow_move_constructible_v<root_type> &&
-            _STD is_nothrow_move_constructible_v<storage_type>
-        );
-
-        /**
-         * Copy Constructor
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @param  other_ The other.
-         */
-        RefSceneGraph(const_reference_type other_) noexcept = default;
-
-        /**
-         * Move Constructor
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @param  other_ The other.
-         */
-        RefSceneGraph(mref<value_type> other_) noexcept = default;
-
-        /**
-         * Destructor
-         *
-         * @author Julius
-         * @date 15.08.2021
-         */
-        ~RefSceneGraph() noexcept;
-
-    public:
-        /**
-         * Copy Assignment operator
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @returns A shallow copy of this.
-         */
-        reference_type operator=(const_reference_type) noexcept = delete;
-
-        /**
-         * Move Assignment operator
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @returns A shallow copy of this.
-         */
-        reference_type operator=(mref<value_type>) noexcept = delete;
-
-    private:
-        /**
-         * Scene Graph Root
-         */
-        root_type _root;
-
-    public:
-        /**
-         * Gets the root
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @returns A cref&lt;_STD remove_reference_t&lt;root_type&gt;&gt;
-         */
-        [[nodiscard]] cref<_STD remove_reference_t<root_type>> root() const noexcept;
-
-        /**
-         * Gets the root
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @returns A ref&lt;_STD remove_reference_t&lt;root_type&gt;&gt;
-         */
-        [[nodiscard]] cref<_STD remove_reference_t<root_type>> root() noexcept;
-
-    private:
-        /**
-         * Scene Graph Storage
-         */
-        storage_type _storage;
-
-    public:
-        /**
-         * Traversals the graph with the given consumer
-         *
-         * @tparam Consumer Type of the consumer.
-         * @param  consumer_ The consumer.
-         */
-        template <typename Consumer> requires IsSceneNodeConsumer<Consumer>
-        void traversal(cref<Consumer> consumer_) const {
-            return traversal(static_cast<_STD function<bool(cref<SceneNode>)>>(consumer_));
-        }
-
-        /**
-         * Traversals the graph with the given consumer
-         *
-         * @author Julius
-         * @date 09.01.2021
-         *
-         * @param  consumer_ The consumer.
-         */
-        void traversal(cref<_STD function<bool(cref<SceneNode>)>> consumer_) const;
-    };
-
+    template <class PayloadType_>
     class SceneGraph {
     public:
-        using value_type = SceneGraph;
-        using reference_type = ref<value_type>;
-        using const_reference_type = cref<value_type>;
-        using pointer_type = ptr<value_type>;
+        using this_type = SceneGraph<PayloadType_>;
 
-        using root_type = SceneNodeHead;
-        using storage_type = sptr<EmberSceneNodeStorage>;
+        using head_type = SceneNodeHead;
+        using node_type = SceneNode<PayloadType_>;
 
-        using batched_consumer_fnc_type = _STD function<bool(u32, cref<SceneNode>)>;
+        using traits = scene_traits<node_type, PayloadType_>;
+
+        using node_storage_type = scene_node_storage<node_type, SceneNodeId>;
+        using element_storage_type = SceneElementStorage<PayloadType_, traits>;
+
+        using root_type = head_type;
+        using batched_consumer_fnc_type = _STD function<bool(u32, cref<node_type>)>;
 
     public:
         /**
@@ -192,46 +53,30 @@ namespace ember::engine::scene {
         SceneGraph() = delete;
 
         /**
-         * Value Copy Constructor
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @param  root_ The root.
-         * @param  storage_ The storage.
-         */
-        SceneGraph(
-            cref<_STD remove_reference_t<root_type>> root_,
-            cref<_STD remove_reference_t<storage_type>> storage_) noexcept (
-            _STD is_nothrow_copy_constructible_v<root_type> &&
-            _STD is_nothrow_copy_constructible_v<storage_type>
-        );
-
-        /**
          * Value Move Constructor
          *
          * @author Julius
          * @date 15.08.2021
          *
-         * @param  root_ The root.
-         * @param  storage_ The storage.
+         * @param root_ The root.
+         * @param nodeStorage_ The storage instance where to store graph nodes
+         * @param elementStorage_ The storage instance where to store node elements
          */
         SceneGraph(
             mref<_STD remove_reference_t<root_type>> root_,
-            mref<_STD remove_reference_t<storage_type>> storage_) noexcept (
-            _STD is_nothrow_move_constructible_v<root_type> &&
-            _STD is_nothrow_move_constructible_v<storage_type>
-        );
+            mref<sptr<node_storage_type>> nodeStorage_,
+            mref<sptr<element_storage_type>> elementStorage_) noexcept :
+            _root(_STD move(root_)),
+            _nodeStorage(_STD move(nodeStorage_)),
+            _elementStorage(_STD move(elementStorage_)) {}
 
         /**
          * Copy Constructor
          *
          * @author Julius
          * @date 15.08.2021
-         *
-         * @param  other_ The other.
          */
-        SceneGraph(const_reference_type other_) noexcept = default;
+        SceneGraph(cref<this_type>) noexcept = delete;
 
         /**
          * Move Constructor
@@ -241,7 +86,10 @@ namespace ember::engine::scene {
          *
          * @param  other_ The other.
          */
-        SceneGraph(mref<value_type> other_) noexcept = default;
+        SceneGraph(mref<this_type> other_) noexcept :
+            _root(_STD move(other_._root)),
+            _nodeStorage(_STD move(other_._nodeStorage)),
+            _elementStorage(_STD move(other_._elementStorage)) {}
 
         /**
          * Destructor
@@ -249,23 +97,21 @@ namespace ember::engine::scene {
          * @author Julius
          * @date 15.08.2021
          */
-        ~SceneGraph() noexcept;
+        ~SceneGraph() noexcept = default;
 
     public:
         /**
-         * Copy Assignment operator
+         * Copy Assignment
          *
          * @author Julius
          * @date 15.08.2021
          *
-         * @param  other_ The other.
-         *
          * @returns A shallow copy of this.
          */
-        reference_type operator=(const_reference_type other_) noexcept;
+        ref<this_type> operator=(cref<this_type>) = delete;
 
         /**
-         * Move Assignment operator
+         * Move Assignment
          *
          * @author Julius
          * @date 15.08.2021
@@ -274,7 +120,16 @@ namespace ember::engine::scene {
          *
          * @returns A shallow copy of this.
          */
-        reference_type operator=(mref<value_type> other_) noexcept;
+        ref<this_type> operator=(mref<this_type> other_) noexcept {
+
+            if (_STD addressof(other_) != this) {
+                _root = _STD move(other_._root);
+                _nodeStorage = _STD move(other_._nodeStorage);
+                _elementStorage = _STD move(other_._elementStorage);
+            }
+
+            return *this;
+        }
 
     protected:
         /**
@@ -283,63 +138,35 @@ namespace ember::engine::scene {
         root_type _root;
 
     public:
-        /**
-         * Gets the root
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @returns A cref&lt;_STD remove_reference_t&lt;root_type&gt;&gt;
-         */
-        [[nodiscard]] cref<_STD remove_reference_t<root_type>> root() const noexcept;
+        [[nodiscard]] cref<decltype(_root)> root() const noexcept {
+            return _root;
+        }
 
-        /**
-         * Gets the root
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @returns A ref&lt;_STD remove_reference_t&lt;root_type&gt;&gt;
-         */
-        [[nodiscard]] ref<_STD remove_reference_t<root_type>> root() noexcept;
+        [[nodiscard]] ref<decltype(_root)> root() noexcept {
+            return _root;
+        }
 
     protected:
         /**
          * Scene Graph Storage
          */
-        storage_type _storage;
+        sptr<node_storage_type> _nodeStorage;
 
     public:
+        [[nodiscard]] cref<sptr<node_storage_type>> getNodeStorage() const noexcept {
+            return _nodeStorage;
+        }
+
+    protected:
         /**
-         * Gets the storage
-         *
-         * @author Julius
-         * @date 16.08.2021
-         *
-         * @returns A cref&lt;storage_type&gt;
+         * Scene Element Storage
          */
-        [[nodiscard]] cref<storage_type> storage() const noexcept;
+        sptr<element_storage_type> _elementStorage;
 
     public:
-        /**
-         * Converts this to a reference scene graph
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @returns A RefSceneGraph.
-         */
-        [[nodiscard]] RefSceneGraph asRefSceneGraph() const;
-
-        /**
-         * Converts this to a reference scene graph
-         *
-         * @author Julius
-         * @date 16.08.2021
-         *
-         * @returns A RefSceneGraph.
-         */
-        [[nodiscard]] RefSceneGraph asRefSceneGraph();
+        [[nodiscard]] cref<sptr<element_storage_type>> getElementStorage() const noexcept {
+            return _elementStorage;
+        }
 
     public:
         /**
@@ -350,7 +177,9 @@ namespace ember::engine::scene {
          *
          * @returns A const reference to this as mutable scene graph
          */
-        [[nodiscard]] cref<MutableSceneGraph> asMutable() const noexcept;
+        [[nodiscard]] cref<MutableSceneGraph<PayloadType_>> asMutable() const noexcept {
+            return *static_cast<ptr<const MutableSceneGraph<PayloadType_>>>(this);
+        }
 
         /**
          * Converts this to a mutable scene graph
@@ -360,7 +189,9 @@ namespace ember::engine::scene {
          *
          * @returns A reference to this as mutable scene graph
          */
-        [[nodiscard]] ref<MutableSceneGraph> asMutable() noexcept;
+        [[nodiscard]] ref<MutableSceneGraph<PayloadType_>> asMutable() noexcept {
+            return *static_cast<ptr<MutableSceneGraph<PayloadType_>>>(this);
+        }
 
     public:
         /**
@@ -369,9 +200,9 @@ namespace ember::engine::scene {
          * @tparam Consumer Type of the consumer.
          * @param  consumer_ The consumer.
          */
-        template <typename Consumer> requires IsSceneNodeConsumer<Consumer>
+        template <typename Consumer> requires IsSceneNodeConsumer<Consumer, node_type>
         void traversal(cref<Consumer> consumer_) const {
-            return traversal(static_cast<_STD function<bool(cref<SceneNode>)>>(consumer_));
+            return traversal(static_cast<_STD function<bool(cref<node_type>)>>(consumer_));
         }
 
         /**
@@ -382,22 +213,151 @@ namespace ember::engine::scene {
          *
          * @param  consumer_ The consumer.
          */
-        void traversal(cref<_STD function<bool(cref<SceneNode>)>> consumer_) const;
+        void traversal(cref<_STD function<bool(cref<node_type>)>> consumer_) const {
+            // Using stack instead of queue will cause graph to traverse primary vertical and secondary horizontal
+            // We assume that memory coherency is stronger when traversing vertical
+            stack<ptr<const SceneNodeHead>> backlog {};
+            backlog.push(&_root);
+
+            auto storage { _nodeStorage.get() };
+            while (!backlog.empty()) {
+                DEBUG_ASSERT(backlog.top() != nullptr, "Cursor element should never be nullptr or undefined")
+
+                // Important: pop() will invalidate top but, we dereference before we make reference to object, so indirection is not modified
+                cref<SceneNodeHead> cursor = *backlog.top();
+                backlog.pop();
+
+                // Only move into sub-graph if consumer_ intersects and node isn't leaf
+                auto payload = cursor.get(storage);
+
+                if (payload && consumer_(*payload) && !payload->isLeaf()) {
+                    for (const auto& children = payload->children(); const auto& child : children) {
+                        backlog.push(&child);
+                    }
+                }
+            }
+        }
 
     private:
         void traversalBatchedSingle(u32 batchIdx_, cref<batched_consumer_fnc_type> consumer_,
-            ptr<const SceneNodeHead> parent_) const;
+            ptr<const SceneNodeHead> parent_) const {
+            // Using stack instead of queue will cause graph to traverse primary vertical and secondary horizontal
+            // We assume that memory coherency is stronger when traversing vertical
+            stack<ptr<const SceneNodeHead>> backlog {};
+            backlog.push(parent_);
 
-        void traversalBatchedPartition(u32 firstBatchIdx_, u32 lastBatchIdx_,
-            cref<_STD function<bool(u32, cref<SceneNode>)>> consumer_, ptr<const SceneNodeHead> parent_) const;
+            auto storage { _nodeStorage.get() };
+            while (!backlog.empty()) {
+                DEBUG_ASSERT(backlog.top() != nullptr, "Cursor element should never be nullptr or undefined")
 
-    public:
-        template <typename BatchConsumer> requires IsSceneNodeBatchConsumer<BatchConsumer>
-        void traversalBatched(u32 maxBatches_, cref<BatchConsumer> consumer_) const {
-            return traversalBatched(maxBatches_, static_cast<_STD function<bool(u32, cref<SceneNode>)>>(consumer_));
+                // Important: pop() will invalidate top but, we dereference before we make reference to object, so indirection is not modified
+                cref<SceneNodeHead> cursor = *backlog.top();
+                backlog.pop();
+
+                // Only move into sub-graph if consumer_ intersects and node isn't leaf
+                auto payload = cursor.get(storage);
+
+                if (payload && consumer_(batchIdx_, *payload) && !payload->isLeaf()) {
+                    for (const auto& children = payload->children(); const auto& child : children) {
+                        backlog.push(&child);
+                    }
+                }
+            }
         }
 
-        void traversalBatched(u32 maxBatches_, cref<_STD function<bool(u32, cref<SceneNode>)>> consumer_) const;
+        void traversalBatchedPartition(u32 firstBatchIdx_, u32 lastBatchIdx_,
+            cref<_STD function<bool(u32, cref<node_type>)>> consumer_, ptr<const SceneNodeHead> parent_) const {
+
+            if (firstBatchIdx_ == lastBatchIdx_) {
+                traversalBatchedSingle(firstBatchIdx_, consumer_, parent_);
+                return;
+            }
+
+            stack<ptr<const SceneNodeHead>> backlog {};
+            backlog.push(parent_);
+
+            auto storage { _nodeStorage.get() };
+            while (!backlog.empty() && firstBatchIdx_ != lastBatchIdx_) {
+                DEBUG_ASSERT(backlog.top() != nullptr, "Cursor element should never be nullptr or undefined")
+
+                // Important: pop() will invalidate top but, we dereference before we make reference to object, so indirection is not modified
+                cref<SceneNodeHead> cursor = *backlog.top();
+                backlog.pop();
+
+                // Only move into sub-graph if consumer_ intersects and node isn't leaf
+                auto payload = cursor.get(storage);
+
+                if (payload && consumer_(0, *payload) && !payload->isLeaf()) {
+                    for (const auto& children = payload->children(); const auto& child : children) {
+                        backlog.push(&child);
+                    }
+                }
+
+                /**
+                 *
+                 */
+                if (backlog.size() > 1) {
+                    const u32 shareable = backlog.size() - 1;
+                    const u32 leftBatches = lastBatchIdx_ - firstBatchIdx_;
+
+                    const u32 partitions = MIN(shareable, leftBatches);
+                    const u32 perShare = leftBatches / partitions;
+
+                    for (u32 i = 0; i < partitions; ++i) {
+
+                        auto* cur = backlog.top();
+                        backlog.pop();
+
+                        if (perShare > 1) {
+
+                            // scheduler::Scheduler::get().exec(scheduler::task::make_task(
+                            //     [&, first = lastBatchIdx_ - perShare, last = lastBatchIdx_, consumer = consumer_, parent = cur
+                            //     ]() {
+                            //         traversalBatchedPartition(first, last, consumer, parent);
+                            //     }, scheduler::task::TaskMask::eNormal,
+                            //     engine::scheduler::ScheduleStageBarriers::eGraphicNodeCollectStrong,
+                            //     engine::scheduler::ScheduleStageBarriers::eGraphicNodeCollectStrong));
+                            // 
+                            // lastBatchIdx_ -= perShare;
+
+                        } else {
+
+                            // scheduler::Scheduler::get().exec(scheduler::task::make_task(
+                            //     [&, idx = lastBatchIdx_--, consumer = consumer_, parent = cur]() {
+                            //         traversalBatchedSingle(idx, consumer, parent);
+                            //     }, scheduler::task::TaskMask::eNormal,
+                            //     engine::scheduler::ScheduleStageBarriers::eGraphicNodeCollectStrong,
+                            //     engine::scheduler::ScheduleStageBarriers::eGraphicNodeCollectStrong));
+                        }
+
+                    }
+                }
+            }
+
+            while (!backlog.empty()) {
+
+                auto* cursor = backlog.top();
+                backlog.pop();
+
+                traversalBatchedSingle(firstBatchIdx_, consumer_, cursor);
+            }
+        }
+
+    public:
+        template <typename BatchConsumer> requires IsSceneNodeBatchConsumer<BatchConsumer, node_type>
+        void traversalBatched(u32 maxBatches_, cref<BatchConsumer> consumer_) const {
+            return traversalBatched(maxBatches_, static_cast<_STD function<bool(u32, cref<node_type>)>>(consumer_));
+        }
+
+        void traversalBatched(u32 maxBatches_, cref<_STD function<bool(u32, cref<node_type>)>> consumer_) const {
+
+            if (maxBatches_ <= 1) {
+                traversalBatchedSingle(0, consumer_, &_root);
+                return;
+            }
+
+            traversalBatchedPartition(0, maxBatches_ - 1, consumer_, &_root);
+        }
 
     };
 

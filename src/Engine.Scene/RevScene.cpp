@@ -1,21 +1,26 @@
 #include "RevScene.hpp"
 
 #include <Ember/World.hpp>
-#include "Graph/MutableSceneGraph.hpp"
-#include "Node/SceneNodeFactory.hpp"
 
 using namespace ember::engine::scene;
 
-SceneGraph makeSceneGraph() {
-    auto storage { ember::make_sptr<EmberSceneNodeStorage>() };
-    auto root { SceneNodeFactory { storage }.assembleRoot() };
+RenderGraph makeRenderGraph() {
 
-    return { _STD move(root.head), _STD move(storage) };
+    auto nodeStorage { ember::make_sptr<RenderGraph::node_storage_type>() };
+    auto elementStorage { ember::make_sptr<RenderGraph::element_storage_type>() };
+
+    auto root { SceneNodeFactory { nodeStorage.get(), elementStorage.get() }.assembleRoot() };
+
+    return {
+        _STD move(root.head),
+        _STD move(nodeStorage),
+        _STD move(elementStorage)
+    };
 }
 
 RevScene::RevScene() noexcept :
     Scene(),
-    _graph(makeSceneGraph()),
+    _renderGraph(makeRenderGraph()),
     _cachedNew(),
     _world(nullptr) {
 
@@ -27,7 +32,7 @@ RevScene::~RevScene() = default;
 void RevScene::update() {
     Scene::update();
 
-    auto& graph { _graph.asMutable() };
+    auto& graph { _renderGraph.asMutable() };
 
     const auto list { _STD move(_cachedNew) };
     /*
@@ -41,8 +46,8 @@ void RevScene::update() {
      */
 }
 
-const ember::ptr<SceneGraph> RevScene::renderGraph() noexcept {
-    return &_graph;
+const ember::ptr<RenderGraph> RevScene::renderGraph() noexcept {
+    return &_renderGraph;
 }
 
 bool RevScene::addNode(const ptr<ActorComponent> node_) {

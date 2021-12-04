@@ -12,7 +12,7 @@ GraphicPass::GraphicPass(cref<sptr<Device>> device_, const ptr<Swapchain> swapch
     _swapchain(swapchain_),
     _mask(mask_) {}
 
-void GraphicPass::process(const ptr<scene::SceneGraph> graph_, ref<CommandBatch> batch_) {
+void GraphicPass::process(const ptr<scene::RenderGraph> graph_, ref<CommandBatch> batch_) {
 
     SCOPED_STOPWATCH
 
@@ -22,9 +22,9 @@ void GraphicPass::process(const ptr<scene::SceneGraph> graph_, ref<CommandBatch>
 
             ref<ModelPassProcessor> obj;
 
-            bool (ModelPassProcessor::*fnc)(u32, cref<scene::SceneNode>);
+            bool (ModelPassProcessor::*fnc)(u32, cref<scene::RenderGraph::node_type>);
 
-            [[nodiscard]] bool operator()(u32 batchIdx_, cref<scene::SceneNode> node_) const noexcept {
+            [[nodiscard]] bool operator()(u32 batchIdx_, cref<scene::RenderGraph::node_type> node_) const noexcept {
                 return (obj.*fnc)(batchIdx_, node_);
             }
         };

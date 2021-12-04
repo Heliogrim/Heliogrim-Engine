@@ -47,7 +47,7 @@ namespace ember::engine::acs {
             auto ptr = &pool_type::getOrCreate();
 
             // Temporary
-            type_id typeId { reinterpret_cast<u64>(ptr) };
+            const type_id typeId { reinterpret_cast<u64>(ptr) };
             auto mapped = static_cast<pool_type*>(_pools[typeId]);
 
             if (mapped == nullptr) {
