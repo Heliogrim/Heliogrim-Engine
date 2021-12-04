@@ -13,26 +13,16 @@ namespace ember::engine::scene {
      * @author Julius
      * @date 15.08.2021
      */
+    template <class PayloadType_>
     class SceneNode;
-
-    /**
-     * Forward Declaration
-     *
-     * @author Julius
-     * @date 16.08.2021
-     */
-    class EmberSceneNodeStorage;
 
     class SceneNodeHead {
     public:
+        template <class PayloadType_>
         friend class SceneNode;
 
     public:
-        using value_type = SceneNodeHead;
-        using reference_type = ref<value_type>;
-        using const_reference_type = cref<value_type>;
-        using pointer_type = ptr<value_type>;
-
+        using this_type = SceneNodeHead;
         using smart_version_type = SceneNodeVersion;
 
     public:
@@ -62,7 +52,7 @@ namespace ember::engine::scene {
          *
          * @param  other_ The other.
          */
-        SceneNodeHead(const_reference_type other_) noexcept;
+        SceneNodeHead(cref<SceneNodeHead> other_) noexcept;
 
         /**
          * Move Constructor
@@ -84,7 +74,7 @@ namespace ember::engine::scene {
 
     public:
         /**
-         * Copy Assignment operator
+         * Copy Assignment
          *
          * @author Julius
          * @date 15.08.2021
@@ -93,10 +83,10 @@ namespace ember::engine::scene {
          *
          * @returns A shallow copy of this.
          */
-        reference_type operator=(const_reference_type other_) noexcept;
+        ref<SceneNodeHead> operator=(cref<SceneNodeHead> other_) noexcept;
 
         /**
-         * Move Assignment operator
+         * Move Assignment
          *
          * @author Julius
          * @date 15.08.2021
@@ -105,7 +95,7 @@ namespace ember::engine::scene {
          *
          * @returns A shallow copy of this.
          */
-        reference_type operator=(mref<value_type> other_) noexcept;
+        ref<SceneNodeHead> operator=(mref<SceneNodeHead> other_) noexcept;
 
     private:
         /**
@@ -128,7 +118,7 @@ namespace ember::engine::scene {
         /**
          * The cached pointer
          */
-        mutable ptr<SceneNode> _cachedPtr;
+        mutable ptr<void> _cachedPtr;
 
         /**
          * The cache version
@@ -136,34 +126,21 @@ namespace ember::engine::scene {
         mutable smart_version_type _cacheVersion;
 
     public:
-        /**
-         * Gets a pointer to the scene node, otherwise throw
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @param  storage_ The storage where to resolve.
-         *
-         * @returns A ptr&lt;SceneNode&gt;
-         */
-        [[nodiscard]] ptr<SceneNode> get(cref<EmberSceneNodeStorage> storage_) const;
+        template <class NodeStorageType_>
+        [[nodiscard]] ptr<typename NodeStorageType_::value_type> get(
+            const ptr<NodeStorageType_> storage_) const noexcept {
 
-        /**
-         * Gets a pointer to the scene node, otherwise return nullptr
-         *
-         * @author Julius
-         * @date 15.08.2021
-         *
-         * @param  storage_ The storage where to resolve.
-         *
-         * @returns A ptr&lt;SceneNode&gt;
-         */
-        [[nodiscard]] ptr<SceneNode> get(cref<EmberSceneNodeStorage> storage_, _STD nothrow_t) const noexcept;
+            if (_cachedPtr == nullptr) {
+                _cachedPtr = storage_->get(_nodeId);
 
-    public:
-        // TODO: Temporary
-        ptr<EmberSceneNodeStorage> storage;
+                if (_cachedPtr == nullptr) {
+                    return nullptr;
+                }
 
-        [[nodiscard]] ptr<SceneNode> get() const noexcept;
+                _cacheVersion = static_cast<ptr<typename NodeStorageType_::value_type>>(_cachedPtr)->_version;
+            }
+
+            return static_cast<ptr<typename NodeStorageType_::value_type>>(_cachedPtr);
+        }
     };
 }

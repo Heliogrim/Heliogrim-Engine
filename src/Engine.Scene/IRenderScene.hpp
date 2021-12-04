@@ -1,5 +1,5 @@
 #pragma once
-#include "Graph/SceneGraph.hpp"
+#include "RenderGraph.hpp"
 
 namespace ember::engine::scene {
 
@@ -8,6 +8,6 @@ namespace ember::engine::scene {
         using this_type = IRenderScene;
 
     public:
-        [[nodiscard]] virtual const ptr<SceneGraph> renderGraph() noexcept = 0;
+        [[nodiscard]] virtual const ptr<RenderGraph> renderGraph() noexcept = 0;
     };
 }

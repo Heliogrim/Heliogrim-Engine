@@ -8,18 +8,44 @@ using namespace ember::engine;
 using namespace ember;
 
 Core::Core() noexcept :
-    _currentMainScene(nullptr) {}
+    _stopped(),
+    _currentMainScene(nullptr) {
+
+    _stopped.test_and_set(_STD memory_order_relaxed);
+}
 
 Core::~Core() = default;
 
 void Core::start() {
 
-    auto session { Session::get() };
+    const auto session { Session::get() };
+    _stopped.clear(_STD memory_order_release);
 
     /**
      * Build Default Scene
      */
     _currentMainScene = new scene::RevScene();
+
+    /**
+     * Register function callbacks
+     */
+    session->modules().scheduler()->exec(
+        scheduler::task::make_repetitive_task([&sig = _stopped, &scene = _currentMainScene]() {
+                if (sig.test(_STD memory_order_consume)) {
+                    return false;
+                }
+
+                if (scene) {
+                    scene->update();
+                }
+
+                return true;
+            },
+            scheduler::task::TaskMask::eNormal,
+            scheduler::ScheduleStageBarriers::ePublishStrong,
+            scheduler::ScheduleStageBarriers::ePublishStrong
+        )
+    );
 
     /**
      * Use current scene
@@ -33,13 +59,14 @@ void Core::start() {
     /**
      * Pseudo workload
      */
-    scheduler::thread::self::sleepFor(15000);
+    scheduler::thread::self::sleepFor(10000);
 
 }
 
 void Core::stop() {
 
-    auto session { Session::get() };
+    const auto session { Session::get() };
+    _stopped.test_and_set(_STD memory_order_release);
 
     /**
      * Unuse current scene
@@ -52,7 +79,7 @@ void Core::stop() {
     /**
      * Pseudo workload
      */
-    scheduler::thread::self::sleepFor(15000);
+    scheduler::thread::self::sleepFor(1000);
 
 }
 

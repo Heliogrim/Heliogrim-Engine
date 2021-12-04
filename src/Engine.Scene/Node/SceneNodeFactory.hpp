@@ -2,10 +2,18 @@
 
 #include "SceneNodeHead.hpp"
 #include "SceneNode.hpp"
-#include "../Storage/EmberSceneNodeStorage.hpp"
 
 namespace ember::engine::scene {
+
+    template <class NodeStorageType_, class ElementStorageType_>
     class SceneNodeFactory {
+    public:
+        using this_type = SceneNodeFactory<NodeStorageType_, ElementStorageType_>;
+
+        using node_storage_type = NodeStorageType_;
+        using element_storage_type = ElementStorageType_;
+
+        using node_type = typename node_storage_type::value_type;
 
     public:
         /**
@@ -16,15 +24,10 @@ namespace ember::engine::scene {
          */
         SceneNodeFactory() = delete;
 
-        /**
-         * Constructor
-         *
-         * @author Julius
-         * @date 16.08.2021
-         *
-         * @param  storage_ The storage.
-         */
-        SceneNodeFactory(sptr<EmberSceneNodeStorage> storage_) noexcept;
+        SceneNodeFactory(const ptr<node_storage_type> nodeStorage_,
+            const ptr<element_storage_type> elementStorage_) noexcept :
+            _nodeStorage(nodeStorage_),
+            _elementStorage(elementStorage_) {}
 
         /**
          * Destructor
@@ -35,38 +38,51 @@ namespace ember::engine::scene {
         ~SceneNodeFactory() noexcept = default;
 
     private:
-        /**
-         * The node's storage
-         */
-        sptr<EmberSceneNodeStorage> _storage;
+        ptr<node_storage_type> _nodeStorage;
+        ptr<element_storage_type> _elementStorage;
 
     public:
-        /**
-         * Gets the storage
-         *
-         * @author Julius
-         * @date 16.08.2021
-         *
-         * @returns A sptr&lt;EmberSceneNodeStorage&gt;
-         */
-        [[nodiscard]] sptr<EmberSceneNodeStorage> storage() const noexcept;
+        [[nodiscard]] const ptr<element_storage_type> getElementStorage() const noexcept {
+            return _elementStorage;
+        }
 
     public:
         using factory_assemble_result = struct {
             SceneNodeHead head;
-            ptr<SceneNode> body;
+            ptr<node_type> body;
         };
 
     public:
-        [[nodiscard]] factory_assemble_result assembleRoot() const;
+        [[nodiscard]] factory_assemble_result assembleRoot() const {
+            return assembleShadow();
+        }
 
-        [[nodiscard]] factory_assemble_result assembleShadow() const;
+        [[nodiscard]] factory_assemble_result assembleShadow() const {
 
-        [[nodiscard]] factory_assemble_result assembleLoosy() const;
+            auto nodeId = _nodeIdGen.fetch_add(1);
+            auto stored = _nodeStorage->insert(nodeId, {});
 
-        [[nodiscard]] factory_assemble_result assembleSpartial() const;
+            if (!stored.second) {
+                throw _STD bad_alloc();
+            }
 
-        [[nodiscard]] factory_assemble_result assembleNatural() const;
+            return {
+                { nodeId },
+                stored.first
+            };
+        }
+
+        [[nodiscard]] factory_assemble_result assembleLoosy() const {
+            throw NotImplementedException();
+        }
+
+        [[nodiscard]] factory_assemble_result assembleSpartial() const {
+            throw NotImplementedException();
+        }
+
+        [[nodiscard]] factory_assemble_result assembleNatural() const {
+            throw NotImplementedException();
+        }
 
     private:
         // Temporary

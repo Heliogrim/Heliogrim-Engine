@@ -48,9 +48,6 @@
     <ClInclude Include="..\..\src\Engine.Scene\Graph\SceneGraph.hpp">
       <Filter>Headerdateien\Graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scene\Storage\EmberSceneNodeStorage.hpp">
-      <Filter>Headerdateien\Storage</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeVersion.hpp">
       <Filter>Headerdateien\Node</Filter>
     </ClInclude>
@@ -87,9 +84,6 @@
     <ClInclude Include="..\..\src\Engine.Scene\Graph\SceneGraphTag.hpp">
       <Filter>Headerdateien\Graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeCreateData.hpp">
-      <Filter>Headerdateien\Node</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Scene\Graph\MutableSceneGraph.hpp">
       <Filter>Headerdateien\Graph</Filter>
     </ClInclude>
@@ -102,6 +96,15 @@
     <ClInclude Include="..\..\src\Engine.Scene\IRenderScene.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\Traits.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Storage\SceneElementStorage.hpp">
+      <Filter>Headerdateien\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\RenderGraph.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp">
@@ -110,38 +113,17 @@
     <ClCompile Include="..\..\src\Engine.Scene\Storage\SceneNodeStorage.cpp">
       <Filter>Quelldateien\Storage</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNode.cpp">
-      <Filter>Quelldateien\Node</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeHead.cpp">
       <Filter>Quelldateien\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scene\Graph\SceneGraph.cpp">
-      <Filter>Quelldateien\Graph</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeHeadContainer.cpp">
       <Filter>Quelldateien\Node</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeFactory.cpp">
-      <Filter>Quelldateien\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scene\Node\ShadowSceneNode.cpp">
-      <Filter>Quelldateien\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scene\Node\NaturalSceneNode.cpp">
-      <Filter>Quelldateien\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scene\Node\SpartialSceneNode.cpp">
-      <Filter>Quelldateien\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scene\Node\LoosySceneNode.cpp">
-      <Filter>Quelldateien\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scene\Graph\MutableSceneGraph.cpp">
-      <Filter>Quelldateien\Graph</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scene\RevScene.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeVersion.cpp">
+      <Filter>Quelldateien\Node</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

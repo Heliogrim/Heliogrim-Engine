@@ -1,30 +1,58 @@
 #pragma once
 #include "SceneGraph.hpp"
 #include "../Node/SceneNodeFactory.hpp"
-#include "../Node/SceneNodeCreateData.hpp"
 
 namespace ember::engine::scene {
 
+    template <class PayloadType_>
     class MutableSceneGraph :
-        public SceneGraph {
+        public SceneGraph<PayloadType_> {
     public:
-        using underlying_type = SceneGraph;
+        using this_type = MutableSceneGraph<PayloadType_>;
+        using underlying_type = SceneGraph<PayloadType_>;
+
+        using factory_type = SceneNodeFactory<
+            typename underlying_type::node_storage_type,
+            typename underlying_type::element_storage_type
+        >;
 
     protected:
-        [[nodiscard]] SceneNodeFactory factory() const noexcept;
+        [[nodiscard]] factory_type factory() const noexcept {
+            return factory_type {
+                underlying_type::_nodeStorage.get(),
+                underlying_type::_elementStorage.get()
+            };
+        }
 
     public:
-        _Success_(return) bool push(_Inout_ mref<SceneNodeCreateData> data_);
+        bool push(ptr<PayloadType_> element_) {
+            throw NotImplementedException();
+        }
 
-        _Success_(return) bool push(_Inout_ ptr<SceneNode> node_);
+        bool push(ptr<typename underlying_type::node_type> node_) {
+            throw NotImplementedException();
+        }
 
-        _Success_(return) bool insert(_Inout_ mref<SceneNodeCreateData> data_, _In_ const ptr<SceneNode> where_);
+        bool insert(ptr<PayloadType_> element_, const ptr<typename underlying_type::node_type> where_) {
+            throw NotImplementedException();
+        }
 
-        _Success_(return) bool insert(_Inout_ ptr<SceneNode> node_, _In_ const ptr<SceneNode> where_);
+        bool insert(ptr<typename underlying_type::node_type> node_,
+            const ptr<typename underlying_type::node_type> where_) {
+            throw NotImplementedException();
+        }
 
-        _Success_(return) bool pop(_In_ const ptr<SceneNode> node_);
+        bool pop(const ptr<PayloadType_> element_) {
+            throw NotImplementedException();
+        }
 
-        _Success_(return) bool erase(_Inout_ ref<ptr<SceneNode>> subGraph_);
+        bool pop(const ptr<typename underlying_type::node_type> node_) {
+            throw NotImplementedException();
+        }
+
+        bool erase(ref<ptr<typename underlying_type::node_type>> subGraph_) {
+            throw NotImplementedException();
+        }
     };
 
 }

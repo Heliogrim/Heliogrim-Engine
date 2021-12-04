@@ -9,7 +9,7 @@ using namespace ember;
 DepthModelPassProcessor::DepthModelPassProcessor(ptr<const GraphicPass> graphicPass_) :
     ModelPassProcessor(graphicPass_) {}
 
-bool DepthModelPassProcessor::operator()(u32 batchIdx_, cref<scene::SceneNode> node_) noexcept {
+bool DepthModelPassProcessor::operator()(u32 batchIdx_, cref<scene::RenderGraph::node_type> node_) noexcept {
 
     /**
      * Precheck whether node has state or children
@@ -21,6 +21,7 @@ bool DepthModelPassProcessor::operator()(u32 batchIdx_, cref<scene::SceneNode> n
     // TODO: Remove!!!
     return !node_.isLeaf();
 
+    #if FALSE
     /**
      * Check whether scene node as stored valid element reference; otherwise drop iteration
      */
@@ -56,6 +57,7 @@ bool DepthModelPassProcessor::operator()(u32 batchIdx_, cref<scene::SceneNode> n
      *
      */
     return !node_.isLeaf();
+    #endif
 }
 
 void DepthModelPassProcessor::reset() {

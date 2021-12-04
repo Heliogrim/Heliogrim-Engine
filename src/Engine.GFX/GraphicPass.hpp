@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Scene/Graph/SceneGraph.hpp>
+#include <Engine.Scene/RenderGraph.hpp>
 
 #include "GraphicPassMask.hpp"
 #include "GraphicPassPipeline.hpp"
@@ -9,6 +9,7 @@
 #include "Swapchain/Swapchain.hpp"
 
 namespace ember::engine::gfx {
+
     class GraphicPass {
     protected:
         /**
@@ -57,7 +58,7 @@ namespace ember::engine::gfx {
          * @param  graph_ The SceneGraph to traverse.
          * @param  batch_ The batch.
          */
-        virtual void process(const ptr<scene::SceneGraph> graph_, IN OUT ref<CommandBatch> batch_);
+        virtual void process(const ptr<scene::RenderGraph> graph_, IN OUT ref<CommandBatch> batch_);
 
     protected:
         sptr<Device> _device;

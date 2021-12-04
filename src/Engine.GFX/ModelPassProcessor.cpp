@@ -13,10 +13,11 @@ using namespace ember;
 ModelPassProcessor::ModelPassProcessor(ptr<const GraphicPass> graphicPass_) :
     _graphicPass(graphicPass_) {}
 
-bool ModelPassProcessor::operator()(u32 batchIdx_, cref<scene::SceneNode> node_) noexcept {
+bool ModelPassProcessor::operator()(u32 batchIdx_, cref<scene::RenderGraph::node_type> node_) noexcept {
 
     SCOPED_STOPWATCH
 
+    #if FALSE
     /**
      * TODO: Check whether node is used for current RenderPass
      */
@@ -30,6 +31,7 @@ bool ModelPassProcessor::operator()(u32 batchIdx_, cref<scene::SceneNode> node_)
     /**
      *
      */
+    //auto* elements { node_.elements() };
     auto nse = node_.payload().payload<SceneElement>().lock();
     ref<SceneElement> se = *nse;
 
@@ -46,6 +48,8 @@ bool ModelPassProcessor::operator()(u32 batchIdx_, cref<scene::SceneNode> node_)
     /**
      * Return true for consumer to traverse the child elements in tree
      */
+    return true;
+    #endif
     return true;
 }
 

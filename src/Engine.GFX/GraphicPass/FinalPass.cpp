@@ -74,7 +74,7 @@ void FinalPass::destroy() {
     }
 }
 
-void FinalPass::process(const ptr<scene::SceneGraph> graph_, ref<CommandBatch> batch_) {
+void FinalPass::process(const ptr<scene::RenderGraph> graph_, ref<CommandBatch> batch_) {
 
     SCOPED_STOPWATCH
 

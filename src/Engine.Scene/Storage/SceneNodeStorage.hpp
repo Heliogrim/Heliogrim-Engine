@@ -1439,8 +1439,7 @@ namespace ember::engine::scene {
     class scene_node_storage {
     public:
         using this_type = scene_node_storage<ValueType, KeyType>;
-        using reference_type = ref<this_type>;
-        using const_reference_type = cref<this_type>;
+        using value_type = ValueType;
 
         inline constexpr static u64 index_page_mask = 0xFFFFFFFF00000000ui64;
         inline constexpr static u64 index_value_mask = 0x00000000FFFFFFFFui64;
@@ -1495,7 +1494,7 @@ namespace ember::engine::scene {
          * @author Julius
          * @date 05.08.2021
          */
-        scene_node_storage(const_reference_type) = delete;
+        scene_node_storage(cref<this_type>) = delete;
 
         /**
          * Move Constructor
@@ -1526,7 +1525,7 @@ namespace ember::engine::scene {
          *
          * @returns A shallow copy of this.
          */
-        reference_type operator=(const_reference_type) = delete;
+        ref<this_type> operator=(cref<this_type>) = delete;
 
         /**
          * Move Assignment operator
@@ -1538,7 +1537,7 @@ namespace ember::engine::scene {
          *
          * @returns A shallow copy of this.
          */
-        reference_type operator=(mref<this_type> other_) noexcept {
+        ref<this_type> operator=(mref<this_type> other_) noexcept {
             if (this != &other_) {
                 _pages = _STD move(other_._pages);
                 _mapping = _STD move(other_._mapping);
@@ -1743,7 +1742,7 @@ namespace ember::engine::scene {
                 return nullptr;
             }
 
-            return _pages[unmask_page_index(it.value().second)].value_at(unmask_value_index(it.value().second));
+            return _pages[unmask_page_index(it->second)].value_at(unmask_value_index(it->second));
         }
 
         /**
@@ -1770,12 +1769,12 @@ namespace ember::engine::scene {
             /**
              * Get mutation reference to storage page
              */
-            ref<storage_page_type> page = _pages[unmask_page_index(it.value().second)];
+            ref<storage_page_type> page = _pages[unmask_page_index(it->second)];
 
             /**
              * Erase key-value pair from storage page
              */
-            page.erase(unmask_value_index(it.value().second));
+            page.erase(unmask_value_index(it->second));
 
             /**
              * Tidy mapping

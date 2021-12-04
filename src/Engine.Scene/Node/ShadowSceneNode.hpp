@@ -4,16 +4,15 @@
 
 namespace ember::engine::scene {
 
+    template <class PayloadType_>
     class ShadowSceneNode final :
-        public SceneNodeSubBase<ShadowSceneNode> {
+        public SceneNodeSubBase<PayloadType_, ShadowSceneNode<PayloadType_>> {
     public:
         using type_trait = scene_node_traits<SceneNodeState::eShadow>;
 
-        using base_type = SceneNode;
-
-        using value_type = ShadowSceneNode;
-        using reference_type = ref<value_type>;
-        using const_reference_type = cref<value_type>;
+        using this_type = ShadowSceneNode<PayloadType_>;
+        using underlying_type = SceneNodeSubBase<PayloadType_, this_type>;
+        using base_type = SceneNode<PayloadType_>;
 
     public:
         /**
@@ -39,7 +38,33 @@ namespace ember::engine::scene {
          *
          * @returns True if the object is in this collection, false if not.
          */
-        [[nodiscard]] bool contains(cref<SceneNodeId> nodeId_) const noexcept;
+        [[nodiscard]] bool contains(cref<SceneNodeId> nodeId_) const noexcept {
+
+            #if FALSE
+            if (base_type::_children.empty()) {
+                return false;
+            }
+
+            // First check for direct member
+            for (const auto& entry : base_type::_children) {
+                if (entry.nodeId() == nodeId_) {
+                    return true;
+                }
+            }
+
+            // Check for indirect member
+            for (const auto& entry : base_type::_children) {
+                auto resolved = entry.get();
+                if (resolved->contains(nodeId_)) {
+                    return true;
+                }
+            }
+
+            return false;
+            #endif
+
+            throw NotImplementedException {};
+        }
 
         /**
          * Query if this contains the given other_ as descendant
@@ -47,39 +72,114 @@ namespace ember::engine::scene {
          * @author Julius
          * @date 16.08.2021
          *
-         * @param  other_ The SceneNode::const_reference_type to test for containment.
+         * @param  other_ The node to test for containment.
          *
          * @returns True if the object is in this collection, false if not.
          */
-        [[nodiscard]] bool contains(SceneNode::const_reference_type other_) const noexcept;
+        [[nodiscard]] bool contains(cref<base_type> other_) const noexcept {
 
-        /**
-         * Pushes an object onto this node or sub graph
-         *
-         * @author Julius
-         * @date 04.11.2021
-         *
-         * @param data_ The data to construct from.
-         * @param factory_ The factory to construct nodes.
-         *
-         * @returns True if it succeeds, false if it fails.
-         */
-        _Success_(return == true) bool push(_Inout_ mref<SceneNodeCreateData> data_,
-            _In_ const ptr<const SceneNodeFactory> factory_);
+            #if FALSE
 
-        /**
-         * Pushes an object onto this node or sub graph
-         *
-         * @author Julius
-         * @date 04.11.2021
-         *
-         * @param data_ The data to construct from.
-         * @param factory_ The factory to construct nodes.
-         *
-         * @returns True if it succeeds, false if it fails.
-         */
-        _Success_(return == true) bool push(_In_ const ptr<SceneNodeCreateData> data_,
-            _In_ const ptr<const SceneNodeFactory> factory_);
+            if (base_type::isLeaf()) {
+                return false;
+            }
+
+            for (const auto& entry : base_type::_children) {
+                auto resolved = entry.get();
+
+                if (*resolved == other_) {
+                    return true;
+                }
+
+                if constexpr (type_trait::distinct_intersect) {
+                    if (resolved->intersects(other_))
+                        return resolved->contains(other_);
+                } else {
+                    if (resolved->intersects(other_) &&
+                        resolved->contains(other_)) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+
+            #endif
+
+            throw NotImplementedException {};
+        }
+
+        template <class FactoryType_>
+        bool push(const ptr<PayloadType_> element_, cref<math::Bounding> boundary_,
+            const ptr<const FactoryType_> factory_) {
+            #if FALSE
+
+            #ifdef _DEBUG
+            if (base_type::_children.empty() && base_type::_children.unsafe_base() == nullptr) {
+                throw _STD runtime_error("Node Container does not contain a valid or pre-allocated memory sequence.");
+            }
+            #endif
+
+            // Container is full -> need to insert into descendant
+            if (base_type::_children.size() >= type_trait::max_nodes_per_layer) {
+
+                // Preference every other node than shadow node
+                for (auto& entry : base_type::_children) {
+                    auto resolved = entry.get();
+
+                    if (resolved->isShadowNode())
+                        continue;
+
+                    if constexpr (type_trait::distinct_intersect) {
+                        if (resolved->intersectsFully(boundary_)) {
+                            return resolved->push(element_, boundary_, factory_), ++base_type::_size;
+                        }
+                    } else {
+                        // TODO: consider memory pressure
+                        if (resolved->intersectsFully(boundary_) && resolved->push(element_, boundary_, factory_)) {
+                            ++base_type::_size;
+                            return true;
+                        }
+                    }
+                }
+
+                // Fallback to shadow node
+                u64 lowestSize = ~0;
+                typename base_type::container_type::iterator cur = base_type::_children.end();
+
+                const typename base_type::container_type::iterator end = base_type::_children.end();
+                typename base_type::container_type::iterator iter = base_type::_children.begin();
+
+                for (; iter != end; ++iter) {
+                    if (!iter->get()->isShadowNode())
+                        continue;
+
+                    const auto testSize = iter->get()->size();
+                    if (testSize <= 1ui64) {
+                        cur = iter;
+                        break;
+                    }
+
+                    if (testSize < lowestSize) {
+                        cur = iter;
+                        lowestSize = testSize;
+                    }
+                }
+
+                // TODO: consider memory pressure
+                return cur->get()->push(element_, boundary_, factory_), ++base_type::_size;
+            }
+
+            // Container has some space left -> insert directly
+            auto result = factory_->assembleShadow();
+            result.body->transform() = _STD move(data_->transform);
+            result.body->bounding() = _STD move(data_->bounding);
+            result.body->payload() = _STD move(data_->payload);
+
+            return base_type::_children.push(_STD move(result.head)), ++base_type::_size;
+            #endif
+            throw NotImplementedException {};
+        }
 
         /**
          * Pulls the given nodeId_
@@ -91,7 +191,62 @@ namespace ember::engine::scene {
          *
          * @returns A pull_result_type.
          */
-        [[nodiscard]] pull_result_type pull(cref<SceneNodeId> nodeId_) noexcept;
+        [[nodiscard]] pull_result_type pull(cref<SceneNodeId> nodeId_) noexcept {
+
+            #if FALSE
+            if (base_type::isLeaf()) {
+                return {};
+            }
+
+            auto iter = base_type::_children.begin();
+            const auto last = base_type::_children.end();
+
+            // Check for direct child node
+            for (; iter != last; ++iter) {
+                if (iter->nodeId() == nodeId_)
+                    break;
+            }
+
+            // Check for indirect childs in sub-graph
+            if (iter == last) {
+                pull_result_type result {};
+                for (iter = base_type::_children.begin(); iter != last; ++iter) {
+                    if (result = iter->get()->pull(nodeId_)) {
+                        --base_type::_size;
+                        return result;
+                    }
+                }
+            }
+
+            // Guard child removal, if reference is not contained in this or sub-graph
+            if (iter == last) {
+                return {};
+            }
+
+            // TODO:
+            ASSERT(iter->get()->isShadowNode())
+
+            //
+            auto& head { *iter };
+            pull_result_type result = pull_result_type::make<SceneNodeHead>(_STD move(head));
+
+            if (!result.value->get<base_type>()->pullChained(*this, iter.pointer())) {
+            #ifdef _DEBUG
+                // Attention: This will invalidate the target iterator cause we modify the underlying container memory sequence
+                ASSERT(base_type::_children.remove(iter))
+            #else
+        _children.remove(iter);
+            #endif
+            }
+
+            if (result.result) {
+                --base_type::_size;
+            }
+            return result;
+            #endif
+
+            throw NotImplementedException {};
+        }
 
         /**
          * Pulls this chained
@@ -99,25 +254,123 @@ namespace ember::engine::scene {
          * @author Julius
          * @date 16.08.2021
          *
-         * @param  parent_ The parent.
-         * @param  pos_ The position.
+         * @param parent_ The parent.
+         * @param pos_ The position.
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool pullChained(
-            SceneNode::const_reference_type parent_,
-            IN OUT ptr<SceneNodeHead> pos_
-        ) noexcept;
+        bool pullChained(cref<base_type> parent_, ptr<SceneNodeHead> pos_) noexcept {
 
-        [[nodiscard]] bool intersects(cref<SceneNode> node_) const noexcept;
+            #if FALSE
+            if (base_type::isLeaf()) {
+                return false;
+            }
 
-        [[nodiscard]] _Success_(return == true) bool intersects(_In_ cref<SceneNodeCreateData> data_) const noexcept;
+            // In-Place replace with [biggest or leaf] shadow node might be best
+            typename base_type::container_type::iterator target = base_type::_children.end();
+            u64 maxSize = 0;
 
-        [[nodiscard]] bool intersectsFully(cref<SceneNode> node_) const noexcept;
+            auto iter = base_type::_children.begin();
+            const auto last = base_type::_children.end();
 
-        [[nodiscard]] _Success_(return == true) bool intersectsFully(
-            _In_ cref<SceneNodeCreateData> data_) const noexcept;
+            // Check for shadow nodes => Replacing Shadow Node with Shadow Node
+            for (; iter != last; ++iter) {
+                if (!iter->get()->isShadowNode())
+                    continue;
 
-        [[nodiscard]] bool intersectedFully(cref<SceneNode> node_) const noexcept;
+                if (iter->get()->isLeaf()) {
+                    target = iter;
+                    break;
+                }
+
+                const auto testSize = iter->get()->size();
+                if (testSize >= maxSize) {
+                    target = iter;
+                    maxSize = testSize;
+                }
+            }
+
+            // When no other shadow node is available, check for other node
+            if (target == last) {
+                throw NotImplementedException();
+            }
+
+            // TODO:
+            ASSERT(target->get()->isShadowNode())
+
+            // Replace in-place at parent iterator position
+            /**
+             * A
+             * | \
+             * |  \
+             * B   C
+             *    / \       /\ {Pushing Reference Up -> Forward}
+             *   D   E
+             */
+            using value_type = typename base_type::container_type::value_type;
+
+            pos_->value_type::~value_type();
+            new(pos_) value_type { _STD move(*target) };
+
+            // Check whether container element was replace or needs to be removed
+            ref<base_type> targetNode { *pos_->get() };
+
+            if (!targetNode.pullChained(*this, target.pointer())) {
+            #ifdef _DEBUG
+                // Attention: This will invalidate the target iterator cause we modify the underlying container memory sequence
+                ASSERT(base_type::_children.remove(target))
+            #else
+                _children.remove(target);
+            #endif
+            }
+
+            // Push container to in-place target
+            /**
+             * A
+             * | \
+             * |  \
+             * B   E[C]
+             *    / \       \/ {Pushing Container Down -> Replace}
+             *   D   -[E]
+             */
+            targetNode.children() = _STD move(base_type::_children);
+            --base_type::_size;
+            return true;
+
+            #endif
+
+            throw NotImplementedException {};
+        }
+
+        [[nodiscard]] bool intersects(cref<base_type> node_) const noexcept {
+            // Any node_ will intersect with shadow node
+            return true;
+        }
+
+        [[nodiscard]] bool intersects(cref<math::Bounding> boundary_) const noexcept {
+            // Any bounding and transform will intersect with shadow node
+            return true;
+        }
+
+        [[nodiscard]] bool intersectsFully(cref<base_type> node_) const noexcept {
+            // Any node_ will intersect with shadow node
+            return true;
+        }
+
+        [[nodiscard]] bool intersectsFully(cref<math::Bounding> boundary_) const noexcept {
+            // Any bounding and transform will intersect with shadow node
+            return true;
+        }
     };
+
+    template <class PayloadType_>
+    ptr<const typename SceneNode<PayloadType_>::shadow_type> SceneNode<PayloadType_>::asShadow() const noexcept {
+        return ShadowSceneNode<PayloadType_>::castFrom(this);
+    }
+
+    template <class PayloadType_>
+    ptr<typename SceneNode<PayloadType_>::shadow_type> SceneNode<PayloadType_>::asShadow() noexcept {
+        return ShadowSceneNode<PayloadType_>::castFrom(this);
+    }
+
 }

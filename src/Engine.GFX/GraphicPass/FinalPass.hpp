@@ -32,7 +32,7 @@ namespace ember::engine::gfx {
          */
         void destroy() override;
 
-        void process([[maybe_unused]] const ptr<scene::SceneGraph> graph_,
+        void process([[maybe_unused]] const ptr<scene::RenderGraph> graph_,
             ref<CommandBatch> batch_) override;
 
         /**
