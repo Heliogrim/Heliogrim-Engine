@@ -209,6 +209,9 @@ namespace ember {
          * The internal state for this asset
          */
         ptr<void> _internal;
+
+    public:
+        [[nodiscard]] ptr<void> internal() const noexcept;
     };
 
 }

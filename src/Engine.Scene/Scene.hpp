@@ -3,13 +3,14 @@
 #include <Engine.Session/Session.hpp>
 
 #include "Graph/SceneGraph.hpp"
-#include "Graph/SceneGraphTag.hpp"
+#include "SceneTag.hpp"
+#include "NodeTypeRegistry.hpp";
 
 /**
  * Forward Declaration
  */
 namespace ember {
-    class ActorComponent;
+    class SceneComponent;
     class IComponentRegisterContext;
     class World;
 }
@@ -34,14 +35,21 @@ namespace ember::engine::scene {
     public:
         virtual void update();
 
+    protected:
+        NodeTypeRegistry _nodeTypeRegistry;
+
     public:
-        virtual bool addNode(const ptr<ActorComponent> node_) = 0;
+        void setNodeType(const SceneTag tag_, cref<component_type_id> typeId_,
+            cref<NodeTypeRegistryValue::model_type> model_);
 
-        virtual bool addNodeCached(const ptr<ActorComponent> node_) noexcept = 0;
+    public:
+        virtual bool addNode(const ptr<SceneComponent> node_) = 0;
 
-        virtual bool removeNode(const ptr<ActorComponent> node_) = 0;
+        virtual bool addNodeCached(const ptr<SceneComponent> node_) noexcept = 0;
 
-        virtual bool removeNodeCached(const ptr<ActorComponent> node_) noexcept = 0;
+        virtual bool removeNode(const ptr<SceneComponent> node_) = 0;
+
+        virtual bool removeNodeCached(const ptr<SceneComponent> node_) noexcept = 0;
 
     public:
         virtual ptr<IComponentRegisterContext> registerContext() noexcept = 0;
@@ -49,5 +57,4 @@ namespace ember::engine::scene {
     public:
         [[nodiscard]] virtual ptr<World> getWorld() noexcept;
     };
-
 }

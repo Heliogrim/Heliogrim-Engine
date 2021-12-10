@@ -41,7 +41,7 @@ namespace ember::engine::scene {
         using element_storage_type = SceneElementStorage<PayloadType_, traits>;
 
         using root_type = head_type;
-        using batched_consumer_fnc_type = _STD function<bool(u32, cref<node_type>)>;
+        using batched_consumer_fnc_type = _STD function<bool(u32, const ptr<node_type>)>;
 
     public:
         /**
@@ -202,7 +202,7 @@ namespace ember::engine::scene {
          */
         template <typename Consumer> requires IsSceneNodeConsumer<Consumer, node_type>
         void traversal(cref<Consumer> consumer_) const {
-            return traversal(static_cast<_STD function<bool(cref<node_type>)>>(consumer_));
+            return traversal(static_cast<_STD function<bool(const ptr<node_type>)>>(consumer_));
         }
 
         /**
@@ -213,7 +213,7 @@ namespace ember::engine::scene {
          *
          * @param  consumer_ The consumer.
          */
-        void traversal(cref<_STD function<bool(cref<node_type>)>> consumer_) const {
+        void traversal(cref<_STD function<bool(const ptr<node_type>)>> consumer_) const {
             // Using stack instead of queue will cause graph to traverse primary vertical and secondary horizontal
             // We assume that memory coherency is stronger when traversing vertical
             stack<ptr<const SceneNodeHead>> backlog {};
@@ -228,9 +228,9 @@ namespace ember::engine::scene {
                 backlog.pop();
 
                 // Only move into sub-graph if consumer_ intersects and node isn't leaf
-                auto payload = cursor.get(storage);
+                auto* payload = cursor.get(storage);
 
-                if (payload && consumer_(*payload) && !payload->isLeaf()) {
+                if (payload && consumer_(payload) && !payload->isLeaf()) {
                     for (const auto& children = payload->children(); const auto& child : children) {
                         backlog.push(&child);
                     }
@@ -248,16 +248,21 @@ namespace ember::engine::scene {
 
             auto storage { _nodeStorage.get() };
             while (!backlog.empty()) {
-                DEBUG_ASSERT(backlog.top() != nullptr, "Cursor element should never be nullptr or undefined")
+                //DEBUG_ASSERT(backlog.top() != nullptr, "Cursor element should never be nullptr or undefined")
 
                 // Important: pop() will invalidate top but, we dereference before we make reference to object, so indirection is not modified
                 cref<SceneNodeHead> cursor = *backlog.top();
                 backlog.pop();
 
                 // Only move into sub-graph if consumer_ intersects and node isn't leaf
-                auto payload = cursor.get(storage);
+                auto* payload = cursor.get(storage);
 
-                if (payload && consumer_(batchIdx_, *payload) && !payload->isLeaf()) {
+                if (
+                    payload &&
+                    consumer_(batchIdx_, payload) &&
+                    !payload->isLeaf() &&
+                    payload->inclusiveSize() != payload->exclusiveSize()
+                ) {
                     for (const auto& children = payload->children(); const auto& child : children) {
                         backlog.push(&child);
                     }
@@ -266,7 +271,7 @@ namespace ember::engine::scene {
         }
 
         void traversalBatchedPartition(u32 firstBatchIdx_, u32 lastBatchIdx_,
-            cref<_STD function<bool(u32, cref<node_type>)>> consumer_, ptr<const SceneNodeHead> parent_) const {
+            cref<_STD function<bool(u32, const ptr<node_type>)>> consumer_, ptr<const SceneNodeHead> parent_) const {
 
             if (firstBatchIdx_ == lastBatchIdx_) {
                 traversalBatchedSingle(firstBatchIdx_, consumer_, parent_);
@@ -285,9 +290,9 @@ namespace ember::engine::scene {
                 backlog.pop();
 
                 // Only move into sub-graph if consumer_ intersects and node isn't leaf
-                auto payload = cursor.get(storage);
+                auto* payload = cursor.get(storage);
 
-                if (payload && consumer_(0, *payload) && !payload->isLeaf()) {
+                if (payload && consumer_(0, payload) && !payload->isLeaf()) {
                     for (const auto& children = payload->children(); const auto& child : children) {
                         backlog.push(&child);
                     }
@@ -346,10 +351,11 @@ namespace ember::engine::scene {
     public:
         template <typename BatchConsumer> requires IsSceneNodeBatchConsumer<BatchConsumer, node_type>
         void traversalBatched(u32 maxBatches_, cref<BatchConsumer> consumer_) const {
-            return traversalBatched(maxBatches_, static_cast<_STD function<bool(u32, cref<node_type>)>>(consumer_));
+            return traversalBatched(maxBatches_,
+                static_cast<_STD function<bool(u32, const ptr<node_type>)>>(consumer_));
         }
 
-        void traversalBatched(u32 maxBatches_, cref<_STD function<bool(u32, cref<node_type>)>> consumer_) const {
+        void traversalBatched(u32 maxBatches_, cref<_STD function<bool(u32, const ptr<node_type>)>> consumer_) const {
 
             if (maxBatches_ <= 1) {
                 traversalBatchedSingle(0, consumer_, &_root);

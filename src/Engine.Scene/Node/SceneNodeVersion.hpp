@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstdint>
+#include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::scene {
@@ -51,19 +51,19 @@ namespace ember::engine::scene {
         return false;
     }
 
-    [[nodiscard]] constexpr bool operator==(cref<SceneNodeVersion> left_, cref<SceneNodeVersion> right_) noexcept {
+    [[nodiscard]] inline bool operator==(cref<SceneNodeVersion> left_, cref<SceneNodeVersion> right_) noexcept {
         return left_.data == right_.data;
     }
 
-    [[nodiscard]] constexpr bool operator!=(cref<SceneNodeVersion> left_, cref<SceneNodeVersion> right_) noexcept {
+    [[nodiscard]] inline bool operator!=(cref<SceneNodeVersion> left_, cref<SceneNodeVersion> right_) noexcept {
         return left_.data != right_.data;
     }
 
-    [[nodiscard]] constexpr bool operator!=(invalid_node_version, cref<SceneNodeVersion> right_) noexcept {
+    [[nodiscard]] inline bool operator!=(invalid_node_version, cref<SceneNodeVersion> right_) noexcept {
         return invalid_node_version::bit_sequence != right_.data;
     }
 
-    [[nodiscard]] constexpr bool operator==(invalid_node_version, cref<SceneNodeVersion> right_) noexcept {
+    [[nodiscard]] inline bool operator==(invalid_node_version, cref<SceneNodeVersion> right_) noexcept {
         return invalid_node_version::bit_sequence == right_.data;
     }
 

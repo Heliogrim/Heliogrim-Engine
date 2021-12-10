@@ -16,7 +16,6 @@
 #include "GraphicPass/PbrPass.hpp"
 #include "GraphicPass/ProbePass.hpp"
 #include "Loader/TextureLoader.hpp"
-#include "Scene/SceneGraphTag.hpp"
 #include "Shader/ShaderStorage.hpp"
 #include "Swapchain/Swapchain.hpp"
 #include "Swapchain/VkSwapchain.hpp"
@@ -475,8 +474,32 @@ void Graphics::reschedule() {
 
 }
 
+#include <Ember/StaticGeometryComponent.hpp>
+#include <Engine.Scene/RevScene.hpp>
+#include "Scene/StaticGeometryModel.hpp"
+#include "Scene/SceneTag.hpp"
+
 bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
     _renderScene = scene_;
+
+    if (scene_ == nullptr) {
+        return true;
+    }
+
+    // TODO: Move callback register to other possition and reconcider lifecycle \
+    //  cause elements added to scene before callback register will be lost data
+
+    /**
+     *
+     */
+    auto* const scene { static_cast<const ptr<scene::RevScene>>(scene_) };
+    scene->setNodeType(GfxSceneTag {}, StaticGeometryComponent::type_id, [](const ptr<SceneComponent> owner_) {
+        return new StaticGeometryModel(owner_);
+    });
+
+    /**
+     *
+     */
     return true;
 }
 

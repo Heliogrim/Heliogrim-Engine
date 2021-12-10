@@ -74,6 +74,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Stream.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\String.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Types.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Url.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Uuid.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Wrapper.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\__macro.hpp" />

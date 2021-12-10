@@ -17,7 +17,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Scene\Graph\MutableSceneGraph.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Graph\SceneGraph.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Graph\SceneGraphTag.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\NodeTypeRegistry.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\LoosySceneNode.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\NaturalSceneNode.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNode.hpp" />
@@ -36,6 +36,8 @@
     <ClInclude Include="..\..\src\Engine.Scene\RevScene.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Scene.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeConsumer.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\SceneNodeModel.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\SceneTag.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\SceneTraits.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Storage\SceneElementStorage.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Storage\SceneNodeStorage.hpp" />
@@ -46,11 +48,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Scene\NodeTypeRegistry.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeHead.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeHeadContainer.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeVersion.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\RevScene.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp" />
+    <ClCompile Include="..\..\src\Engine.Scene\SceneNodeModel.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Storage\SceneNodeStorage.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

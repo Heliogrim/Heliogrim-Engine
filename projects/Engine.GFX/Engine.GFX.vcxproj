@@ -93,9 +93,6 @@
     <ProjectReference Include="..\Engine.ACS\Engine.ACS.vcxproj">
       <Project>{bdd7b57f-5aee-4ddb-95fd-e0f89bb25ec7}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Engine.Proxy\Engine.Proxy.vcxproj">
-      <Project>{6cd674b5-80b9-4af0-8fb9-c1ef8adc6a5a}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\Engine.Resource\Engine.Resource.vcxproj">
       <Project>{b0e77d6c-45d7-4254-8630-d10fdf6ca290}</Project>
     </ProjectReference>
@@ -155,7 +152,8 @@
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\VertexStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\ProcessedModelBatch.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneElement.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Scene\StaticGeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Shader\Binding.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Shader\BindingGroup.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Shader\Factory.cpp" />
@@ -261,8 +259,11 @@
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPassMask.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPassPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPassPipelineStage.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneElement.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneGraphTag.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\LandscapeGeometryModel.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneTag.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\StaticGeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Shader\Binding.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Shader\BindingGroup.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Shader\Factory.hpp" />

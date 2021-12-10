@@ -22,6 +22,7 @@
 
 #include "Assets/GfxMaterials/ForestGround01.hpp"
 #include "Assets/Meshes/PlaneD128.hpp"
+#include "Ember/Ember.hpp"
 #include "Ember/World.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
 
@@ -96,6 +97,11 @@ void ember_main_entry() {
     task.dstStage() = TaskStages::eTopStrong;
 
     execute(_STD move(task));
+
+    /**
+     *
+     */
+    Ember::assets().insert(new game::assets::meshes::PlaneD128 {});
 
     /**
      *
@@ -225,6 +231,9 @@ void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const 
     position_ += math::vec3_forward * (gy - y);
 }
 
+#include "Ember/ActorInitializer.hpp"
+#include "Ember/StaticGeometryComponent.hpp"
+
 void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
 
     auto possible = CreateActor();
@@ -232,6 +241,24 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
 
     Actor* actor = possible.get();
 
+    /**
+     *
+     */
+    auto& initializer { ActorInitializer::get() };
+    //initializer.createComponent<ActorComponent>(actor);
+    auto* comp = initializer.createComponent<StaticGeometryComponent>(actor);
+
+    /**
+     *
+     */
+    auto queryResult = Ember::assets()[game::assets::meshes::PlaneD128::auto_guid()];
+    if (queryResult.flags == AssetDatabaseResultType::eSuccess) {
+        comp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&queryResult.value));
+    }
+
+    /**
+     *
+     */
     auto transform { actor->getWorldTransform() };
 
     const ptr<World> world { GetWorld() };
@@ -244,7 +271,7 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
     transform.resolveMatrix();
     entity.setTransform(transform);
 
-    auto comp = entity.record<component::StaticMeshComponent>();
+    auto comp = entity.record<component::StaticGeometryComponent>();
 
     comp.setMesh(ember::game::assets::meshes::PlaneD128::auto_guid());
     comp.setMaterial(ember::game::assets::material::ForestGround01::auto_guid());

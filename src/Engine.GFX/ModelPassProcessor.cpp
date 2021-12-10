@@ -5,7 +5,6 @@
 #endif
 
 #include "GraphicPass.hpp"
-#include "Scene/SceneElement.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -13,7 +12,7 @@ using namespace ember;
 ModelPassProcessor::ModelPassProcessor(ptr<const GraphicPass> graphicPass_) :
     _graphicPass(graphicPass_) {}
 
-bool ModelPassProcessor::operator()(u32 batchIdx_, cref<scene::RenderGraph::node_type> node_) noexcept {
+bool ModelPassProcessor::operator()(u32 batchIdx_, const ptr<scene::RenderGraph::node_type> node_) noexcept {
 
     SCOPED_STOPWATCH
 

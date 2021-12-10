@@ -164,9 +164,6 @@
     <ProjectReference Include="..\Engine.PFX\Engine.PFX.vcxproj">
       <Project>{9e26faad-2541-4e80-a913-cc87a40bb745}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Engine.Proxy\Engine.Proxy.vcxproj">
-      <Project>{6cd674b5-80b9-4af0-8fb9-c1ef8adc6a5a}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\Engine.Reflect\Engine.Reflect.vcxproj">
       <Project>{9058623e-8475-4683-8131-0845fa5aa877}</Project>
     </ProjectReference>

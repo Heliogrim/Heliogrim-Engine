@@ -22,9 +22,10 @@ void GraphicPass::process(const ptr<scene::RenderGraph> graph_, ref<CommandBatch
 
             ref<ModelPassProcessor> obj;
 
-            bool (ModelPassProcessor::*fnc)(u32, cref<scene::RenderGraph::node_type>);
+            bool (ModelPassProcessor::*fnc)(u32, const ptr<scene::RenderGraph::node_type>);
 
-            [[nodiscard]] bool operator()(u32 batchIdx_, cref<scene::RenderGraph::node_type> node_) const noexcept {
+            [[nodiscard]] bool operator()(u32 batchIdx_,
+                const ptr<scene::RenderGraph::node_type> node_) const noexcept {
                 return (obj.*fnc)(batchIdx_, node_);
             }
         };

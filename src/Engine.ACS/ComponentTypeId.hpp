@@ -12,6 +12,9 @@ namespace ember {
 
         explicit constexpr component_type_id(const decltype(type_id::data) value_) :
             type_id(value_) {}
+
+        component_type_id(cref<component_type_id> other_) noexcept :
+            type_id(other_.data) {}
     };
 }
 

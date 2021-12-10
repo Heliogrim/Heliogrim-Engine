@@ -39,11 +39,11 @@ namespace ember::engine::gfx {
          * @date 09.01.2021
          *
          * @param batchIdx_ The current batch index.
-         * @param  node_ The node.
+         * @param node_ The node.
          *
          * @returns The result of the operation.
          */
-        [[nodiscard]] virtual bool operator()(u32 batchIdx_, cref<scene::RenderGraph::node_type> node_) noexcept;
+        [[nodiscard]] virtual bool operator()(u32 batchIdx_, const ptr<scene::RenderGraph::node_type> node_) noexcept;
 
     protected:
         /**

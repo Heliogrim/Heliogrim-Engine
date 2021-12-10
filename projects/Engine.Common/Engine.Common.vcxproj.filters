@@ -255,6 +255,9 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\Deque.hpp">
       <Filter>Headerdateien\Collection</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Url.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">

@@ -21,7 +21,8 @@ namespace ember::engine::scene {
     struct scene_traits {
 
         constexpr static u64 max_childs_per_node = 8ui64;// Octree like
-        constexpr static u64 max_elements_per_leaf = 1ui64;
+        //constexpr static u64 max_elements_per_leaf = 1ui64;
+        constexpr static u64 max_elements_per_leaf = 16ui64;
 
         // inline constexpr static size_t node_page_size = 32786;// 32kB Memory Blocks
         constexpr static u64 node_page_size = 1 << 20;// 1MB Memory Blocks
@@ -29,7 +30,7 @@ namespace ember::engine::scene {
 
         // inline constexpr static size_t node_page_size = 32786;// 32kB Memory Blocks
         constexpr static u64 element_page_size = 1 << 20;// 1MB Memory Blocks
-        constexpr static u64 max_elements_per_page = element_page_size / sizeof(ElementType_);
+        constexpr static u64 max_elements_per_page = element_page_size / sizeof(ptr<ElementType_>);
 
         constexpr static u64 max_flat_nodes_per_page = max_nodes_per_page / (max_childs_per_node + 1ui64);
         constexpr static u64 splice_layer_per_page = _STD floor(

@@ -83,7 +83,7 @@ ptr<engine::assets::Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_
 
     auto* instance = new Image {
         guid_,
-        ""
+        {}
     };
 
     _database->insert(guid_, Image::type_id, instance);
@@ -95,7 +95,7 @@ ptr<engine::assets::Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_
 
     auto* instance = new Image {
         guid_,
-        url_
+        {}
     };
 
     _database->insert(guid_, Image::type_id, instance);

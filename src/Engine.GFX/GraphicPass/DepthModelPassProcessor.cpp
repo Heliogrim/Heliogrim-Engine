@@ -1,7 +1,6 @@
 #include "DepthModelPassProcessor.hpp"
 
 #include "../GraphicPass.hpp"
-#include "../Scene/SceneElement.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -9,17 +8,17 @@ using namespace ember;
 DepthModelPassProcessor::DepthModelPassProcessor(ptr<const GraphicPass> graphicPass_) :
     ModelPassProcessor(graphicPass_) {}
 
-bool DepthModelPassProcessor::operator()(u32 batchIdx_, cref<scene::RenderGraph::node_type> node_) noexcept {
+bool DepthModelPassProcessor::operator()(u32 batchIdx_, const ptr<scene::RenderGraph::node_type> node_) noexcept {
 
     /**
      * Precheck whether node has state or children
      */
-    if (node_.isLeaf()) {
+    if (node_->isLeaf()) {
         return false;
     }
 
     // TODO: Remove!!!
-    return !node_.isLeaf();
+    return !node_->isLeaf();
 
     #if FALSE
     /**

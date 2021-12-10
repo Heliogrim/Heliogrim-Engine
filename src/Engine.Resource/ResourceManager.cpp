@@ -66,3 +66,19 @@ ptr<ImporterManager> ResourceManager::importer(std::nothrow_t) noexcept {
 ptr<Indexer> ResourceManager::indexer() const noexcept {
     return _indexer.get();
 }
+
+cref<res::LoaderManager> ResourceManager::loader() const {
+    return *_loader;
+}
+
+ptr<const res::LoaderManager> ResourceManager::loader(std::nothrow_t) const noexcept {
+    return _loader.get();
+}
+
+ref<res::LoaderManager> ResourceManager::loader() {
+    return *_loader;
+}
+
+ptr<res::LoaderManager> ResourceManager::loader(std::nothrow_t) noexcept {
+    return _loader.get();
+}

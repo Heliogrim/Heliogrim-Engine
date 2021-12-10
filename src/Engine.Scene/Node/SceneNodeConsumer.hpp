@@ -11,7 +11,7 @@ namespace ember::engine::scene {
 
     template <typename Consumable>
     struct SceneNodeConsumer {
-        [[nodiscard]] bool operator()(cref<Consumable> entry_) noexcept {
+        [[nodiscard]] bool operator()(const ptr<Consumable> entry_) noexcept {
             return false;
         }
     };
@@ -21,7 +21,7 @@ namespace ember::engine::scene {
 
     template <typename Consumable>
     struct SceneNodeBatchConsumer {
-        [[nodiscard]] bool operator()(u32 batchIdx_, cref<Consumable> entry_) noexcept {
+        [[nodiscard]] bool operator()(u32 batchIdx_, const ptr<Consumable> entry_) noexcept {
             return false;
         }
     };

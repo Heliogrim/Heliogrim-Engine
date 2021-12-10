@@ -4,14 +4,14 @@
 
 namespace ember::engine::scene {
 
-    template <class Type_, class Traits_>
+    template <class ElementType_, class Traits_>
     class SceneElementStorage {
     public:
-        [[nodiscard]] ptr<Type_> acquire() {
-            return new Type_ [Traits_::max_elements_per_node];
+        [[nodiscard]] ptr<ptr<ElementType_>> acquire() {
+            return new ptr<ElementType_> [Traits_::max_elements_per_leaf];
         }
 
-        void release(ptr<Type_> res_) {
+        void release(ptr<ptr<ElementType_>> res_) {
             delete[] res_;
         }
     };
