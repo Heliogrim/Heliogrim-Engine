@@ -120,6 +120,12 @@ bool SceneNodeHeadContainer::push(mref<value_type> node_) {
     return emplace<value_type>(_STD move(node_));
 }
 
+void SceneNodeHeadContainer::push(ptr<value_type> first_, const ptr<value_type> end_) {
+    for (; first_ != end_; ++first_) {
+        emplace<value_type>(_STD move(*first_));
+    }
+}
+
 bool SceneNodeHeadContainer::pull(ptr<value_type> pulled_) noexcept {
     if (empty()) {
         return false;

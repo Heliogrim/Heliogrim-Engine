@@ -1,17 +1,22 @@
 #pragma once
 
+#ifdef _DEBUG
+#include <cassert>
+#endif
+
 #include "SceneNodeHead.hpp"
 #include "SceneNode.hpp"
 
 namespace ember::engine::scene {
 
-    template <class NodeStorageType_, class ElementStorageType_>
+    template <class NodeStorageType_, class ElementStorageType_, class Traits_>
     class SceneNodeFactory {
     public:
-        using this_type = SceneNodeFactory<NodeStorageType_, ElementStorageType_>;
+        using this_type = SceneNodeFactory<NodeStorageType_, ElementStorageType_, Traits_>;
 
         using node_storage_type = NodeStorageType_;
         using element_storage_type = ElementStorageType_;
+        using traits = Traits_;
 
         using node_type = typename node_storage_type::value_type;
 
@@ -46,19 +51,18 @@ namespace ember::engine::scene {
             return _elementStorage;
         }
 
+        [[nodiscard]] const ptr<node_storage_type> getNodeStorage() const noexcept {
+            return _nodeStorage;
+        }
+
     public:
         using factory_assemble_result = struct {
-            SceneNodeHead head;
-            ptr<node_type> body;
+            SceneNodeHead heads[traits::max_childs_per_node];
+            ptr<node_type> bodys[traits::max_childs_per_node];
         };
 
     public:
-        [[nodiscard]] factory_assemble_result assembleRoot() const {
-            return assembleShadow();
-        }
-
-        [[nodiscard]] factory_assemble_result assembleShadow() const {
-
+        [[nodiscard]] _STD pair<SceneNodeHead, ptr<node_type>> assembleRoot() const {
             auto nodeId = _nodeIdGen.fetch_add(1);
             auto stored = _nodeStorage->insert(nodeId, {});
 
@@ -66,21 +70,36 @@ namespace ember::engine::scene {
                 throw _STD bad_alloc();
             }
 
-            return {
-                { nodeId },
-                stored.first
-            };
+            return _STD make_pair(SceneNodeHead { nodeId }, stored.first);
+        }
+
+        [[nodiscard]] factory_assemble_result assembleShadows() const {
+
+            constexpr auto nodes_to_assemble { traits::max_childs_per_node };
+            factory_assemble_result result {};
+
+            const auto firstId { _nodeIdGen.fetch_add(nodes_to_assemble) };
+            for (auto i = 0; i < nodes_to_assemble; ++i) {
+
+                auto stored { _nodeStorage->insert(firstId + i, {}) };
+                DEBUG_ASSERT(stored.second, "Failed to allocate scenen node.")
+
+                result.heads[i] = { firstId + i };
+                result.bodys[i] = stored.first;
+            }
+
+            return result;
         }
 
         [[nodiscard]] factory_assemble_result assembleLoosy() const {
             throw NotImplementedException();
         }
 
-        [[nodiscard]] factory_assemble_result assembleSpartial() const {
+        [[nodiscard]] factory_assemble_result assembleSpartials() const {
             throw NotImplementedException();
         }
 
-        [[nodiscard]] factory_assemble_result assembleNatural() const {
+        [[nodiscard]] factory_assemble_result assembleNaturals(cref<math::Bounding> boundary_) const {
             throw NotImplementedException();
         }
 

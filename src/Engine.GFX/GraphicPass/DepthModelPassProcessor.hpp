@@ -23,11 +23,11 @@ namespace ember::engine::gfx {
          * @date 22.03.2021
          *
          * @param batchIdx_ The current batch index.
-         * @param  node_ The node.
+         * @param node_ The node.
          *
          * @returns The result of the operation.
          */
-        [[nodiscard]] bool operator()(u32 batchIdx_, cref<scene::RenderGraph::node_type> node_) noexcept override;
+        [[nodiscard]] bool operator()(u32 batchIdx_, const ptr<scene::RenderGraph::node_type> node_) noexcept override;
 
         // Temporary test solution; Might be moved to base class and enforced to derived ones
         void reset();

@@ -60,6 +60,9 @@ namespace ember {
          */
         ref<Actor> operator=(cref<Actor>) = delete;
 
+    private:
+        actor_guid _guid;
+
     public:
         /**
          * Gets the unique identifier of this actor object
@@ -70,6 +73,8 @@ namespace ember {
          * @returns The actor_guid of this actor object.
          */
         [[nodiscard]] actor_guid guid() const noexcept;
+
+        void unsafe_set_guid(cref<actor_guid> guid_);
 
     protected:
         ptr<ActorComponent> _rootComponent;

@@ -17,8 +17,6 @@
 #include <Engine.Session/Session.hpp>
 #include <Engine.SFX/Audio.hpp>
 
-#include "Engine.Proxy/Proxy.hpp"
-
 using namespace ember;
 
 ref<Audio> Ember::audio() noexcept {

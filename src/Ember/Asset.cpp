@@ -64,3 +64,7 @@ bool Asset::operator==(cref<asset_type_id> typeId_) const noexcept {
 bool Asset::operator!=(cref<asset_type_id> typeId_) const noexcept {
     return _typeId != typeId_;
 }
+
+ptr<void> Asset::internal() const noexcept {
+    return _internal;
+}

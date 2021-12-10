@@ -1,6 +1,6 @@
 #include "WoodenTable.hpp"
 
-#include <Ember/StaticMeshComponent.hpp>
+#include <Ember/StaticGeometryComponent.hpp>
 
 #include "Ember/ActorInitializer.hpp"
 
@@ -13,5 +13,5 @@ WoodenTable::WoodenTable() :
     auto& initializer { ActorInitializer::get() };
 
     initializer.createComponent<ActorComponent>(this);
-    initializer.createSubComponent<StaticMeshComponent>(this, _rootComponent);
+    initializer.createSubComponent<StaticGeometryComponent>(this, _rootComponent);
 }

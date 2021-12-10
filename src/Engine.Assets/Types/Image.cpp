@@ -6,6 +6,6 @@ using namespace ember;
 Image::Image(cref<asset_guid> guid_) :
     Data(guid_, Image::type_id) {}
 
-Image::Image(cref<asset_guid> guid_, cref<string> url_) :
+Image::Image(cref<asset_guid> guid_, mref<Vector<Url>> sources_) :
     Data(guid_, Image::type_id),
-    _url(url_) {}
+    _sources(_STD move(sources_)) {}

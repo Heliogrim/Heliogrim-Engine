@@ -81,13 +81,13 @@
     <ClInclude Include="..\..\src\Ember\StreamableRenderableAsset.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Ember\SkeletalMeshAsset.hpp">
+    <ClInclude Include="..\..\src\Ember\SkeletalGeometryAsset.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\SoundAsset.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Ember\StaticMeshAsset.hpp">
+    <ClInclude Include="..\..\src\Ember\StaticGeometryAsset.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\TextureAsset.hpp">
@@ -108,7 +108,7 @@
     <ClInclude Include="..\..\src\Ember\PfxMaterialAsset.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Ember\LandscapeMeshAsset.hpp">
+    <ClInclude Include="..\..\src\Ember\LandscapeGeometryAsset.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\TextureType.hpp">
@@ -156,19 +156,19 @@
     <ClInclude Include="..\..\src\Ember\SceneComponent.hpp">
       <Filter>Headerdateien\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Ember\SkeletalMeshComponent.hpp">
+    <ClInclude Include="..\..\src\Ember\SkeletalGeometryComponent.hpp">
       <Filter>Headerdateien\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Ember\SkinnedMeshComponent.hpp">
+    <ClInclude Include="..\..\src\Ember\SkinnedGeometryComponent.hpp">
       <Filter>Headerdateien\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Ember\StaticMeshComponent.hpp">
+    <ClInclude Include="..\..\src\Ember\StaticGeometryComponent.hpp">
       <Filter>Headerdateien\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\Actor.hpp">
       <Filter>Headerdateien\Actors</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Ember\StaticMeshActor.hpp">
+    <ClInclude Include="..\..\src\Ember\StaticGeometryActor.hpp">
       <Filter>Headerdateien\Actors</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\Scene.hpp">
@@ -236,13 +236,13 @@
     <ClCompile Include="..\..\src\Ember\PfxMaterialAsset.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Ember\StaticMeshAsset.cpp">
+    <ClCompile Include="..\..\src\Ember\StaticGeometryAsset.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Ember\SkeletalMeshAsset.cpp">
+    <ClCompile Include="..\..\src\Ember\SkeletalGeometryAsset.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Ember\LandscapeMeshAsset.cpp">
+    <ClCompile Include="..\..\src\Ember\LandscapeGeometryAsset.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\TextureAsset.cpp">
@@ -263,7 +263,7 @@
     <ClCompile Include="..\..\src\Ember\Actor.cpp">
       <Filter>Quelldateien\Actors</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Ember\StaticMeshActor.cpp">
+    <ClCompile Include="..\..\src\Ember\StaticGeometryActor.cpp">
       <Filter>Quelldateien\Actors</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\ActorInitializer.cpp">
@@ -278,7 +278,10 @@
     <ClCompile Include="..\..\src\Ember\ActorComponent.cpp">
       <Filter>Quelldateien\Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Ember\StaticMeshComponent.cpp">
+    <ClCompile Include="..\..\src\Ember\StaticGeometryComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\LogicComponent.cpp">
       <Filter>Quelldateien\Components</Filter>
     </ClCompile>
   </ItemGroup>

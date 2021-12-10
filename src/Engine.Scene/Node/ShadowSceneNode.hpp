@@ -14,6 +14,8 @@ namespace ember::engine::scene {
         using underlying_type = SceneNodeSubBase<PayloadType_, this_type>;
         using base_type = SceneNode<PayloadType_>;
 
+        using traits = typename base_type::traits;
+
     public:
         /**
          * Query if this is shadow node
@@ -110,8 +112,120 @@ namespace ember::engine::scene {
         }
 
         template <class FactoryType_>
+        bool pushLeaf(const ptr<PayloadType_> element_, const ptr<const FactoryType_> factory_) {
+            /**
+             * Ensure current leaf has element storage
+             */
+            if (!base_type::_elements) {
+                base_type::_elements = factory_->getElementStorage()->acquire();
+            }
+
+            /**
+             * Store element to current leaf
+             */
+            const auto index { base_type::_elementCount++ };
+            if (index > traits::max_elements_per_leaf) {
+                return --base_type::_elementCount, false;
+            }
+
+            ++base_type::_inclusiveElementCount;
+            base_type::_elements[index] = element_;
+            return true;
+        }
+
+        template <class FactoryType_>
+        void leafToNode(cref<math::Bounding> boundary_, const ptr<const FactoryType_> factory_) {
+            /**
+             * Acquire new scene nodes as childs
+             */
+            // auto assembled { factory_->assembleNaturals(boundary_) };
+            auto assembled { factory_->assembleShadows() };
+
+            /**
+             * Range base push to scene node head container
+             */
+            base_type::_children.push(assembled.heads, assembled.heads + traits::max_childs_per_node);
+        }
+
+        template <class FactoryType_>
         bool push(const ptr<PayloadType_> element_, cref<math::Bounding> boundary_,
             const ptr<const FactoryType_> factory_) {
+
+            if (base_type::isLeaf()) {
+                /**
+                 * Check whether this is suitable leaf or we need to transform the leaf to node
+                 */
+                if (base_type::_elementCount + 1 <= traits::max_elements_per_leaf) {
+                    return pushLeaf(element_, factory_);
+                }
+
+                decltype(base_type::_elements) elements { _STD exchange(base_type::_elements, nullptr) };
+                decltype(base_type::_elementCount) elementCount { _STD exchange(base_type::_elementCount, 0) };
+                base_type::_inclusiveElementCount -= elementCount;
+
+                /**
+                 *
+                 */
+                leafToNode<FactoryType_>(boundary_, factory_);
+
+                /**
+                 *
+                 */
+                for (auto i = 0; i < elementCount; ++i) {
+                    auto boundary { traits::getBounding(elements[i]) };
+                    push(elements[i], boundary, factory_);
+                }
+
+                /**
+                 *
+                 */
+                return push(element_, boundary_, factory_);
+            }
+
+            /**
+             * Check non-shadow children
+             */
+            ptr<base_type> cache[traits::max_childs_per_node];
+            u64 cached { 0 };
+
+            for (auto& child : base_type::_children) {
+
+                auto* node { child.get(factory_->getNodeStorage()) };
+
+                if (node->isShadowNode()) {
+                    cache[cached++] = node;
+                    continue;
+                }
+
+                if (node->intersectsFully(boundary_)) {
+                    return node->push(element_, boundary_, factory_), ++base_type::_inclusiveElementCount;
+                }
+            }
+
+            /**
+             * Check shadow children | Find lowest inclusive element count
+             */
+            decltype(base_type::_inclusiveElementCount) lowest { ~0ui64 };
+            ptr<base_type> inclusiveNode { nullptr };
+            ptr<base_type> exclusiveNode { nullptr };
+
+            while (cached) {
+                auto* cur { cache[--cached] };
+
+                if (cur->inclusiveSize() < lowest) {
+                    inclusiveNode = cur;
+                    lowest = cur->inclusiveSize();
+                }
+
+                if (cur->isLeaf() && cur->exclusiveSize() > 0 && cur->exclusiveSize() < traits::max_elements_per_leaf) {
+                    exclusiveNode = cur;
+                }
+            }
+
+            return (
+                exclusiveNode ? exclusiveNode : inclusiveNode
+            )->push(element_, boundary_, factory_), ++base_type::_inclusiveElementCount;
+
             #if FALSE
 
             #ifdef _DEBUG

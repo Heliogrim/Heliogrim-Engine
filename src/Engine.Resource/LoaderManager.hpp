@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Assets/AssetGuid.hpp>
+#include <Engine.Assets/Types/Asset.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
 
@@ -89,6 +90,19 @@ namespace ember::engine::res {
         // concurrent::future<ptr<res::Resource>> load(cref<type_id> typeId_, cref<asset_guid> guid_, mref<Args_> ...args_);
 
         /**
+         * Preloads the requested resource underlying of given asset
+         *
+         * @author Julius
+         * @date 07.12.2021
+         *
+         * @param asset_ The asset from where to load the underlying resource.
+         * @param options_ (Optional) Options for controlling the loading operation.
+         *
+         * @returns A pointer of the resource which should be loaded.
+         */
+        [[nodiscard]] ptr<Resource> preload(const ptr<assets::Asset> asset_, ptr<void> options = nullptr);
+
+        /**
          * Preloads the requested type of resource by unique identifier
          *
          * @author Julius
@@ -104,6 +118,19 @@ namespace ember::engine::res {
             ptr<void> options_ = nullptr);
 
         /**
+         * Loads the requested resource underlying of given asset
+         *
+         * @author Julius
+         * @date 07.12.2021
+         *
+         * @param asset_ The asset from where to load the underlying resource.
+         * @param options_ (Optional) Options for controlling the loading operation.
+         *
+         * @returns A pointer of the resource which should be loaded.
+         */
+        [[nodiscard]] ptr<Resource> load(const ptr<assets::Asset> asset_, ptr<void> options = nullptr);
+
+        /**
          * Loads the requested type of resource by unique identifier deferred
          *
          * @author Julius
@@ -117,6 +144,19 @@ namespace ember::engine::res {
          */
         [[nodiscard]] load_result load(cref<asset_type_id> typeId_, cref<asset_guid> guid_,
             ptr<void> options_ = nullptr);
+
+        /**
+         * Loads the requested resource underlying of given asset immediatly
+         *
+         * @author Julius
+         * @date 07.12.2021
+         *
+         * @param asset_ The asset from where to load the underlying resource.
+         * @param options_ (Optional) Options for controlling the loading operation.
+         *
+         * @returns A pointer of the resource which should be loaded.
+         */
+        [[nodiscard]] ptr<Resource> loadImmediatly(const ptr<assets::Asset> asset_, ptr<void> options = nullptr);
 
         /**
          * Loads the requested type of resource by unique identifier immediately

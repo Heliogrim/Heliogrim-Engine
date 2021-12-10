@@ -8,6 +8,7 @@ namespace ember {
      * Forward Declaration
      */
     class ActorComponent;
+    class SceneComponent;
 
     class ComponentHierarchy;
 

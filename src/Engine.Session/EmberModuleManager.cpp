@@ -7,7 +7,6 @@
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Network/Network.hpp>
 #include <Engine.PFX/Physics.hpp>
-#include <Engine.Proxy/Proxy.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.SFX/Audio.hpp>
@@ -84,7 +83,6 @@ void EmberModuleManager::start() {
     _graphics = make_ptr<Graphics>();
     _network = make_ptr<Network>();
     _physics = make_ptr<Physics>();
-    _proxy = make_ptr<Proxy>();
     _acsRegistry = make_ptr<acs::Registry>();
 
     /**
@@ -94,13 +92,11 @@ void EmberModuleManager::start() {
     _graphics->setup();
     _network->setup();
     _physics->setup();
-    _proxy->setup();
 
     _audio->schedule();
     _graphics->schedule();
     _network->schedule();
     _physics->schedule();
-    _proxy->schedule();
 
 }
 
@@ -120,9 +116,6 @@ void EmberModuleManager::stop() {
 
     delete _physics;
     _physics = nullptr;
-
-    delete _proxy;
-    _proxy = nullptr;
 
     delete _acsRegistry;
     _acsRegistry = nullptr;
@@ -169,18 +162,6 @@ void EmberModuleManager::wait() {
 
     counter = 0;
     while (_physics) {
-
-        if (counter > 8ui8) {
-            scheduler::thread::self::sleepFor(1000);
-        }
-
-        // Wait until empty
-        scheduler::thread::self::yield();
-        ++counter;
-    }
-
-    counter = 0;
-    while (_proxy) {
 
         if (counter > 8ui8) {
             scheduler::thread::self::sleepFor(1000);

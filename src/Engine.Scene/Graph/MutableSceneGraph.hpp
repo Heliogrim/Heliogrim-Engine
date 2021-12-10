@@ -13,7 +13,8 @@ namespace ember::engine::scene {
 
         using factory_type = SceneNodeFactory<
             typename underlying_type::node_storage_type,
-            typename underlying_type::element_storage_type
+            typename underlying_type::element_storage_type,
+            typename underlying_type::traits
         >;
 
     protected:
@@ -26,7 +27,12 @@ namespace ember::engine::scene {
 
     public:
         bool push(ptr<PayloadType_> element_) {
-            throw NotImplementedException();
+
+            auto factory { this->factory() };
+            auto* root { underlying_type::_root.get(underlying_type::_nodeStorage.get()) };
+            auto boundary { underlying_type::traits::getBounding(element_) };
+
+            return root->push(element_, boundary, &factory);
         }
 
         bool push(ptr<typename underlying_type::node_type> node_) {

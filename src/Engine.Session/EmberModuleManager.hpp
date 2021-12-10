@@ -10,7 +10,6 @@ namespace ember::engine {
     class Graphics;
     class Network;
     class Physics;
-    class Proxy;
     class ResourceManager;
     class Scheduler;
 }
@@ -94,18 +93,6 @@ namespace ember::engine::session {
 
         void setPhysics(const ptr<Physics> physics_) {
             _physics = physics_;
-        }
-
-    private:
-        ptr<Proxy> _proxy;
-
-    public:
-        [[nodiscard]] ptr<Proxy> proxy() const {
-            return _proxy;
-        }
-
-        void setProxy(const ptr<Proxy> proxy_) {
-            _proxy = proxy_;
         }
 
     private:

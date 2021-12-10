@@ -1442,3 +1442,125 @@ gantt
     Top Weak <-> Publish Strong :active, 08-01-1970, 4d
     Top Weak <-> Publish Weak :done, 08-01-1970, 7d
 ```
+
+## Graphics
+
+### Graphic Resources
+
+```mermaid
+classDiagram
+    Graphics ..> Scene
+    Graphics .. GraphicPass
+    Graphics ..> ResourceMapping
+    class Graphics {
+        <<module>>
+    }
+
+    GraphicPass .. ModelPassProcessor
+    GraphicPass ..> SceneGraph
+    class GraphicPass {
+    }
+
+    ModelPassProcessor ..> SceneNodeModel
+    ModelPassProcessor ..> ProcessedModelState
+    class ModelPassProcessor {
+    }
+
+    IRenderScene ..> SceneGraph
+    class IRenderScene {
+        <<interface>>
+    }
+
+    class Scene {
+        <<abstract>>
+    }
+
+    RevScene --> Scene
+    RevScene --> IRenderScene
+    class RevScene {
+    }
+
+    Actor ..> SceneComponent
+    class Actor {
+    }
+
+    SceneComponent ..> Scene
+    class SceneComponent {
+        <<abstract>>
+    }
+
+    class SceneGraph {
+    }
+
+    SceneNodeModel ..> SceneGraph
+    class SceneNodeModel {
+        <<abstract>>
+    }
+
+    ModelComponent --> SceneComponent
+    class ModelComponent {
+    }
+
+    StaticMeshComponent --> ModelComponent
+    StaticMeshComponent ..> StaticMeshAsset
+    StaticMeshComponent ..> StaticMeshModel
+    class StaticMeshComponent {
+    }
+
+    Asset ..> ResourceManager
+    Asset ..> ResourceMapping
+    class Asset {
+        <<abstract>>
+    }
+
+    ResourceManager ..> Resource
+    class ResourceManager {
+    }
+
+    class Resource {
+    }
+
+    StaticMeshModel --> SceneNodeModel
+    StaticMeshModel ..> Asset
+    class StaticMeshModel {
+    }
+
+    StaticMeshAsset ..> Asset
+    class StaticMeshAsset {
+        <<facade>>
+    }
+
+    ResourceMapping ..> ResourceManager
+    ResourceMapping ..> ResourceMaterialMapping
+    ResourceMapping ..> ResourceMeshMapping
+    ResourceMapping ..> ResourceTextureMapping
+    class ResourceMapping {
+    }
+
+    ResourceMaterialMapping ..> MappedMaterial
+    ResourceMaterialMapping ..> Resource
+    class ResourceMaterialMapping {
+    }
+
+    ResourceMeshMapping ..> MappedMesh
+    ResourceMaterialMapping ..> Resource
+    class ResourceMeshMapping {
+    }
+
+    ResourceTextureMapping ..> MappedTexture
+    ResourceMaterialMapping ..> Resource
+    class ResourceTextureMapping {
+    }
+
+    class MappedMesh {
+    }
+
+    class MappedMaterial {
+    }
+
+    ProcessedModelState ..> MappedMesh
+    ProcessedModelState ..> MappedMaterial
+    ProcessedModelState ..> MappedTexture
+    class ProcessedModelState {
+    }
+```

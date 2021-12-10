@@ -8,12 +8,19 @@
 
 using namespace ember;
 
-Actor::Actor() noexcept = default;
+Actor::Actor() noexcept :
+    _guid(invalid_actor_guid),
+    _rootComponent(nullptr),
+    _components() {}
 
 Actor::~Actor() noexcept = default;
 
 actor_guid Actor::guid() const noexcept {
-    throw NotImplementedException();
+    return _guid;
+}
+
+void Actor::unsafe_set_guid(cref<actor_guid> guid_) {
+    _guid = guid_;
 }
 
 ptr<ActorComponent> Actor::getRootComponent() const noexcept {

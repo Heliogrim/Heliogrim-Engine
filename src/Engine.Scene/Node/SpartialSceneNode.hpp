@@ -28,8 +28,9 @@ namespace ember::engine::scene {
             throw NotImplementedException();
         }
 
+        template <class FactoryType_>
         bool push(const ptr<PayloadType_> element_, cref<math::Bounding> boundary_,
-            const ptr<const typename base_type::factory_type> factory_) {
+            const ptr<const FactoryType_> factory_) {
             throw NotImplementedException();
         }
 

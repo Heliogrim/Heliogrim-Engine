@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Engine.Common/String.hpp>
+#include <Engine.Common/Url.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "Data.hpp"
 #include "ImageLayout.hpp"
@@ -15,9 +16,9 @@ namespace ember::engine::assets {
         Image(cref<asset_guid> guid_);
 
     public:
-        Image(cref<asset_guid> guid_, cref<string> url_);
+        Image(cref<asset_guid> guid_, mref<Vector<Url>> sources_);
 
     private:
-        string _url;
+        Vector<Url> _sources;
     };
 }

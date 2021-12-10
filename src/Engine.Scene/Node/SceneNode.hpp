@@ -7,6 +7,7 @@
 
 #include "SceneNodeHeadContainer.hpp"
 #include "SceneNodeVersion.hpp"
+#include "Traits.hpp"
 
 namespace ember::engine::scene {
 
@@ -30,7 +31,7 @@ namespace ember::engine::scene {
     template <class PayloadType_>
     class NaturalSceneNode;
 
-    template <class NodeStorageType_, class ElementStorageType_>
+    template <class NodeStorageType_, class ElementStorageType_, class Traits_>
     class SceneNodeFactory;
 
     /**
@@ -123,20 +124,22 @@ namespace ember::engine::scene {
         }
     };
 
-    template <class PayloadType_>
+    template <class ElementType_>
     class SceneNode {
     public:
         friend class SceneNodeHead;
 
     public:
-        using this_type = SceneNode<PayloadType_>;
+        using this_type = SceneNode<ElementType_>;
         using smart_version_type = SceneNodeVersion;
         using container_type = SceneNodeHeadContainer;
 
-        using shadow_type = ShadowSceneNode<PayloadType_>;
-        using loosy_type = LoosySceneNode<PayloadType_>;
-        using spartial_type = SpartialSceneNode<PayloadType_>;
-        using natural_type = NaturalSceneNode<PayloadType_>;
+        using shadow_type = ShadowSceneNode<ElementType_>;
+        using loosy_type = LoosySceneNode<ElementType_>;
+        using spartial_type = SpartialSceneNode<ElementType_>;
+        using natural_type = NaturalSceneNode<ElementType_>;
+
+        using traits = scene_traits<this_type, ElementType_>;
 
     public:
         /**
@@ -150,8 +153,8 @@ namespace ember::engine::scene {
             _children(),
             _elements(nullptr),
             _elementCount(0),
+            _inclusiveElementCount(0),
             _state(SceneNodeState::eShadow),
-            _size(1),
             _transform(),
             _bounding() {}
 
@@ -168,8 +171,8 @@ namespace ember::engine::scene {
             _children(_STD move(other_._children)),
             _elements(_STD move(other_._elements)),
             _elementCount(_STD move(other_._elementCount)),
+            _inclusiveElementCount(_STD move(other_._inclusiveElementCount)),
             _state(_STD exchange(other_._state, SceneNodeState::eShadow)),
-            _size(_STD move(other_._size)),
             _transform(_STD move(other_._transform)),
             _bounding(_STD move(other_._bounding)) {}
 
@@ -216,8 +219,8 @@ namespace ember::engine::scene {
                 _children = _STD move(other_._children);
                 _elements = _STD move(other_._elements);
                 _elementCount = _STD move(other_._elementCount);
+                _inclusiveElementCount = _STD move(other_._inclusiveElementCount);
                 _state = _STD exchange(other_._state, SceneNodeState::eShadow);
-                _size = _STD exchange(other_._size, 0);
                 _transform = _STD move(other_._transform);
                 _bounding = _STD move(other_._bounding);
             }
@@ -262,41 +265,47 @@ namespace ember::engine::scene {
             return _children;
         }
 
+        [[nodiscard]] u64 childCount() const noexcept {
+            return _children.size();
+        }
+
     protected:
-        PayloadType_* _elements;
+        ptr<ptr<ElementType_>> _elements;
         u64 _elementCount;
+        u64 _inclusiveElementCount;
 
     public:
         /**
-         * Gets the payload
+         * Gets the elements
          *
          * @author Julius
          * @date 16.08.2021
          *
-         * @returns A const reference to the stored payload
+         * @returns A const raw array of the stored elements
          */
-        [[nodiscard]] cref<decltype(_elements)> elements() const noexcept {
+        [[nodiscard]] const decltype(_elements) elements() const noexcept {
             return _elements;
         }
 
         /**
-         * Gets the payload
+         * Gets the elements
          *
          * @author Julius
          * @date 16.08.2021
          *
-         * @returns A reference to the stored payload
+         * @returns A const raw array of the stored elements
          */
-        [[nodiscard]] ref<decltype(_elements)> elements() noexcept {
+        [[nodiscard]] const decltype(_elements) elements() noexcept {
             return _elements;
         }
 
-        [[nodiscard]] u64 exclusiveElementCount() const noexcept {
+    public:
+        [[nodiscard]] u64 exclusiveSize() const noexcept {
             return _elementCount;
         }
 
-        [[nodiscard]] u64 inclusiveElementCount() const {
-            throw NotImplementedException();
+        [[nodiscard]] u64 inclusiveSize() const noexcept {
+            return _inclusiveElementCount;
         }
 
     protected:
@@ -416,39 +425,6 @@ namespace ember::engine::scene {
             return tmp + 1ui64;
         }
 
-    protected:
-        // TODO: Recheck
-        [[deprecated]] u64 _size;
-
-    public:
-        [[nodiscard]] u64 exclusiveSize() const noexcept {
-            return _children.size();
-        }
-
-        /**
-         * Traces the accumulated count of elements in graph from current node
-         *
-         * @author Julius
-         * @date 02.08.2021
-         *
-         * @returns The accumulated count of elements.
-         */
-        [[nodiscard]] u64 inclusiveSize() const noexcept {
-            /*
-            if (isLeaf()) {
-                return 1ui64;
-            }
-
-            u64 tmp = 1ui64;
-            for (const auto& entry : _children) {
-                tmp += entry.get()->size();
-            }
-
-            return tmp;
-            */
-            return _size;
-        }
-
         #define advanced_proxy_macro(FNC_, ...) \
     switch (_state) { \
         case SceneNodeState::eShadow: return asShadow()->FNC_(__VA_ARGS__); \
@@ -497,7 +473,7 @@ namespace ember::engine::scene {
 
     public:
         template <class FactoryType_>
-        bool push(const ptr<PayloadType_> element_, cref<math::Bounding> boundary_,
+        bool push(const ptr<ElementType_> element_, cref<math::Bounding> boundary_,
             const ptr<const FactoryType_> factory_) {
             advanced_proxy_macro(push, element_, boundary_, factory_)
         }

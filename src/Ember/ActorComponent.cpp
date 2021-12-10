@@ -2,8 +2,14 @@
 
 using namespace ember;
 
+ActorComponent::ActorComponent(mref<component_type_id> typeId_, mref<CachedActorPointer> owner_,
+    mref<ptr<ActorComponent>> parent_) :
+    LogicComponent(_STD move(typeId_)),
+    _owner(_STD move(owner_)),
+    _parent(_STD move(parent_)) {}
+
 ActorComponent::ActorComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_) :
-    LogicComponent(),
+    LogicComponent(component_type_id { type_id }),
     _owner(_STD move(owner_)),
     _parent(_STD move(parent_)) {}
 

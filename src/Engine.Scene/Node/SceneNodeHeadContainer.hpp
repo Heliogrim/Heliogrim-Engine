@@ -589,15 +589,15 @@ namespace ember::engine::scene {
         /**
          * Emplaces the given payload onto this container
          *
-         * @tparam Types Type of the types.
-         * @param  payload_ Variable arguments providing the payload.
+         * @tparam Args_ The packed parameter list of types to use to construct.
+         * @param  args_ Variable arguments providing the payload.
          *
          * @returns True if it succeeds, false if it fails.
          */
-        template <class... Types>
-        bool emplace(IN mref<Types> ... payload_) {
+        template <class... Args_>
+        bool emplace(mref<Args_> ... args_) {
             if (_last != &_base[type_traits::max_nodes_per_layer]) {
-                allocator_traits::construct(getAlloc(), _STD _Unfancy(_last), _STD forward<Types>(payload_)...);
+                allocator_traits::construct(getAlloc(), _STD _Unfancy(_last), _STD forward<Args_>(args_)...);
                 ++_last;
 
                 return true;
@@ -630,6 +630,17 @@ namespace ember::engine::scene {
          * @returns True if it succeeds, false if it fails.
          */
         bool push(mref<value_type> node_);
+
+        /**
+         * Pushes a sequence of objects to this container
+         *
+         * @author Julius
+         * @date 04.12.2021
+         *
+         * @param first_ Inclusive first element to push
+         * @param end_ Exclusive end of element sequence_
+         */
+        void push(const ptr<value_type> first_, const ptr<value_type> end_);
 
         /**
          * Pulls the last element from this container

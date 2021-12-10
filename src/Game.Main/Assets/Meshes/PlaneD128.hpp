@@ -1,10 +1,10 @@
 #pragma once
-#include <Ember/StaticMeshAsset.hpp>
+#include <Ember/StaticGeometryAsset.hpp>
 
 namespace ember::game::assets::meshes {
 
     class PlaneD128 :
-        public StaticMeshAsset,
+        public StaticGeometryAsset,
         public AssetAutoGuid<PlaneD128> {
     public:
         PlaneD128();

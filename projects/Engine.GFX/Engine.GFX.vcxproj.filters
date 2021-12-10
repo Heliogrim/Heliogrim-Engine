@@ -462,17 +462,26 @@
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\DepthModelPassProcessor.hpp">
       <Filter>Headerdateien\GraphicPass</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneElement.hpp">
-      <Filter>Headerdateien\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneGraphTag.hpp">
-      <Filter>Headerdateien\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Importer\ImageImporter.hpp">
       <Filter>Headerdateien\Importer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Importer\ModelImporter.hpp">
       <Filter>Headerdateien\Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneTag.hpp">
+      <Filter>Headerdateien\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.hpp">
+      <Filter>Headerdateien\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\StaticGeometryModel.hpp">
+      <Filter>Headerdateien\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.hpp">
+      <Filter>Headerdateien\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\LandscapeGeometryModel.hpp">
+      <Filter>Headerdateien\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -674,7 +683,10 @@
     <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\DepthModelPassProcessor.cpp">
       <Filter>Quelldateien\GraphicPass</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneElement.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX\Scene\StaticGeometryModel.cpp">
+      <Filter>Quelldateien\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.cpp">
       <Filter>Quelldateien\Scene</Filter>
     </ClCompile>
   </ItemGroup>

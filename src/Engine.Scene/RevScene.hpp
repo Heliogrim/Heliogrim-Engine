@@ -29,16 +29,16 @@ namespace ember::engine::scene {
         [[nodiscard]] const ptr<RenderGraph> renderGraph() noexcept override;
 
     private:
-        Vector<ptr<ActorComponent>> _cachedNew;
+        Vector<ptr<SceneComponent>> _cachedNew;
 
     public:
-        bool addNode(const ptr<ActorComponent> node_) override final;
+        bool addNode(const ptr<SceneComponent> node_) override final;
 
-        bool addNodeCached(const ptr<ActorComponent> node_) noexcept override final;
+        bool addNodeCached(const ptr<SceneComponent> node_) noexcept override final;
 
-        bool removeNode(const ptr<ActorComponent> node_) override final;
+        bool removeNode(const ptr<SceneComponent> node_) override final;
 
-        bool removeNodeCached(const ptr<ActorComponent> node_) noexcept override final;
+        bool removeNodeCached(const ptr<SceneComponent> node_) noexcept override final;
 
     public:
         ptr<IComponentRegisterContext> registerContext() noexcept override;
