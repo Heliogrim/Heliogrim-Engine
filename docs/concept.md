@@ -1564,3 +1564,120 @@ classDiagram
     class ProcessedModelState {
     }
 ```
+
+```mermaid
+graph LR
+    user[[User]]
+
+    user --> Actor
+    Actor --o |0..N| ActorComponent
+    ActorComponent --o |0..N| Asset
+
+    Actor --> |0..1| World
+    World --o |0..N| Actor
+
+    scene[[Scene]]
+
+    World --> scene
+    scene --o |0..1| World
+    scene --> SceneGraph
+    scene --o |0..N| SceneNodeModel
+
+    ActorComponent --o |0..1| scene
+    scene --o |0..N| ActorComponent
+```
+
+```mermaid
+stateDiagram-v2
+    [*] --> Asset
+    Asset --> ResourceManager
+    ResourceManager --> Loader
+    Loader --> Resource
+    Resource --> [*]
+```
+
+```mermaid
+stateDiagram-v2
+    [*] --> Asset
+    Asset --> ResourceManager
+    ResourceManager --> Importer
+    Importer --> Loader
+    Loader --> Resource
+    Resource --> [*]
+```
+
+```mermaid
+stateDiagram-v2
+    [*] --> AssetGuid
+    AssetGuid --> ResourceManager
+    ResourceManager --> AssetDatabase
+    AssetDatabase --> ResourceManager
+    ResourceManager --> Loader
+    Loader --> Resource
+    Resource --> [*]
+```
+
+```mermaid
+stateDiagram-v2
+    [*] --> Resource
+    Resource --> Loader
+    
+    state Loader {
+        DResourceManager : ResourceManager
+
+        [*] --> DResourceManager
+        [*] --> Importer
+        DResourceManager --> [*]
+        Importer --> ResourceManager
+        ResourceManager --> Importer
+        Importer --> [*]
+    }
+
+    RResource : Resource
+    Loader --> RResource
+    RResource --> [*]
+```
+
+```mermaid
+classDiagram
+    class Resource {
+        <<abstract>>
+
+        +streamable() boolean
+        +streamstate() ptr~StreamState~
+
+        +readable() boolean
+        +writeable() boolean
+    }
+
+    SharedResource --> Resource
+    class SharedResource {
+    }
+    
+    UniqueResource --> Resource
+    class UniqueResource {
+    }
+
+    CopyOnWrite --> SharedResource
+    class CopyOnWrite {
+    }
+```
+
+```mermaid
+classDiagram
+    class StreamState {
+        <<abstract>>
+    }
+
+    TextureStreamState --> StreamState
+    class TextureStreamState {
+    }
+
+    GeometryStreamState --> StreamState
+    class GeometryStreamState {
+    }
+
+    SoundStreamState --> StreamState
+    class SoundStreamState {
+    }
+```
