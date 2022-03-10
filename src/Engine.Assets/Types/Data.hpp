@@ -1,7 +1,7 @@
 #pragma once
 #include "Asset.hpp"
 #include "../AssetOutputStream.hpp"
-#include "Engine.Assets/AssetInputStream.hpp"
+#include "../AssetInputStream.hpp"
 
 namespace ember::engine::assets {
     template <typename Layout>

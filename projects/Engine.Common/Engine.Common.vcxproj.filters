@@ -258,6 +258,12 @@
     <ClInclude Include="..\..\src\Engine.Common\Url.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\StableUnorderedMap.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\UnsafeVector.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">

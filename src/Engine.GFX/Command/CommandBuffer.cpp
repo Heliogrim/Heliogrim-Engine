@@ -39,6 +39,15 @@ void CommandBuffer::bindDescriptor(const Vector<vk::DescriptorSet>& descriptors_
     );
 }
 
+void CommandBuffer::bindDescriptor(const u32 id_, cref<vk::DescriptorSet> descriptor_) {
+    _vkCmd.bindDescriptorSets(
+        vk::PipelineBindPoint::eGraphics,
+        _pipelineLayout,
+        id_, 1, &descriptor_,
+        0, nullptr
+    );
+}
+
 void CommandBuffer::bindIndexBuffer(const IndexBuffer& buffer_, u64 offset_) {
     _vkCmd.bindIndexBuffer(
         buffer_.buffer,
@@ -47,21 +56,21 @@ void CommandBuffer::bindIndexBuffer(const IndexBuffer& buffer_, u64 offset_) {
     );
 }
 
-void CommandBuffer::bindPipeline(ptr<GraphicPipeline> pipeline_) {
-    const auto& viewport = pipeline_->viewport();
+void CommandBuffer::bindPipeline(ptr<GraphicPipeline> pipeline_, cref<Viewport> viewport_) {
+    //const auto& viewport = pipeline_->viewport();
 
     vk::Viewport vkViewport {
-        static_cast<float>(viewport.offsetX()),
-        static_cast<float>(viewport.offsetY()),
-        static_cast<float>(viewport.width()),
-        static_cast<float>(viewport.height()),
-        viewport.minDepth(),
-        viewport.maxDepth()
+        static_cast<float>(viewport_.offsetX()),
+        static_cast<float>(viewport_.offsetY()),
+        static_cast<float>(viewport_.width()),
+        static_cast<float>(viewport_.height()),
+        viewport_.minDepth(),
+        viewport_.maxDepth()
     };
 
     vk::Rect2D vkScissor {
         { 0, 0 },
-        { viewport.width(), viewport.height() }
+        { viewport_.width(), viewport_.height() }
     };
 
     const auto vkp = static_cast<ptr<VkFixedPipeline>>(pipeline_);
@@ -179,6 +188,7 @@ void CommandBuffer::submitWait() {
 
 void CommandBuffer::release() {
     _pool->release(*this);
+    _vkCmd = nullptr;
 }
 
 const vk::CommandBuffer& CommandBuffer::vkCommandBuffer() const noexcept {

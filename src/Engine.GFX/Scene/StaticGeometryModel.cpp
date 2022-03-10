@@ -2,9 +2,10 @@
 
 #include <Ember/StaticGeometryComponent.hpp>
 #include <Engine.Assets/Database/AssetDatabaseQuery.hpp>
+#include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene/RevScene.hpp>
 
-#include "Engine.Resource/ResourceManager.hpp"
+#include "../Resource/StaticGeometryResource.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -26,8 +27,8 @@ void StaticGeometryModel::create(const ptr<scene::Scene> scene_) {
      *
      */
     _boundary = origin->getBoundaries();
-    _staticGeometry = static_cast<ptr<assets::StaticGeometry>>(origin->getStaticGeometryAsset().internal());
-    _staticGeometryResource = Session::get()->modules().resourceManager()->loader().load(_staticGeometry, nullptr);
+    _staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(origin->getStaticGeometryAsset().internal());
+    _staticGeometryResource = Session::get()->modules().resourceManager()->loader().load(_staticGeometryAsset, nullptr);
 
     /**
      *
@@ -38,3 +39,18 @@ void StaticGeometryModel::create(const ptr<scene::Scene> scene_) {
 void StaticGeometryModel::update(const ptr<scene::Scene> scene_) {}
 
 void StaticGeometryModel::destroy(const ptr<scene::Scene> scene_) {}
+
+ModelBatch StaticGeometryModel::batch(const GraphicPassMask mask_) {
+
+    // TODO: Change getting transform information to resolve via render graph
+    auto* origin { static_cast<ptr<StaticGeometryComponent>>(_owner) };
+    auto* res { static_cast<ptr<StaticGeometryResource>>(_staticGeometryResource) };
+
+    return ModelBatch {
+        origin->getWorldTransform(),
+        res->_vertexData.buffer,
+        res->_indexData.buffer,
+        static_cast<u32>(res->_indexData.buffer.size / sizeof(u32)),
+        0ui32
+    };
+}

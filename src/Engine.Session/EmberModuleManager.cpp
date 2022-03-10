@@ -93,6 +93,9 @@ void EmberModuleManager::start() {
     _network->setup();
     _physics->setup();
 
+    _graphics->registerLoader();
+    _graphics->registerImporter();
+
     _audio->schedule();
     _graphics->schedule();
     _network->schedule();

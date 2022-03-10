@@ -16,7 +16,7 @@ math::uivec2::value_type Swapchain::width() const noexcept {
 }
 
 math::uivec2::value_type Swapchain::height() const noexcept {
-    return _extent.x;
+    return _extent.y;
 }
 
 cref<sptr<Texture>> Swapchain::at(const u32 idx_) const noexcept {

@@ -57,7 +57,7 @@ void Framebuffer::setup() {
     _vkFramebuffer = _device->vkDevice().createFramebuffer(info);
 }
 
-const Vector<FramebufferAttachment>& Framebuffer::attachments() const noexcept {
+cref<Vector<FramebufferAttachment>> Framebuffer::attachments() const noexcept {
     return _attachments;
 }
 

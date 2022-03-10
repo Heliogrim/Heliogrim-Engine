@@ -3,7 +3,8 @@
 using namespace ember::concurrent;
 using namespace ember::engine::scheduler;
 
-UnfairSpinLock::UnfairSpinLock() = default;
+UnfairSpinLock::UnfairSpinLock() :
+    _gate(0) {}
 
 UnfairSpinLock::~UnfairSpinLock() noexcept {
     thread::thread_id expect { 0 };

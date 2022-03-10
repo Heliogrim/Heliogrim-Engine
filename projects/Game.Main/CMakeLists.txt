@@ -33,15 +33,15 @@ target_link_libraries(
         ${DEFAULT_LIBRARIES}
         ${META_PROJECT_NAME}::Ember
         ${META_PROJECT_NAME}::Ember.Main
+        ${META_PROJECT_NAME}::Engine.ACS
         ${META_PROJECT_NAME}::Engine.Assets
         ${META_PROJECT_NAME}::Engine.Common
-        ${META_PROJECT_NAME}::Engine.ACS
+        ${META_PROJECT_NAME}::Engine.Core
         ${META_PROJECT_NAME}::Engine.Env
         ${META_PROJECT_NAME}::Engine.Event
         ${META_PROJECT_NAME}::Engine.GFX
         ${META_PROJECT_NAME}::Engine.Network
         ${META_PROJECT_NAME}::Engine.PFX
-        ${META_PROJECT_NAME}::Engine.Proxy
         ${META_PROJECT_NAME}::Engine.Reflect
         ${META_PROJECT_NAME}::Engine.Resource
         ${META_PROJECT_NAME}::Engine.Scene

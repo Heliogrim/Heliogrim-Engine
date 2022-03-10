@@ -1,13 +1,10 @@
 #pragma once
 
-#include <Engine.Common/Make.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-#include "Binding.hpp"
+#include "ShaderBinding.hpp"
 #include "Type.hpp"
-#include "../Buffer/Buffer.hpp"
-#include "../Texture/Texture.hpp"
 
 namespace ember::engine::gfx::shader {
     /**
@@ -17,6 +14,7 @@ namespace ember::engine::gfx::shader {
 }
 
 namespace ember::engine::gfx {
+
     class Shader {
     protected:
         friend ember::engine::gfx::shader::Factory;
@@ -33,7 +31,7 @@ namespace ember::engine::gfx {
          * @param  vkShader_ The shader.
          */
         Shader(const shader::ShaderType type_, const string& name_,
-            const Vector<shader::Binding>& bindings_,
+            const Vector<shader::ShaderBinding>& bindings_,
             vk::ShaderModule vkShader_);
 
     public:
@@ -97,44 +95,22 @@ namespace ember::engine::gfx {
          */
         [[nodiscard]] const string& name() const noexcept;
 
-        /**
-         * Binds
-         *
-         * @author Julius
-         * @date 18.11.2020
-         *
-         * @param  id_ The identifier.
-         * @param  buffer_ The buffer.
-         */
-        void bind(u32 id_, Buffer::const_reference_type buffer_);
-
-        /**
-         * Binds
-         *
-         * @author Julius
-         * @date 17.11.2020
-         *
-         * @param  id_ The identifier.
-         * @param  texture_ The texture.
-         */
-        void bind(u32 id_, Texture::const_reference_type texture_);
-
     private:
         /**
-         * Bindings
+         * Shader Bindings
          */
-        Vector<shader::Binding> _bindings;
+        Vector<shader::ShaderBinding> _bindings;
 
     public:
         /**
-         * Gets the bindings
+         * Gets the shader bindings
          *
          * @author Julius
          * @date 27.11.2020
          *
          * @returns A list of.
          */
-        [[nodiscard]] const Vector<shader::Binding>& bindings() const noexcept;
+        [[nodiscard]] const Vector<shader::ShaderBinding>& bindings() const noexcept;
 
     private:
         /**

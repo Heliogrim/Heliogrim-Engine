@@ -12,7 +12,7 @@ namespace ember::engine::gfx {
             vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent))
             std::cout << "Match" << std::endl;
 
-        for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+        for (uint32_t i = 0; i < memProps.memoryTypeCount; ++i) {
             if ((types_ & (1 << i)) && (memProps.memoryTypes[i].propertyFlags & flags_) == flags_)
                 return i;
         }

@@ -260,8 +260,12 @@
     <None Include="..\..\resources\shader\compile_shaders.cmd" />
     <None Include="..\..\resources\shader\depthpass.frag.spv" />
     <None Include="..\..\resources\shader\depthpass.fs" />
+    <None Include="..\..\resources\shader\depthpass_skeletal.frag.spv" />
+    <None Include="..\..\resources\shader\depthpass_skeletal.fs" />
     <None Include="..\..\resources\shader\depthpass_skeletal.vert.spv" />
     <None Include="..\..\resources\shader\depthpass_skeletal.vs" />
+    <None Include="..\..\resources\shader\depthpass_static.frag.spv" />
+    <None Include="..\..\resources\shader\depthpass_static.fs" />
     <None Include="..\..\resources\shader\depthpass_static.vert.spv" />
     <None Include="..\..\resources\shader\depthpass_static.vs" />
     <None Include="..\..\resources\shader\finalpass.frag.spv" />

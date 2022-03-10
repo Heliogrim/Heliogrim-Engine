@@ -42,7 +42,6 @@
     <ClInclude Include="..\..\src\Engine.Resource\Source\Source.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\StreamUtils.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\tmp.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource\Url.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Resource\FileResource.cpp" />

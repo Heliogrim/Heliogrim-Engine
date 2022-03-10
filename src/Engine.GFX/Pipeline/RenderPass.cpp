@@ -25,7 +25,7 @@ void RenderPass::setup() {
         switch (entry.layout) {
             case vk::ImageLayout::eColorAttachmentOptimal: {
                 colors.push_back(entry);
-                _clearValues.push_back(vk::ClearColorValue { _STD array<float, 4> { 0.F, 0.F, 0.F, 1.F } });
+                _clearValues.push_back(vk::ClearColorValue { _STD array<float, 4> { 0.F, 0.F, 0.F, 0.F } });
                 break;
             }
 
@@ -57,17 +57,25 @@ void RenderPass::setup() {
      * Warning: Determine Subpass Dependencies
      */
     if (_dependencies.empty()) {
-        const vk::SubpassDependency dep {
-            {},
-            {},
-            vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests,
-            vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests,
-            {},
+        _dependencies.push_back(vk::SubpassDependency {
+            VK_SUBPASS_EXTERNAL,
+            0,
+            vk::PipelineStageFlagBits::eFragmentShader,
+            vk::PipelineStageFlagBits::eEarlyFragmentTests,
+            vk::AccessFlagBits::eShaderRead,
             vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
             vk::DependencyFlagBits::eByRegion
-        };
+        });
 
-        _dependencies.push_back(dep);
+        _dependencies.push_back(vk::SubpassDependency {
+            0,
+            VK_SUBPASS_EXTERNAL,
+            vk::PipelineStageFlagBits::eEarlyFragmentTests,
+            vk::PipelineStageFlagBits::eFragmentShader,
+            vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+            vk::AccessFlagBits::eShaderRead,
+            vk::DependencyFlagBits::eByRegion
+        });
     }
 
     /**

@@ -1,12 +1,14 @@
 #pragma once
-#include "../vkinc.hpp"
-#include "../RasterPolyMode.hpp"
 #include "../InputRate.hpp"
-#include "../RasterPolyFront.hpp"
-#include "../RasterSamples.hpp"
-#include "../RasterCullFace.hpp"
 #include "../PrimitiveTopology.hpp"
+#include "../RasterCullFace.hpp"
+#include "../RasterPolyFront.hpp"
+#include "../RasterPolyMode.hpp"
+#include "../RasterSamples.hpp"
 #include "../TextureFormat.hpp"
+#include "../vkinc.hpp"
+#include "../Memory/MemoryProperty.hpp"
+#include "../Shader/Type.hpp"
 
 namespace ember::engine::gfx::api {
 
@@ -106,4 +108,39 @@ namespace ember::engine::gfx::api {
      */
     [[nodiscard]] TextureFormat vkTranslateFormat(vk::Format format_);
 
+    /**
+     * Translate internal to vulkan
+     *
+     * @author Julius
+     * @date 17.02.2022
+     *
+     * @param  type_ The type of the binding to use.
+     *
+     * @returns A vk::DescriptorType
+     */
+    [[nodiscard]] vk::DescriptorType vkTranslateBindingType(const shader::BindingType type_);
+
+    /**
+     * Translate internal to vulkan
+     *
+     * @author Julius
+     * @date 07.01.2022
+     *
+     * @param properties_ The bitflag of properties to translate.
+     *
+     * @returns vk::MemoryPropertyFlags.
+     */
+    [[nodiscard]] vk::MemoryPropertyFlags vkTranslateMemoryProperties(MemoryProperties properties_);
+
+    /**
+     * Translate vulkan to internal
+     *
+     * @author Julius
+     * @date 07.01.2022
+     *
+     * @param properties_ The bitflag of properties to translate.
+     *
+     * @returns MemoryProperties.
+     */
+    [[nodiscard]] MemoryProperties vkTranslateMemoryProperties(vk::MemoryPropertyFlags properties_);
 }

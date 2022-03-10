@@ -253,16 +253,18 @@ void VkFixedPipeline::setup() {
 
             pdssci = {
                 vk::PipelineDepthStencilStateCreateFlags(),
-                hasDepth ? true : false,
-                hasDepth ? true : false,
+                hasDepth ? VK_TRUE : VK_FALSE,
+                hasDepth ? VK_TRUE : VK_FALSE,
                 hasDepth ? _rasterizationStage.depthCompare() : vk::CompareOp::eNever,
-                /*false*/
-                true,
-                hasStencil ? true : false,
+                VK_FALSE,
+                //VK_TRUE,
+                hasStencil ? VK_TRUE : VK_FALSE,
                 vk::StencilOpState(),
                 vk::StencilOpState().setCompareOp(hasStencil ? vk::CompareOp::eAlways : vk::CompareOp::eNever),
-                0.F,
-                hasDepth ? 1.F : 0.F
+                {},
+                //0.F,
+                {}
+                //hasDepth ? 1.F : 0.F
             };
         }
 

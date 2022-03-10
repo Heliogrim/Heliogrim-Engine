@@ -2,10 +2,10 @@
 
 #include <Engine.Session/Session.hpp>
 
-#include "GraphicPass.hpp"
 #include "Application/Application.hpp"
 #include "Command/CommandQueue.hpp"
 #include "Device/Device.hpp"
+#include "GraphicPass/GraphicPass.hpp"
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
 
@@ -14,6 +14,11 @@
  */
 namespace ember::engine::scene {
     class IRenderScene;
+}
+
+namespace ember::engine::gfx::loader {
+    class GeometryLoader;
+    class TextureLoader;
 }
 
 namespace ember::engine {
@@ -180,6 +185,17 @@ namespace ember::engine {
         [[nodiscard]] gfx::CommandQueue::reference_type getTransferQueue() const noexcept;
 
     private:
+        ptr<gfx::Renderer> _renderer;
+
+    private:
+        Vector<ptr<gfx::RenderInvocation>> _renderPasses;
+
+        // Warning: Temporary
+        ptr<gfx::Camera> _camera;
+        Vector<gfx::CommandBatch> _renderPassBatches;
+
+        #if FALSE
+    private:
         /**
          * Graphic Passes
          */
@@ -207,6 +223,7 @@ namespace ember::engine {
          * @returns A ptr&lt;gfx::GraphicPass&gt;
          */
         [[nodiscard]] ptr<gfx::GraphicPass> graphicPass(gfx::GraphicPassMask mask_) const noexcept;
+        #endif
 
     private:
         struct {
@@ -249,5 +266,18 @@ namespace ember::engine {
 
     public:
         bool useAsUIRenderScene(const ptr<scene::IRenderScene> scene_);
+
+    private:
+        Vector<ptr<gfx::loader::GeometryLoader>> _geometryLoader;
+        Vector<ptr<gfx::loader::TextureLoader>> _textureLoader;
+
+    public:
+        void registerLoader();
+
+    private:
+        Vector<ptr<void>> _importer;
+
+    public:
+        void registerImporter();
     };
 }

@@ -77,7 +77,7 @@ namespace ember::engine::gfx {
          *
          * @returns A list of.
          */
-        [[nodiscard]] const Vector<FramebufferAttachment>& attachments() const noexcept;
+        [[nodiscard]] cref<Vector<FramebufferAttachment>> attachments() const noexcept;
 
         /**
          * Gets the attachments

@@ -179,6 +179,12 @@ namespace ember::engine::assets {
             cref<u32> mipLevel_,
             cref<gfx::TextureType> type_
         );
+
+        // TODO:
+    public:
+        [[nodiscard]] ptr<Asset> createStaticGeometryAsset(cref<asset_guid> guid_);
+
+        [[nodiscard]] ptr<Asset> createLandscapeGeometryAsset(cref<asset_guid> guid_);
     };
 
 }

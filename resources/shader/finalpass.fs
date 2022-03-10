@@ -4,6 +4,7 @@
 #extension GL_ARB_shading_language_420pack : enable
 
 /*
+*/
 layout (set = 0, binding = 1) uniform FinalPassUbo {
     vec3 pos;
 } ubo;
@@ -13,6 +14,7 @@ layout (set = 0, binding = 3) uniform sampler2D mapped_normal;
 layout (set = 0, binding = 4) uniform sampler2D mapped_position;
 layout (set = 0, binding = 5) uniform sampler2D mapped_mrs;
 layout (set = 0, binding = 6) uniform sampler2D mapped_depth;
+/*
 */
 
 layout (location = 0) in vec2 in_uv;
@@ -33,4 +35,7 @@ void main() {
 	out_color = vec4(albedo.rgb, 1.0);
 	*/
 	out_color = vec4(in_color, 1.0);
+
+	vec3 depth = texture(mapped_depth, in_uv).rrr;
+	//out_color = vec4(depth, 1.0);
 }

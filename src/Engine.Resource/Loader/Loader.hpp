@@ -23,8 +23,9 @@ namespace ember::engine::res {
         using const_reference_type = cref<value_type>;
 
         template <typename Type_>
-        using result_wrapper_type = ember::concurrent::future<Type_>;
-        using result_type = result_wrapper_type<ptr<Resource>>;
+        using result_wrapper_type = _STD type_identity_t<Type_>;
+        using result_data_type = ptr<Resource>;
+        using result_type = result_wrapper_type<result_data_type>;
 
     private:
         /**
@@ -51,16 +52,16 @@ namespace ember::engine::res {
          * @author Julius
          * @date 09.09.2021
          *
-         * @param  guid_ Unique identifier.
+         * @param  asset_ The asset to load.
          * @param  options_ (Optional) Options for controlling the operation.
          *
          * @returns The result of the operation.
          */
-        [[nodiscard]] virtual result_type operator()(cref<asset_guid> guid_, ptr<void> options_ = nullptr) = 0;
+        [[nodiscard]] virtual result_type operator()(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr) = 0;
     };
 
     template <assets::IsAsset AssetType_>
-    class Loader :
+    class __declspec(novtable) Loader :
         public LoaderBase {
     public:
         using base_type = LoaderBase;
@@ -88,15 +89,16 @@ namespace ember::engine::res {
          * @author Julius
          * @date 30.08.2021
          */
-        virtual ~Loader() = default;
+        ~Loader() override = default;
 
     protected:
-        [[nodiscard]] result_type operator()(cref<asset_guid> guid_, ptr<void> options_ = nullptr) final override {
-            return this->operator()(guid_, static_cast<options_type>(options_));
+        [[nodiscard]] result_type operator(
+        )(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr) final override {
+            return this->operator()(static_cast<const ptr<AssetType_>>(asset_), static_cast<options_type>(options_));
         }
 
     public:
-        [[nodiscard]] virtual result_type operator()(cref<asset_guid> guid_, options_type options_ = nullptr) = 0;
+        [[nodiscard]] virtual result_type operator()(const ptr<AssetType_> asset_, options_type options_ = nullptr) = 0;
 
     };
 }

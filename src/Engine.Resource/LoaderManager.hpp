@@ -3,6 +3,7 @@
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/Types/Asset.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/StableUnorderedMap.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
 
 #include "Loader/Loader.hpp"
@@ -16,7 +17,8 @@ namespace ember::engine::res {
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
-        using load_result = ember::concurrent::future<ptr<Resource>>;
+        using load_type = LoaderBase::result_type;
+        using load_async_type = ember::concurrent::future<load_type>;
 
     public:
         /**
@@ -35,6 +37,12 @@ namespace ember::engine::res {
          */
         ~LoaderManager() noexcept;
 
+    private:
+        StableUnorderedMap<asset_type_id, sptr<LoaderBase>> _loader;
+
+    private:
+        sptr<LoaderBase> selectLoader(cref<asset_type_id> typeId_, ptr<void> options_) const noexcept;
+
     public:
         /**
          * Registers the given loader for the referenced typeId
@@ -47,10 +55,10 @@ namespace ember::engine::res {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool registerLoader(cref<asset_type_id> typeId_, ptr<LoaderBase> loader_) noexcept;
+        bool registerLoader(cref<asset_type_id> typeId_, cref<sptr<LoaderBase>> loader_) noexcept;
 
         template <assets::IsAsset AssetType_>
-        bool registerLoader(ptr<Loader<AssetType_>> loader_) noexcept {
+        bool registerLoader(cref<sptr<Loader<AssetType_>>> loader_) noexcept {
             return this->registerLoader(AssetType_::type_id, loader_);
         }
 
@@ -64,7 +72,7 @@ namespace ember::engine::res {
          *
          * @returns True if any succeeds, false if it fails.
          */
-        bool unregisterLoader(ptr<LoaderBase> loader_) noexcept;
+        bool unregisterLoader(sptr<LoaderBase> loader_) noexcept;
 
         /**
          * Unregisters the given loader for the referenced typeId
@@ -100,7 +108,7 @@ namespace ember::engine::res {
          *
          * @returns A pointer of the resource which should be loaded.
          */
-        [[nodiscard]] ptr<Resource> preload(const ptr<assets::Asset> asset_, ptr<void> options = nullptr);
+        [[nodiscard]] ptr<Resource> preload(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
 
         /**
          * Preloads the requested type of resource by unique identifier
@@ -114,7 +122,7 @@ namespace ember::engine::res {
          *
          * @returns A future object wrapping the requested resource.
          */
-        [[nodiscard]] load_result preload(cref<asset_type_id> typeId_, cref<asset_guid> guid_,
+        [[nodiscard]] load_async_type preload(cref<asset_type_id> typeId_, cref<asset_guid> guid_,
             ptr<void> options_ = nullptr);
 
         /**
@@ -128,7 +136,7 @@ namespace ember::engine::res {
          *
          * @returns A pointer of the resource which should be loaded.
          */
-        [[nodiscard]] ptr<Resource> load(const ptr<assets::Asset> asset_, ptr<void> options = nullptr);
+        [[nodiscard]] load_type load(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
 
         /**
          * Loads the requested type of resource by unique identifier deferred
@@ -142,7 +150,7 @@ namespace ember::engine::res {
          *
          * @returns A future object wrapping the requested resource.
          */
-        [[nodiscard]] load_result load(cref<asset_type_id> typeId_, cref<asset_guid> guid_,
+        [[nodiscard]] load_async_type load(cref<asset_type_id> typeId_, cref<asset_guid> guid_,
             ptr<void> options_ = nullptr);
 
         /**
@@ -156,7 +164,7 @@ namespace ember::engine::res {
          *
          * @returns A pointer of the resource which should be loaded.
          */
-        [[nodiscard]] ptr<Resource> loadImmediatly(const ptr<assets::Asset> asset_, ptr<void> options = nullptr);
+        [[nodiscard]] load_type loadImmediatly(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
 
         /**
          * Loads the requested type of resource by unique identifier immediately
@@ -170,24 +178,24 @@ namespace ember::engine::res {
          *
          * @returns A future object wrapping the requested resource.
          */
-        [[nodiscard]] load_result loadImmediately(cref<asset_type_id> typeId_, cref<asset_guid> guid_,
+        [[nodiscard]] load_async_type loadImmediately(cref<asset_type_id> typeId_, cref<asset_guid> guid_,
             ptr<void> options_ = nullptr);
 
     public:
         template <assets::IsAsset AssetType_>
-        [[nodiscard]] load_result preload(cref<asset_guid> guid_,
+        [[nodiscard]] load_async_type preload(cref<asset_guid> guid_,
             const ptr<LoaderOptions<AssetType_>> options_ = nullptr) {
             return this->preload(AssetType_::type_id, guid_, options_);
         }
 
         template <assets::IsAsset AssetType_>
-        [[nodiscard]] load_result load(cref<asset_guid> guid_,
+        [[nodiscard]] load_async_type load(cref<asset_guid> guid_,
             const ptr<LoaderOptions<AssetType_>> options_ = nullptr) {
             return this->load(AssetType_::type_id, guid_, options_);
         }
 
         template <assets::IsAsset AssetType_>
-        [[nodiscard]] load_result loadImmediately(cref<asset_guid> guid_,
+        [[nodiscard]] load_async_type loadImmediately(cref<asset_guid> guid_,
             const ptr<LoaderOptions<AssetType_>> options_ = nullptr) {
             return this->loadImmediately(AssetType_::type_id, guid_, options_);
         }
