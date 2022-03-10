@@ -32,7 +32,9 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\Queue.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\RingBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Set.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\StableUnorderedMap.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Stack.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\UnsafeVector.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Vector.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Collection\RingBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Future.hpp" />

@@ -6,17 +6,18 @@
 #include "../Buffer/Buffer.hpp"
 #include "../Command/CommandBuffer.hpp"
 #include "../Texture/TextureFactory.hpp"
+#include "../Memory/VkAllocator.hpp"
 
 using namespace ember::engine::gfx::loader;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-TextureLoader::this_type TextureLoader::_this = nullptr;
-
 Texture load_impl(const Url& url_,
     cref<sptr<Device>> device_) {
 
-    gli::texture glitex = gli::load(url_);
+    //auto url { url_.encode() };
+    auto url = url_.path();
+    gli::texture glitex = gli::load(url.data());
 
     const auto lvlZeroExt = glitex.extent(0);
     math::ivec3 extent = {
@@ -34,11 +35,11 @@ Texture load_impl(const Url& url_,
         vk::ImageUsageFlagBits::eSampled;
 
     switch (lvlZeroForm) {
-            /**
-             * R Formats (2D Images)
-             *
-             * Used for alpha, roughness, displacement
-             */
+        /**
+         * R Formats (2D Images)
+         *
+         * Used for alpha, roughness, displacement
+         */
         case gli::FORMAT_R16_SFLOAT_PACK16: {
             format = vk::Format::eR16Sfloat;
             aspect = vk::ImageAspectFlagBits::eColor;
@@ -50,11 +51,11 @@ Texture load_impl(const Url& url_,
             break;
         }
 
-            /**
-             * D Formats (2D Images)
-             *
-             * Used for depth images or possible for alpha blending
-             */
+        /**
+         * D Formats (2D Images)
+         *
+         * Used for depth images or possible for alpha blending
+         */
         case gli::FORMAT_D16_UNORM_PACK16: {
             format = vk::Format::eD16Unorm;
             aspect = vk::ImageAspectFlagBits::eDepth;
@@ -66,11 +67,11 @@ Texture load_impl(const Url& url_,
             break;
         }
 
-            /**
-             * DS Formats (2D Images)
-             *
-             * Used for depth stencil images
-             */
+        /**
+         * DS Formats (2D Images)
+         *
+         * Used for depth stencil images
+         */
         case gli::FORMAT_D16_UNORM_S8_UINT_PACK32: {
             format = vk::Format::eD16UnormS8Uint;
             aspect = vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil;
@@ -82,11 +83,11 @@ Texture load_impl(const Url& url_,
             break;
         }
 
-            /**
-             * RGB Formats (2D Images)
-             *
-             * Used for color textures like albedo, sample maps or general image
-             */
+        /**
+         * RGB Formats (2D Images)
+         *
+         * Used for color textures like albedo, sample maps or general image
+         */
         case gli::FORMAT_RGB8_UNORM_PACK8: {
             format = vk::Format::eR8G8B8Unorm;
             aspect = vk::ImageAspectFlagBits::eColor;
@@ -113,11 +114,11 @@ Texture load_impl(const Url& url_,
             break;
         }
 
-            /**
-             * RGBA Formats (2D Images)
-             *
-             * Used for color textures with alpha like albedo + blending or sample maps
-             */
+        /**
+         * RGBA Formats (2D Images)
+         *
+         * Used for color textures with alpha like albedo + blending or sample maps
+         */
         case gli::FORMAT_RGBA8_UNORM_PACK8: {
             format = vk::Format::eR8G8B8A8Unorm;
             aspect = vk::ImageAspectFlagBits::eColor;
@@ -144,9 +145,9 @@ Texture load_impl(const Url& url_,
             break;
         }
 
-            /**
-             * RGB(A) Formats (Compressed Cube Images)
-             */
+        /**
+         * RGB(A) Formats (Compressed Cube Images)
+         */
         case gli::FORMAT_RGBA_ASTC_8X8_UNORM_BLOCK16: {
             format = vk::Format::eAstc8x8UnormBlock;
             aspect = vk::ImageAspectFlagBits::eColor;
@@ -214,22 +215,18 @@ Texture load_impl(const Url& url_,
     stage.buffer = device_->vkDevice().createBuffer(bci);
     stage.device = device_->vkDevice();
 
-    const vk::MemoryRequirements mr = device_->vkDevice().getBufferMemoryRequirements(stage.buffer);
-
-    const vk::MemoryAllocateInfo mai {
-        mr.size,
-        get_memory_type(device_->vkPhysicalDevice(), mr.memoryTypeBits,
+    auto* alloc {
+        VkAllocator::makeForBuffer(device_, stage.buffer,
             vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent)
     };
 
-    stage.memory = device_->vkDevice().allocateMemory(mai);
+    const vk::MemoryRequirements mr = device_->vkDevice().getBufferMemoryRequirements(stage.buffer);
+    stage.memory = alloc->allocate(mr.size);
 
     assert(stage.buffer);
     assert(stage.memory);
 
-    stage.align = mr.alignment;
     stage.size = mr.size;
-    stage.memoryFlags = vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent;
     stage.usageFlags = vk::BufferUsageFlagBits::eTransferSrc;
 
     /**
@@ -237,12 +234,12 @@ Texture load_impl(const Url& url_,
      */
     stage.bind();
     stage.map();
-    assert(stage.mapped);
+    assert(stage.memory->mapping);
 
     /**
      * Copy Data
      */
-    memcpy(stage.mapped, glitex.data(), glitex.size());
+    stage.write(glitex.data(), glitex.size());
 
     /**
      *
@@ -402,22 +399,6 @@ Texture load_impl(const Url& url_,
     return result;
 }
 
-TextureLoader::const_reference_type TextureLoader::make(cref<sptr<Device>> device_) {
-    if (!_this)
-        _this = _STD move(
-            _STD unique_ptr<TextureLoader>(new TextureLoader(device_))
-        );
-    return *_this;
-}
-
-TextureLoader::const_reference_type TextureLoader::get() {
-    return *_this;
-}
-
-void TextureLoader::destroy() {
-    TextureLoader::_this = nullptr;
-}
-
 TextureLoader::TextureLoader(cref<sptr<Device>> device_) :
     _device(device_) {}
 
@@ -430,6 +411,10 @@ ember::concurrent::promise<Texture> TextureLoader::load(
     };
 
     return p;
+}
+
+Texture TextureLoader::__tmp__load(const Url& url_) {
+    return load_impl(url_, _device);
 }
 
 #if FALSE

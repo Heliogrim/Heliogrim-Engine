@@ -1,25 +1,28 @@
 #pragma once
 
-#include "../Geometry/Vertex.hpp"
 #include "../vkinc.hpp"
+#include "../Geometry/Vertex.hpp"
+#include "../Memory/AllocatedMemory.hpp"
 
 namespace ember::engine::gfx {
+
     class Buffer {
     public:
+        using this_type = Buffer;
+
         using value_type = Buffer;
         using reference_type = Buffer&;
         using const_reference_type = const Buffer&;
 
+    public:
+        ptr<AllocatedMemory> memory;
+
+    public:
         vk::Buffer buffer;
         vk::Device device;
-        vk::DeviceMemory memory;
         u64 size = 0;
-        u64 align = 0;
-
-        void* mapped = nullptr;
 
         vk::BufferUsageFlags usageFlags;
-        vk::MemoryPropertyFlags memoryFlags;
 
         /**
          * Binds
@@ -31,7 +34,7 @@ namespace ember::engine::gfx {
          * @param  offset_ (Optional) The offset.
          */
         void bind(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0) {
-            device.bindBufferMemory(buffer, memory, offset_);
+            device.bindBufferMemory(buffer, memory->vkMemory, offset_);
         }
 
         /**
@@ -41,14 +44,17 @@ namespace ember::engine::gfx {
          * @date 20.11.2020
          */
         void destroy() {
-            unmap();
+            if (memory->mapping) {
+                unmap();
+            }
 
             if (buffer) {
                 device.destroyBuffer(buffer);
             }
 
             if (memory) {
-                device.freeMemory(memory);
+                delete memory;
+                memory = nullptr;
             }
         }
 
@@ -62,13 +68,7 @@ namespace ember::engine::gfx {
          * @param  offset_ (Optional) The offset.
          */
         void flush(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0) {
-            vk::MappedMemoryRange range {
-                memory,
-                offset_,
-                size_
-            };
-
-            device.flushMappedMemoryRanges(1, &range);
+            memory->flush(size_, offset_);
         }
 
         /**
@@ -81,7 +81,7 @@ namespace ember::engine::gfx {
          * @param  offset_ (Optional) The offset.
          */
         void map(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0) {
-            mapped = device.mapMemory(memory, offset_, size_, vk::MemoryMapFlags());
+            memory->map(size_, offset_);
         }
 
         /**
@@ -91,12 +91,7 @@ namespace ember::engine::gfx {
          * @date 20.11.2020
          */
         void unmap() noexcept {
-            if (!mapped) {
-                return;
-            }
-
-            device.unmapMemory(memory);
-            mapped = nullptr;
+            memory->unmap();
         }
 
         /**
@@ -108,8 +103,8 @@ namespace ember::engine::gfx {
          * @param  data_ The data.
          * @param  size_ The size.
          */
-        void write(const void* data_, const u64 size_) {
-            memcpy(mapped, data_, static_cast<size_t>(size_));
+        void write(const ptr<void> data_, const u64 size_) {
+            memory->write(data_, size_);
         }
 
         /**
@@ -120,15 +115,15 @@ namespace ember::engine::gfx {
          * @param  count_ Number of.
          */
         template <class ValueType>
-        void write(const void* data_, const u32 count_) {
+        void write(const ptr<void> data_, const u32 count_) {
             const size_t size = sizeof(ValueType) * count_;
-            const bool unmapped = (mapped ? false : true);
+            const bool unmapped = (memory->mapping ? false : true);
 
             if (unmapped) {
                 map(size);
             }
 
-            memcpy(mapped, data_, size);
+            memory->write(data_, size);
 
             if (unmapped) {
                 unmap();

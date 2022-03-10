@@ -105,21 +105,9 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
     }
 
     /**
-     * Create DescriptorPool
-     */
-    const vk::DescriptorPoolCreateInfo info {
-        vk::DescriptorPoolCreateFlags(),
-        static_cast<u32>(intervals.size()),
-        static_cast<u32>(sizes.size()),
-        sizes.data()
-    };
-
-    const auto vkPool = _device->vkDevice().createDescriptorPool(info);
-
-    /**
      * Create Descriptor Sets
      */
-    Vector<BindingGroup> groups {};
+    Vector<ShaderBindingGroup> groups {};
 
     Vector<PrototypeBinding> bindings {};
     for (const auto& sp : list_) {
@@ -133,7 +121,7 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
             });
 
             /**
-             * Concatenate matching bindings or push new ones
+             * Concatenate matching shader bindings or push new ones
              */
             if (entry != bindings.end()) {
 
@@ -148,7 +136,7 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
 
             } else {
 
-                auto v {bp};
+                auto v { bp };
                 v.shaderType() = sp.type();
                 bindings.emplace_back(v);
             }
@@ -190,22 +178,10 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
         auto layout = _device->vkDevice().createDescriptorSetLayout(info);
 
         /**
-         * Create DescriptorSet
-         */
-        const vk::DescriptorSetAllocateInfo allocateInfo {
-            vkPool,
-            1,
-            &layout
-        };
-
-        auto set = _device->vkDevice().allocateDescriptorSets(allocateInfo)[0];
-
-        /**
          * Store Binding Group
          */
         groups.push_back({
             interval,
-            set,
             layout
         });
     }
@@ -220,14 +196,14 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
         /**
          * Create Bindings
          */
-        Vector<Binding> bindings {};
+        Vector<ShaderBinding> shaderBindings {};
 
         for (const auto& prototypeBinding : prototype.bindings()) {
 
             /**
              * Find Binding Group
              */
-            BindingGroup* group = nullptr;
+            ShaderBindingGroup* group = nullptr;
             for (auto& entry : groups) {
                 if (entry.interval() == prototypeBinding.updateInterval()) {
                     group = &entry;
@@ -252,24 +228,23 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
                 );
                 #endif
 
-                bindings.push_back(group->getById(prototypeBinding.id()));
+                shaderBindings.push_back(group->getById(prototypeBinding.id()));
                 continue;
             }
 
             /**
              * Instantiate Binding
              */
-            Binding binding {
+            ShaderBinding binding {
                 prototypeBinding.type(),
                 prototypeBinding.id(),
                 prototypeBinding.updateInterval(),
                 _device,
-                group->vkSet(),
                 group->vkSetLayout()
             };
 
             group->add(binding);
-            bindings.push_back(binding);
+            shaderBindings.push_back(binding);
         }
 
         /**
@@ -289,7 +264,7 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
         const auto shader = new Shader {
             prototype.type(),
             prototype.name(),
-            bindings,
+            shaderBindings,
             vkShader
         };
 

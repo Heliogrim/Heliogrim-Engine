@@ -9,17 +9,15 @@
 
 #include "todo.h"
 #include "Command/CommandBatch.hpp"
-#include "Engine.Common/Cast.hpp"
-#include "GraphicPass/DepthPass.hpp"
-#include "GraphicPass/FinalPass.hpp"
-#include "GraphicPass/LightPass.hpp"
-#include "GraphicPass/PbrPass.hpp"
-#include "GraphicPass/ProbePass.hpp"
-#include "Loader/TextureLoader.hpp"
+#include "Engine.Resource/ResourceManager.hpp"
+#include "Rev/GraphicPass/RevDepthPass.hpp"
+#include "Loader/RevTextureLoader.hpp"
 #include "Shader/ShaderStorage.hpp"
 #include "Swapchain/Swapchain.hpp"
 #include "Swapchain/VkSwapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
+#include "Loader/StaticGeometryLoader.hpp"
+#include "Rev/Renderer/RevRenderer.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember::engine;
@@ -70,7 +68,6 @@ void Graphics::setup() {
      * Create Utilities
      */
     VkTextureFactory::make(_device);
-    loader::TextureLoader::make(_device);
 
     /**
      * Create a new swapchain to present image
@@ -85,18 +82,48 @@ void Graphics::setup() {
     build_shader(_device);
 
     /**
+     * Create Renderer
+     */
+    _renderer = new RevRenderer();
+    _renderer->setup(_device);
+
+    // Warning: Temporary
+    _camera = new Camera();
+    _camera->setPosition({ -5.F, -1.8F, -5.F });
+    _camera->setLookAt({ 0.F, -1.8F, 0.F });
+    _camera->setPerspective(60.F, static_cast<float>(_swapchain->width()) / static_cast<float>(_swapchain->height()),
+        0.001F, 1000.F);
+
+    _camera->update();
+
+    /**
+     * Warning: Temporary
+     */
+    _renderPasses.clear();
+    _renderPasses.reserve(_swapchain->length());
+
+    for (u32 swap { 0 }; swap < _swapchain->length(); ++swap) {
+        _renderPasses.push_back(_renderer->allocate({
+            _swapchain->at(swap).get(),
+            nullptr,
+            _camera
+        }));
+    }
+
+    #if FALSE
+    /**
      * Create Graphic Passes
      */
     _graphicPasses.resize(static_cast<u32>(GraphicPassMask::eFinalPass) + 1, nullptr);
 
-    ptr<DepthPass> depthPass;
+    ptr<RevDepthPass> depthPass;
 
-    _graphicPasses[static_cast<u8>(GraphicPassMask::eDepthPass)] = (depthPass = new DepthPass(_device, _swapchain));
-    _graphicPasses[static_cast<u8>(GraphicPassMask::eLightPass)] = new LightPass(_device, _swapchain);
-    _graphicPasses[static_cast<u8>(GraphicPassMask::eProbePass)] = new ProbePass(_device, _swapchain);
-    //_graphicPasses[static_cast<u8>(GraphicPassMask::ePbrPass)] = new PbrPass(_device, _swapchain, depthPass);
-    _graphicPasses[static_cast<u8>(GraphicPassMask::ePbrPass)] = new ProbePass(_device, _swapchain);
-    _graphicPasses[static_cast<u8>(GraphicPassMask::eFinalPass)] = new FinalPass(_device, _swapchain);
+    _graphicPasses[static_cast<u8>(GraphicPassMask::eDepthPass)] = (depthPass = new RevDepthPass(_device, _swapchain));
+    _graphicPasses[static_cast<u8>(GraphicPassMask::eLightPass)] = new RevLightPass(_device, _swapchain);
+    _graphicPasses[static_cast<u8>(GraphicPassMask::eProbePass)] = new RevProbePass(_device, _swapchain);
+    //_graphicPasses[static_cast<u8>(GraphicPassMask::ePbrPass)] = new RevPbrPass(_device, _swapchain, depthPass);
+    _graphicPasses[static_cast<u8>(GraphicPassMask::ePbrPass)] = new RevProbePass(_device, _swapchain);
+    _graphicPasses[static_cast<u8>(GraphicPassMask::eFinalPass)] = new RevFinalPass(_device, _swapchain, depthPass);
 
     /**
      *
@@ -128,6 +155,7 @@ void Graphics::setup() {
      *
      */
     _graphicPassBatches.resize(static_cast<u32>(GraphicPassMask::eFinalPass) + 1ui32, {});
+    #endif
 
     /**
      * Prepare On Flight Synchronization
@@ -158,6 +186,23 @@ void Graphics::setup() {
         }
     }
 
+    // Warning: Temporary
+    _renderPassBatches.clear();
+    _renderPassBatches.reserve(_swapchain->length());
+
+    for (u32 swap { 0 }; swap < _swapchain->length(); ++swap) {
+        CommandBatch batch {};
+
+        // batch.pushBarrier(_onFlightSync.image[swap]);
+        batch.pushSignal(_onFlightSync.finish[swap]);
+        batch.barrierStages() = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+
+        _renderPassBatches.push_back(_STD move(batch));
+    }
+
+    /**
+     * Signal Setup
+     */
     _scheduled.store(0);
 }
 
@@ -193,10 +238,7 @@ void Graphics::tidy() {
     _device->graphicsQueue()->vkQueue().waitIdle();
     _device->transferQueue()->vkQueue().waitIdle();
 
-    _computeQueue->destroy();
-    _graphicsQueue->destroy();
-    _transferQueue->destroy();
-
+    #if FALSE
     /**
      *
      */
@@ -209,6 +251,27 @@ void Graphics::tidy() {
     }
 
     _graphicPasses.clear();
+    #endif
+
+    // Warning: Temporary
+    _renderPassBatches.clear();
+    delete _camera;
+    _camera = nullptr;
+
+    /**
+     * Render Passes
+     */
+    for (auto* entry : _renderPasses) {
+        _renderer->free(_STD move(entry));
+    }
+    _renderPasses.clear();
+
+    /**
+     * Destroy device queues
+     */
+    _computeQueue->destroy();
+    _graphicsQueue->destroy();
+    _transferQueue->destroy();
 
     /**
      *
@@ -226,6 +289,13 @@ void Graphics::tidy() {
     _onFlightSync.image.clear();
     _onFlightSync.finish.clear();
     _onFlightSync.cpuGpuSync.clear();
+
+    /**
+     * Renderer
+     */
+    _renderer->destroy();
+    delete _renderer;
+    _renderer = nullptr;
 
     /**
      * Swapchain
@@ -280,6 +350,7 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
      */
     static u32 syncIdx = 0;
 
+    #if FALSE
     // TODO: Make timeout as small as possible to skip blocking request -> if failed, return an reschedule tick task
     #ifdef _DEBUG
     assert(
@@ -290,6 +361,19 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
     _device->vkDevice().waitForFences(1, &_onFlightSync.cpuGpuSync[syncIdx], VK_TRUE, UINT64_MAX);
     #endif
     _device->vkDevice().resetFences(1, &_onFlightSync.cpuGpuSync[syncIdx]);
+    #endif
+
+    // TODO: Make timeout as small as possible to skip blocking request -> if failed, return an reschedule tick task
+    auto cpuGpuSync { _renderPasses[syncIdx]->unsafeSync() };
+    if (cpuGpuSync) {
+        assert(
+            _device->vkDevice().waitForFences(
+                1, &cpuGpuSync,
+                VK_TRUE, UINT64_MAX
+            ) == vk::Result::eSuccess
+        );
+        //_device->vkDevice().resetFences(1, &cpuGpuSync);
+    }
 
     /**
      * 
@@ -305,6 +389,27 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
 
     _swapchain->setCurrentIdx(swapIdx);
 
+    /**
+     * Get Invocation / Await Last Render
+     */
+    auto* pass { _renderPasses[syncIdx] };
+
+    #ifdef _DEBUG
+    if (!pass->await()) {
+        DEBUG_SNMSG(false, "WARN", "Failed to validate await state of render invocation.")
+    }
+    #endif
+
+    /**
+     * Render
+     */
+    pass->use(_renderScene);
+    pass->use(_camera);
+
+    const auto* feedback = _renderer->invoke(pass, _renderPassBatches[syncIdx]);
+    assert(feedback);
+
+    #if FALSE
     /**
      *
      */
@@ -328,6 +433,7 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
     batch.barrierStages() = vk::PipelineStageFlagBits::eColorAttachmentOutput;
 
     _graphicsQueue->submit(batch, _onFlightSync.cpuGpuSync[syncIdx]);
+    #endif
 
     /**
      * Display Image
@@ -368,6 +474,7 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
     ++frames;
 }
 
+#if FALSE
 void Graphics::processGraphicPasses(ptr<scene::IRenderScene> scene_) {
 
     SCOPED_STOPWATCH
@@ -435,6 +542,7 @@ void Graphics::processGraphicPasses(ptr<scene::IRenderScene> scene_) {
     [[maybe_unused]] auto waitAllResult = _device->vkDevice().waitForFences(_graphicPassFences.size(),
         _graphicPassFences.data(), VK_TRUE, UINT64_MAX);
 }
+#endif
 
 void Graphics::reschedule() {
 
@@ -486,7 +594,7 @@ bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
         return true;
     }
 
-    // TODO: Move callback register to other possition and reconcider lifecycle \
+    // TODO: Move callback register to other position and reconcider lifecycle \
     //  cause elements added to scene before callback register will be lost data
 
     /**
@@ -507,3 +615,27 @@ bool Graphics::useAsUIRenderScene(const ptr<scene::IRenderScene> scene_) {
     _uiRenderScene = scene_;
     return true;
 }
+
+void Graphics::registerLoader() {
+    /**
+     *
+     */
+    auto* manager { _session->modules().resourceManager() };
+    auto& loader { manager->loader() };
+
+    /**
+     * Geometry Loader
+     */
+    const auto sgl = make_sptr<StaticGeometryLoader>(_device);
+
+    loader.registerLoader<assets::StaticGeometry>(sgl);
+
+    /**
+     * Texture Loader
+     */
+    const auto rtl = make_sptr<RevTextureLoader>(_device);
+
+    loader.registerLoader<assets::Texture>(rtl);
+}
+
+void Graphics::registerImporter() {}

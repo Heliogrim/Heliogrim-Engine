@@ -40,8 +40,6 @@ CommandQueue::operator bool() const {
 
 void CommandQueue::submit(const CommandBatch& batch_, const vk::Fence& fence_) {
 
-    assert(fence_);
-
     Vector<vk::CommandBuffer> buffers {};
     buffers.resize(batch_.buffers().size());
 
@@ -64,13 +62,12 @@ void CommandQueue::submit(const CommandBatch& batch_, const vk::Fence& fence_) {
 
 void CommandQueue::submitWait(const CommandBuffer& buffer_) {
 
-    vk::PipelineStageFlags stages { vk::PipelineStageFlagBits::eAllCommands };
     vk::Fence fence = _device->vkDevice().createFence({});
 
     vk::SubmitInfo info {
         0,
         nullptr,
-        &stages,
+        nullptr,
         1,
         &buffer_.vkCommandBuffer(),
         0,

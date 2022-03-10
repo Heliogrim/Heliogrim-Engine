@@ -1,7 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Url.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
-#include <Engine.Resource/Url.hpp>
 #include <gli/gli.hpp>
 
 #include "../Device/Device.hpp"
@@ -25,36 +25,6 @@ namespace ember::engine::gfx::loader {
         ~TextureLoader() = default;
 
         /**
-         * Makes a instance of the TextureLoader
-         *
-         * @author Julius
-         * @date 24.08.2020
-         *
-         * @param  device_ The device.
-         *
-         * @returns A const_reference_type to the unique instance.
-         */
-        static const_reference_type make(cref<sptr<Device>> device_);
-
-        /**
-         * Gets the unique instance of TextureLoader
-         *
-         * @author Julius
-         * @date 24.08.2020
-         *
-         * @returns A const_reference_type to the unique instance.
-         */
-        static const_reference_type get();
-
-        /**
-         * Destroys this 
-         *
-         * @author Julius
-         * @date 20.12.2020
-         */
-        static void destroy();
-
-        /**
          * Loads the given URL
          *
          * @author Julius
@@ -66,8 +36,9 @@ namespace ember::engine::gfx::loader {
          */
         ember::concurrent::promise<Texture> load(const Url& url_) const;
 
-    private:
-        static this_type _this;
+        Texture __tmp__load(const Url& url_);
+
+    protected:
         sptr<Device> _device;
 
         /**

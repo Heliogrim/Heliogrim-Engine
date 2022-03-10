@@ -3,28 +3,8 @@
 #include "Shader/Factory.hpp"
 #include "Shader/ShaderStorage.hpp"
 
-#include <fstream>
-
 using namespace ember::engine::gfx;
 using namespace ember;
-
-_STD vector<char> read_shader_file(const char* file_) {
-    _STD vector<char> spirv {};
-
-    _STD ifstream in {};
-    in.open(file_, _STD ios::ate | _STD ios::in | _STD ios::binary);
-
-    assert(in.is_open());
-
-    const size_t size = in.tellg();
-    spirv.resize(size, 0);
-
-    in.seekg(0, _STD ios::beg);
-    in.read(spirv.data(), size);
-
-    in.close();
-    return spirv;
-}
 
 void build_shader(cref<sptr<Device>> device_) {
 
@@ -322,6 +302,7 @@ void build_shader(cref<sptr<Device>> device_) {
         storage.store(entry);
     }
 
+    #if FALSE
     /**
      * GraphicPass [GraphicPassMask::eDepthPass]
      */
@@ -359,7 +340,9 @@ void build_shader(cref<sptr<Device>> device_) {
     for (const auto& entry : result.shaders) {
         storage.store(entry);
     }
+    #endif
 
+    #if FALSE
     /**
      * GraphicPass [GraphicPassMask::eFinalPass]
      */
@@ -432,4 +415,5 @@ void build_shader(cref<sptr<Device>> device_) {
     for (const auto& entry : result.shaders) {
         storage.store(entry);
     }
+    #endif
 }

@@ -21,18 +21,18 @@ vk::ShaderStageFlagBits vkTranslate(const ShaderType type_) {
         case ShaderType::eGeometry: {
             return vk::ShaderStageFlagBits::eGeometry;
         }
-            /*
-            case eTessellation: {
-                return vk::ShaderStageFlagBits::eTessellationControl | vk::ShaderStageFlagBits::eTessellationEvaluation;
-            }
-             */
+        /*
+        case eTessellation: {
+            return vk::ShaderStageFlagBits::eTessellationControl | vk::ShaderStageFlagBits::eTessellationEvaluation;
+        }
+         */
         default: {
             throw _STD runtime_error("Can not translate undefined `ShaderType` to `vk::ShaderStageFlagBits`.");
         }
     }
 }
 
-Shader::Shader(const ShaderType type_, const string& name_, const Vector<Binding>& bindings_,
+Shader::Shader(const ShaderType type_, const string& name_, const Vector<ShaderBinding>& bindings_,
     vk::ShaderModule vkShader_) :
     _type(type_),
     _name(name_),
@@ -51,55 +51,7 @@ const string& Shader::name() const noexcept {
     return _name;
 }
 
-void Shader::bind(u32 id_, Buffer::const_reference_type buffer_) {
-    /**
-     * Find Binding by id_
-     */
-    const auto entry = _STD find_if(_bindings.begin(), _bindings.end(), [&id_](const auto& entry_) {
-        return entry_.id() == id_;
-    });
-
-    /**
-     * Check whether Binding exists
-     */
-    assert(entry != _bindings.end());
-
-    /**
-     * Unwrap Binding
-     */
-    Binding& binding = *entry;
-
-    /**
-     * Store Buffer
-     */
-    binding.store(buffer_);
-}
-
-void Shader::bind(u32 id_, Texture::const_reference_type texture_) {
-    /**
-     * Find Binding by id_
-     */
-    const auto entry = _STD find_if(_bindings.begin(), _bindings.end(), [&id_](const auto& entry_) {
-        return entry_.id() == id_;
-    });
-
-    /**
-     * Check whether Binding exists
-     */
-    assert(entry != _bindings.end());
-
-    /**
-     * Unwrap Binding
-     */
-    Binding& binding = *entry;
-
-    /**
-     * Store Texture
-     */
-    binding.store(texture_);
-}
-
-const std::vector<Binding>& Shader::bindings() const noexcept {
+const std::vector<ShaderBinding>& Shader::bindings() const noexcept {
     return _bindings;
 }
 

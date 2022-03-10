@@ -349,5 +349,17 @@
     <None Include="..\..\resources\shader\finalpass.vert.spv">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
+    <None Include="..\..\resources\shader\depthpass_skeletal.fs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\depthpass_static.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\depthpass_static.fs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\depthpass_skeletal.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

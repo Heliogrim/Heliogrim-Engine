@@ -21,8 +21,11 @@ namespace ember::engine::gfx {
         void destroy(const ptr<scene::Scene> scene_) override final;
 
     private:
-        ptr<assets::StaticGeometry> _staticGeometry = nullptr;
+        ptr<assets::StaticGeometry> _staticGeometryAsset = nullptr;
         ptr<res::Resource> _staticGeometryResource = nullptr;
         bool _streamable = false;
+
+    public:
+        [[nodiscard]] ModelBatch batch(const GraphicPassMask mask_) override;
     };
 }

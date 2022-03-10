@@ -2,12 +2,14 @@
 
 #include "Graph/MutableSceneGraph.hpp"
 
+/**
+ * Forward Declaration
+ */
+namespace ember::engine::gfx {
+    class SceneNodeModel;
+}
+
 namespace ember::engine::scene {
 
-    /**
-     * Forward Declaration
-     */
-    class SceneNodeModel;
-
-    using RenderGraph = SceneGraph<SceneNodeModel>;
+    using RenderGraph = SceneGraph<gfx::SceneNodeModel>;
 }

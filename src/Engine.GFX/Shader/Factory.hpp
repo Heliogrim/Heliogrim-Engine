@@ -1,14 +1,34 @@
 #pragma once
 
-#include "BindingGroup.hpp"
+#include "ShaderBindingGroup.hpp"
 #include "Prototype.hpp"
 #include "Shader.hpp"
 #include "../Device/Device.hpp"
 
+#include <fstream>
+
+inline _STD vector<char> read_shader_file(const char* file_) {
+    _STD vector<char> spirv {};
+
+    _STD ifstream in {};
+    in.open(file_, _STD ios::ate | _STD ios::in | _STD ios::binary);
+
+    assert(in.is_open());
+
+    const size_t size = in.tellg();
+    spirv.resize(size, 0);
+
+    in.seekg(0, _STD ios::beg);
+    in.read(spirv.data(), size);
+
+    in.close();
+    return spirv;
+}
+
 namespace ember::engine::gfx::shader {
 
     struct FactoryBuildResult {
-        Vector<BindingGroup> groups;
+        Vector<ShaderBindingGroup> groups;
         Vector<ptr<Shader>> shaders;
     };
 

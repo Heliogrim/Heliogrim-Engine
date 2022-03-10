@@ -8,7 +8,9 @@
 
 namespace ember::engine::res {
 
-    class Resource {
+    // TODO: Make subtypes of resource partial compositions to make explicit comps for every use case
+    //  TODO: like: `Streamable<Shared<Resource>>` vs `Streamable<Unique<Resource>>` vs `Streamable<CopyOnWrite<Shared<Resource>>>`
+    class __declspec(novtable) Resource {
     public:
         using value_type = Resource;
         using reference_type = ref<value_type>;
@@ -36,7 +38,7 @@ namespace ember::engine::res {
 
     public:
         /**
-         * Check the state which this is loaded
+         * Get the current loading state of this resource
          *
          * @author Julius
          * @date 27.08.2021

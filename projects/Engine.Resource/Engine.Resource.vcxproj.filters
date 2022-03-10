@@ -45,9 +45,6 @@
     <ClInclude Include="..\..\src\Engine.Resource\tmp.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Url.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\StreamUtils.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>

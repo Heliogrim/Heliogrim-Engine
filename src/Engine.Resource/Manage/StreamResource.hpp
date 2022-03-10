@@ -3,5 +3,5 @@
 
 namespace ember::engine::res {
     class StreamResource :
-        public UniqueResource { };
+        public Resource { };
 }

@@ -56,6 +56,8 @@ namespace ember::engine::gfx {
 
         void bindDescriptor(const Vector<vk::DescriptorSet>& descriptors_);
 
+        void bindDescriptor(const u32 id_, cref<vk::DescriptorSet> descriptor_);
+
         /**
          * Bind index buffer
          *
@@ -74,7 +76,6 @@ namespace ember::engine::gfx {
         vk::PipelineLayout _pipelineLayout;
 
     public:
-
         /**
          * Bind pipeline
          *
@@ -82,8 +83,9 @@ namespace ember::engine::gfx {
          * @date 22.11.2020
          *
          * @param  pipeline_ The pipeline.
+         * @param  viewport_ The viewport.
          */
-        void bindPipeline(ptr<GraphicPipeline> pipeline_);
+        void bindPipeline(ptr<GraphicPipeline> pipeline_, cref<Viewport> viewport_);
 
         /**
          * Bind vertex buffer

@@ -3,6 +3,18 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
+CommandBatch::CommandBatch(const CommandBuffer& buffer_) :
+    _buffers({ buffer_ }),
+    _barriers(),
+    _barrierStages(),
+    _signals() {}
+
+CommandBatch::CommandBatch(cref<this_type> other_) :
+    _buffers(other_._buffers),
+    _barriers(other_._barriers),
+    _barrierStages(other_._barrierStages),
+    _signals(other_._signals) {}
+
 void CommandBatch::reset() {
     _barriers.clear();
     _barrierStages = vk::PipelineStageFlags {};

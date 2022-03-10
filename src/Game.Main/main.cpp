@@ -101,7 +101,16 @@ void ember_main_entry() {
     /**
      *
      */
-    Ember::assets().insert(new game::assets::meshes::PlaneD128 {});
+    {
+        // Is via effect equivalent to commented instruction, cause constructor of inherited asset type class
+        //  will autoregister internal created instance to asset database
+        game::assets::meshes::PlaneD128 {};
+        /*
+        auto* tmp = new game::assets::meshes::PlaneD128 {};
+        Ember::assets().insert(tmp);
+        delete tmp;
+         */
+    }
 
     /**
      *
@@ -114,7 +123,8 @@ void ember_main_entry() {
     #else
     constexpr u64 rows { 1ui64 << 8 };
     constexpr u64 cols { 1ui64 << 8 };
-    constexpr u64 count { rows * cols };
+    //constexpr u64 count { rows * cols };
+    constexpr u64 count { 1ui64 };
     #endif
 
     /**

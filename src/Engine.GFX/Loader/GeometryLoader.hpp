@@ -1,48 +1,45 @@
 #pragma once
 
+#include <Engine.Common/Url.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
-#include <Engine.Resource/Url.hpp>
+
+#include "../Buffer/Buffer.hpp"
 #include "../Device/Device.hpp"
 #include "../Geometry/Geometry.hpp"
 
 namespace ember::engine::gfx::loader {
+
     class GeometryLoader {
     public:
         using this_type = _STD unique_ptr<GeometryLoader>;
         using const_reference_type = const GeometryLoader&;
 
-        using future_type = concurrent::future<Geometry>;
+        using future_type = ::ember::concurrent::future<Geometry>;
 
+    protected:
+        /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 23.08.2020
+         *
+         * @param  device_ The device.
+         */
+        GeometryLoader(cref<sptr<Device>> device_);
+
+    public:
         /**
          * Destructor
          *
          * @author Julius
          * @date 23.08.2020
          */
-        ~GeometryLoader() = default;
+        virtual ~GeometryLoader() = default;
 
-        /**
-         * Makes a instance of the GeometryLoader
-         *
-         * @author Julius
-         * @date 24.08.2020
-         *
-         * @param  device_ The device.
-         *
-         * @returns A const_reference_type to the unique instance.
-         */
-        static const_reference_type make(cref<sptr<Device>> device_);
+    protected:
+        sptr<Device> _device;
 
-        /**
-         * Gets the unique instance of GeometryLoader
-         *
-         * @author Julius
-         * @date 24.08.2020
-         *
-         * @returns A const_reference_type to the unique instance.
-         */
-        static const_reference_type get();
-
+    public:
         /**
          * Loads the data structure of the given Url
          *
@@ -55,18 +52,7 @@ namespace ember::engine::gfx::loader {
          */
         future_type load(const Url& url_) const;
 
-    private:
-        static this_type _this;
-        sptr<Device> _device;
-
-        /**
-         * Constructor
-         *
-         * @author Julius
-         * @date 23.08.2020
-         *
-         * @param  device_ The device.
-         */
-        GeometryLoader(cref<sptr<Device>> device_);
+    protected:
+        [[nodiscard]] Buffer acquireBuffer(const u64 size_);
     };
 }

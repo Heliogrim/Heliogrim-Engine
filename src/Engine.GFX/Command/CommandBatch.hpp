@@ -5,9 +5,12 @@
 #include "../vkinc.hpp"
 
 namespace ember::engine::gfx {
+
     class CommandBatch {
     public:
+        using this_type = CommandBatch;
 
+    public:
         /**
          * Default constructor
          *
@@ -25,6 +28,16 @@ namespace ember::engine::gfx {
          * @param  buffer_ The buffer.
          */
         CommandBatch(const CommandBuffer& buffer_);
+
+        /**
+         * Copy Constructor
+         *
+         * @author Julius
+         * @date 07.03.2022
+         *
+         * @param other_ The other CommandBatch to copy from.
+         */
+        CommandBatch(cref<this_type> other_);
 
         /**
          * Destructor

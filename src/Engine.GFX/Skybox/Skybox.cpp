@@ -78,9 +78,11 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
 
     pool->lck().release();
 
-    const auto rootUrl = FileResource::getRootDir() + std::string("\\world\\");
-    const Url url { rootUrl + "skybox.ktx" };
+    const auto rootUrl = FileResource::getRootDir() + R"(\world\)";
+    const Url url { "file"sv, rootUrl + R"(skybox.ktx)" };
 
+    throw NotImplementedException {};
+    /*
     auto src = loader::TextureLoader::get().load(url);
     src.finally([&, device_ = device_](Texture&& texture_) -> void {
 
@@ -178,6 +180,7 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
     });
 
     scheduler::exec(scheduler::task::make_task(src));
+     */
 }
 
 #if FALSE

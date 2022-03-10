@@ -69,6 +69,14 @@ u64 TextureBuffer::memoryAlign() const noexcept {
     return _memoryAlign;
 }
 
+void* TextureBuffer::memoryMapped() const noexcept {
+    return _memoryMapped;
+}
+
+void*& TextureBuffer::memoryMapped() noexcept {
+    return _memoryMapped;
+}
+
 vk::SharingMode& TextureBuffer::sharingMode() noexcept {
     return _sharing;
 }

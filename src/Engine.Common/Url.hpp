@@ -24,50 +24,50 @@ namespace ember {
             _fragment() {}
 
     private:
-        string_view _scheme;
+        string _scheme;
 
     public:
         [[nodiscard]] bool hasScheme() const noexcept {
             return !_scheme.empty();
         }
 
-        [[nodiscard]] cref<string_view> scheme() const noexcept {
+        [[nodiscard]] string_view scheme() const noexcept {
             return _scheme;
         }
 
     private:
-        string_view _user;
+        string _user;
 
     public:
         [[nodiscard]] bool hasUser() const noexcept {
             return !_user.empty();
         }
 
-        [[nodiscard]] cref<string_view> user() const noexcept {
+        [[nodiscard]] string_view user() const noexcept {
             return _user;
         }
 
     private:
-        string_view _password;
+        string _password;
 
     public:
         [[nodiscard]] bool hasPassword() const noexcept {
             return !_password.empty();
         }
 
-        [[nodiscard]] cref<string_view> password() const noexcept {
+        [[nodiscard]] string_view password() const noexcept {
             return _password;
         }
 
     private:
-        string_view _host;
+        string _host;
 
     public:
         [[nodiscard]] bool hasHost() const noexcept {
             return !_host.empty();
         }
 
-        [[nodiscard]] cref<string_view> host() const noexcept {
+        [[nodiscard]] string_view host() const noexcept {
             return _host;
         }
 
@@ -84,38 +84,38 @@ namespace ember {
         }
 
     private:
-        string_view _path;
+        string _path;
 
     public:
         [[nodiscard]] bool hasPath() const noexcept {
             return !_path.empty();
         }
 
-        [[nodiscard]] cref<string_view> path() const noexcept {
+        [[nodiscard]] string_view path() const noexcept {
             return _path;
         }
 
     private:
-        string_view _query;
+        string _query;
 
     public:
         [[nodiscard]] bool hasQuery() const noexcept {
             return !_query.empty();
         }
 
-        [[nodiscard]] cref<string_view> query() const noexcept {
+        [[nodiscard]] string_view query() const noexcept {
             return _query;
         }
 
     private:
-        string_view _fragment;
+        string _fragment;
 
     public:
         [[nodiscard]] bool hasFragment() const noexcept {
             return !_fragment.empty();
         }
 
-        [[nodiscard]] cref<string_view> fragment() const noexcept {
+        [[nodiscard]] string_view fragment() const noexcept {
             return _fragment;
         }
 

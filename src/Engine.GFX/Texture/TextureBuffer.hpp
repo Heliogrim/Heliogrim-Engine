@@ -181,7 +181,9 @@ namespace ember::engine::gfx {
          *
          * @returns Null if it fails, else a pointer to a void.
          */
-        [[nodiscard]] void* memoryMapped() noexcept;
+        [[nodiscard]] void* memoryMapped() const noexcept;
+
+        [[nodiscard]] void*& memoryMapped() noexcept;
 
     private:
         /**

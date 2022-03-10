@@ -167,5 +167,11 @@
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetSeeder.cpp">
       <Filter>Quelldateien\Database</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\StaticGeometry.cpp">
+      <Filter>Quelldateien\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\LandscapeGeometry.cpp">
+      <Filter>Quelldateien\Types</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
