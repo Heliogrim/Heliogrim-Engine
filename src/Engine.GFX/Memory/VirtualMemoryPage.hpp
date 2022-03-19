@@ -5,7 +5,7 @@
 #include "VirtualMemoryPageState.hpp"
 
 namespace ember::engine::gfx {
-    class AllocatedMemory;
+    struct AllocatedMemory;
     class VirtualMemory;
 }
 

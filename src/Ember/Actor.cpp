@@ -33,6 +33,7 @@ cref<Transform> Actor::getWorldTransform() const noexcept {
         return _rootComponent->getWorldTransform();
     }
 
+    // TODO: Cleanup dangling reference within engine frontend
     return Transform {};
 }
 
@@ -108,13 +109,13 @@ void Actor::registerComponents(const ptr<IComponentRegisterContext> context_) {
 Future<ptr<Actor>> ember::CreateActor() noexcept {
 
     concurrent::promise<ptr<Actor>> p {
-        _STD move([]() {
+        []() {
 
             auto* registry = engine::Session::get()->modules().acsRegistry();
             auto* actor = registry->createActor();
 
             return actor;
-        })
+        }
     };
 
     auto f = p.get();

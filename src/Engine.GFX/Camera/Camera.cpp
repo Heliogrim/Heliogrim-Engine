@@ -2,18 +2,19 @@
 
 #include <Engine.Common/stdafx.h>
 #include <Engine.Common/Math/Quaternion.hpp>
+#include <Engine.Common/Math/Coordinates.hpp>
 
 using namespace ember::engine::gfx;
 using namespace ember;
 
-/** The clip matrix */
-static auto clip_matrix = math::mat4
-(
+/*
+const static math::mat4 clip_matrix = (
     1.0F, 0.0F, 0.0F, 0.0F,
     0.0F, -1.0F, 0.0F, 0.0F,
     0.0F, 0.0F, 0.5F, 0.5F,
     0.0F, 0.0F, 0.5F, 1.0F
 );
+*/
 
 float Camera::aspect() const noexcept {
     return _aspect;
@@ -82,8 +83,7 @@ void Camera::update() {
     /**
      * View
      */
-    const math::vec3 up { 0.F, -1.F, 0.F };
-    _view = math::lookAt(_position, _lookAt, up);
+    _view = math::lookAt(_position, _lookAt, math::vec3_up);
 
     /**
      * Perspective

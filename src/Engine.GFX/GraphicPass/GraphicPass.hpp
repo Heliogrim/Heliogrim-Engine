@@ -8,6 +8,7 @@
 #include "GraphicPassModelProcessor.hpp"
 #include "../Swapchain/Swapchain.hpp"
 #include "../Renderer/RenderInvocation.hpp"
+#include "../Renderer/RenderContext.hpp"
 
 namespace ember::engine::gfx {
 
@@ -86,10 +87,10 @@ namespace ember::engine::gfx {
          * @date 10.02.2021
          *
          * @param  graph_ The graph which should be processed.
-         * @param  state_ The RenderInvocationState containing the required resources and scene.
+         * @param  ctx_ The RenderContext containing the resources, scene, camera and target data.
          * @param  batch_ The batch.
          */
-        virtual void process(_In_ const ptr<scene::RenderGraph> graph_, _Inout_ ref<RenderInvocationState> state_,
+        virtual void process(_In_ const ptr<scene::RenderGraph> graph_, _In_ const ptr<const RenderContext> ctx_,
             _Inout_ ref<CommandBatch> batch_);
 
     protected:

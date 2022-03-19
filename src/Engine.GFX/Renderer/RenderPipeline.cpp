@@ -43,15 +43,15 @@ bool RenderPipeline::defineGraphicPass(const u8 graphicPassIndex_, const ptr<Gra
     return true;
 }
 
-void RenderPipeline::process(const ptr<RenderInvocation> invocation_, ref<CommandBatch> batch_) {
+void RenderPipeline::process(const ptr<const RenderContext> ctx_, ref<CommandBatch> batch_) const {
     /**
      *
      */
     for (u32 gpi { 0ui32 }; gpi < _passes.size(); ++gpi) {
         if (_passes[gpi] != nullptr) {
             _passes[gpi]->process(
-                invocation_->scene()->renderGraph(),
-                *invocation_->state(),
+                ctx_->scene()->renderGraph(),
+                ctx_,
                 batch_
             );
         }

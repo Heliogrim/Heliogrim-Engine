@@ -4,7 +4,7 @@
 
 #include "Graph/SceneGraph.hpp"
 #include "SceneTag.hpp"
-#include "NodeTypeRegistry.hpp";
+#include "NodeTypeRegistry.hpp"
 
 /**
  * Forward Declaration

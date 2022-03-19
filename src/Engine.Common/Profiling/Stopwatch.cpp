@@ -9,7 +9,7 @@ using namespace ember::profiling;
 using namespace ember;
 
 Stopwatch::Stopwatch() noexcept :
-    _name(nullptr),
+    _name(),
     _stopped(true),
     _timestamp() {}
 
@@ -58,7 +58,7 @@ void Stopwatch::stop() noexcept {
     _stopped = true;
 }
 
-cref<string_view> Stopwatch::name() const noexcept {
+const string_view Stopwatch::name() const noexcept {
     return _name;
 }
 

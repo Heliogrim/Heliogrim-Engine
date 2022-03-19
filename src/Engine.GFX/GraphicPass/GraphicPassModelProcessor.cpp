@@ -56,6 +56,8 @@ void GraphicPassModelProcessor::process(mref<ModelBatch> model_) noexcept {
     // TODO:
 }
 
+void GraphicPassModelProcessor::postProcess(const ptr<const RenderContext> ctx_) {}
+
 cref<Vector<ProcessedModelBatch>> GraphicPassModelProcessor::models() const noexcept {
     return _consumed;
 }

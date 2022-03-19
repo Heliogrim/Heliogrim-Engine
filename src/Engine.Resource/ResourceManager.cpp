@@ -23,21 +23,21 @@ void ResourceManager::setup() {
     SCOPED_STOPWATCH
 
     if (!_importer) {
-        _importer = _STD move(make_uptr<ImporterManager>());
+        _importer = make_uptr<ImporterManager>();
     }
 
     #ifdef _EDITOR
     if (!_indexer) {
-        _indexer = _STD move(make_uptr<Indexer>());
+        _indexer = make_uptr<Indexer>();
     }
     #endif
 
     if (!_loader) {
-        _loader = _STD move(make_uptr<LoaderManager>());
+        _loader = make_uptr<LoaderManager>();
     }
 
     if (!_locator) {
-        _locator = _STD move(make_uptr<Locator>());
+        _locator = make_uptr<Locator>();
     }
 }
 

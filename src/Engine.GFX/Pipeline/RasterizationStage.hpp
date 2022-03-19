@@ -49,7 +49,7 @@ namespace ember::engine::gfx::pipeline {
         /**
          * Polygon Count -> Front Face
          */
-        RasterPolyFront _polyFront = RasterPolyFront::eClockwise;
+        RasterPolyFront _polyFront = RasterPolyFront::eCounterClockwise;
 
     public:
         /**
@@ -61,6 +61,16 @@ namespace ember::engine::gfx::pipeline {
          * @returns A RasterPolyFront.
          */
         [[nodiscard]] RasterPolyFront polyFront() const noexcept;
+
+        /**
+         * Polygon front
+         *
+         * @author Julius
+         * @date 01.12.2020
+         *
+         * @returns A reference to a RasterPolyFront.
+         */
+        [[nodiscard]] ref<RasterPolyFront> polyFront() noexcept;
 
     private:
         /**
@@ -87,7 +97,7 @@ namespace ember::engine::gfx::pipeline {
          *
          * @returns A reference to a RasterCullFace.
          */
-        [[nodiscard]] RasterCullFace& cullFace() noexcept;
+        [[nodiscard]] ref<RasterCullFace> cullFace() noexcept;
 
     private:
         /**
@@ -130,7 +140,6 @@ namespace ember::engine::gfx::pipeline {
         bool _depthCheck = true;
 
     public:
-
         /**
          * Determines if we can depth check
          *
@@ -153,6 +162,23 @@ namespace ember::engine::gfx::pipeline {
 
     private:
         /**
+         * Depth Write
+         */
+        bool _depthWrite = true;
+
+    public:
+        /**
+         * Depth Write
+         *
+         * @author Julius
+         * @date 19.03.2022
+         *
+         * @returns A reference to the write flag.
+         */
+        [[nodiscard]] bool& depthWrite() noexcept;
+
+    private:
+        /**
          * Depth Compare
          */
         vk::CompareOp _depthCompare = vk::CompareOp::eLessOrEqual;
@@ -160,6 +186,21 @@ namespace ember::engine::gfx::pipeline {
     public:
         [[nodiscard]] vk::CompareOp& depthCompare() noexcept {
             return _depthCompare;
+        }
+
+    public:
+        /**
+         * Depth Bias
+         */
+        float _depthBiasConstant = 0.F;
+        float _depthBiasClamp = 0.F;
+        float _depthBiasSlope = 0.F;
+
+    public:
+        void setDepthBias(const float constant_, const float clamp_, const float slope_) {
+            _depthBiasConstant = constant_;
+            _depthBiasClamp = clamp_;
+            _depthBiasSlope = slope_;
         }
     };
 }

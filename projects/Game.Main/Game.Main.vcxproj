@@ -190,6 +190,7 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\GrassWild01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Images\GrassWild01Albedo.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\CubeD1.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\Inc.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MetalBare.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MossGround.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\CubeD1.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.hpp" />
@@ -279,6 +281,10 @@
     <None Include="..\..\resources\shader\link.vs" />
     <None Include="..\..\resources\shader\obj.fs" />
     <None Include="..\..\resources\shader\obj.vs" />
+    <None Include="..\..\resources\shader\pbrpass_static.frag.spv" />
+    <None Include="..\..\resources\shader\pbrpass_static.fs" />
+    <None Include="..\..\resources\shader\pbrpass_static.vert.spv" />
+    <None Include="..\..\resources\shader\pbrpass_static.vs" />
     <None Include="..\..\resources\shader\sky.fs" />
     <None Include="..\..\resources\shader\sky.vs" />
     <None Include="..\..\resources\shader\terra.fs" />

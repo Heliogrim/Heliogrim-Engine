@@ -377,7 +377,7 @@ namespace ember::concurrent {
         template <typename Ty>
         friend class promise;
 
-        template <typename NxRet, typename ...Args>
+        template <typename NxRet, typename ...NxArgs>
         friend class nxpromise;
 
     public:
@@ -713,9 +713,9 @@ namespace ember::concurrent {
          *
          * @returns A future instance of type future<Ret> provided by promise chain;
          */
-        future<void> get() {
+        [[nodiscard]] future<void> get() {
             typename future<void>::state_type& fs = _state->future();
-            return _STD move(future<void>(fs));
+            return future<void>(fs);
         }
 
         /**

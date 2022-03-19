@@ -89,10 +89,10 @@ void Graphics::setup() {
 
     // Warning: Temporary
     _camera = new Camera();
-    _camera->setPosition({ -5.F, -1.8F, -5.F });
-    _camera->setLookAt({ 0.F, -1.8F, 0.F });
+    _camera->setPosition({ 8.F, /*-1.8F*/1.8F, 8.F });
+    _camera->setLookAt({ 0.F, /*-1.8F*/0.F, 0.F });
     _camera->setPerspective(60.F, static_cast<float>(_swapchain->width()) / static_cast<float>(_swapchain->height()),
-        0.001F, 1000.F);
+        0.1F, 100.F);
 
     _camera->update();
 
@@ -339,8 +339,6 @@ CommandQueue::reference_type Graphics::getTransferQueue() const noexcept {
     return *_device->transferQueue();
 }
 
-static u64 frame = 0;
-
 void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
 
     SCOPED_STOPWATCH
@@ -378,7 +376,7 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
     /**
      * 
      */
-    u32 swapIdx;
+    u32 swapIdx { 0ui32 };
     [[maybe_unused]] auto result = _device->vkDevice().acquireNextImageKHR(
         static_cast<ptr<VkSwapchain>>(_swapchain)->vkSwapchain(),
         UINT64_MAX,
@@ -399,6 +397,19 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
         DEBUG_SNMSG(false, "WARN", "Failed to validate await state of render invocation.")
     }
     #endif
+
+    /**
+     * Warning: Temporary Update to change state
+     */
+    auto millis {
+        _STD chrono::duration_cast<_STD chrono::milliseconds>(
+            _STD chrono::high_resolution_clock::now().time_since_epoch()).count()
+    };
+    auto timeToVal { static_cast<float>(millis) / 5000.F };
+
+    _camera->setPosition({ _STD sinf(timeToVal) * 8.F, /*-1.8F*/1.8F, _STD cosf(timeToVal) * 8.F });
+    //_camera->setLookAt({ 0.F, /*-1.8F*/0.F, 0.F });
+    _camera->update();
 
     /**
      * Render

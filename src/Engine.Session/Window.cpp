@@ -11,7 +11,7 @@ Window::Window(cref<string_view> title_, cref<math::uExtent2D> extent_) noexcept
 
 Window::~Window() noexcept = default;
 
-cref<string_view> Window::title() const noexcept {
+const string_view Window::title() const noexcept {
     return _title;
 }
 

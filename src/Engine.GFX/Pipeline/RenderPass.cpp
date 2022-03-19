@@ -57,25 +57,59 @@ void RenderPass::setup() {
      * Warning: Determine Subpass Dependencies
      */
     if (_dependencies.empty()) {
-        _dependencies.push_back(vk::SubpassDependency {
-            VK_SUBPASS_EXTERNAL,
-            0,
-            vk::PipelineStageFlagBits::eFragmentShader,
-            vk::PipelineStageFlagBits::eEarlyFragmentTests,
-            vk::AccessFlagBits::eShaderRead,
-            vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
-            vk::DependencyFlagBits::eByRegion
-        });
 
-        _dependencies.push_back(vk::SubpassDependency {
-            0,
-            VK_SUBPASS_EXTERNAL,
-            vk::PipelineStageFlagBits::eEarlyFragmentTests,
-            vk::PipelineStageFlagBits::eFragmentShader,
-            vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
-            vk::AccessFlagBits::eShaderRead,
-            vk::DependencyFlagBits::eByRegion
-        });
+        const auto hasColorRef { !colors.empty() };
+        const auto hasDepthRef { !depthStencils.empty() };
+
+        /**
+         * Enforce Color Attachment Dependencies
+         */
+        if (hasColorRef) {
+            _dependencies.push_back(vk::SubpassDependency {
+                VK_SUBPASS_EXTERNAL,
+                0,
+                vk::PipelineStageFlagBits::eBottomOfPipe,
+                vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                vk::AccessFlagBits::eMemoryRead,
+                vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
+                vk::DependencyFlagBits::eByRegion
+            });
+
+            _dependencies.push_back(vk::SubpassDependency {
+                0,
+                VK_SUBPASS_EXTERNAL,
+                vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                vk::PipelineStageFlagBits::eTopOfPipe,
+                vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
+                vk::AccessFlagBits::eMemoryRead,
+                vk::DependencyFlagBits::eByRegion
+            });
+        }
+
+        /**
+         * Enforce Depth Attachment Dependencies
+         */
+        if (hasDepthRef) {
+            _dependencies.push_back(vk::SubpassDependency {
+                VK_SUBPASS_EXTERNAL,
+                0,
+                vk::PipelineStageFlagBits::eBottomOfPipe,
+                vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
+                vk::AccessFlagBits::eMemoryRead,
+                vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                vk::DependencyFlagBits::eByRegion
+            });
+
+            _dependencies.push_back(vk::SubpassDependency {
+                0,
+                VK_SUBPASS_EXTERNAL,
+                vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
+                vk::PipelineStageFlagBits::eTopOfPipe,
+                vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                vk::AccessFlagBits::eMemoryRead,
+                vk::DependencyFlagBits::eByRegion
+            });
+        }
     }
 
     /**

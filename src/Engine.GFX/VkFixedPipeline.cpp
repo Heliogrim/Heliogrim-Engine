@@ -181,10 +181,10 @@ void VkFixedPipeline::setup() {
         vkTranslateMode(_rasterizationStage.polyMode()),
         vkTranslateCull(_rasterizationStage.cullFace()),
         vkTranslateFace(_rasterizationStage.polyFront()),
-        VK_TRUE,
-        0.F,
-        0.F,
-        0.F,
+        VK_FALSE,
+        _rasterizationStage._depthBiasConstant,
+        _rasterizationStage._depthBiasClamp,
+        _rasterizationStage._depthBiasSlope,
         _rasterizationStage.lineWidth()
     };
 
@@ -241,10 +241,12 @@ void VkFixedPipeline::setup() {
                 return isDepthFormat(format) || isStencilFormat(format);
             });
 
+        const bool attachDepthStencil { entry != attachments.end() && _rasterizationStage.depthCheck() };
+
         /**
          * If Framebuffer has attachment, setup required operations
          */
-        if (entry != attachments.end() && _rasterizationStage.depthCheck()) {
+        if (attachDepthStencil) {
             const auto& instance = *entry;
 
             const TextureFormat format = vkTranslateFormat(instance.format);
@@ -254,21 +256,40 @@ void VkFixedPipeline::setup() {
             pdssci = {
                 vk::PipelineDepthStencilStateCreateFlags(),
                 hasDepth ? VK_TRUE : VK_FALSE,
-                hasDepth ? VK_TRUE : VK_FALSE,
+                hasDepth && _rasterizationStage.depthWrite() ? VK_TRUE : VK_FALSE,
                 hasDepth ? _rasterizationStage.depthCompare() : vk::CompareOp::eNever,
                 VK_FALSE,
                 //VK_TRUE,
-                hasStencil ? VK_TRUE : VK_FALSE,
-                vk::StencilOpState(),
-                vk::StencilOpState().setCompareOp(hasStencil ? vk::CompareOp::eAlways : vk::CompareOp::eNever),
-                {},
-                //0.F,
-                {}
-                //hasDepth ? 1.F : 0.F
+                // Warning: Stencil can cause empty depth buffer due to stencil test, without notice
+                hasStencil ? /*VK_TRUE*/VK_FALSE : VK_FALSE,
+                hasStencil ?
+                    vk::StencilOpState {
+                        vk::StencilOp::eKeep,
+                        vk::StencilOp::eReplace,
+                        vk::StencilOp::eKeep,
+                        vk::CompareOp::eAlways,
+                        0xFF,
+                        0xFF,
+                        1ui32
+                    } :
+                    vk::StencilOpState {},
+                hasStencil ?
+                    vk::StencilOpState {
+                        vk::StencilOp::eKeep,
+                        vk::StencilOp::eReplace,
+                        vk::StencilOp::eKeep,
+                        vk::CompareOp::eAlways,
+                        0xFF,
+                        0xFF,
+                        1ui32
+                    } :
+                    vk::StencilOpState {},
+                0.F,
+                hasDepth ? 1.F : 0.F
             };
         }
 
-        info.pDepthStencilState = (entry != attachments.end()) ? &pdssci : nullptr;
+        info.pDepthStencilState = attachDepthStencil ? &pdssci : nullptr;
     }
 
     /**
@@ -356,14 +377,14 @@ void VkFixedPipeline::destroy() noexcept {
         _renderPass->destroy();
     }
 
-    if (_layout) {
-        _device->vkDevice().destroyPipelineLayout(_layout);
-        _layout = nullptr;
-    }
-
     if (_pipeline) {
         _device->vkDevice().destroyPipeline(_pipeline);
         _pipeline = nullptr;
+    }
+
+    if (_layout) {
+        _device->vkDevice().destroyPipelineLayout(_layout);
+        _layout = nullptr;
     }
 }
 

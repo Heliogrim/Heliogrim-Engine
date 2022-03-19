@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
 
-#include "RenderInvocationData.hpp"
+#include "RenderContext.hpp"
 #include "../GraphicPass/GraphicPass.hpp"
 
 namespace ember::engine::gfx {
@@ -31,7 +31,7 @@ namespace ember::engine::gfx {
         bool defineGraphicPass(const u8 graphicPassIndex_, const ptr<GraphicPass> graphicPass_);
 
     public:
-        void process(const ptr<RenderInvocation> invocation_, ref<CommandBatch> batch_);
+        void process(const ptr<const RenderContext> ctx_, ref<CommandBatch> batch_) const;
 
     public:
         void allocateWith(const ptr<const RenderInvocation> invocation_,

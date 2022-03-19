@@ -71,7 +71,11 @@ using size64_t = uint64_t;
 #include "./Math/Matrix.hpp"
 #include "./Math/Vector.hpp"
 
+// #define VULKAN_HPP_DISABLE_ENHANCED_MODE
+// #define VULKAN_HPP_NO_CONSTRUCTORS
+// #define VULKAN_HPP_NO_SETTERS
 // #define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS
+#define VULKAN_HPP_NO_SPACESHIP_OPERATOR
 #include <vulkan/vulkan.hpp>
 /**
  *

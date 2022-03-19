@@ -37,7 +37,7 @@ void TextureSampler::setup(cref<sptr<Device>> device_) {
         {},
         {},
         0.F,
-        static_cast<float>(MAX(_lods - 1, 0)),
+        MAX(static_cast<float>(_lods) - 1.F, 0.F),
         {},
         {}
     };

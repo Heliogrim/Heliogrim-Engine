@@ -115,14 +115,14 @@ namespace ember::profiling {
 
     public:
         /**
-         * Gets a view of the name
+         * Gets the name of this stopwatch
          *
          * @author Julius
          * @date 21.09.2021
          *
-         * @returns A cref&lt;string_view&gt;
+         * @returns A const string_view
          */
-        cref<string_view> name() const noexcept;
+        const string_view name() const noexcept;
 
         /**
          * Gets a reference to the name

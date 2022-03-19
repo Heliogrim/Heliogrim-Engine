@@ -4,6 +4,7 @@
 
 #include "../ModelBatch.hpp"
 #include "ProcessedModelBatch.hpp"
+#include "../Renderer/RenderContext.hpp"
 
 namespace ember::engine::gfx {
 
@@ -55,6 +56,16 @@ namespace ember::engine::gfx {
          * @param model_ The model data to process.
          */
         virtual void process(mref<ModelBatch> model_) noexcept;
+
+        /**
+         * Post processing of the consumed data
+         *
+         * @author Julius
+         * @date 11.03.2022
+         *
+         * @param  ctx_ The RenderContext containing the resources, scene, camera and target data.
+         */
+        virtual void postProcess(const ptr<const RenderContext> ctx_);
 
     protected:
         /**

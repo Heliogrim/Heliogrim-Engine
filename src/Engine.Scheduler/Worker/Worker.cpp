@@ -18,7 +18,11 @@ Worker::Worker(ptr<SchedulePipeline> pipeline_, ptr<fiber::FiberPool> fiberPool_
     _mask(mask_) {}
 
 Worker::~Worker() {
-    destroy();
+#ifdef _DEBUG
+    assert(destroy());
+#else
+    [[maybe_unused]] auto result { destroy() };
+#endif
 };
 
 bool Worker::start() {

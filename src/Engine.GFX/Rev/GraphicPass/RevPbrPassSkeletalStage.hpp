@@ -58,7 +58,7 @@ namespace ember::engine::gfx {
          */
         [[nodiscard]] bool check(ptr<const ProcessedModelBatch> batch_) noexcept override;
 
-        void before(cref<GraphicPassStageContext> ctx_) override;
+        void before(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) override;
 
         /**
          * Process the given batch_
@@ -66,12 +66,14 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 25.01.2021
          *
-         * @param  ctx_ The context.
+         * @param  ctx_ The RenderContext containing the resources, scene, camera and target data.
+         * @param  stageCtx_ The current GraphicPassStageContext.
          * @param  batch_ The batch.
          */
-        void process(cref<GraphicPassStageContext> ctx_, ptr<const ProcessedModelBatch> batch_) override;
+        void process(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_,
+            ptr<const ProcessedModelBatch> batch_) override;
 
-        void after(cref<GraphicPassStageContext> ctx_) override;
+        void after(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) override;
 
     private:
         /**

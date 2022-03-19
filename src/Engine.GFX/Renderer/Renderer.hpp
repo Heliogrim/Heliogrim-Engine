@@ -47,7 +47,7 @@ namespace ember::engine::gfx {
         virtual void free(mref<ptr<RenderInvocation>> invocation_);
 
     private:
-        void invokeBatched(const non_owning_rptr<RenderInvocation> invocation_, mref<CommandBatch> batch_);
+        void invokeBatched(const non_owning_rptr<RenderInvocation> invocation_, mref<CommandBatch> batch_) const;
 
     public:
         virtual const non_owning_rptr<RenderInvocation> invoke(const non_owning_rptr<RenderInvocation> invocation_);

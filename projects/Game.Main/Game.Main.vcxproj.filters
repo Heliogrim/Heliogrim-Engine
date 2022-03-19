@@ -144,6 +144,9 @@
     <ClCompile Include="..\..\src\Game.Main\World\Actors\WoodenTable.cpp">
       <Filter>Quelldateien\World\Actors</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\CubeD1.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\ForestGround.hpp">
@@ -278,6 +281,9 @@
     <ClInclude Include="..\..\src\Game.Main\World\Actors\WoodenTable.hpp">
       <Filter>Headerdateien\World\Actors</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\CubeD1.hpp">
+      <Filter>Headerdateien\Assets\Meshes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\resources\shader\compile_shaders.cmd">
@@ -359,6 +365,18 @@
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
     <None Include="..\..\resources\shader\depthpass_skeletal.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\pbrpass_static.fs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\pbrpass_static.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\pbrpass_static.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\pbrpass_static.vert.spv">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
   </ItemGroup>

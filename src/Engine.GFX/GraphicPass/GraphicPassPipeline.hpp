@@ -3,6 +3,7 @@
 
 #include "GraphicPassPipelineStage.hpp"
 #include "GraphicPassModelProcessor.hpp"
+#include "../Renderer/RenderContext.hpp"
 
 namespace ember::engine::gfx {
 
@@ -45,10 +46,10 @@ namespace ember::engine::gfx {
          * @date 17.01.2021
          *
          * @param  processor_ The processor.
-         * @param state_ The set of data used to process.
+         * @param  ctx_ The RenderContext containing the resources, scene, camera and target data.
          * @param batch_ The recording command batch.
          */
-        void process(ptr<const GraphicPassModelProcessor> processor_, _Inout_ ref<RenderInvocationState> state_,
+        void process(ptr<const GraphicPassModelProcessor> processor_, _In_ const ptr<const RenderContext> ctx_,
             _Inout_ ref<CommandBatch> batch_);
 
     private:

@@ -9,7 +9,6 @@
       <ModuleOutputFile>$(IntDir)%(RelativeDir)\</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)%(RelativeDir)\</AssemblerListingLocation>
       <XMLDocumentationFileName>$(IntDir)%(RelativeDir)\</XMLDocumentationFileName>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

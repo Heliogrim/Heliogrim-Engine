@@ -182,10 +182,10 @@ Texture& VkTextureFactory::buildView(Texture& texture_) const {
      * Prepare
      */
     const vk::ComponentMapping cm {
-        vk::ComponentSwizzle::eIdentity,
-        vk::ComponentSwizzle::eIdentity,
-        vk::ComponentSwizzle::eIdentity,
-        vk::ComponentSwizzle::eIdentity
+        vk::ComponentSwizzle::eR,
+        vk::ComponentSwizzle::eG,
+        vk::ComponentSwizzle::eB,
+        vk::ComponentSwizzle::eA
     };
 
     const vk::ImageSubresourceRange isr {

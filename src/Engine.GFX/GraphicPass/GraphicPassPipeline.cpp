@@ -27,25 +27,24 @@ void GraphicPassPipeline::freeWith(const ptr<const RenderInvocation> invocation_
     }
 }
 
-void GraphicPassPipeline::process(ptr<const GraphicPassModelProcessor> processor_, ref<RenderInvocationState> state_,
+void GraphicPassPipeline::process(ptr<const GraphicPassModelProcessor> processor_, const ptr<const RenderContext> ctx_,
     ref<CommandBatch> batch_) {
 
     SCOPED_STOPWATCH
 
     for (auto* stage : _stages) {
 
-        GraphicPassStageContext ctx {
-            batch_,
-            state_
+        GraphicPassStageContext stageCtx {
+            batch_
         };
 
         /**
          * If processor_ is nullptr, then execute pipeline with nullptr model
          */
         if (processor_ == nullptr && stage->check(nullptr)) {
-            stage->before(ctx);
-            stage->process(ctx, nullptr);
-            stage->after(ctx);
+            stage->before(ctx_, stageCtx);
+            stage->process(ctx_, stageCtx, nullptr);
+            stage->after(ctx_, stageCtx);
             continue;
         }
 
@@ -70,21 +69,21 @@ void GraphicPassPipeline::process(ptr<const GraphicPassModelProcessor> processor
              * If model is first positive, prepare stage for processing
              */
             if (untouched) {
-                stage->before(ctx);
+                stage->before(ctx_, stageCtx);
                 untouched = false;
             }
 
             /**
              *
              */
-            stage->process(ctx, &model);
+            stage->process(ctx_, stageCtx, &model);
         }
 
         /**
          * If stage was effected by model collection, post process stage
          */
         if (!untouched) {
-            stage->after(ctx);
+            stage->after(ctx_, stageCtx);
         }
     }
 }

@@ -157,7 +157,7 @@ namespace ember::profiling {
          * @param  name_ The name.
          * @param  file_ (Optional) The file.
          */
-        void startSession(cref<string_view> name_, cref<string_view> file_ = "result.json");
+        void startSession(cref<string_view> name_, cref<string_view> file_ = "result.json"sv);
 
         /**
          * Stops a session

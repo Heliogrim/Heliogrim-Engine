@@ -18,7 +18,9 @@ namespace ember::engine::gfx {
         u32 indexOffset;
     };
 
-    struct SharedBind { };
+    struct SharedBind {
+        Buffer uniform;
+    };
 
     struct SharedGeometry {
         VertexBuffer vertices;
@@ -80,6 +82,8 @@ namespace ember::engine::gfx {
          * @returns A cref&lt;SharedBind&gt;
          */
         [[nodiscard]] cref<SharedBind> bind() const noexcept;
+
+        [[nodiscard]] ref<SharedBind> bind() noexcept;
 
     private:
         /**

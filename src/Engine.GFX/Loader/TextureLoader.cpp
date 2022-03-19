@@ -124,6 +124,11 @@ Texture load_impl(const Url& url_,
             aspect = vk::ImageAspectFlagBits::eColor;
             break;
         }
+        case gli::FORMAT_RGBA8_SRGB_PACK8: {
+            format = vk::Format::eR8G8B8A8Srgb;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
         case gli::FORMAT_RGBA8_SNORM_PACK8: {
             format = vk::Format::eR8G8B8A8Snorm;
             aspect = vk::ImageAspectFlagBits::eColor;

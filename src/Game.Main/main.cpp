@@ -21,6 +21,7 @@
 #include <Engine.Session/Session.hpp>
 
 #include "Assets/GfxMaterials/ForestGround01.hpp"
+#include "Assets/Meshes/CubeD1.hpp"
 #include "Assets/Meshes/PlaneD128.hpp"
 #include "Ember/Ember.hpp"
 #include "Ember/World.hpp"
@@ -105,6 +106,7 @@ void ember_main_entry() {
         // Is via effect equivalent to commented instruction, cause constructor of inherited asset type class
         //  will autoregister internal created instance to asset database
         game::assets::meshes::PlaneD128 {};
+        game::assets::meshes::CubeD1 {};
         /*
         auto* tmp = new game::assets::meshes::PlaneD128 {};
         Ember::assets().insert(tmp);
@@ -113,7 +115,20 @@ void ember_main_entry() {
     }
 
     /**
-     *
+     * --- [ 4 ] ---
+     * rows : 1ui32 << 4 := 16
+     * cols : 1ui32 << 4 := 16
+     * count : rows * cols := 256
+     * 
+     * --- [ 5 ] ---
+     * rows : 1ui32 << 5 := 32
+     * cols : 1ui32 << 5 := 32
+     * count : rows * cols := 1024
+     * 
+     * --- [ 6 ] --
+     * rows : 1ui32 << 6 := 64
+     * cols : 1ui32 << 6 := 64
+     * count : rows * colls := 4096
      */
     // test();
     #ifndef _DEBUG
@@ -121,10 +136,9 @@ void ember_main_entry() {
     constexpr u64 cols { 1ui64 << 11 };
     constexpr u64 count { rows * cols };
     #else
-    constexpr u64 rows { 1ui64 << 8 };
-    constexpr u64 cols { 1ui64 << 8 };
-    //constexpr u64 count { rows * cols };
-    constexpr u64 count { 1ui64 };
+    constexpr u64 rows { 1ui64 << 4 };
+    constexpr u64 cols { 1ui64 << 4 };
+    constexpr u64 count { rows * cols };
     #endif
 
     /**
@@ -139,7 +153,8 @@ void ember_main_entry() {
      */
 
     //const u64 perCycle = static_cast<u64>(_STD log10(count));// `_STD log10` is not constexpr
-    constexpr u64 perCycle = count;
+    //constexpr u64 perCycle = count;
+    constexpr u64 perCycle = 1ui64;
 
     RepetitiveTask buildTask {
         [count = count, perCycle = perCycle]() {
@@ -220,25 +235,27 @@ void test() {
     }
 }
 
-void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const u64 cols_,
+void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const u64 cols_, _In_ const float scalar_,
     _Inout_ ref<ember::math::vec3> position_) {
+
+    const float rdxf { static_cast<float>(rows_) };
+    const float rdyf { static_cast<float>(cols_) };
+
+    constexpr float padding { 0.25F };
+    const float rx { (rdxf + rdxf * padding) * scalar_ };
+    const float ry { (rdyf + rdyf * padding) * scalar_ };
 
     const u64 rowCount = idx_ / cols_;
     const u64 colCount = idx_ - (cols_ * rowCount);
 
-    constexpr float padding { 0.25F };
-    const float rcf { static_cast<float>(rowCount) };
-    const float ccf { static_cast<float>(colCount) };
-    const float x = ccf + ccf * padding;
-    const float y = rcf + rcf * padding;
+    const float px { static_cast<float>(rowCount) / rdxf };
+    const float py { static_cast<float>(colCount) / rdyf };
 
-    const float rf { static_cast<float>(rows_) };
-    const float cf { static_cast<float>(cols_) };
-    const float gx = cf * cf * padding * .5F;
-    const float gy = rf * rf * padding * .5F;
+    const auto oxf { _STD sinf(px * math::pi) };
+    const auto oyf { _STD cosf(py * math::pi) };
 
-    position_ += math::vec3_right * (gx - x);
-    position_ += math::vec3_forward * (gy - y);
+    position_ += math::vec3_right * (rx * px - rx * 0.5F + oxf * scalar_);
+    position_ += math::vec3_forward * (ry * py - ry * 0.5F + oyf * scalar_);
 }
 
 #include "Ember/ActorInitializer.hpp"
@@ -261,7 +278,7 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
     /**
      *
      */
-    auto queryResult = Ember::assets()[game::assets::meshes::PlaneD128::auto_guid()];
+    auto queryResult = Ember::assets()[game::assets::meshes::CubeD1::auto_guid()];
     if (queryResult.flags == AssetDatabaseResultType::eSuccess) {
         comp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&queryResult.value));
     }
@@ -269,15 +286,28 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
     /**
      *
      */
-    auto transform { actor->getWorldTransform() };
+    const auto* root { actor->getRootComponent() };
+    const auto& transform { root->getWorldTransform() };
+
+    /*
+    auto previous { transform.position() };
+
+    float sig {(idx_ & 0b0001) ? -1.F : 1.F};
+    float x {sig * _STD ceilf(static_cast<float>(idx_) / 2.F) * 3.F};
+
+    previous.setX(x);
+    const_cast<math::Transform&>(transform).setPosition(previous);
+    */
 
     const ptr<World> world { GetWorld() };
     world->addActor(actor);
 
-    /*
-    randomPaddedPosition(idx_, rows_, cols_, transform.position());
-    transform.scale() = math::vec3_one;
+    auto previous { transform.position() };
 
+    randomPaddedPosition(idx_, rows_, cols_, 0.75F, previous);
+    const_cast<math::Transform&>(transform).setPosition(previous);
+    const_cast<math::Transform&>(transform).setScale(math::vec3_one * 0.2F);
+    /*
     transform.resolveMatrix();
     entity.setTransform(transform);
 
