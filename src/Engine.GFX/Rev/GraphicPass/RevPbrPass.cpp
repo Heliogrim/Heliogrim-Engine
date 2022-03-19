@@ -13,20 +13,20 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-RevPbrPass::RevPbrPass(cref<sptr<Device>> device_, const ptr<RevDepthPass> depthPass_) :
+RevPbrPass::RevPbrPass(cref<sptr<Device>> device_) :
     GraphicPass(device_, GraphicPassMask::ePbrPass),
-    _depthPass(depthPass_) {}
+    _processor(this) {}
 
 void RevPbrPass::setup() {
 
     SCOPED_STOPWATCH
 
-    auto pbrStatic = new RevPbrPassStaticStage { this };
-    pbrStatic->setup();
-    _pipeline.add(pbrStatic);
+    auto pbrStaticStage = new RevPbrPassStaticStage { this };
+    pbrStaticStage->setup();
+    _pipeline.add(pbrStaticStage);
 
-    auto pbrSkeletal = new RevPbrPassSkeletalStage { this };
-    pbrSkeletal->setup();
+    //auto pbrSkeletal = new RevPbrPassSkeletalStage { this };
+    //pbrSkeletal->setup();
     //_pipeline.add(pbrSkeletal);
 }
 
@@ -44,6 +44,67 @@ void RevPbrPass::destroy() {
     stages.clear();
 }
 
+void RevPbrPass::postProcessAllocated(const ptr<RenderInvocationState> state_) const {
+
+    const auto it { state_->data.find("RevPbrPass::Framebuffer"sv) };
+    if (it == state_->data.end()) {
+        return;
+    }
+
+    const ptr<Framebuffer> buffer {
+        static_cast<const ptr<Framebuffer>>(it->second.get())
+    };
+
+    Vector<vk::ImageMemoryBarrier> imgBarriers {};
+    for (const auto& entry : buffer->attachments()) {
+
+        auto& attachment { *entry.unwrapped() };
+
+        if (isDepthFormat(attachment.format()) || isStencilFormat(attachment.format())) {
+            continue;
+        }
+
+        imgBarriers.push_back({
+            vk::AccessFlags {},
+            vk::AccessFlagBits::eShaderRead,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eColorAttachmentOptimal,
+            VK_QUEUE_FAMILY_IGNORED,
+            VK_QUEUE_FAMILY_IGNORED,
+            attachment.buffer().image(),
+            vk::ImageSubresourceRange {
+                vk::ImageAspectFlagBits::eColor,
+                0,
+                attachment.mipLevels(),
+                0,
+                attachment.layer()
+            }
+
+        });
+    }
+
+    auto pool = _device->graphicsQueue()->pool();
+    pool->lck().acquire();
+    CommandBuffer cmd = pool->make();
+    cmd.begin();
+
+    /**
+     * Transform
+     */
+    cmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
+        vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
+        0, nullptr,
+        0, nullptr,
+        static_cast<u32>(imgBarriers.size()), imgBarriers.data()
+    );
+
+    cmd.end();
+    cmd.submitWait();
+    cmd.release();
+
+    pool->lck().release();
+}
+
 void RevPbrPass::allocateWith(const ptr<const RenderInvocation> invocation_, const ptr<RenderInvocationState> state_) {
 
     const auto* factory { TextureFactory::get() };
@@ -56,9 +117,10 @@ void RevPbrPass::allocateWith(const ptr<const RenderInvocation> invocation_, con
     /**
      *
      */
-    auto albedo = factory->build({
+    auto position = factory->build({
         buffer.extent(),
-        TextureFormat::eR8G8B8A8Unorm,
+        TextureFormat::eR32G32B32A32Sfloat,
+        // Surface Positions
         1ui32,
         TextureType::e2d,
         vk::ImageAspectFlagBits::eColor,
@@ -70,6 +132,7 @@ void RevPbrPass::allocateWith(const ptr<const RenderInvocation> invocation_, con
     auto normal = factory->build({
         buffer.extent(),
         TextureFormat::eR32G32B32A32Sfloat,
+        // Surface Normals
         1ui32,
         TextureType::e2d,
         vk::ImageAspectFlagBits::eColor,
@@ -78,9 +141,10 @@ void RevPbrPass::allocateWith(const ptr<const RenderInvocation> invocation_, con
         vk::SharingMode::eExclusive
     });
 
-    auto mrs = factory->build({
+    auto meta = factory->build({
         buffer.extent(),
         TextureFormat::eR16G16B16A16Sfloat,
+        // Meta data Sampling
         1ui32,
         TextureType::e2d,
         vk::ImageAspectFlagBits::eColor,
@@ -89,9 +153,9 @@ void RevPbrPass::allocateWith(const ptr<const RenderInvocation> invocation_, con
         vk::SharingMode::eExclusive
     });
 
-    factory->buildView(albedo);
+    factory->buildView(position);
     factory->buildView(normal);
-    factory->buildView(mrs);
+    factory->buildView(meta);
 
     /**
      *
@@ -104,9 +168,9 @@ void RevPbrPass::allocateWith(const ptr<const RenderInvocation> invocation_, con
     /**
      *
      */
-    buffer.add(_STD move(FramebufferAttachment { _STD move(albedo) }));
-    buffer.add(_STD move(FramebufferAttachment { _STD move(normal) }));
-    buffer.add(_STD move(FramebufferAttachment { _STD move(mrs) }));
+    buffer.add(FramebufferAttachment { _STD move(position) });
+    buffer.add(FramebufferAttachment { _STD move(normal) });
+    buffer.add(FramebufferAttachment { _STD move(meta) });
     buffer.add(depth);
 
     /**
@@ -119,6 +183,11 @@ void RevPbrPass::allocateWith(const ptr<const RenderInvocation> invocation_, con
      *
      */
     GraphicPass::allocateWith(invocation_, state_);
+
+    /**
+     * Post Process Images
+     */
+    postProcessAllocated(state_);
 }
 
 void RevPbrPass::freeWith(const ptr<const RenderInvocation> invocation_, const ptr<RenderInvocationState> state_) {
@@ -151,5 +220,6 @@ void RevPbrPass::freeWith(const ptr<const RenderInvocation> invocation_, const p
 }
 
 ptr<GraphicPassModelProcessor> RevPbrPass::processor() noexcept {
-    return nullptr;
+    _processor.reset();
+    return &_processor;
 }

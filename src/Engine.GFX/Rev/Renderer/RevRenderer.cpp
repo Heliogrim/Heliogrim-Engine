@@ -24,7 +24,7 @@ void RevRenderer::setup(cref<sptr<Device>> device_) {
     _pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eDepthPass), new RevDepthPass(device_));
     //_pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eLightPass), new RevLightPass(device_));
     //_pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eProbePass), new RevProbePass(device_));
-    //_pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::ePbrPass), new RevPbrPass(device_, nullptr));
+    _pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::ePbrPass), new RevPbrPass(device_));
     _pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eFinalPass), new RevFinalPass(device_));
 
     _pipeline->setup();

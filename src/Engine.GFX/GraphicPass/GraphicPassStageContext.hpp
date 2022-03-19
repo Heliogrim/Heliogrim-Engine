@@ -9,7 +9,5 @@ namespace ember::engine::gfx {
 
     struct GraphicPassStageContext {
         ref<CommandBatch> batch;
-
-        cref<RenderInvocationState> state;
     };
 }

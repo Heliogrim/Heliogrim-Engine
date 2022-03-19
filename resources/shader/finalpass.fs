@@ -26,16 +26,16 @@ void main() {
 	/**
 	 * Get data from G-Buffer / Mrt-Buffer
 	 */
-	/*
 	vec4 albedo = texture(mapped_albedo, in_uv);
 	vec3 normal = normalize(texture(mapped_normal, in_uv).xyz);
 	vec3 position = texture(mapped_position, in_uv).xzy;
 	vec3 mrs = texture(mapped_mrs, in_uv).rgb;
-
-	out_color = vec4(albedo.rgb, 1.0);
-	*/
-	out_color = vec4(in_color, 1.0);
-
 	vec3 depth = texture(mapped_depth, in_uv).rrr;
-	//out_color = vec4(depth, 1.0);
+
+	vec3 color = mrs;
+
+	// Gamma Correction
+	//color = pow(color, vec3(1.0f / 2.2f));
+
+	out_color = vec4(color, 1.0);
 }

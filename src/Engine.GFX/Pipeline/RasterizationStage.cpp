@@ -12,6 +12,10 @@ RasterPolyFront RasterizationStage::polyFront() const noexcept {
     return _polyFront;
 }
 
+ref<RasterPolyFront> RasterizationStage::polyFront() noexcept {
+    return _polyFront;
+}
+
 RasterPolyMode RasterizationStage::polyMode() const noexcept {
     return _polyMode;
 }
@@ -38,4 +42,8 @@ bool RasterizationStage::depthCheck() const noexcept {
 
 bool& RasterizationStage::depthCheck() noexcept {
     return _depthCheck;
+}
+
+bool& RasterizationStage::depthWrite() noexcept {
+    return _depthWrite;
 }

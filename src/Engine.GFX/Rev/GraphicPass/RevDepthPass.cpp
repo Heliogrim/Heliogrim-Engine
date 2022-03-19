@@ -8,24 +8,25 @@
 #include "RevDepthPassStaticStage.hpp"
 #include "../../Graphics.hpp"
 #include "../../Texture/TextureFactory.hpp"
+#include "__macro.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
 
 RevDepthPass::RevDepthPass(cref<sptr<Device>> device_) :
     GraphicPass(device_, GraphicPassMask::eDepthPass),
-    _processor({ this }) {}
+    _processor(this) {}
 
 void RevDepthPass::setup() {
 
     SCOPED_STOPWATCH
 
-    auto depthStage = new RevDepthPassStaticStage { this };
-    depthStage->setup();
-    _pipeline.add(depthStage);
+    auto depthStaticStage = new RevDepthPassStaticStage { this };
+    depthStaticStage->setup();
+    _pipeline.add(depthStaticStage);
 
-    auto depthStageSkeletal = new RevDepthPassSkeletalStage { this };
-    depthStageSkeletal->setup();
+    //auto depthStageSkeletal = new RevDepthPassSkeletalStage { this };
+    //depthStageSkeletal->setup();
     //_pipeline.add(depthStageSkeletal);
 }
 
@@ -59,12 +60,13 @@ void RevDepthPass::postProcessAllocated(const ptr<RenderInvocationState> state_)
         vk::AccessFlags {},
         vk::AccessFlagBits::eShaderRead,
         vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eDepthStencilReadOnlyOptimal,
+        vk::ImageLayout::eDepthStencilAttachmentOptimal,
         VK_QUEUE_FAMILY_IGNORED,
         VK_QUEUE_FAMILY_IGNORED,
         depthImage.buffer().image(),
         vk::ImageSubresourceRange {
-            vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil,
+            (isDepthFormat(depthImage.format()) ? vk::ImageAspectFlagBits::eDepth : vk::ImageAspectFlagBits::eNoneKHR) |
+            (isStencilFormat(depthImage.format()) ? vk::ImageAspectFlagBits::eStencil : vk::ImageAspectFlagBits::eNoneKHR),
             0,
             depthImage.mipLevels(),
             0,
@@ -111,7 +113,7 @@ void RevDepthPass::allocateWith(const ptr<const RenderInvocation> invocation_,
     auto texture {
         factory->build({
             buffer.extent(),
-            TextureFormat::eD32SfloatS8Uint,
+            REV_DEPTH_FORMAT,
             1ui32,
             TextureType::e2d,
             vk::ImageAspectFlagBits::eDepth/* | vk::ImageAspectFlagBits::eStencil*/,

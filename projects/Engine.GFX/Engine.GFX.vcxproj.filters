@@ -585,6 +585,15 @@
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderInvocation.hpp">
       <Filter>Headerdateien\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderContext.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassModelProcessor.hpp">
+      <Filter>Headerdateien\Rev\GraphicPass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\__macro.hpp">
+      <Filter>Headerdateien\Rev\GraphicPass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
@@ -838,6 +847,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderInvocation.cpp">
       <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassModelProcessor.cpp">
+      <Filter>Quelldateien\Rev\GraphicPass</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

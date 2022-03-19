@@ -8,5 +8,5 @@ namespace ember {
     using string = _STD string;
     using string_view = _STD string_view;
 
-    using namespace std::literals::string_view_literals;
+    using namespace ::std::literals::string_view_literals;
 }

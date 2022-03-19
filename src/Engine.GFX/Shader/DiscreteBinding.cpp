@@ -108,8 +108,14 @@ void DiscreteBinding::storeAs(cref<Texture> texture_, cref<vk::ImageLayout> layo
         /**
          * Warning: Temporary
          */
-        sampler.addressModeU() = vk::SamplerAddressMode::eMirroredRepeat;
-        sampler.addressModeV() = vk::SamplerAddressMode::eMirroredRepeat;
+        if (isDepthFormat(texture_.format())) {
+            sampler.addressModeU() = vk::SamplerAddressMode::eClampToEdge;
+            sampler.addressModeV() = vk::SamplerAddressMode::eClampToEdge;
+        } else {
+            sampler.addressModeU() = vk::SamplerAddressMode::eMirroredRepeat;
+            sampler.addressModeV() = vk::SamplerAddressMode::eMirroredRepeat;
+        }
+
         /**
          *
          */

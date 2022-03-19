@@ -50,14 +50,14 @@ namespace ember::engine::session {
 
     public:
         /**
-         * Gets the title
+         * Gets the title of this window
          *
          * @author Julius
          * @date 13.10.2021
          *
-         * @returns A cref&lt;string_view&gt;
+         * @returns A const sring_view
          */
-        [[nodiscard]] cref<string_view> title() const noexcept;
+        [[nodiscard]] const string_view title() const noexcept;
 
     private:
         virtual void setTitleInternal(cref<string_view> title_) = 0;

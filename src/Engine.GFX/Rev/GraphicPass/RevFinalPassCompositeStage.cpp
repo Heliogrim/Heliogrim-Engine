@@ -176,7 +176,7 @@ void RevFinalPassCompositeStage::setup() {
     _renderPass->set(0, vk::AttachmentDescription {
         vk::AttachmentDescriptionFlags(),
         /*api::vkTranslateFormat(swapchain->format()),*/
-        vk::Format::eR8G8B8A8Unorm,
+        vk::Format::eB8G8R8A8Unorm,
         vk::SampleCountFlagBits::e1,
         vk::AttachmentLoadOp::eClear,
         vk::AttachmentStoreOp::eStore,
@@ -333,6 +333,47 @@ void RevFinalPassCompositeStage::allocateWith(const ptr<const RenderInvocation> 
     if (!test) {
         RevTextureLoader loader { _graphicPass->device() };
         test = loader.__tmp__load({ ""sv, R"(R:\\test.ktx)"sv });
+
+        const vk::ImageMemoryBarrier imgBarrier {
+            vk::AccessFlags {},
+            vk::AccessFlagBits::eShaderRead,
+            vk::ImageLayout::eTransferSrcOptimal,
+            vk::ImageLayout::eShaderReadOnlyOptimal,
+            VK_QUEUE_FAMILY_IGNORED,
+            VK_QUEUE_FAMILY_IGNORED,
+            test.buffer().image(),
+            vk::ImageSubresourceRange {
+                vk::ImageAspectFlagBits::eColor,
+                0,
+                test.mipLevels(),
+                0,
+                test.layer()
+            }
+
+        };
+
+        auto pool = device->graphicsQueue()->pool();
+        pool->lck().acquire();
+        CommandBuffer iiCmd = pool->make();
+        iiCmd.begin();
+
+        /**
+         * Transform
+         */
+        iiCmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
+            vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
+            0, nullptr,
+            0, nullptr,
+            1, &imgBarrier
+        );
+
+        iiCmd.end();
+        iiCmd.submitWait();
+        iiCmd.release();
+
+        pool->lck().release();
+
+        test.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
         TextureFactory::get()->buildView(test);
     }
 
@@ -341,6 +382,19 @@ void RevFinalPassCompositeStage::allocateWith(const ptr<const RenderInvocation> 
     };
     const sptr<Texture> depth {
         depthFrame->attachments().at(0).unwrapped()
+    };
+
+    const sptr<Framebuffer> pbrFrame {
+        _STD static_pointer_cast<Framebuffer, void>(state_->data.find("RevPbrPass::Framebuffer"sv)->second)
+    };
+    const sptr<Texture> pbrPositions {
+        pbrFrame->attachments().at(0).unwrapped()
+    };
+    const sptr<Texture> pbrNormals {
+        pbrFrame->attachments().at(1).unwrapped()
+    };
+    const sptr<Texture> pbrMeta {
+        pbrFrame->attachments().at(2).unwrapped()
     };
 
     /**
@@ -368,11 +422,11 @@ void RevFinalPassCompositeStage::allocateWith(const ptr<const RenderInvocation> 
      */
     dbgs[0].getById(shader::ShaderBinding::id_type { 1 }).store(uniform);
     dbgs[0].getById(shader::ShaderBinding::id_type { 2 }).store(test);
-    dbgs[0].getById(shader::ShaderBinding::id_type { 3 }).store(test);
-    dbgs[0].getById(shader::ShaderBinding::id_type { 4 }).store(test);
-    dbgs[0].getById(shader::ShaderBinding::id_type { 5 }).store(test);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 3 }).store(*pbrNormals);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 4 }).store(*pbrPositions);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 5 }).store(*pbrMeta);
     dbgs[0].getById(shader::ShaderBinding::id_type { 6 }).
-            storeAs(*depth, vk::ImageLayout::eDepthStencilReadOnlyOptimal);
+            storeAs(*depth, vk::ImageLayout::eDepthStencilAttachmentOptimal);
 
     /**
      * Store State
@@ -492,56 +546,21 @@ bool RevFinalPassCompositeStage::check(ptr<const ProcessedModelBatch> batch_) no
     return batch_ == nullptr;
 }
 
-void RevFinalPassCompositeStage::before(cref<GraphicPassStageContext> ctx_) {
+void RevFinalPassCompositeStage::before(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
 
     SCOPED_STOPWATCH
+
+    const auto& data { ctx_->state()->data };
 
     /**
      * Prepare Command Buffer
      */
-    const auto cmdEntry { ctx_.state.data.at("RevFinalPassCompositeStage::CommandBuffer"sv) };
+    const auto cmdEntry { data.at("RevFinalPassCompositeStage::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
     cmd.begin();
 
-    const auto entry { ctx_.state.data.at("RevFinalPass::Framebuffer"sv) };
+    const auto entry { data.at("RevFinalPass::Framebuffer"sv) };
     auto& frame { *_STD static_pointer_cast<Framebuffer, void>(entry) };
-
-    /**
-     * Temporary
-     */
-    {
-        const auto depthEntry { ctx_.state.data.at("RevDepthPass::Framebuffer"sv) };
-        auto& depthFrame { *_STD static_pointer_cast<Framebuffer, void>(depthEntry) };
-
-        auto& tex { *depthFrame.attachments().at(0).unwrapped() };
-
-        const vk::ImageMemoryBarrier imgBarrier {
-            vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
-            vk::AccessFlagBits::eShaderRead,
-            vk::ImageLayout::eDepthStencilAttachmentOptimal,
-            vk::ImageLayout::eDepthStencilReadOnlyOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            tex.buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil,
-                0,
-                tex.mipLevels(),
-                0,
-                tex.layer()
-            }
-
-        };
-
-        #if FALSE
-  _cmd->vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-            vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
-            0, nullptr,
-            0, nullptr,
-            1, &imgBarrier
-        );
-        #endif
-    }
 
     /**
      *
@@ -559,7 +578,7 @@ void RevFinalPassCompositeStage::before(cref<GraphicPassStageContext> ctx_) {
      */
     sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
         _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
-            ctx_.state.data.find("RevFinalPassCompositeStage::DiscreteBindingGroups"sv)->second
+            data.find("RevFinalPassCompositeStage::DiscreteBindingGroups"sv)->second
         )
     };
 
@@ -574,28 +593,31 @@ void RevFinalPassCompositeStage::before(cref<GraphicPassStageContext> ctx_) {
     // TODO: _cmd->bindDescriptor({...});
 }
 
-void RevFinalPassCompositeStage::process(cref<GraphicPassStageContext> ctx_, ptr<const ProcessedModelBatch> batch_) {
+void RevFinalPassCompositeStage::process(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_,
+    ptr<const ProcessedModelBatch> batch_) {
 
     SCOPED_STOPWATCH
+
+    const auto& data { ctx_->state()->data };
 
     /**
      * Get Command Buffer
      */
-    const auto cmdEntry { ctx_.state.data.at("RevFinalPassCompositeStage::CommandBuffer"sv) };
+    const auto cmdEntry { data.at("RevFinalPassCompositeStage::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
 
     // TODO: cmd.bindDescriptor(...);
     cmd.draw(1, 0, 6, 0);
 }
 
-void RevFinalPassCompositeStage::after(cref<GraphicPassStageContext> ctx_) {
+void RevFinalPassCompositeStage::after(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
 
     SCOPED_STOPWATCH
 
     /**
      * Get Command Buffer
      */
-    const auto cmdEntry { ctx_.state.data.at("RevFinalPassCompositeStage::CommandBuffer"sv) };
+    const auto cmdEntry { ctx_->state()->data.at("RevFinalPassCompositeStage::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
 
     /**
@@ -607,7 +629,7 @@ void RevFinalPassCompositeStage::after(cref<GraphicPassStageContext> ctx_) {
     /**
      * Submit Command Buffer to CommandBatch
      */
-    ctx_.batch.push(cmd);
+    stageCtx_.batch.push(cmd);
 }
 
 sptr<pipeline::RenderPass> RevFinalPassCompositeStage::renderPass() const noexcept {

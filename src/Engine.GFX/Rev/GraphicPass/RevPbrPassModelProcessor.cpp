@@ -1,4 +1,4 @@
-#include "RevDepthPassModelProcessor.hpp"
+#include "RevPbrPassModelProcessor.hpp"
 
 #include <Engine.Common/Math/Coordinates.hpp>
 
@@ -9,10 +9,10 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-RevDepthPassModelProcessor::RevDepthPassModelProcessor(ptr<const GraphicPass> graphicPass_) :
+RevPbrPassModelProcessor::RevPbrPassModelProcessor(ptr<const GraphicPass> graphicPass_) :
     GraphicPassModelProcessor(graphicPass_) {}
 
-bool RevDepthPassModelProcessor::operator()(u32 batchIdx_, const ptr<scene::RenderGraph::node_type> node_) noexcept {
+bool RevPbrPassModelProcessor::operator()(u32 batchIdx_, const ptr<scene::RenderGraph::node_type> node_) noexcept {
 
     /**
      *
@@ -77,7 +77,7 @@ bool RevDepthPassModelProcessor::operator()(u32 batchIdx_, const ptr<scene::Rend
     #endif
 }
 
-void RevDepthPassModelProcessor::process(mref<ModelBatch> model_) noexcept {
+void RevPbrPassModelProcessor::process(mref<ModelBatch> model_) noexcept {
 
     ProcessedModelBatch pmb {};
 
@@ -101,7 +101,7 @@ void RevDepthPassModelProcessor::process(mref<ModelBatch> model_) noexcept {
     _consumed.push_back(_STD move(pmb));
 }
 
-void RevDepthPassModelProcessor::postProcess(const ptr<const RenderContext> ctx_) {
+void RevPbrPassModelProcessor::postProcess(const ptr<const RenderContext> ctx_) {
     GraphicPassModelProcessor::postProcess(ctx_);
 
     if (_consumed.empty()) {
@@ -115,7 +115,7 @@ void RevDepthPassModelProcessor::postProcess(const ptr<const RenderContext> ctx_
      */
     sptr<Buffer> buffer {};
 
-    const auto it { ctx_->state()->data.find("RevDepthPassModelProcessor::InstanceBuffer"sv) };
+    const auto it { ctx_->state()->data.find("RevPbrPassModelProcessor::InstanceBuffer"sv) };
     if (it != ctx_->state()->data.end()) {
         const auto stored { _STD static_pointer_cast<Buffer, void>(it->second) };
         buffer = stored;
@@ -175,7 +175,7 @@ void RevDepthPassModelProcessor::postProcess(const ptr<const RenderContext> ctx_
         /**
          * Store
          */
-        ctx_->state()->data.insert_or_assign("RevDepthPassModelProcessor::InstanceBuffer"sv, buffer);
+        ctx_->state()->data.insert_or_assign("RevPbrPassModelProcessor::InstanceBuffer"sv, buffer);
     }
 
     /**
@@ -218,6 +218,6 @@ void RevDepthPassModelProcessor::postProcess(const ptr<const RenderContext> ctx_
     }
 }
 
-void RevDepthPassModelProcessor::reset() {
+void RevPbrPassModelProcessor::reset() {
     _consumed.clear();
 }

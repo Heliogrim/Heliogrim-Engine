@@ -12,6 +12,7 @@
 #include "../../Shader/Factory.hpp"
 #include "../../Shader/ShaderStorage.hpp"
 #include "../../Shader/DiscreteBinding.hpp"
+#include "__macro.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -121,7 +122,7 @@ void RevDepthPassSkeletalStage::setup() {
     /**
      * Command Buffer
      */
-    _cmd = make_sptr<CommandBuffer>(_STD move(device->graphicsQueue()->pool()->make()));
+    _cmd = make_sptr<CommandBuffer>(device->graphicsQueue()->pool()->make());
 
     /**
      * Render Pass
@@ -131,7 +132,7 @@ void RevDepthPassSkeletalStage::setup() {
 
     _renderPass->set(0, vk::AttachmentDescription {
         vk::AttachmentDescriptionFlags(),
-        vk::Format::eD32SfloatS8Uint,
+        api::vkTranslateFormat(REV_DEPTH_FORMAT),
         vk::SampleCountFlagBits::e1,
         // Warning: Only first element at framebuffer have to clear attachment memory to reset
         vk::AttachmentLoadOp::eLoad,
@@ -398,16 +399,18 @@ bool RevDepthPassSkeletalStage::check(ptr<const ProcessedModelBatch> batch_) noe
     return batch_ != nullptr;
 }
 
-void RevDepthPassSkeletalStage::before(cref<GraphicPassStageContext> ctx_) {
+void RevDepthPassSkeletalStage::before(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
 
     SCOPED_STOPWATCH
+
+    const auto& data { ctx_->state()->data };
 
     /**
      * Prepare Command Buffer
      */
     _cmd->begin();
 
-    const auto entry { ctx_.state.data.at("RevDepthPass::Framebuffer"sv) };
+    const auto entry { data.at("RevDepthPass::Framebuffer"sv) };
     auto& frame { *_STD static_pointer_cast<Framebuffer, void>(entry) };
 
     /**
@@ -426,7 +429,7 @@ void RevDepthPassSkeletalStage::before(cref<GraphicPassStageContext> ctx_) {
      */
     sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
         _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
-            ctx_.state.data.find("RevDepthPassSkeletalStage::DiscreteBindingGroups"sv)->second
+            data.find("RevDepthPassSkeletalStage::DiscreteBindingGroups"sv)->second
         )
     };
     for (u32 idx = 0; idx < dbgs->size(); ++idx) {
@@ -441,7 +444,8 @@ void RevDepthPassSkeletalStage::before(cref<GraphicPassStageContext> ctx_) {
     // TODO: Get uniform buffer object and use it for shared descriptor, cause depth pass only uses a ubo, no other resources required yet
 }
 
-void RevDepthPassSkeletalStage::process(cref<GraphicPassStageContext> ctx_, ptr<const ProcessedModelBatch> batch_) {
+void RevDepthPassSkeletalStage::process(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_,
+    ptr<const ProcessedModelBatch> batch_) {
 
     SCOPED_STOPWATCH
 
@@ -463,7 +467,7 @@ void RevDepthPassSkeletalStage::process(cref<GraphicPassStageContext> ctx_, ptr<
     }
 }
 
-void RevDepthPassSkeletalStage::after(cref<GraphicPassStageContext> ctx_) {
+void RevDepthPassSkeletalStage::after(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
 
     SCOPED_STOPWATCH
 
@@ -476,7 +480,7 @@ void RevDepthPassSkeletalStage::after(cref<GraphicPassStageContext> ctx_) {
     /**
      * Submit Command Buffer to CommandBatch
      */
-    ctx_.batch.push(*_cmd);
+    stageCtx_.batch.push(*_cmd);
 }
 
 sptr<pipeline::RenderPass> RevDepthPassSkeletalStage::renderPass() const noexcept {

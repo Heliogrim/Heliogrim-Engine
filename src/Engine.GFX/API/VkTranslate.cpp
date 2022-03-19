@@ -119,6 +119,9 @@ vk::Format ember::engine::gfx::api::vkTranslateFormat(TextureFormat format_) {
         case TextureFormat::eR8G8B8A8Unorm: {
             return vk::Format::eR8G8B8A8Unorm;
         }
+        case TextureFormat::eR8G8B8A8Srgb: {
+            return vk::Format::eR8G8B8A8Srgb;
+        }
         case TextureFormat::eB8G8R8A8Unorm: {
             return vk::Format::eB8G8R8A8Unorm;
         }
@@ -133,6 +136,9 @@ vk::Format ember::engine::gfx::api::vkTranslateFormat(TextureFormat format_) {
         }
         case TextureFormat::eR32G32B32A32Sfloat: {
             return vk::Format::eR32G32B32A32Sfloat;
+        }
+        case TextureFormat::eD32Sfloat: {
+            return vk::Format::eD32Sfloat;
         }
         case TextureFormat::eD32SfloatS8Uint: {
             return vk::Format::eD32SfloatS8Uint;
@@ -157,6 +163,9 @@ ember::engine::gfx::TextureFormat ember::engine::gfx::api::vkTranslateFormat(vk:
         case vk::Format::eR8G8B8A8Unorm: {
             return TextureFormat::eR8G8B8A8Unorm;
         }
+        case vk::Format::eR8G8B8A8Srgb: {
+            return TextureFormat::eR8G8B8A8Srgb;
+        }
         case vk::Format::eB8G8R8A8Unorm: {
             return TextureFormat::eB8G8R8A8Unorm;
         }
@@ -171,6 +180,9 @@ ember::engine::gfx::TextureFormat ember::engine::gfx::api::vkTranslateFormat(vk:
         }
         case vk::Format::eR32G32B32A32Sfloat: {
             return TextureFormat::eR32G32B32A32Sfloat;
+        }
+        case vk::Format::eD32Sfloat: {
+            return TextureFormat::eD32Sfloat;
         }
         case vk::Format::eD32SfloatS8Uint: {
             return TextureFormat::eD32SfloatS8Uint;

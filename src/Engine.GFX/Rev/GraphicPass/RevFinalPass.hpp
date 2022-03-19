@@ -39,7 +39,7 @@ namespace ember::engine::gfx {
         void freeWith(const ptr<const RenderInvocation> invocation_, const ptr<RenderInvocationState> state_) override;
 
         void process([[maybe_unused]] _In_ const ptr<scene::RenderGraph> graph_,
-            _Inout_ ref<RenderInvocationState> state_,
+            _In_ const ptr<const RenderContext> ctx_,
             _Inout_ ref<CommandBatch> batch_) override;
 
         /**

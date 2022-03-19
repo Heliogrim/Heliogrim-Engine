@@ -2,6 +2,7 @@
 #include <Engine.Common/Math/Vector.hpp>
 
 namespace ember::engine {
+
     class color :
         public math::fvec4 {
     public:

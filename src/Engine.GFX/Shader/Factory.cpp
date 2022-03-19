@@ -170,7 +170,7 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
          * Create DescriptorLayout
          */
         const vk::DescriptorSetLayoutCreateInfo info {
-            vk::DescriptorSetLayoutCreateFlags(),
+            vk::DescriptorSetLayoutCreateFlags {},
             static_cast<u32>(layoutBindings.size()),
             layoutBindings.data()
         };

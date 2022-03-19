@@ -1,8 +1,8 @@
 #pragma once
 
 #include "RevDepthPass.hpp"
+#include "RevPbrPassModelProcessor.hpp"
 #include "../../GraphicPass/GraphicPass.hpp"
-#include "../../Framebuffer/Framebuffer.hpp"
 
 namespace ember::engine::gfx {
     class RevPbrPass :
@@ -14,11 +14,9 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 27.11.2021
          *
-         * @param depthPass_ The previous depth pass to use
-         *
          * @see GraphicPass::GraphicPass(...)
          */
-        RevPbrPass(cref<sptr<Device>> device_, const ptr<RevDepthPass> depthPass_);
+        RevPbrPass(cref<sptr<Device>> device_);
 
         /**
          * Setups this 
@@ -36,12 +34,22 @@ namespace ember::engine::gfx {
          */
         void destroy() override;
 
+    private:
+        void postProcessAllocated(const ptr<RenderInvocationState> state_) const;
+
     public:
         void allocateWith(const ptr<const RenderInvocation> invocation_,
             const ptr<RenderInvocationState> state_) override;
 
         void freeWith(const ptr<const RenderInvocation> invocation_, const ptr<RenderInvocationState> state_) override;
 
+    private:
+        /**
+         *
+         */
+        RevPbrPassModelProcessor _processor;
+
+    public:
         /**
          * Creates a GraphicPassModelProcessor
          *
@@ -51,8 +59,5 @@ namespace ember::engine::gfx {
          * @returns A GraphicPassModelProcessor.
          */
         ptr<GraphicPassModelProcessor> processor() noexcept override;
-
-    private:
-        ptr<RevDepthPass> _depthPass;
     };
 }

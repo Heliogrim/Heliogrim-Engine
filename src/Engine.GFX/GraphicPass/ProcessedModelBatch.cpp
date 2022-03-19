@@ -19,6 +19,10 @@ cref<SharedBind> ProcessedModelBatch::bind() const noexcept {
     return _bind;
 }
 
+ref<SharedBind> ProcessedModelBatch::bind() noexcept {
+    return _bind;
+}
+
 cref<Vector<ExecutionRow>> ProcessedModelBatch::executions() const noexcept {
     return _executions;
 }

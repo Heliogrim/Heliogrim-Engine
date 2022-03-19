@@ -14,6 +14,7 @@
 #include "../../Shader/DiscreteBinding.hpp"
 #include "../../Shader/Factory.hpp"
 #include "../../Shader/ShaderStorage.hpp"
+#include "__macro.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -41,6 +42,12 @@ void RevDepthPassStaticStage::setupShader() {
         shader::BindingUpdateInterval::ePerFrame,
         "staticDepthPassUbo"
     };
+    shader::PrototypeBinding mubo {
+        shader::BindingType::eStorageBuffer,
+        2,
+        shader::BindingUpdateInterval::ePerFrame,
+        "staticDepthPassModel"
+    };
 
     /**
      * Prepare Prototype Shader
@@ -50,6 +57,7 @@ void RevDepthPassStaticStage::setupShader() {
     auto vertexShaderCode { read_shader_file("resources/shader/depthpass_static.vert.spv") };
     vertexPrototype.storeCode(vertexShaderCode.data(), vertexShaderCode.size());
     vertexPrototype.add(ubo);
+    vertexPrototype.add(mubo);
 
     shader::Prototype fragmentPrototype { shader::ShaderType::eFragment, "staticDepthPass" };
 
@@ -75,7 +83,7 @@ void RevDepthPassStaticStage::setupShader() {
     }
 
     /**
-     * Acquire Descriptor Pools
+     * Prepare required Descriptor Pools
      */
     for (const auto& group : factoryResult.groups) {
 
@@ -103,7 +111,7 @@ void RevDepthPassStaticStage::setupShader() {
         }
 
         const vk::DescriptorPoolCreateInfo dpci {
-            vk::DescriptorPoolCreateFlags {},
+            vk::DescriptorPoolCreateFlagBits::eUpdateAfterBind,
             1ui32,
             static_cast<u32>(sizes.size()),
             sizeMem
@@ -128,7 +136,7 @@ void RevDepthPassStaticStage::setup() {
 
     _renderPass->set(0, vk::AttachmentDescription {
         vk::AttachmentDescriptionFlags(),
-        vk::Format::eD32SfloatS8Uint,
+        api::vkTranslateFormat(REV_DEPTH_FORMAT),
         vk::SampleCountFlagBits::e1,
         // Warning: Only first element at framebuffer have to clear attachment memory to reset
         vk::AttachmentLoadOp::eClear,
@@ -136,8 +144,7 @@ void RevDepthPassStaticStage::setup() {
         vk::AttachmentLoadOp::eDontCare,
         vk::AttachmentStoreOp::eDontCare,
         vk::ImageLayout::eUndefined,
-        //vk::ImageLayout::eDepthStencilAttachmentOptimal
-        vk::ImageLayout::eDepthStencilReadOnlyOptimal
+        vk::ImageLayout::eDepthStencilAttachmentOptimal
     });
 
     /**
@@ -175,7 +182,18 @@ void RevDepthPassStaticStage::setup() {
     _pipeline->vertexStage().shaderSlot().name() = "staticDepthPass";
     _pipeline->fragmentStage().shaderSlot().name() = "staticDepthPass";
 
-    _pipeline->rasterizationStage().cullFace() = RasterCullFace::eNone;
+    _pipeline->rasterizationStage().cullFace() = RasterCullFace::eBack;
+    _pipeline->rasterizationStage().depthCompare() = vk::CompareOp::eLess;
+
+    /**
+     * Attention: Need to guarantee invariant from gl_Position calculation
+     *  If not guaranteed, z-fighting will occur
+     *
+     * @see https://stackoverflow.com/a/46920273
+     */
+    // Prevent depth artifacts while re-using depth buffer
+    //_pipeline->rasterizationStage().setDepthBias(1.25F, 0.F, 1.75F);
+    //_pipeline->rasterizationStage().setDepthBias(0.F, 0.F, 1.F);
 
     /**
      *
@@ -419,19 +437,55 @@ bool RevDepthPassStaticStage::check(ptr<const ProcessedModelBatch> batch_) noexc
     return batch_ != nullptr;
 }
 
-void RevDepthPassStaticStage::before(cref<GraphicPassStageContext> ctx_) {
+void RevDepthPassStaticStage::before(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
 
     SCOPED_STOPWATCH
+
+    const auto& data { ctx_->state()->data };
+
+    sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
+        _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
+            data.find("RevDepthPassStaticStage::DiscreteBindingGroups"sv)->second
+        )
+    };
 
     /**
      * Prepare Command Buffer
      */
-    const auto cmdEntry { ctx_.state.data.at("RevDepthPassStaticStage::CommandBuffer"sv) };
+    const auto cmdEntry { data.at("RevDepthPassStaticStage::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
     cmd.begin();
 
-    const auto entry { ctx_.state.data.at("RevDepthPass::Framebuffer"sv) };
+    const auto entry { data.at("RevDepthPass::Framebuffer"sv) };
     auto& frame { *_STD static_pointer_cast<Framebuffer, void>(entry) };
+
+    /**
+     * Update Resources [BindingUpdateInterval::ePerFrame]
+     */
+    const auto uniformEntry { data.at("RevDepthPassStaticStage::UniformBuffer"sv) };
+    auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
+
+    const static math::mat4 clip_matrix = math::mat4(
+        1.0F, 0.0F, 0.0F, 0.0F,
+        0.0F, -1.0F, 0.0F, 0.0F,
+        0.0F, 0.0F, 0.5F, 0.5F,
+        0.0F, 0.0F, 0.5F, 1.0F
+    );
+
+    const auto* camera { ctx_->camera() };
+    math::mat4 mvpc { clip_matrix * camera->projection() * camera->view() * math::mat4::make_identity() };
+    uniform.write<math::mat4>(&mvpc, 1ui32);
+
+    // Warning: Temporary
+    {
+        sptr<Buffer> modelUniform {
+            _STD static_pointer_cast<Buffer, void>(
+                ctx_->state()->data.at("RevDepthPassModelProcessor::InstanceBuffer"sv)
+            )
+        };
+
+        dbgs->back().getById(2).store(*modelUniform);
+    }
 
     /**
      * Temporary
@@ -448,7 +502,7 @@ void RevDepthPassStaticStage::before(cref<GraphicPassStageContext> ctx_) {
             VK_QUEUE_FAMILY_IGNORED,
             tex.buffer().image(),
             vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil,
+                vk::ImageAspectFlagBits::eDepth/* | vk::ImageAspectFlagBits::eStencil*/,
                 0,
                 tex.mipLevels(),
                 0,
@@ -457,8 +511,8 @@ void RevDepthPassStaticStage::before(cref<GraphicPassStageContext> ctx_) {
 
         };
 
-        cmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-            vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
+        cmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe,
+            vk::PipelineStageFlagBits::eEarlyFragmentTests, vk::DependencyFlags {},
             0, nullptr,
             0, nullptr,
             1, &imgBarrier
@@ -479,11 +533,6 @@ void RevDepthPassStaticStage::before(cref<GraphicPassStageContext> ctx_) {
     /**
      * Bind Shared Resources for the whole Frame
      */
-    sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
-        _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
-            ctx_.state.data.find("RevDepthPassStaticStage::DiscreteBindingGroups"sv)->second
-        )
-    };
     for (u32 idx = 0; idx < dbgs->size(); ++idx) {
 
         const auto& grp { (*dbgs)[idx] };
@@ -496,13 +545,16 @@ void RevDepthPassStaticStage::before(cref<GraphicPassStageContext> ctx_) {
     // TODO: Get uniform buffer object and use it for shared descriptor, cause depth pass only uses a ubo, no other resources required yet
 }
 
-void RevDepthPassStaticStage::process(cref<GraphicPassStageContext> ctx_, ptr<const ProcessedModelBatch> batch_) {
+void RevDepthPassStaticStage::process(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_,
+    ptr<const ProcessedModelBatch> batch_) {
 
     SCOPED_STOPWATCH
 
     if (batch_->empty()) {
         return;
     }
+
+    const auto& data { ctx_->state()->data };
 
     // Temporary
     {
@@ -513,32 +565,40 @@ void RevDepthPassStaticStage::process(cref<GraphicPassStageContext> ctx_, ptr<co
     /**
      * Get Command Buffer
      */
-    const auto cmdEntry { ctx_.state.data.at("RevDepthPassStaticStage::CommandBuffer"sv) };
+    const auto cmdEntry { data.at("RevDepthPassStaticStage::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
 
     // TODO: cmd.bindDescriptor(...);
     cmd.bindVertexBuffer(0, batch_->geometry().vertices, 0);
-    // TODO: _cmd->bindVertexBuffer(1, batch_->geometry().instances, 0);
     cmd.bindIndexBuffer(batch_->geometry().indices, 0);
 
     for (const auto& entry : batch_->executions()) {
 
         cref<DistinctBind> db = entry.bind;
-
         cref<DistinctGeometry> dg = entry.geometry;
-        // _cmd->drawIndexed(dg.instanceCount, dg.instanceOffset, dg.indexCount, dg.indexOffset, 0ui32);
-        cmd.draw(1, 0, 6, 0);
+
+        /**
+         *
+         */
+        // TODO: Descriptor Bindings
+
+        /**
+         * Draw Call
+         */
+        cmd.drawIndexed(dg.instanceCount, dg.instanceOffset, dg.indexCount, dg.indexOffset, 0ui32);
     }
 }
 
-void RevDepthPassStaticStage::after(cref<GraphicPassStageContext> ctx_) {
+void RevDepthPassStaticStage::after(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
 
     SCOPED_STOPWATCH
+
+    const auto& data { ctx_->state()->data };
 
     /**
      * Get Command Buffer
      */
-    const auto cmdEntry { ctx_.state.data.at("RevDepthPassStaticStage::CommandBuffer"sv) };
+    const auto cmdEntry { data.at("RevDepthPassStaticStage::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
 
     /**
@@ -550,7 +610,7 @@ void RevDepthPassStaticStage::after(cref<GraphicPassStageContext> ctx_) {
     /**
      * Submit Command Buffer to CommandBatch
      */
-    ctx_.batch.push(cmd);
+    stageCtx_.batch.push(cmd);
 }
 
 sptr<pipeline::RenderPass> RevDepthPassStaticStage::renderPass() const noexcept {

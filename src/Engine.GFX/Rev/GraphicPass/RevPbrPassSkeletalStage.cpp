@@ -143,7 +143,7 @@ bool RevPbrPassSkeletalStage::check(ptr<const ProcessedModelBatch> batch_) noexc
     return batch_ != nullptr;
 }
 
-void RevPbrPassSkeletalStage::before(cref<GraphicPassStageContext> ctx_) {
+void RevPbrPassSkeletalStage::before(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
 
     SCOPED_STOPWATCH
 
@@ -152,7 +152,7 @@ void RevPbrPassSkeletalStage::before(cref<GraphicPassStageContext> ctx_) {
      */
     _cmd->begin();
 
-    const auto entry { ctx_.state.data.at("RevPbrPass::Framebuffer"sv) };
+    const auto entry { ctx_->state()->data.at("RevPbrPass::Framebuffer"sv) };
     auto& frame { *_STD static_pointer_cast<Framebuffer, void>(entry) };
 
     _cmd->beginRenderPass(*_renderPass, frame);
@@ -164,7 +164,8 @@ void RevPbrPassSkeletalStage::before(cref<GraphicPassStageContext> ctx_) {
     });
 }
 
-void RevPbrPassSkeletalStage::process(cref<GraphicPassStageContext> ctx_, ptr<const ProcessedModelBatch> batch_) {
+void RevPbrPassSkeletalStage::process(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_,
+    ptr<const ProcessedModelBatch> batch_) {
 
     SCOPED_STOPWATCH
 
@@ -186,7 +187,7 @@ void RevPbrPassSkeletalStage::process(cref<GraphicPassStageContext> ctx_, ptr<co
     }
 }
 
-void RevPbrPassSkeletalStage::after(cref<GraphicPassStageContext> ctx_) {
+void RevPbrPassSkeletalStage::after(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
 
     SCOPED_STOPWATCH
 
@@ -199,7 +200,7 @@ void RevPbrPassSkeletalStage::after(cref<GraphicPassStageContext> ctx_) {
     /**
      * Submit Command Buffer to CommandBatch
      */
-    ctx_.batch.push(*_cmd);
+    stageCtx_.batch.push(*_cmd);
 }
 
 sptr<FixedPipeline> RevPbrPassSkeletalStage::pipeline() const noexcept {

@@ -161,6 +161,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevFinalPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevLightPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassModelProcessor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassSkeletalStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassStaticStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevProbePass.cpp" />
@@ -275,6 +276,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\RasterPolyMode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RasterSamples.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RayTracePipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderContext.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderInvocation.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\Renderer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderInvocationData.hpp" />
@@ -290,9 +292,11 @@
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevFinalPassCompositeStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevLightPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassModelProcessor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassSkeletalStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassStaticStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevProbePass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\__macro.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevRenderer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\LandscapeGeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.hpp" />

@@ -70,6 +70,10 @@ cref<sptr<RenderInvocationState>> RenderInvocation::state() const noexcept {
     return _state;
 }
 
+ref<decltype(RenderInvocation::_lastSignals)> RenderInvocation::lastSignals() noexcept {
+    return _lastSignals;
+}
+
 bool RenderInvocation::storeSync(mref<vk::Fence> fence_) {
 
     /**

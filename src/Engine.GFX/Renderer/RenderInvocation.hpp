@@ -28,6 +28,7 @@ namespace ember::engine::gfx {
 
         RenderInvocation(cref<this_type>) = delete;
 
+        // Warning: explicitly defaulted move constructor is implicitly deleted [-Wdefaulted-function-deleted]	Ember	R:\Development\C++\Vulkan API\Game\src\Engine.GFX\Renderer\RenderInvocation.hpp	31
         RenderInvocation(mref<this_type> other_) noexcept = default;
 
         ~RenderInvocation();
@@ -68,6 +69,15 @@ namespace ember::engine::gfx {
 
     public:
         [[nodiscard]] cref<sptr<RenderInvocationState>> state() const noexcept;
+
+        /**
+         * TODO: Refactor to cleanup RenderInvocation Interface
+         */
+    private:
+        Vector<vk::Semaphore> _lastSignals;
+
+    public:
+        [[nodiscard]] ref<decltype(_lastSignals)> lastSignals() noexcept;
 
     private:
         _STD atomic_ptrdiff_t _sync;

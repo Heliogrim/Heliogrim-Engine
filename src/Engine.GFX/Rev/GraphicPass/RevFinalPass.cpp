@@ -107,12 +107,12 @@ void RevFinalPass::freeWith(const ptr<const RenderInvocation> invocation_, const
     }
 }
 
-void RevFinalPass::process(const ptr<scene::RenderGraph> graph_, ref<RenderInvocationState> state_,
+void RevFinalPass::process(const ptr<scene::RenderGraph> graph_, const ptr<const RenderContext> ctx_,
     ref<CommandBatch> batch_) {
 
     SCOPED_STOPWATCH
 
-    _pipeline.process(nullptr, state_, batch_);
+    _pipeline.process(nullptr, ctx_, batch_);
 }
 
 ptr<GraphicPassModelProcessor> RevFinalPass::processor() noexcept {

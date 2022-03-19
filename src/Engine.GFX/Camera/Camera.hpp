@@ -3,6 +3,7 @@
 #include <Engine.Common/Math/Matrix.hpp>
 
 namespace ember::engine::gfx {
+
     class Camera {
     public:
         /**

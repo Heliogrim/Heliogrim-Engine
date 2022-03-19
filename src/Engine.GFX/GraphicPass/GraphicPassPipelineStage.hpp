@@ -3,8 +3,8 @@
 
 #include "GraphicPassStageContext.hpp"
 #include "ProcessedModelBatch.hpp"
-#include "../Swapchain/Swapchain.hpp"
 #include "../Renderer/RenderInvocation.hpp"
+#include "../Renderer/RenderContext.hpp"
 
 namespace ember::engine::gfx {
 
@@ -80,9 +80,10 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 12.02.2021
          *
-         * @param  ctx_ The context.
+         * @param  ctx_ The RenderContext containing the resources, scene, camera and target data.
+         * @param  stageCtx_ The current GraphicPassStageContext.
          */
-        virtual void before(cref<GraphicPassStageContext> ctx_) = 0;
+        virtual void before(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) = 0;
 
         /**
          * Process the given batch_
@@ -90,10 +91,12 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 17.01.2021
          *
-         * @param  ctx_ The context.
+         * @param  ctx_ The RenderContext containing the resources, scene, camera and target data.
+         * @param  stageCtx_ The current GraphicPassStageContext.
          * @param  batch_ The batch.
          */
-        virtual void process(cref<GraphicPassStageContext> ctx_, ptr<const ProcessedModelBatch> batch_) = 0;
+        virtual void process(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_,
+            ptr<const ProcessedModelBatch> batch_) = 0;
 
         /**
          * Postprocess for Batches.
@@ -103,8 +106,9 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 12.02.2021
          *
-         * @param  ctx_ The context.
+         * @param  ctx_ The RenderContext containing the resources, scene, camera and target data.
+         * @param  stageCtx_ The current GraphicPassStageContext.
          */
-        virtual void after(cref<GraphicPassStageContext> ctx_) = 0;
+        virtual void after(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) = 0;
     };
 }

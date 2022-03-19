@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 #include "../stdafx.h"
 
 namespace ember::concurrent {

@@ -6,12 +6,14 @@ ActorComponent::ActorComponent(mref<component_type_id> typeId_, mref<CachedActor
     mref<ptr<ActorComponent>> parent_) :
     LogicComponent(_STD move(typeId_)),
     _owner(_STD move(owner_)),
-    _parent(_STD move(parent_)) {}
+    _parent(_STD move(parent_)),
+    _worldTransform({}, {}, math::vec3 { 1.F }) {}
 
 ActorComponent::ActorComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_) :
     LogicComponent(component_type_id { type_id }),
     _owner(_STD move(owner_)),
-    _parent(_STD move(parent_)) {}
+    _parent(_STD move(parent_)),
+    _worldTransform({}, {}, math::vec3 { 1.F }) {}
 
 ptr<Actor> ActorComponent::getOwner() const noexcept {
     return _owner.cached;
