@@ -1,21 +1,21 @@
-#include "RevPbrPassSkeletalStage.hpp"
+#include "RevMainPassSkeletalStage.hpp"
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-#include "RevPbrPass.hpp"
+#include "RevMainPass.hpp"
 #include "../../Graphics.hpp"
 #include "../../VkFixedPipeline.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
 
-RevPbrPassSkeletalStage::RevPbrPassSkeletalStage(ptr<RevPbrPass> graphicPass_) :
+RevMainPassSkeletalStage::RevMainPassSkeletalStage(ptr<RevMainPass> graphicPass_) :
     GraphicPassPipelineStage(),
     _graphicPass(graphicPass_) {}
 
-void RevPbrPassSkeletalStage::setup() {
+void RevMainPassSkeletalStage::setup() {
 
     SCOPED_STOPWATCH
 
@@ -29,7 +29,7 @@ void RevPbrPassSkeletalStage::setup() {
     /**
      * Render Pass
      */
-    _renderPass = make_sptr<pipeline::RenderPass>(device);
+    _renderPass = make_sptr<pipeline::ApiRenderPass>(device);
     assert(_renderPass);
 
     _renderPass->set(0, vk::AttachmentDescription {
@@ -94,8 +94,8 @@ void RevPbrPassSkeletalStage::setup() {
     _pipeline->topology() = PrimitiveTopology::eTriangleList;
     _pipeline->viewport() = Viewport {};
 
-    _pipeline->vertexStage().shaderSlot().name() = "skeletal_pbr";
-    _pipeline->fragmentStage().shaderSlot().name() = "skeletal_pbr";
+    _pipeline->vertexStage().shaderSlot().name() = "skeletal_main";
+    _pipeline->fragmentStage().shaderSlot().name() = "skeletal_main";
 
     _pipeline->rasterizationStage().cullFace() = RasterCullFace::eBack;
 
@@ -105,7 +105,7 @@ void RevPbrPassSkeletalStage::setup() {
     _pipeline->setup();
 }
 
-void RevPbrPassSkeletalStage::destroy() noexcept {
+void RevMainPassSkeletalStage::destroy() noexcept {
 
     SCOPED_STOPWATCH
 
@@ -133,17 +133,17 @@ void RevPbrPassSkeletalStage::destroy() noexcept {
     }
 }
 
-void RevPbrPassSkeletalStage::allocateWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {}
+void RevMainPassSkeletalStage::allocateWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {}
 
-void RevPbrPassSkeletalStage::freeWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {}
+void RevMainPassSkeletalStage::freeWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {}
 
-bool RevPbrPassSkeletalStage::check(ptr<const ProcessedModelBatch> batch_) noexcept {
+bool RevMainPassSkeletalStage::check(ptr<const ProcessedModelBatch> batch_) noexcept {
     return batch_ != nullptr;
 }
 
-void RevPbrPassSkeletalStage::before(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
+void RevMainPassSkeletalStage::before(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
 
     SCOPED_STOPWATCH
 
@@ -152,7 +152,7 @@ void RevPbrPassSkeletalStage::before(const ptr<const RenderContext> ctx_, cref<G
      */
     _cmd->begin();
 
-    const auto entry { ctx_->state()->data.at("RevPbrPass::Framebuffer"sv) };
+    const auto entry { ctx_->state()->data.at("RevMainPass::Framebuffer"sv) };
     auto& frame { *_STD static_pointer_cast<Framebuffer, void>(entry) };
 
     _cmd->beginRenderPass(*_renderPass, frame);
@@ -164,7 +164,7 @@ void RevPbrPassSkeletalStage::before(const ptr<const RenderContext> ctx_, cref<G
     });
 }
 
-void RevPbrPassSkeletalStage::process(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_,
+void RevMainPassSkeletalStage::process(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_,
     ptr<const ProcessedModelBatch> batch_) {
 
     SCOPED_STOPWATCH
@@ -187,7 +187,7 @@ void RevPbrPassSkeletalStage::process(const ptr<const RenderContext> ctx_, cref<
     }
 }
 
-void RevPbrPassSkeletalStage::after(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
+void RevMainPassSkeletalStage::after(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
 
     SCOPED_STOPWATCH
 
@@ -203,6 +203,6 @@ void RevPbrPassSkeletalStage::after(const ptr<const RenderContext> ctx_, cref<Gr
     stageCtx_.batch.push(*_cmd);
 }
 
-sptr<FixedPipeline> RevPbrPassSkeletalStage::pipeline() const noexcept {
+sptr<FixedPipeline> RevMainPassSkeletalStage::pipeline() const noexcept {
     return _pipeline;
 }

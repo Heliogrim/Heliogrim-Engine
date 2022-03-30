@@ -7,8 +7,8 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-void GraphicPassPipeline::allocateWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void GraphicPassPipeline::allocateWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
     /**
      *
      */
@@ -17,8 +17,8 @@ void GraphicPassPipeline::allocateWith(const ptr<const RenderInvocation> invocat
     }
 }
 
-void GraphicPassPipeline::freeWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void GraphicPassPipeline::freeWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
     /**
      *
      */

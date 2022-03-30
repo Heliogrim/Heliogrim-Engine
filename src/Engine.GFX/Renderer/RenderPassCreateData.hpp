@@ -7,7 +7,7 @@
 
 namespace ember::engine::gfx {
 
-    struct RenderInvocationData {
+    struct RenderPassCreateData {
 
         ptr<Texture> target;
 

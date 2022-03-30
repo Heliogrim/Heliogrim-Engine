@@ -12,26 +12,26 @@ namespace ember::engine::gfx {
      * Forward Declaration
      */
     class Renderer;
-    struct RenderInvocationData;
-    struct RenderInvocationState;
+    struct RenderPassCreateData;
+    struct RenderPassState;
 }
 
 namespace ember::engine::gfx {
 
-    class RenderInvocation {
+    class RenderPass {
     public:
-        using this_type = RenderInvocation;
+        using this_type = RenderPass;
 
     public:
-        RenderInvocation(const non_owning_rptr<Renderer> renderer_, RenderInvocationData data_,
-            const sptr<RenderInvocationState> state_);
+        RenderPass(const non_owning_rptr<Renderer> renderer_, RenderPassCreateData data_,
+            const sptr<RenderPassState> state_);
 
-        RenderInvocation(cref<this_type>) = delete;
+        RenderPass(cref<this_type>) = delete;
 
-        // Warning: explicitly defaulted move constructor is implicitly deleted [-Wdefaulted-function-deleted]	Ember	R:\Development\C++\Vulkan API\Game\src\Engine.GFX\Renderer\RenderInvocation.hpp	31
-        RenderInvocation(mref<this_type> other_) noexcept = default;
+        // Warning: explicitly defaulted move constructor is implicitly deleted [-Wdefaulted-function-deleted]	Ember	R:\Development\C++\Vulkan API\Game\src\Engine.GFX\Renderer\RenderPass.hpp	31
+        RenderPass(mref<this_type> other_) noexcept = default;
 
-        ~RenderInvocation();
+        ~RenderPass();
 
     private:
         void tidy();
@@ -65,13 +65,13 @@ namespace ember::engine::gfx {
         [[nodiscard]] const non_owning_rptr<Renderer> renderer() const noexcept;
 
     private:
-        sptr<RenderInvocationState> _state;
+        sptr<RenderPassState> _state;
 
     public:
-        [[nodiscard]] cref<sptr<RenderInvocationState>> state() const noexcept;
+        [[nodiscard]] cref<sptr<RenderPassState>> state() const noexcept;
 
         /**
-         * TODO: Refactor to cleanup RenderInvocation Interface
+         * TODO: Refactor to cleanup RenderPass Interface
          */
     private:
         Vector<vk::Semaphore> _lastSignals;
@@ -90,5 +90,5 @@ namespace ember::engine::gfx {
         [[nodiscard]] bool await() const noexcept;
     };
 
-    static_assert(scheduler::fiber::IsAwaitable<RenderInvocation>);
+    static_assert(scheduler::fiber::IsAwaitable<RenderPass>);
 }

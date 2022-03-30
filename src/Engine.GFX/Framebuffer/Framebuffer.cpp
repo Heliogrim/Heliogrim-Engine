@@ -10,7 +10,7 @@ Framebuffer::Framebuffer(mref<Framebuffer> other_) noexcept :
     _attachments(_STD move(other_._attachments)),
     _extent(_STD exchange(other_._extent, math::uivec3 {})),
     _device(_STD move(other_._device)),
-    _renderPass(_STD exchange(other_._renderPass, wptr<pipeline::RenderPass>())),
+    _renderPass(_STD exchange(other_._renderPass, wptr<pipeline::ApiRenderPass>())),
     _vkFramebuffer(_STD exchange(other_._vkFramebuffer, nullptr)) { }
 
 Framebuffer::~Framebuffer() noexcept {
@@ -93,11 +93,11 @@ cref<sptr<Device>> Framebuffer::device() const noexcept {
     return _device;
 }
 
-cref<wptr<pipeline::RenderPass>> Framebuffer::renderPass() const noexcept {
+cref<wptr<pipeline::ApiRenderPass>> Framebuffer::renderPass() const noexcept {
     return _renderPass;
 }
 
-void Framebuffer::setRenderPass(wptr<pipeline::RenderPass> renderPass_) {
+void Framebuffer::setRenderPass(wptr<pipeline::ApiRenderPass> renderPass_) {
     _renderPass = renderPass_;
 }
 

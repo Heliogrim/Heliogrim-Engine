@@ -7,7 +7,7 @@
 namespace ember::engine {
 
     class Scheduler final {
-    private:
+    public:
         using aligned_worker = ALIGNED(scheduler::worker::Worker, CACHE_LINE_SIZE);
         using fiber_pool_type = scheduler::fiber::FiberPool;
 

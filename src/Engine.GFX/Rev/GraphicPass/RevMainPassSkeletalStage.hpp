@@ -1,17 +1,16 @@
 #pragma once
 #include "../../GraphicPass/GraphicPassPipelineStage.hpp"
 #include "../../FixedPipeline.hpp"
-#include "../../Pipeline/RenderPass.hpp"
-#include "../../Shader/DiscreteBindingGroup.hpp"
+#include "../../Pipeline/ApiRenderPass.hpp"
 
 namespace ember::engine::gfx {
 
     /**
      * Forward Declaration
      */
-    class RevPbrPass;
+    class RevMainPass;
 
-    class RevPbrPassStaticStage final :
+    class RevMainPassSkeletalStage final :
         public GraphicPassPipelineStage {
     public:
         /**
@@ -22,12 +21,8 @@ namespace ember::engine::gfx {
          *
          * @param  graphicPass_ The graphic pass.
          */
-        RevPbrPassStaticStage(ptr<RevPbrPass> graphicPass_);
+        RevMainPassSkeletalStage(ptr<RevMainPass> graphicPass_);
 
-    private:
-        void setupShader();
-
-    public:
         /**
          * Setups this 
          *
@@ -45,10 +40,10 @@ namespace ember::engine::gfx {
         void destroy() noexcept override;
 
     public:
-        void allocateWith(const ptr<const RenderInvocation> invocation_,
-            const ptr<RenderInvocationState> state_) override;
+        void allocateWith(const ptr<const RenderPass> invocation_,
+            const ptr<RenderPassState> state_) override;
 
-        void freeWith(const ptr<const RenderInvocation> invocation_, const ptr<RenderInvocationState> state_) override;
+        void freeWith(const ptr<const RenderPass> invocation_, const ptr<RenderPassState> state_) override;
 
     public:
         /**
@@ -84,24 +79,19 @@ namespace ember::engine::gfx {
         /**
          * Graphic Pass
          */
-        ptr<RevPbrPass> _graphicPass;
+        ptr<RevMainPass> _graphicPass;
+
+    private:
+        /**
+         * Command Buffer
+         */
+        sptr<CommandBuffer> _cmd;
 
     private:
         /**
          * Render Pass
          */
-        sptr<pipeline::RenderPass> _renderPass;
-
-    public:
-        /**
-         * Renders the pass
-         *
-         * @author Julius
-         * @date 04.02.2021
-         *
-         * @returns A sptr&lt;pipeline::RenderPass&gt;
-         */
-        [[nodiscard]] sptr<pipeline::RenderPass> renderPass() const noexcept;
+        sptr<pipeline::ApiRenderPass> _renderPass;
 
     private:
         /**
@@ -119,9 +109,5 @@ namespace ember::engine::gfx {
          * @returns A sptr&lt;FixedPipeline&gt;
          */
         [[nodiscard]] sptr<FixedPipeline> pipeline() const noexcept;
-
-    private:
-        Vector<vk::DescriptorPoolCreateInfo> _requiredDescriptorPools;
-        Vector<shader::ShaderBindingGroup> _requiredBindingGroups;
     };
 }

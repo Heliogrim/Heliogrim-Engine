@@ -3,7 +3,7 @@
 
 #include "GraphicPassStageContext.hpp"
 #include "ProcessedModelBatch.hpp"
-#include "../Renderer/RenderInvocation.hpp"
+#include "../Renderer/RenderPass.hpp"
 #include "../Renderer/RenderContext.hpp"
 
 namespace ember::engine::gfx {
@@ -44,8 +44,8 @@ namespace ember::engine::gfx {
          * @param invocation_ The RenderInvocation used as source data
          * @param state_ The RenderInvocationState where to allocate the resources
          */
-        virtual void allocateWith(const ptr<const RenderInvocation> invocation_,
-            const ptr<RenderInvocationState> state_) = 0;
+        virtual void allocateWith(const ptr<const RenderPass> invocation_,
+            const ptr<RenderPassState> state_) = 0;
 
         /**
          * Frees the given resources allocated by this stage from the given state
@@ -56,8 +56,8 @@ namespace ember::engine::gfx {
          * @param invocation_ The RenderInvocation the allocated data is based on
          * @param state_ The RenderInvocationState where to free the resources from
          */
-        virtual void freeWith(const ptr<const RenderInvocation> invocation_,
-            const ptr<RenderInvocationState> state_) = 0;
+        virtual void freeWith(const ptr<const RenderPass> invocation_,
+            const ptr<RenderPassState> state_) = 0;
 
     public:
         /**

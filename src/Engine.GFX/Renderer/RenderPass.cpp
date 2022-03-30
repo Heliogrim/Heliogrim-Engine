@@ -1,24 +1,24 @@
-#include "RenderInvocation.hpp"
+#include "RenderPass.hpp"
 
 #include "Renderer.hpp"
-#include "RenderInvocationData.hpp"
+#include "RenderPassCreateData.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
 
-RenderInvocation::RenderInvocation(const non_owning_rptr<Renderer> renderer_, RenderInvocationData data_,
-    const sptr<RenderInvocationState> state_) :
+RenderPass::RenderPass(const non_owning_rptr<Renderer> renderer_, RenderPassCreateData data_,
+    const sptr<RenderPassState> state_) :
     _scene(data_.scene),
     _camera(data_.camera),
     _target(data_.target),
     _renderer(renderer_),
     _state(state_) {}
 
-RenderInvocation::~RenderInvocation() {
+RenderPass::~RenderPass() {
     tidy();
 }
 
-void RenderInvocation::tidy() {
+void RenderPass::tidy() {
 
     if (_sync.load()) {
         auto* fence { reinterpret_cast<ptr<vk::Fence>>(_sync.load()) };
@@ -30,11 +30,11 @@ void RenderInvocation::tidy() {
     }
 }
 
-const ptr<engine::scene::IRenderScene> RenderInvocation::scene() const noexcept {
+const ptr<engine::scene::IRenderScene> RenderPass::scene() const noexcept {
     return _scene;
 }
 
-bool RenderInvocation::use(const ptr<scene::IRenderScene> scene_) noexcept {
+bool RenderPass::use(const ptr<scene::IRenderScene> scene_) noexcept {
 
     if (!await()) {
         return false;
@@ -44,11 +44,11 @@ bool RenderInvocation::use(const ptr<scene::IRenderScene> scene_) noexcept {
     return true;
 }
 
-const ptr<Camera> RenderInvocation::camera() const noexcept {
+const ptr<Camera> RenderPass::camera() const noexcept {
     return _camera;
 }
 
-bool RenderInvocation::use(const ptr<Camera> camera_) noexcept {
+bool RenderPass::use(const ptr<Camera> camera_) noexcept {
 
     if (!await()) {
         return false;
@@ -58,23 +58,23 @@ bool RenderInvocation::use(const ptr<Camera> camera_) noexcept {
     return true;
 }
 
-const ptr<Texture> RenderInvocation::target() const noexcept {
+const ptr<Texture> RenderPass::target() const noexcept {
     return _target;
 }
 
-const non_owning_rptr<Renderer> RenderInvocation::renderer() const noexcept {
+const non_owning_rptr<Renderer> RenderPass::renderer() const noexcept {
     return _renderer;
 }
 
-cref<sptr<RenderInvocationState>> RenderInvocation::state() const noexcept {
+cref<sptr<RenderPassState>> RenderPass::state() const noexcept {
     return _state;
 }
 
-ref<decltype(RenderInvocation::_lastSignals)> RenderInvocation::lastSignals() noexcept {
+ref<decltype(RenderPass::_lastSignals)> RenderPass::lastSignals() noexcept {
     return _lastSignals;
 }
 
-bool RenderInvocation::storeSync(mref<vk::Fence> fence_) {
+bool RenderPass::storeSync(mref<vk::Fence> fence_) {
 
     /**
      * Precheck
@@ -106,7 +106,7 @@ bool RenderInvocation::storeSync(mref<vk::Fence> fence_) {
     return false;
 }
 
-vk::Fence RenderInvocation::unsafeSync() const noexcept {
+vk::Fence RenderPass::unsafeSync() const noexcept {
 
     const auto value { _sync.load() };
     if (!value) {
@@ -116,7 +116,7 @@ vk::Fence RenderInvocation::unsafeSync() const noexcept {
     return *reinterpret_cast<ptr<vk::Fence>>(value);
 }
 
-bool RenderInvocation::await() const noexcept {
+bool RenderPass::await() const noexcept {
 
     auto value { _sync.load() };
     if (!value) {

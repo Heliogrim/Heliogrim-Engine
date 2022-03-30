@@ -1,28 +1,32 @@
 #pragma once
 #include "../../GraphicPass/GraphicPassPipelineStage.hpp"
 #include "../../FixedPipeline.hpp"
-#include "../../Pipeline/RenderPass.hpp"
+#include "../../Shader/DiscreteBindingGroup.hpp"
 
 namespace ember::engine::gfx {
 
     /**
      * Forward Declaration
      */
-    class RevPbrPass;
+    class RevMainPass;
 
-    class RevPbrPassSkeletalStage final :
+    class RevMainPassSkyStage final :
         public GraphicPassPipelineStage {
     public:
         /**
          * Constructor
          *
          * @author Julius
-         * @date 12.02.2021
+         * @date 26.03.2022
          *
          * @param  graphicPass_ The graphic pass.
          */
-        RevPbrPassSkeletalStage(ptr<RevPbrPass> graphicPass_);
+        RevMainPassSkyStage(ptr<RevMainPass> graphicPass_);
 
+    private:
+        void setupShader();
+
+    public:
         /**
          * Setups this 
          *
@@ -40,10 +44,10 @@ namespace ember::engine::gfx {
         void destroy() noexcept override;
 
     public:
-        void allocateWith(const ptr<const RenderInvocation> invocation_,
-            const ptr<RenderInvocationState> state_) override;
+        void allocateWith(const ptr<const RenderPass> invocation_,
+            const ptr<RenderPassState> state_) override;
 
-        void freeWith(const ptr<const RenderInvocation> invocation_, const ptr<RenderInvocationState> state_) override;
+        void freeWith(const ptr<const RenderPass> invocation_, const ptr<RenderPassState> state_) override;
 
     public:
         /**
@@ -79,19 +83,7 @@ namespace ember::engine::gfx {
         /**
          * Graphic Pass
          */
-        ptr<RevPbrPass> _graphicPass;
-
-    private:
-        /**
-         * Command Buffer
-         */
-        sptr<CommandBuffer> _cmd;
-
-    private:
-        /**
-         * Render Pass
-         */
-        sptr<pipeline::RenderPass> _renderPass;
+        ptr<RevMainPass> _graphicPass;
 
     private:
         /**
@@ -109,5 +101,9 @@ namespace ember::engine::gfx {
          * @returns A sptr&lt;FixedPipeline&gt;
          */
         [[nodiscard]] sptr<FixedPipeline> pipeline() const noexcept;
+
+    private:
+        Vector<vk::DescriptorPoolCreateInfo> _requiredDescriptorPools;
+        Vector<shader::ShaderBindingGroup> _requiredBindingGroups;
     };
 }

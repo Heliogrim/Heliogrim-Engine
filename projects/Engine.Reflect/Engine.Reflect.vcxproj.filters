@@ -24,6 +24,9 @@
     <ClInclude Include="..\..\src\Engine.Reflect\EmberStruct.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Reflect.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflect\EmberObject.cpp">

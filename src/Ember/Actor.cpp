@@ -13,6 +13,16 @@ Actor::Actor() noexcept :
     _rootComponent(nullptr),
     _components() {}
 
+Actor::Actor(mref<Actor> other_) :
+    _guid(_STD move(other_._guid)),
+    _rootComponent(_STD move(other_._rootComponent)),
+    _components(_STD move(other_._components)) {
+
+    assert(_guid == invalid_actor_guid && other_._guid == invalid_actor_guid);
+    assert(_rootComponent == other_._rootComponent && _rootComponent == nullptr);
+    assert(_components.empty() && other_._components.empty());
+}
+
 Actor::~Actor() noexcept = default;
 
 actor_guid Actor::guid() const noexcept {

@@ -22,7 +22,9 @@
 
 #include "Assets/GfxMaterials/ForestGround01.hpp"
 #include "Assets/Meshes/CubeD1.hpp"
+#include "Assets/Meshes/Cylinder.hpp"
 #include "Assets/Meshes/PlaneD128.hpp"
+#include "Assets/Meshes/Sphere.hpp"
 #include "Ember/Ember.hpp"
 #include "Ember/World.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
@@ -107,6 +109,8 @@ void ember_main_entry() {
         //  will autoregister internal created instance to asset database
         game::assets::meshes::PlaneD128 {};
         game::assets::meshes::CubeD1 {};
+        game::assets::meshes::Sphere {};
+        game::assets::meshes::Cylinder {};
         /*
         auto* tmp = new game::assets::meshes::PlaneD128 {};
         Ember::assets().insert(tmp);
@@ -278,7 +282,7 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
     /**
      *
      */
-    auto queryResult = Ember::assets()[game::assets::meshes::CubeD1::auto_guid()];
+    auto queryResult = Ember::assets()[game::assets::meshes::Cylinder::auto_guid()];
     if (queryResult.flags == AssetDatabaseResultType::eSuccess) {
         comp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&queryResult.value));
     }
@@ -304,9 +308,9 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
 
     auto previous { transform.position() };
 
-    randomPaddedPosition(idx_, rows_, cols_, 0.75F, previous);
+    randomPaddedPosition(idx_, rows_, cols_, 7.5F, previous);
     const_cast<math::Transform&>(transform).setPosition(previous);
-    const_cast<math::Transform&>(transform).setScale(math::vec3_one * 0.2F);
+    const_cast<math::Transform&>(transform).setScale(math::vec3 { 2.F, 0.75F, 2.F });
     /*
     transform.resolveMatrix();
     entity.setTransform(transform);

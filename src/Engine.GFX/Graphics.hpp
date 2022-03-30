@@ -188,7 +188,7 @@ namespace ember::engine {
         ptr<gfx::Renderer> _renderer;
 
     private:
-        Vector<ptr<gfx::RenderInvocation>> _renderPasses;
+        Vector<ptr<gfx::RenderPass>> _renderPasses;
 
         // Warning: Temporary
         ptr<gfx::Camera> _camera;

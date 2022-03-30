@@ -16,7 +16,7 @@ namespace ember::engine::gfx {
 
 namespace ember::engine::gfx::pipeline {
 
-    class RenderPass {
+    class ApiRenderPass {
     public:
         /**
          * Constructor
@@ -26,7 +26,7 @@ namespace ember::engine::gfx::pipeline {
          *
          * @param  device_ The device.
          */
-        RenderPass(sptr<Device> device_) noexcept;
+        ApiRenderPass(sptr<Device> device_) noexcept;
 
         /**
          * Destructor
@@ -34,7 +34,7 @@ namespace ember::engine::gfx::pipeline {
          * @author Julius
          * @date 03.12.2020
          */
-        ~RenderPass() noexcept = default;
+        ~ApiRenderPass() noexcept = default;
 
         /**
          * Setups this

@@ -106,7 +106,7 @@ void Profiler::writeHeader() {
     _output->flush();
 }
 
-Profiler::reference_type profiling::operator<<(Profiler::reference_type self_, cref<ProfileResult> result_) {
+ref<Profiler> profiling::operator<<(ref<Profiler> self_, cref<ProfileResult> result_) {
     self_.writeProfile(result_);
     return self_;
 }

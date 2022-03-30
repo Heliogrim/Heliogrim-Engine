@@ -197,6 +197,20 @@ namespace ember::math {
             return res.scale(scalar_);
         }
 
+        matq4_t<T>& unchecked_scale(const vec3_t<T> scale_) {
+            value[0] *= scale_[0];
+            value[1] *= scale_[1];
+            value[2] *= scale_[2];
+            //value[3] *= scale_[3];
+
+            return *this;
+        }
+
+        matq4_t<T> unchecked_scaled(const vec3_t<T> scale_) {
+            matq4_t<T> res = matq4_t<T>(*this);
+            return res.unchecked_scale(scale_);
+        }
+
         /**
          * Rotates
          *

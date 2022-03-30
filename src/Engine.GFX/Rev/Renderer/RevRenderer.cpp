@@ -1,12 +1,13 @@
 #include "RevRenderer.hpp"
 
-#include "../../Renderer/RenderInvocation.hpp"
+#include "../../Renderer/RenderPass.hpp"
 #include "../../Renderer/RenderPipeline.hpp"
 #include "../GraphicPass/RevDepthPass.hpp"
 #include "../GraphicPass/RevFinalPass.hpp"
 #include "../GraphicPass/RevLightPass.hpp"
-#include "../GraphicPass/RevPbrPass.hpp"
+#include "../GraphicPass/RevMainPass.hpp"
 #include "../GraphicPass/RevProbePass.hpp"
+
 #include "Engine.GFX/GraphicPass/GraphicPassMask.hpp"
 
 using namespace ember::engine::gfx;
@@ -24,7 +25,7 @@ void RevRenderer::setup(cref<sptr<Device>> device_) {
     _pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eDepthPass), new RevDepthPass(device_));
     //_pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eLightPass), new RevLightPass(device_));
     //_pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eProbePass), new RevProbePass(device_));
-    _pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::ePbrPass), new RevPbrPass(device_));
+    _pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eMainPass), new RevMainPass(device_));
     _pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eFinalPass), new RevFinalPass(device_));
 
     _pipeline->setup();

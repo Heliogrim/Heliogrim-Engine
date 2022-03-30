@@ -7,6 +7,10 @@ namespace ember::engine::scene {
     class SceneNodeSubBase :
         public SceneNode<PayloadType_> {
     public:
+        using this_type = SceneNodeSubBase<PayloadType_, NodeSubType_>;
+        using base_type = SceneNode<PayloadType_>;
+
+    public:
         SceneNodeSubBase() noexcept = default;
 
     public:

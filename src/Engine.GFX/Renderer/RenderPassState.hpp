@@ -7,10 +7,8 @@
 
 namespace ember::engine::gfx {
 
-    struct RenderInvocationState {
+    struct RenderPassState {
         ptr<Framebuffer> framebuffer;
-
-        [[deprecated]] u8 swapframe;
 
         ska::bytell_hash_map<_STD string_view, sptr<void>> data;
     };

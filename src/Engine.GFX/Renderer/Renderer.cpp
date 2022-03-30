@@ -2,7 +2,7 @@
 
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
-#include "RenderInvocation.hpp"
+#include "RenderPass.hpp"
 #include "RenderPipeline.hpp"
 
 using namespace ember::engine::gfx;
@@ -16,52 +16,52 @@ cref<sptr<Device>> Renderer::device() const noexcept {
     return _device;
 }
 
-sptr<RenderInvocationState> Renderer::makeInvocationState() const {
+sptr<RenderPassState> Renderer::makeRenderPass() const {
     // TODO:
-    return make_sptr<RenderInvocationState>();
+    return make_sptr<RenderPassState>();
 }
 
-ptr<RenderInvocation> Renderer::allocate(mref<RenderInvocationData> invocation_) {
+ptr<RenderPass> Renderer::allocate(mref<RenderPassCreateData> data_) {
     auto* invocation {
-        new RenderInvocation {
+        new RenderPass {
             this,
-            _STD move(invocation_),
+            _STD move(data_),
             nullptr
         }
     };
 
-    auto state { makeInvocationState() };
+    auto state { makeRenderPass() };
 
     pipeline()->allocateWith(invocation, state.get());
 
     const auto& targetStage { invocation->state() };
-    const_cast<ref<sptr<RenderInvocationState>>>(targetStage).swap(state);
+    const_cast<ref<sptr<RenderPassState>>>(targetStage).swap(state);
 
     return invocation;
 }
 
-void Renderer::free(mref<ptr<RenderInvocation>> invocation_) {
+void Renderer::free(mref<ptr<RenderPass>> renderPass_) {
 
     /**
      *
      */
-    pipeline()->freeWith(invocation_, invocation_->state().get());
+    pipeline()->free(renderPass_, renderPass_->state().get());
 
     /**
      * Warning: Temporary Cleanup for Enforced Synchronization
      */
-    for (const auto& entry : invocation_->lastSignals()) {
+    for (const auto& entry : renderPass_->lastSignals()) {
         _device->vkDevice().destroySemaphore(entry);
     }
 
     /**
      *
      */
-    delete invocation_;
-    invocation_ = nullptr;
+    delete renderPass_;
+    renderPass_ = nullptr;
 }
 
-void Renderer::invokeBatched(const non_owning_rptr<RenderInvocation> invocation_, mref<CommandBatch> batch_) const {
+void Renderer::invokeBatched(const non_owning_rptr<RenderPass> invocation_, mref<CommandBatch> batch_) const {
 
     #ifdef _DEBUG
     assert(invocation_->renderer() == this);
@@ -175,15 +175,15 @@ void Renderer::invokeBatched(const non_owning_rptr<RenderInvocation> invocation_
     }
 }
 
-const non_owning_rptr<RenderInvocation> Renderer::invoke(const non_owning_rptr<RenderInvocation> invocation_) {
+const non_owning_rptr<RenderPass> Renderer::invoke(const non_owning_rptr<RenderPass> renderPass_) {
     /**
      * Forward Invocation with default CommandBatch
      */
-    this->invokeBatched(invocation_, {});
-    return invocation_;
+    this->invokeBatched(renderPass_, {});
+    return renderPass_;
 }
 
-const non_owning_rptr<RenderInvocation> Renderer::invoke(const non_owning_rptr<RenderInvocation> invocation_,
+const non_owning_rptr<RenderPass> Renderer::invoke(const non_owning_rptr<RenderPass> renderPass_,
     cref<CommandBatch> batchLayout_) {
 
     #ifdef _DEBUG
@@ -194,6 +194,6 @@ const non_owning_rptr<RenderInvocation> Renderer::invoke(const non_owning_rptr<R
     /**
      * Forward Invocation with custom CommandBatch
      */
-    this->invokeBatched(invocation_, CommandBatch { batchLayout_ });
-    return invocation_;
+    this->invokeBatched(renderPass_, CommandBatch { batchLayout_ });
+    return renderPass_;
 }

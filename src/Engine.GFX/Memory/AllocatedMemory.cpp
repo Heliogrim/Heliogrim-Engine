@@ -44,7 +44,7 @@ void AllocatedMemory::unmap() {
     mapping = nullptr;
 }
 
-bool AllocatedMemory::write(const ptr<void> data_, const u64 size_) {
+bool AllocatedMemory::write(const ptr<const void> data_, const u64 size_) {
     if (!mapping) {
         return false;
     }

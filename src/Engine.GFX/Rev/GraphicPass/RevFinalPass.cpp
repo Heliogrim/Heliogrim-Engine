@@ -39,8 +39,8 @@ void RevFinalPass::destroy() {
     stages.clear();
 }
 
-void RevFinalPass::allocateWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void RevFinalPass::allocateWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
 
     const auto* factory { TextureFactory::get() };
     const auto* compositeStage { static_cast<ptr<RevFinalPassCompositeStage>>(_pipeline.stages()[0]) };
@@ -78,7 +78,7 @@ void RevFinalPass::allocateWith(const ptr<const RenderInvocation> invocation_,
     GraphicPass::allocateWith(invocation_, state_);
 }
 
-void RevFinalPass::freeWith(const ptr<const RenderInvocation> invocation_, const ptr<RenderInvocationState> state_) {
+void RevFinalPass::freeWith(const ptr<const RenderPass> invocation_, const ptr<RenderPassState> state_) {
     GraphicPass::freeWith(invocation_, state_);
 
     /**

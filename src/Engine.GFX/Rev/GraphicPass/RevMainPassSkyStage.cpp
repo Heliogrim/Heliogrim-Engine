@@ -1,26 +1,28 @@
-#include "RevPbrPassStaticStage.hpp"
+#include "RevMainPassSkyStage.hpp"
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-#include "RevPbrPass.hpp"
-#include "__macro.hpp"
-#include "../../Graphics.hpp"
-#include "../../VkFixedPipeline.hpp"
-#include "../../API/VkTranslate.hpp"
-#include "../../Memory/VkAllocator.hpp"
-#include "../../Shader/Factory.hpp"
+#include "RevMainPass.hpp"
 #include "../../Shader/ShaderStorage.hpp"
+#include "../../Shader/Factory.hpp"
+#include "../../API/VkTranslate.hpp"
+#include "../../VkFixedPipeline.hpp"
+#include "../../Memory/VkAllocator.hpp"
+#include "Engine.GFX/Loader/RevTextureLoader.hpp"
+#include "Engine.GFX/Texture/TextureFactory.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
 
-RevPbrPassStaticStage::RevPbrPassStaticStage(ptr<RevPbrPass> graphicPass_) :
+static Texture testCubeMap {};
+
+RevMainPassSkyStage::RevMainPassSkyStage(ptr<RevMainPass> graphicPass_) :
     GraphicPassPipelineStage(),
     _graphicPass(graphicPass_) {}
 
-void RevPbrPassStaticStage::setupShader() {
+void RevMainPassSkyStage::setupShader() {
 
     auto device { _graphicPass->device() };
 
@@ -31,41 +33,36 @@ void RevPbrPassStaticStage::setupShader() {
     ShaderStorage& shaderStorage { ShaderStorage::get() };
 
     /**
-     * Prepare Protoype Bindings
+     * Prepare Prototype Bindings
      */
     shader::PrototypeBinding ubo {
         shader::BindingType::eUniformBuffer,
         1ui32,
         shader::BindingUpdateInterval::ePerFrame,
-        "staticPbrPassUbo"
+        "skyMainPassUbo"
     };
-    shader::PrototypeBinding mubo {
-        shader::BindingType::eStorageBuffer,
+
+    shader::PrototypeBinding cubeMap {
+        shader::BindingType::eImageSampler,
         2ui32,
-        shader::BindingUpdateInterval::ePerFrame,
-        "staticPbrPassModel"
-    };
-    shader::PrototypeBinding meta {
-        shader::BindingType::eStorageBuffer,
-        3ui32,
-        shader::BindingUpdateInterval::eDedicated,
-        "staticPbrPassMeta"
+        shader::BindingUpdateInterval::eMaterialUpdate,
+        "skyMainPassCubeMap"
     };
 
     /**
      * Prepare Prototype Shader
      */
-    shader::Prototype vertexPrototype { shader::ShaderType::eVertex, "staticPbrPass" };
+    shader::Prototype vertexPrototype { shader::ShaderType::eVertex, "skyMainPass" };
 
-    auto vertexShaderCode { read_shader_file("resources/shader/pbrpass_static.vert.spv") };
+    auto vertexShaderCode { read_shader_file("resources/shader/mainpass_sky.vert.spv") };
     vertexPrototype.storeCode(vertexShaderCode.data(), vertexShaderCode.size());
     vertexPrototype.add(ubo);
-    vertexPrototype.add(mubo);
 
-    shader::Prototype fragmentPrototype { shader::ShaderType::eFragment, "staticPbrPass" };
-    auto fragmentShaderCode { read_shader_file("resources/shader/pbrpass_static.frag.spv") };
+    shader::Prototype fragmentPrototype { shader::ShaderType::eFragment, "skyMainPass" };
+
+    auto fragmentShaderCode { read_shader_file("resources/shader/mainpass_sky.frag.spv") };
     fragmentPrototype.storeCode(fragmentShaderCode.data(), fragmentShaderCode.size());
-    fragmentPrototype.add(meta);
+    fragmentPrototype.add(cubeMap);
 
     /**
      * Build Shader and Bindings
@@ -124,101 +121,30 @@ void RevPbrPassStaticStage::setupShader() {
     }
 }
 
-void RevPbrPassStaticStage::setup() {
+void RevMainPassSkyStage::setup() {
 
     SCOPED_STOPWATCH
 
     auto device = _graphicPass->device();
 
     /**
-     * Render Pass
-     */
-    _renderPass = make_sptr<pipeline::RenderPass>(device);
-    assert(_renderPass);
-
-    // Position Attachment :: Used to store surface positions
-    _renderPass->set(0, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        vk::Format::eR32G32B32A32Sfloat,
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eColorAttachmentOptimal
-    });
-
-    // Normal Attachment :: Used to store surface normals
-    _renderPass->set(1, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        vk::Format::eR32G32B32A32Sfloat,
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eColorAttachmentOptimal
-    });
-
-    // Meta Attachment :: Used to store meta data
-    _renderPass->set(2, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        vk::Format::eR16G16B16A16Sfloat,
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eColorAttachmentOptimal
-    });
-
-    // Depth Attachment :: Pre enriched depth buffer attachment
-    _renderPass->set(3, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        api::vkTranslateFormat(REV_DEPTH_FORMAT),
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eLoad,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eDepthStencilAttachmentOptimal,
-        vk::ImageLayout::eDepthStencilAttachmentOptimal
-    });
-
-    /**
      *
      */
-    _renderPass->setup();
     setupShader();
 
     /**
      * Fixed Pipeline
      */
-    _pipeline = make_sptr<VkFixedPipeline>(device, _renderPass);
+    _pipeline = make_sptr<VkFixedPipeline>(device, _graphicPass->renderPass());
     assert(_pipeline);
 
     _pipeline->topology() = PrimitiveTopology::eTriangleList;
     _pipeline->viewport() = Viewport {};
 
-    _pipeline->inputs().push_back(FixedPipelineInput {
-        0ui8,
-        InputRate::ePerVertex,
-        sizeof(vertex),
-        Vector<InputAttribute> {
-            { 0ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, position)) },
-            { 1ui32, TextureFormat::eR8G8B8Unorm, static_cast<u32>(offsetof(vertex, color)) },
-            { 2ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, uvm)) },
-            { 3ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, normal)) }
-        }
-    });
+    _pipeline->vertexStage().shaderSlot().name() = "skyMainPass";
+    _pipeline->fragmentStage().shaderSlot().name() = "skyMainPass";
 
-    _pipeline->vertexStage().shaderSlot().name() = "staticPbrPass";
-    _pipeline->fragmentStage().shaderSlot().name() = "staticPbrPass";
-
-    _pipeline->rasterizationStage().cullFace() = RasterCullFace::eBack;
+    _pipeline->rasterizationStage().cullFace() = RasterCullFace::eFront;
     _pipeline->rasterizationStage().depthWrite() = false;
 
     auto& blending { static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->blending() };
@@ -234,7 +160,7 @@ void RevPbrPassStaticStage::setup() {
         vk::ColorComponentFlagBits::eA
     };
 
-    for (u8 i = 0; i < 3ui8; ++i) {
+    for (u8 i = 0; i < 4ui8; ++i) {
         blending.push_back(colorState);
     }
 
@@ -242,9 +168,58 @@ void RevPbrPassStaticStage::setup() {
      *
      */
     _pipeline->setup();
+
+    // TODO:
+    if (!testCubeMap) {
+        RevTextureLoader loader { _graphicPass->device() };
+        testCubeMap = loader.__tmp__load({ ""sv, R"(R:\\sky.ktx)" });
+
+        Vector<vk::ImageMemoryBarrier> imgBarriers {};
+        imgBarriers.push_back({
+            vk::AccessFlags {},
+            vk::AccessFlagBits::eShaderRead,
+            vk::ImageLayout::eTransferSrcOptimal,
+            vk::ImageLayout::eShaderReadOnlyOptimal,
+            VK_QUEUE_FAMILY_IGNORED,
+            VK_QUEUE_FAMILY_IGNORED,
+            testCubeMap.buffer().image(),
+            vk::ImageSubresourceRange {
+                vk::ImageAspectFlagBits::eColor,
+                0,
+                testCubeMap.mipLevels(),
+                0,
+                testCubeMap.layer()
+            }
+        });
+
+        auto pool = device->graphicsQueue()->pool();
+        pool->lck().acquire();
+        CommandBuffer iiCmd = pool->make();
+        iiCmd.begin();
+
+        /**
+         * Transform
+         */
+        iiCmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
+            vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
+            0, nullptr,
+            0, nullptr,
+            static_cast<uint32_t>(imgBarriers.size()), imgBarriers.data()
+        );
+
+        iiCmd.end();
+        iiCmd.submitWait();
+        iiCmd.release();
+
+        pool->lck().release();
+
+        testCubeMap.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+
+        TextureFactory::get()->buildView(testCubeMap);
+    }
 }
 
-void RevPbrPassStaticStage::destroy() noexcept {
+void RevMainPassSkyStage::destroy() noexcept {
 
     SCOPED_STOPWATCH
 
@@ -261,19 +236,16 @@ void RevPbrPassStaticStage::destroy() noexcept {
     /**
      *
      */
-    if (_renderPass) {
-        _renderPass->destroy();
-        _renderPass.reset();
-    }
-
-    /**
-     *
-     */
     for (auto& entry : _requiredDescriptorPools) {
         delete[] entry.pPoolSizes;
 
         entry.pPoolSizes = nullptr;
         entry.poolSizeCount = 0ui32;
+    }
+
+    // TODO:
+    if (testCubeMap) {
+        testCubeMap.destroy();
     }
 
     /**
@@ -284,18 +256,13 @@ void RevPbrPassStaticStage::destroy() noexcept {
     }
 }
 
-void RevPbrPassStaticStage::allocateWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void RevMainPassSkyStage::allocateWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
 
     /**
      *
      */
     const auto& device { _graphicPass->device() };
-
-    /**
-     * Allocate Command Buffer
-     */
-    auto cmd { device->graphicsQueue()->pool()->make() };
 
     /**
      * Allocate Uniform Buffer
@@ -334,8 +301,9 @@ void RevPbrPassStaticStage::allocateWith(const ptr<const RenderInvocation> invoc
      * Default insert data
      */
     const ptr<Camera> camera { invocation_->camera() };
-    math::mat4 mvp { camera->projection() * camera->view() * math::mat4::make_identity() };
-    uniform.write<math::mat4>(&mvp, 1ui32);
+    math::mat4 mv { camera->view() * math::mat4::make_identity() };
+    mv[3] = math::vec4(0.F, 0.F, 0.F, 1.F);
+    uniform.write<math::mat4>(&mv, 1ui32);
 
     /**
      * Allocate Descriptors
@@ -361,22 +329,21 @@ void RevPbrPassStaticStage::allocateWith(const ptr<const RenderInvocation> invoc
      * Pre Store
      */
     dbgs[0].getById(shader::ShaderBinding::id_type { 1 }).store(uniform);
+    dbgs[1].getById(shader::ShaderBinding::id_type { 2 }).store(testCubeMap);
 
     /**
      * Store State
      */
-    state_->data.insert_or_assign("RevPbrPassStaticStage::CommandBuffer"sv,
-        _STD make_shared<decltype(cmd)>(_STD move(cmd)));
-    state_->data.insert_or_assign("RevPbrPassStaticStage::UniformBuffer"sv,
+    state_->data.insert_or_assign("RevMainPassSkyStage::UniformBuffer"sv,
         _STD make_shared<decltype(uniform)>(_STD move(uniform)));
-    state_->data.insert_or_assign("RevPbrPassStaticStage::DiscreteBindingGroups"sv,
+    state_->data.insert_or_assign("RevMainPassSkyStage::DiscreteBindingGroups"sv,
         _STD make_shared<decltype(dbgs)>(_STD move(dbgs)));
-    state_->data.insert_or_assign("RevPbrPassStaticStage::DescriptorPools"sv,
+    state_->data.insert_or_assign("RevMainPassSkyStage::DescriptorPools"sv,
         _STD make_shared<decltype(pools)>(_STD move(pools)));
 }
 
-void RevPbrPassStaticStage::freeWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void RevMainPassSkyStage::freeWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
 
     /**
      *
@@ -386,14 +353,14 @@ void RevPbrPassStaticStage::freeWith(const ptr<const RenderInvocation> invocatio
     /**
      * Free Descriptors
      */
-    auto it { state_->data.find("RevPbrPassStaticStage::DiscreteBindingGroups"sv) };
+    auto it { state_->data.find("RevMainPassSkyStage::DiscreteBindingGroups"sv) };
     if (it != state_->data.end()) {
 
         sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
             _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(it->second)
         };
 
-        const auto poolIt { state_->data.find("RevPbrPassStaticStage::DescriptorPools"sv) };
+        const auto poolIt { state_->data.find("RevMainPassSkyStage::DescriptorPools"sv) };
         sptr<Vector<vk::DescriptorPool>> pools {
             _STD static_pointer_cast<Vector<vk::DescriptorPool>, void>(poolIt->second)
         };
@@ -431,7 +398,7 @@ void RevPbrPassStaticStage::freeWith(const ptr<const RenderInvocation> invocatio
     /**
      * Free Buffers
      */
-    it = state_->data.find("RevPbrPassStaticStage::UniformBuffer"sv);
+    it = state_->data.find("RevMainPassSkyStage::UniformBuffer"sv);
     if (it != state_->data.end()) {
 
         sptr<Buffer> uniform {
@@ -448,39 +415,14 @@ void RevPbrPassStaticStage::freeWith(const ptr<const RenderInvocation> invocatio
          */
         state_->data.erase(it);
     }
-
-    /**
-     * Free Command Buffers
-     */
-    it = state_->data.find("RevPbrPassStaticStage::CommandBuffer"sv);
-    if (it != state_->data.end()) {
-
-        sptr<CommandBuffer> cmd {
-            _STD static_pointer_cast<CommandBuffer, void>(it->second)
-        };
-
-        /**
-         *
-         */
-        if (cmd->vkCommandBuffer()) {
-            auto& lck { cmd->lck() };
-            lck.acquire();
-            cmd->release();
-            lck.release();
-        }
-
-        /**
-         *
-         */
-        state_->data.erase(it);
-    }
 }
 
-bool RevPbrPassStaticStage::check(ptr<const ProcessedModelBatch> batch_) noexcept {
-    return batch_ != nullptr;
+bool RevMainPassSkyStage::check(ptr<const ProcessedModelBatch> batch_) noexcept {
+    // return batch_ == nullptr;
+    return false;
 }
 
-void RevPbrPassStaticStage::before(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
+void RevMainPassSkyStage::before(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
 
     SCOPED_STOPWATCH
 
@@ -488,52 +430,41 @@ void RevPbrPassStaticStage::before(const ptr<const RenderContext> ctx_, cref<Gra
 
     sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
         _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
-            data.find("RevPbrPassStaticStage::DiscreteBindingGroups"sv)->second
+            data.find("RevMainPassSkyStage::DiscreteBindingGroups"sv)->second
         )
     };
 
     /**
      * Prepare Command Buffer
      */
-    const auto cmdEntry { data.at("RevPbrPassStaticStage::CommandBuffer"sv) };
+    const auto cmdEntry { data.at("RevMainPass::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
-    cmd.begin();
 
-    const auto entry { ctx_->state()->data.at("RevPbrPass::Framebuffer"sv) };
+    const auto entry { ctx_->state()->data.at("RevMainPass::Framebuffer"sv) };
     auto& frame { *_STD static_pointer_cast<Framebuffer, void>(entry) };
 
     /**
      * Update Resources [BindingUpdateInterval::ePerFrame]
      */
-    const auto uniformEntry { data.at("RevPbrPassStaticStage::UniformBuffer"sv) };
+    const auto uniformEntry { data.at("RevMainPassSkyStage::UniformBuffer"sv) };
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
     const static math::mat4 clip_matrix = math::mat4(
         1.0F, 0.0F, 0.0F, 0.0F,
         0.0F, -1.0F, 0.0F, 0.0F,
-        0.0F, 0.0F, 0.5F, 0.5F,
-        0.0F, 0.0F, 0.5F, 1.0F
+        0.0F, 0.0F, 1.F, 0.F,
+        0.0F, 0.0F, 0.F, 1.0F
     );
 
     const auto* camera { ctx_->camera() };
-    math::mat4 mvpc { clip_matrix * camera->projection() * camera->view() * math::mat4::make_identity() };
-    uniform.write<math::mat4>(&mvpc, 1ui32);
-
-    // Warning: Temporary
-    {
-        sptr<Buffer> modelUniform {
-            _STD static_pointer_cast<Buffer, void>(
-                ctx_->state()->data.at("RevPbrPassModelProcessor::InstanceBuffer"sv)
-            )
-        };
-
-        dbgs->front().getById(2).store(*modelUniform);
-    }
+    math::mat4 mv { camera->view() * math::mat4::make_identity() };
+    mv[3] = math::vec4(0.F, 0.F, 0.F, 1.F);
+    math::mat4 mvp { clip_matrix * camera->projection() * mv };
+    uniform.write<math::mat4>(&mvp, 1ui32);
 
     /**
      *
      */
-    cmd.beginRenderPass(*_renderPass, frame);
     cmd.bindPipeline(_pipeline.get(), {
         frame.width(),
         frame.height(),
@@ -551,76 +482,36 @@ void RevPbrPassStaticStage::before(const ptr<const RenderContext> ctx_, cref<Gra
         if (grp.super().interval() == shader::BindingUpdateInterval::ePerFrame) {
             cmd.bindDescriptor(idx, grp.vkSet());
         }
+
+        if (grp.super().interval() == shader::BindingUpdateInterval::eMaterialUpdate) {
+            cmd.bindDescriptor(idx, grp.vkSet());
+        }
     }
     // TODO: _cmd->bindDescriptor({...});
 }
 
-void RevPbrPassStaticStage::process(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_,
+void RevMainPassSkyStage::process(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_,
     ptr<const ProcessedModelBatch> batch_) {
 
     SCOPED_STOPWATCH
 
-    if (batch_->empty()) {
-        return;
-    }
-
     const auto& data { ctx_->state()->data };
 
     /**
      * Get Command Buffer
      */
-    const auto cmdEntry { data.at("RevPbrPassStaticStage::CommandBuffer"sv) };
+    const auto cmdEntry { data.at("RevMainPass::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
 
     // TODO: cmd.bindDescriptor(...);
-    cmd.bindVertexBuffer(0, batch_->geometry().vertices, 0);
-    cmd.bindIndexBuffer(batch_->geometry().indices, 0);
-
-    for (const auto& entry : batch_->executions()) {
-
-        cref<DistinctBind> db = entry.bind;
-        cref<DistinctGeometry> dg = entry.geometry;
-
-        /**
-         *
-         */
-        // TODO: Descriptor Bindings
-
-        /**
-         * Draw Call
-         */
-        cmd.drawIndexed(dg.instanceCount, dg.instanceOffset, dg.indexCount, dg.indexOffset, 0ui32);
-    }
+    cmd.draw(1, 0, 36, 0);
 }
 
-void RevPbrPassStaticStage::after(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
+void RevMainPassSkyStage::after(const ptr<const RenderContext> ctx_, cref<GraphicPassStageContext> stageCtx_) {
 
     SCOPED_STOPWATCH
-
-    const auto& data { ctx_->state()->data };
-
-    /**
-     * Get Command Buffer
-     */
-    const auto cmdEntry { data.at("RevPbrPassStaticStage::CommandBuffer"sv) };
-    auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
-
-    /**
-     * End Command Buffer
-     */
-    cmd.endRenderPass();
-    cmd.end();
-
-    /**
-     * Submit Command Buffer to CommandBatch
-     */
-    stageCtx_.batch.push(cmd);
 }
 
-sptr<pipeline::RenderPass> RevPbrPassStaticStage::renderPass() const noexcept {
-    return _renderPass;
-}
-
-sptr<FixedPipeline> RevPbrPassStaticStage::pipeline() const noexcept {
+sptr<FixedPipeline> RevMainPassSkyStage::pipeline() const noexcept {
     return _pipeline;
 }

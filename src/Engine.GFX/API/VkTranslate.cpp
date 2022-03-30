@@ -107,6 +107,12 @@ vk::PrimitiveTopology ember::engine::gfx::api::vkTranslateTopology(PrimitiveTopo
 
 vk::Format ember::engine::gfx::api::vkTranslateFormat(TextureFormat format_) {
     switch (format_) {
+        case TextureFormat::eR16Sfloat: {
+            return vk::Format::eR16Sfloat;
+        }
+        case TextureFormat::eR32Sfloat: {
+            return vk::Format::eR32Sfloat;
+        }
         case TextureFormat::eR8G8Unorm: {
             return vk::Format::eR8G8Unorm;
         }
@@ -151,6 +157,12 @@ vk::Format ember::engine::gfx::api::vkTranslateFormat(TextureFormat format_) {
 
 ember::engine::gfx::TextureFormat ember::engine::gfx::api::vkTranslateFormat(vk::Format format_) {
     switch (format_) {
+        case vk::Format::eR16Sfloat: {
+            return TextureFormat::eR16Sfloat;
+        }
+        case vk::Format::eR32Sfloat: {
+            return TextureFormat::eR32Sfloat;
+        }
         case vk::Format::eR8G8Unorm: {
             return TextureFormat::eR8G8Unorm;
         }

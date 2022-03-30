@@ -3,7 +3,7 @@
 
 namespace ember::engine::gfx {
 
-    class RevPbrPassModelProcessor :
+    class RevMainPassModelProcessor :
         public GraphicPassModelProcessor {
     public:
         /**
@@ -14,7 +14,7 @@ namespace ember::engine::gfx {
          *
          * @param  graphicPass_ The graphic pass.
          */
-        RevPbrPassModelProcessor(ptr<const GraphicPass> graphicPass_);
+        RevMainPassModelProcessor(ptr<const GraphicPass> graphicPass_);
 
         /**
          * Function call operator
