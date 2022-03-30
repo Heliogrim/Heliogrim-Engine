@@ -33,10 +33,10 @@ namespace ember::engine::gfx {
         void destroy() override;
 
     public:
-        void allocateWith(const ptr<const RenderInvocation> invocation_,
-            const ptr<RenderInvocationState> state_) override;
+        void allocateWith(const ptr<const RenderPass> invocation_,
+            const ptr<RenderPassState> state_) override;
 
-        void freeWith(const ptr<const RenderInvocation> invocation_, const ptr<RenderInvocationState> state_) override;
+        void freeWith(const ptr<const RenderPass> invocation_, const ptr<RenderPassState> state_) override;
 
         void process([[maybe_unused]] _In_ const ptr<scene::RenderGraph> graph_,
             _In_ const ptr<const RenderContext> ctx_,

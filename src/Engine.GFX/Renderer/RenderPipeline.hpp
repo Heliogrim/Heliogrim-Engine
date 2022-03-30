@@ -1,10 +1,25 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Types.hpp>
 
-#include "RenderContext.hpp"
-#include "../GraphicPass/GraphicPass.hpp"
+#include "../Command/CommandBatch.hpp"
 
 namespace ember::engine::gfx {
+    /**
+     * Forward Declaration
+     */
+    class RenderPass;
+    class RenderPassState;
+    class RenderStage;
+}
+
+namespace ember::engine::gfx {
+
+    enum class RenderPipelineValidationResult : u8 {
+        eSuccess = 0x0,
+        eFailedRequired,
+        eFailedOrder
+    };
 
     class RenderPipeline {
     public:
@@ -24,19 +39,19 @@ namespace ember::engine::gfx {
 
         void setup();
 
-    private:
-        Vector<ptr<GraphicPass>> _passes;
+    public:
+        void allocate(const ptr<const RenderPass> invocation_, _Inout_ const ptr<RenderPassState> state_);
+
+        void free(const ptr<const RenderPass> invocation_, _Inout_ const ptr<RenderPassState> state_);
 
     public:
-        bool defineGraphicPass(const u8 graphicPassIndex_, const ptr<GraphicPass> graphicPass_);
+        void invoke(const ptr<const RenderPass> ctx_, ref<CommandBatch> batch_) const;
 
     public:
-        void process(const ptr<const RenderContext> ctx_, ref<CommandBatch> batch_) const;
+        void push(cref<sptr<RenderStage>> stage_);
 
-    public:
-        void allocateWith(const ptr<const RenderInvocation> invocation_,
-            _Inout_ const ptr<RenderInvocationState> state_);
+        bool pop(cref<sptr<RenderStage>> stage_);
 
-        void freeWith(const ptr<const RenderInvocation> invocation_, _Inout_ const ptr<RenderInvocationState> state_);
+        [[nodiscard]] RenderPipelineValidationResult validate() const noexcept;
     };
 }

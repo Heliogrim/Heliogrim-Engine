@@ -31,7 +31,7 @@ namespace ember::engine::gfx {
 
         void unmap();
 
-        bool write(const ptr<void> data_, const u64 size_);
+        bool write(const ptr<const void> data_, const u64 size_);
 
     };
 

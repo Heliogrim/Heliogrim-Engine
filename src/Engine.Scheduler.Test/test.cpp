@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Queue/ProcessingQueue.hpp>
 #include <Engine.Scheduler/Queue/SharedBufferPool.hpp>
@@ -38,143 +39,596 @@ namespace SchedulerModule {
         EXPECT_EQ(pool.size().load(_STD memory_order_relaxed), 32);
     }
 
-    TEST(ProcessingQueue, Default) {
+    void structuredRuntimeTest(_STD function<void(const ptr<engine::Scheduler>)> callback_) {
         //
-        auto pool = engine::scheduler::SharedBufferPool();
-        auto queue = engine::scheduler::ProcessingQueue(&pool);
+        auto scheduler { engine::Scheduler::make() };
 
         //
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 0);
+        EXPECT_EQ(scheduler->getWorkerCount(), 0ui32);
+
+        //
+        scheduler->setup(0);
+        EXPECT_NE(scheduler->getWorkerCount(), 0ui32);
+
+        //
+        if (callback_) {
+            callback_(scheduler);
+        }
+
+        //
+        delete scheduler;
     }
 
-    TEST(ProcessingQueue, Write) {
-        //
-        auto pool = engine::scheduler::SharedBufferPool();
-        auto queue = engine::scheduler::ProcessingQueue(&pool);
-
-        //
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 0);
-
-        //
-        auto task = engine::scheduler::task::make_task([]() {});
-        queue.push(_STD move(task));
-
-        //
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 1);
+    TEST(RuntimeTest, Default) {
+        structuredRuntimeTest(nullptr);
     }
 
-    TEST(ProcessingQueue, WriteMany) {
-        //
-        auto pool = engine::scheduler::SharedBufferPool();
-        auto queue = engine::scheduler::ProcessingQueue(&pool);
+    TEST(RuntimeTest, SimpleTask) {
+        structuredRuntimeTest([](const ptr<engine::Scheduler> scheduler_) {
 
-        //
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 0);
+            /**
+             *
+             */
+            _STD atomic_flag signal {};
+            auto task {
+                task::make_task([&signal]() {
+                    signal.test_and_set();
+                })
+            };
 
-        //
-        constexpr auto req = 16ui32 * 31ui32 + 1ui32;
-        vector<task::__TaskDelegate> tasks {};
+            /**
+             *
+             */
+            scheduler_->exec(_STD move(task));
 
-        tasks.reserve(req);
-        for (auto ci = req; ci > 0; --ci) {
-            tasks.push_back(engine::scheduler::task::make_task([]() {}));
-        }
+            /**
+             *
+             */
+            u32 retry { 0ui32 };
+            while (!signal.test() && retry < 200) {
+                thread::self::sleepFor(5);
+                ++retry;
+            }
 
-        //
-        for (auto& entry : tasks) {
-            queue.push(_STD move(entry));
-        }
-
-        //
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 2);
-
-        // TODO: Cleanup
+            /**
+             *
+             */
+            EXPECT_TRUE(signal.test());
+        });
     }
 
-    TEST(ProcessingQueue, Cycle) {
-        //
-        auto pool = engine::scheduler::SharedBufferPool();
-        auto queue = engine::scheduler::ProcessingQueue(&pool);
+    TEST(RuntimeTest, SimplePromiseTask) {
+        structuredRuntimeTest([](const ptr<engine::Scheduler> scheduler_) {
 
-        //
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 0);
+            /**
+             *
+             */
+            auto prom { concurrent::promise<void>([]() {}) };
+            auto res { prom.get() };
+            auto task { task::make_task(prom) };
 
-        //
-        auto task = engine::scheduler::task::make_task([]() {});
-        queue.push(_STD move(task));
+            /**
+             *
+             */
+            scheduler_->exec(_STD move(task));
 
-        //
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 1);
+            /**
+             *
+             */
+            u32 retry { 0ui32 };
+            while (!res.ready() && retry < 200) {
+                thread::self::sleepFor(5);
+                ++retry;
+            }
 
-        //
-        task::__TaskDelegate dstTask = nullptr;
-        queue.pop(task::TaskMask::eAll, dstTask);
-
-        //
-        EXPECT_NE(dstTask, nullptr);
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 1);
+            /**
+             *
+             */
+            EXPECT_TRUE(res.ready());
+        });
     }
 
-    TEST(ProcessingQueue, CycleMany) {
-        //
-        auto pool = engine::scheduler::SharedBufferPool();
-        auto queue = engine::scheduler::ProcessingQueue(&pool);
+    TEST(RuntimeTest, SimpleSameBarrierTask) {
+        structuredRuntimeTest([](const ptr<engine::Scheduler> scheduler_) {
 
-        //
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 0);
+            /**
+             *
+             */
+            _STD atomic_flag signal {};
+            auto task {
+                task::make_task(
+                    [&signal]() {
+                        signal.test_and_set();
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eUserUpdateStrong,
+                    ScheduleStageBarriers::eUserUpdateStrong
+                )
+            };
 
-        //
-        constexpr auto req = 16ui32 * 31ui32 * 3ui32 + 1ui32;
-        vector<task::__TaskDelegate> tasks {};
+            /**
+             *
+             */
+            scheduler_->exec(_STD move(task));
 
-        tasks.reserve(req);
-        for (auto ci = req; ci > 0; --ci) {
-            tasks.push_back(engine::scheduler::task::make_task([]() {}));
-        }
+            /**
+             *
+             */
+            u32 retry { 0ui32 };
+            while (!signal.test() && retry < 200) {
+                thread::self::sleepFor(5);
+                ++retry;
+            }
 
-        //
-        for (auto& entry : tasks) {
-            queue.push(_STD move(entry));
-        }
+            /**
+             *
+             */
+            EXPECT_TRUE(signal.test());
+        });
+    }
 
-        //
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 4);
+    TEST(RuntimeTest, SimpleForwardBarrierTask) {
+        structuredRuntimeTest([](const ptr<engine::Scheduler> scheduler_) {
 
-        //
-        task::__TaskDelegate dstTask = nullptr;
-        queue.pop(task::TaskMask::eAll, dstTask);
+            /**
+             *
+             */
+            _STD atomic_flag signal {};
+            auto task {
+                task::make_task(
+                    [&signal]() {
+                        signal.test_and_set();
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eTopStrong,
+                    ScheduleStageBarriers::eBottomStrong
+                )
+            };
 
-        //
-        EXPECT_NE(dstTask, nullptr);
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 4);
+            /**
+             *
+             */
+            scheduler_->exec(_STD move(task));
 
-        //
-        for (auto i = 0ui32; i < 31ui32; ++i) {
-            dstTask = nullptr;
-            queue.pop(task::TaskMask::eAll, dstTask);
-            EXPECT_NE(dstTask, nullptr);
-        }
+            /**
+             *
+             */
+            u32 retry { 0ui32 };
+            while (!signal.test() && retry < 200) {
+                thread::self::sleepFor(5);
+                ++retry;
+            }
 
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 4);
+            /**
+             *
+             */
+            EXPECT_TRUE(signal.test());
+        });
+    }
 
-        //
-        for (auto i = 0ui32; i < 31ui32; ++i) {
-            dstTask = nullptr;
-            queue.pop(task::TaskMask::eAll, dstTask);
-            EXPECT_NE(dstTask, nullptr);
-        }
+    TEST(RuntimeTest, SimpleReverseBarrierTask) {
+        structuredRuntimeTest([](const ptr<engine::Scheduler> scheduler_) {
 
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 4);
+            /**
+             *
+             */
+            _STD atomic_flag signal {};
+            auto task {
+                task::make_task(
+                    [&signal]() {
+                        signal.test_and_set();
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eBottomStrong,
+                    ScheduleStageBarriers::eTopStrong
 
-        //
-        for (auto i = 0ui32; i < 31ui32; ++i) {
-            dstTask = nullptr;
-            queue.pop(task::TaskMask::eAll, dstTask);
-            EXPECT_NE(dstTask, nullptr);
-        }
+                )
+            };
 
-        EXPECT_EQ(queue.pageCount().load(_STD memory_order_relaxed), 4);
+            /**
+             *
+             */
+            scheduler_->exec(_STD move(task));
 
-        // TODO: Cleanup
+            /**
+             *
+             */
+            u32 retry { 0ui32 };
+            while (!signal.test() && retry < 200) {
+                thread::self::sleepFor(5);
+                ++retry;
+            }
+
+            /**
+             *
+             */
+            EXPECT_TRUE(signal.test());
+        });
+    }
+
+    TEST(RuntimeTest, StaleBarrierTaskOrder) {
+        structuredRuntimeTest([](const ptr<engine::Scheduler> scheduler_) {
+
+            /**
+             *
+             */
+            _STD atomic_flag signal {};
+            auto task {
+                task::make_task(
+                    [&signal]() {
+                        signal.test_and_set();
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eBottomStrong,
+                    ScheduleStageBarriers::eBottomStrong
+
+                )
+            };
+
+            auto carrier {
+                task::make_task(
+                    [&task, &signal, &scheduler_]() {
+                        scheduler_->exec(task);
+
+                        thread::self::sleepFor(5);
+
+                        EXPECT_FALSE(signal.test());
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eTopStrong,
+                    ScheduleStageBarriers::eTopStrong
+                )
+            };
+
+            /**
+             *
+             */
+            scheduler_->exec(carrier);
+
+            /**
+             *
+             */
+            u32 retry { 0ui32 };
+            while (!signal.test() && retry < 200) {
+                thread::self::sleepFor(5);
+                ++retry;
+            }
+
+            /**
+             *
+             */
+            EXPECT_TRUE(signal.test());
+        });
+    }
+
+    TEST(RuntimeTest, ForwardTaskOrder) {
+        structuredRuntimeTest([](const ptr<engine::Scheduler> scheduler_) {
+
+            /**
+             *
+             */
+            _STD atomic_uint64_t t0 { 0ui64 };
+            _STD atomic_uint64_t t1 { 0ui64 };
+
+            auto task0 {
+                task::make_task(
+                    [&t0]() {
+                        thread::self::sleepFor(5);
+                        t0.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eNetworkFetchStrong,
+                    ScheduleStageBarriers::ePublishStrong
+                )
+            };
+
+            auto task1 {
+                task::make_task(
+                    [&t1]() {
+                        t1.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eNetworkPushStrong,
+                    ScheduleStageBarriers::eBottomStrong
+                )
+            };
+
+            auto carrier {
+                task::make_task(
+                    [&task0, &t0, &task1, &t1, &scheduler_]() {
+                        scheduler_->exec(task0);
+                        scheduler_->exec(task1);
+
+                        thread::self::sleepFor(5);
+
+                        EXPECT_EQ(t0.load(), 0ui64);
+                        EXPECT_EQ(t1.load(), 0ui64);
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eTopStrong,
+                    ScheduleStageBarriers::eTopStrong
+                )
+            };
+
+            /**
+             *
+             */
+            scheduler_->exec(carrier);
+
+            /**
+             *
+             */
+            u32 retry { 0ui32 };
+            while ((t0.load() == 0 || t1.load() == 0) && retry < 200) {
+                thread::self::sleepFor(5);
+                ++retry;
+            }
+
+            /**
+             *
+             */
+            EXPECT_LT(t0.load(), t1.load());
+        });
+    }
+
+    TEST(RuntimeTest, WrappingForwardTaskOrder) {
+        structuredRuntimeTest([](const ptr<engine::Scheduler> scheduler_) {
+
+            /**
+             *
+             */
+            _STD atomic_uint64_t t0 { 0ui64 };
+            _STD atomic_uint64_t t1 { 0ui64 };
+
+            auto task0 {
+                task::make_task(
+                    [&t0]() {
+                        t0.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eBottomStrong,
+                    ScheduleStageBarriers::eBottomStrong
+                )
+            };
+
+            auto task1 {
+                task::make_task(
+                    [&t1]() {
+                        t1.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eTopStrong,
+                    ScheduleStageBarriers::eTopStrong
+                )
+            };
+
+            auto carrier {
+                task::make_task(
+                    [&task0, &task1, &scheduler_]() {
+                        scheduler_->exec(task0);
+                        scheduler_->exec(task1);
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::ePhysicsSimulateStrong,
+                    ScheduleStageBarriers::ePhysicsSimulateStrong
+                )
+            };
+
+            /**
+             *
+             */
+            scheduler_->exec(carrier);
+
+            /**
+             *
+             */
+            u32 retry { 0ui32 };
+            while ((t0.load() == 0 || t1.load() == 0) && retry < 200) {
+                thread::self::sleepFor(5);
+                ++retry;
+            }
+
+            /**
+             *
+             */
+            EXPECT_LT(t0.load(), t1.load());
+        });
+    }
+
+    TEST(RuntimeTest, StrongToWeakForwardTaskOrder) {
+        structuredRuntimeTest([](const ptr<engine::Scheduler> scheduler_) {
+
+            /**
+             *
+             */
+            _STD atomic_uint64_t t0 { 0ui64 };
+            _STD atomic_uint64_t t1 { 0ui64 };
+
+            auto task0 {
+                task::make_task(
+                    [&t0]() {
+                        t0.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eTopStrong,
+                    ScheduleStageBarriers::eTopStrong
+                )
+            };
+
+            auto task1 {
+                task::make_task(
+                    [&t1]() {
+                        t1.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eTopWeak,
+                    ScheduleStageBarriers::eTopWeak
+                )
+            };
+
+            auto carrier {
+                task::make_task(
+                    [&task0, &task1, &scheduler_]() {
+                        scheduler_->exec(task0);
+                        scheduler_->exec(task1);
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eTopStrong,
+                    ScheduleStageBarriers::eTopStrong
+                )
+            };
+
+            /**
+             *
+             */
+            scheduler_->exec(carrier);
+
+            /**
+             *
+             */
+            u32 retry { 0ui32 };
+            while ((t0.load() == 0 || t1.load() == 0) && retry < 200) {
+                thread::self::sleepFor(5);
+                ++retry;
+            }
+
+            /**
+             *
+             */
+            EXPECT_LT(t0.load(), t1.load());
+        });
+    }
+
+    TEST(RuntimeTest, WeakToStrongReverseTaskOrder) {
+        structuredRuntimeTest([](const ptr<engine::Scheduler> scheduler_) {
+
+            /**
+             *
+             */
+            _STD atomic_uint64_t t0 { 0ui64 };
+            _STD atomic_uint64_t t1 { 0ui64 };
+
+            auto task0 {
+                task::make_task(
+                    [&t0]() {
+                        t0.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eTopWeak,
+                    ScheduleStageBarriers::eBottomWeak
+                )
+            };
+
+            auto task1 {
+                task::make_task(
+                    [&t1]() {
+                        t1.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eTopStrong,
+                    ScheduleStageBarriers::eBottomStrong
+                )
+            };
+
+            auto carrier {
+                task::make_task(
+                    [&task0, &task1, &scheduler_]() {
+                        scheduler_->exec(task0);
+                        scheduler_->exec(task1);
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eTopStrong,
+                    ScheduleStageBarriers::eTopStrong
+                )
+            };
+
+            /**
+             *
+             */
+            scheduler_->exec(carrier);
+
+            /**
+             *
+             */
+            u32 retry { 0ui32 };
+            while ((t0.load() == 0 || t1.load() == 0) && retry < 200) {
+                thread::self::sleepFor(5);
+                ++retry;
+            }
+
+            /**
+             *
+             */
+            EXPECT_GT(t0.load(), t1.load());
+        });
+    }
+
+    TEST(RuntimeTest, WeakDstLeakingTaskOrder) {
+        structuredRuntimeTest([](const ptr<engine::Scheduler> scheduler_) {
+
+            /**
+             *
+             */
+            _STD atomic_uint64_t t0 { 0ui64 };
+            _STD atomic_uint64_t t1 { 0ui64 };
+
+            auto task0 {
+                task::make_task(
+                    [&t0]() {
+                        t0.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::ePhysicsSimulateStrong,
+                    ScheduleStageBarriers::ePhysicsSimulateStrong
+                )
+            };
+
+            auto task1 {
+                task::make_task(
+                    [&t1, &t0]() {
+
+                        while (t0.load() <= 0ui64) {
+                            thread::self::sleepFor(5);
+                        }
+
+                        t1.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eNetworkFetchStrong,
+                    ScheduleStageBarriers::eBottomWeak
+                )
+            };
+
+            auto carrier {
+                task::make_task(
+                    [&task0, &task1, &scheduler_]() {
+                        scheduler_->exec(task0);
+                        scheduler_->exec(task1);
+                    },
+                    task::TaskMask::eUndefined,
+                    ScheduleStageBarriers::eTopStrong,
+                    ScheduleStageBarriers::eTopStrong
+                )
+            };
+
+            /**
+             *
+             */
+            scheduler_->exec(carrier);
+
+            /**
+             *
+             */
+            u32 retry { 0ui32 };
+            while ((t0.load() == 0 || t1.load() == 0) && retry < 200) {
+                thread::self::sleepFor(5);
+                ++retry;
+            }
+
+            /**
+             *
+             */
+            EXPECT_TRUE(t0.load() < t1.load());
+        });
     }
 }

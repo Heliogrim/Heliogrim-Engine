@@ -170,7 +170,7 @@ void RevFinalPassCompositeStage::setup() {
     /**
      * Render Pass
      */
-    _renderPass = make_sptr<pipeline::RenderPass>(device);
+    _renderPass = make_sptr<pipeline::ApiRenderPass>(device);
     assert(_renderPass);
 
     _renderPass->set(0, vk::AttachmentDescription {
@@ -275,8 +275,8 @@ void RevFinalPassCompositeStage::destroy() noexcept {
     }
 }
 
-void RevFinalPassCompositeStage::allocateWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void RevFinalPassCompositeStage::allocateWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
 
     /**
      *
@@ -384,17 +384,20 @@ void RevFinalPassCompositeStage::allocateWith(const ptr<const RenderInvocation> 
         depthFrame->attachments().at(0).unwrapped()
     };
 
-    const sptr<Framebuffer> pbrFrame {
-        _STD static_pointer_cast<Framebuffer, void>(state_->data.find("RevPbrPass::Framebuffer"sv)->second)
+    const sptr<Framebuffer> mainFrame {
+        _STD static_pointer_cast<Framebuffer, void>(state_->data.find("RevMainPass::Framebuffer"sv)->second)
     };
-    const sptr<Texture> pbrPositions {
-        pbrFrame->attachments().at(0).unwrapped()
+    const sptr<Texture> pbrAlbedo {
+        mainFrame->attachments().at(0).unwrapped()
     };
     const sptr<Texture> pbrNormals {
-        pbrFrame->attachments().at(1).unwrapped()
+        mainFrame->attachments().at(1).unwrapped()
     };
-    const sptr<Texture> pbrMeta {
-        pbrFrame->attachments().at(2).unwrapped()
+    const sptr<Texture> pbrPosition {
+        mainFrame->attachments().at(2).unwrapped()
+    };
+    const sptr<Texture> pbrMrs {
+        mainFrame->attachments().at(3).unwrapped()
     };
 
     /**
@@ -421,10 +424,11 @@ void RevFinalPassCompositeStage::allocateWith(const ptr<const RenderInvocation> 
      * Pre Store
      */
     dbgs[0].getById(shader::ShaderBinding::id_type { 1 }).store(uniform);
-    dbgs[0].getById(shader::ShaderBinding::id_type { 2 }).store(test);
-    dbgs[0].getById(shader::ShaderBinding::id_type { 3 }).store(*pbrNormals);
-    dbgs[0].getById(shader::ShaderBinding::id_type { 4 }).store(*pbrPositions);
-    dbgs[0].getById(shader::ShaderBinding::id_type { 5 }).store(*pbrMeta);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 2 }).storeAs(*pbrAlbedo, vk::ImageLayout::eShaderReadOnlyOptimal);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 3 }).storeAs(*pbrNormals, vk::ImageLayout::eShaderReadOnlyOptimal);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 4 }).
+            storeAs(*pbrPosition, vk::ImageLayout::eShaderReadOnlyOptimal);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 5 }).storeAs(*pbrMrs, vk::ImageLayout::eShaderReadOnlyOptimal);
     dbgs[0].getById(shader::ShaderBinding::id_type { 6 }).
             storeAs(*depth, vk::ImageLayout::eDepthStencilAttachmentOptimal);
 
@@ -441,8 +445,8 @@ void RevFinalPassCompositeStage::allocateWith(const ptr<const RenderInvocation> 
         _STD make_shared<decltype(pools)>(_STD move(pools)));
 }
 
-void RevFinalPassCompositeStage::freeWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void RevFinalPassCompositeStage::freeWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
 
     /**
      *
@@ -563,6 +567,15 @@ void RevFinalPassCompositeStage::before(const ptr<const RenderContext> ctx_, cre
     auto& frame { *_STD static_pointer_cast<Framebuffer, void>(entry) };
 
     /**
+     * Update Resources [BindingUpdateInterval::ePerFrame]
+     */
+    const auto uniformEntry { data.at("RevFinalPassCompositeStage::UniformBuffer"sv) };
+    auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
+
+    const auto* camera { ctx_->camera() };
+    uniform.write<math::vec3>(&camera->position(), 1ui32);
+
+    /**
      *
      */
     cmd.beginRenderPass(*_renderPass, frame);
@@ -632,7 +645,7 @@ void RevFinalPassCompositeStage::after(const ptr<const RenderContext> ctx_, cref
     stageCtx_.batch.push(cmd);
 }
 
-sptr<pipeline::RenderPass> RevFinalPassCompositeStage::renderPass() const noexcept {
+sptr<pipeline::ApiRenderPass> RevFinalPassCompositeStage::renderPass() const noexcept {
     return _renderPass;
 }
 

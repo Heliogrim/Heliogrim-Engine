@@ -7,17 +7,19 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Engine.Common/Math/__default.inl>
+
 #include "todo.h"
 #include "Command/CommandBatch.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
-#include "Rev/GraphicPass/RevDepthPass.hpp"
 #include "Loader/RevTextureLoader.hpp"
+#include "Loader/StaticGeometryLoader.hpp"
+#include "Rev/GraphicPass/RevDepthPass.hpp"
+#include "Rev/Renderer/RevRenderer.hpp"
 #include "Shader/ShaderStorage.hpp"
 #include "Swapchain/Swapchain.hpp"
 #include "Swapchain/VkSwapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
-#include "Loader/StaticGeometryLoader.hpp"
-#include "Rev/Renderer/RevRenderer.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember::engine;
@@ -121,8 +123,8 @@ void Graphics::setup() {
     _graphicPasses[static_cast<u8>(GraphicPassMask::eDepthPass)] = (depthPass = new RevDepthPass(_device, _swapchain));
     _graphicPasses[static_cast<u8>(GraphicPassMask::eLightPass)] = new RevLightPass(_device, _swapchain);
     _graphicPasses[static_cast<u8>(GraphicPassMask::eProbePass)] = new RevProbePass(_device, _swapchain);
-    //_graphicPasses[static_cast<u8>(GraphicPassMask::ePbrPass)] = new RevPbrPass(_device, _swapchain, depthPass);
-    _graphicPasses[static_cast<u8>(GraphicPassMask::ePbrPass)] = new RevProbePass(_device, _swapchain);
+    //_graphicPasses[static_cast<u8>(GraphicPassMask::eMainPass)] = new RevMainPass(_device, _swapchain, depthPass);
+    _graphicPasses[static_cast<u8>(GraphicPassMask::eMainPass)] = new RevProbePass(_device, _swapchain);
     _graphicPasses[static_cast<u8>(GraphicPassMask::eFinalPass)] = new RevFinalPass(_device, _swapchain, depthPass);
 
     /**
@@ -140,7 +142,7 @@ void Graphics::setup() {
             GraphicPassMask::eDepthPass,
             GraphicPassMask::eLightPass,
             GraphicPassMask::eProbePass,
-            GraphicPassMask::ePbrPass
+            GraphicPassMask::eMainPass
         };
         constexpr u8 length = static_cast<u8>(sizeof(masks)) - 1;
 
@@ -405,9 +407,14 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
         _STD chrono::duration_cast<_STD chrono::milliseconds>(
             _STD chrono::high_resolution_clock::now().time_since_epoch()).count()
     };
-    auto timeToVal { static_cast<float>(millis) / 5000.F };
+    auto timeToVal { static_cast<double>(millis) / 5000.0 };
 
-    _camera->setPosition({ _STD sinf(timeToVal) * 8.F, /*-1.8F*/1.8F, _STD cosf(timeToVal) * 8.F });
+    _camera->setPosition({
+        static_cast<float>(_STD sin(timeToVal)) * 8.F,
+        /*-1.8F*/
+        1.8F,
+        static_cast<float>(_STD cos(timeToVal)) * 8.F
+    });
     //_camera->setLookAt({ 0.F, /*-1.8F*/0.F, 0.F });
     _camera->update();
 
@@ -494,7 +501,7 @@ void Graphics::processGraphicPasses(ptr<scene::IRenderScene> scene_) {
         GraphicPassMask::eDepthPass,
         GraphicPassMask::eLightPass,
         GraphicPassMask::eProbePass,
-        GraphicPassMask::ePbrPass
+        GraphicPassMask::eMainPass
     };
     constexpr u8 length = static_cast<u8>(sizeof(masks)) - 1;
 
@@ -524,7 +531,7 @@ void Graphics::processGraphicPasses(ptr<scene::IRenderScene> scene_) {
         Vector<GraphicPassMask> dependencies {};
 
         if (dependencies.size() >= 1) {
-            // TODO: get back dependencies for RenderPass finish
+            // TODO: get back dependencies for ApiRenderPass finish
             Vector<vk::Fence> waitFences {};
 
             waitFences.reserve(dependencies.size());
@@ -595,8 +602,9 @@ void Graphics::reschedule() {
 
 #include <Ember/StaticGeometryComponent.hpp>
 #include <Engine.Scene/RevScene.hpp>
-#include "Scene/StaticGeometryModel.hpp"
+
 #include "Scene/SceneTag.hpp"
+#include "Scene/StaticGeometryModel.hpp"
 
 bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
     _renderScene = scene_;

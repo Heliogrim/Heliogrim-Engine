@@ -18,8 +18,8 @@ namespace ember::engine::gfx {
          * @param invocation_ The RenderInvocation data which is required for the allocation
          * @param state_ The RenderInvocationState where to store the allocated data
          */
-        void allocateWith(_In_ const ptr<const RenderInvocation> invocation_,
-            _Inout_ const ptr<RenderInvocationState> state_);
+        void allocateWith(_In_ const ptr<const RenderPass> invocation_,
+            _Inout_ const ptr<RenderPassState> state_);
 
         /**
          * Forwards free call with invocation data and state where to free from
@@ -32,8 +32,8 @@ namespace ember::engine::gfx {
          * @param invocation_ The RenderInvocation data which was required for the allocation
          * @param state_ The RenderInvocationState where to free data from
          */
-        void freeWith(_In_ const ptr<const RenderInvocation> invocation_,
-            _Inout_ const ptr<RenderInvocationState> state_);
+        void freeWith(_In_ const ptr<const RenderPass> invocation_,
+            _Inout_ const ptr<RenderPassState> state_);
 
     public:
         /**

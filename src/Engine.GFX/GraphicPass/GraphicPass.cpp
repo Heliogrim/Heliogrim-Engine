@@ -11,12 +11,12 @@ GraphicPass::GraphicPass(cref<sptr<Device>> device_, cref<GraphicPassMask> mask_
     _device(device_),
     _mask(mask_) {}
 
-void GraphicPass::allocateWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void GraphicPass::allocateWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
     _pipeline.allocateWith(invocation_, state_);
 }
 
-void GraphicPass::freeWith(const ptr<const RenderInvocation> invocation_, const ptr<RenderInvocationState> state_) {
+void GraphicPass::freeWith(const ptr<const RenderPass> invocation_, const ptr<RenderPassState> state_) {
     _pipeline.freeWith(invocation_, state_);
 }
 

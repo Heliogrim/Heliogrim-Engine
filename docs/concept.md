@@ -1,9 +1,6 @@
 ## Ember Engine
 
-* [World / Level / Scene](#world-/-level-/-scene)
-* [Material](#material)
-* [Scheduling](#scheduling)
-    + [Stage Pipeline](#scheduling-pipeline)
+----
 
 > Geometry
 * Each geometry object can be converted to a mesh by a snapshot based on the given parameter
@@ -1160,7 +1157,7 @@ sequenceDiagram
                         Graphics->>Scene: traversal
                             Scene->>SceneNodeQueue: construct
                             Scene->>Scene: fetchRoot
-                            Scene->>SceneNodeQueue: pushNotes
+                            Scene->>SceneNodeQueue: pushNodes
                             Scene->>SceneNodeQueue: traversal
 
                             rect rgb(144, 32, 37)
@@ -1680,4 +1677,115 @@ classDiagram
     SoundStreamState --> StreamState
     class SoundStreamState {
     }
+```
+
+----
+*30.03.2022*
+
+```mermaid
+classDiagram
+
+    RenderPass "1" --> "1" Renderer
+    class RenderPass {
+        ~Renderer~ renderer
+    }
+
+    Renderer "1" --> "1" RenderPipeline
+    class Renderer {
+        <<abstract>>
+
+        ~RenderPipeline~ pipeline
+    }
+
+    RenderPipeline "1" --* "*" RenderStage
+    class RenderPipeline {
+        Collection~RenderStage~ stages
+    }
+
+    RenderStagePass "1" --> "0..1" RenderStage
+    class RenderStagePass {
+        ~RenderStage~ current
+    }
+
+    RenderStage "1" --* "*" RenderStageDependency
+    RenderStage "1" --> "1" Multiplexer
+    class RenderStage {
+        <<abstract>>
+
+        Collection~RenderStageDependency~ dependencies
+        ~Multiplexer~ multiplexer
+    }
+
+    RenderStageDependency "1" ..> "1" RenderStage
+    class RenderStageDependency {
+        ~RenderStage~ stage
+        ~Predecessor|Successor|Ignore~ order
+        ~Required|Optional~ kind
+    }
+
+    StageProcessor "1" --> "1" Multiplexer
+    class StageProcessor {
+        ~Multiplexer~ current
+    }
+
+    Multiplexer "1" --* "*" RenderStageNode
+    class Multiplexer {
+        Collection~RenderStageNode~ nodes
+    }
+
+    class RenderStageNode {
+        <<abstract>>
+    }
+```
+
+```mermaid
+sequenceDiagram
+    participant RenderPass
+    participant Renderer
+    participant RenderPipeline
+    participant RenderStage
+    participant RenderStagePass
+    participant RenderStageProcessor
+    participant Multiplexer
+    participant RenderStageNode
+
+    RenderPass->>+Renderer: invoke
+        Renderer->>+RenderPipeline: invoke
+        loop Every RenderStage
+            RenderPipeline->>+RenderStageProcessor: create
+
+            RenderPipeline->>+RenderStage: get
+            RenderStage-->>RenderPipeline: return
+
+            RenderPipeline->>+RenderStagePass: create
+            RenderStagePass-->>RenderPipeline: return
+
+            RenderPipeline->>+Multiplexer: acquire
+
+            RenderPipeline->>RenderStageProcessor: storeMultiplexer
+            RenderPipeline-->>RenderStageProcessor: return
+
+            RenderPipeline->>RenderStageProcessor: invoke
+            loop Every Model
+                RenderStageProcessor->>Multiplexer: dispatch
+                loop Every RenderStageNode
+                    Multiplexer->>+RenderStageNode: invoke
+                    RenderStageNode-->>-Multiplexer: return
+                end
+                Multiplexer-->>RenderStageProcessor: return
+            end
+            RenderPipeline-->>RenderStageProcessor: return
+            
+            Multiplexer-->>-RenderPipeline: release
+
+            RenderPipeline->>RenderStagePass: destroy
+            RenderStagePass-->>-RenderPipeline: return
+
+            RenderPipeline->>RenderStage: next
+            RenderStage-->>-RenderPipeline: return
+
+            RenderStageProcessor-->>-RenderPipeline: destroy
+        end
+        RenderPipeline-->>-Renderer: return
+    Renderer-->>-RenderPass: return
 ```

@@ -1,9 +1,9 @@
 #pragma once
 
+#include <Engine.Common/Types.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Math/Bounding.hpp>
 #include <Engine.Common/Math/Transform.hpp>
-
-#include <Engine.Common/Types.hpp>
 
 namespace ember::engine::scene {
 
@@ -33,8 +33,12 @@ namespace ember::engine::scene {
         constexpr static u64 max_elements_per_page = element_page_size / sizeof(ptr<ElementType_>);
 
         constexpr static u64 max_flat_nodes_per_page = max_nodes_per_page / (max_childs_per_node + 1ui64);
-        constexpr static u64 splice_layer_per_page = _STD floor(
+        #if ENV_MSVC
+        const inline static u64 splice_layer_per_page = _STD floor(
             _STD log2(max_flat_nodes_per_page) / _STD log2(max_childs_per_node));
+        #else
+        constexpr static u64 splice_layer_per_page = _STD floor(_STD log2(max_flat_nodes_per_page) / _STD log2(max_childs_per_node));
+        #endif
 
         constexpr static float max_boundary_overlap = 0.F;
         constexpr static float min_boundary_overlap = 0.F;

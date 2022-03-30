@@ -86,6 +86,16 @@ namespace ember::engine::scheduler::worker {
         [[nodiscard]] bool start();
 
         /**
+         * Check whether worker is ready
+         *
+         * @author Julius
+         * @date 20.03.2022
+         *
+         * @returns True if this is ready, otherwise false.
+         */
+        [[nodiscard]] bool ready() const noexcept;
+
+        /**
          * Stops this 
          *
          * @author Julius

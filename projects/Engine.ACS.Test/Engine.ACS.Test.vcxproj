@@ -54,6 +54,11 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.ACS.Test\pch.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Engine.ACS\Engine.ACS.vcxproj">
+      <Project>{bdd7b57f-5aee-4ddb-95fd-e0f89bb25ec7}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

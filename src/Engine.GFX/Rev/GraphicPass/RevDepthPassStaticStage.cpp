@@ -10,7 +10,7 @@
 #include "../../API/VkTranslate.hpp"
 #include "../../Camera/Camera.hpp"
 #include "../../Memory/VkAllocator.hpp"
-#include "../../Renderer/RenderInvocationState.hpp"
+#include "../../Renderer/RenderPassState.hpp"
 #include "../../Shader/DiscreteBinding.hpp"
 #include "../../Shader/Factory.hpp"
 #include "../../Shader/ShaderStorage.hpp"
@@ -131,7 +131,7 @@ void RevDepthPassStaticStage::setup() {
     /**
      * Render Pass
      */
-    _renderPass = make_sptr<pipeline::RenderPass>(device);
+    _renderPass = make_sptr<pipeline::ApiRenderPass>(device);
     assert(_renderPass);
 
     _renderPass->set(0, vk::AttachmentDescription {
@@ -241,8 +241,8 @@ void RevDepthPassStaticStage::destroy() noexcept {
     }
 }
 
-void RevDepthPassStaticStage::allocateWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void RevDepthPassStaticStage::allocateWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
 
     /**
      *
@@ -332,8 +332,8 @@ void RevDepthPassStaticStage::allocateWith(const ptr<const RenderInvocation> inv
         _STD make_shared<decltype(pools)>(_STD move(pools)));
 }
 
-void RevDepthPassStaticStage::freeWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void RevDepthPassStaticStage::freeWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
 
     /**
      *
@@ -613,7 +613,7 @@ void RevDepthPassStaticStage::after(const ptr<const RenderContext> ctx_, cref<Gr
     stageCtx_.batch.push(cmd);
 }
 
-sptr<pipeline::RenderPass> RevDepthPassStaticStage::renderPass() const noexcept {
+sptr<pipeline::ApiRenderPass> RevDepthPassStaticStage::renderPass() const noexcept {
     return _renderPass;
 }
 

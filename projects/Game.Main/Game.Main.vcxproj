@@ -25,18 +25,18 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <ConfigurationType>Application</ConfigurationType>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
@@ -87,8 +87,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <EnableModules>false</EnableModules>
@@ -107,7 +105,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <OmitFramePointers>false</OmitFramePointers>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
@@ -123,8 +120,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
@@ -132,7 +127,6 @@
       <Profile>true</Profile>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
-      <FixedBaseAddress>false</FixedBaseAddress>
       <AdditionalOptions>/PROFILE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -191,7 +185,9 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\GrassWild01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Images\GrassWild01Albedo.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\CubeD1.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Cylinder.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Sphere.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Cavity.cpp" />
@@ -236,7 +232,9 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MetalBare.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MossGround.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\CubeD1.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Cylinder.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Sphere.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Cavity.hpp" />
@@ -279,12 +277,16 @@
     <None Include="..\..\resources\shader\light.directional.glsl" />
     <None Include="..\..\resources\shader\link.fs" />
     <None Include="..\..\resources\shader\link.vs" />
+    <None Include="..\..\resources\shader\mainpass_sky.frag.spv" />
+    <None Include="..\..\resources\shader\mainpass_sky.fs" />
+    <None Include="..\..\resources\shader\mainpass_sky.vert.spv" />
+    <None Include="..\..\resources\shader\mainpass_sky.vs" />
     <None Include="..\..\resources\shader\obj.fs" />
     <None Include="..\..\resources\shader\obj.vs" />
-    <None Include="..\..\resources\shader\pbrpass_static.frag.spv" />
-    <None Include="..\..\resources\shader\pbrpass_static.fs" />
-    <None Include="..\..\resources\shader\pbrpass_static.vert.spv" />
-    <None Include="..\..\resources\shader\pbrpass_static.vs" />
+    <None Include="..\..\resources\shader\mainpass_static.frag.spv" />
+    <None Include="..\..\resources\shader\mainpass_static.fs" />
+    <None Include="..\..\resources\shader\mainpass_static.vert.spv" />
+    <None Include="..\..\resources\shader\mainpass_static.vs" />
     <None Include="..\..\resources\shader\sky.fs" />
     <None Include="..\..\resources\shader\sky.vs" />
     <None Include="..\..\resources\shader\terra.fs" />

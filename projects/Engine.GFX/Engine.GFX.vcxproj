@@ -24,15 +24,15 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -90,21 +90,6 @@
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
       <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Engine.ACS\Engine.ACS.vcxproj">
-      <Project>{bdd7b57f-5aee-4ddb-95fd-e0f89bb25ec7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Resource\Engine.Resource.vcxproj">
-      <Project>{b0e77d6c-45d7-4254-8630-d10fdf6ca290}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Scene\Engine.Scene.vcxproj">
-      <Project>{114192e3-04b1-4ae7-86f5-1d055f7526d4}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
-      <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Session\Engine.Session.vcxproj">
-      <Project>{bba6c152-0160-4156-a5ac-cd3068df2311}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\API\VkTranslate.cpp" />
@@ -146,13 +131,12 @@
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\FragmentStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\GeometryStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\RasterizationStage.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\RenderPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\ApiRenderPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\VertexStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\Renderer.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderInvocation.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderPipeline.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderSwapchain.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevDepthPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevDepthPassModelProcessor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevDepthPassSkeletalStage.cpp" />
@@ -160,10 +144,11 @@
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevFinalPassCompositeStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevFinalPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevLightPass.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPass.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassModelProcessor.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassSkeletalStage.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassStaticStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassSkyStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassStaticStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassModelProcessor.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassSkeletalStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevProbePass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevRenderer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.cpp" />
@@ -267,7 +252,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\FragmentStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\GeometryStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\RasterizationStage.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\RenderPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\ApiRenderPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\VertexStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\PrimitiveTopology.hpp" />
@@ -276,13 +261,18 @@
     <ClInclude Include="..\..\src\Engine.GFX\RasterPolyMode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RasterSamples.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RayTracePipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\Multiplexer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderContext.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderInvocation.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\Renderer.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderInvocationData.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderInvocationState.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderPassCreateData.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderPassState.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderPipeline.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderSwapchain.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderStageDependency.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderStageNode.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderStagePass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderStageProcessor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Resource\StaticGeometryResource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevDepthPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevDepthPassModelProcessor.hpp" />
@@ -291,10 +281,11 @@
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevFinalPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevFinalPassCompositeStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevLightPass.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPass.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassModelProcessor.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassSkeletalStage.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevPbrPassStaticStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassSkyStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassModelProcessor.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassSkeletalStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassStaticStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevProbePass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\__macro.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevRenderer.hpp" />

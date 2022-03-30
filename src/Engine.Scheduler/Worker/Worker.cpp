@@ -18,11 +18,11 @@ Worker::Worker(ptr<SchedulePipeline> pipeline_, ptr<fiber::FiberPool> fiberPool_
     _mask(mask_) {}
 
 Worker::~Worker() {
-#ifdef _DEBUG
+    #ifdef _DEBUG
     assert(destroy());
-#else
+    #else
     [[maybe_unused]] auto result { destroy() };
-#endif
+    #endif
 };
 
 bool Worker::start() {
@@ -42,6 +42,10 @@ bool Worker::start() {
     }
 
     return true;
+}
+
+bool Worker::ready() const noexcept {
+    return _interrupt_ptr != nullptr;
 }
 
 bool Worker::stop() {

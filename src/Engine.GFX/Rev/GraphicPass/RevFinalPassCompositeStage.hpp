@@ -1,7 +1,7 @@
 #pragma once
 #include "../../FixedPipeline.hpp"
 #include "../../GraphicPass/GraphicPassPipelineStage.hpp"
-#include "../../Pipeline/RenderPass.hpp"
+#include "../../Pipeline/ApiRenderPass.hpp"
 #include "../../Shader/DiscreteBindingGroup.hpp"
 
 namespace ember::engine::gfx {
@@ -45,10 +45,10 @@ namespace ember::engine::gfx {
         void destroy() noexcept override;
 
     public:
-        void allocateWith(const ptr<const RenderInvocation> invocation_,
-            const ptr<RenderInvocationState> state_) override;
+        void allocateWith(const ptr<const RenderPass> invocation_,
+            const ptr<RenderPassState> state_) override;
 
-        void freeWith(const ptr<const RenderInvocation> invocation_, const ptr<RenderInvocationState> state_) override;
+        void freeWith(const ptr<const RenderPass> invocation_, const ptr<RenderPassState> state_) override;
 
     public:
         /**
@@ -89,7 +89,7 @@ namespace ember::engine::gfx {
         /**
          * Render Pass
          */
-        sptr<pipeline::RenderPass> _renderPass;
+        sptr<pipeline::ApiRenderPass> _renderPass;
 
     public:
         /**
@@ -100,7 +100,7 @@ namespace ember::engine::gfx {
          *
          * @returns A sptr&lt;pipeline::RenderPass&gt;
          */
-        [[nodiscard]] sptr<pipeline::RenderPass> renderPass() const noexcept;
+        [[nodiscard]] sptr<pipeline::ApiRenderPass> renderPass() const noexcept;
 
     private:
         /**

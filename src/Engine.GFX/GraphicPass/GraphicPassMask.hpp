@@ -6,7 +6,8 @@ namespace ember::engine::gfx {
         eDepthPass,
         eLightPass,
         eProbePass,
-        ePbrPass,
+        eSkyPass,
+        eMainPass,
         eFinalPass
     };
 }

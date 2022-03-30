@@ -1,8 +1,8 @@
 #pragma once
 
-#include "RenderInvocation.hpp"
+#include "RenderPass.hpp"
 
 namespace ember::engine::gfx {
 
-    using RenderContext = RenderInvocation;
+    using RenderContext = RenderPass;
 }

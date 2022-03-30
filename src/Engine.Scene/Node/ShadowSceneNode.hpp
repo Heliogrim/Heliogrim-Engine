@@ -159,9 +159,9 @@ namespace ember::engine::scene {
                     return pushLeaf(element_, factory_);
                 }
 
-                decltype(base_type::_elements) elements { _STD exchange(base_type::_elements, nullptr) };
-                decltype(base_type::_elementCount) elementCount { _STD exchange(base_type::_elementCount, 0) };
-                base_type::_inclusiveElementCount -= elementCount;
+                decltype(this->_elements) elements { _STD exchange(base_type::_elements, nullptr) };
+                decltype(this->_elementCount) elementCount { _STD exchange(base_type::_elementCount, 0) };
+                this->_inclusiveElementCount -= elementCount;
 
                 /**
                  *
@@ -205,7 +205,7 @@ namespace ember::engine::scene {
             /**
              * Check shadow children | Find lowest inclusive element count
              */
-            decltype(base_type::_inclusiveElementCount) lowest { ~0ui64 };
+            decltype(this->_inclusiveElementCount) lowest { ~0ui64 };
             ptr<base_type> inclusiveNode { nullptr };
             ptr<base_type> exclusiveNode { nullptr };
 

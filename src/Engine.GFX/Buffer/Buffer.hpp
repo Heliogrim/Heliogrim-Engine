@@ -115,7 +115,7 @@ namespace ember::engine::gfx {
          * @param  count_ Number of.
          */
         template <class ValueType>
-        void write(const ptr<void> data_, const u32 count_) {
+        void write(const ptr<const void> data_, const u32 count_) {
             const size_t size = sizeof(ValueType) * count_;
             const bool unmapped = (memory->mapping ? false : true);
 

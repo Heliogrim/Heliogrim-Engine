@@ -174,18 +174,20 @@ namespace ember::profiling {
 
         void writeHeader();
 
-    public:
-        /**
-         * Write ProfileResult to Profiler
-         *
-         * @author Julius
-         * @date 21.09.2021
-         *
-         * @param [in,out] self_ The self.
-         * @param          result_ The result.
-         *
-         * @returns The shifted result.
-         */
-        friend reference_type operator<<(reference_type self_, cref<ProfileResult> result_);
+    private:
+        friend ref<Profiler> operator<<(ref<Profiler>, cref<ProfileResult>);
     };
+
+    /**
+     * Write ProfileResult to Profiler
+     *
+     * @author Julius
+     * @date 21.09.2021
+     *
+     * @param [in,out] self_ The self.
+     * @param          result_ The result.
+     *
+     * @returns The shifted result.
+     */
+    ref<Profiler> operator<<(ref<Profiler> self_, cref<ProfileResult> result_);
 }

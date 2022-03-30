@@ -22,7 +22,7 @@ void collectLayoutsUnique(const Shader& shader_, Vector<vk::DescriptorSetLayout>
     }
 }
 
-VkFixedPipeline::VkFixedPipeline(sptr<Device> device_, sptr<pipeline::RenderPass> renderPass_) :
+VkFixedPipeline::VkFixedPipeline(sptr<Device> device_, sptr<pipeline::ApiRenderPass> renderPass_) :
     _device(device_),
     _renderPass(renderPass_) {}
 

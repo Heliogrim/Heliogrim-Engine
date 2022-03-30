@@ -95,7 +95,7 @@ namespace ember {
      *
      * @returns The actor unique identifier.
      */
-    static actor_guid generate_actor_guid() {
+    [[maybe_unused]] static actor_guid generate_actor_guid() {
         static _STD atomic_uint_fast32_t ai { 1 };
         const auto post = ai.fetch_add(1, _STD memory_order_relaxed);
         return { 0, 0, 0, post };

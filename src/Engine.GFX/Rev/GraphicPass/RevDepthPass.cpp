@@ -44,7 +44,7 @@ void RevDepthPass::destroy() {
     stages.clear();
 }
 
-void RevDepthPass::postProcessAllocated(const ptr<RenderInvocationState> state_) const {
+void RevDepthPass::postProcessAllocated(const ptr<RenderPassState> state_) const {
 
     const auto it { state_->data.find("RevDepthPass::Framebuffer"sv) };
     if (it == state_->data.end()) {
@@ -97,8 +97,8 @@ void RevDepthPass::postProcessAllocated(const ptr<RenderInvocationState> state_)
     pool->lck().release();
 }
 
-void RevDepthPass::allocateWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void RevDepthPass::allocateWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
 
     const auto* factory { TextureFactory::get() };
     const auto* firstDepthStage { static_cast<ptr<RevDepthPassStaticStage>>(_pipeline.stages()[0]) };
@@ -147,7 +147,7 @@ void RevDepthPass::allocateWith(const ptr<const RenderInvocation> invocation_,
     postProcessAllocated(state_);
 }
 
-void RevDepthPass::freeWith(const ptr<const RenderInvocation> invocation_, const ptr<RenderInvocationState> state_) {
+void RevDepthPass::freeWith(const ptr<const RenderPass> invocation_, const ptr<RenderPassState> state_) {
     GraphicPass::freeWith(invocation_, state_);
 
     /**

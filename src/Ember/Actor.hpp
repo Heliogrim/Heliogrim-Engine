@@ -2,6 +2,10 @@
 
 #include <Engine.ACS/Traits.hpp>
 
+#if TRUE
+#include <Engine.Reflect/Reflect.hpp>
+#endif
+
 #include "ActorComponent.hpp"
 #include "Inbuilt.hpp"
 
@@ -34,6 +38,9 @@ namespace ember {
          * @date 25.11.2021
          */
         Actor() noexcept;
+
+        // Warning: Temporary Debug Solution
+        Actor(mref<Actor> other_);
 
         /**
          * Destructor

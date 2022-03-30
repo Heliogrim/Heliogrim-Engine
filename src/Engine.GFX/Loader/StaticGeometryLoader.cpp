@@ -48,7 +48,7 @@ void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asse
     const ptr<StaticGeometryResource> dst_) {
 
     // TODO: Replace
-    const Url src { "file"sv, R"(R:\Development\C++\Vulkan API\Game\resources\assets\geometry\cube.obj)"sv };
+    const Url src { "file"sv, R"(R:\Development\C++\Vulkan API\Game\resources\assets\geometry\cylinder.obj)"sv };
 
     /**
      *

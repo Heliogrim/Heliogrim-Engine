@@ -4,7 +4,7 @@
 #include "CommandPool.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "../Texture/TextureBuffer.hpp"
-#include "../Pipeline/RenderPass.hpp"
+#include "../Pipeline/ApiRenderPass.hpp"
 #include "../GraphicPipeline.hpp"
 
 namespace ember::engine::gfx {
@@ -51,7 +51,7 @@ namespace ember::engine::gfx {
          * @param  framebuffer_ The framebuffer.
          * @param  inline_ (Optional) True to inline.
          */
-        void beginRenderPass(const pipeline::RenderPass& renderPass_, const Framebuffer& framebuffer_,
+        void beginRenderPass(const pipeline::ApiRenderPass& renderPass_, const Framebuffer& framebuffer_,
             bool inline_ = true);
 
         void bindDescriptor(const Vector<vk::DescriptorSet>& descriptors_);

@@ -58,8 +58,8 @@ void RenderPipeline::process(const ptr<const RenderContext> ctx_, ref<CommandBat
     }
 }
 
-void RenderPipeline::allocateWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void RenderPipeline::allocate(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
     /**
      *
      */
@@ -70,7 +70,7 @@ void RenderPipeline::allocateWith(const ptr<const RenderInvocation> invocation_,
     }
 }
 
-void RenderPipeline::freeWith(const ptr<const RenderInvocation> invocation_, const ptr<RenderInvocationState> state_) {
+void RenderPipeline::free(const ptr<const RenderPass> invocation_, const ptr<RenderPassState> state_) {
     /**
      *
      */

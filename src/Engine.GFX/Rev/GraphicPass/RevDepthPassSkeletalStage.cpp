@@ -127,7 +127,7 @@ void RevDepthPassSkeletalStage::setup() {
     /**
      * Render Pass
      */
-    _renderPass = make_sptr<pipeline::RenderPass>(device);
+    _renderPass = make_sptr<pipeline::ApiRenderPass>(device);
     assert(_renderPass);
 
     _renderPass->set(0, vk::AttachmentDescription {
@@ -235,8 +235,8 @@ void RevDepthPassSkeletalStage::destroy() noexcept {
     }
 }
 
-void RevDepthPassSkeletalStage::allocateWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void RevDepthPassSkeletalStage::allocateWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
 
     /**
      *
@@ -319,8 +319,8 @@ void RevDepthPassSkeletalStage::allocateWith(const ptr<const RenderInvocation> i
         _STD make_shared<decltype(pools)>(_STD move(pools)));
 }
 
-void RevDepthPassSkeletalStage::freeWith(const ptr<const RenderInvocation> invocation_,
-    const ptr<RenderInvocationState> state_) {
+void RevDepthPassSkeletalStage::freeWith(const ptr<const RenderPass> invocation_,
+    const ptr<RenderPassState> state_) {
 
     /**
      *
@@ -483,7 +483,7 @@ void RevDepthPassSkeletalStage::after(const ptr<const RenderContext> ctx_, cref<
     stageCtx_.batch.push(*_cmd);
 }
 
-sptr<pipeline::RenderPass> RevDepthPassSkeletalStage::renderPass() const noexcept {
+sptr<pipeline::ApiRenderPass> RevDepthPassSkeletalStage::renderPass() const noexcept {
     return _renderPass;
 }
 

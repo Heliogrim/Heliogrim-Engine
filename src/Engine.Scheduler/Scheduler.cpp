@@ -78,8 +78,28 @@ void validate_task_ordering(task::__TaskDelegate task_) {
         DEBUG_SNMSG(false, "WARN",
             "Scheduled task with strong barrier guarantee and `TaskMask::eLower`. Low(est) priority tasks should most likly be scheduled with weak guarantee...")
     }
+
+    /**
+     *
+     */
+    if (src.stage == dst.stage && src.weak() && dst.weak()) {
+        DEBUG_SNMSG(false, "ERROR",
+            "Scheduled task with weak barrier guarantee at src stage, while src stage, dst stage and current stage are the same, is not allowed and will cause undefined execution order for this task.")
+    }
 }
 #endif
+
+void waitReadyAll(u32 workerCount_, const ptr<const Scheduler::aligned_worker> workers_) {
+    for (u32 i = 0; i < workerCount_; ++i) {
+        while (!workers_[i].ready()) {
+            #ifdef _DEBUG
+            thread::self::sleepFor(5);
+            #else
+            thread::self::yield();
+            #endif
+        }
+    }
+}
 
 void Scheduler::delay(task::__TaskDelegate task_, const u32 ticks_) {
     // TODO:
@@ -105,6 +125,9 @@ void Scheduler::tidy() {
     SCOPED_STOPWATCH
 
     if (_workerCount) {
+
+        waitReadyAll(_workerCount, _workers);
+
         /**
          * Destroy workers and transitive destroy threads
          */

@@ -2,12 +2,20 @@
 
 #include <Engine.Common/Collection/BytellHashMap.hpp>
 #include <Engine.Common/Make.hpp>
+
 #include <Ember/Actor.hpp>
 
 #include "ComponentTypeId.hpp"
 #include "Traits.hpp"
 #include "Pool.hpp"
 #include "Registry.hpp"
+
+namespace ember {
+    /**
+     * Forward Declaration
+     */
+    class Actor;
+}
 
 namespace ember::engine::acs {
 
@@ -155,14 +163,6 @@ namespace ember::engine::acs {
         ptr<pool_type<Actor>> _defaultActorPool = &pool_type<Actor>::getOrCreate();
 
     public:
-        [[nodiscard]] ptr<Actor> createActor() noexcept {
-
-            const auto guid = generate_actor_guid();
-
-            _defaultActorPool->insert(guid, Actor {});
-            auto* actor { _defaultActorPool->get(guid) };
-            actor->unsafe_set_guid(guid);
-            return actor;
-        }
+        [[nodiscard]] ptr<Actor> createActor() noexcept;
     };
 }

@@ -7,7 +7,7 @@
 #include "GraphicPassResult.hpp"
 #include "GraphicPassModelProcessor.hpp"
 #include "../Swapchain/Swapchain.hpp"
-#include "../Renderer/RenderInvocation.hpp"
+#include "../Renderer/RenderPass.hpp"
 #include "../Renderer/RenderContext.hpp"
 
 namespace ember::engine::gfx {
@@ -62,8 +62,8 @@ namespace ember::engine::gfx {
          * @param invocation_ The RenderInvocation which is required for the allocation
          * @param state_ The RenderInvocationState where to store the allocated data.
          */
-        virtual void allocateWith(_In_ const ptr<const RenderInvocation> invocation_,
-            _Inout_ const ptr<RenderInvocationState> state_);
+        virtual void allocateWith(_In_ const ptr<const RenderPass> invocation_,
+            _Inout_ const ptr<RenderPassState> state_);
 
         /**
          * Frees the allocated resources by this graphic pass from the given state and forwards to the graphic pass pipeline
@@ -76,8 +76,8 @@ namespace ember::engine::gfx {
          * @param invocation_ The RenderInvocation which was used for the allocation.
          * @param state_ The RenderInvocationState where to free the resources from.
          */
-        virtual void freeWith(_In_ const ptr<const RenderInvocation> invocation_,
-            _Inout_ const ptr<RenderInvocationState> state_);
+        virtual void freeWith(_In_ const ptr<const RenderPass> invocation_,
+            _Inout_ const ptr<RenderPassState> state_);
 
     public:
         /**
