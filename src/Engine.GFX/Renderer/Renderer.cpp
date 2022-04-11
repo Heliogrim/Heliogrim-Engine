@@ -2,50 +2,85 @@
 
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
-#include "RenderPass.hpp"
+#include "HORenderPass.hpp"
+#include "RenderPassState.hpp"
 #include "RenderPipeline.hpp"
+#include "../Device/Device.hpp"
+#include "../Command/CommandBatch.hpp"
 
+using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
 using namespace ember;
 
+Renderer::Renderer() noexcept :
+    _device(nullptr),
+    _pipeline(nullptr) {}
+
+Renderer::~Renderer() {
+    /**
+     *
+     */
+    if (_pipeline) {
+        delete _pipeline;
+        _pipeline = nullptr;
+    }
+}
+
 void Renderer::setup(cref<sptr<Device>> device_) {
     _device = device_;
+
+    #ifdef _DEBUG
+    const auto validationResult { _pipeline->validate() };
+    assert(validationResult != RenderPipelineValidationResult::eSuccess);
+    #else
+    const auto validationResult { _pipeline->validate() };
+    if (validationResult != RenderPipelineValidationResult::eSuccess) {
+        // TODO: Logger :: warn(...)
+    }
+    #endif
+
+    _pipeline->setup(device_);
 }
 
 cref<sptr<Device>> Renderer::device() const noexcept {
     return _device;
 }
 
-sptr<RenderPassState> Renderer::makeRenderPass() const {
+sptr<RenderPassState> Renderer::makeRenderPassState() const {
     // TODO:
     return make_sptr<RenderPassState>();
 }
 
-ptr<RenderPass> Renderer::allocate(mref<RenderPassCreateData> data_) {
-    auto* invocation {
-        new RenderPass {
+ptr<HORenderPass> Renderer::allocate(mref<HORenderPassCreateData> data_) {
+    auto* renderPass {
+        new HORenderPass {
             this,
             _STD move(data_),
-            nullptr
+            makeRenderPassState()
         }
     };
 
-    auto state { makeRenderPass() };
-
-    pipeline()->allocateWith(invocation, state.get());
-
-    const auto& targetStage { invocation->state() };
-    const_cast<ref<sptr<RenderPassState>>>(targetStage).swap(state);
-
-    return invocation;
+    _pipeline->allocate(renderPass);
+    return renderPass;
 }
 
-void Renderer::free(mref<ptr<RenderPass>> renderPass_) {
+bool Renderer::free(mref<ptr<HORenderPass>> renderPass_) {
+
+    if (renderPass_->renderer() != this) {
+        return false;
+    }
 
     /**
      *
      */
-    pipeline()->free(renderPass_, renderPass_->state().get());
+    _pipeline->free(renderPass_);
+
+    #ifdef _DEBUG
+    if (!renderPass_->state()->data.empty() || renderPass_->state()->framebuffer != nullptr) {
+        DEBUG_SNMSG(false, "WARN", "Failed to free all HORenderPass resources.")
+        __debugbreak();
+    }
+    #endif
 
     /**
      * Warning: Temporary Cleanup for Enforced Synchronization
@@ -59,19 +94,62 @@ void Renderer::free(mref<ptr<RenderPass>> renderPass_) {
      */
     delete renderPass_;
     renderPass_ = nullptr;
+
+    return true;
 }
 
-void Renderer::invokeBatched(const non_owning_rptr<RenderPass> invocation_, mref<CommandBatch> batch_) const {
+void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mref<CommandBatch> batch_) const {
 
     #ifdef _DEBUG
-    assert(invocation_->renderer() == this);
-    assert(invocation_->state() && invocation_->state()->framebuffer);
+    assert(renderPass_->renderer() == this);
+    // assert(renderPass_->state() && renderPass_->state()->framebuffer);
+    renderPass_->batches().clear();
     #endif
 
     /**
      *
      */
-    pipeline()->process(invocation_, batch_);
+    _pipeline->invoke(renderPass_);
+
+    // TODO:
+    for (const auto& entry : renderPass_->batches()) {
+        assert(entry.signals().empty() && entry.barriers().empty());
+        for (const auto& buffer : entry.buffers()) {
+            batch_.push(buffer);
+        }
+    }
+
+    #ifdef _DEBUG
+    if (batch_.buffers().empty()) {
+
+        vk::SubmitInfo info {
+            static_cast<u32>(batch_.barriers().size()),
+            batch_.barriers().data(),
+            &batch_.barrierStages(),
+            0,
+            nullptr,
+            static_cast<u32>(batch_.signals().size()),
+            batch_.signals().data()
+        };
+
+        vk::Fence fence { renderPass_->unsafeSync() };
+        if (!fence) {
+            fence = { _device->vkDevice().createFence(vk::FenceCreateInfo {}) };
+            #ifdef _DEBUG
+            assert(renderPass_->storeSync(vk::Fence { fence }));
+            #else
+        renderPass_->storeSync(_STD move(fence));
+            #endif
+
+        } else {
+            _device->vkDevice().resetFences(1, &fence);
+        }
+
+        auto* queue { _device->graphicsQueue() };
+        [[maybe_unused]] auto res { queue->vkQueue().submit(1ui32, &info, fence) };
+        return;
+    }
+    #endif
 
     /**
      * Warning: Temporary Enforced Submission Order
@@ -81,9 +159,9 @@ void Renderer::invokeBatched(const non_owning_rptr<RenderPass> invocation_, mref
     #endif
 
     const auto requiredSignals { batch_.buffers().size() - 1ui32 };
-    if (requiredSignals > invocation_->lastSignals().size()) {
-        for (u64 i = invocation_->lastSignals().size(); i < requiredSignals; ++i) {
-            invocation_->lastSignals().push_back(
+    if (requiredSignals > renderPass_->lastSignals().size()) {
+        for (u64 i = renderPass_->lastSignals().size(); i < requiredSignals; ++i) {
+            renderPass_->lastSignals().push_back(
                 _device->vkDevice().createSemaphore({
                     vk::SemaphoreCreateFlags {}
                 })
@@ -94,13 +172,13 @@ void Renderer::invokeBatched(const non_owning_rptr<RenderPass> invocation_, mref
     /**
      *
      */
-    vk::Fence fence { invocation_->unsafeSync() };
+    vk::Fence fence { renderPass_->unsafeSync() };
     if (!fence) {
         fence = { _device->vkDevice().createFence(vk::FenceCreateInfo {}) };
         #ifdef _DEBUG
-        assert(invocation_->storeSync(vk::Fence { fence }));
+        assert(renderPass_->storeSync(vk::Fence { fence }));
         #else
-        invocation_->storeSync(_STD move(fence));
+        renderPass_->storeSync(_STD move(fence));
         #endif
 
     } else {
@@ -138,7 +216,7 @@ void Renderer::invokeBatched(const non_owning_rptr<RenderPass> invocation_, mref
 
     } else {
         info.signalSemaphoreCount = 1ui32;
-        info.pSignalSemaphores = &invocation_->lastSignals()[0];
+        info.pSignalSemaphores = &renderPass_->lastSignals()[0];
         [[maybe_unused]] auto res { queue->vkQueue().submit(1ui32, &info, vk::Fence {}) };
     }
 
@@ -146,14 +224,14 @@ void Renderer::invokeBatched(const non_owning_rptr<RenderPass> invocation_, mref
     for (u32 i = 1; i < requiredSignals; ++i) {
 
         info.waitSemaphoreCount = 1ui32;
-        info.pWaitSemaphores = &invocation_->lastSignals()[i - 1ui32];
+        info.pWaitSemaphores = &renderPass_->lastSignals()[i - 1ui32];
         vk::PipelineStageFlags waitStage { vk::PipelineStageFlagBits::eColorAttachmentOutput };
         info.pWaitDstStageMask = &waitStage;
 
         info.pCommandBuffers = &batch_.buffers()[i].vkCommandBuffer();
 
         info.signalSemaphoreCount = 1ui32;
-        info.pSignalSemaphores = &invocation_->lastSignals()[i];
+        info.pSignalSemaphores = &renderPass_->lastSignals()[i];
 
         [[maybe_unused]] auto res { queue->vkQueue().submit(1ui32, &info, vk::Fence {}) };
     }
@@ -162,7 +240,7 @@ void Renderer::invokeBatched(const non_owning_rptr<RenderPass> invocation_, mref
     if (&batch_.buffers().front() != &batch_.buffers().back()) {
         // Front != Back ~ at least two submissions
         info.waitSemaphoreCount = 1ui32;
-        info.pWaitSemaphores = &invocation_->lastSignals()[requiredSignals - 1ui32];
+        info.pWaitSemaphores = &renderPass_->lastSignals()[requiredSignals - 1ui32];
         vk::PipelineStageFlags waitStage { vk::PipelineStageFlagBits::eColorAttachmentOutput };
         info.pWaitDstStageMask = &waitStage;
 
@@ -175,7 +253,7 @@ void Renderer::invokeBatched(const non_owning_rptr<RenderPass> invocation_, mref
     }
 }
 
-const non_owning_rptr<RenderPass> Renderer::invoke(const non_owning_rptr<RenderPass> renderPass_) {
+const non_owning_rptr<HORenderPass> Renderer::invoke(const non_owning_rptr<HORenderPass> renderPass_) {
     /**
      * Forward Invocation with default CommandBatch
      */
@@ -183,7 +261,7 @@ const non_owning_rptr<RenderPass> Renderer::invoke(const non_owning_rptr<RenderP
     return renderPass_;
 }
 
-const non_owning_rptr<RenderPass> Renderer::invoke(const non_owning_rptr<RenderPass> renderPass_,
+const non_owning_rptr<HORenderPass> Renderer::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     cref<CommandBatch> batchLayout_) {
 
     #ifdef _DEBUG
@@ -196,4 +274,16 @@ const non_owning_rptr<RenderPass> Renderer::invoke(const non_owning_rptr<RenderP
      */
     this->invokeBatched(renderPass_, CommandBatch { batchLayout_ });
     return renderPass_;
+}
+
+const non_owning_rptr<const RenderPipeline> Renderer::pipeline() const noexcept {
+    return _pipeline;
+}
+
+const non_owning_rptr<RenderPipeline> Renderer::getOrCreatePipeline() {
+    if (_pipeline == nullptr) {
+        _pipeline = new RenderPipeline();
+    }
+
+    return _pipeline;
 }

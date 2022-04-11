@@ -1,5 +1,7 @@
 #include "GraphicPass.hpp"
 
+#if FALSE
+
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
@@ -76,3 +78,5 @@ GraphicPassMask GraphicPass::mask() noexcept {
 cref<GraphicPassPipeline> GraphicPass::pipeline() const noexcept {
     return _pipeline;
 }
+
+#endif

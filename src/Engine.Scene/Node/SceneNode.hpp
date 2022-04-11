@@ -410,7 +410,8 @@ namespace ember::engine::scene {
          *
          * @returns An u64.
          */
-        [[nodiscard]] u64 depth() const noexcept {
+        template <class StorageType_>
+        [[nodiscard]] u64 depth(const ptr<StorageType_> storage_) const noexcept {
 
             if (isLeaf()) {
                 return 0ui64;
@@ -418,7 +419,7 @@ namespace ember::engine::scene {
 
             u64 tmp = 0ui64;
             for (const auto& entry : _children) {
-                const auto res = entry.get()->depth();
+                const auto res = entry.get(storage_)->depth(storage_);
                 tmp = MAX(tmp, res);
             }
 

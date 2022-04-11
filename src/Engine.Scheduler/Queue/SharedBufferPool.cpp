@@ -117,7 +117,7 @@ void SharedBufferPool::release(mref<ptr<aligned_buffer>> buffer_) {
         ++_poolSize;
 
         #ifdef _DEBUG
-        for (auto i = 0; i < used; ++i) {
+        for (decltype(_poolSize)::value_type i = 0; i < used; ++i) {
             DEBUG_ASSERT(pooled[i] != buffer_, "Collision by double releasing buffer to pool.")
         }
         #endif

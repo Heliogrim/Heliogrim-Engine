@@ -216,7 +216,7 @@ namespace ember::engine::scene {
         void traversal(cref<_STD function<bool(const ptr<node_type>)>> consumer_) const {
             // Using stack instead of queue will cause graph to traverse primary vertical and secondary horizontal
             // We assume that memory coherency is stronger when traversing vertical
-            stack<ptr<const SceneNodeHead>> backlog {};
+            stack<ptr<const SceneNodeHead>, Vector<ptr<const SceneNodeHead>>> backlog {};
             backlog.push(&_root);
 
             auto storage { _nodeStorage.get() };
@@ -241,12 +241,23 @@ namespace ember::engine::scene {
     private:
         void traversalBatchedSingle(u32 batchIdx_, cref<batched_consumer_fnc_type> consumer_,
             ptr<const SceneNodeHead> parent_) const {
+
+            /**
+             *
+             */
+            const auto storage { _nodeStorage.get() };
+
             // Using stack instead of queue will cause graph to traverse primary vertical and secondary horizontal
             // We assume that memory coherency is stronger when traversing vertical
-            stack<ptr<const SceneNodeHead>> backlog {};
+            Vector<ptr<const SceneNodeHead>> backlogContainer {};
+
+            // prepare stack container with `min(value, 64)`
+            const auto depth { parent_->get(storage)->depth(storage) };
+            backlogContainer.reserve(_STD min(traits::max_childs_per_node * depth, 64ui64));
+
+            stack<ptr<const SceneNodeHead>, Vector<ptr<const SceneNodeHead>>> backlog {};
             backlog.push(parent_);
 
-            auto storage { _nodeStorage.get() };
             while (!backlog.empty()) {
                 //DEBUG_ASSERT(backlog.top() != nullptr, "Cursor element should never be nullptr or undefined")
 
@@ -278,7 +289,7 @@ namespace ember::engine::scene {
                 return;
             }
 
-            stack<ptr<const SceneNodeHead>> backlog {};
+            stack<ptr<const SceneNodeHead>, Vector<ptr<const SceneNodeHead>>> backlog {};
             backlog.push(parent_);
 
             auto storage { _nodeStorage.get() };

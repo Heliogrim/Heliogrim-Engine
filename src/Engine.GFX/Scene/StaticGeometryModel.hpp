@@ -9,6 +9,12 @@ namespace ember::engine::gfx {
     class StaticGeometryModel final :
         public SceneNodeModel {
     public:
+        using this_type = StaticGeometryModel;
+        using underlying_type = SceneNodeModel;
+
+        inline constexpr static type_id type_id { "StaticGeometryModel"_typeId };
+
+    public:
         StaticGeometryModel(const ptr<SceneComponent> owner_);
 
         ~StaticGeometryModel() override final = default;

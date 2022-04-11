@@ -10,6 +10,10 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
+#if TRUE
+void pretransform(cref<sptr<Device>>, cref<Vector<sptr<Texture>>>);
+#endif
+
 VkSwapchain::VkSwapchain(cref<sptr<Device>> device_, cref<Surface> surface_) :
     Swapchain(),
     _device(device_),
@@ -103,6 +107,10 @@ void VkSwapchain::setup() {
         assert(texture->vkView());
         assert(texture->buffer().image());
     }
+
+    #if TRUE
+    pretransform(_device, _images);
+    #endif
 }
 
 void VkSwapchain::destroy() {
@@ -164,3 +172,58 @@ vk::PresentModeKHR VkSwapchain::selectPresentMode(cref<Vector<vk::PresentModeKHR
 
     return pm;
 }
+
+#if TRUE
+#include <Engine.GFX/Device/Device.hpp>
+#include <Engine.GFX/Command/CommandBuffer.hpp>
+
+void pretransform(cref<sptr<Device>> device_, cref<Vector<sptr<Texture>>> textures_) {
+
+    Vector<vk::ImageMemoryBarrier> imgBarriers {};
+    for (const auto& entry : textures_) {
+
+        if (isDepthFormat(entry->format()) || isStencilFormat(entry->format())) {
+            continue;
+        }
+
+        imgBarriers.push_back({
+            vk::AccessFlags {},
+            vk::AccessFlags {},
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::ePresentSrcKHR,
+            VK_QUEUE_FAMILY_IGNORED,
+            VK_QUEUE_FAMILY_IGNORED,
+            entry->buffer().image(),
+            vk::ImageSubresourceRange {
+                vk::ImageAspectFlagBits::eColor,
+                0,
+                entry->mipLevels(),
+                0,
+                entry->layer()
+            }
+        });
+    }
+
+    const auto pool = device_->graphicsQueue()->pool();
+    pool->lck().acquire();
+    CommandBuffer cmd = pool->make();
+    cmd.begin();
+
+    /**
+     * Transform
+     */
+    cmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
+        vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
+        0, nullptr,
+        0, nullptr,
+        static_cast<u32>(imgBarriers.size()), imgBarriers.data()
+    );
+
+    cmd.end();
+    cmd.submitWait();
+    cmd.release();
+
+    pool->lck().release();
+}
+
+#endif

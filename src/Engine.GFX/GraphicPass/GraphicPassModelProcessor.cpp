@@ -1,5 +1,7 @@
 #include "GraphicPassModelProcessor.hpp"
 
+#if FALSE
+
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
@@ -16,7 +18,7 @@ bool GraphicPassModelProcessor::operator()(u32 batchIdx_, const ptr<scene::Rende
 
     SCOPED_STOPWATCH
 
-    #if FALSE
+#if FALSE
     /**
      * TODO: Check whether node is used for current RenderPass
      */
@@ -48,7 +50,7 @@ bool GraphicPassModelProcessor::operator()(u32 batchIdx_, const ptr<scene::Rende
      * Return true for consumer to traverse the child elements in tree
      */
     return true;
-    #endif
+#endif
     return true;
 }
 
@@ -69,3 +71,5 @@ ptr<const GraphicPass> GraphicPassModelProcessor::graphicPass() const noexcept {
 ptr<const GraphicPass> GraphicPassModelProcessor::graphicPass() noexcept {
     return _graphicPass;
 }
+
+#endif

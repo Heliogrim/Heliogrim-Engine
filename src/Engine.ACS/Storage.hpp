@@ -2390,7 +2390,7 @@ namespace ember::engine::acs {
             value_index_type vidx;
             [[maybe_unused]] const bool r = page.template emplace<Args_...>(key_, _STD forward<Args_>(args_)..., vidx);
 
-            const page_index_type pidx = _STD distance(_pages.begin(), s.base()) - 1;
+            const page_index_type pidx { static_cast<page_index_type>(_STD distance(_pages.begin(), s.base()) - 1) };
 
             /**
              * Composite index_type

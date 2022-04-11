@@ -1,3 +1,5 @@
+#if FALSE
+
 #include "RevMainPassSkyStage.hpp"
 
 #ifdef _PROFILING
@@ -373,12 +375,12 @@ void RevMainPassSkyStage::freeWith(const ptr<const RenderPass> invocation_,
             const auto& dbg { (*dbgs)[i] };
             const auto& pool { (*pools)[i] };
 
-            #ifdef _DEBUG
-            //const auto result { device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet()) };
-            //assert(result == vk::Result::eSuccess);
-            #else
+#ifdef _DEBUG
+//const auto result { device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet()) };
+//assert(result == vk::Result::eSuccess);
+#else
             device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet())
-            #endif
+#endif
         }
 
         /**
@@ -515,3 +517,5 @@ void RevMainPassSkyStage::after(const ptr<const RenderContext> ctx_, cref<Graphi
 sptr<FixedPipeline> RevMainPassSkyStage::pipeline() const noexcept {
     return _pipeline;
 }
+
+#endif

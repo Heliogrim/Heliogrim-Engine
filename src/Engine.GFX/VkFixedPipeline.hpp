@@ -1,6 +1,6 @@
 #pragma once
 #include "FixedPipeline.hpp"
-#include "Pipeline/ApiRenderPass.hpp"
+#include "Pipeline/LORenderPass.hpp"
 
 namespace ember::engine::gfx {
     class VkFixedPipeline final :
@@ -16,7 +16,7 @@ namespace ember::engine::gfx {
          * @param  device_ The device.
          * @param  renderPass_ The render pass.
          */
-        VkFixedPipeline(sptr<Device> device_, sptr<pipeline::ApiRenderPass> renderPass_);
+        VkFixedPipeline(sptr<Device> device_, sptr<pipeline::LORenderPass> renderPass_);
 
         /**
          * Destructor
@@ -50,9 +50,9 @@ namespace ember::engine::gfx {
 
     private:
         /**
-         * ApiRenderPass
+         * LORenderPass
          */
-        sptr<pipeline::ApiRenderPass> _renderPass;
+        sptr<pipeline::LORenderPass> _renderPass;
 
     private:
         /**

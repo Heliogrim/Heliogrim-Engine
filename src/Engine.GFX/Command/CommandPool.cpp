@@ -41,6 +41,23 @@ CommandBuffer CommandPool::make() {
     };
 }
 
+CommandBuffer CommandPool::make(bool secondary_) {
+    const vk::CommandBufferAllocateInfo info {
+        _vkPool,
+        secondary_ ? vk::CommandBufferLevel::eSecondary : vk::CommandBufferLevel::ePrimary,
+        1ui32
+    };
+
+    auto vkCmds = _queue->device()->vkDevice().allocateCommandBuffers(info);
+
+    assert(!vkCmds.empty());
+
+    return CommandBuffer {
+        this,
+        vkCmds[0]
+    };
+}
+
 void CommandPool::release(const CommandBuffer& buffer_) {
     _queue->device()->vkDevice().freeCommandBuffers(_vkPool, 1, &buffer_.vkCommandBuffer());
 }

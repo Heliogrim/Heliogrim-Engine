@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/Bounding.hpp>
+#include <Engine.Reflect/EmberReflect.hpp>
 
 /**
  * Forward Declaration
@@ -16,7 +17,8 @@ namespace ember::engine::scene {
 
 namespace ember::engine::scene {
 
-    class __declspec(novtable) SceneNodeModel {
+    class __declspec(novtable) SceneNodeModel :
+        public EmberObject {
     public:
         SceneNodeModel() = delete;
 

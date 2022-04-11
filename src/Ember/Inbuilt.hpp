@@ -14,7 +14,7 @@
 #include <Engine.Common/Concurrent/Future.hpp>
 #include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Scheduler/Fiber/Awaitable.hpp>
-#include <Engine.Reflect/EmberObject.hpp>
+#include <Engine.Reflect/EmberReflect.hpp>
 
 #include "Task.hpp"
 
@@ -46,6 +46,7 @@ namespace ember {
      * Subsection: Suspension
      */
     using await_signal_type = engine::scheduler::fiber::await_signal_type;
+    using await_signal_sub_type = engine::scheduler::fiber::await_signal_sub_type;
 
     /**
      * Subsection: Results
@@ -94,7 +95,7 @@ namespace ember {
          *
          * @returns A pointer to the awaitable signal.
          */
-        [[nodiscard]] operator ptr<await_signal_type>() const noexcept {
+        [[nodiscard]] operator ptr<await_signal_sub_type>() const noexcept {
             return underlying_type::signal();
         }
     };
@@ -206,9 +207,9 @@ namespace ember {
      * @author Julius
      * @date 23.10.2021
      *
-     * @param  signal_ The signal to wait for.
+     * @param  signal_ The signal where to subscribe / wait for.
      */
-    extern void await(_In_ const ptr<await_signal_type> signal_);
+    extern void await(_In_ const ptr<await_signal_sub_type> signal_);
 
     /**
      * Awaits the given future and returns the stored value

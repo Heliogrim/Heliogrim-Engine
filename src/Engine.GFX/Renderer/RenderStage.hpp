@@ -5,18 +5,18 @@
 
 #include "Multiplexer.hpp"
 #include "RenderStageDependency.hpp"
+#include "__fwd.hpp"
 
 namespace ember::engine::gfx {
     /**
      * Forward Declaration
      */
-    class RenderPass;
-    class RenderPipeline;
+    class Device;
 }
 
-namespace ember::engine::gfx {
+namespace ember::engine::gfx::render {
 
-    class RenderStage {
+    class __declspec(novtable) RenderStage {
     public:
         using this_type = RenderStage;
 
@@ -73,8 +73,10 @@ namespace ember::engine::gfx {
          * @date 30.03.2022
          *
          * @details Will be invoked by propagation through pipelineSetup call.
+         *
+         * @param device_ The device used for this render stage
          */
-        virtual void setup();
+        virtual void setup(cref<sptr<Device>> device_);
 
         /**
          * Custom destroy callback
@@ -87,9 +89,9 @@ namespace ember::engine::gfx {
         virtual void destroy();
 
     public:
-        bool allocate(const ptr<const RenderPass> renderPass_);
+        virtual bool allocate(const ptr<HORenderPass> renderPass_);
 
-        void free(const ptr<const RenderPass> renderPass_);
+        virtual void free(const ptr<HORenderPass> renderPass_);
 
     private:
         /**
@@ -105,8 +107,14 @@ namespace ember::engine::gfx {
     protected:
         [[nodiscard]] ref<Vector<RenderStageDependency>> dependencies() noexcept;
 
+    public:
+        bool pushDependency(cref<RenderStageDependency> dependency_);
+
     private:
         Multiplexer _multiplexer;
+
+    protected:
+        [[nodiscard]] ref<Multiplexer> multiplexer() noexcept;
 
     public:
         [[nodiscard]] cref<Multiplexer> multiplexer() const noexcept;

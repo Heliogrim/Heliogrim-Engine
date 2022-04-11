@@ -1,4 +1,7 @@
 #pragma once
+
+#if FALSE
+
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Scene/RenderGraph.hpp>
 
@@ -112,3 +115,5 @@ namespace ember::engine::gfx {
         [[nodiscard]] ptr<const GraphicPass> graphicPass() noexcept;
     };
 }
+
+#endif

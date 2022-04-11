@@ -14,6 +14,8 @@
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Loader/RevTextureLoader.hpp"
 #include "Loader/StaticGeometryLoader.hpp"
+#include "Renderer/Renderer.hpp"
+#include "Renderer/HORenderPass.hpp"
 #include "Rev/GraphicPass/RevDepthPass.hpp"
 #include "Rev/Renderer/RevRenderer.hpp"
 #include "Shader/ShaderStorage.hpp"
@@ -86,7 +88,7 @@ void Graphics::setup() {
     /**
      * Create Renderer
      */
-    _renderer = new RevRenderer();
+    _renderer = new render::RevRenderer();
     _renderer->setup(_device);
 
     // Warning: Temporary
@@ -531,7 +533,7 @@ void Graphics::processGraphicPasses(ptr<scene::IRenderScene> scene_) {
         Vector<GraphicPassMask> dependencies {};
 
         if (dependencies.size() >= 1) {
-            // TODO: get back dependencies for ApiRenderPass finish
+            // TODO: get back dependencies for LORenderPass finish
             Vector<vk::Fence> waitFences {};
 
             waitFences.reserve(dependencies.size());
@@ -621,7 +623,7 @@ bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
      */
     auto* const scene { static_cast<const ptr<scene::RevScene>>(scene_) };
     scene->setNodeType(GfxSceneTag {}, StaticGeometryComponent::type_id, [](const ptr<SceneComponent> owner_) {
-        return new StaticGeometryModel(owner_);
+        return EmberObject::create<StaticGeometryModel>(owner_);
     });
 
     /**

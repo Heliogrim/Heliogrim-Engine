@@ -31,12 +31,13 @@ set(DEFAULT_PROJECT_OPTIONS
 #
 set(DEFAULT_INCLUDE_DIRECTORIES
         "${Vulkan_INCLUDE_DIR}"
-        "${META_PROJECT_LIB_DIR}/assimp/include"
+        "${META_PROJECT_LIB_DIR}/assimp"
         "${META_PROJECT_LIB_DIR}/dr_flac"
         "${META_PROJECT_LIB_DIR}/dr_wav"
         "${META_PROJECT_LIB_DIR}/gli"
         "${META_PROJECT_LIB_DIR}/glm"
         "${META_PROJECT_LIB_DIR}/SDL2"
+        "${META_PROJECT_LIB_DIR}/tsl"
         "${META_PROJECT_LIB_DIR}/vorbis")
 
 set(TEST_INCLUDE_DIRECTORIES
@@ -76,6 +77,17 @@ endif ()
 set(DEFAULT_COMPILE_DEFINITIONS
         SYSTEM_${SYSTEM_NAME_UPPER}
         )
+
+if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
+    set(DEFAULT_COMPILE_DEFINITIONS ${DEFAULT_COMPILE_DEFINITIONS}
+        _Debug # Custom Debug Preprocessor Flag
+    )
+endif ()
+if (${CMAKE_BUILD_TYPE} MATCHES "Profile")
+    set(DEFAULT_COMPILE_DEFINITIONS ${DEFAULT_COMPILE_DEFINITIONS}
+        _Profiling # Custom Debug Preprocessor Flag
+    )
+endif ()
 
 # MSVC compiler options
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")

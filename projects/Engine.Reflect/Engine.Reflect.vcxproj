@@ -101,13 +101,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Reflect\EmberClass.hpp" />
-    <ClInclude Include="..\..\src\Engine.Reflect\EmberObject.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\EmberReflect.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\EmberStruct.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Reflect.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Reflect\EmberObject.cpp" />
+    <ClCompile Include="..\..\src\Engine.Reflect\EmberReflect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">

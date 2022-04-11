@@ -1,4 +1,7 @@
 #pragma once
+
+#if FALSE
+
 #include "../../FixedPipeline.hpp"
 #include "../../GraphicPass/GraphicPassPipelineStage.hpp"
 #include "../../Pipeline/ApiRenderPass.hpp"
@@ -124,3 +127,6 @@ namespace ember::engine::gfx {
         Vector<shader::ShaderBindingGroup> _requiredBindingGroups;
     };
 }
+
+
+#endif

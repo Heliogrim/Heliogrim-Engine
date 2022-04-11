@@ -1,41 +1,83 @@
 #include "RevRenderer.hpp"
 
-#include "../../Renderer/RenderPass.hpp"
-#include "../../Renderer/RenderPipeline.hpp"
-#include "../GraphicPass/RevDepthPass.hpp"
-#include "../GraphicPass/RevFinalPass.hpp"
-#include "../GraphicPass/RevLightPass.hpp"
-#include "../GraphicPass/RevMainPass.hpp"
-#include "../GraphicPass/RevProbePass.hpp"
+#include <Engine.GFX/Renderer/RenderPipeline.hpp>
 
-#include "Engine.GFX/GraphicPass/GraphicPassMask.hpp"
+#include "RevDepthStage.hpp"
+#include "RevFinalStage.hpp"
+#include "RevLightStage.hpp"
+#include "RevMainStage.hpp"
+#include "RevProbeStage.hpp"
 
+using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
 using namespace ember;
 
 RevRenderer::RevRenderer() :
-    Renderer(),
-    _pipeline(nullptr) {}
+    Renderer() {}
 
 void RevRenderer::setup(cref<sptr<Device>> device_) {
-    base_type::setup(device_);
 
-    _pipeline = new RenderPipeline();
+    const auto pipe { getOrCreatePipeline() };
 
-    _pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eDepthPass), new RevDepthPass(device_));
-    //_pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eLightPass), new RevLightPass(device_));
-    //_pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eProbePass), new RevProbePass(device_));
-    _pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eMainPass), new RevMainPass(device_));
-    _pipeline->defineGraphicPass(static_cast<u8>(GraphicPassMask::eFinalPass), new RevFinalPass(device_));
+    /**
+     * Create Stages
+     */
+    const auto depthStage { make_sptr<RevDepthStage>() };
+    const auto lightStage { make_sptr<RevLightStage>() };
+    const auto probeStage { make_sptr<RevProbeStage>() };
+    const auto mainStage { make_sptr<RevMainStage>() };
+    const auto finalStage { make_sptr<RevFinalStage>() };
 
-    _pipeline->setup();
+    /**
+     * Declare Dependencies
+     */
+    lightStage->pushDependency({
+        depthStage.get(),
+        RenderStageOrder::ePredecessor,
+        true
+    });
+
+    probeStage->pushDependency({
+        depthStage.get(),
+        RenderStageOrder::ePredecessor,
+        true
+    });
+
+    mainStage->pushDependency({
+        depthStage.get(),
+        RenderStageOrder::ePredecessor,
+        true
+    });
+
+    mainStage->pushDependency({
+        lightStage.get(),
+        RenderStageOrder::ePredecessor,
+        true
+    });
+
+    mainStage->pushDependency({
+        probeStage.get(),
+        RenderStageOrder::ePredecessor,
+        true
+    });
+
+    finalStage->pushDependency({
+        mainStage.get(),
+        RenderStageOrder::ePredecessor,
+        true
+    });
+
+    /**
+     * Push Stages
+     */
+    pipe->push(depthStage);
+    pipe->push(mainStage);
+    pipe->push(finalStage);
+
+    /**
+     * Setup Pipeline & Store Device
+     */
+    Renderer::setup(device_);
 }
 
-void RevRenderer::destroy() {
-    _pipeline->destroy();
-    delete _pipeline;
-}
-
-const ptr<RenderPipeline> RevRenderer::pipeline() const noexcept {
-    return _pipeline;
-}
+void RevRenderer::destroy() {}

@@ -1,3 +1,5 @@
+#if FALSE
+
 #pragma once
 #include "../../GraphicPass/GraphicPassPipelineStage.hpp"
 #include "../../FixedPipeline.hpp"
@@ -111,3 +113,6 @@ namespace ember::engine::gfx {
         [[nodiscard]] sptr<FixedPipeline> pipeline() const noexcept;
     };
 }
+
+
+#endif

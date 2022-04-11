@@ -1,5 +1,7 @@
 #include "RevDepthPass.hpp"
 
+#if FALSE
+
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
@@ -180,3 +182,5 @@ ptr<GraphicPassModelProcessor> RevDepthPass::processor() noexcept {
     _processor.reset();
     return &_processor;
 }
+
+#endif

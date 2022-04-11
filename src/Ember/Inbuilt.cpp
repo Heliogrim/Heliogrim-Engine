@@ -121,7 +121,7 @@ void ember::execute(mref<TickTask> task_) {
     engine::Scheduler::get().exec(task);
 }
 
-void ember::await(const ptr<await_signal_type> signal_) {
+void ember::await(const ptr<await_signal_sub_type> signal_) {
     engine::scheduler::fiber::self::await_signal(signal_);
 }
 

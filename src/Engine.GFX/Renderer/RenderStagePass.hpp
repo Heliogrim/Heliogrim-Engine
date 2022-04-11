@@ -1,14 +1,11 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::gfx {
-    /**
-     * Forward Declaration
-     */
-    class RenderStage;
-}
+#include "../Command/CommandBatch.hpp"
 
-namespace ember::engine::gfx {
+#include "__fwd.hpp"
+
+namespace ember::engine::gfx::render {
 
     class RenderStagePass {
     public:
@@ -24,6 +21,16 @@ namespace ember::engine::gfx {
         RenderStagePass() = default;
 
         /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 30.03.2022
+         *
+         * @param stage_ The current RenderStage instance.
+         */
+        RenderStagePass(const non_owning_rptr<RenderStage> stage_);
+
+        /**
          * Destructor
          *
          * @author Julius
@@ -36,5 +43,13 @@ namespace ember::engine::gfx {
 
     public:
         [[nodiscard]] const ptr<const RenderStage> stage() const noexcept;
+
+    private:
+        CommandBatch _batch;
+
+    public:
+        [[nodiscard]] cref<CommandBatch> batch() const noexcept;
+
+        [[nodiscard]] ref<CommandBatch> batch() noexcept;
     };
 }

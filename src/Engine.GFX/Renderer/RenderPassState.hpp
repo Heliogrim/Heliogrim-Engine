@@ -3,9 +3,8 @@
 #include <Engine.Common/Collection/BytellHashMap.hpp>
 
 #include "../Framebuffer/Framebuffer.hpp"
-#include "../Command/CommandBatch.hpp"
 
-namespace ember::engine::gfx {
+namespace ember::engine::gfx::render {
 
     struct RenderPassState {
         ptr<Framebuffer> framebuffer;

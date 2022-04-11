@@ -48,6 +48,18 @@ namespace ember::engine::gfx {
         ~CommandBatch() noexcept = default;
 
         /**
+         * Check whether this is empty
+         *
+         * @author Julius
+         * @date 30.03.2022
+         *
+         * @details Will check for no buffers and signals. Barriers without payload should not cause any (side-)effect.
+         *
+         * @returns True if no buffers and signals are present, otherwise false.
+         */
+        [[nodiscard]] bool empty() const noexcept;
+
+        /**
          * Resets this
          *
          * @author Julius

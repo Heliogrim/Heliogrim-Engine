@@ -15,6 +15,10 @@ CommandBatch::CommandBatch(cref<this_type> other_) :
     _barrierStages(other_._barrierStages),
     _signals(other_._signals) {}
 
+bool CommandBatch::empty() const noexcept {
+    return _buffers.empty() && _signals.empty();
+}
+
 void CommandBatch::reset() {
     _barriers.clear();
     _barrierStages = vk::PipelineStageFlags {};

@@ -7,9 +7,12 @@ UnfairSpinLock::UnfairSpinLock() :
     _gate(0) {}
 
 UnfairSpinLock::~UnfairSpinLock() noexcept {
+    // Assuming that spin lock is used while destroying is erroneous
+    /*
     thread::thread_id expect { 0 };
     if (_gate != expect && !try_release())
         throw _STD runtime_error("Can not destroy spin lock while gate is locked by other thread");
+     */
 }
 
 void UnfairSpinLock::acquire() noexcept {
