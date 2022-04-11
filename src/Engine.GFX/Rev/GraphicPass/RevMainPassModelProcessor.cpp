@@ -1,5 +1,7 @@
 #include "RevMainPassModelProcessor.hpp"
 
+#if FALSE
+
 #include <Engine.Common/Math/Coordinates.hpp>
 
 #include "../../GraphicPass/GraphicPass.hpp"
@@ -38,7 +40,7 @@ bool RevMainPassModelProcessor::operator()(u32 batchIdx_, const ptr<scene::Rende
     // TODO: Remove!!!
     return !node_->isLeaf();
 
-    #if FALSE
+#if FALSE
     /**
      * Check whether scene node as stored valid element reference; otherwise drop iteration
      */
@@ -74,7 +76,7 @@ bool RevMainPassModelProcessor::operator()(u32 batchIdx_, const ptr<scene::Rende
      *
      */
     return !node_.isLeaf();
-    #endif
+#endif
 }
 
 void RevMainPassModelProcessor::process(mref<ModelBatch> model_) noexcept {
@@ -221,3 +223,6 @@ void RevMainPassModelProcessor::postProcess(const ptr<const RenderContext> ctx_)
 void RevMainPassModelProcessor::reset() {
     _consumed.clear();
 }
+
+
+#endif

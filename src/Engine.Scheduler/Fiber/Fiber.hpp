@@ -114,7 +114,7 @@ namespace ember::engine::scheduler::fiber {
             if constexpr (IsAwaitableSignal<AwaitableType_>) {
                 return await_signal<AwaitableType_>(awaitable_);
             } else if (IsAwaitableSignalRet<AwaitableType_>) {
-                return await_signal<await_signal_type>(awaitable_.await());
+                return await_signal<await_signal_sub_type>(awaitable_.await());
             } else if (IsAwaitableSignalCall<AwaitableType_>) {
                 return await_signal_call<AwaitableType_>(awaitable_);
             } else {

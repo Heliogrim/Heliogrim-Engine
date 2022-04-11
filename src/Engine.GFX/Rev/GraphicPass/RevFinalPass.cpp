@@ -1,3 +1,5 @@
+#if FALSE
+
 #include "RevFinalPass.hpp"
 
 #ifdef _PROFILING
@@ -118,3 +120,6 @@ void RevFinalPass::process(const ptr<scene::RenderGraph> graph_, const ptr<const
 ptr<GraphicPassModelProcessor> RevFinalPass::processor() noexcept {
     return nullptr;
 }
+
+
+#endif

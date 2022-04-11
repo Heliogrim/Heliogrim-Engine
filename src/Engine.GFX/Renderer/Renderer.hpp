@@ -1,17 +1,19 @@
 #pragma once
 
-#include "RenderPassCreateData.hpp"
-#include "RenderPassState.hpp"
+#include <Engine.Common/Wrapper.hpp>
+
+#include "HORenderPassCreateData.hpp"
+#include "__fwd.hpp"
+#include "../Command/__fwd.hpp"
 
 namespace ember::engine::gfx {
     /**
      * Forward Declaration
      */
-    class RenderPass;
-    class RenderPipeline;
+    class Device;
 }
 
-namespace ember::engine::gfx {
+namespace ember::engine::gfx::render {
 
     class __declspec(novtable) Renderer {
     public:
@@ -24,7 +26,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 30.03.2022
          */
-        Renderer() noexcept = default;
+        Renderer() noexcept;
 
     public:
         /**
@@ -33,7 +35,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 30.03.2022
          */
-        virtual ~Renderer() = default;
+        virtual ~Renderer();
 
     public:
         /**
@@ -53,11 +55,11 @@ namespace ember::engine::gfx {
         virtual void destroy() = 0;
 
     protected:
-        [[nodiscard]] sptr<RenderPassState> makeRenderPass() const;
+        [[nodiscard]] sptr<RenderPassState> makeRenderPassState() const;
 
     public:
         /**
-         * Creates a RenderPass for this Renderer based on given data
+         * Creates a HORenderPass for this Renderer based on given data
          *
          * @author Julius
          * @date 30.03.2022
@@ -69,10 +71,10 @@ namespace ember::engine::gfx {
          *
          * @returns A owning pointer to the created RenderPass.
          */
-        virtual ptr<RenderPass> allocate(mref<RenderPassCreateData> data_);
+        virtual ptr<HORenderPass> allocate(mref<HORenderPassCreateData> data_);
 
         /**
-         * Frees the given RenderPass if allocated by this Renderer
+         * Frees the given HORenderPass if allocated by this Renderer
          *
          * @author Julius
          * @date 30.03.2022
@@ -84,15 +86,15 @@ namespace ember::engine::gfx {
          *
          * @returns True if succeeded, otherwise false.
          */
-        virtual bool free(mref<ptr<RenderPass>> renderPass_);
+        virtual bool free(mref<ptr<HORenderPass>> renderPass_);
 
     private:
-        void invokeBatched(const non_owning_rptr<RenderPass> invocation_, mref<CommandBatch> batch_) const;
+        void invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mref<CommandBatch> batch_) const;
 
     public:
-        virtual const non_owning_rptr<RenderPass> invoke(const non_owning_rptr<RenderPass> renderPass_);
+        virtual const non_owning_rptr<HORenderPass> invoke(const non_owning_rptr<HORenderPass> renderPass_);
 
-        virtual const non_owning_rptr<RenderPass> invoke(const non_owning_rptr<RenderPass> renderPass_,
+        virtual const non_owning_rptr<HORenderPass> invoke(const non_owning_rptr<HORenderPass> renderPass_,
             cref<CommandBatch> batchLayout_);
 
     protected:

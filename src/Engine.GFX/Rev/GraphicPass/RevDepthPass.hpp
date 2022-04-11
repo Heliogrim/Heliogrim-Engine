@@ -1,4 +1,7 @@
 #pragma once
+
+#if FALSE
+
 #include "RevDepthPassModelProcessor.hpp"
 #include "../../GraphicPass/GraphicPass.hpp"
 #include "../../Framebuffer/Framebuffer.hpp"
@@ -39,10 +42,10 @@ namespace ember::engine::gfx {
         void postProcessAllocated(const ptr<RenderPassState> state_) const;
 
     public:
-        void allocateWith(const ptr<const RenderPass> invocation_,
+        void allocateWith(const ptr<const HORenderPass> invocation_,
             const ptr<RenderPassState> state_) override;
 
-        void freeWith(const ptr<const RenderPass> invocation_, const ptr<RenderPassState> state_) override;
+        void freeWith(const ptr<const HORenderPass> invocation_, const ptr<RenderPassState> state_) override;
 
     private:
         /**
@@ -62,3 +65,5 @@ namespace ember::engine::gfx {
         ptr<GraphicPassModelProcessor> processor() noexcept override final;
     };
 }
+
+#endif

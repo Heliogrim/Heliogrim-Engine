@@ -345,7 +345,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\RasterizationStage.hpp">
       <Filter>Headerdateien\Pipeline</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\ApiRenderPass.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\LORenderPass.hpp">
       <Filter>Headerdateien\Pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Shader\ShaderStorage.hpp">
@@ -525,16 +525,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevDepthPassSkeletalStage.hpp">
       <Filter>Headerdateien\Rev\GraphicPass</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevFinalPass.hpp">
-      <Filter>Headerdateien\Rev\GraphicPass</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevFinalPassCompositeStage.hpp">
-      <Filter>Headerdateien\Rev\GraphicPass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevLightPass.hpp">
-      <Filter>Headerdateien\Rev\GraphicPass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPass.hpp">
       <Filter>Headerdateien\Rev\GraphicPass</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassStaticStage.hpp">
@@ -543,25 +534,13 @@
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassSkeletalStage.hpp">
       <Filter>Headerdateien\Rev\GraphicPass</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevProbePass.hpp">
-      <Filter>Headerdateien\Rev\GraphicPass</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\GraphicPassResult.hpp">
       <Filter>Headerdateien\GraphicPass</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\GraphicPassStageContext.hpp">
       <Filter>Headerdateien\GraphicPass</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\GraphicPass.hpp">
-      <Filter>Headerdateien\GraphicPass</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\GraphicPassMask.hpp">
-      <Filter>Headerdateien\GraphicPass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\GraphicPassPipeline.hpp">
-      <Filter>Headerdateien\GraphicPass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\GraphicPassPipelineStage.hpp">
       <Filter>Headerdateien\GraphicPass</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\GraphicPassModelProcessor.hpp">
@@ -570,7 +549,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\ProcessedModelBatch.hpp">
       <Filter>Headerdateien\GraphicPass</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderPassCreateData.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\HORenderPassCreateData.hpp">
       <Filter>Headerdateien\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevRenderer.hpp">
@@ -579,10 +558,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderPassState.hpp">
       <Filter>Headerdateien\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderPass.hpp">
-      <Filter>Headerdateien\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderContext.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\HORenderPass.hpp">
       <Filter>Headerdateien\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassModelProcessor.hpp">
@@ -611,6 +587,54 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderStageNode.hpp">
       <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthStage.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevLightStage.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevProbeStage.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevMainStage.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthStaticNode.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthSkeletalNode.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevMainStaticNode.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevMainSkyNode.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevMainSkeletalNode.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\__macro.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevFinalStage.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\__fwd.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Command\__fwd.hpp">
+      <Filter>Headerdateien\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevMainSharedNode.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthSharedNode.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevFinalComposeNode.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -680,7 +704,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Shader\ShaderBindingGroup.cpp">
       <Filter>Quelldateien\Shader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\ApiRenderPass.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\LORenderPass.cpp">
       <Filter>Quelldateien\Pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Shader\ShaderStorage.cpp">
@@ -824,16 +848,10 @@
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevFinalPassCompositeStage.cpp">
       <Filter>Quelldateien\Rev\GraphicPass</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevLightPass.cpp">
-      <Filter>Quelldateien\Rev\GraphicPass</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPass.cpp">
       <Filter>Quelldateien\Rev\GraphicPass</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassSkeletalStage.cpp">
-      <Filter>Quelldateien\Rev\GraphicPass</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevProbePass.cpp">
       <Filter>Quelldateien\Rev\GraphicPass</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\GraphicPassPipeline.cpp">
@@ -857,7 +875,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderPipeline.cpp">
       <Filter>Quelldateien\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderPass.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX\Renderer\HORenderPass.cpp">
       <Filter>Quelldateien\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassModelProcessor.cpp">
@@ -868,6 +886,60 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevMainPassSkyStage.cpp">
       <Filter>Quelldateien\Rev\GraphicPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthStaticNode.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderStage.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderStageProcessor.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthStage.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthSkeletalNode.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevFinalStage.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevLightStage.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevMainSkeletalNode.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevMainSkyNode.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevMainStage.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevMainStaticNode.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevProbeStage.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderStagePass.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Renderer\Multiplexer.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderStageNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevMainSharedNode.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthSharedNode.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevFinalComposeNode.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

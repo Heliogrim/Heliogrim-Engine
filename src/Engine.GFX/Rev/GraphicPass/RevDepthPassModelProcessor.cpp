@@ -1,5 +1,7 @@
 #include "RevDepthPassModelProcessor.hpp"
 
+#if FALSE
+
 #include <Engine.Common/Math/Coordinates.hpp>
 
 #include "../../GraphicPass/GraphicPass.hpp"
@@ -38,7 +40,7 @@ bool RevDepthPassModelProcessor::operator()(u32 batchIdx_, const ptr<scene::Rend
     // TODO: Remove!!!
     return !node_->isLeaf();
 
-    #if FALSE
+#if FALSE
     /**
      * Check whether scene node as stored valid element reference; otherwise drop iteration
      */
@@ -74,7 +76,7 @@ bool RevDepthPassModelProcessor::operator()(u32 batchIdx_, const ptr<scene::Rend
      *
      */
     return !node_.isLeaf();
-    #endif
+#endif
 }
 
 void RevDepthPassModelProcessor::process(mref<ModelBatch> model_) noexcept {
@@ -221,3 +223,6 @@ void RevDepthPassModelProcessor::postProcess(const ptr<const RenderContext> ctx_
 void RevDepthPassModelProcessor::reset() {
     _consumed.clear();
 }
+
+
+#endif

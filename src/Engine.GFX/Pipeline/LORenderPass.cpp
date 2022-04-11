@@ -1,4 +1,4 @@
-#include "ApiRenderPass.hpp"
+#include "LORenderPass.hpp"
 #include "../TextureFormat.hpp"
 #include "../API/VkTranslate.hpp"
 #include "../Framebuffer/Framebuffer.hpp"
@@ -7,10 +7,10 @@ using namespace ember::engine::gfx::pipeline;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-ApiRenderPass::ApiRenderPass(sptr<Device> device_) noexcept :
+LORenderPass::LORenderPass(sptr<Device> device_) noexcept :
     _device(device_) {}
 
-void ApiRenderPass::setup() {
+void LORenderPass::setup() {
     /**
      * Prepare
      */
@@ -142,7 +142,7 @@ void ApiRenderPass::setup() {
     };
 }
 
-void ApiRenderPass::setup(const Framebuffer& framebuffer_) {
+void LORenderPass::setup(const Framebuffer& framebuffer_) {
     const auto& attachments = framebuffer_.attachments();
 
     /**
@@ -210,11 +210,11 @@ void ApiRenderPass::setup(const Framebuffer& framebuffer_) {
     setup();
 }
 
-void ApiRenderPass::destroy() {
+void LORenderPass::destroy() {
     _device->vkDevice().destroyRenderPass(_vkRenderPass);
 }
 
-void ApiRenderPass::set(const u32 idx_, const vk::AttachmentDescription& attachment_) {
+void LORenderPass::set(const u32 idx_, const vk::AttachmentDescription& attachment_) {
 
     const TextureFormat format { api::vkTranslateFormat(attachment_.format) };
     const auto hasDepth = isDepthFormat(format);
@@ -264,34 +264,34 @@ void ApiRenderPass::set(const u32 idx_, const vk::AttachmentDescription& attachm
     set(idx_, attachment_);
 }
 
-const Vector<vk::AttachmentDescription>& ApiRenderPass::attachments() const noexcept {
+const Vector<vk::AttachmentDescription>& LORenderPass::attachments() const noexcept {
     return _attachments;
 }
 
-vk::AttachmentDescription& ApiRenderPass::attachment(const u32 idx_) {
+vk::AttachmentDescription& LORenderPass::attachment(const u32 idx_) {
     return _attachments.at(idx_);
 }
 
-Vector<vk::SubpassDependency>& ApiRenderPass::dependencies() noexcept {
+Vector<vk::SubpassDependency>& LORenderPass::dependencies() noexcept {
     return _dependencies;
 }
 
-cref<sptr<Device>> ApiRenderPass::device() const noexcept {
+cref<sptr<Device>> LORenderPass::device() const noexcept {
     return _device;
 }
 
-vk::SubpassDescription& ApiRenderPass::subpass() noexcept {
+vk::SubpassDescription& LORenderPass::subpass() noexcept {
     return _subpass;
 }
 
-const vk::RenderPass& ApiRenderPass::vkRenderPass() const noexcept {
+const vk::RenderPass& LORenderPass::vkRenderPass() const noexcept {
     return _vkRenderPass;
 }
 
-vk::RenderPass& ApiRenderPass::vkRenderPass() noexcept {
+vk::RenderPass& LORenderPass::vkRenderPass() noexcept {
     return _vkRenderPass;
 }
 
-cref<vk::RenderPassBeginInfo> ApiRenderPass::vkBeginInfo() const noexcept {
+cref<vk::RenderPassBeginInfo> LORenderPass::vkBeginInfo() const noexcept {
     return _vkBeginInfo;
 }

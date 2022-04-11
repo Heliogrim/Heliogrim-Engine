@@ -1,3 +1,5 @@
+#if FALSE
+
 #include "RevMainPass.hpp"
 
 #ifdef _PROFILING
@@ -432,3 +434,6 @@ ptr<GraphicPassModelProcessor> RevMainPass::processor() noexcept {
     _processor.reset();
     return &_processor;
 }
+
+
+#endif

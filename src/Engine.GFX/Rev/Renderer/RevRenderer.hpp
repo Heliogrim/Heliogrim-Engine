@@ -1,7 +1,7 @@
 #pragma once
 #include "../../Renderer/Renderer.hpp"
 
-namespace ember::engine::gfx {
+namespace ember::engine::gfx::render {
 
     class RevRenderer :
         public Renderer {
@@ -18,11 +18,5 @@ namespace ember::engine::gfx {
         void setup(cref<sptr<Device>> device_) override;
 
         void destroy() override;
-
-    private:
-        ptr<RenderPipeline> _pipeline;
-
-    public:
-        [[nodiscard]] const ptr<RenderPipeline> pipeline() const noexcept override;
     };
 }

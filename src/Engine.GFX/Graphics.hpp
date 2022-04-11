@@ -5,7 +5,7 @@
 #include "Application/Application.hpp"
 #include "Command/CommandQueue.hpp"
 #include "Device/Device.hpp"
-#include "GraphicPass/GraphicPass.hpp"
+#include "Renderer/__fwd.hpp"
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
 
@@ -14,6 +14,10 @@
  */
 namespace ember::engine::scene {
     class IRenderScene;
+}
+
+namespace ember::engine::gfx {
+    class Camera;
 }
 
 namespace ember::engine::gfx::loader {
@@ -185,10 +189,10 @@ namespace ember::engine {
         [[nodiscard]] gfx::CommandQueue::reference_type getTransferQueue() const noexcept;
 
     private:
-        ptr<gfx::Renderer> _renderer;
+        ptr<gfx::render::Renderer> _renderer;
 
     private:
-        Vector<ptr<gfx::RenderPass>> _renderPasses;
+        Vector<ptr<gfx::render::HORenderPass>> _renderPasses;
 
         // Warning: Temporary
         ptr<gfx::Camera> _camera;

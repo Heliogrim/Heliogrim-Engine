@@ -19,7 +19,7 @@ void CommandBuffer::begin() {
     _vkCmd.begin(info);
 }
 
-void CommandBuffer::beginRenderPass(const pipeline::ApiRenderPass& renderPass_, const Framebuffer& framebuffer_,
+void CommandBuffer::beginRenderPass(const pipeline::LORenderPass& renderPass_, const Framebuffer& framebuffer_,
     bool inline_) {
 
     vk::RenderPassBeginInfo info = renderPass_.vkBeginInfo();

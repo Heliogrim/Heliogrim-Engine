@@ -1680,9 +1680,9 @@ namespace ember {
             return *this;
         }
 
-        void swap(const_reference_type right_) noexcept {
+        void swap(const_reference_type other_) noexcept {
             if (this != _STD addressof(other_)) {
-                swap_internal(right_);
+                swap_internal(other_);
             }
         }
 

@@ -10,14 +10,25 @@
 
 namespace ember::engine::scheduler::fiber {
 
+    /**
+     * await_signal_type :: Defines type to use as awaitable signal by source
+     * await_signal_sub_type :: Defines the subscription type the FiberAwaitable will use
+     *
+     *  Be aware that `std::atomic_flag` had no `const std::atomic_flag::test()` before CXX20
+     *      which required implicitly a mutable object due to `std::atomic_flag::test_and_set()`
+     */
     using await_signal_type = _STD atomic_flag;
+    using await_signal_sub_type = const await_signal_type;
 
     template <typename AwaitableType_>
-    concept IsAwaitableSignal = _STD is_same_v<AwaitableType_, await_signal_type>;
+    concept IsAwaitableSignal = _STD is_same_v<AwaitableType_, await_signal_type> || _STD is_same_v<AwaitableType_,
+        await_signal_sub_type>;
 
     template <typename AwaitableType_>
     concept IsAwaitableSignalRet = requires(const AwaitableType_ obj) {
         { obj.await() } -> std::same_as<const ptr<await_signal_type>>;
+    } || requires(const AwaitableType_ obj) {
+        { obj.await() } -> std::same_as<const ptr<await_signal_sub_type>>;
     };
 
     template <typename AwaitableType_>
@@ -51,7 +62,7 @@ namespace ember::engine::scheduler::fiber {
             /**
              *
              */
-            await_signal_type* signal;
+            await_signal_sub_type* signal;
 
             /**
              *

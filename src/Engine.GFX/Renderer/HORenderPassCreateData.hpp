@@ -5,9 +5,9 @@
 #include "../Camera/Camera.hpp"
 #include "../Texture/Texture.hpp"
 
-namespace ember::engine::gfx {
+namespace ember::engine::gfx::render {
 
-    struct RenderPassCreateData {
+    struct HORenderPassCreateData {
 
         ptr<Texture> target;
 

@@ -1,3 +1,4 @@
+#if FALSE
 #include "GraphicPassPipeline.hpp"
 
 #ifdef _PROFILING
@@ -105,3 +106,5 @@ cref<Vector<ptr<GraphicPassPipelineStage>>> GraphicPassPipeline::stages() const 
 ref<Vector<ptr<GraphicPassPipelineStage>>> GraphicPassPipeline::stages() noexcept {
     return _stages;
 }
+
+#endif

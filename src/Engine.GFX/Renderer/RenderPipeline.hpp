@@ -1,24 +1,24 @@
 #pragma once
-#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Types.hpp>
+#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
-#include "../Command/CommandBatch.hpp"
+#include "__fwd.hpp"
 
 namespace ember::engine::gfx {
     /**
      * Forward Declaration
      */
-    class RenderPass;
-    class RenderPassState;
-    class RenderStage;
+    class Device;
 }
 
-namespace ember::engine::gfx {
+namespace ember::engine::gfx::render {
 
     enum class RenderPipelineValidationResult : u8 {
         eSuccess = 0x0,
         eFailedRequired,
-        eFailedOrder
+        eFailedOrder,
+        eFailedUnique
     };
 
     class RenderPipeline {
@@ -37,21 +37,36 @@ namespace ember::engine::gfx {
     public:
         void destroy();
 
-        void setup();
+        void setup(cref<sptr<Device>> device_);
 
     public:
-        void allocate(const ptr<const RenderPass> invocation_, _Inout_ const ptr<RenderPassState> state_);
+        void allocate(_Inout_ const ptr<HORenderPass> renderPass_);
 
-        void free(const ptr<const RenderPass> invocation_, _Inout_ const ptr<RenderPassState> state_);
-
-    public:
-        void invoke(const ptr<const RenderPass> ctx_, ref<CommandBatch> batch_) const;
+        void free(_Inout_ const ptr<HORenderPass> renderPass_);
 
     public:
-        void push(cref<sptr<RenderStage>> stage_);
+        void invoke(const non_owning_rptr<HORenderPass> renderPass_) const;
+
+    private:
+        /**
+         * The sorted collection of defined render stages
+         */
+        Vector<sptr<RenderStage>> _stages;
+
+    public:
+        RenderPipelineValidationResult push(cref<sptr<RenderStage>> stage_);
 
         bool pop(cref<sptr<RenderStage>> stage_);
 
         [[nodiscard]] RenderPipelineValidationResult validate() const noexcept;
+
+    private:
+        /**
+         * The api/graphic device this render pipeline is associated with
+         */
+        sptr<Device> _device;
+
+    public:
+        [[nodiscard]] cref<sptr<Device>> device() const noexcept;
     };
 }

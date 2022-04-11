@@ -1,4 +1,7 @@
 #pragma once
+
+#if FALSE
+
 #include "../../GraphicPass/GraphicPassModelProcessor.hpp"
 
 namespace ember::engine::gfx {
@@ -37,3 +40,5 @@ namespace ember::engine::gfx {
         void reset();
     };
 }
+
+#endif

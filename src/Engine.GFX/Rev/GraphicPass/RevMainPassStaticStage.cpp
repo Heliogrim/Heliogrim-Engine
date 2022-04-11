@@ -1,3 +1,5 @@
+#if FALSE
+
 #include "RevMainPassStaticStage.hpp"
 
 #ifdef _PROFILING
@@ -491,12 +493,12 @@ void RevMainPassStaticStage::freeWith(const ptr<const RenderPass> invocation_,
             const auto& dbg { (*dbgs)[i] };
             const auto& pool { (*pools)[i] };
 
-            #ifdef _DEBUG
-            //const auto result { device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet()) };
-            //assert(result == vk::Result::eSuccess);
-            #else
+#ifdef _DEBUG
+//const auto result { device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet()) };
+//assert(result == vk::Result::eSuccess);
+#else
             device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet())
-            #endif
+#endif
         }
 
         /**
@@ -658,7 +660,7 @@ void RevMainPassStaticStage::after(const ptr<const RenderContext> ctx_, cref<Gra
 
     SCOPED_STOPWATCH
 
-    #if FALSE
+#if FALSE
     const auto& data { ctx_->state()->data };
 
     /**
@@ -666,9 +668,12 @@ void RevMainPassStaticStage::after(const ptr<const RenderContext> ctx_, cref<Gra
      */
     const auto cmdEntry { data.at("RevMainPass::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
-    #endif
+#endif
 }
 
 sptr<FixedPipeline> RevMainPassStaticStage::pipeline() const noexcept {
     return _pipeline;
 }
+
+
+#endif

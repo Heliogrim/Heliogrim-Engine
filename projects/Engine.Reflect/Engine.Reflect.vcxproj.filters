@@ -15,21 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Reflect\EmberClass.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflect\EmberObject.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflect\EmberStruct.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflect\Reflect.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\EmberReflect.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Reflect\EmberObject.cpp">
+    <ClCompile Include="..\..\src\Engine.Reflect\EmberReflect.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

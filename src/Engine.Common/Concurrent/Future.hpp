@@ -190,7 +190,7 @@ namespace ember::concurrent {
             }
 
         public:
-            [[nodiscard]] non_owning_rptr<_STD atomic_flag> signal() const {
+            [[nodiscard]] const non_owning_rptr<const _STD atomic_flag> signal() const {
                 return &_returned;
             }
 
@@ -279,7 +279,7 @@ namespace ember::concurrent {
         }
 
     public:
-        [[nodiscard]] non_owning_rptr<_STD atomic_flag> signal() const {
+        [[nodiscard]] const non_owning_rptr<const _STD atomic_flag> signal() const {
             return _state->signal();
         }
 
@@ -357,7 +357,7 @@ namespace ember::concurrent {
         }
 
     public:
-        [[nodiscard]] non_owning_rptr<_STD atomic_flag> signal() const {
+        [[nodiscard]] const non_owning_rptr<const _STD atomic_flag> signal() const {
             return _state->signal();
         }
 

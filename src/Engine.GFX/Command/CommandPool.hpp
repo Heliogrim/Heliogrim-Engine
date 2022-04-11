@@ -60,6 +60,8 @@ namespace ember::engine::gfx {
          */
         [[nodiscard]] CommandBuffer make();
 
+        [[nodiscard]] CommandBuffer make(bool secondary_);
+
         /**
          * Releases the given buffer
          *

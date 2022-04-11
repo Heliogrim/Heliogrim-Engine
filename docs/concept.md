@@ -1769,8 +1769,10 @@ sequenceDiagram
             loop Every Model
                 RenderStageProcessor->>Multiplexer: dispatch
                 loop Every RenderStageNode
+                    Multiplexer-)RenderStageNode: before
                     Multiplexer->>+RenderStageNode: invoke
                     RenderStageNode-->>-Multiplexer: return
+                    Multiplexer-)RenderStageNode: after
                 end
                 Multiplexer-->>RenderStageProcessor: return
             end

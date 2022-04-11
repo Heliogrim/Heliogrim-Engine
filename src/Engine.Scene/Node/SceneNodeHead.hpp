@@ -128,7 +128,8 @@ namespace ember::engine::scene {
     public:
         template <class NodeStorageType_>
         [[nodiscard]] ptr<typename NodeStorageType_::value_type> get(
-            const ptr<NodeStorageType_> storage_) const noexcept {
+            const ptr<NodeStorageType_> storage_
+        ) const noexcept {
 
             if (_cachedPtr == nullptr) {
                 _cachedPtr = storage_->get(_nodeId);

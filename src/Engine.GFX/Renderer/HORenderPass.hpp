@@ -1,37 +1,38 @@
 #pragma once
 
-#include <Engine.Scene/IRenderScene.hpp>
 #include <Engine.Scheduler/Fiber/Awaitable.hpp>
 
-#include "../Camera/Camera.hpp"
-#include "../Texture/Texture.hpp"
-#include "../Command/CommandBatch.hpp"
+#include "HORenderPassCreateData.hpp"
+#include "__fwd.hpp"
 
 namespace ember::engine::gfx {
     /**
      * Forward Declaration
      */
-    class Renderer;
-    struct RenderPassCreateData;
-    struct RenderPassState;
+    class Camera;
+    class Texture;
+    class CommandBatch;
 }
 
-namespace ember::engine::gfx {
+namespace ember::engine::scene {
+    class IRenderScene;
+}
 
-    class RenderPass {
+namespace ember::engine::gfx::render {
+
+    class HORenderPass {
     public:
-        using this_type = RenderPass;
+        using this_type = HORenderPass;
 
     public:
-        RenderPass(const non_owning_rptr<Renderer> renderer_, RenderPassCreateData data_,
-            const sptr<RenderPassState> state_);
+        HORenderPass(const non_owning_rptr<Renderer> renderer_, HORenderPassCreateData data_,
+            cref<sptr<RenderPassState>> state_);
 
-        RenderPass(cref<this_type>) = delete;
+        HORenderPass(cref<this_type>) = delete;
 
-        // Warning: explicitly defaulted move constructor is implicitly deleted [-Wdefaulted-function-deleted]	Ember	R:\Development\C++\Vulkan API\Game\src\Engine.GFX\Renderer\RenderPass.hpp	31
-        RenderPass(mref<this_type> other_) noexcept = default;
+        HORenderPass(mref<this_type> other_) noexcept;
 
-        ~RenderPass();
+        ~HORenderPass();
 
     private:
         void tidy();
@@ -70,9 +71,17 @@ namespace ember::engine::gfx {
     public:
         [[nodiscard]] cref<sptr<RenderPassState>> state() const noexcept;
 
+        [[nodiscard]] sptr<RenderPassState> state() noexcept;
+
         /**
-         * TODO: Refactor to cleanup RenderPass Interface
+         * TODO: Refactor to cleanup HORenderPass Interface
          */
+    private:
+        Vector<CommandBatch> _batches;
+
+    public:
+        [[nodiscard]] ref<decltype(_batches)> batches() noexcept;
+
     private:
         Vector<vk::Semaphore> _lastSignals;
 
@@ -90,5 +99,5 @@ namespace ember::engine::gfx {
         [[nodiscard]] bool await() const noexcept;
     };
 
-    static_assert(scheduler::fiber::IsAwaitable<RenderPass>);
+    static_assert(scheduler::fiber::IsAwaitable<HORenderPass>);
 }

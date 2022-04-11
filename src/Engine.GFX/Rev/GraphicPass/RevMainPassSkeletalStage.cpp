@@ -1,3 +1,5 @@
+#if FALSE
+
 #include "RevMainPassSkeletalStage.hpp"
 
 #ifdef _PROFILING
@@ -206,3 +208,6 @@ void RevMainPassSkeletalStage::after(const ptr<const RenderContext> ctx_, cref<G
 sptr<FixedPipeline> RevMainPassSkeletalStage::pipeline() const noexcept {
     return _pipeline;
 }
+
+
+#endif

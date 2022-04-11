@@ -1,5 +1,7 @@
 #include "RevFinalPassCompositeStage.hpp"
 
+#if FALSE
+
 #include <cassert>
 #include <Engine.Common/Make.hpp>
 
@@ -476,12 +478,12 @@ void RevFinalPassCompositeStage::freeWith(const ptr<const RenderPass> invocation
             const auto& dbg { (*dbgs)[i] };
             const auto& pool { (*pools)[i] };
 
-            #ifdef _DEBUG
-            // const auto result { device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet()) };
-            // assert(result == vk::Result::eSuccess);
-            #else
+#ifdef _DEBUG
+// const auto result { device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet()) };
+// assert(result == vk::Result::eSuccess);
+#else
             device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet())
-            #endif
+#endif
         }
 
         /**
@@ -652,3 +654,6 @@ sptr<pipeline::ApiRenderPass> RevFinalPassCompositeStage::renderPass() const noe
 sptr<FixedPipeline> RevFinalPassCompositeStage::pipeline() const noexcept {
     return _pipeline;
 }
+
+
+#endif

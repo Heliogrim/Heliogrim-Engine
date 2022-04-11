@@ -1,18 +1,22 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Meta/TypeId.hpp>
+
+#include "__fwd.hpp"
 
 namespace ember::engine::gfx {
     /**
      * Forward Declaration
      */
-    class RenderPass;
+    class Device;
     class SceneNodeModel;
 }
 
-namespace ember::engine::gfx {
+namespace ember::engine::gfx::render {
 
-    class RenderStageNode {
+    class __declspec(novtable) RenderStageNode {
     public:
         using this_type = RenderStageNode;
 
@@ -35,17 +39,41 @@ namespace ember::engine::gfx {
         virtual ~RenderStageNode() = default;
 
     public:
-        virtual void setup();
+        virtual void setup(cref<sptr<Device>> device_);
 
         virtual void destroy();
 
     public:
-        virtual bool allocate(const ptr<const RenderPass> renderPass_);
+        virtual bool allocate(const ptr<HORenderPass> renderPass_);
 
-        virtual bool free(const ptr<const RenderPass> renderPass_);
+        virtual bool free(const ptr<HORenderPass> renderPass_);
 
     public:
-        virtual void invoke(const non_owning_rptr<RenderPass> renderPass_,
-            const non_owning_rptr<SceneNodeModel> model_) const;
+        /**
+         * Get the processable model types of this RenderStageNode
+         *
+         * @details Will be requested by Multiplexer to build execution mesh and filter invocations.
+         *  // TODO: Checkout whether we can make a template derived type of RenderStageNode providing method overrides with optimized `variant<...Types>`
+         *
+         * @returns A list of type_ids describing the SceneNodeModel types
+         */
+        [[nodiscard]] virtual const non_owning_rptr<const Vector<type_id>> modelTypes() const noexcept;
+
+    public:
+        virtual void before(
+            const non_owning_rptr<HORenderPass> renderPass_,
+            const non_owning_rptr<RenderStagePass> stagePass_
+        ) const;
+
+        virtual void invoke(
+            const non_owning_rptr<HORenderPass> renderPass_,
+            const non_owning_rptr<RenderStagePass> stagePass_,
+            const non_owning_rptr<SceneNodeModel> model_
+        ) const;
+
+        virtual void after(
+            const non_owning_rptr<HORenderPass> renderPass_,
+            const non_owning_rptr<RenderStagePass> stagePass_
+        ) const;
     };
 }

@@ -5,7 +5,7 @@
 #include <Engine.Common/Math/Vector.hpp>
 #include "Attachment.hpp"
 #include "../Device/Device.hpp"
-#include "../Pipeline/ApiRenderPass.hpp"
+#include "../Pipeline/LORenderPass.hpp"
 
 namespace ember::engine::gfx {
     class Framebuffer {
@@ -177,7 +177,7 @@ namespace ember::engine::gfx {
         /**
          * Render Pass
          */
-        wptr<pipeline::ApiRenderPass> _renderPass;
+        wptr<pipeline::LORenderPass> _renderPass;
 
     public:
         /**
@@ -188,7 +188,7 @@ namespace ember::engine::gfx {
          *
          * @returns A cref&lt;wptr&lt;pipeline::RenderPass&gt;&gt;
          */
-        [[nodiscard]] cref<wptr<pipeline::ApiRenderPass>> renderPass() const noexcept;
+        [[nodiscard]] cref<wptr<pipeline::LORenderPass>> renderPass() const noexcept;
 
         /**
          * Sets render pass
@@ -198,7 +198,7 @@ namespace ember::engine::gfx {
          *
          * @param  renderPass_ The render pass.
          */
-        void setRenderPass(wptr<pipeline::ApiRenderPass> renderPass_);
+        void setRenderPass(wptr<pipeline::LORenderPass> renderPass_);
 
     private:
         /**
