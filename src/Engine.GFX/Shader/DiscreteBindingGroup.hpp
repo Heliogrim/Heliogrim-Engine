@@ -2,6 +2,13 @@
 #include "ShaderBindingGroup.hpp"
 #include "DiscreteBinding.hpp"
 
+namespace ember::engine::gfx {
+    /**
+     * Forward Declaration
+     */
+    class DiscreteBindingPool;
+}
+
 namespace ember::engine::gfx::shader {
 
     class DiscreteBindingGroup {
@@ -9,7 +16,8 @@ namespace ember::engine::gfx::shader {
         using this_type = DiscreteBindingGroup;
 
     public:
-        DiscreteBindingGroup(cref<ShaderBindingGroup> super_, cref<vk::DescriptorSet> vkSet_);
+        DiscreteBindingGroup(cref<ShaderBindingGroup> super_, const ptr<DiscreteBindingPool> pool_,
+            cref<vk::DescriptorSet> vkSet_);
 
         DiscreteBindingGroup(cref<this_type>) = delete;
 
@@ -17,11 +25,22 @@ namespace ember::engine::gfx::shader {
 
         ~DiscreteBindingGroup() = default;
 
+    public:
+        ref<this_type> operator=(cref<this_type>) = delete;
+
+        ref<this_type> operator=(mref<this_type> other_) noexcept;
+
     private:
         ShaderBindingGroup _super;
 
     public:
         [[nodiscard]] cref<ShaderBindingGroup> super() const noexcept;
+
+    private:
+        ptr<DiscreteBindingPool> _pool;
+
+    public:
+        [[nodiscard]] const ptr<DiscreteBindingPool> pool() const noexcept;
 
     private:
         /**
@@ -49,5 +68,8 @@ namespace ember::engine::gfx::shader {
 
     public:
         [[nodiscard]] cref<vk::DescriptorSet> vkSet() const noexcept;
+
+    public:
+        [[nodiscard]] operator bool() const noexcept;
     };
 }

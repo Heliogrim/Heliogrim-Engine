@@ -264,6 +264,9 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\UnsafeVector.hpp">
       <Filter>Headerdateien\Collection</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Convertion.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">

@@ -170,6 +170,19 @@ namespace ember::math {
             matq4_t(0) { }
 
         /**
+         * Constructor
+         *
+         * @param m3_ The 3x3 matrix to convert
+         */
+        constexpr matq4_t(const matq3_t<T> m3_) :
+            value {
+                row_type { m3_[0], 0 },
+                row_type { m3_[1], 0 },
+                row_type { m3_[2], 0 },
+                row_type { 0, 0, 0, 1 }
+            } {}
+
+        /**
          * Scales the given scalar
          *
          * @param scalar_ The scalar.

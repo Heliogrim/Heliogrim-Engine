@@ -48,7 +48,11 @@ cref<sptr<Device>> Renderer::device() const noexcept {
 
 sptr<RenderPassState> Renderer::makeRenderPassState() const {
     // TODO:
-    return make_sptr<RenderPassState>();
+    return make_sptr<RenderPassState>(RenderPassState {
+        .framebuffer = {},
+        .bindingCache = { _device },
+        .data = {}
+    });
 }
 
 ptr<HORenderPass> Renderer::allocate(mref<HORenderPassCreateData> data_) {

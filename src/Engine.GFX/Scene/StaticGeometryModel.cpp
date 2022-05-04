@@ -11,7 +11,25 @@ using namespace ember::engine::gfx;
 using namespace ember;
 
 StaticGeometryModel::StaticGeometryModel(const ptr<SceneComponent> owner_) :
-    SceneNodeModel(owner_) {}
+    SceneNodeModel(owner_),
+    __tmp__instance(),
+    __tmp__cdb(nullptr) {}
+
+StaticGeometryModel::~StaticGeometryModel() {
+    tidy();
+}
+
+void StaticGeometryModel::tidy() {
+
+    if (__tmp__instance.buffer) {
+        __tmp__instance.destroy();
+    }
+
+    if (__tmp__cdb) {
+        delete __tmp__cdb;
+        __tmp__cdb = nullptr;
+    }
+}
 
 void StaticGeometryModel::create(const ptr<scene::Scene> scene_) {
 
@@ -39,6 +57,18 @@ void StaticGeometryModel::create(const ptr<scene::Scene> scene_) {
 void StaticGeometryModel::update(const ptr<scene::Scene> scene_) {}
 
 void StaticGeometryModel::destroy(const ptr<scene::Scene> scene_) {}
+
+const ptr<engine::assets::StaticGeometry> StaticGeometryModel::geometryAsset() const noexcept {
+    return _staticGeometryAsset;
+}
+
+const ptr<engine::res::Resource> StaticGeometryModel::geometryResource() const noexcept {
+    return _staticGeometryResource;
+}
+
+bool StaticGeometryModel::streamable() const noexcept {
+    return _streamable;
+}
 
 ModelBatch StaticGeometryModel::batch(const GraphicPassMask mask_) {
 

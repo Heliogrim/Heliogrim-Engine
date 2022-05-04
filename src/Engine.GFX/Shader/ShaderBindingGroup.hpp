@@ -1,11 +1,16 @@
 #pragma once
 
 #include "ShaderBinding.hpp"
+#include "ShaderBindingGroupLayout.hpp"
 
-namespace ember::engine::gfx::shader {
+namespace ember::engine::gfx {
     /**
      * Forward Declaration
      */
+    class DiscreteBindingPool;
+}
+
+namespace ember::engine::gfx::shader {
     class DiscreteBindingGroup;
 }
 
@@ -20,9 +25,14 @@ namespace ember::engine::gfx::shader {
          * @date 30.11.2020
          *
          * @param  interval_ The interval.
+         * @param  layout_ The layout of bindings.
          * @param  vkSetLayout_ The vk set layout.
          */
-        ShaderBindingGroup(const BindingUpdateInterval interval_, const vk::DescriptorSetLayout vkSetLayout_) noexcept;
+        ShaderBindingGroup(
+            const BindingUpdateInterval interval_,
+            mref<ShaderBindingGroupLayout> layout_,
+            const vk::DescriptorSetLayout vkSetLayout_
+        ) noexcept;
 
     private:
         /**
@@ -95,6 +105,20 @@ namespace ember::engine::gfx::shader {
         [[nodiscard]] cref<ShaderBinding> getById(const ShaderBinding::id_type id_) const;
 
     private:
+        ShaderBindingGroupLayout _layout;
+
+    public:
+        /**
+         * Gets the layout of this shader binding group
+         *
+         * @author Julius
+         * @date 28.04.2022
+         *
+         * @returns A const reference to the ShaderBindingGroupLayout.
+         */
+        [[nodiscard]] cref<ShaderBindingGroupLayout> layout() const noexcept;
+
+    private:
         /**
          * Descriptor Set Layout
          */
@@ -113,5 +137,8 @@ namespace ember::engine::gfx::shader {
 
     public:
         [[nodiscard]] DiscreteBindingGroup useDiscrete(cref<vk::DescriptorSet> vkSet_) const noexcept;
+
+        [[nodiscard]] DiscreteBindingGroup useDiscrete(cref<vk::DescriptorSet> vkSet_,
+            const ptr<DiscreteBindingPool> pool_) const noexcept;
     };
 }

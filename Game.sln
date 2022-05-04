@@ -120,6 +120,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.ACS.Test", "projects
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Core", "projects\Engine.Core\Engine.Core.vcxproj", "{C4A9AB6D-512C-472A-AE8D-5242E7BA4EC3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Reflect.Test", "projects\Engine.Reflect.Test\Engine.Reflect.Test.vcxproj", "{58902C3B-6F12-4222-9BE6-E6E8885960BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -478,6 +480,17 @@ Global
 		{C4A9AB6D-512C-472A-AE8D-5242E7BA4EC3}.Release|x64.ActiveCfg = Release|x64
 		{C4A9AB6D-512C-472A-AE8D-5242E7BA4EC3}.Release|x64.Build.0 = Release|x64
 		{C4A9AB6D-512C-472A-AE8D-5242E7BA4EC3}.Release|x86.ActiveCfg = Release|x64
+		{58902C3B-6F12-4222-9BE6-E6E8885960BA}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{58902C3B-6F12-4222-9BE6-E6E8885960BA}.Debug|Any CPU.Build.0 = Debug|x64
+		{58902C3B-6F12-4222-9BE6-E6E8885960BA}.Debug|x64.ActiveCfg = Debug|x64
+		{58902C3B-6F12-4222-9BE6-E6E8885960BA}.Debug|x86.ActiveCfg = Debug|x64
+		{58902C3B-6F12-4222-9BE6-E6E8885960BA}.Profile|Any CPU.ActiveCfg = Debug|x64
+		{58902C3B-6F12-4222-9BE6-E6E8885960BA}.Profile|x64.ActiveCfg = Profile|x64
+		{58902C3B-6F12-4222-9BE6-E6E8885960BA}.Profile|x86.ActiveCfg = Debug|x64
+		{58902C3B-6F12-4222-9BE6-E6E8885960BA}.Release|Any CPU.ActiveCfg = Release|x64
+		{58902C3B-6F12-4222-9BE6-E6E8885960BA}.Release|Any CPU.Build.0 = Release|x64
+		{58902C3B-6F12-4222-9BE6-E6E8885960BA}.Release|x64.ActiveCfg = Release|x64
+		{58902C3B-6F12-4222-9BE6-E6E8885960BA}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

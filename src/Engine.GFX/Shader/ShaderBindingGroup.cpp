@@ -6,9 +6,13 @@ using namespace ember::engine::gfx::shader;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-ShaderBindingGroup::ShaderBindingGroup(const BindingUpdateInterval interval_,
-    const vk::DescriptorSetLayout vkSetLayout_) noexcept :
+ShaderBindingGroup::ShaderBindingGroup(
+    const BindingUpdateInterval interval_,
+    mref<ShaderBindingGroupLayout> layout_,
+    const vk::DescriptorSetLayout vkSetLayout_
+) noexcept :
     _interval(interval_),
+    _layout(_STD move(layout_)),
     _vkSetLayout(vkSetLayout_) {}
 
 BindingUpdateInterval ShaderBindingGroup::interval() const noexcept {
@@ -48,6 +52,10 @@ cref<ShaderBinding> ShaderBindingGroup::getById(const ShaderBinding::id_type id_
     return const_cast<ShaderBindingGroup*>(this)->getById(id_);
 }
 
+cref<ShaderBindingGroupLayout> ShaderBindingGroup::layout() const noexcept {
+    return _layout;
+}
+
 cref<vk::DescriptorSetLayout> ShaderBindingGroup::vkSetLayout() const noexcept {
     return _vkSetLayout;
 }
@@ -55,6 +63,16 @@ cref<vk::DescriptorSetLayout> ShaderBindingGroup::vkSetLayout() const noexcept {
 DiscreteBindingGroup ShaderBindingGroup::useDiscrete(cref<vk::DescriptorSet> vkSet_) const noexcept {
     return DiscreteBindingGroup {
         *this,
+        nullptr,
+        vkSet_
+    };
+}
+
+DiscreteBindingGroup ShaderBindingGroup::useDiscrete(cref<vk::DescriptorSet> vkSet_,
+    const ptr<DiscreteBindingPool> pool_) const noexcept {
+    return DiscreteBindingGroup {
+        *this,
+        pool_,
         vkSet_
     };
 }

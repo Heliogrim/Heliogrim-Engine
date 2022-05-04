@@ -3,6 +3,7 @@
 #include <Engine.Resource/Manage/Resource.hpp>
 
 #include "SceneNodeModel.hpp"
+#include "../Shader/CachedDiscreteBinding.hpp"
 
 namespace ember::engine::gfx {
 
@@ -17,7 +18,10 @@ namespace ember::engine::gfx {
     public:
         StaticGeometryModel(const ptr<SceneComponent> owner_);
 
-        ~StaticGeometryModel() override final = default;
+        ~StaticGeometryModel() override final;
+
+    private:
+        void tidy();
 
     public:
         void create(const ptr<scene::Scene> scene_) override final;
@@ -30,6 +34,17 @@ namespace ember::engine::gfx {
         ptr<assets::StaticGeometry> _staticGeometryAsset = nullptr;
         ptr<res::Resource> _staticGeometryResource = nullptr;
         bool _streamable = false;
+
+    public:
+        [[nodiscard]] const ptr<assets::StaticGeometry> geometryAsset() const noexcept;
+
+        [[nodiscard]] const ptr<res::Resource> geometryResource() const noexcept;
+
+        [[nodiscard]] bool streamable() const noexcept;
+
+    public:
+        Buffer __tmp__instance;
+        ptr<CachedDiscreteBinding> __tmp__cdb;
 
     public:
         [[nodiscard]] ModelBatch batch(const GraphicPassMask mask_) override;

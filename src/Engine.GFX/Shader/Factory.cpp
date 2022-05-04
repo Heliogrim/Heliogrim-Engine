@@ -149,6 +149,7 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
          * Collect Layout Bindings
          */
         Vector<vk::DescriptorSetLayoutBinding> layoutBindings {};
+        ShaderBindingGroupLayout layout {};
 
         for (const auto& binding : bindings) {
 
@@ -164,6 +165,27 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
             };
 
             layoutBindings.push_back(dslb);
+
+            //
+            switch (binding.type()) {
+                case shader::BindingType::eStorageBuffer: {
+                    ++layout.storages;
+                    break;
+                }
+                case shader::BindingType::eUniformBuffer: {
+                    ++layout.uniforms;
+                    break;
+                }
+                case shader::BindingType::eImageSampler: {
+                    ++layout.images;
+                    break;
+                }
+                    #ifdef _DEBUG
+                default: {
+                    __debugbreak();
+                }
+                    #endif
+            }
         }
 
         /**
@@ -175,14 +197,15 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
             layoutBindings.data()
         };
 
-        auto layout = _device->vkDevice().createDescriptorSetLayout(info);
+        auto vkLayout = _device->vkDevice().createDescriptorSetLayout(info);
 
         /**
          * Store Binding Group
          */
         groups.push_back({
             interval,
-            layout
+            _STD move(layout),
+            vkLayout
         });
     }
 

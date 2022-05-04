@@ -51,6 +51,7 @@
     <ClCompile Include="..\..\src\Engine.Resource\Indexer\Watcher.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\LoaderManager.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\Locator.cpp" />
+    <ClCompile Include="..\..\src\Engine.Resource\Manage\Resource.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\Source\BufferSource.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\Source\FileSource.cpp" />
