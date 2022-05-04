@@ -219,6 +219,33 @@ namespace ember::engine::scene {
             stack<ptr<const SceneNodeHead>, Vector<ptr<const SceneNodeHead>>> backlog {};
             backlog.push(&_root);
 
+            /*
+             *     0
+             *    / \
+             *   1   2
+             *  / \ / \
+             * 3  4 5  6
+             */
+
+            // Using Forward Iterator
+            // ----------------------
+            // null -> [0] {} :: {}
+            // [0]  -> [] {0} :: {1, 2}
+            // [0]  -> [1, 2] {0} :: {}
+            // [2]  -> [1] {2} :: {5, 6}
+            // [2]  -> [1, 5, 6] {2} :: {}
+            // [6]  -> [1, 5] {6} :: {~}
+            // [6]  -> [1, 5] {6} :: {}
+            // [5]  -> [1] {5} :: {~}
+            // [5]  -> [1] {5} :: {}
+            // [1]  -> [] {1} :: {3, 4}
+            // [1]  -> [3, 4] {1} :: {}
+            // [4]  -> [3] {4} :: {~}
+            // [4]  -> [3] {4} :: {}
+            // [3]  -> [] {3} :: {~}
+            // [3]  -> [] {3} :: {}
+            // null -> [] {} :: {}
+
             auto storage { _nodeStorage.get() };
             while (!backlog.empty()) {
                 DEBUG_ASSERT(backlog.top() != nullptr, "Cursor element should never be nullptr or undefined")
@@ -231,8 +258,11 @@ namespace ember::engine::scene {
                 auto* payload = cursor.get(storage);
 
                 if (payload && consumer_(payload) && !payload->isLeaf()) {
-                    for (const auto& children = payload->children(); const auto& child : children) {
-                        backlog.push(&child);
+
+                    const auto& children = payload->children();
+                    const auto rend { children.rend() };
+                    for (auto it { children.rbegin() }; it != rend; ++it) {
+                        backlog.push(it.pointer());
                     }
                 }
             }
@@ -274,8 +304,11 @@ namespace ember::engine::scene {
                     !payload->isLeaf() &&
                     payload->inclusiveSize() != payload->exclusiveSize()
                 ) {
-                    for (const auto& children = payload->children(); const auto& child : children) {
-                        backlog.push(&child);
+
+                    const auto& children = payload->children();
+                    const auto rend { children.rend() };
+                    for (auto it { children.rbegin() }; it != rend; ++it) {
+                        backlog.push(it.pointer());
                     }
                 }
             }
@@ -303,9 +336,15 @@ namespace ember::engine::scene {
                 // Only move into sub-graph if consumer_ intersects and node isn't leaf
                 auto* payload = cursor.get(storage);
 
-                if (payload && consumer_(0, payload) && !payload->isLeaf()) {
-                    for (const auto& children = payload->children(); const auto& child : children) {
-                        backlog.push(&child);
+                if (
+                    payload &&
+                    consumer_(0, payload) &&
+                    !payload->isLeaf()
+                ) {
+                    const auto& children = payload->children();
+                    const auto rend { children.rend() };
+                    for (auto it { children.rbegin() }; it != rend; ++it) {
+                        backlog.push(it.pointer());
                     }
                 }
 

@@ -4,6 +4,7 @@
 #include <Engine.Common/Meta/TypeId.hpp>
 
 #include "EmberStruct.hpp"
+#include "Engine.Common/Exception/NotImplementedException.hpp"
 
 namespace ember {
     /**
@@ -104,6 +105,7 @@ namespace ember {
             return of<ClassType_>();
         }
 
+    public:
         template <class ClassType_>
         [[nodiscard]] static constexpr type_id stid() noexcept {
             if constexpr (HasStaticType<ClassType_, type_id>) {
@@ -157,6 +159,21 @@ namespace ember {
                 "Failed to determine <static|dynamic> type_id while requested.");
             #endif
             return type_id { 0ui64 };
+        }
+
+    public:
+        template <IsEmberObject TargetType_>
+        [[nodiscard]] bool isType() const noexcept {
+            if constexpr (IsFinalEmberObject<TargetType_>) {
+                return this == EmberClass::__getOrCreate<TargetType_>();
+            } else {
+                throw NotImplementedException();
+            }
+        }
+
+        template <IsEmberObject TargetType_>
+        [[nodiscard]] bool isExactType() const noexcept {
+            return this == EmberClass::__getOrCreate<TargetType_>();
         }
     };
 

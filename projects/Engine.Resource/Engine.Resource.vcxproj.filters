@@ -37,6 +37,9 @@
     <Filter Include="Quelldateien\Indexer">
       <UniqueIdentifier>{44058363-9546-4cd5-a450-31a8391340f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Manage">
+      <UniqueIdentifier>{de227ce9-06f9-4dc7-8942-2e12e5dd4add}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Resource\FileResource.hpp">
@@ -157,6 +160,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Resource\FileTypeId.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\Manage\Resource.cpp">
+      <Filter>Quelldateien\Manage</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

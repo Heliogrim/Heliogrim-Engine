@@ -7,10 +7,10 @@ layout(early_fragment_tests) in;
 
 /*
 */
-layout (set = 1, binding = 3) uniform sampler2D mapped_albedo;
-layout (set = 1, binding = 4) uniform sampler2D mapped_normal;
-layout (set = 1, binding = 5) uniform sampler2D mapped_roughness;
-layout (set = 1, binding = 6) uniform sampler2D mapped_specular;
+layout (set = 2, binding = 3) uniform sampler2D mapped_albedo;
+layout (set = 2, binding = 4) uniform sampler2D mapped_normal;
+layout (set = 2, binding = 5) uniform sampler2D mapped_roughness;
+layout (set = 2, binding = 6) uniform sampler2D mapped_specular;
 /*
 */
 
@@ -33,4 +33,6 @@ void main() {
 		texture(mapped_specular, fragUvm.st).r,
 		1.0
 	);
+
+	out_albedo = fragPosition;
 }

@@ -202,3 +202,19 @@ SceneNodeHeadContainer::const_iterator SceneNodeHeadContainer::end() const {
 SceneNodeHeadContainer::iterator SceneNodeHeadContainer::end() {
     return iterator { _last };
 }
+
+SceneNodeHeadContainer::const_reverse_iterator SceneNodeHeadContainer::rbegin() const {
+    return const_reverse_iterator { _last - 1 };
+}
+
+SceneNodeHeadContainer::reverse_iterator SceneNodeHeadContainer::rbegin() {
+    return reverse_iterator { _last - 1 };
+}
+
+SceneNodeHeadContainer::const_reverse_iterator SceneNodeHeadContainer::rend() const {
+    return const_reverse_iterator { _base - 1 };
+}
+
+SceneNodeHeadContainer::reverse_iterator SceneNodeHeadContainer::rend() {
+    return reverse_iterator { _base - 1 };
+}

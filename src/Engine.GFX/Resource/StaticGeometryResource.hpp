@@ -28,6 +28,9 @@ namespace ember::engine::gfx {
 
     public:
         [[nodiscard]] loaded_flag_type loaded() const noexcept override {
+            if (_vertexData.buffer.memory && _indexData.buffer.memory) {
+                return 1;
+            }
             return {};
         }
 

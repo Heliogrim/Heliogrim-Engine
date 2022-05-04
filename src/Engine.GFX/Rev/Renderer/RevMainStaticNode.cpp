@@ -8,6 +8,7 @@
 #include <cassert>
 #endif
 
+#include <Ember/StaticGeometryComponent.hpp>
 #include <Engine.GFX/VkFixedPipeline.hpp>
 #include <Engine.GFX/API/VkTranslate.hpp>
 #include <Engine.GFX/Command/CommandBuffer.hpp>
@@ -15,14 +16,16 @@
 #include <Engine.GFX/Renderer/HORenderPass.hpp>
 #include <Engine.GFX/Renderer/RenderPassState.hpp>
 #include <Engine.GFX/Renderer/RenderStagePass.hpp>
+#include <Engine.GFX/Resource/StaticGeometryResource.hpp>
 #include <Engine.GFX/Shader/DiscreteBindingGroup.hpp>
 #include <Engine.GFX/Shader/Factory.hpp>
 #include <Engine.GFX/Shader/Prototype.hpp>
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
 
-#include "__macro.hpp"
 #include "RevMainSharedNode.hpp"
+#include "__macro.hpp"
+#include "Engine.Common/Math/Coordinates.hpp"
 #include "Engine.GFX/Loader/RevTextureLoader.hpp"
 #include "Engine.GFX/Scene/StaticGeometryModel.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
@@ -83,7 +86,7 @@ void RevMainStaticNode::setup(cref<sptr<Device>> device_) {
     _pipeline->fragmentStage().shaderSlot().name() = "staticMainPass";
 
     _pipeline->rasterizationStage().cullFace() = RasterCullFace::eBack;
-    _pipeline->rasterizationStage().depthWrite() = false;
+    _pipeline->rasterizationStage().depthWrite() = true;// TODO: Revert to `false`, currently true for debugging purpose
 
     auto& blending { static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->blending() };
     const vk::PipelineColorBlendAttachmentState colorState {
@@ -110,10 +113,10 @@ void RevMainStaticNode::setup(cref<sptr<Device>> device_) {
     // TODO:
     if (!testAlbedo) {
         RevTextureLoader loader { _device };
-        testAlbedo = loader.__tmp__load({ ""sv, R"(R:\\albedo.ktx)" });
-        testNormal = loader.__tmp__load({ ""sv, R"(R:\\normal.ktx)" });
-        testRoughness = loader.__tmp__load({ ""sv, R"(R:\\roughness.ktx)" });
-        testSpecular = loader.__tmp__load({ ""sv, R"(R:\\specular.ktx)" });
+        testAlbedo = loader.__tmp__load({ ""sv, R"(R:\\albedo.ktx)"sv });
+        testNormal = loader.__tmp__load({ ""sv, R"(R:\\normal.ktx)"sv });
+        testRoughness = loader.__tmp__load({ ""sv, R"(R:\\roughness.ktx)"sv });
+        testSpecular = loader.__tmp__load({ ""sv, R"(R:\\specular.ktx)"sv });
 
         Vector<vk::ImageMemoryBarrier> imgBarriers {};
         imgBarriers.push_back({
@@ -336,10 +339,10 @@ bool RevMainStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
      * Pre Store
      */
     dbgs[0].getById(shader::ShaderBinding::id_type { 1 }).store(uniform);
-    dbgs[1].getById(shader::ShaderBinding::id_type { 3 }).store(testAlbedo);
-    dbgs[1].getById(shader::ShaderBinding::id_type { 4 }).store(testNormal);
-    dbgs[1].getById(shader::ShaderBinding::id_type { 5 }).store(testRoughness);
-    dbgs[1].getById(shader::ShaderBinding::id_type { 6 }).store(testSpecular);
+    dbgs[2].getById(shader::ShaderBinding::id_type { 3 }).store(testAlbedo);
+    dbgs[2].getById(shader::ShaderBinding::id_type { 4 }).store(testNormal);
+    dbgs[2].getById(shader::ShaderBinding::id_type { 5 }).store(testRoughness);
+    dbgs[2].getById(shader::ShaderBinding::id_type { 6 }).store(testSpecular);
 
     /**
      * Store State
@@ -558,6 +561,115 @@ void RevMainStaticNode::invoke(
      */
     const auto cmdEntry { data.at("RevMainStaticNode::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
+
+    // Temporary
+    const auto* owner { static_cast<const ptr<StaticGeometryComponent>>(model_->owner()) };
+    const auto* model { static_cast<const ptr<StaticGeometryModel>>(model_) };
+    if (!model->geometryResource()->isLoaded()) {
+        return;
+    }
+
+    const auto* res { static_cast<const ptr<StaticGeometryResource>>(model->geometryResource()) };
+
+    /**
+     *
+     */
+    cmd.bindVertexBuffer(0, res->_vertexData.buffer, 0);
+    cmd.bindIndexBuffer(res->_indexData.buffer, 0);
+
+    // Temporary
+    if (!model->__tmp__instance.memory) {
+        auto& buffer { const_cast<ptr<StaticGeometryModel>>(model)->__tmp__instance };
+        buffer.device = _device->vkDevice();
+        buffer.size = static_cast<u64>(sizeof(math::mat4));
+        buffer.usageFlags = vk::BufferUsageFlagBits::eStorageBuffer;
+
+        const vk::BufferCreateInfo ci { {}, buffer.size, buffer.usageFlags, vk::SharingMode::eExclusive, 0, nullptr };
+        buffer.buffer = _device->vkDevice().createBuffer(ci);
+        assert(buffer.buffer);
+
+        ptr<VkAllocator> alloc {
+            VkAllocator::makeForBuffer(_device, buffer.buffer, vk::MemoryPropertyFlagBits::eHostVisible)
+        };
+
+        const vk::MemoryRequirements req { _device->vkDevice().getBufferMemoryRequirements(buffer.buffer) };
+        buffer.memory = alloc->allocate(req.size);
+        buffer.bind();
+
+        delete alloc;
+
+        /**
+         * Push Data
+         */
+        auto translation {
+            math::mat4::make_identity().translate(
+                owner->getWorldTransform().position()
+            )
+        };
+
+        auto scale {
+            math::mat4::make_identity().unchecked_scale(
+                owner->getWorldTransform().scale()
+            )
+        };
+
+        // TODO: auto rotation { as<quaternion, mat4>(owner->getWorldTransform().rotation()) };
+
+        auto euler { owner->getWorldTransform().rotation().euler() };
+        auto rotation { math::mat4::make_identity() };
+        rotation.rotate(euler.x, math::vec3_pitch);
+        rotation.rotate(euler.y, math::vec3_yaw);
+        rotation.rotate(euler.z, math::vec3_roll);
+
+        const auto mm { translation * rotation * scale };
+        buffer.write<math::mat4>(&mm, 1ui32);
+    }
+
+    // TODO: Optimize finding binding group for model update [ePerInstance]
+    u32 sbgIdx { 0ui32 };
+    ptr<const shader::ShaderBindingGroup> sbg { nullptr };
+    for (; sbgIdx < _requiredBindingGroups.size(); ++sbgIdx) {
+        const auto& entry { _requiredBindingGroups[sbgIdx] };
+        if (entry.interval() == shader::BindingUpdateInterval::ePerInstance) {
+            sbg = &entry;
+            break;
+        }
+    }
+
+    // Trigger early exit if no suitable shader binding group was found
+    if (sbg == nullptr) {
+        return;
+    }
+
+    if (model->__tmp__cdb != nullptr) {
+        auto& dbg { model->__tmp__cdb->binding() };
+        //dbg.getById(2ui32).store(model->__tmp__instance);
+        cmd.bindDescriptor(sbgIdx, dbg.vkSet());
+
+    } else {
+        /**
+         * Acquire Descriptor for model data, push data and bind it
+         */
+        auto& cache { renderPass_->state()->bindingCache };
+        auto dbg { cache.allocate(*sbg) };
+
+        dbg.getById(2ui32).store(model->__tmp__instance);
+        cmd.bindDescriptor(sbgIdx, dbg.vkSet());
+
+        // TODO: Replace storing of cached descriptor binding
+        if (model->__tmp__cdb == nullptr) {
+            // const_cast<_STD remove_cv_t<_STD remove_pointer_t<decltype(model)>>*>(model);
+            const_cast<StaticGeometryModel*>(model)->__tmp__cdb = new CachedDiscreteBinding { _STD move(dbg) };
+        } else {
+            model->__tmp__cdb->operator=(_STD move(dbg));
+        }
+
+    }
+
+    /**
+     * Invoke Rendering Code
+     */
+    cmd.drawIndexed(1, 0, res->_indexData.buffer.count(), 0ui32, 0ui32);
 }
 
 void RevMainStaticNode::after(
@@ -612,10 +724,11 @@ void RevMainStaticNode::setupShader() {
         shader::BindingUpdateInterval::ePerFrame,
         "staticMainPassUbo"
     };
+
     shader::PrototypeBinding mubo {
         shader::BindingType::eStorageBuffer,
         2ui32,
-        shader::BindingUpdateInterval::ePerFrame,
+        shader::BindingUpdateInterval::ePerInstance,
         "staticMainPassModel"
     };
 

@@ -460,8 +460,376 @@ namespace ember::engine::scene {
             }
         };
 
+        template <bool Const>
+        class scene_node_container_reverse_iterator final {
+            friend class SceneNodeHeadContainer;
+
+        public:
+            using iterator_category = _STD contiguous_iterator_tag;
+            using difference_type = type_traits::container_diff_type;
+            using value_type = _STD conditional_t<Const, const SceneNodeHead, SceneNodeHead>;
+
+            using this_type = scene_node_container_reverse_iterator<Const>;
+            using reference_type = ref<this_type>;
+            using const_reference_type = cref<this_type>;
+            using pointer_type = ptr<value_type>;
+
+        protected:
+            pointer_type _ptr;
+
+        public:
+            /**
+             * Default constructor
+             *
+             * @author Julius
+             * @date 13.07.2021
+             */
+            scene_node_container_reverse_iterator() noexcept :
+                _ptr(nullptr) {}
+
+            /**
+             * Constructor
+             *
+             * @author Julius
+             * @date 28.07.2021
+             *
+             * @param  ptr_ The pointer.
+             */
+            scene_node_container_reverse_iterator(pointer_type ptr_) noexcept :
+                _ptr(ptr_) {}
+
+            /**
+             * Copy Constructor
+             *
+             * @author Julius
+             * @date 13.07.2021
+             *
+             * @param  other_ The other.
+             */
+            scene_node_container_reverse_iterator(cref<this_type> other_) :
+                _ptr(other_._ptr) {}
+
+            /**
+             * Move Constructor
+             *
+             * @author Julius
+             * @date 13.07.2021
+             *
+             * @param  other_ The other.
+             */
+            scene_node_container_reverse_iterator(mref<this_type> other_) noexcept :
+                _ptr(_STD exchange(other_._ptr, nullptr)) {}
+
+            /**
+             * Copy Assignment operator
+             *
+             * @author Julius
+             * @date 13.07.2021
+             *
+             * @param  other_ The other.
+             *
+             * @returns A shallow copy of this.
+             */
+            reference_type operator=(cref<this_type> other_) {
+
+                if (_STD addressof(other_) != this) {
+                    _ptr = other_._ptr;
+                }
+
+                return *this;
+            }
+
+            /**
+             * Move Assignment operator
+             *
+             * @author Julius
+             * @date 13.07.2021
+             *
+             * @param  other_ The other.
+             *
+             * @returns A shallow copy of this.
+             */
+            reference_type operator=(mref<this_type> other_) noexcept {
+
+                if (_STD addressof(other_) != this) {
+                    _ptr = _STD exchange(other_._ptr, nullptr);
+                }
+
+                return *this;
+            }
+
+            /**
+             * Gets the value
+             *
+             * @returns A ref&lt;value_type&gt;
+             */
+            [[nodiscard]] ref<value_type> value() const {
+                return *_ptr;
+            }
+
+            /**
+             * Gets the pointer
+             *
+             * @returns A ptr&lt;value_type&gt;
+             */
+            [[nodiscard]] pointer_type pointer() const noexcept {
+                return _ptr;
+            }
+
+            /**
+             * Indirection operator
+             *
+             * @author Julius
+             * @date 13.07.2021
+             *
+             * @returns The result of the operation.
+             */
+            [[nodiscard]] ref<value_type> operator*() const {
+                return *_ptr;
+            }
+
+            /**
+             * Member dereference operator
+             *
+             * @author Julius
+             * @date 13.07.2021
+             *
+             * @returns The dereferenced object.
+             */
+            ptr<value_type> operator->() const {
+                return _ptr;
+            }
+
+            /**
+             * Array indexer operator
+             *
+             * @author Julius
+             * @date 28.07.2021
+             *
+             * @param  diff_ The difference.
+             *
+             * @returns The indexed value.
+             */
+            [[nodiscard]] ref<value_type> operator[](difference_type diff_) const {
+                return *(_ptr - diff_);
+            }
+
+            /**
+             * Pre-Increment operator
+             *
+             * @author Julius
+             * @date 13.07.2021
+             *
+             * @returns The result of the operation.
+             */
+            reference_type operator++() {
+                --_ptr;
+                return *this;
+            }
+
+            /**
+             * Post-Increment operator
+             *
+             * @author Julius
+             * @date 13.07.2021
+             *
+             * @returns The result of the operation.
+             */
+            reference_type operator++(int) {
+                this_type tmp { *this };
+                ++(*this);
+                return tmp;
+            }
+
+            /**
+             * Pre-Decrement operator
+             *
+             * @author Julius
+             * @date 28.07.2021
+             *
+             * @returns The result of the operation.
+             */
+            reference_type operator--() {
+                ++_ptr;
+                return *this;
+            }
+
+            /**
+             * Post-Decrement operator
+             *
+             * @author Julius
+             * @date 28.07.2021
+             *
+             * @returns The result of the operation.
+             */
+            reference_type operator--(int) {
+                this_type tmp { *this };
+                --(*this);
+                return tmp;
+            }
+
+            /**
+             * Advance forward operator
+             *
+             * @author Julius
+             * @date 28.07.2021
+             *
+             * @param  diff_ The difference.
+             *
+             * @returns The result of the operation.
+             */
+            [[nodiscard]] this_type operator+(difference_type diff_) const {
+                return this_type { _ptr - diff_ };
+            }
+
+            /**
+             * Advance backward operator
+             *
+             * @author Julius
+             * @date 28.07.2021
+             *
+             * @param  diff_ The difference.
+             *
+             * @returns The result of the operation.
+             */
+            [[nodiscard]] this_type operator-(difference_type diff_) const {
+                return this_type { _ptr + diff_ };
+            }
+
+            /**
+             * Advance forward assignment operator
+             *
+             * @author Julius
+             * @date 28.07.2021
+             *
+             * @param  diff_ The difference.
+             *
+             * @returns The result of the operation.
+             */
+            [[maybe_unused]] reference_type operator+=(difference_type diff_) {
+                _ptr -= diff_;
+                return *this;
+            }
+
+            /**
+             * Advance backward assignment operator
+             *
+             * @author Julius
+             * @date 28.07.2021
+             *
+             * @param  diff_ The difference.
+             *
+             * @returns The result of the operation.
+             */
+            [[maybe_unused]] reference_type operator-=(difference_type diff_) {
+                _ptr += diff_;
+                return *this;
+            }
+
+            /**
+             * Equality operator
+             *
+             * @author Julius
+             * @date 13.07.2021
+             *
+             * @param  left_ The first instance to compare.
+             * @param  right_ The second instance to compare.
+             *
+             * @returns True if the parameters are considered equivalent.
+             */
+            constexpr friend bool operator==(const_reference_type left_, const_reference_type right_) {
+                return left_._ptr == right_._ptr;
+            }
+
+            /**
+             * Inequality operator
+             *
+             * @author Julius
+             * @date 13.07.2021
+             *
+             * @param  left_ The first instance to compare.
+             * @param  right_ The second instance to compare.
+             *
+             * @returns True if the parameters are not considered equivalent.
+             */
+            constexpr friend bool operator!=(const_reference_type left_, const_reference_type right_) {
+                return left_._ptr != right_._ptr;
+            }
+
+            /**
+             * Less-than comparison operator
+             *
+             * @author Julius
+             * @date 28.07.2021
+             *
+             * @param  left_ The first instance to compare.
+             * @param  right_ The second instance to compare.
+             *
+             * @returns True if the first parameter is less than the second.
+             */
+            constexpr friend bool operator<(const_reference_type left_, const_reference_type right_) {
+                return left_._ptr < right_._ptr;
+            }
+
+            /**
+             * Less-than-or-equal comparison operator
+             *
+             * @author Julius
+             * @date 28.07.2021
+             *
+             * @param  left_ The first instance to compare.
+             * @param  right_ The second instance to compare.
+             *
+             * @returns True if the first parameter is less than or equal to the second.
+             */
+            constexpr friend bool operator<=(const_reference_type left_, const_reference_type right_) {
+                return left_._ptr <= right_._ptr;
+            }
+
+            /**
+             * Greater-than comparison operator
+             *
+             * @author Julius
+             * @date 28.07.2021
+             *
+             * @param  left_ The first instance to compare.
+             * @param  right_ The second instance to compare.
+             *
+             * @returns True if the first parameter is greater than to the second.
+             */
+            constexpr friend bool operator>(const_reference_type left_, const_reference_type right_) {
+                return left_._ptr > right_._ptr;
+            }
+
+            /**
+             * Greater-than-or-equal comparison operator
+             *
+             * @author Julius
+             * @date 28.07.2021
+             *
+             * @param  left_ The first instance to compare.
+             * @param  right_ The second instance to compare.
+             *
+             * @returns True if the first parameter is greater than or equal to the second.
+             */
+            constexpr friend bool operator>=(const_reference_type left_, const_reference_type right_) {
+                return left_._ptr >= right_._ptr;
+            }
+
+            /**
+             * Three-way comparison operator
+             *
+             * @returns The order representation
+             */
+            constexpr friend difference_type operator<=>(const_reference_type left_, const_reference_type right_) {
+                return difference_type { right_._ptr - left_._ptr };
+            }
+        };
+
         using iterator = scene_node_container_iterator<false>;
         using const_iterator = scene_node_container_iterator<true>;
+        using reverse_iterator = scene_node_container_reverse_iterator<false>;
+        using const_reverse_iterator = scene_node_container_reverse_iterator<true>;
 
     public:
         /**
@@ -732,5 +1100,45 @@ namespace ember::engine::scene {
          * @returns An iterator.
          */
         [[nodiscard]] iterator end();
+
+        /**
+         * Gets the reverse begin
+         *
+         * @author Julius
+         * @date 13.07.2021
+         *
+         * @returns A const_reverse_iterator.
+         */
+        [[nodiscard]] const_reverse_iterator rbegin() const;
+
+        /**
+         * Gets the reverse begin
+         *
+         * @author Julius
+         * @date 13.07.2021
+         *
+         * @returns An reverse_iterator.
+         */
+        [[nodiscard]] reverse_iterator rbegin();
+
+        /**
+         * Gets the reverse end
+         *
+         * @author Julius
+         * @date 13.07.2021
+         *
+         * @returns A const_reverse_iterator.
+         */
+        [[nodiscard]] const_reverse_iterator rend() const;
+
+        /**
+         * Gets the reverse end
+         *
+         * @author Julius
+         * @date 13.07.2021
+         *
+         * @returns An reverse_iterator.
+         */
+        [[nodiscard]] reverse_iterator rend();
     };
 }

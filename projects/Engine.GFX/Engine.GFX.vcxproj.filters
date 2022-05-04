@@ -636,6 +636,18 @@
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevFinalComposeNode.hpp">
       <Filter>Headerdateien\Rev\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\DiscreteBindingPool.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\DiscreteBindingCache.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\ShaderBindingGroupLayout.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Shader\CachedDiscreteBinding.hpp">
+      <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
@@ -940,6 +952,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevFinalComposeNode.cpp">
       <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\DiscreteBindingCache.cpp">
+      <Filter>Quelldateien\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\DiscreteBindingPool.cpp">
+      <Filter>Quelldateien\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Shader\CachedDiscreteBinding.cpp">
+      <Filter>Quelldateien\Shader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

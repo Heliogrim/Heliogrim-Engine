@@ -7,7 +7,7 @@ layout (set = 0, binding = 1) uniform PbrPassUbo {
 	mat4 viewProj;
 } ubo;
 
-layout (set = 0, binding = 2) buffer PbrPassModel {
+layout (set = 1, binding = 2) buffer PbrPassModel {
 	mat4 model[];
 } mubo;
 

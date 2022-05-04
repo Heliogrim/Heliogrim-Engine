@@ -37,7 +37,7 @@ namespace ember::engine::gfx::shader {
         eUndefined = 0x0,
 
         /**
-         * Will be concatenated with descriptor, which are update on [Event]
+         * Will be concatenated with descriptors, which are update on [Event]
          */
         eVertexUpdate = 0x2,
         eIndexUpdate = 0x3,
@@ -49,8 +49,9 @@ namespace ember::engine::gfx::shader {
         eDedicated = 0x6,
 
         /**
-         * Will be concatenated with descriptors, which are updated per frame
+         * Will be concatenated with descriptors, which are updated per [Frame, Instance]
          */
-        ePerFrame = 0x7
+        ePerFrame = 0x7,
+        ePerInstance = 0x8
     };
 }

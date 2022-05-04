@@ -50,6 +50,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Math\Bezier.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Bounding.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Complex.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Math\Convertion.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Coordinates.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Extent.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Hash.hpp" />
