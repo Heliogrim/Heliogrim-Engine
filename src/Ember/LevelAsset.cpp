@@ -7,12 +7,12 @@ using namespace ember;
 LevelAsset::LevelAsset(cref<asset_guid> guid_) noexcept :
     Asset(
         guid_,
-        engine::assets::Level::type_id,
+        engine::assets::Level::typeId,
         nullptr
     ) {}
 
 LevelAsset::~LevelAsset() noexcept = default;
 
 bool LevelAsset::isValidType() const noexcept {
-    return _typeId == engine::assets::Level::type_id;
+    return _typeId == engine::assets::Level::typeId;
 }

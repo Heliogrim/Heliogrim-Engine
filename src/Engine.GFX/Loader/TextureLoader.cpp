@@ -220,18 +220,19 @@ Texture load_impl(const Url& url_,
     stage.buffer = device_->vkDevice().createBuffer(bci);
     stage.device = device_->vkDevice();
 
-    auto* alloc {
-        VkAllocator::makeForBuffer(device_, stage.buffer,
-            vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent)
+    const auto allocResult {
+        memory::allocate(
+            device_->allocator(),
+            device_,
+            stage.buffer,
+            MemoryProperties { MemoryProperty::eHostVisible } | MemoryProperty::eHostCoherent,
+            stage.memory
+        )
     };
-
-    const vk::MemoryRequirements mr = device_->vkDevice().getBufferMemoryRequirements(stage.buffer);
-    stage.memory = alloc->allocate(mr.size);
-
     assert(stage.buffer);
     assert(stage.memory);
 
-    stage.size = mr.size;
+    stage.size = stage.memory->size;
     stage.usageFlags = vk::BufferUsageFlagBits::eTransferSrc;
 
     /**

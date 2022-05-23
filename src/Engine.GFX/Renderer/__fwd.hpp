@@ -6,7 +6,7 @@ namespace ember::engine::gfx::render {
     class HORenderPass;
     class Multiplexer;
     class Renderer;
-    class RenderPassState;
+    struct RenderPassState;
     class RenderPipeline;
     class RenderStage;
     class RenderStageNode;

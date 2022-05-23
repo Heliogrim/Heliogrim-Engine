@@ -4,6 +4,7 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include "../Application/Application.hpp"
+#include "../Memory/GlobalPooledAllocator.hpp"
 
 namespace ember::engine::gfx {
 
@@ -26,7 +27,6 @@ namespace ember::engine::gfx {
     class Device final :
         public _STD enable_shared_from_this<Device> {
     public:
-
         /**
          * Constructor
          *
@@ -81,6 +81,12 @@ namespace ember::engine::gfx {
          * @returns A reference to a vk::PhysicalDevice.
          */
         vk::PhysicalDevice& vkPhysicalDevice() const;
+
+    private:
+        uptr<memory::GlobalPooledAllocator> _alloc;
+
+    public:
+        [[nodiscard]] const non_owning_rptr<memory::GlobalPooledAllocator> allocator() const noexcept;
 
     private:
         /**

@@ -9,7 +9,7 @@ using namespace ember;
 GfxMaterialAsset::GfxMaterialAsset(cref<asset_guid> guid_) noexcept :
     StreamableRenderableAsset(
         guid_,
-        engine::assets::GfxMaterial::type_id,
+        engine::assets::GfxMaterial::typeId,
         engine::Session::get()->modules().assetFactory()->createGfxMaterialAsset(guid_)
     ) {}
 
@@ -26,7 +26,7 @@ GfxMaterialAsset::GfxMaterialAsset(
 ) noexcept :
     StreamableRenderableAsset(
         guid_,
-        engine::assets::GfxMaterial::type_id,
+        engine::assets::GfxMaterial::typeId,
         engine::Session::get()->modules().assetFactory()->createGfxMaterialAsset(
             guid_,
             albedo_,
@@ -43,5 +43,5 @@ GfxMaterialAsset::GfxMaterialAsset(
 GfxMaterialAsset::~GfxMaterialAsset() noexcept = default;
 
 bool GfxMaterialAsset::isValidType() const noexcept {
-    return _typeId == engine::assets::GfxMaterial::type_id;
+    return _typeId == engine::assets::GfxMaterial::typeId;
 }

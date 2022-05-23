@@ -18,6 +18,6 @@ namespace ember {
         component_type_id _typeId;
 
     public:
-        [[nodiscard]] cref<component_type_id> typeId() const noexcept;
+        [[nodiscard]] cref<component_type_id> getTypeId() const noexcept;
     };
 }

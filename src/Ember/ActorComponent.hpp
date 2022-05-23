@@ -15,7 +15,7 @@ namespace ember {
         using this_type = ActorComponent;
         using underlying_type = LogicComponent;
 
-        inline constexpr static component_type_id type_id { "ActorComponent"_typeId };
+        inline constexpr static component_type_id typeId { "ActorComponent"_typeId };
 
     public:
         ActorComponent(mref<component_type_id> typeId_, mref<CachedActorPointer> owner_,

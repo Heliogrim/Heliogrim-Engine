@@ -7,12 +7,12 @@ using namespace ember;
 SkeletalGeometryAsset::SkeletalGeometryAsset(cref<asset_guid> guid_) noexcept :
     StreamableRenderableAsset(
         guid_,
-        engine::assets::SkeletalGeometry::type_id,
+        engine::assets::SkeletalGeometry::typeId,
         nullptr
     ) {}
 
 SkeletalGeometryAsset::~SkeletalGeometryAsset() noexcept = default;
 
 bool SkeletalGeometryAsset::isValidType() const noexcept {
-    return _typeId == engine::assets::SkeletalGeometry::type_id;
+    return _typeId == engine::assets::SkeletalGeometry::typeId;
 }

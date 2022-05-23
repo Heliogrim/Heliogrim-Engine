@@ -63,6 +63,7 @@
     <ClCompile Include="..\..\src\Engine.Assets\AssetGuid.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabase.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabaseEntry.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabaseQuery.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetSeeder.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Asset.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\GfxMaterial.cpp" />

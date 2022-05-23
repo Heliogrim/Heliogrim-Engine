@@ -7,6 +7,6 @@ namespace ember::engine::assets {
     class PfxMaterial :
         public Material<PfxMaterialLayout> {
     public:
-        inline static const asset_type_id type_id { "PfxMaterial"_typeId };
+        inline static const asset_type_id typeId { "PfxMaterial"_typeId };
     };
 }

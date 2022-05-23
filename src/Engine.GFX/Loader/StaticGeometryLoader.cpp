@@ -1,10 +1,12 @@
 #include "StaticGeometryLoader.hpp"
 
+#include <cassert>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <Engine.Common/Math/Coordinates.hpp>
 
+#include "Engine.GFX/Memory/AllocationResult.hpp"
 #include "Engine.GFX/Memory/VkAllocator.hpp"
 
 using namespace ember::engine::gfx;
@@ -141,13 +143,16 @@ void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asse
             ib.device = _device->vkDevice();
             ib.size = bci.size;
 
-            auto* alloc {
-                VkAllocator::makeForBuffer(_device, ib.buffer,
-                    vk::MemoryPropertyFlagBits::eDeviceLocal | vk::MemoryPropertyFlagBits::eHostVisible)
+            const auto result {
+                memory::allocate(
+                    _device->allocator(),
+                    _device,
+                    ib.buffer,
+                    MemoryProperties { MemoryProperty::eDeviceLocal } | MemoryProperty::eHostVisible,
+                    ib.memory
+                )
             };
-
-            ib.memory = alloc->allocate(bci.size);
-            delete alloc;
+            assert(result == memory::AllocationResult::eSuccess);
 
             //
             ib.map();
@@ -175,13 +180,16 @@ void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asse
             vb.device = _device->vkDevice();
             vb.size = bci.size;
 
-            auto* alloc {
-                VkAllocator::makeForBuffer(_device, vb.buffer,
-                    vk::MemoryPropertyFlagBits::eDeviceLocal | vk::MemoryPropertyFlagBits::eHostVisible)
+            const auto result {
+                memory::allocate(
+                    _device->allocator(),
+                    _device,
+                    vb.buffer,
+                    MemoryProperties { MemoryProperty::eDeviceLocal } | MemoryProperty::eHostVisible,
+                    vb.memory
+                )
             };
-
-            vb.memory = alloc->allocate(bci.size);
-            delete alloc;
+            assert(result == memory::AllocationResult::eSuccess);
 
             //
             vb.map();

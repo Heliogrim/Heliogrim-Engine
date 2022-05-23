@@ -71,7 +71,7 @@ namespace ember::engine::assets {
          */
         template <IsAsset AssetType_>
         AssetDatabaseEntry(cref<asset_guid> guid_, ptr<AssetType_> asset_ = nullptr) noexcept :
-            AssetDatabaseEntry(guid_, AssetType_::type_id, asset_) {}
+            AssetDatabaseEntry(guid_, AssetType_::typeId, asset_) {}
 
         /**
          * Destructor

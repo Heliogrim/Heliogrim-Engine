@@ -11,7 +11,7 @@ namespace ember {
         using const_reference_type = cref<value_type>;
 
     public:
-        inline static constexpr event_type_id type_id { "AudioStartupEvent"_typeId };
+        inline static constexpr event_type_id typeId { "AudioStartupEvent"_typeId };
 
     public:
         /**

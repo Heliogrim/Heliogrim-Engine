@@ -15,20 +15,38 @@ namespace ember::engine::gfx {
 
     class VirtualBuffer {
     public:
+        using this_type = VirtualBuffer;
+
+    public:
         VirtualBuffer() noexcept;
 
-        VirtualBuffer(const ptr<Allocator> allocator_, cref<vk::Buffer> buffer_,
+        VirtualBuffer(const ptr<memory::Allocator> allocator_, cref<vk::Buffer> buffer_,
             cref<vk::BufferUsageFlags> usageFlags_) noexcept;
+
+        VirtualBuffer(cref<this_type>) = delete;
+
+        VirtualBuffer(mref<this_type> other_) noexcept;
 
         ~VirtualBuffer();
 
+    public:
+        ref<this_type> operator=(cref<this_type>) = delete;
+
+        ref<this_type> operator=(mref<this_type> other_) noexcept;
+
     private:
-        ptr<Allocator> _allocator;
+        /**
+         * Will free backing resources and destroy buffer object
+         */
+        void tidy();
+
+    private:
+        ptr<memory::Allocator> _allocator;
 
     public:
-        [[nodiscard]] const ptr<const Allocator> allocator() const noexcept;
+        [[nodiscard]] const ptr<const memory::Allocator> allocator() const noexcept;
 
-        [[nodiscard]] ref<ptr<Allocator>> allocator() noexcept;
+        [[nodiscard]] ref<ptr<memory::Allocator>> allocator() noexcept;
 
     private:
         ptr<VirtualMemory> _memory;
@@ -79,5 +97,11 @@ namespace ember::engine::gfx {
 
     public:
         void updateBindingData();
+
+    public:
+        void enqueueBinding(const ptr<CommandQueue> queue_);
+
+        void enqueueBinding(const ptr<CommandQueue> queue_, cref<Vector<vk::Semaphore>> waits_,
+            cref<Vector<vk::Semaphore>> signals_);
     };
 }

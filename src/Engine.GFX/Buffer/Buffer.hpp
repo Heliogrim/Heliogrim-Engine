@@ -15,7 +15,7 @@ namespace ember::engine::gfx {
         using const_reference_type = const Buffer&;
 
     public:
-        ptr<AllocatedMemory> memory;
+        ptr<memory::AllocatedMemory> memory;
 
     public:
         vk::Buffer buffer;

@@ -190,7 +190,7 @@ void RevDepthSharedNode::before(
     const auto frameEntry { data.at("RevDepthStage::Framebuffer"sv) };
     auto& framebuffer { *_STD static_pointer_cast<Framebuffer, void>(frameEntry) };
 
-    cmd.beginRenderPass(*_loRenderPass, framebuffer);
+    cmd.beginRenderPass(*_loRenderPass, framebuffer, false);
 }
 
 void RevDepthSharedNode::invoke(

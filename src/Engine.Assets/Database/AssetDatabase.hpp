@@ -6,6 +6,7 @@
 #include <Engine.Utils/_CTRL.hpp>
 
 #include "AssetDatabaseEntry.hpp"
+#include "AssetDatabaseQuery.hpp"
 #include "../AssetGuid.hpp"
 #include "../Types/Asset.hpp"
 
@@ -117,7 +118,7 @@ namespace ember::engine::assets {
          */
         template <IsAsset AssetType_>
         bool insert(cref<asset_guid> guid_, const ptr<AssetType_> asset_ = nullptr) noexcept {
-            return insert(guid_, AssetType_::type_id, asset_);
+            return insert(guid_, AssetType_::typeId, asset_);
         }
 
         /**
@@ -130,7 +131,7 @@ namespace ember::engine::assets {
          */
         template <IsAsset AssetType_>
         bool insert(ptr<AssetType_> asset_) noexcept {
-            return insert(asset_->get_guid(), AssetType_::type_id, asset_);
+            return insert(asset_->get_guid(), AssetType_::typeId, asset_);
         }
 
     public:

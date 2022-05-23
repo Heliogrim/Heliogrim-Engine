@@ -13,6 +13,6 @@ asset_guid Asset::get_guid() const noexcept {
     return _guid;
 }
 
-asset_type_id Asset::get_typeId() const noexcept {
+asset_type_id Asset::getTypeId() const noexcept {
     return _type;
 }

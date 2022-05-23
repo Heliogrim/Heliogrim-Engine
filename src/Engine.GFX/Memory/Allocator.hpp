@@ -1,9 +1,9 @@
 #pragma once
-#include <Engine.Common/Types.hpp>
 
+#include "__fwd.hpp"
 #include "AllocatedMemory.hpp"
 
-namespace ember::engine::gfx {
+namespace ember::engine::gfx::memory {
 
     class __declspec(novtable) Allocator {
     public:
@@ -15,15 +15,10 @@ namespace ember::engine::gfx {
     public:
         virtual ~Allocator() noexcept = default;
 
-    protected:
-        u64 _align;
-
     public:
-        [[nodiscard]] u64 align() const noexcept;
+        [[nodiscard]] virtual AllocationResult allocate(cref<MemoryLayout> layout_, const u64 size_,
+            _Out_ ref<ptr<AllocatedMemory>> dst_) = 0;
 
-    public:
-        [[nodiscard]] virtual ptr<AllocatedMemory> allocate(const u64 size_) = 0;
-
-        virtual void free(mref<ptr<AllocatedMemory>> memory_) = 0;
+        virtual void free(mref<ptr<AllocatedMemory>> mem_) = 0;
     };
 }

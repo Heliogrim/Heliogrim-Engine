@@ -7,7 +7,7 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-VirtualMemory::VirtualMemory(const ptr<Allocator> allocator_) :
+VirtualMemory::VirtualMemory(const ptr<memory::Allocator> allocator_) :
     _allocator(allocator_) {}
 
 VirtualMemory::~VirtualMemory() {

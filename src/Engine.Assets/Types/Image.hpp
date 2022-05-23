@@ -10,7 +10,7 @@ namespace ember::engine::assets {
     class Image :
         public Data<ImageLayout> {
     public:
-        inline static const asset_type_id type_id { "Image"_typeId };
+        inline static const asset_type_id typeId { "Image"_typeId };
 
     protected:
         Image(cref<asset_guid> guid_);

@@ -9,12 +9,12 @@ using namespace ember;
 LandscapeGeometryAsset::LandscapeGeometryAsset(cref<asset_guid> guid_) noexcept :
     StreamableRenderableAsset(
         guid_,
-        engine::assets::LandscapeGeometry::type_id,
+        engine::assets::LandscapeGeometry::typeId,
         engine::Session::get()->modules().assetFactory()->createLandscapeGeometryAsset(guid_)
     ) {}
 
 LandscapeGeometryAsset::~LandscapeGeometryAsset() noexcept = default;
 
 bool LandscapeGeometryAsset::isValidType() const noexcept {
-    return _typeId == engine::assets::LandscapeGeometry::type_id;
+    return _typeId == engine::assets::LandscapeGeometry::typeId;
 }

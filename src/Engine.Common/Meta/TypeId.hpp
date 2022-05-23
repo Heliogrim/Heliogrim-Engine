@@ -92,7 +92,7 @@ namespace ember {
      */
     template <typename Ty, typename TypeIdType_ = type_id>
     concept HasStaticType = requires(Ty) {
-        { Ty::type_id };
+        { Ty::typeId };
     };
 
     /**
@@ -101,7 +101,7 @@ namespace ember {
      */
     template <typename Ty, typename TypeIdType_ = type_id>
     concept HasDynamicType = requires(Ty obj) {
-        { obj.get_typeId() } -> std::same_as<TypeIdType_>;
+        { obj.getTypeId() } -> std::same_as<TypeIdType_>;
     };
 
     /**

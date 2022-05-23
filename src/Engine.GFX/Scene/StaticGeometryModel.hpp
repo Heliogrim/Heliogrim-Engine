@@ -13,7 +13,7 @@ namespace ember::engine::gfx {
         using this_type = StaticGeometryModel;
         using underlying_type = SceneNodeModel;
 
-        inline constexpr static type_id type_id { "StaticGeometryModel"_typeId };
+        inline constexpr static type_id typeId { "StaticGeometryModel"_typeId };
 
     public:
         StaticGeometryModel(const ptr<SceneComponent> owner_);
@@ -30,6 +30,9 @@ namespace ember::engine::gfx {
 
         void destroy(const ptr<scene::Scene> scene_) override final;
 
+    public:
+        [[nodiscard]] ptr<cache::ModelBatch> batch(const ptr<render::RenderPassState> state_) override;
+
     private:
         ptr<assets::StaticGeometry> _staticGeometryAsset = nullptr;
         ptr<res::Resource> _staticGeometryResource = nullptr;
@@ -41,12 +44,5 @@ namespace ember::engine::gfx {
         [[nodiscard]] const ptr<res::Resource> geometryResource() const noexcept;
 
         [[nodiscard]] bool streamable() const noexcept;
-
-    public:
-        Buffer __tmp__instance;
-        ptr<CachedDiscreteBinding> __tmp__cdb;
-
-    public:
-        [[nodiscard]] ModelBatch batch(const GraphicPassMask mask_) override;
     };
 }

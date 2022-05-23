@@ -129,15 +129,10 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
     uniform.buffer = _device->vkDevice().createBuffer(bci);
     assert(uniform.buffer);
 
-    ptr<VkAllocator> alloc {
-        VkAllocator::makeForBuffer(_device, uniform.buffer, vk::MemoryPropertyFlagBits::eHostVisible)
-    };
-
-    const vk::MemoryRequirements req { _device->vkDevice().getBufferMemoryRequirements(uniform.buffer) };
-    uniform.memory = alloc->allocate(req.size);
+    auto result {
+        memory::allocate(&state->alloc, _device, uniform.buffer, MemoryProperty::eHostVisible, uniform.memory)
+    };// TODO: Handle failed allocation
     uniform.bind();
-
-    delete alloc;
 
     /**
      * Default insert data

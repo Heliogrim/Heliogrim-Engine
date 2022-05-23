@@ -1,38 +1,45 @@
 #pragma once
-#include <Engine.Common/Types.hpp>
+
+#include "__fwd.hpp"
+#include "MemoryLayout.hpp"
 
 #include "MemoryMapping.hpp"
-#include "MemoryProperty.hpp"
 #include "../Device/Device.hpp"
 
-namespace ember::engine::gfx {
+namespace ember::engine::gfx::memory {
 
     struct AllocatedMemory {
 
         ~AllocatedMemory();
 
-        ref<AllocatedMemory> operator=(cref<AllocatedMemory> other_) = delete;
+        //
+        ref<AllocatedMemory> operator=(cref<AllocatedMemory>) = delete;
 
         ref<AllocatedMemory> operator=(mref<AllocatedMemory> other_) noexcept;
 
-        MemoryProperties props;
+        //
+        ptr<AllocatedMemory> parent;
 
-        u64 align;
+        //
+        MemoryLayout layout;
+
         u64 size;
+        u64 offset;
 
-        MemoryMapping mapping;
-
+        //
         vk::Device vkDevice;
         vk::DeviceMemory vkMemory;
 
-        void flush(const u64 size_, const u64 offset_);
+        //
+        MemoryMapping mapping;
 
         MemoryMapping map(const u64 size_, const u64 offset_);
 
         void unmap();
 
+        //
+        void flush(const u64 size_, const u64 offset_);
+
         bool write(const ptr<const void> data_, const u64 size_);
-
     };
-
 }

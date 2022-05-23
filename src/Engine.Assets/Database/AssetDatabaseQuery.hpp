@@ -2,8 +2,14 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-#include "AssetDatabase.hpp"
 #include "../Types/Asset.hpp"
+
+namespace ember::engine::assets {
+    /**
+     * Forward Declaration
+     */
+    class AssetDatabase;
+};
 
 namespace ember::engine::assets {
 
@@ -68,9 +74,7 @@ namespace ember::engine::assets {
          *
          * @returns A const ptr&lt;AssetDatabase&gt;
          */
-        [[nodiscard]] const ptr<AssetDatabase> database() const noexcept {
-            return _database;
-        }
+        [[nodiscard]] const ptr<AssetDatabase> database() const noexcept;
 
         /**
          * Gets the database
@@ -80,9 +84,7 @@ namespace ember::engine::assets {
          *
          * @returns A ptr&lt;AssetDatabase&gt;
          */
-        [[nodiscard]] ptr<AssetDatabase> database() noexcept {
-            return _database;
-        }
+        [[nodiscard]] ptr<AssetDatabase> database() noexcept;
 
     public:
         [[nodiscard]] cref<asset_guid> guid() const noexcept {
@@ -102,9 +104,7 @@ namespace ember::engine::assets {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        [[nodiscard]] bool exists() const noexcept {
-            return _database->has(_guid);
-        }
+        [[nodiscard]] bool exists() const noexcept;
 
         /**
          * Queries for a pointer to a stored asset
@@ -114,9 +114,7 @@ namespace ember::engine::assets {
          *
          * @returns A pointer to the stored asset
          */
-        [[nodiscard]] ptr<Asset> get() const {
-            return (*_database)[_guid];
-        }
+        [[nodiscard]] ptr<Asset> get() const;
 
         /**
          * Queries for a pointer to a stored asset
@@ -126,12 +124,7 @@ namespace ember::engine::assets {
          *
          * @returns A pointer to an existing asset or nullptr
          */
-        [[nodiscard]] ptr<Asset> get(_STD nothrow_t) const noexcept {
-            if (_database->has(_guid)) {
-                return get();
-            }
-            return nullptr;
-        }
+        [[nodiscard]] ptr<Asset> get(_STD nothrow_t) const noexcept;
 
     public:
         /**
@@ -142,9 +135,7 @@ namespace ember::engine::assets {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool insert(cref<asset_type_id> type_, ptr<Asset> asset_) noexcept {
-            return _database->insert(_guid, type_, asset_);
-        }
+        bool insert(cref<asset_type_id> type_, ptr<Asset> asset_) noexcept;
 
         /**
          * Inserts a new database entry associated with stored guid
@@ -155,7 +146,7 @@ namespace ember::engine::assets {
          */
         template <IsAsset AssetType_>
         bool insert(ptr<Asset> asset_) noexcept {
-            return insert(AssetType_::type_id, asset_);
+            return insert(AssetType_::typeId, asset_);
         }
 
     public:
@@ -164,8 +155,6 @@ namespace ember::engine::assets {
          *
          * @returns A pointer to the stored asset or nullptr
          */
-        [[nodiscard]] ptr<Asset> remove() noexcept {
-            return _database->remove(_guid);
-        }
+        [[nodiscard]] ptr<Asset> remove() noexcept;
     };
 }

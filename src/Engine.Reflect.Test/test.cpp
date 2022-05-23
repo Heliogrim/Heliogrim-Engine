@@ -12,27 +12,27 @@ namespace ReflectModule {
 
     class TestBase01 : public EmberObject {
     public:
-        inline constexpr static ember::type_id type_id { "TestBase01"_typeId };
+        inline constexpr static ember::type_id typeId { "TestBase01"_typeId };
     };
 
     class TestDerived01 : public TestBase01 {
     public:
-        inline constexpr static ember::type_id type_id { "TestDerived01"_typeId };
+        inline constexpr static ember::type_id typeId { "TestDerived01"_typeId };
     };
 
     class TestDerived01F final : public TestBase01 {
     public:
-        inline constexpr static ember::type_id type_id { "TestDerived01F"_typeId };
+        inline constexpr static ember::type_id typeId { "TestDerived01F"_typeId };
     };
 
     class TestDerived02 : public TestDerived01 {
     public:
-        inline constexpr static ember::type_id type_id { "TestDerived02"_typeId };
+        inline constexpr static ember::type_id typeId { "TestDerived02"_typeId };
     };
 
     class TestDerived02F final : public TestDerived01 {
     public:
-        inline constexpr static ember::type_id type_id { "TestDerived02F"_typeId };
+        inline constexpr static ember::type_id typeId { "TestDerived02F"_typeId };
     };
 
     TEST(EmberObject, Create) {

@@ -8,6 +8,12 @@ TaskBase::TaskBase(cref<TaskType> type_) noexcept :
     _srcStage(TaskStages::eAll),
     _dstStage(TaskStages::eUndefined) {}
 
+TaskBase::TaskBase(mref<TaskBase> other_) noexcept :
+    _type(other_._type),
+    _mask(other_._mask),
+    _srcStage(other_._srcStage),
+    _dstStage(other_._dstStage) {}
+
 TaskBase::~TaskBase() noexcept = default;
 
 TaskType TaskBase::type() const noexcept {
@@ -77,7 +83,7 @@ RepetitiveTask::RepetitiveTask(cref<RepetitiveTask> other_) noexcept :
     _fnc(other_._fnc) {}
 
 RepetitiveTask::RepetitiveTask(mref<RepetitiveTask> other_) noexcept :
-    TaskBase(TaskType::eRepetitive),
+    TaskBase(_STD move(other_)),
     _fnc(_STD move(other_._fnc)) {}
 
 RepetitiveTask::~RepetitiveTask() noexcept = default;

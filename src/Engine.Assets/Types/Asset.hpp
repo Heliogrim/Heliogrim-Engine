@@ -89,6 +89,6 @@ namespace ember::engine::assets {
          *
          * @returns The type identifier.
          */
-        [[nodiscard]] asset_type_id get_typeId() const noexcept;
+        [[nodiscard]] asset_type_id getTypeId() const noexcept;
     };
 }

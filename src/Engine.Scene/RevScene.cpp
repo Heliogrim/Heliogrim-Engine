@@ -44,7 +44,7 @@ void RevScene::update() {
      * Will swap _cachedNew with a new vector
      */
     const auto list { _STD move(_cachedNew) };
-    for (auto& entry : list) {
+    for (auto* entry : list) {
         //graph.push(entry);
 
         /**
@@ -65,7 +65,7 @@ void RevScene::update() {
          *  `graphics( component ) = gfx proxy` + `physics( component ) = pfx proxy`
          */
 
-        auto& ntre { _nodeTypeRegistry.get(entry->typeId()) };
+        auto& ntre { _nodeTypeRegistry.get(entry->getTypeId()) };
         if (!ntre.gfx) {
             continue;
         }
