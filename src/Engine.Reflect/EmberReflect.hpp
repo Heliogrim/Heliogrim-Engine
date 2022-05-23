@@ -26,6 +26,7 @@ namespace ember {
         using this_type = EmberObject;
 
     private:
+        // TODO: const ptr<const EmberClass> _class = ...;
         ptr<EmberClass> _class = nullptr;
 
     public:
@@ -109,7 +110,7 @@ namespace ember {
         template <class ClassType_>
         [[nodiscard]] static constexpr type_id stid() noexcept {
             if constexpr (HasStaticType<ClassType_, type_id>) {
-                return ClassType_::type_id;
+                return ClassType_::typeId;
             }
             #ifdef _DEBUG
             static_assert(HasStaticType<ClassType_, type_id>, "Failed to determine static type_id while requested.");
@@ -120,7 +121,7 @@ namespace ember {
         template <class ClassType_>
         [[nodiscard]] static type_id dtid(cref<ClassType_> obj_) noexcept {
             if constexpr (HasDynamicType<ClassType_, type_id>) {
-                return obj_.get_typeId();
+                return obj_.getTypeId();
             }
             return type_id { 0ui64 };
         }
@@ -128,7 +129,7 @@ namespace ember {
         template <class ClassType_>
         [[nodiscard]] static type_id dtid(const ptr<const ClassType_> obj_) noexcept {
             if constexpr (HasDynamicType<ClassType_, type_id>) {
-                return obj_->get_typeId();
+                return obj_->getTypeId();
             }
             return type_id { 0ui64 };
         }
@@ -136,9 +137,9 @@ namespace ember {
         template <class ClassType_>
         [[nodiscard]] static type_id tid(cref<ClassType_> obj_) noexcept {
             if constexpr (HasStaticType<ClassType_, type_id>) {
-                return ClassType_::type_id;
+                return ClassType_::typeId;
             } else if constexpr (HasDynamicType<ClassType_, type_id>) {
-                return obj_.get_typeId();
+                return obj_.getTypeId();
             }
             #ifdef _DEBUG
             static_assert(HasStaticType<ClassType_, type_id> || HasDynamicType<ClassType_, type_id>,
@@ -150,9 +151,9 @@ namespace ember {
         template <class ClassType_>
         [[nodiscard]] static type_id tid(const ptr<const ClassType_> obj_) noexcept {
             if constexpr (HasStaticType<ClassType_, type_id>) {
-                return ClassType_::type_id;
+                return ClassType_::typeId;
             } else if constexpr (HasDynamicType<ClassType_, type_id>) {
-                return obj_->get_typeId();
+                return obj_->getTypeId();
             }
             #ifdef _DEBUG
             static_assert(HasStaticType<ClassType_, type_id> || HasDynamicType<ClassType_, type_id>,
@@ -177,7 +178,7 @@ namespace ember {
         }
     };
 
-    template <IsEmberObject ClassType_, typename ... Args_>
+    template <IsEmberObject ClassType_, typename... Args_>
     ptr<ClassType_> EmberObject::create(Args_&&... args_) {
         auto* obj { new ClassType_(_STD forward<Args_>(args_)...) };
         obj->_class = EmberClass::of<ClassType_>();

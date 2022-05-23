@@ -135,7 +135,7 @@ namespace ember {
         template <IsStatefulEvent EventType_>
         void emit(ref<EventType_> event_) {
 
-            const auto it = _emitter.find(EventType_::type_id);
+            const auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
                 return;
             }
@@ -146,7 +146,7 @@ namespace ember {
         template <IsStatefulEvent EventType_> requires _STD is_trivially_default_constructible_v<EventType_>
         void emit() {
 
-            const auto it = _emitter.find(EventType_::type_id);
+            const auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
                 return;
             }
@@ -158,7 +158,7 @@ namespace ember {
             EventType_, Arg0_, Args_...>
         void emit(Arg0_&& arg0_, Args_&&... args_) {
 
-            const auto it = _emitter.find(EventType_::type_id);
+            const auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
                 return;
             }
@@ -172,7 +172,7 @@ namespace ember {
         template <IsStatelessEvent EventType_>
         void emit(cref<EventType_> event_) {
 
-            const auto it = _emitter.find(EventType_::type_id);
+            const auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
                 return;
             }
@@ -183,7 +183,7 @@ namespace ember {
         template <IsStatelessEvent EventType_> requires _STD is_trivially_default_constructible_v<EventType_>
         void emit() {
 
-            const auto it = _emitter.find(EventType_::type_id);
+            const auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
                 return;
             }
@@ -195,7 +195,7 @@ namespace ember {
             EventType_, Arg0_, Args_...>
         void emit(Arg0_&& arg0_, Args_&&... args_) {
 
-            const auto it = _emitter.find(EventType_::type_id);
+            const auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
                 return;
             }
@@ -222,9 +222,9 @@ namespace ember {
             mref<typename stateful_emitter_type<EventType_>::function_type> fnc_
         ) {
 
-            auto it = _emitter.find(EventType_::type_id);
+            auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
-                auto result = _emitter.insert(_STD make_pair(EventType_::type_id, makeEmitter<EventType_>()));
+                auto result = _emitter.insert(_STD make_pair(EventType_::typeId, makeEmitter<EventType_>()));
                 DEBUG_ASSERT(result.second, "Insert should be successful")
 
                 it = result.first;
@@ -240,9 +240,9 @@ namespace ember {
             mref<typename stateless_emitter_type<EventType_>::function_type> fnc_
         ) {
 
-            auto it = _emitter.find(EventType_::type_id);
+            auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
-                auto result = _emitter.insert(_STD make_pair(EventType_::type_id, makeEmitter<EventType_>()));
+                auto result = _emitter.insert(_STD make_pair(EventType_::typeId, makeEmitter<EventType_>()));
                 DEBUG_ASSERT(result.second, "Insert should be successful")
 
                 it = result.first;
@@ -257,7 +257,7 @@ namespace ember {
         template <IsStatefulEvent EventType_>
         bool remove(cref<typename stateful_emitter_type<EventType_>::handle_type> handle_) {
 
-            auto it = _emitter.find(EventType_::type_id);
+            auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
                 return false;
             }
@@ -268,7 +268,7 @@ namespace ember {
         template <IsStatelessEvent EventType_>
         bool remove(cref<typename stateless_emitter_type<EventType_>::handle_type> handle_) {
 
-            auto it = _emitter.find(EventType_::type_id);
+            auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
                 return false;
             }

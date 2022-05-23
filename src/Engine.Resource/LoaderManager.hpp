@@ -59,7 +59,7 @@ namespace ember::engine::res {
 
         template <assets::IsAsset AssetType_>
         bool registerLoader(cref<sptr<Loader<AssetType_>>> loader_) noexcept {
-            return this->registerLoader(AssetType_::type_id, loader_);
+            return this->registerLoader(AssetType_::typeId, loader_);
         }
 
         /**
@@ -88,7 +88,7 @@ namespace ember::engine::res {
 
         template <assets::IsAsset AssetType_>
         bool unregisterLoader() noexcept {
-            return this->unregisterLoader(AssetType_::type_id);
+            return this->unregisterLoader(AssetType_::typeId);
         }
 
     public:
@@ -185,19 +185,19 @@ namespace ember::engine::res {
         template <assets::IsAsset AssetType_>
         [[nodiscard]] load_async_type preload(cref<asset_guid> guid_,
             const ptr<LoaderOptions<AssetType_>> options_ = nullptr) {
-            return this->preload(AssetType_::type_id, guid_, options_);
+            return this->preload(AssetType_::typeId, guid_, options_);
         }
 
         template <assets::IsAsset AssetType_>
         [[nodiscard]] load_async_type load(cref<asset_guid> guid_,
             const ptr<LoaderOptions<AssetType_>> options_ = nullptr) {
-            return this->load(AssetType_::type_id, guid_, options_);
+            return this->load(AssetType_::typeId, guid_, options_);
         }
 
         template <assets::IsAsset AssetType_>
         [[nodiscard]] load_async_type loadImmediately(cref<asset_guid> guid_,
             const ptr<LoaderOptions<AssetType_>> options_ = nullptr) {
-            return this->loadImmediately(AssetType_::type_id, guid_, options_);
+            return this->loadImmediately(AssetType_::typeId, guid_, options_);
         }
     };
 }

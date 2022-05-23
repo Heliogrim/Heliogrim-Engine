@@ -58,6 +58,16 @@ namespace ember {
         TaskBase(cref<TaskType> type_) noexcept;
 
         /**
+         * Move Constructor
+         *
+         * @author Julius
+         * @date 20.05.2022
+         *
+         * @param other_ The instance to move.
+         */
+        TaskBase(mref<TaskBase> other_) noexcept;
+
+        /**
          * Destructor
          *
          * @author Julius

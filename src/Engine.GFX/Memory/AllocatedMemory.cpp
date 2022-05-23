@@ -1,6 +1,10 @@
 #include "AllocatedMemory.hpp"
 
-using namespace ember::engine::gfx;
+#ifdef _DEBUG
+#include <cassert>
+#endif
+
+using namespace ember::engine::gfx::memory;
 using namespace ember;
 
 AllocatedMemory::~AllocatedMemory() {
@@ -8,7 +12,13 @@ AllocatedMemory::~AllocatedMemory() {
         unmap();
     }
 
-    if (vkMemory) {
+    #ifdef _DEBUG
+    if (parent) {
+        assert(!vkMemory);
+    }
+    #endif
+
+    if (vkMemory && !parent) {
         vkDevice.freeMemory(vkMemory);
     }
 }
@@ -16,8 +26,8 @@ AllocatedMemory::~AllocatedMemory() {
 ref<AllocatedMemory> AllocatedMemory::operator=(mref<AllocatedMemory> other_) noexcept {
 
     if (_STD addressof(other_) != this) {
-        _STD swap(props, other_.props);
-        _STD swap(align, other_.align);
+        _STD swap(parent, other_.parent);
+        _STD swap(layout, other_.layout);
         _STD swap(size, other_.size);
         _STD swap(mapping, other_.mapping);
         _STD swap(vkMemory, other_.vkMemory);

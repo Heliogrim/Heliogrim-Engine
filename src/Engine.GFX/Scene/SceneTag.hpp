@@ -7,9 +7,9 @@ namespace ember::engine::gfx {
     struct GfxSceneTag :
         public scene::SceneTag {
 
-        static constexpr type_id type_id = "GfxSceneGraphTag"_typeId;
+        static constexpr type_id typeId = "GfxSceneGraphTag"_typeId;
 
         constexpr GfxSceneTag() noexcept :
-            scene::SceneTag(type_id) {}
+            scene::SceneTag(typeId) {}
     };
 }

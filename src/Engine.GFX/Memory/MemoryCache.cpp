@@ -1,0 +1,43 @@
+﻿#include "MemoryCache.hpp"
+
+#include "AllocatedMemory.hpp"
+#include "AllocationResult.hpp"
+#include "MemoryPool.hpp"
+
+using namespace ember::engine::gfx::memory;
+using namespace ember;
+
+MemoryCache::MemoryCache() :
+    _pools() {}
+
+MemoryCache::~MemoryCache() {
+    tidy();
+}
+
+void MemoryCache::tidy() {
+    for (const auto& entry : _pools) {
+        entry.second->tidy();
+    }
+    _pools.clear();
+}
+
+AllocationResult MemoryCache::allocate(cref<MemoryLayout> layout_, const u64 size_, ref<ptr<AllocatedMemory>> dst_) {
+    const auto it { _pools.find(layout_) };
+    if (it == _pools.end()) {
+        return AllocationResult::eFailed;
+    }
+
+    return it->second->allocate(size_, dst_);
+}
+
+bool MemoryCache::free(mref<ptr<AllocatedMemory>> mem_) {
+
+    const auto layout { mem_->layout };
+    const auto it { _pools.find(layout) };
+
+    if (it == _pools.end()) {
+        return false;
+    }
+
+    return it->second->free(_STD move(mem_));
+}

@@ -2,10 +2,10 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
+#include "../Memory/__fwd.hpp"
 #include "VirtualMemoryPageState.hpp"
 
 namespace ember::engine::gfx {
-    struct AllocatedMemory;
     class VirtualMemory;
 }
 
@@ -45,10 +45,10 @@ namespace ember::engine::gfx {
         [[nodiscard]] VirtualMemoryPageState state() const noexcept;
 
     private:
-        ptr<AllocatedMemory> _memory;
+        ptr<memory::AllocatedMemory> _memory;
 
     public:
-        [[nodiscard]] const ptr<AllocatedMemory> allocated() const noexcept;
+        [[nodiscard]] const ptr<memory::AllocatedMemory> allocated() const noexcept;
     };
 
 }

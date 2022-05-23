@@ -36,7 +36,7 @@ AssetDatabaseResult<Asset> AssetDatabase::operator[](cref<asset_guid> guid_) con
         { AssetDatabaseResultType::eSuccess },
         {
             value->get_guid(),
-            value->get_typeId(),
+            value->getTypeId(),
             value
         }
     };

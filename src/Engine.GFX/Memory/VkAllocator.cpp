@@ -1,80 +1,77 @@
 #include "VkAllocator.hpp"
 
+#include "AllocationResult.hpp"
 #include "../vkinc.hpp"
 #include "../API/VkTranslate.hpp"
+#include "../Device/Device.hpp"
 
+using namespace ember::engine::gfx::memory;
 using namespace ember::engine::gfx;
 using namespace ember;
 
 VkAllocator::VkAllocator(cref<sptr<Device>> device_) noexcept :
-    _device(device_),
-    _memoryTypeBits(0) {}
+    _device(device_) {}
 
 VkAllocator::~VkAllocator() noexcept = default;
 
-ptr<AllocatedMemory> VkAllocator::allocate(const u64 size_) {
+AllocationResult VkAllocator::allocate(cref<MemoryLayout> layout_, const u64 size_,
+    ref<ptr<AllocatedMemory>> dst_) {
 
     const vk::MemoryAllocateInfo mai {
         size_,
         get_memory_type(
             _device->vkPhysicalDevice(),
-            _memoryTypeBits,
-            _memoryProperties
+            layout_.typeBits,
+            api::vkTranslateMemoryProperties(layout_.props)
         )
     };
 
-    const auto vkMemResult { _device->vkDevice().allocateMemory(mai) };
-    assert(vkMemResult);
+    VkDevice vkd { *reinterpret_cast<VkDevice*>(reinterpret_cast<void*>(&_device->vkDevice())) };
+    VkDeviceMemory mem {};
 
-    auto mem = new AllocatedMemory {
-        api::vkTranslateMemoryProperties(_memoryProperties),
-        _align,
-        size_,
-        nullptr,
-        _device->vkDevice(),
-        vkMemResult
+    const auto vkMemResult {
+        vk::getDispatchLoaderStatic().vkAllocateMemory(
+            vkd,
+            reinterpret_cast<const VkMemoryAllocateInfo*>(&mai),
+            nullptr,
+            &mem
+        )
     };
 
-    return mem;
+    // Handle failed vulkan allocation
+    if (vkMemResult != VkResult::VK_SUCCESS) {
+        switch (vkMemResult) {
+            case VkResult::VK_ERROR_OUT_OF_POOL_MEMORY:
+            case VkResult::VK_ERROR_OUT_OF_HOST_MEMORY:
+            case VkResult::VK_ERROR_OUT_OF_DEVICE_MEMORY: {
+                return AllocationResult::eOutOfMemory;
+            }
+            default: {
+                return AllocationResult::eFailed;
+            }
+        }
+    }
+
+    dst_ = new AllocatedMemory {
+        nullptr,
+        layout_,
+        size_,
+        0ui64,
+        _device->vkDevice(),
+        vk::DeviceMemory { mem }
+    };
+
+    return AllocationResult::eSuccess;
 }
 
-void VkAllocator::free(mref<ptr<AllocatedMemory>> memory_) {
+void VkAllocator::free(mref<ptr<AllocatedMemory>> mem_) {
+    _device->vkDevice().freeMemory(mem_->vkMemory);
+    mem_->vkMemory = nullptr;
 
-    _device->vkDevice().freeMemory(memory_->vkMemory);
-    memory_->vkMemory = nullptr;
-
-    delete memory_;
-    memory_ = nullptr;
+    delete mem_;
+    mem_ = nullptr;
 }
 
 cref<sptr<Device>> VkAllocator::device() const noexcept {
     return _device;
-}
-
-ptr<VkAllocator> VkAllocator::makeForBuffer(cref<sptr<Device>> device_, cref<vk::Buffer> buffer_,
-    cref<vk::MemoryPropertyFlags> properties_) {
-
-    const vk::Device vkDevice { device_->vkDevice() };
-    const vk::MemoryRequirements req { vkDevice.getBufferMemoryRequirements(buffer_) };
-
-    auto alloc = new VkAllocator { device_ };
-    alloc->_align = req.alignment;
-    alloc->_memoryTypeBits = req.memoryTypeBits;
-    alloc->_memoryProperties = properties_;
-
-    return alloc;
-}
-
-ptr<VkAllocator> VkAllocator::makeForImage(cref<sptr<Device>> device_, cref<vk::Image> image_,
-    cref<vk::MemoryPropertyFlags> properties_) {
-
-    const vk::Device vkDevice { device_->vkDevice() };
-    const vk::MemoryRequirements req { vkDevice.getImageMemoryRequirements(image_) };
-
-    auto alloc = new VkAllocator { device_ };
-    alloc->_align = req.alignment;
-    alloc->_memoryTypeBits = req.memoryTypeBits;
-    alloc->_memoryProperties = properties_;
-
-    return alloc;
 }

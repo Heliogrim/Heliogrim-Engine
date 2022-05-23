@@ -26,10 +26,10 @@ namespace AssetModule {
         struct PayloadType : Asset {
             float pos[4];
 
-            static constexpr asset_type_id type_id = { "PayloadType"_typeId };
+            static constexpr asset_type_id typeId = { "PayloadType"_typeId };
 
-            constexpr asset_type_id get_typeId() const noexcept {
-                return PayloadType::type_id;
+            constexpr asset_type_id getTypeId() const noexcept {
+                return PayloadType::typeId;
             }
 
             PayloadType(const asset_guid& guid_) :

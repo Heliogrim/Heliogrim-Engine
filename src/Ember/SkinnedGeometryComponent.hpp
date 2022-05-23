@@ -9,7 +9,7 @@ namespace ember {
         using this_type = SkinnedGeometryComponent;
         using underlying_type = SkeletalGeometryComponent;
 
-        inline constexpr static component_type_id type_id { "SkinnedGeometryComponent"_typeId };
+        inline constexpr static component_type_id typeId { "SkinnedGeometryComponent"_typeId };
 
     public:
     };

@@ -3,7 +3,7 @@
 using namespace ember;
 
 StaticGeometryComponent::StaticGeometryComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_) :
-    ModelComponent(component_type_id { type_id }, _STD move(owner_), _STD move(parent_)),
+    ModelComponent(component_type_id { typeId }, _STD move(owner_), _STD move(parent_)),
     _staticGeometry(invalid_asset_guid) {}
 
 asset_guid StaticGeometryComponent::getStaticGeometryGuid() const noexcept {

@@ -28,10 +28,15 @@
 #include "Ember/Ember.hpp"
 #include "Ember/World.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
+#include "Engine.Event/ShutdownEvent.hpp"
 
 using namespace ember;
 
 void test();
+
+inline static _STD atomic_flag suspended {};
+
+void waveActors();
 
 void buildActor(const u64 idx_, const u64 rows_, const u64 cols_);
 
@@ -54,6 +59,13 @@ void ember_block_main() {
 void ember_main_entry() {
 
     SCOPED_STOPWATCH
+
+    /**
+     * Create suspend callback for event emitter
+     */
+    engine::Session::get()->emitter().on<ShutdownEvent>([](cref<ShutdownEvent> event_) {
+        suspended.test_and_set(_STD memory_order::release);
+    });
 
     /**
      * Make a repetitive task to emit TickEvent
@@ -139,10 +151,16 @@ void ember_main_entry() {
     constexpr u64 rows { 1ui64 << 11 };
     constexpr u64 cols { 1ui64 << 11 };
     constexpr u64 count { rows * cols };
+
+    constexpr u64 perCycle = 4ui64;
+
     #else
-    constexpr u64 rows { 1ui64 << 4 };
-    constexpr u64 cols { 1ui64 << 4 };
+    constexpr u64 rows { 1ui64 << 5 };
+    constexpr u64 cols { 1ui64 << 5 };
     constexpr u64 count { rows * cols };
+
+    constexpr u64 perCycle = 4ui64;
+
     #endif
 
     /**
@@ -158,10 +176,25 @@ void ember_main_entry() {
 
     //const u64 perCycle = static_cast<u64>(_STD log10(count));// `_STD log10` is not constexpr
     //constexpr u64 perCycle = count;
-    constexpr u64 perCycle = 1ui64;
 
+    /**
+     * Generic Animation Task
+     */
+    RepetitiveTask animTask {
+        []() {
+            waveActors();
+            return !suspended.test(_STD memory_order::consume);
+        }
+    };
+
+    animTask.srcStage() = TaskStages::eUserUpdateStrong;
+    animTask.dstStage() = TaskStages::eUserUpdateStrong;
+
+    /**
+     * Generic Generator Task
+     */
     RepetitiveTask buildTask {
-        [count = count, perCycle = perCycle]() {
+        [count = count, perCycle = perCycle, animTask = animTask]() {
 
             auto timestamp = _STD chrono::high_resolution_clock::now();
 
@@ -184,7 +217,11 @@ void ember_main_entry() {
             std::cout << "Creating cycle took " << _STD chrono::duration_cast<
                 _STD chrono::microseconds>(end - timestamp) << "" << std::endl;
 
-            return idx < count;
+            const auto repeat { idx < count };
+            if (!repeat) {
+                execute(RepetitiveTask { animTask });
+            }
+            return repeat;
         }
     };
 
@@ -265,12 +302,17 @@ void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const 
 #include "Ember/ActorInitializer.hpp"
 #include "Ember/StaticGeometryComponent.hpp"
 
+Vector<Actor*> testActors {};
+
 void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
 
     auto possible = CreateActor();
     // await(possible);
 
     Actor* actor = possible.get();
+
+    // TODO:
+    testActors.push_back(actor);
 
     /**
      *
@@ -308,9 +350,9 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
 
     auto previous { transform.position() };
 
-    randomPaddedPosition(idx_, rows_, cols_, 7.5F, previous);
+    randomPaddedPosition(idx_, rows_, cols_, 3.F, previous);
     const_cast<math::Transform&>(transform).setPosition(previous);
-    const_cast<math::Transform&>(transform).setScale(math::vec3 { 2.F, 0.75F, 2.F });
+    const_cast<math::Transform&>(transform).setScale(math::vec3 { 0.75F, 0.3F, 0.75F });
     /*
     transform.resolveMatrix();
     entity.setTransform(transform);
@@ -320,4 +362,39 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
     comp.setMesh(ember::game::assets::meshes::PlaneD128::auto_guid());
     comp.setMaterial(ember::game::assets::material::ForestGround01::auto_guid());
      */
+}
+
+void waveActors() {
+
+    static float timescale { 2000.F };
+    static float waveScale { 5.F };
+    static float fracScale { 2.F };
+
+    const auto timestamp {
+        _STD chrono::duration_cast<_STD chrono::milliseconds>(
+            _STD chrono::high_resolution_clock::now().time_since_epoch()).count()
+    };
+
+    const float sqrLength { _STD sqrtf(static_cast<float>(testActors.size())) };
+    const float fraction { math::pi_f * fracScale / sqrLength };
+    const float progress { static_cast<float>(timestamp) / timescale };
+
+    const u32 limit { static_cast<u32>(_STD floor(sqrLength)) };
+    for (u32 x { 0ui32 }; x < limit; ++x) {
+        for (u32 z { 0ui32 }; z < limit; ++z) {
+
+            const auto idx { x * limit + z };
+            Actor* cur { testActors[idx] };
+
+            const auto& transform { cur->getWorldTransform() };
+            auto prev { transform.position() };
+
+            const auto xfrac { x * fraction };
+            const auto zfrac { z * fraction };
+            const auto frac { _STD sqrtf(xfrac * xfrac + zfrac * zfrac) };
+
+            const_cast<math::Transform&>(transform).setPosition(prev.setY(_STD sinf(progress + frac) * waveScale));
+        }
+    }
+
 }

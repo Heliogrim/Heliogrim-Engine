@@ -48,11 +48,14 @@ cref<sptr<Device>> Renderer::device() const noexcept {
 
 sptr<RenderPassState> Renderer::makeRenderPassState() const {
     // TODO:
-    return make_sptr<RenderPassState>(RenderPassState {
-        .framebuffer = {},
-        .bindingCache = { _device },
-        .data = {}
-    });
+    return make_sptr<RenderPassState>(
+        _device,
+        nullptr,
+        decltype(RenderPassState::cache) {},
+        _device->allocator(),
+        DiscreteBindingCache { _device },
+        decltype(RenderPassState::data) {}
+    );
 }
 
 ptr<HORenderPass> Renderer::allocate(mref<HORenderPassCreateData> data_) {
@@ -109,6 +112,16 @@ void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mr
     // assert(renderPass_->state() && renderPass_->state()->framebuffer);
     renderPass_->batches().clear();
     #endif
+
+    /**
+     * Warning: Temporary => Validate usability of provided state
+     */
+    if (!renderPass_->isReset()) {
+        renderPass_->reset();
+    }
+
+    // Mark as touched as soon as we mutate the state
+    renderPass_->markAsTouched();
 
     /**
      *

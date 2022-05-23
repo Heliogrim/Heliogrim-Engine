@@ -38,6 +38,22 @@ namespace ember::engine::gfx::render {
         void tidy();
 
     private:
+        _STD atomic_flag _reset;
+
+    public:
+        [[nodiscard]] bool isReset() const noexcept;
+
+        /**
+         * Reset the internal state and signals of this HORenderPass
+         *
+         * @details Will internally check, whether this instance is in a pending state or was already reset. If the check fails, the call will return immediately without any side effects.
+         *  If the check succeeds the state and it's caches will be reset/shifted, signal will be lifted and fences destroyed.
+         */
+        void reset();
+
+        void markAsTouched();
+
+    private:
         ptr<scene::IRenderScene> _scene;
 
     public:
@@ -90,6 +106,9 @@ namespace ember::engine::gfx::render {
 
     private:
         _STD atomic_ptrdiff_t _sync;
+
+    private:
+        void clearSync();
 
     public:
         [[nodiscard]] bool storeSync(mref<vk::Fence> fence_);

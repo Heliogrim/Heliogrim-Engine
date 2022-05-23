@@ -12,7 +12,7 @@ namespace ember::engine::assets {
     class StaticGeometry :
         public Geometry<StaticGeometryLayout> {
     public:
-        inline static constexpr asset_type_id type_id { "StaticGeometry"_typeId };
+        inline static constexpr asset_type_id typeId { "StaticGeometry"_typeId };
 
     protected:
         StaticGeometry(cref<asset_guid> guid_);

@@ -16,7 +16,7 @@ namespace EventModule {
         struct TestType01 { };
 
         struct TestType02 {
-            inline static constexpr event_type_id type_id { "TestType02"_typeId };
+            inline static constexpr event_type_id typeId { "TestType02"_typeId };
         };
 
         struct TestType03 {
@@ -29,7 +29,7 @@ namespace EventModule {
 
         struct TestType04 :
             TestType03 {
-            inline static constexpr event_type_id type_id { "TestType04"_typeId };
+            inline static constexpr event_type_id typeId { "TestType04"_typeId };
         };
 
         TEST(Event, TypeCheck) {

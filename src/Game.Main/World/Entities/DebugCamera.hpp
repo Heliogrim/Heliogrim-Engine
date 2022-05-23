@@ -9,7 +9,7 @@ namespace game::world::entity {
     class DebugCamera :
         public ember::world::TypedEntity<DebugCamera> {
     public:
-        static constexpr type_id type_id = "DebugCamera"_typeId;
+        static constexpr type_id typeId = "DebugCamera"_typeId;
 
     public:
         void construct() noexcept;

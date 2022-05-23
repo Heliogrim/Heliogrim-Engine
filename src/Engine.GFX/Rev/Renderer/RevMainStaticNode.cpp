@@ -27,6 +27,7 @@
 #include "__macro.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
 #include "Engine.GFX/Loader/RevTextureLoader.hpp"
+#include "Engine.GFX/Scene/StaticGeometryBatch.hpp"
 #include "Engine.GFX/Scene/StaticGeometryModel.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.Reflect/EmberReflect.hpp"
@@ -86,7 +87,8 @@ void RevMainStaticNode::setup(cref<sptr<Device>> device_) {
     _pipeline->fragmentStage().shaderSlot().name() = "staticMainPass";
 
     _pipeline->rasterizationStage().cullFace() = RasterCullFace::eBack;
-    _pipeline->rasterizationStage().depthWrite() = true;// TODO: Revert to `false`, currently true for debugging purpose
+    //_pipeline->rasterizationStage().depthWrite() = true;// TODO: Revert to `false`, currently true for debugging purpose
+    _pipeline->rasterizationStage().depthWrite() = false;
 
     auto& blending { static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->blending() };
     const vk::PipelineColorBlendAttachmentState colorState {
@@ -298,15 +300,10 @@ bool RevMainStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
     uniform.buffer = _device->vkDevice().createBuffer(bci);
     assert(uniform.buffer);
 
-    ptr<VkAllocator> alloc {
-        VkAllocator::makeForBuffer(_device, uniform.buffer, vk::MemoryPropertyFlagBits::eHostVisible)
-    };
-
-    const vk::MemoryRequirements req { _device->vkDevice().getBufferMemoryRequirements(uniform.buffer) };
-    uniform.memory = alloc->allocate(req.size);
+    const auto result {
+        memory::allocate(&state->alloc, _device, uniform.buffer, MemoryProperty::eHostVisible, uniform.memory)
+    };// TODO: Handle failed allocation
     uniform.bind();
-
-    delete alloc;
 
     /**
      * Default insert data
@@ -554,6 +551,7 @@ void RevMainStaticNode::invoke(
 
     SCOPED_STOPWATCH
 
+    auto* state { renderPass_->state().get() };
     const auto& data { renderPass_->state()->data };
 
     /**
@@ -563,7 +561,6 @@ void RevMainStaticNode::invoke(
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
 
     // Temporary
-    const auto* owner { static_cast<const ptr<StaticGeometryComponent>>(model_->owner()) };
     const auto* model { static_cast<const ptr<StaticGeometryModel>>(model_) };
     if (!model->geometryResource()->isLoaded()) {
         return;
@@ -576,54 +573,6 @@ void RevMainStaticNode::invoke(
      */
     cmd.bindVertexBuffer(0, res->_vertexData.buffer, 0);
     cmd.bindIndexBuffer(res->_indexData.buffer, 0);
-
-    // Temporary
-    if (!model->__tmp__instance.memory) {
-        auto& buffer { const_cast<ptr<StaticGeometryModel>>(model)->__tmp__instance };
-        buffer.device = _device->vkDevice();
-        buffer.size = static_cast<u64>(sizeof(math::mat4));
-        buffer.usageFlags = vk::BufferUsageFlagBits::eStorageBuffer;
-
-        const vk::BufferCreateInfo ci { {}, buffer.size, buffer.usageFlags, vk::SharingMode::eExclusive, 0, nullptr };
-        buffer.buffer = _device->vkDevice().createBuffer(ci);
-        assert(buffer.buffer);
-
-        ptr<VkAllocator> alloc {
-            VkAllocator::makeForBuffer(_device, buffer.buffer, vk::MemoryPropertyFlagBits::eHostVisible)
-        };
-
-        const vk::MemoryRequirements req { _device->vkDevice().getBufferMemoryRequirements(buffer.buffer) };
-        buffer.memory = alloc->allocate(req.size);
-        buffer.bind();
-
-        delete alloc;
-
-        /**
-         * Push Data
-         */
-        auto translation {
-            math::mat4::make_identity().translate(
-                owner->getWorldTransform().position()
-            )
-        };
-
-        auto scale {
-            math::mat4::make_identity().unchecked_scale(
-                owner->getWorldTransform().scale()
-            )
-        };
-
-        // TODO: auto rotation { as<quaternion, mat4>(owner->getWorldTransform().rotation()) };
-
-        auto euler { owner->getWorldTransform().rotation().euler() };
-        auto rotation { math::mat4::make_identity() };
-        rotation.rotate(euler.x, math::vec3_pitch);
-        rotation.rotate(euler.y, math::vec3_yaw);
-        rotation.rotate(euler.z, math::vec3_roll);
-
-        const auto mm { translation * rotation * scale };
-        buffer.write<math::mat4>(&mm, 1ui32);
-    }
 
     // TODO: Optimize finding binding group for model update [ePerInstance]
     u32 sbgIdx { 0ui32 };
@@ -641,9 +590,13 @@ void RevMainStaticNode::invoke(
         return;
     }
 
-    if (model->__tmp__cdb != nullptr) {
-        auto& dbg { model->__tmp__cdb->binding() };
-        //dbg.getById(2ui32).store(model->__tmp__instance);
+    // TODO: -> Actual target method
+    auto* const batch { model_->batch(state) };
+    auto* const casted { static_cast<const ptr<StaticGeometryBatch>>(batch) };
+
+    // TODO: Temporary storage
+    if (casted->cdb != nullptr) {
+        auto& dbg { casted->cdb->binding() };
         cmd.bindDescriptor(sbgIdx, dbg.vkSet());
 
     } else {
@@ -653,17 +606,14 @@ void RevMainStaticNode::invoke(
         auto& cache { renderPass_->state()->bindingCache };
         auto dbg { cache.allocate(*sbg) };
 
-        dbg.getById(2ui32).store(model->__tmp__instance);
+        dbg.getById(2ui32).store(casted->instance);
         cmd.bindDescriptor(sbgIdx, dbg.vkSet());
 
-        // TODO: Replace storing of cached descriptor binding
-        if (model->__tmp__cdb == nullptr) {
-            // const_cast<_STD remove_cv_t<_STD remove_pointer_t<decltype(model)>>*>(model);
-            const_cast<StaticGeometryModel*>(model)->__tmp__cdb = new CachedDiscreteBinding { _STD move(dbg) };
+        if (casted->cdb == nullptr) {
+            casted->cdb = new CachedDiscreteBinding { _STD move(dbg) };
         } else {
-            model->__tmp__cdb->operator=(_STD move(dbg));
+            casted->cdb->operator=(_STD move(dbg));
         }
-
     }
 
     /**

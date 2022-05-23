@@ -7,12 +7,12 @@ using namespace ember;
 SfxMaterialAsset::SfxMaterialAsset(cref<asset_guid> guid_) noexcept :
     Asset(
         guid_,
-        engine::assets::SfxMaterial::type_id,
+        engine::assets::SfxMaterial::typeId,
         nullptr
     ) {}
 
 SfxMaterialAsset::~SfxMaterialAsset() noexcept = default;
 
 bool SfxMaterialAsset::isValidType() const noexcept {
-    return _typeId == engine::assets::SfxMaterial::type_id;
+    return _typeId == engine::assets::SfxMaterial::typeId;
 }

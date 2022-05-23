@@ -39,7 +39,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) {
         invalid_asset_guid
     };
 
-    _database->insert(guid_, GfxMaterial::type_id, instance);
+    _database->insert(guid_, GfxMaterial::typeId, instance);
 
     return instance;
 }
@@ -68,7 +68,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(
         specular_
     };
 
-    _database->insert(guid_, GfxMaterial::type_id, instance);
+    _database->insert(guid_, GfxMaterial::typeId, instance);
     return instance;
 }
 
@@ -85,7 +85,7 @@ ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_) {
         {}
     };
 
-    _database->insert(guid_, Image::type_id, instance);
+    _database->insert(guid_, Image::typeId, instance);
     return instance;
 }
 
@@ -96,7 +96,7 @@ ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> u
         {}
     };
 
-    _database->insert(guid_, Image::type_id, instance);
+    _database->insert(guid_, Image::typeId, instance);
     return instance;
 }
 
@@ -107,7 +107,7 @@ ptr<Asset> AssetFactory::createLandscapeGeometryAsset(cref<asset_guid> guid_) {
         {}
     };
 
-    _database->insert(guid_, LandscapeGeometry::type_id, instance);
+    _database->insert(guid_, LandscapeGeometry::typeId, instance);
     return instance;
 }
 
@@ -118,7 +118,7 @@ ptr<Asset> AssetFactory::createStaticGeometryAsset(cref<asset_guid> guid_) {
         {}
     };
 
-    _database->insert(guid_, StaticGeometry::type_id, instance);
+    _database->insert(guid_, StaticGeometry::typeId, instance);
     return instance;
 }
 
@@ -140,7 +140,7 @@ ptr<Asset> AssetFactory::createTextureAsset(cref<asset_guid> guid_) {
         gfx::TextureType::eUndefined
     };
 
-    _database->insert(guid_, Texture::type_id, instance);
+    _database->insert(guid_, Texture::typeId, instance);
     return instance;
 }
 
@@ -163,6 +163,6 @@ ptr<Asset> AssetFactory::createTextureAsset(
         type_
     };
 
-    _database->insert(guid_, Texture::type_id, instance);
+    _database->insert(guid_, Texture::typeId, instance);
     return instance;
 }

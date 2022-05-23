@@ -4,18 +4,31 @@
 
 #include "../Framebuffer/Framebuffer.hpp"
 #include "../Shader/DiscreteBindingCache.hpp"
+#include "../Cache/LocalResourceCache.hpp"
+#include "../Memory/LocalPooledAllocator.hpp"
 
 namespace ember::engine::gfx::render {
 
     struct RenderPassState {
+
+        ~RenderPassState();
+
+        /**
+         *
+         */
+        sptr<Device> device;
+
         /**
          * Final Render Target
          */
         ptr<Framebuffer> framebuffer;
 
         /**
-         * Resource Descriptors
+         * Resources
          */
+        cache::LocalResourceCache cache;
+        memory::LocalPooledAllocator alloc;
+
         DiscreteBindingCache bindingCache;
 
         /**

@@ -467,7 +467,8 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
     };
 
     #ifdef _DEBUG
-    assert(_graphicsQueue->vkQueue().presentKHR(present) == vk::Result::eSuccess);
+    result = _graphicsQueue->vkQueue().presentKHR(present);
+    assert(result == vk::Result::eSuccess);
     #else
     _graphicsQueue->vkQueue().presentKHR(present);
     #endif
@@ -622,7 +623,7 @@ bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
      *
      */
     auto* const scene { static_cast<const ptr<scene::RevScene>>(scene_) };
-    scene->setNodeType(GfxSceneTag {}, StaticGeometryComponent::type_id, [](const ptr<SceneComponent> owner_) {
+    scene->setNodeType(GfxSceneTag {}, StaticGeometryComponent::typeId, [](const ptr<SceneComponent> owner_) {
         return EmberObject::create<StaticGeometryModel>(owner_);
     });
 

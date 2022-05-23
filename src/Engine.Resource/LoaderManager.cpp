@@ -33,7 +33,7 @@ LoaderManager::load_type LoaderManager::load(const ptr<assets::Asset> asset_, pt
     /**
      *
      */
-    const auto loader { selectLoader(asset_->get_typeId(), options_) };
+    const auto loader { selectLoader(asset_->getTypeId(), options_) };
 
     if (loader == nullptr) {
         return nullptr;

@@ -175,6 +175,12 @@
     <Filter Include="Quelldateien\GraphicPass">
       <UniqueIdentifier>{371545e6-bdda-4a6a-a3c7-4b2839288356}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Cache">
+      <UniqueIdentifier>{4c1dd85c-54dc-4722-a75d-ca1680cf85bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Cache">
+      <UniqueIdentifier>{6f24cd1e-03b6-4b9b-8801-33c3add2403e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX\Inc.hpp">
@@ -370,9 +376,6 @@
       <Filter>Headerdateien\Material</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\ModelState.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\ModelBatch.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\TextureFormat.hpp">
@@ -647,6 +650,45 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Shader\CachedDiscreteBinding.hpp">
       <Filter>Headerdateien\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Memory\MemoryCache.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Memory\__fwd.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Memory\MemoryLayout.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Memory\LocalPooledAllocator.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Memory\GlobalPooledAllocator.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Memory\MemoryPool.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Memory\AllocationResult.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Cache\LocalResourceCache.hpp">
+      <Filter>Headerdateien\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Cache\TransientCache.hpp">
+      <Filter>Headerdateien\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Cache\__fwd.hpp">
+      <Filter>Headerdateien\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Cache\CacheResult.hpp">
+      <Filter>Headerdateien\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Cache\ModelBatch.hpp">
+      <Filter>Headerdateien\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\StaticGeometryBatch.hpp">
+      <Filter>Headerdateien\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -961,6 +1003,30 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Shader\CachedDiscreteBinding.cpp">
       <Filter>Quelldateien\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Memory\LocalPooledAllocator.cpp">
+      <Filter>Quelldateien\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Memory\GlobalPooledAllocator.cpp">
+      <Filter>Quelldateien\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Memory\MemoryCache.cpp">
+      <Filter>Quelldateien\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Memory\MemoryPool.cpp">
+      <Filter>Quelldateien\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Cache\LocalResourceCache.cpp">
+      <Filter>Quelldateien\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Cache\TransientCache.cpp">
+      <Filter>Quelldateien\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Scene\StaticGeometryBatch.cpp">
+      <Filter>Quelldateien\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderPassState.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

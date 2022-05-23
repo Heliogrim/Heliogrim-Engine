@@ -9,7 +9,7 @@ using namespace ember;
 TextureAsset::TextureAsset(cref<asset_guid> guid_) noexcept :
     StreamableRenderableAsset(
         guid_,
-        engine::assets::Texture::type_id,
+        engine::assets::Texture::typeId,
         engine::Session::get()->modules().assetFactory()->createTextureAsset(guid_)
     ) {}
 
@@ -24,7 +24,7 @@ TextureAsset::TextureAsset(
 ) noexcept :
     StreamableRenderableAsset(
         guid_,
-        engine::assets::Texture::type_id,
+        engine::assets::Texture::typeId,
         engine::Session::get()->modules().assetFactory()->createTextureAsset(
             guid_,
             baseImage_,
@@ -39,5 +39,5 @@ TextureAsset::TextureAsset(
 TextureAsset::~TextureAsset() noexcept = default;
 
 bool TextureAsset::isValidType() const noexcept {
-    return _typeId == engine::assets::Texture::type_id;
+    return _typeId == engine::assets::Texture::typeId;
 }

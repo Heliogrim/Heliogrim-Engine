@@ -10,7 +10,7 @@ namespace ember::engine::assets {
         friend class GfxMaterialLayout;
 
     public:
-        inline static const asset_type_id type_id { "GfxMaterial"_typeId };
+        inline static const asset_type_id typeId { "GfxMaterial"_typeId };
 
     protected:
         GfxMaterial(cref<asset_guid> guid_);

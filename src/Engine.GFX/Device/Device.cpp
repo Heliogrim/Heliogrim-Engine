@@ -8,6 +8,7 @@
 #include "../Command/CommandQueue.hpp"
 #include "../Library/Types.hpp"
 #include "../Surface/Surface.hpp"
+#include "../Memory/VkAllocator.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -25,6 +26,7 @@ static std::vector<const char*> validationLayers = {
 };
 
 Device::Device(Application::const_reference_type application_, ptr<Surface> surface_) :
+    _alloc(nullptr),
     _computeQueue(nullptr),
     _graphicsQueue(nullptr),
     _transferQueue(nullptr),
@@ -157,6 +159,13 @@ void Device::setup() {
     #endif
 
     /**
+     * Setup Allocator
+     */
+    const auto vulkanLayerAlloc { make_sptr<memory::VkAllocator>(shared_from_this()) };
+    auto fwdVulkanLayerAlloc { _STD static_pointer_cast<memory::Allocator, memory::VkAllocator>(vulkanLayerAlloc) };
+    _alloc = make_uptr<memory::GlobalPooledAllocator>(_STD move(fwdVulkanLayerAlloc));
+
+    /**
      * Setup Queues
      */
 
@@ -212,6 +221,10 @@ vk::Device& Device::vkDevice() const {
 
 vk::PhysicalDevice& Device::vkPhysicalDevice() const {
     return _physicalDevice;
+}
+
+const non_owning_rptr<memory::GlobalPooledAllocator> Device::allocator() const noexcept {
+    return _alloc.get();
 }
 
 ptr<CommandQueue> Device::computeQueue() const noexcept {

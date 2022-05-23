@@ -30,6 +30,9 @@ namespace ember::engine::gfx::render {
         bool free(const ptr<HORenderPass> renderPass_) override;
 
     public:
+        [[nodiscard]] const non_owning_rptr<const Vector<type_id>> modelTypes() const noexcept override;
+
+    public:
         void before(
             const non_owning_rptr<HORenderPass> renderPass_,
             const non_owning_rptr<RenderStagePass> stagePass_
@@ -48,6 +51,9 @@ namespace ember::engine::gfx::render {
 
     private:
         void setupShader(cref<sptr<Device>> device_);
+
+    private:
+        Vector<type_id> _modelTypes;
 
     private:
         sptr<Device> _device;

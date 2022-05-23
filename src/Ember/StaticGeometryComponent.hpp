@@ -10,7 +10,7 @@ namespace ember {
         using this_type = StaticGeometryComponent;
         using underlying_type = ModelComponent;
 
-        inline constexpr static component_type_id type_id { "StaticGeometryComponent"_typeId };
+        inline constexpr static component_type_id typeId { "StaticGeometryComponent"_typeId };
 
     public:
         StaticGeometryComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_);

@@ -1,5 +1,7 @@
 #include "VirtualBufferPage.hpp"
 
+#include "../Memory/AllocatedMemory.hpp"
+
 using namespace ember::engine::gfx;
 using namespace ember;
 

@@ -11,12 +11,12 @@ namespace ember::engine::gfx {
         using this_type = VirtualMemory;
 
     public:
-        VirtualMemory(const ptr<Allocator> allocator_);
+        VirtualMemory(const ptr<memory::Allocator> allocator_);
 
         ~VirtualMemory();
 
     private:
-        ptr<Allocator> _allocator;
+        ptr<memory::Allocator> _allocator;
         Vector<ptr<VirtualMemoryPage>> _pages;
 
     public:

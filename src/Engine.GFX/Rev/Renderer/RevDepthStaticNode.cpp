@@ -23,11 +23,21 @@
 
 #include "__macro.hpp"
 #include "RevDepthSharedNode.hpp"
+#include "Ember/StaticGeometryComponent.hpp"
+#include "Engine.Common/Math/Coordinates.hpp"
+#include "Engine.GFX/Resource/StaticGeometryResource.hpp"
+#include "Engine.GFX/Scene/StaticGeometryModel.hpp"
+#include "Engine.Reflect/EmberReflect.hpp"
+#include <Engine.GFX/Scene/StaticGeometryBatch.hpp>
 
 using namespace ember::engine::gfx::render;
 using namespace ember;
 
 RevDepthStaticNode::RevDepthStaticNode(const ptr<RevDepthSharedNode> sharedNode_) :
+    RenderStageNode(),
+    _modelTypes({
+        EmberClass::stid<StaticGeometryModel>()
+    }),
     _sharedNode(sharedNode_) {}
 
 void RevDepthStaticNode::setup(cref<sptr<Device>> device_) {
@@ -132,7 +142,7 @@ bool RevDepthStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Allocate Command Buffer
      */
-    auto cmd { _device->graphicsQueue()->pool()->make() };
+    auto cmd { _device->graphicsQueue()->pool()->make(true) };
 
     /**
      * Allocate Uniform Buffer
@@ -157,15 +167,10 @@ bool RevDepthStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
     uniform.buffer = _device->vkDevice().createBuffer(bci);
     assert(uniform.buffer);
 
-    ptr<VkAllocator> alloc {
-        VkAllocator::makeForBuffer(_device, uniform.buffer, vk::MemoryPropertyFlagBits::eHostVisible)
-    };
-
-    const vk::MemoryRequirements req { _device->vkDevice().getBufferMemoryRequirements(uniform.buffer) };
-    uniform.memory = alloc->allocate(req.size);
+    auto result {
+        memory::allocate(&state->alloc, _device, uniform.buffer, MemoryProperty::eHostVisible, uniform.memory)
+    };// TODO: Should assert or handle failed memory allocation
     uniform.bind();
-
-    delete alloc;
 
     /**
      * Default insert data
@@ -315,6 +320,10 @@ bool RevDepthStaticNode::free(const ptr<HORenderPass> renderPass_) {
     return true;
 }
 
+const non_owning_rptr<const Vector<type_id>> RevDepthStaticNode::modelTypes() const noexcept {
+    return &_modelTypes;
+}
+
 void RevDepthStaticNode::before(
     const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_
@@ -324,21 +333,38 @@ void RevDepthStaticNode::before(
 
     const auto& data { renderPass_->state()->data };
 
-    sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
-        _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
-            data.find("RevDepthStaticNode::DiscreteBindingGroups"sv)->second
-        )
-    };
-
     /**
      * Prepare Command Buffer
      */
     const auto cmdEntry { data.at("RevDepthStaticNode::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
-    cmd.begin();
 
     const auto entry { data.at("RevDepthStage::Framebuffer"sv) };
     auto& framebuffer { *_STD static_pointer_cast<Framebuffer, void>(entry) };
+
+    const vk::CommandBufferInheritanceInfo inheritance {
+        _sharedNode->loRenderPass()->vkRenderPass(),
+        0ui32,
+        framebuffer.vkFramebuffer(),
+        VK_FALSE,
+        {},
+        {}
+    };
+    const vk::CommandBufferBeginInfo info {
+        vk::CommandBufferUsageFlagBits::eRenderPassContinue | vk::CommandBufferUsageFlagBits::eSimultaneousUse,
+        &inheritance
+    };
+    cmd.vkCommandBuffer().begin(info);
+
+    /**
+     *
+     */
+    cmd.bindPipeline(_pipeline.get(), {
+        framebuffer.width(),
+        framebuffer.height(),
+        0.F,
+        1.F
+    });
 
     /**
      * Update Resources [BindingUpdateInterval::ePerFrame]
@@ -357,33 +383,15 @@ void RevDepthStaticNode::before(
     math::mat4 mvpc { clip_matrix * camera->projection() * camera->view() * math::mat4::make_identity() };
     uniform.write<math::mat4>(&mvpc, 1ui32);
 
-    #if FALSE
-    // Warning: Temporary
-    {
-        sptr<Buffer> modelUniform {
-            _STD static_pointer_cast<Buffer, void>(
-                renderPass_->state()->data.at("RevDepthPassModelProcessor::InstanceBuffer"sv)
-            )
-        };
-
-        dbgs->back().getById(2).store(*modelUniform);
-    }
-    #endif
-
-    /**
-     *
-     */
-    cmd.beginRenderPass(*_sharedNode->loRenderPass(), framebuffer);
-    cmd.bindPipeline(_pipeline.get(), {
-        framebuffer.width(),
-        framebuffer.height(),
-        0.F,
-        1.F
-    });
-
     /**
      * Bind Shared Resources for the whole Frame
      */
+    sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
+        _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
+            data.find("RevDepthStaticNode::DiscreteBindingGroups"sv)->second
+        )
+    };
+
     for (u32 idx = 0; idx < dbgs->size(); ++idx) {
 
         const auto& grp { (*dbgs)[idx] };
@@ -391,9 +399,11 @@ void RevDepthStaticNode::before(
         if (grp.super().interval() == shader::BindingUpdateInterval::ePerFrame) {
             cmd.bindDescriptor(idx, grp.vkSet());
         }
+
+        if (grp.super().interval() == shader::BindingUpdateInterval::eMaterialUpdate) {
+            cmd.bindDescriptor(idx, grp.vkSet());
+        }
     }
-    // TODO: _cmd->bindDescriptor({...});
-    // TODO: Get uniform buffer object and use it for shared descriptor, cause depth pass only uses a ubo, no other resources required yet
 }
 
 void RevDepthStaticNode::invoke(
@@ -404,6 +414,7 @@ void RevDepthStaticNode::invoke(
 
     SCOPED_STOPWATCH
 
+    auto* state { renderPass_->state().get() };
     const auto& data { renderPass_->state()->data };
 
     /**
@@ -412,27 +423,64 @@ void RevDepthStaticNode::invoke(
     const auto cmdEntry { data.at("RevDepthStaticNode::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
 
-    #if FALSE
-    // TODO: cmd.bindDescriptor(...);
-    cmd.bindVertexBuffer(0, batch_->geometry().vertices, 0);
-    cmd.bindIndexBuffer(batch_->geometry().indices, 0);
+    // Temporary
+    const auto* owner { static_cast<const ptr<StaticGeometryComponent>>(model_->owner()) };
+    const auto* model { static_cast<const ptr<StaticGeometryModel>>(model_) };
 
-    for (const auto& entry : batch_->executions()) {
-
-        cref<DistinctBind> db = entry.bind;
-        cref<DistinctGeometry> dg = entry.geometry;
-
-        /**
-         *
-         */
-        // TODO: Descriptor Bindings
-
-        /**
-         * Draw Call
-         */
-        cmd.drawIndexed(dg.instanceCount, dg.instanceOffset, dg.indexCount, dg.indexOffset, 0ui32);
+    if (!model->geometryResource()->isLoaded()) {
+        return;
     }
-    #endif
+
+    const auto* sgr { static_cast<const ptr<StaticGeometryResource>>(model->geometryResource()) };
+
+    /**
+     *
+     */
+    cmd.bindVertexBuffer(0, sgr->_vertexData.buffer, 0);
+    cmd.bindIndexBuffer(sgr->_indexData.buffer, 0);
+
+    u32 sbdIdx { 0ui32 };
+    ptr<const shader::ShaderBindingGroup> sbg { nullptr };
+    for (; sbdIdx < _requiredBindingGroups.size(); ++sbdIdx) {
+        const auto& entry { _requiredBindingGroups[sbdIdx] };
+        if (entry.interval() == shader::BindingUpdateInterval::ePerInstance) {
+            sbg = &entry;
+            break;
+        }
+    }
+
+    if (sbg == nullptr) {
+        return;
+    }
+
+    auto* const batch { model_->batch(state) };
+    auto* const casted { static_cast<const ptr<StaticGeometryBatch>>(batch) };
+
+    if (casted->cdb != nullptr) {
+        auto& dbg { casted->cdb->binding() };
+        cmd.bindDescriptor(sbdIdx, dbg.vkSet());
+
+    } else {
+        /**
+         * Acquire Descriptor for model data, push data and bind it
+         */
+        auto& cache { renderPass_->state()->bindingCache };
+        auto dbg { cache.allocate(*sbg) };
+
+        dbg.getById(2ui32).store(casted->instance);
+        cmd.bindDescriptor(sbdIdx, dbg.vkSet());
+
+        if (casted->cdb == nullptr) {
+            casted->cdb = new CachedDiscreteBinding(_STD move(dbg));
+        } else {
+            casted->cdb->operator=(_STD move(dbg));
+        }
+    }
+
+    /**
+     * Invoke Rendering
+     */
+    cmd.drawIndexed(1, 0, sgr->_indexData.buffer.count(), 0ui32, 0ui32);
 }
 
 void RevDepthStaticNode::after(
@@ -453,13 +501,21 @@ void RevDepthStaticNode::after(
     /**
      * End Command Buffer
      */
-    cmd.endRenderPass();
     cmd.end();
 
-    /**
-     * Submit Command Buffer to CommandBatch
-     */
-    stagePass_->batch().push(cmd);
+    // Commit Secondary to Primary
+    {
+        /**
+         * Get primary Command Buffer
+         */
+        const auto primaryEntry { data.at("RevDepthStage::CommandBuffer"sv) };
+        auto& primary { *_STD static_pointer_cast<CommandBuffer, void>(primaryEntry) };
+
+        /**
+         * Submit
+         */
+        primary.vkCommandBuffer().executeCommands(1ui32, &cmd.vkCommandBuffer());
+    }
 }
 
 void RevDepthStaticNode::setupShader(cref<sptr<Device>> device_) {
@@ -482,7 +538,7 @@ void RevDepthStaticNode::setupShader(cref<sptr<Device>> device_) {
     shader::PrototypeBinding mubo {
         shader::BindingType::eStorageBuffer,
         2,
-        shader::BindingUpdateInterval::ePerFrame,
+        shader::BindingUpdateInterval::ePerInstance,
         "staticDepthPassModel"
     };
 

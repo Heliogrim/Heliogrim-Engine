@@ -15,35 +15,78 @@ using namespace ember;
 
 HORenderPass::HORenderPass(const non_owning_rptr<Renderer> renderer_, HORenderPassCreateData data_,
     cref<sptr<RenderPassState>> state_) :
+    _reset(),
     _scene(data_.scene),
     _camera(data_.camera),
     _target(data_.target),
     _renderer(renderer_),
-    _state(state_) {}
+    _state(state_) {
+
+    /**
+     * Default is reset state
+     */
+    _reset.test_and_set(_STD memory_order::relaxed);
+}
 
 HORenderPass::HORenderPass(mref<this_type> other_) noexcept :
+    _reset(),
     _scene(other_._scene),
     _camera(other_._camera),
     _target(_STD exchange(other_._target, nullptr)),
     _renderer(_STD exchange(other_._renderer, nullptr)),
     _state(_STD exchange(other_._state, nullptr)),
     _lastSignals(_STD move(other_._lastSignals)),
-    _sync(other_._sync.exchange(reinterpret_cast<ptrdiff_t>(nullptr))) {}
+    _sync(other_._sync.exchange(reinterpret_cast<ptrdiff_t>(nullptr))) {
+
+    /**
+     * Copy reset state from other instance
+     */
+    if (other_._reset.test(_STD memory_order::consume)) {
+        _reset.test_and_set(_STD memory_order::relaxed);
+        other_._reset.clear(_STD memory_order::relaxed);
+    }
+}
 
 HORenderPass::~HORenderPass() {
     tidy();
 }
 
 void HORenderPass::tidy() {
+    clearSync();
+}
 
-    if (_sync.load()) {
-        auto* fence { reinterpret_cast<ptr<vk::Fence>>(_sync.load()) };
+bool HORenderPass::isReset() const noexcept {
+    return _reset.test(_STD memory_order::consume);
+}
 
-        _renderer->device()->vkDevice().destroyFence(*fence);
-        delete fence;
+void HORenderPass::reset() {
 
-        _sync.store(NULL);
+    /**
+     * Check pending state
+     */
+    if (!await()) {
+        return;
     }
+
+    /**
+     * Check whether state is already reset
+     */
+    if (_reset.test_and_set()) {
+        return;
+    }
+
+    /**
+     * Reset
+     */
+    auto* state { _state.get() };
+    // TODO: Check whether state should get a reset method, which forwards invocation to state's members
+    state->cache.shift();
+
+    clearSync();
+}
+
+void HORenderPass::markAsTouched() {
+    _reset.clear(_STD memory_order::release);
 }
 
 const ptr<engine::scene::IRenderScene> HORenderPass::scene() const noexcept {
@@ -96,6 +139,20 @@ ref<decltype(HORenderPass::_batches)> HORenderPass::batches() noexcept {
 
 ref<decltype(HORenderPass::_lastSignals)> HORenderPass::lastSignals() noexcept {
     return _lastSignals;
+}
+
+void HORenderPass::clearSync() {
+
+    if (!_sync.load()) {
+        return;
+    }
+
+    auto* fence { reinterpret_cast<ptr<vk::Fence>>(_sync.load()) };
+
+    _renderer->device()->vkDevice().destroyFence(*fence);
+    delete fence;
+
+    _sync.store(NULL);
 }
 
 bool HORenderPass::storeSync(mref<vk::Fence> fence_) {
