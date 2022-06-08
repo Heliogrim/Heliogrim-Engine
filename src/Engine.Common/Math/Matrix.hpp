@@ -374,7 +374,7 @@ namespace ember::math {
          * \brief 
          * \return 
          */
-        static matq4_t<T> make_identity() {
+        constexpr static matq4_t<T> make_identity() {
             return matq4_t(1);
         }
 

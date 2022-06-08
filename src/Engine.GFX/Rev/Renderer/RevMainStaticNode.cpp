@@ -509,7 +509,7 @@ void RevMainStaticNode::before(
     const auto uniformEntry { data.at("RevMainStaticNode::UniformBuffer"sv) };
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
-    const static math::mat4 clip_matrix = math::mat4(
+    const static auto clip_matrix = math::mat4(
         1.0F, 0.0F, 0.0F, 0.0F,
         0.0F, -1.0F, 0.0F, 0.0F,
         0.0F, 0.0F, 0.5F, 0.5F,

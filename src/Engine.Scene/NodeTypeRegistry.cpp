@@ -38,12 +38,12 @@ cref<NodeTypeRegistryValue> NodeTypeRegistry::get(cref<component_type_id> typeId
 }
 
 void NodeTypeRegistry::setGfxModel(cref<component_type_id> typeId_,
-    cref<NodeTypeRegistryValue::model_type> model_) {
+    cref<NodeTypeRegistryValue::model_type> callback_) {
 
     /**
      *
      */
-    if (model_ == nullptr) {
+    if (callback_ == nullptr) {
 
         const auto mapped { _mapped.find(typeId_) };
         if (mapped != _mapped.end()) {
@@ -57,16 +57,39 @@ void NodeTypeRegistry::setGfxModel(cref<component_type_id> typeId_,
      *
      */
     auto& mapped { _mapped[typeId_] };
-    mapped.gfx = model_;
+    mapped.gfx = callback_;
 }
 
-void NodeTypeRegistry::setPfxModel(cref<component_type_id> typeId_,
-    cref<NodeTypeRegistryValue::model_type> model_) {
+void NodeTypeRegistry::setGfxModel(cref<component_type_id> typeId_,
+    mref<NodeTypeRegistryValue::model_type> callback_) {
 
     /**
      *
      */
-    if (model_ == nullptr) {
+    if (callback_ == nullptr) {
+
+        const auto mapped { _mapped.find(typeId_) };
+        if (mapped != _mapped.end()) {
+            mapped->second.gfx = nullptr;
+        }
+
+        return sanitize(typeId_);
+    }
+
+    /**
+     *
+     */
+    auto& mapped { _mapped[typeId_] };
+    mapped.gfx = _STD move(callback_);
+}
+
+void NodeTypeRegistry::setPfxModel(cref<component_type_id> typeId_,
+    cref<NodeTypeRegistryValue::model_type> callback_) {
+
+    /**
+     *
+     */
+    if (callback_ == nullptr) {
 
         const auto mapped { _mapped.find(typeId_) };
         if (mapped != _mapped.end()) {
@@ -80,16 +103,39 @@ void NodeTypeRegistry::setPfxModel(cref<component_type_id> typeId_,
      *
      */
     auto& mapped { _mapped[typeId_] };
-    mapped.pfx = model_;
+    mapped.pfx = callback_;
 }
 
-void NodeTypeRegistry::setSfxModel(cref<component_type_id> typeId_,
-    cref<NodeTypeRegistryValue::model_type> model_) {
+void NodeTypeRegistry::setPfxModel(cref<component_type_id> typeId_,
+    mref<NodeTypeRegistryValue::model_type> callback_) {
 
     /**
      *
      */
-    if (model_ == nullptr) {
+    if (callback_ == nullptr) {
+
+        const auto mapped { _mapped.find(typeId_) };
+        if (mapped != _mapped.end()) {
+            mapped->second.pfx = nullptr;
+        }
+
+        return sanitize(typeId_);
+    }
+
+    /**
+     *
+     */
+    auto& mapped { _mapped[typeId_] };
+    mapped.pfx = _STD move(callback_);
+}
+
+void NodeTypeRegistry::setSfxModel(cref<component_type_id> typeId_,
+    cref<NodeTypeRegistryValue::model_type> callback_) {
+
+    /**
+     *
+     */
+    if (callback_ == nullptr) {
 
         const auto mapped { _mapped.find(typeId_) };
         if (mapped != _mapped.end()) {
@@ -103,5 +149,28 @@ void NodeTypeRegistry::setSfxModel(cref<component_type_id> typeId_,
      *
      */
     auto& mapped { _mapped[typeId_] };
-    mapped.sfx = model_;
+    mapped.sfx = callback_;
+}
+
+void NodeTypeRegistry::setSfxModel(cref<component_type_id> typeId_,
+    mref<NodeTypeRegistryValue::model_type> callback_) {
+
+    /**
+     *
+     */
+    if (callback_ == nullptr) {
+
+        const auto mapped { _mapped.find(typeId_) };
+        if (mapped != _mapped.end()) {
+            mapped->second.sfx = nullptr;
+        }
+
+        return sanitize(typeId_);
+    }
+
+    /**
+     *
+     */
+    auto& mapped { _mapped[typeId_] };
+    mapped.sfx = _STD move(callback_);
 }

@@ -18,6 +18,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Buffer.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Cast.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Array.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\AssociativeKey.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\BytellHashMap.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Deque.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\FlatHashMap.hpp" />

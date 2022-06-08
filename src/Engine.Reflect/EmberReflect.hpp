@@ -30,7 +30,9 @@ namespace ember {
         ptr<EmberClass> _class = nullptr;
 
     public:
-        [[nodiscard]] const ptr<const EmberClass> getClass() const noexcept;
+        [[nodiscard]] FORCEINLINE const ptr<const EmberClass> getClass() const noexcept {
+            return _class;
+        }
 
     public:
         template <IsEmberObject ClassType_, typename... Args_>
