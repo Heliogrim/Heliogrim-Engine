@@ -281,9 +281,11 @@ namespace ember::engine::scene {
             // We assume that memory coherency is stronger when traversing vertical
             Vector<ptr<const SceneNodeHead>> backlogContainer {};
 
+            /*
             // prepare stack container with `min(value, 64)`
             const auto depth { parent_->get(storage)->depth(storage) };
             backlogContainer.reserve(_STD min(traits::max_childs_per_node * depth, 64ui64));
+             */
 
             stack<ptr<const SceneNodeHead>, Vector<ptr<const SceneNodeHead>>> backlog {};
             backlog.push(parent_);

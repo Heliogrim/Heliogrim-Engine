@@ -1,7 +1,7 @@
 #include "Multiplexer.hpp"
 
 #if _DEBUG
-#include <assert.h>
+#include <cassert>
 #endif
 
 #include <Engine.Common/Collection/Set.hpp>
@@ -104,9 +104,12 @@ void Multiplexer::dispatchAny(const non_owning_rptr<HORenderPass> renderPass_,
 
     // TODO: Get model type / for now just anything but null_type_id
     const type_id modelType { model_->getClass()->typeId() };
-    const Vector<type_id> types { modelType };
+    const _STD array<type_id, 1> types { modelType };
 
-    CompactSet<ptr<RenderStageNode>> effected {};
+    // Warning: This is just a dirty workaround saving us 500FPS when just iterating 1024 elements without any action\
+    //  CompactSet seams to be very expensive to create, so we should replace it with a better solution
+    thread_local static CompactSet<ptr<RenderStageNode>> effected {};
+    effected.clear();
 
     // TODO: Resolve class/type hierarchy to fetch every type id involved
 
@@ -130,6 +133,7 @@ void Multiplexer::dispatchAny(const non_owning_rptr<HORenderPass> renderPass_,
                 continue;
             }
 
+            // TODO: Before invoking the render nodes, collect all effected nodes to optimize cache usage with small loops
             node->invoke(renderPass_, stagePass_, model_);
             effected.insert(node);
         }

@@ -40,7 +40,10 @@ namespace ember::engine::scene {
 
     public:
         void setNodeType(const SceneTag tag_, cref<component_type_id> typeId_,
-            cref<NodeTypeRegistryValue::model_type> model_);
+            cref<NodeTypeRegistryValue::model_type> callback_);
+
+        void setNodeType(const SceneTag tag_, cref<component_type_id> typeId_,
+            mref<NodeTypeRegistryValue::model_type> callback_);
 
     public:
         virtual bool addNode(const ptr<SceneComponent> node_) = 0;

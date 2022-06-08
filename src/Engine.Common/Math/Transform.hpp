@@ -102,6 +102,10 @@ namespace ember::math {
             _position = position_;
         }
 
+        void setPosition(mref<vec3> position_) noexcept {
+            _position = position_;
+        }
+
     private:
         quaternion _rotation;
 
@@ -114,6 +118,10 @@ namespace ember::math {
             _rotation = rotation_;
         }
 
+        void setRotation(mref<quaternion> rotation_) noexcept {
+            _rotation = rotation_;
+        }
+
     private:
         vec3 _scale;
 
@@ -123,6 +131,10 @@ namespace ember::math {
         }
 
         void setScale(cref<vec3> scale_) noexcept {
+            _scale = scale_;
+        }
+
+        void setScale(mref<vec3> scale_) noexcept {
             _scale = scale_;
         }
     };

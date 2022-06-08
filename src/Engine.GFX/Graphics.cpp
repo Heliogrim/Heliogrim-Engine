@@ -623,9 +623,8 @@ bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
      *
      */
     auto* const scene { static_cast<const ptr<scene::RevScene>>(scene_) };
-    scene->setNodeType(GfxSceneTag {}, StaticGeometryComponent::typeId, [](const ptr<SceneComponent> owner_) {
-        return EmberObject::create<StaticGeometryModel>(owner_);
-    });
+    scene->setNodeType(GfxSceneTag {}, StaticGeometryComponent::typeId,
+        EmberObject::create<StaticGeometryModel, const ptr<SceneComponent>>);
 
     /**
      *

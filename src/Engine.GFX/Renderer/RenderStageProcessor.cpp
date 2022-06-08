@@ -70,8 +70,9 @@ bool RenderStageProcessor::operator()(const ptr<scene::RenderGraph::node_type> n
     auto** elements { node_->elements() };
     const auto elementCount { node_->exclusiveSize() };
 
-    for (u64 i = 0; i < elementCount; ++i, ++elements) {
+    for (u64 i = 0; i < elementCount; ++i) {
         _multiplexer->dispatch(_renderPass, _stagePass, *elements);
+        ++elements;
     }
 
     return !node_->isLeaf();

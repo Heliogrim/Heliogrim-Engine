@@ -2,10 +2,6 @@
 
 using namespace ember;
 
-const ptr<const EmberClass> EmberObject::getClass() const noexcept {
-    return _class;
-}
-
 EmberClass::EmberClass() = default;
 
 cref<type_id> EmberClass::typeId() const noexcept {

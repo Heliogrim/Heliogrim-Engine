@@ -43,11 +43,17 @@ namespace ember::engine::scene {
     public:
         [[nodiscard]] cref<NodeTypeRegistryValue> get(cref<component_type_id> typeId_) noexcept;
 
-        void setGfxModel(cref<component_type_id> typeId_, cref<NodeTypeRegistryValue::model_type> model_);
+        void setGfxModel(cref<component_type_id> typeId_, cref<NodeTypeRegistryValue::model_type> callback_);
 
-        void setPfxModel(cref<component_type_id> typeId_, cref<NodeTypeRegistryValue::model_type> model_);
+        void setGfxModel(cref<component_type_id> typeId_, mref<NodeTypeRegistryValue::model_type> callback_);
 
-        void setSfxModel(cref<component_type_id> typeId_, cref<NodeTypeRegistryValue::model_type> model_);
+        void setPfxModel(cref<component_type_id> typeId_, cref<NodeTypeRegistryValue::model_type> callback_);
+
+        void setPfxModel(cref<component_type_id> typeId_, mref<NodeTypeRegistryValue::model_type> callback_);
+
+        void setSfxModel(cref<component_type_id> typeId_, cref<NodeTypeRegistryValue::model_type> callback_);
+
+        void setSfxModel(cref<component_type_id> typeId_, mref<NodeTypeRegistryValue::model_type> callback_);
     };
 
 }
