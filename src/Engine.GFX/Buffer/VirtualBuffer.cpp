@@ -4,29 +4,30 @@
 #include "../Memory/VkAllocator.hpp"
 #include "../Command/CommandQueue.hpp"
 
+// TODO: Remove
+#include "Engine.GFX/Graphics.hpp"
+#include "Engine.Session/Session.hpp"
+
 using namespace ember::engine::gfx;
 using namespace ember;
 
 VirtualBuffer::VirtualBuffer() noexcept :
-    _allocator(nullptr),
     _memory(nullptr),
     _pages(),
     _vkBuffer(),
     _vkBufferUsageFlags(),
     _changed(false) {}
 
-VirtualBuffer::VirtualBuffer(const ptr<memory::Allocator> allocator_, cref<vk::Buffer> buffer_,
+VirtualBuffer::VirtualBuffer(mref<uptr<VirtualMemory>> memory_, cref<vk::Buffer> buffer_,
     cref<vk::BufferUsageFlags> usageFlags_) noexcept :
-    _allocator(allocator_),
-    _memory(nullptr),
+    _memory(_STD move(memory_)),
     _pages(),
     _vkBuffer(buffer_),
     _vkBufferUsageFlags(usageFlags_),
     _changed(false) {}
 
 VirtualBuffer::VirtualBuffer(mref<this_type> other_) noexcept :
-    _allocator(other_._allocator),
-    _memory(_STD exchange(other_._memory, nullptr)),
+    _memory(_STD move(other_._memory)),
     _pages(_STD move(other_._pages)),
     _vkBuffer(_STD exchange(other_._vkBuffer, {})),
     _vkBufferUsageFlags(_STD exchange(other_._vkBufferUsageFlags, {})),
@@ -44,8 +45,8 @@ ref<VirtualBuffer::this_type> VirtualBuffer::operator=(mref<this_type> other_) n
         /**
          * Might be equal to `_STD swap(*this, other_)`
          */
-        _allocator = _STD exchange(other_._allocator, _allocator);
-        _memory = _STD exchange(other_._memory, _memory);
+
+        _memory.swap(other_._memory);
         _pages = _STD exchange(other_._pages, _pages);
         _vkBuffer = _STD exchange(other_._vkBuffer, _vkBuffer);
         _vkBufferUsageFlags = _STD exchange(other_._vkBufferUsageFlags, _vkBufferUsageFlags);
@@ -60,9 +61,20 @@ ref<VirtualBuffer::this_type> VirtualBuffer::operator=(mref<this_type> other_) n
 void VirtualBuffer::tidy() {
 
     /**
+     * Destroy Buffer before backing memory or pages
+     */
+    if (_vkBuffer) {
+        Session::get()->modules().graphics()->getCurrentDevice()->vkDevice().destroyBuffer(_vkBuffer);
+    }
+
+    /**
      * Cleanup Pages
      */
     for (auto& entry : _pages) {
+
+        // Unhook paged memory
+        _memory->undefinePage(entry->memory());
+
         delete entry;
         entry = nullptr;
     }
@@ -70,34 +82,15 @@ void VirtualBuffer::tidy() {
     /**
      * Cleanup Memory
      */
-    if (_memory != nullptr) {
-        delete _memory;
-        _memory = nullptr;
-    }
-
-    /**
-     * Destroy Buffer
-     */
-    if (_vkBuffer) {
-        // TODO:
-        __debugbreak();
-    }
-}
-
-const ptr<const memory::Allocator> VirtualBuffer::allocator() const noexcept {
-    return _allocator;
-}
-
-ref<ptr<memory::Allocator>> VirtualBuffer::allocator() noexcept {
-    return _allocator;
+    _memory.reset();
 }
 
 const ptr<const VirtualMemory> VirtualBuffer::memory() const noexcept {
-    return _memory;
+    return _memory.get();
 }
 
 const ptr<VirtualMemory> VirtualBuffer::memory() noexcept {
-    return _memory;
+    return _memory.get();
 }
 
 u64 VirtualBuffer::size() const noexcept {
@@ -142,6 +135,10 @@ non_owning_rptr<VirtualBufferPage> VirtualBuffer::addPage(const u64 size_, const
 
     _pages.push_back(page);
     return page;
+}
+
+cref<Vector<ptr<VirtualBufferPage>>> VirtualBuffer::pages() const noexcept {
+    return _pages;
 }
 
 void VirtualBuffer::updateBindingData() {
@@ -209,4 +206,33 @@ void VirtualBuffer::enqueueBinding(const ptr<CommandQueue> queue_, cref<Vector<v
     [[maybe_unused]] const auto res { queue_->vkQueue().bindSparse(1, &bsi, nullptr) };
     #endif
 
+}
+
+void VirtualBuffer::enqueueBindingSync(const ptr<CommandQueue> queue_) {
+
+    vk::BindSparseInfo bsi {
+        0,
+        nullptr,
+        1ui32,
+        &_bindData,
+        0,
+        nullptr,
+        0,
+        nullptr,
+        0,
+        nullptr,
+        nullptr
+    };
+
+    auto fence { queue_->device()->vkDevice().createFence(vk::FenceCreateInfo {}) };
+
+    #ifdef _DEBUG
+    auto res { queue_->vkQueue().bindSparse(1, &bsi, fence) };
+    assert(res == vk::Result::eSuccess);
+    #else
+    [[maybe_unused]] auto res { queue_->vkQueue().bindSparse(1, &bsi, fence) };
+    #endif
+
+    res = queue_->device()->vkDevice().waitForFences(1ui32, &fence, VK_TRUE, UINT64_MAX);
+    assert(res == vk::Result::eSuccess);
 }

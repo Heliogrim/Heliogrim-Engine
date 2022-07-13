@@ -3,7 +3,9 @@
 #include <Engine.Common/Concurrent/SpinLock.hpp>
 #include "CommandPool.hpp"
 #include "../Buffer/Buffer.hpp"
+#include "../Buffer/VirtualBuffer.hpp"
 #include "../Texture/TextureBuffer.hpp"
+#include "../Texture/VirtualTexture.hpp"
 #include "../Pipeline/LORenderPass.hpp"
 #include "../GraphicPipeline.hpp"
 
@@ -69,6 +71,17 @@ namespace ember::engine::gfx {
          */
         void bindIndexBuffer(const IndexBuffer& buffer_, u64 offset_);
 
+        /**
+         * Bind index buffer
+         *
+         * @author Julius
+         * @date 18.06.2022
+         *
+         * @param  buffer_ The buffer to bind.
+         * @param  offset_ The offset into the buffer.
+         */
+        void bindIndexBuffer(const ptr<VirtualBuffer> buffer_, u64 offset_);
+
     private:
         /**
          * Pipeline
@@ -110,6 +123,18 @@ namespace ember::engine::gfx {
          * @param  offset_ The offset.
          */
         void bindVertexBuffer(const u32 binding_, const VertexBuffer& buffer_, u64 offset_);
+
+        /**
+         * Bind vertex buffer
+         *
+         * @author Julius
+         * @date 18.06.2022
+         *
+         * @param   binding_ The binding.
+         * @param   buffer_ The buffer to bind.
+         * @param   offset_ The offset into the buffer.
+         */
+        void bindVertexBuffer(const u32 binding_, const ptr<VirtualBuffer> buffer_, u64 offset_);
 
         /**
          * Blits

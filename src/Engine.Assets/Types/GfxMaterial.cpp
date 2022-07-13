@@ -18,3 +18,31 @@ GfxMaterial::GfxMaterial(cref<asset_guid> guid_, cref<asset_guid> albedo_, cref<
     _normal(normal_),
     _roughness(roughness_),
     _specular(specular_) {}
+
+CompactArray<asset_guid> GfxMaterial::textures() const noexcept {
+
+    CompactArray<asset_guid> obj {};
+    obj.reserve(sizeof(_textures) / sizeof(asset_guid));
+
+    for (const auto& guid : _textures) {
+        obj.push_back(guid);
+    }
+
+    return obj;
+}
+
+asset_guid GfxMaterial::diffuse() const noexcept {
+    return _albedo;
+}
+
+asset_guid GfxMaterial::normal() const noexcept {
+    return _normal;
+}
+
+asset_guid GfxMaterial::roughness() const noexcept {
+    return _roughness;
+}
+
+asset_guid GfxMaterial::ao() const noexcept {
+    return _ao;
+}

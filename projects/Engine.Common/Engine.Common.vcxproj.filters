@@ -270,6 +270,27 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\AssociativeKey.hpp">
       <Filter>Headerdateien\Collection</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Hash\Fnv-1a.hpp">
+      <Filter>Headerdateien\Hash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\RobinMap.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\AutoArray.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\CompactArray.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\InlineAutoArray.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\InlineArray.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Meta\Concept.hpp">
+      <Filter>Headerdateien\Meta</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">

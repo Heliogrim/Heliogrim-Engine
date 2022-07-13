@@ -182,5 +182,11 @@
     <ClCompile Include="..\..\src\Engine.Scheduler\Queue\DynamicBufferPages.cpp">
       <Filter>Quelldateien\Queue</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\FiberLaunchPad.cpp">
+      <Filter>Quelldateien\Fiber</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\Awaitable.cpp">
+      <Filter>Quelldateien\Fiber</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

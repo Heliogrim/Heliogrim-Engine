@@ -181,6 +181,12 @@
     <Filter Include="Quelldateien\Cache">
       <UniqueIdentifier>{6f24cd1e-03b6-4b9b-8801-33c3add2403e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Performance">
+      <UniqueIdentifier>{259d905f-fc81-4fa0-a355-47773a272938}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Resource">
+      <UniqueIdentifier>{3948f78b-e611-4f87-a3f5-d6f5b8a12c2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX\Inc.hpp">
@@ -690,6 +696,51 @@
     <ClInclude Include="..\..\src\Engine.GFX\Scene\StaticGeometryBatch.hpp">
       <Filter>Headerdateien\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderDataToken.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\ModelDataTokens.hpp">
+      <Filter>Headerdateien\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Performance\RenderTokens.hpp">
+      <Filter>Headerdateien\Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Cache\GlobalResourceCache.hpp">
+      <Filter>Headerdateien\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Resource\TextureResource.hpp">
+      <Filter>Headerdateien\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTextureView.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\__fwd.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTexturePage.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Cache\GlobalCacheCtrl.hpp">
+      <Filter>Headerdateien\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Cache\CacheCtrlSubject.hpp">
+      <Filter>Headerdateien\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Cache\CacheTextureSubject.hpp">
+      <Filter>Headerdateien\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Cache\CacheStaticGeometrySubject.hpp">
+      <Filter>Headerdateien\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\GeometryModel.hpp">
+      <Filter>Headerdateien\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Resource\MaterialResource.hpp">
+      <Filter>Headerdateien\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Loader\MaterialLoader.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
@@ -1027,6 +1078,27 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderPassState.cpp">
       <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Cache\GlobalResourceCache.cpp">
+      <Filter>Quelldateien\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\VirtualTextureView.cpp">
+      <Filter>Quelldateien\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\VirtualTexturePage.cpp">
+      <Filter>Quelldateien\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Cache\GlobalCacheCtrl.cpp">
+      <Filter>Quelldateien\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Scene\GeometryModel.cpp">
+      <Filter>Quelldateien\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Loader\MaterialLoader.cpp">
+      <Filter>Quelldateien\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Resource\MaterialResource.cpp">
+      <Filter>Quelldateien\Resource</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

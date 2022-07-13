@@ -7,8 +7,9 @@ namespace ember::game::assets::image {
         public ImageAsset,
         public AssetAutoGuid<ForestGround01Roughness> {
     public:
-        ForestGround01Roughness() :
-            ImageAsset(ForestGround01Roughness::auto_guid()) {}
+        ForestGround01Roughness():
+            ImageAsset(ForestGround01Roughness::auto_guid(),
+                R"(resources\assets\texture\forest_ground_01_roughness.ktx)") {}
     };
 
     AUTO_REGISTER_ASSET(ForestGround01Roughness)

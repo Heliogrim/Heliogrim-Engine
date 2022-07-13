@@ -4,7 +4,9 @@
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <gli/gli.hpp>
 
+#include "../Cache/__fwd.hpp"
 #include "../Device/Device.hpp"
+#include "../Texture/__fwd.hpp"
 #include "../Texture/Texture.hpp"
 
 namespace ember::engine::gfx::loader {
@@ -36,10 +38,13 @@ namespace ember::engine::gfx::loader {
          */
         ember::concurrent::promise<Texture> load(const Url& url_) const;
 
+        // [[nodiscard]] ember::concurrent::promise<uptr<VirtualTextureView>> loadTo(const Url& url_, mref<uptr<VirtualTextureView>> dst_) const;
+        [[nodiscard]] uptr<VirtualTextureView> loadTo(const Url& url_, mref<uptr<VirtualTextureView>> dst_) const;
+
         Texture __tmp__load(const Url& url_);
 
     protected:
-        sptr<Device> _device;
+        ptr<cache::GlobalCacheCtrl> _cacheCtrl;
 
         /**
          * Constructor
@@ -47,8 +52,8 @@ namespace ember::engine::gfx::loader {
          * @author Julius
          * @date 23.08.2020
          *
-         * @param  device_ The device.
+         * @param  cache_ The resource cache to use.
          */
-        TextureLoader(cref<sptr<Device>> device_);
+        TextureLoader(const ptr<cache::GlobalCacheCtrl> cache_);
     };
 }

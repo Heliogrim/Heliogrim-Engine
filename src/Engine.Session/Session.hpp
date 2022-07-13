@@ -80,8 +80,10 @@ namespace ember::engine {
     public:
         void start();
 
-        void stop();
+    private:
+        static void stop();
 
+    public:
         void wait();
 
     private:

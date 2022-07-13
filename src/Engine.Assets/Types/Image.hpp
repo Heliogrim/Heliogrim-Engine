@@ -20,5 +20,8 @@ namespace ember::engine::assets {
 
     private:
         Vector<Url> _sources;
+
+    public:
+        [[nodiscard]] cref<Vector<Url>> sources() const noexcept;
     };
 }

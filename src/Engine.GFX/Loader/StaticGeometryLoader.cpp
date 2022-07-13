@@ -8,46 +8,49 @@
 
 #include "Engine.GFX/Memory/AllocationResult.hpp"
 #include "Engine.GFX/Memory/VkAllocator.hpp"
+#include "../Cache/GlobalCacheCtrl.hpp"
+#include "../Cache/GlobalResourceCache.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
 
 // Warning: Remove asap
-ptr<StaticGeometryResource> tmpTestObject = nullptr;
+bool tmpTestObject = false;
 
-StaticGeometryLoader::StaticGeometryLoader(cref<sptr<Device>> device_) :
-    GeometryLoader(device_) {}
+StaticGeometryLoader::StaticGeometryLoader(const ptr<cache::GlobalCacheCtrl> cache_) :
+    GeometryLoader(cache_->cache()->device()),
+    _cacheCtrl(cache_) {}
 
-StaticGeometryLoader::~StaticGeometryLoader() {
-
-    if (tmpTestObject) {
-        tmpTestObject->_indexData.buffer.destroy();
-        tmpTestObject->_vertexData.buffer.destroy();
-        delete tmpTestObject;
-    }
-
-}
+StaticGeometryLoader::~StaticGeometryLoader() = default;
 
 StaticGeometryLoader::result_type StaticGeometryLoader::operator()(
     const ptr<assets::StaticGeometry> asset_,
     options_type options_
 ) {
 
-    if (tmpTestObject) {
-        return tmpTestObject;
+    auto* ptr { _cacheCtrl->cache()->request(asset_) };
+
+    if (!tmpTestObject) {
+        //auto* ptr = new StaticGeometryResource {};
+        loadWithAssimp(asset_, ptr);
+        tmpTestObject = true;
     }
 
-    auto* ptr = new StaticGeometryResource {};
-    loadWithAssimp(asset_, ptr);
-
-    //
-    tmpTestObject = ptr;
+    /*
+    if (!ptr->loaded()) {
+        //auto* ptr = new StaticGeometryResource {};
+        loadWithAssimp(asset_, ptr);
+    }
+     */
 
     return ptr;
 }
 
 void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asset_,
     const ptr<StaticGeometryResource> dst_) {
+
+    assert(dst_->_indexData.buffer->memory()->allocatedSize() > 0);
+    assert(dst_->_vertexData.buffer->memory()->allocatedSize() > 0);
 
     // TODO: Replace
     const Url src { "file"sv, R"(R:\Development\C++\Vulkan API\Game\resources\assets\geometry\cylinder.obj)"sv };
@@ -127,78 +130,27 @@ void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asse
          *
          */
 
+        assert(dst_->_indexData.buffer->memory()->allocatedSize() >= sizeof(u32) * indices.size());
+        assert(dst_->_vertexData.buffer->memory()->allocatedSize() >= sizeof(vertex) * vertices.size());
+
         {
-            vk::BufferCreateInfo bci {
-                vk::BufferCreateFlags {},
-                sizeof(u32) * indices.size(),
-                vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer,
-                vk::SharingMode::eExclusive,
-                0,
-                nullptr
-            };
+            const auto indexSize { sizeof(u32) * indices.size() };
+            auto* memory { dst_->_indexData.buffer->pages()[0]->memory()->allocated() };
 
-            IndexBuffer ib {};
-            ib.buffer = _device->vkDevice().createBuffer(bci);
-            ib.usageFlags = bci.usage;
-            ib.device = _device->vkDevice();
-            ib.size = bci.size;
-
-            const auto result {
-                memory::allocate(
-                    _device->allocator(),
-                    _device,
-                    ib.buffer,
-                    MemoryProperties { MemoryProperty::eDeviceLocal } | MemoryProperty::eHostVisible,
-                    ib.memory
-                )
-            };
-            assert(result == memory::AllocationResult::eSuccess);
-
-            //
-            ib.map();
-            ib.memory->write(indices.data(), indices.size() * sizeof(u32));
-            ib.unmap();
-
-            //
-            ib.bind();
-            dst_->_indexData.buffer = ib;
+            memory->map(indexSize);
+            memory->write(indices.data(), indexSize);
+            memory->flush(indexSize);
+            memory->unmap();
         }
 
         {
-            vk::BufferCreateInfo bci {
-                vk::BufferCreateFlags {},
-                sizeof(vertex) * vertices.size(),
-                vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer,
-                vk::SharingMode::eExclusive,
-                0,
-                nullptr
-            };
+            const auto vertexSize { sizeof(vertex) * vertices.size() };
+            auto* memory { dst_->_vertexData.buffer->pages()[0]->memory()->allocated() };
 
-            VertexBuffer vb {};
-            vb.buffer = _device->vkDevice().createBuffer(bci);
-            vb.usageFlags = bci.usage;
-            vb.device = _device->vkDevice();
-            vb.size = bci.size;
-
-            const auto result {
-                memory::allocate(
-                    _device->allocator(),
-                    _device,
-                    vb.buffer,
-                    MemoryProperties { MemoryProperty::eDeviceLocal } | MemoryProperty::eHostVisible,
-                    vb.memory
-                )
-            };
-            assert(result == memory::AllocationResult::eSuccess);
-
-            //
-            vb.map();
-            vb.memory->write(vertices.data(), vertices.size() * sizeof(vertex));
-            vb.unmap();
-
-            //
-            vb.bind();
-            dst_->_vertexData.buffer = vb;
+            memory->map(vertexSize);
+            memory->write(vertices.data(), vertexSize);
+            memory->flush(vertexSize);
+            memory->unmap();
         }
     }
 

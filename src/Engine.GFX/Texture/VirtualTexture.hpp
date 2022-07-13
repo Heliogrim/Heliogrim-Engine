@@ -2,88 +2,141 @@
 
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Math/Vector.hpp>
+
+#include "__fwd.hpp"
 #include "Texture.hpp"
 #include "../Device/Device.hpp"
+#include "../Memory/VirtualMemory.hpp"
 
 namespace ember::engine::gfx {
 
-    class VirtualTexturePage final {
+    class VirtualTexture final {
     public:
-        /**
-         * Default constructor
-         *
-         * @author Julius
-         * @date 20.11.2020
-         */
-        VirtualTexturePage();
+        using this_type = VirtualTexture;
 
-        /**
-         * Destructor
-         *
-         * @author Julius
-         * @date 20.11.2020
-         */
-        ~VirtualTexturePage() noexcept;
+    public:
+        VirtualTexture(
+            mref<uptr<VirtualMemory>> memory_,
+            u32 layer_,
+            math::uivec3 extent_,
+            TextureFormat format_,
+            math::uivec2 mipLevels_,
+            TextureType type_,
+            /**/
+            vk::Image vkImage_
+        );
 
-        /**
-         * Check whether resident this 
-         *
-         * @author Julius
-         * @date 20.11.2020
-         *
-         * @returns True if it succeeds, false if it fails.
-         */
-        [[nodiscard]] bool resident() const noexcept;
+        VirtualTexture(cref<this_type>) = delete;
 
-        /**
-         * Allocates virtual page at given device
-         *
-         * @author Julius
-         * @date 20.11.2020
-         *
-         * @param  device_ The device.
-         */
-        void allocate(cref<sptr<Device>> device_);
+        VirtualTexture(mref<this_type>) noexcept = delete;
 
-        /**
-         * Releases this at given device
-         *
-         * @author Julius
-         * @date 20.11.2020
-         *
-         * @param  device_ The device.
-         */
-        void release(cref<sptr<Device>> device_);
+        ~VirtualTexture();
+
+    public:
+        ref<this_type> operator=(cref<this_type>) = delete;
+
+        ref<this_type> operator=(mref<this_type>) noexcept = delete;
 
     private:
-        math::uivec3 _offset;
+        void tidy();
+
+    private:
+        uptr<VirtualMemory> _memory;
+
+    private:
+        Vector<ptr<VirtualTexturePage>> _pages;
+
+    private:
+        non_owning_rptr<VirtualTexturePage> makePage(
+            u32 layer_,
+            u32 mipLevel_
+        );
+
+        non_owning_rptr<VirtualTexturePage> makeSpatialPage(
+            math::uivec2 offset_,
+            math::uivec2 extent_,
+            u32 mipLevel_
+        );
+
+    public:
+        /**
+         * Create an sub-resource view of this virtual texture
+         *
+         * @author Julius
+         * @date 22.06.2022
+         *
+         * @returns A unique pointer to the created view.
+         */
+        [[nodiscard]] uptr<VirtualTextureView> makeView(
+            u32 layer_,
+            math::uivec2 mipLevels_
+        );
+
+        /**
+         * Create an sub-resource view of this virtual texture
+         *
+         * @details This method is explicitly for usage with non-layered 2d textures.
+         *  It will create a view for a spatial sub-resource of the original texture.
+         *
+         * @author Julius
+         * @date 22.06.2022
+         *
+         * @returns A unique pointer to the created view.
+         */
+        [[nodiscard]] uptr<VirtualTextureView> makeSpatialView(
+            math::uivec2 offset_,
+            math::uivec2 extent_,
+            math::uivec2 mipLevels_
+        );
+
+    private:
+        u32 _layer;
+
+    public:
+        [[nodiscard]] u32 layers() const noexcept;
+
+    private:
         math::uivec3 _extent;
 
-        u32 _mipLevel;
-        u32 _layer;
-        u32 _idx;
-    };
-
-    class VirtualTexture :
-        public Texture {
     public:
-        /**
-         * Default constructor
-         *
-         * @author Julius
-         * @date 20.11.2020
-         */
-        VirtualTexture();
+        [[nodiscard]] math::uivec3::value_type width() const noexcept;
 
-        /**
-         * Destructor
-         *
-         * @author Julius
-         * @date 20.11.2020
-         */
-        ~VirtualTexture() noexcept;
+        [[nodiscard]] math::uivec3::value_type height() const noexcept;
+
+        [[nodiscard]] math::uivec3::value_type depth() const noexcept;
 
     private:
-        Vector<VirtualTexturePage> _pages;
+        TextureFormat _format;
+
+    public:
+        [[nodiscard]] TextureFormat format() const noexcept;
+
+    private:
+        math::uivec2 _mipLevels;
+
+    public:
+        [[nodiscard]] math::uivec2::value_type minMipLevel() const noexcept;
+
+        [[nodiscard]] math::uivec2::value_type mipLevels() const noexcept;
+
+        [[nodiscard]] math::uivec2::value_type maxMipLevel() const noexcept;
+
+    private:
+        TextureType _type;
+
+    public:
+        [[nodiscard]] TextureType type() const noexcept;
+
+    private:
+        /**
+         * Vulkan Virtual Texture
+         */
+        vk::Image _vkImage;
+
+    public:
+        [[nodiscard]] cref<vk::Image> vkImage() const noexcept;
+
+    public:
+        vk::ImageView _vkImageView;
     };
 }

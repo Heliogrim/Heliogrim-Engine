@@ -1,18 +1,18 @@
-#include <Ember/TextureFormat.hpp>
-
 #include "ForestGround01Roughness.hpp"
 #include "../Images/ForestGround01Roughness.hpp"
 
-using namespace ember::game::assets::texture;
+#include <Ember/TextureFormat.hpp>
+
+using namespace ember::game::assets;
 using namespace ember;
 
-ForestGround01Roughness::ForestGround01Roughness() :
+texture::ForestGround01Roughness::ForestGround01Roughness() :
     TextureAsset(
-        ForestGround01Roughness::auto_guid(),
-        game::assets::image::ForestGround01Roughness::auto_guid(),
+        texture::ForestGround01Roughness::auto_guid(),
+        image::ForestGround01Roughness::auto_guid(),
         {},
-        {},
-        TextureFormat::eR8G8B8Unorm,
-        0,
+        { 8192ui32, 8192ui32, 1ui32 },
+        TextureFormat::eR16Sfloat,
+        4ui32,
         engine::gfx::TextureType::e2d
     ) { }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/String.hpp>
+#include <Engine.Common/Url.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.GFX/TextureFormat.hpp>
@@ -41,6 +42,9 @@ namespace ember::engine::assets {
          * Asset Database
          */
         ptr<AssetDatabase> _database;
+
+    private:
+        [[nodiscard]] Url resolveAsSource(cref<string> url_) const noexcept;
 
     public:
         /**

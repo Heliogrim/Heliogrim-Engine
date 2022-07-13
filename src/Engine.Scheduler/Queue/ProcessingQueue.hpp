@@ -59,7 +59,7 @@ namespace ember::engine::scheduler {
         ptr<SharedBufferPool> _pool;
 
     private:
-        AtomicCtrlBlockPage<aligned_buffer> _sharedCtrlBlockPage;
+        AtomicCtrlBlockPage<aligned_buffer, page_size> _sharedCtrlBlockPage;
 
     private:
         _STD atomic<ptr<AtomicCtrlBlock<DynamicBufferPages>>> _currentPage;

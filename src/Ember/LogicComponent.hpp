@@ -14,6 +14,8 @@ namespace ember {
     public:
         LogicComponent(mref<component_type_id> typeId_) noexcept;
 
+        ~LogicComponent() = default;
+
     private:
         component_type_id _typeId;
 

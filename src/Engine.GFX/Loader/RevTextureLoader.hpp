@@ -2,6 +2,8 @@
 #include <Engine.Assets/Types/Texture.hpp>
 #include <Engine.Resource/Loader/Loader.hpp>
 
+#include <Engine.GFX/Cache/__fwd.hpp>
+
 #include "TextureLoader.hpp"
 
 namespace ember::engine::gfx {
@@ -17,7 +19,7 @@ namespace ember::engine::gfx {
         using options_type = loader_type::options_type;
 
     public:
-        RevTextureLoader(cref<sptr<Device>> device_);
+        RevTextureLoader(const ptr<cache::GlobalCacheCtrl> cache_);
 
     public:
         [[nodiscard]] result_type operator()(const ptr<assets::Texture> asset_, options_type options_) override;

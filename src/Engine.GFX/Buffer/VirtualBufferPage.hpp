@@ -17,7 +17,7 @@ namespace ember::engine::gfx {
     public:
         [[nodiscard]] const ptr<VirtualMemoryPage> memory() const noexcept;
 
-        [[nodiscard]] bool resident() const noexcept;
+        [[nodiscard]] bool residential() const noexcept;
 
         bool load();
 

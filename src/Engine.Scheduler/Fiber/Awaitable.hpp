@@ -76,10 +76,10 @@ namespace ember::engine::scheduler::fiber {
         };
 
     public:
-        void reset() noexcept {
-            mask = FiberAwaitableBits::eUndefined;
-            self = nullptr;
-            call = nullptr;
-        }
+        void reset() noexcept;
+
+        [[nodiscard]] bool ready() const noexcept;
+
+        [[nodiscard]] bool operator!() const noexcept;
     };
 }

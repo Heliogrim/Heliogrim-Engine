@@ -1,11 +1,16 @@
 ﻿#include "RevFinalComposeNode.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include <Engine.GFX/VkFixedPipeline.hpp>
 #include <Engine.GFX/API/VkTranslate.hpp>
 #include <Engine.GFX/Buffer/Buffer.hpp>
 #include <Engine.GFX/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Memory/VkAllocator.hpp>
 #include <Engine.GFX/Renderer/HORenderPass.hpp>
+#include <Engine.GFX/Renderer/RenderDataToken.hpp>
 #include <Engine.GFX/Renderer/RenderPassState.hpp>
 #include <Engine.GFX/Renderer/RenderStagePass.hpp>
 #include <Engine.GFX/Shader/DiscreteBindingGroup.hpp>
@@ -13,8 +18,10 @@
 #include <Engine.GFX/Shader/Prototype.hpp>
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
+#include <Engine.Session/Session.hpp>
 
 #include "__macro.hpp"
+#include "Engine.GFX/Graphics.hpp"
 #include "Engine.GFX/Loader/RevTextureLoader.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 
@@ -144,7 +151,7 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
      * Allocate Textures
      */
     if (!test) {
-        RevTextureLoader loader { _device };
+        RevTextureLoader loader { Session::get()->modules().graphics()->cacheCtrl() };
         test = loader.__tmp__load({ ""sv, R"(R:\\test.ktx)"sv });
 
         const vk::ImageMemoryBarrier imgBarrier {
@@ -295,7 +302,7 @@ bool RevFinalComposeNode::free(const ptr<HORenderPass> renderPass_) {
             // const auto result { device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet()) };
             // assert(result == vk::Result::eSuccess);
             #else
-            device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet())
+            //_device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet());
             #endif
         }
 
@@ -389,6 +396,14 @@ bool RevFinalComposeNode::free(const ptr<HORenderPass> renderPass_) {
     }
 
     return true;
+}
+
+Vector<RenderDataToken> RevFinalComposeNode::requiredToken() noexcept {
+    return {};
+}
+
+Vector<RenderDataToken> RevFinalComposeNode::optionalToken() noexcept {
+    return {};
 }
 
 void RevFinalComposeNode::before(

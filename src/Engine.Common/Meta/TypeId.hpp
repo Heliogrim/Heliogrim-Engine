@@ -149,9 +149,8 @@ namespace std {
     template <>
     struct hash<ember::type_id> {
         [[nodiscard]] _STD size_t operator()(const ember::type_id& value_) const noexcept {
-            /**
-             * !important! don't use identity
-             */
+            // We assume that type_id was created by literal, which will result in constexpr of FNV-1a, which is already a suitable hash
+            /*
             ember::u64 dst[2];
             ember::hash::murmur3_x64_128(
                 &value_,
@@ -160,6 +159,8 @@ namespace std {
                 &dst
             );
             return dst[0];
+             */
+            return value_.data;
         }
     };
 }

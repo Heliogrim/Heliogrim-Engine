@@ -27,6 +27,8 @@ namespace ember {
 
         ActorComponent(cref<ActorComponent>) = delete;
 
+        ~ActorComponent() = default;
+
     private:
         CachedActorPointer _owner;
 

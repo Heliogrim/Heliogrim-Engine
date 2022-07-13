@@ -113,20 +113,12 @@ namespace ember {
 
     public:
         /**
-         * Starts the ember engine
+         * Launches the ember engine
          *
          * @author Julius
-         * @date 08.01.2021
+         * @date 08.07.2022
          */
-        static void start();
-
-        /**
-         * Stops the ember engine
-         *
-         * @author Julius
-         * @date 08.01.2021
-         */
-        static void stop();
+        static void launch();
 
         /**
          * Waits until engine stopped

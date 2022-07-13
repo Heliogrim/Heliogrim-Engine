@@ -10,10 +10,12 @@
 #include <Engine.Common/Math/__default.inl>
 
 #include "todo.h"
+#include "Cache/GlobalCacheCtrl.hpp"
 #include "Command/CommandBatch.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Loader/RevTextureLoader.hpp"
 #include "Loader/StaticGeometryLoader.hpp"
+#include "Loader/MaterialLoader.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/HORenderPass.hpp"
 #include "Rev/GraphicPass/RevDepthPass.hpp"
@@ -22,6 +24,7 @@
 #include "Swapchain/Swapchain.hpp"
 #include "Swapchain/VkSwapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
+#include "Cache/GlobalResourceCache.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember::engine;
@@ -33,6 +36,9 @@ Graphics::Graphics(cref<sptr<Session>> session_) noexcept :
     _computeQueue(nullptr),
     _graphicsQueue(nullptr),
     _transferQueue(nullptr),
+    _cacheCtrl(nullptr),
+    _renderer(nullptr),
+    _camera(nullptr),
     _renderScene(nullptr),
     _uiRenderScene(nullptr) {}
 
@@ -59,7 +65,7 @@ void Graphics::setup() {
     /**
      * Prepare rendering specific data structures
      *
-     *	a: create a new device to access graphics architecture  
+     *	a: create a new device to access graphics architecture
      */
     _device = make_sptr<Device>(_application, &_surface);
     _device->setup();
@@ -71,6 +77,8 @@ void Graphics::setup() {
     /**
      * Create Utilities
      */
+    auto* globalCache { cache::GlobalResourceCache::make(_device) };
+    _cacheCtrl = make_uptr<cache::GlobalCacheCtrl>(globalCache);
     VkTextureFactory::make(_device);
 
     /**
@@ -232,7 +240,8 @@ void Graphics::tidy() {
 
     expect = 0;
     while (_scheduled.load() != expect) {
-        scheduler::thread::self::yield();
+        // scheduler::thread::self::yield();
+        scheduler::fiber::self::yield();
     }
 
     /**
@@ -310,6 +319,13 @@ void Graphics::tidy() {
     ShaderStorage::destroy();
 
     /**
+     *
+     */
+    TextureFactory::destroy();
+    _cacheCtrl.reset();
+    cache::GlobalResourceCache::destroy();
+
+    /**
      * Device
      */
     _device->destroy();
@@ -343,6 +359,10 @@ CommandQueue::reference_type Graphics::getTransferQueue() const noexcept {
     return *_device->transferQueue();
 }
 
+const non_owning_rptr<gfx::cache::GlobalCacheCtrl> Graphics::cacheCtrl() const noexcept {
+    return _cacheCtrl.get();
+}
+
 void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
 
     SCOPED_STOPWATCH
@@ -368,6 +388,7 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
     // TODO: Make timeout as small as possible to skip blocking request -> if failed, return an reschedule tick task
     auto cpuGpuSync { _renderPasses[syncIdx]->unsafeSync() };
     if (cpuGpuSync) {
+        #ifdef _DEBUG
         assert(
             _device->vkDevice().waitForFences(
                 1, &cpuGpuSync,
@@ -375,6 +396,9 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
             ) == vk::Result::eSuccess
         );
         //_device->vkDevice().resetFences(1, &cpuGpuSync);
+        #else
+        _device->vkDevice().waitForFences(1, &cpuGpuSync, VK_TRUE, UINT64_MAX);
+        #endif
     }
 
     /**
@@ -647,16 +671,23 @@ void Graphics::registerLoader() {
     /**
      * Geometry Loader
      */
-    const auto sgl = make_sptr<StaticGeometryLoader>(_device);
+    const auto sgl = make_sptr<StaticGeometryLoader>(_cacheCtrl.get());
 
     loader.registerLoader<assets::StaticGeometry>(sgl);
 
     /**
      * Texture Loader
      */
-    const auto rtl = make_sptr<RevTextureLoader>(_device);
+    const auto rtl = make_sptr<RevTextureLoader>(_cacheCtrl.get());
 
     loader.registerLoader<assets::Texture>(rtl);
+
+    /**
+     * Material Loader
+     */
+    const auto mtl = make_sptr<MaterialLoader>(_cacheCtrl.get());
+
+    loader.registerLoader<assets::GfxMaterial>(mtl);
 }
 
 void Graphics::registerImporter() {}

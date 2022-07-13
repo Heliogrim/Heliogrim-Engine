@@ -29,7 +29,7 @@ void ProcessingQueue::tidy() {
     /**
      * Signal every ctrl block of shared task queue
      */
-    for (auto i = 0; i < 16; ++i) {
+    for (auto i = 0; i < page_size; ++i) {
         _sharedCtrlBlockPage.retire(i);
     }
 
@@ -59,20 +59,21 @@ void ProcessingQueue::tidy() {
 
 void ProcessingQueue::setup(const u64 workerCount_, const u64 maxSharedTasks_) {
 
-    const auto sharedPageCount = maxSharedTasks_ / (31ui64 * 16ui64);
+    constexpr size_type ring_buffer_size { 31 };
+    const auto sharedPageCount = maxSharedTasks_ / static_cast<u64>(ring_buffer_size * page_size);
     DEBUG_ASSERT(sharedPageCount <= 1, "Currently unsuported amount of shared tasks.")
 
     /**
      * Setup shared task queues
      */
-    for (auto i = 0; i < 16; ++i) {
+    for (size_type i { 0 }; i < page_size; ++i) {
         _sharedCtrlBlockPage.store(i, _pool->acquire());
     }
 
     /**
      * Prepare dynamic pages
      */
-    constexpr u64 initialDynamicPages = 1;
+    constexpr u64 initialDynamicPages { 1 };
     auto newPages = new DynamicBufferPages(initialDynamicPages, &_resizing);
 
     for (auto i = 0; i < initialDynamicPages; ++i) {
@@ -144,8 +145,8 @@ void ProcessingQueue::push(mref<task::__TaskDelegate> task_) {
 
     #define inc(var_, limit_) ((++var_) >= limit_ ? var_ -= limit_ : var_)
     auto threadIdx = thread::self::getIdx();
-    while (threadIdx > 16ui64) {
-        threadIdx -= 16ui64;
+    while (threadIdx > page_size) {
+        threadIdx -= page_size;
     }
 
     /**
@@ -153,7 +154,7 @@ void ProcessingQueue::push(mref<task::__TaskDelegate> task_) {
      */
     u64 i = threadIdx;
     bool succeeded = false;
-    for (i = inc(i, 16ui64); !succeeded && i != threadIdx; i = inc(i, 16ui64)) {
+    for (i = inc(i, page_size); !succeeded && i != threadIdx; i = inc(i, page_size)) {
         /**
          * Get managed queue
          */
@@ -183,7 +184,7 @@ void ProcessingQueue::pushStaged(mref<ptr<aligned_buffer>> buffer_) {
         const auto dynamicPages = dynamicPagesCtrl->acq();
         const auto dynamicPageCount = dynamicPages->size();
 
-        for (size_type i = 0; i < dynamicPageCount; ++i) {
+        for (_STD remove_const_t<decltype(dynamicPageCount)> i = 0; i < dynamicPageCount; ++i) {
 
             /**
              * Get current dynamic page
@@ -193,7 +194,7 @@ void ProcessingQueue::pushStaged(mref<ptr<aligned_buffer>> buffer_) {
             /**
              * Try to use current page
              */
-            for (size_type j = 0; j < page_size; ++j) {
+            for (DynamicBufferPages::size_type j = 0; j < DynamicBufferPages::page_size; ++j) {
                 /**
                  * Will already check if empty internally and faster than acquiring a managed pointer to check
                  */
@@ -216,8 +217,8 @@ void ProcessingQueue::pop(const task::TaskMask mask_, ref<task::__TaskDelegate> 
      * Speedup spread
      */
     auto threadIdx = thread::self::getIdx();
-    while (threadIdx > 16ui64) {
-        threadIdx -= 16ui64;
+    while (threadIdx > page_size) {
+        threadIdx -= page_size;
     }
 
     /**
@@ -227,7 +228,7 @@ void ProcessingQueue::pop(const task::TaskMask mask_, ref<task::__TaskDelegate> 
     const auto dynamicPages = dynamicPagesCtrl->acq();
     const auto dynamicPageCount = dynamicPages->size();
 
-    for (u64 i = 0; i < dynamicPageCount; ++i) {
+    for (_STD remove_const_t<decltype(dynamicPageCount)> i = 0; i < dynamicPageCount; ++i) {
 
         /**
          * Get current dynamic page
@@ -237,7 +238,7 @@ void ProcessingQueue::pop(const task::TaskMask mask_, ref<task::__TaskDelegate> 
         /**
          * Try to use current page
          */
-        for (u64 j = 0; j < page_size; ++j) {
+        for (DynamicBufferPages::size_type j = 0; j < DynamicBufferPages::page_size; ++j) {
 
             const auto bufferPtr = page->get(j);
             if (!bufferPtr.empty()) {
@@ -260,7 +261,7 @@ void ProcessingQueue::pop(const task::TaskMask mask_, ref<task::__TaskDelegate> 
      */
     u64 i = threadIdx;
     bool succeeded = false;
-    for (i = inc(i, 16ui64); !succeeded && i != threadIdx; i = inc(i, 16ui64)) {
+    for (i = inc(i, page_size); !succeeded && i != threadIdx; i = inc(i, page_size)) {
         /**
          * Get managed queue
          */

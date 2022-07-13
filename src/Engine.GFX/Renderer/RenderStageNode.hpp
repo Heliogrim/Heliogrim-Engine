@@ -49,6 +49,11 @@ namespace ember::engine::gfx::render {
         virtual bool free(const ptr<HORenderPass> renderPass_);
 
     public:
+        [[nodiscard]] virtual Vector<RenderDataToken> requiredToken() noexcept = 0;
+
+        [[nodiscard]] virtual Vector<RenderDataToken> optionalToken() noexcept = 0;
+
+    public:
         /**
          * Get the processable model types of this RenderStageNode
          *

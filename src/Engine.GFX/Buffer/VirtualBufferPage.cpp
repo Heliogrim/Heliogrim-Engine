@@ -1,6 +1,7 @@
 #include "VirtualBufferPage.hpp"
 
 #include "../Memory/AllocatedMemory.hpp"
+#include "Engine.GFX/Memory/AllocationResult.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -20,16 +21,24 @@ const ptr<VirtualMemoryPage> VirtualBufferPage::memory() const noexcept {
     return _memory;
 }
 
-bool VirtualBufferPage::resident() const noexcept {
+bool VirtualBufferPage::residential() const noexcept {
     return _memory->state() == VirtualMemoryPageState::eLoaded;
 }
 
 bool VirtualBufferPage::load() {
-    return false;
+
+    const auto result { _memory->load() };
+    if (result != memory::AllocationResult::eSuccess) {
+        return false;
+    }
+
+    return _memory->state() == VirtualMemoryPageState::eLoaded;
 }
 
 bool VirtualBufferPage::unload() {
-    return false;
+
+    _memory->unload();
+    return _memory->state() == VirtualMemoryPageState::eUnloaded;
 }
 
 vk::SparseMemoryBind VirtualBufferPage::vkSparseMemoryBind() const noexcept {
@@ -37,7 +46,7 @@ vk::SparseMemoryBind VirtualBufferPage::vkSparseMemoryBind() const noexcept {
         _resourceOffset,
         _resourceSize,
         _memory ? _memory->allocated()->vkMemory : nullptr,
-        _memory ? _memory->offset() : 0ui64,
+        _memory ? _memory->allocated()->offset : 0ui64,
         vk::SparseMemoryBindFlags {}
     };
 }

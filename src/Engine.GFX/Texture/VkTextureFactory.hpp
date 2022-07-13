@@ -68,10 +68,10 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 07.12.2020
          *
-         * @param  type_ The type.
+         * @param  payload_ The payload.
          *
          * @returns A Texture.
          */
-        [[nodiscard]] VirtualTexture buildVirtual(const TextureType type_) const override;
+        [[nodiscard]] ptr<VirtualTexture> buildVirtual(const VirtualTextureBuildPayload& payload_) const override;
     };
 }

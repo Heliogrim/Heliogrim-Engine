@@ -215,9 +215,143 @@ Texture& VkTextureFactory::buildView(Texture& texture_) const {
     return texture_;
 }
 
-VirtualTexture VkTextureFactory::buildVirtual(const TextureType type_) const {
+ptr<VirtualTexture> VkTextureFactory::buildVirtual(const VirtualTextureBuildPayload& payload_) const {
 
     SCOPED_STOPWATCH
 
-    return VirtualTexture {};
+    vk::ImageCreateFlags create { vk::ImageCreateFlagBits::eSparseBinding | vk::ImageCreateFlagBits::eSparseResidency };
+
+    u32 layers { 0ui32 };
+    if (payload_.type == TextureType::e2d) {
+
+        #ifdef _DEBUG
+        assert(payload_.extent.z == 1ui32);
+        assert(payload_.layers <= 1ui32);
+        #endif
+
+        layers = 1ui32;
+
+    } else if (payload_.type == TextureType::e2dArray) {
+
+        #ifdef _DEBUG
+        assert(payload_.extent.z == 1ui32);
+        assert(payload_.layers >= 1ui32);
+        #endif
+
+        layers = payload_.layers;
+
+    } else if (payload_.type == TextureType::eCube) {
+
+        #ifdef _DEBUG
+        assert(payload_.layers >= 6ui32);
+        assert(payload_.extent.x == payload_.extent.y);
+        #endif
+
+        create |= vk::ImageCreateFlagBits::eCubeCompatible;
+        layers = payload_.layers;
+    }
+
+    /**
+     * Vk Image
+     */
+    const vk::ImageCreateInfo ici {
+        create,
+        vkTranslate(payload_.type),
+        api::vkTranslateFormat(payload_.format),
+        vk::Extent3D {
+            payload_.extent.x,
+            payload_.extent.y,
+            payload_.extent.z
+        },
+        payload_.mipLevels.max + 1ui32,
+        layers,
+        vk::SampleCountFlagBits::e1,
+        vk::ImageTiling::eOptimal,
+        payload_.vkUsage,
+        payload_.vkSharing,
+        {},
+        {},
+        // Comment: Layout can be changed later, don't make nasty queued command buffer calls while using factory
+        vk::ImageLayout::eUndefined
+    };
+
+    const vk::Image image = _device->vkDevice().createImage(ici);
+    assert(image);
+
+    /**
+     * Get meta data of required memory
+     */
+    const vk::MemoryRequirements mr = _device->vkDevice().getImageMemoryRequirements(image);
+
+    /**
+     * Get suitable virtual memory instance
+     */
+    auto memory {
+        make_uptr<VirtualMemory>(
+            _device->allocator(),
+            memory::MemoryLayout {
+                mr.alignment,
+                api::vkTranslateMemoryProperties(payload_.vkMemoryFlags),
+                mr.memoryTypeBits
+            },
+            mr.size
+        )
+    };
+
+    /**
+     *
+     */
+    auto* texture {
+        make_ptr<VirtualTexture>(
+            _STD move(memory),
+            layers,
+            payload_.extent,
+            payload_.format,
+            payload_.mipLevels,
+            payload_.type,
+            image
+        )
+    };
+
+    // TODO: copy aspects for sparse image binding
+    // -> buffer._vkAspect = payload_.vkAspect;
+
+    // TODO: track meta attributes of underlying resources like
+    // -> vk::ImageTiling, vk::ImageLayout, vk::ImageUsage
+
+    /**
+     * TODO: Remove
+     */
+    {
+        const vk::ComponentMapping cm {
+            vk::ComponentSwizzle::eR,
+            vk::ComponentSwizzle::eG,
+            vk::ComponentSwizzle::eB,
+            vk::ComponentSwizzle::eA
+        };
+
+        const vk::ImageSubresourceRange isr {
+            vk::ImageAspectFlagBits::eColor,
+            0,
+            static_cast<u32>(payload_.mipLevels.max - payload_.mipLevels.min) + 1ui32,
+            0,
+            layers
+        };
+
+        const vk::ImageViewCreateInfo ivci {
+            vk::ImageViewCreateFlags(),
+            image,
+            vkTranslateView(TextureType::e2dArray),
+            api::vkTranslateFormat(payload_.format),
+            cm,
+            isr
+        };
+
+        const vk::ImageView view = _device->vkDevice().createImageView(ivci);
+        assert(view);
+
+        texture->_vkImageView = view;
+    }
+
+    return texture;
 }

@@ -23,6 +23,12 @@ namespace ember {
             _query(),
             _fragment() {}
 
+        Url(cref<this_type> other_) = default;
+
+        Url(mref<this_type> other_) = default;
+
+        ~Url() = default;
+
     private:
         string _scheme;
 
@@ -117,6 +123,20 @@ namespace ember {
 
         [[nodiscard]] string_view fragment() const noexcept {
             return _fragment;
+        }
+
+    public:
+        /**
+         * Check whether Url is empty
+         *
+         * @author Julius
+         * @date 27.06.2022
+         *
+         * @returns True is this url is empty, otherwise false.
+         */
+        [[nodiscard]] bool empty() const noexcept {
+            return _scheme.empty() && _user.empty() && _password.empty() && _host.empty() && _port == 0ui16 && _path.
+                empty() && _query.empty() && _fragment.empty();
         }
 
     public:

@@ -9,12 +9,13 @@
 #include "StaticGeometryBatch.hpp"
 #include "../Cache/CacheResult.hpp"
 #include "../Resource/StaticGeometryResource.hpp"
+#include "ModelDataTokens.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
 
 StaticGeometryModel::StaticGeometryModel(const ptr<SceneComponent> owner_) :
-    SceneNodeModel(owner_) {}
+    GeometryModel(owner_) {}
 
 StaticGeometryModel::~StaticGeometryModel() {
     tidy();
@@ -24,12 +25,6 @@ void StaticGeometryModel::tidy() {}
 
 void StaticGeometryModel::create(const ptr<scene::Scene> scene_) {
 
-    /**
-     *
-     */
-    auto* const scene { static_cast<const ptr<scene::RevScene>>(scene_) };
-    auto& graph { scene->renderGraph()->asMutable() };
-
     auto* origin { static_cast<ptr<StaticGeometryComponent>>(_owner) };
 
     /**
@@ -38,16 +33,16 @@ void StaticGeometryModel::create(const ptr<scene::Scene> scene_) {
     _boundary = origin->getBoundaries();
     _staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(origin->getStaticGeometryAsset().internal());
     _staticGeometryResource = Session::get()->modules().resourceManager()->loader().load(_staticGeometryAsset, nullptr);
-
-    /**
-     *
-     */
-    graph.push(this);
 }
 
 void StaticGeometryModel::update(const ptr<scene::Scene> scene_) {}
 
 void StaticGeometryModel::destroy(const ptr<scene::Scene> scene_) {}
+
+Vector<render::RenderDataToken> StaticGeometryModel::providedToken() const noexcept {
+    using namespace ::ember::engine::gfx::render;
+    return { StaticModelGeometry, StaticModelTransform };
+}
 
 ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassState> state_) {
 
@@ -91,7 +86,8 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
     #endif
 
     // TODO: Temporary
-    if (!batch->instance.memory) {
+    if (!batch->instance.memory) [[unlikely]]
+    {
         auto& buffer { batch->instance };
         buffer.device = state_->device->vkDevice();
         buffer.size = static_cast<u64>(sizeof(math::mat4));

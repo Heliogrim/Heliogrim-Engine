@@ -112,7 +112,8 @@ namespace ember::engine::scene {
         }
 
         template <class FactoryType_>
-        bool pushLeaf(const ptr<PayloadType_> element_, const ptr<const FactoryType_> factory_) {
+        bool pushLeaf(const ptr<PayloadType_> element_, const ptr<const FactoryType_> factory_,
+            const SceneNodePath path_) {
             /**
              * Ensure current leaf has element storage
              */
@@ -130,7 +131,43 @@ namespace ember::engine::scene {
 
             ++base_type::_inclusiveElementCount;
             base_type::_elements[index] = element_;
+
+            // Store path
+            base_type::_elements[index]->setSceneNodePath(path_);
+
             return true;
+        }
+
+        bool popLeaf(const ptr<PayloadType_> element_) {
+            /**
+             * Ensure current leaf has elements
+             */
+            if (!base_type::_elements || !base_type::_elementCount) {
+                return false;
+            }
+
+            /**
+             * Store element to current leaf
+             */
+            auto idx { base_type::_elementCount - 1u };
+            for (;
+                idx < base_type::_elementCount &&
+                base_type::_elements[idx] != element_;
+                --idx
+            ) { }
+
+            /**
+             * Ensure element was found
+             */
+            if (base_type::_elements[idx] != element_) {
+                return false;
+            }
+
+            /**
+             * Override target element with current last to release
+             */
+            base_type::_elements[idx] = base_type::_elements[--base_type::_elementCount];
+            return --base_type::_inclusiveElementCount, true;
         }
 
         template <class FactoryType_>
@@ -149,14 +186,14 @@ namespace ember::engine::scene {
 
         template <class FactoryType_>
         bool push(const ptr<PayloadType_> element_, cref<math::Bounding> boundary_,
-            const ptr<const FactoryType_> factory_) {
+            const ptr<const FactoryType_> factory_, SceneNodePath forwardPath_) {
 
             if (base_type::isLeaf()) {
                 /**
                  * Check whether this is suitable leaf or we need to transform the leaf to node
                  */
-                if (base_type::_elementCount + 1 <= traits::max_elements_per_leaf) {
-                    return pushLeaf(element_, factory_);
+                if (base_type::_elementCount <= traits::max_elements_per_leaf - 1u) {
+                    return pushLeaf(element_, factory_, forwardPath_.inversed());
                 }
 
                 decltype(this->_elements) elements { _STD exchange(base_type::_elements, nullptr) };
@@ -173,58 +210,69 @@ namespace ember::engine::scene {
                  */
                 for (auto i = 0; i < elementCount; ++i) {
                     auto boundary { traits::getBounding(elements[i]) };
-                    push(elements[i], boundary, factory_);
+                    push(elements[i], boundary, factory_, forwardPath_);
                 }
 
                 /**
                  *
                  */
-                return push(element_, boundary_, factory_);
+                return push(element_, boundary_, factory_, forwardPath_);
             }
 
             /**
              * Check non-shadow children
              */
-            ptr<base_type> cache[traits::max_childs_per_node];
+            using cache_type = _STD pair<SceneNodePath::decision_type, ptr<base_type>>;
+            cache_type cache[traits::max_childs_per_node];
             u64 cached { 0 };
 
-            for (auto& child : base_type::_children) {
+            for (SceneNodePath::decision_type dt { 0u }; dt < base_type::_children.size(); ++dt) {
 
+                auto& child { base_type::_children[dt] };
                 auto* node { child.get(factory_->getNodeStorage()) };
 
                 if (node->isShadowNode()) {
-                    cache[cached++] = node;
+                    cache[cached++] = _STD make_pair(dt, node);
                     continue;
                 }
 
                 if (node->intersectsFully(boundary_)) {
-                    return node->push(element_, boundary_, factory_), ++base_type::_inclusiveElementCount;
+                    return node->push(element_, boundary_, factory_, forwardPath_.push(dt)), ++
+                        base_type::_inclusiveElementCount;
                 }
+
             }
 
             /**
              * Check shadow children | Find lowest inclusive element count
              */
             decltype(this->_inclusiveElementCount) lowest { ~0ui64 };
-            ptr<base_type> inclusiveNode { nullptr };
-            ptr<base_type> exclusiveNode { nullptr };
+            cache_type inclusiveNode {};
+            cache_type exclusiveNode {};
 
             while (cached) {
-                auto* cur { cache[--cached] };
+                auto cur { cache[--cached] };
 
-                if (cur->inclusiveSize() < lowest) {
+                if (cur.second->inclusiveSize() < lowest) {
                     inclusiveNode = cur;
-                    lowest = cur->inclusiveSize();
+                    lowest = cur.second->inclusiveSize();
                 }
 
-                if (cur->isLeaf() && cur->exclusiveSize() > 0 && cur->exclusiveSize() < traits::max_elements_per_leaf) {
+                if (cur.second->isLeaf() && cur.second->exclusiveSize() > 0 && cur.second->exclusiveSize() <
+                    traits::max_elements_per_leaf) {
                     exclusiveNode = cur;
                 }
             }
 
-            return (
-                exclusiveNode ? exclusiveNode : inclusiveNode
-            )->push(element_, boundary_, factory_), ++base_type::_inclusiveElementCount;
+            if (exclusiveNode.second) {
+                return exclusiveNode.second->push(element_, boundary_, factory_,
+                        forwardPath_.push(exclusiveNode.first)),
+                    ++base_type::_inclusiveElementCount;
+            }
+
+            return inclusiveNode.second->push(element_, boundary_, factory_,
+                    forwardPath_.push(inclusiveNode.first)),
+                ++base_type::_inclusiveElementCount;
 
             #if FALSE
 
@@ -293,6 +341,19 @@ namespace ember::engine::scene {
             return base_type::_children.push(_STD move(result.head)), ++base_type::_size;
             #endif
             throw NotImplementedException {};
+        }
+
+        template <class FactoryType_>
+        bool pop(SceneNodePath path_, const ptr<PayloadType_> element_, const ptr<const FactoryType_> factory_) {
+
+            if (base_type::isLeaf()) {
+                return popLeaf(element_);
+            }
+
+            const auto decision { path_.pop() };
+            auto* const next { base_type::_children[decision].get(factory_->getNodeStorage()) };
+
+            return next->pop(path_, element_, factory_);
         }
 
         /**

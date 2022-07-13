@@ -13,6 +13,7 @@
 #include <Engine.GFX/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Memory/VkAllocator.hpp>
 #include <Engine.GFX/Renderer/HORenderPass.hpp>
+#include <Engine.GFX/Renderer/RenderDataToken.hpp>
 #include <Engine.GFX/Renderer/RenderPassState.hpp>
 #include <Engine.GFX/Renderer/RenderStagePass.hpp>
 #include <Engine.GFX/Shader/DiscreteBindingGroup.hpp>
@@ -20,9 +21,11 @@
 #include <Engine.GFX/Shader/Prototype.hpp>
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
+#include <Engine.Session/Session.hpp>
 
-#include "__macro.hpp"
 #include "RevMainSharedNode.hpp"
+#include "__macro.hpp"
+#include "Engine.GFX/Graphics.hpp"
 #include "Engine.GFX/Loader/RevTextureLoader.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 
@@ -88,7 +91,7 @@ void RevMainSkyNode::setup(cref<sptr<Device>> device_) {
 
     // TODO:
     if (!testCubeMap) {
-        RevTextureLoader loader { _device };
+        RevTextureLoader loader { Session::get()->modules().graphics()->cacheCtrl() };
         testCubeMap = loader.__tmp__load({ ""sv, R"(R:\\sky.ktx)" });
 
         Vector<vk::ImageMemoryBarrier> imgBarriers {};
@@ -296,7 +299,7 @@ bool RevMainSkyNode::free(const ptr<HORenderPass> renderPass_) {
             //const auto result { device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet()) };
             //assert(result == vk::Result::eSuccess);
             #else
-            device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet())
+            //_device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet());
             #endif
         }
 
@@ -362,6 +365,14 @@ bool RevMainSkyNode::free(const ptr<HORenderPass> renderPass_) {
     }
 
     return true;
+}
+
+Vector<RenderDataToken> RevMainSkyNode::requiredToken() noexcept {
+    return {};
+}
+
+Vector<RenderDataToken> RevMainSkyNode::optionalToken() noexcept {
+    return {};
 }
 
 void RevMainSkyNode::before(

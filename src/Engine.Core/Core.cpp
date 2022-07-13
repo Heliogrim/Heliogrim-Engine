@@ -59,8 +59,7 @@ void Core::start() {
     /**
      * Pseudo workload
      */
-    scheduler::thread::self::sleepFor(10000);
-
+    // scheduler::thread::self::sleepFor(10000);
 }
 
 void Core::stop() {

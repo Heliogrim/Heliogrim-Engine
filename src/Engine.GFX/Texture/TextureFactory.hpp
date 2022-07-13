@@ -50,6 +50,41 @@ namespace ember::engine::gfx {
     };
 
     struct VirtualTextureBuildPayload {
+
+        /**
+         * Number of layers
+         */
+        u32 layers;
+
+        /**
+         * Extent ( Width | Height | Depth )
+         */
+        math::uivec3 extent;
+
+        /**
+         * Format
+         */
+        TextureFormat format = TextureFormat::eUndefined;
+
+        /**
+         * Mip Levels to use [min, max)
+         */
+        math::uivec2 mipLevels;
+
+        /**
+         * Type
+         */
+        TextureType type = TextureType::eUndefined;
+
+        /**
+         * Vulkan API
+         */
+        vk::ImageAspectFlags vkAspect;
+        vk::ImageUsageFlags vkUsage;
+
+        vk::MemoryPropertyFlags vkMemoryFlags;
+        vk::SharingMode vkSharing;
+
         /**
          * Cast that converts the given  to a bool
          *
@@ -155,10 +190,10 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 04.12.2020
          *
-         * @param  type_ The type.
+         * @param  payload_ The payload.
          *
          * @returns A Texture.
          */
-        [[nodiscard]] virtual VirtualTexture buildVirtual(const TextureType type_) const = 0;
+        [[nodiscard]] virtual ptr<VirtualTexture> buildVirtual(const VirtualTextureBuildPayload& payload_) const = 0;
     };
 }

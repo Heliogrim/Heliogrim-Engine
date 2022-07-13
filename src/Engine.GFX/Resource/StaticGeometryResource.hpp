@@ -1,11 +1,12 @@
 #pragma once
 #include <Engine.Resource/Manage/Resource.hpp>
 
-#include "../Buffer/Buffer.hpp"
+#include "../Buffer/VirtualBuffer.hpp"
+#include "Engine.GFX/Memory/VirtualMemory.hpp"
 
 namespace ember::engine::gfx {
 
-    class StaticGeometryResource :
+    class StaticGeometryResource final :
         public res::Resource {
     public:
         using this_type = StaticGeometryResource;
@@ -19,18 +20,23 @@ namespace ember::engine::gfx {
         //private:
     public:
         struct VertexData {
-            VertexBuffer buffer;
+            ptr<VirtualBuffer> buffer;
         } _vertexData;
 
         struct IndexData {
-            IndexBuffer buffer;
+            ptr<VirtualBuffer> buffer;
         } _indexData;
 
     public:
         [[nodiscard]] loaded_flag_type loaded() const noexcept override {
-            if (_vertexData.buffer.memory && _indexData.buffer.memory) {
+
+            const auto hasIndex { _indexData.buffer->memory() && _indexData.buffer->memory()->allocatedSize() > 0 };
+            const auto hasVertex { _vertexData.buffer->memory() && _vertexData.buffer->memory()->allocatedSize() > 0 };
+
+            if (hasIndex && hasVertex) {
                 return 1;
             }
+
             return {};
         }
 
@@ -38,7 +44,7 @@ namespace ember::engine::gfx {
             return {};
         }
 
-        [[nodiscard]] bool try_acquire(ptr<res::ManageGuard<Resource>> guard_,
+        [[nodiscard]] bool try_acquire(ref<res::ManageGuard<Resource>> guard_,
             const res::ResourceUsageFlags flags_) noexcept override {
             return false;
         }

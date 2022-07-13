@@ -68,7 +68,13 @@ namespace ember::engine::scene {
             mref<sptr<element_storage_type>> elementStorage_) noexcept :
             _root(_STD move(root_)),
             _nodeStorage(_STD move(nodeStorage_)),
-            _elementStorage(_STD move(elementStorage_)) {}
+            _elementStorage(_STD move(elementStorage_)) {
+
+            /**
+             *
+             */
+            static_assert(IsSceneNodeElement<PayloadType_>);
+        }
 
         /**
          * Copy Constructor

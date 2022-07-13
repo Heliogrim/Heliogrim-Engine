@@ -81,7 +81,8 @@ namespace ember::engine::scheduler::fiber {
         void tidy();
 
     private:
-        _STD atomic_flag _amtx;
+        _STD atomic_flag _acqMtx;
+        _STD atomic_flag _relMtx;
         concurrent::RingBuffer<ptr<Fiber>> _pool;
 
     public:

@@ -4,6 +4,7 @@
 #include "../Buffer/Buffer.hpp"
 #include "../Texture/Texture.hpp"
 #include "../Texture/TextureSampler.hpp"
+#include "../Texture/VirtualTexture.hpp"
 
 namespace ember::engine::gfx::shader {
 
@@ -120,5 +121,8 @@ namespace ember::engine::gfx::shader {
          * @param  layout_ The textures's layout to use.
          */
         void storeAs(cref<Texture> texture_, cref<vk::ImageLayout> layout_);
+
+    public:
+        void store(const ptr<const VirtualTexture> texture_);
     };
 }

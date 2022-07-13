@@ -13,8 +13,12 @@ namespace ember {
         SceneComponent(mref<component_type_id> typeId_, mref<CachedActorPointer> owner_,
             mref<ptr<ActorComponent>> parent_);
 
+
+        // Warning: does not propagate currently
+        ~SceneComponent();
+
     private:
-        CompactSet<ptr<SceneNodeModel>> _sceneNodeModels;
+        CompactSet<non_owning_rptr<SceneNodeModel>> _sceneNodeModels;
 
     private:
         template <typename Fnc_>
@@ -28,13 +32,13 @@ namespace ember {
         }
 
     public:
-        [[nodiscard]] cref<CompactSet<ptr<SceneNodeModel>>> getSceneNodeModels() const noexcept;
+        [[nodiscard]] cref<CompactSet<non_owning_rptr<SceneNodeModel>>> getSceneNodeModels() const noexcept;
 
         template <typename Selector_>
-        [[nodiscard]] Vector<ptr<SceneNodeModel>> selectSceneNodeModels(mref<Selector_> selector_) const {
+        [[nodiscard]] Vector<non_owning_rptr<SceneNodeModel>> selectSceneNodeModels(mref<Selector_> selector_) const {
 
-            Vector<ptr<SceneNodeModel>> result {};
-            eachSceneNodeModel([&](const ptr<SceneNodeModel> model_) {
+            Vector<non_owning_rptr<SceneNodeModel>> result {};
+            eachSceneNodeModel([&](const non_owning_rptr<SceneNodeModel> model_) {
                 if (selector_(model_)) {
                     result.push_back(model_);
                 }
@@ -43,6 +47,6 @@ namespace ember {
             return result;
         }
 
-        void addSceneNodeModel(const ptr<SceneNodeModel> model_);
+        void addSceneNodeModel(const non_owning_rptr<SceneNodeModel> model_);
     };
 }

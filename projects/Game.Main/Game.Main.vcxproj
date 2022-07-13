@@ -115,7 +115,6 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -183,19 +182,19 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\GrassWild01.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\ForestGround01AO.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\ForestGround01Diffuse.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\ForestGround01Normal.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\ForestGround01Roughness.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Images\GrassWild01Albedo.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\CubeD1.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Cylinder.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Sphere.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.cpp" />
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.cpp" />
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Cavity.cpp" />
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Displacement.cpp" />
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Gloss.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Diffuse.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Normal.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Roughness.cpp" />
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Specular.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Albedo.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\GrassWild01AO.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Cavity.cpp" />
@@ -210,14 +209,10 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\GrassWild01.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Albedo.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01AO.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Cavity.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Displacement.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Gloss.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Diffuse.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Normal.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Roughness.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Specular.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Albedo.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01AO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Cavity.hpp" />
@@ -235,14 +230,10 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Cylinder.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Sphere.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Cavity.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Displacement.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Gloss.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Diffuse.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Normal.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Roughness.hpp" />
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Specular.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Albedo.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01AO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Cavity.hpp" />

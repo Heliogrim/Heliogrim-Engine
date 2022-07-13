@@ -29,7 +29,9 @@ namespace ember::engine::scene {
         [[nodiscard]] const ptr<RenderGraph> renderGraph() noexcept override;
 
     private:
-        Vector<ptr<SceneComponent>> _cachedNew;
+        using cache_type = _STD pair<SceneTag, ptr<SceneNodeModel>>;
+
+        Vector<cache_type> _cached;
 
     public:
         bool addNode(const ptr<SceneComponent> node_) override final;

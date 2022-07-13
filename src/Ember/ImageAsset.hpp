@@ -28,6 +28,17 @@ namespace ember {
          */
         ImageAsset(cref<asset_guid> guid_) noexcept;
 
+        /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 27.06.2022
+         *
+         * @param  guid_ Unique identifier.
+         * @param  url_ The url to the underlying data resource
+         */
+        ImageAsset(cref<asset_guid> guid_, cref<string> url_) noexcept;
+
     public:
         /**
          * Destructor

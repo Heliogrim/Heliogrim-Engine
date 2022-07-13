@@ -15,7 +15,7 @@ namespace ember::engine::assets {
         friend class TextureLayout;
 
     public:
-        inline static const asset_type_id typeId { "Texture"_typeId };
+        static constexpr asset_type_id typeId { "Texture"_typeId };
 
     protected:
         Texture(cref<asset_guid> guid_);
@@ -29,16 +29,31 @@ namespace ember::engine::assets {
         asset_guid _baseImage;
         Vector<asset_guid> _images;
 
+    public:
+        [[nodiscard]] cref<asset_guid> baseImage() const noexcept;
+
     private:
         math::uivec3 _extent;
+
+    public:
+        [[nodiscard]] cref<math::uivec3> getExtent() const noexcept;
 
     private:
         gfx::TextureFormat _format;
 
+    public:
+        [[nodiscard]] gfx::TextureFormat getTextureFormat() const noexcept;
+
     private:
         u32 _mipLevel;
 
+    public:
+        [[nodiscard]] u32 getMipLevelCount() const noexcept;
+
     private:
         gfx::TextureType _textureType;
+
+    public:
+        [[nodiscard]] gfx::TextureType getTextureType() const noexcept;
     };
 }

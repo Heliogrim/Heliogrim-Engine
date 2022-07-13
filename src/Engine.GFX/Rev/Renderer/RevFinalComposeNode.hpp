@@ -28,6 +28,11 @@ namespace ember::engine::gfx::render {
         bool free(const ptr<HORenderPass> renderPass_) override;
 
     public:
+        [[nodiscard]] Vector<RenderDataToken> requiredToken() noexcept override;
+
+        [[nodiscard]] Vector<RenderDataToken> optionalToken() noexcept override;
+
+    public:
         void before(const non_owning_rptr<HORenderPass> renderPass_,
             const non_owning_rptr<RenderStagePass> stagePass_) const override;
 

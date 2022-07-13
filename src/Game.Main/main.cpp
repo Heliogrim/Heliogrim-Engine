@@ -21,14 +21,16 @@
 #include <Engine.Session/Session.hpp>
 
 #include "Assets/GfxMaterials/ForestGround01.hpp"
-#include "Assets/Meshes/CubeD1.hpp"
 #include "Assets/Meshes/Cylinder.hpp"
-#include "Assets/Meshes/PlaneD128.hpp"
-#include "Assets/Meshes/Sphere.hpp"
+#include "Assets/Images/ForestGround01Diffuse.hpp"
+#include "Assets/Textures/ForestGround01Diffuse.hpp"
 #include "Ember/Ember.hpp"
 #include "Ember/World.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
 #include "Engine.Event/ShutdownEvent.hpp"
+#include "Engine.Assets/Types/Texture.hpp"
+#include "Engine.Assets/Types/GfxMaterial.hpp"
+#include "Engine.Resource/ResourceManager.hpp"
 
 using namespace ember;
 
@@ -39,6 +41,12 @@ inline static _STD atomic_flag suspended {};
 void waveActors();
 
 void buildActor(const u64 idx_, const u64 rows_, const u64 cols_);
+
+void burstBuildActors(const u64 size_, _Inout_ ref<Vector<ptr<Actor>>> storage_);
+
+void validateBurstActors(cref<Vector<ptr<Actor>>> actors_);
+
+void burstDestroyActors(mref<Vector<ptr<Actor>>> actors_);
 
 void ember_block_main() {
 
@@ -116,19 +124,38 @@ void ember_main_entry() {
     /**
      *
      */
-    {
-        // Is via effect equivalent to commented instruction, cause constructor of inherited asset type class
-        //  will autoregister internal created instance to asset database
-        game::assets::meshes::PlaneD128 {};
-        game::assets::meshes::CubeD1 {};
-        game::assets::meshes::Sphere {};
-        game::assets::meshes::Cylinder {};
-        /*
-        auto* tmp = new game::assets::meshes::PlaneD128 {};
-        Ember::assets().insert(tmp);
-        delete tmp;
-         */
-    }
+    auto testLoadTexture = []() {
+        auto fgdtr = Ember::assets()[game::assets::texture::ForestGround01Diffuse::auto_guid()];
+        assert(fgdtr);
+
+        auto* const tex { static_cast<ptr<engine::assets::Texture>>(fgdtr.value.internal()) };
+        auto texRes = engine::Session::get()->modules().resourceManager()->loader().load(tex, nullptr);
+
+        assert(texRes != nullptr);
+        assert(texRes->isLoaded());
+    };
+
+    auto testLoadMaterial = []() {
+        auto fgmr = Ember::assets()[game::assets::material::ForestGround01::auto_guid()];
+        assert(fgmr);
+
+        auto* const mat { static_cast<ptr<engine::assets::GfxMaterial>>(fgmr.value.internal()) };
+        auto matRes = engine::Session::get()->modules().resourceManager()->loader().load(mat, nullptr);
+
+        assert(matRes != nullptr);
+        assert(matRes->isLoaded());
+    };
+
+    Task textureTask { _STD function<void()>(testLoadTexture) };
+    Task materialTask { _STD function<void()>(testLoadMaterial) };
+
+    textureTask.srcStage() = engine::scheduler::ScheduleStageBarriers::eTopStrong;
+    textureTask.dstStage() = engine::scheduler::ScheduleStageBarriers::eUserUpdateStrong;
+    materialTask.srcStage() = engine::scheduler::ScheduleStageBarriers::eTopStrong;
+    materialTask.dstStage() = engine::scheduler::ScheduleStageBarriers::eUserUpdateStrong;
+
+    execute(_STD move(textureTask));
+    execute(_STD move(materialTask));
 
     /**
      * --- [ 4 ] ---
@@ -147,7 +174,7 @@ void ember_main_entry() {
      * count : rows * colls := 4096
      */
     // test();
-    #ifndef _DEBUG
+    #if not defined(_DEBUG) && FALSE
     constexpr u64 rows { 1ui64 << 11 };
     constexpr u64 cols { 1ui64 << 11 };
     constexpr u64 count { rows * cols };
@@ -228,7 +255,17 @@ void ember_main_entry() {
     buildTask.srcStage() = TaskStages::eUserUpdateStrong;
     buildTask.dstStage() = TaskStages::eUserUpdateStrong;
 
-    execute(_STD move(buildTask));
+    //execute(_STD move(buildTask));
+
+    //
+    execute([&]() {
+        Vector<ptr<Actor>> storage {};
+        burstBuildActors(1024ui64, storage);
+        _STD ranges::sort(storage);
+        validateBurstActors(storage);
+        yield();
+        burstDestroyActors(_STD move(storage));
+    });
 }
 
 void test() {
@@ -237,7 +274,7 @@ void test() {
      *
      */
     {
-        Actor* actor = await(CreateActor());
+        Actor* actor = await(CreateActor(traits::async));
         await(Destroy(_STD move(actor)));
     }
 
@@ -257,7 +294,7 @@ void test() {
 
         Vector<Future<ptr<Actor>>> flist {};
         for (u8 c = 0; c < 128ui8; ++c) {
-            flist.push_back(CreateActor());
+            flist.push_back(CreateActor(traits::async));
         }
 
         for (auto& entry : flist) {
@@ -306,7 +343,7 @@ Vector<Actor*> testActors {};
 
 void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
 
-    auto possible = CreateActor();
+    auto possible = CreateActor(traits::async);
     // await(possible);
 
     Actor* actor = possible.get();
@@ -377,6 +414,7 @@ void waveActors() {
 
     const float sqrLength { _STD sqrtf(static_cast<float>(testActors.size())) };
     const float fraction { math::pi_f * fracScale / sqrLength };
+    const float fracP2 { fraction * fraction };
     const float progress { static_cast<float>(timestamp) / timescale };
 
     const u32 limit { static_cast<u32>(_STD floor(sqrLength)) };
@@ -389,12 +427,206 @@ void waveActors() {
             const auto& transform { cur->getWorldTransform() };
             auto prev { transform.position() };
 
-            const auto xfrac { x * fraction };
-            const auto zfrac { z * fraction };
-            const auto frac { _STD sqrtf(xfrac * xfrac + zfrac * zfrac) };
+            const auto xfrac2 { static_cast<float>(x * x) * fracP2 };
+            const auto zfrac2 { static_cast<float>(z * z) * fracP2 };
+            const auto frac { _STD sqrtf(xfrac2 + zfrac2) };
 
             const_cast<math::Transform&>(transform).setPosition(prev.setY(_STD sinf(progress + frac) * waveScale));
         }
     }
 
 }
+
+#pragma region BurstActorBuilding
+
+constexpr auto burstBatchSize = 128ui64;
+constexpr auto burstSpacingScale = 16.F;
+#define BURST_USE_FUTURE_DIRECT
+
+void burstBuildActor(ptr<Actor> actor_, const u64 idx_, const u64 rows_, const u64 cols_) {
+    /**
+     *
+     */
+    auto& initializer { ActorInitializer::get() };
+    //initializer.createComponent<ActorComponent>(actor);
+    auto* comp = initializer.createComponent<StaticGeometryComponent>(actor_);
+
+    /**
+     *
+     */
+    auto queryResult = Ember::assets()[game::assets::meshes::Cylinder::auto_guid()];
+    if (queryResult.flags == AssetDatabaseResultType::eSuccess) {
+        comp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&queryResult.value));
+    }
+
+    /**
+     *
+     */
+    const auto* root { actor_->getRootComponent() };
+    const auto& transform { root->getWorldTransform() };
+
+    /*
+    auto previous { transform.position() };
+
+    float sig {(idx_ & 0b0001) ? -1.F : 1.F};
+    float x {sig * _STD ceilf(static_cast<float>(idx_) / 2.F) * 3.F};
+
+    previous.setX(x);
+    const_cast<math::Transform&>(transform).setPosition(previous);
+    */
+
+    const ptr<World> world { GetWorld() };
+    world->addActor(actor_);
+
+    auto previous { transform.position() };
+
+    randomPaddedPosition(idx_, rows_, cols_, burstSpacingScale, previous);
+    const_cast<math::Transform&>(transform).setPosition(previous);
+    const_cast<math::Transform&>(transform).setScale(math::vec3 { 0.75F, 0.3F, 0.75F });
+    /*
+    transform.resolveMatrix();
+    entity.setTransform(transform);
+
+    auto comp = entity.record<component::StaticGeometryComponent>();
+
+    comp.setMesh(ember::game::assets::meshes::PlaneD128::auto_guid());
+    comp.setMaterial(ember::game::assets::material::ForestGround01::auto_guid());
+     */
+}
+
+void burstBuildActors(const u64 size_, _Inout_ ref<Vector<ptr<Actor>>> storage_) {
+
+    assert(storage_.empty());
+
+    // Prepare batches
+    const auto batches { size_ / burstBatchSize };
+    auto leftBatchSize { size_ - batches * burstBatchSize };
+
+    // Prepare collections
+    storage_.reserve(storage_.size() + size_);
+    storage_.resize(storage_.size() + size_, nullptr);
+
+    #ifndef BURST_USE_FUTURE_DIRECT
+    Vector<Vector<ember::Future<ptr<Actor>>>> deferredActors {};
+    deferredActors.resize(leftBatchSize > 0ui64 ? batches + 1ui64 : batches);
+
+    for (auto&& actors : deferredActors) {
+        actors.reserve(burstBatchSize);
+    }
+    #endif
+
+    //
+    auto start { _STD chrono::high_resolution_clock::now() };
+
+    for (auto batch { batches + 1ui64 }; batch >= 1ui64; --batch) {
+        // TODO: Schedule async job
+        // TODO: `parallel(...)` -> `void parallel( << functor >>, ...)`
+
+        #ifndef BURST_USE_FUTURE_DIRECT
+        auto& collection { deferredActors[batch - 1ui64] };
+        for (auto req { batch != 1ui64 ? burstBatchSize : leftBatchSize }; req > 0ui64; --req) {
+            collection.push_back(CreateActor());
+        }
+        #endif
+
+        #ifdef BURST_USE_FUTURE_DIRECT
+        const auto offset { size_ - ((batch - 1ui64) * burstBatchSize) };
+        for (auto req { batch != 1ui64 ? burstBatchSize : leftBatchSize }; req > 0ui64; --req) {
+            storage_[offset + req - 1ui64] = CreateActor();
+        }
+        #endif
+    }
+
+    #ifndef BURST_USE_FUTURE_DIRECT
+    //
+    u64 idx { 0ui64 };
+    for (auto& futures : deferredActors) {
+        for (auto& future : futures) {
+            storage_[idx++] = future.get();
+        }
+    }
+    #endif
+
+    auto end { _STD chrono::high_resolution_clock::now() };
+    _STD cout << "Burst instantiation of " << size_ << " Actors took " << _STD chrono::duration_cast<
+        _STD chrono::microseconds>(end - start) << _STD endl;
+
+    //
+    start = _STD chrono::high_resolution_clock::now();
+
+    for (auto batch { batches + 1ui64 }; batch >= 1ui64; --batch) {
+        // TODO: Schedule async job
+        // TODO: `parallel(...)` -> `void parallel( << functor >>, ...)`
+
+        const auto cols = static_cast<u64>(_STD ceil(_STD sqrt(size_)));
+        const auto rows = cols;
+
+        const auto offset { size_ - ((batch - 1ui64) * burstBatchSize) };
+        for (auto req { batch != 1ui64 ? burstBatchSize : leftBatchSize }; req > 0ui64; --req) {
+            burstBuildActor(storage_[offset + req - 1ui64], offset + req - 1ui64, rows, cols);
+        }
+    }
+
+    end = _STD chrono::high_resolution_clock::now();
+    _STD cout << "Burst building of " << size_ << " Actors took " << _STD chrono::duration_cast<
+        _STD chrono::microseconds>(end - start) << _STD endl;
+}
+
+void validateBurstActors(cref<Vector<ptr<Actor>>> actors_) {
+
+    CompactSet<actor_guid> testSet {};
+    CompactSet<ptr<ActorComponent>> testCompSet {};
+
+    for (const auto& actor : actors_) {
+        if (!testSet.insert(actor->guid()).second) {
+            throw _STD runtime_error("Actor Guid Collision.");
+        }
+    }
+
+    for (const auto& actor : actors_) {
+        if (!testCompSet.insert(actor->getRootComponent()).second) {
+            throw _STD runtime_error("Actor Component Collision.");
+        }
+    }
+}
+
+void burstDestroyActors(mref<Vector<ptr<Actor>>> actors_) {
+
+    auto start { _STD chrono::high_resolution_clock::now() };
+
+    const ptr<World> world { GetWorld() };
+    for (auto* const actor : actors_) {
+        world->removeActor(actor);
+    }
+
+    auto end { _STD chrono::high_resolution_clock::now() };
+    _STD cout << "Burst remove of " << actors_.size() << " Actors from World(" <<
+        _STD showbase << _STD hex << reinterpret_cast<u64>(_STD addressof(world)) << _STD dec <<
+        ") took " << _STD chrono::duration_cast<_STD chrono::microseconds>(end - start) << _STD endl;
+
+    /**
+     *
+     */
+
+    start = _STD chrono::high_resolution_clock::now();
+
+    for (auto&& actor : actors_) {
+        #ifdef _DEBUG
+        assert(Destroy(_STD move(actor)).get());
+        #else
+        [[maybe_unused]] auto result { Destroy(_STD move(actor)).get() };
+        #endif
+    }
+
+    end = _STD chrono::high_resolution_clock::now();
+    _STD cout << "Burst destruction of " << actors_.size() << " Actors took " << _STD chrono::duration_cast<
+        _STD chrono::microseconds>(end - start) << _STD endl;
+
+    actors_.clear();
+}
+
+#ifdef BURST_USE_FUTURE_DIRECT
+#undef BURST_USE_FUTURE_DIRECT
+#endif
+
+#pragma endregion

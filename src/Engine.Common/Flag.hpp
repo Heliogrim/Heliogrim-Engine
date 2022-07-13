@@ -85,8 +85,9 @@ namespace ember {
          *
          * @returns The result of the operation.
          */
-        Flag& operator |=(const Ty& other_) {
-            unwrap |= static_cast<value_type>(other_);
+        constexpr Flag& operator |=(const Ty& other_) {
+            // unwrap |= static_cast<value_type>(other_); // static_cast<...> is not constexpr
+            unwrap |= (value_type)(other_);
             return *this;
         }
 
@@ -225,8 +226,22 @@ namespace ember {
          *
          * @returns True if the parameters are considered equivalent.
          */
-        [[nodiscard]] bool operator==(const Ty& value_) noexcept {
+        [[nodiscard]] bool operator==(const Ty& value_) const noexcept {
             return value_ == static_cast<Ty>(unwrap);
+        }
+
+        /**
+         * Inequality operator
+         *
+         * @author Julius
+         * @date 18.06.2022
+         *
+         * @param   value_ The value.
+         *
+         * @returns True if the parameters are considered not equivalent.
+         */
+        [[nodiscard]] bool operator!=(const Ty& value_) const noexcept {
+            return value_ != static_cast<Ty>(unwrap);
         }
 
         /** The unwrap */

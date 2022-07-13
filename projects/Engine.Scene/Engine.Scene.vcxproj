@@ -21,15 +21,18 @@
     <ClInclude Include="..\..\src\Engine.Scene\Node\LoosySceneNode.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\NaturalSceneNode.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNode.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeElement.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeHead.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeHeadContainer.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeId.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodePath.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeSubBase.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeVersion.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\ShadowSceneNode.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SpartialSceneNode.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\Traits.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\Node\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\PreviewScene.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\IRenderScene.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\RenderGraph.hpp" />
@@ -51,6 +54,7 @@
     <ClCompile Include="..\..\src\Engine.Scene\NodeTypeRegistry.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeHead.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeHeadContainer.cpp" />
+    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodePath.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeVersion.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\RevScene.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp" />

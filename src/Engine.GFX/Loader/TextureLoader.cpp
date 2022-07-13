@@ -7,6 +7,8 @@
 #include "../Command/CommandBuffer.hpp"
 #include "../Texture/TextureFactory.hpp"
 #include "../Memory/VkAllocator.hpp"
+#include "../Cache/GlobalCacheCtrl.hpp"
+#include "../Cache/GlobalResourceCache.hpp"
 
 using namespace ember::engine::gfx::loader;
 using namespace ember::engine::gfx;
@@ -405,13 +407,13 @@ Texture load_impl(const Url& url_,
     return result;
 }
 
-TextureLoader::TextureLoader(cref<sptr<Device>> device_) :
-    _device(device_) {}
+TextureLoader::TextureLoader(const ptr<cache::GlobalCacheCtrl> cache_) :
+    _cacheCtrl(cache_) {}
 
 ember::concurrent::promise<Texture> TextureLoader::load(
     const Url& url_) const {
     concurrent::promise<Texture> p {
-        [_device = _device, url_ = url_]() {
+        [_device = _cacheCtrl->cache()->device(), url_ = url_]() {
             return load_impl(url_, _device);
         }
     };
@@ -419,8 +421,356 @@ ember::concurrent::promise<Texture> TextureLoader::load(
     return p;
 }
 
+uptr<VirtualTextureView> TextureLoader::loadTo(const Url& url_, mref<uptr<VirtualTextureView>> dst_) const {
+
+    /**/
+    assert(url_.scheme() == "file"sv);
+    assert(url_.hasPath());
+
+    auto dst { _STD move(dst_) };
+    assert(dst->type() == TextureType::e2d || dst->type() == TextureType::e2dArray);
+    /**/
+
+    auto url = url_.path();
+    gli::texture glitex = gli::load(url.data());
+
+    const auto lvlZeroExt = glitex.extent(0);
+    math::ivec3 extent = {
+        lvlZeroExt.x,
+        lvlZeroExt.y,
+        lvlZeroExt.z
+    };
+
+    /**/
+    assert(dst->width() == extent.x);
+    assert(dst->height() == extent.y);
+    assert(dst->depth() == extent.z);
+    /**/
+
+    const auto lvlZeroForm = glitex.format();
+    vk::Format format;
+    vk::ImageAspectFlags aspect;
+
+    switch (lvlZeroForm) {
+        /**
+         * R Formats (2D Images)
+         *
+         * Used for alpha, roughness, displacement
+         */
+        case gli::FORMAT_R16_SFLOAT_PACK16: {
+            format = vk::Format::eR16Sfloat;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        case gli::FORMAT_R32_SFLOAT_PACK32: {
+            format = vk::Format::eR32Sfloat;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+
+        /**
+         * D Formats (2D Images)
+         *
+         * Used for depth images or possible for alpha blending
+         */
+        case gli::FORMAT_D16_UNORM_PACK16: {
+            format = vk::Format::eD16Unorm;
+            aspect = vk::ImageAspectFlagBits::eDepth;
+            break;
+        }
+        case gli::FORMAT_D32_SFLOAT_PACK32: {
+            format = vk::Format::eD32Sfloat;
+            aspect = vk::ImageAspectFlagBits::eDepth;
+            break;
+        }
+
+        /**
+         * DS Formats (2D Images)
+         *
+         * Used for depth stencil images
+         */
+        case gli::FORMAT_D16_UNORM_S8_UINT_PACK32: {
+            format = vk::Format::eD16UnormS8Uint;
+            aspect = vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil;
+            break;
+        }
+        case gli::FORMAT_D32_SFLOAT_S8_UINT_PACK64: {
+            format = vk::Format::eD32SfloatS8Uint;
+            aspect = vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil;
+            break;
+        }
+
+        /**
+         * RGB Formats (2D Images)
+         *
+         * Used for color textures like albedo, sample maps or general image
+         */
+        case gli::FORMAT_RGB8_UNORM_PACK8: {
+            format = vk::Format::eR8G8B8Unorm;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        case gli::FORMAT_RGB8_SNORM_PACK8: {
+            format = vk::Format::eR8G8B8Snorm;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        case gli::FORMAT_RGB16_UNORM_PACK16: {
+            format = vk::Format::eR16G16B16A16Unorm;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        case gli::FORMAT_RGB32_UINT_PACK32: {
+            format = vk::Format::eR32G32B32Uint;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        case gli::FORMAT_RGB32_SFLOAT_PACK32: {
+            format = vk::Format::eR32G32B32Sfloat;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+
+        /**
+         * RGBA Formats (2D Images)
+         *
+         * Used for color textures with alpha like albedo + blending or sample maps
+         */
+        case gli::FORMAT_RGBA8_UNORM_PACK8: {
+            format = vk::Format::eR8G8B8A8Unorm;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        case gli::FORMAT_RGBA8_SRGB_PACK8: {
+            format = vk::Format::eR8G8B8A8Srgb;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        case gli::FORMAT_RGBA8_SNORM_PACK8: {
+            format = vk::Format::eR8G8B8A8Snorm;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        case gli::FORMAT_RGBA16_UNORM_PACK16: {
+            format = vk::Format::eR16G16B16A16Unorm;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        case gli::FORMAT_RGBA32_UINT_PACK32: {
+            format = vk::Format::eR32G32B32A32Uint;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        case gli::FORMAT_RGBA32_SFLOAT_PACK32: {
+            format = vk::Format::eR32G32B32A32Sfloat;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+
+        /**
+         * RGB(A) Formats (Compressed Cube Images)
+         */
+        case gli::FORMAT_RGBA_ASTC_8X8_UNORM_BLOCK16: {
+            format = vk::Format::eAstc8x8UnormBlock;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        case gli::FORMAT_RGB_ETC2_UNORM_BLOCK8: {
+            format = vk::Format::eEtc2R8G8B8UnormBlock;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        case gli::FORMAT_RGBA_DXT5_UNORM_BLOCK16: {
+            // TODO: Temporary
+            format = vk::Format::eBc2UnormBlock;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+        default: {
+            throw _STD exception("Unresolved texture format.");
+        }
+    }
+
+    /**/
+    assert(dst->format() == api::vkTranslateFormat(format));
+    /**/
+
+    /**
+     * Staging Buffer
+     */
+    Buffer stage {};
+
+    vk::BufferCreateInfo bci {
+        vk::BufferCreateFlags(),
+        glitex.size(),
+        vk::BufferUsageFlagBits::eTransferSrc,
+        vk::SharingMode::eExclusive,
+        0,
+        nullptr
+    };
+
+    stage.buffer = _cacheCtrl->cache()->device()->vkDevice().createBuffer(bci);
+    stage.device = _cacheCtrl->cache()->device()->vkDevice();
+
+    const auto allocResult {
+        memory::allocate(
+            _cacheCtrl->cache()->device()->allocator(),
+            _cacheCtrl->cache()->device(),
+            stage.buffer,
+            MemoryProperties { MemoryProperty::eHostVisible } | MemoryProperty::eHostCoherent,
+            stage.memory
+        )
+    };
+    assert(stage.buffer);
+    assert(stage.memory);
+
+    stage.size = stage.memory->size;
+    stage.usageFlags = vk::BufferUsageFlagBits::eTransferSrc;
+
+    /**
+     *
+     */
+    stage.bind();
+    stage.map();
+    assert(stage.memory->mapping);
+
+    /**
+     * Copy Data
+     */
+    stage.write(glitex.data(), glitex.size());
+    stage.flush();
+
+    /**
+     *
+     */
+    stage.unmap();
+
+    /**
+     * Fetch Region per Layer
+     */
+    Vector<vk::BufferImageCopy> regions {};
+    uint32_t srcOff = 0;
+
+    const u32 mipToCopy { _STD min(static_cast<u32>(glitex.levels()), dst->mipLevels()) };
+    const u32 layerCount { 1ui32 };
+
+    /**
+     * Copy Buffer Image (2D / 2D Array)
+     */
+    for (uint32_t level = 0; level < mipToCopy; ++level) {
+
+        const auto srcExt { glitex.extent(level) };
+
+        vk::BufferImageCopy copy {
+            srcOff,
+            0,
+            0,
+            {
+                aspect,
+                level,
+                dst->baseLayer(),
+                layerCount
+            },
+            vk::Offset3D(),
+            vk::Extent3D {
+                static_cast<u32>(srcExt.x),
+                static_cast<u32>(srcExt.y),
+                static_cast<u32>(srcExt.z)
+            }
+        };
+
+        regions.push_back(copy);
+        srcOff += static_cast<uint32_t>(glitex.size(level));
+    }
+
+    /**
+     * Copy Data to Image
+     */
+    auto pool = _cacheCtrl->cache()->device()->transferQueue()->pool();
+    pool->lck().acquire();
+    CommandBuffer cmd = pool->make();
+    cmd.begin();
+
+    vk::ImageMemoryBarrier simb {
+        vk::AccessFlags(),
+        vk::AccessFlags(),
+        vk::ImageLayout::eUndefined,
+        vk::ImageLayout::eTransferDstOptimal,
+        VK_QUEUE_FAMILY_IGNORED,
+        VK_QUEUE_FAMILY_IGNORED,
+        dst->owner()->vkImage(),
+        {
+            aspect,
+            0,
+            mipToCopy,
+            dst->baseLayer(),
+            layerCount
+        }
+    };
+
+    cmd.vkCommandBuffer().pipelineBarrier(
+        vk::PipelineStageFlagBits::eTransfer,
+        vk::PipelineStageFlagBits::eTransfer,
+        vk::DependencyFlags(),
+        0, nullptr,
+        0, nullptr,
+        1, &simb
+    );
+
+    cmd.vkCommandBuffer().copyBufferToImage(
+        stage.buffer,
+        dst->owner()->vkImage(),
+        vk::ImageLayout::eTransferDstOptimal,
+        static_cast<u32>(regions.size()),
+        regions.data()
+    );
+
+    /**
+     * Restore Layout
+     */
+    vk::ImageMemoryBarrier eimb {
+        vk::AccessFlags(),
+        vk::AccessFlags(),
+        vk::ImageLayout::eTransferDstOptimal,
+        vk::ImageLayout::eShaderReadOnlyOptimal,
+        VK_QUEUE_FAMILY_IGNORED,
+        VK_QUEUE_FAMILY_IGNORED,
+        dst->owner()->vkImage(),
+        {
+            aspect,
+            0,
+            mipToCopy,
+            dst->baseLayer(),
+            layerCount
+        }
+    };
+
+    cmd.vkCommandBuffer().pipelineBarrier(
+        vk::PipelineStageFlagBits::eTransfer,
+        vk::PipelineStageFlagBits::eTransfer,
+        vk::DependencyFlags(),
+        0, nullptr,
+        0, nullptr,
+        1, &eimb
+    );
+
+    cmd.end();
+    cmd.submitWait();
+    cmd.release();
+
+    pool->lck().release();
+
+    /**
+     * Cleanup
+     */
+    stage.destroy();
+    glitex.clear();
+
+    return _STD move(dst);
+}
+
 Texture TextureLoader::__tmp__load(const Url& url_) {
-    return load_impl(url_, _device);
+    return load_impl(url_, _cacheCtrl->cache()->device());
 }
 
 #if FALSE

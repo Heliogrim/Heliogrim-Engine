@@ -19,7 +19,9 @@
     <ClInclude Include="..\..\src\Engine.Common\Cast.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Array.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\AssociativeKey.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\AutoArray.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\BytellHashMap.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\CompactArray.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Deque.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\FlatHashMap.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Bucket.hpp" />
@@ -28,10 +30,13 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\HopScotch.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Map.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Set.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\InlineArray.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\InlineAutoArray.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\List.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\ProxyVector.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Queue.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\RingBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\RobinMap.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Set.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\StableUnorderedMap.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Stack.hpp" />
@@ -45,6 +50,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Exception\__macro.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Flag.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Functional\Function.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Hash\Fnv-1a.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Hash\Murmur3.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Inc.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Make.hpp" />
@@ -66,6 +72,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Math\__macro.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Memory\allocator.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Memory\DbgMemoryStats.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Meta\Concept.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Meta\CoreState.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Meta\TypeId.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Profiling\Profiler.hpp" />

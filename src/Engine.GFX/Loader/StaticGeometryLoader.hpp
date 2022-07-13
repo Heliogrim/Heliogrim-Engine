@@ -3,6 +3,7 @@
 #include <Engine.Resource/Loader/Loader.hpp>
 
 #include "GeometryLoader.hpp"
+#include "../Cache/__fwd.hpp"
 #include "../Resource/StaticGeometryResource.hpp"
 
 namespace ember::engine::gfx {
@@ -18,9 +19,12 @@ namespace ember::engine::gfx {
         using options_type = loader_type::options_type;
 
     public:
-        StaticGeometryLoader(cref<sptr<Device>> device_);
+        StaticGeometryLoader(const ptr<cache::GlobalCacheCtrl> cache_);
 
         ~StaticGeometryLoader() override;
+
+    private:
+        ptr<cache::GlobalCacheCtrl> _cacheCtrl;
 
     public:
         [[nodiscard]] result_type operator()(const ptr<assets::StaticGeometry> asset_, options_type options_) override;

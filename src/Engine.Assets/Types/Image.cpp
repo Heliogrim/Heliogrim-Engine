@@ -9,3 +9,7 @@ Image::Image(cref<asset_guid> guid_) :
 Image::Image(cref<asset_guid> guid_, mref<Vector<Url>> sources_) :
     Data(guid_, Image::typeId),
     _sources(_STD move(sources_)) {}
+
+cref<Vector<Url>> Image::sources() const noexcept {
+    return _sources;
+}

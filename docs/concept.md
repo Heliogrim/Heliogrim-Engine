@@ -1791,3 +1791,26 @@ sequenceDiagram
         RenderPipeline-->>-Renderer: return
     Renderer-->>-RenderPass: return
 ```
+
+----
+*17.06.2022*
+
+#### RenderDataScope <-> RenderDataSharing
+| | eExternal | eRenderPass |
+|---|---|---|
+| eDedicated | ❌ | ✓ |
+| eShared | ✓ | ✓ |
+
+#### RenderDataScope <-> RenderDataUsage
+| | eExternal | eRenderPass |
+|---|---|---|
+| eSingle | ✓ | ✓ |
+| ePerRenderNode | ❌ | ✓ |
+| eModelInstance | ✓* | ✓ |
+
+#### RenderDataSharing <-> RenderDataUsage
+| | eDedicated | eShared |
+|---|---|---|
+| eSingle | ✓ | ✓ |
+| ePerRenderNode | ❌ | ✓** |
+| eModelInstance | ✓*** | ✓ |

@@ -2,13 +2,14 @@
 #include <Engine.Assets/Types/StaticGeometry.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
 
-#include "SceneNodeModel.hpp"
+#include "GeometryModel.hpp"
 #include "../Shader/CachedDiscreteBinding.hpp"
+#include "../Renderer/__fwd.hpp"
 
 namespace ember::engine::gfx {
 
     class StaticGeometryModel final :
-        public SceneNodeModel {
+        public GeometryModel {
     public:
         using this_type = StaticGeometryModel;
         using underlying_type = SceneNodeModel;
@@ -29,6 +30,9 @@ namespace ember::engine::gfx {
         void update(const ptr<scene::Scene> scene_) override final;
 
         void destroy(const ptr<scene::Scene> scene_) override final;
+
+    public:
+        [[nodiscard]] Vector<render::RenderDataToken> providedToken() const noexcept override;
 
     public:
         [[nodiscard]] ptr<cache::ModelBatch> batch(const ptr<render::RenderPassState> state_) override;

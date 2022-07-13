@@ -24,13 +24,13 @@ namespace ember::engine::assets {
         Vector<Url> _sources;
 
     public:
-        [[nodiscard, deprecated]] u32 getMaterialCount();
+        [[nodiscard, deprecated]] u32 getMaterialCount() const;
 
-        [[nodiscard, deprecated]] u64 getVertexCount();
+        [[nodiscard]] u64 getVertexCount() const;
 
-        [[nodiscard, deprecated]] u64 getIndexCount();
+        [[nodiscard]] u64 getIndexCount() const;
 
-        [[nodiscard, deprecated]] u64 getFaceCount();
+        [[nodiscard, deprecated]] u64 getFaceCount() const;
 
         [[nodiscard, deprecated]] bool hasUvCoords();
 

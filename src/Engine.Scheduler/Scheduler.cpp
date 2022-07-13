@@ -167,6 +167,8 @@ void Scheduler::setup(u32 workers_) {
     workers_ = USE_WORKER_COUNT;
     #endif
 
+    workers_ = 1ui32;
+
     if (workers_ == 0ui32) {
         workers_ = MAX(static_cast<u32>(MAX(static_cast<s32>(thread::getNativeThreadCount()) - 1i32, 0i32)), 1ui32);
     }

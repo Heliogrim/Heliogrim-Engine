@@ -44,11 +44,17 @@ namespace ember::engine::gfx {
     public:
         [[nodiscard]] VirtualMemoryPageState state() const noexcept;
 
-    private:
+        //private:
+    public:
         ptr<memory::AllocatedMemory> _memory;
 
     public:
         [[nodiscard]] const ptr<memory::AllocatedMemory> allocated() const noexcept;
+
+    public:
+        [[nodiscard]] memory::AllocationResult load();
+
+        void unload();
     };
 
 }
