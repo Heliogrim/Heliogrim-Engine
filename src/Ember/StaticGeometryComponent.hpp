@@ -15,6 +15,8 @@ namespace ember {
     public:
         StaticGeometryComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_);
 
+        ~StaticGeometryComponent() = default;
+
     private:
         StaticGeometryAsset _staticGeometry;
 

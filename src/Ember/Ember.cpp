@@ -43,26 +43,13 @@ ref<Scheduler> Ember::scheduler() noexcept {
     throw NotImplementedException();
 }
 
-void Ember::start() {
+void Ember::launch() {
 
     /**
      *
      */
     auto session = engine::Session::get();
     session->start();
-}
-
-void Ember::stop() {
-    /**
-     *
-     */
-    auto session = engine::Session::get();
-
-    /**
-     *
-     */
-    session->emitter().emit<ShutdownEvent>();
-    session->stop();
 }
 
 void Ember::wait() {

@@ -154,7 +154,7 @@ namespace ember::engine::res {
             ptr<void> options_ = nullptr);
 
         /**
-         * Loads the requested resource underlying of given asset immediatly
+         * Loads the requested resource underlying of given asset immediately
          *
          * @author Julius
          * @date 07.12.2021
@@ -164,7 +164,7 @@ namespace ember::engine::res {
          *
          * @returns A pointer of the resource which should be loaded.
          */
-        [[nodiscard]] load_type loadImmediatly(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
+        [[nodiscard]] load_type loadImmediately(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
 
         /**
          * Loads the requested type of resource by unique identifier immediately

@@ -45,7 +45,7 @@ LoaderManager::load_type LoaderManager::load(const ptr<assets::Asset> asset_, pt
     return loader->operator()(asset_, options_);
 }
 
-LoaderManager::load_type LoaderManager::loadImmediatly(const ptr<assets::Asset> asset_, ptr<void> options_) {
+LoaderManager::load_type LoaderManager::loadImmediately(const ptr<assets::Asset> asset_, ptr<void> options_) {
     // TODO:
     return load(asset_, options_);
 }

@@ -18,6 +18,7 @@
     <ClInclude Include="..\..\src\Engine.ACS\Component.hpp" />
     <ClInclude Include="..\..\src\Engine.ACS\ComponentTypeId.hpp" />
     <ClInclude Include="..\..\src\Engine.ACS\Pool.hpp" />
+    <ClInclude Include="..\..\src\Engine.ACS\PoolWrapper.hpp" />
     <ClInclude Include="..\..\src\Engine.ACS\Registry.hpp" />
     <ClInclude Include="..\..\src\Engine.ACS\Storage.hpp" />
     <ClInclude Include="..\..\src\Engine.ACS\Traits.hpp" />

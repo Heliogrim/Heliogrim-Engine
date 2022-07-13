@@ -144,7 +144,8 @@ namespace ember::engine::res {
             swap(_ptr->acquire(flags_));
         }
 
-        reference_this_type acquire(reference_type value_, const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault) {
+        reference_this_type acquire(reference_type value_,
+            const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault) {
             swap(_STD forward<value_type>(value_.acquire(flags_)));
             return *this;
         }
@@ -152,6 +153,7 @@ namespace ember::engine::res {
         reference_this_type release() {
             _ptr->release(_owned_flags);
             _owned_flags = ResourceUsageFlag::eNone;
+            return *this;
         }
 
     public:

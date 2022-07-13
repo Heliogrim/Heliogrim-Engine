@@ -104,6 +104,7 @@
     <ClCompile Include="..\..\src\Ember\TextureAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\TextureBuffer.cpp" />
     <ClCompile Include="..\..\src\Ember\TextureFormat.cpp" />
+    <ClCompile Include="..\..\src\Ember\Traits.cpp" />
     <ClCompile Include="..\..\src\Ember\World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +128,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine.GFX\Engine.GFX.vcxproj">
       <Project>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Logging\Engine.Logging.vcxproj">
+      <Project>{9d1b3213-b18e-4551-9a75-9ecd3f6196ee}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Network\Engine.Network.vcxproj">
       <Project>{813c849e-7ee6-4241-ae94-a7d0a7abf9bc}</Project>

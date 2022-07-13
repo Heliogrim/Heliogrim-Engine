@@ -33,12 +33,12 @@ namespace ember::engine::gfx::memory {
         //
         MemoryMapping mapping;
 
-        MemoryMapping map(const u64 size_, const u64 offset_);
+        MemoryMapping map(const u64 size_, const u64 offset_ = 0ui64);
 
         void unmap();
 
         //
-        void flush(const u64 size_, const u64 offset_);
+        void flush(const u64 size_, const u64 offset_ = 0ui64);
 
         bool write(const ptr<const void> data_, const u64 size_);
     };

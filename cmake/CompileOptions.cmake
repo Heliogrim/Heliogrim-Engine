@@ -36,6 +36,7 @@ set(DEFAULT_INCLUDE_DIRECTORIES
         "${META_PROJECT_LIB_DIR}/dr_wav"
         "${META_PROJECT_LIB_DIR}/gli"
         "${META_PROJECT_LIB_DIR}/glm"
+        "${META_PROJECT_LIB_DIR}/ryml"
         "${META_PROJECT_LIB_DIR}/SDL2"
         "${META_PROJECT_LIB_DIR}/tsl"
         "${META_PROJECT_LIB_DIR}/vorbis")
@@ -48,6 +49,8 @@ set(TEST_INCLUDE_DIRECTORIES
 #
 set(DEFAULT_LIBRARIES
         "${Vulkan_LIBRARY}"
+        "${META_PROJECT_LIB_DIR}/bin/ryml/${CMAKE_BUILD_TYPE}/c4core.lib"
+        "${META_PROJECT_LIB_DIR}/bin/ryml/${CMAKE_BUILD_TYPE}/ryml.lib"
         "${META_PROJECT_LIB_DIR}/bin/SDL2/${CMAKE_BUILD_TYPE}/SDL2.lib"
         "${META_PROJECT_LIB_DIR}/bin/vorbis/${CMAKE_BUILD_TYPE}/ogg.lib"
         "${META_PROJECT_LIB_DIR}/bin/vorbis/${CMAKE_BUILD_TYPE}/vorbis.lib"

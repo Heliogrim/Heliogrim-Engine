@@ -1,4 +1,6 @@
 #pragma once
+#include <Engine.Common/Collection/CompactArray.hpp>
+
 #include "GfxMaterialLayout.hpp"
 #include "Material.hpp"
 
@@ -21,27 +23,32 @@ namespace ember::engine::assets {
             cref<asset_guid> roughness_, cref<asset_guid> specular_);
 
     private:
-        asset_guid _albedo;
+        union {
+            struct {
+                asset_guid _albedo;
+                asset_guid _ao;
+                asset_guid _cavity;
+                asset_guid _displacement;
+                asset_guid _gloss;
+                asset_guid _normal;
+                asset_guid _roughness;
+                asset_guid _specular;
+            };
 
-    private:
-        asset_guid _ao;
+            struct {
+                asset_guid _textures[8];
+            };
+        };
 
-    private:
-        asset_guid _cavity;
+    public:
+        [[nodiscard]] CompactArray<asset_guid> textures() const noexcept;
 
-    private:
-        asset_guid _displacement;
+        [[nodiscard]] asset_guid diffuse() const noexcept;
 
-    private:
-        asset_guid _gloss;
+        [[nodiscard]] asset_guid normal() const noexcept;
 
-    private:
-        asset_guid _normal;
+        [[nodiscard]] asset_guid roughness() const noexcept;
 
-    private:
-        asset_guid _roughness;
-
-    private:
-        asset_guid _specular;
+        [[nodiscard]] asset_guid ao() const noexcept;
     };
 }

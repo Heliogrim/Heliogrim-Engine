@@ -1,38 +1,18 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Exception/NotImplementedException.hpp>
 #include <Engine.Common/Math/Bounding.hpp>
 #include <Engine.Common/Math/Transform.hpp>
-#include <Engine.Common/Exception/NotImplementedException.hpp>
 
+#include "SceneNodeElement.hpp"
 #include "SceneNodeHeadContainer.hpp"
+#include "SceneNodePath.hpp"
 #include "SceneNodeVersion.hpp"
 #include "Traits.hpp"
+#include "__fwd.hpp"
 
 namespace ember::engine::scene {
-
-    /**
-     * Forward Declaration
-     *
-     * @author Julius
-     * @date 15.08.2021
-     */
-    class SceneNodeHead;
-
-    template <class PayloadType_>
-    class ShadowSceneNode;
-
-    template <class PayloadType_>
-    class LoosySceneNode;
-
-    template <class PayloadType_>
-    class SpartialSceneNode;
-
-    template <class PayloadType_>
-    class NaturalSceneNode;
-
-    template <class NodeStorageType_, class ElementStorageType_, class Traits_>
-    class SceneNodeFactory;
 
     /**
      * A pull result type.
@@ -156,7 +136,17 @@ namespace ember::engine::scene {
             _inclusiveElementCount(0),
             _state(SceneNodeState::eShadow),
             _transform(),
-            _bounding() {}
+            _bounding() {
+
+            /**
+             *
+             */
+            static_assert(
+                traits::max_childs_per_node <= ((SceneNodePath::decision_size > 0 ? 1 : 0) << (
+                    SceneNodePath::decision_size - SceneNodePath::decision_occupied - SceneNodePath::decision_padding)),
+                "Error validating traits `max_childs_per_node` against node paths decision width. Reduce targeted child count or use wider decision sequence..."
+            );
+        }
 
         /**
          * Move Constructor
@@ -475,8 +465,13 @@ namespace ember::engine::scene {
     public:
         template <class FactoryType_>
         bool push(const ptr<ElementType_> element_, cref<math::Bounding> boundary_,
-            const ptr<const FactoryType_> factory_) {
-            advanced_proxy_macro(push, element_, boundary_, factory_)
+            const ptr<const FactoryType_> factory_, SceneNodePath forwardPath_) {
+            advanced_proxy_macro(push, element_, boundary_, factory_, forwardPath_)
+        }
+
+        template <class FactoryType_>
+        bool pop(cref<SceneNodePath> path_, const ptr<ElementType_> element_, const ptr<const FactoryType_> factory_) {
+            advanced_proxy_macro(pop, path_, element_, factory_)
         }
 
         [[nodiscard]] pull_result_type pull(cref<SceneNodeId> nodeId_) noexcept {

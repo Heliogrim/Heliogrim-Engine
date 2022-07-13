@@ -116,7 +116,15 @@ void Actor::registerComponents(const ptr<IComponentRegisterContext> context_) {
     }
 }
 
-Future<ptr<Actor>> ember::CreateActor() noexcept {
+ptr<Actor> ember::CreateActor() noexcept {
+
+    auto* registry = engine::Session::get()->modules().acsRegistry();
+    auto* actor = registry->createActor();
+
+    return actor;
+}
+
+Future<ptr<Actor>> ember::CreateActor(ember::async_t) noexcept {
 
     concurrent::promise<ptr<Actor>> p {
         []() {
@@ -159,5 +167,32 @@ Future<ptr<Actor>> ember::SpawnActor(cref<ActorClass> class_, const ptr<Serializ
 }
 
 Future<bool> ember::Destroy(mref<ptr<Actor>> actor_) noexcept {
-    throw NotImplementedException();
+
+    // TODO: Remove all components
+    auto* registry = engine::Session::get()->modules().acsRegistry();
+
+    auto guid { actor_->guid() };
+    for (auto* const component : actor_->getComponents()) {
+        assert(component->getTypeId().data);
+        registry->releaseActorComponent(guid, component->getTypeId());
+    }
+
+    /**
+     *
+     */
+    registry->destroyActor(_STD move(actor_));
+
+    /**
+     *
+     */
+    concurrent::promise<bool> p {
+        []() {
+            return true;
+        }
+    };
+
+    auto f = p.get();
+    p();
+
+    return Future { _STD move(f) };
 }

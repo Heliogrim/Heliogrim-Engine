@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
+#include <Engine.Reflect/EmberReflect.hpp>
 
 #include "../AssetGuid.hpp"
 #include "../AssetTypeId.hpp"
@@ -30,7 +31,8 @@ namespace ember::engine::assets {
         { obj.get_guid() } -> std::same_as<asset_guid>;
     } && ember::HasType<Ty, asset_type_id>;
 
-    class Asset {
+    class Asset :
+        public EmberObject {
     public:
         using value_type = Asset;
         using reference_type = Asset&;

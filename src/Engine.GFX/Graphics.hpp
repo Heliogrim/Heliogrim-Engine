@@ -6,6 +6,7 @@
 #include "Command/CommandQueue.hpp"
 #include "Device/Device.hpp"
 #include "Renderer/__fwd.hpp"
+#include "Cache/__fwd.hpp"
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
 
@@ -189,6 +190,12 @@ namespace ember::engine {
         [[nodiscard]] gfx::CommandQueue::reference_type getTransferQueue() const noexcept;
 
     private:
+        uptr<gfx::cache::GlobalCacheCtrl> _cacheCtrl;
+
+    public:
+        [[nodiscard]] const non_owning_rptr<gfx::cache::GlobalCacheCtrl> cacheCtrl() const noexcept;
+
+    private:
         ptr<gfx::render::Renderer> _renderer;
 
     private:
@@ -197,37 +204,6 @@ namespace ember::engine {
         // Warning: Temporary
         ptr<gfx::Camera> _camera;
         Vector<gfx::CommandBatch> _renderPassBatches;
-
-        #if FALSE
-    private:
-        /**
-         * Graphic Passes
-         */
-        Vector<ptr<gfx::GraphicPass>> _graphicPasses;
-
-        /**
-         * Graphic Pass Fences[GraphicPassMask:: ...]
-         */
-        Vector<vk::Fence> _graphicPassFences;
-
-        /**
-         * Graphic Pass Batches
-         */
-        Vector<gfx::CommandBatch> _graphicPassBatches;
-
-    public:
-        /**
-         * Gets a Graphic pass by given mask
-         *
-         * @author Julius
-         * @date 31.01.2021
-         *
-         * @param  mask_ The mask.
-         *
-         * @returns A ptr&lt;gfx::GraphicPass&gt;
-         */
-        [[nodiscard]] ptr<gfx::GraphicPass> graphicPass(gfx::GraphicPassMask mask_) const noexcept;
-        #endif
 
     private:
         struct {

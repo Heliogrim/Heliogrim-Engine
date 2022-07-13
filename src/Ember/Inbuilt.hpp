@@ -9,6 +9,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/__default.inl>
 #include <Engine.Common/Collection/Array.hpp>
+#include <Engine.Common/Collection/CompactArray.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>

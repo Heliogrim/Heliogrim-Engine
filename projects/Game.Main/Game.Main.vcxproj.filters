@@ -81,30 +81,6 @@
     <ClCompile Include="..\..\src\Game.Main\main.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.cpp">
-      <Filter>Quelldateien\Assets\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.cpp">
-      <Filter>Quelldateien\Assets\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Cavity.cpp">
-      <Filter>Quelldateien\Assets\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Displacement.cpp">
-      <Filter>Quelldateien\Assets\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Gloss.cpp">
-      <Filter>Quelldateien\Assets\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Normal.cpp">
-      <Filter>Quelldateien\Assets\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Roughness.cpp">
-      <Filter>Quelldateien\Assets\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Specular.cpp">
-      <Filter>Quelldateien\Assets\Textures</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Albedo.cpp">
       <Filter>Quelldateien\Assets\Textures</Filter>
     </ClCompile>
@@ -153,6 +129,30 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Cylinder.cpp">
       <Filter>Quelldateien\Assets\Meshes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Normal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Roughness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\ForestGround01AO.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\ForestGround01Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\ForestGround01Normal.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\ForestGround01Roughness.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\ForestGround.hpp">
@@ -191,30 +191,6 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Roughness.hpp">
       <Filter>Headerdateien\Assets\Images</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Albedo.hpp">
-      <Filter>Headerdateien\Assets\Images</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Normal.hpp">
-      <Filter>Headerdateien\Assets\Images</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01AO.hpp">
-      <Filter>Headerdateien\Assets\Images</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Displacement.hpp">
-      <Filter>Headerdateien\Assets\Images</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Roughness.hpp">
-      <Filter>Headerdateien\Assets\Images</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Gloss.hpp">
-      <Filter>Headerdateien\Assets\Images</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Specular.hpp">
-      <Filter>Headerdateien\Assets\Images</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Cavity.hpp">
-      <Filter>Headerdateien\Assets\Images</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Cavity.hpp">
       <Filter>Headerdateien\Assets\Images</Filter>
     </ClInclude>
@@ -223,30 +199,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\GrassWild01Specular.hpp">
       <Filter>Headerdateien\Assets\Images</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Albedo.hpp">
-      <Filter>Headerdateien\Assets\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.hpp">
-      <Filter>Headerdateien\Assets\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Cavity.hpp">
-      <Filter>Headerdateien\Assets\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Displacement.hpp">
-      <Filter>Headerdateien\Assets\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Gloss.hpp">
-      <Filter>Headerdateien\Assets\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Normal.hpp">
-      <Filter>Headerdateien\Assets\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Roughness.hpp">
-      <Filter>Headerdateien\Assets\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Specular.hpp">
-      <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\GrassWild01Albedo.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
@@ -295,6 +247,30 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Cylinder.hpp">
       <Filter>Headerdateien\Assets\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Normal.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01AO.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Roughness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Normal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Roughness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

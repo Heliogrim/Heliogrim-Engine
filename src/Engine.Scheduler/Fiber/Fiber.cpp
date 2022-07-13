@@ -139,8 +139,10 @@ void self::await(mref<FiberAwaitable> awaitable_) {
     auto* entry = ::GetFiberData();
     DEBUG_ASSERT(entry != nullptr, "")
     static_cast<ptr<Fiber>>(entry)->await(_STD forward<FiberAwaitable>(awaitable_));
+
     #else
     static_cast<ptr<Fiber>>(::GetFiberData())->await(_STD forward<FiberAwaitable>(awaitable_));
+
     #endif
 
     #else

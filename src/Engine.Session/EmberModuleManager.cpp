@@ -101,6 +101,10 @@ void EmberModuleManager::start() {
     _network->schedule();
     _physics->schedule();
 
+    /**
+     *
+     */
+    _assetSeeder->seed(_scheduler);
 }
 
 void EmberModuleManager::stop() {

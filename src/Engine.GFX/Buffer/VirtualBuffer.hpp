@@ -20,7 +20,7 @@ namespace ember::engine::gfx {
     public:
         VirtualBuffer() noexcept;
 
-        VirtualBuffer(const ptr<memory::Allocator> allocator_, cref<vk::Buffer> buffer_,
+        VirtualBuffer(mref<uptr<VirtualMemory>> memory_, cref<vk::Buffer> buffer_,
             cref<vk::BufferUsageFlags> usageFlags_) noexcept;
 
         VirtualBuffer(cref<this_type>) = delete;
@@ -41,20 +41,12 @@ namespace ember::engine::gfx {
         void tidy();
 
     private:
-        ptr<memory::Allocator> _allocator;
+        uptr<VirtualMemory> _memory;
 
     public:
-        [[nodiscard]] const ptr<const memory::Allocator> allocator() const noexcept;
+        [[nodiscard]] const non_owning_rptr<const VirtualMemory> memory() const noexcept;
 
-        [[nodiscard]] ref<ptr<memory::Allocator>> allocator() noexcept;
-
-    private:
-        ptr<VirtualMemory> _memory;
-
-    public:
-        [[nodiscard]] const ptr<const VirtualMemory> memory() const noexcept;
-
-        [[nodiscard]] const ptr<VirtualMemory> memory() noexcept;
+        [[nodiscard]] const non_owning_rptr<VirtualMemory> memory() noexcept;
 
     private:
         Vector<ptr<VirtualBufferPage>> _pages;
@@ -91,6 +83,8 @@ namespace ember::engine::gfx {
          */
         non_owning_rptr<VirtualBufferPage> addPage(const u64 size_, const u64 offset_);
 
+        [[nodiscard]] cref<Vector<ptr<VirtualBufferPage>>> pages() const noexcept;
+
     private:
         Vector<vk::SparseMemoryBind> _bindings;
         vk::SparseBufferMemoryBindInfo _bindData;
@@ -103,5 +97,7 @@ namespace ember::engine::gfx {
 
         void enqueueBinding(const ptr<CommandQueue> queue_, cref<Vector<vk::Semaphore>> waits_,
             cref<Vector<vk::Semaphore>> signals_);
+
+        [[deprecated]] void enqueueBindingSync(const ptr<CommandQueue> queue_);
     };
 }

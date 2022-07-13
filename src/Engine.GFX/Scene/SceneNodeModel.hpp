@@ -4,6 +4,9 @@
 
 #include "../Cache/ModelBatch.hpp"
 #include "../Renderer/RenderPassState.hpp"
+#include "../Renderer/__fwd.hpp"
+
+#include "Engine.Scene/Node/SceneNodePath.hpp"
 
 namespace ember::engine::gfx {
 
@@ -11,6 +14,9 @@ namespace ember::engine::gfx {
         public scene::SceneNodeModel {
     public:
         SceneNodeModel(const ptr<SceneComponent> owner_);
+
+    public:
+        [[nodiscard]] virtual Vector<render::RenderDataToken> providedToken() const noexcept = 0;
 
     public:
         /**
@@ -25,5 +31,18 @@ namespace ember::engine::gfx {
          * @returns A pointer to a specialized ModelBatch containing the contract resources to render this model representation.
          */
         [[nodiscard]] virtual ptr<cache::ModelBatch> batch(const ptr<render::RenderPassState> state_) = 0;
+
+    private:
+        // TODO: Check whether we want this in basic class of scene nodes
+        scene::SceneNodePath _sceneNodePath;
+
+    public:
+        [[nodiscard]] scene::SceneNodePath sceneNodePath() const noexcept {
+            return _sceneNodePath;
+        }
+
+        void setSceneNodePath(const scene::SceneNodePath path_) noexcept {
+            _sceneNodePath = path_;
+        }
     };
 }

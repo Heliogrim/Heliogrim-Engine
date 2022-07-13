@@ -5,13 +5,13 @@
 
 namespace ember::game::assets::texture {
 
-    class ForestGround01Albedo :
+    class ForestGround01Diffuse :
         public TextureAsset,
-        public AssetAutoGuid<ForestGround01Albedo> {
+        public AssetAutoGuid<ForestGround01Diffuse> {
     public:
-        ForestGround01Albedo();
+        ForestGround01Diffuse();
     };
 
-    AUTO_REGISTER_ASSET(ForestGround01Albedo)
+    AUTO_REGISTER_ASSET(ForestGround01Diffuse)
 
 }

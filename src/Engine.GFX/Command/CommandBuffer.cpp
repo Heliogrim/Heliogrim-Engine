@@ -56,6 +56,14 @@ void CommandBuffer::bindIndexBuffer(const IndexBuffer& buffer_, u64 offset_) {
     );
 }
 
+void CommandBuffer::bindIndexBuffer(const ptr<VirtualBuffer> buffer_, u64 offset_) {
+    _vkCmd.bindIndexBuffer(
+        buffer_->vkBuffer(),
+        offset_,
+        vk::IndexType::eUint32
+    );
+}
+
 void CommandBuffer::bindPipeline(ptr<GraphicPipeline> pipeline_, cref<Viewport> viewport_) {
     //const auto& viewport = pipeline_->viewport();
 
@@ -98,6 +106,10 @@ void CommandBuffer::bindVertexBuffer(const u32 binding_, const VertexBuffer& buf
         &buffer_.buffer,
         &offset_
     );
+}
+
+void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<VirtualBuffer> buffer_, u64 offset_) {
+    _vkCmd.bindVertexBuffers(binding_, 1ui32, &buffer_->vkBuffer(), &offset_);
 }
 
 void CommandBuffer::copyBuffer(const Buffer& src_, Buffer& dst_, const vk::BufferCopy& region_) {

@@ -8,6 +8,7 @@
 
 #include "ActorComponent.hpp"
 #include "Inbuilt.hpp"
+#include "Traits.hpp"
 
 namespace ember {
 
@@ -109,9 +110,9 @@ namespace ember {
         [[nodiscard]] cref<CompactSet<ptr<ActorComponent>>> getComponents() const noexcept;
 
         template <typename Selector_>
-        [[nodiscard]] Vector<ptr<ActorComponent>> selectComponents(mref<Selector_> selector_) const {
+        [[nodiscard]] CompactArray<ptr<ActorComponent>> selectComponents(mref<Selector_> selector_) const {
 
-            Vector<ptr<ActorComponent>> result {};
+            CompactArray<ptr<ActorComponent>> result {};
             eachComponent([&](const ptr<ActorComponent> component_) {
                 if (selector_(component_)) {
                     result.push_back(component_);
@@ -170,9 +171,19 @@ namespace ember {
      * @author Julius
      * @date 25.11.2021
      *
+     * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
+     */
+    [[nodiscard]] extern ptr<Actor> CreateActor() noexcept;
+
+    /**
+     * Create a new default actor object
+     *
+     * @author Julius
+     * @date 25.11.2021
+     *
      * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
      */
-    [[nodiscard]] extern Future<ptr<Actor>> CreateActor() noexcept;
+    [[nodiscard]] extern Future<ptr<Actor>> CreateActor(async_t) noexcept;
 
     /**
      * Creates a new actor object based on given actor class

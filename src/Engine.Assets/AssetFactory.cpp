@@ -1,5 +1,7 @@
 #include "AssetFactory.hpp"
 
+#include <filesystem>
+
 #include "Types/GfxMaterial.hpp"
 #include "Types/Image.hpp"
 #include "Types/LandscapeGeometry.hpp"
@@ -19,6 +21,14 @@ AssetFactory::AssetFactory(ptr<AssetDatabase> database_) noexcept :
 
 AssetFactory::~AssetFactory() noexcept = default;
 
+Url AssetFactory::resolveAsSource(cref<string> url_) const noexcept {
+
+    auto cwd { _STD filesystem::current_path() };
+    cwd.append(url_);
+
+    return Url { "file"sv, cwd.generic_string() };
+}
+
 ptr<Asset> AssetFactory::createGfxMaterialAsset() {
 
     auto guid = generate_asset_guid();
@@ -27,7 +37,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset() {
 
 ptr<Asset> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) {
 
-    auto* instance = new GfxMaterial {
+    auto* instance = EmberObject::create<GfxMaterial>(
         guid_,
         invalid_asset_guid,
         invalid_asset_guid,
@@ -37,7 +47,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) {
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid
-    };
+    );
 
     _database->insert(guid_, GfxMaterial::typeId, instance);
 
@@ -56,7 +66,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(
     cref<asset_guid> specular_
 ) {
 
-    auto* instance = new GfxMaterial {
+    auto* instance = EmberObject::create<GfxMaterial>(
         guid_,
         albedo_,
         ao_,
@@ -66,7 +76,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(
         normal_,
         roughness_,
         specular_
-    };
+    );
 
     _database->insert(guid_, GfxMaterial::typeId, instance);
     return instance;
@@ -80,10 +90,7 @@ ptr<Asset> AssetFactory::createImageAsset() {
 
 ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_) {
 
-    auto* instance = new Image {
-        guid_,
-        {}
-    };
+    auto* instance = EmberObject::create<Image>(guid_, Vector<Url> {});
 
     _database->insert(guid_, Image::typeId, instance);
     return instance;
@@ -91,10 +98,14 @@ ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_) {
 
 ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> url_) {
 
-    auto* instance = new Image {
-        guid_,
-        {}
-    };
+    auto src { resolveAsSource(url_) };
+    Vector<Url> sources {};
+
+    if (src.hasScheme()/* Fast empty check */) {
+        sources.push_back(src);
+    }
+
+    auto* instance = EmberObject::create<Image>(guid_, _STD move(sources));
 
     _database->insert(guid_, Image::typeId, instance);
     return instance;
@@ -102,10 +113,7 @@ ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> u
 
 ptr<Asset> AssetFactory::createLandscapeGeometryAsset(cref<asset_guid> guid_) {
 
-    auto* instance = new LandscapeGeometry {
-        guid_,
-        {}
-    };
+    auto* instance = EmberObject::create<LandscapeGeometry>(guid_, Vector<Url> {});
 
     _database->insert(guid_, LandscapeGeometry::typeId, instance);
     return instance;
@@ -113,10 +121,7 @@ ptr<Asset> AssetFactory::createLandscapeGeometryAsset(cref<asset_guid> guid_) {
 
 ptr<Asset> AssetFactory::createStaticGeometryAsset(cref<asset_guid> guid_) {
 
-    auto* instance = new StaticGeometry {
-        guid_,
-        {}
-    };
+    auto* instance = EmberObject::create<StaticGeometry>(guid_, Vector<Url> {});
 
     _database->insert(guid_, StaticGeometry::typeId, instance);
     return instance;
@@ -130,15 +135,15 @@ ptr<Asset> AssetFactory::createTextureAsset() {
 
 ptr<Asset> AssetFactory::createTextureAsset(cref<asset_guid> guid_) {
 
-    auto* instance = new Texture {
+    auto* instance = EmberObject::create<Texture>(
         guid_,
         invalid_asset_guid,
-        { invalid_asset_guid },
-        {},
+        Vector<asset_guid> { invalid_asset_guid },
+        math::uivec3 {},
         gfx::TextureFormat::eUndefined,
         0,
         gfx::TextureType::eUndefined
-    };
+    );
 
     _database->insert(guid_, Texture::typeId, instance);
     return instance;
@@ -153,7 +158,7 @@ ptr<Asset> AssetFactory::createTextureAsset(
     cref<u32> mipLevel_,
     cref<gfx::TextureType> type_
 ) {
-    auto* instance = new Texture {
+    auto* instance = EmberObject::create<Texture>(
         guid_,
         baseImage_,
         _STD forward<Vector<asset_guid>>(images_),
@@ -161,8 +166,21 @@ ptr<Asset> AssetFactory::createTextureAsset(
         format_,
         mipLevel_,
         type_
+    );
+
+    const auto result {
+        _database->insert(guid_, Texture::typeId, instance)
     };
 
-    _database->insert(guid_, Texture::typeId, instance);
+    if (!result) {
+        #ifdef _DEBUG
+        // TODO: We need to handle a missed insertion call to the asset database
+        // Important: Move from asset factory to another place, cause factory is just instantiation, and not database management
+        __debugbreak();
+        #else
+        throw _STD runtime_error("Failed to insert texture asset into database.");
+        #endif
+    }
+
     return instance;
 }

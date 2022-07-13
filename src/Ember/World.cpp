@@ -31,7 +31,7 @@ bool World::removeActor(const ptr<Actor> actor_) {
      *
      */
     const ptr<IComponentRegisterContext> ctx { _scene->registerContext() };
-    //actor_->unregisterComponents(ctx);
+    // actor_->unregisterComponents(ctx);
 
     /**
      *

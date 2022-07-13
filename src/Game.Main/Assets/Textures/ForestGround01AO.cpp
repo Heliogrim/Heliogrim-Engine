@@ -1,19 +1,18 @@
+#include "ForestGround01AO.hpp"
 #include "../Images/ForestGround01AO.hpp"
 
 #include <Ember/TextureFormat.hpp>
 
-#include "ForestGround01AO.hpp"
-
-using namespace ember::game::assets::texture;
+using namespace ember::game::assets;
 using namespace ember;
 
-ForestGround01AO::ForestGround01AO() :
+texture::ForestGround01AO::ForestGround01AO() :
     TextureAsset(
-        ForestGround01AO::auto_guid(),
-        game::assets::image::ForestGround01AO::auto_guid(),
+        texture::ForestGround01AO::auto_guid(),
+        image::ForestGround01AO::auto_guid(),
         {},
-        { 0, 0, 0 },
-        TextureFormat::eR8G8B8Unorm,
-        0,
+        { 8192ui32, 8192ui32, 1ui32 },
+        TextureFormat::eR16Sfloat,
+        4ui32,
         engine::gfx::TextureType::e2d
-    ) {}
+    ) { }

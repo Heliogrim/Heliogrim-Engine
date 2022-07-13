@@ -9,7 +9,10 @@ namespace ember::engine::scheduler {
 
     class DynamicBufferPages {
     public:
-        using page_value_type = AtomicCtrlBlockPage<SharedBufferPool::aligned_buffer>;
+        using size_type = uint_fast16_t;
+        inline static constexpr size_type page_size = 16ui16;
+
+        using page_value_type = AtomicCtrlBlockPage<SharedBufferPool::aligned_buffer, page_size>;
         using page_type = ptr<page_value_type>;
 
     public:

@@ -20,6 +20,7 @@
 #include <Engine.GFX/Shader/Prototype.hpp>
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
+#include <Engine.GFX/Renderer/RenderDataToken.hpp>
 
 #include "__macro.hpp"
 #include "RevDepthSharedNode.hpp"
@@ -252,7 +253,7 @@ bool RevDepthStaticNode::free(const ptr<HORenderPass> renderPass_) {
             //const auto result { device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet()) };
             //assert(result == vk::Result::eSuccess);
             #else
-            device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet())
+            //_device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet());
             #endif
         }
 
@@ -318,6 +319,14 @@ bool RevDepthStaticNode::free(const ptr<HORenderPass> renderPass_) {
     }
 
     return true;
+}
+
+Vector<RenderDataToken> RevDepthStaticNode::requiredToken() noexcept {
+    return {};
+}
+
+Vector<RenderDataToken> RevDepthStaticNode::optionalToken() noexcept {
+    return {};
 }
 
 const non_owning_rptr<const Vector<type_id>> RevDepthStaticNode::modelTypes() const noexcept {
@@ -480,7 +489,8 @@ void RevDepthStaticNode::invoke(
     /**
      * Invoke Rendering
      */
-    cmd.drawIndexed(1, 0, sgr->_indexData.buffer.count(), 0ui32, 0ui32);
+    //cmd.drawIndexed(1, 0, ... / sizeof(u32), 0ui32, 0ui32);
+    cmd.drawIndexed(1, 0, 1140ui32, 0ui32, 0ui32);
 }
 
 void RevDepthStaticNode::after(

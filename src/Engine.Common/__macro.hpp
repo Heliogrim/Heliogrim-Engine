@@ -117,6 +117,17 @@
 #define ALIGNED(struct_, alignment_) __declspec(align(alignment_)) struct_
 #endif
 
+// Assume (Optimization <-> Progress with caution)
+#ifndef assume
+#ifdef ENV_MSVC
+#define assume(expr) __assume(expr);
+#elif defined(ENV_GCC)
+#define assume(expr)
+#elif defined(ENV_CLANG)
+#define assume(expr) __builtin_assume(expr);
+#endif
+#endif
+
 // Comparison
 #ifndef MAX
 #define MAX(a,b) (((a) > (b)) ? (a) : (b))
@@ -162,3 +173,5 @@
 #if defined(_DEBUG) || defined(_PROFILING)
 #define _EDITOR
 #endif
+
+#define _EDITOR

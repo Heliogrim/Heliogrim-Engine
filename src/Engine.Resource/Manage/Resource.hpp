@@ -82,7 +82,7 @@ namespace ember::engine::res {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        [[nodiscard]] virtual bool try_acquire(ptr<ManageGuard<value_type>> guard_,
+        [[nodiscard]] virtual bool try_acquire(_Inout_ ref<ManageGuard<value_type>> guard_,
             const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault) noexcept = 0;
 
         /**

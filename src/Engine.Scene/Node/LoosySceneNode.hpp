@@ -30,7 +30,12 @@ namespace ember::engine::scene {
 
         template <class FactoryType_>
         bool push(const ptr<PayloadType_> element_, cref<math::Bounding> boundary_,
-            const ptr<const FactoryType_> factory_) {
+            const ptr<const FactoryType_> factory_, SceneNodePath forwardPath_) {
+            throw NotImplementedException();
+        }
+
+        template <class FactoryType_>
+        bool pop(SceneNodePath path_, const ptr<PayloadType_> element_, const ptr<const FactoryType_> factory_) {
             throw NotImplementedException();
         }
 

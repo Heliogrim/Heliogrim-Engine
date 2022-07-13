@@ -107,7 +107,7 @@ bool Renderer::free(mref<ptr<HORenderPass>> renderPass_) {
 
 void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mref<CommandBatch> batch_) const {
 
-    #ifdef _DEBUG
+    #if defined(_DEBUG) || TRUE
     assert(renderPass_->renderer() == this);
     // assert(renderPass_->state() && renderPass_->state()->framebuffer);
     renderPass_->batches().clear();
@@ -136,7 +136,7 @@ void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mr
         }
     }
 
-    #ifdef _DEBUG
+    #if defined(_DEBUG) || TRUE
     if (batch_.buffers().empty()) {
 
         vk::SubmitInfo info {
@@ -152,11 +152,11 @@ void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mr
         vk::Fence fence { renderPass_->unsafeSync() };
         if (!fence) {
             fence = { _device->vkDevice().createFence(vk::FenceCreateInfo {}) };
-            #ifdef _DEBUG
+    #ifdef _DEBUG
             assert(renderPass_->storeSync(vk::Fence { fence }));
-            #else
-        renderPass_->storeSync(_STD move(fence));
-            #endif
+    #else
+            renderPass_->storeSync(_STD move(fence));
+    #endif
 
         } else {
             _device->vkDevice().resetFences(1, &fence);

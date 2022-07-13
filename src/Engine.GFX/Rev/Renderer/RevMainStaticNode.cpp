@@ -14,6 +14,7 @@
 #include <Engine.GFX/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Memory/VkAllocator.hpp>
 #include <Engine.GFX/Renderer/HORenderPass.hpp>
+#include <Engine.GFX/Renderer/RenderDataToken.hpp>
 #include <Engine.GFX/Renderer/RenderPassState.hpp>
 #include <Engine.GFX/Renderer/RenderStagePass.hpp>
 #include <Engine.GFX/Resource/StaticGeometryResource.hpp>
@@ -26,7 +27,10 @@
 #include "RevMainSharedNode.hpp"
 #include "__macro.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
+#include "Engine.GFX/Graphics.hpp"
 #include "Engine.GFX/Loader/RevTextureLoader.hpp"
+#include "Engine.GFX/Performance/RenderTokens.hpp"
+#include "Engine.GFX/Scene/ModelDataTokens.hpp"
 #include "Engine.GFX/Scene/StaticGeometryBatch.hpp"
 #include "Engine.GFX/Scene/StaticGeometryModel.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
@@ -114,7 +118,7 @@ void RevMainStaticNode::setup(cref<sptr<Device>> device_) {
 
     // TODO:
     if (!testAlbedo) {
-        RevTextureLoader loader { _device };
+        RevTextureLoader loader { Session::get()->modules().graphics()->cacheCtrl() };
         testAlbedo = loader.__tmp__load({ ""sv, R"(R:\\albedo.ktx)"sv });
         testNormal = loader.__tmp__load({ ""sv, R"(R:\\normal.ktx)"sv });
         testRoughness = loader.__tmp__load({ ""sv, R"(R:\\roughness.ktx)"sv });
@@ -215,7 +219,44 @@ void RevMainStaticNode::setup(cref<sptr<Device>> device_) {
         testRoughness.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
         testSpecular.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 
-        TextureFactory::get()->buildView(testAlbedo);
+        {
+            /**
+     * Prepare
+     */
+            const vk::ComponentMapping cm {
+                vk::ComponentSwizzle::eR,
+                vk::ComponentSwizzle::eG,
+                vk::ComponentSwizzle::eB,
+                vk::ComponentSwizzle::eA
+            };
+
+            const vk::ImageSubresourceRange isr {
+                testAlbedo.buffer()._vkAspect,
+                0,
+                testAlbedo.mipLevels(),
+                0,
+                testAlbedo.layer()
+            };
+
+            const vk::ImageViewCreateInfo ivci {
+                vk::ImageViewCreateFlags(),
+                testAlbedo.buffer().image(),
+                vk::ImageViewType::e2DArray,
+                api::vkTranslateFormat(testAlbedo.format()),
+                cm,
+                isr
+            };
+
+            /**
+             * Create
+             */
+            const vk::ImageView view = _device->vkDevice().createImageView(ivci);
+            assert(view);
+
+            testAlbedo.vkView() = view;
+        }
+
+        //TextureFactory::get()->buildView(testAlbedo);
         TextureFactory::get()->buildView(testNormal);
         TextureFactory::get()->buildView(testRoughness);
         TextureFactory::get()->buildView(testSpecular);
@@ -389,7 +430,7 @@ bool RevMainStaticNode::free(const ptr<HORenderPass> renderPass_) {
             //const auto result { device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet()) };
             //assert(result == vk::Result::eSuccess);
             #else
-            _device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet())
+            //_device->vkDevice().freeDescriptorSets(pool, 1ui32, &dbg.vkSet());
             #endif
         }
 
@@ -455,6 +496,14 @@ bool RevMainStaticNode::free(const ptr<HORenderPass> renderPass_) {
     }
 
     return true;
+}
+
+Vector<RenderDataToken> RevMainStaticNode::requiredToken() noexcept {
+    return { StaticModelGeometry, StaticModelTransform };
+}
+
+Vector<RenderDataToken> RevMainStaticNode::optionalToken() noexcept {
+    return { PerformanceQuery };
 }
 
 const non_owning_rptr<const Vector<type_id>> RevMainStaticNode::modelTypes() const noexcept {
@@ -619,7 +668,8 @@ void RevMainStaticNode::invoke(
     /**
      * Invoke Rendering Code
      */
-    cmd.drawIndexed(1, 0, res->_indexData.buffer.count(), 0ui32, 0ui32);
+    //cmd.drawIndexed(1, 0, ... / sizeof(u32), 0ui32, 0ui32);
+    cmd.drawIndexed(1, 0, 1140ui32, 0ui32, 0ui32);
 }
 
 void RevMainStaticNode::after(

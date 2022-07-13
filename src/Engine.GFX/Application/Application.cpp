@@ -1,5 +1,7 @@
 #include "Application.hpp"
 
+#include <Engine.Logging/Logger.hpp>
+
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
@@ -56,7 +58,7 @@ void Application::setup() {
         0,
         "LunarG SDK",
         0,
-        VK_API_VERSION_1_1
+        VK_API_VERSION_1_3
     };
 
     // Instance

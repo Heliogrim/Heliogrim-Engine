@@ -1,8 +1,13 @@
 #include "RenderStageProcessor.hpp"
 
+#ifdef _PROFILING
+#include <Engine.Common/Profiling/Stopwatch.hpp>
+#endif
+
 #include "Multiplexer.hpp"
 #include "HORenderPass.hpp"
 #include "RenderStagePass.hpp"
+#include "../Scene/SceneNodeModel.hpp"
 
 using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
@@ -71,11 +76,17 @@ bool RenderStageProcessor::operator()(const ptr<scene::RenderGraph::node_type> n
     const auto elementCount { node_->exclusiveSize() };
 
     for (u64 i = 0; i < elementCount; ++i) {
-        _multiplexer->dispatch(_renderPass, _stagePass, *elements);
+
+        // TODO: Rework / Rewrite
+        if (!(*elements)->markedAsDeleted()) [[likely]]
+        {
+            _multiplexer->dispatch(_renderPass, _stagePass, *elements);
+        }
+
         ++elements;
     }
 
-    return !node_->isLeaf();
+    return node_->inclusiveSize() && !node_->isLeaf();
 }
 
 void RenderStageProcessor::use(const non_owning_rptr<HORenderPass> renderPass_) noexcept {

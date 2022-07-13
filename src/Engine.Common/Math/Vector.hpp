@@ -772,6 +772,7 @@ namespace ember::math {
          * @returns whether vector is zero.
          */
         [[nodiscard]] bool zero() const {
+            // TODO: Unsafe possible float point equality operation
             return x == 0 && y == 0 && z == 0;
         }
 

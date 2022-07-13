@@ -76,7 +76,7 @@ void TaskDelegate::delegate() const {
             delete static_cast<const task::Task*>(this);
             break;
         }
-        default: { }
+            [[unlikely]] default: { }
     }
 }
 

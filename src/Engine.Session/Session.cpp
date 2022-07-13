@@ -3,6 +3,7 @@
 #include <Ember/Ember.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Common/Concurrent/Promise.hpp>
+#include <Engine.Event/ShutdownEvent.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
@@ -91,13 +92,13 @@ void Session::setup() {
 
                             // Warning: We need to call stop via scheduler, cause this thread will deadlock itself (recursive) due to window ownership and close behavior
                             // Warning: Undefined behavior if called multiple times
-                            Scheduler::get().exec(scheduler::task::make_task(Ember::stop));
+                            Scheduler::get().exec(scheduler::task::make_task(Session::stop));
                             break;
                         }
                         case SDL_EventType::SDL_QUIT: {
                             // Warning: We need to call stop via scheduler, cause this thread will deadlock itself (recursive) due to window ownership and close behavior
                             // Warning: Undefined behavior if called multiple times
-                            Scheduler::get().exec(scheduler::task::make_task(Ember::stop));
+                            Scheduler::get().exec(scheduler::task::make_task(Session::stop));
                             break;
                         }
                     }
@@ -128,6 +129,7 @@ void Session::setup() {
 }
 
 void Session::start() {
+
     /**
      *
      */
@@ -152,8 +154,8 @@ void Session::start() {
     _moduleManager.scheduler()->exec(scheduler::task::make_task(
         p,
         TaskMask::eCritical,
-        scheduler::ScheduleStageBarriers::eAll,
-        scheduler::ScheduleStageBarriers::eUndefined
+        scheduler::ScheduleStageBarriers::eBottomWeak,
+        scheduler::ScheduleStageBarriers::eBottomStrong
     ));
 
     /**
@@ -165,8 +167,18 @@ void Session::start() {
 
 void Session::stop() {
 
+    auto session = engine::Session::get();
+
+    /**
+     *
+     */
+    session->emitter().emit<ShutdownEvent>();
+
+    /**
+     *
+     */
     auto p {
-        ember::concurrent::promise<void>([core = &_core]() {
+        ember::concurrent::promise<void>([core = &(session->_core)]() {
             /**
              * Invoke core function
              *
@@ -181,7 +193,7 @@ void Session::stop() {
     /**
      * Stop Game Core
      */
-    _moduleManager.scheduler()->exec(scheduler::task::make_task(
+    session->_moduleManager.scheduler()->exec(scheduler::task::make_task(
         p,
         TaskMask::eCritical,
         scheduler::ScheduleStageBarriers::eAll,
@@ -191,13 +203,12 @@ void Session::stop() {
     /**
      * Await Game Core stopped
      */
-    f.get();
-    // await(f.signal());
+    await(f.signal());
 
     /**
      *
      */
-    _moduleManager.stop();
+    session->_moduleManager.stop();
 }
 
 void Session::wait() {

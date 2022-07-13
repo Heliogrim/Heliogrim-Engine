@@ -284,5 +284,8 @@
     <ClCompile Include="..\..\src\Ember\LogicComponent.cpp">
       <Filter>Quelldateien\Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Traits.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -36,6 +36,9 @@
     <ClInclude Include="..\..\src\Engine.ACS\ComponentTypeId.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.ACS\PoolWrapper.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.ACS\Registry.cpp">

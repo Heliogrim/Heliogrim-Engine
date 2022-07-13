@@ -4,6 +4,7 @@ using namespace ember::engine::assets;
 using namespace ember;
 
 Asset::Asset(cref<asset_guid> guid_, cref<asset_type_id> type_) :
+    EmberObject(),
     _guid(guid_),
     _type(type_) {}
 

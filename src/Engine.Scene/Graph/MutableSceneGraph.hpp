@@ -32,7 +32,7 @@ namespace ember::engine::scene {
             auto* root { underlying_type::_root.get(underlying_type::_nodeStorage.get()) };
             auto boundary { underlying_type::traits::getBounding(element_) };
 
-            return root->push(element_, boundary, &factory);
+            return root->push(element_, boundary, &factory, SceneNodePath {});
         }
 
         bool push(ptr<typename underlying_type::node_type> node_) {
@@ -49,7 +49,11 @@ namespace ember::engine::scene {
         }
 
         bool pop(const ptr<PayloadType_> element_) {
-            throw NotImplementedException();
+
+            auto factory { this->factory() };
+            auto* root { underlying_type::_root.get(underlying_type::_nodeStorage.get()) };
+
+            return root->pop(element_->sceneNodePath(), element_, &factory);
         }
 
         bool pop(const ptr<typename underlying_type::node_type> node_) {

@@ -23,7 +23,7 @@ namespace ember::engine::acs {
 
     template <typename Ty>
     FORCE_INLINE void destruct_inplace(Ty* destination_) {
-        delete destination_;
+        destination_->~Ty();
     }
 
     /**
@@ -301,6 +301,7 @@ namespace ember::engine::acs {
             if (fi == _seq.rend()) {
                 _seq.push_back({ idx_, idx_ });
                 _STD sort(_seq.begin(), _seq.end(), page_sequence_range_comparator());
+                return;
             }
 
             /**
@@ -337,6 +338,7 @@ namespace ember::engine::acs {
                 /**
                  * Erase the forward iterator and reverse iterator while there reference is stable
                  */
+                _STD advance(fi, 1u);
                 _seq.erase(fi.base());
                 _seq.erase(ri);
 
@@ -833,7 +835,7 @@ namespace ember::engine::acs {
              * @returns True if it succeeds, false if it fails.
              */
             [[nodiscard]] bool mergable(const index_type& index_) const {
-                return (end + 1u <= index_) || (begin - 1u >= index_);
+                return (end + 1u == index_) || (begin > 0u && begin - 1u == index_);
             }
 
             /**
@@ -847,7 +849,7 @@ namespace ember::engine::acs {
              * @returns True if it succeeds, false if it fails.
              */
             [[nodiscard]] bool mergable(const page_sequence& other_) const {
-                return (end + 1u <= other_.begin) || (begin - 1u >= other_.end);
+                return (end + 1u == other_.begin) || (begin > 0u && begin - 1u == other_.end);
             }
 
             [[nodiscard]] bool valid() const {
@@ -1026,7 +1028,7 @@ namespace ember::engine::acs {
             _mem(allocate_safe()),
             _keys(static_cast<KeyType*>(static_cast<void*>(static_cast<ValueType*>(_mem) + per_page))),
             _values(static_cast<ValueType*>(_mem)),
-            _seq(Vector<page_sequence>({ page_sequence { 0, per_page } })) {}
+            _seq(Vector<page_sequence>({ page_sequence { 0u, per_page - 1u } })) {}
 
     private:
         /**

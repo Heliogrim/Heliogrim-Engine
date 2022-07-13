@@ -111,6 +111,15 @@
     <ClInclude Include="..\..\src\Engine.Scene\SceneNodeModel.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\__fwd.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodePath.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeElement.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp">
@@ -136,6 +145,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scene\SceneNodeModel.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodePath.cpp">
+      <Filter>Quelldateien\Node</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

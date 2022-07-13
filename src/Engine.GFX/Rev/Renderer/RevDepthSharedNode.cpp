@@ -6,6 +6,7 @@
 #include <Engine.GFX/Command/CommandQueue.hpp>
 #include <Engine.GFX/Framebuffer/Framebuffer.hpp>
 #include <Engine.GFX/Renderer/HORenderPass.hpp>
+#include <Engine.GFX/Renderer/RenderDataToken.hpp>
 #include <Engine.GFX/Renderer/RenderPassState.hpp>
 #include <Engine.GFX/Renderer/RenderStagePass.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
@@ -98,8 +99,10 @@ bool RevDepthSharedNode::allocate(const ptr<HORenderPass> renderPass_) {
         ).second
     );
     #else
-    renderPass_->state()->data.insert_or_assign("RevDepthStage::CommandBuffer"sv, make_sptr<decltype(cmd)>(_STD move(cmd)));
-    renderPass_->state()->data.insert_or_assign("RevDepthStage::Framebuffer"sv, make_sptr<decltype(buffer)>(_STD move(buffer)));
+    renderPass_->state()->data.insert_or_assign("RevDepthStage::CommandBuffer"sv,
+        make_sptr<decltype(cmd)>(_STD move(cmd)));
+    renderPass_->state()->data.insert_or_assign("RevDepthStage::Framebuffer"sv,
+        make_sptr<decltype(buffer)>(_STD move(buffer)));
     #endif
 
     /**
@@ -166,6 +169,14 @@ bool RevDepthSharedNode::free(const ptr<HORenderPass> renderPass_) {
 
     //
     return true;
+}
+
+Vector<RenderDataToken> RevDepthSharedNode::requiredToken() noexcept {
+    return {};
+}
+
+Vector<RenderDataToken> RevDepthSharedNode::optionalToken() noexcept {
+    return {};
 }
 
 void RevDepthSharedNode::before(

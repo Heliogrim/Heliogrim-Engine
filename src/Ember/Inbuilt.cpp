@@ -15,7 +15,6 @@ void ember::delay(mref<execute_function_type> function_, ticks delay_) {
         _STD forward<execute_function_type>(function_),
         engine::scheduler::task::TaskMask::eNormal
     );
-
     /**
      * Schedule task
      */

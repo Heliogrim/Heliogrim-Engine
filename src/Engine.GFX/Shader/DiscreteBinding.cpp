@@ -179,3 +179,86 @@ void DiscreteBinding::storeAs(cref<Texture> texture_, cref<vk::ImageLayout> layo
         0, nullptr
     );
 }
+
+void DiscreteBinding::store(const ptr<const VirtualTexture> texture_) {
+
+    /**
+     * Assure optimal sampler exists
+     */
+    if (!_sampler.vkSampler() || true) {
+        TextureSampler sampler {};
+        /**
+         * Warning: Temporary
+         */
+        if (isDepthFormat(texture_->format())) {
+            sampler.addressModeU() = vk::SamplerAddressMode::eClampToEdge;
+            sampler.addressModeV() = vk::SamplerAddressMode::eClampToEdge;
+        } else {
+            sampler.addressModeU() = vk::SamplerAddressMode::eMirroredRepeat;
+            sampler.addressModeV() = vk::SamplerAddressMode::eMirroredRepeat;
+        }
+
+        /**
+         *
+         */
+        sampler.lods() = texture_->mipLevels();
+
+        sampler.setup(_super->device());
+
+        /**
+         * Exchange sampler
+         */
+        _sampler.destroy();
+        _sampler = _STD move(sampler);
+    }
+
+    /**
+     * Translate BindingType to vk::DescriptorType
+     */
+    vk::DescriptorType dt { vk::DescriptorType() };
+    switch (_super->type()) {
+        case BindingType::eImageSampler: {
+            dt = vk::DescriptorType::eCombinedImageSampler;
+            break;
+        }
+        default: {
+            #if _DEBUG
+            assert(false);
+            #else
+			return;
+            #endif
+        }
+    }
+
+    /**
+     * Build Descriptor for texture_
+     */
+    vk::DescriptorImageInfo info {
+        _sampler.vkSampler(),
+        texture_->_vkImageView,
+        vk::ImageLayout::eShaderReadOnlyOptimal
+    };
+
+    /**
+     * Build Writer
+     */
+    vk::WriteDescriptorSet writer = {
+        _vkSet,
+        _super->id(),
+        0,
+        1,
+        dt,
+        &info,
+        nullptr,
+        nullptr
+    };
+
+    /**
+     * Update DescriptorSet with build Writer
+     */
+    _super->device()->vkDevice().updateDescriptorSets(
+        1, &writer,
+        0, nullptr
+    );
+
+}

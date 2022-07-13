@@ -393,12 +393,15 @@ namespace ember::engine::scheduler {
         _STD atomic_uint64_t _packed;
     };
 
-    template <IsAtomicPayload PayloadType_>
+    template <IsAtomicPayload PayloadType_, uint_fast16_t Size_>
     class AtomicCtrlBlockPage {
     public:
         using atomic_ctrl_block = AtomicCtrlBlock<PayloadType_>;
         using atomic_ctrl_ptr = typename atomic_ctrl_block::atomic_ctrl_ptr;
         using value_type = typename atomic_ctrl_ptr::value_type;
+
+        using size_type = uint_fast16_t;
+        inline static constexpr size_type page_size = Size_;
 
     public:
         /**
@@ -445,7 +448,7 @@ namespace ember::engine::scheduler {
          */
         [[nodiscard]] atomic_ctrl_ptr get(_In_ const uint64_t idx_) {
 
-            DEBUG_ASSERT(idx_ < 16, "Index out of bound.")
+            DEBUG_ASSERT(idx_ < page_size, "Index out of bound.")
 
             auto* ctrlb = _blocks[idx_].load(_STD memory_order_consume);
 
@@ -472,7 +475,7 @@ namespace ember::engine::scheduler {
          */
         void retire(_In_ const uint64_t idx_) {
 
-            DEBUG_ASSERT(idx_ < 16, "Index out of bound.")
+            DEBUG_ASSERT(idx_ < page_size, "Index out of bound.")
 
             auto* ctrlb = _blocks[idx_].exchange(nullptr, _STD memory_order_acq_rel);
 
@@ -512,7 +515,7 @@ namespace ember::engine::scheduler {
          */
         void store(_In_ const uint64_t idx_, _In_ const value_type ptr_) {
 
-            DEBUG_ASSERT(idx_ < 16, "Index out of bound.")
+            DEBUG_ASSERT(idx_ < page_size, "Index out of bound.")
 
             auto* ctrlb = _blocks[idx_].load(_STD memory_order_consume);
 
@@ -545,7 +548,7 @@ namespace ember::engine::scheduler {
 
         [[nodiscard]] bool try_store(_In_ const uint64_t idx_, _In_ const value_type ptr_) {
 
-            DEBUG_ASSERT(idx_ < 16, "Index out of bound.")
+            DEBUG_ASSERT(idx_ < page_size, "Index out of bound.")
 
             const auto* ctrlb = _blocks[idx_].load(_STD memory_order_consume);
 
@@ -576,8 +579,8 @@ namespace ember::engine::scheduler {
         }
 
     private:
-        atomic_ctrl_block _ctrls[16];
-        _STD atomic<ptr<atomic_ctrl_block>> _blocks[16];
+        atomic_ctrl_block _ctrls[page_size];
+        _STD atomic<ptr<atomic_ctrl_block>> _blocks[page_size];
     };
 
 }

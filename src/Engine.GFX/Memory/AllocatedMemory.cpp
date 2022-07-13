@@ -38,12 +38,12 @@ ref<AllocatedMemory> AllocatedMemory::operator=(mref<AllocatedMemory> other_) no
 }
 
 void AllocatedMemory::flush(const u64 size_, const u64 offset_) {
-    const vk::MappedMemoryRange range { vkMemory, offset_, size_ };
+    const vk::MappedMemoryRange range { vkMemory, offset + offset_, size_ };
     [[maybe_unused]] auto result = vkDevice.flushMappedMemoryRanges(1, &range);
 }
 
 MemoryMapping AllocatedMemory::map(const u64 size_, const u64 offset_) {
-    mapping = vkDevice.mapMemory(vkMemory, offset_, size_, vk::MemoryMapFlags {});
+    mapping = vkDevice.mapMemory(vkMemory, offset + offset_, size_, vk::MemoryMapFlags {});
     return mapping;
 }
 

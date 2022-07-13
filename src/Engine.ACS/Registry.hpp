@@ -8,6 +8,7 @@
 #include "ComponentTypeId.hpp"
 #include "Traits.hpp"
 #include "Pool.hpp"
+#include "PoolWrapper.hpp"
 #include "Registry.hpp"
 
 namespace ember {
@@ -51,15 +52,16 @@ namespace ember::engine::acs {
         pool_type<ValueType>& getOrCreatePool() {
 
             using pool_type = pool_type<ValueType>;
+            using wrapper_type = PoolWrapper<ValueType>;
 
             auto ptr = &pool_type::getOrCreate();
 
             // Temporary
-            const type_id typeId { reinterpret_cast<u64>(ptr) };
-            auto mapped = static_cast<pool_type*>(_pools[typeId]);
+            const auto typeId { EmberClass::stid<ValueType>() };
+            auto mapped = _pools[typeId];
 
             if (mapped == nullptr) {
-                _pools[typeId] = ptr;
+                _pools[typeId] = new PoolWrapper<ValueType>(ptr);
             }
 
             return *ptr;
@@ -147,7 +149,7 @@ namespace ember::engine::acs {
         }
 
     private:
-        ska::bytell_hash_map<type_id, void*> _pools;
+        ska::bytell_hash_map<type_id, ptr<PoolWrapperBase>> _pools;
 
     public:
         template <class ValueType_, typename... Args_>
@@ -159,10 +161,20 @@ namespace ember::engine::acs {
             return result.second ? result.first : nullptr;
         }
 
+        void releaseActorComponent(cref<actor_guid> guid_, cref<type_id> typeId_);
+
+        template <IsEmberObject ValueType_>
+        void releaseActorComponent(cref<actor_guid> guid_, mref<ptr<ValueType_>> value_) {
+            // TODO: releaseActorComponent(guid_, value_->getClass()->typeId());
+            releaseActorComponent(guid_, value_->getTypeId());
+        }
+
     private:
         ptr<pool_type<Actor>> _defaultActorPool = &pool_type<Actor>::getOrCreate();
 
     public:
         [[nodiscard]] ptr<Actor> createActor() noexcept;
+
+        void destroyActor(mref<ptr<Actor>> actor_);
     };
 }

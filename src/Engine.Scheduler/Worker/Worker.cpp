@@ -85,7 +85,7 @@ void Worker::handle(void* args_) {
     /**
      *
      */
-    Worker* worker = static_cast<Worker*>(args_);
+    Worker* worker { static_cast<Worker*>(args_) };
 
     /**
      * Convert this thread to fiber
@@ -99,10 +99,16 @@ void Worker::handle(void* args_) {
     worker->setFiberHandle(fiber);
 
     /**
+     * Presolve used data
+     */
+    const auto mask { worker->mask() };
+    auto* const pipeline { worker->pipeline() };
+
+    /**
      * Resolve required objects
      */
     fiber::FiberPool& pool { *worker->_fiberPool };
-    fiber::FiberLaunchPad launcher;
+    fiber::FiberLaunchPad launcher { nullptr };
     task::__TaskDelegate task = nullptr;
 
     /**
@@ -111,12 +117,13 @@ void Worker::handle(void* args_) {
     volatile bool interrupt = false;
     worker->setInterruptPtr(&interrupt);
 
-    while (!interrupt) {
+    while (!interrupt) [[likely]]
+    {
         /**
          * Acquire next task or nullptr
          */
         task = nullptr;
-        worker->pipeline()->pop(worker->mask(), task);
+        pipeline->pop(mask, task);
 
         /**
          * Process Task
@@ -144,17 +151,25 @@ void Worker::handle(void* args_) {
             }
 
             /**
-             *
+             * Check for awaiter task
+             *  // TODO: Rewrite
              */
-            DEBUG_ASSERT(launcher.self->parent == nullptr, "")
-            DEBUG_ASSERT(launcher.self->task != nullptr, "")
-            DEBUG_ASSERT(launcher.self->task->fiber() != nullptr, "")
-            launcher.self->parent = fiber;
+            if (launcher.self->awaiter.ready()) {
 
-            /**
-             *
-             */
-            launcher();
+                /**
+                 *
+                 */
+                DEBUG_ASSERT(launcher.self->parent == nullptr, "")
+                DEBUG_ASSERT(launcher.self->task != nullptr, "")
+                DEBUG_ASSERT(launcher.self->task->fiber() != nullptr, "")
+                launcher.self->parent = fiber;
+
+                /**
+                 *
+                 */
+                launcher();
+
+            }
 
             /**
              * Check whether task suspended execution

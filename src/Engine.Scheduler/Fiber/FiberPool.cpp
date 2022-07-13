@@ -9,7 +9,8 @@ using namespace ember::engine::scheduler::fiber;
 using namespace ember;
 
 FiberPool::FiberPool(pool_container_type::size_type reserved_) :
-    _amtx(),
+    _acqMtx(),
+    _relMtx(),
     _pool(reserved_ > 0 ? reserved_ : thread::getNativeThreadCount() * 4ui32) {}
 
 FiberPool::~FiberPool() {
@@ -115,7 +116,7 @@ ptr<Fiber> FiberPool::acquireReuse() noexcept {
     /**
      *
      */
-    if (_amtx.test_and_set()) {
+    if (_acqMtx.test_and_set(_STD memory_order::acq_rel)) {
         return nullptr;
     }
 
@@ -128,7 +129,7 @@ ptr<Fiber> FiberPool::acquireReuse() noexcept {
     /**
      *
      */
-    _amtx.clear();
+    _acqMtx.clear(_STD memory_order::release);
     return fiber;
 }
 
@@ -137,7 +138,7 @@ bool FiberPool::restore(ptr<Fiber> fiber_) noexcept {
     /**
      *
      */
-    if (_amtx.test_and_set()) {
+    if (_relMtx.test_and_set(_STD memory_order::acq_rel)) {
         return false;
     }
 
@@ -145,6 +146,6 @@ bool FiberPool::restore(ptr<Fiber> fiber_) noexcept {
      *
      */
     const auto result = _pool.try_push(_STD forward<ptr<Fiber>>(fiber_));
-    _amtx.clear();
+    _relMtx.clear(_STD memory_order::release);
     return result;
 }

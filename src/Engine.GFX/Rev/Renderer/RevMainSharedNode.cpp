@@ -6,6 +6,7 @@
 #include <Engine.GFX/Command/CommandQueue.hpp>
 #include <Engine.GFX/Framebuffer/Framebuffer.hpp>
 #include <Engine.GFX/Renderer/HORenderPass.hpp>
+#include <Engine.GFX/Renderer/RenderDataToken.hpp>
 #include <Engine.GFX/Renderer/RenderPassState.hpp>
 #include <Engine.GFX/Renderer/RenderStagePass.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
@@ -151,8 +152,10 @@ bool RevMainSharedNode::allocate(const ptr<HORenderPass> renderPass_) {
         ).second
     );
     #else
-    renderPass_->state()->data.insert_or_assign("RevMainStage::CommandBuffer"sv, make_sptr<decltype(cmd)>(_STD move(cmd)));
-    renderPass_->state()->data.insert_or_assign("RevMainStage::Framebuffer"sv, make_sptr<decltype(buffer)>(_STD move(buffer)));
+    renderPass_->state()->data.insert_or_assign("RevMainStage::CommandBuffer"sv,
+        make_sptr<decltype(cmd)>(_STD move(cmd)));
+    renderPass_->state()->data.insert_or_assign("RevMainStage::Framebuffer"sv,
+        make_sptr<decltype(buffer)>(_STD move(buffer)));
     #endif
 
     /**
@@ -219,6 +222,14 @@ bool RevMainSharedNode::free(const ptr<HORenderPass> renderPass_) {
 
     //
     return true;
+}
+
+Vector<RenderDataToken> RevMainSharedNode::requiredToken() noexcept {
+    return {};
+}
+
+Vector<RenderDataToken> RevMainSharedNode::optionalToken() noexcept {
+    return {};
 }
 
 void RevMainSharedNode::before(
