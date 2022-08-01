@@ -38,12 +38,14 @@ void main() {
 
 	//out_albedo = fragPosition;
 
+	#define uv_scale_factor 4.0
+
 	vec4 sparseAlbedo = vec4(0.0);
-	int statusCode = sparseTextureARB(mapped_albedo, vec3(fragUvm.st, 0.0), sparseAlbedo);
+	int statusCode = sparseTextureARB(mapped_albedo, vec3(fragUvm.st * uv_scale_factor, 0.0), sparseAlbedo);
 
 	float minLod = 1.0f;
 	while (!sparseTexelsResidentARB(statusCode) && minLod < 13.0f) {
-		statusCode = sparseTextureClampARB(mapped_albedo, vec3(fragUvm.st, 0.0), minLod, sparseAlbedo);
+		statusCode = sparseTextureClampARB(mapped_albedo, vec3(fragUvm.st * uv_scale_factor, 0.0), minLod, sparseAlbedo);
 		minLod += 1.0f;
 	}
 

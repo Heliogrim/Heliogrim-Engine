@@ -14,9 +14,6 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-// Warning: Remove asap
-bool tmpTestObject = false;
-
 StaticGeometryLoader::StaticGeometryLoader(const ptr<cache::GlobalCacheCtrl> cache_) :
     GeometryLoader(cache_->cache()->device()),
     _cacheCtrl(cache_) {}
@@ -30,10 +27,11 @@ StaticGeometryLoader::result_type StaticGeometryLoader::operator()(
 
     auto* ptr { _cacheCtrl->cache()->request(asset_) };
 
-    if (!tmpTestObject) {
+    // TODO: Rewrite
+    if (!ptr->hasOrigin()) {
         //auto* ptr = new StaticGeometryResource {};
         loadWithAssimp(asset_, ptr);
-        tmpTestObject = true;
+        ptr->setOrigin(asset_);
     }
 
     /*
@@ -144,42 +142,70 @@ void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asse
 
         {
             const auto indexSize { sizeof(u32) * indices.size() };
-            auto* memory { dst_->_indexData.buffer->pages()[0]->memory()->allocated() };
 
-            constexpr auto shift { 7ui64 };
-            constexpr auto mask { 0b0111'1111ui64 };
+            auto firstPage { dst_->_indexData.buffer->pages().front() };
+            auto alignment { firstPage->memory()->allocated()->layout.align };
 
-            const auto aligned {
-                ((indexSize >> shift) << shift) +
-                ((indexSize & mask) ? + 1ui64 << shift : 0ui64)
+            const auto required {
+                (indexSize / alignment) +
+                ((indexSize % alignment) ? 1ui64 : 0ui64)
             };
+            for (u64 page { 0ui64 }; page < required; ++page) {
 
-            const auto patchSize { _STD min(aligned, memory->size) };
+                const auto pageDataSize { _STD min(indexSize - (page * alignment), alignment) };
 
-            memory->map(patchSize);
-            memory->write(indices.data(), indexSize);
-            memory->flush(patchSize);
-            memory->unmap();
+                constexpr auto shift { 7ui64 };
+                constexpr auto mask { 0b0111'1111ui64 };
+
+                const auto aligned {
+                    ((pageDataSize >> shift) << shift) +
+                    ((pageDataSize & mask) ? + 1ui64 << shift : 0ui64)
+                };
+
+                auto* memory { dst_->_indexData.buffer->pages()[page]->memory()->allocated() };
+                const auto patchSize { _STD min(aligned, memory->size) };
+
+                memory->map(patchSize);
+                memory->write(
+                    static_cast<const ptr<const char>>(static_cast<ptr<void>>(indices.data())) + (page * alignment),
+                    patchSize);
+                memory->flush(patchSize);
+                memory->unmap();
+            }
         }
 
         {
             const auto vertexSize { sizeof(vertex) * vertices.size() };
-            auto* memory { dst_->_vertexData.buffer->pages()[0]->memory()->allocated() };
 
-            constexpr auto shift { 7ui64 };
-            constexpr auto mask { 0b0111'1111ui64 };
+            auto firstPage { dst_->_vertexData.buffer->pages().front() };
+            auto alignment { firstPage->memory()->allocated()->layout.align };
 
-            const auto aligned {
-                ((vertexSize >> shift) << shift) +
-                ((vertexSize & mask) ? + 1ui64 << shift : 0ui64)
+            const auto required {
+                (vertexSize / alignment) +
+                ((vertexSize % alignment) ? 1ui64 : 0ui64)
             };
+            for (u64 page { 0ui64 }; page < required; ++page) {
 
-            const auto patchSize { _STD min(aligned, memory->size) };
+                const auto pageDataSize { _STD min(vertexSize - (page * alignment), alignment) };
 
-            memory->map(patchSize);
-            memory->write(vertices.data(), vertexSize);
-            memory->flush(patchSize);
-            memory->unmap();
+                constexpr auto shift { 7ui64 };
+                constexpr auto mask { 0b0111'1111ui64 };
+
+                const auto aligned {
+                    ((pageDataSize >> shift) << shift) +
+                    ((pageDataSize & mask) ? + 1ui64 << shift : 0ui64)
+                };
+
+                auto* memory { dst_->_vertexData.buffer->pages()[page]->memory()->allocated() };
+                const auto patchSize { _STD min(aligned, memory->size) };
+
+                memory->map(patchSize);
+                memory->write(
+                    static_cast<const ptr<const char>>(static_cast<ptr<void>>(vertices.data())) + (page * alignment),
+                    patchSize);
+                memory->flush(patchSize);
+                memory->unmap();
+            }
         }
     }
 

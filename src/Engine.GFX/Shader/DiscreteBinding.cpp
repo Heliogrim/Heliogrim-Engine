@@ -114,6 +114,8 @@ void DiscreteBinding::storeAs(cref<Texture> texture_, cref<vk::ImageLayout> layo
         } else {
             sampler.addressModeU() = vk::SamplerAddressMode::eMirroredRepeat;
             sampler.addressModeV() = vk::SamplerAddressMode::eMirroredRepeat;
+
+            //sampler.anisotropy() = 8.0F;
         }
 
         /**

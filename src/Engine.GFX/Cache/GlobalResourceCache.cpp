@@ -281,6 +281,7 @@ non_owning_rptr<VirtualBuffer> GlobalResourceCache::requestVertexBuffer(mref<Vec
         )
     };
 
+    /*
     u64 offset { 0ui64 };
     s64 leftPageSize { static_cast<s64>(req.alignment) };
     for (const auto pageSize : pageSizes_) {
@@ -292,10 +293,15 @@ non_owning_rptr<VirtualBuffer> GlobalResourceCache::requestVertexBuffer(mref<Vec
         // TBD:
         __debugbreak();
     }
+     */
 
-    if (leftPageSize != req.alignment) {
+    const auto required {
+        (wholeSize / req.alignment) +
+        ((wholeSize % req.alignment) ? 1ui64 : 0ui64)
+    };
 
-        auto vp { vb->addPage(req.alignment, offset) };
+    for (u64 page { 0ui64 }; page < required; ++page) {
+        auto vp { vb->addPage(req.alignment, req.alignment * page) };
 
         #ifdef _DEBUG
         assert(vp->load());
@@ -381,6 +387,7 @@ non_owning_rptr<VirtualBuffer> GlobalResourceCache::requestIndexBuffer(mref<Vect
         )
     };
 
+    /*
     u64 offset { 0ui64 };
     s64 leftPageSize { static_cast<s64>(req.alignment) };
     for (const auto pageSize : pageSizes_) {
@@ -392,10 +399,15 @@ non_owning_rptr<VirtualBuffer> GlobalResourceCache::requestIndexBuffer(mref<Vect
         // TBD:
         __debugbreak();
     }
+     */
 
-    if (leftPageSize != req.alignment) {
+    const auto required {
+        (wholeSize / req.alignment) +
+        ((wholeSize % req.alignment) ? 1ui64 : 0ui64)
+    };
 
-        auto vp { vb->addPage(req.alignment, offset) };
+    for (u64 page { 0ui64 }; page < required; ++page) {
+        auto vp { vb->addPage(req.alignment, req.alignment * page) };
 
         #ifdef _DEBUG
         assert(vp->load());

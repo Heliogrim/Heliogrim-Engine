@@ -490,7 +490,10 @@ void RevDepthStaticNode::invoke(
      * Invoke Rendering
      */
     //cmd.drawIndexed(1, 0, ... / sizeof(u32), 0ui32, 0ui32);
-    cmd.drawIndexed(1, 0, 1140ui32, 0ui32, 0ui32);
+    //cmd.drawIndexed(1, 0, 1140ui32, 0ui32, 0ui32);
+    const auto* res { static_cast<const ptr<StaticGeometryResource>>(model->geometryResource()) };
+    auto* asset { static_cast<const ptr<const assets::StaticGeometry>>(res->origin()) };
+    cmd.drawIndexed(1, 0, asset->getIndexCount(), 0, 0);
 }
 
 void RevDepthStaticNode::after(
