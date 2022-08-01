@@ -92,6 +92,7 @@ void MemoryPool::treeSplice(mref<ptr<AllocatedMemory>> memory_, const u64 target
 
         _pooling.insert(next);
 
+        #if FALSE
         const auto size { next->size >> 2ui64 };
         const auto baseOffset { next->offset };
 
@@ -111,6 +112,26 @@ void MemoryPool::treeSplice(mref<ptr<AllocatedMemory>> memory_, const u64 target
         _memory.push_back(sparse[2]);
 
         next = sparse[3];
+        #endif
+
+        const auto size { next->size >> 1ui64 };
+        const auto baseOffset { next->offset };
+
+        // Prevent to much splitting under target size
+        if (size < targetSize_) {
+            break;
+        }
+
+        const ptr<AllocatedMemory> sparse[] {
+            make_ptr<AllocatedMemory>(next->allocator, next, _layout, size,
+                baseOffset, next->vkDevice, next->vkMemory, nullptr),
+            make_ptr<AllocatedMemory>(next->allocator, next, _layout, size,
+                baseOffset + size, next->vkDevice, next->vkMemory, nullptr)
+        };
+
+        _memory.push_back(sparse[0]);
+
+        next = sparse[1];
     }
 
     _memory.push_back(next);
@@ -120,7 +141,7 @@ void MemoryPool::treeSplice(mref<ptr<AllocatedMemory>> memory_, const u64 target
     });
 }
 
-AllocationResult MemoryPool::allocate(const u64 size_, ref<ptr<AllocatedMemory>> dst_) {
+AllocationResult MemoryPool::allocate(const u64 size_, const bool bestFit_, ref<ptr<AllocatedMemory>> dst_) {
 
     auto lbe = std::ranges::lower_bound(_memory, size_,
         [](u64 left_, u64 right_) {
@@ -135,7 +156,7 @@ AllocationResult MemoryPool::allocate(const u64 size_, ref<ptr<AllocatedMemory>>
         return AllocationResult::eOutOfMemory;
     }
 
-    if ((*lbe)->size == size_) {
+    if ((*lbe)->size == size_ || (bestFit_ && (*lbe)->size >= size_)) {
         auto* mem { *lbe };
         _memory.erase(lbe);
 
@@ -156,7 +177,11 @@ AllocationResult MemoryPool::allocate(const u64 size_, ref<ptr<AllocatedMemory>>
     _memory.erase(lbe);
 
     treeSplice(_STD move(mem), size_);
-    return allocate(size_, dst_);
+    return allocate(size_, true, dst_);
+}
+
+AllocationResult MemoryPool::allocate(const u64 size_, ref<ptr<AllocatedMemory>> dst_) {
+    return allocate(size_, false, dst_);
 }
 
 bool MemoryPool::free(mref<ptr<AllocatedMemory>> mem_) {

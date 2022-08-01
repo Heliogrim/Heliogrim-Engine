@@ -27,7 +27,8 @@ void TextureSampler::setup(cref<sptr<Device>> device_) {
         vk::SamplerCreateFlags(),
         _magnification,
         _minification,
-        vk::SamplerMipmapMode::eNearest,
+        //vk::SamplerMipmapMode::eNearest,
+        _minification == vk::Filter::eLinear ? vk::SamplerMipmapMode::eLinear : vk::SamplerMipmapMode::eNearest,
         _addressModeU,
         _addressModeV,
         _addressModeW,
@@ -52,6 +53,10 @@ void TextureSampler::destroy() {
 }
 
 float TextureSampler::anisotropy() const noexcept {
+    return _anisotropy;
+}
+
+float& TextureSampler::anisotropy() noexcept {
     return _anisotropy;
 }
 

@@ -64,6 +64,16 @@ namespace ember::engine::gfx {
          */
         [[nodiscard]] float anisotropy() const noexcept;
 
+        /**
+         * Gets the anisotropy
+         *
+         * @author Julius
+         * @date 20.11.2020
+         *
+         * @returns A reference to the float.
+         */
+        [[nodiscard]] float& anisotropy() noexcept;
+
     private:
         /**
          * Lod's

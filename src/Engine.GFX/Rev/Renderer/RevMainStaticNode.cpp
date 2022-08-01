@@ -763,7 +763,9 @@ void RevMainStaticNode::invoke(
      * Invoke Rendering Code
      */
     //cmd.drawIndexed(1, 0, ... / sizeof(u32), 0ui32, 0ui32);
-    cmd.drawIndexed(1, 0, 1140ui32, 0ui32, 0ui32);
+    //cmd.drawIndexed(1, 0, 1140ui32, 0ui32, 0ui32);
+    auto* asset { static_cast<const ptr<const assets::StaticGeometry>>(res->origin()) };
+    cmd.drawIndexed(1, 0, asset->getIndexCount(), 0ui32, 0ui32);
 }
 
 void RevMainStaticNode::after(
