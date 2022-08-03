@@ -3,6 +3,7 @@
 #include <Engine.Assets/Types/GfxMaterial.hpp>
 #include <Engine.Resource/Loader/Loader.hpp>
 
+#include <Engine.GFX/Buffer/__fwd.hpp>
 #include <Engine.GFX/Cache/__fwd.hpp>
 
 namespace ember::engine::gfx {
@@ -21,6 +22,11 @@ namespace ember::engine::gfx {
 
     private:
         ptr<cache::GlobalCacheCtrl> _cacheCtrl;
+
+    private:
+        void makeStageBuffer(const u64 size_, _Out_ ref<Buffer> stageBuffer_);
+
+        void destroyStageBuffer(mref<Buffer> stageBuffer_);
 
     public:
         [[nodiscard]] result_type operator()(const ptr<assets::GfxMaterial> asset_, options_type options_) override;

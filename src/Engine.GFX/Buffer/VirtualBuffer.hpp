@@ -4,6 +4,7 @@
 
 #include "../Device/Device.hpp"
 #include "VirtualBufferPage.hpp"
+#include "__fwd.hpp"
 
 namespace ember::engine::gfx {
 
@@ -85,6 +86,32 @@ namespace ember::engine::gfx {
         non_owning_rptr<VirtualBufferPage> addPage(const u64 size_, const u64 offset_);
 
         [[nodiscard]] cref<Vector<ptr<VirtualBufferPage>>> pages() const noexcept;
+
+    private:
+        void assureTiledPages(
+            const u64 offset_,
+            const u64 size_
+        );
+
+        void selectPages(
+            const u64 offset_,
+            const u64 size_,
+            _Inout_ ref<Vector<non_owning_rptr<VirtualBufferPage>>> pages_
+        );
+
+    public:
+        /**
+         * Create an sub-resource view of this virtual buffer
+         *
+         * @author Julius
+         * @datte 03.08.20222
+         *
+         * @returns A unique pointer to the created view
+         */
+        [[nodiscard]] uptr<VirtualBufferView> makeView(
+            const u64 offset_,
+            const u64 size_
+        );
 
     private:
         Vector<vk::SparseMemoryBind> _bindings;

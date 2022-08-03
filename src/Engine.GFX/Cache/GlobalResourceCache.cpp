@@ -3,6 +3,7 @@
 #include "Engine.GFX/Geometry/Vertex.hpp"
 #include "Engine.GFX/Memory/AllocationResult.hpp"
 #include "../Texture/TextureFactory.hpp"
+#include "../Material/MaterialMetaDto.hpp"
 
 using namespace ember::engine::gfx::cache;
 using namespace ember::engine::gfx;
@@ -190,6 +191,120 @@ ptr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Textur
     auto view { atlas->makeView(0ui32/* TODO: Layers */, { 0ui32, asset_->getMipLevelCount() - 1ui32 }) };
 
     auto* res { make_ptr<TextureResource>() };
+    res->setOrigin(asset_);
+    res->_payload.view = _STD move(view);
+
+    /**
+     * Store requested resource
+     */
+    _mapped.insert_or_assign(asset_->get_guid(), res);
+    return res;
+}
+
+ptr<MaterialResource> GlobalResourceCache::request(const ptr<const assets::GfxMaterial> asset_) {
+    /**
+     * Check whether resource does already exists
+     */
+    auto iter { _mapped.find(asset_->get_guid()) };
+    if (iter != _mapped.end()) {
+        return static_cast<ptr<MaterialResource>>(iter->second);
+    }
+
+    /**
+     *
+     */
+    ptr<VirtualBuffer> buffer { nullptr };
+    if (buffer == nullptr) {
+
+        // Warning: Experimental
+        constexpr const auto dataSize { sizeof(experimental::MaterialMetaDto) };
+
+        /**
+         * Create sparse vulkan buffer
+         */
+        vk::BufferCreateInfo ci {
+            vk::BufferCreateFlagBits::eSparseBinding | vk::BufferCreateFlagBits::eSparseResidency,
+            dataSize,
+            vk::BufferUsageFlagBits::eUniformBuffer /* vk::BufferUsageFlagBits::eStorageBuffer */ |
+            vk::BufferUsageFlagBits::eTransferDst,
+            vk::SharingMode::eExclusive,
+            0ui32,
+            nullptr,
+            nullptr
+        };
+
+        auto vkBuffer { _device->vkDevice().createBuffer(ci) };
+
+        /**
+         * Store page meta data and allocate
+         */
+
+        // Warning: The following memory management only works as long as the requested data size is less or equal to the memory requirements alignment
+        const auto req { _device->vkDevice().getBufferMemoryRequirements(vkBuffer) };
+        const memory::MemoryLayout layout {
+            req.alignment,
+            MemoryProperty::eDeviceLocal,
+            req.memoryTypeBits
+        };
+
+        /**
+         * Get suitable virtual memory instance
+         */
+        auto memory {
+            make_uptr<VirtualMemory>(
+                _device->allocator(),
+                layout,
+                req.size
+            )
+        };
+
+        /**
+         * Gather virtual buffer instance
+         */
+        buffer = make_ptr<VirtualBuffer>(
+            _STD move(memory),
+            vkBuffer,
+            ci.usage
+        );
+
+        const auto required {
+            (dataSize / req.alignment) +
+            ((dataSize % req.alignment) ? 1ui64 : 0ui64)
+        };
+
+        for (u64 page { 0ui64 }; page < required; ++page) {
+            auto vp { buffer->addPage(req.alignment, req.alignment * page) };
+
+            #ifdef _DEBUG
+            assert(vp->load());
+            #else
+        vp->load();
+            #endif
+        }
+
+        /**
+         * Bind buffer and allocated memory
+         */
+        buffer->updateBindingData();
+
+        #pragma warning(push)
+        #pragma warning(disable : 4996)
+        buffer->enqueueBindingSync(_device->graphicsQueue());
+        #pragma warning(pop)
+
+        /**
+         * Store and return virtual buffer
+         */
+        auto ubuffer { _STD unique_ptr<VirtualBuffer>(buffer) };
+        _materialBuffer.push_back(_STD move(ubuffer));
+    }
+
+    /**
+     *
+     */
+    auto view { buffer->makeView(0ui32, 0ui32) };
+
+    auto* res { new MaterialResource() };
     res->setOrigin(asset_);
     res->_payload.view = _STD move(view);
 

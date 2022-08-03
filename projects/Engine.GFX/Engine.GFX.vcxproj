@@ -97,6 +97,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\Buffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBufferPage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBufferView.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\GlobalCacheCtrl.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\GlobalResourceCache.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\LocalCacheCtrl.cpp" />
@@ -220,6 +221,8 @@
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\Buffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBufferPage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBufferView.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\CacheCtrlSubject.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\CacheResult.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\CacheStaticGeometrySubject.hpp" />
@@ -285,6 +288,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Material\Material.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMapFlags.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMeta.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMetaDto.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Memory\AllocatedMemory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Memory\Allocator.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Memory\AllocationResult.hpp" />
