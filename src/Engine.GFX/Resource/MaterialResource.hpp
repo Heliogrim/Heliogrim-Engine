@@ -2,6 +2,7 @@
 #include <Engine.Resource/Manage/Resource.hpp>
 
 #include "TextureResource.hpp"
+#include "../Buffer/VirtualBufferView.hpp"
 
 namespace ember::engine::gfx {
 
@@ -22,6 +23,9 @@ namespace ember::engine::gfx {
             ptr<TextureResource> normal;
             ptr<TextureResource> roughness;
             ptr<TextureResource> ao;
+            //
+            uptr<VirtualBufferView> view;
+            bool __pseudo_stored;
         } _payload;
 
     public:

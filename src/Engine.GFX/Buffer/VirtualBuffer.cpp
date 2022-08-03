@@ -2,6 +2,7 @@
 
 #include "../Memory/VirtualMemory.hpp"
 #include "../Command/CommandQueue.hpp"
+#include "VirtualBufferView.hpp"
 
 // TODO: Remove
 #include "Engine.GFX/Graphics.hpp"
@@ -139,6 +140,59 @@ non_owning_rptr<VirtualBufferPage> VirtualBuffer::addPage(const u64 size_, const
 
 cref<Vector<ptr<VirtualBufferPage>>> VirtualBuffer::pages() const noexcept {
     return _pages;
+}
+
+void VirtualBuffer::assureTiledPages(const u64 offset_, const u64 size_) {}
+
+void VirtualBuffer::selectPages(
+    const u64 offset_,
+    const u64 size_,
+    ref<Vector<non_owning_rptr<VirtualBufferPage>>> pages_
+) {
+
+    const u64 lowerBound { offset_ };
+    const u64 upperBound { offset_ + size_ };
+
+    for (auto* const entry : _pages) {
+
+        const u64 pageUpperBound { entry->resourceOffset() + entry->resourceSize() };
+
+        if (entry->resourceOffset() > upperBound || lowerBound > pageUpperBound) {
+            continue;
+        }
+
+        pages_.push_back(entry);
+    }
+
+}
+
+uptr<VirtualBufferView> VirtualBuffer::makeView(const u64 offset_, const u64 size_) {
+
+    assureTiledPages(offset_, size_);
+
+    Vector<non_owning_rptr<VirtualBufferPage>> pages {};
+    selectPages(offset_, size_, pages);
+
+    /**
+     * Take the time to sort the pages by it's mip level (virtual backing)
+     */
+    _STD ranges::sort(pages, [](non_owning_rptr<VirtualBufferPage> left_, non_owning_rptr<VirtualBufferPage> right_) {
+        return left_->resourceOffset() < right_->resourceOffset();
+    });
+
+    /**
+     *
+     */
+    const auto view {
+        new VirtualBufferView(
+            this,
+            _STD move(pages),
+            offset_,
+            size_
+        )
+    };
+
+    return _STD unique_ptr<VirtualBufferView>(view);
 }
 
 void VirtualBuffer::updateBindingData() {

@@ -266,7 +266,6 @@ void ember_main_entry() {
     //execute(_STD move(buildTask));
 
     //
-    /*
     execute([&, next = _STD move(buildTask)]() {
         Vector<ptr<Actor>> storage {};
         burstBuildActors(1024ui64, storage);
@@ -279,7 +278,6 @@ void ember_main_entry() {
         yield();
         execute(RepetitiveTask { next });
     });
-     */
 
     //
     execute(buildGlobalPlane);

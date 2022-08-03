@@ -753,6 +753,15 @@
     <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTexturePageFlag.hpp">
       <Filter>Headerdateien\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBufferView.hpp">
+      <Filter>Headerdateien\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\__fwd.hpp">
+      <Filter>Headerdateien\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMetaDto.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
@@ -1119,6 +1128,9 @@
       <Filter>Quelldateien\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\Buffer.cpp">
+      <Filter>Quelldateien\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBufferView.cpp">
       <Filter>Quelldateien\Buffer</Filter>
     </ClCompile>
   </ItemGroup>

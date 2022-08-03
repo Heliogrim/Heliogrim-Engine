@@ -3,6 +3,7 @@
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Assets/Types/GfxMaterial.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 #include "__fwd.hpp"
@@ -10,6 +11,7 @@
 #include "../Device/Device.hpp"
 #include "../Resource/StaticGeometryResource.hpp"
 #include "../Resource/TextureResource.hpp"
+#include "../Resource/MaterialResource.hpp"
 #include "../Texture/VirtualTexture.hpp"
 
 namespace ember::engine::gfx::cache {
@@ -72,6 +74,8 @@ namespace ember::engine::gfx::cache {
 
         [[nodiscard]] ptr<TextureResource> request(const ptr<const assets::Texture> asset_);
 
+        [[nodiscard]] ptr<MaterialResource> request(const ptr<const assets::GfxMaterial> asset_);
+
         void drop(cref<asset_guid> guid_, mref<ptr<StaticGeometryResource>> resource_);
 
     private:
@@ -112,5 +116,9 @@ namespace ember::engine::gfx::cache {
         Vector<uptr<VirtualTexture>> _textureAtlas;
 
     private:
+        /**
+         * Material Buffer
+         */
+        Vector<uptr<VirtualBuffer>> _materialBuffer;
     };
 }
