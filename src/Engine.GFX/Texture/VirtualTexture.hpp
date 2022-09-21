@@ -104,10 +104,13 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 22.06.2022
          *
+         * @param layers_ The set of layers `[min, max]` to include
+         * @param mipLevels_ The set of mip levels `[min, max]` to include
+         *
          * @returns A unique pointer to the created view.
          */
         [[nodiscard]] uptr<VirtualTextureView> makeView(
-            u32 layer_,
+            math::uivec2 layers_,
             math::uivec2 mipLevels_
         );
 

@@ -387,6 +387,15 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Cerberus.cpp">
       <Filter>Quelldateien\Assets\GfxMaterials</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Skybox01.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Skybox01.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultSkybox.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\ForestGround.hpp">
@@ -808,6 +817,21 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Cerberus.hpp">
       <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Skybox01.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Skybox01.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Skybox01.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultSkybox.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultSkybox.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

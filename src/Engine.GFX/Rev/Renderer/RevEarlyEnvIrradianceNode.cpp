@@ -33,6 +33,7 @@
 
 #include "Engine.GFX/Graphics.hpp"
 #include "Engine.GFX/Loader/RevTextureLoader.hpp"
+#include "Engine.GFX/Scene/SkyboxModel.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.GFX/Texture/Texture.hpp"
 
@@ -43,6 +44,9 @@ static engine::gfx::Texture testCubeMap {};
 
 RevEarlyEnvIrradiance::RevEarlyEnvIrradiance() :
     RenderStageNode(),
+    _modelTypes({
+        EmberClass::stid<SkyboxModel>()
+    }),
     _envIrradExtent(64ui32, 64ui32),
     _envIrradFormat(TextureFormat::eR32G32B32A32Sfloat) {}
 
@@ -404,6 +408,22 @@ bool RevEarlyEnvIrradiance::free(const ptr<HORenderPass> renderPass_) {
         state->data.erase(poolIt);
     }
 
+    /**
+     *
+     */
+    it = state->data.find("RevEarlyEnvIrradianceNode::LastRecordedActor"sv);
+    if (it != state->data.end()) {
+
+        sptr<ptr<void>> dbgs {
+            _STD static_pointer_cast<ptr<void>, void>(it->second)
+        };
+
+        /**/
+        state->data.erase(it);
+    }
+
+    state->data.erase("RevEarlyEnvIrradianceNode::ShouldUpdate"sv);
+
     return true;
 }
 
@@ -415,6 +435,10 @@ Vector<RenderDataToken> RevEarlyEnvIrradiance::optionalToken() noexcept {
     return {};
 }
 
+const non_owning_rptr<const Vector<type_id>> RevEarlyEnvIrradiance::modelTypes() const noexcept {
+    return &_modelTypes;
+}
+
 void RevEarlyEnvIrradiance::before(
     const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_
@@ -424,19 +448,6 @@ void RevEarlyEnvIrradiance::before(
 
     auto* state { renderPass_->state().get() };
     const auto& data { state->data };
-
-    const bool shouldUpdate { true };
-
-    if (shouldUpdate) {
-
-        /**
-         * Prepare Command Bufferr
-         */
-        const auto cmdEntry { data.at("RevEarlyEnvIrradianceNode::CommandBuffer"sv) };
-        auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
-
-        cmd.begin();
-    }
 }
 
 void RevEarlyEnvIrradiance::invoke(
@@ -448,17 +459,40 @@ void RevEarlyEnvIrradiance::invoke(
     SCOPED_STOPWATCH
 
     auto* state { renderPass_->state().get() };
-    const auto& data { state->data };
+    auto& data { state->data };
 
-    const bool shouldUpdate { true };
+    /**
+     *
+     */
+    const auto* model { static_cast<const ptr<SkyboxModel>>(model_) };
+    ptr<void> lastOwner { nullptr };
 
+    const auto lastActorEntry { data.find("RevEarlyEnvIrradianceNode::LastRecordedActor"sv) };
+    if (lastActorEntry != data.end()) {
+        lastOwner = *_STD static_pointer_cast<ptr<void>, void>(lastActorEntry->second);
+    }
+
+    const bool shouldUpdate { lastOwner != model->owner() };
+
+    if (shouldUpdate) {
+        data.insert_or_assign("RevEarlyEnvIrradianceNode::ShouldUpdate"sv, nullptr);
+    } else {
+        data.erase("RevEarlyEnvIrradianceNode::ShouldUpdate"sv);
+    }
+
+    /**
+     *
+     */
     if (shouldUpdate) {
 
         /**
-         * Get Command Buffer
+         * Prepare Command Bufferr
          */
         const auto cmdEntry { data.at("RevEarlyEnvIrradianceNode::CommandBuffer"sv) };
         auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
+
+        cmd.reset();
+        cmd.begin();
 
         /**
          * Get Irradiance Cube
@@ -673,6 +707,9 @@ void RevEarlyEnvIrradiance::invoke(
             1ui32,
             &toSampleLayout
         );
+
+        //
+        data.insert_or_assign("RevEarlyEnvIrradianceNode::LastRecordedActor"sv, make_sptr<ptr<void>>(model->owner()));
     }
 }
 
@@ -685,7 +722,7 @@ void RevEarlyEnvIrradiance::after(
 
     const auto& data { renderPass_->state()->data };
 
-    const bool shouldUpdate { true };
+    const bool shouldUpdate { data.find("RevEarlyEnvIrradianceNode::ShouldUpdate"sv) != data.end() };
 
     if (shouldUpdate) {
 

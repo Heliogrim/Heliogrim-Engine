@@ -25,6 +25,7 @@
 #include "Assets/GfxMaterials/DryGroundRocks01.hpp"
 #include "Assets/GfxMaterials/ForestGround01.hpp"
 #include "Assets/GfxMaterials/Rock01.hpp"
+#include "Assets/GfxMaterials/Skybox01.hpp"
 #include "Assets/GfxMaterials/Stick01.hpp"
 #include "Assets/GfxMaterials/WoodenPier01Planks.hpp"
 #include "Assets/GfxMaterials/WoodenPier01Poles.hpp"
@@ -36,6 +37,7 @@
 #include "Assets/Meshes/Dandelion01.hpp"
 #include "Assets/Meshes/PlaneD128.hpp"
 #include "Assets/Meshes/Rock01.hpp"
+#include "Assets/Meshes/Sphere.hpp"
 #include "Assets/Meshes/Stick01.hpp"
 #include "Assets/Meshes/WoodenPier01Planks.hpp"
 #include "Assets/Meshes/WoodenPier01Poles.hpp"
@@ -43,6 +45,7 @@
 #include "Assets/Meshes/WoodenBucket02.hpp"
 #include "Assets/Textures/ForestGround01Diffuse.hpp"
 #include "Ember/Ember.hpp"
+#include "Ember/SkyboxComponent.hpp"
 #include "Ember/World.hpp"
 #include "Engine.Assets/Types/GfxMaterial.hpp"
 #include "Engine.Assets/Types/Texture/Texture.hpp"
@@ -595,6 +598,8 @@ void burstDestroyActors(mref<Vector<ptr<Actor>>> actors_) {
 
 #pragma endregion
 
+#pragma region Simple Assets
+
 void buildGlobalPlane(s32 dim_) {
 
     const auto ext { 4.F * static_cast<float>(dim_) };
@@ -759,11 +764,42 @@ ptr<Actor> buildDandelion01() {
     return actor;
 }
 
+#pragma endregion
+
+/**/
+
+#pragma region Skybox Assets
+
+ptr<Actor> buildSkyboxAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
+
+    auto* actor = await(CreateActor(traits::async));
+
+    auto& initializer { ActorInitializer::get() };
+    auto* cmp { initializer.createComponent<SkyboxComponent>(actor) };
+
+    auto query { Ember::assets()[meshGuid_] };
+    cmp->setSkyboxGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&query.value));
+
+    query = Ember::assets()[materialGuid_];
+    cmp->setSkyboxMaterialByAsset(*static_cast<ptr<GfxMaterialAsset>>(&query.value));
+
+    GetWorld()->addActor(actor);
+
+    return actor;
+}
+
+#pragma endregion
+
 void buildTestScene() {
 
     //buildGlobalPlane(12i32);
 
     //buildRock01();
+
+    auto* skyboxActor = buildSkyboxAsset(
+        game::assets::meshes::Sphere::auto_guid(),
+        game::assets::material::Skybox01::auto_guid()
+    );
 
     #if TRUE
     auto* actor = buildSimpleAsset(
@@ -781,13 +817,10 @@ void buildTestScene() {
     #endif
 
     #if FALSE
-    [[maybe_unused]] auto* sphere = buildSphere();
-
     [[maybe_unused]] auto* rock01 = buildRock01();
     [[maybe_unused]] auto* stick01 = buildStick01();
 
     [[maybe_unused]] auto* poles01 = buildWoodenPier01Poles();
-    [[maybe_unused]] auto* planks01 = buildWoodenPier01Planks();
 
     [[maybe_unused]] auto* bucket01 = buildWoodenBucket01();
     [[maybe_unused]] auto* bucket02 = buildWoodenBucket02();

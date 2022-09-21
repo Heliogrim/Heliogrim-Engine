@@ -628,11 +628,15 @@ void Graphics::reschedule() {
 
 }
 
-#include <Ember/StaticGeometryComponent.hpp>
 #include <Engine.Scene/RevScene.hpp>
 
-#include "Scene/SceneTag.hpp"
+#include <Ember/StaticGeometryComponent.hpp>
 #include "Scene/StaticGeometryModel.hpp"
+
+#include <Ember/SkyboxComponent.hpp>
+#include "Scene/SkyboxModel.hpp"
+
+#include "Scene/SceneTag.hpp"
 
 bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
     _renderScene = scene_;
@@ -648,8 +652,12 @@ bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
      *
      */
     auto* const scene { static_cast<const ptr<scene::RevScene>>(scene_) };
+
     scene->setNodeType(GfxSceneTag {}, StaticGeometryComponent::typeId,
         EmberObject::create<StaticGeometryModel, const ptr<SceneComponent>>);
+
+    scene->setNodeType(GfxSceneTag {}, SkyboxComponent::typeId,
+        EmberObject::create<SkyboxModel, const ptr<SceneComponent>>);
 
     /**
      *

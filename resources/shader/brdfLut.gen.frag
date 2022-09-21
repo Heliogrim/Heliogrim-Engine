@@ -113,7 +113,7 @@ vec2 integrBrdf(float ndv, float rough) {
 
 		if (ndl > 0.0) {
 
-			float G = geo_sch_smith(ndv, ndv, rough);
+			float G = geo_sch_smith(ndl, ndv, rough);
 			float Gv = (G * vdh) / (ndh * ndv);
 			float F = fresnel_sch(vdh, 0.0, 1.0);
 			

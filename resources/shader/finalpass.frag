@@ -450,7 +450,7 @@ void main() {
 	vec3 rspec = preflec * (kS * brdf.x + brdf.y);
 
 
-	vec3 ambient = (kD * irrDiff + rspec);
+	vec3 ambient = (kD * irrDiff + rspec) * mrs.b;
 	// vec3 ambient = irradiance * albedo.rgb /* * ao.r */ * 0.8;
 	// vec3 ambient = (kD * irrDiff) * mrs.b;
 

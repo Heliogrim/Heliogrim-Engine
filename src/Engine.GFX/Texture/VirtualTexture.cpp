@@ -142,9 +142,10 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makePage(
     assert(
         _format == TextureFormat::eR8Unorm ||
         _format == TextureFormat::eR8G8B8A8Unorm ||
+        _format == TextureFormat::eR16G16B16A16Sfloat ||
         _format == TextureFormat::eR32G32B32A32Sfloat ||
         _format == TextureFormat::eR16Sfloat);
-    assert(_type == TextureType::e2dArray);
+    assert(_type == TextureType::e2dArray || _type == TextureType::eCube);
 
     #ifdef _DEBUG
     assert(_layers >= layer_);
@@ -193,9 +194,10 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makeOpaquePage(u32 layer_) {
     assert(
         _format == TextureFormat::eR8Unorm ||
         _format == TextureFormat::eR8G8B8A8Unorm ||
+        _format == TextureFormat::eR16G16B16A16Sfloat ||
         _format == TextureFormat::eR32G32B32A32Sfloat ||
         _format == TextureFormat::eR16Sfloat);
-    assert(_type == TextureType::e2dArray);
+    assert(_type == TextureType::e2dArray || _type == TextureType::eCube);
 
     #ifdef _DEBUG
     assert(_layers >= layer_);
@@ -372,7 +374,7 @@ void VirtualTexture::selectPages(
     }
 }
 
-uptr<VirtualTextureView> VirtualTexture::makeView(u32 layer_, math::uivec2 mipLevels_) {
+uptr<VirtualTextureView> VirtualTexture::makeView(math::uivec2 layers_, math::uivec2 mipLevels_) {
 
     math::uivec2 mipLevels {
         _mipLevels.min > mipLevels_.min ? _mipLevels.min : mipLevels_.min,
@@ -391,10 +393,12 @@ uptr<VirtualTextureView> VirtualTexture::makeView(u32 layer_, math::uivec2 mipLe
     /**
      * Assure view will be fully backed by virtual texture pages
      */
-    assureTiledPages(layer_, mipLevels, {}, _extent);
+    for (auto layer { layers_.min }; layer <= layers_.max; ++layer) {
+        assureTiledPages(layer, mipLevels, {}, _extent);
+    }
 
     Vector<non_owning_rptr<VirtualTexturePage>> pages {};
-    selectPages({ layer_, layer_ + 1ui32 }, mipLevels, {}, _extent, pages);
+    selectPages({ layers_.min, layers_.max + 1ui32 }, mipLevels, {}, _extent, pages);
 
     /**
      * Take the time to sort the pages by it's mip level (virtual backing)
@@ -410,7 +414,7 @@ uptr<VirtualTextureView> VirtualTexture::makeView(u32 layer_, math::uivec2 mipLe
         new VirtualTextureView(
             this,
             _STD move(pages),
-            layer_,
+            layers_,
             _extent,
             _format,
             mipLevels,

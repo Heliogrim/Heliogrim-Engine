@@ -278,6 +278,8 @@ Texture load_impl(const Url& url_,
 
         const gli::texture_cube ct { glitex };
 
+        assert(result.depth() == 1ui32);
+
         for (uint32_t face = 0; face < glitex.faces(); face++) {
             for (uint32_t level = 0; level < result.mipLevels(); ++level) {
 
@@ -291,13 +293,13 @@ Texture load_impl(const Url& url_,
                         aspect,
                         level,
                         face,
-                        result.depth()
+                        1ui32
                     },
                     vk::Offset3D(),
                     vk::Extent3D {
                         static_cast<uint32_t>(se.x),
                         static_cast<uint32_t>(se.y),
-                        result.depth()
+                        1ui32
                     }
                 };
 
@@ -542,6 +544,11 @@ void deduceFromFormat(cref<gli::format> format_, ref<vk::Format> vkFormat_, ref<
             aspect_ = vk::ImageAspectFlagBits::eColor;
             break;
         }
+        case gli::FORMAT_RGBA16_SFLOAT_PACK16: {
+            vkFormat_ = vk::Format::eR16G16B16A16Sfloat;
+            aspect_ = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
         case gli::FORMAT_RGBA32_UINT_PACK32: {
             vkFormat_ = vk::Format::eR32G32B32A32Uint;
             aspect_ = vk::ImageAspectFlagBits::eColor;
@@ -648,7 +655,11 @@ uptr<VirtualTextureView> TextureLoader::loadTo(
     assert(url_.hasPath());
 
     auto dst { _STD move(dst_) };
-    assert(dst->type() == TextureType::e2d || dst->type() == TextureType::e2dArray);
+    assert(
+        dst->type() == TextureType::e2d ||
+        dst->type() == TextureType::e2dArray ||
+        (dst->type() == TextureType::eCube && not (flags_ & TextureLoaderFlagBits::eLazyDataLoading))
+    );
     /**/
 
     auto url = url_.path();
@@ -661,7 +672,7 @@ uptr<VirtualTextureView> TextureLoader::loadTo(
     vk::ImageAspectFlags aspect;
 
     u32 effectedMipLevels { 0ui32 };
-    u32 layerCount { 1ui32 };
+    const u32 layerCount { dst->type() == TextureType::eCube ? 6ui32 : 1ui32 };
     /**/
 
     if (flags_ & TextureLoaderFlagBits::eLazyDataLoading) {
@@ -762,7 +773,7 @@ uptr<VirtualTextureView> TextureLoader::loadTo(
 
     Vector<vk::BufferImageCopy> regions {};
 
-    if (!(flags_ & TextureLoaderFlagBits::eLazyDataLoading)) {
+    if (not (flags_ & TextureLoaderFlagBits::eLazyDataLoading)) {
 
         /**
          * Setup vulkan stage buffer to eager load texture
@@ -815,35 +826,66 @@ uptr<VirtualTextureView> TextureLoader::loadTo(
         /**
          * Fetch Region per Layer
          */
-        uint32_t srcOff = 0;
+        uint32_t offset = 0;
 
-        /**
-         * Copy Buffer Image (2D / 2D Array)
-         */
-        for (uint32_t level = 0; level < effectedMipLevels; ++level) {
+        if (dst->type() == TextureType::eCube) {
 
-            const auto srcExt { glitex.extent(level) };
+            const gli::texture_cube ct { glitex };
 
-            vk::BufferImageCopy copy {
-                srcOff,
-                0,
-                0,
-                {
-                    aspect,
-                    level,
-                    dst->baseLayer(),
-                    layerCount
-                },
-                vk::Offset3D(),
-                vk::Extent3D {
-                    static_cast<u32>(srcExt.x),
-                    static_cast<u32>(srcExt.y),
-                    static_cast<u32>(srcExt.z)
+            for (uint32_t face = 0; face < glitex.faces(); face++) {
+                for (uint32_t level = 0; level < dst->mipLevels(); ++level) {
+
+                    const auto se = ct[face][level].extent();
+
+                    vk::BufferImageCopy copy {
+                        offset,
+                        0,
+                        0,
+                        {
+                            aspect,
+                            level,
+                            face,
+                            1ui32
+                        },
+                        vk::Offset3D(),
+                        vk::Extent3D {
+                            static_cast<uint32_t>(se.x),
+                            static_cast<uint32_t>(se.y),
+                            1ui32
+                        }
+                    };
+
+                    regions.push_back(copy);
+                    offset += static_cast<uint32_t>(ct[face][level].size());
                 }
-            };
+            }
 
-            regions.push_back(copy);
-            srcOff += static_cast<uint32_t>(glitex.size(level));
+        } else {
+            /**
+             * Copy Buffer Image (2D / 2D Array)
+             */
+            for (uint32_t level = 0; level < dst->mipLevels(); ++level) {
+                vk::BufferImageCopy copy {
+                    offset,
+                    0,
+                    0,
+                    {
+                        aspect,
+                        level,
+                        0,
+                        dst->type() == TextureType::e2dArray ? dst->depth() : 1
+                    },
+                    vk::Offset3D(),
+                    vk::Extent3D {
+                        dst->width() / (0x1 << level),
+                        dst->height() / (0x1 << level),
+                        dst->type() == TextureType::e2dArray ? 1 : dst->depth()
+                    }
+                };
+
+                regions.push_back(copy);
+                offset += static_cast<uint32_t>(glitex.size(level));
+            }
         }
 
         // Warning: Temporary
@@ -945,7 +987,7 @@ uptr<VirtualTextureView> TextureLoader::loadTo(
 
     cmd.vkCommandBuffer().pipelineBarrier(
         vk::PipelineStageFlagBits::eTransfer,
-        vk::PipelineStageFlagBits::eTransfer,
+        vk::PipelineStageFlagBits::eAllGraphics,
         vk::DependencyFlags(),
         0, nullptr,
         0, nullptr,

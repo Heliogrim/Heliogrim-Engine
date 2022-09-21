@@ -180,6 +180,9 @@
     <ClInclude Include="..\..\src\Ember\CachedActorPointer.hpp">
       <Filter>Headerdateien\Actors</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Ember\SkyboxComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember\AudioFormat.cpp">
@@ -286,6 +289,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\Traits.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\SkyboxComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

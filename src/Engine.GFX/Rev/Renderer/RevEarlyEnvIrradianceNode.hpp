@@ -33,6 +33,9 @@ namespace ember::engine::gfx::render {
         [[nodiscard]] Vector<RenderDataToken> optionalToken() noexcept override;
 
     public:
+        [[nodiscard]] const non_owning_rptr<const Vector<type_id>> modelTypes() const noexcept override;
+
+    public:
         void before(
             const non_owning_rptr<HORenderPass> renderPass_,
             const non_owning_rptr<RenderStagePass> stagePass_

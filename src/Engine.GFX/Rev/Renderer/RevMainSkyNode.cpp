@@ -27,7 +27,11 @@
 #include "__macro.hpp"
 #include "Engine.GFX/Graphics.hpp"
 #include "Engine.GFX/Loader/RevTextureLoader.hpp"
+#include "Engine.GFX/Scene/SkyboxModel.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
+#include "Engine.Resource/ResourceManager.hpp"
+#include "Engine.Resource/LoaderManager.hpp"
+#include "Game.Main/Assets/Textures/DefaultSkybox.hpp"
 
 using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
@@ -36,6 +40,9 @@ using namespace ember;
 static Texture testCubeMap {};
 
 RevMainSkyNode::RevMainSkyNode(const ptr<RevMainSharedNode> sharedNode_) :
+    _modelTypes({
+        EmberClass::stid<SkyboxModel>()
+    }),
     _sharedNode(sharedNode_) {}
 
 void RevMainSkyNode::setup(cref<sptr<Device>> device_) {
@@ -246,7 +253,6 @@ bool RevMainSkyNode::allocate(const ptr<HORenderPass> renderPass_) {
      * Pre Store
      */
     dbgs[0].getById(shader::ShaderBinding::id_type { 1 }).store(uniform);
-    dbgs[1].getById(shader::ShaderBinding::id_type { 2 }).store(testCubeMap);
 
     /**
      * Store State
@@ -268,9 +274,6 @@ bool RevMainSkyNode::free(const ptr<HORenderPass> renderPass_) {
     SCOPED_STOPWATCH
 
     const auto state { renderPass_->state() };
-
-    // Warning: Experimental one time recording and reuse
-    state->data.erase("RevMainSkyNode::RecordedCommandBuffer"sv);
 
     /**
      * Free Descriptors
@@ -364,6 +367,22 @@ bool RevMainSkyNode::free(const ptr<HORenderPass> renderPass_) {
         renderPass_->state()->data.erase(it);
     }
 
+    /**
+     * Free last owner reference
+     */
+    it = renderPass_->state()->data.find("RevMainSkyNode::LastRecordedActor"sv);
+    if (it != renderPass_->state()->data.end()) {
+
+        sptr<ptr<void>> cmd {
+            _STD static_pointer_cast<ptr<void>, void>(it->second)
+        };
+
+        /**
+         *
+         */
+        renderPass_->state()->data.erase(it);
+    }
+
     return true;
 }
 
@@ -373,6 +392,10 @@ Vector<RenderDataToken> RevMainSkyNode::requiredToken() noexcept {
 
 Vector<RenderDataToken> RevMainSkyNode::optionalToken() noexcept {
     return {};
+}
+
+const non_owning_rptr<const Vector<type_id>> RevMainSkyNode::modelTypes() const noexcept {
+    return &_modelTypes;
 }
 
 void RevMainSkyNode::before(
@@ -402,68 +425,6 @@ void RevMainSkyNode::before(
     mv[3] = math::vec4(0.F, 0.F, 0.F, 1.F);
     math::mat4 mvp { clip_matrix * camera->projection() * mv };
     uniform.write<math::mat4>(&mvp, 1ui32);
-
-    /**
-     * Prepare Command Buffer
-     */
-    const auto cmdEntry { data.at("RevMainSkyNode::CommandBuffer"sv) };
-    auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
-
-    const auto entry { data.at("RevMainStage::Framebuffer"sv) };
-    auto& frame { *_STD static_pointer_cast<Framebuffer, void>(entry) };
-
-    // Warning: Experimental one time recording and reuse
-    const auto checked { data.find("RevMainSkyNode::RecordedCommandBuffer"sv) };
-    if (checked != data.end()) {
-        return;
-    }
-
-    const vk::CommandBufferInheritanceInfo inheritance {
-        _sharedNode->loRenderPass()->vkRenderPass(),
-        0ui32,
-        frame.vkFramebuffer(),
-        VK_FALSE,
-        {},
-        {}
-    };
-    const vk::CommandBufferBeginInfo info {
-        vk::CommandBufferUsageFlagBits::eRenderPassContinue | vk::CommandBufferUsageFlagBits::eSimultaneousUse,
-        &inheritance
-    };
-    cmd.vkCommandBuffer().begin(info);
-
-    /**
-     *
-     */
-    cmd.bindPipeline(_pipeline.get(), {
-        frame.width(),
-        frame.height(),
-        0.F,
-        1.F
-    });
-
-    /**
-     * Bind Shared Resources for the whole Frame
-     */
-    sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
-        _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
-            data.find("RevMainSkyNode::DiscreteBindingGroups"sv)->second
-        )
-    };
-
-    for (u32 idx = 0; idx < dbgs->size(); ++idx) {
-
-        const auto& grp { (*dbgs)[idx] };
-
-        if (grp.super().interval() == shader::BindingUpdateInterval::ePerFrame) {
-            cmd.bindDescriptor(idx, grp.vkSet());
-        }
-
-        if (grp.super().interval() == shader::BindingUpdateInterval::eMaterialUpdate) {
-            cmd.bindDescriptor(idx, grp.vkSet());
-        }
-    }
-    // TODO: _cmd->bindDescriptor({...});
 }
 
 void RevMainSkyNode::invoke(
@@ -474,22 +435,110 @@ void RevMainSkyNode::invoke(
 
     SCOPED_STOPWATCH
 
-    const auto& data { renderPass_->state()->data };
-
-    // Warning: Experimental one time recording and reuse
-    const auto checked { data.find("RevMainSkyNode::RecordedCommandBuffer"sv) };
-    if (checked != data.end()) {
-        return;
-    }
+    auto& data { renderPass_->state()->data };
 
     /**
-     * Get Command Buffer
+     *
      */
-    const auto cmdEntry { data.at("RevMainSkyNode::CommandBuffer"sv) };
-    auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
+    const auto* model { static_cast<const ptr<SkyboxModel>>(model_) };
+    ptr<void> lastOwner { nullptr };
 
-    // TODO: cmd.bindDescriptor(...);
-    cmd.draw(1, 0, 36, 0);
+    const auto lastActorEntry { data.find("RevMainSkyNode::LastRecordedActor"sv) };
+    if (lastActorEntry != data.end()) {
+        lastOwner = *_STD static_pointer_cast<ptr<void>, void>(lastActorEntry->second);
+    }
+
+    const bool skyboxChanged { lastOwner != model->owner() };
+    if (skyboxChanged) {
+
+        /**
+         * Prepare Command Buffer
+         */
+        const auto cmdEntry { data.at("RevMainSkyNode::CommandBuffer"sv) };
+        auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
+
+        const auto entry { data.at("RevMainStage::Framebuffer"sv) };
+        auto& frame { *_STD static_pointer_cast<Framebuffer, void>(entry) };
+
+        cmd.reset();
+
+        const vk::CommandBufferInheritanceInfo inheritance {
+            _sharedNode->loRenderPass()->vkRenderPass(),
+            0ui32,
+            frame.vkFramebuffer(),
+            VK_FALSE,
+            {},
+            {}
+        };
+        const vk::CommandBufferBeginInfo info {
+            vk::CommandBufferUsageFlagBits::eRenderPassContinue | vk::CommandBufferUsageFlagBits::eSimultaneousUse,
+            &inheritance
+        };
+        cmd.vkCommandBuffer().begin(info);
+
+        /**
+         *
+         */
+        cmd.bindPipeline(_pipeline.get(), {
+            frame.width(),
+            frame.height(),
+            0.F,
+            1.F
+        });
+
+        /**
+         * Bind Shared Resources for the whole Frame
+         */
+        sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
+            _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
+                data.find("RevMainSkyNode::DiscreteBindingGroups"sv)->second
+            )
+        };
+
+        for (u32 idx = 0; idx < dbgs->size(); ++idx) {
+
+            const auto& grp { (*dbgs)[idx] };
+
+            if (grp.super().interval() == shader::BindingUpdateInterval::ePerFrame) {
+                cmd.bindDescriptor(idx, grp.vkSet());
+            }
+
+            if (grp.super().interval() == shader::BindingUpdateInterval::eMaterialUpdate) {
+                cmd.bindDescriptor(idx, grp.vkSet());
+            }
+        }
+
+        /**
+         *
+         */
+        if (model->hasOverrideMaterials()) {
+
+            const auto* first { model->overrideMaterials().front() };
+
+            ptr<const VirtualTextureView> skyboxView { nullptr };
+
+            if (first->_payload.diffuse) {
+                skyboxView = first->_payload.diffuse->_payload.view.get();
+
+            } else {
+                skyboxView = getDefaultSkybox();
+            }
+
+            (*dbgs)[1].getById(shader::ShaderBinding::id_type { 2 }).store(skyboxView->owner());
+            //(*dbgs)[1].getById(shader::ShaderBinding::id_type { 2 }).store(testCubeMap);
+        }
+
+        // TODO: cmd.bindDescriptor(...);
+        cmd.draw(1, 0, 36, 0);
+
+        /**
+         * End Command Buffer
+         */
+        cmd.end();
+
+        //
+        data.insert_or_assign("RevMainSkyNode::LastRecordedActor"sv, make_sptr<ptr<void>>(model->owner()));
+    }
 }
 
 void RevMainSkyNode::after(
@@ -501,24 +550,16 @@ void RevMainSkyNode::after(
 
     const auto& data { renderPass_->state()->data };
 
-    // Warning: Experimental one time recording and reuse
-    const auto checked {
-        renderPass_->state()->data.insert_or_assign("RevMainSkyNode::RecordedCommandBuffer"sv, nullptr)
-    };
+    const auto lastActor { data.find("RevMainSkyNode::LastRecordedActor"sv) };
+    if (lastActor == data.end()) {
+        return;
+    }
 
     /**
      * Get Command Buffer
      */
     const auto cmdEntry { data.at("RevMainSkyNode::CommandBuffer"sv) };
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
-
-    // Stop recording
-    if (checked.second) {
-        /**
-         * End Command Buffer
-         */
-        cmd.end();
-    }
 
     // Commit Secondary to Primary
     {
@@ -631,4 +672,83 @@ void RevMainSkyNode::setupShader(cref<sptr<Device>> device_) {
         _requiredBindingGroups.push_back(group);
     }
 
+}
+
+const ptr<const VirtualTextureView> RevMainSkyNode::getDefaultSkybox() const {
+
+    const auto defaultSkyboxGuid { game::assets::texture::DefaultSkybox::auto_guid() };
+
+    const auto* const db { Session::get()->modules().assetDatabase() };
+    auto& loader { Session::get()->modules().resourceManager()->loader() };
+
+    /**
+     * Load texture assets -> Get resource handler
+     */
+    auto query { db->query(defaultSkyboxGuid) };
+
+    if (not query.exists()) {
+        delete (new game::assets::texture::DefaultSkybox());
+        query = db->query(defaultSkyboxGuid);
+    }
+
+    assert(query.exists());
+
+    auto* const defaultSkyboxAsset { query.get() };
+
+    #ifdef _DEBUG
+    if (!defaultSkyboxAsset->getClass()->isExactType<engine::assets::Texture>()) {
+        __debugbreak();
+    }
+    #endif
+
+    /**/
+    auto skyboxTextureResource {
+        static_cast<const ptr<TextureResource>>(loader.loadImmediately(defaultSkyboxAsset))
+    };
+    VirtualTextureView* defaultSkybox = skyboxTextureResource->_payload.view.get();
+
+    /**
+     * Pretransform Layout
+     */
+    Vector<vk::ImageMemoryBarrier> imgBarriers {};
+    imgBarriers.push_back({
+        vk::AccessFlags {},
+        vk::AccessFlagBits::eShaderRead,
+        vk::ImageLayout::eTransferSrcOptimal,
+        vk::ImageLayout::eShaderReadOnlyOptimal,
+        VK_QUEUE_FAMILY_IGNORED,
+        VK_QUEUE_FAMILY_IGNORED,
+        defaultSkybox->owner()->vkImage(),
+        vk::ImageSubresourceRange {
+            vk::ImageAspectFlagBits::eColor,
+            defaultSkybox->minMipLevel(),
+            defaultSkybox->mipLevels(),
+            defaultSkybox->baseLayer(),
+            defaultSkybox->layers()
+        }
+    });
+
+    auto pool = _device->graphicsQueue()->pool();
+    pool->lck().acquire();
+    CommandBuffer iiCmd = pool->make();
+    iiCmd.begin();
+
+    /**
+     * Transform
+     */
+    iiCmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
+        vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
+        0, nullptr,
+        0, nullptr,
+        static_cast<uint32_t>(imgBarriers.size()), imgBarriers.data()
+    );
+
+    iiCmd.end();
+    iiCmd.submitWait();
+    iiCmd.release();
+
+    pool->lck().release();
+
+    /**/
+    return defaultSkybox;
 }

@@ -132,11 +132,15 @@ ptr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Textur
     }
 
     const auto& extent { asset_->getExtent() };
+    u32 layers { 1ui32 };
     const auto format { asset_->getTextureFormat() };
     const auto type { asset_->getTextureType() };
 
-    // Warning: Currently only support single layer 2d images
-    if (extent.z != 1ui32 || type != TextureType::e2d) {
+    // Warning: Temporary Solution
+    if (type == TextureType::eCube && extent.z == 1ui32) {
+        layers = 6ui32;
+    } else if (extent.z != 1ui32 || type != TextureType::e2d) {
+        // Warning: Currently only support single layer 2d images
         __debugbreak();
         return nullptr;
     }
@@ -172,11 +176,11 @@ ptr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Textur
     if (atlas == nullptr) {
 
         atlas = TextureFactory::get()->buildVirtual({
-            1ui32/* TODO: Layers */,
+            layers/* TODO: Layers */,
             extent,
             format,
             math::uivec2 { 0ui32, asset_->getMipLevelCount() - 1ui32 },
-            TextureType::e2dArray,
+            type == TextureType::eCube ? TextureType::eCube : TextureType::e2dArray,
             vk::ImageAspectFlagBits::eColor,
             vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
             vk::MemoryPropertyFlagBits::eDeviceLocal,
@@ -190,7 +194,7 @@ ptr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Textur
     /**
      *
      */
-    auto view { atlas->makeView(0/* TODO: Layers */, { 0ui32, asset_->getMipLevelCount() - 1ui32 }) };
+    auto view { atlas->makeView({ 0ui32, layers - 1ui32 }, { 0ui32, asset_->getMipLevelCount() - 1ui32 }) };
 
     auto* res { make_ptr<TextureResource>() };
     res->setOrigin(asset_);

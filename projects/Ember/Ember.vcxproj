@@ -51,6 +51,7 @@
     <ClInclude Include="..\..\src\Ember\SkeletalGeometryAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\SkeletalGeometryComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\SkinnedGeometryComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\SkyboxComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\SoundAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\StaticGeometryActor.hpp" />
     <ClInclude Include="..\..\src\Ember\StaticGeometryAsset.hpp" />
@@ -93,6 +94,7 @@
     <ClCompile Include="..\..\src\Ember\SceneComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\SfxMaterialAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\SkeletalGeometryAsset.cpp" />
+    <ClCompile Include="..\..\src\Ember\SkyboxComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\SoundAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\StaticGeometryActor.cpp" />
     <ClCompile Include="..\..\src\Ember\StaticGeometryAsset.cpp" />

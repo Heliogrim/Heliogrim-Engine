@@ -13,10 +13,17 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
+#ifdef _DEBUG
 static std::vector<const char*> deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
     VK_KHR_MULTIVIEW_EXTENSION_NAME
 };
+#else
+static std::vector<const char*> deviceExtensions = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    VK_KHR_MULTIVIEW_EXTENSION_NAME
+};
+#endif
 
 static std::vector<const char*> validationLayers = {
     #ifdef _DEBUG
@@ -24,7 +31,8 @@ static std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
     #endif
     #ifdef ENABLE_RENDERDOC
-			,"VK_LAYER_RENDERDOC_Capture"
+    ,
+    "VK_LAYER_RENDERDOC_Capture"
     #endif
 };
 
@@ -150,7 +158,6 @@ void Device::setup() {
         dCi.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
         dCi.ppEnabledLayerNames = validationLayers.data();
     }
-
 
     vk::PhysicalDeviceMultiviewFeatures pdmf {};
     pdmf.multiview = VK_TRUE;
