@@ -199,6 +199,7 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\GrassWild01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Rock01.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Skybox01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Stick01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenBucket01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenBucket02.cpp" />
@@ -257,6 +258,7 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultMetalness.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultNormal.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultRoughness.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultSkybox.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01AO.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Diffuse.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Normal.cpp" />
@@ -276,6 +278,7 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Rock01Diffuse.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Rock01Normal.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Rock01Roughness.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Skybox01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Stick01AO.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Stick01Diffuse.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Stick01Normal.cpp" />
@@ -304,6 +307,7 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\GrassWild01.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Rock01.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Skybox01.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Stick01.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenBucket01.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenBucket02.hpp" />
@@ -324,6 +328,7 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultMetalness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultNormal.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultRoughness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultSkybox.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01AO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Diffuse.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Normal.hpp" />
@@ -343,6 +348,7 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\Rock01Diffuse.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\Rock01Normal.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\Rock01Roughness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Skybox01.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\Stick01AO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\Stick01Diffuse.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\Stick01Normal.hpp" />
@@ -397,6 +403,7 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultMetalness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultNormal.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultRoughness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultSkybox.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01AO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Diffuse.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Normal.hpp" />
@@ -416,6 +423,7 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Rock01Diffuse.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Rock01Normal.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Rock01Roughness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Skybox01.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Stick01AO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Stick01Diffuse.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Stick01Normal.hpp" />

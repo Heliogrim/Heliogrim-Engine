@@ -15,7 +15,7 @@ namespace ember {
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
-    protected:
+    public:
         /**
          * Constructor
          *
@@ -26,6 +26,7 @@ namespace ember {
          */
         GfxMaterialAsset(cref<asset_guid> guid_) noexcept;
 
+    protected:
         /**
          * Constructor
          *

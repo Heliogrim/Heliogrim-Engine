@@ -190,6 +190,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevRenderer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Texture\RevVirtualMarkerTexture.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\GeometryModel.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Scene\SkyboxModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\StaticGeometryBatch.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\StaticGeometryModel.cpp" />
@@ -379,6 +380,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Scene\GeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\LandscapeGeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\ModelDataTokens.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\SkyboxModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\StaticGeometryBatch.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneTag.hpp" />

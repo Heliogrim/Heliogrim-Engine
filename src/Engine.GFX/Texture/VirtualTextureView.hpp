@@ -25,7 +25,7 @@ namespace ember::engine::gfx {
 
     protected:
         VirtualTextureView(non_owning_rptr<VirtualTexture> owner_,
-            mref<Vector<non_owning_rptr<VirtualTexturePage>>> pages_, u32 layer_, math::uivec3 extent_,
+            mref<Vector<non_owning_rptr<VirtualTexturePage>>> pages_, math::uivec2 layers_, math::uivec3 extent_,
             TextureFormat format_, math::uivec2 mipLevels_, TextureType type_);
 
     public:
@@ -53,10 +53,12 @@ namespace ember::engine::gfx {
         Vector<non_owning_rptr<VirtualTexturePage>> _pages;
 
     private:
-        u32 _baseLayer;
+        math::uivec2 _layers;
 
     public:
-        [[nodiscard]] u32 baseLayer() const noexcept;
+        [[nodiscard]] math::uivec2::value_type baseLayer() const noexcept;
+
+        [[nodiscard]] math::uivec2::value_type layers() const noexcept;
 
     private:
         math::uivec3 _extent;

@@ -41,11 +41,12 @@ RevTextureLoader::result_type RevTextureLoader::operator()(const ptr<assets::Tex
 
     /**/
     const auto isDefault { baseImage->sources().front().path().contains("default"sv) };
+    const auto isSkybox { baseImage->sources().front().path().contains("skybox"sv) };
     /**/
 
     if (!res->_payload.__pseudo_stored) {
 
-        if (isDefault) {
+        if (isDefault || isSkybox) {
 
             constexpr loader::TextureLoaderFlags flags { loader::TextureLoaderFlagBits::eLockLoaded };
 

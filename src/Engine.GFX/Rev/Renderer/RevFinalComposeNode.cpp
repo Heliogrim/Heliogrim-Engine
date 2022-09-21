@@ -263,11 +263,12 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
             storeAs(*pbrPosition, vk::ImageLayout::eShaderReadOnlyOptimal);
     dbgs[0].getById(shader::ShaderBinding::id_type { 5 }).storeAs(*pbrMrs, vk::ImageLayout::eShaderReadOnlyOptimal);
     dbgs[0].getById(shader::ShaderBinding::id_type { 6 }).
-            storeAs(*depth, vk::ImageLayout::eDepthStencilAttachmentOptimal);
+            storeAs(*depth, vk::ImageLayout::eDepthStencilReadOnlyOptimal);
     dbgs[0].getById(shader::ShaderBinding::id_type { 7 }).
             storeAdv(*brdfLut, vk::ImageLayout::eShaderReadOnlyOptimal, vk::SamplerAddressMode::eClampToEdge,
                 vk::SamplerMipmapMode::eLinear, vk::Filter::eLinear, vk::BorderColor::eFloatOpaqueWhite);
-    dbgs[0].getById(shader::ShaderBinding::id_type { 8 }).storeAs(*prefiltered, vk::ImageLayout::eShaderReadOnlyOptimal);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 8 }).
+            storeAs(*prefiltered, vk::ImageLayout::eShaderReadOnlyOptimal);
     dbgs[0].getById(shader::ShaderBinding::id_type { 9 }).storeAs(*irradiance, vk::ImageLayout::eShaderReadOnlyOptimal);
 
     /**
@@ -440,6 +441,41 @@ void RevFinalComposeNode::before(
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
     cmd.begin();
 
+    {
+        const sptr<Framebuffer> depthFrame {
+            _STD static_pointer_cast<Framebuffer, void>(data.find("RevDepthStage::Framebuffer"sv)->second)
+        };
+        const sptr<Texture> depth {
+            depthFrame->attachments().at(0).unwrapped()
+        };
+
+        vk::ImageMemoryBarrier dpb {
+            vk::AccessFlagBits::eNone,
+            vk::AccessFlagBits::eNone,
+            vk::ImageLayout::eDepthStencilAttachmentOptimal,
+            vk::ImageLayout::eDepthStencilReadOnlyOptimal,
+            VK_QUEUE_FAMILY_IGNORED,
+            VK_QUEUE_FAMILY_IGNORED,
+            depth->buffer().image(),
+            vk::ImageSubresourceRange {
+                vk::ImageAspectFlagBits::eDepth,
+                0ui32,
+                1ui32,
+                0ui32,
+                1ui32
+            }
+        };
+
+        cmd.vkCommandBuffer().pipelineBarrier(
+            vk::PipelineStageFlagBits::eAllGraphics,
+            vk::PipelineStageFlagBits::eAllGraphics,
+            vk::DependencyFlagBits::eByRegion,
+            0, nullptr,
+            0, nullptr,
+            1, &dpb
+        );
+    }
+
     const auto entry { data.at("RevFinalComposeNode::Framebuffer"sv) };
     auto& framebuffer { *_STD static_pointer_cast<Framebuffer, void>(entry) };
 
@@ -450,7 +486,7 @@ void RevFinalComposeNode::before(
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
     const auto* camera { renderPass_->camera() };
-    auto pos {camera->position()};
+    auto pos { camera->position() };
     uniform.write<math::vec3>(&pos, 1ui32);
 
     /**

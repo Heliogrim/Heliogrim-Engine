@@ -3,6 +3,10 @@
 #include <Engine.GFX/Renderer/RenderStageNode.hpp>
 #include <Engine.GFX/Shader/ShaderBindingGroup.hpp>
 
+namespace ember::engine::gfx {
+    class VirtualTextureView;
+}
+
 namespace ember::engine::gfx::render {
     class RevMainSharedNode;
 }
@@ -35,6 +39,9 @@ namespace ember::engine::gfx::render {
         [[nodiscard]] Vector<RenderDataToken> optionalToken() noexcept override;
 
     public:
+        [[nodiscard]] const non_owning_rptr<const Vector<type_id>> modelTypes() const noexcept override;
+
+    public:
         void before(
             const non_owning_rptr<HORenderPass> renderPass_,
             const non_owning_rptr<RenderStagePass> stagePass_
@@ -55,6 +62,9 @@ namespace ember::engine::gfx::render {
         void setupShader(cref<sptr<Device>> device_);
 
     private:
+        Vector<type_id> _modelTypes;
+
+    private:
         sptr<Device> _device;
 
     private:
@@ -64,5 +74,8 @@ namespace ember::engine::gfx::render {
     private:
         Vector<vk::DescriptorPoolCreateInfo> _requiredDescriptorPools;
         Vector<shader::ShaderBindingGroup> _requiredBindingGroups;
+
+    private:
+        [[nodiscard]] const ptr<const VirtualTextureView> getDefaultSkybox() const;
     };
 }

@@ -361,7 +361,7 @@ ptr<VirtualTexture> VkTextureFactory::buildVirtual(const VirtualTextureBuildPayl
         const vk::ImageViewCreateInfo ivci {
             vk::ImageViewCreateFlags(),
             image,
-            vkTranslateView(TextureType::e2dArray),
+            vkTranslateView(payload_.type),
             api::vkTranslateFormat(payload_.format),
             cm,
             isr

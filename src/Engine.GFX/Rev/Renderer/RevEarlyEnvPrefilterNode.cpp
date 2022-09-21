@@ -33,6 +33,7 @@
 
 #include "Engine.GFX/Graphics.hpp"
 #include "Engine.GFX/Loader/RevTextureLoader.hpp"
+#include "Engine.GFX/Scene/SkyboxModel.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.GFX/Texture/Texture.hpp"
 
@@ -48,6 +49,9 @@ static engine::gfx::Texture testCubeMap {};
 
 RevEarlyEnvPrefilterNode::RevEarlyEnvPrefilterNode() :
     RenderStageNode(),
+    _modelTypes({
+        EmberClass::stid<SkyboxModel>()
+    }),
     _envPrefilterExtent(512ui32, 512ui32),
     _envPrefilterFormat(TextureFormat::eR16G16B16A16Sfloat) {}
 
@@ -409,6 +413,22 @@ bool RevEarlyEnvPrefilterNode::free(const ptr<HORenderPass> renderPass_) {
         state->data.erase(poolIt);
     }
 
+    /**
+     *
+     */
+    it = state->data.find("RevEarlyEnvPrefilterNode::LastRecordedActor"sv);
+    if (it != state->data.end()) {
+
+        sptr<ptr<void>> dbgs {
+            _STD static_pointer_cast<ptr<void>, void>(it->second)
+        };
+
+        /**/
+        state->data.erase(it);
+    }
+
+    state->data.erase("RevEarlyEnvPrefilterNode::ShouldUpdate"sv);
+
     return true;
 }
 
@@ -420,6 +440,10 @@ Vector<RenderDataToken> RevEarlyEnvPrefilterNode::optionalToken() noexcept {
     return {};
 }
 
+const non_owning_rptr<const Vector<type_id>> RevEarlyEnvPrefilterNode::modelTypes() const noexcept {
+    return &_modelTypes;
+}
+
 void RevEarlyEnvPrefilterNode::before(
     const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_
@@ -429,19 +453,6 @@ void RevEarlyEnvPrefilterNode::before(
 
     auto* state { renderPass_->state().get() };
     const auto& data { state->data };
-
-    const bool shouldUpdate { true };
-
-    if (shouldUpdate) {
-
-        /**
-         * Prepare Command Bufferr
-         */
-        const auto cmdEntry { data.at("RevEarlyEnvPrefilterNode::CommandBuffer"sv) };
-        auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
-
-        cmd.begin();
-    }
 }
 
 void RevEarlyEnvPrefilterNode::invoke(
@@ -453,17 +464,40 @@ void RevEarlyEnvPrefilterNode::invoke(
     SCOPED_STOPWATCH
 
     auto* state { renderPass_->state().get() };
-    const auto& data { state->data };
+    auto& data { state->data };
 
-    const bool shouldUpdate { true };
+    /**
+     *
+     */
+    const auto* model { static_cast<const ptr<SkyboxModel>>(model_) };
+    ptr<void> lastOwner { nullptr };
 
+    const auto lastActorEntry { data.find("RevEarlyEnvPrefilterNode::LastRecordedActor"sv) };
+    if (lastActorEntry != data.end()) {
+        lastOwner = *_STD static_pointer_cast<ptr<void>, void>(lastActorEntry->second);
+    }
+
+    const bool shouldUpdate { lastOwner != model->owner() };
+
+    if (shouldUpdate) {
+        data.insert_or_assign("RevEarlyEnvPrefilterNode::ShouldUpdate"sv, nullptr);
+    } else {
+        data.erase("RevEarlyEnvPrefilterNode::ShouldUpdate"sv);
+    }
+
+    /**
+     *
+     */
     if (shouldUpdate) {
 
         /**
-         * Get Command Buffer
+         * Prepare Command Bufferr
          */
         const auto cmdEntry { data.at("RevEarlyEnvPrefilterNode::CommandBuffer"sv) };
         auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
+
+        cmd.reset();
+        cmd.begin();
 
         /**
          * Get Prefilter Cube
@@ -699,6 +733,9 @@ void RevEarlyEnvPrefilterNode::invoke(
             1ui32,
             &toSampleLayout
         );
+
+        //
+        data.insert_or_assign("RevEarlyEnvPrefilterNode::LastRecordedActor"sv, make_sptr<ptr<void>>(model->owner()));
     }
 }
 
@@ -711,7 +748,7 @@ void RevEarlyEnvPrefilterNode::after(
 
     const auto& data { renderPass_->state()->data };
 
-    const bool shouldUpdate { true };
+    const bool shouldUpdate { data.find("RevEarlyEnvPrefilterNode::ShouldUpdate"sv) != data.end() };
 
     if (shouldUpdate) {
 
