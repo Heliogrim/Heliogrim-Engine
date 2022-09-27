@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\Renderer">
+      <UniqueIdentifier>{3b6091a4-5afd-4f0a-8fe0-32c9a54a7757}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Renderer">
+      <UniqueIdentifier>{6222e1d7-c766-49f8-9365-efe292688391}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Renderer\State">
+      <UniqueIdentifier>{3a2cbf70-9697-40ee-a631-8b87c092094a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Renderer\State">
+      <UniqueIdentifier>{30ca86e3-9241-49ff-a379-c021b5182be5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\State\__fwd.hpp">
+      <Filter>Headerdateien\Renderer\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\State\RevSfMtt.hpp">
+      <Filter>Headerdateien\Renderer\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\__macro.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevDepthSharedNode.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevDepthSkeletalNode.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevDepthStage.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevDepthStaticNode.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevEarlyBrdfLutNode.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevEarlyEnvIrradianceNode.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevEarlyEnvPrefilterNode.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevEarlySFNode.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevEarlyStage.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevFinalComposeNode.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevFinalStage.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevLightStage.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevMainSharedNode.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevMainSkeletalNode.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevMainSkyNode.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevMainStage.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevMainStaticNode.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevProbeStage.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevRenderer.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevDepthSharedNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevDepthSkeletalNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevDepthStage.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevDepthStaticNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevEarlyBrdfLutNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevEarlyEnvIrradianceNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevEarlyEnvPrefilterNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevEarlySFNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevEarlyStage.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevFinalComposeNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevFinalStage.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevLightStage.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevMainSharedNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevMainSkeletalNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevMainSkyNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevMainStage.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevMainStaticNode.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevProbeStage.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.3D\Renderer\RevRenderer.cpp">
+      <Filter>Quelldateien\Renderer</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
