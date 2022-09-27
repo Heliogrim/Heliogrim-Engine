@@ -27,7 +27,7 @@ namespace ember::engine::gfx::cache {
     public:
         using this_type = LocalCacheCtrl;
 
-        using texture_subject_type = LocalCacheCtrlSubject<TextureResource, TextureSubResource>;
+        using texture_subject_type = LocalCacheCtrlSubject<TextureResource, AssocKey<TextureSubResource>>;
         using static_geometry_subject_type = LocalCacheCtrlSubject<StaticGeometryResource, StaticGeometrySubResource>;
 
     public:
@@ -63,6 +63,8 @@ namespace ember::engine::gfx::cache {
 
     public:
         void markAsUsed(const ptr<TextureResource> resource_, mref<TextureSubResource> subResource_);
+
+        void markAsUsed(const ptr<TextureResource> resource_, cref<AssocKey<TextureSubResource>> subResource_);
 
         void markAsUsed(const ptr<StaticGeometryResource> resource_, mref<StaticGeometrySubResource> subResource_);
     };

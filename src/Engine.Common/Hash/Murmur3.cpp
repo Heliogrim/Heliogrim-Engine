@@ -96,10 +96,10 @@ void hash::murmur3_x86_32(const void* data_, const u32 length_, const u32 seed_,
     *dst_ = h1;
 }
 
-void hash::murmur3_x64_64(const void* data_, const u32 length_, const u32 seed_, u64* dst_) {
+void hash::murmur3_x64_64(const void* data_, const u32 length_, const u32 seed_, u64& dst_) {
     u64 tmp[2];
     murmur3_x64_128(data_, length_, seed_, tmp);
-    *dst_ = tmp[0];
+    dst_ = tmp[0];
 }
 
 void hash::murmur3_x64_128(const void* data_, const u32 length_, const u32 seed_, void* dst_) {

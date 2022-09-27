@@ -5,6 +5,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/Hash/Murmur3.hpp>
 
 namespace ember::engine::gfx::cache {
 
@@ -152,4 +153,29 @@ namespace ember::engine::gfx::cache {
     static_assert(_STD totally_ordered<CacheTextureSubject>);
 
     using TextureSubResource = CacheTextureSubject;
+}
+
+namespace std {
+
+    template <>
+    struct hash<ember::engine::gfx::cache::CacheTextureSubject> {
+        [[nodiscard]] size_t operator()(
+            ::ember::cref<ember::engine::gfx::cache::CacheTextureSubject> obj_) const noexcept {
+            const ::ember::u32 data[] = {
+                obj_.layer,
+                obj_.mip,
+                obj_.offset.x,
+                obj_.offset.y,
+                obj_.offset.z,
+                obj_.extent.x,
+                obj_.extent.y,
+                obj_.extent.z,
+            };
+
+            ::ember::u64 dst { ~0ui64 };
+            ::ember::hash::murmur3_x64_64(data, sizeof(data), 0x351678ui32, dst);
+
+            return dst;
+        }
+    };
 }

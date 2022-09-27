@@ -3,14 +3,15 @@
 #include <concepts>
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/AssociativeKey.hpp>
 #include <Engine.Common/Collection/RobinMap.hpp>
 
-#include "__fwd.hpp"
 #include "CacheCtrlSubject.hpp"
-#include "CacheTextureSubject.hpp"
 #include "CacheStaticGeometrySubject.hpp"
-#include "../Resource/TextureResource.hpp"
+#include "CacheTextureSubject.hpp"
+#include "__fwd.hpp"
 #include "../Resource/StaticGeometryResource.hpp"
+#include "../Resource/TextureResource.hpp"
 
 namespace ember::engine::gfx::cache {
 
@@ -50,7 +51,7 @@ namespace ember::engine::gfx::cache {
         /**
          * Texture Atlases
          */
-        RobinMap<ptr<TextureResource>, Vector<ptr<CacheCtrlSubject<TextureSubResource>>>> _textures;
+        RobinMap<ptr<TextureResource>, RobinMap<AssocKey<TextureSubResource>, ptr<CacheCtrlSubject<TextureSubResource>>>> _textures;
 
     private:
         void dispatchLoad(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_);
@@ -60,9 +61,13 @@ namespace ember::engine::gfx::cache {
     public:
         void markAsUsed(ptr<TextureResource> resource_, mref<TextureSubResource> subresource_);
 
+        void markAsUsed(ptr<TextureResource> resource_, cref<AssocKey<TextureSubResource>> subresource_);
+
         [[deprecated]] void markAsUsed(ptr<TextureResource>, mref<TextureSubResourceRange> subresourceRange_);
 
         void unmark(ptr<TextureResource> resource_, mref<TextureSubResource> subresource_);
+
+        void unmark(ptr<TextureResource> resource_, cref<AssocKey<TextureSubResource>> subresource_);
 
         [[deprecated]] void unmark(ptr<TextureResource>, mref<TextureSubResourceRange> subresourceRange_);
 

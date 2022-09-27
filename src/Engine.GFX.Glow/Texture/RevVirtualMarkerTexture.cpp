@@ -585,11 +585,15 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
             const auto blie { (pli == (ploctC - 1)) && (sli == (slie - 1)) ? lps : patchSize };
             for (u16 bit { 0ui16 }; bit < blie; ++bit) {
 
-                const auto byteOffset { (outerOffset + bit) / 8ui16 };
-                const auto innerBitOffset { (outerOffset + bit) - (byteOffset * 8ui16) };
+                // Optimize (Nr.1) :: Use const bit before byte conversion 
+
+                const auto bitOffset { outerOffset + bit };
+                const auto byteOffset { bitOffset / 8ui16 };
+                /* Attention: `(byteOffset * 8ui16)` can not be replaced, cause of int 'div' dropping 'rest' */
+                const auto innerBitOffset { bitOffset - (byteOffset * 8ui16) };
 
                 if (*(cursor + byteOffset) >> innerBitOffset & 0b1) {
-                    const auto index = tileBitOffsetToIndex(outerOffset + bit);
+                    const auto index = tileBitOffsetToIndex(static_cast<u16>(bitOffset));
                     indices.push_back(index);
                 }
 

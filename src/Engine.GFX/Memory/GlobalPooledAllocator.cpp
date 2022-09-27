@@ -48,7 +48,12 @@ AllocationResult GlobalPooledAllocator::allocate(cref<MemoryLayout> layout_, con
             return AllocationResult::eFailed;
         }
         #else
-        throw runtime_error("Failed to allocate pooled memory.");
+        auto* const pool { _cache.getOrCreatePool(layout_) };
+        if (pool == nullptr) {
+            throw _STD runtime_error("Failed to allocate pooled memory.");
+            return AllocationResult::eFailed;
+        }
+
         #endif
 
         /**

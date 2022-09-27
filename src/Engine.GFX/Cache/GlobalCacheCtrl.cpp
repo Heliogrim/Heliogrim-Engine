@@ -55,16 +55,27 @@ void GlobalCacheCtrl::dispatchUnload(const ptr<TextureResource> resource_, cref<
     delete options;
 }
 
-void GlobalCacheCtrl::markAsUsed(ptr<TextureResource> resource_, mref<CacheTextureSubject> subresource_) {
+void GlobalCacheCtrl::markAsUsed(
+    ptr<TextureResource> resource_,
+    mref<TextureSubResource> subresource_
+) {
+    markAsUsed(resource_, AssocKey<TextureSubResource>::from(_STD move(subresource_)));
+}
 
-    using SubjectType = CacheCtrlSubject<CacheTextureSubject>;
+void GlobalCacheCtrl::markAsUsed(
+    ptr<TextureResource> resource_,
+    cref<AssocKey<TextureSubResource>> subresource_
+) {
+
+    using SubjectType = CacheCtrlSubject<TextureSubResource>;
+    using SubMapType = RobinMap<AssocKey<TextureSubResource>, ptr<SubjectType>>;
 
     /**
      * Ensure that resource is already present within controls
      */
     auto resEntry { _textures.find(resource_) };
     if (resEntry == _textures.end()) {
-        auto [entry, assigned] = _textures.insert_or_assign(resource_, Vector<ptr<SubjectType>> {});
+        auto [entry, assigned] = _textures.insert_or_assign(resource_, SubMapType {});
         assert(assigned);
 
         resEntry = _STD move(entry);
@@ -73,32 +84,14 @@ void GlobalCacheCtrl::markAsUsed(ptr<TextureResource> resource_, mref<CacheTextu
     /**
      * Check for existing derived subresource
      */
-    auto& ctrls { const_cast<Vector<ptr<SubjectType>>&>(resEntry->second) };
-    /*
-    const auto existing {
-        _STD ranges::lower_bound(ctrls, subresource_,
-            [](cref<CacheTextureSubject> entry_, cref<CacheTextureSubject> value_) {
-                return _STD ranges::less {}(entry_, value_);
-            }, [](const auto* const it_) {
-                return it_->subject;
-            })
-    };
-     */
-    const auto existing {
-        _STD ranges::find(
-            ctrls,
-            subresource_,
-            [](const auto* const it_) {
-                return it_->subject;
-            }
-        )
-    };
+    auto& ctrls { const_cast<SubMapType&>(resEntry->second) };
+    const auto existing { ctrls.find(subresource_) };
 
     if (existing != ctrls.end()) {
         /**
          * Atomically increase mark count at ctrl object
          */
-        (*existing)->marks.operator++();
+        (existing->second)->marks.operator++();
 
     } else {
         /**
@@ -109,14 +102,7 @@ void GlobalCacheCtrl::markAsUsed(ptr<TextureResource> resource_, mref<CacheTextu
         /**
          * Create new ctrl object by given subject with intial mark count of 1ui16
          */
-        ctrls.push_back(new SubjectType { _STD move(subresource_), 1ui16 });
-
-        /**
-         * Resort ctrls with new subscribed subject
-         */
-        _STD ranges::sort(ctrls, [](const SubjectType* const left_, const SubjectType* const right_) {
-            return _STD ranges::less {}(left_->subject, right_->subject);
-        });
+        ctrls.insert_or_assign(subresource_, new SubjectType { _STD move(subresource_), 1ui16 });
     }
 }
 
@@ -124,9 +110,14 @@ void GlobalCacheCtrl::markAsUsed(ptr<TextureResource>, mref<TextureSubResourceRa
     throw NotImplementedException();
 }
 
-void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, mref<CacheTextureSubject> subresource_) {
+void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, mref<TextureSubResource> subresource_) {
+    unmark(resource_, AssocKey<TextureSubResource>::from(_STD move(subresource_)));
+}
+
+void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, cref<AssocKey<TextureSubResource>> subresource_) {
 
     using SubjectType = CacheCtrlSubject<CacheTextureSubject>;
+    using SubMapType = RobinMap<AssocKey<CacheTextureSubject>, ptr<SubjectType>>;
 
     /**
      * Check whether resource is present within controls
@@ -139,12 +130,8 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, mref<CacheTextureSu
     /**
      * Check for existing derived subresource
      */
-    auto& ctrls { const_cast<Vector<ptr<SubjectType>>&>(resEntry->second) };
-    const auto existing {
-        _STD ranges::find(ctrls, subresource_, [](const auto* const it_) {
-            return it_->subject;
-        })
-    };
+    auto& ctrls { const_cast<SubMapType&>(resEntry->second) };
+    const auto existing { ctrls.find(subresource_) };
 
     /**
      * Early exit if ctrl object is not present
@@ -156,7 +143,7 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, mref<CacheTextureSu
     /**
      * Atomically decrease mark count at ctrl object
      */
-    const auto left { (*existing)->marks.operator--() };
+    const auto left { (existing->second)->marks.operator--() };
 
     #if _DEBUG
     if (left > 128ui16) {
@@ -174,7 +161,7 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, mref<CacheTextureSu
     // TODO: Check whether we want to erase subjects with no left marks
     if (left <= 0ui16) {
 
-        const auto* subject { *existing };
+        const auto* subject { existing->second };
         delete subject;
 
         ctrls.erase(existing);
@@ -187,7 +174,7 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource>, mref<TextureSubResourceRange>
 
 #pragma endregion
 
-#pragma region StaticGeomtryResource
+#pragma region StaticGeometryResource
 
 void GlobalCacheCtrl::dispatchLoad(const ptr<StaticGeometryResource> resource_,
     cref<StaticGeometrySubResource> subresource_) {}
