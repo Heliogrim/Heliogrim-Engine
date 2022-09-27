@@ -652,40 +652,25 @@ void RevMainStaticNode::invoke(
 
                             auto [mip, offset] = markerTexture->tileFromIndex(sfi);
 
-                            state->cacheCtrl.markAsUsed(diff, {
-                                .layer = view->baseLayer(),
-                                .mip = static_cast<u32>(mip),
-                                .offset = offset,
-                                .extent = markerTexture->tileExtent(mip)
-                            });
+                            auto aksr {
+                                AssocKey<cache::TextureSubResource>::from({
+                                    .layer = view->baseLayer(),
+                                    .mip = static_cast<u32>(mip),
+                                    .offset = offset,
+                                    .extent = markerTexture->tileExtent(mip)
+                                })
+                            };
 
-                            state->cacheCtrl.markAsUsed(norm, {
-                                .layer = normView->baseLayer(),
-                                .mip = static_cast<u32>(mip),
-                                .offset = offset,
-                                .extent = markerTexture->tileExtent(mip)
-                            });
+                            assert(normView->baseLayer() == aksr.value.layer);
+                            assert(roughView->baseLayer() == aksr.value.layer);
+                            assert(metalView->baseLayer() == aksr.value.layer);
+                            assert(aoView->baseLayer() == aksr.value.layer);
 
-                            state->cacheCtrl.markAsUsed(rough, {
-                                .layer = roughView->baseLayer(),
-                                .mip = static_cast<u32>(mip),
-                                .offset = offset,
-                                .extent = markerTexture->tileExtent(mip)
-                            });
-
-                            state->cacheCtrl.markAsUsed(metal, {
-                                .layer = metalView->baseLayer(),
-                                .mip = static_cast<u32>(mip),
-                                .offset = offset,
-                                .extent = markerTexture->tileExtent(mip)
-                            });
-
-                            state->cacheCtrl.markAsUsed(ao, {
-                                .layer = aoView->baseLayer(),
-                                .mip = static_cast<u32>(mip),
-                                .offset = offset,
-                                .extent = markerTexture->tileExtent(mip)
-                            });
+                            state->cacheCtrl.markAsUsed(diff, aksr);
+                            state->cacheCtrl.markAsUsed(norm, aksr);
+                            state->cacheCtrl.markAsUsed(rough, aksr);
+                            state->cacheCtrl.markAsUsed(metal, aksr);
+                            state->cacheCtrl.markAsUsed(ao, aksr);
                         }
                     }
                 }

@@ -241,12 +241,8 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makeOpaquePage(u32 layer_) {
 // Warning: TODO: Rewrite !?!
 void VirtualTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math::uivec3 offset_, math::uivec3 extent_) {
 
-    #ifdef _DEBUG
     assert(offset_.zero());
     assert(extent_ == _extent);
-    #else
-    throw NotImplementedExceptition();
-    #endif
 
     /**
      * Sanitize request values

@@ -29,7 +29,7 @@ void LocalCacheCtrl::reset(const bool fully_) {
      * Reset all texture marks
      */
     for (auto&& entry : _textures) {
-        global->unmark(entry.subject, _STD move(entry.subResource));
+        global->unmark(entry.subject, entry.subResource);
     }
     _textures.clear();
 
@@ -59,10 +59,16 @@ const non_owning_rptr<LocalResourceCache> LocalCacheCtrl::cache() noexcept {
 }
 
 void LocalCacheCtrl::markAsUsed(const ptr<TextureResource> resource_, mref<TextureSubResource> subResource_) {
+    markAsUsed(resource_, AssocKey<TextureSubResource>::from(_STD move(subResource_)));
+}
 
+void LocalCacheCtrl::markAsUsed(
+    const ptr<TextureResource> resource_,
+    cref<AssocKey<TextureSubResource>> subResource_
+) {
     // TODO: Check for uniqueness
     _textures.push_back({ resource_, subResource_ });
-    _cache->_global->markAsUsed(resource_, _STD move(subResource_));
+    _cache->_global->markAsUsed(resource_, subResource_);
 }
 
 void LocalCacheCtrl::markAsUsed(const ptr<StaticGeometryResource> resource_,
