@@ -128,6 +128,15 @@
     <ProjectReference Include="..\Engine.Event\Engine.Event.vcxproj">
       <Project>{4551b6e7-4a5e-4576-87a2-dc5fa7959a9c}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Glow.3D\Engine.GFX.Glow.3D.vcxproj">
+      <Project>{4f8e6e80-a58c-463c-b24a-391bfea54f9b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Glow.UI\Engine.GFX.Glow.UI.vcxproj">
+      <Project>{14136e81-a7c5-4547-af82-819d8c0478e5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Glow\Engine.GFX.Glow.vcxproj">
+      <Project>{7c46da1c-1139-4e4b-8d34-0ed78d12c1f2}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.GFX\Engine.GFX.vcxproj">
       <Project>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</Project>
     </ProjectReference>

@@ -1006,5 +1006,17 @@
     <None Include="..\..\resources\shader\envPrefilter.gen.vs">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
+    <None Include="..\..\resources\shader\uipass.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\uipass.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\uipass.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\uipass.vert.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

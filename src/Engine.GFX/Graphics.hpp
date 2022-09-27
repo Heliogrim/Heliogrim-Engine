@@ -19,6 +19,7 @@ namespace ember::engine::scene {
 
 namespace ember::engine::gfx {
     class Camera;
+    class RenderTarget;
 }
 
 namespace ember::engine::gfx::loader {
@@ -197,20 +198,16 @@ namespace ember::engine {
 
     private:
         ptr<gfx::render::Renderer> _renderer;
+        ptr<gfx::render::Renderer> _uiRenderer;
 
     private:
-        Vector<ptr<gfx::render::HORenderPass>> _renderPasses;
-
         // Warning: Temporary
         ptr<gfx::Camera> _camera;
-        Vector<gfx::CommandBatch> _renderPassBatches;
 
     private:
-        struct {
-            Vector<vk::Semaphore> image;
-            Vector<vk::Semaphore> finish;
-            Vector<vk::Fence> cpuGpuSync;
-        } _onFlightSync;
+        ptr<gfx::RenderTarget> _renderTarget;
+
+        #pragma region Ember Graphics
 
         /**
          * Internal tick() function to invoke graphics
@@ -259,5 +256,7 @@ namespace ember::engine {
 
     public:
         void registerImporter();
+
+        #pragma endregion
     };
 }

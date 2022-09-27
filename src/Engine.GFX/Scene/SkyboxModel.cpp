@@ -11,7 +11,7 @@
 #include "../Buffer/Buffer.hpp"
 #include "../Cache/CacheResult.hpp"
 #include "Engine.Assets/Types/GfxMaterial.hpp"
-#include "Engine.GFX/Rev/Renderer/State/RevSfMtt.hpp"
+#include "Engine.GFX.Glow.3D/Renderer/State/RevSfMtt.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -148,7 +148,7 @@ ptr<cache::ModelBatch> SkyboxModel::batch(const ptr<render::RenderPassState> sta
 
         const auto& data { state_->data };
         const auto mttEntry { data.at("RevEarlySFNode::SfMtt"sv) };
-        auto& mtt { *_STD static_pointer_cast<render::RevSfMtt, void>(mttEntry) };
+        auto& mtt { *_STD static_pointer_cast<glow::render::RevSfMtt, void>(mttEntry) };
 
         const auto dataSize { sizeof(u32) * _overrideMaterials.size() };
         //batch->mtt.mapAligned(dataSize);

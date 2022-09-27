@@ -37,6 +37,7 @@ namespace ember::engine {
 
     private:
         ptr<scene::Scene> _currentMainScene;
+        ptr<scene::Scene> _currentUiScene;
 
     public:
         [[nodiscard]] const ptr<scene::Scene> getCurrentScene() const noexcept;

@@ -11,7 +11,8 @@ using namespace ember;
 
 Core::Core() noexcept :
     _stopped(),
-    _currentMainScene(nullptr) {
+    _currentMainScene(nullptr),
+    _currentUiScene(nullptr) {
 
     _stopped.test_and_set(_STD memory_order_relaxed);
 }
@@ -27,6 +28,10 @@ void Core::start() {
      * Build Default Scene
      */
     _currentMainScene = new scene::RevScene();
+
+    #pragma region Temporary UI Override
+    _currentUiScene = new scene::RevScene();
+    #pragma endregion
 
     /**
      * Register function callbacks
@@ -49,6 +54,26 @@ void Core::start() {
         )
     );
 
+    #pragma region Temporary UI Override
+    session->modules().scheduler()->exec(
+        scheduler::task::make_repetitive_task([&sig = _stopped, &scene = _currentUiScene]() {
+                if (sig.test(_STD memory_order_consume)) {
+                    return false;
+                }
+
+                if (scene) {
+                    scene->update();
+                }
+
+                return true;
+            },
+            scheduler::task::TaskMask::eNormal,
+            scheduler::ScheduleStageBarriers::ePublishStrong,
+            scheduler::ScheduleStageBarriers::ePublishStrong
+        )
+    );
+    #pragma endregion
+
     /**
      * Use current scene
      */
@@ -57,6 +82,13 @@ void Core::start() {
             static_cast<scene::RevScene*>(_currentMainScene)
         )
     );
+
+    #pragma region Temporary UI Override
+    session->modules().graphics()->useAsUIRenderScene(
+        static_cast<ptr<scene::IRenderScene>>(static_cast<ptr<scene::RevScene>>(_currentUiScene)
+        )
+    );
+    #pragma endregion
 
     /**
      * Pseudo workload
@@ -75,6 +107,7 @@ void Core::stop() {
     auto graphics { session->modules().graphics() };
     if (graphics) {
         graphics->useAsRenderScene(nullptr);
+        graphics->useAsUIRenderScene(nullptr);
     }
 
     /**
