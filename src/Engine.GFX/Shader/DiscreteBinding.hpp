@@ -1,11 +1,11 @@
 #pragma once
 
-#include "ShaderBinding.hpp"
-#include "../Buffer/Buffer.hpp"
-#include "../Texture/Texture.hpp"
-#include "../Texture/TextureSampler.hpp"
-#include "../Texture/VirtualTexture.hpp"
+#include <Engine.Common/Wrapper.hpp>
 
+#include "ShaderBinding.hpp"
+#include "../Buffer/__fwd.hpp"
+#include "../Texture/__fwd.hpp"
+#include "../Texture/TextureSampler.hpp"
 namespace ember::engine::gfx::shader {
 
     class DiscreteBinding {
@@ -82,7 +82,11 @@ namespace ember::engine::gfx::shader {
          *
          * @param  buffer_ The buffer to store.
          */
-        void store(const Buffer& buffer_);
+        void store(const ref<Buffer>& buffer_);
+
+        void store(const ref<VirtualBuffer> buffer_);
+
+        void store(const ref<VirtualBufferView> view_);
 
     private:
         /**
@@ -99,7 +103,7 @@ namespace ember::engine::gfx::shader {
          *
          * @param  sampler_ The sampler.
          */
-        void setSampler(const TextureSampler& sampler_) noexcept;
+        void setSampler(const ref<TextureSampler> sampler_) noexcept;
 
         /**
          * Stores the given texture
@@ -109,7 +113,7 @@ namespace ember::engine::gfx::shader {
          *
          * @param  texture_ The texture to store.
          */
-        void store(const Texture& texture_);
+        void store(const ref<Texture> texture_);
 
         /**
          * Stores the given texture with specified layout

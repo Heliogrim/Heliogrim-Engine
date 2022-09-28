@@ -50,6 +50,8 @@ namespace ember::engine::gfx::render {
     private:
         void setupShader();
 
+        [[nodiscard]] shader::DiscreteBindingGroup createMaterialDescriptor(const ptr<RenderPassState> state_) const;
+
     private:
         Vector<type_id> _modelTypes;
 
@@ -64,6 +66,6 @@ namespace ember::engine::gfx::render {
         Vector<vk::DescriptorPoolCreateInfo> _requiredDescriptorPools;
         Vector<shader::ShaderBindingGroup> _requiredBindingGroups;
 
-        bool __test_flag;
+        Vector<void*> __test_flag;
     };
 }

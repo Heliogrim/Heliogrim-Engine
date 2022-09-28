@@ -9,10 +9,18 @@ layout(early_fragment_tests) in;
 
 /*
 */
-layout (set = 2, binding = 3) uniform sampler2DArray mapped_albedo;
-layout (set = 2, binding = 4) uniform sampler2D mapped_normal;
-layout (set = 2, binding = 5) uniform sampler2D mapped_roughness;
-layout (set = 2, binding = 6) uniform sampler2D mapped_specular;
+layout (set = 2, binding = 3) uniform MaterialUbo {
+	uint diffuse;
+	uint normal;
+	uint roughness;
+	uint ao;
+} material;
+/*
+*/
+layout (set = 2, binding = 4) uniform sampler2DArray mapped_albedo;
+layout (set = 2, binding = 5) uniform sampler2DArray mapped_normal;
+layout (set = 2, binding = 6) uniform sampler2DArray mapped_roughness;
+layout (set = 2, binding = 7) uniform sampler2DArray mapped_specular;
 /*
 */
 
@@ -31,8 +39,8 @@ void main() {
 	out_position = fragPosition;
 	out_mrs = vec4(
 		0.0,
-		texture(mapped_roughness, fragUvm.st).r,
-		texture(mapped_specular, fragUvm.st).r,
+		texture(mapped_roughness, vec3(fragUvm.st, 0.0)).r,
+		texture(mapped_specular, vec3(fragUvm.st, 0.0)).r,
 		1.0
 	);
 

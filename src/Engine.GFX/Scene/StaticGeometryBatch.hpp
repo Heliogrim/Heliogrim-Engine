@@ -2,6 +2,7 @@
 #include "../Cache/ModelBatch.hpp"
 
 #include "../Shader/CachedDiscreteBinding.hpp"
+#include "../Buffer/Buffer.hpp"
 
 namespace ember::engine::gfx {
 

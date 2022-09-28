@@ -167,6 +167,8 @@ ptr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Textur
     /**
      *
      */
+    // TODO:
+    atlas = nullptr;
     if (atlas == nullptr) {
 
         atlas = TextureFactory::get()->buildVirtual({
@@ -188,7 +190,7 @@ ptr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Textur
     /**
      *
      */
-    auto view { atlas->makeView(0ui32/* TODO: Layers */, { 0ui32, asset_->getMipLevelCount() - 1ui32 }) };
+    auto view { atlas->makeView(0/* TODO: Layers */, { 0ui32, asset_->getMipLevelCount() - 1ui32 }) };
 
     auto* res { make_ptr<TextureResource>() };
     res->setOrigin(asset_);
@@ -297,12 +299,16 @@ ptr<MaterialResource> GlobalResourceCache::request(const ptr<const assets::GfxMa
          */
         auto ubuffer { _STD unique_ptr<VirtualBuffer>(buffer) };
         _materialBuffer.push_back(_STD move(ubuffer));
+        _materialForward.push_back({});
     }
 
     /**
      *
      */
-    auto view { buffer->makeView(0ui32, 0ui32) };
+    const auto dataSize { sizeof(experimental::MaterialMetaDto) };
+    auto& forward { _materialForward.front() };
+
+    auto view { buffer->makeView(/*(forward++) * dataSize*/0ui32, dataSize) };
 
     auto* res { new MaterialResource() };
     res->setOrigin(asset_);

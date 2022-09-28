@@ -2,7 +2,6 @@
 
 #include <Engine.Assets/Database/AssetDatabase.hpp>
 #include <Engine.Assets/Types/Texture/Texture.hpp>
-#include <Engine.Common/Collection/CompactArray.hpp>
 #include <Engine.Session/Session.hpp>
 
 #include "../Resource/MaterialResource.hpp"
@@ -122,9 +121,9 @@ MaterialLoader::result_type MaterialLoader::operator()(const ptr<assets::GfxMate
         Buffer stage {};
         makeStageBuffer(sizeof(experimental::MaterialMetaDto), stage);
 
-        stage.mapAligned();
+        stage.mapAligned(sizeof(experimental::MaterialMetaDto));
         stage.write<experimental::MaterialMetaDto>(&data, 1ui32);
-        stage.flushAligned();
+        stage.flushAligned(sizeof(experimental::MaterialMetaDto));
 
         {
             /**

@@ -11,6 +11,7 @@
 #include "../Cache/CacheResult.hpp"
 #include "../Resource/StaticGeometryResource.hpp"
 #include "Engine.Assets/Types/GfxMaterial.hpp"
+#include "../Buffer/Buffer.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;

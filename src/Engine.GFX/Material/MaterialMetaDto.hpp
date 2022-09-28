@@ -5,9 +5,9 @@
 namespace ember::engine::gfx::experimental {
 
     struct MaterialMetaDto final {
-        u16 diffuse;
-        u16 normal;
-        u16 roughness;
-        u16 ao;
+        u32 diffuse;
+        u32 normal;
+        u32 roughness;
+        u32 ao;
     };
 }

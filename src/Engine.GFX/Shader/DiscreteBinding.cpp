@@ -1,5 +1,11 @@
 #include "DiscreteBinding.hpp"
 
+#include "../Buffer/Buffer.hpp"
+#include "../Buffer/VirtualBuffer.hpp"
+#include "../Buffer/VirtualBufferView.hpp"
+#include "../Texture/Texture.hpp"
+#include "../Texture/VirtualTexture.hpp"
+
 using namespace ember::engine::gfx::shader;
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -36,7 +42,7 @@ vk::DescriptorSet DiscreteBinding::vkSet() const noexcept {
     return _vkSet;
 }
 
-void DiscreteBinding::store(const Buffer& buffer_) {
+void DiscreteBinding::store(const ref<Buffer> buffer_) {
     /**
      * Translate BindingType to vk::DescriptorType
      */
@@ -91,11 +97,121 @@ void DiscreteBinding::store(const Buffer& buffer_) {
     );
 }
 
-void DiscreteBinding::setSampler(const TextureSampler& sampler_) noexcept {
+void DiscreteBinding::store(const ref<VirtualBuffer> buffer_) {
+    /**
+     * Translate BindingType to vk::DescriptorType
+     */
+    vk::DescriptorType dt { vk::DescriptorType() };
+    switch (_super->type()) {
+        case BindingType::eUniformBuffer: {
+            dt = vk::DescriptorType::eUniformBuffer;
+            break;
+        }
+        case BindingType::eStorageBuffer: {
+            dt = vk::DescriptorType::eStorageBuffer;
+            break;
+        }
+        default: {
+            #if _DEBUG
+            assert(false);
+            #else
+			return;
+            #endif
+        }
+    }
+
+    /**
+     * Build Descriptor for buffer_
+     */
+    vk::DescriptorBufferInfo info {
+        buffer_.vkBuffer(),
+        0,
+        buffer_.size()
+    };
+
+    /**
+     * Build Writer
+     */
+    vk::WriteDescriptorSet writer = {
+        _vkSet,
+        _super->id(),
+        0,
+        1,
+        dt,
+        nullptr,
+        &info,
+        nullptr
+    };
+
+    /**
+     * Update DescriptorSet with build Writer
+     */
+    _super->device()->vkDevice().updateDescriptorSets(
+        1, &writer,
+        0, nullptr
+    );
+}
+
+void DiscreteBinding::store(const ref<VirtualBufferView> view_) {
+    /**
+     * Translate BindingType to vk::DescriptorType
+     */
+    vk::DescriptorType dt { vk::DescriptorType() };
+    switch (_super->type()) {
+        case BindingType::eUniformBuffer: {
+            dt = vk::DescriptorType::eUniformBuffer;
+            break;
+        }
+        case BindingType::eStorageBuffer: {
+            dt = vk::DescriptorType::eStorageBuffer;
+            break;
+        }
+        default: {
+            #if _DEBUG
+            assert(false);
+            #else
+			return;
+            #endif
+        }
+    }
+
+    /**
+     * Build Descriptor for buffer_
+     */
+    vk::DescriptorBufferInfo info {
+        view_.owner()->vkBuffer(),
+        0,
+        view_.size()
+    };
+
+    /**
+     * Build Writer
+     */
+    vk::WriteDescriptorSet writer = {
+        _vkSet,
+        _super->id(),
+        0,
+        1,
+        dt,
+        nullptr,
+        &info,
+        nullptr
+    };
+
+    /**
+     * Update DescriptorSet with build Writer
+     */
+    _super->device()->vkDevice().updateDescriptorSets(
+        1, &writer,
+        0, nullptr
+    );
+}
+
+void DiscreteBinding::setSampler(const ref<TextureSampler> sampler_) noexcept {
     _sampler = sampler_;
 }
 
-void DiscreteBinding::store(const Texture& texture_) {
+void DiscreteBinding::store(const ref<Texture> texture_) {
     storeAs(texture_, texture_.buffer()._vkLayout);
 }
 
