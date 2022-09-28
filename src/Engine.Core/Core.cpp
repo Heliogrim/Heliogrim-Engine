@@ -2,7 +2,9 @@
 
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Scene/RevScene.hpp>
+#include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
+#include <Engine.Scheduler/Task/Task.hpp>
 
 using namespace ember::engine;
 using namespace ember;

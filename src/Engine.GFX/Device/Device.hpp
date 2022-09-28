@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Engine.Common/stdafx.h>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include "../vkinc.hpp"
 #include "../Application/Application.hpp"
 #include "../Memory/GlobalPooledAllocator.hpp"
 

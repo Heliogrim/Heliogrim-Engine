@@ -1,6 +1,7 @@
 #include "VorbisImporter.hpp"
 
 #include <vorbis/vorbisfile.h>
+#include <Engine.Common/Make.hpp>
 
 #include "AudioFileTypes.hpp"
 

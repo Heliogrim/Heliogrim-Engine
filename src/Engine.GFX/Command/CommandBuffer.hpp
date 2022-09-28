@@ -2,12 +2,12 @@
 
 #include <Engine.Common/Concurrent/SpinLock.hpp>
 #include "CommandPool.hpp"
+#include "../ComputePipeline.hpp"
+#include "../GraphicPipeline.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "../Buffer/VirtualBuffer.hpp"
-#include "../Texture/TextureBuffer.hpp"
-#include "../Texture/VirtualTexture.hpp"
 #include "../Pipeline/LORenderPass.hpp"
-#include "../GraphicPipeline.hpp"
+#include "../Texture/TextureBuffer.hpp"
 
 namespace ember::engine::gfx {
 
@@ -82,13 +82,25 @@ namespace ember::engine::gfx {
          */
         void bindIndexBuffer(const ptr<VirtualBuffer> buffer_, u64 offset_);
 
-    private:
+    //private:
+    public:
         /**
          * Pipeline
          */
         vk::PipelineLayout _pipelineLayout;
+        vk::PipelineBindPoint _pipelineBindPoint;
 
     public:
+        /**
+         * Bind pipeline
+         *
+         * @author Julius
+         * @date 10.08.2022
+         *
+         * @param  pipeline_ The pipeline.
+         */
+        void bindPipeline(ptr<ComputePipeline> pipeline_);
+
         /**
          * Bind pipeline
          *

@@ -5,8 +5,6 @@
 
 #include <Engine.Scene/SceneNodeModel.hpp>
 
-#include "Inbuilt.hpp"
-
 namespace ember {
 
     using Scene = ::ember::engine::scene::Scene;

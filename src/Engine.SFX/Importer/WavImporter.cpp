@@ -1,6 +1,7 @@
 #include "WavImporter.hpp"
 
 #include <Engine.Common/Buffer.hpp>
+#include <Engine.Common/Make.hpp>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>

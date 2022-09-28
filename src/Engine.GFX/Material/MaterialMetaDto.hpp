@@ -9,5 +9,6 @@ namespace ember::engine::gfx::experimental {
         u32 normal;
         u32 roughness;
         u32 ao;
+        u32 alpha;
     };
 }

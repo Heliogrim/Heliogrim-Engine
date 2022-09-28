@@ -38,7 +38,21 @@ void GlobalCacheCtrl::dispatchLoad(const ptr<TextureResource> resource_, cref<Te
 
 void GlobalCacheCtrl::dispatchUnload(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_) {
     // TODO:
-    resource_->streamUnload(nullptr);
+
+    using stream_loader_type = res::StreamLoader<assets::Texture>;
+    using stream_options_type = _STD remove_pointer_t<stream_loader_type::stream_options_type>;
+
+    auto* options = new stream_options_type {
+        .layer = subresource_.layer,
+        .mip = subresource_.mip,
+        .offset = subresource_.offset,
+        .extent = subresource_.extent
+    };
+
+    //
+    resource_->streamUnload(static_cast<const ptr<EmberObject>>(static_cast<const ptr<void>>(options)));
+
+    delete options;
 }
 
 void GlobalCacheCtrl::markAsUsed(ptr<TextureResource> resource_, mref<CacheTextureSubject> subresource_) {
@@ -127,12 +141,9 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, mref<CacheTextureSu
      */
     auto& ctrls { const_cast<Vector<ptr<SubjectType>>&>(resEntry->second) };
     const auto existing {
-        _STD ranges::lower_bound(ctrls, subresource_,
-            [](cref<CacheTextureSubject> entry_, cref<CacheTextureSubject> value_) {
-                return _STD ranges::less {}(entry_, value_);
-            }, [](const auto* const it_) {
-                return it_->subject;
-            })
+        _STD ranges::find(ctrls, subresource_, [](const auto* const it_) {
+            return it_->subject;
+        })
     };
 
     /**
@@ -147,7 +158,16 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, mref<CacheTextureSu
      */
     const auto left { (*existing)->marks.operator--() };
 
+    #if _DEBUG
+    if (left > 128ui16) {
+        __debugbreak();
+    }
+    #endif
+
     // TODO: Check whether we want to erase subjects with no left marks
+    if (left <= 0ui16) {
+        ctrls.erase(existing);
+    }
 
     /**
      * Dispatch unloading of texture (stream unloading if possible/available)

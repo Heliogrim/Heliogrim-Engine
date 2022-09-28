@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
@@ -30,7 +31,7 @@ namespace ember {
         ptr<EmberClass> _class = nullptr;
 
     public:
-        [[nodiscard]] FORCEINLINE const ptr<const EmberClass> getClass() const noexcept {
+        [[nodiscard]] FORCE_INLINE const ptr<const EmberClass> getClass() const noexcept {
             return _class;
         }
 

@@ -46,6 +46,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) {
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
+        invalid_asset_guid,
         invalid_asset_guid
     );
 
@@ -63,7 +64,8 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(
     cref<asset_guid> gloss_,
     cref<asset_guid> normal_,
     cref<asset_guid> roughness_,
-    cref<asset_guid> specular_
+    cref<asset_guid> specular_,
+    cref<asset_guid> alpha_
 ) {
 
     auto* instance = EmberObject::create<GfxMaterial>(
@@ -75,7 +77,8 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(
         gloss_,
         normal_,
         roughness_,
-        specular_
+        specular_,
+        alpha_
     );
 
     _database->insert(guid_, GfxMaterial::typeId, instance);

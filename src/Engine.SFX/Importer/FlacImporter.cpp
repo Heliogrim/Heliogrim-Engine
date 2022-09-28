@@ -1,6 +1,7 @@
 #include "FlacImporter.hpp"
 
 #include <Engine.Common/Buffer.hpp>
+#include <Engine.Common/Make.hpp>
 
 #define DR_FLAC_IMPLEMENTATION
 #include <dr_flac/dr_flac.h>

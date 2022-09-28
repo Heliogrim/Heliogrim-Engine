@@ -1,6 +1,8 @@
 #include "ParallelSource.hpp"
 
+#include <algorithm>
 #include <ranges>
+#include <Engine.Common/Exception/NotImplementedException.hpp>
 
 using namespace ember::engine::res;
 using namespace ember;

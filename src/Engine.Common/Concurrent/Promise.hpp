@@ -1,6 +1,9 @@
 #pragma once
 
+#include <functional>
+
 #include "Future.hpp"
+#include "../Make.hpp"
 
 namespace ember::concurrent {
 

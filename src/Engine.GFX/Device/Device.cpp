@@ -13,7 +13,9 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-static std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+static std::vector<const char*> deviceExtensions = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
 
 static std::vector<const char*> validationLayers = {
     #ifdef _DEBUG

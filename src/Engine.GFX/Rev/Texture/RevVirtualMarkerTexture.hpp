@@ -10,6 +10,9 @@ namespace ember::engine::gfx {
 
         ~RevVirtualMarkerTexture();
 
+    private:
+        void generateMarkers();
+
     public:
         void setup();
 
@@ -33,9 +36,15 @@ namespace ember::engine::gfx {
         [[nodiscard]] s32 tileIndex(const math::uivec3 uvw_, const u32 level_) const noexcept;
 
         // pair.first < 0 :: tile index out of bound
-        [[nodiscard]] _STD pair<s32, math::uivec3> tileFromIndex(const u32 index_) const noexcept;
+        [[nodiscard]] _STD pair<s32, math::uivec3> tileFromIndex(const u16 index_) const noexcept;
+
+    public:
+        [[nodiscard]] static Vector<u16> tileBitToIndex(const ptr<const u32> bitmask_) noexcept;
 
     private:
+        /**
+         * @brief The supported mip levels `[min..max)` addressed by this marker texture
+         */
         math::uivec2 _supportedMips;
 
     public:
@@ -43,6 +52,9 @@ namespace ember::engine::gfx {
 
     private:
         Texture _texture;
+
+    public:
+        [[nodiscard]] cref<Texture> texture() const noexcept;
     };
 
 }

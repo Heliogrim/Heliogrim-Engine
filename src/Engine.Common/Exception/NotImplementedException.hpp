@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "../stdafx.h"
+#include <stdexcept>
 
 namespace ember {
     class NotImplementedException :

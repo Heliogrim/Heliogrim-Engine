@@ -1,5 +1,9 @@
 #include "Win32Window.hpp"
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
+#include <SDL2/SDL_vulkan.h>
+
 #ifdef _DEBUG
 #include <cassert>
 #endif

@@ -34,6 +34,7 @@
 #include "Engine.GFX/Scene/StaticGeometryBatch.hpp"
 #include "Engine.GFX/Scene/StaticGeometryModel.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
+#include <Engine.GFX/Rev/Texture/RevVirtualMarkerTexture.hpp>
 #include "Engine.Reflect/EmberReflect.hpp"
 
 using namespace ember::engine::gfx::render;
@@ -87,7 +88,8 @@ void RevMainStaticNode::setup(cref<sptr<Device>> device_) {
     _pipeline->vertexStage().shaderSlot().name() = "staticMainPass";
     _pipeline->fragmentStage().shaderSlot().name() = "staticMainPass";
 
-    _pipeline->rasterizationStage().cullFace() = RasterCullFace::eBack;
+    _pipeline->rasterizationStage().cullFace() = RasterCullFace::eNone;
+    // TODO: Default => RasterCullFace::eBack | Foliage => RasterCullFace::eNone
     //_pipeline->rasterizationStage().depthWrite() = true;// TODO: Revert to `false`, currently true for debugging purpose
     _pipeline->rasterizationStage().depthWrite() = false;
 
@@ -484,13 +486,31 @@ void RevMainStaticNode::invoke(
             // TODO:
             auto dbg { createMaterialDescriptor(state) };
 
+            //
             dbg.getById(shader::ShaderBinding::id_type { 3 }).store(*first->_payload.view.get());
 
+            //
             dbg.getById(shader::ShaderBinding::id_type { 4 }).store(first->_payload.diffuse->_payload.view->owner());
-            dbg.getById(shader::ShaderBinding::id_type { 5 }).store(first->_payload.normal->_payload.view->owner());
-            dbg.getById(shader::ShaderBinding::id_type { 6 }).store(first->_payload.roughness->_payload.view->owner());
-            dbg.getById(shader::ShaderBinding::id_type { 7 }).store(first->_payload.ao->_payload.view->owner());
 
+            //
+            if (first->_payload.normal) {
+                dbg.getById(shader::ShaderBinding::id_type { 5 }).store(
+                    first->_payload.normal->_payload.view->owner());
+            }
+            if (first->_payload.roughness) {
+                dbg.getById(shader::ShaderBinding::id_type { 6 }).store(
+                    first->_payload.roughness->_payload.view->owner());
+            }
+            if (first->_payload.ao) {
+                dbg.getById(shader::ShaderBinding::id_type { 7 }).store(
+                    first->_payload.ao->_payload.view->owner());
+            }
+            if (first->_payload.alpha) {
+                dbg.getById(shader::ShaderBinding::id_type { 8 }).store(
+                    first->_payload.alpha->_payload.view->owner());
+            }
+
+            //
             auto result {
                 materialDescriptors->insert_or_assign(const_cast<ptr<assets::Asset>>(first->origin()), _STD move(dbg))
             };
@@ -507,6 +527,74 @@ void RevMainStaticNode::invoke(
             _STD ranges::find(__test_flag, static_cast<void*>(first)) == _STD ranges::end(__test_flag)
         ) {
 
+            #pragma region Test Stream-Feedback
+            #if TRUE
+            {
+                sptr<::ember::engine::gfx::RevVirtualMarkerTexture> markerTexture {
+                    _STD static_pointer_cast<::ember::engine::gfx::RevVirtualMarkerTexture, void>(
+                        data.find("RevDepthStage::MarkerTexture"sv)->second
+                    )
+                };
+
+                auto it = data.find("RevEarlySFNode::CsfmBuffer"sv);
+                if (it != data.end()) {
+
+                    sptr<Buffer> csfm {
+                        _STD static_pointer_cast<Buffer, void>(it->second)
+                    };
+
+                    csfm->mapAligned();
+                    auto* mapped { csfm->memory->mapping };
+                    auto* casted { static_cast<ptr<u32>>(mapped) };
+
+                    /**
+                     * 1x1      ::  13.0/0 -> [0..1)
+                     * 2x2      ::  12.0/1 -> [1..2)
+                     * 4x4      ::  11.0/2 -> [2..3)
+                     * 8x8      ::  10.0/3 -> [3..4)
+                     * 16x16    ::  9.0/4 -> [4..5)
+                     * 32x32    ::  8.0/5 -> [5..6)
+                     * 64x64    ::  7.0/6 -> [6..7)
+                     * 128x128  ::  6.0/7 -> [7..8)
+                     * 256x256  ::  5.0/8 -> [8..12)
+                     * 512x512  ::  4.0/9 -> [12..28)
+                     * 1k x 1k  ::  3.0/10 -> [28..92)
+                     * 2k x 2k  ::  2.0/11 -> [92..348)
+                     * 4k x 4k  ::  1.0/12 -> [348..1372)
+                     * 8k x 8k  ::  0.0/13 -> [1372..5468)
+                     */
+
+                    /**/
+
+                    auto indices {
+                        RevVirtualMarkerTexture::tileBitToIndex(
+                            static_cast<const ptr<const u32>>(csfm->memory->mapping)
+                        )
+                    };
+
+                    csfm->unmap();
+
+                    auto* diff { first->_payload.diffuse };
+                    auto& view { diff->_payload.view };
+
+                    for (auto&& sfi : indices) {
+
+                        auto [mip, offset] = markerTexture->tileFromIndex(sfi);
+
+                        state->cacheCtrl.markAsUsed(diff, {
+                            .layer = view->baseLayer(),
+                            .mip = static_cast<u32>(mip),
+                            .offset = _STD move(offset),
+                            .extent = math::uivec3 { 128ui32, 128ui32, 1ui32 }
+                        });
+                    }
+                }
+            }
+            #endif
+            #pragma endregion
+
+            #pragma region Test Virtual Texture Streaming
+            #if FALSE
             auto* diff { first->_payload.diffuse };
             auto& view { diff->_payload.view };
 
@@ -553,6 +641,8 @@ void RevMainStaticNode::invoke(
                     }
                 }
             }
+            #endif
+            #pragma endregion
 
             const_cast<ptr<RevMainStaticNode>>(this)->__test_flag.push_back(first);
         }
@@ -676,7 +766,7 @@ void RevMainStaticNode::setupShader() {
     };
 
     shader::PrototypeBinding material {
-        shader::BindingType::eStorageBuffer,
+        shader::BindingType::eUniformBuffer,
         3ui32,
         shader::BindingUpdateInterval::eMaterialUpdate,
         "staticMainMaterial"
@@ -710,6 +800,13 @@ void RevMainStaticNode::setupShader() {
         "staticMainPassSpecular"
     };
 
+    shader::PrototypeBinding alpha {
+        shader::BindingType::eImageSampler,
+        8ui32,
+        shader::BindingUpdateInterval::eMaterialUpdate,
+        "staticMainPassAlpha"
+    };
+
     /**
      * Prepare Prototype Shader
      */
@@ -728,6 +825,7 @@ void RevMainStaticNode::setupShader() {
     fragmentPrototype.add(normal);
     fragmentPrototype.add(roughness);
     fragmentPrototype.add(specular);
+    fragmentPrototype.add(alpha);
 
     /**
      * Build Shader and Bindings

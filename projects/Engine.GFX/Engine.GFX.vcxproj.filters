@@ -190,6 +190,9 @@
     <Filter Include="Headerdateien\Rev\Texture">
       <UniqueIdentifier>{730fb20e-023b-4c32-95b3-0897ad635dd4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Rev\Texture">
+      <UniqueIdentifier>{4f009a1e-8670-4bc7-8333-8cadbbe982b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX\Inc.hpp">
@@ -762,6 +765,15 @@
     <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMetaDto.hpp">
       <Filter>Headerdateien\Material</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyStage.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlySFNode.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\VkComputePipeline.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
@@ -1132,6 +1144,21 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBufferView.cpp">
       <Filter>Quelldateien\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Texture\RevVirtualMarkerTexture.cpp">
+      <Filter>Quelldateien\Rev\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyStage.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlySFNode.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\VkComputePipeline.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\ComputePipeline.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -41,6 +41,7 @@ namespace ember {
          * @param  normal_ The normal.
          * @param  roughness_ The roughness.
          * @param  specular_ The specular.
+         * @param  alpha_ The alpha.
          */
         GfxMaterialAsset(
             cref<asset_guid> guid_,
@@ -51,7 +52,8 @@ namespace ember {
             cref<asset_guid> gloss_,
             cref<asset_guid> normal_,
             cref<asset_guid> roughness_,
-            cref<asset_guid> specular_
+            cref<asset_guid> specular_,
+            cref<asset_guid> alpha_
         ) noexcept;
 
     public:
@@ -106,6 +108,10 @@ namespace ember {
         [[nodiscard]] const ptr<const TextureAsset> specular() const noexcept;
 
         [[nodiscard]] cref<asset_guid> specularGuid() const noexcept;
+
+        [[nodiscard]] const ptr<const TextureAsset> alpha() const noexcept;
+
+        [[nodiscard]] cref<asset_guid> alphaGuid() const noexcept;
     };
 
 }

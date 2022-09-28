@@ -1,9 +1,13 @@
 #pragma once
 
-#include <Windows.h>
 #include <Engine.Scheduler/Task/SignaledQueue.hpp>
 
 #include "Window.hpp"
+
+/**
+ * SDL Forward Declaration
+ */
+struct SDL_Window;
 
 namespace ember::engine::session {
 

@@ -211,7 +211,7 @@ void DiscreteBinding::setSampler(const ref<TextureSampler> sampler_) noexcept {
     _sampler = sampler_;
 }
 
-void DiscreteBinding::store(const ref<Texture> texture_) {
+void DiscreteBinding::store(cref<Texture> texture_) {
     storeAs(texture_, texture_.buffer()._vkLayout);
 }
 
@@ -237,6 +237,98 @@ void DiscreteBinding::storeAs(cref<Texture> texture_, cref<vk::ImageLayout> layo
         /**
          *
          */
+        sampler.lods() = texture_.mipLevels();
+
+        sampler.setup(_super->device());
+
+        /**
+         * Exchange sampler
+         */
+        _sampler.destroy();
+        _sampler = _STD move(sampler);
+    }
+
+    /**
+     * Translate BindingType to vk::DescriptorType
+     */
+    vk::DescriptorType dt { vk::DescriptorType() };
+    switch (_super->type()) {
+        case BindingType::eImageSampler: {
+            dt = vk::DescriptorType::eCombinedImageSampler;
+            break;
+        }
+        default: {
+            #if _DEBUG
+            assert(false);
+            #else
+			return;
+            #endif
+        }
+    }
+
+    /**
+     * Build Descriptor for texture_
+     */
+    vk::DescriptorImageInfo info {
+        _sampler.vkSampler(),
+        texture_.vkView(),
+        layout_
+    };
+
+    /**
+     * Build Writer
+     */
+    vk::WriteDescriptorSet writer = {
+        _vkSet,
+        _super->id(),
+        0,
+        1,
+        dt,
+        &info,
+        nullptr,
+        nullptr
+    };
+
+    /**
+     * Update DescriptorSet with build Writer
+     */
+    _super->device()->vkDevice().updateDescriptorSets(
+        1, &writer,
+        0, nullptr
+    );
+}
+
+void DiscreteBinding::storeAdv(
+    cref<Texture> texture_,
+    cref<vk::ImageLayout> layout_,
+    cref<vk::SamplerAddressMode> addressMode_,
+    cref<vk::SamplerMipmapMode> mipMode_,
+    cref<vk::Filter> filterMode_
+) {
+    /**
+     * Assure optimal sampler exists
+     */
+    if (!_sampler.vkSampler() || !isSamplerCompatible(_sampler, texture_)) {
+        TextureSampler sampler {};
+
+        sampler.addressModeU() = addressMode_;
+        sampler.addressModeV() = addressMode_;
+
+        sampler.magnification() = filterMode_;
+        sampler.minification() = filterMode_;
+
+        if (
+            filterMode_ == vk::Filter::eLinear ||
+            texture_.format() == TextureFormat::eR32Uint ||
+            texture_.format() == TextureFormat::eR16Uint ||
+            texture_.format() == TextureFormat::eR16G16Uint
+        ) {
+            sampler.magnification() = vk::Filter::eNearest;
+            sampler.minification() = vk::Filter::eNearest;
+        }
+
+        sampler.mipMode() = mipMode_;
+
         sampler.lods() = texture_.mipLevels();
 
         sampler.setup(_super->device());

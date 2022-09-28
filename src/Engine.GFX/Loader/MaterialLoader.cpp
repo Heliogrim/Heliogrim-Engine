@@ -105,21 +105,40 @@ MaterialLoader::result_type MaterialLoader::operator()(const ptr<assets::GfxMate
         auto& loader { Session::get()->modules().resourceManager()->loader() };
 
         res->_payload.diffuse = resolveTextureResource(asset_->diffuse(), db, &loader);
-        res->_payload.normal = resolveTextureResource(asset_->normal(), db, &loader);
-        res->_payload.roughness = resolveTextureResource(asset_->roughness(), db, &loader);
-        res->_payload.ao = resolveTextureResource(asset_->ao(), db, &loader);
+
+        if (asset_->normal()) {
+            res->_payload.normal = resolveTextureResource(asset_->normal(), db, &loader);
+        }
+
+        if (asset_->roughness()) {
+            res->_payload.roughness = resolveTextureResource(asset_->roughness(), db, &loader);
+        }
+
+        if (asset_->ao()) {
+            res->_payload.ao = resolveTextureResource(asset_->ao(), db, &loader);
+        }
+
+        if (asset_->alpha()) {
+            res->_payload.alpha = resolveTextureResource(asset_->alpha(), db, &loader);
+        }
 
         // TODO: Make meta data stored to virtual buffer view of material aggregate buffer
 
         experimental::MaterialMetaDto data {
-            .diffuse = static_cast<u16>(res->_payload.diffuse->_payload.view->baseLayer()),
-            .normal = static_cast<u16>(res->_payload.normal->_payload.view->baseLayer()),
-            .roughness = static_cast<u16>(res->_payload.roughness->_payload.view->baseLayer()),
-            .ao = static_cast<u16>(res->_payload.ao->_payload.view->baseLayer())
+            .diffuse = res->_payload.diffuse->_payload.view->baseLayer(),
+            .normal = asset_->normal() ? res->_payload.normal->_payload.view->baseLayer() : ~0ui32,
+            .roughness = asset_->roughness() ? res->_payload.roughness->_payload.view->baseLayer() : ~0ui32,
+            .ao = asset_->ao() ? res->_payload.ao->_payload.view->baseLayer() : ~0ui32,
+            .alpha = asset_->alpha() ? res->_payload.alpha->_payload.view->baseLayer() : ~0ui32
+        };
+
+        const u64 alignedSize {
+            (sizeof(experimental::MaterialMetaDto) / 128ui64) * 128ui64 + (
+                (sizeof(experimental::MaterialMetaDto) % 128ui64) ? 128ui64 : 0ui64)
         };
 
         Buffer stage {};
-        makeStageBuffer(sizeof(experimental::MaterialMetaDto), stage);
+        makeStageBuffer(alignedSize, stage);
 
         stage.mapAligned(sizeof(experimental::MaterialMetaDto));
         stage.write<experimental::MaterialMetaDto>(&data, 1ui32);
@@ -141,13 +160,13 @@ MaterialLoader::result_type MaterialLoader::operator()(const ptr<assets::GfxMate
                 VK_QUEUE_FAMILY_IGNORED,
                 stage.buffer,
                 0ui32,
-                stage.size
+                sizeof(experimental::MaterialMetaDto)
             };
 
             const vk::BufferCopy region {
                 0ui32,
                 res->_payload.view->offset(),
-                stage.size
+                sizeof(experimental::MaterialMetaDto)
             };
 
             cmd.vkCommandBuffer().pipelineBarrier(
@@ -176,7 +195,7 @@ MaterialLoader::result_type MaterialLoader::operator()(const ptr<assets::GfxMate
                 VK_QUEUE_FAMILY_IGNORED,
                 stage.buffer,
                 0ui32,
-                stage.size
+                sizeof(experimental::MaterialMetaDto)
             };
 
             cmd.vkCommandBuffer().pipelineBarrier(

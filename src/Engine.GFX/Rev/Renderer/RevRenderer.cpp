@@ -3,6 +3,7 @@
 #include <Engine.GFX/Renderer/RenderPipeline.hpp>
 
 #include "RevDepthStage.hpp"
+#include "RevEarlyStage.hpp"
 #include "RevFinalStage.hpp"
 #include "RevLightStage.hpp"
 #include "RevMainStage.hpp"
@@ -23,6 +24,7 @@ void RevRenderer::setup(cref<sptr<Device>> device_) {
      * Create Stages
      */
     const auto depthStage { make_sptr<RevDepthStage>() };
+    const auto earlyStage { make_sptr<RevEarlyStage>() };
     const auto lightStage { make_sptr<RevLightStage>() };
     const auto probeStage { make_sptr<RevProbeStage>() };
     const auto mainStage { make_sptr<RevMainStage>() };
@@ -31,6 +33,12 @@ void RevRenderer::setup(cref<sptr<Device>> device_) {
     /**
      * Declare Dependencies
      */
+    earlyStage->pushDependency({
+        depthStage.get(),
+        RenderStageOrder::ePredecessor,
+        true
+    });
+
     lightStage->pushDependency({
         depthStage.get(),
         RenderStageOrder::ePredecessor,
@@ -71,6 +79,7 @@ void RevRenderer::setup(cref<sptr<Device>> device_) {
      * Push Stages
      */
     pipe->push(depthStage);
+    pipe->push(earlyStage);
     pipe->push(mainStage);
     pipe->push(finalStage);
 

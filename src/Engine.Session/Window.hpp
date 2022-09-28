@@ -4,6 +4,12 @@
 #include <Engine.Common/Concurrent/Future.hpp>
 #include <Engine.Common/Math/Extent.hpp>
 
+#ifndef VULKAN_HPP_NO_SPACESHIP_OPERATOR
+#define VULKAN_HPP_NO_SPACESHIP_OPERATOR
+#endif
+#include <vulkan/vulkan.hpp>
+
+
 namespace ember::engine::session {
 
     class Window {

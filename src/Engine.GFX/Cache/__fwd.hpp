@@ -19,6 +19,6 @@ namespace ember::engine::gfx::cache {
     template <std::totally_ordered SubjectType_>
     class CacheCtrlSubject;
 
-    class CacheStaticGeometrySubject;
-    class CacheTextureSubject;
+    struct CacheStaticGeometrySubject;
+    struct CacheTextureSubject;
 }

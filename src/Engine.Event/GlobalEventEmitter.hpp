@@ -5,12 +5,12 @@
 #endif
 
 #include <Engine.Common/Collection/BytellHashMap.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
 
 #include "EventEmitter.hpp"
 
 namespace ember {
 
+    /*
     namespace {
 
         template <IsStatelessEvent EventType_>
@@ -24,6 +24,7 @@ namespace ember {
         };
 
     };
+     */
 
     class GlobalEventEmitter {
     public:

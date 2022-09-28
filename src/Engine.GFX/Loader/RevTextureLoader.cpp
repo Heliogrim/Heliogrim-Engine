@@ -73,4 +73,12 @@ void RevTextureLoader::streamLoad(const ptr<res::partial::Streamable<res::Resour
 }
 
 void RevTextureLoader::streamUnload(const ptr<res::partial::Streamable<res::Resource>> resource_,
-    stream_options_type options_) {}
+    stream_options_type options_) {
+
+    const ptr<TextureResource> texture { static_cast<const ptr<TextureResource>>(resource_) };
+
+    /**
+     *
+     */
+    TextureLoader::partialUnload(options_, texture->_payload.view.get());
+}

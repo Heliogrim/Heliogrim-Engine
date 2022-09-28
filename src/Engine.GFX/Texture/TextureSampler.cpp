@@ -9,6 +9,7 @@ TextureSampler::TextureSampler() noexcept :
     _lods(1ui8),
     _magnification(vk::Filter::eLinear),
     _minification(vk::Filter::eLinear),
+    _mipMode(vk::SamplerMipmapMode::eLinear),
     _addressModeU(vk::SamplerAddressMode::eRepeat),
     _addressModeV(vk::SamplerAddressMode::eRepeat),
     _addressModeW(vk::SamplerAddressMode::eClampToEdge),
@@ -27,8 +28,7 @@ void TextureSampler::setup(cref<sptr<Device>> device_) {
         vk::SamplerCreateFlags(),
         _magnification,
         _minification,
-        //vk::SamplerMipmapMode::eNearest,
-        _minification == vk::Filter::eLinear ? vk::SamplerMipmapMode::eLinear : vk::SamplerMipmapMode::eNearest,
+        _mipMode,
         _addressModeU,
         _addressModeV,
         _addressModeW,
@@ -72,8 +72,20 @@ vk::Filter TextureSampler::magnification() const noexcept {
     return _magnification;
 }
 
+ref<vk::Filter> TextureSampler::magnification() noexcept {
+    return _magnification;
+}
+
 vk::Filter TextureSampler::minification() const noexcept {
     return _minification;
+}
+
+ref<vk::Filter> TextureSampler::minification() noexcept {
+    return _minification;
+}
+
+ref<vk::SamplerMipmapMode> TextureSampler::mipMode() noexcept {
+    return _mipMode;
 }
 
 vk::SamplerAddressMode TextureSampler::addressModeU() const noexcept {

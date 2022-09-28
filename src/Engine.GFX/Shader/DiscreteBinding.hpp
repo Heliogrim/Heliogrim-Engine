@@ -6,6 +6,7 @@
 #include "../Buffer/__fwd.hpp"
 #include "../Texture/__fwd.hpp"
 #include "../Texture/TextureSampler.hpp"
+
 namespace ember::engine::gfx::shader {
 
     class DiscreteBinding {
@@ -113,7 +114,7 @@ namespace ember::engine::gfx::shader {
          *
          * @param  texture_ The texture to store.
          */
-        void store(const ref<Texture> texture_);
+        void store(cref<Texture> texture_);
 
         /**
          * Stores the given texture with specified layout
@@ -125,6 +126,14 @@ namespace ember::engine::gfx::shader {
          * @param  layout_ The textures's layout to use.
          */
         void storeAs(cref<Texture> texture_, cref<vk::ImageLayout> layout_);
+
+        void storeAdv(
+            cref<Texture> texture_,
+            cref<vk::ImageLayout> layout_,
+            cref<vk::SamplerAddressMode> addressMode_,
+            cref<vk::SamplerMipmapMode> mipMode_,
+            cref<vk::Filter> filterMode_
+        );
 
     public:
         void store(const ptr<const VirtualTexture> texture_);

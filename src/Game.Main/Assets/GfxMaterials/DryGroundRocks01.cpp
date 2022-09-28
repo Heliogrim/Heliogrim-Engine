@@ -18,5 +18,6 @@ DryGroundRocks01::DryGroundRocks01() :
         invalid_asset_guid,
         texture::DryGroundRocks01Normal::auto_guid(),
         texture::DryGroundRocks01Roughness::auto_guid(),
+        invalid_asset_guid,
         invalid_asset_guid
     ) {}

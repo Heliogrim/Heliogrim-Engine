@@ -10,7 +10,6 @@
 
 #include <Engine.GFX/VkFixedPipeline.hpp>
 #include <Engine.GFX/API/VkTranslate.hpp>
-#include <Engine.GFX/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Memory/VkAllocator.hpp>
 #include <Engine.GFX/Renderer/HORenderPass.hpp>
 #include <Engine.GFX/Renderer/RenderPassState.hpp>
@@ -30,6 +29,7 @@
 #include "Engine.GFX/Scene/StaticGeometryModel.hpp"
 #include "Engine.Reflect/EmberReflect.hpp"
 #include <Engine.GFX/Scene/StaticGeometryBatch.hpp>
+#include <Engine.GFX/Rev/Texture/RevVirtualMarkerTexture.hpp>
 
 using namespace ember::engine::gfx::render;
 using namespace ember;
@@ -96,6 +96,21 @@ void RevDepthStaticNode::setup(cref<sptr<Device>> device_) {
     // Prevent depth artifacts while re-using depth buffer
     //_pipeline->rasterizationStage().setDepthBias(1.25F, 0.F, 1.75F);
     //_pipeline->rasterizationStage().setDepthBias(0.F, 0.F, 1.F);
+
+    auto& blending { static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->blending() };
+    const vk::PipelineColorBlendAttachmentState colorState {
+        VK_FALSE,
+        vk::BlendFactor::eOne,
+        vk::BlendFactor::eZero,
+        vk::BlendOp::eAdd,
+        vk::BlendFactor::eOne,
+        vk::BlendFactor::eZero,
+        vk::BlendOp::eAdd,
+        vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB |
+        vk::ColorComponentFlagBits::eA
+    };
+
+    blending.push_back(colorState);
 
     /**
      *
@@ -203,7 +218,20 @@ bool RevDepthStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Pre Store
      */
+    sptr<::ember::engine::gfx::RevVirtualMarkerTexture> markerTexture {
+        _STD static_pointer_cast<::ember::engine::gfx::RevVirtualMarkerTexture, void>(
+            renderPass_->state()->data.find("RevDepthStage::MarkerTexture"sv)->second
+        )
+    };
+
     dbgs[0].getById(shader::ShaderBinding::id_type { 1 }).store(uniform);
+    dbgs[2].getById(shader::ShaderBinding::id_type { 3 }).storeAdv(
+        markerTexture->texture(),
+        vk::ImageLayout::eShaderReadOnlyOptimal,
+        vk::SamplerAddressMode::eClampToBorder,
+        vk::SamplerMipmapMode::eNearest,
+        vk::Filter::eNearest
+    );
 
     /**
      * Store State
@@ -409,6 +437,10 @@ void RevDepthStaticNode::before(
             cmd.bindDescriptor(idx, grp.vkSet());
         }
 
+        if (grp.super().interval() == shader::BindingUpdateInterval::eDedicated) {
+            cmd.bindDescriptor(idx, grp.vkSet());
+        }
+
         if (grp.super().interval() == shader::BindingUpdateInterval::eMaterialUpdate) {
             cmd.bindDescriptor(idx, grp.vkSet());
         }
@@ -555,6 +587,13 @@ void RevDepthStaticNode::setupShader(cref<sptr<Device>> device_) {
         "staticDepthPassModel"
     };
 
+    shader::PrototypeBinding marker {
+        shader::BindingType::eImageSampler,
+        3ui32,
+        shader::BindingUpdateInterval::eDedicated,
+        "streamMarker"
+    };
+
     /**
      * Prepare Prototype Shader
      */
@@ -570,6 +609,7 @@ void RevDepthStaticNode::setupShader(cref<sptr<Device>> device_) {
     auto fragmentShaderCode { read_shader_file("resources/shader/depthpass_static.frag.spv") };
     fragmentPrototype.storeCode(fragmentShaderCode.data(), fragmentShaderCode.size());
     fragmentPrototype.add(ubo);
+    fragmentPrototype.add(marker);
 
     /**
      * Build Shader and Bindings
