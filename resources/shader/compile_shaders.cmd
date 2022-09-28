@@ -1,6 +1,6 @@
 @ECHO OFF
 
-SET glslang="C:\VulkanSDK\1.2.162.1\Bin\glslangValidator.exe"
+SET glslang="C:\VulkanSDK\1.3.224.1\Bin\glslangValidator.exe"
 
 for %%a in (*.vs *.vert) do (
     %glslang% -V -S vert -v -o .\%%~na.vert.spv %%a
