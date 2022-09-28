@@ -505,6 +505,15 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
 
     Vector<u16> indices {};
 
+    /* Octree Header */
+    const ptr<const uint8_t> oct {
+        static_cast<const ptr<const uint8_t>>(static_cast<const ptr<const void>>(bitmask_))
+    };
+    if (not *oct) {
+        return indices;
+    }
+    /**/
+
     /**
      * 1x1      ::  13.0/0 -> [0..1)
      * 2x2      ::  12.0/1 -> [1..2)
@@ -522,12 +531,82 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
      * 8k x 8k  ::  0.0/13 -> [1372..5468)
      */
 
-    u16 outerOffset { 0ui16 };
-    auto* cursor { bitmask_ };
+    constexpr auto decisions { 5468ui16 };
+    constexpr auto patchSize { 128ui16 };
+    constexpr auto childsPerNode { 8ui16 };
 
+    // Octree - Primary level counter
+    constexpr auto __ploctC__ { decisions / patchSize / childsPerNode };
+    constexpr auto ploctC { (__ploctC__ * childsPerNode * patchSize >= decisions) ? __ploctC__ : __ploctC__ + 1 };
+
+    // Octree - Second level counter
+    constexpr auto sloctC { childsPerNode };
+
+    // Octree - Decisions per Second Node
+    constexpr auto dpsn { patchSize * childsPerNode };
+
+    // Octree - Decision of Last Node
+    constexpr auto doln { decisions % dpsn };
+    // Octree - Last level counter
+    constexpr auto lloctC { (doln % patchSize == 0) ? doln / patchSize : doln / patchSize + 1 };
+    // Octree - Last patch size
+    constexpr auto lps { doln - (lloctC - 1) * patchSize };
+
+    /**
+     * Tree controlled loop
+     */
+
+    #define USE_HEADER_TREE
+
+    #ifdef USE_HEADER_TREE
+    u16 outerOffset { 0ui16 };
+    const ptr<const u8> cursor {
+        static_cast<const ptr<const u8>>(
+            static_cast<const ptr<const void>>(bitmask_ + (2ui32 /* add offset of header */))
+        )
+    };
+
+    for (u16 pli { 0ui16 }; pli < ploctC; ++pli) {
+
+        if (not (*oct & (1 << pli))) {
+            outerOffset += dpsn;
+            continue;
+        }
+
+        const auto slie { pli == (ploctC - 1) ? lloctC : sloctC };
+        for (u16 sli { 0ui16 }; sli < slie; ++sli) {
+
+            if (not (*(oct + 1ui16 + pli) & (1 << sli))) {
+                outerOffset += patchSize;
+                continue;
+            }
+
+            const auto blie { (pli == (ploctC - 1)) && (sli == (slie - 1)) ? lps : patchSize };
+            for (u16 bit { 0ui16 }; bit < blie; ++bit) {
+
+                const auto byteOffset { (outerOffset + bit) / 8ui16 };
+                const auto innerBitOffset { (outerOffset + bit) - (byteOffset * 8ui16) };
+
+                if (*(cursor + byteOffset) >> innerBitOffset & 0b1) {
+                    const auto index = tileBitOffsetToIndex(outerOffset + bit);
+                    indices.push_back(index);
+                }
+
+            }
+
+            outerOffset += blie;
+        }
+
+    }
+
+    #else
+
+    u16 outerOffset { 0ui16 };
+    auto* cursor { bitmask_ + (2ui32 /* add offset of header */) };
     while (outerOffset < 5468ui16) {
 
         for (u16 bit { 0ui16 }; bit < (sizeof(u32) * 8ui16); ++bit) {
+
             if ((*cursor >> bit) & 0b1) {
                 const auto index = tileBitOffsetToIndex(outerOffset + bit);
                 indices.push_back(index);
@@ -537,6 +616,9 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
         outerOffset += (sizeof(u32) * 8ui16);
         ++cursor;
     }
+    #endif
+
+    #undef USE_HEADER_TREE
 
     return indices;
 }

@@ -4,6 +4,7 @@
 #include "../Textures/WoodenBucket01Diffuse.hpp"
 #include "../Textures/WoodenBucket01Normal.hpp"
 #include "../Textures/WoodenBucket01Roughness.hpp"
+#include "../Textures/WoodenBucket01Metalness.hpp"
 
 using namespace ember::game::assets::material;
 using namespace ember;
@@ -18,6 +19,7 @@ WoodenBucket01::WoodenBucket01() :
         invalid_asset_guid,
         texture::WoodenBucket01Normal::auto_guid(),
         texture::WoodenBucket01Roughness::auto_guid(),
+        texture::WoodenBucket01Metalness::auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}

@@ -29,14 +29,22 @@ namespace ember::engine::gfx {
         using uvm_type = math::vec3_t<uvmt>;
         using normal_type = math::vec3_t<nt>;
 
+        using tangent_type = math::vec3_t<nt>;
+
         vertex_t() = default;
 
-        vertex_t(cref<position_type> position_, cref<color_type> color_, cref<uvm_type> uvm_,
-            cref<normal_type> normal_) :
+        vertex_t(
+            cref<position_type> position_,
+            cref<color_type> color_,
+            cref<uvm_type> uvm_,
+            cref<normal_type> normal_,
+            cref<tangent_type> tangent_
+        ) :
             position(position_),
             color(color_),
             uvm(uvm_),
-            normal(normal_) { }
+            normal(normal_),
+            tangent(tangent_) { }
 
         /** The position */
         position_type position;
@@ -49,6 +57,9 @@ namespace ember::engine::gfx {
 
         /** The normal */
         normal_type normal;
+
+        /**/
+        tangent_type tangent;
     };
 
     template <typename pt, typename ct, typename uvmt, typename nt>

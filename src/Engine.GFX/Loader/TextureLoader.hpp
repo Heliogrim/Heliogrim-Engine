@@ -15,7 +15,8 @@ namespace ember::engine::gfx::loader {
 
     enum class TextureLoaderFlagBits : u8 {
         eNone = 0b0000 << 0,
-        eLazyDataLoading = 0b0001 << 0
+        eLazyDataLoading = 0b0001 << 0,
+        eLockLoaded = 0b0001 << 1,
     };
 
     using TextureLoaderFlags = Flag<TextureLoaderFlagBits>;

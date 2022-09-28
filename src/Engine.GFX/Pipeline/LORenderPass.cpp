@@ -115,7 +115,7 @@ void LORenderPass::setup() {
     /**
      * Setup Info
      */
-    const vk::RenderPassCreateInfo info {
+    vk::RenderPassCreateInfo info {
         vk::RenderPassCreateFlags(),
         static_cast<u32>(_attachments.size()),
         _attachments.data(),
@@ -124,6 +124,20 @@ void LORenderPass::setup() {
         static_cast<u32>(_dependencies.size()),
         _dependencies.data()
     };
+
+    vk::RenderPassMultiviewCreateInfo mvi {};
+    if (!_viewMasks.empty()) {
+        mvi.subpassCount = _viewMasks.size();
+        mvi.pViewMasks = _viewMasks.data();
+
+        mvi.dependencyCount = 0;
+        mvi.pViewOffsets = nullptr;
+
+        mvi.correlationMaskCount = _correlationMasks.size();
+        mvi.pCorrelationMasks = _correlationMasks.data();
+
+        info.pNext = &mvi;
+    }
 
     /**
      * Create

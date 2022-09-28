@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <Engine.Common/Concurrent/Promise.hpp>
+#include <Engine.Common/Math/Coordinates.hpp>
 
 #include "../API/VkTranslate.hpp"
 #include "../Buffer/Buffer.hpp"
@@ -173,6 +174,17 @@ Texture load_impl(const Url& url_,
             aspect = vk::ImageAspectFlagBits::eColor;
             break;
         }
+
+        /**
+         *
+         */
+        case gli::FORMAT_RGBA16_SFLOAT_PACK16: {
+            format = vk::Format::eR16G16B16A16Sfloat;
+            aspect = vk::ImageAspectFlagBits::eColor;
+            break;
+        }
+
+        /**/
         default: {
             throw _STD exception("Unresolved texture format.");
         }
@@ -711,6 +723,7 @@ uptr<VirtualTextureView> TextureLoader::loadTo(
         const_cast<ref<u32>>(effectedMipLevels) = _STD min(header.levelCount, dst->mipLevels());
 
     } else {
+
         /**
          * Fully load source file
          */
@@ -756,7 +769,7 @@ uptr<VirtualTextureView> TextureLoader::loadTo(
          */
         vk::BufferCreateInfo bci {
             vk::BufferCreateFlags(),
-            glitex.size(),
+            MAX(glitex.size(), 128ui64),
             vk::BufferUsageFlagBits::eTransferSrc,
             vk::SharingMode::eExclusive,
             0,
@@ -835,6 +848,11 @@ uptr<VirtualTextureView> TextureLoader::loadTo(
 
         // Warning: Temporary
         for (auto* page : dst->_pages) {
+
+            if (flags_ & TextureLoaderFlagBits::eLockLoaded) {
+                // TODO: Lock effected memory and texture pages!!!
+            }
+
             if (page->memory()->state() != VirtualMemoryPageState::eLoaded) {
                 dst->owner()->load(page);
             }
@@ -958,17 +976,165 @@ void TextureLoader::partialLoadTo(
 ) const {
 
     /**
+     *
+     */
+    math::uivec3 reqExtent { options_->extent };
+    math::uivec3 reqOffset { options_->offset };
+
+    /**
      * Check for memory changes to prevent excessive file loading
      */
     #pragma region Preserve Memory Changes
 
-    // Warning: Temporary
+    /* (Optimization I :: Binary Search Begin) */
+    auto pageIter { dst_->_pages.begin() };
+
+    if (options_->mip > 0) {
+        // We assume that the pages of each texture have a geometric distribution, therefore we might skip the first subset
+        // Warning: Only when using 8k Textures :: 8192 / 128 ~> 64 ~> 4096 Pages
+
+        auto estSkip { 0ui64 };
+        if (dst_->_pages.size() >= 5200ui64) {
+            estSkip = 4095ui64;
+        }
+
+        const auto flbe {
+            _STD ranges::lower_bound(
+                dst_->_pages.begin() + estSkip,
+                dst_->_pages.end(),
+                options_->mip,
+                _STD ranges::less {},
+                [](non_owning_rptr<VirtualTexturePage> entry_) {
+                    return entry_->mipLevel();
+                }
+            )
+        };
+
+        pageIter += _STD distance(dst_->_pages.begin(), flbe);
+    }
+    /**/
+
+    u32 mipOff { static_cast<u32>(_STD distance(dst_->_pages.begin(), pageIter)) };
+
     bool changedMemory { false };
-    for (auto* page : dst_->_pages) {
+
+    if (mipOff >= dst_->_pages.size()) {
+        mipOff = dst_->_pages.size() - 1;
+    }
+
+    if (dst_->_pages[mipOff]->flags() & VirtualTexturePageFlag::eOpaqueTail) {
+
+        changedMemory = dst_->_pages[mipOff]->memory()->state() != VirtualMemoryPageState::eLoaded;
+
+        if (changedMemory) {
+            dst_->owner()->load(dst_->_pages[mipOff]);
+        }
+    }
+
+    if (options_->mip < dst_->owner()->_mipTailFirstLod) {
+
+        //constexpr auto pageExt { 128ui32 };
+        const math::uivec3 pageExt { dst_->owner()->_granularity };
+
+        const math::uivec3 acc {
+            math::compMax<math::uivec3::value_type>((dst_->_extent >> options_->mip) / pageExt, math::uivec3 { 1ui32 })
+        };
+        const math::uivec3 off { options_->offset / pageExt };
+        const math::uivec3 ext {
+            math::compMax<math::uivec3::value_type>(options_->extent / pageExt, math::uivec3 { 1ui32 })
+        };
+
+        /**
+         * Reexpand the ext to the requested size to apply page granularity for data loading
+         */
+        reqExtent = ext * pageExt;
+
+        /**
+         * Reexpand tthe off to tthe requested offset to apply page granularity for data loading
+         */
+        reqOffset = off * pageExt;
+
+        u32 oi { off.x + off.y * acc.x };
+        const auto out { (off.x + ext.x) + (off.y + ext.y) * acc.x };
+
+        while (oi < out) {
+            for (u32 ix { 0ui32 }; ix < ext.x; ++ix) {
+
+                u32 idx { mipOff + oi + ix };
+                auto* page { dst_->_pages[idx] };
+
+                bool effected { false };
+                if (page->mipLevel() != options_->mip) {
+                    continue;
+                }
+
+                const auto minPage { page->offset() };
+                const auto maxPage { page->offset() + page->extent() };
+
+                const auto minDst { reqOffset };
+                const auto maxDst { reqOffset + reqExtent };
+
+                const auto pX { minPage.x >= maxDst.x || maxPage.x <= minDst.x };
+                const auto pY { minPage.y >= maxDst.y || maxPage.y <= minDst.y };
+                const auto pZ { minPage.z >= maxDst.z || maxPage.z <= minDst.z };
+
+                effected = !(pX || pY || pZ);
+
+                if (effected && page->memory()->state() != VirtualMemoryPageState::eLoaded) {
+                    dst_->owner()->load(page);
+                    changedMemory = true;
+                }
+
+            }
+            oi += acc.x;
+        }
+    }
+
+    #if FALSE
+    /* (Optimization II :: Early-Exit Iterator Loop) */
+    bool changedMemory { false };
+    for (; pageIter != dst_->_pages.end() && (*pageIter)->mipLevel() == options_->mip; ++pageIter) {
+
+        auto* page { *pageIter };
 
         if (page->layer() != options_->layer) {
             continue;
         }
+
+        // Assuming the pages are sorted by there mip and linearized as grid, we can compute some `bounding box` to check
+        //bool testLower { false };
+        bool testUpper { false };
+
+        /*
+         *              |                   |
+         *   Offset     |   Y-Skip (ax*dy)  |
+         *              |                   |
+         *  ------------|-------------------|-------
+         *              |                   |
+         *  X-Skip (dx) |   Extent          |   X-Break (ix >= ox+ex)
+         *              |                   |
+         *  ------------|-------------------|-------
+         *              |                   |
+         *              |   Y-Break (iy >= oy+ey) | Exit
+         *              |                   |
+         */
+
+    #if FALSE
+        constexpr auto pageExt { 128ui32 };
+        const math::uivec3 acc { (dst_->width() >> options_->mip) / pageExt };
+        const math::uivec3 off { options_->offset / pageExt };
+        const math::uivec3 ext { options_->extent / pageExt };
+
+        u32 oi { off.x + off.y * acc.x };
+        const auto out { (off.x + ext.x) + (off.y + ext.y) * acc.x };
+
+        while (oi < out) {
+            for (u32 ix { 0ui32 }; ix < ext.x; ++ix) {
+                u32 idx { oi + ix };
+            }
+            oi += acc.x;
+        }
+    #endif
 
         bool effected { false };
         if (page->flags() & VirtualTexturePageFlag::eOpaqueTail) {
@@ -991,13 +1157,24 @@ void TextureLoader::partialLoadTo(
             const auto pZ { minPage.z >= maxDst.z || maxPage.z <= minDst.z };
 
             effected = !(pX || pY || pZ);
+
+            // Upper `bounding box` check for early exit
+            if (maxPage.x >= maxDst.x && maxPage.y >= maxDst.y && maxPage.z >= maxDst.z) {
+                testUpper = true;
+            }
         }
 
         if (effected && page->memory()->state() != VirtualMemoryPageState::eLoaded) {
             dst_->owner()->load(page);
             changedMemory = true;
         }
+
+        // Early-Exit on last effected element
+        if (testUpper) {
+            break;
+        }
     }
+    #endif
 
     // TODO: !!! Move dirty flagging and update tracking into virtual texture itself !!!
     if (changedMemory) {
@@ -1014,7 +1191,7 @@ void TextureLoader::partialLoadTo(
     /**
      *
      */
-    if (!changedMemory && not (options_->mip >= 7ui32)) {
+    if (!changedMemory && not (options_->mip >= dst_->owner()->_mipTailFirstLod)) {
         return;
     }
 
@@ -1123,6 +1300,7 @@ void TextureLoader::partialLoadTo(
 
     auto internalLevel { indexedLevels[srcMip] };
     auto blockSize { formatDataSize(api::vkTranslateFormat(format)) };
+
     _STD vector<char> data {};
 
     /**
@@ -1130,10 +1308,7 @@ void TextureLoader::partialLoadTo(
      */
 
     math::uivec3 mipExtent { header.pixelWidth >> srcMip, header.pixelHeight >> srcMip, header.pixelDepth >> srcMip };
-
-    mipExtent.x = mipExtent.x ? mipExtent.x : 1ui32;
-    mipExtent.y = mipExtent.y ? mipExtent.y : 1ui32;
-    mipExtent.z = mipExtent.z ? mipExtent.z : 1ui32;
+    mipExtent = math::compMax<u32>(mipExtent, math::uivec3 { 1ui32 });
 
     /**
      *
@@ -1161,13 +1336,13 @@ void TextureLoader::partialLoadTo(
         const auto faceCount { header.faceCount ? header.faceCount : 1ui32 };
 
         //
-        data.resize(options_->extent.x * options_->extent.y * options_->extent.z * blockSize);
+        data.resize(reqExtent.x * reqExtent.y * reqExtent.z * blockSize);
 
         //
         const auto layerOffset { options_->layer * faceCount * mipExtent.z * mipExtent.y * mipExtent.x };
 
-        const auto minExt { options_->offset };
-        const auto maxExt { options_->offset + options_->extent };
+        const auto minExt { reqOffset };
+        const auto maxExt { reqOffset + reqExtent };
 
         const auto outerOffset { levelOffset + layerOffset };
         auto bfd { 0ui64 };
@@ -1273,14 +1448,14 @@ void TextureLoader::partialLoadTo(
             1ui32
         },
         vk::Offset3D(
-            options_->offset.x,
-            options_->offset.y,
-            options_->offset.z
+            reqOffset.x,
+            reqOffset.y,
+            reqOffset.z
         ),
         vk::Extent3D(
-            options_->extent.x,
-            options_->extent.y,
-            options_->extent.z
+            reqExtent.x,
+            reqExtent.y,
+            reqExtent.z
         )
     });
 
@@ -1373,9 +1548,28 @@ void TextureLoader::partialUnload(
     const ptr<VirtualTextureView> dst_
 ) const {
 
-    // Warning: Temporary
+    /* (Optimization I :: Binary Search Begin) */
+    const auto flbe {
+        _STD ranges::lower_bound(
+            dst_->_pages,
+            options_->mip,
+            _STD ranges::less {},
+            [](non_owning_rptr<VirtualTexturePage> entry_) {
+                return entry_->mipLevel();
+            }
+        )
+    };
+    /**/
+
+    /* (Optimization II :: Early-Exit Iterator Loop) */
     bool changedMemory { false };
-    for (auto* page : dst_->_pages) {
+    for (
+        auto iter { dst_->_pages.begin() + _STD distance(dst_->_pages.begin(), flbe) };
+        iter != dst_->_pages.end() && (*iter)->mipLevel() == options_->mip;
+        ++iter
+    ) {
+
+        auto* page { *iter };
 
         if (page->layer() != options_->layer) {
             continue;

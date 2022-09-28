@@ -8,6 +8,7 @@
 #include "../Images/GrassWild01Normal.hpp"
 #include "../Images/GrassWild01Roughness.hpp"
 #include "../Images/GrassWild01Specular.hpp"
+#include "../Textures/DefaultMetalness.hpp"
 
 using namespace ember::game::assets::material;
 using namespace ember;
@@ -22,6 +23,7 @@ GrassWild01::GrassWild01() :
         image::GrassWild01Gloss::auto_guid(),
         image::GrassWild01Normal::auto_guid(),
         image::GrassWild01Roughness::auto_guid(),
+        texture::DefaultMetalness::auto_guid(),
         image::GrassWild01Specular::auto_guid(),
         invalid_asset_guid
     ) {}

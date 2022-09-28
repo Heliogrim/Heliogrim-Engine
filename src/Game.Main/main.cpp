@@ -20,6 +20,7 @@
 #include <Engine.Event/TickEvent.hpp>
 #include <Engine.Session/Session.hpp>
 
+#include "Assets/GfxMaterials/Cerberus.hpp"
 #include "Assets/GfxMaterials/Dandelion01.hpp"
 #include "Assets/GfxMaterials/DryGroundRocks01.hpp"
 #include "Assets/GfxMaterials/ForestGround01.hpp"
@@ -27,7 +28,10 @@
 #include "Assets/GfxMaterials/Stick01.hpp"
 #include "Assets/GfxMaterials/WoodenPier01Planks.hpp"
 #include "Assets/GfxMaterials/WoodenPier01Poles.hpp"
+#include "Assets/GfxMaterials/WoodenBucket01.hpp"
+#include "Assets/GfxMaterials/WoodenBucket02.hpp"
 #include "Assets/Images/ForestGround01Diffuse.hpp"
+#include "Assets/Meshes/Cerberus.hpp"
 #include "Assets/Meshes/Cylinder.hpp"
 #include "Assets/Meshes/Dandelion01.hpp"
 #include "Assets/Meshes/PlaneD128.hpp"
@@ -35,6 +39,8 @@
 #include "Assets/Meshes/Stick01.hpp"
 #include "Assets/Meshes/WoodenPier01Planks.hpp"
 #include "Assets/Meshes/WoodenPier01Poles.hpp"
+#include "Assets/Meshes/WoodenBucket01.hpp"
+#include "Assets/Meshes/WoodenBucket02.hpp"
 #include "Assets/Textures/ForestGround01Diffuse.hpp"
 #include "Ember/Ember.hpp"
 #include "Ember/World.hpp"
@@ -52,7 +58,7 @@ inline static _STD atomic_flag suspended {};
 
 #pragma region Forwarded Functions
 
-void buildGlobalPlane();
+void buildGlobalPlane(s32 dim_);
 
 void buildTestScene();
 
@@ -269,7 +275,7 @@ void ember_main_entry() {
     //execute(_STD move(buildTask));
 
     //
-#if FALSE
+    #if FALSE
     execute([&, next = _STD move(buildTask)]() {
         Vector<ptr<Actor>> storage {};
         burstBuildActors(1024ui64, storage);
@@ -282,7 +288,7 @@ void ember_main_entry() {
         yield();
         execute(RepetitiveTask { next });
     });
-#endif
+    #endif
 
     //
     execute(buildTestScene);
@@ -569,11 +575,11 @@ void burstDestroyActors(mref<Vector<ptr<Actor>>> actors_) {
     start = _STD chrono::high_resolution_clock::now();
 
     for (auto&& actor : actors_) {
-#ifdef _DEBUG
+        #ifdef _DEBUG
         assert(Destroy(_STD move(actor)).get());
-#else
+        #else
         [[maybe_unused]] auto result { Destroy(_STD move(actor)).get() };
-#endif
+        #endif
     }
 
     end = _STD chrono::high_resolution_clock::now();
@@ -589,7 +595,18 @@ void burstDestroyActors(mref<Vector<ptr<Actor>>> actors_) {
 
 #pragma endregion
 
-void buildGlobalPlane() {
+void buildGlobalPlane(s32 dim_) {
+
+    const auto ext { 4.F * static_cast<float>(dim_) };
+
+    for (s32 y { 0 }; y < dim_; ++y) {
+        for (s32 x { 0 }; x < dim_; ++x) {
+
+            const math::vec3 position {
+                (static_cast<float>(x - (dim_ >> 1)) / static_cast<float>(dim_)) * ext,
+                0.F,
+                (static_cast<float>(y - (dim_ >> 1)) / static_cast<float>(dim_)) * ext,
+            };
 
     globalPlaneActor = await(CreateActor(traits::async));
 
@@ -604,10 +621,13 @@ void buildGlobalPlane() {
     materials.push_back(*static_cast<ptr<GfxMaterialAsset>>(&query.value));
 
     cref<math::Transform> transform { globalPlaneActor->getWorldTransform() };
-    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F });
-    const_cast<ref<math::Transform>>(transform).setScale(math::vec3(10.F, 1.F, 10.F));
+            const_cast<ref<math::Transform>>(transform).setPosition(position);
+            const_cast<ref<math::Transform>>(transform).setScale(math::vec3(2.F, 1.F, 2.F));
 
     GetWorld()->addActor(globalPlaneActor);
+
+}
+    }
 }
 
 ptr<Actor> buildSimpleAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
@@ -683,7 +703,39 @@ ptr<Actor> buildWoodenPier01Planks() {
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
-    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -1.F, -2.F, -1.F });
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -1.F, 0.F, -1.F });
+    const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
+
+    GetWorld()->addActor(actor);
+
+    return actor;
+}
+
+ptr<Actor> buildWoodenBucket01() {
+
+    auto* actor = buildSimpleAsset(
+        game::assets::meshes::WoodenBucket01::auto_guid(),
+        game::assets::material::WoodenBucket01::auto_guid()
+    );
+
+    cref<math::Transform> transform { actor->getWorldTransform() };
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, .5F });
+    const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
+
+    GetWorld()->addActor(actor);
+
+    return actor;
+}
+
+ptr<Actor> buildWoodenBucket02() {
+
+    auto* actor = buildSimpleAsset(
+        game::assets::meshes::WoodenBucket02::auto_guid(),
+        game::assets::material::WoodenBucket02::auto_guid()
+    );
+
+    cref<math::Transform> transform { actor->getWorldTransform() };
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, -.5F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
     GetWorld()->addActor(actor);
@@ -709,15 +761,27 @@ ptr<Actor> buildDandelion01() {
 
 void buildTestScene() {
 
-    buildGlobalPlane();
+    //buildGlobalPlane(12i32);
 
+    //buildRock01();
 
-    auto plank = buildWoodenPier01Planks();
-    cref<math::Transform> transform { plank->getWorldTransform() };
-    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -1.F, -5.F, -1.F });
-    const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 2.5F });
+    #if TRUE
+    auto* actor = buildSimpleAsset(
+        game::assets::meshes::Cerberus::auto_guid(),
+        game::assets::material::Cerberus::auto_guid()
+    );
+
+    cref<math::Transform> transform { actor->getWorldTransform() };
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, 0.F });
+    const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
+
+    GetWorld()->addActor(actor);
 
     return;
+    #endif
+
+    #if FALSE
+    [[maybe_unused]] auto* sphere = buildSphere();
 
     [[maybe_unused]] auto* rock01 = buildRock01();
     [[maybe_unused]] auto* stick01 = buildStick01();
@@ -725,12 +789,29 @@ void buildTestScene() {
     [[maybe_unused]] auto* poles01 = buildWoodenPier01Poles();
     [[maybe_unused]] auto* planks01 = buildWoodenPier01Planks();
 
+    [[maybe_unused]] auto* bucket01 = buildWoodenBucket01();
+    [[maybe_unused]] auto* bucket02 = buildWoodenBucket02();
+
+    {
+        {
+            cref<math::Transform> transform { bucket01->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -6.F, .8F, 2.F });
+            const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 2.5F });
+        }
+
+        {
+            cref<math::Transform> transform { bucket02->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -6.F, .8F, -2.F });
+            const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 2.5F });
+        }
+    }
+
     {
         auto* plank = buildWoodenPier01Planks();
 
         {
             cref<math::Transform> transform { plank->getWorldTransform() };
-            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -6.F, -2.F, 2.F });
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -6.F, .5F, 2.F });
         }
 
         //
@@ -738,7 +819,7 @@ void buildTestScene() {
 
         {
             cref<math::Transform> transform { plank->getWorldTransform() };
-            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -6.F, -2.F, 4.F });
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -6.F, .5F, 4.F });
         }
 
         //
@@ -746,7 +827,7 @@ void buildTestScene() {
 
         {
             cref<math::Transform> transform { plank->getWorldTransform() };
-            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -4.F, -2.F, 2.F });
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -4.F, .5F, 2.F });
         }
 
         //
@@ -754,7 +835,133 @@ void buildTestScene() {
 
         {
             cref<math::Transform> transform { plank->getWorldTransform() };
-            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -4.F, -2.F, 4.F });
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -4.F, .5F, 4.F });
         }
     }
+
+    {
+        auto* cannon = buildCannon01();
+
+        {
+            cref<math::Transform> transform { cannon->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 2.1F, 0.05F, 4.F });
+            ///const_cast<ref<math::Transform>>(transform).setRotation(math::quaternion::euler({ 0.F, glm::radians(173.F), 0.F }));
+        }
+
+        //
+        cannon = buildCannon01();
+
+        {
+            cref<math::Transform> transform { cannon->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 3.1F, 0.05F, 6.F });
+            //const_cast<ref<math::Transform>>(transform).setRotation(math::quaternion::euler({ 0.F, glm::radians(184.F), 0.F }));
+        }
+
+        //
+        cannon = buildCannon01();
+
+        {
+            cref<math::Transform> transform { cannon->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -0.2F, 0.05F, 6.7F });
+            //const_cast<ref<math::Transform>>(transform).setRotation(math::quaternion::euler({ 0.F, glm::radians(179.F), 0.F }));
+        }
+    }
+
+    {
+        auto* plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, -0.01F, 4.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, -0.01F, 6.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 2.F, -0.01F, 4.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 2.F, -0.01F, 6.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 4.F, -0.01F, 4.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 4.F, -0.01F, 6.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, -0.01F, 8.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, -0.01F, 10.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 2.F, -0.01F, 8.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 2.F, -0.01F, 10.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 4.F, -0.01F, 8.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 4.F, -0.01F, 10.F });
+        }
+    }
+    #endif
 }

@@ -204,6 +204,18 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
         depthFrame->attachments().at(0).unwrapped()
     };
 
+    /**/
+    const sptr<Texture> brdfLut {
+        _STD static_pointer_cast<Texture, void>(state->data.find("RevEarlyBrdfLutNode::BrdfLut"sv)->second)
+    };
+    const sptr<Texture> prefiltered {
+        _STD static_pointer_cast<Texture, void>(state->data.find("RevEarlyEnvPrefilterNode::PrefilterCube"sv)->second)
+    };
+    const sptr<Texture> irradiance {
+        _STD static_pointer_cast<Texture, void>(state->data.find("RevEarlyEnvIrradianceNode::IrradianceCube"sv)->second)
+    };
+    /**/
+
     const sptr<Framebuffer> mainFrame {
         _STD static_pointer_cast<Framebuffer, void>(state->data.find("RevMainStage::Framebuffer"sv)->second)
     };
@@ -245,12 +257,18 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
      */
     dbgs[0].getById(shader::ShaderBinding::id_type { 1 }).store(uniform);
     dbgs[0].getById(shader::ShaderBinding::id_type { 2 }).storeAs(*pbrAlbedo, vk::ImageLayout::eShaderReadOnlyOptimal);
-    dbgs[0].getById(shader::ShaderBinding::id_type { 3 }).storeAs(*pbrNormals, vk::ImageLayout::eShaderReadOnlyOptimal);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 3 }).storeAdv(*pbrNormals, vk::ImageLayout::eShaderReadOnlyOptimal,
+        vk::SamplerAddressMode::eClampToBorder, vk::SamplerMipmapMode::eNearest, vk::Filter::eNearest);
     dbgs[0].getById(shader::ShaderBinding::id_type { 4 }).
             storeAs(*pbrPosition, vk::ImageLayout::eShaderReadOnlyOptimal);
     dbgs[0].getById(shader::ShaderBinding::id_type { 5 }).storeAs(*pbrMrs, vk::ImageLayout::eShaderReadOnlyOptimal);
     dbgs[0].getById(shader::ShaderBinding::id_type { 6 }).
             storeAs(*depth, vk::ImageLayout::eDepthStencilAttachmentOptimal);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 7 }).
+            storeAdv(*brdfLut, vk::ImageLayout::eShaderReadOnlyOptimal, vk::SamplerAddressMode::eClampToEdge,
+                vk::SamplerMipmapMode::eLinear, vk::Filter::eLinear, vk::BorderColor::eFloatOpaqueWhite);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 8 }).storeAs(*prefiltered, vk::ImageLayout::eShaderReadOnlyOptimal);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 9 }).storeAs(*irradiance, vk::ImageLayout::eShaderReadOnlyOptimal);
 
     /**
      * Store State
@@ -432,7 +450,8 @@ void RevFinalComposeNode::before(
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
     const auto* camera { renderPass_->camera() };
-    uniform.write<math::vec3>(&camera->position(), 1ui32);
+    auto pos {camera->position()};
+    uniform.write<math::vec3>(&pos, 1ui32);
 
     /**
      *
@@ -597,6 +616,27 @@ void RevFinalComposeNode::setupShader() {
         "finalPassDepth"
     };
 
+    shader::PrototypeBinding brdfLut {
+        shader::BindingType::eImageSampler,
+        7,
+        shader::BindingUpdateInterval::ePerFrame,
+        "brdfLut"
+    };
+
+    shader::PrototypeBinding prefilter {
+        shader::BindingType::eImageSampler,
+        8,
+        shader::BindingUpdateInterval::ePerFrame,
+        "prefilter"
+    };
+
+    shader::PrototypeBinding irradiance {
+        shader::BindingType::eImageSampler,
+        9,
+        shader::BindingUpdateInterval::ePerFrame,
+        "irradiance"
+    };
+
     /**
      * Prepare Prototype Shader
      */
@@ -616,6 +656,9 @@ void RevFinalComposeNode::setupShader() {
     fragmentPrototype.add(position);
     fragmentPrototype.add(mrs);
     fragmentPrototype.add(depth);
+    fragmentPrototype.add(brdfLut);
+    fragmentPrototype.add(prefilter);
+    fragmentPrototype.add(irradiance);
 
     /**
      * Build Shader and Bindings

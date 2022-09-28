@@ -11,8 +11,8 @@ texture::Rock01Roughness::Rock01Roughness() :
         texture::Rock01Roughness::auto_guid(),
         image::Rock01Roughness::auto_guid(),
         {},
-        { 4096ui32, 4096ui32, 1ui32 },
-        TextureFormat::eR16Sfloat,
-        12ui32,
+        { 8192ui32, 8192ui32, 1ui32 },
+        TextureFormat::eR8Unorm,
+        14ui32,
         engine::gfx::TextureType::e2d
     ) { }

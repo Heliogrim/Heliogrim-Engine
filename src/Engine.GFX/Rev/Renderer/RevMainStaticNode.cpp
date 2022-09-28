@@ -82,14 +82,15 @@ void RevMainStaticNode::setup(cref<sptr<Device>> device_) {
             { 0ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, position)) },
             { 1ui32, TextureFormat::eR8G8B8Unorm, static_cast<u32>(offsetof(vertex, color)) },
             { 2ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, uvm)) },
-            { 3ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, normal)) }
+            { 3ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, normal)) },
+            { 4ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, tangent)) }
         }
     });
 
     _pipeline->vertexStage().shaderSlot().name() = "staticMainPass";
     _pipeline->fragmentStage().shaderSlot().name() = "staticMainPass";
 
-    _pipeline->rasterizationStage().cullFace() = RasterCullFace::eNone;
+    _pipeline->rasterizationStage().cullFace() = RasterCullFace::eBack;
     // TODO: Default => RasterCullFace::eBack | Foliage => RasterCullFace::eNone
     //_pipeline->rasterizationStage().depthWrite() = true;// TODO: Revert to `false`, currently true for debugging purpose
     _pipeline->rasterizationStage().depthWrite() = false;
@@ -502,13 +503,21 @@ void RevMainStaticNode::invoke(
                 dbg.getById(shader::ShaderBinding::id_type { 6 }).store(
                     first->_payload.roughness->_payload.view->owner());
             }
-            if (first->_payload.ao) {
+            if (first->_payload.metalness) {
                 dbg.getById(shader::ShaderBinding::id_type { 7 }).store(
+                    first->_payload.metalness->_payload.view->owner());
+            }
+            if (first->_payload.ao) {
+                dbg.getById(shader::ShaderBinding::id_type { 8 }).store(
                     first->_payload.ao->_payload.view->owner());
             }
             if (first->_payload.alpha) {
-                dbg.getById(shader::ShaderBinding::id_type { 8 }).store(
+                dbg.getById(shader::ShaderBinding::id_type { 9 }).store(
                     first->_payload.alpha->_payload.view->owner());
+            }
+            if (first->_payload.ao) {
+                dbg.getById(shader::ShaderBinding::id_type { 10 }).store(
+                    first->_payload.ao->_payload.view->owner());
             }
 
             //
@@ -604,7 +613,13 @@ void RevMainStaticNode::invoke(
                          * Get the csfm data offset by forward querying the material's dynamic index
                          */
                         const auto dynIdx { mtt.forward.at(material) };
-                        const auto offset { dynIdx * 171ui32 };
+                        const auto offset { dynIdx * (2ui32 + 171ui32) };
+
+                        /**/
+                        if (offset >= csfm->memory->size) {
+                            continue;
+                        }
+                        /**/
 
                         /**
                          *
@@ -620,6 +635,18 @@ void RevMainStaticNode::invoke(
                         auto* diff { material->_payload.diffuse };
                         auto& view { diff->_payload.view };
 
+                        auto* norm { material->_payload.normal };
+                        auto& normView { norm->_payload.view };
+
+                        auto* rough { material->_payload.roughness };
+                        auto& roughView { rough->_payload.view };
+
+                        auto* metal { material->_payload.metalness };
+                        auto& metalView { metal->_payload.view };
+
+                        auto* ao { material->_payload.ao };
+                        auto& aoView { ao->_payload.view };
+
                         for (auto&& sfi : indices) {
 
                             auto [mip, offset] = markerTexture->tileFromIndex(sfi);
@@ -627,7 +654,35 @@ void RevMainStaticNode::invoke(
                             state->cacheCtrl.markAsUsed(diff, {
                                 .layer = view->baseLayer(),
                                 .mip = static_cast<u32>(mip),
-                                .offset = _STD move(offset),
+                                .offset = offset,
+                                .extent = markerTexture->tileExtent(mip)
+                            });
+
+                            state->cacheCtrl.markAsUsed(norm, {
+                                .layer = normView->baseLayer(),
+                                .mip = static_cast<u32>(mip),
+                                .offset = offset,
+                                .extent = markerTexture->tileExtent(mip)
+                            });
+
+                            state->cacheCtrl.markAsUsed(rough, {
+                                .layer = roughView->baseLayer(),
+                                .mip = static_cast<u32>(mip),
+                                .offset = offset,
+                                .extent = markerTexture->tileExtent(mip)
+                            });
+
+                            state->cacheCtrl.markAsUsed(metal, {
+                                .layer = metalView->baseLayer(),
+                                .mip = static_cast<u32>(mip),
+                                .offset = offset,
+                                .extent = markerTexture->tileExtent(mip)
+                            });
+
+                            state->cacheCtrl.markAsUsed(ao, {
+                                .layer = aoView->baseLayer(),
+                                .mip = static_cast<u32>(mip),
+                                .offset = offset,
                                 .extent = markerTexture->tileExtent(mip)
                             });
                         }
@@ -837,18 +892,32 @@ void RevMainStaticNode::setupShader() {
         "staticMainPassRoughness"
     };
 
-    shader::PrototypeBinding specular {
+    shader::PrototypeBinding metalness {
         shader::BindingType::eImageSampler,
         7ui32,
+        shader::BindingUpdateInterval::eMaterialUpdate,
+        "staticMainPassMetalness"
+    };
+
+    shader::PrototypeBinding specular {
+        shader::BindingType::eImageSampler,
+        8ui32,
         shader::BindingUpdateInterval::eMaterialUpdate,
         "staticMainPassSpecular"
     };
 
     shader::PrototypeBinding alpha {
         shader::BindingType::eImageSampler,
-        8ui32,
+        9ui32,
         shader::BindingUpdateInterval::eMaterialUpdate,
         "staticMainPassAlpha"
+    };
+
+    shader::PrototypeBinding ao {
+        shader::BindingType::eImageSampler,
+        10ui32,
+        shader::BindingUpdateInterval::eMaterialUpdate,
+        "staticMainPassAO"
     };
 
     /**
@@ -868,8 +937,10 @@ void RevMainStaticNode::setupShader() {
     fragmentPrototype.add(albedo);
     fragmentPrototype.add(normal);
     fragmentPrototype.add(roughness);
+    fragmentPrototype.add(metalness);
     fragmentPrototype.add(specular);
     fragmentPrototype.add(alpha);
+    fragmentPrototype.add(ao);
 
     /**
      * Build Shader and Bindings

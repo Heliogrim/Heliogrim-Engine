@@ -13,6 +13,6 @@ texture::Dandelion01Alpha::Dandelion01Alpha() :
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR16Sfloat,
-        13ui32,
+        14ui32,
         engine::gfx::TextureType::e2d
     ) { }

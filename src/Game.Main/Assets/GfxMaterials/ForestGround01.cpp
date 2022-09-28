@@ -1,5 +1,6 @@
 #include "ForestGround01.hpp"
 
+#include "Game.Main/Assets/Textures/DefaultMetalness.hpp"
 #include "Game.Main/Assets/Textures/ForestGround01AO.hpp"
 #include "Game.Main/Assets/Textures/ForestGround01Diffuse.hpp"
 #include "Game.Main/Assets/Textures/ForestGround01Normal.hpp"
@@ -18,6 +19,7 @@ ForestGround01::ForestGround01() :
         invalid_asset_guid,
         texture::ForestGround01Normal::auto_guid(),
         texture::ForestGround01Roughness::auto_guid(),
+        texture::DefaultMetalness::auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}

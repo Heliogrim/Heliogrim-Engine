@@ -132,7 +132,8 @@ namespace ember::engine::gfx::shader {
             cref<vk::ImageLayout> layout_,
             cref<vk::SamplerAddressMode> addressMode_,
             cref<vk::SamplerMipmapMode> mipMode_,
-            cref<vk::Filter> filterMode_
+            cref<vk::Filter> filterMode_,
+            cref<vk::BorderColor> borderColor_ = vk::BorderColor::eFloatOpaqueBlack
         );
 
     public:

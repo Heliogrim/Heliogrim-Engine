@@ -352,9 +352,10 @@ void VkFixedPipeline::setup() {
         vk::PipelineLayoutCreateFlags(),
         static_cast<u32>(descriptorLayouts.size()),
         descriptorLayouts.data(),
-        0,
-        nullptr
+        static_cast<u32>(_pushConstants.size()),
+        _pushConstants.data()
     };
+
     _layout = _device->vkDevice().createPipelineLayout(plci);
     info.layout = _layout;
 
@@ -390,6 +391,10 @@ void VkFixedPipeline::destroy() noexcept {
 
 ref<Vector<vk::PipelineColorBlendAttachmentState>> VkFixedPipeline::blending() noexcept {
     return _blending;
+}
+
+ref<Vector<vk::PushConstantRange>> VkFixedPipeline::pushConstants() noexcept {
+    return _pushConstants;
 }
 
 cref<vk::PipelineLayout> VkFixedPipeline::vkLayout() const noexcept {

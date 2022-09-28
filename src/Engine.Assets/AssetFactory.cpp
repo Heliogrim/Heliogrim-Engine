@@ -47,6 +47,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) {
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
+        invalid_asset_guid,
         invalid_asset_guid
     );
 
@@ -64,6 +65,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(
     cref<asset_guid> gloss_,
     cref<asset_guid> normal_,
     cref<asset_guid> roughness_,
+    cref<asset_guid> metalness_,
     cref<asset_guid> specular_,
     cref<asset_guid> alpha_
 ) {
@@ -77,6 +79,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(
         gloss_,
         normal_,
         roughness_,
+        metalness_,
         specular_,
         alpha_
     );

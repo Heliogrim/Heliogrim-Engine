@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         DefaultAlpha():
             ImageAsset(DefaultAlpha::auto_guid(),
-                R"(resources\assets\texture\default_alpha.ktx2)") {}
+                R"(resources\assets\texture\default_alpha.ktx)") {}
     };
 
     AUTO_REGISTER_ASSET(DefaultAlpha)

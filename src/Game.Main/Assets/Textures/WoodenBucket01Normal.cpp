@@ -12,7 +12,7 @@ texture::WoodenBucket01Normal::WoodenBucket01Normal() :
         image::WoodenBucket01Normal::auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
-        TextureFormat::eR32G32B32A32Sfloat,
+        TextureFormat::eR8G8B8A8Unorm,
         14ui32,
         engine::gfx::TextureType::e2d
     ) { }

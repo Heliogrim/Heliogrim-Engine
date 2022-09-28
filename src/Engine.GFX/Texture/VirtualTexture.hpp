@@ -9,9 +9,16 @@
 #include "../Device/Device.hpp"
 #include "../Memory/VirtualMemory.hpp"
 
+namespace ember::engine::gfx::loader {
+    class TextureLoader;
+}
+
 namespace ember::engine::gfx {
 
     class VirtualTexture final {
+    public:
+        friend class ::ember::engine::gfx::loader::TextureLoader;
+
     public:
         using this_type = VirtualTexture;
 

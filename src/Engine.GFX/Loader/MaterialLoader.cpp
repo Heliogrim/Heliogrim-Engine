@@ -114,6 +114,10 @@ MaterialLoader::result_type MaterialLoader::operator()(const ptr<assets::GfxMate
             res->_payload.roughness = resolveTextureResource(asset_->roughness(), db, &loader);
         }
 
+        if (asset_->metalness()) {
+            res->_payload.metalness = resolveTextureResource(asset_->metalness(), db, &loader);
+        }
+
         if (asset_->ao()) {
             res->_payload.ao = resolveTextureResource(asset_->ao(), db, &loader);
         }
@@ -128,6 +132,7 @@ MaterialLoader::result_type MaterialLoader::operator()(const ptr<assets::GfxMate
             .diffuse = res->_payload.diffuse->_payload.view->baseLayer(),
             .normal = asset_->normal() ? res->_payload.normal->_payload.view->baseLayer() : ~0ui32,
             .roughness = asset_->roughness() ? res->_payload.roughness->_payload.view->baseLayer() : ~0ui32,
+            .metalness = asset_->metalness() ? res->_payload.metalness->_payload.view->baseLayer() : ~0ui32,
             .ao = asset_->ao() ? res->_payload.ao->_payload.view->baseLayer() : ~0ui32,
             .alpha = asset_->alpha() ? res->_payload.alpha->_payload.view->baseLayer() : ~0ui32
         };

@@ -435,11 +435,12 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
     };
     auto timeToVal { static_cast<double>(millis) / 5000.0 };
 
+    constexpr auto dist { 3.F };
     _camera->setPosition({
-        static_cast<float>(_STD sin(timeToVal)) * 8.F,
+        static_cast<float>(_STD sin(timeToVal)) * dist,
         /*-1.8F*/
-        1.8F,
-        static_cast<float>(_STD cos(timeToVal)) * 8.F
+        /*1.2F*/0.F,
+        static_cast<float>(_STD cos(timeToVal)) * dist
     });
     //_camera->setLookAt({ 0.F, /*-1.8F*/0.F, 0.F });
     _camera->update();

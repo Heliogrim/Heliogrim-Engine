@@ -786,6 +786,15 @@
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\State\__fwd.hpp">
       <Filter>Headerdateien\Rev\Renderer\State</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyBrdfLutNode.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyEnvIrradianceNode.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyEnvPrefilterNode.hpp">
+      <Filter>Headerdateien\Rev\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
@@ -1171,6 +1180,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\ComputePipeline.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyBrdfLutNode.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyEnvIrradianceNode.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyEnvPrefilterNode.cpp">
+      <Filter>Quelldateien\Rev\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

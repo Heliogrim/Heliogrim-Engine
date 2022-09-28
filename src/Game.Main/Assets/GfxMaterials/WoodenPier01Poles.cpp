@@ -5,6 +5,9 @@
 #include "../Textures/DefaultNormal.hpp"
 #include "../Textures/DefaultDiffuse.hpp"
 #include "../Textures/WoodenPier01PolesDiffuse.hpp"
+#include "../Textures/WoodenPier01PolesNormal.hpp"
+#include "../Textures/DefaultMetalness.hpp"
+#include "../Textures/WoodenPier01PolesRoughness.hpp"
 
 using namespace ember::game::assets::material;
 using namespace ember;
@@ -17,8 +20,9 @@ WoodenPier01Poles::WoodenPier01Poles() :
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
-        texture::DefaultNormal::auto_guid(),
-        texture::DefaultRoughness::auto_guid(),
+        texture::WoodenPier01PolesNormal::auto_guid(),
+        texture::WoodenPier01PolesRoughness::auto_guid(),
+        texture::DefaultMetalness::auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}

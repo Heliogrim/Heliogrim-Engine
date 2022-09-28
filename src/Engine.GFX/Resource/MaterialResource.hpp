@@ -22,6 +22,7 @@ namespace ember::engine::gfx {
             ptr<TextureResource> diffuse;
             ptr<TextureResource> normal;
             ptr<TextureResource> roughness;
+            ptr<TextureResource> metalness;
             ptr<TextureResource> ao;
             ptr<TextureResource> alpha;
             //

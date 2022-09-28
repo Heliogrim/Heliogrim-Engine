@@ -13,6 +13,6 @@ texture::Dandelion01Diffuse::Dandelion01Diffuse() :
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Unorm,
-        13ui32,
+        14ui32,
         engine::gfx::TextureType::e2d
     ) { }

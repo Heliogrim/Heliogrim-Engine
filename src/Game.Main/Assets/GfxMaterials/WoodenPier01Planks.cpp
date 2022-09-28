@@ -5,6 +5,9 @@
 #include "../Textures/DefaultNormal.hpp"
 #include "../Textures/DefaultDiffuse.hpp"
 #include "../Textures/WoodenPier01PlanksDiffuse.hpp"
+#include "../Textures/WoodenPier01PlanksNormal.hpp"
+#include "../Textures/DefaultMetalness.hpp"
+#include "../Textures/WoodenPier01PlanksRoughness.hpp"
 
 using namespace ember::game::assets::material;
 using namespace ember;
@@ -17,8 +20,9 @@ WoodenPier01Planks::WoodenPier01Planks() :
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
-        texture::DefaultNormal::auto_guid(),
-        texture::DefaultRoughness::auto_guid(),
+        texture::WoodenPier01PlanksNormal::auto_guid(),
+        texture::WoodenPier01PlanksRoughness::auto_guid(),
+        texture::DefaultMetalness::auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}

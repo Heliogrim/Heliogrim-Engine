@@ -66,7 +66,7 @@ void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asse
      *
      */
     Assimp::Importer importer {};
-    aiPostProcessSteps ppFlags {};
+    auto ppFlags { aiProcess_PreTransformVertices };
 
     /**
      *
@@ -83,30 +83,34 @@ void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asse
      */
     auto meshes = scene->mMeshes;
     auto meshCount = scene->mNumMeshes;
+
+    Vector<u32> indices {};
+    Vector<vertex> vertices {};
+
     for (auto i = 0; i < meshCount; ++i) {
         auto* mesh { meshes[i] };
 
         u32 fc { mesh->mNumFaces };
 
-        Vector<u32> indices {};
-        indices.reserve(fc * 3ui32);
+        indices.reserve(indices.size() + fc * 3ui32);
+        const auto meshIdxOff { indices.size() };
 
         for (u32 j = 0; j < fc; ++j) {
             auto face { mesh->mFaces[j] };
 
             for (auto k = 0; k < face.mNumIndices; ++k) {
-                indices.push_back(face.mIndices[k]);
+                indices.push_back(meshIdxOff + face.mIndices[k]);
             }
         }
 
         auto vc { mesh->mNumVertices };
 
-        Vector<vertex> vertices {};
-        vertices.reserve(vc);
+        vertices.reserve(vertices.size() + vc);
 
         auto* colors { mesh->mColors[0] };
         auto* texCoords { mesh->mTextureCoords[0] };
         auto* normals { mesh->mNormals };
+        auto* tangents { mesh->mTangents };
 
         for (u32 j = 0; j < vc; ++j) {
             auto entry { mesh->mVertices[j] };
@@ -125,87 +129,98 @@ void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asse
                         255ui8
                     },
                 texCoords ?
-                    vertex::uvm_type { texCoords[j].x, texCoords[j].y, texCoords[j].z } :
+                    vertex::uvm_type { texCoords[j].x, 1.0f - texCoords[j].y, texCoords[j].z } :
                     math::vec3_zero,
                 normals ?
-                    vertex::normal_type { normals[j].x, normals[j].y, normals[j].z } :
-                    math::vec3_up
+                    vertex::normal_type {
+                        normals[j].x,
+                        normals[j].y,
+                        normals[j].z
+                    } :
+                    math::vec3_up,
+                tangents ?
+                    vertex::tangent_type {
+                        tangents[j].x,
+                        tangents[j].y,
+                        tangents[j].z
+                    } :
+                    math::vec3_zero
             });
         }
+    }
 
-        /**
-         *
-         */
+    /**
+     *
+     */
 
-        assert(dst_->_indexData.buffer->memory()->allocatedSize() >= sizeof(u32) * indices.size());
-        assert(dst_->_vertexData.buffer->memory()->allocatedSize() >= sizeof(vertex) * vertices.size());
+    assert(dst_->_indexData.buffer->memory()->allocatedSize() >= sizeof(u32) * indices.size());
+    assert(dst_->_vertexData.buffer->memory()->allocatedSize() >= sizeof(vertex) * vertices.size());
 
-        {
-            const auto indexSize { sizeof(u32) * indices.size() };
+    {
+        const auto indexSize { sizeof(u32) * indices.size() };
 
-            auto firstPage { dst_->_indexData.buffer->pages().front() };
-            auto alignment { firstPage->memory()->allocated()->layout.align };
+        auto firstPage { dst_->_indexData.buffer->pages().front() };
+        auto alignment { firstPage->memory()->allocated()->layout.align };
 
-            const auto required {
-                (indexSize / alignment) +
-                ((indexSize % alignment) ? 1ui64 : 0ui64)
+        const auto required {
+            (indexSize / alignment) +
+            ((indexSize % alignment) ? 1ui64 : 0ui64)
+        };
+        for (u64 page { 0ui64 }; page < required; ++page) {
+
+            const auto pageDataSize { _STD min(indexSize - (page * alignment), alignment) };
+
+            constexpr auto shift { 7ui64 };
+            constexpr auto mask { 0b0111'1111ui64 };
+
+            const auto aligned {
+                ((pageDataSize >> shift) << shift) +
+                ((pageDataSize & mask) ? + 1ui64 << shift : 0ui64)
             };
-            for (u64 page { 0ui64 }; page < required; ++page) {
 
-                const auto pageDataSize { _STD min(indexSize - (page * alignment), alignment) };
+            auto* memory { dst_->_indexData.buffer->pages()[page]->memory()->allocated() };
+            const auto patchSize { _STD min(aligned, memory->size) };
 
-                constexpr auto shift { 7ui64 };
-                constexpr auto mask { 0b0111'1111ui64 };
-
-                const auto aligned {
-                    ((pageDataSize >> shift) << shift) +
-                    ((pageDataSize & mask) ? + 1ui64 << shift : 0ui64)
-                };
-
-                auto* memory { dst_->_indexData.buffer->pages()[page]->memory()->allocated() };
-                const auto patchSize { _STD min(aligned, memory->size) };
-
-                memory->map(patchSize);
-                memory->write(
-                    static_cast<const ptr<const char>>(static_cast<ptr<void>>(indices.data())) + (page * alignment),
-                    patchSize);
-                memory->flush(patchSize);
-                memory->unmap();
-            }
+            memory->map(patchSize);
+            memory->write(
+                static_cast<const ptr<const char>>(static_cast<ptr<void>>(indices.data())) + (page * alignment),
+                patchSize);
+            memory->flush(patchSize);
+            memory->unmap();
         }
+    }
 
-        {
-            const auto vertexSize { sizeof(vertex) * vertices.size() };
+    {
+        const auto vertexSize { sizeof(vertex) * vertices.size() };
 
-            auto firstPage { dst_->_vertexData.buffer->pages().front() };
-            auto alignment { firstPage->memory()->allocated()->layout.align };
+        auto firstPage { dst_->_vertexData.buffer->pages().front() };
+        auto alignment { firstPage->memory()->allocated()->layout.align };
 
-            const auto required {
-                (vertexSize / alignment) +
-                ((vertexSize % alignment) ? 1ui64 : 0ui64)
+        const auto required {
+            (vertexSize / alignment) +
+            ((vertexSize % alignment) ? 1ui64 : 0ui64)
+        };
+        for (u64 page { 0ui64 }; page < required; ++page) {
+
+            const auto pageDataSize { _STD min(vertexSize - (page * alignment), alignment) };
+
+            constexpr auto shift { 7ui64 };
+            constexpr auto mask { 0b0111'1111ui64 };
+
+            const auto aligned {
+                ((pageDataSize >> shift) << shift) +
+                ((pageDataSize & mask) ? + 1ui64 << shift : 0ui64)
             };
-            for (u64 page { 0ui64 }; page < required; ++page) {
 
-                const auto pageDataSize { _STD min(vertexSize - (page * alignment), alignment) };
+            auto* memory { dst_->_vertexData.buffer->pages()[page]->memory()->allocated() };
+            const auto patchSize { _STD min(aligned, memory->size) };
 
-                constexpr auto shift { 7ui64 };
-                constexpr auto mask { 0b0111'1111ui64 };
-
-                const auto aligned {
-                    ((pageDataSize >> shift) << shift) +
-                    ((pageDataSize & mask) ? + 1ui64 << shift : 0ui64)
-                };
-
-                auto* memory { dst_->_vertexData.buffer->pages()[page]->memory()->allocated() };
-                const auto patchSize { _STD min(aligned, memory->size) };
-
-                memory->map(patchSize);
-                memory->write(
-                    static_cast<const ptr<const char>>(static_cast<ptr<void>>(vertices.data())) + (page * alignment),
-                    patchSize);
-                memory->flush(patchSize);
-                memory->unmap();
-            }
+            memory->map(patchSize);
+            memory->write(
+                static_cast<const ptr<const char>>(static_cast<ptr<void>>(vertices.data())) + (page * alignment),
+                patchSize);
+            memory->flush(patchSize);
+            memory->unmap();
         }
     }
 

@@ -45,20 +45,26 @@ ref<AllocatedMemory> AllocatedMemory::operator=(mref<AllocatedMemory> other_) no
 }
 
 void AllocatedMemory::flush(const u64 size_, const u64 offset_) {
+
+    const auto mapSize { (size_ == VK_WHOLE_SIZE && offset_ == 0 && offset != 0) ? size : size_ };
+
     #ifdef _DEBUG
-    assert((size_ == VK_WHOLE_SIZE && (offset_ + offset) == 0) || size_ <= (size - offset_));
+    assert((mapSize == VK_WHOLE_SIZE && (offset_ + offset) == 0) || mapSize <= (size - offset_));
     #endif
 
-    const vk::MappedMemoryRange range { vkMemory, offset + offset_, size_ };
+    const vk::MappedMemoryRange range { vkMemory, offset + offset_, mapSize };
     [[maybe_unused]] auto result = vkDevice.flushMappedMemoryRanges(1, &range);
 }
 
 MemoryMapping AllocatedMemory::map(const u64 size_, const u64 offset_) {
+
+    const auto mapSize { (size_ == VK_WHOLE_SIZE && offset_ == 0 && offset != 0) ? size : size_ };
+
     #ifdef _DEBUG
-    assert((size_ == VK_WHOLE_SIZE && (offset_ + offset) == 0) || size_ <= (size - offset_));
+    assert((mapSize == VK_WHOLE_SIZE && (offset_ + offset) == 0) || mapSize <= (size - offset_));
     #endif
 
-    mapping = vkDevice.mapMemory(vkMemory, offset + offset_, size_, vk::MemoryMapFlags {});
+    mapping = vkDevice.mapMemory(vkMemory, offset + offset_, mapSize, vk::MemoryMapFlags {});
     return mapping;
 }
 
