@@ -135,10 +135,6 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makePage(
     math::uivec3 tileExtent_
 ) {
 
-    #ifndef _DEBUG
-    throw NotImplementedException();
-    #endif
-
     assert(
         _format == TextureFormat::eR8Unorm ||
         _format == TextureFormat::eR8G8B8A8Unorm ||
@@ -186,10 +182,6 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makePage(
 }
 
 non_owning_rptr<VirtualTexturePage> VirtualTexture::makeOpaquePage(u32 layer_) {
-
-    #ifndef _DEBUG
-    throw NotImplementedException();
-    #endif
 
     assert(
         _format == TextureFormat::eR8Unorm ||
