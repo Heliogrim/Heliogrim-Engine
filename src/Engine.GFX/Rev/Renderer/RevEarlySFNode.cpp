@@ -142,119 +142,23 @@ bool RevEarlySFNode::allocate(const ptr<HORenderPass> renderPass_) {
         /**
          * Store to state
          */
-        state->data.insert_or_assign("RevEarlySFNode::SfMtt"sv, _STD make_shared<RevSfMtt>());
-    }
+        auto sfMtt { _STD make_shared<RevSfMtt>() };
+        state->data.insert_or_assign("RevEarlySFNode::SfMtt"sv, sfMtt);
 
-    // Warning: Temporary Solution to test
-    {
-        constexpr auto TEST_MATERIAL_COUNT = 8;
+        [[maybe_unused]] auto builtMtt = rebuildMttBuffer(sfMtt, state);
+        [[maybe_unused]] auto builtCsfm = rebuildCsfmBuffer(sfMtt, state);
 
-        /**
-         * Allocate MTT Buffer
-         */
-        Buffer mtt {
-            nullptr,
-            nullptr,
-            _device->vkDevice(),
-            MAX((sizeof(u16) * TEST_MATERIAL_COUNT), 128ui32),
-            vk::BufferUsageFlagBits::eStorageBuffer
-        };
+        //
+        const auto mttEntry { state->data.at("RevEarlySFNode::MttBuffer"sv) };
+        auto& mtt { *_STD static_pointer_cast<Buffer, void>(mttEntry) };
 
-        const vk::BufferCreateInfo bci {
-            vk::BufferCreateFlags {},
-            mtt.size,
-            mtt.usageFlags,
-            vk::SharingMode::eExclusive,
-            0ui32,
-            nullptr
-        };
-
-        mtt.buffer = _device->vkDevice().createBuffer(bci);
-        assert(mtt.buffer);
-
-        const auto result {
-            memory::allocate(&state->alloc, _device, mtt.buffer, MemoryProperty::eHostVisible, mtt.memory)
-        };// TODO: Handle failed allocation
-        mtt.bind();
-
-        /**
-         * Default insert data
-         */
-        mtt.mapAligned();
-
-        for (auto fwd { 0ui8 }; fwd < (TEST_MATERIAL_COUNT / 2); ++fwd) {
-            static_cast<ptr<u32>>(mtt.memory->mapping)[fwd] |= static_cast<u16>(fwd) * 2;
-            static_cast<ptr<u32>>(mtt.memory->mapping)[fwd] |= static_cast<u32>(static_cast<u16>(fwd) * 2 + 1) << 16;
-        }
-
-        mtt.flushAligned();
-        mtt.unmap();
-
-        /**
-         * Early bind buffer to descriptor
-         */
         dbgs[0].getById(shader::ShaderBinding::id_type { 2 }).store(mtt);
 
-        /**
-         * Store to state
-         */
-        state->data.insert_or_assign("RevEarlySFNode::MttBuffer"sv, _STD make_shared<decltype(mtt)>(_STD move(mtt)));
-    }
+        //
+        const auto csfmEntry { state->data.at("RevEarlySFNode::CsfmBuffer"sv) };
+        auto& csfm { *_STD static_pointer_cast<Buffer, void>(mttEntry) };
 
-    // Warning: Temporary Solution to test
-    {
-        constexpr auto TEST_MATERIAL_COUNT = 8;
-
-        constexpr auto distinct_count = 5468;
-        constexpr auto distinct_size = ((distinct_count / 8) + ((distinct_count % 8) ? 1 : 0));
-        constexpr auto distinct_aligned_size = (distinct_size / sizeof(u32)) * sizeof(u32) + (
-            (distinct_size % sizeof(u32)) ? 4 : 0);
-
-        /**
-         * Allocate CSFM Buffer
-         */
-        Buffer csfm {
-            nullptr,
-            nullptr,
-            _device->vkDevice(),
-            distinct_aligned_size * TEST_MATERIAL_COUNT,
-            vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferDst
-        };
-
-        const vk::BufferCreateInfo bci {
-            vk::BufferCreateFlags {},
-            csfm.size,
-            csfm.usageFlags,
-            vk::SharingMode::eExclusive,
-            0ui32,
-            nullptr
-        };
-
-        csfm.buffer = _device->vkDevice().createBuffer(bci);
-        assert(csfm.buffer);
-
-        const auto result {
-            memory::allocate(&state->alloc, _device, csfm.buffer,
-                MemoryProperty::eHostVisible | MemoryProperty::eHostCoherent, csfm.memory)
-        };// TODO: Handle failed allocation
-        csfm.bind();
-
-        /**
-         * Default insert data
-         */
-        csfm.mapAligned();
-        //csfm.flushAligned();
-        csfm.unmap();
-
-        /**
-         * Early bind buffer to descriptor
-         */
         dbgs[0].getById(shader::ShaderBinding::id_type { 3 }).store(csfm);
-
-        /**
-         * Store to state
-         */
-        state->data.insert_or_assign("RevEarlySFNode::CsfmBuffer"sv, _STD make_shared<decltype(csfm)>(_STD move(csfm)));
     }
 
     /**
@@ -436,6 +340,54 @@ void RevEarlySFNode::before(const non_owning_rptr<HORenderPass> renderPass_,
      */
     cmd.bindPipeline(_pipeline.get());
 
+    /**
+     * Bind Shared Resources for the whole Frame
+     */
+    sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
+        _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
+            data.find("RevEarlySFNode::DiscreteBindingGroups"sv)->second
+        )
+    };
+
+    for (u32 idx = 0; idx < dbgs->size(); ++idx) {
+
+        const auto& grp { (*dbgs)[idx] };
+
+        if (grp.super().interval() == shader::BindingUpdateInterval::ePerFrame) {
+            cmd.bindDescriptor(idx, grp.vkSet());
+        }
+    }
+
+    /**/
+    #pragma region Experimental Rebuilding and Binding
+    {
+        /**
+         * Checking for requirement to rebuild buffers storing stream feedback
+         * -> This should actualy be done by async enqueue job requiring a certain synchronization block between gpu and cpu
+         * -> Memory should actually work just fine, because we can use `UpdateAfterBind` descriptors which "just" require
+         *  an external additional sychronization
+         */
+
+        const auto sfMttEntry { data.at("RevEarlySFNode::SfMtt"sv) };
+        auto sfMtt { _STD static_pointer_cast<RevSfMtt, void>(sfMttEntry) };
+
+        if (rebuildMttBuffer(sfMtt, renderPass_->state())) {
+
+            const auto mttEntry { renderPass_->state()->data.at("RevEarlySFNode::MttBuffer"sv) };
+            auto& mtt { *_STD static_pointer_cast<Buffer, void>(mttEntry) };
+
+            (*dbgs)[0].getById(shader::ShaderBinding::id_type { 2 }).store(mtt);
+        }
+
+        if (rebuildCsfmBuffer(sfMtt, renderPass_->state())) {
+
+            const auto csfmEntry { renderPass_->state()->data.at("RevEarlySFNode::CsfmBuffer"sv) };
+            auto& csfm { *_STD static_pointer_cast<Buffer, void>(csfmEntry) };
+
+            (*dbgs)[0].getById(shader::ShaderBinding::id_type { 3 }).store(csfm);
+        }
+    }
+
     {
         const auto mttEntry { data.at("RevEarlySFNode::SfMtt"sv) };
         auto& mtt { *_STD static_pointer_cast<RevSfMtt, void>(mttEntry) };
@@ -474,27 +426,10 @@ void RevEarlySFNode::before(const non_owning_rptr<HORenderPass> renderPass_,
              */
 
             // TODO: Clear previous render data
-            cmd.vkCommandBuffer().fillBuffer(csfm->buffer, 0ui32, csfm->size, 0ui32);
+            //cmd.vkCommandBuffer().fillBuffer(csfm->buffer, 0ui32, csfm->size, 0ui32);
         }
     }
-
-    /**
-     * Bind Shared Resources for the whole Frame
-     */
-    sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
-        _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
-            data.find("RevEarlySFNode::DiscreteBindingGroups"sv)->second
-        )
-    };
-
-    for (u32 idx = 0; idx < dbgs->size(); ++idx) {
-
-        const auto& grp { (*dbgs)[idx] };
-
-        if (grp.super().interval() == shader::BindingUpdateInterval::ePerFrame) {
-            cmd.bindDescriptor(idx, grp.vkSet());
-        }
-    }
+    #pragma endregion
 }
 
 void RevEarlySFNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
@@ -692,4 +627,168 @@ void RevEarlySFNode::postProcessAllocated(const ptr<HORenderPass> renderPass_) {
     cmd.release();
 
     pool->lck().release();
+}
+
+bool RevEarlySFNode::rebuildMttBuffer(cref<sptr<RevSfMtt>> sfMtt_, cref<sptr<RenderPassState>> state_) const {
+
+    const auto mappedCount { MAX(sfMtt_->backward.size(), 1) };
+    const auto mappedSize { mappedCount * sizeof(u16) };
+    const auto alignedSize { (mappedSize % 128ui32 == 0) ? mappedSize : ((mappedSize / 128ui32) + 1ui32) * 128ui32 };
+
+    //
+    const auto prevEntry { state_->data.find("RevEarlySFNode::MttBuffer"sv) };
+    if (prevEntry != state_->data.end()) {
+        auto prev { _STD static_pointer_cast<Buffer, void>(prevEntry->second) };
+
+        /**
+         * Check whether we need to rebuild or just reuse the previous buffer
+         */
+        if (prev->size >= alignedSize) {
+            return false;
+        }
+
+        prev->destroy();
+        prev.reset();
+    }
+
+    /**
+     * Allocate MTT Buffer
+     */
+    Buffer mtt {
+        nullptr,
+        nullptr,
+        _device->vkDevice(),
+        alignedSize,
+        vk::BufferUsageFlagBits::eStorageBuffer
+    };
+
+    const vk::BufferCreateInfo bci {
+        vk::BufferCreateFlags {},
+        mtt.size,
+        mtt.usageFlags,
+        vk::SharingMode::eExclusive,
+        0ui32,
+        nullptr
+    };
+
+    mtt.buffer = _device->vkDevice().createBuffer(bci);
+    assert(mtt.buffer);
+
+    const auto result {
+        memory::allocate(&state_->alloc, _device, mtt.buffer, MemoryProperty::eHostVisible, mtt.memory)
+    };// TODO: Handle failed allocation
+    mtt.bind();
+
+    /**
+     * Default insert data
+     */
+    #if FALSE
+    mtt.mapAligned();
+
+    for (auto fwd { 0ui8 }; fwd < (TEST_MATERIAL_COUNT / 2); ++fwd) {
+        static_cast<ptr<u32>>(mtt.memory->mapping)[fwd] |= static_cast<u16>(fwd) * 2;
+        static_cast<ptr<u32>>(mtt.memory->mapping)[fwd] |= static_cast<u32>(static_cast<u16>(fwd) * 2 + 1) << 16;
+    }
+
+    mtt.flushAligned();
+    mtt.unmap();
+    #endif
+
+    /**
+     * Store to state
+     */
+    state_->data.insert_or_assign("RevEarlySFNode::MttBuffer"sv, _STD make_shared<decltype(mtt)>(_STD move(mtt)));
+
+    return true;
+}
+
+bool RevEarlySFNode::rebuildCsfmBuffer(cref<sptr<RevSfMtt>> sfMtt_, cref<sptr<RenderPassState>> state_) const {
+
+    /**
+     * Map bit-mapped decisions first to byte and then to layout used size type (Bit -> Byte -> U32)
+     */
+    constexpr auto singleMarkCount { 5468 };
+    constexpr auto singleMarkSize {
+        (singleMarkCount % 8ui32 == 0) ? singleMarkCount / 8ui32 : ((singleMarkCount / 8ui32) + 1ui32)
+    };
+    constexpr auto markAlignedSize {
+        (singleMarkSize % 4ui32 == 0) ? singleMarkSize : ((singleMarkSize / 4ui32) + 1ui32) * 4ui32
+    };
+
+    /**
+     * Map bit-mapped header first octree structure ( suppresses byte alignment ) and then to layout used size type (Bit -> Octree -> Byte -> U32)
+     */
+    constexpr auto singleHeaderCount { 43 };
+    constexpr auto singleHeaderSize {
+        (singleHeaderCount % 8ui32 == 0) ? singleHeaderCount / 8ui32 : ((singleHeaderCount / 8ui32) + 1ui32)
+    };
+    constexpr auto headerAlignedSize {
+        (singleHeaderSize % 4ui32 == 0) ? singleHeaderSize : ((singleHeaderSize / 4ui32) + 1ui32) * 4ui32
+    };
+
+    /**
+     * Expand aligned marks with captured table entries and align to flushable size
+     */
+    const auto mappedCount { MAX(sfMtt_->backward.size() + 1, 1) };
+    const auto mappedSize { mappedCount * (headerAlignedSize + markAlignedSize) };
+    const auto alignedSize { (mappedSize % 128ui32 == 0) ? mappedSize : ((mappedSize / 128ui32) + 1ui32) * 128ui32 };
+
+    //
+    const auto prevEntry { state_->data.find("RevEarlySFNode::CsfmBuffer"sv) };
+    if (prevEntry != state_->data.end()) {
+        auto prev { _STD static_pointer_cast<Buffer, void>(prevEntry->second) };
+
+        /**
+         * Check whether we need to rebuild or just reuse the previous buffer
+         */
+        if (prev->size >= alignedSize) {
+            return false;
+        }
+
+        prev->destroy();
+        prev.reset();
+    }
+
+    /**
+     * Allocate CSFM Buffer
+     */
+    Buffer csfm {
+        nullptr,
+        nullptr,
+        _device->vkDevice(),
+        alignedSize,
+        vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferDst
+    };
+
+    const vk::BufferCreateInfo bci {
+        vk::BufferCreateFlags {},
+        csfm.size,
+        csfm.usageFlags,
+        vk::SharingMode::eExclusive,
+        0ui32,
+        nullptr
+    };
+
+    csfm.buffer = _device->vkDevice().createBuffer(bci);
+    assert(csfm.buffer);
+
+    const auto result {
+        memory::allocate(&state_->alloc, _device, csfm.buffer,
+            MemoryProperty::eHostVisible | MemoryProperty::eHostCoherent, csfm.memory)
+    };// TODO: Handle failed allocation
+    csfm.bind();
+
+    /**
+     * Default insert data
+     */
+    csfm.mapAligned();
+    //csfm.flushAligned();
+    csfm.unmap();
+
+    /**
+     * Store to state
+     */
+    state_->data.insert_or_assign("RevEarlySFNode::CsfmBuffer"sv, _STD make_shared<decltype(csfm)>(_STD move(csfm)));
+
+    return true;
 }

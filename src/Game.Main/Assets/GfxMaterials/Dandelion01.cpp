@@ -5,6 +5,7 @@
 #include "../Textures/Dandelion01Normal.hpp"
 #include "../Textures/Dandelion01Roughness.hpp"
 #include "../Textures/DefaultAO.hpp"
+#include "../Textures/DefaultMetalness.hpp"
 
 using namespace ember::game::assets::material;
 using namespace ember;
@@ -19,6 +20,7 @@ Dandelion01::Dandelion01() :
         invalid_asset_guid,
         texture::Dandelion01Normal::auto_guid(),
         texture::Dandelion01Roughness::auto_guid(),
+        texture::DefaultMetalness::auto_guid(),
         invalid_asset_guid,
         texture::Dandelion01Alpha::auto_guid()
     ) {}

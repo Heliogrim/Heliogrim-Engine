@@ -16,5 +16,5 @@ layout (location = 0) in vec3 fragUvw;
 layout (location = 0) out vec4 out_albedo;
 
 void main() {
-	out_albedo = texture(skyCubeMap, fragUvw);
+	out_albedo = texture(skyCubeMap, vec3(fragUvw.x, -fragUvw.y, fragUvw.z));
 }

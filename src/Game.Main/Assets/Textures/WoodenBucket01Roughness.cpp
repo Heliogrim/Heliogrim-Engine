@@ -12,7 +12,7 @@ texture::WoodenBucket01Roughness::WoodenBucket01Roughness() :
         image::WoodenBucket01Roughness::auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
-        TextureFormat::eR16Sfloat,
+        TextureFormat::eR8Unorm,
         14ui32,
         engine::gfx::TextureType::e2d
     ) { }

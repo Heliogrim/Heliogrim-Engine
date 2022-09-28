@@ -39,7 +39,7 @@ void TextureSampler::setup(cref<sptr<Device>> device_) {
         {},
         0.F,
         MAX(static_cast<float>(_lods) - 1.F, 0.F),
-        {},
+        _borderColor,
         {}
     };
     _vkSampler = _device->vkDevice().createSampler(info);
@@ -110,6 +110,10 @@ vk::SamplerAddressMode TextureSampler::addressModeW() const noexcept {
 
 vk::SamplerAddressMode& TextureSampler::addressModeW() noexcept {
     return _addressModeW;
+}
+
+vk::BorderColor& TextureSampler::borderColor() noexcept {
+    return _borderColor;
 }
 
 const vk::Sampler& TextureSampler::vkSampler() const noexcept {

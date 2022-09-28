@@ -6,6 +6,7 @@ using namespace ember;
 engine::res::Resource::loaded_flag_type MaterialResource::loaded() const noexcept {
     return _payload.normal != nullptr
         && _payload.roughness != nullptr
+        && _payload.metalness != nullptr
         && _payload.ao != nullptr
         && _payload.diffuse != nullptr;
 }

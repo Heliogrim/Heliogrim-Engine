@@ -72,6 +72,7 @@ layout (location = 0) out vec3 fragUvw;
 
 void main() {
 	fragUvw = cube_vertices[gl_VertexIndex];
+	//fragUvw.xy * -1.0;
 	fragUvw.xy * -1.0;
 	gl_Position = ubo.mvp * vec4(cube_vertices[gl_VertexIndex], 1.0);
 	// gl_Position.z = gl_Position.w;

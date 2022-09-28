@@ -7,6 +7,6 @@ WoodenBucket01::WoodenBucket01() :
     StaticGeometryAsset(
         WoodenBucket01::auto_guid(),
         R"(resources\assets\geometry\wooden_bucket_01.obj)",
-        2872ui64,
-        2872ui64
+        15348ui64,
+        15348ui64
     ) {}

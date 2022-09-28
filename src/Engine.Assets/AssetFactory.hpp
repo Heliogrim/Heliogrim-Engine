@@ -83,6 +83,7 @@ namespace ember::engine::assets {
          * @param  gloss_ The gloss.
          * @param  normal_ The normal.
          * @param  roughness_ The roughness.
+         * @param  metalness_ The metalness.
          * @param  specular_ The specular.
          * @param  alpha_ The alpha.
          *
@@ -97,6 +98,7 @@ namespace ember::engine::assets {
             cref<asset_guid> gloss_,
             cref<asset_guid> normal_,
             cref<asset_guid> roughness_,
+            cref<asset_guid> metalness_,
             cref<asset_guid> specular_,
             cref<asset_guid> alpha_
         );

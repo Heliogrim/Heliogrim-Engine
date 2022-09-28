@@ -11,8 +11,8 @@ texture::Rock01Normal::Rock01Normal() :
         texture::Rock01Normal::auto_guid(),
         image::Rock01Normal::auto_guid(),
         {},
-        { 4096ui32, 4096ui32, 1ui32 },
-        TextureFormat::eR32G32B32A32Sfloat,
-        12ui32,
+        { 8192ui32, 8192ui32, 1ui32 },
+        TextureFormat::eR8G8B8A8Unorm,
+        14ui32,
         engine::gfx::TextureType::e2d
     ) { }

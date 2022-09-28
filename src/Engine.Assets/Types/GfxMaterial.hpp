@@ -20,7 +20,8 @@ namespace ember::engine::assets {
     public:
         GfxMaterial(cref<asset_guid> guid_, cref<asset_guid> albedo_, cref<asset_guid> ao_, cref<asset_guid> cavity_,
             cref<asset_guid> displacement_, cref<asset_guid> gloss_, cref<asset_guid> normal_,
-            cref<asset_guid> roughness_, cref<asset_guid> specular_, cref<asset_guid> alpha_);
+            cref<asset_guid> roughness_, cref<asset_guid> metalness_, cref<asset_guid> specular_,
+            cref<asset_guid> alpha_);
 
     private:
         union {
@@ -32,12 +33,13 @@ namespace ember::engine::assets {
                 asset_guid _gloss;
                 asset_guid _normal;
                 asset_guid _roughness;
+                asset_guid _metalness;
                 asset_guid _specular;
                 asset_guid _alpha;
             };
 
             struct {
-                asset_guid _textures[9];
+                asset_guid _textures[10];
             };
         };
 
@@ -49,6 +51,8 @@ namespace ember::engine::assets {
         [[nodiscard]] asset_guid normal() const noexcept;
 
         [[nodiscard]] asset_guid roughness() const noexcept;
+
+        [[nodiscard]] asset_guid metalness() const noexcept;
 
         [[nodiscard]] asset_guid ao() const noexcept;
 

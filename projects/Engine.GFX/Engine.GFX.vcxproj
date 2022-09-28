@@ -173,6 +173,9 @@
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthSkeletalNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthStaticNode.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyBrdfLutNode.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyEnvIrradianceNode.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyEnvPrefilterNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlySFNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevFinalComposeNode.cpp" />
@@ -354,6 +357,9 @@
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthSkeletalNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthStaticNode.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyBrdfLutNode.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyEnvIrradianceNode.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyEnvPrefilterNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlySFNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevFinalComposeNode.hpp" />

@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         DefaultAO():
             ImageAsset(DefaultAO::auto_guid(),
-                R"(resources\assets\texture\default_ao.ktx2)") {}
+                R"(resources\assets\texture\default_ao.ktx)") {}
     };
 
     AUTO_REGISTER_ASSET(DefaultAO)

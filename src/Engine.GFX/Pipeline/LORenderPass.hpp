@@ -198,5 +198,13 @@ namespace ember::engine::gfx::pipeline {
          * @returns A cref&lt;vk::RenderPassBeginInfo&gt;
          */
         [[nodiscard]] cref<vk::RenderPassBeginInfo> vkBeginInfo() const noexcept;
+
+    //private:
+    public:
+        /**
+         * Vulkan API
+         */
+        Vector<u32> _viewMasks;
+        Vector<u32> _correlationMasks;
     };
 }

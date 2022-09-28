@@ -94,6 +94,7 @@ void Application::destroy() {
 std::vector<const char*> Application::getExtensions() {
     std::vector<const char*> extensions;
     extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+    extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
     #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 			extensions.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);

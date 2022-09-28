@@ -92,7 +92,7 @@ void RevMainSkyNode::setup(cref<sptr<Device>> device_) {
     // TODO:
     if (!testCubeMap) {
         RevTextureLoader loader { Session::get()->modules().graphics()->cacheCtrl() };
-        testCubeMap = loader.__tmp__load({ ""sv, R"(R:\\sky.ktx)" });
+        testCubeMap = loader.__tmp__load({ ""sv, R"(R:\\sky_monbachtal.ktx)" });
 
         Vector<vk::ImageMemoryBarrier> imgBarriers {};
         imgBarriers.push_back({

@@ -125,6 +125,12 @@ vk::Format ember::engine::gfx::api::vkTranslateFormat(TextureFormat format_) {
         case TextureFormat::eR32Sfloat: {
             return vk::Format::eR32Sfloat;
         }
+        case TextureFormat::eR16G16Sfloat: {
+            return vk::Format::eR16G16Sfloat;
+        }
+        case TextureFormat::eR8Unorm: {
+            return vk::Format::eR8Unorm;
+        }
         case TextureFormat::eR8G8Unorm: {
             return vk::Format::eR8G8Unorm;
         }
@@ -186,6 +192,12 @@ ember::engine::gfx::TextureFormat ember::engine::gfx::api::vkTranslateFormat(vk:
         }
         case vk::Format::eR32Sfloat: {
             return TextureFormat::eR32Sfloat;
+        }
+        case vk::Format::eR16G16Sfloat: {
+            return TextureFormat::eR16G16Sfloat;
+        }
+        case vk::Format::eR8Unorm: {
+            return TextureFormat::eR8Unorm;
         }
         case vk::Format::eR8G8Unorm: {
             return TextureFormat::eR8G8Unorm;

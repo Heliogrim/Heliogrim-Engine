@@ -16,10 +16,10 @@ in uvec3 gl_GlobalInvocationID;
 in uint gl_LocalInvocationIndex;
 */
 
-/*
 struct CsfmHeader {
+	// Using 128 Bit patches and binary tree
+	uint32_t bt[2];
 };
-*/
 
 struct CsfmBody {
 	// 5468 Decisions => 683.5 Bytes => uint16_t[342]
@@ -28,7 +28,7 @@ struct CsfmBody {
 };
 
 struct CsfmRow {
-	//CsfmHeader header;
+	CsfmHeader header;
 	CsfmBody body;
 };
 
@@ -108,7 +108,7 @@ void markerFor(ivec2 pixel) {
 	offset += ((tile >> 6) & dim_bit_mask) * tdim; // Y-Dimension :: Position [0..tdim)
 
 	/**
-	 * Store Bitfield
+	 * Store Bitfield - Body
 	 */
 	csfm.rows[
 		/* uint16_t(indMat) */
@@ -117,6 +117,30 @@ void markerFor(ivec2 pixel) {
 	].body.tme[
 		offset /* (div) */ / 32
 	] |= (1 << offset /* (modulo) */ % 32);
+
+	/**
+	 * Store Bitfield - Header
+	 */
+	uint16_t octp = uint16_t(offset / 128);
+
+	uint16_t slnode = uint16_t(octp / 8); // Second level node || level(1) * 8 := 8
+	uint16_t slioff = uint16_t(octp % 8); // Second level child || leaf
+
+	// First write primary level
+	csfm.rows[
+		uint32_t(matId)
+	].header.bt[0] |= (1 << slnode);
+
+	// Then write secondary level
+	csfm.rows[
+		uint32_t(matId)
+	].header.bt[
+		(slnode > 2) ? 1 : 0
+	] |= ((slnode > 2) ? (
+		1 << ((slnode * 8) + slioff - 24)
+	) : (
+		1 << (8 + slnode * 8 + slioff)
+	));
 
 	/*
 	// Debug

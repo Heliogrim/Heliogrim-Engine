@@ -13,6 +13,6 @@ texture::Dandelion01Roughness::Dandelion01Roughness() :
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR16Sfloat,
-        4ui32,
+        14ui32,
         engine::gfx::TextureType::e2d
     ) { }

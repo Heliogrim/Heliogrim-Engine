@@ -22,6 +22,7 @@ GfxMaterialAsset::GfxMaterialAsset(
     cref<asset_guid> gloss_,
     cref<asset_guid> normal_,
     cref<asset_guid> roughness_,
+    cref<asset_guid> metalness_,
     cref<asset_guid> specular_,
     cref<asset_guid> alpha_
 ) noexcept :
@@ -37,6 +38,7 @@ GfxMaterialAsset::GfxMaterialAsset(
             gloss_,
             normal_,
             roughness_,
+            metalness_,
             specular_,
             alpha_
         )

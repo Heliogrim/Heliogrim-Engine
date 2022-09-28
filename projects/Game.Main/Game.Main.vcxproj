@@ -97,6 +97,10 @@
       <AdditionalOptions>
       </AdditionalOptions>
     </Link>
+    <PostBuildEvent>
+      <Command>call cd "$(SolutionDir)resources\shader"
+call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -116,6 +120,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <PostBuildEvent>
+      <Command>call cd "$(SolutionDir)resources\shader"
+call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
@@ -128,6 +136,10 @@
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <AdditionalOptions>/PROFILE %(AdditionalOptions)</AdditionalOptions>
     </Link>
+    <PostBuildEvent>
+      <Command>call cd "$(SolutionDir)resources\shader"
+call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ember.Main\Ember.Main.vcxproj">
@@ -180,6 +192,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Cannon01.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Cerberus.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Dandelion01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\DryGroundRocks01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.cpp" />
@@ -211,6 +225,8 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Metalness.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Normal.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Roughness.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Cannon01.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Cerberus.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\CubeD1.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Cylinder.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Dandelion01.cpp" />
@@ -222,6 +238,15 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\WoodenBucket02.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Planks.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Poles.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Cannon01Diffuse.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Cannon01Metalness.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Cannon01Normal.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Cannon01Roughness.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\CerberusAO.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\CerberusDiffuse.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\CerberusMetalness.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\CerberusNormal.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\CerberusRoughness.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Alpha.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Diffuse.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Normal.cpp" />
@@ -229,6 +254,7 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultAlpha.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultAO.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultDiffuse.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultMetalness.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultNormal.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultRoughness.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01AO.cpp" />
@@ -262,11 +288,17 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Normal.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Roughness.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksDiffuse.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksNormal.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksRoughness.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesDiffuse.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesNormal.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesRoughness.cpp" />
     <ClCompile Include="..\..\src\Game.Main\main.cpp" />
     <ClCompile Include="..\..\src\Game.Main\World\Actors\WoodenTable.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Cannon01.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Cerberus.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Dandelion01.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\DryGroundRocks01.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.hpp" />
@@ -277,9 +309,19 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenBucket02.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenPier01Planks.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenPier01Poles.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Cannon01Diffuse.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Cannon01Metalness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Cannon01Normal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Cannon01Roughness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\CerberusAO.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\CerberusDiffuse.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\CerberusMetalness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\CerberusNormal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\CerberusRoughness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultAlpha.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultAO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultDiffuse.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultMetalness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultNormal.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultRoughness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01AO.hpp" />
@@ -313,12 +355,18 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Normal.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Roughness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenPier01PlanksDiffuse.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenPier01PlanksNormal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenPier01PlanksRoughness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenPier01PolesDiffuse.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenPier01PolesNormal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenPier01PolesRoughness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\ForestGround.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\GrassWildGround.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\Inc.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MetalBare.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\MossGround.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Cannon01.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Cerberus.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\CubeD1.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Cylinder.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Dandelion01.hpp" />
@@ -330,6 +378,15 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\WoodenBucket02.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Planks.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Poles.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Cannon01Diffuse.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Cannon01Metalness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Cannon01Normal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Cannon01Roughness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\CerberusAO.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\CerberusDiffuse.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\CerberusMetalness.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\CerberusNormal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\CerberusRoughness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Alpha.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Diffuse.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Normal.hpp" />
@@ -337,6 +394,7 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultAlpha.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultAO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultDiffuse.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultMetalness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultNormal.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultRoughness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01AO.hpp" />
@@ -370,13 +428,21 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Normal.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Roughness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksDiffuse.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksNormal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksRoughness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesDiffuse.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesNormal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesRoughness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\World\Actors\EditorCamera.hpp" />
     <ClInclude Include="..\..\src\Game.Main\World\Actors\WoodenTable.hpp" />
     <ClInclude Include="..\..\src\Game.Main\World\Entities\Components\CameraComponent.hpp" />
     <ClInclude Include="..\..\src\Game.Main\World\Entities\DebugCamera.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\resources\shader\brdfLut.gen.frag" />
+    <None Include="..\..\resources\shader\brdfLut.gen.frag.spv" />
+    <None Include="..\..\resources\shader\brdfLut.gen.vert.spv" />
+    <None Include="..\..\resources\shader\brdfLut.gen.vs" />
     <None Include="..\..\resources\shader\compile_shaders.cmd" />
     <None Include="..\..\resources\shader\depthpass.frag" />
     <None Include="..\..\resources\shader\depthpass.frag.spv" />
@@ -390,6 +456,12 @@
     <None Include="..\..\resources\shader\depthpass_static.vs" />
     <None Include="..\..\resources\shader\earlypass_sf.comp.spv" />
     <None Include="..\..\resources\shader\earlypass_sf.cps" />
+    <None Include="..\..\resources\shader\envIrrad.gen.frag" />
+    <None Include="..\..\resources\shader\envIrrad.gen.vs" />
+    <None Include="..\..\resources\shader\envPrefilter.gen.frag" />
+    <None Include="..\..\resources\shader\envPrefilter.gen.frag.spv" />
+    <None Include="..\..\resources\shader\envPrefilter.gen.vert.spv" />
+    <None Include="..\..\resources\shader\envPrefilter.gen.vs" />
     <None Include="..\..\resources\shader\finalpass.frag" />
     <None Include="..\..\resources\shader\finalpass.frag.spv" />
     <None Include="..\..\resources\shader\finalpass.vert.spv" />

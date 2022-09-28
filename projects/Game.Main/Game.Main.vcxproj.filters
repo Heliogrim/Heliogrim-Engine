@@ -333,6 +333,60 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Poles.cpp">
       <Filter>Quelldateien\Assets\Meshes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksNormal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesNormal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultMetalness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksRoughness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesRoughness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Cannon01.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Cannon01.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Cannon01Normal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Cannon01Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Cannon01Roughness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Cannon01Metalness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\CerberusMetalness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\CerberusRoughness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\CerberusNormal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\CerberusAO.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\CerberusDiffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Cerberus.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Cerberus.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\ForestGround.hpp">
@@ -659,6 +713,102 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Roughness.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenPier01PlanksNormal.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenPier01PolesNormal.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksNormal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesNormal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultMetalness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultMetalness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenPier01PlanksRoughness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenPier01PolesRoughness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksRoughness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesRoughness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Cannon01.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Cannon01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Cannon01Normal.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Cannon01Roughness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Cannon01Metalness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Cannon01.hpp">
+      <Filter>Headerdateien\Assets\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Cannon01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Cannon01Normal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Cannon01Roughness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Cannon01Metalness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\CerberusDiffuse.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\CerberusMetalness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\CerberusRoughness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\CerberusAO.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\CerberusNormal.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\CerberusDiffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\CerberusAO.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\CerberusNormal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\CerberusRoughness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\CerberusMetalness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Cerberus.hpp">
+      <Filter>Headerdateien\Assets\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Cerberus.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\resources\shader\compile_shaders.cmd">
@@ -800,6 +950,36 @@
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
     <None Include="..\..\resources\shader\terra.vert.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\brdfLut.gen.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\brdfLut.gen.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\brdfLut.gen.vert.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\brdfLut.gen.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\envIrrad.gen.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\envIrrad.gen.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\envPrefilter.gen.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\envPrefilter.gen.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\envPrefilter.gen.vert.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\envPrefilter.gen.vs">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
   </ItemGroup>

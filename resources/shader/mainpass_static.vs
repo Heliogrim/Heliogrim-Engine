@@ -30,9 +30,11 @@ void main() {
 	vec4 pos = mubo.model * vec4(in_position, 1.0);
 	gl_Position = ubo.viewProj * pos;
 
-	vec4 normal = mubo.model * vec4(in_normal, 0.0);
-
 	fragPosition = pos;
-	fragNormal = vec4(normalize(normal.xyz), 1.0);
 	fragUvm = in_uvm;
+
+	/**
+	 *
+	 */
+	fragNormal = vec4(mat3(mubo.model) * normalize(in_normal), 0.0);
 }

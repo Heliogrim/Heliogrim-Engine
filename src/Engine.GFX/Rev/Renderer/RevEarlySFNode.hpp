@@ -3,6 +3,8 @@
 #include <Engine.GFX/Renderer/RenderStageNode.hpp>
 #include <Engine.GFX/Shader/ShaderBindingGroup.hpp>
 
+#include "State/__fwd.hpp"
+
 namespace ember::engine::gfx::render {
 
     class RevEarlySFNode final :
@@ -55,6 +57,10 @@ namespace ember::engine::gfx::render {
 
     private:
         void postProcessAllocated(const ptr<HORenderPass> renderPass_);
+
+        [[nodiscard]] bool rebuildMttBuffer(cref<sptr<RevSfMtt>> sfMtt_, cref<sptr<RenderPassState>> state_) const;
+
+        [[nodiscard]] bool rebuildCsfmBuffer(cref<sptr<RevSfMtt>> sfMtt_, cref<sptr<RenderPassState>> state_) const;
     };
 
 }

@@ -227,6 +227,15 @@ namespace ember::engine::gfx {
 
     private:
         /**
+         * Border
+         */
+        vk::BorderColor _borderColor;
+
+    public:
+        [[nodiscard]] vk::BorderColor& borderColor() noexcept;
+
+    private:
+        /**
          * Vulkan API
          */
         vk::Sampler _vkSampler;

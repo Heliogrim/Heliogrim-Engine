@@ -37,6 +37,8 @@ namespace ember::engine::gfx {
         eR32Sfloat,
         eR64Sfloat,
 
+        eR16G16Sfloat,
+
         eR16G16B16Sfloat,
         eR32G32B32Sfloat,
 

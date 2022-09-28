@@ -11,8 +11,8 @@ texture::Stick01AO::Stick01AO() :
         texture::Stick01AO::auto_guid(),
         image::Stick01AO::auto_guid(),
         {},
-        { 4096ui32, 4096ui32, 1ui32 },
+        { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR16Sfloat,
-        12ui32,
+        14ui32,
         engine::gfx::TextureType::e2d
     ) { }

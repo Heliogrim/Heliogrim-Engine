@@ -39,12 +39,27 @@ RevTextureLoader::result_type RevTextureLoader::operator()(const ptr<assets::Tex
     //
     assert(res != nullptr);
 
+    /**/
+    const auto isDefault { baseImage->sources().front().path().contains("default"sv) };
+    /**/
+
     if (!res->_payload.__pseudo_stored) {
 
-        constexpr loader::TextureLoaderFlags flags { loader::TextureLoaderFlagBits::eLazyDataLoading };
+        if (isDefault) {
 
-        res->_payload.view = TextureLoader::loadTo(baseImage->sources().front(), _STD move(res->_payload.view), flags);
-        res->_payload.__pseudo_stored = true;
+            constexpr loader::TextureLoaderFlags flags { loader::TextureLoaderFlagBits::eLockLoaded };
+
+            res->_payload.view = TextureLoader::loadTo(baseImage->sources().front(), _STD move(res->_payload.view), flags);
+            res->_payload.__pseudo_stored = true;
+            
+        } else {
+
+            constexpr loader::TextureLoaderFlags flags { loader::TextureLoaderFlagBits::eLazyDataLoading };
+
+            res->_payload.view = TextureLoader::loadTo(baseImage->sources().front(), _STD move(res->_payload.view), flags);
+            res->_payload.__pseudo_stored = true;
+        }
+
     }
 
     return res;
@@ -56,6 +71,13 @@ void RevTextureLoader::streamLoad(const ptr<res::partial::Streamable<res::Resour
     const ptr<TextureResource> texture { static_cast<const ptr<TextureResource>>(resource_) };
     const auto* const asset { static_cast<const non_owning_rptr<const assets::Texture>>(resource_->origin()) };
     const auto* const db { Session::get()->modules().assetDatabase() };
+
+    /**/
+    if (texture->_payload.view->width() == 1ui32) {
+        // Warning: Drop stream load operations on default textures
+        return;
+    }
+    /**/
 
     // TODO: Rewrite
     const asset_guid baseImageGuid { asset->baseImage() };

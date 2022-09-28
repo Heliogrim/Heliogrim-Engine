@@ -6,7 +6,6 @@ namespace ember::engine::gfx {
     class VkFixedPipeline final :
         public FixedPipeline {
     public:
-
         /**
          * Constructor
          *
@@ -61,7 +60,6 @@ namespace ember::engine::gfx {
         Vector<vk::PipelineColorBlendAttachmentState> _blending;
 
     public:
-
         /**
          * Gets the ColorBlendState
          *
@@ -71,6 +69,23 @@ namespace ember::engine::gfx {
          * @returns A ref&lt;vector&lt;vk::PipelineColorBlendAttachmentState&gt;&gt;
          */
         [[nodiscard]] ref<Vector<vk::PipelineColorBlendAttachmentState>> blending() noexcept;
+
+    private:
+        /**
+         * Push Constants
+         */
+        Vector<vk::PushConstantRange> _pushConstants;
+
+    public:
+        /**
+         * Gets the collection of PushConstants
+         *
+         * @author Julius
+         * @date 08.02.2021
+         *
+         * @returns A ref&lt;vector&lt;vk::PushConstantRange&gt;&gt;
+         */
+        [[nodiscard]] ref<Vector<vk::PushConstantRange>> pushConstants() noexcept;
 
     private:
         /**

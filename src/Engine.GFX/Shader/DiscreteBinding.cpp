@@ -303,7 +303,8 @@ void DiscreteBinding::storeAdv(
     cref<vk::ImageLayout> layout_,
     cref<vk::SamplerAddressMode> addressMode_,
     cref<vk::SamplerMipmapMode> mipMode_,
-    cref<vk::Filter> filterMode_
+    cref<vk::Filter> filterMode_,
+    cref<vk::BorderColor> borderColor_
 ) {
     /**
      * Assure optimal sampler exists
@@ -316,6 +317,8 @@ void DiscreteBinding::storeAdv(
 
         sampler.magnification() = filterMode_;
         sampler.minification() = filterMode_;
+
+        sampler.borderColor() = borderColor_;
 
         if (
             filterMode_ == vk::Filter::eLinear ||

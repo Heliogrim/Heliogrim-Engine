@@ -1646,6 +1646,45 @@ namespace ember::math {
     vec3_t<T> operator*(const T& scalar_, typename vec3_t<T>::const_reference_type vec_) {
         return (vec3_t<T>(vec_) *= scalar_);
     }
+
+    /**
+     * Componentwise max operation
+     *
+     * @author Julius
+     * @date 09.09.2022
+     *
+     * @param vec0_ The first vector
+     * @param vec1_ The second vector
+     *
+     * @returns A vector with the maximum values per component.
+     */
+    template <typename T>
+    vec2_t<T> compMax(typename vec2_t<T>::const_reference_type vec0_, typename vec2_t<T>::const_reference_type vec1_) {
+        return vec2_t<T> {
+            MAX(vec0_.x, vec1_.x),
+            MAX(vec0_.y, vec1_.y)
+        };
+    }
+
+    /**
+     * Componentwise max operation
+     *
+     * @author Julius
+     * @date 09.09.2022
+     *
+     * @param vec0_ The first vector
+     * @param vec1_ The second vector
+     *
+     * @returns A vector with the maximum values per component.
+     */
+    template <typename T>
+    vec3_t<T> compMax(typename vec3_t<T>::const_reference_type vec0_, typename vec3_t<T>::const_reference_type vec1_) {
+        return vec3_t<T> {
+            MAX(vec0_.x, vec1_.x),
+            MAX(vec0_.y, vec1_.y),
+            MAX(vec0_.z, vec1_.z)
+        };
+    }
 }
 
 /** . */
