@@ -279,9 +279,20 @@ ptr<VirtualTexture> VkTextureFactory::buildVirtual(const VirtualTextureBuildPayl
     assert(image);
 
     /**
-     * Get meta data of required memory
+     * Get meta data of required memory and sparse image
      */
     const vk::MemoryRequirements mr = _device->vkDevice().getImageMemoryRequirements(image);
+
+    u32 simReqCount { 16ui32 };
+    _STD array<vk::SparseImageMemoryRequirements, 16> simReqs {};
+    _device->vkDevice().getImageSparseMemoryRequirements(image, &simReqCount, simReqs.data());
+
+    assert(simReqCount);
+
+    // Select requested sparse image requirements
+    const ptr<vk::SparseImageMemoryRequirements> simReq {
+        &simReqs[0]
+    };
 
     /**
      * Get suitable virtual memory instance
@@ -309,7 +320,16 @@ ptr<VirtualTexture> VkTextureFactory::buildVirtual(const VirtualTextureBuildPayl
             payload_.format,
             payload_.mipLevels,
             payload_.type,
-            image
+            image,
+            math::uivec3 {
+                simReq->formatProperties.imageGranularity.width,
+                simReq->formatProperties.imageGranularity.height,
+                simReq->formatProperties.imageGranularity.depth
+            },
+            simReq->imageMipTailFirstLod,
+            simReq->imageMipTailSize,
+            simReq->imageMipTailOffset,
+            simReq->imageMipTailStride
         )
     };
 

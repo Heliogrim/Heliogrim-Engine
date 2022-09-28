@@ -4,9 +4,13 @@
 #include "../AssetInputStream.hpp"
 
 namespace ember::engine::assets {
-    template <typename Layout>
+    template <typename Layout_>
     class Data :
         public Asset {
+    public:
+        using this_type = Data<Layout_>;
+        using layout_type = Layout_;
+
     protected:
         Data(cref<asset_guid> guid_, cref<asset_type_id> type_) :
             Asset(guid_, type_) {}

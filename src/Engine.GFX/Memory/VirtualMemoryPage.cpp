@@ -3,7 +3,6 @@
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 #include "VirtualMemory.hpp"
-#include "Engine.Common/Exception/NotImplementedException.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -13,12 +12,12 @@ VirtualMemoryPage::VirtualMemoryPage(const non_owning_rptr<VirtualMemory> owner_
     _owner(owner_),
     _offset(offset_),
     _size(size_),
-    _state(VirtualMemoryPageState::eLoaded),
+    _state(VirtualMemoryPageState::eUnloaded),
     _memory(nullptr) {}
 
 VirtualMemoryPage::~VirtualMemoryPage() {
     if (_memory != nullptr) {
-        delete _memory;
+        memory::AllocatedMemory::free(_STD move(_memory));
         _memory = nullptr;
     }
 }
@@ -28,10 +27,6 @@ const non_owning_rptr<VirtualMemory> VirtualMemoryPage::owner() const noexcept {
 }
 
 u64 VirtualMemoryPage::offset() const noexcept {
-    if (_state != VirtualMemoryPageState::eLoaded) {
-        return ~(0ui64);
-    }
-
     return _offset;
 }
 
@@ -63,7 +58,7 @@ memory::AllocationResult VirtualMemoryPage::load() {
 }
 
 void VirtualMemoryPage::unload() {
-    delete _memory;
+    memory::AllocatedMemory::free(_STD move(_memory));
     _memory = nullptr;
 
     _state = VirtualMemoryPageState::eUnloaded;

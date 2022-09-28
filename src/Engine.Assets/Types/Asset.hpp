@@ -23,22 +23,18 @@ namespace ember::engine::assets {
         Geometry                -	    -	        -	                    -	        -	        -	        -	        -	        -	        -
      */
 
-    /**
-     * The Concept for assets
-     */
-    template <class Ty>
-    concept IsAsset = requires(const Ty obj) {
-        { obj.get_guid() } -> std::same_as<asset_guid>;
-    } && ember::HasType<Ty, asset_type_id>;
-
     class Asset :
         public EmberObject {
+    public:
+        template <typename Layout_>
+        friend class Data;
+
     public:
         using value_type = Asset;
         using reference_type = Asset&;
         using const_reference_type = const Asset&;
 
-    protected:
+    private:
         /**
          * Constructor
          *

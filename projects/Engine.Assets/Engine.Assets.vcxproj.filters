@@ -25,6 +25,24 @@
     <Filter Include="Quelldateien\Database">
       <UniqueIdentifier>{790f722f-1f39-4305-8d5c-6d65c29f4fe3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Types\World">
+      <UniqueIdentifier>{44a2c7af-a550-4f5c-86e8-84f87c76fa38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Types\Sound">
+      <UniqueIdentifier>{a353c225-0a36-46c8-8429-c9fb163286c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Types\Texture">
+      <UniqueIdentifier>{24156c5a-6982-4851-8cf6-48b004249005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Types\Material">
+      <UniqueIdentifier>{91131538-67e2-49fd-8dca-341960c0f1e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Types\Geometry">
+      <UniqueIdentifier>{18362cff-6b37-4a46-b3fc-22f545726b6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Types\Texture">
+      <UniqueIdentifier>{ba434ff1-757e-48e9-82a3-25fb82ac13d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Assets\Types\Image.hpp">
@@ -64,12 +82,6 @@
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\SoundLayout.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\Texture.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\TextureLayout.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\GfxMaterial.hpp">
@@ -126,17 +138,29 @@
     <ClInclude Include="..\..\src\Engine.Assets\Types\SkeletalGeometryLayout.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\StaticGeometry.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\StaticGeometryLayout.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\AssetFactory.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Database\AssetSeeder.hpp">
       <Filter>Headerdateien\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\AssetConcept.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\StreamDataLayout.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Texture\Texture.hpp">
+      <Filter>Headerdateien\Types\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Texture\TextureLayout.hpp">
+      <Filter>Headerdateien\Types\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometry.hpp">
+      <Filter>Headerdateien\Types\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometryLayout.hpp">
+      <Filter>Headerdateien\Types\Geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -148,9 +172,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabaseEntry.cpp">
       <Filter>Quelldateien\Database</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Assets\Types\Texture.cpp">
-      <Filter>Quelldateien\Types</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\GfxMaterial.cpp">
       <Filter>Quelldateien\Types</Filter>
@@ -167,14 +188,17 @@
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetSeeder.cpp">
       <Filter>Quelldateien\Database</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Assets\Types\StaticGeometry.cpp">
-      <Filter>Quelldateien\Types</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\LandscapeGeometry.cpp">
       <Filter>Quelldateien\Types</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabaseQuery.cpp">
       <Filter>Quelldateien\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\Texture.cpp">
+      <Filter>Quelldateien\Types\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometry.cpp">
+      <Filter>Quelldateien\Types</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

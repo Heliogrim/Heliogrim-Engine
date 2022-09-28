@@ -4,6 +4,8 @@
 #include <cassert>
 #endif
 
+#include "Allocator.hpp"
+
 using namespace ember::engine::gfx::memory;
 using namespace ember;
 
@@ -13,12 +15,16 @@ AllocatedMemory::~AllocatedMemory() {
     }
 
     #ifdef _DEBUG
-    if (parent) {
-        assert(!vkMemory);
+    if (parent || allocator) {
+        assert(!vkMemory && "Possible memory leak due to missing hierarchical release report.");
+    }
+    #else
+    if (vkMemory && (parent || allocator)) {
+        throw _STD runtime_error("Possible memory leak due to missing hierarchical release report.");
     }
     #endif
 
-    if (vkMemory && !parent) {
+    if (vkMemory && !parent && !allocator) {
         vkDevice.freeMemory(vkMemory);
     }
 }
@@ -26,6 +32,7 @@ AllocatedMemory::~AllocatedMemory() {
 ref<AllocatedMemory> AllocatedMemory::operator=(mref<AllocatedMemory> other_) noexcept {
 
     if (_STD addressof(other_) != this) {
+        _STD swap(allocator, other_.allocator);
         _STD swap(parent, other_.parent);
         _STD swap(layout, other_.layout);
         _STD swap(size, other_.size);
@@ -38,11 +45,19 @@ ref<AllocatedMemory> AllocatedMemory::operator=(mref<AllocatedMemory> other_) no
 }
 
 void AllocatedMemory::flush(const u64 size_, const u64 offset_) {
+    #ifdef _DEBUG
+    assert((size_ == VK_WHOLE_SIZE && (offset_ + offset) == 0) || size_ <= (size - offset_));
+    #endif
+
     const vk::MappedMemoryRange range { vkMemory, offset + offset_, size_ };
     [[maybe_unused]] auto result = vkDevice.flushMappedMemoryRanges(1, &range);
 }
 
 MemoryMapping AllocatedMemory::map(const u64 size_, const u64 offset_) {
+    #ifdef _DEBUG
+    assert((size_ == VK_WHOLE_SIZE && (offset_ + offset) == 0) || size_ <= (size - offset_));
+    #endif
+
     mapping = vkDevice.mapMemory(vkMemory, offset + offset_, size_, vk::MemoryMapFlags {});
     return mapping;
 }
@@ -61,4 +76,17 @@ bool AllocatedMemory::write(const ptr<const void> data_, const u64 size_) {
 
     memcpy(mapping, data_, static_cast<size_t>(size_));
     return true;
+}
+
+void AllocatedMemory::free(mref<ptr<AllocatedMemory>> memory_) {
+
+    if (memory_->mapping) {
+        memory_->unmap();
+    }
+
+    if (memory_->allocator) {
+        return memory_->allocator->free(_STD move(memory_));
+    }
+
+    return delete _STD move(memory_);
 }

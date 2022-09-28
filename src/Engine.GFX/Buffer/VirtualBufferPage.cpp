@@ -42,11 +42,14 @@ bool VirtualBufferPage::unload() {
 }
 
 vk::SparseMemoryBind VirtualBufferPage::vkSparseMemoryBind() const noexcept {
+
+    const bool isMemoryBacking { _memory->state() == VirtualMemoryPageState::eLoaded };
+
     return vk::SparseMemoryBind {
         _resourceOffset,
         _resourceSize,
-        _memory ? _memory->allocated()->vkMemory : nullptr,
-        _memory ? _memory->allocated()->offset : 0ui64,
+        isMemoryBacking ? _memory->allocated()->vkMemory : nullptr,
+        isMemoryBacking ? _memory->allocated()->offset : 0ui64,
         vk::SparseMemoryBindFlags {}
     };
 }

@@ -8,6 +8,7 @@ using namespace ember::engine::gfx::memory;
 using namespace ember;
 
 LocalPooledAllocator::LocalPooledAllocator(const ptr<GlobalPooledAllocator> global_) :
+    Allocator(),
     _global(global_),
     _cache() {}
 
@@ -23,6 +24,7 @@ AllocationResult LocalPooledAllocator::allocate(cref<MemoryLayout> layout_, cons
     ref<ptr<AllocatedMemory>> dst_) {
 
     if (_cache.allocate(layout_, size_, dst_) == AllocationResult::eSuccess) {
+        dst_->allocator = this;
         return AllocationResult::eSuccess;
     }
 

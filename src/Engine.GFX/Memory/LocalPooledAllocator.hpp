@@ -2,19 +2,21 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-#include "__fwd.hpp"
+#include "Allocator.hpp"
 #include "MemoryCache.hpp"
+#include "__fwd.hpp"
 
 namespace ember::engine::gfx::memory {
 
-    class LocalPooledAllocator {
+    class LocalPooledAllocator final :
+        public Allocator {
     public:
         using this_type = LocalPooledAllocator;
 
     public:
         LocalPooledAllocator(const ptr<GlobalPooledAllocator> global_);
 
-        ~LocalPooledAllocator();
+        ~LocalPooledAllocator() override;
 
     public:
         void tidy();
@@ -27,9 +29,9 @@ namespace ember::engine::gfx::memory {
 
     public:
         [[nodiscard]] AllocationResult allocate(cref<MemoryLayout> layout_, const u64 size_,
-            _Out_ ref<ptr<AllocatedMemory>> dst_);
+            _Out_ ref<ptr<AllocatedMemory>> dst_) override;
 
-        void free(mref<ptr<AllocatedMemory>> mem_);
+        void free(mref<ptr<AllocatedMemory>> mem_) override;
     };
 }
 

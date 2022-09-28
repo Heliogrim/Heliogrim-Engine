@@ -52,6 +52,11 @@ namespace ember::engine::gfx::cache {
          */
         RobinMap<ptr<TextureResource>, Vector<ptr<CacheCtrlSubject<TextureSubResource>>>> _textures;
 
+    private:
+        void dispatchLoad(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_);
+
+        void dispatchUnload(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_);
+
     public:
         void markAsUsed(ptr<TextureResource> resource_, mref<TextureSubResource> subresource_);
 
@@ -67,6 +72,13 @@ namespace ember::engine::gfx::cache {
          */
         RobinMap<ptr<StaticGeometryResource>, Vector<ptr<CacheCtrlSubject<StaticGeometrySubResource>>>>
         _staticGeometries;
+
+    private:
+        [[deprecated]] void dispatchLoad(const ptr<StaticGeometryResource> resource_,
+            cref<StaticGeometrySubResource> subresource_);
+
+        [[deprecated]] void dispatchUnload(const ptr<StaticGeometryResource> resource_,
+            cref<StaticGeometrySubResource> subresource_);
 
     public:
         [[deprecated]] void markAsUsed(ptr<StaticGeometryResource> resource_,

@@ -17,8 +17,24 @@ MemoryCache::~MemoryCache() {
 void MemoryCache::tidy() {
     for (const auto& entry : _pools) {
         entry.second->tidy();
+        delete entry.second;
     }
     _pools.clear();
+}
+
+non_owning_rptr<MemoryPool> MemoryCache::getOrCreatePool(cref<MemoryLayout> layout_) {
+
+    const auto it { _pools.find(layout_) };
+    if (it != _pools.end()) {
+        return it->second;;
+    }
+
+    auto* pool { make_ptr<MemoryPool>(layout_) };
+    const auto insert { _pools.insert_or_assign(layout_, pool) };
+
+    assert(insert.second);
+
+    return pool;
 }
 
 AllocationResult MemoryCache::allocate(cref<MemoryLayout> layout_, const u64 size_, ref<ptr<AllocatedMemory>> dst_) {

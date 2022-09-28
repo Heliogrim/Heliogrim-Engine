@@ -180,8 +180,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\DryGroundRocks01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\GrassWild01.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01AO.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Diffuse.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Normal.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Roughness.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Images\ForestGround01AO.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Images\ForestGround01Diffuse.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Images\ForestGround01Normal.cpp" />
@@ -191,6 +196,10 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Cylinder.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Sphere.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01AO.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Diffuse.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Normal.cpp" />
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Roughness.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Diffuse.cpp" />
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Normal.cpp" />
@@ -207,8 +216,13 @@
     <ClCompile Include="..\..\src\Game.Main\World\Actors\WoodenTable.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\DryGroundRocks01.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\ForestGround01.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\GrassWild01.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01AO.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Diffuse.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Normal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Roughness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01AO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Diffuse.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Images\ForestGround01Normal.hpp" />
@@ -230,6 +244,10 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Cylinder.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\PlaneD128.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Sphere.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01AO.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Diffuse.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Normal.hpp" />
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Roughness.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Diffuse.hpp" />
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01Normal.hpp" />

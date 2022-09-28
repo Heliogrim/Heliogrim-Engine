@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::gfx {
@@ -83,4 +84,16 @@ namespace ember::engine::gfx {
      * @returns True if depth stencil format, false if not.
      */
     [[nodiscard]] bool isDepthStencilFormat(cref<TextureFormat> format_) noexcept;
+
+    /**
+     * Query the size of the data described by the format
+     *
+     * @author Julius
+     * @date 25.07.2022
+     *
+     * @param   format_ The format to check
+     *
+     * @returns The amount of bytes used by a data block, otherwise -1
+     */
+    [[nodiscard]] s64 formatDataSize(const TextureFormat format_) noexcept;
 }

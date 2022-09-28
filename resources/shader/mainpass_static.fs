@@ -2,6 +2,8 @@
 
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
+#extension GL_ARB_sparse_texture2 : enable
+#extension GL_ARB_sparse_texture_clamp : enable
 
 layout(early_fragment_tests) in;
 
@@ -35,4 +37,19 @@ void main() {
 	);
 
 	//out_albedo = fragPosition;
+
+	vec4 sparseAlbedo = vec4(0.0);
+	int statusCode = sparseTextureARB(mapped_albedo, vec3(fragUvm.st, 0.0), sparseAlbedo);
+
+	float minLod = 1.0f;
+	while (!sparseTexelsResidentARB(statusCode) && minLod < 13.0f) {
+		statusCode = sparseTextureClampARB(mapped_albedo, vec3(fragUvm.st, 0.0), minLod, sparseAlbedo);
+		minLod += 1.0f;
+	}
+
+	if (!sparseTexelsResidentARB(statusCode)) {
+		sparseAlbedo = vec4(0.0);
+	}
+
+	out_albedo = sparseAlbedo;
 }

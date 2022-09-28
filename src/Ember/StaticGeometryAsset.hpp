@@ -25,6 +25,24 @@ namespace ember {
         StaticGeometryAsset(cref<asset_guid> guid_) noexcept;
 
         /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 27.06.2022
+         *
+         * @param  guid_ Unique identifier.
+         * @param  url_ The url to the underlying data resource
+         * @param  vertexCount_ The number of vertices within the source geometry
+         * @param  indexCount_ The number of indices within the source geometry
+         */
+        StaticGeometryAsset(
+            cref<asset_guid> guid_,
+            cref<string> url_,
+            cref<u64> vertexCount_,
+            cref<u64> indexCount_
+        ) noexcept;
+
+        /**
          * Destructor
          *
          * @author Julius
@@ -42,6 +60,9 @@ namespace ember {
          * @returns True if valid type, false if not.
          */
         [[nodiscard]] bool isValidType() const noexcept;
+
+    public:
+        [[nodiscard]] cref<string> url() const noexcept;
     };
 
 }

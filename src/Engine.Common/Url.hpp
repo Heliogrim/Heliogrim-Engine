@@ -25,9 +25,14 @@ namespace ember {
 
         Url(cref<this_type> other_) = default;
 
-        Url(mref<this_type> other_) = default;
+        Url(mref<this_type> other_) noexcept = default;
 
         ~Url() = default;
+
+    public:
+        ref<Url> operator=(cref<Url> other_) = default;
+
+        ref<Url> operator=(mref<Url> other_) noexcept = default;
 
     private:
         string _scheme;

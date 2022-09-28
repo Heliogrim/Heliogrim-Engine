@@ -94,10 +94,12 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\API\VkTranslate.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Application\Application.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\Buffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBufferPage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\GlobalCacheCtrl.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\GlobalResourceCache.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Cache\LocalCacheCtrl.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\LocalResourceCache.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\TransientCache.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Camera\Camera.cpp" />
@@ -153,6 +155,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderStagePass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderStageProcessor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Resource\MaterialResource.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Resource\TextureResource.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevDepthPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevDepthPassModelProcessor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\GraphicPass\RevDepthPassSkeletalStage.cpp" />
@@ -223,6 +226,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Cache\CacheTextureSubject.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\GlobalCacheCtrl.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\GlobalResourceCache.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Cache\LocalCacheCtrl.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\LocalResourceCache.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\ModelBatch.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\TransientCache.hpp" />
@@ -352,6 +356,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevProbeStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevRenderer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\__macro.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Texture\RevVirtualMarkerTexture.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\GeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\LandscapeGeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\ModelDataTokens.hpp" />
@@ -388,6 +393,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Texture\Utility.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTexture.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTexturePage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTexturePageFlag.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTextureView.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\__fwd.hpp" />

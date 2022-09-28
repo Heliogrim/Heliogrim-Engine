@@ -3,8 +3,9 @@
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.GFX/TextureFormat.hpp>
 #include <Engine.GFX/Texture/TextureType.hpp>
+#include <Engine.Resource/Loader/StreamLoader.hpp>
 
-#include "Data.hpp"
+#include "../Data.hpp"
 #include "TextureLayout.hpp"
 
 namespace ember::engine::assets {
@@ -55,5 +56,15 @@ namespace ember::engine::assets {
 
     public:
         [[nodiscard]] gfx::TextureType getTextureType() const noexcept;
+    };
+}
+
+namespace ember::engine::res {
+    template <>
+    struct StreamLoaderOptions<::ember::engine::assets::Texture> {
+        u32 layer;
+        u32 mip;
+        math::uivec3 offset;
+        math::uivec3 extent;
     };
 }

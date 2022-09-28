@@ -1,7 +1,7 @@
 #include "MaterialLoader.hpp"
 
 #include <Engine.Assets/Database/AssetDatabase.hpp>
-#include <Engine.Assets/Types/Texture.hpp>
+#include <Engine.Assets/Types/Texture/Texture.hpp>
 #include <Engine.Common/Collection/CompactArray.hpp>
 #include <Engine.Session/Session.hpp>
 

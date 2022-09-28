@@ -1,13 +1,16 @@
 #pragma once
 
 #include <Engine.Resource/Manage/Resource.hpp>
+#include <Engine.Resource/Manage/Streamable.hpp>
 
 #include "../Texture/VirtualTextureView.hpp"
 
 namespace ember::engine::gfx {
 
     class TextureResource final :
-        public res::Resource {
+        public res::partial::Streamable<
+            res::Resource
+        > {
     public:
         using this_type = TextureResource;
         using underlying_type = res::Resource;
@@ -20,12 +23,18 @@ namespace ember::engine::gfx {
     public:
         struct {
             uptr<VirtualTextureView> view;
+            bool __pseudo_stored;
         } _payload;
 
     public:
         [[nodiscard]] loaded_flag_type loaded() const noexcept override {
-            // TODO: 
-            return _payload.view.get() != nullptr;
+            // TODO:
+
+            if (_payload.view.get() == nullptr) {
+                return false;
+            }
+
+            return _payload.__pseudo_stored;
         }
 
         [[nodiscard]] res::ManageGuard<Resource> acquire(const res::ResourceUsageFlags flags_) override {
@@ -38,5 +47,10 @@ namespace ember::engine::gfx {
         }
 
         void release(const res::ResourceUsageFlags flags_) override {}
+
+    public:
+        void streamLoad(const ptr<EmberObject> options_) override;
+
+        void streamUnload(const ptr<EmberObject> options_) override;
     };
 }

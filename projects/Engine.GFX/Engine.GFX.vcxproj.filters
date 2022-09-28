@@ -187,6 +187,9 @@
     <Filter Include="Quelldateien\Resource">
       <UniqueIdentifier>{3948f78b-e611-4f87-a3f5-d6f5b8a12c2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Rev\Texture">
+      <UniqueIdentifier>{730fb20e-023b-4c32-95b3-0897ad635dd4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX\Inc.hpp">
@@ -741,6 +744,15 @@
     <ClInclude Include="..\..\src\Engine.GFX\Loader\MaterialLoader.hpp">
       <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Cache\LocalCacheCtrl.hpp">
+      <Filter>Headerdateien\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Texture\RevVirtualMarkerTexture.hpp">
+      <Filter>Headerdateien\Rev\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTexturePageFlag.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
@@ -1099,6 +1111,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Resource\MaterialResource.cpp">
       <Filter>Quelldateien\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Cache\LocalCacheCtrl.cpp">
+      <Filter>Quelldateien\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Resource\TextureResource.cpp">
+      <Filter>Quelldateien\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\Buffer.cpp">
+      <Filter>Quelldateien\Buffer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -7,7 +7,8 @@ using namespace ember::engine::gfx::cache;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-LocalResourceCache::LocalResourceCache() :
+LocalResourceCache::LocalResourceCache(const non_owning_rptr<GlobalCacheCtrl> global_) :
+    _global(global_),
     _caches(),
     _shifting({ &_caches.front(), &_caches.back() }) {}
 
@@ -38,6 +39,18 @@ void LocalResourceCache::tidy() {
     for (auto& cache : _caches) {
         cache.tidy();
     }
+}
+
+void LocalResourceCache::reset() {
+    shift();
+}
+
+void LocalResourceCache::reset(const bool fully_) {
+    if (fully_) {
+        return tidy();
+    }
+
+    return reset();
 }
 
 CacheResult LocalResourceCache::fetch(cref<_STD ptrdiff_t> key_, _Out_ ref<ptr<ModelBatch>> dst_) {

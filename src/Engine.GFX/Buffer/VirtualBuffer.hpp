@@ -2,6 +2,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
+#include "../Device/Device.hpp"
 #include "VirtualBufferPage.hpp"
 
 namespace ember::engine::gfx {

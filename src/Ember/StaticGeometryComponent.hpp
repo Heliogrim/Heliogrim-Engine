@@ -1,6 +1,7 @@
 #pragma once
 #include "ModelComponent.hpp"
 #include "StaticGeometryAsset.hpp"
+#include "GfxMaterialAsset.hpp"
 
 namespace ember {
 
@@ -26,5 +27,11 @@ namespace ember {
         [[nodiscard]] cref<StaticGeometryAsset> getStaticGeometryAsset() const noexcept;
 
         bool setStaticGeometryByAsset(cref<StaticGeometryAsset> asset_);
+
+    private:
+        CompactArray<GfxMaterialAsset> _overrideMaterials;
+
+    public:
+        [[nodiscard]] cref<CompactArray<GfxMaterialAsset>> overrideMaterials() const noexcept;
     };
 }

@@ -5,5 +5,8 @@ using namespace ember;
 
 PlaneD128::PlaneD128() :
     StaticGeometryAsset(
-        PlaneD128::auto_guid()
+        PlaneD128::auto_guid(),
+        R"(resources\assets\geometry\plane_d128.obj)",
+        98304ui64,
+        98304ui64
     ) {}

@@ -65,7 +65,7 @@ void RevScene::update() {
                  * Check for destruction marking, otherwise update element
                  */
                 auto* const element { elements[idx - 1u] };
-                if (element->markAsDeleted()) {
+                if (element->markedAsDeleted()) {
                     markedForDestruction.push_back(element);
 
                 } else {
@@ -76,19 +76,21 @@ void RevScene::update() {
 
         }
 
-        return node_->inclusiveSize() && !node_->isLeaf();
+        return node_->inclusiveSize();
     });
 
     /**
      * Destroy every fetched marked node
      */
-    for (const auto& marked : markedForDestruction) {
+    for (auto&& marked : markedForDestruction) {
 
         [[maybe_unused]] const auto result { graph.pop(marked) };
 
         #ifdef _DEBUG
         assert(result);
         #endif
+
+        EmberObject::destroy(_STD move(marked));
     }
 
     /**

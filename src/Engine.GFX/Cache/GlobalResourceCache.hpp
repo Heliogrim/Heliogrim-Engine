@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Assets/Types/StaticGeometry.hpp>
-#include <Engine.Assets/Types/Texture.hpp>
+#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets/Types/Texture/Texture.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 #include "__fwd.hpp"
@@ -17,6 +17,7 @@ namespace ember::engine::gfx::cache {
     class GlobalResourceCache final {
     public:
         friend class GlobalCacheCtrl;
+        friend class LocalResourceCache;
 
     public:
         using this_type = GlobalResourceCache;

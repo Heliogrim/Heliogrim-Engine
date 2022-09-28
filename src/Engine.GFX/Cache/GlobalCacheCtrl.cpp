@@ -1,5 +1,8 @@
 #include "GlobalCacheCtrl.hpp"
 
+#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Resource/Loader/StreamLoader.hpp>
+
 using namespace ember::engine::gfx::cache;
 using namespace ember;
 
@@ -12,12 +15,38 @@ const ptr<GlobalResourceCache> GlobalCacheCtrl::cache() const noexcept {
     return _cache;
 }
 
+#pragma region TextureResource
+
+void GlobalCacheCtrl::dispatchLoad(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_) {
+    // TODO:
+
+    using stream_loader_type = res::StreamLoader<assets::Texture>;
+    using stream_options_type = _STD remove_pointer_t<stream_loader_type::stream_options_type>;
+
+    auto* options = new stream_options_type {
+        .layer = subresource_.layer,
+        .mip = subresource_.mip,
+        .offset = subresource_.offset,
+        .extent = subresource_.extent
+    };
+
+    //
+    resource_->streamLoad(static_cast<const ptr<EmberObject>>(static_cast<const ptr<void>>(options)));
+
+    delete options;
+}
+
+void GlobalCacheCtrl::dispatchUnload(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_) {
+    // TODO:
+    resource_->streamUnload(nullptr);
+}
+
 void GlobalCacheCtrl::markAsUsed(ptr<TextureResource> resource_, mref<CacheTextureSubject> subresource_) {
 
     using SubjectType = CacheCtrlSubject<CacheTextureSubject>;
 
     /**
-     * Check whether resource is already present within controls
+     * Ensure that resource is already present within controls
      */
     auto resEntry { _textures.find(resource_) };
     if (resEntry == _textures.end()) {
@@ -31,6 +60,7 @@ void GlobalCacheCtrl::markAsUsed(ptr<TextureResource> resource_, mref<CacheTextu
      * Check for existing derived subresource
      */
     auto& ctrls { const_cast<Vector<ptr<SubjectType>>&>(resEntry->second) };
+    /*
     const auto existing {
         _STD ranges::lower_bound(ctrls, subresource_,
             [](cref<CacheTextureSubject> entry_, cref<CacheTextureSubject> value_) {
@@ -38,6 +68,16 @@ void GlobalCacheCtrl::markAsUsed(ptr<TextureResource> resource_, mref<CacheTextu
             }, [](const auto* const it_) {
                 return it_->subject;
             })
+    };
+     */
+    const auto existing {
+        _STD ranges::find(
+            ctrls,
+            subresource_,
+            [](const auto* const it_) {
+                return it_->subject;
+            }
+        )
     };
 
     if (existing != ctrls.end()) {
@@ -47,6 +87,11 @@ void GlobalCacheCtrl::markAsUsed(ptr<TextureResource> resource_, mref<CacheTextu
         (*existing)->marks.operator++();
 
     } else {
+        /**
+         * Dispatch loading of texture (stream loading if possible/available)
+         */
+        dispatchLoad(resource_, subresource_);
+
         /**
          * Create new ctrl object by given subject with intial mark count of 1ui16
          */
@@ -70,7 +115,7 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, mref<CacheTextureSu
     using SubjectType = CacheCtrlSubject<CacheTextureSubject>;
 
     /**
-     * Check whether resource is already present within controls
+     * Check whether resource is present within controls
      */
     auto resEntry { _textures.find(resource_) };
     if (resEntry == _textures.end()) {
@@ -91,7 +136,7 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, mref<CacheTextureSu
     };
 
     /**
-     * exit if not ctrl object is present
+     * Early exit if ctrl object is not present
      */
     if (existing == ctrls.end()) {
         return;
@@ -100,12 +145,31 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, mref<CacheTextureSu
     /**
      * Atomically decrease mark count at ctrl object
      */
-    (*existing)->marks.operator--();
+    const auto left { (*existing)->marks.operator--() };
+
+    // TODO: Check whether we want to erase subjects with no left marks
+
+    /**
+     * Dispatch unloading of texture (stream unloading if possible/available)
+     */
+    if (left <= 0ui16) {
+        dispatchUnload(resource_, subresource_);
+    }
 }
 
 void GlobalCacheCtrl::unmark(ptr<TextureResource>, mref<TextureSubResourceRange> subresourceRange_) {
     throw NotImplementedException();
 }
+
+#pragma endregion
+
+#pragma region StaticGeomtryResource
+
+void GlobalCacheCtrl::dispatchLoad(const ptr<StaticGeometryResource> resource_,
+    cref<StaticGeometrySubResource> subresource_) {}
+
+void GlobalCacheCtrl::dispatchUnload(const ptr<StaticGeometryResource> resource_,
+    cref<StaticGeometrySubResource> subresource_) {}
 
 void GlobalCacheCtrl::markAsUsed(ptr<StaticGeometryResource> resource_, mref<CacheStaticGeometrySubject> subresource_) {
     throw NotImplementedException();
@@ -114,3 +178,5 @@ void GlobalCacheCtrl::markAsUsed(ptr<StaticGeometryResource> resource_, mref<Cac
 void GlobalCacheCtrl::unmark(ptr<StaticGeometryResource> resource_, mref<CacheStaticGeometrySubject> subresource_) {
     throw NotImplementedException();
 }
+
+#pragma endregion

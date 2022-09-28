@@ -7,12 +7,15 @@
 
 namespace ember::engine::gfx::cache {
 
-    class LocalResourceCache {
+    class LocalResourceCache final {
+    public:
+        friend class LocalCacheCtrl;
+
     public:
         using this_type = LocalResourceCache;
 
     public:
-        LocalResourceCache();
+        LocalResourceCache(const non_owning_rptr<GlobalCacheCtrl> global_);
 
         LocalResourceCache(cref<this_type>) = delete;
 
@@ -29,6 +32,14 @@ namespace ember::engine::gfx::cache {
         void tidy();
 
     private:
+        non_owning_rptr<GlobalCacheCtrl> _global;
+
+    public:
+        void reset();
+
+        void reset(const bool fully_);
+
+    private:
         _STD array<TransientCache, 2> _caches;
         _STD array<ptr<TransientCache>, 2> _shifting;
 
@@ -37,7 +48,7 @@ namespace ember::engine::gfx::cache {
 
         void store(cref<_STD ptrdiff_t> key_, mref<ptr<ModelBatch>> obj_);
 
-    public:
+    private:
         void shift();
 
     };

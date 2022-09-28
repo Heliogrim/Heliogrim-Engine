@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         ForestGround01Diffuse():
             ImageAsset(ForestGround01Diffuse::auto_guid(),
-                R"(resources\assets\texture\forest_ground_01_diffuse.ktx)") {}
+                R"(resources\assets\texture\forest_ground_01_diffuse.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(ForestGround01Diffuse)

@@ -20,23 +20,29 @@
 #include <Engine.Event/TickEvent.hpp>
 #include <Engine.Session/Session.hpp>
 
+#include "Assets/GfxMaterials/DryGroundRocks01.hpp"
 #include "Assets/GfxMaterials/ForestGround01.hpp"
 #include "Assets/Meshes/Cylinder.hpp"
 #include "Assets/Images/ForestGround01Diffuse.hpp"
+#include "Assets/Meshes/PlaneD128.hpp"
 #include "Assets/Textures/ForestGround01Diffuse.hpp"
 #include "Ember/Ember.hpp"
 #include "Ember/World.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
 #include "Engine.Event/ShutdownEvent.hpp"
-#include "Engine.Assets/Types/Texture.hpp"
+#include "Engine.Assets/Types/Texture/Texture.hpp"
 #include "Engine.Assets/Types/GfxMaterial.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 
 using namespace ember;
 
+ptr<Actor> globalPlaneActor = nullptr;
+
 void test();
 
 inline static _STD atomic_flag suspended {};
+
+void buildGlobalPlane();
 
 void waveActors();
 
@@ -124,6 +130,7 @@ void ember_main_entry() {
     /**
      *
      */
+    #if FALSE
     auto testLoadTexture = []() {
         auto fgdtr = Ember::assets()[game::assets::texture::ForestGround01Diffuse::auto_guid()];
         assert(fgdtr);
@@ -156,6 +163,7 @@ void ember_main_entry() {
 
     execute(_STD move(textureTask));
     execute(_STD move(materialTask));
+    #endif
 
     /**
      * --- [ 4 ] ---
@@ -258,14 +266,21 @@ void ember_main_entry() {
     //execute(_STD move(buildTask));
 
     //
-    execute([&]() {
+    execute([&, next = _STD move(buildTask)]() {
         Vector<ptr<Actor>> storage {};
         burstBuildActors(1024ui64, storage);
         _STD ranges::sort(storage);
         validateBurstActors(storage);
         yield();
         burstDestroyActors(_STD move(storage));
+
+        //
+        yield();
+        execute(RepetitiveTask { next });
     });
+
+    //
+    execute(buildGlobalPlane);
 }
 
 void test() {
@@ -366,6 +381,14 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
         comp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&queryResult.value));
     }
 
+    queryResult = Ember::assets()[game::assets::material::DryGroundRocks01::auto_guid()];
+    if (queryResult.flags == AssetDatabaseResultType::eSuccess) {
+        const auto& list { comp->overrideMaterials() };
+        auto& ovm { const_cast<ref<_STD decay_t<decltype(list)>>>(list) };
+
+        ovm.push_back(*static_cast<ptr<GfxMaterialAsset>>(&queryResult.value));
+    }
+
     /**
      *
      */
@@ -441,7 +464,6 @@ void waveActors() {
 
 constexpr auto burstBatchSize = 128ui64;
 constexpr auto burstSpacingScale = 16.F;
-#define BURST_USE_FUTURE_DIRECT
 
 void burstBuildActor(ptr<Actor> actor_, const u64 idx_, const u64 rows_, const u64 cols_) {
     /**
@@ -506,15 +528,6 @@ void burstBuildActors(const u64 size_, _Inout_ ref<Vector<ptr<Actor>>> storage_)
     storage_.reserve(storage_.size() + size_);
     storage_.resize(storage_.size() + size_, nullptr);
 
-    #ifndef BURST_USE_FUTURE_DIRECT
-    Vector<Vector<ember::Future<ptr<Actor>>>> deferredActors {};
-    deferredActors.resize(leftBatchSize > 0ui64 ? batches + 1ui64 : batches);
-
-    for (auto&& actors : deferredActors) {
-        actors.reserve(burstBatchSize);
-    }
-    #endif
-
     //
     auto start { _STD chrono::high_resolution_clock::now() };
 
@@ -522,30 +535,11 @@ void burstBuildActors(const u64 size_, _Inout_ ref<Vector<ptr<Actor>>> storage_)
         // TODO: Schedule async job
         // TODO: `parallel(...)` -> `void parallel( << functor >>, ...)`
 
-        #ifndef BURST_USE_FUTURE_DIRECT
-        auto& collection { deferredActors[batch - 1ui64] };
-        for (auto req { batch != 1ui64 ? burstBatchSize : leftBatchSize }; req > 0ui64; --req) {
-            collection.push_back(CreateActor());
-        }
-        #endif
-
-        #ifdef BURST_USE_FUTURE_DIRECT
         const auto offset { size_ - ((batch - 1ui64) * burstBatchSize) };
         for (auto req { batch != 1ui64 ? burstBatchSize : leftBatchSize }; req > 0ui64; --req) {
             storage_[offset + req - 1ui64] = CreateActor();
         }
-        #endif
     }
-
-    #ifndef BURST_USE_FUTURE_DIRECT
-    //
-    u64 idx { 0ui64 };
-    for (auto& futures : deferredActors) {
-        for (auto& future : futures) {
-            storage_[idx++] = future.get();
-        }
-    }
-    #endif
 
     auto end { _STD chrono::high_resolution_clock::now() };
     _STD cout << "Burst instantiation of " << size_ << " Actors took " << _STD chrono::duration_cast<
@@ -630,3 +624,24 @@ void burstDestroyActors(mref<Vector<ptr<Actor>>> actors_) {
 #endif
 
 #pragma endregion
+
+void buildGlobalPlane() {
+
+    globalPlaneActor = await(CreateActor(traits::async));
+
+    auto& initializer { ActorInitializer::get() };
+    auto* cmp { initializer.createComponent<StaticGeometryComponent>(globalPlaneActor) };
+
+    auto query { Ember::assets()[game::assets::meshes::PlaneD128::auto_guid()] };
+    cmp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&query.value));
+
+    query = Ember::assets()[game::assets::material::ForestGround01::auto_guid()];
+    auto& materials { const_cast<ref<_STD decay_t<cref<Vector<GfxMaterialAsset>>>>>(cmp->overrideMaterials()) };
+    materials.push_back(*static_cast<ptr<GfxMaterialAsset>>(&query.value));
+
+    cref<math::Transform> transform { globalPlaneActor->getWorldTransform() };
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F });
+    const_cast<ref<math::Transform>>(transform).setScale(math::vec3(10.F, 1.F, 10.F));
+
+    GetWorld()->addActor(globalPlaneActor);
+}

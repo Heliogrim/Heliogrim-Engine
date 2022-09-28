@@ -242,6 +242,19 @@ namespace ember::math {
         }
 
         /**
+         * Check zero vector
+         *
+         * @author Julius
+         * @date 16.01.2020
+         *
+         * @returns whether vector is zero.
+         */
+        [[nodiscard]] bool zero() const {
+            // TODO: Unsafe possible float point equality operation
+            return x == 0 && y == 0;
+        }
+
+        /**
          * Multiplication assignment operator
          *
          * @author Julius

@@ -4,7 +4,7 @@
 #include "MemoryLayout.hpp"
 
 #include "MemoryMapping.hpp"
-#include "../Device/Device.hpp"
+#include "../vkinc.hpp"
 
 namespace ember::engine::gfx::memory {
 
@@ -18,6 +18,7 @@ namespace ember::engine::gfx::memory {
         ref<AllocatedMemory> operator=(mref<AllocatedMemory> other_) noexcept;
 
         //
+        ptr<Allocator> allocator;
         ptr<AllocatedMemory> parent;
 
         //
@@ -41,5 +42,8 @@ namespace ember::engine::gfx::memory {
         void flush(const u64 size_, const u64 offset_ = 0ui64);
 
         bool write(const ptr<const void> data_, const u64 size_);
+
+        //
+        static void free(mref<ptr<AllocatedMemory>> memory_);
     };
 }

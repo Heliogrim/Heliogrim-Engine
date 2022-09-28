@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Common/Collection/Vector.hpp>
 
-#include "Allocator.hpp"
+#include "GlobalPooledAllocator.hpp"
 #include "VirtualMemoryPage.hpp"
 
 namespace ember::engine::gfx {
@@ -35,7 +35,7 @@ namespace ember::engine::gfx {
         Vector<ptr<VirtualMemoryPage>> _pages;
 
     public:
-        [[nodiscard]] non_owning_rptr<VirtualMemoryPage> definePage(const u64 size_);
+        [[nodiscard]] non_owning_rptr<VirtualMemoryPage> definePage(const u64 offset_, const u64 size_);
 
         void undefinePage(const non_owning_rptr<VirtualMemoryPage> page_);
 

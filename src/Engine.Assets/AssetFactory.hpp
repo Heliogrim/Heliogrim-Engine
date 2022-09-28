@@ -188,6 +188,13 @@ namespace ember::engine::assets {
     public:
         [[nodiscard]] ptr<Asset> createStaticGeometryAsset(cref<asset_guid> guid_);
 
+        [[nodiscard]] ptr<Asset> createStaticGeometryAsset(
+            cref<asset_guid> guid_,
+            cref<string> url_,
+            cref<u64> vertexCount_,
+            cref<u64> indexCount_
+        );
+
         [[nodiscard]] ptr<Asset> createLandscapeGeometryAsset(cref<asset_guid> guid_);
     };
 

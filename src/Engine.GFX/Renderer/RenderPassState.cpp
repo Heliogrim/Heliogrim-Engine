@@ -10,6 +10,6 @@ RenderPassState::~RenderPassState() {
      *  ^ Resources
      *  - Binding Caches 
      */
-    cache.tidy();
+    cacheCtrl.tidy();
     bindingCache.tidy();
 }
