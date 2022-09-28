@@ -3,6 +3,7 @@
 #include "CommandPool.hpp"
 #include "CommandQueue.hpp"
 #include "../Framebuffer/Framebuffer.hpp"
+#include "../VkComputePipeline.hpp"
 #include "../VkFixedPipeline.hpp"
 
 using namespace ember::engine::gfx;
@@ -32,7 +33,7 @@ void CommandBuffer::beginRenderPass(const pipeline::LORenderPass& renderPass_, c
 
 void CommandBuffer::bindDescriptor(const Vector<vk::DescriptorSet>& descriptors_) {
     _vkCmd.bindDescriptorSets(
-        vk::PipelineBindPoint::eGraphics,
+        _pipelineBindPoint,
         _pipelineLayout,
         0, static_cast<u32>(descriptors_.size()), descriptors_.data(),
         0, nullptr
@@ -40,8 +41,9 @@ void CommandBuffer::bindDescriptor(const Vector<vk::DescriptorSet>& descriptors_
 }
 
 void CommandBuffer::bindDescriptor(const u32 id_, cref<vk::DescriptorSet> descriptor_) {
+
     _vkCmd.bindDescriptorSets(
-        vk::PipelineBindPoint::eGraphics,
+        _pipelineBindPoint,
         _pipelineLayout,
         id_, 1, &descriptor_,
         0, nullptr
@@ -62,6 +64,16 @@ void CommandBuffer::bindIndexBuffer(const ptr<VirtualBuffer> buffer_, u64 offset
         offset_,
         vk::IndexType::eUint32
     );
+}
+
+void CommandBuffer::bindPipeline(ptr<ComputePipeline> pipeline_) {
+
+    const auto vkp = static_cast<ptr<VkComputePipeline>>(pipeline_);
+
+    _vkCmd.bindPipeline(vk::PipelineBindPoint::eCompute, vkp->vkPipeline());
+
+    _pipelineLayout = vkp->vkLayout();
+    _pipelineBindPoint = vk::PipelineBindPoint::eCompute;
 }
 
 void CommandBuffer::bindPipeline(ptr<GraphicPipeline> pipeline_, cref<Viewport> viewport_) {
@@ -88,6 +100,7 @@ void CommandBuffer::bindPipeline(ptr<GraphicPipeline> pipeline_, cref<Viewport> 
     _vkCmd.setViewport(0, 1, &vkViewport);
 
     _pipelineLayout = vkp->vkLayout();
+    _pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
 }
 
 void CommandBuffer::bindVertexBuffer(const u32 binding_, cref<Buffer> buffer_, u64 offset_) {

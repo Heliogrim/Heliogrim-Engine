@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Wrapper.hpp>
+
 #include "../vkinc.hpp"
 #include "../RasterCullFace.hpp"
 #include "../RasterPolyFront.hpp"

@@ -1,5 +1,7 @@
 ﻿#include "MemoryPool.hpp"
 
+#include <Engine.Common/Make.hpp>
+
 #ifdef _DEBUG
 #include <cassert>
 #endif

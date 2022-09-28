@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Math/__default.inl>
+
 #include "../TextureFormat.hpp"
 #include "TextureBuffer.hpp"
 #include "TextureType.hpp"

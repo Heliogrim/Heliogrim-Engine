@@ -110,6 +110,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Command\CommandBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Command\CommandPool.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Command\CommandQueue.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\ComputePipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Device\Device.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\FixedPipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Framebuffer\Attachment.cpp" />
@@ -172,6 +173,8 @@
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthSkeletalNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthStaticNode.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlySFNode.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevFinalComposeNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevFinalStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevLightStage.cpp" />
@@ -182,6 +185,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevMainStaticNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevProbeStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Rev\Renderer\RevRenderer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Rev\Texture\RevVirtualMarkerTexture.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\GeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\StaticGeometryBatch.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.cpp" />
@@ -213,6 +217,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Texture\VirtualTextureView.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Viewport.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\VkComputePipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\VkFixedPipeline.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -349,6 +354,8 @@
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthSkeletalNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevDepthStaticNode.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlySFNode.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevEarlyStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevFinalComposeNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevFinalStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevLightStage.hpp" />
@@ -402,6 +409,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Viewport.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\VkComputePipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\VkFixedPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\vkinc.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\__macro.hpp" />

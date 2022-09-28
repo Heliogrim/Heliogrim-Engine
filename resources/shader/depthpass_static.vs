@@ -12,6 +12,9 @@ layout (set = 1, binding = 2) buffer DepthPassModel {
 } mubo;
 
 layout (location = 0) in vec3 in_position;
+layout (location = 2) in vec3 in_uvm;
+
+layout (location = 0) out vec3 fragUvm;
 
 void main() {
 	/**
@@ -22,4 +25,6 @@ void main() {
      */
 	vec4 pos = mubo.model * vec4(in_position, 1.0);
     gl_Position = ubo.viewProj * pos;
+
+    fragUvm = in_uvm;
 }

@@ -14,6 +14,7 @@ layout (set = 2, binding = 3) uniform MaterialUbo {
 	uint normal;
 	uint roughness;
 	uint ao;
+	uint alpha;
 } material;
 /*
 */
@@ -21,6 +22,7 @@ layout (set = 2, binding = 4) uniform sampler2DArray mapped_albedo;
 layout (set = 2, binding = 5) uniform sampler2DArray mapped_normal;
 layout (set = 2, binding = 6) uniform sampler2DArray mapped_roughness;
 layout (set = 2, binding = 7) uniform sampler2DArray mapped_specular;
+layout (set = 2, binding = 8) uniform sampler2DArray mapped_alpha;
 /*
 */
 
@@ -34,7 +36,7 @@ layout (location = 2) out vec4 out_position;
 layout (location = 3) out vec4 out_mrs;
 
 void main() {
-	out_albedo = texture(mapped_albedo, vec3(fragUvm.st, 0.0));
+	//out_albedo = texture(mapped_albedo, vec3(fragUvm.st, 0.0));
 	out_normal = fragNormal.xyz;
 	out_position = fragPosition;
 	out_mrs = vec4(
@@ -46,7 +48,7 @@ void main() {
 
 	//out_albedo = fragPosition;
 
-	#define uv_scale_factor 4.0
+	#define uv_scale_factor 1.0
 
 	vec4 sparseAlbedo = vec4(0.0);
 	int statusCode = sparseTextureARB(mapped_albedo, vec3(fragUvm.st * uv_scale_factor, 0.0), sparseAlbedo);

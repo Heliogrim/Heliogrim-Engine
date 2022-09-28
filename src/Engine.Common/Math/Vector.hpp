@@ -8,6 +8,8 @@
 #include "MathDefaultDefine.hpp"
 #include "Hash.hpp"
 
+#pragma warning (disable: 4201)
+
 /** . */
 namespace ember::math {
     /* Class Forward */
@@ -973,6 +975,15 @@ namespace ember::math {
          */
         bool operator!=(const_reference_type other_) const {
             return !(x == other_.x && y == other_.y && z == other_.z);
+        }
+
+        template <typename NumericType_ = T, typename = _STD enable_if_t<!_STD is_floating_point_v<T>>>
+        type operator>>(const value_type& shift_) const {
+            return type {
+                x >> shift_,
+                y >> shift_,
+                z >> shift_
+            };
         }
 
         /**

@@ -8,7 +8,7 @@ GfxMaterial::GfxMaterial(cref<asset_guid> guid_) :
 
 GfxMaterial::GfxMaterial(cref<asset_guid> guid_, cref<asset_guid> albedo_, cref<asset_guid> ao_,
     cref<asset_guid> cavity_, cref<asset_guid> displacement_, cref<asset_guid> gloss_, cref<asset_guid> normal_,
-    cref<asset_guid> roughness_, cref<asset_guid> specular_) :
+    cref<asset_guid> roughness_, cref<asset_guid> specular_, cref<asset_guid> alpha_) :
     Data(guid_, GfxMaterial::typeId),
     _albedo(albedo_),
     _ao(ao_),
@@ -17,7 +17,8 @@ GfxMaterial::GfxMaterial(cref<asset_guid> guid_, cref<asset_guid> albedo_, cref<
     _gloss(gloss_),
     _normal(normal_),
     _roughness(roughness_),
-    _specular(specular_) {}
+    _specular(specular_),
+    _alpha(alpha_) {}
 
 CompactArray<asset_guid> GfxMaterial::textures() const noexcept {
 
@@ -45,4 +46,8 @@ asset_guid GfxMaterial::roughness() const noexcept {
 
 asset_guid GfxMaterial::ao() const noexcept {
     return _ao;
+}
+
+asset_guid GfxMaterial::alpha() const noexcept {
+    return _alpha;
 }

@@ -37,9 +37,22 @@ namespace ember::engine::gfx::cache {
                 return mip < other_.mip;
             }
 
+            if (offset != other_.offset) {
+                if (offset.x < other_.offset.x)
+                    return true;
+                if (offset.y < other_.offset.y)
+                    return true;
+                if (offset.z < other_.offset.z)
+                    return true;
+            }
+
             if (extent != other_.extent) {
-                // TODO: Replace unsafe float pointer equality check with epsilon check
-                return extent.sqrLength() < other_.extent.sqrLength();
+                if (extent.x < other_.extent.x)
+                    return true;
+                if (extent.y < other_.extent.y)
+                    return true;
+                if (extent.z < other_.extent.z)
+                    return true;
             }
 
             return false;
@@ -54,9 +67,22 @@ namespace ember::engine::gfx::cache {
                 return mip > other_.mip;
             }
 
+            if (offset != other_.offset) {
+                if (offset.x > other_.offset.x)
+                    return true;
+                if (offset.y > other_.offset.y)
+                    return true;
+                if (offset.z > other_.offset.z)
+                    return true;
+            }
+
             if (extent != other_.extent) {
-                // TODO: Replace unsafe float pointer equality check with epsilon check
-                return extent.sqrLength() > other_.extent.sqrLength();
+                if (extent.x > other_.extent.x)
+                    return true;
+                if (extent.y > other_.extent.y)
+                    return true;
+                if (extent.z > other_.extent.z)
+                    return true;
             }
 
             return false;
@@ -71,12 +97,25 @@ namespace ember::engine::gfx::cache {
                 return false;
             }
 
-            if (extent != other_.extent) {
-                // TODO: Replace unsafe float pointer equality check with epsilon check
-                return extent.sqrLength() < other_.extent.sqrLength();
+            if (offset != other_.offset) {
+                if (offset.x > other_.offset.x)
+                    return false;
+                if (offset.y > other_.offset.y)
+                    return false;
+                if (offset.z > other_.offset.z)
+                    return false;
             }
 
-            return extent == other_.extent;
+            if (extent != other_.extent) {
+                if (extent.x > other_.extent.x)
+                    return false;
+                if (extent.y > other_.extent.y)
+                    return false;
+                if (extent.z > other_.extent.z)
+                    return false;
+            }
+
+            return offset == other_.offset && extent == other_.extent;
         }
 
         [[nodiscard]] bool operator>=(cref<CacheTextureSubject> other_) const noexcept {
@@ -88,12 +127,25 @@ namespace ember::engine::gfx::cache {
                 return false;
             }
 
-            if (extent != other_.extent) {
-                // TODO: Replace unsafe float pointer equality check with epsilon check
-                return extent.sqrLength() > other_.extent.sqrLength();
+            if (offset != other_.offset) {
+                if (offset.x < other_.offset.x)
+                    return false;
+                if (offset.y < other_.offset.y)
+                    return false;
+                if (offset.z < other_.offset.z)
+                    return false;
             }
 
-            return extent == other_.extent;
+            if (extent != other_.extent) {
+                if (extent.x < other_.extent.x)
+                    return false;
+                if (extent.y < other_.extent.y)
+                    return false;
+                if (extent.z < other_.extent.z)
+                    return false;
+            }
+
+            return offset == other_.offset && extent == other_.extent;
         }
     };
 

@@ -1363,7 +1363,7 @@ void TextureLoader::partialUnload(
 
         bool effected { false };
         if (page->flags() & VirtualTexturePageFlag::eOpaqueTail) {
-            effected = page->mipLevel() <= options_->mip;
+            // TODO: effected = page->mipLevel() <= options_->mip;
 
         } else {
 
@@ -1373,12 +1373,13 @@ void TextureLoader::partialUnload(
 
             const auto minPage { page->offset() };
             const auto maxPage { page->offset() + page->extent() };
+
             const auto minDst { options_->offset };
             const auto maxDst { options_->offset + options_->extent };
 
-            const auto pX { minPage.x > maxDst.x || maxPage.x < minDst.x };
-            const auto pY { minPage.y > maxDst.y || maxPage.y < minDst.y };
-            const auto pZ { minPage.z > maxDst.z || maxPage.z < minDst.z };
+            const auto pX { minPage.x >= maxDst.x || maxPage.x <= minDst.x };
+            const auto pY { minPage.y >= maxDst.y || maxPage.y <= minDst.y };
+            const auto pZ { minPage.z >= maxDst.z || maxPage.z <= minDst.z };
 
             effected = !(pX || pY || pZ);
         }

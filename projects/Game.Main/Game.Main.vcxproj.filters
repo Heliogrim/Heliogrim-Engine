@@ -180,6 +180,99 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\DryGroundRocks01.cpp">
       <Filter>Quelldateien\Assets\GfxMaterials</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Rock01.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Stick01.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Rock01Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Rock01Normal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Rock01Roughness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Stick01Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Stick01Normal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Stick01AO.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Rock01.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Stick01.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultAO.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultDiffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultNormal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultRoughness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\Dandelion01.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\Dandelion01Alpha.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\Dandelion01Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\Dandelion01Normal.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\Dandelion01Roughness.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\Dandelion01.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Alpha.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Normal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Roughness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultAlpha.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Planks.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Poles.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenPier01Poles.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenPier01Planks.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesDiffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksDiffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\ForestGround.hpp">
@@ -326,6 +419,126 @@
     <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\DryGroundRocks01.hpp">
       <Filter>Headerdateien\Assets\GfxMaterials</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Stick01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Rock01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Stick01AO.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Stick01Normal.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Rock01Normal.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\Rock01Roughness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Rock01.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Stick01.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Rock01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Rock01Normal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Rock01Roughness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Stick01AO.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Stick01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Stick01Normal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Rock01.hpp">
+      <Filter>Headerdateien\Assets\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Stick01.hpp">
+      <Filter>Headerdateien\Assets\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultAO.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultDiffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultNormal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultRoughness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultAO.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultDiffuse.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultNormal.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultRoughness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\Dandelion01.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\Dandelion01.hpp">
+      <Filter>Headerdateien\Assets\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Alpha.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Normal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\Dandelion01Roughness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DefaultAlpha.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DefaultAlpha.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Planks.hpp">
+      <Filter>Headerdateien\Assets\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Poles.hpp">
+      <Filter>Headerdateien\Assets\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenPier01Poles.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenPier01Planks.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenPier01PolesDiffuse.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenPier01PlanksDiffuse.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksDiffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesDiffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\resources\shader\compile_shaders.cmd">
@@ -334,40 +547,22 @@
     <None Include="..\..\resources\shader\sky.vs">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
-    <None Include="..\..\resources\shader\sky.fs">
-      <Filter>Ressourcendateien\Shader</Filter>
-    </None>
     <None Include="..\..\resources\shader\gui.vs">
-      <Filter>Ressourcendateien\Shader</Filter>
-    </None>
-    <None Include="..\..\resources\shader\link.fs">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
     <None Include="..\..\resources\shader\link.vs">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
-    <None Include="..\..\resources\shader\obj.fs">
-      <Filter>Ressourcendateien\Shader</Filter>
-    </None>
     <None Include="..\..\resources\shader\obj.vs">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
-    <None Include="..\..\resources\shader\terra.fs">
-      <Filter>Ressourcendateien\Shader</Filter>
-    </None>
     <None Include="..\..\resources\shader\terra.vs">
-      <Filter>Ressourcendateien\Shader</Filter>
-    </None>
-    <None Include="..\..\resources\shader\gui.fs">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
     <None Include="..\..\resources\shader\light.directional.glsl">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
     <None Include="light.spotlight.glsl">
-      <Filter>Ressourcendateien\Shader</Filter>
-    </None>
-    <None Include="..\..\resources\shader\depthpass.fs">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
     <None Include="..\..\resources\shader\depthpass.frag.spv">
@@ -388,28 +583,16 @@
     <None Include="..\..\resources\shader\finalpass.vs">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
-    <None Include="..\..\resources\shader\finalpass.fs">
-      <Filter>Ressourcendateien\Shader</Filter>
-    </None>
     <None Include="..\..\resources\shader\finalpass.frag.spv">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
     <None Include="..\..\resources\shader\finalpass.vert.spv">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
-    <None Include="..\..\resources\shader\depthpass_skeletal.fs">
-      <Filter>Ressourcendateien\Shader</Filter>
-    </None>
     <None Include="..\..\resources\shader\depthpass_static.frag.spv">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
-    <None Include="..\..\resources\shader\depthpass_static.fs">
-      <Filter>Ressourcendateien\Shader</Filter>
-    </None>
     <None Include="..\..\resources\shader\depthpass_skeletal.frag.spv">
-      <Filter>Ressourcendateien\Shader</Filter>
-    </None>
-    <None Include="..\..\resources\shader\mainpass_static.fs">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
     <None Include="..\..\resources\shader\mainpass_static.vs">
@@ -424,13 +607,79 @@
     <None Include="..\..\resources\shader\mainpass_sky.frag.spv">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
-    <None Include="..\..\resources\shader\mainpass_sky.fs">
-      <Filter>Ressourcendateien\Shader</Filter>
-    </None>
     <None Include="..\..\resources\shader\mainpass_sky.vert.spv">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
     <None Include="..\..\resources\shader\mainpass_sky.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\earlypass_sf.cps">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\earlypass_sf.comp.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\depthpass_static.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\depthpass.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\depthpass_skeletal.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\finalpass.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\gui.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\gui.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\gui.vert.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\link.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\link.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\link.vert.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\mainpass_sky.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\mainpass_static.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\obj.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\obj.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\obj.vert.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\sky.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\sky.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\sky.vert.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\terra.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\terra.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\terra.vert.spv">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
   </ItemGroup>

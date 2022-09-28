@@ -18,5 +18,6 @@ ForestGround01::ForestGround01() :
         invalid_asset_guid,
         texture::ForestGround01Normal::auto_guid(),
         texture::ForestGround01Roughness::auto_guid(),
+        invalid_asset_guid,
         invalid_asset_guid
     ) {}

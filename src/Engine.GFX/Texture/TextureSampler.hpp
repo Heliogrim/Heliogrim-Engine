@@ -118,6 +118,8 @@ namespace ember::engine::gfx {
          */
         [[nodiscard]] vk::Filter magnification() const noexcept;
 
+        [[nodiscard]] ref<vk::Filter> magnification() noexcept;
+
     private:
         /**
          * Minification
@@ -134,6 +136,25 @@ namespace ember::engine::gfx {
          * @returns A vk::Filter.
          */
         [[nodiscard]] vk::Filter minification() const noexcept;
+
+        [[nodiscard]] ref<vk::Filter> minification() noexcept;
+
+    private:
+        /**
+         * Mip Mode
+         */
+        vk::SamplerMipmapMode _mipMode;
+
+    public:
+        /**
+         * Sampler Mipmap Mode
+         *
+         * @author Julius
+         * @date 20.11.2020
+         *
+         * @returns A reference to the vk::SamplerMipmapMode.
+         */
+        [[nodiscard]] ref<vk::SamplerMipmapMode> mipMode() noexcept;
 
     private:
         /**

@@ -1,5 +1,7 @@
 #include "FileSource.hpp"
 
+#include <Engine.Common/Exception/NotImplementedException.hpp>
+
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif

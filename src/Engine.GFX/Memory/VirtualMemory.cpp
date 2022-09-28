@@ -1,5 +1,7 @@
 #include "VirtualMemory.hpp"
 
+#include <Engine.Common/Make.hpp>
+
 #include <algorithm>
 #include <cassert>
 #include <Engine.Common/Exception/NotImplementedException.hpp>

@@ -22,5 +22,6 @@ GrassWild01::GrassWild01() :
         image::GrassWild01Gloss::auto_guid(),
         image::GrassWild01Normal::auto_guid(),
         image::GrassWild01Roughness::auto_guid(),
-        image::GrassWild01Specular::auto_guid()
+        image::GrassWild01Specular::auto_guid(),
+        invalid_asset_guid
     ) {}

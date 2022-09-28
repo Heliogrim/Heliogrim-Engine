@@ -23,6 +23,7 @@ namespace ember::engine::gfx {
             ptr<TextureResource> normal;
             ptr<TextureResource> roughness;
             ptr<TextureResource> ao;
+            ptr<TextureResource> alpha;
             //
             uptr<VirtualBufferView> view;
             bool __pseudo_stored;

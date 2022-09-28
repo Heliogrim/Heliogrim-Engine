@@ -20,29 +20,41 @@
 #include <Engine.Event/TickEvent.hpp>
 #include <Engine.Session/Session.hpp>
 
+#include "Assets/GfxMaterials/Dandelion01.hpp"
 #include "Assets/GfxMaterials/DryGroundRocks01.hpp"
 #include "Assets/GfxMaterials/ForestGround01.hpp"
-#include "Assets/Meshes/Cylinder.hpp"
+#include "Assets/GfxMaterials/Rock01.hpp"
+#include "Assets/GfxMaterials/Stick01.hpp"
+#include "Assets/GfxMaterials/WoodenPier01Planks.hpp"
+#include "Assets/GfxMaterials/WoodenPier01Poles.hpp"
 #include "Assets/Images/ForestGround01Diffuse.hpp"
+#include "Assets/Meshes/Cylinder.hpp"
+#include "Assets/Meshes/Dandelion01.hpp"
 #include "Assets/Meshes/PlaneD128.hpp"
+#include "Assets/Meshes/Rock01.hpp"
+#include "Assets/Meshes/Stick01.hpp"
+#include "Assets/Meshes/WoodenPier01Planks.hpp"
+#include "Assets/Meshes/WoodenPier01Poles.hpp"
 #include "Assets/Textures/ForestGround01Diffuse.hpp"
 #include "Ember/Ember.hpp"
 #include "Ember/World.hpp"
+#include "Engine.Assets/Types/GfxMaterial.hpp"
+#include "Engine.Assets/Types/Texture/Texture.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
 #include "Engine.Event/ShutdownEvent.hpp"
-#include "Engine.Assets/Types/Texture/Texture.hpp"
-#include "Engine.Assets/Types/GfxMaterial.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 
 using namespace ember;
 
 ptr<Actor> globalPlaneActor = nullptr;
 
-void test();
-
 inline static _STD atomic_flag suspended {};
 
+#pragma region Forwarded Functions
+
 void buildGlobalPlane();
+
+void buildTestScene();
 
 void waveActors();
 
@@ -54,15 +66,7 @@ void validateBurstActors(cref<Vector<ptr<Actor>>> actors_);
 
 void burstDestroyActors(mref<Vector<ptr<Actor>>> actors_);
 
-void ember_block_main() {
-
-    SCOPED_STOPWATCH
-
-    /**
-     * Just delay control flow to hold window open
-     */
-    engine::scheduler::thread::self::sleepFor(30000);
-}
+#pragma endregion
 
 /**
  * Ember main entry
@@ -181,7 +185,6 @@ void ember_main_entry() {
      * cols : 1ui32 << 6 := 64
      * count : rows * colls := 4096
      */
-    // test();
     #if not defined(_DEBUG) && FALSE
     constexpr u64 rows { 1ui64 << 11 };
     constexpr u64 cols { 1ui64 << 11 };
@@ -266,6 +269,7 @@ void ember_main_entry() {
     //execute(_STD move(buildTask));
 
     //
+#if FALSE
     execute([&, next = _STD move(buildTask)]() {
         Vector<ptr<Actor>> storage {};
         burstBuildActors(1024ui64, storage);
@@ -278,55 +282,13 @@ void ember_main_entry() {
         yield();
         execute(RepetitiveTask { next });
     });
+#endif
 
     //
-    execute(buildGlobalPlane);
+    execute(buildTestScene);
 }
 
-void test() {
-
-    /**
-     *
-     */
-    {
-        Actor* actor = await(CreateActor(traits::async));
-        await(Destroy(_STD move(actor)));
-    }
-
-    /**
-     *
-     */
-    {
-        ptr<Level> level = await(CreateLevel());
-        await(Destroy(_STD move(level)));
-    }
-
-    /**
-     *
-     */
-    {
-        ptr<Level> level = await(CreateLevel());
-
-        Vector<Future<ptr<Actor>>> flist {};
-        for (u8 c = 0; c < 128ui8; ++c) {
-            flist.push_back(CreateActor(traits::async));
-        }
-
-        for (auto& entry : flist) {
-            while (!entry.ready()) {
-                yield();
-            }
-        }
-
-        /*
-        for (auto& entry : flist) {
-            level.addEntity(entry.get());
-        }
-         */
-
-        await(Destroy(_STD move(level)));
-    }
-}
+#pragma region Actors Over Time
 
 void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const u64 cols_, _In_ const float scalar_,
     _Inout_ ref<ember::math::vec3> position_) {
@@ -344,8 +306,8 @@ void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const 
     const float px { static_cast<float>(rowCount) / rdxf };
     const float py { static_cast<float>(colCount) / rdyf };
 
-    const auto oxf { _STD sinf(px * math::pi) };
-    const auto oyf { _STD cosf(py * math::pi) };
+    const auto oxf { _STD sinf(px * math::pi_f) };
+    const auto oyf { _STD cosf(py * math::pi_f) };
 
     position_ += math::vec3_right * (rx * px - rx * 0.5F + oxf * scalar_);
     position_ += math::vec3_forward * (ry * py - ry * 0.5F + oyf * scalar_);
@@ -459,6 +421,8 @@ void waveActors() {
     }
 
 }
+
+#pragma endregion
 
 #pragma region BurstActorBuilding
 
@@ -605,11 +569,11 @@ void burstDestroyActors(mref<Vector<ptr<Actor>>> actors_) {
     start = _STD chrono::high_resolution_clock::now();
 
     for (auto&& actor : actors_) {
-        #ifdef _DEBUG
+#ifdef _DEBUG
         assert(Destroy(_STD move(actor)).get());
-        #else
+#else
         [[maybe_unused]] auto result { Destroy(_STD move(actor)).get() };
-        #endif
+#endif
     }
 
     end = _STD chrono::high_resolution_clock::now();
@@ -644,4 +608,147 @@ void buildGlobalPlane() {
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3(10.F, 1.F, 10.F));
 
     GetWorld()->addActor(globalPlaneActor);
+}
+
+ptr<Actor> buildSimpleAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
+
+    auto* actor = await(CreateActor(traits::async));
+
+    auto& initializer { ActorInitializer::get() };
+    auto* cmp { initializer.createComponent<StaticGeometryComponent>(actor) };
+
+    auto query { Ember::assets()[meshGuid_] };
+    cmp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&query.value));
+
+    query = Ember::assets()[materialGuid_];
+    auto& materials { const_cast<ref<_STD decay_t<cref<Vector<GfxMaterialAsset>>>>>(cmp->overrideMaterials()) };
+    materials.push_back(*static_cast<ptr<GfxMaterialAsset>>(&query.value));
+
+    return actor;
+}
+
+ptr<Actor> buildRock01() {
+
+    auto* actor = buildSimpleAsset(
+        game::assets::meshes::Rock01::auto_guid(),
+        game::assets::material::Rock01::auto_guid()
+    );
+
+    cref<math::Transform> transform { actor->getWorldTransform() };
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 5.F, 1.F, 0.F });
+    const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 2.F });
+
+    GetWorld()->addActor(actor);
+
+    return actor;
+}
+
+ptr<Actor> buildStick01() {
+
+    auto* actor = buildSimpleAsset(
+        game::assets::meshes::Stick01::auto_guid(),
+        game::assets::material::Stick01::auto_guid()
+    );
+
+    cref<math::Transform> transform { actor->getWorldTransform() };
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 1.F, 0.F });
+    const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 10.F });
+
+    GetWorld()->addActor(actor);
+
+    return actor;
+}
+
+ptr<Actor> buildWoodenPier01Poles() {
+
+    auto* actor = buildSimpleAsset(
+        game::assets::meshes::WoodenPier01Poles::auto_guid(),
+        game::assets::material::WoodenPier01Poles::auto_guid()
+    );
+
+    cref<math::Transform> transform { actor->getWorldTransform() };
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, .5F, -1.F });
+    const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
+
+    GetWorld()->addActor(actor);
+
+    return actor;
+}
+
+ptr<Actor> buildWoodenPier01Planks() {
+
+    auto* actor = buildSimpleAsset(
+        game::assets::meshes::WoodenPier01Planks::auto_guid(),
+        game::assets::material::WoodenPier01Planks::auto_guid()
+    );
+
+    cref<math::Transform> transform { actor->getWorldTransform() };
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -1.F, -2.F, -1.F });
+    const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
+
+    GetWorld()->addActor(actor);
+
+    return actor;
+}
+
+ptr<Actor> buildDandelion01() {
+
+    auto* actor = buildSimpleAsset(
+        game::assets::meshes::Dandelion01::auto_guid(),
+        game::assets::material::Dandelion01::auto_guid()
+    );
+
+    cref<math::Transform> transform { actor->getWorldTransform() };
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, .5F, 5.F });
+    const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 5.F });
+
+    GetWorld()->addActor(actor);
+
+    return actor;
+}
+
+void buildTestScene() {
+
+    buildGlobalPlane();
+
+    return;
+
+    [[maybe_unused]] auto* rock01 = buildRock01();
+    [[maybe_unused]] auto* stick01 = buildStick01();
+
+    [[maybe_unused]] auto* poles01 = buildWoodenPier01Poles();
+    [[maybe_unused]] auto* planks01 = buildWoodenPier01Planks();
+
+    {
+        auto* plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -6.F, -2.F, 2.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -6.F, -2.F, 4.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -4.F, -2.F, 2.F });
+        }
+
+        //
+        plank = buildWoodenPier01Planks();
+
+        {
+            cref<math::Transform> transform { plank->getWorldTransform() };
+            const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -4.F, -2.F, 4.F });
+        }
+    }
 }

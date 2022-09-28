@@ -1,8 +1,11 @@
 #pragma once
 
 #include <atomic>
+#include <mutex>
+#include <memory>
 
-#include "../stdafx.h"
+#include "../__macro.hpp"
+#include "../Wrapper.hpp"
 
 namespace ember::concurrent {
 

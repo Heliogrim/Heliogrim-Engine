@@ -252,15 +252,29 @@ void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mr
 
         info.waitSemaphoreCount = 1ui32;
         info.pWaitSemaphores = &renderPass_->lastSignals()[i - 1ui32];
-        vk::PipelineStageFlags waitStage { vk::PipelineStageFlagBits::eColorAttachmentOutput };
-        info.pWaitDstStageMask = &waitStage;
 
         info.pCommandBuffers = &batch_.buffers()[i].vkCommandBuffer();
 
         info.signalSemaphoreCount = 1ui32;
         info.pSignalSemaphores = &renderPass_->lastSignals()[i];
 
-        [[maybe_unused]] auto res { queue->vkQueue().submit(1ui32, &info, vk::Fence {}) };
+        if (batch_.buffers()[i]._pipelineBindPoint == vk::PipelineBindPoint::eGraphics) [[likely]]
+        {
+            vk::PipelineStageFlags waitStage { vk::PipelineStageFlagBits::eColorAttachmentOutput };
+            info.pWaitDstStageMask = &waitStage;
+
+            [[maybe_unused]] auto res { queue->vkQueue().submit(1ui32, &info, vk::Fence {}) };
+
+        } else if (batch_.buffers()[i]._pipelineBindPoint == vk::PipelineBindPoint::eCompute) {
+
+            vk::PipelineStageFlags waitStage { vk::PipelineStageFlagBits::eAllCommands };
+            info.pWaitDstStageMask = &waitStage;
+
+            [[maybe_unused]] auto res { _device->computeQueue()->vkQueue().submit(1ui32, &info, vk::Fence {}) };
+
+        } else {
+            throw _STD runtime_error("Unsupported bind point.");
+        }
     }
 
     // Last Enforced

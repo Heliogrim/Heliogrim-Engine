@@ -1,6 +1,11 @@
 #pragma once
 
-#include <Engine.Common/stdafx.h>
+// #define VULKAN_HPP_DISABLE_ENHANCED_MODE
+// #define VULKAN_HPP_NO_CONSTRUCTORS
+// #define VULKAN_HPP_NO_SETTERS
+// #define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS
+#define VULKAN_HPP_NO_SPACESHIP_OPERATOR
+#include <vulkan/vulkan.hpp>
 
 namespace ember::engine::gfx {
     // TODO: Refactor / Move to other location

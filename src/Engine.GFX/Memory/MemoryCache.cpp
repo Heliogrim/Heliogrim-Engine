@@ -1,5 +1,7 @@
 ﻿#include "MemoryCache.hpp"
 
+#include <Engine.Common/Make.hpp>
+
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 #include "MemoryPool.hpp"

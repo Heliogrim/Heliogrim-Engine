@@ -11,11 +11,21 @@
 #include <Engine.GFX/Renderer/RenderStagePass.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
 
+#include <Engine.GFX/Rev/Texture/RevVirtualMarkerTexture.hpp>
+
 #include "__macro.hpp"
 
 using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
 using namespace ember;
+
+#pragma region Global Shared Marker
+/**/
+
+wptr<::ember::engine::gfx::RevVirtualMarkerTexture> globalMarkerTexture {};
+
+/**/
+#pragma endregion
 
 RevDepthSharedNode::RevDepthSharedNode() :
     RenderStageNode(),
@@ -70,12 +80,25 @@ bool RevDepthSharedNode::allocate(const ptr<HORenderPass> renderPass_) {
         vk::SharingMode::eExclusive
     });
 
+    auto marker = factory->build({
+        buffer.extent(),
+        REV_EARLY_STREAM_MARKER_FORMAT,
+        1ui32,
+        TextureType::e2d,
+        vk::ImageAspectFlagBits::eColor,
+        vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
+        vk::MemoryPropertyFlagBits::eDeviceLocal,
+        vk::SharingMode::eExclusive
+    });
+
     factory->buildView(depth);
+    factory->buildView(marker);
 
     /**
      * Create Framebuffer :: Attach
      */
     buffer.add({ _STD move(depth) });
+    buffer.add({ _STD move(marker) });
 
     /**
      *
@@ -110,16 +133,37 @@ bool RevDepthSharedNode::allocate(const ptr<HORenderPass> renderPass_) {
      */
     postProcessAllocated(renderPass_);
 
+    /**/
+    auto markerTexture { globalMarkerTexture.lock() };
+    if (!markerTexture) {
+        markerTexture = make_sptr<::ember::engine::gfx::RevVirtualMarkerTexture>();
+        markerTexture->setup();
+
+        globalMarkerTexture = markerTexture;
+    }
+    /**/
+
+    renderPass_->state()->data.insert_or_assign("RevDepthStage::MarkerTexture"sv, markerTexture);
+
     //
     return true;
 }
 
 bool RevDepthSharedNode::free(const ptr<HORenderPass> renderPass_) {
 
+    auto it { renderPass_->state()->data.find("RevDepthStage::MarkerTexture"sv) };
+    if (it != renderPass_->state()->data.end()) {
+        sptr<::ember::engine::gfx::RevVirtualMarkerTexture> markerTexture {
+            _STD static_pointer_cast<::ember::engine::gfx::RevVirtualMarkerTexture, void>(it->second)
+        };
+
+        renderPass_->state()->data.erase(it);
+    }
+
     /**
      *
      */
-    auto it { renderPass_->state()->data.find("RevDepthStage::Framebuffer"sv) };
+    it = renderPass_->state()->data.find("RevDepthStage::Framebuffer"sv);
     if (it != renderPass_->state()->data.end()) {
 
         sptr<Framebuffer> buffer {
@@ -266,6 +310,18 @@ void RevDepthSharedNode::setupLORenderPass() {
         vk::ImageLayout::eDepthStencilAttachmentOptimal
     });
 
+    _loRenderPass->set(1, vk::AttachmentDescription {
+        vk::AttachmentDescriptionFlags(),
+        api::vkTranslateFormat(REV_EARLY_STREAM_MARKER_FORMAT),
+        vk::SampleCountFlagBits::e1,
+        vk::AttachmentLoadOp::eClear,
+        vk::AttachmentStoreOp::eStore,
+        vk::AttachmentLoadOp::eDontCare,
+        vk::AttachmentStoreOp::eDontCare,
+        vk::ImageLayout::eUndefined,
+        vk::ImageLayout::eShaderReadOnlyOptimal
+    });
+
     /**
      *
      */
@@ -296,7 +352,7 @@ void RevDepthSharedNode::postProcessAllocated(const ptr<HORenderPass> renderPass
 
         auto& attachment { *entry.unwrapped() };
 
-        if (isDepthFormat(attachment.format()) || isStencilFormat(attachment.format())) {
+        if (!isDepthFormat(attachment.format()) && !isStencilFormat(attachment.format())) {
             continue;
         }
 

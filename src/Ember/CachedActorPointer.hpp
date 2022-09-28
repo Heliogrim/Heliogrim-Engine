@@ -1,8 +1,7 @@
 #pragma once
 
 #include <Engine.ACS/Traits.hpp>
-
-#include "Inbuilt.hpp"
+#include <Engine.Common/Wrapper.hpp>
 
 namespace ember {
 

@@ -317,12 +317,11 @@ class bucket_entry : public bucket_entry_hash<StoreHash> {
                 "std::numeric_limits<distance_type>::max() - 1.");
 
  private:
-  using storage = typename std::aligned_storage<sizeof(value_type),
-                                                alignof(value_type)>::type;
-
   distance_type m_dist_from_ideal_bucket;
   bool m_last_bucket;
-  storage m_value;
+  //using storage = typename std::aligned_storage<sizeof(value_type), alignof(value_type)>::type;
+  //storage m_value;
+  alignas(value_type) std::byte m_value[sizeof(value_type)];
 };
 
 /**

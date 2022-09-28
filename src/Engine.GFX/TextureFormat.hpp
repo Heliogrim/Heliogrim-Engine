@@ -7,6 +7,7 @@ namespace ember::engine::gfx {
     enum class TextureFormat {
         eUndefined = 0x0,
 
+        //
         eR8Unorm,
         eR8G8Unorm,
         eR8G8B8Unorm,
@@ -21,16 +22,17 @@ namespace ember::engine::gfx {
         eR16G16B16Unorm,
         eR16G16B16A16Unorm,
 
-        eR32Unorm,
+        eR32Unorm [[deprecated]],
         eR32G32Unorm,
         eR32G32B32Unorm,
         eR32G32B32A32Unorm,
 
-        eR64Unorm,
+        eR64Unorm [[deprecated]],
         eR64G64Unorm,
         eR64G64B64Unorm,
         eR64G64B64A64Unorm,
 
+        //
         eR16Sfloat,
         eR32Sfloat,
         eR64Sfloat,
@@ -41,12 +43,18 @@ namespace ember::engine::gfx {
         eR16G16B16A16Sfloat,
         eR32G32B32A32Sfloat,
 
+        //
         eD16Unorm,
         eD32Sfloat,
         eS8Uint,
         eD16UnormS8Uint,
         eD24UnormS8Uint,
-        eD32SfloatS8Uint
+        eD32SfloatS8Uint,
+
+        //
+        eR16Uint,
+        eR16G16Uint,
+        eR32Uint
     };
 
     /**
