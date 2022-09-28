@@ -47,6 +47,8 @@ namespace ember::engine::gfx {
     public:
         [[nodiscard]] const non_owning_rptr<const VirtualTexture> owner() const noexcept;
 
+        [[nodiscard]] const non_owning_rptr<VirtualTexture> owner() noexcept;
+
     private:
         Vector<non_owning_rptr<VirtualTexturePage>> _pages;
 

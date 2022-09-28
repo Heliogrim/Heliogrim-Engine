@@ -9,7 +9,7 @@ namespace ember::engine::gfx::render {
 
     struct HORenderPassCreateData {
 
-        ptr<Texture> target;
+        sptr<Texture> target;
 
         ptr<scene::IRenderScene> scene = nullptr;
 

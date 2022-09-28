@@ -296,6 +296,17 @@ void RevVirtualMarkerTexture::destroy() {
     _extent = {};
 }
 
+math::uivec3 RevVirtualMarkerTexture::tileExtent(const u32 level_) const noexcept {
+
+    if (level_ < 6ui32) {
+        return _tileExtent;
+    }
+
+    auto ext { math::uivec3 { _extent } >> level_ };
+    ext.z = 1ui32;
+    return ext;
+}
+
 u32 RevVirtualMarkerTexture::tileCount() const noexcept {
 
     u32 tiles { 0ui32 };

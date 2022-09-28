@@ -11,8 +11,8 @@ texture::Stick01Diffuse::Stick01Diffuse() :
         texture::Stick01Diffuse::auto_guid(),
         image::Stick01Diffuse::auto_guid(),
         {},
-        { 4096ui32, 4096ui32, 1ui32 },
+        { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Unorm,
-        12ui32,
+        14ui32,
         engine::gfx::TextureType::e2d
     ) { }

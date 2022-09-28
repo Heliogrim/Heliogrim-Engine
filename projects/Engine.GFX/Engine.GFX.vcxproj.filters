@@ -193,6 +193,12 @@
     <Filter Include="Quelldateien\Rev\Texture">
       <UniqueIdentifier>{4f009a1e-8670-4bc7-8333-8cadbbe982b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Rev\Renderer\State">
+      <UniqueIdentifier>{c9fd0f95-e874-4338-b668-3a4c0fd866d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Rev\Renderer\State">
+      <UniqueIdentifier>{b90e7e19-c2b7-4f51-9387-ad6a2fce8130}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX\Inc.hpp">
@@ -773,6 +779,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\VkComputePipeline.hpp">
       <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\State\RevSfMtt.hpp">
+      <Filter>Headerdateien\Rev\Renderer\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\State\__fwd.hpp">
+      <Filter>Headerdateien\Rev\Renderer\State</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

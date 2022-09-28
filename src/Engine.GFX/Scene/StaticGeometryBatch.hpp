@@ -18,7 +18,10 @@ namespace ember::engine::gfx {
         ptr<ModelBatch> clone() override;
 
         ptr<CachedDiscreteBinding> cdb = nullptr;
+        ptr<CachedDiscreteBinding> mttCdb = nullptr;
+
         Buffer instance { nullptr, nullptr, nullptr, 0ui64, vk::BufferUsageFlags {} };
+        Buffer mtt { nullptr, nullptr, nullptr, 0ui64, vk::BufferUsageFlags {} };
     };
 
 }

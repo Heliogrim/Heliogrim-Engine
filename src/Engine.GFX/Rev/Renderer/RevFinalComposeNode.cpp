@@ -101,12 +101,12 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Create Framebuffer :: Attach
      */
-    auto& target { *renderPass_->target() };
-    if (!target.vkView()) {
-        factory->buildView(target);
+    auto target { renderPass_->target() };
+    if (!target->vkView()) {
+        factory->buildView(*target);
     }
 
-    framebuffer.add({ _STD move(target) });
+    framebuffer.add({ target });
 
     /**
      *

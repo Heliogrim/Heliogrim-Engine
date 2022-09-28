@@ -8,7 +8,10 @@ layout(early_fragment_tests) in;
 
 /*
 */
-layout (set = 2, binding = 3) uniform usampler2D mapped_albedo;
+layout (set = 2, binding = 3) uniform usampler2D mapped_marker;
+layout (set = 3, binding = 4) buffer DepthPassMaterialMeta {
+	uint32_t mte[];
+} dpmm;
 /*
 */
 
@@ -17,11 +20,11 @@ layout (location = 0) in vec3 fragUvm;
 layout (location = 0) out uint32_t out_color;
 
 void main() {
-	//out_color = texture(mapped_albedo, fragUvm.st).r;
 
 	uint32_t val = 0;
-	val |= 1 << 16;
-	val |= texture(mapped_albedo, fragUvm.st).r;
+	//val |= 1 << 16;
+	val |= dpmm.mte[0] << 16;
+	val |= texture(mapped_marker, fragUvm.st).r;
 	/*
 	*/
 	/*

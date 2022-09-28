@@ -117,7 +117,7 @@ bool HORenderPass::use(const ptr<Camera> camera_) noexcept {
     return true;
 }
 
-const ptr<Texture> HORenderPass::target() const noexcept {
+cref<sptr<Texture>> HORenderPass::target() const noexcept {
     return _target;
 }
 

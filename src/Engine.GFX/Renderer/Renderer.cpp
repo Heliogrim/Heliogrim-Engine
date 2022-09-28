@@ -268,6 +268,7 @@ void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mr
         } else if (batch_.buffers()[i]._pipelineBindPoint == vk::PipelineBindPoint::eCompute) {
 
             vk::PipelineStageFlags waitStage { vk::PipelineStageFlagBits::eAllCommands };
+            //vk::PipelineStageFlags waitStage { vk::PipelineStageFlagBits::eComputeShader };
             info.pWaitDstStageMask = &waitStage;
 
             [[maybe_unused]] auto res { _device->computeQueue()->vkQueue().submit(1ui32, &info, vk::Fence {}) };

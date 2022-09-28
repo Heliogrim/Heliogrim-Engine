@@ -70,10 +70,10 @@ namespace ember::engine::gfx::render {
         bool use(const ptr<Camera> camera_) noexcept;
 
     private:
-        ptr<Texture> _target;
+        sptr<Texture> _target;
 
     public:
-        [[nodiscard]] const ptr<Texture> target() const noexcept;
+        [[nodiscard]] cref<sptr<Texture>> target() const noexcept;
 
     private:
         non_owning_rptr<Renderer> _renderer;

@@ -5,9 +5,12 @@
 #extension GL_EXT_shader_explicit_arithmetic_types_int16 : enable
 #extension GL_EXT_shader_explicit_arithmetic_types_float32 : enable
 
+layout (local_size_x = 256) in;
+
 /*
 in uvec3 gl_NumWorkGroups;
 in uvec3 gl_WorkGroupID;
+in uvec3 gl_WorkGroupSize;
 in uvec3 gl_LocalInvocationID;
 in uvec3 gl_GlobalInvocationID;
 in uint gl_LocalInvocationIndex;
@@ -109,7 +112,8 @@ void markerFor(ivec2 pixel) {
 	 */
 	csfm.rows[
 		/* uint16_t(indMat) */
-		uint32_t(indMat)
+		//uint32_t(indMat)
+		uint32_t(matId)
 	].body.tme[
 		offset /* (div) */ / 32
 	] |= (1 << offset /* (modulo) */ % 32);
@@ -124,8 +128,14 @@ void markerFor(ivec2 pixel) {
 
 void main() {
 
-	markerFor(ivec2(320, 460));
-	markerFor(ivec2(960, 460));
+	//markerFor(ivec2(320, 460));
 
-	markerFor(ivec2(640, 680));
+	uint32_t globalIndex = gl_LocalInvocationIndex + gl_WorkGroupID.x * gl_WorkGroupSize.x;
+
+	markerFor(
+		ivec2(
+			globalIndex /* (modulo) */ % 1280,
+			min(globalIndex /* (div) */ / 1280, 1279)
+		)
+	);
 }

@@ -80,5 +80,5 @@ void RevTextureLoader::streamUnload(const ptr<res::partial::Streamable<res::Reso
     /**
      *
      */
-    TextureLoader::partialUnload(options_, texture->_payload.view.get());
+    //TextureLoader::partialUnload(options_, texture->_payload.view.get());
 }

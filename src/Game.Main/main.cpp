@@ -711,6 +711,12 @@ void buildTestScene() {
 
     buildGlobalPlane();
 
+
+    auto plank = buildWoodenPier01Planks();
+    cref<math::Transform> transform { plank->getWorldTransform() };
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -1.F, -5.F, -1.F });
+    const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 2.5F });
+
     return;
 
     [[maybe_unused]] auto* rock01 = buildRock01();

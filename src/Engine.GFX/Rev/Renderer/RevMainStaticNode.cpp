@@ -36,6 +36,7 @@
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include <Engine.GFX/Rev/Texture/RevVirtualMarkerTexture.hpp>
 #include "Engine.Reflect/EmberReflect.hpp"
+#include "State/RevSfMtt.hpp"
 
 using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
@@ -543,6 +544,11 @@ void RevMainStaticNode::invoke(
                         _STD static_pointer_cast<Buffer, void>(it->second)
                     };
 
+                    /**/
+                    const auto mttEntry { data.at("RevEarlySFNode::SfMtt"sv) };
+                    auto& mtt { *_STD static_pointer_cast<render::RevSfMtt, void>(mttEntry) };
+                    /**/
+
                     csfm->mapAligned();
                     auto* mapped { csfm->memory->mapping };
                     auto* casted { static_cast<ptr<u32>>(mapped) };
@@ -566,6 +572,7 @@ void RevMainStaticNode::invoke(
 
                     /**/
 
+                    #if FALSE
                     auto indices {
                         RevVirtualMarkerTexture::tileBitToIndex(
                             static_cast<const ptr<const u32>>(csfm->memory->mapping)
@@ -585,8 +592,45 @@ void RevMainStaticNode::invoke(
                             .layer = view->baseLayer(),
                             .mip = static_cast<u32>(mip),
                             .offset = _STD move(offset),
-                            .extent = math::uivec3 { 128ui32, 128ui32, 1ui32 }
+                            .extent = markerTexture->tileExtent(mip)
                         });
+                    }
+                    #endif
+
+                    /**/
+                    for (const auto& material : model->overrideMaterials()) {
+
+                        /**
+                         * Get the csfm data offset by forward querying the material's dynamic index
+                         */
+                        const auto dynIdx { mtt.forward.at(material) };
+                        const auto offset { dynIdx * 171ui32 };
+
+                        /**
+                         *
+                         */
+                        const auto indices {
+                            RevVirtualMarkerTexture::tileBitToIndex(
+                                &static_cast<const ptr<const u32>>(csfm->memory->mapping)[offset]
+                            )
+                        };
+
+                        csfm->unmap();
+
+                        auto* diff { material->_payload.diffuse };
+                        auto& view { diff->_payload.view };
+
+                        for (auto&& sfi : indices) {
+
+                            auto [mip, offset] = markerTexture->tileFromIndex(sfi);
+
+                            state->cacheCtrl.markAsUsed(diff, {
+                                .layer = view->baseLayer(),
+                                .mip = static_cast<u32>(mip),
+                                .offset = _STD move(offset),
+                                .extent = markerTexture->tileExtent(mip)
+                            });
+                        }
                     }
                 }
             }

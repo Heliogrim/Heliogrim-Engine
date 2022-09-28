@@ -366,6 +366,8 @@
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevMainStaticNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevProbeStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\RevRenderer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\State\RevSfMtt.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\State\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Renderer\__macro.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Rev\Texture\RevVirtualMarkerTexture.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\GeometryModel.hpp" />

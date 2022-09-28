@@ -26,6 +26,10 @@ const non_owning_rptr<const VirtualTexture> VirtualTextureView::owner() const no
     return _owner;
 }
 
+const non_owning_rptr<VirtualTexture> VirtualTextureView::owner() noexcept {
+    return _owner;
+}
+
 u32 VirtualTextureView::baseLayer() const noexcept {
     return _baseLayer;
 }

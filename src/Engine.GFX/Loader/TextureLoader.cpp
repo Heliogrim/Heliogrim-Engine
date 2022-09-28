@@ -836,7 +836,7 @@ uptr<VirtualTextureView> TextureLoader::loadTo(
         // Warning: Temporary
         for (auto* page : dst->_pages) {
             if (page->memory()->state() != VirtualMemoryPageState::eLoaded) {
-                page->load();
+                dst->owner()->load(page);
             }
         }
     }
@@ -956,6 +956,67 @@ void TextureLoader::partialLoadTo(
     const ptr<const ember::engine::res::StreamLoaderOptions<ember::engine::assets::Texture>> options_,
     const ptr<VirtualTextureView> dst_
 ) const {
+
+    /**
+     * Check for memory changes to prevent excessive file loading
+     */
+    #pragma region Preserve Memory Changes
+
+    // Warning: Temporary
+    bool changedMemory { false };
+    for (auto* page : dst_->_pages) {
+
+        if (page->layer() != options_->layer) {
+            continue;
+        }
+
+        bool effected { false };
+        if (page->flags() & VirtualTexturePageFlag::eOpaqueTail) {
+            effected = page->mipLevel() <= options_->mip;
+
+        } else {
+
+            if (page->mipLevel() != options_->mip) {
+                continue;
+            }
+
+            const auto minPage { page->offset() };
+            const auto maxPage { page->offset() + page->extent() };
+
+            const auto minDst { options_->offset };
+            const auto maxDst { options_->offset + options_->extent };
+
+            const auto pX { minPage.x >= maxDst.x || maxPage.x <= minDst.x };
+            const auto pY { minPage.y >= maxDst.y || maxPage.y <= minDst.y };
+            const auto pZ { minPage.z >= maxDst.z || maxPage.z <= minDst.z };
+
+            effected = !(pX || pY || pZ);
+        }
+
+        if (effected && page->memory()->state() != VirtualMemoryPageState::eLoaded) {
+            dst_->owner()->load(page);
+            changedMemory = true;
+        }
+    }
+
+    // TODO: !!! Move dirty flagging and update tracking into virtual texture itself !!!
+    if (changedMemory) {
+        const auto* tex { dst_->owner() };
+        const_cast<VirtualTexture*>(tex)->updateBindingData();
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
+        const_cast<VirtualTexture*>(tex)->enqueueBindingSync(_cacheCtrl->cache()->device()->transferQueue());
+        #pragma warning(pop)
+    }
+
+    #pragma endregion
+
+    /**
+     *
+     */
+    if (!changedMemory && not (options_->mip >= 7ui32)) {
+        return;
+    }
 
     /**
      *
@@ -1223,48 +1284,6 @@ void TextureLoader::partialLoadTo(
         )
     });
 
-    // Warning: Temporary
-    for (auto* page : dst_->_pages) {
-
-        if (page->layer() != options_->layer) {
-            continue;
-        }
-
-        bool effected { false };
-        if (page->flags() & VirtualTexturePageFlag::eOpaqueTail) {
-            effected = page->mipLevel() <= options_->mip;
-
-        } else {
-
-            if (page->mipLevel() != options_->mip) {
-                continue;
-            }
-
-            const auto minPage { page->offset() };
-            const auto maxPage { page->offset() + page->extent() };
-
-            const auto minDst { options_->offset };
-            const auto maxDst { options_->offset + options_->extent };
-
-            const auto pX { minPage.x >= maxDst.x || maxPage.x <= minDst.x };
-            const auto pY { minPage.y >= maxDst.y || maxPage.y <= minDst.y };
-            const auto pZ { minPage.z >= maxDst.z || maxPage.z <= minDst.z };
-
-            effected = !(pX || pY || pZ);
-        }
-
-        if (effected && page->memory()->state() != VirtualMemoryPageState::eLoaded) {
-            page->load();
-        }
-    }
-
-    const auto* tex { dst_->owner() };
-    const_cast<VirtualTexture*>(tex)->updateBindingData();
-    #pragma warning(push)
-    #pragma warning(disable: 4996)
-    const_cast<VirtualTexture*>(tex)->enqueueBindingSync(_cacheCtrl->cache()->device()->graphicsQueue());
-    #pragma warning(pop)
-
     /**
      * Copy Data to Image
      */
@@ -1355,6 +1374,7 @@ void TextureLoader::partialUnload(
 ) const {
 
     // Warning: Temporary
+    bool changedMemory { false };
     for (auto* page : dst_->_pages) {
 
         if (page->layer() != options_->layer) {
@@ -1385,16 +1405,22 @@ void TextureLoader::partialUnload(
         }
 
         if (effected && page->memory()->state() == VirtualMemoryPageState::eLoaded) {
-            page->unload();
+            dst_->owner()->unload(page);
+            changedMemory = true;
         }
     }
 
-    const auto* tex { dst_->owner() };
-    const_cast<VirtualTexture*>(tex)->updateBindingData();
-    #pragma warning(push)
-    #pragma warning(disable: 4996)
-    const_cast<VirtualTexture*>(tex)->enqueueBindingSync(_cacheCtrl->cache()->device()->graphicsQueue());
-    #pragma warning(pop)
+    /**
+     *
+     */
+    if (changedMemory) {
+        const auto* tex { dst_->owner() };
+        const_cast<VirtualTexture*>(tex)->updateBindingData();
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
+        const_cast<VirtualTexture*>(tex)->enqueueBindingSync(_cacheCtrl->cache()->device()->transferQueue());
+        #pragma warning(pop)
+    }
 }
 
 Texture TextureLoader::__tmp__load(const Url& url_) {
