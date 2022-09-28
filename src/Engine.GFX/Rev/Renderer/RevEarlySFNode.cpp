@@ -14,6 +14,8 @@
 
 #include <Engine.GFX/Rev/Texture/RevVirtualMarkerTexture.hpp>
 
+#include "State/RevSfMtt.hpp"
+
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
@@ -134,6 +136,14 @@ bool RevEarlySFNode::allocate(const ptr<HORenderPass> renderPass_) {
         vk::SamplerMipmapMode::eNearest,
         vk::Filter::eNearest
     );
+
+    // Warning: Temporary Solution to test
+    {
+        /**
+         * Store to state
+         */
+        state->data.insert_or_assign("RevEarlySFNode::SfMtt"sv, _STD make_shared<RevSfMtt>());
+    }
 
     // Warning: Temporary Solution to test
     {
@@ -317,6 +327,20 @@ bool RevEarlySFNode::free(const ptr<HORenderPass> renderPass_) {
     }
 
     /**
+     * Free Tables
+     */
+    it = state->data.find("RevEarlySFNode::SfMtt"sv);
+    if (it != state->data.end()) {
+
+        auto& mtt { *_STD static_pointer_cast<RevSfMtt, void>(it->second) };
+
+        /**
+         *
+         */
+        state->data.erase(it);
+    }
+
+    /**
      * Free Buffers
      */
     it = state->data.find("RevEarlySFNode::MttBuffer"sv);
@@ -413,6 +437,18 @@ void RevEarlySFNode::before(const non_owning_rptr<HORenderPass> renderPass_,
     cmd.bindPipeline(_pipeline.get());
 
     {
+        const auto mttEntry { data.at("RevEarlySFNode::SfMtt"sv) };
+        auto& mtt { *_STD static_pointer_cast<RevSfMtt, void>(mttEntry) };
+
+        assert(mtt.mti <= 8ui16);
+
+        const auto mttBufferEntry { data.at("RevEarlySFNode::MttBuffer"sv) };
+        auto& mttBuffer { *_STD static_pointer_cast<Buffer, void>(mttBufferEntry) };
+
+        //mttBuffer.write<u32>();
+    }
+
+    {
         auto it = data.find("RevEarlySFNode::CsfmBuffer"sv);
         if (it != data.end()) {
 
@@ -478,9 +514,14 @@ void RevEarlySFNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     /**
      * Invoke Computing
      */
-    constexpr auto grpX { 1ui64 };
-    constexpr auto grpY { 1ui64 };
-    constexpr auto grpZ { 1ui64 };
+    constexpr auto workGroupSize { 256ui32 };
+
+    const auto extent { renderPass_->target()->extent() };
+    const auto payload { extent.x * extent.y * extent.z };
+
+    const auto grpX { (payload / workGroupSize) + 1ui32 };
+    constexpr auto grpY { 1ui32 };
+    constexpr auto grpZ { 1ui32 };
 
     cmd.vkCommandBuffer().dispatch(grpX, grpY, grpZ);
 }

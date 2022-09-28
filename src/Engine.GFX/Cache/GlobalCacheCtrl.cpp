@@ -164,16 +164,20 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, mref<CacheTextureSu
     }
     #endif
 
-    // TODO: Check whether we want to erase subjects with no left marks
-    if (left <= 0ui16) {
-        ctrls.erase(existing);
-    }
-
     /**
      * Dispatch unloading of texture (stream unloading if possible/available)
      */
     if (left <= 0ui16) {
         dispatchUnload(resource_, subresource_);
+    }
+
+    // TODO: Check whether we want to erase subjects with no left marks
+    if (left <= 0ui16) {
+
+        const auto* subject { *existing };
+        delete subject;
+
+        ctrls.erase(existing);
     }
 }
 

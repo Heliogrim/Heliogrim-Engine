@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Types.hpp>
+#include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 
 #include "Texture.hpp"
@@ -178,12 +179,23 @@ namespace ember::engine::gfx {
         vk::ImageView _vkImageView;
 
     private:
+        CompactSet<ptr<VirtualTexturePage>> _changedPages;
+        CompactSet<ptr<VirtualTexturePage>> _changedOpaquePages;
+
+    public:
+        bool load(non_owning_rptr<VirtualTexturePage> page_);
+
+        bool unload(non_owning_rptr<VirtualTexturePage> page_);
+
+    private:
         Vector<vk::SparseImageMemoryBind> _bindings;
         Vector<vk::SparseMemoryBind> _opaqueBindings;
         vk::SparseImageMemoryBindInfo _bindData;
         vk::SparseImageOpaqueMemoryBindInfo _opaqueBindData;
 
     public:
+        void unsafe_scan_changes();
+
         void updateBindingData();
 
     public:

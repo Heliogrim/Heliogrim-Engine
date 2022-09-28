@@ -9,8 +9,17 @@ StaticGeometryBatch::~StaticGeometryBatch() {
         cdb = nullptr;
     }
 
+    if (mttCdb) {
+        delete mttCdb;
+        mttCdb = nullptr;
+    }
+
     if (instance.buffer || instance.memory) {
         instance.destroy();
+    }
+
+    if (mtt.buffer || mtt.memory) {
+        mtt.destroy();
     }
 }
 

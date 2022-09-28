@@ -12,6 +12,7 @@
 #include "../Resource/StaticGeometryResource.hpp"
 #include "Engine.Assets/Types/GfxMaterial.hpp"
 #include "../Buffer/Buffer.hpp"
+#include "Engine.GFX/Rev/Renderer/State/RevSfMtt.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -97,6 +98,7 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
     assert(result->getClass()->isExactType<StaticGeometryBatch>());
     #endif
 
+    #pragma region Instance Data
     // TODO: Temporary
     if (!batch->instance.memory) [[unlikely]]
     {
@@ -132,6 +134,53 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
         const auto mm { trans * rotation * scale };
         batch->instance.write<math::mat4>(&mm, 1ui32);
     }
+
+    #pragma endregion
+
+    #pragma region Material Translation Table
+
+    // TODO: Temporary
+    if (!batch->mtt.memory) [[unlikely]]
+    {
+        auto& buffer { batch->mtt };
+        buffer.device = state_->device->vkDevice();
+        buffer.size = static_cast<u64>(sizeof(u32) * _overrideMaterials.size());
+        buffer.usageFlags = vk::BufferUsageFlagBits::eStorageBuffer;
+
+        const vk::BufferCreateInfo ci { {}, buffer.size, buffer.usageFlags, vk::SharingMode::eExclusive, 0, nullptr };
+        buffer.buffer = state_->device->vkDevice().createBuffer(ci);
+        assert(buffer.buffer);
+
+        const auto result {
+            memory::allocate(&state_->alloc, state_->device, buffer.buffer, MemoryProperty::eHostVisible,
+                buffer.memory)
+        };// TODO: Handle failed allocation
+        buffer.bind();
+    }
+
+    if (batch->mtt.memory) {
+        /**
+         * Push Material Translation
+         */
+
+        const auto& data { state_->data };
+        const auto mttEntry { data.at("RevEarlySFNode::SfMtt"sv) };
+        auto& mtt { *_STD static_pointer_cast<render::RevSfMtt, void>(mttEntry) };
+
+        const auto dataSize { sizeof(u32) * _overrideMaterials.size() };
+        //batch->mtt.mapAligned(dataSize);
+        batch->mtt.map(dataSize);
+
+        for (u32 i { 0ui32 }; i < _overrideMaterials.size(); ++i) {
+            const auto te { mtt.insert(_overrideMaterials[i]) };
+            static_cast<ptr<u32>>(batch->mtt.memory->mapping)[i] = te;
+        }
+
+        //batch->mtt.flushAligned(dataSize);
+        batch->mtt.unmap();
+    }
+
+    #pragma endregion
 
     /**
      * Bind Data

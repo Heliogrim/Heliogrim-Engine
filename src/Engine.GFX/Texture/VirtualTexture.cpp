@@ -467,38 +467,74 @@ cref<vk::Image> VirtualTexture::vkImage() const noexcept {
     return _vkImage;
 }
 
-void VirtualTexture::updateBindingData() {
+bool VirtualTexture::load(non_owning_rptr<VirtualTexturePage> page_) {
 
-    cref<Vector<ptr<VirtualTexturePage>>> updates { _pages };
-    cref<Vector<ptr<VirtualTexturePage>>> updates2 { _opaquePages };
+    /**
+     * Track Changes
+     */
+    if (page_->flags() & VirtualTexturePageFlag::eOpaqueTail) {
+        _changedOpaquePages.insert(page_);
+    } else {
+        _changedPages.insert(page_);
+    }
+
+    /**
+     *
+     */
+    return page_->load();
+}
+
+bool VirtualTexture::unload(non_owning_rptr<VirtualTexturePage> page_) {
+
+    /**
+     * Track Changes
+     */
+    if (page_->flags() & VirtualTexturePageFlag::eOpaqueTail) {
+        _changedOpaquePages.insert(page_);
+    } else {
+        _changedPages.insert(page_);
+    }
+
+    /**
+     *
+     */
+    return page_->unload();
+}
+
+void VirtualTexture::unsafe_scan_changes() {
+
+    /**
+     *
+     */
+    _changedPages.clear();
+    _changedOpaquePages.clear();
+
+    /**
+     *
+     */
+    _changedPages.insert(_pages.begin(), _pages.end());
+    _changedOpaquePages.insert(_opaquePages.begin(), _opaquePages.end());
+}
+
+void VirtualTexture::updateBindingData() {
 
     _opaqueBindings.clear();
     _bindings.clear();
 
-    for (const auto& page : updates) {
+    for (const auto& page : _changedPages) {
 
         // TODO: Check residential `(page->residential())`
         // TODO: Check changed memory state `(page->memoryChanged())`
 
-        if (page->flags() & VirtualTexturePageFlag::eOpaqueTail) {
-            _opaqueBindings.push_back(page->vkSparseMemoryBind());
-
-        } else {
-            _bindings.push_back(page->vkSparseImageMemoryBind());
-        }
+        _bindings.push_back(page->vkSparseImageMemoryBind());
     }
 
-    for (const auto& page : updates2) {
+    for (const auto& page : _changedOpaquePages) {
 
         // TODO: Check residential `(page->residential())`
         // TODO: Check changed memory state `(page->memoryChanged())`
 
-        if (page->flags() & VirtualTexturePageFlag::eOpaqueTail) {
-            _opaqueBindings.push_back(page->vkSparseMemoryBind());
-
-        } else {
-            _bindings.push_back(page->vkSparseImageMemoryBind());
-        }
+        _opaqueBindings.push_back(page->vkSparseMemoryBind());
     }
 
     /**
@@ -515,6 +551,12 @@ void VirtualTexture::updateBindingData() {
         static_cast<u32>(_opaqueBindings.size()),
         _opaqueBindings.data()
     };
+
+    /**
+     *
+     */
+    _changedPages.clear();
+    _changedOpaquePages.clear();
 }
 
 void VirtualTexture::enqueueBindingSync(const ptr<CommandQueue> queue_) {
@@ -543,5 +585,7 @@ void VirtualTexture::enqueueBindingSync(const ptr<CommandQueue> queue_) {
     #endif
 
     res = queue_->device()->vkDevice().waitForFences(1ui32, &fence, VK_TRUE, UINT64_MAX);
+    queue_->device()->vkDevice().destroyFence(fence);
+
     assert(res == vk::Result::eSuccess);
 }

@@ -482,6 +482,7 @@ void RevDepthStaticNode::invoke(
 
     u32 sbdIdx { 0ui32 };
     ptr<const shader::ShaderBindingGroup> sbg { nullptr };
+
     for (; sbdIdx < _requiredBindingGroups.size(); ++sbdIdx) {
         const auto& entry { _requiredBindingGroups[sbdIdx] };
         if (entry.interval() == shader::BindingUpdateInterval::ePerInstance) {
@@ -497,6 +498,28 @@ void RevDepthStaticNode::invoke(
     auto* const batch { model_->batch(state) };
     auto* const casted { static_cast<const ptr<StaticGeometryBatch>>(batch) };
 
+    if (casted->mttCdb != nullptr) {
+        auto& dbg { casted->mttCdb->binding() };
+        cmd.bindDescriptor(3ui32, dbg.vkSet());
+
+    } else {
+        /**
+         * Acquire Descriptor for model data, push data and bind it
+         */
+        auto& cache { renderPass_->state()->bindingCache };
+        auto dbg { cache.allocate(_requiredBindingGroups[3ui32]) };
+
+        dbg.getById(4ui32).store(casted->mtt);
+
+        cmd.bindDescriptor(3ui32, dbg.vkSet());
+
+        if (casted->mttCdb == nullptr) {
+            casted->mttCdb = new CachedDiscreteBinding(_STD move(dbg));
+        } else {
+            casted->mttCdb->operator=(_STD move(dbg));
+        }
+    }
+
     if (casted->cdb != nullptr) {
         auto& dbg { casted->cdb->binding() };
         cmd.bindDescriptor(sbdIdx, dbg.vkSet());
@@ -509,6 +532,7 @@ void RevDepthStaticNode::invoke(
         auto dbg { cache.allocate(*sbg) };
 
         dbg.getById(2ui32).store(casted->instance);
+
         cmd.bindDescriptor(sbdIdx, dbg.vkSet());
 
         if (casted->cdb == nullptr) {
@@ -594,6 +618,13 @@ void RevDepthStaticNode::setupShader(cref<sptr<Device>> device_) {
         "streamMarker"
     };
 
+    shader::PrototypeBinding mtt {
+        shader::BindingType::eStorageBuffer,
+        4ui32,
+        shader::BindingUpdateInterval::eUndefined,
+        "staticDepthPassMtt"
+    };
+
     /**
      * Prepare Prototype Shader
      */
@@ -608,8 +639,8 @@ void RevDepthStaticNode::setupShader(cref<sptr<Device>> device_) {
 
     auto fragmentShaderCode { read_shader_file("resources/shader/depthpass_static.frag.spv") };
     fragmentPrototype.storeCode(fragmentShaderCode.data(), fragmentShaderCode.size());
-    fragmentPrototype.add(ubo);
     fragmentPrototype.add(marker);
+    fragmentPrototype.add(mtt);
 
     /**
      * Build Shader and Bindings

@@ -255,12 +255,6 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DefaultAlpha.cpp">
       <Filter>Quelldateien\Assets\Textures</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Planks.cpp">
-      <Filter>Quelldateien\Assets\Meshes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Poles.cpp">
-      <Filter>Quelldateien\Assets\Meshes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenPier01Poles.cpp">
       <Filter>Quelldateien\Assets\GfxMaterials</Filter>
     </ClCompile>
@@ -272,6 +266,72 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PlanksDiffuse.cpp">
       <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenBucket01.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenBucket02.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\WoodenBucket01Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\WoodenBucket01Metalness.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\WoodenBucket01Normal.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\WoodenBucket01Roughness.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Metalness.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Normal.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Roughness.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\WoodenBucket01.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\WoodenBucket02.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket01Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket01Normal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket01Roughness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket01Metalness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Metalness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Normal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Roughness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Planks.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Meshes\WoodenPier01Poles.cpp">
+      <Filter>Quelldateien\Assets\Meshes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -537,6 +597,66 @@
       <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenPier01PolesDiffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenBucket01.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\WoodenBucket02.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenBucket01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenBucket01Metalness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenBucket01Normal.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenBucket01Roughness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Metalness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Normal.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\WoodenBucket02Roughness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\WoodenBucket01.hpp">
+      <Filter>Headerdateien\Assets\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Meshes\WoodenBucket02.hpp">
+      <Filter>Headerdateien\Assets\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket01Normal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket01Roughness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket01Metalness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Metalness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Normal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\WoodenBucket02Roughness.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
   </ItemGroup>

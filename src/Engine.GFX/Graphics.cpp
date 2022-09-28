@@ -116,7 +116,7 @@ void Graphics::setup() {
 
     for (u32 swap { 0 }; swap < _swapchain->length(); ++swap) {
         _renderPasses.push_back(_renderer->allocate({
-            _swapchain->at(swap).get(),
+            _swapchain->at(swap),
             nullptr,
             _camera
         }));

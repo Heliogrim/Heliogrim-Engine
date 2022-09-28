@@ -25,6 +25,9 @@ namespace ember::engine::gfx {
         Vector<u32> _tilesPerLayer;
 
     public:
+        [[nodiscard]] math::uivec3 tileExtent(const u32 level_) const noexcept;
+
+    public:
         [[nodiscard]] u32 tileCount() const noexcept;
 
         [[nodiscard]] u32 tileCount(const u32 level_) const noexcept;
