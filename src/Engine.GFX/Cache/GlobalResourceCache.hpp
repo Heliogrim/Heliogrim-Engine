@@ -119,6 +119,7 @@ namespace ember::engine::gfx::cache {
         /**
          * Material Buffer
          */
+        Vector<_STD uint_fast16_t> _materialForward;
         Vector<uptr<VirtualBuffer>> _materialBuffer;
     };
 }

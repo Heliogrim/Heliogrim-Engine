@@ -40,10 +40,7 @@ using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-static Texture testAlbedo {};
-static Texture testNormal {};
-static Texture testRoughness {};
-static Texture testSpecular {};
+#define MATERIAL_DESCRIPTOR_INDEX 2
 
 RevMainStaticNode::RevMainStaticNode(const ptr<RevMainSharedNode> sharedNode_) :
     RenderStageNode(),
@@ -115,152 +112,6 @@ void RevMainStaticNode::setup(cref<sptr<Device>> device_) {
      *
      */
     _pipeline->setup();
-
-    // TODO:
-    if (!testAlbedo) {
-        RevTextureLoader loader { Session::get()->modules().graphics()->cacheCtrl() };
-        testAlbedo = loader.__tmp__load({ ""sv, R"(R:\\albedo.ktx)"sv });
-        testNormal = loader.__tmp__load({ ""sv, R"(R:\\normal.ktx)"sv });
-        testRoughness = loader.__tmp__load({ ""sv, R"(R:\\roughness.ktx)"sv });
-        testSpecular = loader.__tmp__load({ ""sv, R"(R:\\specular.ktx)"sv });
-
-        Vector<vk::ImageMemoryBarrier> imgBarriers {};
-        imgBarriers.push_back({
-            vk::AccessFlags {},
-            vk::AccessFlagBits::eShaderRead,
-            vk::ImageLayout::eTransferSrcOptimal,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            testAlbedo.buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                testAlbedo.mipLevels(),
-                0,
-                testAlbedo.layer()
-            }
-        });
-
-        imgBarriers.push_back({
-            vk::AccessFlags {},
-            vk::AccessFlagBits::eShaderRead,
-            vk::ImageLayout::eTransferSrcOptimal,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            testNormal.buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                testNormal.mipLevels(),
-                0,
-                testNormal.layer()
-            }
-        });
-
-        imgBarriers.push_back({
-            vk::AccessFlags {},
-            vk::AccessFlagBits::eShaderRead,
-            vk::ImageLayout::eTransferSrcOptimal,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            testRoughness.buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                testRoughness.mipLevels(),
-                0,
-                testRoughness.layer()
-            }
-        });
-
-        imgBarriers.push_back({
-            vk::AccessFlags {},
-            vk::AccessFlagBits::eShaderRead,
-            vk::ImageLayout::eTransferSrcOptimal,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            testSpecular.buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                testSpecular.mipLevels(),
-                0,
-                testSpecular.layer()
-            }
-        });
-
-        auto pool = _device->graphicsQueue()->pool();
-        pool->lck().acquire();
-        CommandBuffer iiCmd = pool->make();
-        iiCmd.begin();
-
-        /**
-         * Transform
-         */
-        iiCmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-            vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
-            0, nullptr,
-            0, nullptr,
-            static_cast<uint32_t>(imgBarriers.size()), imgBarriers.data()
-        );
-
-        iiCmd.end();
-        iiCmd.submitWait();
-        iiCmd.release();
-
-        pool->lck().release();
-
-        testAlbedo.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-        testNormal.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-        testRoughness.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-        testSpecular.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-
-        {
-            /**
-     * Prepare
-     */
-            const vk::ComponentMapping cm {
-                vk::ComponentSwizzle::eR,
-                vk::ComponentSwizzle::eG,
-                vk::ComponentSwizzle::eB,
-                vk::ComponentSwizzle::eA
-            };
-
-            const vk::ImageSubresourceRange isr {
-                testAlbedo.buffer()._vkAspect,
-                0,
-                testAlbedo.mipLevels(),
-                0,
-                testAlbedo.layer()
-            };
-
-            const vk::ImageViewCreateInfo ivci {
-                vk::ImageViewCreateFlags(),
-                testAlbedo.buffer().image(),
-                vk::ImageViewType::e2DArray,
-                api::vkTranslateFormat(testAlbedo.format()),
-                cm,
-                isr
-            };
-
-            /**
-             * Create
-             */
-            const vk::ImageView view = _device->vkDevice().createImageView(ivci);
-            assert(view);
-
-            testAlbedo.vkView() = view;
-        }
-
-        //TextureFactory::get()->buildView(testAlbedo);
-        TextureFactory::get()->buildView(testNormal);
-        TextureFactory::get()->buildView(testRoughness);
-        TextureFactory::get()->buildView(testSpecular);
-    }
 }
 
 void RevMainStaticNode::destroy() {
@@ -283,20 +134,6 @@ void RevMainStaticNode::destroy() {
 
         entry.pPoolSizes = nullptr;
         entry.poolSizeCount = 0ui32;
-    }
-
-    // TODO:
-    if (testAlbedo) {
-        testAlbedo.destroy();
-    }
-    if (testNormal) {
-        testNormal.destroy();
-    }
-    if (testRoughness) {
-        testRoughness.destroy();
-    }
-    if (testSpecular) {
-        testSpecular.destroy();
     }
 
     /**
@@ -361,6 +198,10 @@ bool RevMainStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
 
     for (u64 rdp = 0; rdp < _requiredDescriptorPools.size(); ++rdp) {
 
+        if (_requiredBindingGroups[rdp].interval() == shader::BindingUpdateInterval::eMaterialUpdate) {
+            continue;
+        }
+
         vk::DescriptorPool pool { _device->vkDevice().createDescriptorPool(_requiredDescriptorPools[rdp]) };
         assert(pool);
 
@@ -377,10 +218,6 @@ bool RevMainStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
      * Pre Store
      */
     dbgs[0].getById(shader::ShaderBinding::id_type { 1 }).store(uniform);
-    dbgs[2].getById(shader::ShaderBinding::id_type { 3 }).store(testAlbedo);
-    dbgs[2].getById(shader::ShaderBinding::id_type { 4 }).store(testNormal);
-    dbgs[2].getById(shader::ShaderBinding::id_type { 5 }).store(testRoughness);
-    dbgs[2].getById(shader::ShaderBinding::id_type { 6 }).store(testSpecular);
 
     /**
      * Store State
@@ -393,6 +230,9 @@ bool RevMainStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
         _STD make_shared<decltype(dbgs)>(_STD move(dbgs)));
     state->data.insert_or_assign("RevMainStaticNode::DescriptorPools"sv,
         _STD make_shared<decltype(pools)>(_STD move(pools)));
+
+    using material_map_type = ska::bytell_hash_map<ptr<void>, shader::DiscreteBindingGroup>;
+    state->data.insert_or_assign("RevMainStaticNode::MaterialDescriptors"sv, _STD make_shared<material_map_type>());
 
     return true;
 }
@@ -448,6 +288,22 @@ bool RevMainStaticNode::free(const ptr<HORenderPass> renderPass_) {
         state->data.erase(poolIt);
     }
 
+    it = state->data.find("RevMainStaticNode::MaterialDescriptors"sv);
+    if (it != state->data.end()) {
+
+        using material_map_type = ska::bytell_hash_map<ptr<void>, shader::DiscreteBindingGroup>;
+        auto materialDescriptors {
+            _STD static_pointer_cast<material_map_type, void>(it->second)
+        };
+
+        materialDescriptors->clear();
+
+        /**
+         *
+         */
+        state->data.erase(it);
+    }
+
     /**
      * Free Buffers
      */
@@ -493,12 +349,6 @@ bool RevMainStaticNode::free(const ptr<HORenderPass> renderPass_) {
          *
          */
         renderPass_->state()->data.erase(it);
-    }
-
-    // Warning: Temporary
-    it = state->data.find("test_swapped_albedo"sv);
-    if (it != state->data.end()) {
-        state->data.erase(it);
     }
 
     return true;
@@ -591,13 +441,9 @@ void RevMainStaticNode::before(
         if (grp.super().interval() == shader::BindingUpdateInterval::ePerFrame) {
             cmd.bindDescriptor(idx, grp.vkSet());
         }
-
-        if (grp.super().interval() == shader::BindingUpdateInterval::eMaterialUpdate) {
-            cmd.bindDescriptor(idx, grp.vkSet());
-        }
     }
 
-    const_cast<ptr<RevMainStaticNode>>(this)->__test_flag = false;
+    const_cast<ptr<RevMainStaticNode>>(this)->__test_flag.clear();
 }
 
 void RevMainStaticNode::invoke(
@@ -625,40 +471,41 @@ void RevMainStaticNode::invoke(
 
     const auto* res { static_cast<const ptr<StaticGeometryResource>>(model->geometryResource()) };
 
-    const auto swappedAlbedo = data.find("test_swapped_albedo"sv) != data.end();
-    if (model->hasOverrideMaterials() && !swappedAlbedo) {
-
+    if (model->hasOverrideMaterials()) {
         auto* first { model->overrideMaterials().front() };
 
-        if (first->_payload.diffuse->isLoaded()) {
+        using material_map_type = ska::bytell_hash_map<ptr<void>, shader::DiscreteBindingGroup>;
 
-            sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
-                _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
-                    data.find("RevMainStaticNode::DiscreteBindingGroups"sv)->second
-                )
+        auto dataEntry { data.find("RevMainStaticNode::MaterialDescriptors"sv) };
+        auto materialDescriptors { _STD static_pointer_cast<material_map_type, void>(dataEntry->second) };
+
+        auto materialIter { materialDescriptors->find(const_cast<ptr<assets::Asset>>(first->origin())) };
+        if (materialIter == materialDescriptors->end()) {
+            // TODO:
+            auto dbg { createMaterialDescriptor(state) };
+
+            dbg.getById(shader::ShaderBinding::id_type { 3 }).store(*first->_payload.view.get());
+
+            dbg.getById(shader::ShaderBinding::id_type { 4 }).store(first->_payload.diffuse->_payload.view->owner());
+            dbg.getById(shader::ShaderBinding::id_type { 5 }).store(first->_payload.normal->_payload.view->owner());
+            dbg.getById(shader::ShaderBinding::id_type { 6 }).store(first->_payload.roughness->_payload.view->owner());
+            dbg.getById(shader::ShaderBinding::id_type { 7 }).store(first->_payload.ao->_payload.view->owner());
+
+            auto result {
+                materialDescriptors->insert_or_assign(const_cast<ptr<assets::Asset>>(first->origin()), _STD move(dbg))
             };
-
-            auto* texture { first->_payload.diffuse->_payload.view->owner() };
-            auto* mut = const_cast<ptr<VirtualTexture>>(texture);
-
-            #pragma warning(push)
-            #pragma warning(disable: 4996)
-            mut->updateBindingData();
-            mut->enqueueBindingSync(cmd.pool()->queue());
-            #pragma warning(pop)
-
-            (*dbgs)[2].getById(shader::ShaderBinding::id_type { 3 }).store(
-                first->_payload.diffuse->_payload.view->owner());
-            cmd.bindDescriptor(2, (*dbgs)[2].vkSet());
-
-            const_cast<_STD decay_t<decltype(data)>&>(data).insert_or_assign("test_swapped_albedo"sv, nullptr);
+            materialIter = result.first;
         }
+
+        cmd.bindDescriptor(MATERIAL_DESCRIPTOR_INDEX, materialIter->second.vkSet());
     }
 
     if (model->hasOverrideMaterials()) {
 
         auto* first { model->overrideMaterials().front() };
-        if (first->_payload.diffuse->isLoaded() && !__test_flag) {
+        if (first->_payload.diffuse->isLoaded() &&
+            _STD ranges::find(__test_flag, static_cast<void*>(first)) == _STD ranges::end(__test_flag)
+        ) {
 
             auto* diff { first->_payload.diffuse };
             auto& view { diff->_payload.view };
@@ -707,7 +554,7 @@ void RevMainStaticNode::invoke(
                 }
             }
 
-            const_cast<ptr<RevMainStaticNode>>(this)->__test_flag = true;
+            const_cast<ptr<RevMainStaticNode>>(this)->__test_flag.push_back(first);
         }
     }
 
@@ -828,30 +675,37 @@ void RevMainStaticNode::setupShader() {
         "staticMainPassModel"
     };
 
+    shader::PrototypeBinding material {
+        shader::BindingType::eStorageBuffer,
+        3ui32,
+        shader::BindingUpdateInterval::eMaterialUpdate,
+        "staticMainMaterial"
+    };
+
     shader::PrototypeBinding albedo {
         shader::BindingType::eImageSampler,
-        3ui32,
+        4ui32,
         shader::BindingUpdateInterval::eMaterialUpdate,
         "staticMainPassAlbedo"
     };
 
     shader::PrototypeBinding normal {
         shader::BindingType::eImageSampler,
-        4ui32,
+        5ui32,
         shader::BindingUpdateInterval::eMaterialUpdate,
         "staticMainPassNormal"
     };
 
     shader::PrototypeBinding roughness {
         shader::BindingType::eImageSampler,
-        5ui32,
+        6ui32,
         shader::BindingUpdateInterval::eMaterialUpdate,
         "staticMainPassRoughness"
     };
 
     shader::PrototypeBinding specular {
         shader::BindingType::eImageSampler,
-        6ui32,
+        7ui32,
         shader::BindingUpdateInterval::eMaterialUpdate,
         "staticMainPassSpecular"
     };
@@ -869,6 +723,7 @@ void RevMainStaticNode::setupShader() {
     shader::Prototype fragmentPrototype { shader::ShaderType::eFragment, "staticMainPass" };
     auto fragmentShaderCode { read_shader_file("resources/shader/mainpass_static.frag.spv") };
     fragmentPrototype.storeCode(fragmentShaderCode.data(), fragmentShaderCode.size());
+    fragmentPrototype.add(material);
     fragmentPrototype.add(albedo);
     fragmentPrototype.add(normal);
     fragmentPrototype.add(roughness);
@@ -929,4 +784,22 @@ void RevMainStaticNode::setupShader() {
         _requiredDescriptorPools.push_back(dpci);
         _requiredBindingGroups.push_back(group);
     }
+}
+
+shader::DiscreteBindingGroup RevMainStaticNode::createMaterialDescriptor(const ptr<RenderPassState> state_) const {
+
+    const auto poolIt { state_->data.find("RevMainStaticNode::DescriptorPools"sv) };
+    sptr<Vector<vk::DescriptorPool>> pools {
+        _STD static_pointer_cast<Vector<vk::DescriptorPool>, void>(poolIt->second)
+    };
+
+    const auto& poolReq { _requiredDescriptorPools[MATERIAL_DESCRIPTOR_INDEX] };
+    auto pool { _device->vkDevice().createDescriptorPool(poolReq) };
+
+    const auto& setReq { _requiredBindingGroups[MATERIAL_DESCRIPTOR_INDEX] };
+    auto set { _device->vkDevice().allocateDescriptorSets({ pool, 1ui32, &setReq.vkSetLayout() })[0] };
+
+    pools->push_back(pool);
+
+    return _STD move(setReq.useDiscrete(set));
 }
