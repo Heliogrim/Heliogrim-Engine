@@ -1,7 +1,7 @@
 #include "TextureAsset.hpp"
 
 #include <Engine.Assets/AssetFactory.hpp>
-#include <Engine.Assets/Types/Texture.hpp>
+#include <Engine.Assets/Types/Texture/Texture.hpp>
 #include <Engine.Session/Session.hpp>
 
 using namespace ember;

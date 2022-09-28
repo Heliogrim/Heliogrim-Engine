@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Assets/Types/Asset.hpp>
 
 #include "Guard.hpp"
 #include "../ResourceUsageFlag.hpp"
@@ -92,6 +93,16 @@ namespace ember::engine::res {
          * @date 28.08.2021
          */
         virtual void release(const ResourceUsageFlags flags_) = 0;
-    };
 
+    protected:
+        non_owning_rptr<const assets::Asset> _origin;
+
+    public:
+        [[nodiscard]] bool hasOrigin() const noexcept;
+
+        [[nodiscard]] const non_owning_rptr<const assets::Asset> origin() const noexcept;
+
+        void setOrigin(const non_owning_rptr<const assets::Asset> origin_) noexcept;
+
+    };
 }

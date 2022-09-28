@@ -63,5 +63,7 @@ namespace ember::engine::gfx::render {
     private:
         Vector<vk::DescriptorPoolCreateInfo> _requiredDescriptorPools;
         Vector<shader::ShaderBindingGroup> _requiredBindingGroups;
+
+        bool __test_flag;
     };
 }

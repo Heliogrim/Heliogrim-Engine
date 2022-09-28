@@ -3,8 +3,8 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 
-#include "__fwd.hpp"
 #include "Texture.hpp"
+#include "__fwd.hpp"
 #include "../Device/Device.hpp"
 #include "../Memory/VirtualMemory.hpp"
 
@@ -17,13 +17,30 @@ namespace ember::engine::gfx {
     public:
         VirtualTexture(
             mref<uptr<VirtualMemory>> memory_,
-            u32 layer_,
+            u32 layers_,
             math::uivec3 extent_,
             TextureFormat format_,
             math::uivec2 mipLevels_,
             TextureType type_,
             /**/
             vk::Image vkImage_
+        );
+
+        VirtualTexture(
+            mref<uptr<VirtualMemory>> memory_,
+            u32 layers_,
+            math::uivec3 extent_,
+            TextureFormat format_,
+            math::uivec2 mipLevels_,
+            TextureType type_,
+            /**/
+            vk::Image vkImage_,
+            /**/
+            math::uivec3 granularity_,
+            u32 mipTailFirstLod_,
+            u32 mipTailSize_,
+            u32 mipTailOffset_,
+            u32 mipTailStride_
         );
 
         VirtualTexture(cref<this_type>) = delete;
@@ -45,17 +62,31 @@ namespace ember::engine::gfx {
 
     private:
         Vector<ptr<VirtualTexturePage>> _pages;
+        Vector<ptr<VirtualTexturePage>> _opaquePages;
 
     private:
         non_owning_rptr<VirtualTexturePage> makePage(
             u32 layer_,
-            u32 mipLevel_
+            u32 mipLevel_,
+            math::uivec3 tileOffset_,
+            math::uivec3 tileExtent_
         );
 
-        non_owning_rptr<VirtualTexturePage> makeSpatialPage(
-            math::uivec2 offset_,
-            math::uivec2 extent_,
-            u32 mipLevel_
+        non_owning_rptr<VirtualTexturePage> makeOpaquePage(u32 layer_);
+
+        void assureTiledPages(
+            u32 layer_,
+            math::uivec2 mipLevels_,
+            math::uivec3 offset_,
+            math::uivec3 extent_
+        );
+
+        void selectPages(
+            math::uivec2 layers_,
+            math::uivec2 mipLevels_,
+            math::uivec3 offset_,
+            math::uivec3 extent_,
+            _Inout_ ref<Vector<non_owning_rptr<VirtualTexturePage>>> pages_
         );
 
     public:
@@ -90,7 +121,7 @@ namespace ember::engine::gfx {
         );
 
     private:
-        u32 _layer;
+        u32 _layers;
 
     public:
         [[nodiscard]] u32 layers() const noexcept;
@@ -128,6 +159,13 @@ namespace ember::engine::gfx {
         [[nodiscard]] TextureType type() const noexcept;
 
     private:
+        math::uivec3 _granularity;
+        u32 _mipTailFirstLod;
+        u32 _mipTailSize;
+        u32 _mipTailOffset;
+        u32 _mipTailStride;
+
+    private:
         /**
          * Vulkan Virtual Texture
          */
@@ -138,5 +176,17 @@ namespace ember::engine::gfx {
 
     public:
         vk::ImageView _vkImageView;
+
+    private:
+        Vector<vk::SparseImageMemoryBind> _bindings;
+        Vector<vk::SparseMemoryBind> _opaqueBindings;
+        vk::SparseImageMemoryBindInfo _bindData;
+        vk::SparseImageOpaqueMemoryBindInfo _opaqueBindData;
+
+    public:
+        void updateBindingData();
+
+    public:
+        [[deprecated]] void enqueueBindingSync(const ptr<CommandQueue> queue_);
     };
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine.Assets/Types/StaticGeometry.hpp>
+#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
 #include <Engine.Resource/Loader/Loader.hpp>
 
 #include "GeometryLoader.hpp"

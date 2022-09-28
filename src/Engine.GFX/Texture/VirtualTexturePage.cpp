@@ -1,7 +1,7 @@
 #include "VirtualTexturePage.hpp"
 
-#include "Engine.GFX/Memory/AllocatedMemory.hpp"
-#include "Engine.GFX/Memory/AllocationResult.hpp"
+#include "../Memory/AllocatedMemory.hpp"
+#include "../Memory/AllocationResult.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -9,8 +9,10 @@ using namespace ember;
 VirtualTexturePage::VirtualTexturePage(
     non_owning_rptr<VirtualMemoryPage> memory_,
     u32 layer_, math::uivec3 offset_,
-    math::uivec3 extent_, u32 mipLevel_
+    math::uivec3 extent_, u32 mipLevel_,
+    const VirtualTexturePageFlags flags_
 ) :
+    _flags(flags_),
     _memory(memory_),
     _layer(layer_),
     _offset(offset_),
@@ -19,6 +21,10 @@ VirtualTexturePage::VirtualTexturePage(
 
 VirtualTexturePage::~VirtualTexturePage() noexcept {
     delete _memory;
+}
+
+const VirtualTexturePageFlags VirtualTexturePage::flags() const noexcept {
+    return _flags;
 }
 
 const non_owning_rptr<VirtualMemoryPage> VirtualTexturePage::memory() const noexcept {
@@ -61,6 +67,9 @@ u32 VirtualTexturePage::mipLevel() const noexcept {
 }
 
 vk::SparseImageMemoryBind VirtualTexturePage::vkSparseImageMemoryBind() const noexcept {
+
+    const bool isMemoryBacking { _memory->state() == VirtualMemoryPageState::eLoaded };
+
     return vk::SparseImageMemoryBind {
         vk::ImageSubresource {
             vk::ImageAspectFlagBits::eColor,
@@ -69,8 +78,22 @@ vk::SparseImageMemoryBind VirtualTexturePage::vkSparseImageMemoryBind() const no
         },
         vk::Offset3D { INT32_T(_offset.x), INT32_T(_offset.y), INT32_T(_offset.z) },
         vk::Extent3D { _extent.x, _extent.y, _extent.z },
-        _memory->allocated()->vkMemory,
-        _memory->allocated()->offset,
-        {}
+        isMemoryBacking ? _memory->allocated()->vkMemory : nullptr,
+        isMemoryBacking ? _memory->allocated()->offset : 0ui64,
+        vk::SparseMemoryBindFlags {}
     };
+}
+
+vk::SparseMemoryBind VirtualTexturePage::vkSparseMemoryBind() const noexcept {
+
+    const bool isMemoryBacking { _memory->state() == VirtualMemoryPageState::eLoaded };
+
+    return vk::SparseMemoryBind {
+        _memory->offset(),
+        _memory->size(),
+        isMemoryBacking ? _memory->allocated()->vkMemory : nullptr,
+        isMemoryBacking ? _memory->allocated()->offset : 0ui64,
+        vk::SparseMemoryBindFlags {}
+    };
+
 }

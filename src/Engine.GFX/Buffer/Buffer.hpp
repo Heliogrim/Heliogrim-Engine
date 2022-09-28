@@ -33,9 +33,7 @@ namespace ember::engine::gfx {
          * @param  size_ (Optional) The size.
          * @param  offset_ (Optional) The offset.
          */
-        void bind(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0) {
-            device.bindBufferMemory(buffer, memory->vkMemory, offset_);
-        }
+        void bind(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0);
 
         /**
          * Destroys this 
@@ -43,20 +41,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 20.11.2020
          */
-        void destroy() {
-            if (memory->mapping) {
-                unmap();
-            }
-
-            if (buffer) {
-                device.destroyBuffer(buffer);
-            }
-
-            if (memory) {
-                delete memory;
-                memory = nullptr;
-            }
-        }
+        void destroy();
 
         /**
          * Flushes this 
@@ -67,9 +52,7 @@ namespace ember::engine::gfx {
          * @param  size_ (Optional) The size.
          * @param  offset_ (Optional) The offset.
          */
-        void flush(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0) {
-            memory->flush(size_, offset_);
-        }
+        void flushAligned(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0);
 
         /**
          * Maps
@@ -80,9 +63,18 @@ namespace ember::engine::gfx {
          * @param  size_ (Optional) The size.
          * @param  offset_ (Optional) The offset.
          */
-        void map(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0) {
-            memory->map(size_, offset_);
-        }
+        void map(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0);
+
+        /**
+         * Map the buffer memory aligned (non coherent atom size) to host
+         *
+         * @author Julius
+         * @date 01.08.20222
+         *
+         * @param  size_ (Optional) The size.
+         * @param  offset_ (Optional) The offset.
+         */
+        void mapAligned(const u64 size_ = VK_WHOLE_SIZE, const u64 offset_ = 0);
 
         /**
          * Unmaps this 
@@ -90,9 +82,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 20.11.2020
          */
-        void unmap() noexcept {
-            memory->unmap();
-        }
+        void unmap() noexcept;
 
         /**
          * Writes
@@ -103,12 +93,12 @@ namespace ember::engine::gfx {
          * @param  data_ The data.
          * @param  size_ The size.
          */
-        void write(const ptr<void> data_, const u64 size_) {
-            memory->write(data_, size_);
-        }
+        void write(const ptr<void> data_, const u64 size_);
 
         /**
          * Writes
+         *
+         * // TODO: Make two overloads; One for coherent memory, one for flushable memory
          *
          * @tparam ValueType Type of the value type.
          * @param  data_ The data.

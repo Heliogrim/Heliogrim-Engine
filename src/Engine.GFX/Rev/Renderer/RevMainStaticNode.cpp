@@ -495,6 +495,12 @@ bool RevMainStaticNode::free(const ptr<HORenderPass> renderPass_) {
         renderPass_->state()->data.erase(it);
     }
 
+    // Warning: Temporary
+    it = state->data.find("test_swapped_albedo"sv);
+    if (it != state->data.end()) {
+        state->data.erase(it);
+    }
+
     return true;
 }
 
@@ -590,6 +596,8 @@ void RevMainStaticNode::before(
             cmd.bindDescriptor(idx, grp.vkSet());
         }
     }
+
+    const_cast<ptr<RevMainStaticNode>>(this)->__test_flag = false;
 }
 
 void RevMainStaticNode::invoke(
@@ -616,6 +624,92 @@ void RevMainStaticNode::invoke(
     }
 
     const auto* res { static_cast<const ptr<StaticGeometryResource>>(model->geometryResource()) };
+
+    const auto swappedAlbedo = data.find("test_swapped_albedo"sv) != data.end();
+    if (model->hasOverrideMaterials() && !swappedAlbedo) {
+
+        auto* first { model->overrideMaterials().front() };
+
+        if (first->_payload.diffuse->isLoaded()) {
+
+            sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
+                _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(
+                    data.find("RevMainStaticNode::DiscreteBindingGroups"sv)->second
+                )
+            };
+
+            auto* texture { first->_payload.diffuse->_payload.view->owner() };
+            auto* mut = const_cast<ptr<VirtualTexture>>(texture);
+
+            #pragma warning(push)
+            #pragma warning(disable: 4996)
+            mut->updateBindingData();
+            mut->enqueueBindingSync(cmd.pool()->queue());
+            #pragma warning(pop)
+
+            (*dbgs)[2].getById(shader::ShaderBinding::id_type { 3 }).store(
+                first->_payload.diffuse->_payload.view->owner());
+            cmd.bindDescriptor(2, (*dbgs)[2].vkSet());
+
+            const_cast<_STD decay_t<decltype(data)>&>(data).insert_or_assign("test_swapped_albedo"sv, nullptr);
+        }
+    }
+
+    if (model->hasOverrideMaterials()) {
+
+        auto* first { model->overrideMaterials().front() };
+        if (first->_payload.diffuse->isLoaded() && !__test_flag) {
+
+            auto* diff { first->_payload.diffuse };
+            auto& view { diff->_payload.view };
+
+            for (auto mip { 6ui32 }; mip <= view->maxMipLevel(); ++mip) {
+                // TODO:
+                // Warning: This only works if view extent is pow of 2
+                state->cacheCtrl.markAsUsed(diff, {
+                    .layer = view->baseLayer(),
+                    //.mip = view->minMipLevel(),
+                    .mip = mip,
+                    .offset = math::uivec3 {},
+                    .extent = math::uivec3 {
+                        view->width() >> mip,
+                        view->height() >> mip,
+                        //view->depth() >> mip
+                        view->depth()
+                    }
+                });
+            }
+
+            for (u32 i { 5ui32 }; i > 2; --i) {
+                const auto th = view->height() >> i;
+                const auto tw = view->width() >> i;
+
+                for (u32 d = 1; d < 2; ++d) {
+                    for (u32 h = 128ui32; h <= th; h += 128ui32) {
+                        for (u32 w = 128ui32; w <= tw; w += 128ui32) {
+                            state->cacheCtrl.markAsUsed(diff, {
+                                .layer = view->baseLayer(),
+                                //.mip = view->minMipLevel(),
+                                .mip = i,
+                                .offset = math::uivec3 {
+                                    w - 128ui32,
+                                    h - 128ui32,
+                                    d - 1ui32
+                                },
+                                .extent = math::uivec3 {
+                                    128ui32,
+                                    128ui32,
+                                    1ui32
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+
+            const_cast<ptr<RevMainStaticNode>>(this)->__test_flag = true;
+        }
+    }
 
     /**
      *

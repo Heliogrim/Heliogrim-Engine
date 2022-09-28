@@ -17,7 +17,7 @@ namespace ember::engine::gfx {
 
         ~GeometryModel() override = default;
 
-    private:
+    protected:
         CompactArray<ptr<MaterialResource>> _overrideMaterials;
 
     public:

@@ -1,5 +1,6 @@
 #pragma once
 #include "Allocator.hpp"
+#include "../Device/Device.hpp"
 
 namespace ember::engine::gfx::memory {
 

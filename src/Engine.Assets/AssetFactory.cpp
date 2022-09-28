@@ -9,9 +9,9 @@
 #include "Types/PfxMaterial.hpp"
 #include "Types/SfxMaterial.hpp"
 #include "Types/SkeletalGeometry.hpp"
-#include "Types/StaticGeometry.hpp"
+#include "Types/Geometry/StaticGeometry.hpp"
 #include "Types/Sound.hpp"
-#include "Types/Texture.hpp"
+#include "Types/Texture/Texture.hpp"
 
 using namespace ember::engine::assets;
 using namespace ember;
@@ -121,7 +121,37 @@ ptr<Asset> AssetFactory::createLandscapeGeometryAsset(cref<asset_guid> guid_) {
 
 ptr<Asset> AssetFactory::createStaticGeometryAsset(cref<asset_guid> guid_) {
 
-    auto* instance = EmberObject::create<StaticGeometry>(guid_, Vector<Url> {});
+    auto* instance = EmberObject::create<StaticGeometry>(
+        guid_,
+        Vector<Url> {},
+        0ui64,
+        0ui64
+    );
+
+    _database->insert(guid_, StaticGeometry::typeId, instance);
+    return instance;
+}
+
+ptr<Asset> AssetFactory::createStaticGeometryAsset(
+    cref<asset_guid> guid_,
+    cref<string> url_,
+    cref<u64> vertexCount_,
+    cref<u64> indexCount_
+) {
+
+    auto src { resolveAsSource(url_) };
+    Vector<Url> sources {};
+
+    if (src.hasScheme()/* Fast empty check */) {
+        sources.push_back(src);
+    }
+
+    auto* instance = EmberObject::create<StaticGeometry>(
+        guid_,
+        _STD move(sources),
+        vertexCount_,
+        indexCount_
+    );
 
     _database->insert(guid_, StaticGeometry::typeId, instance);
     return instance;

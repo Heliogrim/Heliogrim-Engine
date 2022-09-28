@@ -80,7 +80,7 @@ void HORenderPass::reset() {
      */
     auto* state { _state.get() };
     // TODO: Check whether state should get a reset method, which forwards invocation to state's members
-    state->cache.shift();
+    state->cacheCtrl.reset();
 
     clearSync();
 }

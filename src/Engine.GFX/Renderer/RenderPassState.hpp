@@ -4,7 +4,7 @@
 
 #include "../Framebuffer/Framebuffer.hpp"
 #include "../Shader/DiscreteBindingCache.hpp"
-#include "../Cache/LocalResourceCache.hpp"
+#include "../Cache/LocalCacheCtrl.hpp"
 #include "../Memory/LocalPooledAllocator.hpp"
 
 namespace ember::engine::gfx::render {
@@ -26,7 +26,7 @@ namespace ember::engine::gfx::render {
         /**
          * Resources
          */
-        cache::LocalResourceCache cache;
+        cache::LocalCacheCtrl cacheCtrl;
         memory::LocalPooledAllocator alloc;
 
         DiscreteBindingCache bindingCache;

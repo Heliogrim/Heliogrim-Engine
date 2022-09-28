@@ -7,6 +7,7 @@
 #include <Engine.Common/Concurrent/Future.hpp>
 
 #include "Loader/Loader.hpp"
+#include "Loader/StreamLoader.hpp"
 #include "Manage/Resource.hpp"
 
 namespace ember::engine::res {
@@ -59,6 +60,11 @@ namespace ember::engine::res {
 
         template <assets::IsAsset AssetType_>
         bool registerLoader(cref<sptr<Loader<AssetType_>>> loader_) noexcept {
+            return this->registerLoader(AssetType_::typeId, loader_);
+        }
+
+        template <assets::IsStreamableAsset AssetType_>
+        bool registerLoader(cref<sptr<StreamLoader<AssetType_>>> loader_) noexcept {
             return this->registerLoader(AssetType_::typeId, loader_);
         }
 

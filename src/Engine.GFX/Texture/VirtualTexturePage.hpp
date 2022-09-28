@@ -4,9 +4,10 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/__default.inl>
 
+#include "VirtualTexturePageFlag.hpp"
 #include "__fwd.hpp"
-#include "../Memory/VirtualMemoryPage.hpp"
 #include "../Device/Device.hpp"
+#include "../Memory/VirtualMemoryPage.hpp"
 
 namespace ember::engine::gfx {
 
@@ -23,7 +24,8 @@ namespace ember::engine::gfx {
             u32 layer_,
             math::uivec3 offset_,
             math::uivec3 extent_,
-            u32 mipLevel_
+            u32 mipLevel_,
+            const VirtualTexturePageFlags flags_ = {}
         );
 
     public:
@@ -36,6 +38,12 @@ namespace ember::engine::gfx {
         ~VirtualTexturePage() noexcept;
 
     private:
+        VirtualTexturePageFlags _flags;
+
+    public:
+        [[nodiscard]] const VirtualTexturePageFlags flags() const noexcept;
+
+    private:
         non_owning_rptr<VirtualMemoryPage> _memory;
 
     public:
@@ -45,7 +53,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 19.06.2022
          *
-         * @returns A non owning pointer to the VirtualMemoryPage.
+         * @returns A non owning pointer to the const VirtualMemoryPage.
          */
         [[nodiscard]] const non_owning_rptr<VirtualMemoryPage> memory() const noexcept;
 
@@ -80,6 +88,8 @@ namespace ember::engine::gfx {
 
     protected:
         [[nodiscard]] vk::SparseImageMemoryBind vkSparseImageMemoryBind() const noexcept;
+
+        [[nodiscard]] vk::SparseMemoryBind vkSparseMemoryBind() const noexcept;
     };
 
 }

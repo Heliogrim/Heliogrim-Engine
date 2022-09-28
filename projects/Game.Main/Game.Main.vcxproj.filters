@@ -153,6 +153,33 @@
     <ClCompile Include="..\..\src\Game.Main\Assets\Images\ForestGround01Roughness.cpp">
       <Filter>Quelldateien\Assets\Images</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Normal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Roughness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01AO.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01AO.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Diffuse.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Normal.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Roughness.cpp">
+      <Filter>Quelldateien\Assets\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game.Main\Assets\GfxMaterials\DryGroundRocks01.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game.Main\Assets\Materials\ForestGround.hpp">
@@ -271,6 +298,33 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Game.Main\Assets\Textures\ForestGround01AO.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Normal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01AO.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Textures\DryGroundRocks01Roughness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01AO.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Diffuse.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Normal.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\Images\DryGroundRocks01Roughness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game.Main\Assets\GfxMaterials\DryGroundRocks01.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

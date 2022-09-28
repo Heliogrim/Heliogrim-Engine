@@ -16,7 +16,7 @@ namespace ember::engine::gfx::memory {
     class MemoryPool;
 
     /**
-     * Native (Layer) Allocation
+     * (Layer) Allocation
      */
     class Allocator;
     class VkAllocator;

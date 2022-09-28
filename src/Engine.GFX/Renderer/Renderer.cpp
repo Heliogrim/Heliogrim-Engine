@@ -1,12 +1,14 @@
 #include "Renderer.hpp"
 
 #include <Engine.Scheduler/Thread/Thread.hpp>
+#include <Engine.Session/Session.hpp>
 
 #include "HORenderPass.hpp"
 #include "RenderPassState.hpp"
 #include "RenderPipeline.hpp"
-#include "../Device/Device.hpp"
 #include "../Command/CommandBatch.hpp"
+#include "../Device/Device.hpp"
+#include "Engine.GFX/Graphics.hpp"
 
 using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
@@ -47,15 +49,23 @@ cref<sptr<Device>> Renderer::device() const noexcept {
 }
 
 sptr<RenderPassState> Renderer::makeRenderPassState() const {
+
+    auto session { Session::get() };
+    auto* const globalCacheCtrl { session->modules().graphics()->cacheCtrl() };
+
+    auto localCache { make_uptr<cache::LocalResourceCache>(globalCacheCtrl) };
+
+    auto state = new RenderPassState {
+        .device = _device,
+        .framebuffer = nullptr,
+        .cacheCtrl = decltype(RenderPassState::cacheCtrl) { _STD move(localCache) },
+        .alloc = decltype(RenderPassState::alloc) { _device->allocator() },
+        .bindingCache = DiscreteBindingCache { _device },
+        .data = decltype(RenderPassState::data) {}
+    };
+
     // TODO:
-    return make_sptr<RenderPassState>(
-        _device,
-        nullptr,
-        decltype(RenderPassState::cache) {},
-        _device->allocator(),
-        DiscreteBindingCache { _device },
-        decltype(RenderPassState::data) {}
-    );
+    return sptr<RenderPassState>(state);
 }
 
 ptr<HORenderPass> Renderer::allocate(mref<HORenderPassCreateData> data_) {
@@ -152,11 +162,11 @@ void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mr
         vk::Fence fence { renderPass_->unsafeSync() };
         if (!fence) {
             fence = { _device->vkDevice().createFence(vk::FenceCreateInfo {}) };
-    #ifdef _DEBUG
+            #ifdef _DEBUG
             assert(renderPass_->storeSync(vk::Fence { fence }));
-    #else
+            #else
             renderPass_->storeSync(_STD move(fence));
-    #endif
+            #endif
 
         } else {
             _device->vkDevice().resetFences(1, &fence);

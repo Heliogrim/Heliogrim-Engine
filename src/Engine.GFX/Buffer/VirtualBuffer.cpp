@@ -1,7 +1,6 @@
 #include "VirtualBuffer.hpp"
 
 #include "../Memory/VirtualMemory.hpp"
-#include "../Memory/VkAllocator.hpp"
 #include "../Command/CommandQueue.hpp"
 
 // TODO: Remove
@@ -124,7 +123,8 @@ non_owning_rptr<VirtualBufferPage> VirtualBuffer::addPage(const u64 size_, const
     }
     #endif
 
-    const auto memPage = _memory->definePage(size_);
+    // Warning: Replace virtual memory page offset
+    const auto memPage = _memory->definePage(0ui64, size_);
     assert(memPage);
 
     const auto page = new VirtualBufferPage {

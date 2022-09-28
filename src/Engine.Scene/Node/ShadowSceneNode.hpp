@@ -353,7 +353,12 @@ namespace ember::engine::scene {
             const auto decision { path_.pop() };
             auto* const next { base_type::_children[decision].get(factory_->getNodeStorage()) };
 
-            return next->pop(path_, element_, factory_);
+            const auto succeeded { next->pop(path_, element_, factory_) };
+            if (succeeded) {
+                --base_type::_inclusiveElementCount;
+            }
+
+            return succeeded;
         }
 
         /**

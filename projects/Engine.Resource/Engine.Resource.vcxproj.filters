@@ -123,6 +123,15 @@
     <ClInclude Include="..\..\src\Engine.Resource\Indexer\MetaFile.hpp">
       <Filter>Headerdateien\Indexer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\Streamable.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\StreamLoader.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\ResourceConcept.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Resource\FileResource.cpp">

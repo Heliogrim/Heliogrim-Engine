@@ -32,9 +32,45 @@ RevTextureLoader::result_type RevTextureLoader::operator()(const ptr<assets::Tex
      */
     auto* res { _cacheCtrl->cache()->request(asset_) };
 
+    if (not res->hasStreamLoader()) {
+        res->setStreamLoader(weak_from_this());
+    }
+
     //
     assert(res != nullptr);
-    res->_payload.view = TextureLoader::loadTo(baseImage->sources().front(), _STD move(res->_payload.view));
+
+    if (!res->_payload.__pseudo_stored) {
+
+        constexpr loader::TextureLoaderFlags flags { loader::TextureLoaderFlagBits::eLazyDataLoading };
+
+        res->_payload.view = TextureLoader::loadTo(baseImage->sources().front(), _STD move(res->_payload.view), flags);
+        res->_payload.__pseudo_stored = true;
+    }
 
     return res;
 }
+
+void RevTextureLoader::streamLoad(const ptr<res::partial::Streamable<res::Resource>> resource_,
+    stream_options_type options_) {
+
+    const ptr<TextureResource> texture { static_cast<const ptr<TextureResource>>(resource_) };
+    const auto* const asset { static_cast<const non_owning_rptr<const assets::Texture>>(resource_->origin()) };
+    const auto* const db { Session::get()->modules().assetDatabase() };
+
+    // TODO: Rewrite
+    const asset_guid baseImageGuid { asset->baseImage() };
+
+    const auto query { db->query(baseImageGuid) };
+    assert(query.exists());
+
+    const auto* const baseImage { static_cast<ptr<ember::engine::assets::Image>>(query.get()) };
+    assert(!baseImage->sources().empty());
+
+    /**
+     *
+     */
+    TextureLoader::partialLoadTo(baseImage->sources().front(), options_, texture->_payload.view.get());
+}
+
+void RevTextureLoader::streamUnload(const ptr<res::partial::Streamable<res::Resource>> resource_,
+    stream_options_type options_) {}

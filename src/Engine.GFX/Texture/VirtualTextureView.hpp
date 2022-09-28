@@ -9,11 +9,16 @@
 #include "../TextureFormat.hpp"
 #include "TextureType.hpp"
 
+namespace ember::engine::gfx::loader {
+    class TextureLoader;
+}
+
 namespace ember::engine::gfx {
 
     class VirtualTextureView final {
     public:
         friend class VirtualTexture;
+        friend class ::ember::engine::gfx::loader::TextureLoader;
 
     public:
         using this_type = VirtualTextureView;

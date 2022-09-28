@@ -46,14 +46,23 @@ StaticGeometryLoader::result_type StaticGeometryLoader::operator()(
     return ptr;
 }
 
+constexpr auto test_fallback_filettype = "file"sv;
+constexpr auto test_fallback_file = R"(R:\Development\C++\Vulkan API\Game\resources\assets\geometry\cylinder.obj)"sv;
+
 void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asset_,
     const ptr<StaticGeometryResource> dst_) {
 
     assert(dst_->_indexData.buffer->memory()->allocatedSize() > 0);
     assert(dst_->_vertexData.buffer->memory()->allocatedSize() > 0);
 
-    // TODO: Replace
-    const Url src { "file"sv, R"(R:\Development\C++\Vulkan API\Game\resources\assets\geometry\cylinder.obj)"sv };
+    Url src { ""sv, ""sv };
+
+    if (asset_->sources().empty()) {
+        src = Url { test_fallback_filettype, test_fallback_file };
+
+    } else {
+        src = asset_->sources().front();
+    }
 
     /**
      *
@@ -137,9 +146,19 @@ void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asse
             const auto indexSize { sizeof(u32) * indices.size() };
             auto* memory { dst_->_indexData.buffer->pages()[0]->memory()->allocated() };
 
-            memory->map(indexSize);
+            constexpr auto shift { 7ui64 };
+            constexpr auto mask { 0b0111'1111ui64 };
+
+            const auto aligned {
+                ((indexSize >> shift) << shift) +
+                ((indexSize & mask) ? + 1ui64 << shift : 0ui64)
+            };
+
+            const auto patchSize { _STD min(aligned, memory->size) };
+
+            memory->map(patchSize);
             memory->write(indices.data(), indexSize);
-            memory->flush(indexSize);
+            memory->flush(patchSize);
             memory->unmap();
         }
 
@@ -147,9 +166,19 @@ void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asse
             const auto vertexSize { sizeof(vertex) * vertices.size() };
             auto* memory { dst_->_vertexData.buffer->pages()[0]->memory()->allocated() };
 
-            memory->map(vertexSize);
+            constexpr auto shift { 7ui64 };
+            constexpr auto mask { 0b0111'1111ui64 };
+
+            const auto aligned {
+                ((vertexSize >> shift) << shift) +
+                ((vertexSize & mask) ? + 1ui64 << shift : 0ui64)
+            };
+
+            const auto patchSize { _STD min(aligned, memory->size) };
+
+            memory->map(patchSize);
             memory->write(vertices.data(), vertexSize);
-            memory->flush(vertexSize);
+            memory->flush(patchSize);
             memory->unmap();
         }
     }

@@ -4,7 +4,8 @@ using namespace ember;
 
 StaticGeometryComponent::StaticGeometryComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_) :
     ModelComponent(component_type_id { typeId }, _STD move(owner_), _STD move(parent_)),
-    _staticGeometry(invalid_asset_guid) {}
+    _staticGeometry(invalid_asset_guid),
+    _overrideMaterials() {}
 
 asset_guid StaticGeometryComponent::getStaticGeometryGuid() const noexcept {
     return _staticGeometry;
@@ -22,4 +23,8 @@ bool StaticGeometryComponent::setStaticGeometryByAsset(cref<StaticGeometryAsset>
 
     _staticGeometry = asset_;
     return true;
+}
+
+cref<CompactArray<GfxMaterialAsset>> StaticGeometryComponent::overrideMaterials() const noexcept {
+    return _overrideMaterials;
 }

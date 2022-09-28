@@ -58,7 +58,7 @@ void DiscreteBindingPool::setup() {
     }
 
     const vk::DescriptorPoolCreateInfo pci {
-        vk::DescriptorPoolCreateFlagBits::eUpdateAfterBind,
+        vk::DescriptorPoolCreateFlagBits::eUpdateAfterBind | vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet,
         _maxSets,
         UINT32_T(sizes.size()),
         sizes.data()

@@ -35,7 +35,7 @@ Device::Device(Application::const_reference_type application_, ptr<Surface> surf
     _device(nullptr),
     _physicalDevice(nullptr) {}
 
-Device::~Device() {}
+Device::~Device() = default;
 
 void Device::setup() {
 
@@ -213,7 +213,29 @@ void Device::setup() {
     DEBUG_SNMSG(true, "VK", "Acquired vk::Queue's successfully.")
 }
 
-void Device::destroy() {}
+void Device::destroy() {
+
+    //
+    if (_transferQueue != _graphicsQueue) {
+        _transferQueue->destroy();
+        delete _transferQueue;
+    }
+
+    if (_computeQueue != _graphicsQueue) {
+        _computeQueue->destroy();
+        delete _computeQueue;
+    }
+
+    _graphicsQueue->destroy();
+    delete _graphicsQueue;
+
+    _transferQueue = nullptr;
+    _computeQueue = nullptr;
+    _graphicsQueue = nullptr;
+
+    //
+    _alloc.reset();
+}
 
 vk::Device& Device::vkDevice() const {
     return _device;

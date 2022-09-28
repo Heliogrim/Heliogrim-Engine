@@ -1,10 +1,10 @@
 #pragma once
-#include "DataLayout.hpp"
+#include "../StreamDataLayout.hpp"
 
 namespace ember::engine::assets {
 
     class TextureLayout :
-        public DataLayout {
+        public StreamDataLayout {
     public:
         TextureLayout();
     };

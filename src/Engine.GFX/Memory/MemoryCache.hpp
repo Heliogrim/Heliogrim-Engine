@@ -24,6 +24,8 @@ namespace ember::engine::gfx::memory {
         ska::bytell_hash_map<MemoryLayout, ptr<MemoryPool>> _pools;
 
     public:
+        [[nodiscard]] non_owning_rptr<MemoryPool> getOrCreatePool(cref<MemoryLayout> layout_);
+
         [[nodiscard]] AllocationResult allocate(cref<MemoryLayout> layout_, const u64 size_,
             _Out_ ref<ptr<AllocatedMemory>> dst_);
 

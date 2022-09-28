@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include <Engine.Scene/RevScene.hpp>
 #include <Engine.Scene/Scene.hpp>
 
 using namespace ember::engine::scene;
@@ -9,59 +10,45 @@ TEST(__DummyTest__, Exists) {
     EXPECT_TRUE(true);
 }
 
-TEST(SceneModule, Singleton) {
-    //
-    EXPECT_EQ(Scene::get(), nullptr);
-
-    //
-    const auto scene = Scene::make();
-    EXPECT_FALSE(scene == nullptr);
-
-    //
-    EXPECT_EQ(scene, Scene::get());
-
-    //
-    Scene::destroy();
-    EXPECT_EQ(Scene::get(), nullptr);
-}
-
-TEST(SceneModule, DefaultGraph) {
-    //
-    auto scene = Scene::make();
-    scene->setup();
-
-    auto& graphs = scene->graphs();
-
-    //
-    EXPECT_FALSE(graphs.empty());
-
-    //
-    Scene::destroy();
-}
-
 namespace SceneModule {
 
-    namespace Node {
+    namespace Graph { }
+
+    namespace Storage { }
+
+    namespace Rev {
+        TEST(RevScene, DefaultGraph) {
+            //
+            auto* scene = new RevScene();
+
+            //
+            EXPECT_NE(scene->renderGraph(), nullptr);
+            EXPECT_NE(scene->getWorld(), nullptr);
+
+            //
+            delete scene;
+        }
+    }
+
+    namespace Composite {
         TEST(Head, BodyResolve) {
             //
-            auto scene = Scene::make();
-            scene->setup();
+            auto* scene = new RevScene();
 
-            auto& graphs = scene->graphs();
-            auto& graph = graphs.front();
+            auto* graph { scene->renderGraph() };
 
             //
             EXPECT_TRUE(graph->root().nodeId());
 
-            auto& storage = graph->storage();
+            auto& storage { graph->getNodeStorage() };
 
-            auto& root = graph->root();
-            auto node = root.get(*storage, _STD nothrow_t {});
+            const auto& root = graph->root();
+            const auto node = root.get(storage.get());
 
-            EXPECT_FALSE(node == nullptr);
+            EXPECT_NE(node, nullptr);
 
             //
-            Scene::destroy();
+            delete scene;
         }
     }
 
@@ -493,5 +480,4 @@ namespace SceneModule {
         }
     }
     #endif
-
 }

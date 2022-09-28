@@ -6,10 +6,11 @@
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene/RevScene.hpp>
 
+#include "ModelDataTokens.hpp"
 #include "StaticGeometryBatch.hpp"
 #include "../Cache/CacheResult.hpp"
 #include "../Resource/StaticGeometryResource.hpp"
-#include "ModelDataTokens.hpp"
+#include "Engine.Assets/Types/GfxMaterial.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -33,6 +34,16 @@ void StaticGeometryModel::create(const ptr<scene::Scene> scene_) {
     _boundary = origin->getBoundaries();
     _staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(origin->getStaticGeometryAsset().internal());
     _staticGeometryResource = Session::get()->modules().resourceManager()->loader().load(_staticGeometryAsset, nullptr);
+
+    /**
+     *
+     */
+    for (const auto& material : origin->overrideMaterials()) {
+        auto* const wrapped { static_cast<ptr<assets::GfxMaterial>>(material.internal()) };
+        const auto resource { Session::get()->modules().resourceManager()->loader().load(wrapped, nullptr) };
+
+        _overrideMaterials.push_back(static_cast<ptr<gfx::MaterialResource>>(resource));
+    }
 }
 
 void StaticGeometryModel::update(const ptr<scene::Scene> scene_) {}
@@ -64,13 +75,13 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
      * Acquire ModelBatch
      */
     ptr<cache::ModelBatch> result { nullptr };
-    const auto cacheResult { state_->cache.fetch(reinterpret_cast<ptrdiff_t>(owner()), result) };
+    const auto cacheResult { state_->cacheCtrl.cache()->fetch(reinterpret_cast<ptrdiff_t>(owner()), result) };
     if (cacheResult != cache::CacheResult::eHit) {
         /**
          * On cache miss create new instance and store back for further usage
          */
         result = EmberObject::create<StaticGeometryBatch>();
-        state_->cache.store(reinterpret_cast<ptrdiff_t>(owner()), ptr<cache::ModelBatch> { result });
+        state_->cacheCtrl.cache()->store(reinterpret_cast<ptrdiff_t>(owner()), ptr<cache::ModelBatch> { result });
         // TODO: Check whether we can improve storing a copy of the pointer, cause value copy currently requires a explicit copy
     }
 

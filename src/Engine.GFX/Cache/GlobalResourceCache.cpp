@@ -190,6 +190,7 @@ ptr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Textur
     auto view { atlas->makeView(0ui32/* TODO: Layers */, { 0ui32, asset_->getMipLevelCount() - 1ui32 }) };
 
     auto* res { make_ptr<TextureResource>() };
+    res->setOrigin(asset_);
     res->_payload.view = _STD move(view);
 
     /**

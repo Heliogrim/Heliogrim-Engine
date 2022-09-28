@@ -28,10 +28,10 @@ cref<memory::MemoryLayout> VirtualMemory::layout() const noexcept {
     return _layout;
 }
 
-non_owning_rptr<VirtualMemoryPage> VirtualMemory::definePage(const u64 size_) {
+non_owning_rptr<VirtualMemoryPage> VirtualMemory::definePage(const u64 offset_, const u64 size_) {
 
     // TODO: replace naïve implementation
-    auto* page { make_ptr<VirtualMemoryPage>(this, 0ui64, size_) };
+    auto* page { make_ptr<VirtualMemoryPage>(this, offset_, size_) };
     _pages.push_back(page);
 
     return page;

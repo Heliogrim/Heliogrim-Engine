@@ -2,19 +2,25 @@
 
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Assets/Types/AssetConcept.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
 
 #include "../Manage/Resource.hpp"
+#include "../Manage/ResourceConcept.hpp"
 
 namespace ember::engine::res {
 
     template <assets::IsAsset Type_>
     struct LoaderOptions;
 
-    class __declspec(novtable) LoaderBase {
+    template <assets::IsAsset AssetType_, template<IsResource> typename PartialType_ = PartialIdentity>
+    class Loader;
+
+    class __declspec(novtable) LoaderBase :
+        public EmberObject {
     public:
-        template <assets::IsAsset AssetType_>
+        template <assets::IsAsset AssetType_, template<IsResource> typename PartialType_>
         friend class Loader;
 
     public:
@@ -60,7 +66,7 @@ namespace ember::engine::res {
         [[nodiscard]] virtual result_type operator()(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr) = 0;
     };
 
-    template <assets::IsAsset AssetType_>
+    template <assets::IsAsset AssetType_, template<IsResource> typename PartialType_>
     class __declspec(novtable) Loader :
         public LoaderBase {
     public:
@@ -70,7 +76,9 @@ namespace ember::engine::res {
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
-        using result_type = base_type::result_wrapper_type<ptr<Resource>>;
+        static_assert(IsResource<PartialType_<Resource>>);
+
+        using result_type = base_type::result_wrapper_type<ptr<PartialType_<Resource>>>;
         using options_type = ptr<LoaderOptions<AssetType_>>;
 
     protected:

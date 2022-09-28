@@ -53,6 +53,7 @@ AllocationResult VkAllocator::allocate(cref<MemoryLayout> layout_, const u64 siz
     }
 
     dst_ = new AllocatedMemory {
+        this,
         nullptr,
         layout_,
         size_,

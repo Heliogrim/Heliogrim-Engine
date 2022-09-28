@@ -1,8 +1,10 @@
 #pragma once
 
+#include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Url.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <gli/gli.hpp>
+#include <Engine.Assets/Types/Texture/Texture.hpp>
 
 #include "../Cache/__fwd.hpp"
 #include "../Device/Device.hpp"
@@ -10,6 +12,14 @@
 #include "../Texture/Texture.hpp"
 
 namespace ember::engine::gfx::loader {
+
+    enum class TextureLoaderFlagBits : u8 {
+        eNone = 0b0000 << 0,
+        eLazyDataLoading = 0b0001 << 0
+    };
+
+    using TextureLoaderFlags = Flag<TextureLoaderFlagBits>;
+
     class TextureLoader {
     public:
         using value_type = TextureLoader;
@@ -39,7 +49,19 @@ namespace ember::engine::gfx::loader {
         ember::concurrent::promise<Texture> load(const Url& url_) const;
 
         // [[nodiscard]] ember::concurrent::promise<uptr<VirtualTextureView>> loadTo(const Url& url_, mref<uptr<VirtualTextureView>> dst_) const;
-        [[nodiscard]] uptr<VirtualTextureView> loadTo(const Url& url_, mref<uptr<VirtualTextureView>> dst_) const;
+        [[nodiscard]] uptr<VirtualTextureView> loadTo(const Url& url_, mref<uptr<VirtualTextureView>> dst_,
+            TextureLoaderFlags flags_ = TextureLoaderFlagBits::eNone) const;
+
+        void partialLoadTo(
+            const Url& url_,
+            const ptr<const ::ember::engine::res::StreamLoaderOptions<::ember::engine::assets::Texture>> options_,
+            _Inout_ const ptr<VirtualTextureView> dst_
+        ) const;
+
+        void partialUnload(
+            const ptr<const ::ember::engine::res::StreamLoaderOptions<::ember::engine::assets::Texture>> options_,
+            _Inout_ const ptr<VirtualTextureView> dst_
+        ) const;
 
         Texture __tmp__load(const Url& url_);
 

@@ -4,6 +4,7 @@
 
 #include "../AssetGuid.hpp"
 #include "../Types/Asset.hpp"
+#include "../Types/AssetConcept.hpp"
 
 namespace ember::engine::assets {
 

@@ -3,6 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "../Types/Asset.hpp"
+#include "../Types/AssetConcept.hpp"
 
 namespace ember::engine::assets {
     /**
