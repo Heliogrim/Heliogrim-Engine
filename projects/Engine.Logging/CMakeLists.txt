@@ -1,5 +1,5 @@
 # Target Name
-set(target Engine.GFX)
+set(target Engine.Logging)
 
 # Linker
 set(link_libraries ${META_PROJECT_NAME}::Engine.Common)
