@@ -1,5 +1,5 @@
 variables:
-    GIT_DEPTH: 10
+    GIT_DEPTH: 0
 
 build.windows.msvc:
     stage: build
@@ -10,14 +10,8 @@ build.windows.msvc:
     
     # Preparation
     before_script:
-        - '[ -e cmdlet.cmd ] && rm cmdlet.cmd'
-        - touch cmdlet.cmd
-        - chmod +x cmdlet.cmd
-
-        - echo $'cmake --version' >> cmdlet.cmd
-        - echo $'cmake -E capabilities' >> cmdlet.cmd
-
-        - cmd //c cmdlet.cmd
+        - cmake --version
+        - cmake -E capabilities
     
     # Process
     script:
@@ -38,17 +32,17 @@ build.windows.msvc:
         # Linking Resources
 
         #- rm -rf dist/Debug/resources
-        - cmd //c "IF EXIST .\dist\Debug\resources del /f /q /s .\dist\Debug\resources && rmdir /q /s .\dist\Debug\resources"
+        #- if (Test-Path ".\dist\Debug\resources") { Remove-Item ".\dist\Debug\resources" -Recurse -Force -Confirm:$False }
         #- rm -rf dist/Profile/resources
-        #- cmd //c "IF EXIST .\dist\Profile\resources del /f /q /s .\dist\Profile\resources && rmdir /q /s .\dist\Profile\resources"
+        #- if (Test-Path ".\dist\Profile\resources") { Remove-Item ".\dist\Profile\resources" -Recurse -Force -Confirm:$False }
         #- rm -rf dist/Release/resources
-        #- cmd //c "IF EXIST .\dist\Release\resources del /f /q /s .\dist\Release\resources && rmdir /q /s .\dist\Release\resources"
+        #- if (Test-Path ".\dist\Release\resources") { Remove-Item ".\dist\Release\resources" -Recurse -Force -Confirm:$False }
         #- ln -sfrn resources dist/Debug/resources
-        - cmd //c "mklink /j .\dist\Debug\resources .\resources"
+        #- New-Item -ItemType Junction -Path ".\dist\Debug\resources" -Target ".\resources"
         #- ln -sfrn resources dist/Profile/resources
-        #- cmd //c "mklink /j .\dist\Profile\resources .\resources"
+        #- New-Item -ItemType Junction -Path ".\dist\Profile\resources" -Target ".\resources"
         #- ln -sfrn resources dist/Release/resources
-        #- cmd //c "mklink /j .\dist\Release\resources .\resources"
+        #- New-Item -ItemType Junction -Path ".\dist\Release\resources" -Target ".\resources"
     
     artifacts:
         name: Ember-Win-MSVC-$CI_COMMIT_REF_NAME
