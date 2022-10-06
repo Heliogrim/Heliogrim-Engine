@@ -285,6 +285,38 @@ namespace ember::math {
         }
 
         /**
+         * Addition assignment operator
+         *
+         * @author Julius
+         * @date 30.09.2022
+         *
+         * @param  other_ The other.
+         *
+         * @returns The result of the operation.
+         */
+        reference_type operator+=(const_reference_type other_) {
+            x += other_.x;
+            y += other_.y;
+            return *this;
+        }
+
+        /**
+         * Subtraction assignment operator
+         *
+         * @author Julius
+         * @date 30.09.2022
+         *
+         * @param  other_ The other.
+         *
+         * @returns The result of the operation.
+         */
+        reference_type operator-=(const_reference_type other_) {
+            x -= other_.x;
+            y -= other_.y;
+            return *this;
+        }
+
+        /**
          * Addition operator
          *
          * @author Julius
@@ -1124,6 +1156,21 @@ namespace ember::math {
          * @author Julius
          * @date 16.01.2020
          *
+         * @param  p0_ The scalar paired value to store first.
+         * @param  p1_ The scalar paired value to store second.
+         */
+        explicit constexpr vec4_t(const value_type& p0_, const value_type& p1_) noexcept :
+            x(p0_),
+            y(p1_),
+            z(p0_),
+            w(p1_) {}
+
+        /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 16.01.2020
+         *
          * @param  xy_ The xy.
          * @param  zw_ The zw.
          */
@@ -1299,6 +1346,19 @@ namespace ember::math {
             const value_type l = length();
             scale(1 / l);
             return *this;
+        }
+
+        /**
+         * Check zero vector
+         *
+         * @author Julius
+         * @date 16.01.2020
+         *
+         * @returns whether vector is zero.
+         */
+        [[nodiscard]] bool zero() const {
+            // TODO: Unsafe possible float point equality operation
+            return x == 0 && y == 0 && z == 0 && w == 0;
         }
 
         /**
