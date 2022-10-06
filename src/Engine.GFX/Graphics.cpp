@@ -11,6 +11,7 @@
 #include <Engine.GFX.Glow.3D/Renderer/RevRenderer.hpp>
 #include <Engine.GFX.Glow.UI/Renderer/UIRenderer.hpp>
 
+#include "RenderTarget.hpp"
 #include "todo.h"
 #include "Cache/GlobalCacheCtrl.hpp"
 #include "Cache/GlobalResourceCache.hpp"
@@ -23,9 +24,8 @@
 #include "Renderer/Renderer.hpp"
 #include "Shader/ShaderStorage.hpp"
 #include "Swapchain/Swapchain.hpp"
-#include "Swapchain/VkSwapchain.hpp"
+#include "Swapchain/VkSurfaceSwapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
-#include "RenderTarget.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember::engine;
@@ -87,8 +87,9 @@ void Graphics::setup() {
     /**
      * Create a new swapchain to present image
      */
-    _swapchain = new VkSwapchain(_device, _surface);
-    _swapchain->setup();
+    _swapchain = new VkSurfaceSwapchain();
+    static_cast<ptr<VkSurfaceSwapchain>>(_swapchain)->useSurface(_surface);
+    _swapchain->setup(_device);
 
     /**
      * Create Shader Storage
@@ -109,7 +110,7 @@ void Graphics::setup() {
     _camera = new Camera();
     _camera->setPosition({ 8.F, /*-1.8F*/1.8F, 8.F });
     _camera->setLookAt({ 0.F, /*-1.8F*/0.F, 0.F });
-    _camera->setPerspective(60.F, static_cast<float>(_swapchain->width()) / static_cast<float>(_swapchain->height()),
+    _camera->setPerspective(60.F, static_cast<float>(_swapchain->extent().x) / static_cast<float>(_swapchain->extent().y),
         0.1F, 100.F);
 
     _camera->update();
@@ -124,7 +125,21 @@ void Graphics::setup() {
     _renderTarget->use(_swapchain);
     _renderTarget->use(_renderer);
 
-    _renderTarget->rebuildPasses(_camera);
+    _renderTarget->buildPasses(_camera);
+
+    #if TRUE
+    /**
+     * Setup (Main) UI RenderTarget
+     */
+    _uiRenderTarget = make_ptr<RenderTarget>();
+
+    _uiRenderTarget->use(_device);
+    _uiRenderTarget->use(&_surface);
+    _uiRenderTarget->use(_swapchain);
+    _uiRenderTarget->use(_uiRenderer);
+
+    _uiRenderTarget->buildPasses(_camera);
+    #endif
 
     /**
      * Signal Setup
@@ -164,6 +179,14 @@ void Graphics::tidy() {
     _device->computeQueue()->vkQueue().waitIdle();
     _device->graphicsQueue()->vkQueue().waitIdle();
     _device->transferQueue()->vkQueue().waitIdle();
+
+    #if TRUE
+    /**
+     * Cleanup (Main) UI RenderTarget
+     */
+    delete _uiRenderTarget;
+    _uiRenderTarget = nullptr;
+    #endif
 
     /**
      * Cleanup (Main) RenderTarget
@@ -246,14 +269,41 @@ const non_owning_rptr<gfx::cache::GlobalCacheCtrl> Graphics::cacheCtrl() const n
     return _cacheCtrl.get();
 }
 
-void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
+void Graphics::__tmp__resize(cref<math::uivec2> extent_) {
+
+    /**
+     * Create a new swapchain to present image
+     */
+    auto* nextSwapchain = new VkSurfaceSwapchain();
+    nextSwapchain->useSurface(_surface);
+    nextSwapchain->setup(_device);
+
+    /**
+     * Block Render Passes related to swapchain to rebuild passes
+     */
+    auto succeeded = _uiRenderTarget->rebuildPasses(nextSwapchain);
+    assert(succeeded);
+
+    succeeded = _renderTarget->rebuildPasses(nextSwapchain);
+    assert(succeeded);
+
+    /**
+     * Cleanup
+     */
+    _swapchain->destroy();
+    delete _swapchain;
+
+    _swapchain = nextSwapchain;
+}
+
+void Graphics::_tick(ptr<scene::IRenderScene> scene_, const ptr<gfx::RenderTarget> target_) {
 
     SCOPED_STOPWATCH
 
     /**
      * Tick (Main) RenderTarget
      */
-    auto* renderPass = _renderTarget->next();
+    auto* renderPass = target_->next();
 
     /**
      * Warning: Temporary Update to change state
@@ -283,8 +333,10 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_) {
     renderPass->use(scene_);
     renderPass->use(_camera);
 
-    _renderTarget->update();
-    _renderTarget->finish({});
+    target_->update();
+
+    auto result = target_->finish({});
+    assert(result != RenderEnqueueResult::eFailed);
 
     /**
      * Debug Metrics
@@ -321,9 +373,17 @@ void Graphics::reschedule() {
                     /**
                      * TODO: Replace Guard
                      */
+                    #if FALSE
                     if (_renderScene) {
-                        _tick(_renderScene);
+                        _tick(_renderScene, _renderTarget);
                     }
+                    #endif
+
+                    #if TRUE
+                    if (_uiRenderScene) {
+                        _tick(_uiRenderScene, _uiRenderTarget);
+                    }
+                    #endif
 
                     return true;
                 }
@@ -343,11 +403,13 @@ void Graphics::reschedule() {
 
 #include <Ember/SkyboxComponent.hpp>
 #include <Ember/StaticGeometryComponent.hpp>
+#include <Ember/UIComponent.hpp>
 #include <Engine.Scene/RevScene.hpp>
 
 #include "Scene/SceneTag.hpp"
 #include "Scene/SkyboxModel.hpp"
 #include "Scene/StaticGeometryModel.hpp"
+#include <Engine.GFX.Glow.UI/Scene/UISceneModel.hpp>
 
 bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
     _renderScene = scene_;
@@ -378,6 +440,22 @@ bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
 
 bool Graphics::useAsUIRenderScene(const ptr<scene::IRenderScene> scene_) {
     _uiRenderScene = scene_;
+
+    if (scene_ == nullptr) {
+        return true;
+    }
+
+    // TODO: Move callback register to other position and reconcider lifecycle \
+    //  cause elements added to scene before callback register will be lost data
+
+    /**
+     *
+     */
+    auto* const scene { static_cast<const ptr<scene::RevScene>>(scene_) };
+
+    scene->setNodeType(GfxSceneTag {}, UIComponent::typeId,
+        EmberObject::create<glow::ui::UISceneModel, const ptr<SceneComponent>>);
+
     return true;
 }
 

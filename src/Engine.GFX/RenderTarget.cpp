@@ -7,7 +7,6 @@
 #include "Renderer/HORenderPass.hpp"
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
-#include "Swapchain/VkSwapchain.hpp"
 
 using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
@@ -24,7 +23,9 @@ RenderTarget::RenderTarget() :
     _otfCpuGpu(),
     _enforceCpuGpuSync(true),
     _onTheFlight(true),
-    _syncIdx(0ui32) {}
+    _syncIdx(0ui32),
+    _swapIdx(~0ui32),
+    _swapSignal() {}
 
 RenderTarget::~RenderTarget() {
     tidy();
@@ -96,7 +97,7 @@ void RenderTarget::nextSync() {
     _syncIdx = 1ui32 - _syncIdx;
 }
 
-void RenderTarget::rebuildPasses(cref<ptr<Camera>> camera_, cref<ptr<scene::IRenderScene>> scene_) {
+void RenderTarget::buildPasses(cref<ptr<Camera>> camera_, cref<ptr<scene::IRenderScene>> scene_) {
 
     assert(_device);
     assert(_renderer);
@@ -141,7 +142,45 @@ void RenderTarget::rebuildPasses(cref<ptr<Camera>> camera_, cref<ptr<scene::IRen
         }
 
     }
+}
 
+bool RenderTarget::rebuildPasses(cref<non_owning_rptr<Swapchain>> swapchain_) {
+
+    /**
+     *
+     */
+    const auto req { _onTheFlight ? 2ui32 : 1ui32 };
+
+    /**
+     * Block render passes
+     */
+    if (_enforceCpuGpuSync) {
+        for (u32 tsi { 0ui32 }; tsi < req; ++tsi) {
+
+            auto cpuGpuSync { _passes[tsi]->unsafeSync() };
+
+            if (cpuGpuSync) {
+                auto result { _device->vkDevice().waitForFences(1, &cpuGpuSync, VK_TRUE, UINT64_MAX) };
+                // Might fail when one was submitted or pipeline gets dumped/error state
+                assert(result == vk::Result::eSuccess);
+            }
+
+        }
+    }
+
+    /**
+     *
+     */
+    for (u32 tsi { 0ui32 }; tsi < req; ++tsi) {
+        _passes[tsi] = _renderer->reallocate(_STD move(_passes[tsi]), { .target = swapchain_->at(tsi) });
+        assert(_passes[tsi]);
+    }
+
+    /**
+     * 
+     */
+    use(swapchain_);
+    return true;
 }
 
 const non_owning_rptr<render::HORenderPass> RenderTarget::next() {
@@ -163,18 +202,11 @@ const non_owning_rptr<render::HORenderPass> RenderTarget::next() {
     /**
      * Next Swapchain Image
      */
-    u32 image { ~0ui32 };
-    auto nextResult {
-        _device->vkDevice().acquireNextImageKHR(
-            static_cast<ptr<VkSwapchain>>(_swapchain)->vkSwapchain(),
-            UINT64_MAX,
-            _onTheFlight ? _otfImage[_syncIdx] : VK_NULL_HANDLE,
-            VK_NULL_HANDLE,
-            &image
-        )
-    };
+    s64 nextIdx { ~0ui32 };
+    sptr<Texture> nextImage {};
+    vk::Semaphore nextSignal {};
 
-    _swapchain->setCurrentIdx(image);
+    _swapchain->acquireNext(nextIdx, nextImage, nextSignal);
 
     if (!_onTheFlight) {
         /**
@@ -187,10 +219,13 @@ const non_owning_rptr<render::HORenderPass> RenderTarget::next() {
         }
     }
 
+    _swapSignal = nextSignal;
+    _swapIdx = nextIdx;
+
     /**
      *
      */
-    return _passes[image];
+    return _passes[nextIdx];
 }
 
 void RenderTarget::update() {
@@ -201,7 +236,7 @@ void RenderTarget::update() {
     CommandBatch layout {};
 
     if (_onTheFlight) {
-        layout.pushBarrier(_otfImage[_syncIdx]);
+        layout.pushBarrier(_swapSignal);
         layout.pushSignal(_otfFinish[_syncIdx]);
 
         layout.barrierStages() = vk::PipelineStageFlagBits::eColorAttachmentOutput;
@@ -212,14 +247,15 @@ void RenderTarget::update() {
     assert(feedback);
 }
 
-void RenderTarget::finish(cref<Vector<vk::Semaphore>> waits_/* , cref<Vector<vk::Semaphore>> signals_ */) {
+RenderEnqueueResult
+RenderTarget::finish(cref<Vector<vk::Semaphore>> waits_/* , cref<Vector<vk::Semaphore>> signals_ */) {
 
     /**
      * If we got no surface, we can't present results
      */
     if (!_surface) {
         nextSync();
-        return;
+        return RenderEnqueueResult::eFailed;
     }
 
     /**
@@ -240,21 +276,18 @@ void RenderTarget::finish(cref<Vector<vk::Semaphore>> waits_/* , cref<Vector<vk:
     /**
      *
      */
-    const auto index { _swapchain->currentIdx() };
+    const auto vkResult { _swapchain->presentNext(_swapIdx, waits) };
+    RenderEnqueueResult result {};
 
-    const vk::PresentInfoKHR info {
-        static_cast<u32>(waits.size()),
-        waits.data(),
-        1ui32,
-        &(static_cast<ptr<VkSwapchain>>(_swapchain)->vkSwapchain()),
-        &index
-    };
-
-    auto result { _device->graphicsQueue()->vkQueue().presentKHR(info) };
-    assert(result == vk::Result::eSuccess);
+    if (vkResult == vk::Result::eSuboptimalKHR || vkResult == vk::Result::eErrorOutOfDateKHR) {
+        result = RenderEnqueueResult::eFailedChanged;
+    } else if (vkResult != vk::Result::eSuccess) {
+        result = RenderEnqueueResult::eFailed;
+    }
 
     /**
      *
      */
     nextSync();
+    return result;
 }

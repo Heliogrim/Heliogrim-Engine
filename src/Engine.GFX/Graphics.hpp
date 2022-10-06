@@ -10,6 +10,8 @@
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
 
+#include <Engine.Common/Math/Vector.hpp>
+
 /**
  * Forward Declaration
  */
@@ -207,6 +209,15 @@ namespace ember::engine {
     private:
         ptr<gfx::RenderTarget> _renderTarget;
 
+        #if TRUE
+        ptr<gfx::RenderTarget> _uiRenderTarget = nullptr;
+        #endif
+
+        #if TRUE
+    public:
+        void __tmp__resize(cref<math::uivec2> extent_);
+        #endif
+
         #pragma region Ember Graphics
 
         /**
@@ -216,8 +227,9 @@ namespace ember::engine {
          * @date 13.12.2020
          *
          * @param scene_ The scene to render.
+         * @param target_ The target where to render the scene.
          */
-        void _tick(ptr<scene::IRenderScene> scene_);
+        void _tick(ptr<scene::IRenderScene> scene_, const ptr<gfx::RenderTarget> target_);
 
         /**
          * Process the graphic passes
