@@ -1,32 +1,42 @@
-#include "VkSwapchain.hpp"
+#include "VkSurfaceSwapchain.hpp"
 
-#ifdef _PROFILING
-#include <Engine.Common/Profiling/Stopwatch.hpp>
-#endif
-
-#include "../API/VkTranslate.hpp"
-#include "../Texture/TextureFactory.hpp"
+#include "Engine.GFX/API/VkTranslate.hpp"
+#include "Engine.GFX/Command/CommandQueue.hpp"
+#include "Engine.GFX/Texture/TextureFactory.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
 
-#if TRUE
-void pretransform(cref<sptr<Device>>, cref<Vector<sptr<Texture>>>);
-#endif
+/**
+ *
+ */
 
-VkSwapchain::VkSwapchain(cref<sptr<Device>> device_, cref<Surface> surface_) :
+math::uivec2 clampExtent(math::uivec2 extent_, cref<vk::SurfaceCapabilitiesKHR> capabilities_) noexcept;
+
+vk::PresentModeKHR selectPresentMode(cref<Vector<vk::PresentModeKHR>> modes_) noexcept;
+
+void pretransform(cref<sptr<Device>> device_, cref<Vector<SwapchainImage>> textures_);
+
+/**
+ *
+ */
+
+VkSurfaceSwapchain::VkSurfaceSwapchain() :
     Swapchain(),
-    _device(device_),
-    _surface(surface_) {}
+    _signals(),
+    _vkSwapchain(),
+    _surface() {}
 
-VkSwapchain::~VkSwapchain() {
-    VkSwapchain::destroy();
+VkSurfaceSwapchain::~VkSurfaceSwapchain() {
+    destroy();
 }
 
-void VkSwapchain::setup() {
 
-    SCOPED_STOPWATCH
+void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
+    /**/
+    Swapchain::setup(device_);
 
+    /**/
     assert(_device);
     assert(/*_surface*/true);
 
@@ -81,14 +91,14 @@ void VkSwapchain::setup() {
     assert(_vkSwapchain);
 
     const auto swapImages = _device->vkDevice().getSwapchainImagesKHR(_vkSwapchain);
-    _images.resize(swapImages.size(), nullptr);
+    _images.resize(swapImages.size(), {});
 
     for (u32 i = 0; i < swapImages.size(); ++i) {
         /**
          *
          */
-        _images[i] = make_sptr<Texture>();
-        auto& texture = _images[i];
+        _images[i].image = make_sptr<Texture>();
+        auto& texture = _images[i].image;
 
         assert(texture);
 
@@ -100,6 +110,7 @@ void VkSwapchain::setup() {
         texture->extent() = { _extent, 1ui32 };
         texture->mipLevels() = 1ui32;
         texture->buffer()._vkAspect = vk::ImageAspectFlagBits::eColor;
+        texture->buffer().vkDevice() = _device->vkDevice();
         texture->buffer().image() = swapImages[i];
 
         TextureFactory::get()->buildView(*texture);
@@ -108,30 +119,160 @@ void VkSwapchain::setup() {
         assert(texture->buffer().image());
     }
 
-    #if TRUE
+    /**
+     *
+     */
     pretransform(_device, _images);
-    #endif
 }
 
-void VkSwapchain::destroy() {
+void VkSurfaceSwapchain::destroy() {
 
-    SCOPED_STOPWATCH
+    /**/
+    for (auto&& signal : _signals) {
+        _device->vkDevice().destroySemaphore(signal);
+    }
+    _signals.clear();
 
+    /**
+     * We are must not destroy/delete the swapchain acquired images
+     */
     for (auto& entry : _images) {
-        entry->destroy();
+        entry.image->buffer().image() = VK_NULL_HANDLE;
+    }
+
+    /**
+     *
+     */
+    for (auto& entry : _images) {
+        /**/
+        entry.image->destroy();
+        /**/
+        if (entry.readySignal) {
+            _device->vkDevice().destroySemaphore(entry.readySignal);
+        }
     }
 
     _images.clear();
 
     _device->vkDevice().destroySwapchainKHR(_vkSwapchain);
-    _vkSwapchain = nullptr;
+    _vkSwapchain = VK_NULL_HANDLE;
 }
 
-cref<vk::SwapchainKHR> VkSwapchain::vkSwapchain() const noexcept {
-    return _vkSwapchain;
+bool VkSurfaceSwapchain::acquireNext(ref<s64> idx_, ref<sptr<Texture>> image_, ref<vk::Semaphore> signal_) {
+
+    const auto nxtSig { nextSignal() };
+
+    u32 nextIdx { ~0ui32 };
+    // TODO: Handle next result while acquiring next image
+    [[maybe_unused]] auto nextResult {
+        _device->vkDevice().acquireNextImageKHR(
+            _vkSwapchain,
+            UINT64_MAX,
+            nxtSig,
+            VK_NULL_HANDLE,
+            &nextIdx
+        )
+    };
+
+    /**
+     * Store local
+     */
+    restoreSignal(_images[nextIdx].readySignal);
+
+    _images[nextIdx].readySignal = nxtSig;
+    _images[nextIdx].presentWaits.clear();
+
+    /**
+     * Store output
+     */
+    idx_ = static_cast<s64>(nextIdx);
+    image_ = _images[nextIdx].image;
+    signal_ = nxtSig;
+
+    return true;
 }
 
-math::uivec2 VkSwapchain::clampExtent(math::uivec2 extent_, cref<vk::SurfaceCapabilitiesKHR> capabilities_) noexcept {
+vk::Result VkSurfaceSwapchain::presentNext(u64 idx_) {
+
+    const u32 idx { static_cast<u32>(idx_) };
+    ref<SwapchainImage> image { _images[idx_] };
+
+    const vk::PresentInfoKHR info {
+        static_cast<u32>(image.presentWaits.size()),
+        image.presentWaits.data(),
+        1ui32,
+        &_vkSwapchain,
+        &idx
+    };
+
+    const auto vkResult {
+        _device->graphicsQueue()->vkQueue().presentKHR(info)
+    };
+
+    return vkResult;
+}
+
+vk::Result VkSurfaceSwapchain::presentNext(u64 idx_, cref<Vector<vk::Semaphore>> waits_) {
+
+    const u32 idx { static_cast<u32>(idx_) };
+    ref<SwapchainImage> image { _images[idx_] };
+
+    /**/
+    image.presentWaits.insert(image.presentWaits.end(), waits_.begin(), waits_.end());
+
+    const vk::PresentInfoKHR info {
+        static_cast<u32>(image.presentWaits.size()),
+        image.presentWaits.data(),
+        1ui32,
+        &_vkSwapchain,
+        &idx
+    };
+
+    const auto vkResult {
+        _device->graphicsQueue()->vkQueue().presentKHR(info)
+    };
+
+    return vkResult;
+}
+
+bool VkSurfaceSwapchain::consumeNext(ref<Texture> image_, ref<Vector<vk::Semaphore>> waits_) {
+    return false;
+}
+
+vk::Semaphore VkSurfaceSwapchain::nextSignal() {
+
+    if (!_signals.empty()) {
+        auto signal { _signals.back() };
+        _signals.pop_back();
+        return signal;
+    }
+
+    vk::SemaphoreCreateInfo info {};
+    const auto signal { _device->vkDevice().createSemaphore(info) };
+    return signal;
+}
+
+void VkSurfaceSwapchain::restoreSignal(const vk::Semaphore signal_) {
+
+    if (!signal_) {
+        return;
+    }
+
+    _signals.push_back(signal_);
+}
+
+void VkSurfaceSwapchain::useSurface(cref<Surface> surface_) {
+    _surface = surface_;
+}
+
+/**
+ *
+ */
+
+#include <Engine.GFX/Device/Device.hpp>
+#include <Engine.GFX/Command/CommandBuffer.hpp>
+
+math::uivec2 clampExtent(math::uivec2 extent_, cref<vk::SurfaceCapabilitiesKHR> capabilities_) noexcept {
     if (capabilities_.currentExtent.width == 0xFFFFFFFF) {
 
         if (extent_.x < capabilities_.minImageExtent.width) {
@@ -156,7 +297,7 @@ math::uivec2 VkSwapchain::clampExtent(math::uivec2 extent_, cref<vk::SurfaceCapa
     return extent_;
 }
 
-vk::PresentModeKHR VkSwapchain::selectPresentMode(cref<Vector<vk::PresentModeKHR>> modes_) const noexcept {
+vk::PresentModeKHR selectPresentMode(cref<Vector<vk::PresentModeKHR>> modes_) noexcept {
     vk::PresentModeKHR pm { vk::PresentModeKHR::eFifo };
 
     for (u32 i = 0; i < modes_.size(); ++i) {
@@ -173,16 +314,12 @@ vk::PresentModeKHR VkSwapchain::selectPresentMode(cref<Vector<vk::PresentModeKHR
     return pm;
 }
 
-#if TRUE
-#include <Engine.GFX/Device/Device.hpp>
-#include <Engine.GFX/Command/CommandBuffer.hpp>
-
-void pretransform(cref<sptr<Device>> device_, cref<Vector<sptr<Texture>>> textures_) {
+void pretransform(cref<sptr<Device>> device_, cref<Vector<SwapchainImage>> textures_) {
 
     Vector<vk::ImageMemoryBarrier> imgBarriers {};
     for (const auto& entry : textures_) {
 
-        if (isDepthFormat(entry->format()) || isStencilFormat(entry->format())) {
+        if (isDepthFormat(entry.image->format()) || isStencilFormat(entry.image->format())) {
             continue;
         }
 
@@ -193,13 +330,13 @@ void pretransform(cref<sptr<Device>> device_, cref<Vector<sptr<Texture>>> textur
             vk::ImageLayout::ePresentSrcKHR,
             VK_QUEUE_FAMILY_IGNORED,
             VK_QUEUE_FAMILY_IGNORED,
-            entry->buffer().image(),
+            entry.image->buffer().image(),
             vk::ImageSubresourceRange {
                 vk::ImageAspectFlagBits::eColor,
                 0,
-                entry->mipLevels(),
+                entry.image->mipLevels(),
                 0,
-                entry->layer()
+                entry.image->layer()
             }
         });
     }
@@ -225,5 +362,3 @@ void pretransform(cref<sptr<Device>> device_, cref<Vector<sptr<Texture>>> textur
 
     pool->lck().release();
 }
-
-#endif

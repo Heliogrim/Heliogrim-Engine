@@ -2,6 +2,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
+#include "RenderEnqueueResult.hpp"
 #include "vkinc.hpp"
 
 namespace ember::engine::gfx::render {
@@ -103,6 +104,10 @@ namespace ember::engine::gfx {
         u32 _syncIdx;
 
     private:
+        u32 _swapIdx;
+        vk::Semaphore _swapSignal;
+
+    private:
         void nextSync();
 
     public:
@@ -110,7 +115,13 @@ namespace ember::engine::gfx {
          *
          * @blocking
          */
-        void rebuildPasses(cref<ptr<Camera>> camera_, cref<ptr<scene::IRenderScene>> scene_ = nullptr);
+        void buildPasses(cref<ptr<Camera>> camera_, cref<ptr<scene::IRenderScene>> scene_ = nullptr);
+
+        /**
+         *
+         * @blocking
+         */
+        [[nodiscard]] bool rebuildPasses(cref<non_owning_rptr<Swapchain>> swapchain_);
 
     public:
         /**
@@ -129,6 +140,6 @@ namespace ember::engine::gfx {
          *
          * @non-blocking
          */
-        void finish(cref<Vector<vk::Semaphore>> waits_/* , cref<Vector<vk::Semaphore>> signals_ */);
+        RenderEnqueueResult finish(cref<Vector<vk::Semaphore>> waits_/* , cref<Vector<vk::Semaphore>> signals_ */);
     };
 }
