@@ -121,21 +121,11 @@ namespace ember::engine::gfx {
          */
         [[nodiscard]] const Vector<vk::Semaphore>& barriers() const noexcept;
 
-        /**
-         * Pushes a barrier
-         *
-         * @author Julius
-         * @date 13.12.2020
-         *
-         * @param  barrier_ The semaphore.
-         */
-        void pushBarrier(const vk::Semaphore& barrier_);
-
     private:
         /**
          * Barrier Stages
          */
-        vk::PipelineStageFlags _barrierStages;
+        Vector<vk::PipelineStageFlags> _barrierStages;
 
     public:
         /**
@@ -144,19 +134,21 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 13.12.2020
          *
-         * @returns A reference to the vk::PipelineStageFlags.
+         * @returns A const reference to the Collection of vk::PipelineStageFlags.
          */
-        [[nodiscard]] const vk::PipelineStageFlags& barrierStages() const noexcept;
+        [[nodiscard]] const Vector<vk::PipelineStageFlags>& barrierStages() const noexcept;
 
+    public:
         /**
-         * Barrier stages
+         * Pushes a barrier
          *
          * @author Julius
-         * @date 14.12.2020
+         * @date 13.12.2020
          *
-         * @returns A reference to the vk::PipelineStageFlags.
+         * @param  barrier_ The semaphore.
+         * @param  stage_ The barrier stage.
          */
-        [[nodiscard]] vk::PipelineStageFlags& barrierStages() noexcept;
+        void pushBarrier(const vk::Semaphore& barrier_, cref<vk::PipelineStageFlags> stage_);
 
     private:
         /**

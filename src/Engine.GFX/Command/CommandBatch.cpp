@@ -21,7 +21,7 @@ bool CommandBatch::empty() const noexcept {
 
 void CommandBatch::reset() {
     _barriers.clear();
-    _barrierStages = vk::PipelineStageFlags {};
+    _barrierStages.clear();
     _buffers.clear();
     _signals.clear();
 }
@@ -42,16 +42,13 @@ const Vector<vk::Semaphore>& CommandBatch::barriers() const noexcept {
     return _barriers;
 }
 
-void CommandBatch::pushBarrier(const vk::Semaphore& barrier_) {
+cref<Vector<vk::PipelineStageFlags>> CommandBatch::barrierStages() const noexcept {
+    return _barrierStages;
+}
+
+void CommandBatch::pushBarrier(const vk::Semaphore& barrier_, cref<vk::PipelineStageFlags> stage_) {
     _barriers.push_back(barrier_);
-}
-
-const vk::PipelineStageFlags& CommandBatch::barrierStages() const noexcept {
-    return _barrierStages;
-}
-
-vk::PipelineStageFlags& CommandBatch::barrierStages() noexcept {
-    return _barrierStages;
+    _barrierStages.push_back(stage_);
 }
 
 const Vector<vk::Semaphore>& CommandBatch::signals() const noexcept {

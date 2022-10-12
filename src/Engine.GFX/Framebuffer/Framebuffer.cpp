@@ -22,6 +22,12 @@ Framebuffer::~Framebuffer() noexcept {
 void Framebuffer::destroy() {
     _device->vkDevice().destroyFramebuffer(_vkFramebuffer);
     _vkFramebuffer = nullptr;
+
+    /**
+     * Cleanup Attachments
+     */
+    _attachments.clear();
+    _attachments.shrink_to_fit();
 }
 
 void Framebuffer::setup() {

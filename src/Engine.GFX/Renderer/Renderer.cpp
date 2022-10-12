@@ -152,7 +152,7 @@ void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mr
         vk::SubmitInfo info {
             static_cast<u32>(batch_.barriers().size()),
             batch_.barriers().data(),
-            &batch_.barrierStages(),
+            batch_.barrierStages().data(),
             0,
             nullptr,
             static_cast<u32>(batch_.signals().size()),
@@ -227,7 +227,7 @@ void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mr
     vk::SubmitInfo info {
         static_cast<u32>(batch_.barriers().size()),
         batch_.barriers().data(),
-        &batch_.barrierStages(),
+        batch_.barrierStages().data(),
         1ui32,
         &batch_.buffers()[0].vkCommandBuffer(),
         0ui32,

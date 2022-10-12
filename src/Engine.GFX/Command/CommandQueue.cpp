@@ -50,7 +50,7 @@ void CommandQueue::submit(const CommandBatch& batch_, const vk::Fence& fence_) {
     vk::SubmitInfo info {
         static_cast<u32>(batch_.barriers().size()),
         batch_.barriers().data(),
-        &batch_.barrierStages(),
+        batch_.barrierStages().data(),
         static_cast<u32>(buffers.size()),
         buffers.data(),
         static_cast<u32>(batch_.signals().size()),
