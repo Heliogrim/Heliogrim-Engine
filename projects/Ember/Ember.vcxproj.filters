@@ -25,6 +25,9 @@
     <Filter Include="Quelldateien\Components">
       <UniqueIdentifier>{92a6a43e-1161-4dbb-8b33-fd4d3f2fa4af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Components\__UI__">
+      <UniqueIdentifier>{00906c5e-3db1-463d-9b0f-00439945b848}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Ember\Texture.hpp">
@@ -183,6 +186,12 @@
     <ClInclude Include="..\..\src\Ember\SkyboxComponent.hpp">
       <Filter>Headerdateien\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Ember\UIComponent.hpp">
+      <Filter>Headerdateien\Components\__UI__</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\FontAsset.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember\AudioFormat.cpp">
@@ -292,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\SkyboxComponent.cpp">
       <Filter>Quelldateien\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\FontAsset.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
