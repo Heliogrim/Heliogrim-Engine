@@ -128,6 +128,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\ProcessedModelBatch.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\GraphicPipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Graphics.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Loader\FontLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Loader\MaterialLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Loader\StaticGeometryLoader.cpp" />
@@ -157,6 +158,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderStagePass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderStageProcessor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\RenderTarget.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Resource\FontResource.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Resource\MaterialResource.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Resource\TextureResource.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\GeometryModel.cpp" />
@@ -180,6 +182,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Surface\Surface.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Swapchain\Swapchain.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSurfaceSwapchain.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\TextureFormat.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureSampler.cpp" />
@@ -259,6 +262,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Library\RenderObject.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Library\Types.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Light\LightAtlas.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Loader\FontLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Loader\GeometryLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Loader\MaterialLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Loader\RevTextureLoader.hpp" />
@@ -298,6 +302,8 @@
     <ClInclude Include="..\..\src\Engine.GFX\RasterPolyMode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RasterSamples.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RayTracePipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\RenderEnqueueResult.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\HORenderPassChanges.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\Multiplexer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\HORenderPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderDataToken.hpp" />
@@ -312,6 +318,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderStageProcessor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RenderTarget.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Resource\FontResource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Resource\MaterialResource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Resource\StaticGeometryResource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Resource\TextureResource.hpp" />
@@ -342,6 +349,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Skybox\Skybox.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Surface\Surface.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\Swapchain.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSurfaceSwapchain.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\TextureFormat.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\Texture.hpp" />
