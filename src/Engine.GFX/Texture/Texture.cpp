@@ -18,7 +18,9 @@ Texture::Texture(value_type&& other_) noexcept :
     _type(_STD exchange(other_._type, TextureType::eUndefined)),
     _view(_STD exchange(other_._view, {})) { }
 
-Texture::~Texture() noexcept = default;
+Texture::~Texture() noexcept {
+    destroy();
+}
 
 Texture& Texture::operator=(value_type&& other_) noexcept {
     if (this != &other_) {
@@ -47,6 +49,7 @@ void Texture::destroy() {
 
     if (_view) {
         _buffer.vkDevice().destroy(_view);
+        _view = VK_NULL_HANDLE;
     }
 
     _buffer.destroy();

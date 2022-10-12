@@ -25,6 +25,7 @@
 #include "Shader/ShaderStorage.hpp"
 #include "Swapchain/Swapchain.hpp"
 #include "Swapchain/VkSurfaceSwapchain.hpp"
+#include "Swapchain/VkSwapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
 
 using namespace ember::engine::gfx;
@@ -34,6 +35,7 @@ using namespace ember;
 Graphics::Graphics(cref<sptr<Session>> session_) noexcept :
     _session(session_),
     _swapchain(nullptr),
+    _secondarySwapchain(nullptr),
     _computeQueue(nullptr),
     _graphicsQueue(nullptr),
     _transferQueue(nullptr),
@@ -110,7 +112,8 @@ void Graphics::setup() {
     _camera = new Camera();
     _camera->setPosition({ 8.F, /*-1.8F*/1.8F, 8.F });
     _camera->setLookAt({ 0.F, /*-1.8F*/0.F, 0.F });
-    _camera->setPerspective(60.F, static_cast<float>(_swapchain->extent().x) / static_cast<float>(_swapchain->extent().y),
+    _camera->setPerspective(60.F,
+        static_cast<float>(_swapchain->extent().x) / static_cast<float>(_swapchain->extent().y),
         0.1F, 100.F);
 
     _camera->update();
@@ -118,20 +121,20 @@ void Graphics::setup() {
     /**
      * Setup (Main) RenderTarget
      */
-    _renderTarget = make_ptr<RenderTarget>();
+    _renderTarget = make_sptr<RenderTarget>();
 
     _renderTarget->use(_device);
     _renderTarget->use(&_surface);
-    _renderTarget->use(_swapchain);
+    //_renderTarget->use(_swapchain);
     _renderTarget->use(_renderer);
 
-    _renderTarget->buildPasses(_camera);
+    //_renderTarget->buildPasses(_camera);
 
     #if TRUE
     /**
      * Setup (Main) UI RenderTarget
      */
-    _uiRenderTarget = make_ptr<RenderTarget>();
+    _uiRenderTarget = make_sptr<RenderTarget>();
 
     _uiRenderTarget->use(_device);
     _uiRenderTarget->use(&_surface);
@@ -184,15 +187,13 @@ void Graphics::tidy() {
     /**
      * Cleanup (Main) UI RenderTarget
      */
-    delete _uiRenderTarget;
-    _uiRenderTarget = nullptr;
+    _uiRenderTarget.reset();
     #endif
 
     /**
      * Cleanup (Main) RenderTarget
      */
-    delete _renderTarget;
-    _renderTarget = nullptr;
+    _renderTarget.reset();
 
     // Warning: Temporary
     delete _camera;
@@ -269,42 +270,60 @@ const non_owning_rptr<gfx::cache::GlobalCacheCtrl> Graphics::cacheCtrl() const n
     return _cacheCtrl.get();
 }
 
-void Graphics::__tmp__resize(cref<math::uivec2> extent_) {
-
-    /**
-     * Create a new swapchain to present image
-     */
-    auto* nextSwapchain = new VkSurfaceSwapchain();
-    nextSwapchain->useSurface(_surface);
-    nextSwapchain->setup(_device);
-
-    /**
-     * Block Render Passes related to swapchain to rebuild passes
-     */
-    auto succeeded = _uiRenderTarget->rebuildPasses(nextSwapchain);
-    assert(succeeded);
-
-    succeeded = _renderTarget->rebuildPasses(nextSwapchain);
-    assert(succeeded);
-
-    /**
-     * Cleanup
-     */
-    _swapchain->destroy();
-    delete _swapchain;
-
-    _swapchain = nextSwapchain;
+sptr<gfx::render::Renderer> Graphics::getRenderer(cref<AssocKey<string>> key_) const {
+    return _cachedRenderer.at(key_);
 }
 
-void Graphics::_tick(ptr<scene::IRenderScene> scene_, const ptr<gfx::RenderTarget> target_) {
+sptr<gfx::render::Renderer> Graphics::getRenderer(cref<AssocKey<string>> key_, std::nothrow_t) const noexcept {
+    const auto it { _cachedRenderer.find(key_) };
+    return it != _cachedRenderer.end() ? it->second : nullptr;
+}
+
+bool Graphics::hasRenderer(cref<AssocKey<string>> key_) {
+    return _cachedRenderer.contains(key_);
+}
+
+bool Graphics::removeRenderer(cref<AssocKey<string>> key_) {
+    return _cachedRenderer.erase(key_);
+}
+
+void Graphics::tick(
+    cref<sptr<gfx::RenderTarget>> target_,
+    ptr<scene::IRenderScene> scene_,
+    ptr<gfx::Camera> camera_
+) const {
 
     SCOPED_STOPWATCH
 
     /**
-     * Tick (Main) RenderTarget
+     * Tick RenderTarget
      */
+    if (not target_->ready()) {
+        DEBUG_SNMSG(false, "GFX",
+            "Tried to tick an unready RenderTarget. Please ensure the completness of RenderTargets before ticking/dispatching...")
+        return;
+    }
+
     auto* renderPass = target_->next();
 
+    if (not renderPass) {
+        DEBUG_SNMSG(false, "GFX",
+            "Skipping graphics tick due to missing RenderPass (No next Swapchain Image) at RenderTarget")
+        return;
+}
+
+    renderPass->use(scene_);
+    renderPass->use(camera_);
+
+    target_->update();
+
+    const auto result = target_->finish({});
+    assert(result != RenderEnqueueResult::eFailed);
+}
+
+void Graphics::_tick() {
+
+    #if TRUE
     /**
      * Warning: Temporary Update to change state
      */
@@ -326,17 +345,11 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_, const ptr<gfx::RenderTarge
         //_camera->setLookAt({ 0.F, /*-1.8F*/0.F, 0.F });
         _camera->update();
     }
+    #endif
 
-    /**
-     *
-     */
-    renderPass->use(scene_);
-    renderPass->use(_camera);
-
-    target_->update();
-
-    auto result = target_->finish({});
-    assert(result != RenderEnqueueResult::eFailed);
+    for (const auto& entry : _scheduledTargets) {
+        tick(entry.target, entry.scene, entry.camera);
+    }
 
     /**
      * Debug Metrics
@@ -346,13 +359,37 @@ void Graphics::_tick(ptr<scene::IRenderScene> scene_, const ptr<gfx::RenderTarge
 
     const auto now = _STD chrono::high_resolution_clock::now();
     if (_STD chrono::duration_cast<_STD chrono::milliseconds>(now - last).count() > 1000) {
-        _STD cout << "Frames: " << frames << _STD endl;
+        _STD cout << "GFX Ticks: " << frames << _STD endl;
 
         frames = 0;
         last = now;
     }
 
     ++frames;
+}
+
+void Graphics::__tmp__resize(cref<math::uivec2> extent_) {
+
+    /**
+     * Create a new swapchain to present image
+     */
+    auto* nextSwapchain = new VkSurfaceSwapchain();
+    nextSwapchain->useSurface(_surface);
+    nextSwapchain->setup(_device);
+
+    /**
+     * Block Render Passes related to swapchain to rebuild passes
+     */
+    auto succeeded = _uiRenderTarget->rebuildPasses(nextSwapchain);
+    assert(succeeded);
+
+    /**
+     * Cleanup
+     */
+    _swapchain->destroy();
+    delete _swapchain;
+
+    _swapchain = nextSwapchain;
 }
 
 void Graphics::reschedule() {
@@ -369,22 +406,7 @@ void Graphics::reschedule() {
 
                 u8 expect { 1 };
                 if (_scheduled.load(_STD memory_order_relaxed) == expect) {
-
-                    /**
-                     * TODO: Replace Guard
-                     */
-                    #if FALSE
-                    if (_renderScene) {
-                        _tick(_renderScene, _renderTarget);
-                    }
-                    #endif
-
-                    #if TRUE
-                    if (_uiRenderScene) {
-                        _tick(_uiRenderScene, _uiRenderTarget);
-                    }
-                    #endif
-
+                    _tick();
                     return true;
                 }
 
@@ -432,9 +454,21 @@ bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
     scene->setNodeType(GfxSceneTag {}, SkyboxComponent::typeId,
         EmberObject::create<SkyboxModel, const ptr<SceneComponent>>);
 
-    /**
-     *
-     */
+    /**/
+
+    const auto stit {
+        _STD find_if(_scheduledTargets.begin(), _scheduledTargets.end(),
+            [renderTarget = _renderTarget](const auto& entry) {
+                return entry.target == renderTarget;
+            })
+    };
+    if (stit != _scheduledTargets.end()) {
+        _scheduledTargets.erase(stit);
+    }
+
+    _scheduledTargets.push_back({ _renderTarget, scene_, _camera });
+
+    /**/
     return true;
 }
 
@@ -456,6 +490,21 @@ bool Graphics::useAsUIRenderScene(const ptr<scene::IRenderScene> scene_) {
     scene->setNodeType(GfxSceneTag {}, UIComponent::typeId,
         EmberObject::create<glow::ui::UISceneModel, const ptr<SceneComponent>>);
 
+    /**/
+
+    const auto stit {
+        _STD find_if(_scheduledTargets.begin(), _scheduledTargets.end(),
+            [renderTarget = _uiRenderTarget](const auto& entry) {
+                return entry.target == renderTarget;
+            })
+    };
+    if (stit != _scheduledTargets.end()) {
+        _scheduledTargets.erase(stit);
+    }
+
+    _scheduledTargets.push_back({ _uiRenderTarget, scene_, _camera });
+
+    /**/
     return true;
 }
 

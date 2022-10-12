@@ -27,7 +27,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 07.12.2020
          */
-        Texture(const value_type&) = delete;
+        Texture(cref<value_type>) = delete;
 
         /**
          * Move Constructor
@@ -45,7 +45,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 20.11.2020
          */
-        ~Texture() noexcept;
+        ~Texture();
 
         /**
          * Copy assignment operator
@@ -55,7 +55,7 @@ namespace ember::engine::gfx {
          *
          * @returns A shallow copy of this.
          */
-        Texture& operator=(const value_type&) = delete;
+        Texture& operator=(cref<value_type>) = delete;
 
         /**
          * Move assignment operator

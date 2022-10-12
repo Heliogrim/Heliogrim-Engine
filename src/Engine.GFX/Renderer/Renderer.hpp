@@ -3,6 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "HORenderPassCreateData.hpp"
+#include "HORenderPassChanges.hpp"
 #include "__fwd.hpp"
 #include "../Command/__fwd.hpp"
 
@@ -72,6 +73,22 @@ namespace ember::engine::gfx::render {
          * @returns A owning pointer to the created RenderPass.
          */
         virtual ptr<HORenderPass> allocate(mref<HORenderPassCreateData> data_);
+
+        /**
+         * Recreate a HORenderPass for this Renderer based on previous pass and changes
+         *
+         * @author Julius
+         * @date 02.10.2022
+         *
+         * @details Will reuse existing RenderPass instance and cascade resource reallocation
+         *  through all operators of this renderer and it's pipeline
+         *
+         * @param renderPass_ The RenderPass to mutate.
+         * @param changes_ The changes to apply to the existing instance.
+         *
+         * @returns An owning pointer to the modified RenderPass when succeeded, otherwise nullptr.
+         */
+        virtual ptr<HORenderPass> reallocate(mref<ptr<HORenderPass>> renderPass_, mref<HORenderPassChanges> changes_);
 
         /**
          * Frees the given HORenderPass if allocated by this Renderer

@@ -583,7 +583,11 @@ void RevFinalComposeNode::setupLORenderPass() {
         vk::AttachmentLoadOp::eDontCare,
         vk::AttachmentStoreOp::eDontCare,
         vk::ImageLayout::eUndefined,
+#if FALSE
         vk::ImageLayout::ePresentSrcKHR
+#else
+        vk::ImageLayout::eShaderReadOnlyOptimal
+#endif
     });
 
     /**

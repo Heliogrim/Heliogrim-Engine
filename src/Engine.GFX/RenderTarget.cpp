@@ -97,6 +97,10 @@ void RenderTarget::nextSync() {
     _syncIdx = 1ui32 - _syncIdx;
 }
 
+bool RenderTarget::ready() const noexcept {
+    return _device && _renderer && _swapchain && !_passes.empty();
+}
+
 void RenderTarget::buildPasses(cref<ptr<Camera>> camera_, cref<ptr<scene::IRenderScene>> scene_) {
 
     assert(_device);
@@ -206,7 +210,14 @@ const non_owning_rptr<render::HORenderPass> RenderTarget::next() {
     sptr<Texture> nextImage {};
     vk::Semaphore nextSignal {};
 
-    _swapchain->acquireNext(nextIdx, nextImage, nextSignal);
+    const auto nextResult { _swapchain->acquireNext(nextIdx, nextImage, nextSignal) };
+
+    /**
+     * Ensure swapchain complies our expectations
+     */
+    if (not nextResult) {
+        return nullptr;
+    }
 
     if (!_onTheFlight) {
         /**

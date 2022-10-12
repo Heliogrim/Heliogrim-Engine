@@ -62,7 +62,7 @@ namespace ember::engine::gfx {
         virtual vk::Result presentNext(_In_ u64 idx_, _In_ cref<Vector<vk::Semaphore>> waits_) = 0;
 
     public:
-        virtual bool consumeNext(_Out_ ref<Texture> image_, _Out_ ref<Vector<vk::Semaphore>> waits_) = 0;
+        virtual bool consumeNext(_Out_ ref<sptr<Texture>> image_, _Out_ ref<vk::Semaphore> signal_, _Out_ ref<Vector<vk::Semaphore>> waits_) = 0;
     };
     #if FALSE
 

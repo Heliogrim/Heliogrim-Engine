@@ -181,11 +181,13 @@ Texture& VkTextureFactory::buildView(Texture& texture_) const {
     /**
      * Prepare
      */
+    const bool spanRSw { texture_.format() == TextureFormat::eR8Unorm };
+
     const vk::ComponentMapping cm {
         vk::ComponentSwizzle::eR,
-        vk::ComponentSwizzle::eG,
-        vk::ComponentSwizzle::eB,
-        vk::ComponentSwizzle::eA
+        spanRSw ? vk::ComponentSwizzle::eR : vk::ComponentSwizzle::eG,
+        spanRSw ? vk::ComponentSwizzle::eR : vk::ComponentSwizzle::eB,
+        spanRSw ? vk::ComponentSwizzle::eR : vk::ComponentSwizzle::eA
     };
 
     const vk::ImageSubresourceRange isr {
