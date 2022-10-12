@@ -235,11 +235,12 @@ void RenderTarget::update() {
      */
     CommandBatch layout {};
 
-    if (_onTheFlight) {
-        layout.pushBarrier(_swapSignal);
-        layout.pushSignal(_otfFinish[_syncIdx]);
+    if (_onTheFlight && _swapSignal) {
+        layout.pushBarrier(_swapSignal, vk::PipelineStageFlagBits::eColorAttachmentOutput);
+    }
 
-        layout.barrierStages() = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    if (_onTheFlight) {
+        layout.pushSignal(_otfFinish[_syncIdx]);
     }
 
     auto* pass { _passes[_syncIdx] };
