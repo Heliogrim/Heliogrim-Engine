@@ -64,9 +64,3 @@ namespace ember::engine::gfx::glow::ui {
         [[nodiscard]] cref<sptr<Texture>> atlas() const noexcept;
     };
 }
-
-#include <Engine.GFX/Device/Device.hpp>
-
-namespace ember::engine::gfx::glow::ui {
-    Font testLoadDefaultFont(cref<sptr<Device>> device_);
-}
