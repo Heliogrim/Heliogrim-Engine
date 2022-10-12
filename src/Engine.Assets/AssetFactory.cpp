@@ -2,6 +2,7 @@
 
 #include <filesystem>
 
+#include "Types/Font.hpp"
 #include "Types/GfxMaterial.hpp"
 #include "Types/Image.hpp"
 #include "Types/LandscapeGeometry.hpp"
@@ -27,6 +28,29 @@ Url AssetFactory::resolveAsSource(cref<string> url_) const noexcept {
     cwd.append(url_);
 
     return Url { "file"sv, cwd.generic_string() };
+}
+
+ptr<Asset> AssetFactory::createFontAsset(cref<asset_guid> guid_) {
+
+    auto* instance = EmberObject::create<Font>(guid_, Vector<Url> {});
+
+    _database->insert(guid_, Font::typeId, instance);
+    return instance;
+}
+
+ptr<Asset> AssetFactory::createFontAsset(cref<asset_guid> guid_, cref<string> url_) {
+
+    auto src { resolveAsSource(url_) };
+    Vector<Url> sources {};
+
+    if (src.hasScheme()/* Fast empty check */) {
+        sources.push_back(src);
+    }
+
+    auto* instance = EmberObject::create<Font>(guid_, _STD move(sources));
+
+    _database->insert(guid_, Font::typeId, instance);
+    return instance;
 }
 
 ptr<Asset> AssetFactory::createGfxMaterialAsset() {

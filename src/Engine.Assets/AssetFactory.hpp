@@ -47,6 +47,10 @@ namespace ember::engine::assets {
         [[nodiscard]] Url resolveAsSource(cref<string> url_) const noexcept;
 
     public:
+        [[nodiscard]] ptr<Asset> createFontAsset(cref<asset_guid> guid_);
+
+        [[nodiscard]] ptr<Asset> createFontAsset(cref<asset_guid> guid_, cref<string> url_);
+
         /**
          * Creates a graphics material asset
          *
