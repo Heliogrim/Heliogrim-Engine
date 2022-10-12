@@ -40,6 +40,11 @@ target_link_libraries(
         ${META_PROJECT_NAME}::Engine.Env
         ${META_PROJECT_NAME}::Engine.Event
         ${META_PROJECT_NAME}::Engine.GFX
+	    ${META_PROJECT_NAME}::Engine.GFX.Glow
+	    ${META_PROJECT_NAME}::Engine.GFX.Glow.3D
+	    ${META_PROJECT_NAME}::Engine.GFX.Glow.UI
+	    ${META_PROJECT_NAME}::Engine.Input
+	    ${META_PROJECT_NAME}::Engine.Logging
         ${META_PROJECT_NAME}::Engine.Network
         ${META_PROJECT_NAME}::Engine.PFX
         ${META_PROJECT_NAME}::Engine.Reflect

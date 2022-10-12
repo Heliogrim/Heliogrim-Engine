@@ -417,9 +417,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\API\VkTranslate.hpp">
       <Filter>Headerdateien\API</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.hpp">
-      <Filter>Headerdateien\Swapchain</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Camera\CameraFrustum.hpp">
       <Filter>Headerdateien\Camera</Filter>
     </ClInclude>
@@ -672,6 +669,24 @@
     <ClInclude Include="..\..\src\Engine.GFX\RenderTarget.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\RenderEnqueueResult.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Renderer\HORenderPassChanges.hpp">
+      <Filter>Headerdateien\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSurfaceSwapchain.hpp">
+      <Filter>Headerdateien\Swapchain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Loader\FontLoader.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Resource\FontResource.hpp">
+      <Filter>Headerdateien\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.hpp">
+      <Filter>Headerdateien\Swapchain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
@@ -793,9 +808,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\VkFixedPipeline.cpp">
       <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.cpp">
-      <Filter>Quelldateien\Swapchain</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Camera\CameraFrustum.cpp">
       <Filter>Quelldateien\Camera</Filter>
@@ -979,6 +991,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\RenderTarget.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSurfaceSwapchain.cpp">
+      <Filter>Quelldateien\Swapchain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Loader\FontLoader.cpp">
+      <Filter>Quelldateien\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Resource\FontResource.cpp">
+      <Filter>Quelldateien\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.cpp">
+      <Filter>Quelldateien\Swapchain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
