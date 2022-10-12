@@ -47,6 +47,7 @@
 #include "Ember/Ember.hpp"
 #include "Ember/SkyboxComponent.hpp"
 #include "Ember/World.hpp"
+#include "Ember.Default/Assets/Fonts/Consolas24Latin1.hpp"
 #include "Engine.Assets/Types/GfxMaterial.hpp"
 #include "Engine.Assets/Types/Texture/Texture.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
