@@ -17,6 +17,7 @@
 #include "Cache/GlobalResourceCache.hpp"
 #include "Command/CommandBatch.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
+#include "Loader/FontLoader.hpp"
 #include "Loader/MaterialLoader.hpp"
 #include "Loader/RevTextureLoader.hpp"
 #include "Loader/StaticGeometryLoader.hpp"
@@ -310,7 +311,7 @@ void Graphics::tick(
         DEBUG_SNMSG(false, "GFX",
             "Skipping graphics tick due to missing RenderPass (No next Swapchain Image) at RenderTarget")
         return;
-}
+    }
 
     renderPass->use(scene_);
     renderPass->use(camera_);
@@ -514,6 +515,13 @@ void Graphics::registerLoader() {
      */
     auto* manager { _session->modules().resourceManager() };
     auto& loader { manager->loader() };
+
+    /**
+     * Font Loader
+     */
+    const auto fl = make_sptr<FontLoader>(_cacheCtrl.get());
+
+    loader.registerLoader<assets::Font>(fl);
 
     /**
      * Geometry Loader
