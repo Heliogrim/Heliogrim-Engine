@@ -29,7 +29,7 @@ concurrent::future<void> Win32Window::create() {
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             _extent.width, _extent.height,
             /* SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE */
-            SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI
+            SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE
         );
 
         DEBUG_ASSERT(_wnd != nullptr, "Window should be created.")
