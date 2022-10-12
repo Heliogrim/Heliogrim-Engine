@@ -27,6 +27,7 @@
     <ClInclude Include="..\..\src\Ember\Audio.hpp" />
     <ClInclude Include="..\..\src\Ember\AudioFormat.hpp" />
     <ClInclude Include="..\..\src\Ember\CollisionComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\FontAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\IComponentRegisterContext.hpp" />
     <ClInclude Include="..\..\src\Ember\Ember.hpp" />
     <ClInclude Include="..\..\src\Ember\GfxMaterial.hpp" />
@@ -66,6 +67,7 @@
     <ClInclude Include="..\..\src\Ember\TextureType.hpp" />
     <ClInclude Include="..\..\src\Ember\Traits.hpp" />
     <ClInclude Include="..\..\src\Ember\TypedEntity.hpp" />
+    <ClInclude Include="..\..\src\Ember\UIComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\World.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +78,7 @@
     <ClCompile Include="..\..\src\Ember\AssetDatabase.cpp" />
     <ClCompile Include="..\..\src\Ember\AudioFormat.cpp" />
     <ClCompile Include="..\..\src\Ember\Ember.cpp" />
+    <ClCompile Include="..\..\src\Ember\FontAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\GfxMaterial.cpp" />
     <ClCompile Include="..\..\src\Ember\GfxMaterialAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\ImageAsset.cpp" />
@@ -140,6 +143,9 @@
     <ProjectReference Include="..\Engine.GFX\Engine.GFX.vcxproj">
       <Project>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.Input\Engine.Input.vcxproj">
+      <Project>{0d2545d9-3df6-4319-b726-1c22ca1cede0}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Logging\Engine.Logging.vcxproj">
       <Project>{9d1b3213-b18e-4551-9a75-9ecd3f6196ee}</Project>
     </ProjectReference>
@@ -181,21 +187,15 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <PlatformToolset>v143</PlatformToolset>
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
