@@ -113,6 +113,12 @@ namespace ember::engine::gfx {
     public:
         /**
          *
+         */
+        [[nodiscard]] bool ready() const noexcept;
+
+    public:
+        /**
+         *
          * @blocking
          */
         void buildPasses(cref<ptr<Camera>> camera_, cref<ptr<scene::IRenderScene>> scene_ = nullptr);

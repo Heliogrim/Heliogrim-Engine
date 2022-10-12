@@ -12,6 +12,9 @@
 
 #include <Engine.Common/Math/Vector.hpp>
 
+#include "Engine.Common/Collection/AssociativeKey.hpp"
+#include "Engine.Common/Collection/RobinMap.hpp"
+
 /**
  * Forward Declaration
  */
@@ -27,6 +30,14 @@ namespace ember::engine::gfx {
 namespace ember::engine::gfx::loader {
     class GeometryLoader;
     class TextureLoader;
+}
+
+namespace ember::engine::gfx {
+    struct ScheduledTarget {
+        sptr<gfx::RenderTarget> target;
+        ptr<scene::IRenderScene> scene;
+        ptr<gfx::Camera> camera;
+    };
 }
 
 namespace ember::engine {
@@ -130,6 +141,11 @@ namespace ember::engine {
          */
         ptr<gfx::Swapchain> _swapchain;
 
+        #if TRUE
+    public:
+        ptr<gfx::Swapchain> _secondarySwapchain;
+        #endif
+
     public:
         /**
          * Gets current swapchain
@@ -199,18 +215,48 @@ namespace ember::engine {
         [[nodiscard]] const non_owning_rptr<gfx::cache::GlobalCacheCtrl> cacheCtrl() const noexcept;
 
     private:
+        RobinMap<AssocKey<string>, sptr<gfx::render::Renderer>> _cachedRenderer;
+
+    public:
+        [[nodiscard]] sptr<gfx::render::Renderer> getRenderer(cref<AssocKey<string>> key_) const;
+
+        [[nodiscard]] sptr<gfx::render::Renderer> getRenderer(cref<AssocKey<string>> key_,
+            _STD nothrow_t) const noexcept;
+
+        [[nodiscard]] bool hasRenderer(cref<AssocKey<string>> key_);
+
+        [[nodiscard, deprecated("Might create memory leak and not-freeable resources")]] bool removeRenderer(
+            cref<AssocKey<string>> key_);
+
+    private:
+        // TODO: Check if we want the Renderer instance or RenderTarget instance to hold dependencies between HORenderPasses or related data
+        // TODO: Check how to map sequential dependencies to dispatch order/winding
+        // Warning: Sequential dependencies which are only present on graphics device side (vulkan pipeline) can be ignored to prevent slow down
+        // Warning: When switching partially to gpu-driven pipelines, we might encounter some problems with cpu sided synching between dependent targets/passes
+        Vector<gfx::ScheduledTarget> _scheduledTargets;
+
+    public:
+        void tick(cref<sptr<gfx::RenderTarget>> target_, ptr<scene::IRenderScene> scene_,
+            ptr<gfx::Camera> camera_) const;
+
+    private:
+        void _tick();
+
+    private:
         ptr<gfx::render::Renderer> _renderer;
         ptr<gfx::render::Renderer> _uiRenderer;
 
-    private:
+        //private:
+    public:
         // Warning: Temporary
         ptr<gfx::Camera> _camera;
 
-    private:
-        ptr<gfx::RenderTarget> _renderTarget;
+        //private:
+    public:
+        sptr<gfx::RenderTarget> _renderTarget;
 
         #if TRUE
-        ptr<gfx::RenderTarget> _uiRenderTarget = nullptr;
+        sptr<gfx::RenderTarget> _uiRenderTarget = nullptr;
         #endif
 
         #if TRUE
@@ -219,27 +265,6 @@ namespace ember::engine {
         #endif
 
         #pragma region Ember Graphics
-
-        /**
-         * Internal tick() function to invoke graphics
-         *
-         * @author Julius
-         * @date 13.12.2020
-         *
-         * @param scene_ The scene to render.
-         * @param target_ The target where to render the scene.
-         */
-        void _tick(ptr<scene::IRenderScene> scene_, const ptr<gfx::RenderTarget> target_);
-
-        /**
-         * Process the graphic passes
-         *
-         * @author Julius
-         * @date 31.01.2021
-         *
-         * @param scene_ The scene to render.
-         */
-        void processGraphicPasses(ptr<scene::IRenderScene> scene_);
 
     private:
         void reschedule();

@@ -22,14 +22,17 @@ TextureBuffer::operator bool() const noexcept {
 void TextureBuffer::destroy() {
     if (_memory && _memoryMapped) {
         _vkDevice.unmapMemory(_memory);
+        _memoryMapped = nullptr;
     }
 
     if (_memory) {
         _vkDevice.free(_memory);
+        _memory = VK_NULL_HANDLE;
     }
 
     if (_image) {
         _vkDevice.destroyImage(_image);
+        _image = VK_NULL_HANDLE;
     }
 }
 

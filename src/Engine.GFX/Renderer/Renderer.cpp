@@ -33,7 +33,8 @@ void Renderer::setup(cref<sptr<Device>> device_) {
 
     #ifdef _DEBUG
     const auto validationResult { _pipeline->validate() };
-    assert(validationResult != RenderPipelineValidationResult::eSuccess);
+    // Warning: TODO: Validate pipeline
+    //assert(validationResult == RenderPipelineValidationResult::eSuccess);
     #else
     const auto validationResult { _pipeline->validate() };
     if (validationResult != RenderPipelineValidationResult::eSuccess) {
@@ -79,6 +80,19 @@ ptr<HORenderPass> Renderer::allocate(mref<HORenderPassCreateData> data_) {
 
     _pipeline->allocate(renderPass);
     return renderPass;
+}
+
+ptr<HORenderPass> Renderer::reallocate(mref<ptr<HORenderPass>> renderPass_, mref<HORenderPassChanges> changes_) {
+
+    if (renderPass_->renderer() != this) {
+        return nullptr;
+    }
+
+    // Warning: Temporary implementation
+    HORenderPassCreateData tmp { changes_.target, renderPass_->scene(), renderPass_->camera() };
+    free(_STD move(renderPass_));
+
+    return allocate(_STD move(tmp));
 }
 
 bool Renderer::free(mref<ptr<HORenderPass>> renderPass_) {
@@ -140,7 +154,16 @@ void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mr
 
     // TODO:
     for (const auto& entry : renderPass_->batches()) {
-        assert(entry.signals().empty() && entry.barriers().empty());
+
+        // Warning: Temporary merging of sub signals into root batch
+        for (const auto& signal : entry.signals()) {
+            batch_.pushSignal(signal);
+        }
+
+        for (u32 bidx { 0ui32 }; bidx < entry.barriers().size(); ++bidx) {
+            batch_.pushBarrier(entry.barriers()[bidx], batch_.barrierStages()[bidx]);
+        }
+
         for (const auto& buffer : entry.buffers()) {
             batch_.push(buffer);
         }

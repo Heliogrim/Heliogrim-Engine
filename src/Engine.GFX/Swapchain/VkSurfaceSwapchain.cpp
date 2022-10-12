@@ -235,7 +235,7 @@ vk::Result VkSurfaceSwapchain::presentNext(u64 idx_, cref<Vector<vk::Semaphore>>
     return vkResult;
 }
 
-bool VkSurfaceSwapchain::consumeNext(ref<Texture> image_, ref<Vector<vk::Semaphore>> waits_) {
+bool VkSurfaceSwapchain::consumeNext(ref<sptr<Texture>> image_, ref<vk::Semaphore> signal_, ref<Vector<vk::Semaphore>> waits_) {
     return false;
 }
 
