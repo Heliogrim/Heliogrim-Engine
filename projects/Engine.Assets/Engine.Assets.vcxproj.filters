@@ -162,6 +162,12 @@
     <ClInclude Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometryLayout.hpp">
       <Filter>Headerdateien\Types\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Font.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\FontLayout.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Asset.cpp">
@@ -198,6 +204,9 @@
       <Filter>Quelldateien\Types\Texture</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometry.cpp">
+      <Filter>Quelldateien\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Font.cpp">
       <Filter>Quelldateien\Types</Filter>
     </ClCompile>
   </ItemGroup>

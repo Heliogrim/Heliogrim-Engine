@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\Assets">
+      <UniqueIdentifier>{aee4a876-4948-4d7b-8b01-9a1b532e790e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Assets\GfxMaterials">
+      <UniqueIdentifier>{d0cb0c63-a393-4ab7-92cf-1ca2dd187492}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Assets\Meshes">
+      <UniqueIdentifier>{0f72fd02-2870-4ec0-ac04-c026cf6d8b2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Assets\Textures">
+      <UniqueIdentifier>{394066f9-9574-4423-b141-c787278328cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Assets\Images">
+      <UniqueIdentifier>{15ebd43d-da16-432f-ba0c-8dc39f6cacdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Assets\Sounds">
+      <UniqueIdentifier>{cc5dcbf0-8948-4c40-857e-732e63441d9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Assets">
+      <UniqueIdentifier>{5bea0bd8-b028-4d76-9ebc-1166663c166d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Assets\GfxMaterials">
+      <UniqueIdentifier>{e62df938-fe7c-458b-b7a2-5300edf25dc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Assets\Meshes">
+      <UniqueIdentifier>{4c7e74d9-41a9-4f1a-8cd3-c82bc5b8da6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Assets\Images">
+      <UniqueIdentifier>{a2872b1c-1a21-4524-99ae-02ddaa6e68e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Assets\Sounds">
+      <UniqueIdentifier>{8182740c-bc98-458c-9bed-5abdb8840252}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Assets\Textures">
+      <UniqueIdentifier>{9f6c2531-76b5-4199-a256-d38f633e27a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Assets\Font">
+      <UniqueIdentifier>{c369cefb-545a-4af0-89ca-7b85792ec0f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Assets\Font">
+      <UniqueIdentifier>{ff32bd4b-6648-453a-aea3-cf472cd5ab33}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultAlpha.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultAO.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultDiffuse.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultMetalness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultNormal.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultRoughness.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultSkybox.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultAlpha.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultAO.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultDiffuse.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultMetalness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultNormal.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultRoughness.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultSkybox.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Fonts\Consolas24Latin1.hpp">
+      <Filter>Headerdateien\Assets\Font</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultAlpha.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultAO.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultDiffuse.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultMetalness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultNormal.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultRoughness.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultSkybox.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
