@@ -144,15 +144,15 @@
 
 // Restrict
 #ifndef RESTRICT
-#if ENV_MSVC && not defined(RESTRICT)
+#if defined(ENV_MSVC) && not defined(RESTRICT)
 #define RESTRICT __restrict
 #endif
 
-#if ENV_GCC && not defined(RESTRICT)
+#if defined(ENV_GCC) && not defined(RESTRICT)
 #define RESTRICT __restrict__
 #endif
 
-#if ENV_CLANG && not defined(RESTRICT)
+#if defined(ENV_CLANG) && not defined(RESTRICT)
 #define RESTRICT __restrict__
 #endif
 

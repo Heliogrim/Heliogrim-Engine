@@ -35,10 +35,10 @@ namespace ember::engine::concurrent {
          * @author Julius
          * @date 15.11.2020
          *
-         * @param  reserved_ (Optional) The reserved.
+         * @param  capacity_ (Optional) The fixed capacity of contained elements `[0..N(`.
          */
-        RingBuffer(size_type reserved_ = 0x20ui32) :
-            _container(reserved_),
+        RingBuffer(size_type capacity_ = 0x20ui32) :
+            _container(capacity_),
             _head(0),
             _tail(0) {}
 
