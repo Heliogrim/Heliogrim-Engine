@@ -7,6 +7,12 @@
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
+#if true
+#include <Engine.GFX/Graphics.hpp>
+#include <Engine.Input/MouseButtonEvent.hpp>
+#include <Engine.Input/MouseMoveEvent.hpp>
+#endif
+
 #include "Win32Window.hpp"
 
 using namespace ember::engine;
@@ -99,6 +105,50 @@ void Session::setup() {
                             // Warning: We need to call stop via scheduler, cause this thread will deadlock itself (recursive) due to window ownership and close behavior
                             // Warning: Undefined behavior if called multiple times
                             Scheduler::get().exec(scheduler::task::make_task(Session::stop));
+                            break;
+                        }
+                        case SDL_EventType::SDL_WINDOWEVENT: {
+                            // Warning: We need to call stop via scheduler
+                            // Warning: Temporary solution
+                            if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+
+                                math::uivec2 extent {
+                                    static_cast<u32>(event.window.data1),
+                                    static_cast<u32>(event.window.data2)
+                                };
+                                auto resizeTask {
+                                    scheduler::task::make_task([extent]() {
+                                        Session::get()->modules().graphics()->__tmp__resize(extent);
+                                    })
+                                };
+
+                                resizeTask->srcStage() = scheduler::ScheduleStageBarriers::eAll;
+                                resizeTask->dstStage() = scheduler::ScheduleStageBarriers::eNetworkPushStrong;
+
+                                Scheduler::get().exec(_STD move(resizeTask));
+                                break;
+                            }
+                        }
+                        case SDL_EventType::SDL_MOUSEMOTION: {
+                            // Warning: Temporary solution
+
+                            math::ivec2 point { event.motion.x, event.motion.y };
+                            math::ivec2 delta { event.motion.xrel, event.motion.yrel };
+
+                            const input::event::MouseMoveEvent mme { point, delta, 0ui32, 0ui32 };
+                            emitter().emit(mme);
+                            break;
+                        }
+                        case SDL_EventType::SDL_MOUSEBUTTONDOWN:
+                        case SDL_EventType::SDL_MOUSEBUTTONUP: {
+                            // Warning: Temporary solution
+
+                            math::ivec2 point { event.button.x, event.button.y };
+                            const bool down { event.button.state == SDL_PRESSED };
+                            u32 button { event.button.button };
+
+                            const input::event::MouseButtonEvent mbe { point, button, down, 0ui32 };
+                            emitter().emit(mbe);
                             break;
                         }
                     }
