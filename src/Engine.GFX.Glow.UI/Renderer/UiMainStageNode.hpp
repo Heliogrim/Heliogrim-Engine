@@ -6,6 +6,13 @@
 #include "Engine.GFX/Shader/ShaderBindingGroup.hpp"
 #include <Engine.GFX/Pipeline/LORenderPass.hpp>
 
+#include "Engine.GFX/Texture/Texture.hpp"
+
+#if TRUE
+#include <mutex>
+extern _STD mutex uiTestMtx;
+#endif
+
 namespace ember::engine::gfx::glow::ui::render {
 
     class UiMainStageNode final :
@@ -63,6 +70,21 @@ namespace ember::engine::gfx::glow::ui::render {
         void setupLORenderPass();
 
         void destroyLORenderPass();
+
+    private:
+        [[nodiscard]] Framebuffer allocateFramebuffer(const non_owning_rptr<gfx::render::HORenderPass> renderPass_);
+
+        void freeFramebuffer(mref<Framebuffer> framebuffer_);
+
+    private:
+        Texture _defaultImage;
+
+        void setupDefaultImage();
+
+        void destroyDefaultImage();
+
+        void rebuildImageDescriptors(ref<sptr<vk::DescriptorPool>> pool_,
+            ref<sptr<Vector<shader::DiscreteBindingGroup>>> groups_, u32 count_) const;
     };
 
 }
