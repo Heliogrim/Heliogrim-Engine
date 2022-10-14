@@ -113,6 +113,22 @@ void Widget::setReflowSpacing(const ReflowSpacing spacing_) {
     _reflowSpacing = spacing_;
 }
 
+ReflowWrapping Widget::reflowWrapping() const noexcept {
+    return _reflowWrapping;
+}
+
+void Widget::setReflowWrapping(const ReflowWrapping wrapping_) {
+    _reflowWrapping = wrapping_;
+}
+
+ReflowOverflow Widget::reflowOverflow() const noexcept {
+    return _reflowOverflow;
+}
+
+void Widget::setReflowOverflow(const ReflowOverflow overflow_) {
+    _reflowOverflow = overflow_;
+}
+
 cref<WidgetEventEmitter> Widget::emitter() const noexcept {
     return _emitter;
 }

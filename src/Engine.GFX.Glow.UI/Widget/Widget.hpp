@@ -145,6 +145,7 @@ namespace ember::engine::gfx::glow::ui {
     public:
         math::vec2 _extent;
         math::vec2 _minExtent;
+        math::vec2 _maxExtent;
 
         //protected:
     public:
@@ -160,6 +161,8 @@ namespace ember::engine::gfx::glow::ui {
         float _reflowBase = 0.F;
         float _reflowShrink = 0.F;
         float _reflowGrow = 0.F;
+
+        math::vec2 _reflowGapping;
 
         #pragma region Reflow (Flex) Behaviour
 
@@ -179,6 +182,22 @@ namespace ember::engine::gfx::glow::ui {
 
         void setReflowSpacing(const ReflowSpacing spacing_);
 
+    protected:
+        ReflowWrapping _reflowWrapping;
+
+    public:
+        [[nodiscard]] ReflowWrapping reflowWrapping() const noexcept;
+
+        void setReflowWrapping(const ReflowWrapping wrapping_);
+
+    protected:
+        ReflowOverflow _reflowOverflow;
+
+    public:
+        [[nodiscard]] ReflowOverflow reflowOverflow() const noexcept;
+
+        void setReflowOverflow(const ReflowOverflow overflow_);
+
         #pragma endregion
 
         #pragma region Event Behaviour
@@ -192,6 +211,7 @@ namespace ember::engine::gfx::glow::ui {
 
     public:
         using OnClickListener = ::ember::StatelessEventEmitter<input::event::MouseButtonEvent>::function_type;
+
         bool onMouseButtonEvent(cref<math::ivec2> pointer_, u32 button_, bool down_, u32 modifier_) override;
 
         bool onMouseMotionEvent(cref<math::ivec2> pointer_, cref<math::ivec2> delta_, u32 button_,

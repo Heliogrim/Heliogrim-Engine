@@ -156,6 +156,12 @@
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\MenuButton.hpp">
       <Filter>Headerdateien\Widget</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowWrapping.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowOverflow.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UIRenderer.cpp">

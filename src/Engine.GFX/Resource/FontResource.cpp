@@ -13,7 +13,7 @@ FontResource::~FontResource() {
 
 void FontResource::tidy() {
 
-    if (_fontData) {
+    if (_fontData && false) {
         // Might implicitly delete font texture atlas due to ref counted texture
         delete _fontData;
         _fontData = nullptr;

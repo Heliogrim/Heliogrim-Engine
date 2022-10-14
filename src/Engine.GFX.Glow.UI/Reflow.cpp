@@ -62,10 +62,82 @@ math::vec2 Reflow::flow(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec2
     }
 
     /**/
-    const math::vec2 diff { innerChildAgg - local };
+    math::vec2 diff { innerChildAgg - local };
 
     /**
      * Overflow Behaviour
+     */
+
+    /**
+     * Overflow Behaviour - Wrapping
+     */
+    if (
+        (
+            (diff.x > 0.F && self_->_reflowType == ReflowType::eFlexRow) ||
+            (diff.y > 0.F && self_->_reflowType == ReflowType::eFlexCol)
+        ) && (
+            self_->_reflowWrapping == ReflowWrapping::eWrap
+        )
+    ) {
+
+        innerChildAgg.x = 0.F;
+        innerChildAgg.y = 0.F;
+
+        const auto& bounds { local };
+
+        float forward { 0.F };
+        math::vec2 maxForward { 0.F };
+        for (const auto& widget : self_->_nodes) {
+
+            const auto bounding = widget->flow(ctx_, local);
+
+            if (self_->_reflowType == ReflowType::eFlexRow) {
+
+                if (forward + bounding.x > bounds.x) {
+                    innerChildAgg.x = MAX(innerChildAgg.x, forward);
+                    innerChildAgg.y += maxForward.y;
+
+                    forward = 0.F;
+                    maxForward.y = 0.F;
+                    maxForward.x = 0.F;
+                }
+
+                forward += bounding.x;
+                maxForward = math::compMax<float>(maxForward, bounding);
+
+            } else if (self_->_reflowType == ReflowType::eFlexCol) {
+
+                if (forward + bounding.y > bounds.y) {
+                    innerChildAgg.x += maxForward.x;
+                    innerChildAgg.y = MAX(innerChildAgg.y, forward);
+
+                    forward = 0.F;
+                    maxForward.x = 0.F;
+                    maxForward.y = 0.F;
+                }
+
+                forward += bounding.y;
+                maxForward = math::compMax<float>(maxForward, bounding);
+
+            }
+
+        }
+
+        /**/
+        if (autoWidth && self_->_reflowType == ReflowType::eFlexCol) {
+            local.x = MAX(local.x, innerChildAgg.x);
+        }
+
+        if (autoHeight && self_->_reflowType == ReflowType::eFlexRow) {
+            local.y = MAX(local.y, innerChildAgg.y);
+        }
+
+        /**/
+        diff = innerChildAgg - local;
+    }
+
+    /**
+     * Overflow Behaviour - Flex Shrink
      */
     if (
         (diff.x > 0.F && self_->_reflowType == ReflowType::eFlexRow) ||
@@ -176,12 +248,45 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
 
     /**/
     math::vec2 fwd { 0.F };
+    math::vec2 wrap { 0.F };
     const auto nodeCount { self_->_nodes.size() };
+
+    math::vec2 maxFwd { 0.F };
 
     for (u32 idx { 0ui32 }; idx < nodeCount; ++idx) {
 
         const auto& widget { self_->_nodes[idx] };
         math::vec2 io { 0.F };// Internal Offset
+
+        if (self_->_reflowWrapping == ReflowWrapping::eWrap) {
+
+            if (self_->_reflowType == ReflowType::eFlexRow && (fwd.x + widget->_transform.width + widget->_margin.x +
+                widget->_margin.z) > self_->_transform.width) {
+
+                wrap.y += maxFwd.y;
+                wrap.y += self_->_reflowGapping.y;
+
+                fwd.x = 0.F;
+                fwd.y = 0.F;
+
+                maxFwd.x = 0.F;
+                maxFwd.y = 0.F;
+
+            } else if (self_->_reflowType == ReflowType::eFlexCol && (fwd.y + widget->_transform.height + widget->
+                _margin.y + widget->_margin.w) > self_->_transform.height) {
+
+                wrap.x += maxFwd.x;
+                wrap.y += self_->_reflowGapping.x;
+
+                fwd.x = 0.F;
+                fwd.y = 0.F;
+
+                maxFwd.x = 0.F;
+                maxFwd.y = 0.F;
+
+            }
+
+        }
 
         if (self_->_reflowSpacing == ReflowSpacing::eSpaceEvenly) {
 
@@ -231,7 +336,7 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
         /**
          * Shift target widget
          */
-        math::vec2 offset { localOffset + io };
+        math::vec2 offset { localOffset + io + wrap };
 
         if (self_->_reflowType == ReflowType::eFlexCol) {
             offset.y += fwd.y;
@@ -254,6 +359,10 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
 
         fwd.x += widget->_transform.width;
         fwd.y += widget->_transform.height;
+
+        /**/
+        maxFwd.x = MAX(maxFwd.x, widget->_transform.width);
+        maxFwd.y = MAX(maxFwd.y, widget->_transform.height);
     }
 
     return outerOffset_;
