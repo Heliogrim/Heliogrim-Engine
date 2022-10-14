@@ -9,18 +9,27 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
+static sptr<glow::ui::Font> __tmp_cache {};
+
 FontLoader::FontLoader(const ptr<cache::GlobalCacheCtrl> cache_) :
     Loader(),
     _cacheCtrl(cache_) {}
 
-FontLoader::~FontLoader() = default;
+FontLoader::~FontLoader() {
+    __tmp_cache.reset();
+}
 
 FontLoader::result_type FontLoader::operator()(
     const ptr<assets::Font> asset_,
     options_type options_
 ) {
     auto* res { make_ptr<FontResource>() };
-    res->_fontData = static_cast<ptr<glow::ui::Font>>(__test_load());
+
+    if (!__tmp_cache) {
+        __tmp_cache = sptr<glow::ui::Font>(static_cast<ptr<glow::ui::Font>>(__test_load()));
+    }
+
+    res->_fontData = __tmp_cache.get();
     return res;
 }
 

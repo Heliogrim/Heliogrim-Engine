@@ -27,6 +27,8 @@ namespace ember::engine::gfx::glow::ui {
 
         float _fontSize;
         float _lineHeight;
+
+        u32 _ellipseLines;
     };
 
 }

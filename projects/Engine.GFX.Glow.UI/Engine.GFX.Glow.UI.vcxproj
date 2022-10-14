@@ -112,8 +112,10 @@
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Font\Font.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Font\FontGlyph.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Reflow.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowOverflow.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowSpacing.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowType.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowWrapping.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStageNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UIRenderer.hpp" />

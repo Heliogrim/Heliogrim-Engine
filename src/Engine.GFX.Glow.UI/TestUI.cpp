@@ -34,11 +34,15 @@
 #include "Engine.GFX/Resource/FontResource.hpp"
 #endif
 
+#if TRUE
+#include "Editor.UI/Panel/AssetBrowserPanel.hpp"
+#endif
+
 using namespace ember::engine::gfx::glow::ui;
 using namespace ember;
 
 // Warning: Memory leak
-static sptr<ember::engine::gfx::Texture> testTexture {};
+sptr<ember::engine::gfx::Texture> testTexture {};
 
 void testLoad(cref<sptr<engine::gfx::Device>> device_) {
     // TODO:
@@ -98,31 +102,7 @@ ember::sptr<ember::engine::gfx::glow::ui::Panel> buildTestUI(cref<sptr<engine::g
      */
     auto root = make_sptr<Panel>();
 
-    ptr<engine::gfx::glow::ui::Font> defaultFont { nullptr };
-    {
-        using font_default_type = game::assets::font::Consolas24Latin1;
-
-        auto* db { engine::Session::get()->modules().assetDatabase() };
-        auto query { db->query(font_default_type::auto_guid()) };
-
-        if (!query.exists()) {
-            delete (new font_default_type);
-        }
-
-        assert(query.exists());
-
-        auto* font { static_cast<ptr<engine::assets::Font>>(query.get()) };
-
-        /**/
-
-        auto* rm = engine::Session::get()->modules().resourceManager();
-        auto* loaded = rm->loader().load(font, nullptr);
-
-        /**/
-
-        auto* res { static_cast<ptr<engine::gfx::FontResource>>(loaded) };
-        defaultFont = res->_fontData;
-    }
+    ptr<engine::gfx::glow::ui::Font> defaultFont { getDefaultFont() };
 
     /**
      *
@@ -307,10 +287,13 @@ ember::sptr<ember::engine::gfx::glow::ui::Panel> buildTestUI(cref<sptr<engine::g
     mainSection->_extent.y = 1.F;
 
     auto mainTopSection = make_sptr<Panel>();
-    auto mainBottomSection = make_sptr<ReflowContainer>();
+    auto assetBrowsePanel = editor::ui::AssetBrowserPanel::make();
 
     mainSection->add(mainTopSection);
-    mainSection->add(mainBottomSection);
+
+    assetBrowsePanel->_extent.x = 1.F;
+    assetBrowsePanel->_extent.y = 1.F / 3.F;
+    mainSection->add(assetBrowsePanel);
 
     /**
      *
@@ -389,38 +372,6 @@ ember::sptr<ember::engine::gfx::glow::ui::Panel> buildTestUI(cref<sptr<engine::g
     viewport->_extent.x = 1.F;
     viewport->_extent.y = 1.F;
 
-    /**
-     *
-     */
-    mainBottomSection->setReflowType(ReflowType::eFlexCol);
-    mainBottomSection->setReflowSpacing(ReflowSpacing::eStart);
-    mainBottomSection->_extent.x = 1.F;
-    mainBottomSection->_extent.y = 1.F / 3.F;
-
-    auto assetNavBar = make_sptr<ReflowContainer>();
-    auto assets = make_sptr<ReflowContainer>();
-
-    assets->_reflowGrow = 1.F;
-
-    mainBottomSection->add(assetNavBar);
-    mainBottomSection->add(assets);
-
-    /**
-     *
-     */
-    assetNavBar->setReflowType(ReflowType::eFlexRow);
-    assetNavBar->setReflowSpacing(ReflowSpacing::eSpaceBetween);
-    assetNavBar->_extent.x = 1.F;
-    assetNavBar->_extent.y = 0.F;
-    assetNavBar->_minExtent.x = -1.F;
-    assetNavBar->_minExtent.y = 20.F;
-
-    auto breadcrumb = make_sptr<Button>();
-    auto searchbar = make_sptr<InputText>();
-
-    assetNavBar->add(breadcrumb);
-    assetNavBar->add(searchbar);
-
     #pragma endregion
     #pragma region Right Section
     #if false
@@ -480,4 +431,33 @@ ember::sptr<ember::engine::gfx::glow::ui::Panel> buildTestUI(cref<sptr<engine::g
     root->shift(ctx, shift);
 
     return root;
+}
+
+ember::ptr<ember::engine::gfx::glow::ui::Font> getDefaultFont() {
+
+    using font_default_type = game::assets::font::Consolas24Latin1;
+
+    auto* db { engine::Session::get()->modules().assetDatabase() };
+    auto query { db->query(font_default_type::auto_guid()) };
+
+    if (!query.exists()) {
+        delete (new font_default_type);
+    }
+
+    assert(query.exists());
+
+    auto* font { static_cast<ptr<engine::assets::Font>>(query.get()) };
+
+    /**/
+
+    auto* rm = engine::Session::get()->modules().resourceManager();
+    auto* loaded = rm->loader().load(font, nullptr);
+
+    /**/
+
+    auto* res { static_cast<ptr<engine::gfx::FontResource>>(loaded) };
+    auto* data = res->_fontData;
+    delete res;
+
+    return data;
 }

@@ -18,5 +18,4 @@ void main() {
 	fragUvm = in_uvm;
 
 	gl_Position = vec4(in_position.xy * meta.scale + meta.translate, 0, 1);
-
 }
