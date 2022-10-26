@@ -239,7 +239,7 @@ void VirtualTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math:
     /**
      * Sanitize request values
      */
-    const u32 maxTiledMipLevel { _STD min(mipLevels_.max, _mipTailFirstLod) };
+    const u32 maxTiledMipLevel { _STD min(mipLevels_.max + 1ui32, _mipTailFirstLod) };
 
     /**
      * Collect pages of targeted region
