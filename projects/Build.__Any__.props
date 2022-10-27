@@ -11,7 +11,7 @@
       <XMLDocumentationFileName>$(IntDir)%(RelativeDir)\</XMLDocumentationFileName>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)library\bin\assimp\$(Configuration)\;$(SolutionDir)library\bin\ryml\$(Configuration)\;$(SolutionDir)library\bin\vorbis\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)library\bin\assimp\$(Configuration)\;$(SolutionDir)library\bin\ryml\$(Configuration)\;$(SolutionDir)library\bin\vorbis\$(Configuration)\;$(SolutionDir)library\bin\freetype2\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />
