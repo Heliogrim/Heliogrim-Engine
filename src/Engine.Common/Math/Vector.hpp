@@ -1745,6 +1745,45 @@ namespace ember::math {
             MAX(vec0_.z, vec1_.z)
         };
     }
+
+    /**
+     * Componentwise min operation
+     *
+     * @author Julius
+     * @date 09.09.2022
+     *
+     * @param vec0_ The first vector
+     * @param vec1_ The second vector
+     *
+     * @returns A vector with the maximum values per component.
+     */
+    template <typename T>
+    vec2_t<T> compMin(typename vec2_t<T>::const_reference_type vec0_, typename vec2_t<T>::const_reference_type vec1_) {
+        return vec2_t<T> {
+            MIN(vec0_.x, vec1_.x),
+            MIN(vec0_.y, vec1_.y)
+        };
+    }
+
+    /**
+     * Componentwise min operation
+     *
+     * @author Julius
+     * @date 09.09.2022
+     *
+     * @param vec0_ The first vector
+     * @param vec1_ The second vector
+     *
+     * @returns A vector with the maximum values per component.
+     */
+    template <typename T>
+    vec3_t<T> compMin(typename vec3_t<T>::const_reference_type vec0_, typename vec3_t<T>::const_reference_type vec1_) {
+        return vec3_t<T> {
+            MIN(vec0_.x, vec1_.x),
+            MIN(vec0_.y, vec1_.y),
+            MIN(vec0_.z, vec1_.z)
+        };
+    }
 }
 
 /** . */

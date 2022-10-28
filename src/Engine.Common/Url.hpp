@@ -13,6 +13,9 @@ namespace ember {
         using this_type = Url;
 
     public:
+        inline static constexpr string_view Separator { "/"sv };
+
+    public:
         Url(cref<string_view> scheme_, cref<string_view> path_) :
             _scheme(scheme_),
             _user(),

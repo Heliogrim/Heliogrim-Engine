@@ -97,7 +97,7 @@ namespace ember::engine::concurrent {
         }
 
         /**
-         * Empties this
+         * Check whether this buffer is empty
          *
          * @author Julius
          * @date 15.11.2020
@@ -110,7 +110,7 @@ namespace ember::engine::concurrent {
         }
 
         /**
-         * Fulls this
+         * Check whether this buffer is full
          *
          * @author Julius
          * @date 15.11.2020
@@ -118,8 +118,8 @@ namespace ember::engine::concurrent {
          * @returns True if it succeeds, false if it fails.
          */
         [[nodiscard]] bool full() const {
-            const size_type h = _head.load(_STD memory_order::consume), t = _tail.load(_STD memory_order::consume);
-            return (h - t) != 0 && (h + t) % (reserved() - 1) == 0;
+            const size_type h = _head.load(_STD memory_order_consume);
+            return inc(h) == _tail.load(_STD memory_order_consume);
         }
 
         /**
@@ -162,7 +162,7 @@ namespace ember::engine::concurrent {
          *
          * @returns A size_type.
          */
-        [[nodiscard]] FORCE_INLINE size_type inc(size_t value_) noexcept {
+        [[nodiscard]] FORCE_INLINE size_type inc(size_t value_) const noexcept {
             return (++value_) % reserved();
         }
 
