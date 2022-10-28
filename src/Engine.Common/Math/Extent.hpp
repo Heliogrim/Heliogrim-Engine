@@ -106,6 +106,18 @@ namespace ember::math {
         void setOffsetY(const T& offset_) {
             offsetY = offset_;
         }
+
+        /**
+         * Equality operator
+         *
+         * @param other_ The extent to compare with
+         *
+         * @returns True is all values are evaluated equal.
+         */
+        [[nodiscard]] bool operator==(cref<Extent2D<T>> other_) const noexcept {
+            return width == other_.width && height == other_.height &&
+                offsetX == other_.offsetX && offsetY == other_.offsetY;
+        }
     };
 
     /**
@@ -115,6 +127,10 @@ namespace ember::math {
      */
     template <typename T>
     class Extent3D {
+    public:
+        using value_type = T;
+        using off_type = T;
+
     public:
         /** Default constructor */
         Extent3D() :
@@ -159,12 +175,12 @@ namespace ember::math {
             offsetY(offsetY_),
             offsetZ(offsetZ_) { }
 
-        T width;
-        T height;
-        T depth;
-        T offsetX;
-        T offsetY;
-        T offsetZ;
+        value_type width;
+        value_type height;
+        value_type depth;
+        off_type offsetX;
+        off_type offsetY;
+        off_type offsetZ;
 
         /**
          * Sets an extent
