@@ -11,6 +11,8 @@
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Input/MouseButtonEvent.hpp>
 #include <Engine.Input/MouseMoveEvent.hpp>
+#include <Engine.Input/MouseWheelEvent.hpp>
+#include "Engine.Input/DragDropEvent.hpp"
 #endif
 
 #include "Win32Window.hpp"
@@ -80,8 +82,16 @@ void Session::setup() {
             SetThreadDescription(GetCurrentThread(), L"Session Thread");
             #endif
 
+            #if TRUE
+            SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
+            #endif
+
             SDL_Event event;
             _STD function<void()> fnc;
+
+            #if TRUE
+            math::ivec2 lastPoint {};
+            #endif
 
             while (!_queue.finalized()) {
 
@@ -135,6 +145,8 @@ void Session::setup() {
                             math::ivec2 point { event.motion.x, event.motion.y };
                             math::ivec2 delta { event.motion.xrel, event.motion.yrel };
 
+                            lastPoint = point;
+
                             const input::event::MouseMoveEvent mme { point, delta, 0ui32, 0ui32 };
                             emitter().emit(mme);
                             break;
@@ -147,9 +159,38 @@ void Session::setup() {
                             const bool down { event.button.state == SDL_PRESSED };
                             u32 button { event.button.button };
 
+                            lastPoint = point;
+
                             const input::event::MouseButtonEvent mbe { point, button, down, 0ui32 };
                             emitter().emit(mbe);
                             break;
+                        }
+                        case SDL_EventType::SDL_MOUSEWHEEL: {
+                            // Warning: Temporary solution
+
+                            math::ivec2 point { lastPoint };
+                            math::vec2 value { event.wheel.preciseX, event.wheel.preciseY };
+
+                            const input::event::MouseWheelEvent mwe { point, value };
+                            emitter().emit(mwe);
+                            break;
+                        }
+                        case SDL_EventType::SDL_DROPFILE: {
+                            // Warning: Temporary solution
+
+                            auto* rfile { event.drop.file };
+
+                            math::ivec2 point { lastPoint };
+                            SDL_PumpEvents();
+                            [[maybe_unused]] u32 _ { SDL_GetMouseState(&point.x, &point.y) };
+
+                            auto type { input::event::DragDropEventType::eDropFileType };
+                            void* data { rfile };
+
+                            const input::event::DragDropEvent dde { point, type, data };
+                            emitter().emit(dde);
+
+                            SDL_free(rfile);
                         }
                     }
                 }
