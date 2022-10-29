@@ -222,7 +222,7 @@ namespace ember::engine::scene {
         void traversal(cref<_STD function<bool(const ptr<node_type>)>> consumer_) const {
             // Using stack instead of queue will cause graph to traverse primary vertical and secondary horizontal
             // We assume that memory coherency is stronger when traversing vertical
-            stack<ptr<const SceneNodeHead>, Vector<ptr<const SceneNodeHead>>> backlog {};
+            Stack<ptr<const SceneNodeHead>, Vector<ptr<const SceneNodeHead>>> backlog {};
             backlog.push(&_root);
 
             /*
@@ -293,7 +293,7 @@ namespace ember::engine::scene {
             backlogContainer.reserve(_STD min(traits::max_childs_per_node * depth, 64ui64));
              */
 
-            stack<ptr<const SceneNodeHead>, Vector<ptr<const SceneNodeHead>>> backlog {};
+            Stack<ptr<const SceneNodeHead>, Vector<ptr<const SceneNodeHead>>> backlog {};
             backlog.push(parent_);
 
             while (!backlog.empty()) {
@@ -330,7 +330,7 @@ namespace ember::engine::scene {
                 return;
             }
 
-            stack<ptr<const SceneNodeHead>, Vector<ptr<const SceneNodeHead>>> backlog {};
+            Stack<ptr<const SceneNodeHead>, Vector<ptr<const SceneNodeHead>>> backlog {};
             backlog.push(parent_);
 
             auto storage { _nodeStorage.get() };
