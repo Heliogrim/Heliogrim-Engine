@@ -52,6 +52,9 @@
     <Filter Include="Quelldateien\Font">
       <UniqueIdentifier>{e2e6d584-5785-45e1-91e8-f2f413fc4069}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Event">
+      <UniqueIdentifier>{3221d64d-402c-4edb-b5a7-c9dd78cbc757}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UIRenderer.hpp">
@@ -162,6 +165,30 @@
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowOverflow.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\ScrollContainer.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Dialog.hpp">
+      <Filter>Headerdateien\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowPosition.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Overlay.hpp">
+      <Filter>Headerdateien\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Font\GlyphRanges.hpp">
+      <Filter>Headerdateien\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Font\GlyphCode.hpp">
+      <Filter>Headerdateien\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Form.hpp">
+      <Filter>Headerdateien\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Event\FormSubmitEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UIRenderer.cpp">
@@ -219,6 +246,21 @@
       <Filter>Quelldateien\Widget</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Viewport.cpp">
+      <Filter>Quelldateien\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\ScrollContainer.cpp">
+      <Filter>Quelldateien\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Dialog.cpp">
+      <Filter>Quelldateien\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Font\FontGlyph.cpp">
+      <Filter>Quelldateien\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Overlay.cpp">
+      <Filter>Quelldateien\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Form.cpp">
       <Filter>Quelldateien\Widget</Filter>
     </ClCompile>
   </ItemGroup>

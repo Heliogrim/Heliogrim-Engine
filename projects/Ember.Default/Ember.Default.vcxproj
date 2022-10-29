@@ -91,6 +91,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Ember.Default\Assets\Fonts\Consolas24Latin1.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\Brand.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultAlpha.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultAO.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultDiffuse.hpp" />
@@ -98,6 +99,13 @@
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultNormal.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultRoughness.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultSkybox.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\Directory.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\FolderAudio.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\FolderImages.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\FolderLog.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\FolderResource.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\FolderShader.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\Brand.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultAlpha.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultAO.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultDiffuse.hpp" />
@@ -105,8 +113,15 @@
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultNormal.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultRoughness.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultSkybox.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\Directory.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\FolderAudio.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\FolderImages.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\FolderLog.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\FolderResource.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\FolderShader.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\Brand.cpp" />
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultAlpha.cpp" />
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultAO.cpp" />
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultDiffuse.cpp" />
@@ -114,6 +129,12 @@
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultNormal.cpp" />
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultRoughness.cpp" />
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultSkybox.cpp" />
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\Directory.cpp" />
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\FolderAudio.cpp" />
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\FolderImages.cpp" />
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\FolderLog.cpp" />
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\FolderResource.cpp" />
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\FolderShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ember\Ember.vcxproj">
