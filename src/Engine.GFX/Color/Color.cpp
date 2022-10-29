@@ -6,7 +6,7 @@ using namespace ember::math;
 color::color() :
     math::fvec4() {}
 
-color::color(const float r_, const float g_, const float b_, const float a_) :
+color::color(const float& r_, const float& g_, const float& b_, const float& a_) :
     math::fvec4(r_, g_, b_, a_) {}
 
 color::color(const fvec3& rgb_, const float a_) :
