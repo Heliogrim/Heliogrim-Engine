@@ -138,10 +138,10 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makePage(
     assert(
         _format == TextureFormat::eR8Unorm ||
         _format == TextureFormat::eR8G8B8A8Unorm ||
+        _format == TextureFormat::eR8G8B8A8Srgb ||
         _format == TextureFormat::eR16G16B16A16Sfloat ||
         _format == TextureFormat::eR32G32B32A32Sfloat ||
         _format == TextureFormat::eR16Sfloat);
-    assert(_type == TextureType::e2dArray || _type == TextureType::eCube);
 
     #ifdef _DEBUG
     assert(_layers >= layer_);
@@ -267,6 +267,14 @@ void VirtualTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math:
 
         math::uivec3 mipSize { _extent.x >> mip, _extent.y >> mip, 1ui32 };
         math::uivec3 desiredTiles { mipSize.x / _granularity.x, mipSize.y / _granularity.y, 1ui32 };
+
+        if (mipSize.x > _granularity.x * desiredTiles.x) {
+            ++desiredTiles.x;
+        }
+
+        if (mipSize.y > _granularity.y * desiredTiles.y) {
+            ++desiredTiles.y;
+        }
 
         const u32 desiredMipTiles { desiredTiles.x * desiredTiles.y * desiredTiles.z };
 
