@@ -6,7 +6,7 @@ using namespace ember;
 WoodenBucket01::WoodenBucket01() :
     StaticGeometryAsset(
         WoodenBucket01::auto_guid(),
-        R"(resources\assets\geometry\wooden_bucket_01.obj)",
+        R"(resources\imports\obj\wooden_bucket_01.obj)",
         15348ui64,
         15348ui64
     ) {}

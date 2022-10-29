@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         Skybox01Diffuse():
             ImageAsset(Skybox01Diffuse::auto_guid(),
-                R"(resources\assets\texture\skybox_01_diffuse.ktx)") {}
+                R"(resources\imports\ktx\skybox_01_diffuse.ktx)") {}
     };
 
     AUTO_REGISTER_ASSET(Skybox01Diffuse)

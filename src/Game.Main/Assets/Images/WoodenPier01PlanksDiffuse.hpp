@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         WoodenPier01PlanksDiffuse():
             ImageAsset(WoodenPier01PlanksDiffuse::auto_guid(),
-                R"(resources\assets\texture\wooden_pier_01_planks_diffuse.ktx2)") {}
+                R"(resources\imports\ktx2\wooden_pier_01_planks_diffuse.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(WoodenPier01PlanksDiffuse)

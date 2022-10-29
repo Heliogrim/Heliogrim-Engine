@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         Stick01AO():
             ImageAsset(Stick01AO::auto_guid(),
-                R"(resources\assets\texture\stick_01_ao.ktx2)") {}
+                R"(resources\imports\ktx2\stick_01_ao.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(Stick01AO)

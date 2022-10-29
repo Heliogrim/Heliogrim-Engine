@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         WoodenBucket02Roughness():
             ImageAsset(WoodenBucket02Roughness::auto_guid(),
-                R"(resources\assets\texture\wooden_bucket_02_roughness.ktx2)") {}
+                R"(resources\imports\ktx2\wooden_bucket_02_roughness.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(WoodenBucket02Roughness)

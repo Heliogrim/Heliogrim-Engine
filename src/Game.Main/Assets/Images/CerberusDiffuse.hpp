@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         CerberusDiffuse():
             ImageAsset(CerberusDiffuse::auto_guid(),
-                R"(resources\assets\texture\cerberus_diffuse.ktx2)") {}
+                R"(resources\imports\ktx2\cerberus_diffuse.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(CerberusDiffuse)
