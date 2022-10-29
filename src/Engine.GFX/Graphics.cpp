@@ -7,6 +7,7 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Engine.Common/Concurrent/Collection/RingBuffer.hpp>
 #include <Engine.Common/Math/__default.inl>
 #include <Engine.GFX.Glow.3D/Renderer/RevRenderer.hpp>
 #include <Engine.GFX.Glow.UI/Renderer/UIRenderer.hpp>
@@ -322,6 +323,11 @@ void Graphics::tick(
     assert(result != RenderEnqueueResult::eFailed);
 }
 
+#if TRUE
+// Warning: Temporary Experimental
+void reportStats(float fps_, float time_);
+#endif
+
 void Graphics::_tick() {
 
     #if TRUE
@@ -355,18 +361,36 @@ void Graphics::_tick() {
     /**
      * Debug Metrics
      */
-    static uint64_t frames = 0;
-    static auto last = std::chrono::high_resolution_clock::now();
+    static concurrent::RingBuffer<_STD chrono::nanoseconds> timeBuffer { 17 };
 
+    static auto lastFrame = std::chrono::high_resolution_clock::now();
     const auto now = _STD chrono::high_resolution_clock::now();
-    if (_STD chrono::duration_cast<_STD chrono::milliseconds>(now - last).count() > 1000) {
-        _STD cout << "GFX Ticks: " << frames << _STD endl;
 
-        frames = 0;
-        last = now;
+    auto duration { _STD chrono::duration_cast<_STD chrono::nanoseconds>(now - lastFrame) };
+    timeBuffer.try_push(_STD move(duration));
+
+    if (timeBuffer.full()) {
+        _STD chrono::nanoseconds tmp {};
+        timeBuffer.try_pop(tmp);
     }
 
-    ++frames;
+    lastFrame = now;
+
+    /**/
+
+    _STD chrono::nanoseconds accValue {};
+    u32 accCount { 0ui32 };
+    for (const auto& entry : timeBuffer.unsafe_container()) {
+        if (entry.count() > 0) {
+            accValue += entry;
+            ++accCount;
+        }
+    }
+
+    const double avg { static_cast<double>(accValue.count()) / static_cast<double>(accCount) };
+    const double diff { static_cast<double>(duration.count()) / 1000'000.0 };
+
+    reportStats(static_cast<float>(1000'000'000.0 / avg), static_cast<float>(diff));
 }
 
 void Graphics::__tmp__resize(cref<math::uivec2> extent_) {
@@ -427,12 +451,12 @@ void Graphics::reschedule() {
 #include <Ember/SkyboxComponent.hpp>
 #include <Ember/StaticGeometryComponent.hpp>
 #include <Ember/UIComponent.hpp>
+#include <Engine.GFX.Glow.UI/Scene/UISceneModel.hpp>
 #include <Engine.Scene/RevScene.hpp>
 
 #include "Scene/SceneTag.hpp"
 #include "Scene/SkyboxModel.hpp"
 #include "Scene/StaticGeometryModel.hpp"
-#include <Engine.GFX.Glow.UI/Scene/UISceneModel.hpp>
 
 bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
     _renderScene = scene_;
@@ -546,3 +570,24 @@ void Graphics::registerLoader() {
 }
 
 void Graphics::registerImporter() {}
+
+#if TRUE
+// Warning: Experimental Test
+
+#include <format>
+#include <Engine.GFX.Glow.UI/TestUI.hpp>
+#include <Engine.GFX.Glow.UI/Widget/Text.hpp>
+
+void reportStats(float fps_, float time_) {
+
+    if (not testFrameDisplay.expired()) {
+        auto* tfd { static_cast<ptr<engine::gfx::glow::ui::Text>>(testFrameDisplay.lock().get()) };
+        tfd->_text = std::format("{:.0f} FPS", fps_);
+    }
+
+    if (not testFrameTime.expired()) {
+        auto* tft { static_cast<ptr<engine::gfx::glow::ui::Text>>(testFrameTime.lock().get()) };
+        tft->_text = std::format("{:.2f} ms", time_);
+    }
+}
+#endif
