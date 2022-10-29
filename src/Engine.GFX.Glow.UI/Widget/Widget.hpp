@@ -4,6 +4,7 @@
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.GFX/Color/Color.hpp>
 #include <Engine.Input/MouseButtonEvent.hpp>
+#include <Engine.Input/DragDropEvent.hpp>
 
 #include "../Reflow.hpp"
 #include "../Command/UICommandBuffer.hpp"
@@ -34,6 +35,12 @@ namespace ember::engine::gfx::glow::ui {
         virtual bool onMouseEnterEvent(cref<math::ivec2> pointer_, bool enter_) = 0;
 
     public:
+        virtual bool onDragDropEvent(cref<input::event::DragDropEvent> event_) = 0;
+
+    public:
+        virtual bool onScrollEvent(cref<math::ivec2> pointer_, cref<math::vec2> value_) = 0;
+
+    public:
         virtual bool onFocusEvent(bool focus_) = 0;
 
     public:
@@ -46,6 +53,11 @@ namespace ember::engine::gfx::glow::ui {
         bool focused;
         bool hover;
         bool visible = true;
+
+        /**/
+
+        bool touched = false;
+        bool deleted = false;
     };
 
     class __declspec(novtable) Widget :
@@ -99,6 +111,10 @@ namespace ember::engine::gfx::glow::ui {
         non_owning_rptr<Widget> _parent;
 
     public:
+        [[nodiscard]] const non_owning_rptr<const Widget> root() const noexcept;
+
+        [[nodiscard]] const non_owning_rptr<Widget> root() noexcept;
+
         [[nodiscard]] non_owning_rptr<Widget> parent() const noexcept;
 
         void setParent(const non_owning_rptr<Widget> parent_);
@@ -107,6 +123,8 @@ namespace ember::engine::gfx::glow::ui {
         Vector<sptr<Widget>> _nodes;
 
     public:
+        [[nodiscard]] ref<Vector<sptr<Widget>>> nodes() noexcept;
+
         void add(mref<ptr<Widget>> widget_);
 
         void add(cref<sptr<Widget>> widget_);
@@ -129,9 +147,25 @@ namespace ember::engine::gfx::glow::ui {
 
         [[nodiscard]] bool recursiveVisible() const noexcept;
 
+    public:
         [[nodiscard]] bool focused() const noexcept;
 
+        void requestFocus();
+
+    protected:
+        void updateFocus(ptr<Widget> widget_);
+
+    public:
         [[nodiscard]] bool hovered() const noexcept;
+
+    public:
+        [[nodiscard]] bool markedAsDeleted() const noexcept;
+
+        void markAsDeleted() noexcept;
+
+        [[nodiscard]] bool markedAsTouched() const noexcept;
+
+        void markAsTouched() noexcept;
 
     protected:
         math::fExtent2D _transform;
@@ -140,6 +174,17 @@ namespace ember::engine::gfx::glow::ui {
         [[nodiscard]] cref<math::fExtent2D> transform() const noexcept;
 
         [[nodiscard]] bool contains(cref<math::ivec2> point_) const noexcept;
+
+        #pragma region Runtime States
+
+    protected:
+        math::vec2 _overflowSize;
+
+        #pragma endregion
+
+        //protected:
+    public:
+        ReflowPosition _reflowPosition;
 
         //protected:
     public:
@@ -154,7 +199,14 @@ namespace ember::engine::gfx::glow::ui {
 
         //protected:
     public:
-        color _background;
+        math::vec4 _borderRadius;
+
+        //protected:
+    public:
+        engine::color _color;
+
+    public:
+        [[nodiscard]] virtual engine::color statedColor() const noexcept;
 
     public:
         // Warning: experimental
@@ -221,6 +273,10 @@ namespace ember::engine::gfx::glow::ui {
             u32 modifier_) override;
 
         bool onMouseEnterEvent(cref<math::ivec2> pointer_, bool enter_) override;
+
+        bool onDragDropEvent(cref<input::event::DragDropEvent> event_) override;
+
+        bool onScrollEvent(cref<math::ivec2> pointer_, cref<math::vec2> value_) override;
 
         bool onFocusEvent(bool focus_) override;
 

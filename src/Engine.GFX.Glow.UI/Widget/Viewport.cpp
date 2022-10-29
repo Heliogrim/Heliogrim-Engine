@@ -102,7 +102,7 @@ void Viewport::render(const ptr<UICommandBuffer> cmd_) {
                 c1, _uvs[1],
                 c2, _uvs[2],
                 c3, _uvs[3],
-                image,
+                ProxyTexture<non_owning_rptr> { _STD move(image.get()) },
                 imageWaits.empty() ? VK_NULL_HANDLE : imageWaits.back(),
                 imageSignal,
                 cl

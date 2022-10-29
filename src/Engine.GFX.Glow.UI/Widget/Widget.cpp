@@ -10,17 +10,49 @@ Widget::Widget() :
     _parent(nullptr),
     _nodes(),
     _state(),
+    _reflowPosition(ReflowPosition::eStatic),
     _margin(),
+    _padding(),
     _reflowType(ReflowType::eFlexRow),
     _reflowSpacing(ReflowSpacing::eSpaceAround),
+    _reflowWrapping(ReflowWrapping::eNone),
+    _reflowOverflow(ReflowOverflow::eNone),
     _emitter() {}
 
 math::vec2 Widget::flow(cref<UIContext> ctx_, cref<math::vec2> available_) {
+
+    auto it {
+        _STD ranges::remove(_nodes.begin(), _nodes.end(), true, [](cref<sptr<Widget>> node_) {
+            return node_->markedAsDeleted();
+        })
+    };
+    _nodes.erase(it.begin(), it.end());
+
+    /**/
+
     return Reflow::flow(this, ctx_, available_);
 }
 
 void Widget::shift(cref<UIContext> ctx_, cref<math::vec2> offset_) {
     Reflow::shift(this, ctx_, offset_);
+}
+
+const non_owning_rptr<const Widget> Widget::root() const noexcept {
+    ptr<const Widget> cur { this };
+    while (cur->_parent) {
+        cur = cur->_parent;
+    }
+
+    return cur->_parent ? cur->_parent : cur;
+}
+
+const non_owning_rptr<Widget> Widget::root() noexcept {
+    ptr<Widget> cur { this };
+    while (cur->_parent) {
+        cur = cur->_parent;
+    }
+
+    return cur->_parent ? cur->_parent : cur;
 }
 
 ptr<Widget> Widget::parent() const noexcept {
@@ -29,6 +61,10 @@ ptr<Widget> Widget::parent() const noexcept {
 
 void Widget::setParent(const non_owning_rptr<Widget> parent_) {
     _parent = parent_;
+}
+
+ref<Vector<sptr<Widget>>> Widget::nodes() noexcept {
+    return _nodes;
 }
 
 void Widget::add(mref<ptr<Widget>> widget_) {
@@ -50,8 +86,13 @@ bool Widget::has(cref<sptr<Widget>> widget_) {
 }
 
 void Widget::remove(const ptr<Widget> widget_) {
-    //widget_->setParent(nullptr);
-    throw NotImplementedException();
+    widget_->setParent(nullptr);
+    const auto it {
+        _STD ranges::remove(_nodes.begin(), _nodes.end(), widget_, [](cref<sptr<Widget>> node_) {
+            return node_.get();
+        })
+    };
+    _nodes.erase(it.begin(), it.end());
 }
 
 void Widget::remove(cref<sptr<Widget>> widget_) {
@@ -79,8 +120,54 @@ bool Widget::focused() const noexcept {
     return _state.focused;
 }
 
+void Widget::requestFocus() {
+    root()->updateFocus(this);
+}
+
+void Widget::updateFocus(ptr<Widget> widget_) {
+
+    auto next { this };
+    while (next) {
+
+        auto cur = next;
+        next = nullptr;
+
+        for (const auto& entry : cur->_nodes) {
+            if (entry->focused()) {
+                entry->onFocusEvent(false);
+                next = entry.get();
+                break;
+            }
+        }
+    }
+
+    /**/
+
+    next = widget_;
+    while (next) {
+        next->onFocusEvent(true);
+        next = next->parent();
+    }
+}
+
 bool Widget::hovered() const noexcept {
     return _state.hover;
+}
+
+bool Widget::markedAsDeleted() const noexcept {
+    return _state.deleted;
+}
+
+void Widget::markAsDeleted() noexcept {
+    _state.deleted = true;
+}
+
+bool Widget::markedAsTouched() const noexcept {
+    return _state.touched;
+}
+
+void Widget::markAsTouched() noexcept {
+    _state.touched = true;
 }
 
 cref<math::fExtent2D> Widget::transform() const noexcept {
@@ -95,6 +182,10 @@ bool Widget::contains(cref<math::ivec2> point_) const noexcept {
 
     return diff.x >= 0 && _transform.width > diff.x &&
         diff.y >= 0 && _transform.height > diff.y;
+}
+
+engine::color Widget::statedColor() const noexcept {
+    return _color;
 }
 
 ReflowType Widget::reflowType() const noexcept {
@@ -153,11 +244,16 @@ bool Widget::onMouseButtonEvent(cref<math::ivec2> pointer_, u32 button_, bool do
 
     }
 
+    if (!result && down_ && not focused()) {
+        requestFocus();
+    }
+
     return result;
 }
 
 bool Widget::onMouseMotionEvent(cref<math::ivec2> pointer_, cref<math::ivec2> delta_, u32 button_, u32 modifier_) {
 
+    bool result { false };
     for (auto rit { _nodes.rbegin() }; rit != _nodes.rend(); ++rit) {
 
         auto& widget { *rit };
@@ -165,20 +261,24 @@ bool Widget::onMouseMotionEvent(cref<math::ivec2> pointer_, cref<math::ivec2> de
             continue;
         }
 
-        bool prevCont = widget->contains(pointer_ - delta_);
-        bool cont = widget->contains(pointer_);
+        const bool prevCont = widget->contains(pointer_ - delta_);
+        const bool cont = widget->contains(pointer_);
 
-        if (prevCont != cont) {
+        if (prevCont != cont || (cont && not widget->_state.hover)) {
             widget->onMouseEnterEvent(pointer_, cont);
         }
 
         if ((prevCont || cont) && widget->onMouseMotionEvent(pointer_, delta_, button_, modifier_)) {
             // Warning: Might result in missing leave events when container has dismounted elements / popover
-            return true;
+            result = true;
+
+        } else if (widget->_state.hover) {
+            widget->onMouseMotionEvent(pointer_, delta_, button_, modifier_);
+            widget->onMouseEnterEvent(pointer_, cont);
         }
     }
 
-    return true;
+    return result;
 }
 
 bool Widget::onMouseDragEvent(cref<math::ivec2> pointer_, cref<math::ivec2> delta_, u32 button_, u32 modifier_) {
@@ -188,6 +288,40 @@ bool Widget::onMouseDragEvent(cref<math::ivec2> pointer_, cref<math::ivec2> delt
 bool Widget::onMouseEnterEvent(cref<math::ivec2> pointer_, bool enter_) {
     _state.hover = enter_;
     return true;
+}
+
+bool Widget::onDragDropEvent(cref<input::event::DragDropEvent> event_) {
+
+    for (auto rit { _nodes.rbegin() }; rit != _nodes.rend(); ++rit) {
+
+        const auto& widget { *rit };
+        if (!widget->visible()) {
+            continue;
+        }
+
+        if (widget->contains(event_._pointer) && widget->onDragDropEvent(event_)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Widget::onScrollEvent(cref<math::ivec2> pointer_, cref<math::vec2> value_) {
+
+    for (auto rit { _nodes.rbegin() }; rit != _nodes.rend(); ++rit) {
+
+        const auto& widget { *rit };
+        if (!widget->visible()) {
+            continue;
+        }
+
+        if (widget->contains(pointer_) && widget->onScrollEvent(pointer_, value_)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool Widget::onFocusEvent(bool focus_) {

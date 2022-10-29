@@ -12,7 +12,7 @@ Menu::Menu() :
     _extent.x = -1.F;
     _extent.y = -1.F;
     _padding = math::vec4 { 4.F };
-    _background = color { 46.F, 50.F, 58.F, 255.F };
+    _color = color { 46.F, 50.F, 58.F, 255.F };
 
 }
 
