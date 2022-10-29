@@ -1,5 +1,7 @@
 #include "Texture.hpp"
 
+#include "TextureView.hpp"
+
 using namespace ember::engine::gfx;
 
 Texture::Texture() noexcept :
@@ -53,6 +55,35 @@ void Texture::destroy() {
     }
 
     _buffer.destroy();
+}
+
+ember::uptr<TextureView> Texture::makeView(math::uivec2 layers_, math::uExtent3D extent_, math::uivec2 mipLevels_) {
+
+    const math::uivec2 mipLevels {
+        MAX(_mipLevels, mipLevels_.min),
+        MIN(_mipLevels, mipLevels_.max)
+    };
+
+    const math::uivec2 layers {
+        MAX(_extent.z, layers_.min),
+        MIN(_extent.z, layers_.max)
+    };
+
+    const math::uExtent3D extent {
+        MIN(_extent.x - extent_.offsetX, extent_.width),
+        MIN(_extent.y - extent_.offsetY, extent_.height),
+        MIN(/*_extent.z*/1 - extent_.offsetZ, extent_.depth),
+        MIN(_extent.x, extent_.offsetX),
+        MIN(_extent.y, extent_.offsetY),
+        MIN(/*_extent.z*/1, extent_.offsetZ)
+    };
+
+    /**/
+
+    const auto view {
+        new TextureView(this, layers, extent, mipLevels)
+    };
+    return _STD unique_ptr<TextureView>(view);
 }
 
 TextureBuffer& Texture::buffer() noexcept {
