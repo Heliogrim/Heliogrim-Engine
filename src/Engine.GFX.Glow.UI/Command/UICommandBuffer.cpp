@@ -155,6 +155,27 @@ bool UICommandBuffer::scissorCull(cref<math::vec2> p_, float r_) const noexcept 
     return false;
 }
 
+bool UICommandBuffer::scissorCull(cref<math::fExtent2D> rect_) const noexcept {
+
+    if (_scissorStack.empty()) {
+        return false;
+    }
+
+    const auto& scissor { _scissorStack.top() };
+
+    const math::vec2 rectMax { rect_.offsetX + rect_.width, rect_.offsetY + rect_.height };
+    if (rectMax.x < scissor.offsetX || rectMax.y < scissor.offsetY) {
+        return true;
+    }
+
+    const math::vec2 scissorMax { scissor.offsetX + scissor.width, scissor.offsetY + scissor.height };
+    if (scissorMax.x < rect_.offsetX || scissorMax.y < rect_.offsetY) {
+        return true;
+    }
+
+    return false;
+}
+
 void UICommandBuffer::drawLine(math::vec2 p0_, math::vec2 p1_, const float strength_) {}
 
 void UICommandBuffer::drawTriangle(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, cref<color> color_) {}

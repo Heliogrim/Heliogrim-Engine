@@ -34,6 +34,8 @@ namespace ember::engine::gfx::glow::ui {
     public:
         [[nodiscard]] bool scissorCull(cref<math::vec2> p_, float r_) const noexcept;
 
+        [[nodiscard]] bool scissorCull(cref<math::fExtent2D> rect_) const noexcept;
+
         //private:
     public:
         Vector<u32> _runningIndexes;
