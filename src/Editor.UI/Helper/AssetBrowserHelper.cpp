@@ -5,10 +5,14 @@
 #include <Ember.Default/Assets/Textures/Brand.hpp>
 #include <Ember.Default/Assets/Textures/Directory.hpp>
 #include <Ember.Default/Assets/Textures/FolderAudio.hpp>
+#include <Ember.Default/Assets/Textures/FolderEnvironment.hpp>
+#include <Ember.Default/Assets/Textures/FolderFont.hpp>
 #include <Ember.Default/Assets/Textures/FolderImages.hpp>
+#include <Ember.Default/Assets/Textures/FolderImport.hpp>
 #include <Ember.Default/Assets/Textures/FolderLog.hpp>
 #include <Ember.Default/Assets/Textures/FolderResource.hpp>
 #include <Ember.Default/Assets/Textures/FolderShader.hpp>
+#include <Ember.Default/Assets/Textures/FolderVideo.hpp>
 
 using namespace ember::editor::ui;
 using namespace ember;
@@ -94,8 +98,16 @@ void AssetBrowserHelper::setup() {
         delete (new game::assets::texture::FolderResource());
     }
 
-    _directoryIcons.push_back(_STD make_pair("import", static_cast<ptr<engine::assets::Texture>>(query.get())));
     _directoryIcons.push_back(_STD make_pair("resource", static_cast<ptr<engine::assets::Texture>>(query.get())));
+
+    /**/
+
+    query = _assetDb->query(game::assets::texture::FolderImport::auto_guid());
+    if (not query.exists()) {
+        delete (new game::assets::texture::FolderImport());
+    }
+
+    _directoryIcons.push_back(_STD make_pair("import", static_cast<ptr<engine::assets::Texture>>(query.get())));
 
     /**/
 
@@ -114,6 +126,39 @@ void AssetBrowserHelper::setup() {
     }
 
     _directoryIcons.push_back(_STD make_pair("log", static_cast<ptr<engine::assets::Texture>>(query.get())));
+
+    /**/
+
+    query = _assetDb->query(game::assets::texture::FolderEnvironment::auto_guid());
+    if (not query.exists()) {
+        delete (new game::assets::texture::FolderEnvironment());
+    }
+
+    _directoryIcons.push_back(_STD make_pair("env", static_cast<ptr<engine::assets::Texture>>(query.get())));
+    _directoryIcons.push_back(_STD make_pair("environment", static_cast<ptr<engine::assets::Texture>>(query.get())));
+    _directoryIcons.push_back(_STD make_pair("scene", static_cast<ptr<engine::assets::Texture>>(query.get())));
+    _directoryIcons.push_back(_STD make_pair("world", static_cast<ptr<engine::assets::Texture>>(query.get())));
+
+    _directoryIcons.push_back(_STD make_pair("fbx", static_cast<ptr<engine::assets::Texture>>(query.get())));
+    _directoryIcons.push_back(_STD make_pair("gltf", static_cast<ptr<engine::assets::Texture>>(query.get())));
+
+    /**/
+
+    query = _assetDb->query(game::assets::texture::FolderVideo::auto_guid());
+    if (not query.exists()) {
+        delete (new game::assets::texture::FolderVideo());
+    }
+
+    _directoryIcons.push_back(_STD make_pair("video", static_cast<ptr<engine::assets::Texture>>(query.get())));
+
+    /**/
+
+    query = _assetDb->query(game::assets::texture::FolderFont::auto_guid());
+    if (not query.exists()) {
+        delete (new game::assets::texture::FolderFont());
+    }
+
+    _directoryIcons.push_back(_STD make_pair("font", static_cast<ptr<engine::assets::Texture>>(query.get())));
 }
 
 ptr<engine::assets::Texture> AssetBrowserHelper::getItemIconByAssetType(cref<asset_type_id> typeId_) const noexcept {
