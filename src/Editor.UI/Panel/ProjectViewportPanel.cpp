@@ -16,7 +16,7 @@ void configureCtrls(cref<sptr<Widget>> parent_) {
     parent_->setReflowType(ReflowType::eFlexRow);
     parent_->setReflowSpacing(ReflowSpacing::eSpaceAround);
 
-    parent_->_background = engine::color { 46.F, 50.F, 58.F, 255.F };
+    parent_->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
 
     parent_->_extent.x = 1.F;
     parent_->_extent.y = 0.F;
@@ -40,7 +40,7 @@ void configureCtrls(cref<sptr<Widget>> parent_) {
     playText->_text = "Play"sv;
     playButton->add(playText);
 
-    playButton->_background = engine::color { 46.F, 50.F, 58.F, 255.F };
+    playButton->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
     playButton->_margin = math::vec4 { 4.F };
     playButton->_padding = math::vec4 { 8.F, 4.F };
     parent_->add(playButton);
@@ -50,7 +50,7 @@ void configureCtrls(cref<sptr<Widget>> parent_) {
     pauseText->_text = "Pause"sv;
     pauseButton->add(pauseText);
 
-    pauseButton->_background = engine::color { 46.F, 50.F, 58.F, 255.F };
+    pauseButton->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
     pauseButton->_margin = math::vec4 { 4.F };
     pauseButton->_padding = math::vec4 { 8.F, 4.F };
     parent_->add(pauseButton);
@@ -60,7 +60,7 @@ void configureCtrls(cref<sptr<Widget>> parent_) {
     stopText->_text = "Play"sv;
     stopButton->add(stopText);
 
-    stopButton->_background = engine::color { 46.F, 50.F, 58.F, 255.F };
+    stopButton->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
     stopButton->_margin = math::vec4 { 4.F };
     stopButton->_padding = math::vec4 { 8.F, 4.F };
     parent_->add(stopButton);
@@ -70,7 +70,7 @@ void configureViewport(cref<sptr<Widget>> parent_) {
     parent_->setReflowType(ReflowType::eFlexRow);
     parent_->setReflowSpacing(ReflowSpacing::eSpaceAround);
 
-    parent_->_background = engine::color { 46.F, 50.F, 58.F, 255.F };
+    parent_->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
 
     parent_->_extent.x = 1.F;
     parent_->_extent.y = 1.F;
@@ -82,7 +82,7 @@ void configureViewport(cref<sptr<Widget>> parent_) {
 
     /**/
 
-    viewport->_background = engine::color { 46.F, 50.F, 58.F, 255.F };
+    viewport->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
     viewport->_extent.x = 1.F;
     viewport->_extent.y = 1.F;
 
