@@ -26,7 +26,7 @@ namespace ember::engine {
          * @param  b_ The b.
          * @param  a_ (Optional) A.
          */
-        color(const float r_, const float g_, const float b_, const float a_ = 1.F);
+        color(const float& r_, const float& g_, const float& b_, const float& a_ = 1.F);
 
         /**
          * Constructor
