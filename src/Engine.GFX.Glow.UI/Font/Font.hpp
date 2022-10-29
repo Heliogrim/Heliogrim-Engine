@@ -6,6 +6,8 @@
 #include <Engine.GFX/Texture/Texture.hpp>
 
 #include "FontGlyph.hpp"
+#include "GlyphCode.hpp"
+#include "Engine.Common/Collection/RobinMap.hpp"
 
 namespace ember::engine::gfx::glow::ui {
 
@@ -18,17 +20,14 @@ namespace ember::engine::gfx::glow::ui {
 
         ~Font() noexcept;
 
-    //private:
+        //private:
     public:
         string _name;
 
     public:
         [[nodiscard]] cref<string> name() const noexcept;
 
-    public:
-        [[nodiscard]] bool isBitmap() const noexcept;
-
-    //private:
+        //private:
     public:
         math::uivec2 _extent;
 
@@ -37,30 +36,37 @@ namespace ember::engine::gfx::glow::ui {
 
         [[nodiscard]] u32 height() const noexcept;
 
-    //private:
+        //private:
     public:
-        float _fontSize;
+        u32 _fontSize;
+        Vector<u32> _sizes;
 
     public:
         [[nodiscard]] float fontSize() const noexcept;
 
+        [[nodiscard]] u32 nextFontSize(const u32 size_) const noexcept;
 
-    //private:
+        //private:
     public:
-        Vector<FontGlyph> _glyphs;
-        FontGlyph _fallback;
-
-        u32 _first;
+        RobinMap<u32, ptr<FontGlyph>> _glyphs;
         u32 _glyphCount;
 
+        //private:
     public:
-        [[nodiscard]] cref<FontGlyph> glyph(const u32 letter_) const noexcept;
+        [[nodiscard]] u32 encodeKey(const GlyphCode code_, const u32 fontSize_) const noexcept;
 
-    //private:
+    public:
+        [[nodiscard]] const ptr<const FontGlyph> glyph(const GlyphCode code_, const u32 fontSize_) const noexcept;
+
+        //private:
     public:
         sptr<Texture> _atlas;
 
     public:
         [[nodiscard]] cref<sptr<Texture>> atlas() const noexcept;
+
+        //private:
+    public:
+        ptr<void> _ftFace;
     };
 }

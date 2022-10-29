@@ -2,6 +2,8 @@
 
 #include <Engine.Common/Url.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.GFX.Glow.UI/Font/GlyphRanges.hpp>
+#include <Engine.Resource/Loader/Loader.hpp>
 
 #include "Data.hpp"
 #include "FontLayout.hpp"
@@ -26,4 +28,16 @@ namespace ember::engine::assets {
         [[nodiscard]] cref<Vector<Url>> sources() const noexcept;
     };
 
+}
+
+namespace ember::engine::res {
+    template <>
+    struct LoaderOptions<::ember::engine::assets::Font> {
+        Vector<gfx::glow::ui::GlyphRange> ranges;
+        Vector<gfx::glow::ui::GlyphCode> glyphs;
+
+        /**/
+
+        Vector<u32> fontSizes;
+    };
 }

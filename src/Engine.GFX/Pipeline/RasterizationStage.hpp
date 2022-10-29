@@ -118,6 +118,16 @@ namespace ember::engine::gfx::pipeline {
          */
         [[nodiscard]] RasterSamples samples() const noexcept;
 
+        /**
+         * Gets the amount of requested Samples
+         *
+         * @author Julius
+         * @date 01.12.2020
+         *
+         * @returns A reference to the RasterSamples.
+         */
+        [[nodiscard]] ref<RasterSamples> samples() noexcept;
+
     private:
         /**
          * Line Width

@@ -36,6 +36,10 @@ RasterSamples RasterizationStage::samples() const noexcept {
     return _samples;
 }
 
+ref<RasterSamples> RasterizationStage::samples() noexcept {
+    return _samples;
+}
+
 bool RasterizationStage::depthCheck() const noexcept {
     return _depthCheck;
 }
