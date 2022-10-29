@@ -1,5 +1,7 @@
 #include "UICommandBuffer.hpp"
 
+#include <Engine.GFX/Texture/TextureView.hpp>
+
 using namespace ember::engine::gfx::glow::ui;
 using namespace ember;
 
@@ -8,6 +10,16 @@ void UICommandBuffer::begin() {}
 void UICommandBuffer::end() {}
 
 void UICommandBuffer::reset(const bool free_) {
+
+    /**
+     *
+     */
+    while (not _scissorStack.empty()) {
+        _scissorStack.pop();
+    }
+    _scissorIndices.clear();
+    _scissors.clear();
+
     /**
      *
      */
@@ -24,6 +36,9 @@ void UICommandBuffer::reset(const bool free_) {
      *
      */
     if (free_) {
+        _scissorIndices.shrink_to_fit();
+        _scissors.shrink_to_fit();
+
         _runningIndexes.shrink_to_fit();
         _runningVertices.shrink_to_fit();
 
@@ -35,6 +50,111 @@ void UICommandBuffer::reset(const bool free_) {
     }
 }
 
+void UICommandBuffer::pushScissor(cref<math::fExtent2D> scissor_) {
+
+    const u32 lastRunningIdx { static_cast<u32>(_runningIndexes.size()) };
+
+    const bool usedPrevScissor { not _scissors.empty() && _scissorIndices.back().first != lastRunningIdx };
+
+    if (usedPrevScissor) {
+        _scissorIndices.back().second = lastRunningIdx;
+
+        _scissorIndices.push_back({ lastRunningIdx, 0ui32 });
+        _scissors.push_back(scissor_);
+
+    } else if (not _scissors.empty()) {
+
+        //_scissorIndices.back().first = lastRunningIdx;
+        _scissors.back() = scissor_;
+
+    } else {
+
+        _scissorIndices.push_back({ lastRunningIdx, 0ui32 });
+        _scissors.push_back(scissor_);
+    }
+
+    assert(_scissors.size() == _scissorIndices.size());
+    _scissorStack.push(scissor_);
+}
+
+void UICommandBuffer::pushIntersectScissor(cref<math::fExtent2D> scissor_) {
+
+    const auto hasPrevScissor { not _scissorStack.empty() };
+    auto scissor { scissor_ };
+
+    if (hasPrevScissor) {
+        const auto& prev { _scissorStack.top() };
+
+        const math::vec2 outerMin { prev.offsetX, prev.offsetY };
+        const math::vec2 outerMax { prev.offsetX + prev.width, prev.offsetY + prev.height };
+
+        const math::vec2 innerMin { scissor_.offsetX, scissor_.offsetY };
+        const math::vec2 innerMax { scissor_.offsetX + scissor_.width, scissor_.offsetY + scissor_.height };
+
+        const math::vec2 min { math::compMax<float>(outerMin, innerMin) };
+        const math::vec2 max { math::compMin<float>(outerMax, innerMax) };
+
+        if (min.x > max.x || min.y > max.y) {
+            scissor.width = 0;
+            scissor.height = 0;
+            scissor.offsetX = 0;
+            scissor.offsetY = 0;
+
+        } else {
+            scissor.width = max.x - min.x;
+            scissor.height = max.y - min.y;
+            scissor.offsetX = min.x;
+            scissor.offsetY = min.y;
+        }
+    }
+
+    pushScissor(scissor);
+}
+
+math::fExtent2D UICommandBuffer::popScissor() {
+
+    const u32 lastRunningIdx { static_cast<u32>(_runningIndexes.size()) };
+
+    if (not _scissorStack.empty()) {
+        _scissorIndices.back().second = lastRunningIdx;
+    }
+
+    const auto top { _scissorStack.top() };
+    _scissorStack.pop();
+
+    if (not _scissorStack.empty()) {
+
+        if (_scissorIndices.back().first == lastRunningIdx) {
+            _scissors.back() = _scissorStack.top();
+
+        } else {
+            _scissorIndices.push_back({ lastRunningIdx, 0ui32 });
+            _scissors.push_back(_scissorStack.top());
+        }
+    }
+
+    return top;
+}
+
+bool UICommandBuffer::scissorCull(cref<math::vec2> p_, float r_) const noexcept {
+
+    if (_scissorStack.empty()) {
+        return false;
+    }
+
+    const auto& scissor { _scissorStack.top() };
+
+    if (p_.x + r_ <= scissor.offsetX || p_.x - r_ > scissor.offsetX + scissor.width) {
+        return true;
+    }
+
+    if (p_.y + r_ <= scissor.offsetY || p_.y - r_ > scissor.offsetY + scissor.height) {
+        return true;
+    }
+
+    return false;
+}
+
 void UICommandBuffer::drawLine(math::vec2 p0_, math::vec2 p1_, const float strength_) {}
 
 void UICommandBuffer::drawTriangle(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, cref<color> color_) {}
@@ -43,6 +163,10 @@ void UICommandBuffer::drawTriangleLine(math::vec2 p0_, math::vec2 p1_, math::vec
     const float strength_) {}
 
 void UICommandBuffer::drawQuad(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, math::vec2 p3_, cref<color> color_) {
+
+    if (color_.a <= 0.F) {
+        return;
+    }
 
     /**
      *
@@ -63,32 +187,44 @@ void UICommandBuffer::drawQuad(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, m
     _runningIndexes.push_back(baseIdx + cqi[4]);
     _runningIndexes.push_back(baseIdx + cqi[5]);
 
-    _runningVertices.push_back(vertex {
-        math::vec3 { p0_, 0.F },
-        math::vec3_t<u8> { static_cast<u8>(color_.r), static_cast<u8>(color_.g), static_cast<u8>(color_.b) },
-        math::vec3 {},
-        math::vec3 {},
+    _runningVertices.push_back(uivertex {
+        math::vec2 { p0_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
         math::vec3 {}
     });
-    _runningVertices.push_back(vertex {
-        math::vec3 { p1_, 0.F },
-        math::vec3_t<u8> { static_cast<u8>(color_.r), static_cast<u8>(color_.g), static_cast<u8>(color_.b) },
-        math::vec3 {},
-        math::vec3 {},
+    _runningVertices.push_back(uivertex {
+        math::vec2 { p1_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
         math::vec3 {}
     });
-    _runningVertices.push_back(vertex {
-        math::vec3 { p2_, 0.F },
-        math::vec3_t<u8> { static_cast<u8>(color_.r), static_cast<u8>(color_.g), static_cast<u8>(color_.b) },
-        math::vec3 {},
-        math::vec3 {},
+    _runningVertices.push_back(uivertex {
+        math::vec2 { p2_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
         math::vec3 {}
     });
-    _runningVertices.push_back(vertex {
-        math::vec3 { p3_, 0.F },
-        math::vec3_t<u8> { static_cast<u8>(color_.r), static_cast<u8>(color_.g), static_cast<u8>(color_.b) },
-        math::vec3 {},
-        math::vec3 {},
+    _runningVertices.push_back(uivertex {
+        math::vec2 { p3_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
         math::vec3 {}
     });
 }
@@ -100,25 +236,99 @@ void UICommandBuffer::drawRect(math::vec2 min_, math::vec2 max_, cref<color> col
 
 void UICommandBuffer::drawRectLine(math::vec2 min_, math::vec2 max_, cref<color> color_, const float strength_) {}
 
-void UICommandBuffer::drawArc(math::vec2 pos_, const float radius_, const float from_, const float to_,
-    cref<color> color_) {}
+void UICommandBuffer::drawArc(
+    math::vec2 pos_, const float radius_,
+    const float fromTheta_, const float toTheta_,
+    cref<color> color_
+) {
 
-void UICommandBuffer::drawText(math::vec2 pos_, cref<string_view> text_, cref<Font> font_, const float fontSize_,
+    if (color_.a <= 0.F) {
+        return;
+    }
+
+    /* Surface :: 2*PI*r */
+    /* Radians :: 2*PI */
+    /* Splice  :: (tt - ft) */
+    /* Result  :: [2*PI*r] * [(tt-ft)/(2*PI)] */
+    /*         :: [r] * [(tt-ft)] */
+
+    u32 segments { MIN(static_cast<u32>(radius_ * (toTheta_ - fromTheta_)), 11ui32) };
+
+    // Enforce odd segment count to prevent rounding / flattening of corner tip
+    if (not segments & 0x1) {
+        ++segments;
+    }
+
+    const float dtPs { (toTheta_ - fromTheta_) / static_cast<float>(segments) };
+
+    const u32 reqVtx { 1ui32 + segments + 1ui32 };
+    const u32 reqIdx { segments * 3ui32 };
+
+    /**
+     *
+     */
+    const u32 baseIdx { static_cast<u32>(_runningIndexes.size()) };
+    const u32 baseVtx { static_cast<u32>(_runningVertices.size()) };
+
+    _runningIndexes.reserve(baseIdx + reqIdx);
+    _runningVertices.reserve(baseVtx + reqVtx);
+
+    /**/
+    _runningVertices.push_back(uivertex {
+        math::vec2 { pos_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 {}
+    });
+
+    /**/
+    for (u32 seg { 0ui32 }; seg <= segments; ++seg) {
+        float theta { fromTheta_ + static_cast<float>(seg) * dtPs };
+        theta = MIN(theta, toTheta_);
+
+        const math::vec2 nd { _STD cosf(theta), _STD sinf(theta) };
+
+        _runningVertices.push_back(uivertex {
+            math::vec2 { pos_ + nd * radius_ },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 {}
+        });
+    }
+
+    /**/
+    for (u32 seg { 0ui32 }; seg < segments; ++seg) {
+        _runningIndexes.push_back(baseVtx);
+        _runningIndexes.push_back(baseVtx + seg + 1ui32);
+        _runningIndexes.push_back(baseVtx + seg + 2ui32);
+    }
+}
+
+void UICommandBuffer::drawText(math::vec2 pos_, cref<string_view> text_, ref<Font> font_, const float fontSize_,
     cref<color> color_) {
 
     if (color_.a <= 0.F || text_.empty()) {
         return;
     }
 
-    math::vec2 charScale { fontSize_ / font_.fontSize() };
+    const auto fss { font_.nextFontSize(static_cast<u32>(fontSize_)) };// Next (native) Supported Size
+    math::vec2 charScale { fontSize_ / static_cast<float>(fss) };
 
     /**
      *
      */
     float accw { 0.F };
     for (const auto& letter : text_) {
-        const auto& glyph { font_.glyph(static_cast<u32>(letter)) };
-        accw += glyph.advance * charScale.x;
+        const auto& glyph { font_.glyph(static_cast<u32>(letter), fss) };
+        accw += glyph->_advance * charScale.x;
     }
 
     /**
@@ -137,18 +347,23 @@ void UICommandBuffer::drawText(math::vec2 pos_, cref<string_view> text_, cref<Fo
      *
      */
     _imageIndices.push_back({ baseIdx, baseIdx + reqIdx });
-    _images.push_back(font_.atlas());
+    auto atlas { font_.atlas().get() };
+    ProxyTexture<non_owning_rptr> proxy { _STD move(atlas) };
+    _images.push_back(_STD move(proxy));
 
     /**
      *
      */
     constexpr u32 cqi[] { 0ui32, 1ui32, 2ui32, 2ui32, 3ui32, 0ui32 };
 
-    math::vec2 fwd { pos_ };
+    math::vec2 fwd { pos_ + math::vec2 { 0.F, -0.25F * static_cast<float>(fss) * charScale.y } };
+    fwd.x = _STD floorf(fwd.x);
+    fwd.y = _STD floorf(fwd.y);
+
     for (const auto& letter : text_) {
 
         /**/
-        const auto& glyph { font_.glyph(static_cast<u32>(letter)) };
+        const auto& glyph { font_.glyph(static_cast<u32>(letter), fss) };
 
         /**/
         const u32 cbv { static_cast<u32>(_runningVertices.size()) };
@@ -160,37 +375,66 @@ void UICommandBuffer::drawText(math::vec2 pos_, cref<string_view> text_, cref<Fo
         _runningIndexes.push_back(cbv + cqi[4]);
         _runningIndexes.push_back(cbv + cqi[5]);
 
-        _runningVertices.push_back(vertex {
-            math::vec3 { fwd + glyph.xy0 * charScale, 0.F },
-            math::vec3_t<u8> { static_cast<u8>(color_.r), static_cast<u8>(color_.g), static_cast<u8>(color_.b) },
-            math::vec3 { glyph.st0, 0.F },
-            math::vec3 {},
-            math::vec3 {}
+        const float gx { fwd.x + (static_cast<float>(glyph->_bearing.x) * charScale.x) };
+        const float gy { fwd.y + fontSize_ - (static_cast<float>(glyph->_bearing.y) * charScale.y) };
+        const float gw { static_cast<float>(glyph->_size.x) * charScale.x };
+        const float gh { static_cast<float>(glyph->_size.y) * charScale.y };
+
+        _runningVertices.push_back(uivertex {
+            math::vec2 {
+                gx,
+                gy
+            },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 { glyph->_minSt, 0.F }
         });
-        _runningVertices.push_back(vertex {
-            math::vec3 { fwd.x + glyph.xy1.x * charScale.x, fwd.y + glyph.xy0.y * charScale.y, 0.F },
-            math::vec3_t<u8> { static_cast<u8>(color_.r), static_cast<u8>(color_.g), static_cast<u8>(color_.b) },
-            math::vec3 { glyph.st1.s, glyph.st0.t, 0.F },
-            math::vec3 {},
-            math::vec3 {}
+        _runningVertices.push_back(uivertex {
+            math::vec2 {
+                gx + gw,
+                gy
+            },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 { glyph->_maxSt.s, glyph->_minSt.t, 0.F }
         });
-        _runningVertices.push_back(vertex {
-            math::vec3 { fwd + glyph.xy1 * charScale, 0.F },
-            math::vec3_t<u8> { static_cast<u8>(color_.r), static_cast<u8>(color_.g), static_cast<u8>(color_.b) },
-            math::vec3 { glyph.st1, 0.F },
-            math::vec3 {},
-            math::vec3 {}
+        _runningVertices.push_back(uivertex {
+            math::vec2 {
+                gx + gw,
+                gy + gh
+            },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 { glyph->_maxSt, 0.F }
         });
-        _runningVertices.push_back(vertex {
-            math::vec3 { fwd.x + glyph.xy0.x * charScale.x, fwd.y + glyph.xy1.y * charScale.y, 0.F },
-            math::vec3_t<u8> { static_cast<u8>(color_.r), static_cast<u8>(color_.g), static_cast<u8>(color_.b) },
-            math::vec3 { glyph.st0.s, glyph.st1.t, 0.F },
-            math::vec3 {},
-            math::vec3 {}
+        _runningVertices.push_back(uivertex {
+            math::vec2 {
+                gx,
+                gy + gh
+            },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 { glyph->_minSt.s, glyph->_maxSt.t, 0.F }
         });
 
         /**/
-        fwd.x += glyph.advance * charScale.x;
+        fwd.x += glyph->_advance * charScale.x;
     }
 }
 
@@ -199,10 +443,11 @@ void UICommandBuffer::drawImage(
     math::vec2 p1_, math::vec2 uv1_,
     math::vec2 p2_, math::vec2 uv2_,
     math::vec2 p3_, math::vec2 uv3_,
-    sptr<Texture> image_,
+    ProxyTexture<non_owning_rptr> image_,
     cref<color> color_
 ) {
-    drawImageAsync(p0_, uv0_, p1_, uv1_, p2_, uv2_, p3_, uv3_, image_, VK_NULL_HANDLE, VK_NULL_HANDLE, color_);
+    drawImageAsync(p0_, uv0_, p1_, uv1_, p2_, uv2_, p3_, uv3_, _STD move(image_), VK_NULL_HANDLE, VK_NULL_HANDLE,
+        color_);
 }
 
 void UICommandBuffer::drawImageAsync(
@@ -210,7 +455,7 @@ void UICommandBuffer::drawImageAsync(
     math::vec2 p1_, math::vec2 uv1_,
     math::vec2 p2_, math::vec2 uv2_,
     math::vec2 p3_, math::vec2 uv3_,
-    sptr<Texture> image_,
+    ProxyTexture<non_owning_rptr> image_,
     vk::Semaphore wait_,
     vk::Semaphore signal_,
     cref<color> color_
@@ -236,40 +481,52 @@ void UICommandBuffer::drawImageAsync(
     _runningIndexes.push_back(baseVtx + cqi[4]);
     _runningIndexes.push_back(baseVtx + cqi[5]);
 
-    _runningVertices.push_back(vertex {
-        math::vec3 { p0_, 0.F },
-        math::vec3_t<u8> { static_cast<u8>(color_.r), static_cast<u8>(color_.g), static_cast<u8>(color_.b) },
-        math::vec3 { uv0_, 0.F },
-        math::vec3 {},
-        math::vec3 {}
+    _runningVertices.push_back(uivertex {
+        math::vec2 { p0_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 { uv0_, 0.F }
     });
-    _runningVertices.push_back(vertex {
-        math::vec3 { p1_, 0.F },
-        math::vec3_t<u8> { static_cast<u8>(color_.r), static_cast<u8>(color_.g), static_cast<u8>(color_.b) },
-        math::vec3 { uv1_, 0.F },
-        math::vec3 {},
-        math::vec3 {}
+    _runningVertices.push_back(uivertex {
+        math::vec2 { p1_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 { uv1_, 0.F }
     });
-    _runningVertices.push_back(vertex {
-        math::vec3 { p2_, 0.F },
-        math::vec3_t<u8> { static_cast<u8>(color_.r), static_cast<u8>(color_.g), static_cast<u8>(color_.b) },
-        math::vec3 { uv2_, 0.F },
-        math::vec3 {},
-        math::vec3 {}
+    _runningVertices.push_back(uivertex {
+        math::vec2 { p2_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 { uv2_, 0.F }
     });
-    _runningVertices.push_back(vertex {
-        math::vec3 { p3_, 0.F },
-        math::vec3_t<u8> { static_cast<u8>(color_.r), static_cast<u8>(color_.g), static_cast<u8>(color_.b) },
-        math::vec3 { uv3_, 0.F },
-        math::vec3 {},
-        math::vec3 {}
+    _runningVertices.push_back(uivertex {
+        math::vec2 { p3_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 { uv3_, 0.F }
     });
 
     /**
      *
      */
     _imageIndices.push_back({ baseIdx, baseIdx + 6 });
-    _images.push_back(image_);
+    _images.push_back(_STD move(image_));
 
     if (wait_) {
         _imageWait.push_back(wait_);
