@@ -36,6 +36,8 @@ using namespace ember;
 #include <Engine.Session/Session.hpp>
 #include <Engine.Input/MouseButtonEvent.hpp>
 #include <Engine.Input/MouseMoveEvent.hpp>
+#include <Engine.Input/MouseWheelEvent.hpp>
+#include <Engine.Input/DragDropEvent.hpp>
 #include <mutex>
 #include <atomic>
 static sptr<glow::ui::Panel> uiTestPanel {};
@@ -253,6 +255,18 @@ void UiMainStageNode::before(const non_owning_rptr<HORenderPass> renderPass_,
             _STD unique_lock<_STD mutex> lck { uiTestMtx };
             uiTestPanel->onMouseMotionEvent(event_._pointer, event_._delta, event_._button, event_._modifier);
         });
+        session->emitter().on<input::event::MouseWheelEvent>([](cref<input::event::MouseWheelEvent> event_) {
+            _STD unique_lock<_STD mutex> lck { uiTestMtx };
+            uiTestPanel->onScrollEvent(event_._pointer, event_._value);
+        });
+        session->emitter().on<input::event::MouseWheelEvent>([](cref<input::event::MouseWheelEvent> event_) {
+            _STD unique_lock<_STD mutex> lck { uiTestMtx };
+            uiTestPanel->onScrollEvent(event_._pointer, event_._value);
+        });
+        session->emitter().on<input::event::DragDropEvent>([](cref<input::event::DragDropEvent> event_) {
+            _STD unique_lock<_STD mutex> lck { uiTestMtx };
+            uiTestPanel->onDragDropEvent(event_);
+        });
     }
     #endif
 
@@ -313,6 +327,8 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
      *
      */
     UICommandBuffer uiCmd {};
+    uiCmd._runningIndexes.reserve(32ui64 * 1024ui64);
+    uiCmd._runningVertices.reserve(32ui64 * 1024ui64);
 
     math::vec2 ava {
         static_cast<float>(renderPass_->target()->width()),
@@ -328,7 +344,12 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     _STD unique_lock<_STD mutex> lck { uiTestMtx };
     uiTestPanel->flow(context, ava);
     uiTestPanel->shift(context, zero);
+
+    math::fExtent2D rootScissor { context.scissor };
+    uiCmd.pushScissor(rootScissor);
     uiTestPanel->render(&uiCmd);
+    assert(rootScissor == uiCmd.popScissor());
+
     lck.unlock();
 
     /**
@@ -340,7 +361,7 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     /**
      *
      */
-    const u64 vertexSize { sizeof(vertex) * rv.size() };
+    const u64 vertexSize { sizeof(uivertex) * rv.size() };
     const u64 indexSize { sizeof(u32) * ri.size() };
     const u64 imageCount { uiCmd._images.size() + /* Default Image*/ 1 };
 
@@ -372,7 +393,7 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
         buffer.bind();
     }
 
-    vertexBuffer->write<vertex>(uiCmd._runningVertices.data(), uiCmd._runningVertices.size());
+    vertexBuffer->write<uivertex>(uiCmd._runningVertices.data(), uiCmd._runningVertices.size());
 
     if (indexBuffer->size != indexSize) {
 
@@ -466,40 +487,107 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     cmd.bindIndexBuffer(*static_cast<ptr<IndexBuffer>>(indexBuffer.get()), 0);
 
     cmd.bindDescriptor(0, imageDescriptors->at(0).vkSet());
-    cmd.drawIndexed(1, 0, static_cast<u32>(uiCmd._runningIndexes.size()), 0, 0);
+    //cmd.drawIndexed(1, 0, static_cast<u32>(uiCmd._runningIndexes.size()), 0, 0);
 
-    const u32 firstIndices {
-        uiCmd._imageIndices.empty() ? static_cast<u32>(uiCmd._runningIndexes.size()) : uiCmd._imageIndices.front().first
-    };
-    const u32 lastStartIndices {
-        uiCmd._imageIndices.empty() ? static_cast<u32>(uiCmd._runningIndexes.size()) : uiCmd._imageIndices.back().second
+    /**/
+    u32 firstIndices { static_cast<u32>(uiCmd._runningIndexes.size()) };
+    if (not uiCmd._scissorIndices.empty() && uiCmd._scissorIndices.front().first < firstIndices) {
+        firstIndices = uiCmd._scissorIndices.front().first;
+    }
+    if (not uiCmd._imageIndices.empty() && uiCmd._imageIndices.front().first < firstIndices) {
+        firstIndices = uiCmd._imageIndices.front().first;
+    }
+
+    /**/
+    u32 lastStartIndices { static_cast<u32>(uiCmd._runningIndexes.size()) };
+    if (not uiCmd._scissorIndices.empty() && uiCmd._scissorIndices.back().second < lastStartIndices) {
+        lastStartIndices = uiCmd._scissorIndices.back().second;
+    }
+    if (not uiCmd._imageIndices.empty() && uiCmd._imageIndices.back().second < lastStartIndices) {
+        lastStartIndices = uiCmd._imageIndices.back().second;
+    }
+
+    /**/
+    auto sciIdxIt { 0ui32 };
+    auto imgIdxIt { 0ui32 };
+
+    vk::Rect2D vkScissor {
+        vk::Offset2D { static_cast<s32>(rootScissor.offsetX), static_cast<s32>(rootScissor.offsetY) },
+        vk::Extent2D { static_cast<u32>(rootScissor.width), static_cast<u32>(rootScissor.height) }
     };
 
+    /**/
+    cmd.vkCommandBuffer().setScissor(0, 1, &vkScissor);
     cmd.drawIndexed(1, 0, firstIndices, 0, 0);
 
-    u32 prevBaseIdx { firstIndices };
-    for (u32 idx { 0ui32 }; idx < uiCmd._imageIndices.size(); ++idx) {
+    /**/
+    u32 idx { firstIndices };
+    while (idx < lastStartIndices) {
 
-        const auto& ppi { uiCmd._imageIndices[idx] };
+        const auto sciIdx { idx >= uiCmd._scissorIndices[sciIdxIt].second ? ++sciIdxIt : sciIdxIt };
+        const auto imgIdx { idx >= uiCmd._imageIndices[imgIdxIt].second ? ++imgIdxIt : imgIdxIt };
 
+        auto nextStride { MIN(uiCmd._scissorIndices[sciIdx].second, uiCmd._imageIndices[imgIdx].second) };
+
+        if (uiCmd._scissorIndices[sciIdx].first > idx && uiCmd._scissorIndices[sciIdx].first < nextStride) {
+            nextStride = uiCmd._scissorIndices[sciIdx].first;
+        }
+        if (uiCmd._imageIndices[imgIdx].first > idx && uiCmd._imageIndices[imgIdx].first < nextStride) {
+            nextStride = uiCmd._imageIndices[imgIdx].first;
+        }
+
+        /*
         if (prevBaseIdx < ppi.first) {
             cmd.bindDescriptor(0, imageDescriptors->at(0).vkSet());
             cmd.drawIndexed(1, 0, ppi.first - prevBaseIdx, prevBaseIdx, 0);
         }
+         */
 
-        auto& dbind { (*imageDescriptors)[idx + 1] };
-        //dbind.getById(1).store(*uiCmd._images[idx]);
-        dbind.getById(1).storeAs(*uiCmd._images[idx], vk::ImageLayout::eShaderReadOnlyOptimal);
+        /**/
+        const auto& uiScissor { uiCmd._scissors[sciIdx] };
+        vkScissor.offset.x = static_cast<s32>(uiScissor.offsetX);
+        vkScissor.offset.y = static_cast<s32>(uiScissor.offsetY);
+        vkScissor.extent.width = static_cast<u32>(uiScissor.width);
+        vkScissor.extent.height = static_cast<u32>(uiScissor.height);
+        cmd.vkCommandBuffer().setScissor(0, 1, &vkScissor);
 
-        cmd.bindDescriptor(0, dbind.vkSet());
-        cmd.drawIndexed(1, 0, ppi.second - ppi.first, ppi.first, 0);
+        /**/
+        if (uiCmd._imageIndices[imgIdxIt].first <= idx && idx < uiCmd._imageIndices[imgIdxIt].second) {
 
-        prevBaseIdx = ppi.second;
+            auto& dbind { (*imageDescriptors)[imgIdx + 1] };
+            //dbind.getById(1).store(*uiCmd._images[idx]);
+            if (uiCmd._images[imgIdx].is<Texture>()) {
+                dbind.getById(1).storeAs(*uiCmd._images[imgIdx].as<Texture>(), vk::ImageLayout::eShaderReadOnlyOptimal);
+
+            } else if (uiCmd._images[imgIdx].is<VirtualTextureView>()) {
+                const auto* view { uiCmd._images[imgIdx].as<VirtualTextureView>() };
+                dbind.getById(1).store(view->owner());
+            }
+
+            cmd.bindDescriptor(0, dbind.vkSet());
+
+        } else {
+            cmd.bindDescriptor(0, imageDescriptors->at(0).vkSet());
+        }
+
+        /**/
+        cmd.drawIndexed(1, 0, nextStride - idx, idx, 0);
+
+        /**/
+        idx = nextStride;
     }
 
     if (lastStartIndices < uiCmd._runningIndexes.size()) {
+
+        vkScissor.offset.x = static_cast<s32>(rootScissor.offsetX);
+        vkScissor.offset.y = static_cast<s32>(rootScissor.offsetY);
+        vkScissor.extent.width = static_cast<u32>(rootScissor.width);
+        vkScissor.extent.height = static_cast<u32>(rootScissor.height);
+
+        cmd.vkCommandBuffer().setScissor(0, 1, &vkScissor);
         cmd.bindDescriptor(0, imageDescriptors->at(0).vkSet());
         cmd.drawIndexed(1, 0, uiCmd._runningIndexes.size() - lastStartIndices, lastStartIndices, 0);
+
     }
 
     /**
@@ -631,12 +719,11 @@ void UiMainStageNode::setupPipeline() {
     _pipeline->inputs().push_back(FixedPipelineInput {
         0ui8,
         InputRate::ePerVertex,
-        sizeof(vertex),
+        sizeof(uivertex),
         Vector<InputAttribute> {
-            { 0ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, position)) },
-            { 1ui32, TextureFormat::eR8G8B8Unorm, static_cast<u32>(offsetof(vertex, color)) },
-            { 2ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, uvm)) },
-            { 3ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, normal)) }
+            { 0ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(uivertex, position)) },
+            { 1ui32, TextureFormat::eR8G8B8A8Unorm, static_cast<u32>(offsetof(uivertex, color)) },
+            { 2ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(uivertex, uvm)) }
         }
     });
 
@@ -653,7 +740,7 @@ void UiMainStageNode::setupPipeline() {
         vk::BlendFactor::eSrcAlpha,
         vk::BlendFactor::eOneMinusSrcAlpha,
         vk::BlendOp::eAdd,
-        vk::BlendFactor::eOneMinusSrcAlpha,
+        vk::BlendFactor::eZero,
         vk::BlendFactor::eZero,
         vk::BlendOp::eAdd,
         vk::ColorComponentFlagBits::eR |
@@ -812,7 +899,7 @@ void UiMainStageNode::setupDefaultImage() {
     engine::gfx::RevTextureLoader loader { engine::Session::get()->modules().graphics()->cacheCtrl() };
     _defaultImage = loader.__tmp__load({
         ""sv,
-        R"(R:\\Development\C++\Vulkan API\Game\resources\assets\texture\default_ui.ktx)"
+        R"(R:\\Development\C++\Vulkan API\Game\resources\imports\ktx\default_ui.ktx)"
     });
 
     Vector<vk::ImageMemoryBarrier> imgBarriers {};
