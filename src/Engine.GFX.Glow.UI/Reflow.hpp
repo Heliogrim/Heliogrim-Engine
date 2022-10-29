@@ -10,6 +10,7 @@
 #include "ReflowSpacing.hpp"
 #include "ReflowWrapping.hpp"
 #include "ReflowOverflow.hpp"
+#include "ReflowPosition.hpp"
 
 namespace ember::engine::gfx::glow::ui {
     class Widget;

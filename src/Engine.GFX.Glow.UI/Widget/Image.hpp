@@ -7,6 +7,8 @@ namespace ember::engine::gfx::glow::ui {
     public:
         Image();
 
+        ~Image() override;
+
     public:
         void render(const ptr<UICommandBuffer> cmd_) override {
 
@@ -22,15 +24,26 @@ namespace ember::engine::gfx::glow::ui {
                 const math::vec2 c2 { tf.offsetX + tf.width, tf.offsetY + tf.height };
                 const math::vec2 c3 { tf.offsetX, tf.offsetY + tf.height };
 
+                ProxyTexture<non_owning_rptr> proxy {};
+
+                if (_image) {
+                    auto tmp { _image.get() };
+                    proxy = _STD move(tmp);
+
+                } else if (_imageView) {
+                    auto tmp { _imageView };
+                    proxy = _STD move(tmp);
+
+                }
+
                 cmd_->drawImage(
                     c0, _uvs[0],
                     c1, _uvs[1],
                     c2, _uvs[2],
                     c3, _uvs[3],
-                    _image,
+                    _STD move(proxy),
                     cl
                 );
-
             }
 
             for (const auto& widget : _nodes) {
@@ -47,6 +60,11 @@ namespace ember::engine::gfx::glow::ui {
     public:
         sptr<Texture> _image;
         _STD array<math::vec2, 4> _uvs;
+
+    public:
+        // Warning: Dirty Workaround
+        ptr<void> _imageResource;
+        ptr<VirtualTextureView> _imageView;
     };
 
 }

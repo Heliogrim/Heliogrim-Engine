@@ -14,17 +14,21 @@ ReflowContainer::ReflowContainer() :
     _transform.width = 1.F;
     _transform.height = 1.F;
 
-    //_background = color { 0.2F, 0.2F, 0.2F, 1.0F };
+    //_color = color { 0.2F, 0.2F, 0.2F, 1.0F };
 
     auto rnd = static_cast<float>(rand());
     const auto rndMax = static_cast<float>(RAND_MAX);
     rnd /= rndMax;
     rnd = 0.2F + 0.8F * rnd;
 
-    _background = color(rnd * 255.F, rnd * 255.F, rnd * 255.F, 255.F);
+    _color = color(rnd * 255.F, rnd * 255.F, rnd * 255.F, 255.F);
 }
 
 void ReflowContainer::render(const ptr<UICommandBuffer> cmd_) {
+
+    if constexpr (true) {
+        return Reflow::renderContainer(this, cmd_);
+    }
 
     /**
      *
@@ -46,7 +50,7 @@ void ReflowContainer::render(const ptr<UICommandBuffer> cmd_) {
         const math::vec2 c2 { tf.offsetX + tf.width, tf.offsetY + tf.height };
         const math::vec2 c3 { tf.offsetX, tf.offsetY + tf.height };
 
-        cmd_->drawQuad(c0, c1, c2, c3, _background);
+        cmd_->drawQuad(c0, c1, c2, c3, _color);
 
     } else {
 
@@ -63,7 +67,7 @@ void ReflowContainer::render(const ptr<UICommandBuffer> cmd_) {
         math::vec2 c2 { (tf.offsetX + tf.width) - ebr.z, (tf.offsetY + tf.height) - ebr.z };
         math::vec2 c3 { tf.offsetX + ebr.w, (tf.offsetY + tf.height) - ebr.w };
 
-        cmd_->drawQuad(c0, c1, c2, c3, _background);
+        cmd_->drawQuad(c0, c1, c2, c3, _color);
 
         /**
          *
@@ -73,7 +77,7 @@ void ReflowContainer::render(const ptr<UICommandBuffer> cmd_) {
         math::vec2 c02 { tf.offsetX + tf.width - borderRadius.y, tf.offsetY + ebr.y };
         math::vec2 c03 { tf.offsetX + borderRadius.x, tf.offsetY + ebr.x };
 
-        cmd_->drawQuad(c00, c01, c02, c03, _background);
+        cmd_->drawQuad(c00, c01, c02, c03, _color);
 
         /**
          *
@@ -83,7 +87,7 @@ void ReflowContainer::render(const ptr<UICommandBuffer> cmd_) {
         math::vec2 c12 { tf.offsetX + tf.width - ebr.z, tf.offsetY + tf.height - borderRadius.z };
         math::vec2 c13 { tf.offsetX + tf.width - ebr.y, tf.offsetY + borderRadius.y };
 
-        cmd_->drawQuad(c10, c11, c12, c13, _background);
+        cmd_->drawQuad(c10, c11, c12, c13, _color);
 
         /**
          *
@@ -93,7 +97,7 @@ void ReflowContainer::render(const ptr<UICommandBuffer> cmd_) {
         math::vec2 c22 { tf.offsetX + borderRadius.w, tf.offsetY + tf.height - ebr.w };
         math::vec2 c23 { tf.offsetX + tf.width - borderRadius.z, tf.offsetY + tf.height - ebr.z };
 
-        cmd_->drawQuad(c20, c21, c22, c23, _background);
+        cmd_->drawQuad(c20, c21, c22, c23, _color);
 
         /**
          *
@@ -103,19 +107,19 @@ void ReflowContainer::render(const ptr<UICommandBuffer> cmd_) {
         math::vec2 c32 { tf.offsetX + ebr.x, tf.offsetY + borderRadius.x };
         math::vec2 c33 { tf.offsetX + ebr.w, tf.offsetY + tf.height - borderRadius.w };
 
-        cmd_->drawQuad(c30, c31, c32, c33, _background);
+        cmd_->drawQuad(c30, c31, c32, c33, _color);
 
         /**
          *
          */
         cmd_->drawArc(math::vec2 { tf.offsetX + borderRadius.x, tf.offsetY + borderRadius.x },
-            borderRadius.x, 270.F, 360.F, _background);
+            borderRadius.x, 270.F, 360.F, _color);
         cmd_->drawArc(math::vec2 { tf.offsetX + tf.width - borderRadius.y, tf.offsetY + borderRadius.y },
-            borderRadius.y, 0.F, 90.F, _background);
+            borderRadius.y, 0.F, 90.F, _color);
         cmd_->drawArc(math::vec2 { tf.offsetX + tf.width - borderRadius.z, tf.offsetY + tf.height - borderRadius.z },
-            borderRadius.z, 90.F, 180.F, _background);
+            borderRadius.z, 90.F, 180.F, _color);
         cmd_->drawArc(math::vec2 { tf.offsetX + borderRadius.w, tf.offsetY + tf.height - borderRadius.w },
-            borderRadius.w, 180.F, 270.F, _background);
+            borderRadius.w, 180.F, 270.F, _color);
     }
 
     /**
@@ -133,6 +137,9 @@ math::vec2 ReflowContainer::reflow(cref<math::vec2> available_, cref<math::vec2>
     if (reflow_.zero()) {
         return reflow_;
     }
+
+    __debugbreak();
+    return reflow_;
 
     UIContext ctx {};
 

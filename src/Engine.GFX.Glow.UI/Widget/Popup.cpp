@@ -6,7 +6,9 @@ using namespace ember;
 Popup::Popup() :
     Widget(),
     _anchor(),
-    _root() {}
+    _root() {
+    _reflowPosition = ReflowPosition::eAbsolute;
+}
 
 math::vec2 Popup::flow(cref<UIContext> ctx_, cref<math::vec2> available_) {
 

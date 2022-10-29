@@ -7,7 +7,8 @@
 
 namespace ember::engine::gfx::glow::ui {
 
-    class __declspec(novtable) InputBase : public StatefulWidget {};
+    class __declspec(novtable) InputBase : public StatefulWidget {
+    };
 
     template <typename InputType_>
     class __declspec(novtable) Input : public InputBase {

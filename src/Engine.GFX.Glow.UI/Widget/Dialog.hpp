@@ -1,17 +1,16 @@
 #pragma once
-#include "ReflowContainer.hpp"
-#include "Widget.hpp"
+#include "Panel.hpp"
+#include "Popup.hpp"
 
 namespace ember::engine::gfx::glow::ui {
 
-    class Panel : public ReflowContainer {
+    class Dialog : public Popup {
     public:
-        Panel();
+        Dialog();
 
-        ~Panel() override = default;
+        ~Dialog() override = default;
 
     public:
         void render(const ptr<UICommandBuffer> cmd_) override;
     };
-
 }

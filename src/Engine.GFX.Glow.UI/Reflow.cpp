@@ -41,7 +41,19 @@ math::vec2 Reflow::flow(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec2
 
         const auto bounding = widget->flow(ctx_, local);
 
-        innerChildAgg += bounding;
+        if (widget->_reflowPosition == ReflowPosition::eAbsolute) {
+            continue;
+        }
+
+        if (self_->_reflowType == ReflowType::eFlexRow) {
+            innerChildAgg.x += bounding.x;
+            innerChildAgg.y = MAX(innerChildAgg.y, bounding.y);
+
+        } else if (self_->_reflowType == ReflowType::eFlexCol) {
+            innerChildAgg.x = MAX(innerChildAgg.x, bounding.x);
+            innerChildAgg.y += bounding.y;
+        }
+
         innerChildMax = math::compMax<float>(innerChildMax, bounding);
     }
 
@@ -89,13 +101,19 @@ math::vec2 Reflow::flow(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec2
         math::vec2 maxForward { 0.F };
         for (const auto& widget : self_->_nodes) {
 
+            if (widget->_reflowPosition == ReflowPosition::eAbsolute) {
+                continue;
+            }
+
             const auto bounding = widget->flow(ctx_, local);
 
             if (self_->_reflowType == ReflowType::eFlexRow) {
 
-                if (forward + bounding.x > bounds.x) {
+                if (forward + bounding.x >= bounds.x) {
                     innerChildAgg.x = MAX(innerChildAgg.x, forward);
                     innerChildAgg.y += maxForward.y;
+
+                    innerChildAgg.y += self_->_reflowGapping.y;
 
                     forward = 0.F;
                     maxForward.y = 0.F;
@@ -107,9 +125,11 @@ math::vec2 Reflow::flow(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec2
 
             } else if (self_->_reflowType == ReflowType::eFlexCol) {
 
-                if (forward + bounding.y > bounds.y) {
+                if (forward + bounding.y >= bounds.y) {
                     innerChildAgg.x += maxForward.x;
                     innerChildAgg.y = MAX(innerChildAgg.y, forward);
+
+                    innerChildAgg.x += self_->_reflowGapping.x;
 
                     forward = 0.F;
                     maxForward.x = 0.F;
@@ -121,6 +141,13 @@ math::vec2 Reflow::flow(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec2
 
             }
 
+        }
+
+        /**/
+        if (self_->_reflowType == ReflowType::eFlexRow) {
+            innerChildAgg.y += maxForward.y;
+        } else if (self_->_reflowType == ReflowType::eFlexCol) {
+            innerChildAgg.x += maxForward.x;
         }
 
         /**/
@@ -149,6 +176,10 @@ math::vec2 Reflow::flow(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec2
 
         Vector<ptr<Widget>> rw {};
         for (const auto& widget : self_->_nodes) {
+
+            if (widget->_reflowPosition == ReflowPosition::eAbsolute) {
+                continue;
+            }
 
             growFrac += widget->_reflowGrow;
             shrinkFrac += widget->_reflowShrink;
@@ -187,6 +218,11 @@ math::vec2 Reflow::flow(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec2
         (diff.y < 0.F && self_->reflowType() == ReflowType::eGrid)
     ) { }
 
+    /**
+     * Overflow State
+     */
+    self_->_overflowSize = math::compMax<float>(innerChildAgg - local, math::vec2 { 0.F });
+
     /**/
     if (!self_->_padding.zero()) {
         local.x += (self_->_padding.x + self_->_padding.z);
@@ -217,8 +253,18 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
      */
     assert(self_->_reflowType == ReflowType::eFlexCol || self_->_reflowType == ReflowType::eFlexRow);
 
+    /**/
+    u32 effectNodes { 0ui32 };
+    /**/
+
     math::vec2 aggregate { 0.F };
     for (const auto& widget : self_->_nodes) {
+
+        //
+        if (widget->_reflowPosition == ReflowPosition::eAbsolute) {
+            continue;
+        }
+
         //
         aggregate.x += widget->_transform.width;
         aggregate.y += widget->_transform.height;
@@ -228,6 +274,9 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
         aggregate.y += widget->_margin.y;
         aggregate.x += widget->_margin.z;
         aggregate.y += widget->_margin.w;
+
+        //
+        ++effectNodes;
     }
 
     math::vec2 left {
@@ -248,14 +297,21 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
 
     /**/
     math::vec2 fwd { 0.F };
-    math::vec2 wrap { 0.F };
+    math::vec2 ctxDiff { 0.F };
     const auto nodeCount { self_->_nodes.size() };
 
     math::vec2 maxFwd { 0.F };
 
-    for (u32 idx { 0ui32 }; idx < nodeCount; ++idx) {
+    u32 fwdIdx { 0ui32 };
+    for (const auto& widget : self_->_nodes) {
 
-        const auto& widget { self_->_nodes[idx] };
+        /**/
+        if (widget->_reflowPosition == ReflowPosition::eAbsolute) {
+            widget->shift(ctx_, localOffset);
+            continue;
+        }
+        /**/
+
         math::vec2 io { 0.F };// Internal Offset
 
         if (self_->_reflowWrapping == ReflowWrapping::eWrap) {
@@ -263,8 +319,8 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
             if (self_->_reflowType == ReflowType::eFlexRow && (fwd.x + widget->_transform.width + widget->_margin.x +
                 widget->_margin.z) > self_->_transform.width) {
 
-                wrap.y += maxFwd.y;
-                wrap.y += self_->_reflowGapping.y;
+                ctxDiff.y += maxFwd.y;
+                ctxDiff.y += self_->_reflowGapping.y;
 
                 fwd.x = 0.F;
                 fwd.y = 0.F;
@@ -275,8 +331,8 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
             } else if (self_->_reflowType == ReflowType::eFlexCol && (fwd.y + widget->_transform.height + widget->
                 _margin.y + widget->_margin.w) > self_->_transform.height) {
 
-                wrap.x += maxFwd.x;
-                wrap.y += self_->_reflowGapping.x;
+                ctxDiff.x += maxFwd.x;
+                ctxDiff.y += self_->_reflowGapping.x;
 
                 fwd.x = 0.F;
                 fwd.y = 0.F;
@@ -290,7 +346,7 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
 
         if (self_->_reflowSpacing == ReflowSpacing::eSpaceEvenly) {
 
-            const math::vec2 ispn { left / (self_->_nodes.size() + 1) };
+            const math::vec2 ispn { left / (effectNodes + 1) };
 
             if (self_->_reflowType == ReflowType::eFlexCol) {
                 io.y += ispn.y;
@@ -300,7 +356,7 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
 
         } else if (self_->_reflowSpacing == ReflowSpacing::eSpaceAround) {
 
-            if (idx == 0/* || idx == nodeCount */) {
+            if (fwdIdx == 0/* || fwdIdx == nodeCount */) {
 
                 if (self_->_reflowType == ReflowType::eFlexCol) {
                     io.y += left.y / 2.F;
@@ -313,9 +369,9 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
         } else if (self_->_reflowSpacing == ReflowSpacing::eSpaceBetween) {
 
             // Skip first element for right bound offset when iterating left bound
-            if (idx != 0) {
+            if (fwdIdx != 0) {
 
-                const math::vec2 ispn { left / (nodeCount - 1) };
+                const math::vec2 ispn { left / (effectNodes - 1) };
 
                 if (self_->_reflowType == ReflowType::eFlexCol) {
                     io.y += ispn.y;
@@ -336,7 +392,7 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
         /**
          * Shift target widget
          */
-        math::vec2 offset { localOffset + io + wrap };
+        math::vec2 offset { localOffset + io + ctxDiff };
 
         if (self_->_reflowType == ReflowType::eFlexCol) {
             offset.y += fwd.y;
@@ -361,8 +417,11 @@ math::vec2 Reflow::shift(ptr<Widget> self_, cref<UIContext> ctx_, cref<math::vec
         fwd.y += widget->_transform.height;
 
         /**/
-        maxFwd.x = MAX(maxFwd.x, widget->_transform.width);
-        maxFwd.y = MAX(maxFwd.y, widget->_transform.height);
+        maxFwd.x = MAX(maxFwd.x, widget->_transform.width + widget->_margin.x + widget->_margin.z);
+        maxFwd.y = MAX(maxFwd.y, widget->_transform.height + widget->_margin.y + widget->_margin.w);
+
+        /**/
+        ++fwdIdx;
     }
 
     return outerOffset_;
@@ -378,7 +437,7 @@ void Reflow::renderContainer(ptr<Widget> self_, const ptr<UICommandBuffer> cmd_)
     /**
      *
      */
-    constexpr math::vec4 borderRadius { 0.F };
+    const math::vec4& borderRadius { self_->_borderRadius };
 
     /**
      *
@@ -390,83 +449,86 @@ void Reflow::renderContainer(ptr<Widget> self_, const ptr<UICommandBuffer> cmd_)
         const math::vec2 c2 { tf.offsetX + tf.width, tf.offsetY + tf.height };
         const math::vec2 c3 { tf.offsetX, tf.offsetY + tf.height };
 
-        cmd_->drawQuad(c0, c1, c2, c3, self_->_background);
+        cmd_->drawQuad(c0, c1, c2, c3, self_->statedColor());
 
     } else {
-
-        constexpr auto deg45rad { glm::radians(45.F) };
-        const auto sin45 { glm::sin(deg45rad) };
-
-        const math::vec4 ebr { borderRadius - borderRadius * sin45 };
 
         /**
          *
          */
-        math::vec2 c0 { tf.offsetX + ebr.x, tf.offsetY + ebr.x };
-        math::vec2 c1 { (tf.offsetX + tf.width) - ebr.y, tf.offsetY + ebr.y };
-        math::vec2 c2 { (tf.offsetX + tf.width) - ebr.z, (tf.offsetY + tf.height) - ebr.z };
-        math::vec2 c3 { tf.offsetX + ebr.w, (tf.offsetY + tf.height) - ebr.w };
+        math::vec2 c0 { tf.offsetX + borderRadius.x, tf.offsetY + borderRadius.x };
+        math::vec2 c1 { (tf.offsetX + tf.width) - borderRadius.y, tf.offsetY + borderRadius.y };
+        math::vec2 c2 { (tf.offsetX + tf.width) - borderRadius.z, (tf.offsetY + tf.height) - borderRadius.z };
+        math::vec2 c3 { tf.offsetX + borderRadius.w, (tf.offsetY + tf.height) - borderRadius.w };
 
-        cmd_->drawQuad(c0, c1, c2, c3, self_->_background);
+        cmd_->drawQuad(c0, c1, c2, c3, self_->statedColor());
 
         /**
          *
          */
         math::vec2 c00 { tf.offsetX + borderRadius.x, tf.offsetY };
-        math::vec2 c01 { tf.offsetX + tf.width - borderRadius.y, tf.offsetY };
-        math::vec2 c02 { tf.offsetX + tf.width - borderRadius.y, tf.offsetY + ebr.y };
-        math::vec2 c03 { tf.offsetX + borderRadius.x, tf.offsetY + ebr.x };
+        math::vec2 c01 { (tf.offsetX + tf.width) - borderRadius.y, tf.offsetY };
+        math::vec2 c02 { (tf.offsetX + tf.width) - borderRadius.y, tf.offsetY + borderRadius.y };
+        math::vec2 c03 { tf.offsetX + borderRadius.x, tf.offsetY + borderRadius.x };
 
-        cmd_->drawQuad(c00, c01, c02, c03, self_->_background);
+        cmd_->drawQuad(c00, c01, c02, c03, self_->statedColor());
 
         /**
          *
          */
         math::vec2 c10 { tf.offsetX + tf.width, tf.offsetY + borderRadius.y };
-        math::vec2 c11 { tf.offsetX + tf.width, tf.offsetY + tf.height - borderRadius.z };
-        math::vec2 c12 { tf.offsetX + tf.width - ebr.z, tf.offsetY + tf.height - borderRadius.z };
-        math::vec2 c13 { tf.offsetX + tf.width - ebr.y, tf.offsetY + borderRadius.y };
+        math::vec2 c11 { tf.offsetX + tf.width, (tf.offsetY + tf.height) - borderRadius.z };
+        math::vec2 c12 { (tf.offsetX + tf.width) - borderRadius.z, (tf.offsetY + tf.height) - borderRadius.z };
+        math::vec2 c13 { (tf.offsetX + tf.width) - borderRadius.y, tf.offsetY + borderRadius.y };
 
-        cmd_->drawQuad(c10, c11, c12, c13, self_->_background);
+        cmd_->drawQuad(c10, c11, c12, c13, self_->statedColor());
 
         /**
          *
          */
-        math::vec2 c20 { tf.offsetX + tf.width - borderRadius.z, tf.offsetY + tf.height };
+        math::vec2 c20 { (tf.offsetX + tf.width) - borderRadius.z, tf.offsetY + tf.height };
         math::vec2 c21 { tf.offsetX + borderRadius.w, tf.offsetY + tf.height };
-        math::vec2 c22 { tf.offsetX + borderRadius.w, tf.offsetY + tf.height - ebr.w };
-        math::vec2 c23 { tf.offsetX + tf.width - borderRadius.z, tf.offsetY + tf.height - ebr.z };
+        math::vec2 c22 { tf.offsetX + borderRadius.w, (tf.offsetY + tf.height) - borderRadius.w };
+        math::vec2 c23 { (tf.offsetX + tf.width) - borderRadius.z, (tf.offsetY + tf.height) - borderRadius.z };
 
-        cmd_->drawQuad(c20, c21, c22, c23, self_->_background);
+        cmd_->drawQuad(c20, c21, c22, c23, self_->statedColor());
 
         /**
          *
          */
-        math::vec2 c30 { tf.offsetX, tf.offsetY + tf.height - borderRadius.w };
+        math::vec2 c30 { tf.offsetX, (tf.offsetY + tf.height) - borderRadius.w };
         math::vec2 c31 { tf.offsetX, tf.offsetY + borderRadius.x };
-        math::vec2 c32 { tf.offsetX + ebr.x, tf.offsetY + borderRadius.x };
-        math::vec2 c33 { tf.offsetX + ebr.w, tf.offsetY + tf.height - borderRadius.w };
+        math::vec2 c32 { tf.offsetX + borderRadius.x, tf.offsetY + borderRadius.x };
+        math::vec2 c33 { tf.offsetX + borderRadius.w, (tf.offsetY + tf.height) - borderRadius.w };
 
-        cmd_->drawQuad(c30, c31, c32, c33, self_->_background);
+        cmd_->drawQuad(c30, c31, c32, c33, self_->statedColor());
 
         /**
          *
          */
         cmd_->drawArc(math::vec2 { tf.offsetX + borderRadius.x, tf.offsetY + borderRadius.x },
-            borderRadius.x, 270.F, 360.F, self_->_background);
+            borderRadius.x, glm::radians(180.F), glm::radians(270.F), self_->statedColor());
         cmd_->drawArc(math::vec2 { tf.offsetX + tf.width - borderRadius.y, tf.offsetY + borderRadius.y },
-            borderRadius.y, 0.F, 90.F, self_->_background);
+            borderRadius.y, glm::radians(270.F), glm::radians(360.F), self_->statedColor());
         cmd_->drawArc(math::vec2 { tf.offsetX + tf.width - borderRadius.z, tf.offsetY + tf.height - borderRadius.z },
-            borderRadius.z, 90.F, 180.F, self_->_background);
+            borderRadius.z, glm::radians(0.F), glm::radians(90.F), self_->statedColor());
         cmd_->drawArc(math::vec2 { tf.offsetX + borderRadius.w, tf.offsetY + tf.height - borderRadius.w },
-            borderRadius.w, 180.F, 270.F, self_->_background);
+            borderRadius.w, glm::radians(90.F), glm::radians(180.F), self_->statedColor());
     }
 
     /**
      *
      */
     for (const auto& widget : self_->_nodes) {
-        if (widget->visible()) {
+        // Warning: Temporary Solution
+        const math::vec2 center {
+            widget->_transform.offsetX + widget->_transform.width * 0.5F,
+            widget->_transform.offsetY + widget->_transform.height * 0.5F
+        };
+
+        //if (widget->visible() && not cmd_->scissorCull(center, _STD sqrtf(widget->_transform.width^2 + widget->_transform.height^2))) {
+        if (widget->visible() && not cmd_->scissorCull(center,
+            (widget->_transform.width + widget->_transform.height) * 0.75F)) {
             widget->render(cmd_);
         }
     }
