@@ -29,7 +29,7 @@ namespace ember::engine::gfx {
         [[nodiscard]] result_type operator()(const ptr<assets::Font> asset_, options_type options_) override;
 
     private:
-        ptr<void> __test_load();
+        ptr<void> __test_load(ptr<::ember::engine::res::LoaderOptions<::ember::engine::assets::Font>> options_);
     };
 
 }

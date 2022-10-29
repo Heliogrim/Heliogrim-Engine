@@ -7,15 +7,13 @@ namespace ember::engine::gfx::glow::ui {
 
     struct FontGlyph {
         /**/
-        math::vec2 st0;
-        math::vec2 st1;
+        math::uivec2 _size;
+        math::ivec2 _bearing;
+        float _advance;
 
         /**/
-        math::vec2 xy0;
-        math::vec2 xy1;
-
-        /**/
-        float advance;
+        math::vec2 _minSt;
+        math::vec2 _maxSt;
     };
 
 }
