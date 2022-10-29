@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         DryGroundRocks01Diffuse():
             ImageAsset(DryGroundRocks01Diffuse::auto_guid(),
-                R"(resources\assets\texture\dry_ground_rocks_01_diffuse.ktx2)") {}
+                R"(resources\imports\ktx2\dry_ground_rocks_01_diffuse.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(DryGroundRocks01Diffuse)

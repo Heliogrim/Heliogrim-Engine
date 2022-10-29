@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         WoodenBucket02Diffuse():
             ImageAsset(WoodenBucket02Diffuse::auto_guid(),
-                R"(resources\assets\texture\wooden_bucket_02_diffuse.ktx2)") {}
+                R"(resources\imports\ktx2\wooden_bucket_02_diffuse.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(WoodenBucket02Diffuse)

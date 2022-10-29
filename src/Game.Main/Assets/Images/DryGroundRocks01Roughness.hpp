@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         DryGroundRocks01Roughness():
             ImageAsset(DryGroundRocks01Roughness::auto_guid(),
-                R"(resources\assets\texture\dry_ground_rocks_01_roughness.ktx2)") {}
+                R"(resources\imports\ktx2\dry_ground_rocks_01_roughness.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(DryGroundRocks01Roughness)

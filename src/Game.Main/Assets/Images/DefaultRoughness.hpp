@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         DefaultRoughness():
             ImageAsset(DefaultRoughness::auto_guid(),
-                R"(resources\assets\texture\default_roughness.ktx)") {}
+                R"(resources\imports\ktx\default_roughness.ktx)") {}
     };
 
     AUTO_REGISTER_ASSET(DefaultRoughness)

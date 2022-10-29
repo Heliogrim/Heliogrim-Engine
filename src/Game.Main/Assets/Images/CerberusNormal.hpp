@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         CerberusNormal():
             ImageAsset(CerberusNormal::auto_guid(),
-                R"(resources\assets\texture\cerberus_normal.ktx2)") {}
+                R"(resources\imports\ktx2\cerberus_normal.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(CerberusNormal)

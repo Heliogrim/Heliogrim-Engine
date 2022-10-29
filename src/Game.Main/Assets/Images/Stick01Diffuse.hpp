@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         Stick01Diffuse():
             ImageAsset(Stick01Diffuse::auto_guid(),
-                R"(resources\assets\texture\stick_01_diffuse.ktx2)") {}
+                R"(resources\imports\ktx2\stick_01_diffuse.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(Stick01Diffuse)

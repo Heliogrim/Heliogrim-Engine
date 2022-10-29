@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         ForestGround01AO():
             ImageAsset(ForestGround01AO::auto_guid(),
-                R"(resources\assets\texture\forest_ground_01_ao.ktx2)") {}
+                R"(resources\imports\ktx2\forest_ground_01_ao.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(ForestGround01AO)

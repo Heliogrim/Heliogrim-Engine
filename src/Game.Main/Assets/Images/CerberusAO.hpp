@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         CerberusAO():
             ImageAsset(CerberusAO::auto_guid(),
-                R"(resources\assets\texture\cerberus_ao.ktx2)") {}
+                R"(resources\imports\ktx2\cerberus_ao.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(CerberusAO)

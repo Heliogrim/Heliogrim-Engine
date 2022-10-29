@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         WoodenBucket01Metalness():
             ImageAsset(WoodenBucket01Metalness::auto_guid(),
-                R"(resources\assets\texture\wooden_bucket_01_metalness.ktx2)") {}
+                R"(resources\imports\ktx2\wooden_bucket_01_metalness.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(WoodenBucket01Metalness)

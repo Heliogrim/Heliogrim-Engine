@@ -9,7 +9,7 @@ namespace ember::game::assets::image {
     public:
         CerberusMetalness():
             ImageAsset(CerberusMetalness::auto_guid(),
-                R"(resources\assets\texture\cerberus_metalness.ktx2)") {}
+                R"(resources\imports\ktx2\cerberus_metalness.ktx2)") {}
     };
 
     AUTO_REGISTER_ASSET(CerberusMetalness)
