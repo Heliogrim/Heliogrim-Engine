@@ -91,9 +91,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Input\DragDropEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Input\KeyboardEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Input\MouseButtonEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Input\MouseMoveEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Input\MouseWheelEvent.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
@@ -104,8 +106,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Input\DragDropEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Input\MouseButtonEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Input\MouseMoveEvent.cpp" />
+    <ClCompile Include="..\..\src\Engine.Input\MouseWheelEvent.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -22,6 +22,30 @@
     <Filter Include="Quelldateien\Panel">
       <UniqueIdentifier>{f65ff643-1b84-4c49-a25a-27c436872d1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Dialog">
+      <UniqueIdentifier>{a3228b55-3d47-408e-bbba-b15271342b14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Color">
+      <UniqueIdentifier>{31cc0f73-f983-4cd2-a23a-aa54838d3807}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Dialog">
+      <UniqueIdentifier>{a9334b70-f8a0-4c2a-95e4-b26b51dd4eb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Widget">
+      <UniqueIdentifier>{840888c4-6555-4d99-acdd-9b76751e1c5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Helper">
+      <UniqueIdentifier>{bf75e260-abda-4265-886e-44bdab58d890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Helper">
+      <UniqueIdentifier>{546eb09e-a727-44c0-bc52-08ebf4c437f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Modules">
+      <UniqueIdentifier>{7b7f262d-d4f6-4411-9915-887aff586681}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Modules">
+      <UniqueIdentifier>{c9226c5c-df61-4a68-894b-5fc417dd1a55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.UI\Panel\SceneHierarchyPanel.hpp">
@@ -33,6 +57,24 @@
     <ClInclude Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.hpp">
       <Filter>Headerdateien\Panel</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Widget\AssetBrowserItem.hpp">
+      <Filter>Headerdateien\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Dialog\AssetFileImportDialog.hpp">
+      <Filter>Headerdateien\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Color\Dark.hpp">
+      <Filter>Headerdateien\Color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Widget\AssetImportTypeItem.hpp">
+      <Filter>Headerdateien\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Helper\AssetBrowserHelper.hpp">
+      <Filter>Headerdateien\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Modules\AssetBrowser.hpp">
+      <Filter>Headerdateien\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.cpp">
@@ -43,6 +85,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.UI\Panel\SceneHierarchyPanel.cpp">
       <Filter>Quelldateien\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Dialog\AssetFileImportDialog.cpp">
+      <Filter>Quelldateien\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Widget\AssetBrowserItem.cpp">
+      <Filter>Quelldateien\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Helper\AssetBrowserHelper.cpp">
+      <Filter>Quelldateien\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Modules\AssetBrowser.cpp">
+      <Filter>Quelldateien\Modules</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

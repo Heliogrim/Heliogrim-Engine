@@ -102,6 +102,48 @@
     <ClInclude Include="..\..\src\Ember.Default\Assets\Fonts\Consolas24Latin1.hpp">
       <Filter>Headerdateien\Assets\Font</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\Brand.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\Brand.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\Directory.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\Directory.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\FolderImages.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\FolderAudio.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\FolderShader.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\FolderLog.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\FolderResource.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\FolderShader.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\FolderResource.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\FolderLog.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\FolderImages.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\FolderAudio.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultAlpha.cpp">
@@ -123,6 +165,27 @@
       <Filter>Quelldateien\Assets\Textures</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultSkybox.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\Brand.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\Directory.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\FolderShader.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\FolderResource.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\FolderLog.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\FolderImages.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\FolderAudio.cpp">
       <Filter>Quelldateien\Assets\Textures</Filter>
     </ClCompile>
   </ItemGroup>
