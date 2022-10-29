@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Math/__default.inl>
 
+#include "__fwd.hpp"
 #include "../TextureFormat.hpp"
 #include "TextureBuffer.hpp"
 #include "TextureType.hpp"
@@ -13,6 +14,7 @@ namespace ember::engine::gfx {
         using reference_type = Texture&;
         using const_reference_type = const Texture&;
 
+    public:
         /**
          * Default constructor
          *
@@ -87,6 +89,20 @@ namespace ember::engine::gfx {
          */
         void destroy();
 
+    public:
+        /**
+         * Create an sub-resource view of this texture
+         *
+         * @author Julius
+         * @date 23.10.2022
+         *
+         * @param layers_ The set of layers `[min, max]` to include
+         * @param extent_ The offset-ed sub-dimensions of the view
+         * @param mipLevels_ The set of mip levels `[min, max]` to include
+         */
+        [[nodiscard]] uptr<TextureView> makeView(math::uivec2 layers_, math::uExtent3D extent_,
+            math::uivec2 mipLevels_);
+
     private:
         /**
          * Buffer
@@ -114,7 +130,7 @@ namespace ember::engine::gfx {
          */
         [[nodiscard]] TextureBuffer& buffer() noexcept;
 
-    private:
+    protected:
         /**
          * Extent
          */
