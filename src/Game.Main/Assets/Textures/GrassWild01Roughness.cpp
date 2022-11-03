@@ -8,8 +8,8 @@ using namespace ember;
 
 GrassWild01Roughness::GrassWild01Roughness() :
     TextureAsset(
-        GrassWild01Roughness::auto_guid(),
-        game::assets::image::GrassWild01Roughness::auto_guid(),
+        GrassWild01Roughness::unstable_auto_guid(),
+        game::assets::image::GrassWild01Roughness::unstable_auto_guid(),
         {},
         {},
         TextureFormat::eR8G8B8Unorm,

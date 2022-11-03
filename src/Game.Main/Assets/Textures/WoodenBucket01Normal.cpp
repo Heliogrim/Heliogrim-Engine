@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::WoodenBucket01Normal::WoodenBucket01Normal() :
     TextureAsset(
-        texture::WoodenBucket01Normal::auto_guid(),
-        image::WoodenBucket01Normal::auto_guid(),
+        texture::WoodenBucket01Normal::unstable_auto_guid(),
+        image::WoodenBucket01Normal::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Unorm,

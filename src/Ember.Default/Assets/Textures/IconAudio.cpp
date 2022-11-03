@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::IconAudio::IconAudio() :
     TextureAsset(
-        texture::IconAudio::auto_guid(),
-        image::IconAudio::auto_guid(),
+        texture::IconAudio::unstable_auto_guid(),
+        image::IconAudio::unstable_auto_guid(),
         {},
         { 144ui32, 144ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Srgb,

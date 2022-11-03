@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<WoodenPier01PolesNormal> {
     public:
         WoodenPier01PolesNormal():
-            ImageAsset(WoodenPier01PolesNormal::auto_guid(),
+            ImageAsset(WoodenPier01PolesNormal::unstable_auto_guid(),
                 R"(resources\imports\ktx2\wooden_pier_01_poles_normal.ktx2)") {}
     };
 

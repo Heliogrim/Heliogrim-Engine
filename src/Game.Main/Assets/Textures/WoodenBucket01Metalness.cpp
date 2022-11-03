@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::WoodenBucket01Metalness::WoodenBucket01Metalness() :
     TextureAsset(
-        texture::WoodenBucket01Metalness::auto_guid(),
-        image::WoodenBucket01Metalness::auto_guid(),
+        texture::WoodenBucket01Metalness::unstable_auto_guid(),
+        image::WoodenBucket01Metalness::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8Unorm,

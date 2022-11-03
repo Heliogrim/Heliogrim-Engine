@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::IconContributing::IconContributing() :
     TextureAsset(
-        texture::IconContributing::auto_guid(),
-        image::IconContributing::auto_guid(),
+        texture::IconContributing::unstable_auto_guid(),
+        image::IconContributing::unstable_auto_guid(),
         {},
         { 144ui32, 144ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Srgb,

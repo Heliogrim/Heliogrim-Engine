@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconDiff> {
     public:
         IconDiff():
-            ImageAsset(IconDiff::auto_guid(),
+            ImageAsset(IconDiff::unstable_auto_guid(),
                 R"(resources\imports\ktx\diff.ktx)") {}
     };
 

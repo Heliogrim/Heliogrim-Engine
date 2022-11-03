@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::WoodenPier01PlanksRoughness::WoodenPier01PlanksRoughness() :
     TextureAsset(
-        texture::WoodenPier01PlanksRoughness::auto_guid(),
-        image::WoodenPier01PlanksRoughness::auto_guid(),
+        texture::WoodenPier01PlanksRoughness::unstable_auto_guid(),
+        image::WoodenPier01PlanksRoughness::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8Unorm,

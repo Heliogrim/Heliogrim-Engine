@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<Rock01Normal> {
     public:
         Rock01Normal():
-            ImageAsset(Rock01Normal::auto_guid(),
+            ImageAsset(Rock01Normal::unstable_auto_guid(),
                 R"(resources\imports\ktx2\rock_01_normal.ktx2)") {}
     };
 

@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconPdf> {
     public:
         IconPdf():
-            ImageAsset(IconPdf::auto_guid(),
+            ImageAsset(IconPdf::unstable_auto_guid(),
                 R"(resources\imports\ktx\pdf.ktx)") {}
     };
 

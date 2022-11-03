@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::Dandelion01Diffuse::Dandelion01Diffuse() :
     TextureAsset(
-        texture::Dandelion01Diffuse::auto_guid(),
-        image::Dandelion01Diffuse::auto_guid(),
+        texture::Dandelion01Diffuse::unstable_auto_guid(),
+        image::Dandelion01Diffuse::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Unorm,

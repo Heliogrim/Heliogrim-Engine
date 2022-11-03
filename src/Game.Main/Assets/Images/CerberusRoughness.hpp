@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<CerberusRoughness> {
     public:
         CerberusRoughness():
-            ImageAsset(CerberusRoughness::auto_guid(),
+            ImageAsset(CerberusRoughness::unstable_auto_guid(),
                 R"(resources\imports\ktx2\cerberus_roughness.ktx2)") {}
     };
 

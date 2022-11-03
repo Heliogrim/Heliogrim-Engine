@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<Stick01AO> {
     public:
         Stick01AO():
-            ImageAsset(Stick01AO::auto_guid(),
+            ImageAsset(Stick01AO::unstable_auto_guid(),
                 R"(resources\imports\ktx2\stick_01_ao.ktx2)") {}
     };
 

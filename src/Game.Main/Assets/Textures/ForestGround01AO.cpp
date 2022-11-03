@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::ForestGround01AO::ForestGround01AO() :
     TextureAsset(
-        texture::ForestGround01AO::auto_guid(),
-        image::ForestGround01AO::auto_guid(),
+        texture::ForestGround01AO::unstable_auto_guid(),
+        image::ForestGround01AO::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8Unorm,

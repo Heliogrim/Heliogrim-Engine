@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<Rock01Roughness> {
     public:
         Rock01Roughness():
-            ImageAsset(Rock01Roughness::auto_guid(),
+            ImageAsset(Rock01Roughness::unstable_auto_guid(),
                 R"(resources\imports\ktx2\rock_01_roughness.ktx2)") {}
     };
 

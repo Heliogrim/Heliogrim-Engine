@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<FolderFont> {
     public:
         FolderFont():
-            ImageAsset(FolderFont::auto_guid(),
+            ImageAsset(FolderFont::unstable_auto_guid(),
                 R"(resources\imports\ktx\folder-font.ktx)") {}
     };
 

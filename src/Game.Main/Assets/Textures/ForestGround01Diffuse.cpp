@@ -9,7 +9,7 @@ using namespace ember;
 texture::ForestGround01Diffuse::ForestGround01Diffuse() :
     TextureAsset(
         texture::ForestGround01Diffuse::auto_guid(),
-        image::ForestGround01Diffuse::auto_guid(),
+        image::ForestGround01Diffuse::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Unorm,

@@ -5,5 +5,5 @@ using namespace ember;
 
 CubeD1::CubeD1() :
     StaticGeometryAsset(
-        CubeD1::auto_guid()
+        CubeD1::unstable_auto_guid()
     ) {}

@@ -11,15 +11,15 @@ using namespace ember;
 
 WoodenBucket01::WoodenBucket01() :
     GfxMaterialAsset(
-        WoodenBucket01::auto_guid(),
-        texture::WoodenBucket01Diffuse::auto_guid(),
-        texture::DefaultAO::auto_guid(),
+        WoodenBucket01::unstable_auto_guid(),
+        texture::WoodenBucket01Diffuse::unstable_auto_guid(),
+        texture::DefaultAO::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
-        texture::WoodenBucket01Normal::auto_guid(),
-        texture::WoodenBucket01Roughness::auto_guid(),
-        texture::WoodenBucket01Metalness::auto_guid(),
+        texture::WoodenBucket01Normal::unstable_auto_guid(),
+        texture::WoodenBucket01Roughness::unstable_auto_guid(),
+        texture::WoodenBucket01Metalness::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}

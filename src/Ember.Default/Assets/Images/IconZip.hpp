@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconZip> {
     public:
         IconZip():
-            ImageAsset(IconZip::auto_guid(),
+            ImageAsset(IconZip::unstable_auto_guid(),
                 R"(resources\imports\ktx\zip.ktx)") {}
     };
 

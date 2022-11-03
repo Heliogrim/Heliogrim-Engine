@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::IconLog::IconLog() :
     TextureAsset(
-        texture::IconLog::auto_guid(),
-        image::IconLog::auto_guid(),
+        texture::IconLog::unstable_auto_guid(),
+        image::IconLog::unstable_auto_guid(),
         {},
         { 144ui32, 144ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Srgb,

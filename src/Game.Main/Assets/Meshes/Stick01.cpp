@@ -5,7 +5,7 @@ using namespace ember;
 
 Stick01::Stick01() :
     StaticGeometryAsset(
-        Stick01::auto_guid(),
+        Stick01::unstable_auto_guid(),
         R"(resources\imports\obj\stick_01.obj)",
         150'000ui64,
         150'000ui64

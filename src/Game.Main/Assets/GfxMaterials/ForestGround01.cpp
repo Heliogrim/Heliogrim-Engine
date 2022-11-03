@@ -11,15 +11,15 @@ using namespace ember;
 
 ForestGround01::ForestGround01() :
     GfxMaterialAsset(
-        ForestGround01::auto_guid(),
-        texture::ForestGround01Diffuse::auto_guid(),
-        texture::ForestGround01AO::auto_guid(),
+        ForestGround01::unstable_auto_guid(),
+        texture::ForestGround01Diffuse::unstable_auto_guid(),
+        texture::ForestGround01AO::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
-        texture::ForestGround01Normal::auto_guid(),
-        texture::ForestGround01Roughness::auto_guid(),
-        texture::DefaultMetalness::auto_guid(),
+        texture::ForestGround01Normal::unstable_auto_guid(),
+        texture::ForestGround01Roughness::unstable_auto_guid(),
+        texture::DefaultMetalness::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}

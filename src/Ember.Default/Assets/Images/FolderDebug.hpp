@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<FolderDebug> {
     public:
         FolderDebug():
-            ImageAsset(FolderDebug::auto_guid(),
+            ImageAsset(FolderDebug::unstable_auto_guid(),
                 R"(resources\imports\ktx\folder-debug.ktx)") {}
     };
 

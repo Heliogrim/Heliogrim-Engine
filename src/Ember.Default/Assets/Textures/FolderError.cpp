@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::FolderError::FolderError() :
     TextureAsset(
-        texture::FolderError::auto_guid(),
-        image::FolderError::auto_guid(),
+        texture::FolderError::unstable_auto_guid(),
+        image::FolderError::unstable_auto_guid(),
         {},
         { 144ui32, 144ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Srgb,

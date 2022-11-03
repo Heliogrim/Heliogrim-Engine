@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::Stick01Diffuse::Stick01Diffuse() :
     TextureAsset(
-        texture::Stick01Diffuse::auto_guid(),
-        image::Stick01Diffuse::auto_guid(),
+        texture::Stick01Diffuse::unstable_auto_guid(),
+        image::Stick01Diffuse::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Unorm,

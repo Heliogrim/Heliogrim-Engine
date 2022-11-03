@@ -12,15 +12,15 @@ using namespace ember;
 
 Dandelion01::Dandelion01() :
     GfxMaterialAsset(
-        Dandelion01::auto_guid(),
-        texture::Dandelion01Diffuse::auto_guid(),
-        texture::DefaultAO::auto_guid(),
+        Dandelion01::unstable_auto_guid(),
+        texture::Dandelion01Diffuse::unstable_auto_guid(),
+        texture::DefaultAO::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
-        texture::Dandelion01Normal::auto_guid(),
-        texture::Dandelion01Roughness::auto_guid(),
-        texture::DefaultMetalness::auto_guid(),
+        texture::Dandelion01Normal::unstable_auto_guid(),
+        texture::Dandelion01Roughness::unstable_auto_guid(),
+        texture::DefaultMetalness::unstable_auto_guid(),
         invalid_asset_guid,
-        texture::Dandelion01Alpha::auto_guid()
+        texture::Dandelion01Alpha::unstable_auto_guid()
     ) {}

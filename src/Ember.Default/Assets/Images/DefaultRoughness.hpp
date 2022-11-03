@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<DefaultRoughness> {
     public:
         DefaultRoughness():
-            ImageAsset(DefaultRoughness::auto_guid(),
+            ImageAsset(DefaultRoughness::unstable_auto_guid(),
                 R"(resources\imports\ktx\default_roughness.ktx)") {}
     };
 

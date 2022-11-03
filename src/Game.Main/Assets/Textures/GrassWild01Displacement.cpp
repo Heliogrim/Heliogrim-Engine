@@ -8,8 +8,8 @@ using namespace ember;
 
 GrassWild01Displacement::GrassWild01Displacement() :
     TextureAsset(
-        GrassWild01Displacement::auto_guid(),
-        game::assets::image::GrassWild01Displacement::auto_guid(),
+        GrassWild01Displacement::unstable_auto_guid(),
+        game::assets::image::GrassWild01Displacement::unstable_auto_guid(),
         {},
         {},
         TextureFormat::eR8G8B8Unorm,

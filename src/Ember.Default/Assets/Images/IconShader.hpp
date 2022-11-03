@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconShader> {
     public:
         IconShader():
-            ImageAsset(IconShader::auto_guid(),
+            ImageAsset(IconShader::unstable_auto_guid(),
                 R"(resources\imports\ktx\shader.ktx)") {}
     };
 

@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<FolderVideo> {
     public:
         FolderVideo():
-            ImageAsset(FolderVideo::auto_guid(),
+            ImageAsset(FolderVideo::unstable_auto_guid(),
                 R"(resources\imports\ktx\folder-video.ktx)") {}
     };
 

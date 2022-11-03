@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::Stick01AO::Stick01AO() :
     TextureAsset(
-        texture::Stick01AO::auto_guid(),
-        image::Stick01AO::auto_guid(),
+        texture::Stick01AO::unstable_auto_guid(),
+        image::Stick01AO::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR16Sfloat,

@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconLua> {
     public:
         IconLua():
-            ImageAsset(IconLua::auto_guid(),
+            ImageAsset(IconLua::unstable_auto_guid(),
                 R"(resources\imports\ktx\lua.ktx)") {}
     };
 

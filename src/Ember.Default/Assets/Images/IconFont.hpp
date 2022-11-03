@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconFont> {
     public:
         IconFont():
-            ImageAsset(IconFont::auto_guid(),
+            ImageAsset(IconFont::unstable_auto_guid(),
                 R"(resources\imports\ktx\font.ktx)") {}
     };
 

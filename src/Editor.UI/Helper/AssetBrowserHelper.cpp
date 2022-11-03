@@ -51,7 +51,7 @@ void AssetBrowserHelper::setup() {
 
     /**/
 
-    auto query { _assetDb->query(game::assets::texture::Brand::auto_guid()) };
+    auto query { _assetDb->query(game::assets::texture::Brand::unstable_auto_guid()) };
     if (not query.exists()) {
         delete (new game::assets::texture::Brand());
     }
@@ -60,7 +60,7 @@ void AssetBrowserHelper::setup() {
 
     /**/
 
-    query = _assetDb->query(game::assets::texture::Directory::auto_guid());
+    query = _assetDb->query(game::assets::texture::Directory::unstable_auto_guid());
     if (not query.exists()) {
         delete (new game::assets::texture::Directory());
     }
@@ -69,7 +69,7 @@ void AssetBrowserHelper::setup() {
 
     /**/
 
-    query = _assetDb->query(game::assets::texture::FolderAudio::auto_guid());
+    query = _assetDb->query(game::assets::texture::FolderAudio::unstable_auto_guid());
     if (not query.exists()) {
         delete (new game::assets::texture::FolderAudio());
     }
@@ -81,7 +81,7 @@ void AssetBrowserHelper::setup() {
 
     /**/
 
-    query = _assetDb->query(game::assets::texture::FolderImages::auto_guid());
+    query = _assetDb->query(game::assets::texture::FolderImages::unstable_auto_guid());
     if (not query.exists()) {
         delete (new game::assets::texture::FolderImages());
     }
@@ -93,7 +93,7 @@ void AssetBrowserHelper::setup() {
 
     /**/
 
-    query = _assetDb->query(game::assets::texture::FolderResource::auto_guid());
+    query = _assetDb->query(game::assets::texture::FolderResource::unstable_auto_guid());
     if (not query.exists()) {
         delete (new game::assets::texture::FolderResource());
     }
@@ -102,7 +102,7 @@ void AssetBrowserHelper::setup() {
 
     /**/
 
-    query = _assetDb->query(game::assets::texture::FolderImport::auto_guid());
+    query = _assetDb->query(game::assets::texture::FolderImport::unstable_auto_guid());
     if (not query.exists()) {
         delete (new game::assets::texture::FolderImport());
     }
@@ -111,7 +111,7 @@ void AssetBrowserHelper::setup() {
 
     /**/
 
-    query = _assetDb->query(game::assets::texture::FolderShader::auto_guid());
+    query = _assetDb->query(game::assets::texture::FolderShader::unstable_auto_guid());
     if (not query.exists()) {
         delete (new game::assets::texture::FolderShader());
     }
@@ -120,7 +120,7 @@ void AssetBrowserHelper::setup() {
 
     /**/
 
-    query = _assetDb->query(game::assets::texture::FolderLog::auto_guid());
+    query = _assetDb->query(game::assets::texture::FolderLog::unstable_auto_guid());
     if (not query.exists()) {
         delete (new game::assets::texture::FolderLog());
     }
@@ -129,7 +129,7 @@ void AssetBrowserHelper::setup() {
 
     /**/
 
-    query = _assetDb->query(game::assets::texture::FolderEnvironment::auto_guid());
+    query = _assetDb->query(game::assets::texture::FolderEnvironment::unstable_auto_guid());
     if (not query.exists()) {
         delete (new game::assets::texture::FolderEnvironment());
     }
@@ -144,7 +144,7 @@ void AssetBrowserHelper::setup() {
 
     /**/
 
-    query = _assetDb->query(game::assets::texture::FolderVideo::auto_guid());
+    query = _assetDb->query(game::assets::texture::FolderVideo::unstable_auto_guid());
     if (not query.exists()) {
         delete (new game::assets::texture::FolderVideo());
     }
@@ -153,7 +153,7 @@ void AssetBrowserHelper::setup() {
 
     /**/
 
-    query = _assetDb->query(game::assets::texture::FolderFont::auto_guid());
+    query = _assetDb->query(game::assets::texture::FolderFont::unstable_auto_guid());
     if (not query.exists()) {
         delete (new game::assets::texture::FolderFont());
     }

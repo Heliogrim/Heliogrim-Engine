@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::Brand::Brand() :
     TextureAsset(
-        texture::Brand::auto_guid(),
-        image::Brand::auto_guid(),
+        texture::Brand::unstable_auto_guid(),
+        image::Brand::unstable_auto_guid(),
         {},
         { 512ui32, 512ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Srgb,

@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::FolderMeta::FolderMeta() :
     TextureAsset(
-        texture::FolderMeta::auto_guid(),
-        image::FolderMeta::auto_guid(),
+        texture::FolderMeta::unstable_auto_guid(),
+        image::FolderMeta::unstable_auto_guid(),
         {},
         { 144ui32, 144ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Srgb,

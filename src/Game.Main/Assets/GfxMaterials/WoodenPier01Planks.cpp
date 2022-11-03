@@ -14,15 +14,15 @@ using namespace ember;
 
 WoodenPier01Planks::WoodenPier01Planks() :
     GfxMaterialAsset(
-        WoodenPier01Planks::auto_guid(),
-        texture::WoodenPier01PlanksDiffuse::auto_guid(),
-        texture::DefaultAO::auto_guid(),
+        WoodenPier01Planks::unstable_auto_guid(),
+        texture::WoodenPier01PlanksDiffuse::unstable_auto_guid(),
+        texture::DefaultAO::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
-        texture::WoodenPier01PlanksNormal::auto_guid(),
-        texture::WoodenPier01PlanksRoughness::auto_guid(),
-        texture::DefaultMetalness::auto_guid(),
+        texture::WoodenPier01PlanksNormal::unstable_auto_guid(),
+        texture::WoodenPier01PlanksRoughness::unstable_auto_guid(),
+        texture::DefaultMetalness::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}
