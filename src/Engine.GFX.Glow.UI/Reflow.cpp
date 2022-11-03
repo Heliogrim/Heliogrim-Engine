@@ -520,15 +520,7 @@ void Reflow::renderContainer(ptr<Widget> self_, const ptr<UICommandBuffer> cmd_)
      *
      */
     for (const auto& widget : self_->_nodes) {
-        // Warning: Temporary Solution
-        const math::vec2 center {
-            widget->_transform.offsetX + widget->_transform.width * 0.5F,
-            widget->_transform.offsetY + widget->_transform.height * 0.5F
-        };
-
-        //if (widget->visible() && not cmd_->scissorCull(center, _STD sqrtf(widget->_transform.width^2 + widget->_transform.height^2))) {
-        if (widget->visible() && not cmd_->scissorCull(center,
-            (widget->_transform.width + widget->_transform.height) * 0.75F)) {
+        if (widget->visible() && not cmd_->scissorCull(widget->_transform)) {
             widget->render(cmd_);
         }
     }
