@@ -40,7 +40,11 @@ RevTextureLoader::result_type RevTextureLoader::operator()(const ptr<assets::Tex
     assert(res != nullptr);
 
     /**/
-    const auto isDefault { baseImage->sources().front().path().contains("default"sv) };
+    const auto isDefault {
+        baseImage->sources().front().path().contains("default"sv) ||
+        baseImage->sources().front().path().contains("brand"sv) ||
+        asset_->getTextureFormat() == TextureFormat::eR8G8B8A8Srgb
+    };
     const auto isSkybox { baseImage->sources().front().path().contains("skybox"sv) };
     /**/
 
@@ -50,14 +54,16 @@ RevTextureLoader::result_type RevTextureLoader::operator()(const ptr<assets::Tex
 
             constexpr loader::TextureLoaderFlags flags { loader::TextureLoaderFlagBits::eLockLoaded };
 
-            res->_payload.view = TextureLoader::loadTo(baseImage->sources().front(), _STD move(res->_payload.view), flags);
+            res->_payload.view = TextureLoader::loadTo(baseImage->sources().front(), _STD move(res->_payload.view),
+                flags);
             res->_payload.__pseudo_stored = true;
-            
+
         } else {
 
             constexpr loader::TextureLoaderFlags flags { loader::TextureLoaderFlagBits::eLazyDataLoading };
 
-            res->_payload.view = TextureLoader::loadTo(baseImage->sources().front(), _STD move(res->_payload.view), flags);
+            res->_payload.view = TextureLoader::loadTo(baseImage->sources().front(), _STD move(res->_payload.view),
+                flags);
             res->_payload.__pseudo_stored = true;
         }
 
