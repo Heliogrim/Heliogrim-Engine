@@ -175,12 +175,19 @@ ptr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Textur
     atlas = nullptr;
     if (atlas == nullptr) {
 
+        /**/
+        TextureType payloadType { type == TextureType::eCube ? TextureType::eCube : TextureType::e2dArray };
+        if (asset_->getTextureFormat() == TextureFormat::eR8G8B8A8Srgb) {
+            payloadType = type;
+        }
+        /**/
+
         atlas = TextureFactory::get()->buildVirtual({
             layers/* TODO: Layers */,
             extent,
             format,
             math::uivec2 { 0ui32, asset_->getMipLevelCount() - 1ui32 },
-            type == TextureType::eCube ? TextureType::eCube : TextureType::e2dArray,
+            payloadType,
             vk::ImageAspectFlagBits::eColor,
             vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
             vk::MemoryPropertyFlagBits::eDeviceLocal,
