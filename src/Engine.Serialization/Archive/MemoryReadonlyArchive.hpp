@@ -1,0 +1,39 @@
+#pragma once
+
+#include <span>
+
+#include "MemoryArchive.hpp"
+
+namespace ember::engine::serialization {
+
+    class MemoryReadonlyArchive :
+        public MemoryArchive {
+    public:
+        using this_type = MemoryReadonlyArchive;
+        using underlying_type = MemoryArchive;
+
+    public:
+        MemoryReadonlyArchive(_In_ ref<_STD span<u8, _STD dynamic_extent>> bytes_);
+
+        MemoryReadonlyArchive(_In_ ref<_STD span<u8, _STD dynamic_extent>> bytes_, const s64 limit_);
+
+    public:
+        [[nodiscard]] Url getArchiveUrl() const noexcept override;
+
+    protected:
+        ref<_STD span<u8, _STD dynamic_extent>> _bytes;
+        s64 _limit;
+
+    public:
+        [[nodiscard]] s64 totalSize() const noexcept override;
+
+        [[nodiscard]] bool hasSizeLimit() const noexcept;
+
+        [[nodiscard]] s64 sizeLimit() const noexcept;
+
+        void setSizeLimit(const s64 limit_);
+
+        void serializeBytes(const ptr<void> value_, u64 size_, const ArchiveStreamMode mode_) override;
+    };
+
+}
