@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\Archive">
+      <UniqueIdentifier>{2c1914db-2eae-483f-9ef2-aa09f14d5ea4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Filter">
+      <UniqueIdentifier>{9a5c71ab-4696-48df-8928-7d1678a07bc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Compression">
+      <UniqueIdentifier>{7ddcda15-d776-4458-b42e-8f3a5e1a7e2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Archive">
+      <UniqueIdentifier>{e98cbeac-5c60-4ac7-bbcc-c0cac5de9941}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Filter">
+      <UniqueIdentifier>{b5303d0c-1a32-4440-9247-a211d1fcdbf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Compression">
+      <UniqueIdentifier>{b40e2bc5-a398-45b4-aee7-c4922f5482aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Layout">
+      <UniqueIdentifier>{0e11a360-f9c1-4fb3-ba4c-d7ab3b5aa19b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Layout">
+      <UniqueIdentifier>{11499094-e580-48b7-8be7-edb69a3eceb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Native">
+      <UniqueIdentifier>{2cf3137a-a9e2-4d97-964e-9d47e7b18b1b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\Archive.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Filter\__fwd.hpp">
+      <Filter>Headerdateien\Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Compression\__fwd.hpp">
+      <Filter>Headerdateien\Compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Filter\ArchiveFilter.hpp">
+      <Filter>Headerdateien\Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Compression\ArchiveCompression.hpp">
+      <Filter>Headerdateien\Compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\StructuredArchive.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\__fwd.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\LayoutArchive.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\BufferArchive.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\MemoryArchive.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\ArchiveStreamMode.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\MemoryReadonlyArchive.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\MemoryWriteonlyArchive.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\MemoryReadWriteArchive.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Layout\__fwd.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Layout\DataLayout.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefine.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineSlice.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineSpan.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineValue.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineValueType.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Layout\DataLayoutReflect.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Layout\DataLayoutDispatch.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Layout\DataLayoutBase.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineObject.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\LayoutArchive.cpp">
+      <Filter>Quelldateien\Archive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\Archive.cpp">
+      <Filter>Quelldateien\Archive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryArchive.cpp">
+      <Filter>Quelldateien\Archive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryReadWriteArchive.cpp">
+      <Filter>Quelldateien\Archive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryReadonlyArchive.cpp">
+      <Filter>Quelldateien\Archive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryWriteonlyArchive.cpp">
+      <Filter>Quelldateien\Archive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\BufferArchive.cpp">
+      <Filter>Quelldateien\Archive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayout.cpp">
+      <Filter>Quelldateien\Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Layout\LayoutDefineSpan.cpp">
+      <Filter>Quelldateien\Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayoutReflect.cpp">
+      <Filter>Quelldateien\Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayoutDispatch.cpp">
+      <Filter>Quelldateien\Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayoutBase.cpp">
+      <Filter>Quelldateien\Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Layout\LayoutDefineObject.cpp">
+      <Filter>Quelldateien\Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Native\U8DataLayout.cpp">
+      <Filter>Quelldateien\Native</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
