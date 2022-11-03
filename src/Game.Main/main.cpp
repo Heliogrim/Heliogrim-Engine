@@ -48,8 +48,10 @@
 #include "Ember/SkyboxComponent.hpp"
 #include "Ember/World.hpp"
 #include "Ember.Default/Assets/Fonts/Consolas24Latin1.hpp"
+#include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Assets/Types/GfxMaterial.hpp"
 #include "Engine.Assets/Types/Texture/Texture.hpp"
+#include "Engine.Assets/Types/Image.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
 #include "Engine.Event/ShutdownEvent.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
@@ -78,6 +80,233 @@ void burstDestroyActors(mref<Vector<ptr<Actor>>> actors_);
 
 #pragma endregion
 
+#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Serialization/Archive/BufferArchive.hpp>
+#include <Engine.Serialization/Archive/LayoutArchive.hpp>
+#include <Engine.Serialization/Layout/DataLayout.hpp>
+
+void testCreateAsset(cref<Url> source_) {
+    const auto helper { _STD filesystem::path { source_.path() } };
+    const string fn { helper.filename().string() };
+    const string ext { helper.extension().string() };
+    const string name { fn.substr(0, fn.size() - ext.size()) };
+
+    const auto folderPath {
+        _STD filesystem::current_path().append(R"(..\..\resources\assets\texture)").append(name)
+    };
+    _STD filesystem::create_directories(folderPath);
+
+    const auto assetPath {
+        _STD filesystem::current_path().append(R"(..\..\resources\assets\texture)")
+                                       .append(name)
+                                       .append(name).concat(R"(.imasset)")
+    };
+
+    /**/
+
+    const auto importPath {
+        _STD filesystem::current_path().append(R"(..\..\resources\imports\ktx2)").append(helper.filename().string())
+    };
+
+    _STD filesystem::copy(helper, importPath);
+
+    /**/
+
+    if (not _STD filesystem::exists(assetPath)) {
+
+        using namespace ::ember::engine::serialization;
+        using namespace ::ember::engine::assets;
+
+        /**/
+        auto* imageAsset { engine::Session::get()->modules().assetFactory()->createImageAsset() };
+        auto* image { static_cast<ptr<Image>>(imageAsset) };
+
+        const auto resourceRoot { _STD filesystem::current_path().append(R"(..\..)") };
+        const auto subImportPath { _STD filesystem::relative(importPath, resourceRoot) };
+        image->addSource(Url { "file"sv, subImportPath.string() });
+
+        /**/
+        auto* asset { engine::Session::get()->modules().assetFactory()->createTextureAsset() };
+        auto* texture { static_cast<ptr<Texture>>(asset) };
+
+        texture->setBaseImage(image->get_guid());
+        texture->setExtent(math::uivec3 { 8192ui32, 8192ui32, 1ui32 });
+        texture->setMipLevelCount(14ui32);
+        texture->setTextureFormat(TextureFormat::eR8G8B8A8Unorm);
+        texture->setTextureType(TextureType::e2d);
+
+        /**/
+        BufferArchive buffer {};
+        _STD fstream fs {};
+
+        /**/
+        auto imageLayout { make_sptr<DataLayout<Image>>() };
+        imageLayout->reflect().storeType<Image>();
+        imageLayout->describe();
+
+        buffer.seek(0);
+        LayoutArchive<DataLayout<Image>> imageArch { &buffer, imageLayout.get() };
+
+        imageArch << image;
+
+        const auto imagePath {
+            _STD filesystem::current_path().append(R"(..\..\resources\assets\texture)")
+                                           .append(name)
+                                           .append(name).concat(R"(.img.imasset)")
+        };
+
+        fs.open(imagePath, _STD ios::out | _STD ios::binary);
+        fs.seekg(0, _STD ios::beg);
+
+        fs.write(reinterpret_cast<char*>(buffer.data()), buffer.totalSize());
+        fs.flush();
+        fs.close();
+
+        /**/
+        auto textureLayout { make_sptr<DataLayout<Texture>>() };
+        textureLayout->reflect().storeType<Texture>();
+        textureLayout->describe();
+
+        buffer.seek(0);
+        buffer.clear();
+        LayoutArchive<DataLayout<Texture>> textureArch { &buffer, textureLayout.get() };
+
+        textureArch << texture;
+
+        const auto texturePath {
+            _STD filesystem::current_path().append(R"(..\..\resources\assets\texture)")
+                                           .append(name)
+                                           .append(name).concat(R"(.imasset)")
+        };
+
+        fs.open(assetPath, _STD ios::out | _STD ios::binary);
+        fs.seekg(0, _STD ios::beg);
+
+        fs.write(reinterpret_cast<char*>(buffer.data()), buffer.totalSize());
+        fs.flush();
+        fs.close();
+    }
+}
+
+void file_to_buffer(cref<_STD filesystem::path> path_, ref<engine::serialization::BufferArchive> archive_) {
+
+    _STD fstream fs { path_, _STD ios::in | _STD ios::binary };
+
+    fs.seekg(0, _STD ios::beg);
+    const auto fstart { fs.tellg() };
+
+    fs.seekg(0, _STD ios::end);
+    const auto fend { fs.tellg() };
+
+    const auto fsize { fend - fstart };
+    archive_.resize(fsize);
+
+    const auto blockSize { MIN(fsize, 1024) };
+
+    u8* mem = new u8 [blockSize];
+    u64 off { 0ui64 };
+
+    fs.seekg(0, _STD ios::beg);
+    while (off < fsize) {
+
+        const auto cursor { fs.tellg() };
+        fs.read(reinterpret_cast<char*>(mem), blockSize);
+        const auto read { fs.tellg() - cursor };
+
+        memcpy(&(archive_.data()[off]), mem, read);
+        off += read;
+
+    }
+
+    delete[] mem;
+    fs.close();
+
+}
+
+void try_load_texture(cref<_STD filesystem::path> path_) {
+
+    using namespace ::ember::engine::serialization;
+    using namespace ::ember::engine::assets;
+
+    auto layout { make_sptr<DataLayout<Texture>>() };
+    layout->reflect().storeType<Texture>();
+    layout->describe();
+
+    BufferArchive buffer {};
+    LayoutArchive<DataLayout<Texture>> archive { &buffer, layout.get() };
+
+    file_to_buffer(path_, buffer);
+    buffer.seek(0);
+
+    auto* texture { EmberObject::create<Texture>() };
+    archive >> texture;
+
+    engine::Session::get()->modules().assetDatabase()->insert(texture);
+
+    /**/
+
+    if (path_.filename().string().ends_with("_diff_8k.imasset")) {
+        auto query = Ember::assets()[game::assets::material::Cerberus::unstable_auto_guid()];
+        auto* ia = static_cast<ptr<GfxMaterialAsset>>(&query.value)->internal();
+        static_cast<ptr<engine::assets::GfxMaterial>>(ia)->setDiffuse(texture->get_guid());
+    }
+}
+
+void try_load_image(cref<_STD filesystem::path> path_) {
+
+    using namespace ::ember::engine::serialization;
+    using namespace ::ember::engine::assets;
+
+    auto layout { make_sptr<DataLayout<Image>>() };
+    layout->reflect().storeType<Image>();
+    layout->describe();
+
+    BufferArchive buffer {};
+    LayoutArchive<DataLayout<Image>> archive { &buffer, layout.get() };
+
+    file_to_buffer(path_, buffer);
+    buffer.seek(0);
+
+    auto* image { EmberObject::create<Image>() };
+    archive >> image;
+
+    engine::Session::get()->modules().assetDatabase()->insert(image);
+}
+
+void try_load_asset(cref<_STD filesystem::path> path_) {
+    if (path_.filename().string().ends_with(".img.imasset")) {
+        try_load_image(path_);
+    } else {
+        try_load_texture(path_);
+    }
+}
+
+void try_load_asset_files() {
+
+    const auto root { _STD filesystem::current_path().append(R"(..\..\resources\assets)") };
+    const auto directory {
+        _STD filesystem::recursive_directory_iterator {
+            root,
+            _STD filesystem::directory_options::follow_directory_symlink
+        }
+    };
+
+    for (const auto& file : directory) {
+
+        if (not file.is_regular_file()) {
+            continue;
+        }
+
+        const auto path { file.path() };
+        if (path.extension().string() != ".imasset") {
+            continue;
+        }
+
+        try_load_asset(path);
+    }
+
+}
+
 /**
  * Ember main entry
  *
@@ -87,6 +316,10 @@ void burstDestroyActors(mref<Vector<ptr<Actor>>> actors_);
 void ember_main_entry() {
 
     SCOPED_STOPWATCH
+
+    /**/
+    try_load_asset_files();
+    /**/
 
     /**
      * Create suspend callback for event emitter

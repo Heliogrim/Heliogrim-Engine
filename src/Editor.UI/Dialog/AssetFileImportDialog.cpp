@@ -16,6 +16,10 @@
 
 #include "../Modules/AssetBrowser.hpp"
 
+#if TRUE
+void testCreateAsset(ember::cref<ember::Url> target_);
+#endif
+
 using namespace ember::engine::gfx::glow::ui;
 using namespace ember::editor::ui;
 using namespace ember;
@@ -591,6 +595,9 @@ sptr<Dialog> AssetFileImportDialog::make(const ptr<AssetBrowser> browser_, cref<
         DEBUG_MSG(
             _STD format("Importing new asset from `{}` to `{}`.", dialog->_source.path(), dialog->_target.path())
         )
+
+        /**/
+        testCreateAsset(dialog->_source);
     });
 
     /**/
