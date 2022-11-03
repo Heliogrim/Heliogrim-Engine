@@ -139,6 +139,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor.UI", "projects\Edito
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ember.Default", "projects\Ember.Default\Ember.Default.vcxproj", "{3700B064-DA76-4D4E-B21B-A264D80E701A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Serialization", "projects\Engine.Serialization\Engine.Serialization.vcxproj", "{24B7F6AE-1EC1-4268-9B1A-584F44AAD1FE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Serialization.Test", "projects\Engine.Serialization.Test\Engine.Serialization.Test.vcxproj", "{90A5BE97-C78A-469D-A622-51E1CF9A6487}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -572,6 +576,21 @@ Global
 		{3700B064-DA76-4D4E-B21B-A264D80E701A}.Release|x64.ActiveCfg = Release|x64
 		{3700B064-DA76-4D4E-B21B-A264D80E701A}.Release|x64.Build.0 = Release|x64
 		{3700B064-DA76-4D4E-B21B-A264D80E701A}.Release|x86.ActiveCfg = Release|x64
+		{24B7F6AE-1EC1-4268-9B1A-584F44AAD1FE}.Debug|x64.ActiveCfg = Debug|x64
+		{24B7F6AE-1EC1-4268-9B1A-584F44AAD1FE}.Debug|x64.Build.0 = Debug|x64
+		{24B7F6AE-1EC1-4268-9B1A-584F44AAD1FE}.Debug|x86.ActiveCfg = Debug|x64
+		{24B7F6AE-1EC1-4268-9B1A-584F44AAD1FE}.Profile|x64.ActiveCfg = Profile|x64
+		{24B7F6AE-1EC1-4268-9B1A-584F44AAD1FE}.Profile|x64.Build.0 = Profile|x64
+		{24B7F6AE-1EC1-4268-9B1A-584F44AAD1FE}.Profile|x86.ActiveCfg = Debug|x64
+		{24B7F6AE-1EC1-4268-9B1A-584F44AAD1FE}.Release|x64.ActiveCfg = Release|x64
+		{24B7F6AE-1EC1-4268-9B1A-584F44AAD1FE}.Release|x64.Build.0 = Release|x64
+		{24B7F6AE-1EC1-4268-9B1A-584F44AAD1FE}.Release|x86.ActiveCfg = Release|x64
+		{90A5BE97-C78A-469D-A622-51E1CF9A6487}.Debug|x64.ActiveCfg = Debug|x64
+		{90A5BE97-C78A-469D-A622-51E1CF9A6487}.Debug|x86.ActiveCfg = Debug|x64
+		{90A5BE97-C78A-469D-A622-51E1CF9A6487}.Profile|x64.ActiveCfg = Profile|x64
+		{90A5BE97-C78A-469D-A622-51E1CF9A6487}.Profile|x86.ActiveCfg = Debug|x64
+		{90A5BE97-C78A-469D-A622-51E1CF9A6487}.Release|x64.ActiveCfg = Release|x64
+		{90A5BE97-C78A-469D-A622-51E1CF9A6487}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
