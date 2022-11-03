@@ -101,6 +101,7 @@
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Profiler.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Stopwatch.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp" />
+    <ClCompile Include="..\..\src\Engine.Common\UrlDataLayout.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Uuid.cpp" />
   </ItemGroup>
   <ItemGroup>
