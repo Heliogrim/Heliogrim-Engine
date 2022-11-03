@@ -1,8 +1,6 @@
 #pragma once
-#include "Data.hpp"
+#include "Asset.hpp"
 
 namespace ember::engine::assets {
-
-    template <typename Layout_>
-    using Geometry = Data<Layout_>;
+    using Geometry = Asset;
 }

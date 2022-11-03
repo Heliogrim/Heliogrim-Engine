@@ -4,7 +4,7 @@ using namespace ember::engine::assets;
 using namespace ember;
 
 StaticGeometry::StaticGeometry(cref<asset_guid> guid_) :
-    Data(guid_, typeId) {}
+    Asset(guid_, typeId) {}
 
 StaticGeometry::StaticGeometry(
     cref<asset_guid> guid_,
@@ -12,7 +12,7 @@ StaticGeometry::StaticGeometry(
     cref<u64> vertexCount_,
     cref<u64> indexCount_
 ) :
-    Data(guid_, typeId),
+    Asset(guid_, typeId),
     _sources(_STD move(sources_)),
     _vertexCount(vertexCount_),
     _indexCount(indexCount_) {}

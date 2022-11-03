@@ -5,12 +5,15 @@
 #include <Engine.Common/Collection/Vector.hpp>
 
 #include "../Geometry.hpp"
-#include "StaticGeometryLayout.hpp"
 
 namespace ember::engine::assets {
 
     class StaticGeometry :
-        public Geometry<StaticGeometryLayout> {
+        public Geometry {
+    public:
+        template <typename>
+        friend class serialization::DataLayout;
+
     public:
         inline static constexpr asset_type_id typeId { "StaticGeometry"_typeId };
 

@@ -4,14 +4,17 @@
 #include <Engine.Common/Collection/Vector.hpp>
 
 #include "Geometry.hpp"
-#include "LandscapeGeometryLayout.hpp"
 
 namespace ember::engine::assets {
 
     class LandscapeGeometry :
-        public Geometry<LandscapeGeometryLayout> {
+        public Geometry {
     public:
-        inline static const asset_type_id typeId { "LandscapeGeometry"_typeId };
+        template <typename>
+        friend class serialization::DataLayout;
+
+    public:
+        inline static constexpr asset_type_id typeId { "LandscapeGeometry"_typeId };
 
     protected:
         LandscapeGeometry(cref<asset_guid> guid_);

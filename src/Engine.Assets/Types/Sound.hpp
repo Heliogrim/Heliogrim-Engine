@@ -3,14 +3,17 @@
 #include <Engine.Common/String.hpp>
 #include <Engine.SFX/AudioFormat.hpp>
 
-#include "Data.hpp"
-#include "SoundLayout.hpp"
+#include "Asset.hpp"
 
 namespace ember::engine::assets {
     class Sound :
-        public Data<SoundLayout> {
+        public Asset {
     public:
-        inline static const asset_type_id typeId { "Sound"_typeId };
+        template <typename>
+        friend class serialization::DataLayout;
+
+    public:
+        inline static constexpr asset_type_id typeId { "Sound"_typeId };
 
     protected:
         Sound(cref<asset_guid> guid_);

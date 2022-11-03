@@ -3,14 +3,21 @@
 #include <Engine.Common/Url.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-#include "Data.hpp"
-#include "ImageLayout.hpp"
+#include "Asset.hpp"
 
 namespace ember::engine::assets {
-    class Image :
-        public Data<ImageLayout> {
+    class Image final :
+        public Asset {
     public:
-        inline static const asset_type_id typeId { "Image"_typeId };
+        template <typename>
+        friend class serialization::DataLayout;
+
+    public:
+        inline static constexpr asset_type_id typeId { "Image"_typeId };
+
+    private:
+    public:
+        Image();
 
     protected:
         Image(cref<asset_guid> guid_);
@@ -23,5 +30,9 @@ namespace ember::engine::assets {
 
     public:
         [[nodiscard]] cref<Vector<Url>> sources() const noexcept;
+
+        void addSource(cref<Url> sourceUrl_);
+
+        void removeSource(cref<Url> sourceUrl_);
     };
 }

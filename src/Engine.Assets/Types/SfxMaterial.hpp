@@ -1,12 +1,15 @@
 #pragma once
 #include "Material.hpp"
-#include "SfxMaterialLayout.hpp"
 
 namespace ember::engine::assets {
 
     class SfxMaterial :
-        public Material<SfxMaterialLayout> {
+        public Material {
     public:
-        inline static const asset_type_id typeId { "SfxMaterial"_typeId };
+        template <typename>
+        friend class serialization::DataLayout;
+
+    public:
+        inline static constexpr asset_type_id typeId { "SfxMaterial"_typeId };
     };
 }

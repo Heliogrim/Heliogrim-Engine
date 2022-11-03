@@ -5,15 +5,18 @@
 #include <Engine.GFX.Glow.UI/Font/GlyphRanges.hpp>
 #include <Engine.Resource/Loader/Loader.hpp>
 
-#include "Data.hpp"
-#include "FontLayout.hpp"
+#include "Asset.hpp"
 
 namespace ember::engine::assets {
 
     class Font :
-        public Data<FontLayout> {
+        public Asset {
     public:
-        inline static const asset_type_id typeId { "Font"_typeId };
+        template <typename>
+        friend class serialization::DataLayout;
+
+    public:
+        inline static constexpr asset_type_id typeId { "Font"_typeId };
 
     protected:
         Font(cref<asset_guid> guid_);
