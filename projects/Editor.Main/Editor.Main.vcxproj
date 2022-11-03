@@ -102,7 +102,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Editor.Main.cpp" />
+    <ClCompile Include="..\..\src\Editor.Main\Editor.Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Editor.UI\Editor.UI.vcxproj">
