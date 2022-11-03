@@ -6,14 +6,7 @@
 
 #include "EmberStruct.hpp"
 #include "Engine.Common/Exception/NotImplementedException.hpp"
-
-namespace ember {
-    /**
-     * Forward Declaration
-     */
-    class EmberClass;
-    class EmberObject;
-}
+#include "__fwd.hpp"
 
 namespace ember {
 
@@ -39,10 +32,18 @@ namespace ember {
         template <IsEmberObject ClassType_, typename... Args_>
         [[nodiscard]] static ptr<ClassType_> create(Args_&&... args_);
 
+        template <IsEmberObject ClassType_, typename... Args_>
+        [[nodiscard]] static ptr<ClassType_> createInPlace(const ptr<void> pos_, Args_&&... args_);
+
         template <IsEmberObject ClassType_>
         static void destroy(mref<ptr<ClassType_>> obj_) {
             delete obj_;
             obj_ = nullptr;
+        }
+
+        template <IsEmberObject ClassType_>
+        static void destroyInPlace(const ptr<ClassType_> obj_) {
+            obj_->~ClassType_();
         }
     };
 
@@ -184,6 +185,13 @@ namespace ember {
     template <IsEmberObject ClassType_, typename... Args_>
     ptr<ClassType_> EmberObject::create(Args_&&... args_) {
         auto* obj { new ClassType_(_STD forward<Args_>(args_)...) };
+        obj->_class = EmberClass::of<ClassType_>();
+        return obj;
+    }
+
+    template <IsEmberObject ClassType_, typename... Args_>
+    ptr<ClassType_> EmberObject::createInPlace(const ptr<void> pos_, Args_&&... args_) {
+        auto* obj { new(pos_) ClassType_(_STD forward<Args_>(args_)...) };
         obj->_class = EmberClass::of<ClassType_>();
         return obj;
     }
