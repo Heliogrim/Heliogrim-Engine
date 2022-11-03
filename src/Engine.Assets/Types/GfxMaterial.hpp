@@ -1,18 +1,18 @@
 #pragma once
 #include <Engine.Common/Collection/CompactArray.hpp>
 
-#include "GfxMaterialLayout.hpp"
 #include "Material.hpp"
 
 namespace ember::engine::assets {
 
     class GfxMaterial :
-        public Material<GfxMaterialLayout> {
+        public Material {
     public:
-        friend class GfxMaterialLayout;
+        template <typename>
+        friend class serialization::DataLayout;
 
     public:
-        inline static const asset_type_id typeId { "GfxMaterial"_typeId };
+        inline static constexpr asset_type_id typeId { "GfxMaterial"_typeId };
 
     protected:
         GfxMaterial(cref<asset_guid> guid_);
@@ -47,6 +47,8 @@ namespace ember::engine::assets {
         [[nodiscard]] CompactArray<asset_guid> textures() const noexcept;
 
         [[nodiscard]] asset_guid diffuse() const noexcept;
+
+        void setDiffuse(const asset_guid textureGuid_);
 
         [[nodiscard]] asset_guid normal() const noexcept;
 

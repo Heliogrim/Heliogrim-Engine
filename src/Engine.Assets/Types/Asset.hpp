@@ -3,6 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 #include <Engine.Reflect/EmberReflect.hpp>
+#include <Engine.Serialization/Layout/__fwd.hpp>
 
 #include "../AssetGuid.hpp"
 #include "../AssetTypeId.hpp"
@@ -26,15 +27,11 @@ namespace ember::engine::assets {
     class Asset :
         public EmberObject {
     public:
-        template <typename Layout_>
-        friend class Data;
-
-    public:
         using value_type = Asset;
         using reference_type = Asset&;
         using const_reference_type = const Asset&;
 
-    private:
+    protected:
         /**
          * Constructor
          *

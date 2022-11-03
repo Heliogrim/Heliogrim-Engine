@@ -2,17 +2,17 @@
 
 #include <Engine.Common/Collection/List.hpp>
 
-#include "Data.hpp"
-#include "LevelLayout.hpp"
+#include "Asset.hpp"
 
 namespace ember::engine::assets {
     class Level :
-        public Data<LevelLayout> {
+        public Asset {
     public:
-        friend class LevelLayout;
+        template <typename>
+        friend class serialization::DataLayout;
 
     public:
-        inline static const asset_type_id typeId { "Level"_typeId };
+        inline static constexpr asset_type_id typeId { "Level"_typeId };
 
     protected:
         Level(cref<asset_guid> guid_);
