@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconContributing> {
     public:
         IconContributing():
-            ImageAsset(IconContributing::auto_guid(),
+            ImageAsset(IconContributing::unstable_auto_guid(),
                 R"(resources\imports\ktx\contributing.ktx)") {}
     };
 

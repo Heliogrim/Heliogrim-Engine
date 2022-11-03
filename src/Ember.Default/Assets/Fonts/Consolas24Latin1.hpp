@@ -10,7 +10,7 @@ namespace ember::game::assets::font {
     public:
         Consolas24Latin1() :
             FontAsset(
-                Consolas24Latin1::auto_guid(),
+                Consolas24Latin1::unstable_auto_guid(),
                 R"(resources\assets\font\consolas_24_latin1.otf)"
             ) {}
     };

@@ -11,15 +11,15 @@ using namespace ember;
 
 Stick01::Stick01() :
     GfxMaterialAsset(
-        Stick01::auto_guid(),
-        texture::Stick01Diffuse::auto_guid(),
-        texture::Stick01AO::auto_guid(),
+        Stick01::unstable_auto_guid(),
+        texture::Stick01Diffuse::unstable_auto_guid(),
+        texture::Stick01AO::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
-        texture::Stick01Normal::auto_guid(),
-        texture::DefaultRoughness::auto_guid(),
-        texture::DefaultMetalness::auto_guid(),
+        texture::Stick01Normal::unstable_auto_guid(),
+        texture::DefaultRoughness::unstable_auto_guid(),
+        texture::DefaultMetalness::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}

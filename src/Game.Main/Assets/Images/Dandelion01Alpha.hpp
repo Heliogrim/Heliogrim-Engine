@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<Dandelion01Alpha> {
     public:
         Dandelion01Alpha():
-            ImageAsset(Dandelion01Alpha::auto_guid(),
+            ImageAsset(Dandelion01Alpha::unstable_auto_guid(),
                 R"(resources\assets\texture\dandelion_01_alpha.ktx2)") {}
     };
 

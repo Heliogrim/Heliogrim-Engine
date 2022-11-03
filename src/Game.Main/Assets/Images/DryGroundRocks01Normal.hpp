@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<DryGroundRocks01Normal> {
     public:
         DryGroundRocks01Normal():
-            ImageAsset(DryGroundRocks01Normal::auto_guid(),
+            ImageAsset(DryGroundRocks01Normal::unstable_auto_guid(),
                 R"(resources\imports\ktx2\dry_ground_rocks_01_normal.ktx2)") {}
     };
 

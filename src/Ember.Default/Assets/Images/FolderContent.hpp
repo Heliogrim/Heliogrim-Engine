@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<FolderContent> {
     public:
         FolderContent():
-            ImageAsset(FolderContent::auto_guid(),
+            ImageAsset(FolderContent::unstable_auto_guid(),
                 R"(resources\imports\ktx\folder-content.ktx)") {}
     };
 

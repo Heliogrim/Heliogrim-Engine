@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::IconDiff::IconDiff() :
     TextureAsset(
-        texture::IconDiff::auto_guid(),
-        image::IconDiff::auto_guid(),
+        texture::IconDiff::unstable_auto_guid(),
+        image::IconDiff::unstable_auto_guid(),
         {},
         { 144ui32, 144ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Srgb,

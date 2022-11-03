@@ -11,15 +11,15 @@ using namespace ember;
 
 Cerberus::Cerberus() :
     GfxMaterialAsset(
-        Cerberus::auto_guid(),
-        texture::CerberusDiffuse::auto_guid(),
-        texture::CerberusAO::auto_guid(),
+        Cerberus::unstable_auto_guid(),
+        texture::CerberusDiffuse::unstable_auto_guid(),
+        texture::CerberusAO::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
-        texture::CerberusNormal::auto_guid(),
-        texture::CerberusRoughness::auto_guid(),
-        texture::CerberusMetalness::auto_guid(),
+        texture::CerberusNormal::unstable_auto_guid(),
+        texture::CerberusRoughness::unstable_auto_guid(),
+        texture::CerberusMetalness::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}

@@ -348,12 +348,12 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
     /**
      *
      */
-    auto queryResult = Ember::assets()[game::assets::meshes::Cylinder::auto_guid()];
+    auto queryResult = Ember::assets()[game::assets::meshes::Cylinder::unstable_auto_guid()];
     if (queryResult.flags == AssetDatabaseResultType::eSuccess) {
         comp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&queryResult.value));
     }
 
-    queryResult = Ember::assets()[game::assets::material::DryGroundRocks01::auto_guid()];
+    queryResult = Ember::assets()[game::assets::material::DryGroundRocks01::unstable_auto_guid()];
     if (queryResult.flags == AssetDatabaseResultType::eSuccess) {
         const auto& list { comp->overrideMaterials() };
         auto& ovm { const_cast<ref<_STD decay_t<decltype(list)>>>(list) };
@@ -450,7 +450,7 @@ void burstBuildActor(ptr<Actor> actor_, const u64 idx_, const u64 rows_, const u
     /**
      *
      */
-    auto queryResult = Ember::assets()[game::assets::meshes::Cylinder::auto_guid()];
+    auto queryResult = Ember::assets()[game::assets::meshes::Cylinder::unstable_auto_guid()];
     if (queryResult.flags == AssetDatabaseResultType::eSuccess) {
         comp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&queryResult.value));
     }
@@ -619,10 +619,10 @@ void buildGlobalPlane(s32 dim_) {
     auto& initializer { ActorInitializer::get() };
     auto* cmp { initializer.createComponent<StaticGeometryComponent>(globalPlaneActor) };
 
-    auto query { Ember::assets()[game::assets::meshes::PlaneD128::auto_guid()] };
+            auto query { Ember::assets()[game::assets::meshes::PlaneD128::unstable_auto_guid()] };
     cmp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&query.value));
 
-    query = Ember::assets()[game::assets::material::ForestGround01::auto_guid()];
+            query = Ember::assets()[game::assets::material::ForestGround01::unstable_auto_guid()];
     auto& materials { const_cast<ref<_STD decay_t<cref<Vector<GfxMaterialAsset>>>>>(cmp->overrideMaterials()) };
     materials.push_back(*static_cast<ptr<GfxMaterialAsset>>(&query.value));
 
@@ -656,8 +656,8 @@ ptr<Actor> buildSimpleAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
 ptr<Actor> buildRock01() {
 
     auto* actor = buildSimpleAsset(
-        game::assets::meshes::Rock01::auto_guid(),
-        game::assets::material::Rock01::auto_guid()
+        game::assets::meshes::Rock01::unstable_auto_guid(),
+        game::assets::material::Rock01::unstable_auto_guid()
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
@@ -672,8 +672,8 @@ ptr<Actor> buildRock01() {
 ptr<Actor> buildStick01() {
 
     auto* actor = buildSimpleAsset(
-        game::assets::meshes::Stick01::auto_guid(),
-        game::assets::material::Stick01::auto_guid()
+        game::assets::meshes::Stick01::unstable_auto_guid(),
+        game::assets::material::Stick01::unstable_auto_guid()
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
@@ -688,8 +688,8 @@ ptr<Actor> buildStick01() {
 ptr<Actor> buildWoodenPier01Poles() {
 
     auto* actor = buildSimpleAsset(
-        game::assets::meshes::WoodenPier01Poles::auto_guid(),
-        game::assets::material::WoodenPier01Poles::auto_guid()
+        game::assets::meshes::WoodenPier01Poles::unstable_auto_guid(),
+        game::assets::material::WoodenPier01Poles::unstable_auto_guid()
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
@@ -704,8 +704,8 @@ ptr<Actor> buildWoodenPier01Poles() {
 ptr<Actor> buildWoodenPier01Planks() {
 
     auto* actor = buildSimpleAsset(
-        game::assets::meshes::WoodenPier01Planks::auto_guid(),
-        game::assets::material::WoodenPier01Planks::auto_guid()
+        game::assets::meshes::WoodenPier01Planks::unstable_auto_guid(),
+        game::assets::material::WoodenPier01Planks::unstable_auto_guid()
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
@@ -720,8 +720,8 @@ ptr<Actor> buildWoodenPier01Planks() {
 ptr<Actor> buildWoodenBucket01() {
 
     auto* actor = buildSimpleAsset(
-        game::assets::meshes::WoodenBucket01::auto_guid(),
-        game::assets::material::WoodenBucket01::auto_guid()
+        game::assets::meshes::WoodenBucket01::unstable_auto_guid(),
+        game::assets::material::WoodenBucket01::unstable_auto_guid()
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
@@ -736,8 +736,8 @@ ptr<Actor> buildWoodenBucket01() {
 ptr<Actor> buildWoodenBucket02() {
 
     auto* actor = buildSimpleAsset(
-        game::assets::meshes::WoodenBucket02::auto_guid(),
-        game::assets::material::WoodenBucket02::auto_guid()
+        game::assets::meshes::WoodenBucket02::unstable_auto_guid(),
+        game::assets::material::WoodenBucket02::unstable_auto_guid()
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
@@ -752,8 +752,8 @@ ptr<Actor> buildWoodenBucket02() {
 ptr<Actor> buildDandelion01() {
 
     auto* actor = buildSimpleAsset(
-        game::assets::meshes::Dandelion01::auto_guid(),
-        game::assets::material::Dandelion01::auto_guid()
+        game::assets::meshes::Dandelion01::unstable_auto_guid(),
+        game::assets::material::Dandelion01::unstable_auto_guid()
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
@@ -798,14 +798,14 @@ void buildTestScene() {
     //buildRock01();
 
     auto* skyboxActor = buildSkyboxAsset(
-        game::assets::meshes::Sphere::auto_guid(),
-        game::assets::material::Skybox01::auto_guid()
+        game::assets::meshes::Sphere::unstable_auto_guid(),
+        game::assets::material::Skybox01::unstable_auto_guid()
     );
 
     #if TRUE
     auto* actor = buildSimpleAsset(
-        game::assets::meshes::Cerberus::auto_guid(),
-        game::assets::material::Cerberus::auto_guid()
+        game::assets::meshes::Cerberus::unstable_auto_guid(),
+        game::assets::material::Cerberus::unstable_auto_guid()
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };

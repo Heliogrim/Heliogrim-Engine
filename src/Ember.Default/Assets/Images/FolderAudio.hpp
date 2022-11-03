@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<FolderAudio> {
     public:
         FolderAudio():
-            ImageAsset(FolderAudio::auto_guid(),
+            ImageAsset(FolderAudio::unstable_auto_guid(),
                 R"(resources\imports\ktx\folder-audio.ktx)") {}
     };
 

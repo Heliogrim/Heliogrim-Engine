@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::Rock01Roughness::Rock01Roughness() :
     TextureAsset(
-        texture::Rock01Roughness::auto_guid(),
-        image::Rock01Roughness::auto_guid(),
+        texture::Rock01Roughness::unstable_auto_guid(),
+        image::Rock01Roughness::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8Unorm,

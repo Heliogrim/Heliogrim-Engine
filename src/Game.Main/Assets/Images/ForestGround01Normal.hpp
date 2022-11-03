@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<ForestGround01Normal> {
     public:
         ForestGround01Normal():
-            ImageAsset(ForestGround01Normal::auto_guid(),
+            ImageAsset(ForestGround01Normal::unstable_auto_guid(),
                 R"(resources\imports\ktx2\forest_ground_01_normal.ktx2)") {}
     };
 

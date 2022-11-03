@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::WoodenPier01PlanksDiffuse::WoodenPier01PlanksDiffuse() :
     TextureAsset(
-        texture::WoodenPier01PlanksDiffuse::auto_guid(),
-        image::WoodenPier01PlanksDiffuse::auto_guid(),
+        texture::WoodenPier01PlanksDiffuse::unstable_auto_guid(),
+        image::WoodenPier01PlanksDiffuse::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Unorm,

@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::WoodenPier01PolesNormal::WoodenPier01PolesNormal() :
     TextureAsset(
-        texture::WoodenPier01PolesNormal::auto_guid(),
-        image::WoodenPier01PolesNormal::auto_guid(),
+        texture::WoodenPier01PolesNormal::unstable_auto_guid(),
+        image::WoodenPier01PolesNormal::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Unorm,

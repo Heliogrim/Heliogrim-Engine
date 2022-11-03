@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<WoodenBucket02Metalness> {
     public:
         WoodenBucket02Metalness():
-            ImageAsset(WoodenBucket02Metalness::auto_guid(),
+            ImageAsset(WoodenBucket02Metalness::unstable_auto_guid(),
                 R"(resources\imports\ktx2\wooden_bucket_02_metalness.ktx2)") {}
     };
 

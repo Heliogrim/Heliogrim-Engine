@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<DefaultMetalness> {
     public:
         DefaultMetalness():
-            ImageAsset(DefaultMetalness::auto_guid(),
+            ImageAsset(DefaultMetalness::unstable_auto_guid(),
                 R"(resources\imports\ktx\default_metalness.ktx)") {}
     };
 

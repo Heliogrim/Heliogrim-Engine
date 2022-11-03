@@ -11,15 +11,15 @@ using namespace ember;
 
 Skybox01::Skybox01() :
     GfxMaterialAsset(
-        Skybox01::auto_guid(),
-        texture::Skybox01Diffuse::auto_guid(),
-        texture::DefaultAO::auto_guid(),
+        Skybox01::unstable_auto_guid(),
+        texture::Skybox01Diffuse::unstable_auto_guid(),
+        texture::DefaultAO::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
-        texture::DefaultNormal::auto_guid(),
-        texture::DefaultRoughness::auto_guid(),
-        texture::DefaultMetalness::auto_guid(),
+        texture::DefaultNormal::unstable_auto_guid(),
+        texture::DefaultRoughness::unstable_auto_guid(),
+        texture::DefaultMetalness::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}

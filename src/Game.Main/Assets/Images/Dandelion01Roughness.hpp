@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<Dandelion01Roughness> {
     public:
         Dandelion01Roughness():
-            ImageAsset(Dandelion01Roughness::auto_guid(),
+            ImageAsset(Dandelion01Roughness::unstable_auto_guid(),
                 R"(resources\assets\texture\dandelion_01_roughness.ktx2)") {}
     };
 

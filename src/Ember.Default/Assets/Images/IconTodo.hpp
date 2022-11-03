@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconTodo> {
     public:
         IconTodo():
-            ImageAsset(IconTodo::auto_guid(),
+            ImageAsset(IconTodo::unstable_auto_guid(),
                 R"(resources\imports\ktx\todo.ktx)") {}
     };
 

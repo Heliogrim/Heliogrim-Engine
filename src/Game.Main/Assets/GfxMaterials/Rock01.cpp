@@ -11,15 +11,15 @@ using namespace ember;
 
 Rock01::Rock01() :
     GfxMaterialAsset(
-        Rock01::auto_guid(),
-        texture::Rock01Diffuse::auto_guid(),
-        texture::DefaultAO::auto_guid(),
+        Rock01::unstable_auto_guid(),
+        texture::Rock01Diffuse::unstable_auto_guid(),
+        texture::DefaultAO::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
-        texture::Rock01Normal::auto_guid(),
-        texture::Rock01Roughness::auto_guid(),
-        texture::DefaultMetalness::auto_guid(),
+        texture::Rock01Normal::unstable_auto_guid(),
+        texture::Rock01Roughness::unstable_auto_guid(),
+        texture::DefaultMetalness::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}

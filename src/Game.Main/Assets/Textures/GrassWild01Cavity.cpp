@@ -8,8 +8,8 @@ using namespace ember;
 
 GrassWild01Cavity::GrassWild01Cavity() :
     TextureAsset(
-        GrassWild01Cavity::auto_guid(),
-        game::assets::image::GrassWild01Cavity::auto_guid(),
+        GrassWild01Cavity::unstable_auto_guid(),
+        game::assets::image::GrassWild01Cavity::unstable_auto_guid(),
         {},
         {},
         TextureFormat::eR8G8B8Unorm,

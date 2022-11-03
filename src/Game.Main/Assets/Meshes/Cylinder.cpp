@@ -5,7 +5,7 @@ using namespace ember;
 
 Cylinder::Cylinder() :
     StaticGeometryAsset(
-        Cylinder::auto_guid(),
+        Cylinder::unstable_auto_guid(),
         R"(resources\imports\obj\cylinder.obj)",
         1140ui64,
         1140ui64

@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconReadme> {
     public:
         IconReadme():
-            ImageAsset(IconReadme::auto_guid(),
+            ImageAsset(IconReadme::unstable_auto_guid(),
                 R"(resources\imports\ktx\readme.ktx)") {}
     };
 

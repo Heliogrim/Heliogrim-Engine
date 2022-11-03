@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::DefaultSkybox::DefaultSkybox() :
     TextureAsset(
-        texture::DefaultSkybox::auto_guid(),
-        image::DefaultSkybox::auto_guid(),
+        texture::DefaultSkybox::unstable_auto_guid(),
+        image::DefaultSkybox::unstable_auto_guid(),
         {},
         { 1ui32, 1ui32, 1ui32 },
         TextureFormat::eR16G16B16A16Sfloat,

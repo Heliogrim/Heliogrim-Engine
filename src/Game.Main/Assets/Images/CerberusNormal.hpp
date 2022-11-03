@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<CerberusNormal> {
     public:
         CerberusNormal():
-            ImageAsset(CerberusNormal::auto_guid(),
+            ImageAsset(CerberusNormal::unstable_auto_guid(),
                 R"(resources\imports\ktx2\cerberus_normal.ktx2)") {}
     };
 

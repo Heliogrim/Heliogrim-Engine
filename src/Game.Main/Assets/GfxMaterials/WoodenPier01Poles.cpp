@@ -14,15 +14,15 @@ using namespace ember;
 
 WoodenPier01Poles::WoodenPier01Poles() :
     GfxMaterialAsset(
-        WoodenPier01Poles::auto_guid(),
-        texture::WoodenPier01PolesDiffuse::auto_guid(),
-        texture::DefaultAO::auto_guid(),
+        WoodenPier01Poles::unstable_auto_guid(),
+        texture::WoodenPier01PolesDiffuse::unstable_auto_guid(),
+        texture::DefaultAO::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
-        texture::WoodenPier01PolesNormal::auto_guid(),
-        texture::WoodenPier01PolesRoughness::auto_guid(),
-        texture::DefaultMetalness::auto_guid(),
+        texture::WoodenPier01PolesNormal::unstable_auto_guid(),
+        texture::WoodenPier01PolesRoughness::unstable_auto_guid(),
+        texture::DefaultMetalness::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}

@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<GrassWild01Cavity> {
     public:
         GrassWild01Cavity() :
-            ImageAsset(GrassWild01Cavity::auto_guid()) {}
+            ImageAsset(GrassWild01Cavity::unstable_auto_guid()) {}
     };
 
     AUTO_REGISTER_ASSET(GrassWild01Cavity)

@@ -5,7 +5,7 @@ using namespace ember;
 
 Dandelion01::Dandelion01() :
     StaticGeometryAsset(
-        Dandelion01::auto_guid(),
+        Dandelion01::unstable_auto_guid(),
         R"(resources\imports\obj\dandelion_01.obj)",
         70'626ui64,
         70'626ui64

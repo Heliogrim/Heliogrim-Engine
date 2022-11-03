@@ -15,15 +15,15 @@ using namespace ember;
 
 GrassWild01::GrassWild01() :
     GfxMaterialAsset(
-        GrassWild01::auto_guid(),
-        image::GrassWild01Albedo::auto_guid(),
-        image::GrassWild01AO::auto_guid(),
-        image::GrassWild01Cavity::auto_guid(),
-        image::GrassWild01Displacement::auto_guid(),
-        image::GrassWild01Gloss::auto_guid(),
-        image::GrassWild01Normal::auto_guid(),
-        image::GrassWild01Roughness::auto_guid(),
-        texture::DefaultMetalness::auto_guid(),
-        image::GrassWild01Specular::auto_guid(),
+        GrassWild01::unstable_auto_guid(),
+        image::GrassWild01Albedo::unstable_auto_guid(),
+        image::GrassWild01AO::unstable_auto_guid(),
+        image::GrassWild01Cavity::unstable_auto_guid(),
+        image::GrassWild01Displacement::unstable_auto_guid(),
+        image::GrassWild01Gloss::unstable_auto_guid(),
+        image::GrassWild01Normal::unstable_auto_guid(),
+        image::GrassWild01Roughness::unstable_auto_guid(),
+        texture::DefaultMetalness::unstable_auto_guid(),
+        image::GrassWild01Specular::unstable_auto_guid(),
         invalid_asset_guid
     ) {}

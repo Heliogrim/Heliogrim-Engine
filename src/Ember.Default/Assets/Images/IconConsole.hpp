@@ -8,7 +8,7 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconConsole> {
     public:
         IconConsole():
-            ImageAsset(IconConsole::auto_guid(),
+            ImageAsset(IconConsole::unstable_auto_guid(),
                 R"(resources\imports\ktx\console.ktx)") {}
     };
 

@@ -11,15 +11,15 @@ using namespace ember;
 
 DryGroundRocks01::DryGroundRocks01() :
     GfxMaterialAsset(
-        DryGroundRocks01::auto_guid(),
-        texture::DryGroundRocks01Diffuse::auto_guid(),
-        texture::DryGroundRocks01AO::auto_guid(),
+        DryGroundRocks01::unstable_auto_guid(),
+        texture::DryGroundRocks01Diffuse::unstable_auto_guid(),
+        texture::DryGroundRocks01AO::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid,
         invalid_asset_guid,
-        texture::DryGroundRocks01Normal::auto_guid(),
-        texture::DryGroundRocks01Roughness::auto_guid(),
-        texture::DefaultMetalness::auto_guid(),
+        texture::DryGroundRocks01Normal::unstable_auto_guid(),
+        texture::DryGroundRocks01Roughness::unstable_auto_guid(),
+        texture::DefaultMetalness::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
     ) {}

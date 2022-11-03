@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::DefaultAlpha::DefaultAlpha() :
     TextureAsset(
-        texture::DefaultAlpha::auto_guid(),
-        image::DefaultAlpha::auto_guid(),
+        texture::DefaultAlpha::unstable_auto_guid(),
+        image::DefaultAlpha::unstable_auto_guid(),
         {},
         { 1ui32, 1ui32, 1ui32 },
         TextureFormat::eR16Sfloat,

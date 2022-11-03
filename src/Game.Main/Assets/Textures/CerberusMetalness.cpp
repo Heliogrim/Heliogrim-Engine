@@ -10,8 +10,8 @@ using namespace ember;
 
 texture::CerberusMetalness::CerberusMetalness() :
     TextureAsset(
-        texture::CerberusMetalness::auto_guid(),
-        image::CerberusMetalness::auto_guid(),
+        texture::CerberusMetalness::unstable_auto_guid(),
+        image::CerberusMetalness::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8Unorm,

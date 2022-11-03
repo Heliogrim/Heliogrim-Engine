@@ -5,7 +5,7 @@ using namespace ember;
 
 Cerberus::Cerberus() :
     StaticGeometryAsset(
-        Cerberus::auto_guid(),
+        Cerberus::unstable_auto_guid(),
         R"(resources\imports\gltf\cerberus.gltf)",
         100623ui64,
         100623ui64

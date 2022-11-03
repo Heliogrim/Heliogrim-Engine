@@ -10,8 +10,8 @@ using namespace ember;
 
 texture::WoodenBucket02Diffuse::WoodenBucket02Diffuse() :
     TextureAsset(
-        texture::WoodenBucket02Diffuse::auto_guid(),
-        image::WoodenBucket02Diffuse::auto_guid(),
+        texture::WoodenBucket02Diffuse::unstable_auto_guid(),
+        image::WoodenBucket02Diffuse::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8G8B8A8Unorm,

@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::DefaultRoughness::DefaultRoughness() :
     TextureAsset(
-        texture::DefaultRoughness::auto_guid(),
-        image::DefaultRoughness::auto_guid(),
+        texture::DefaultRoughness::unstable_auto_guid(),
+        image::DefaultRoughness::unstable_auto_guid(),
         {},
         { 1ui32, 1ui32, 1ui32 },
         TextureFormat::eR16Sfloat,

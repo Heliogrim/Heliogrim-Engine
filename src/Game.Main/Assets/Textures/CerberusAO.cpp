@@ -10,8 +10,8 @@ using namespace ember;
 
 texture::CerberusAO::CerberusAO() :
     TextureAsset(
-        texture::CerberusAO::auto_guid(),
-        image::CerberusAO::auto_guid(),
+        texture::CerberusAO::unstable_auto_guid(),
+        image::CerberusAO::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8Unorm,

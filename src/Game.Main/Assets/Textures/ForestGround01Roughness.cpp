@@ -8,8 +8,8 @@ using namespace ember;
 
 texture::ForestGround01Roughness::ForestGround01Roughness() :
     TextureAsset(
-        texture::ForestGround01Roughness::auto_guid(),
-        image::ForestGround01Roughness::auto_guid(),
+        texture::ForestGround01Roughness::unstable_auto_guid(),
+        image::ForestGround01Roughness::unstable_auto_guid(),
         {},
         { 8192ui32, 8192ui32, 1ui32 },
         TextureFormat::eR8Unorm,
