@@ -6,14 +6,32 @@
 #include "String.hpp"
 #include "Wrapper.hpp"
 
+#include <Engine.Serialization/Layout/__fwd.hpp>
+
 namespace ember {
 
     class Url {
+    public:
+        template <typename>
+        friend class ::ember::engine::serialization::DataLayout;
+
     public:
         using this_type = Url;
 
     public:
         inline static constexpr string_view Separator { "/"sv };
+
+    private:
+    public:
+        Url() :
+            _scheme(),
+            _user(),
+            _password(),
+            _host(),
+            _port(),
+            _path(),
+            _query(),
+            _fragment() {}
 
     public:
         Url(cref<string_view> scheme_, cref<string_view> path_) :
