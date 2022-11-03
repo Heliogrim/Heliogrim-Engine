@@ -48,40 +48,19 @@
     <ClInclude Include="..\..\src\Engine.Assets\Types\Image.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\ImageLayout.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\AssetGuid.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\Asset.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\Data.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\DataLayout.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\Entity.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\EntityLayout.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\Level.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\LevelLayout.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\Material.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\Sound.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\SoundLayout.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\GfxMaterial.hpp">
@@ -91,15 +70,6 @@
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\SfxMaterial.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\GfxMaterialLayout.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\PfxMaterialLayout.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\SfxMaterialLayout.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\Geometry.hpp">
@@ -129,13 +99,7 @@
     <ClInclude Include="..\..\src\Engine.Assets\Types\LandscapeGeometry.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\LandscapeGeometryLayout.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\SkeletalGeometry.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\SkeletalGeometryLayout.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\AssetFactory.hpp">
@@ -147,25 +111,13 @@
     <ClInclude Include="..\..\src\Engine.Assets\Types\AssetConcept.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\StreamDataLayout.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\Texture\Texture.hpp">
-      <Filter>Headerdateien\Types\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\Texture\TextureLayout.hpp">
       <Filter>Headerdateien\Types\Texture</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometry.hpp">
       <Filter>Headerdateien\Types\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometryLayout.hpp">
-      <Filter>Headerdateien\Types\Geometry</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\Font.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\FontLayout.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
   </ItemGroup>
@@ -207,6 +159,15 @@
       <Filter>Quelldateien\Types</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Font.cpp">
+      <Filter>Quelldateien\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\TextureDataLayout.cpp">
+      <Filter>Quelldateien\Types\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\AssetGuidDataLayout.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\ImageDataLayout.cpp">
       <Filter>Quelldateien\Types</Filter>
     </ClCompile>
   </ItemGroup>

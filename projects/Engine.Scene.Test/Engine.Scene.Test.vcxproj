@@ -41,6 +41,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
+    <ProjectReference Include="..\Editor.UI\Editor.UI.vcxproj">
+      <Project>{88b1a2bc-57f1-4969-918a-221f15decb23}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Ember.Default\Ember.Default.vcxproj">
+      <Project>{3700b064-da76-4d4e-b21b-a264d80e701a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Ember\Ember.vcxproj">
+      <Project>{8d01b7e3-273a-4a0b-8099-ad227fbdaf9c}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Scene\Engine.Scene.vcxproj">
       <Project>{114192e3-04b1-4ae7-86f5-1d055f7526d4}</Project>
     </ProjectReference>

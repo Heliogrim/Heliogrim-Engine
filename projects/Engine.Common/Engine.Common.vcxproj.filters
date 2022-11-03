@@ -326,6 +326,9 @@
     <ClCompile Include="..\..\src\Engine.Common\Math\Transform.cpp">
       <Filter>Quelldateien\Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\UrlDataLayout.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Engine.Common\Math\__default.inl">

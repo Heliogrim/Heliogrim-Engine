@@ -27,35 +27,19 @@
     <ClInclude Include="..\..\src\Engine.Assets\Database\AssetSeeder.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\Asset.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\AssetConcept.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\Data.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\DataLayout.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\Entity.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\EntityLayout.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\Font.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\FontLayout.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\Geometry.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometry.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometryLayout.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\GfxMaterial.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\GfxMaterialLayout.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\Image.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\ImageLayout.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\LandscapeGeometry.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\LandscapeGeometryLayout.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\Level.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\LevelLayout.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\Material.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\PfxMaterial.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\PfxMaterialLayout.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\SfxMaterial.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\SfxMaterialLayout.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\SkeletalGeometry.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\SkeletalGeometryLayout.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\Sound.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\SoundLayout.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\StreamDataLayout.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\Texture\Texture.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\Texture\TextureLayout.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
@@ -65,6 +49,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Assets\AssetFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\AssetGuid.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\AssetGuidDataLayout.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabase.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabaseEntry.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabaseQuery.cpp" />
@@ -74,8 +59,10 @@
     <ClCompile Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometry.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\GfxMaterial.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Image.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Types\ImageDataLayout.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\LandscapeGeometry.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\Texture.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\TextureDataLayout.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

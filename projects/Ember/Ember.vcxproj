@@ -167,6 +167,9 @@
     <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
       <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.Serialization\Engine.Serialization.vcxproj">
+      <Project>{24b7f6ae-1ec1-4268-9b1a-584f44aad1fe}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Session\Engine.Session.vcxproj">
       <Project>{bba6c152-0160-4156-a5ac-cd3068df2311}</Project>
     </ProjectReference>
