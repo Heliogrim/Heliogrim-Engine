@@ -677,7 +677,7 @@ void RevMainSkyNode::setupShader(cref<sptr<Device>> device_) {
 
 const ptr<const VirtualTextureView> RevMainSkyNode::getDefaultSkybox() const {
 
-    const auto defaultSkyboxGuid { game::assets::texture::DefaultSkybox::auto_guid() };
+    const auto defaultSkyboxGuid { game::assets::texture::DefaultSkybox::unstable_auto_guid() };
 
     const auto* const db { Session::get()->modules().assetDatabase() };
     auto& loader { Session::get()->modules().resourceManager()->loader() };

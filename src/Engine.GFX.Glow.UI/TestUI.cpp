@@ -532,7 +532,7 @@ ember::ptr<ember::engine::gfx::glow::ui::Font> getDefaultFont() {
     using font_default_type = game::assets::font::Consolas24Latin1;
 
     auto* db { engine::Session::get()->modules().assetDatabase() };
-    auto query { db->query(font_default_type::auto_guid()) };
+    auto query { db->query(font_default_type::unstable_auto_guid()) };
 
     if (!query.exists()) {
         delete (new font_default_type);
