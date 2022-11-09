@@ -2,27 +2,33 @@
 
 #include <filesystem>
 #include <Engine.Common/Make.hpp>
-#include <Engine.GFX.Glow.UI/Widget/Button.hpp>
-#include <Engine.GFX.Glow.UI/Widget/Image.hpp>
-#include <Engine.GFX.Glow.UI/Widget/InputText.hpp>
-#include <Engine.GFX.Glow.UI/Widget/ScrollContainer.hpp>
-#include <Engine.GFX.Glow.UI/Widget/Text.hpp>
+#include <Engine.Reflow/Widget/Button.hpp>
+#include <Engine.Reflow/Widget/Image.hpp>
+#include <Engine.Reflow/Widget/Input/InputText.hpp>
+#include <Engine.Reflow/Widget/Scroll/VScrollBox.hpp>
+#include <Engine.Reflow/Widget/Text.hpp>
+#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
 
 #include "Editor.UI/Color/Dark.hpp"
 #include "Editor.UI/Widget/AssetBrowserItem.hpp"
 #include "Editor.UI/Dialog/AssetFileImportDialog.hpp"
 #include "../Modules/AssetBrowser.hpp"
+#include "Editor.UI/Style/Style.hpp"
+#include "Engine.Reflow/Window/WindowManager.hpp"
+#include "Engine.Reflow/Window/Window.hpp"
+#include "../Widget/Breadcrumb.hpp"
 
 #if TRUE
 #include <Engine.GFX.Glow.UI/TestUI.hpp>
+#include "../Menu/ContextMenu.hpp"
 #endif
 
-using namespace ember::engine::gfx::glow::ui;
 using namespace ember::editor::ui;
+using namespace ember::engine::reflow;
 using namespace ember;
 
 AssetBrowserPanel::AssetBrowserPanel() :
-    Panel(),
+    Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))),
     _browser(nullptr),
     _browserRoot(""sv, ""sv),
     _browserCwd(""sv, ""sv),
@@ -43,25 +49,25 @@ void AssetBrowserPanel::changeCwd(cref<Url> nextCwd_) {
     buildItems();
 }
 
-cref<sptr<Widget>> AssetBrowserPanel::getNavContainer() const {
-    return _nodes.front();
+sptr<HBox> AssetBrowserPanel::getNavContainer() const {
+    return _STD static_pointer_cast<HBox, Widget>(_nav);
 }
 
-cref<sptr<Widget>> AssetBrowserPanel::getItemContainer() const {
-    return _nodes.back();
+sptr<HBox> AssetBrowserPanel::getItemContainer() const {
+    return _STD static_pointer_cast<HBox, Widget>(_items);
 }
 
 void AssetBrowserPanel::dropNav() {
     const auto nav { getNavContainer() };
-    for (const auto& node : nav->nodes().front()->nodes()) {
-        node->markAsDeleted();
-    }
+    const auto bread { _STD static_pointer_cast<Breadcrumb, Widget>(nav->children()->front()) };
+
+    bread->clearNavEntries();
 }
 
 void AssetBrowserPanel::buildNav() {
 
     const auto nav { getNavContainer() };
-    const auto bread { nav->nodes().front() };
+    const auto bread { _STD static_pointer_cast<Breadcrumb, Widget>(nav->children()->front()) };
 
     /**/
 
@@ -92,29 +98,32 @@ void AssetBrowserPanel::buildNav() {
             fwd = Url { fwd.scheme(), string { fwd.path() }.append(Url::Separator).append(part) };
         }
 
-        auto text { make_sptr<Text>() };
-        text->_text = (part == _browserRoot.path()) ? "Root" : part;
-        text->_font = font;
-        text->_fontSize = 12.F;
-        text->_raisedColor = color::Dark::backgroundRaisedText;
+        const string title { (part == _browserRoot.path()) ? "Root" : part };
+        const string key { title + _STD to_string(_STD distance(it, proxyParts.rend())) };
 
-        auto button { make_sptr<Button>() };
+        bread->addNavEntry(AssocKey<string>::from(key), title, fwd);
 
-        button->setReflowType(ReflowType::eFlexCol);
-        button->setReflowSpacing(ReflowSpacing::eSpaceAround);
+        #if FALSE
+        auto text {
+            make_sptr<Text>(BoundStyleSheet::make(StyleSheet {
+                .color = { true, color::Dark::grey },
+                .font = { true, font },
+                .fontSize = { true, 12.F },
+            }))
+        };
+        text->setText((part == _browserRoot.path()) ? "Root" : part);
 
-        button->_extent.x = -1.F;
-        button->_extent.y = 1.F;
-        button->_minExtent.x = -1.F;
-        button->_minExtent.y = 16.F;
-        button->_maxExtent.x = 1.F;
-        button->_maxExtent.y = 1.F;
-
-        button->_padding = math::vec4 { 4.F, 2.F };
-        button->_margin = math::vec4 { 2.F, 0.F };
-
-        button->_color = color::Dark::backgroundDefault;
-        button->_raisedColor = color::Dark::raisedColor;
+        auto button {
+            make_sptr<Button>(BoundStyleSheet::make(StyleSheet {
+                //.maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
+                .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .padding = { true, Padding { 4.F, 2.F } },
+                .margin = { true, Margin { 2.F, 0.F } },
+                .color = { true, color::Dark::backgroundDefault },
+            }))
+        };
 
         /**/
 
@@ -130,30 +139,31 @@ void AssetBrowserPanel::buildNav() {
 
         /**/
 
-        button->add(text);
-        bread->add(button);
+        button->addChild(text);
+        bread->addChild(button);
 
         if ((it + 1) != proxyParts.rend()) {
-            auto fwdText { make_sptr<Text>() };
-            fwdText->_text = R"(>)"sv;
-            fwdText->_font = font;
-            fwdText->_fontSize = 12.F;
-            fwdText->_extent.x = -1.F;
-            fwdText->_extent.y = -1.F;
-            fwdText->_minExtent.x = -1.F;
-            fwdText->_minExtent.y = 16.F;
-            fwdText->_margin = math::vec4 { 4.F, 0.F };
-            fwdText->_textAlign = 0b0010'0010ui8;
-            bread->add(fwdText);
+
+            auto fwdText {
+                make_sptr<Text>(BoundStyleSheet::make(StyleSheet {
+                    .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
+                    .margin = { true, Margin { 4.F, 0.F } },
+                    .color = { true, color::Dark::grey },
+                    .font = { true, font },
+                    .fontSize = { true, 12.F },
+                    .textAlign = { true, TextAlign::eCenterMiddle }
+                }))
+            };
+            fwdText->setText(R"(>)");
+            bread->addChild(fwdText);
         }
+        #endif
     }
 }
 
 void AssetBrowserPanel::dropItems() {
     const auto items { getItemContainer() };
-    for (const auto& node : items->nodes()) {
-        node->markAsDeleted();
-    }
+    items->clearChildren();
 }
 
 void AssetBrowserPanel::buildItems() {
@@ -172,7 +182,10 @@ void AssetBrowserPanel::buildItems() {
         };
 
         Vector<Url> fqUrls { entry.second };
-        items->add(AssetBrowserItem::make(entry.first, virtUrl, _STD move(fqUrls)));
+        items->addChild(AssetBrowserItem::make(
+                _STD static_pointer_cast<AssetBrowserPanel, Widget>(shared_from_this()),
+                entry.first, virtUrl, _STD move(fqUrls))
+        );
     }
 }
 
@@ -182,28 +195,20 @@ void AssetBrowserPanel::closeImportDialog() {
         return;
     }
 
-    auto prev { _dialog.lock() };
+    const auto dialog = _dialog.lock();
+    const auto window { _STD static_pointer_cast<Window, Widget>(dialog->root()) };
 
-    const auto pp { prev->parent() };
-    pp->remove(prev);
+    if (window && dialog->getPopupLayer()) {
+        window->dropPopLayer(dialog->getPopupLayer());
+    }
 
-    prev->setParent(nullptr);
-    prev.reset();
-
-    /**/
     _dialog.reset();
 }
 
 void AssetBrowserPanel::openImportDialog(cref<Url> fqUrlSource_) {
 
-    if (!_dialog.expired()) {
-        auto prev { _dialog.lock() };
-
-        const auto pp { prev->parent() };
-        pp->remove(prev);
-
-        prev->setParent(nullptr);
-        prev.reset();
+    if (not _dialog.expired()) {
+        closeImportDialog();
     }
 
     /**/
@@ -229,124 +234,176 @@ void AssetBrowserPanel::openImportDialog(cref<Url> fqUrlSource_) {
     const auto dialog {
         AssetFileImportDialog::make(_browser, fqUrlSource_, isImportSubPath ? _browserCwd : targetRoot)
     };
-    const auto root { this->root() };
 
     /**/
 
-    if (!root) {
+    const auto panelRoot { root() };
+    if (!panelRoot) {
         return;
     }
 
+    const auto window { _STD static_pointer_cast<Window, Widget>(panelRoot) };
+    auto layer = window->pushPopLayer(dialog);
+
+    const auto off { window->screenOffset() };
+    const auto size { window->innerSize() };
+    const math::vec2 center { size * 0.5F + off };
+
+    const FlowContext ctx { { size.x, size.y, off.x, off.y }, { size.x, size.y, off.x, off.y } };
+    StyleKeyStack stack {};
+    dialog->flow(ctx, size, stack);
+
     /**/
 
-    const auto& rootTf { root->transform() };
-    const math::vec2 center { rootTf.width * 0.5F + rootTf.offsetX, rootTf.height * 0.5F + rootTf.offsetY };
-
-    const UIContext ctx { rootTf, rootTf };
-    dialog->flow(ctx, math::vec2 { rootTf.width, rootTf.height });
-
-    dialog->setAnchor(center - math::vec2 { dialog->transform().width * 0.5F, dialog->transform().height * 0.5F });
+    const auto half { dialog->outerSize() * 0.5F };
+    layer->setScreenPos(center - half);
 
     /**/
 
     _dialog = dialog;
-    root->add(dialog);
 }
 
-bool AssetBrowserPanel::onDragDropEvent(cref<engine::input::event::DragDropEvent> event_) {
+engine::reflow::EventResponse AssetBrowserPanel::onMouseButtonDown(cref<engine::reflow::MouseEvent> event_) {
 
-    if (event_._type != engine::input::event::DragDropEventType::eDropFileType/* || !_dialog.expired()*/) {
-        return Panel::onDragDropEvent(event_);
+    const auto response {
+        Panel::onMouseButtonDown(event_)
+    };
+
+    if (response == EventResponse::eConsumed) {
+        return response;
     }
 
-    if (Panel::onDragDropEvent(event_)) {
-        return true;
+    if (not event_._down || event_._button != /*SDL_BUTTON_RIGHT*/3) {
+        return response;
+    }
+
+    /*
+    const auto ctxMenu { ContextMenu::make(this, pointer_) };
+
+    const auto mkdir { make_sptr<Button>() };
+    {
+        mkdir->setReflowType(ReflowType::eFlexRow);
+        mkdir->setReflowSpacing(ReflowSpacing::eStart);
+        mkdir->setReflowOverflow(ReflowOverflow::eDiscard);
+        mkdir->setReflowWrapping(ReflowWrapping::eNoWrap);
+
+        mkdir->_extent.x = -1.F;
+        mkdir->_extent.y = -1.F;
+        mkdir->_minExtent.x = -1.F;
+        mkdir->_minExtent.y = 24.F;
+        mkdir->_maxExtent.x = 1.F;
+        mkdir->_maxExtent.y = 1.F;
+
+        auto* font { getDefaultFont() };
+        const auto mkdirTitle { make_sptr<Text>() };
+
+        mkdirTitle->setReflowType(ReflowType::eFlexRow);
+        mkdirTitle->setReflowSpacing(ReflowSpacing::eStart);
+        mkdirTitle->setReflowOverflow(ReflowOverflow::eDiscard);
+        mkdirTitle->setReflowWrapping(ReflowWrapping::eNoWrap);
+
+        mkdirTitle->_extent.x = -1.F;
+        mkdirTitle->_extent.y = -1.F;
+        mkdirTitle->_minExtent.x = -1.F;
+        mkdirTitle->_minExtent.y = 24.F;
+        mkdirTitle->_maxExtent.x = -1.F;
+        mkdirTitle->_maxExtent.y = 24.F;
+
+        mkdirTitle->_padding = math::vec4 { 4.F, 4.F };
+        mkdirTitle->_margin = math::vec4 { 0 };
+
+        mkdirTitle->_text = "Create Directory";
+        mkdirTitle->_font = font;
+        mkdirTitle->_fontSize = 16.F;
+        mkdirTitle->_lineHeight = 1.F;
+        mkdirTitle->_textAlign = 0b0010'0001;
+
+        mkdir->add(mkdirTitle);
+    }
+
+    ctxMenu->addMenuAction(mkdir);
+    ctxMenu->setRoot(root());
+
+    root()->add(ctxMenu);
+     */
+
+    return EventResponse::eConsumed;
+}
+
+engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::DragDropEvent> event_) {
+
+    if (event_._type != engine::input::event::DragDropEventType::eDropFileType/* || !_dialog.expired()*/) {
+        return Panel::onDrop(event_);
+    }
+
+    const auto result = Panel::onDrop(event_);
+    if (result != EventResponse::eUnhandled) {
+        return result;
     }
 
     const Url source { "file"sv, static_cast<const char*>(event_._data) };
     openImportDialog(source);
 
-    return true;
+    return EventResponse::eConsumed;
 }
 
-void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<Widget>> parent_) {
+void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<HBox>> parent_) {
 
     auto* font { getDefaultFont() };
 
     /**/
 
-    parent_->setReflowType(ReflowType::eFlexRow);
-    parent_->setReflowSpacing(ReflowSpacing::eSpaceBetween);
+    auto breadcrumb = Breadcrumb::make();
+    breadcrumb->onAction([self = wptr<AssetBrowserPanel>(root_)](cref<Url> url_) {
+        if (self.expired())
+            return;
+        self.lock()->changeCwd(url_);
+    });
 
-    parent_->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
-
-    parent_->_extent.x = 1.F;
-    parent_->_extent.y = 0.F;
-    parent_->_minExtent.x = -1.F;
-    parent_->_minExtent.y = 20.F;
-
-    /**/
-
-    auto breadcrumb = make_sptr<ReflowContainer>();
-    auto searchbar = make_sptr<InputText>();
-
-    /**/
-
-    breadcrumb->setReflowType(ReflowType::eFlexRow);
-    breadcrumb->setReflowSpacing(ReflowSpacing::eStart);
-
-    breadcrumb->_extent.x = -1.F;
-    breadcrumb->_extent.y = -1.F;
-    breadcrumb->_minExtent.x = -1.F;
-    breadcrumb->_minExtent.y = 20.F;
-    breadcrumb->_maxExtent.x = 1.F;
-    breadcrumb->_maxExtent.y = 1.F;
-
-    breadcrumb->_color = color::Dark::backgroundDefault;
-    breadcrumb->_padding = math::vec4 { 4.F, 2.F };
-    parent_->add(breadcrumb);
+    /*
+    auto breadcrumb = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+        .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .padding = { true, Padding { 4.F, 2.F } },
+        .color = { true, color::Dark::backgroundDefault },
+    }));
+     */
 
     /**/
 
+    parent_->addChild(breadcrumb);
+
+    /**/
+
+    auto searchbar = make_sptr<InputText>(BoundStyleSheet::make(StyleSheet {
+        .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 212.F } },
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
+        .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .padding = { true, Padding { 4.F, 0.F } },
+        .margin = { true, Margin { 4.F, 2.F } },
+        .borderRadius = { true, BorderRadius { 4.F } },
+        .color = { true, color::Dark::backgroundInnerField },
+    }), BoundStyleSheet::make(StyleSheet {
+        .margin = { true, Margin { 0.F, 2.F } },
+        .color = { true, color::Dark::grey },
+        .font = { true, font },
+        .fontSize = { true, 12.F },
+        .textAlign = { true, TextAlign::eLeftMiddle }
+    }));
     searchbar->setPlaceholder("Search...");
-    searchbar->_font = font;
-    searchbar->_fontSize = 12.F;
 
-    searchbar->_extent.x = -1.F;
-    searchbar->_extent.y = -1.F;
-    searchbar->_minExtent.x = 212.F;
-    searchbar->_minExtent.y = 16.F;
-    searchbar->_maxExtent.x = 212.F;
-    searchbar->_maxExtent.y = -1.F;
-
+    /*
     searchbar->_baseBackground = color::Dark::backgroundInnerField;
     searchbar->_raisedBackground = color::Dark::backgroundInnerFieldDarken;
     searchbar->_focusBackground = color::Dark::backgroundInnerFieldDarken;
     searchbar->_baseColor = color::Dark::grey;
     searchbar->_raisedColor = color::Dark::white;
     searchbar->_focusColor = color::Dark::white;
+     */
 
-    searchbar->_textAlign = 0b0010'0001ui8;
-
-    searchbar->_margin = math::vec4 { 4.F, 2.F };
-    searchbar->_padding = math::vec4 { 4.F, 0.F };
-    searchbar->_borderRadius = math::vec4 { 6.F };
-    parent_->add(searchbar);
-}
-
-void configureContent(cref<sptr<Widget>> self_) {
-    self_->setReflowType(ReflowType::eFlexRow);
-    self_->setReflowSpacing(ReflowSpacing::eStart);
-    self_->setReflowWrapping(ReflowWrapping::eWrap);
-
-    self_->_color = color::Dark::backgroundInnerField;
-
-    self_->_extent.x = 1.F;
-    self_->_extent.y = 1.F;
-    self_->_padding = math::vec4 { 4.F };
-
-    self_->_reflowShrink = 1.F;
-    self_->_reflowGrow = 1.F;
+    parent_->addChild(searchbar);
 }
 
 sptr<AssetBrowserPanel> AssetBrowserPanel::make(const non_owning_rptr<AssetBrowser> browser_, cref<Url> root_) {
@@ -361,23 +418,44 @@ sptr<AssetBrowserPanel> AssetBrowserPanel::make(const non_owning_rptr<AssetBrows
 
     /**/
 
-    panel->setReflowType(ReflowType::eFlexCol);
-    panel->setReflowSpacing(ReflowSpacing::eStart);
-
-    panel->_reflowShrink = 1.F;
-
-    /**/
-
-    auto nav = make_sptr<ReflowContainer>();
-    auto content = make_sptr<ScrollContainer>();
+    auto nav = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+        .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
+        .color = { true, color::Dark::backgroundDefault },
+    }));
+    auto scrollContent = make_sptr<VScrollBox>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .padding = { true, Padding { 4.F } },
+        .reflowSpacing = { true, ReflowSpacing::eStart },
+        .reflowShrink = { true, 1.F },
+        .reflowGrow = { true, 1.F },
+        .color = { true, color::Dark::backgroundInnerField },
+    }));
+    auto content = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        // .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+        .wrap = { true, ReflowWrap::eWrap },
+        .colGap = { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
+        .rowGap = { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
+        .reflowSpacing = { true, ReflowSpacing::eStart },
+        .color = { true, color::Dark::backgroundInnerField },
+    }));
 
     configureNav(panel, nav);
-    configureContent(content);
 
-    panel->add(nav);
-    panel->add(content);
+    panel->addChild(nav);
+    scrollContent->addChild(content);
+    panel->addChild(scrollContent);
 
     /**/
+
+    panel->_nav = nav;
+    panel->_items = content;
 
     panel->buildNav();
     panel->buildItems();

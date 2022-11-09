@@ -1,11 +1,11 @@
 #include "SceneHierarchyPanel.hpp"
 
-using namespace ember::engine::gfx::glow::ui;
 using namespace ember::editor::ui;
+using namespace ember::engine::reflow;
 using namespace ember;
 
 SceneHierarchyPanel::SceneHierarchyPanel() :
-    Panel() {}
+    Panel(nullptr) {}
 
 sptr<Panel> SceneHierarchyPanel::make() {
 

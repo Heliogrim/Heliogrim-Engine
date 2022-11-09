@@ -15,10 +15,10 @@ namespace ember::debug {
 template <typename Ty>
 void printSet(const Ty*& ptr_, const size_t count_) {
     if (count_ < 1) {
-        std::cout << "[ ]" << std::endl;
+        ::std::cout << "[ ]" << std::endl;
     }
 
-    std::stringstream ss = std::stringstream();
+    ::std::stringstream ss = std::stringstream();
 
     // Open
     ss << "[ ";
@@ -29,7 +29,7 @@ void printSet(const Ty*& ptr_, const size_t count_) {
     // Close
     ss << " ]";
 
-    std::cout << ss.str() << std::endl;
+    ::std::cout << ss.str() << ::std::endl;
 }
 
 #define DEBUG_OUT(x) do { ember::debug::outMtx.lock(); SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15); std::cout << _STD to_string(_STD chrono::duration_cast<_STD chrono::milliseconds>(_STD chrono::high_resolution_clock::now() - ember::processStartTime).count()) << " | " << x << std::endl; ember::debug::outMtx.unlock(); } while (0);

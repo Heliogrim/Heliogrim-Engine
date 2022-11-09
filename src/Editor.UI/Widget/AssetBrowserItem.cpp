@@ -1,50 +1,120 @@
 #include "AssetBrowserItem.hpp"
 
+#include <iostream>
+#include <Engine.Common/stddg.h>
+#include <Engine.Common/stdafx.h>
+
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.GFX/Resource/TextureResource.hpp>
 #include <Engine.GFX.Glow.UI/TestUI.hpp>
-#include <Engine.GFX.Glow.UI/Widget/Image.hpp>
-#include <Engine.GFX.Glow.UI/Widget/Text.hpp>
+#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
+#include <Engine.Reflow/Style/StyleCondition.hpp>
+#include <Engine.Reflow/Widget/Image.hpp>
+#include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Session/Session.hpp>
 
-#include "../Helper/AssetBrowserHelper.hpp"
 #include "../Color/Dark.hpp"
+#include "../Helper/AssetBrowserHelper.hpp"
 #include "../Panel/AssetBrowserPanel.hpp"
+#include "../Style/Style.hpp"
 
-using namespace ember::engine::gfx::glow::ui;
+using namespace ember::engine::reflow;
 using namespace ember::editor::ui;
 using namespace ember;
 
+[[nodiscard]] static sptr<BoundStyleSheet> makeStyleSheet() {
+
+    sptr<BoundStyleSheet> style { BoundStyleSheet::make() };
+
+    const auto* lib { Style::get() };
+
+    style->pushStyle({
+        Style::key_type::from("AssetBrowserItem::Hovered"),
+        style::isRaised,
+        lib->getStyleSheet(Style::DefaultKey)
+    });
+
+    style->pushStyle({
+        Style::NeutralKey,
+        nullptr,
+        lib->getStyleSheet(Style::NeutralKey)
+    });
+
+    return style;
+}
+
+[[nodiscard]] static sptr<BoundStyleSheet> makeTypeTitleStyle() {
+
+    auto* font { getDefaultFont() };
+
+    auto style = BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 84.F } },
+        //
+        .margin = { true, Margin { 0.F, 4.F, 0.F, 0.F } },
+        //
+        .color = { false, color::Dark::backgroundText },
+        //
+        .font = { true, font },
+        .fontSize = { true, 12.F },
+        .textAlign = { true, TextAlign::eLeftMiddle }
+    });
+
+    /**/
+
+    style->pushStyle({
+        Style::key_type::from("AssetBrowserItem::Hovered"),
+        style::isNever,
+        make_sptr<StyleSheet>(StyleSheet {
+            .color = { true, color::Dark::backgroundRaisedText }
+        })
+    });
+
+    /**/
+
+    return style;
+}
+
+[[nodiscard]] static sptr<BoundStyleSheet> makeAssetTitleStyle() {
+
+    auto* font { getDefaultFont() };
+
+    auto style = BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 84.F } },
+        //
+        .color = { false, color::Dark::grey },
+        //
+        .font = { true, font },
+        .fontSize = { true, 12.F },
+        .textEllipse = { true, 2ui32 }
+    });
+
+    /**/
+
+    style->pushStyle({
+        Style::key_type::from("AssetBrowserItem::Hovered"),
+        style::isNever,
+        make_sptr<StyleSheet>(StyleSheet {
+            .color = { true, color::Dark::white }
+        })
+    });
+
+    /**/
+
+    return style;
+}
+
 AssetBrowserItem::AssetBrowserItem() :
-    Button(),
+    Button(makeStyleSheet()),
     _name(),
     _virtUrl(Url { ""sv, ""sv }),
     _fqUrls() {}
 
-bool AssetBrowserItem::onMouseEnterEvent(cref<math::ivec2> pointer_, bool enter_) {
-
-    Vector<ptr<Widget>> subtree {};
-    for (const auto& node : _nodes) {
-        subtree.push_back(node.get());
-    }
-
-    while (not subtree.empty()) {
-        auto* current { subtree.back() };
-        subtree.pop_back();
-
-        for (const auto& node : current->nodes()) {
-            subtree.push_back(node.get());
-        }
-
-        current->onMouseEnterEvent(pointer_, enter_);
-    }
-
-    return StatefulWidget::onMouseEnterEvent(pointer_, enter_);
-}
-
 sptr<AssetBrowserItem> AssetBrowserItem::make(
+    cref<sptr<AssetBrowserPanel>> panel_,
     cref<string> name_,
     cref<Url> virtUrl_,
     mref<Vector<Url>> fqUrls_
@@ -78,15 +148,19 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
         /**/
 
         // Warning: Could result in a deadlock or crash
-        [[maybe_unused]] const auto _ = self->addOnClick([self](cref<engine::input::event::MouseButtonEvent> event_) {
+        [[maybe_unused]] const auto _ = self->addOnClick(
+            [self, panel = wptr<AssetBrowserPanel> { panel_ }](cref<engine::input::event::MouseButtonEvent> event_) {
 
-            if (not event_._down) {
-                return;
-            }
+                if (not event_._down || event_._button != /* SDL_BUTTON_LEFT */1) {
+                    return;
+                }
 
-            auto* panel { static_cast<ptr<AssetBrowserPanel>>(self->parent()->parent()) };
-            panel->changeCwd(self->_virtUrl);
-        });
+                if (panel.expired()) {
+                    return;
+                }
+
+                panel.lock()->changeCwd(self->_virtUrl);
+            });
 
     } else {
 
@@ -103,99 +177,58 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
     };
 
     /**/
-
-    self->setReflowType(ReflowType::eFlexCol);
-    self->setReflowSpacing(ReflowSpacing::eStart);
-
-    self->_color = color::Dark::backgroundInnerFieldDarken;
-    self->_raisedColor = color::Dark::backgroundInnerFieldDarken;
-
-    self->_extent.x = -1.F;
-    self->_extent.y = -1.F;
-    self->_minExtent.x = 96.F;
-    self->_minExtent.y = 156.F;
-
-    self->_padding = math::vec4 { 0.F };
-    self->_margin = math::vec4 { 4.F };
-
-    self->_borderRadius = math::vec4 { 6.F };
+    auto item {
+        make_sptr<VBox>(BoundStyleSheet::make(StyleSheet {
+            .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+            .width = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+            //
+            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
+            .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
+            .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
+            //
+            //.margin = { true, Margin { 4.F } },
+            .borderRadius = { true, BorderRadius { 6.F } },
+            //
+            .color = { true, color::Dark::backgroundInnerFieldDarken },
+        }))
+    };
+    self->addChild(item);
 
     /**/
 
-    const auto icon { make_sptr<Image>() };
-    self->add(icon);
+    const auto icon { make_sptr<Image>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::Icon96Key))) };
+    item->addChild(icon);
 
-    icon->_imageResource = iconRes;
-    icon->_imageView = iconRes->_payload.view.get();
+    auto* view { iconRes->_payload.view.get() };
+    icon->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(view)), iconRes);
 
-    icon->_extent.x = 1.F;
-    icon->_extent.y = -1.F;
-    icon->_minExtent.x = 96.F;
-    icon->_minExtent.y = 96.F;
-    icon->_maxExtent.x = 1.F;
-    icon->_maxExtent.y = -1.F;
+    const auto infoWrapper {
+        make_sptr<VBox>(_STD move(BoundStyleSheet::make(StyleSheet {
+            .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+            .width = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+            //
+            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
+            .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
+            .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
+            //
+            .padding = { true, Padding { 6.F } },
+            .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
+            .borderRadius = { true, BorderRadius { 0.F, 0.F, 6.F, 6.F } },
+            //
+            .color = { true, color::Dark::backgroundDefault },
+        })))
+    };
+    item->addChild(infoWrapper);
 
-    const auto infoWrapper { make_sptr<ReflowContainer>() };
-    self->add(infoWrapper);
+    const auto assetTitle { make_sptr<Text>(makeAssetTitleStyle()) };
+    assetTitle->setText(self->_name);
+    infoWrapper->addChild(assetTitle);
 
-    infoWrapper->setReflowType(ReflowType::eFlexCol);
-    infoWrapper->setReflowSpacing(ReflowSpacing::eSpaceBetween);
-
-    infoWrapper->_color = color::Dark::backgroundDefault;
-
-    infoWrapper->_extent.x = 1.F;
-    infoWrapper->_extent.y = -1.F;
-    infoWrapper->_minExtent.x = 96.F;
-    infoWrapper->_minExtent.y = 156.F - 96.F;
-    infoWrapper->_maxExtent.x = 1.F;
-    infoWrapper->_maxExtent.y = 1.F;
-
-    infoWrapper->_padding = math::vec4 { 6.F };
-    infoWrapper->_borderRadius = math::vec4 { 0.F, 0.F, 6.F, 6.F };
-
-    const auto assetTitle { make_sptr<Text>() };
-    infoWrapper->add(assetTitle);
-
-    assetTitle->setReflowType(ReflowType::eFlexRow);
-    assetTitle->setReflowSpacing(ReflowSpacing::eStart);
-
-    assetTitle->_text = self->_name;
-
-    assetTitle->_font = font;
-    assetTitle->_fontSize = 12.F;
-    assetTitle->_ellipseLines = 2ui32;
-    assetTitle->_color = color::Dark::white;
-    assetTitle->_raisedColor = engine::color { 255.F, 127.F, 127.F, 255.F };
-
-    assetTitle->_extent.x = 1.F;
-    assetTitle->_extent.y = -1.F;
-    assetTitle->_minExtent.x = -1.F;
-    assetTitle->_minExtent.y = -1.F;
-    assetTitle->_maxExtent.x = 84.F;
-    assetTitle->_maxExtent.y = -1.F;
-
-    const auto assetTypeTitle { make_sptr<Text>() };
-    infoWrapper->add(assetTypeTitle);
-
-    assetTypeTitle->setReflowType(ReflowType::eFlexRow);
-    assetTypeTitle->setReflowSpacing(ReflowSpacing::eEnd);
-
-    assetTypeTitle->_text = helper->getAssetTypeName(assetType);
-
-    assetTypeTitle->_font = font;
-    assetTypeTitle->_fontSize = 12.F;
-    assetTypeTitle->_ellipseLines = 0ui32;
-    assetTypeTitle->_color = color::Dark::backgroundText;
-    assetTypeTitle->_raisedColor = color::Dark::backgroundRaisedText;
-
-    assetTypeTitle->_extent.x = 1.F;
-    assetTypeTitle->_extent.y = -1.F;
-    assetTypeTitle->_minExtent.x = -1.F;
-    assetTypeTitle->_minExtent.y = -1.F;
-    assetTypeTitle->_maxExtent.x = 84.F;
-    assetTypeTitle->_maxExtent.y = -1.F;
-
-    assetTypeTitle->_margin = math::vec4 { 0.F, 4.F, 0.F, 0.F };
+    const auto assetTypeTitle { make_sptr<Text>(makeTypeTitleStyle()) };
+    assetTypeTitle->setText(helper->getAssetTypeName(assetType));
+    infoWrapper->addChild(assetTypeTitle);
 
     /**/
 

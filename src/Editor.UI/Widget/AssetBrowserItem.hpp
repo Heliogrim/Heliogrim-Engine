@@ -3,20 +3,21 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-#include <Engine.GFX.Glow.UI/Widget/Button.hpp>
+#include <Engine.Reflow/Widget/Button.hpp>
+
+namespace ember::editor::ui {
+    class AssetBrowserPanel;
+}
 
 namespace ember::editor::ui {
 
     class AssetBrowserItem :
-        public engine::gfx::glow::ui::Button {
+        public engine::reflow::Button {
     protected:
         AssetBrowserItem();
 
     public:
         ~AssetBrowserItem() override = default;
-
-    public:
-        bool onMouseEnterEvent(cref<math::ivec2> pointer_, bool enter_) override;
 
     private:
         string _name;
@@ -25,6 +26,7 @@ namespace ember::editor::ui {
 
     public:
         [[nodiscard]] static sptr<AssetBrowserItem> make(
+            cref<sptr<AssetBrowserPanel>> panel_,
             cref<string> name_,
             cref<Url> virtUrl_,
             mref<Vector<Url>> fqUrls_

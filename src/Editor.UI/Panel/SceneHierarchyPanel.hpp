@@ -1,10 +1,10 @@
 #pragma once
-#include <Engine.GFX.Glow.UI/Widget/Panel.hpp>
+#include <Engine.Reflow/Widget/Panel.hpp>
 
 namespace ember::editor::ui {
 
     class SceneHierarchyPanel :
-        public engine::gfx::glow::ui::Panel {
+        public engine::reflow::Panel {
     protected:
         SceneHierarchyPanel();
 

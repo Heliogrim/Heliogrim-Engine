@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Url.hpp>
-#include <Engine.GFX.Glow.UI/Widget/Dialog.hpp>
+#include <Engine.Reflow/Widget/Dialog.hpp>
 
 namespace ember::editor::ui {
     class AssetBrowser;
@@ -9,7 +9,7 @@ namespace ember::editor::ui {
 namespace ember::editor::ui {
 
     class AssetFileImportDialog :
-        public engine::gfx::glow::ui::Dialog {
+        public engine::reflow::Dialog {
     protected:
         AssetFileImportDialog(cref<Url> source_, cref<Url> target_);
 

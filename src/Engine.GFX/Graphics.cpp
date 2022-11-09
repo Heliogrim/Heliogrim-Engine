@@ -576,18 +576,18 @@ void Graphics::registerImporter() {}
 
 #include <format>
 #include <Engine.GFX.Glow.UI/TestUI.hpp>
-#include <Engine.GFX.Glow.UI/Widget/Text.hpp>
+#include <Engine.Reflow/Widget/Text.hpp>
 
 void reportStats(float fps_, float time_) {
 
     if (not testFrameDisplay.expired()) {
-        auto* tfd { static_cast<ptr<engine::gfx::glow::ui::Text>>(testFrameDisplay.lock().get()) };
-        tfd->_text = std::format("{:.0f} FPS", fps_);
+        auto* tfd { static_cast<ptr<engine::reflow::Text>>(testFrameDisplay.lock().get()) };
+        tfd->setText(std::format("{:.0f} FPS", fps_));
     }
 
     if (not testFrameTime.expired()) {
-        auto* tft { static_cast<ptr<engine::gfx::glow::ui::Text>>(testFrameTime.lock().get()) };
-        tft->_text = std::format("{:.2f} ms", time_);
+        auto* tft { static_cast<ptr<engine::reflow::Text>>(testFrameTime.lock().get()) };
+        tft->setText(std::format("{:.2f} ms", time_));
     }
 }
 #endif

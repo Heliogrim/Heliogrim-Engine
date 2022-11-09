@@ -7,91 +7,104 @@
 #include "Engine.Common/Make.hpp"
 #include "Engine.Common/stdafx.h"
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
-#include "Engine.GFX.Glow.UI/Widget/Button.hpp"
-#include "Engine.GFX.Glow.UI/Widget/Form.hpp"
-#include "Engine.GFX.Glow.UI/Widget/Image.hpp"
-#include "Engine.GFX.Glow.UI/Widget/InputText.hpp"
-#include "Engine.GFX.Glow.UI/Widget/ScrollContainer.hpp"
-#include "Engine.GFX.Glow.UI/Widget/Text.hpp"
+#include "Engine.Reflow/Widget/Button.hpp"
+#include "Engine.Reflow/Widget/Input/Form.hpp"
+#include "Engine.Reflow/Widget/Image.hpp"
+#include "Engine.Reflow/Widget/Input/InputText.hpp"
+#include "Engine.Reflow/Widget/Scroll/VScrollBox.hpp"
+#include "Engine.Reflow/Widget/Text.hpp"
+#include "Engine.Reflow/Style/BoundStyleSheet.hpp"
+#include "Engine.Reflow/Style/StyleCondition.hpp"
 
 #include "../Modules/AssetBrowser.hpp"
+#include "Editor.UI/Style/Style.hpp"
+#include "Engine.Reflow/Window/PopupLayer.hpp"
+#include "Engine.Reflow/Window/Window.hpp"
 
 #if TRUE
 void testCreateAsset(ember::cref<ember::Url> target_);
 #endif
 
-using namespace ember::engine::gfx::glow::ui;
 using namespace ember::editor::ui;
+using namespace ember::engine::reflow;
 using namespace ember;
 
+[[nodiscard]] static sptr<BoundStyleSheet> makeStyleSheet() {
+    return BoundStyleSheet::make(StyleSheet {
+        .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 380.F } },
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 460.F } },
+        .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .color = { true, color::Dark::backgroundDefault }
+    });
+}
+
 AssetFileImportDialog::AssetFileImportDialog(cref<Url> source_, cref<Url> target_) :
-    Dialog(),
+    Dialog(makeStyleSheet()),
     _source(source_),
     _target(target_) {}
 
-void configureNav(cref<sptr<Widget>> parent_) {
+void configureNav(cref<sptr<Dialog>> dialog_, cref<sptr<HBox>> parent_) {
 
     auto* font { getDefaultFont() };
 
     /**/
 
-    parent_->setReflowType(ReflowType::eFlexRow);
-    parent_->setReflowSpacing(ReflowSpacing::eSpaceBetween);
+    auto titleWrapper = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .padding = { true, Padding { 4.F } },
+        .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
+        .color = { true, color::Dark::backgroundDefault }
+    }));
+    auto closeBtnStyle { BoundStyleSheet::make() };
+    closeBtnStyle->pushStyle({ Style::TextButtonKey, nullptr, Style::get()->getStyleSheet(Style::ButtonKey) });
+    closeBtnStyle->pushStyle({
+        Style::ButtonRaisedKey,
+        style::isRaised,
+        Style::get()->getStyleSheet(Style::ButtonRaisedKey)
+    });
 
-    parent_->_color = color::Dark::backgroundDefault;
-
-    parent_->_extent.x = 1.F;
-    parent_->_extent.y = 0.F;
-    parent_->_minExtent.x = -1.F;
-    parent_->_minExtent.y = 24.F;
-
-    /**/
-
-    auto titleWrapper = make_sptr<ReflowContainer>();
-    auto closeButton = make_sptr<Button>();
-
-    /**/
-
-    auto dialogTitle = make_sptr<Text>();
-
-    dialogTitle->_text = "Asset Import"sv;
-    dialogTitle->_font = font;
-    dialogTitle->_fontSize = 16.F;
-
-    dialogTitle->_color = color::Dark::white;
-    titleWrapper->add(dialogTitle);
-
-    titleWrapper->_extent.x = -1.F;
-    titleWrapper->_extent.y = -1.F;
-    titleWrapper->_color = color::Dark::backgroundDefault;
-    titleWrapper->_padding = math::vec4 { 4.F, 4.F };
-
-    parent_->add(titleWrapper);
+    auto closeButton = make_sptr<Button>(_STD move(closeBtnStyle));
 
     /**/
 
-    auto closeText = make_sptr<Text>();
+    const StyleSheet titleStyle {
+        .color = { true, color::Dark::white },
+        .font = { true, font },
+        .fontSize = { true, 16.F }
+    };
+
+    auto dialogTitle = make_sptr<Text>(BoundStyleSheet::make(titleStyle));
+    dialogTitle->setText("Asset Import");
+
+    titleWrapper->addChild(dialogTitle);
+    parent_->addChild(titleWrapper);
 
     /**/
 
-    closeText->_text = "X"sv;
-    closeText->_font = font;
-    closeText->_fontSize = 16.F;
-    closeButton->add(closeText);
+    auto closeStyle { BoundStyleSheet::make() };
+    closeStyle->pushStyle({ Style::TitleKey, nullptr, Style::get()->getStyleSheet(Style::TitleKey) });
+    closeStyle->pushStyle(
+        { Style::ButtonRaisedKey, style::isNever, Style::get()->getStyleSheet(Style::TitleRaisedKey) });
 
-    closeButton->_color = color::Dark::backgroundDefault;
-    closeButton->_raisedColor = color::Dark::raisedColor;
+    auto closeText = make_sptr<Text>(_STD move(closeStyle));
+    closeText->setText("X");
 
-    closeButton->_padding = math::vec4 { 4.F };
-    parent_->add(closeButton);
+    closeButton->addChild(closeText);
+    parent_->addChild(closeButton);
 
     /**/
 
     [[maybe_unused]] auto _ = closeButton->addOnClick(
-        [dialog = parent_->root()](cref<engine::input::event::MouseButtonEvent> event_) {
+        [dialog = wptr<Dialog> { dialog_ }](cref<engine::input::event::MouseButtonEvent> event_) {
             if (!event_._down)
                 return;
-            dialog->markAsDeleted();
+
+            if (dialog.expired()) {
+                return;
+            }
+
+            // TODO: dialog->markAsDeleted();
+            dialog.lock()->getPopupLayer()->getWindow()->dropPopLayer(dialog.lock()->getPopupLayer());
         }
     );
 }
@@ -103,108 +116,55 @@ void configureImportTypeEntry(cref<sptr<AssetImportTypeItem>> parent_, cref<stri
 
     /**/
 
-    parent_->setReflowType(ReflowType::eFlexCol);
-    // parent_->setReflowSpacing(ReflowSpacing::eSpaceBetween);
-    parent_->setReflowSpacing(ReflowSpacing::eStart);
-
-    parent_->_color = color::Dark::backgroundInnerField;
-    parent_->_raisedColor = color::Dark::backgroundInnerFieldDarken;
-
-    parent_->_extent.x = -1.F;
-    parent_->_extent.y = -1.F;
-    parent_->_minExtent.x = 88.F;
-    parent_->_minExtent.y = 124.F;
-
-    parent_->_padding = math::vec4 { 6.F };
-    parent_->_margin = math::vec4 { 4.F };
-
-    parent_->_borderRadius = math::vec4 { 6.F };
+    auto icon = make_sptr<Image>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::Icon72Key)));
+    auto title = make_sptr<Text>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 76.F } },
+        .margin = { true, Margin { 0.F, 4.F, 0.F, 0.F } },
+        .color = { true, color::Dark::backgroundText },
+        .font = { true, font },
+        .fontSize = { true, 12.F },
+        .textEllipse = { true, 2ui32 }
+    }));
 
     /**/
 
-    auto icon = make_sptr<Image>();
-    auto title = make_sptr<Text>();
+    auto* imagePtr { image.get() };
+    icon->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(imagePtr)));
+    parent_->addChild(icon);
 
     /**/
 
-    icon->_image = image;
-    icon->_color = color::Dark::backgroundInnerField;
-
-    icon->_extent.x = 0.F;
-    icon->_extent.y = 0.F;
-    icon->_minExtent.x = 72.F;
-    icon->_minExtent.y = 72.F;
-
-    icon->_margin = math::vec4 { 2.F };
-    parent_->add(icon);
-
-    /**/
-
-    title->_text = typeTitle_;
-    title->_font = font;
-    title->_fontSize = 12.F;
-    title->_ellipseLines = 2ui32;
-    title->_color = color::Dark::backgroundText;
-    title->_raisedColor = color::Dark::backgroundRaisedText;
-
-    title->_extent.x = 1.F;
-    title->_extent.y = -1.F;
-    title->_minExtent.x = -1.F;
-    title->_minExtent.y = -1.F;
-    title->_maxExtent.x = 76.F;
-    title->_maxExtent.y = -1.F;
-
-    title->_margin = math::vec4 { 0.F, 4.F, 0.F, 0.F };
-    parent_->add(title);
+    title->setText(string { typeTitle_ });
+    parent_->addChild(title);
 }
 
-void configureImportAs(cref<sptr<Widget>> parent_, cref<Url> source_) {
+void configureImportAs(cref<sptr<VBox>> parent_, cref<Url> source_) {
 
     auto* font { getDefaultFont() };
 
     /**/
 
-    parent_->setReflowType(ReflowType::eFlexCol);
-    parent_->setReflowSpacing(ReflowSpacing::eStart);
-
-    parent_->_color = color::Dark::backgroundDefault;
-
-    parent_->_extent.x = 1.F;
-    parent_->_extent.y = -1.F;
-    parent_->_minExtent.x = -1.F;
-    parent_->_minExtent.y = -1.F;
-
-    parent_->_padding = math::vec4 { 0.F };
+    auto inputTitle = make_sptr<Text>(BoundStyleSheet::make(StyleSheet {
+        .color = { true, color::Dark::white },
+        .font = { true, font },
+        .fontSize = { true, 12.F },
+    }));
+    inputTitle->setText("Import As");
+    parent_->addChild(inputTitle);
 
     /**/
 
-    auto inputTitle = make_sptr<Text>();
-
-    inputTitle->_text = "Import As"sv;
-    inputTitle->_font = font;
-    inputTitle->_fontSize = 12.F;
-
-    parent_->add(inputTitle);
-
-    /**/
-
-    auto container = make_sptr<ReflowContainer>();
-
-    container->setReflowType(ReflowType::eFlexRow);
-    container->setReflowSpacing(ReflowSpacing::eStart);
-    container->setReflowWrapping(ReflowWrapping::eWrap);
-
-    container->_color = color::Dark::backgroundInnerField;
-
-    container->_extent.x = 1.F;
-    container->_extent.y = -1.F;
-    container->_minExtent.x = -1.F;
-    container->_minExtent.y = -1.F;
-
-    container->_margin = math::vec4 { 0.F, 2.F, 0.F, 0.F };
-    container->_padding = math::vec4 { 4.F };
-
-    parent_->add(container);
+    auto container = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .wrap = { true, ReflowWrap::eWrap },
+        .padding = { true, Padding { 4.F } },
+        .margin = { true, Margin { 0.F, 2.F, 0.F, 0.F } },
+        .reflowSpacing = { true, ReflowSpacing::eStart },
+        .color = { true, color::Dark::backgroundInnerField },
+    }));
+    parent_->addChild(container);
 
     /**/
 
@@ -213,177 +173,136 @@ void configureImportAs(cref<sptr<Widget>> parent_, cref<Url> source_) {
 
         auto uiEntry = make_sptr<AssetImportTypeItem>();
         configureImportTypeEntry(uiEntry, entry);
-        container->add(uiEntry);
+        container->addChild(uiEntry);
 
     }
 }
 
-void configureSourceDomain(cref<sptr<Widget>> parent_, cref<Url> source_) {
+void configureSourceDomain(cref<sptr<VBox>> parent_, cref<Url> source_) {
 
     auto* font { getDefaultFont() };
 
     /**/
 
-    parent_->setReflowType(ReflowType::eFlexCol);
-    parent_->setReflowSpacing(ReflowSpacing::eStart);
-
-    parent_->_color = color::Dark::backgroundDefault;
-
-    parent_->_extent.x = 1.F;
-    parent_->_extent.y = -1.F;
-    parent_->_minExtent.x = -1.F;
-    parent_->_minExtent.y = -1.F;
+    auto inputTitle = make_sptr<Text>(BoundStyleSheet::make(StyleSheet {
+        .color = { true, color::Dark::white },
+        .font = { true, font },
+        .fontSize = { true, 12.F },
+    }));
+    inputTitle->setText("Source File");
+    parent_->addChild(inputTitle);
 
     /**/
 
-    auto inputTitle = make_sptr<Text>();
-
-    inputTitle->_text = "Source File"sv;
-    inputTitle->_font = font;
-    inputTitle->_fontSize = 12.F;
-
-    parent_->add(inputTitle);
-
-    /**/
-
-    auto container = make_sptr<ReflowContainer>();
-
-    container->setReflowType(ReflowType::eFlexRow);
-    container->setReflowSpacing(ReflowSpacing::eStart);
-
-    container->_color = color::Dark::backgroundDefault;
-
-    container->_extent.x = 1.F;
-    container->_extent.y = -1.F;
-    container->_minExtent.x = -1.F;
-    container->_minExtent.y = -1.F;
-    container->_maxExtent.x = 1.F;
-    container->_maxExtent.y = -1.F;
-
-    container->_margin = math::vec4 { 0.F, 2.F, 0.F, 0.F };
-
-    parent_->add(container);
+    auto container = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .wrap = { true, ReflowWrap::eWrap },
+        .padding = { true, Padding { 4.F } },
+        .margin = { true, Margin { 0.F, 2.F, 0.F, 0.F } },
+        .reflowSpacing = { true, ReflowSpacing::eStart },
+        .color = { true, color::Dark::backgroundDefault },
+    }));
+    parent_->addChild(container);
 
     /**/
 
-    auto sourceInput = make_sptr<InputText>();
+    auto sourceInput = make_sptr<InputText>(BoundStyleSheet::make(StyleSheet {
+        .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .padding = { true, Padding { 4.F, 2.F } },
+        .margin = { true, Margin { 0.F, 2.F, 0.F, 0.F } },
+        .reflowSpacing = { true, ReflowSpacing::eStart },
+        .reflowShrink = { true, 1.F },
+        .color = { true, color::Dark::backgroundInnerField },
+    }), BoundStyleSheet::make(StyleSheet {
+        .color = { true, color::Dark::white },
+        .font = { true, font },
+        .fontSize = { true, 16.F },
+        .textAlign = { true, TextAlign::eLeftMiddle }
+    }));
 
-    sourceInput->setReflowType(ReflowType::eFlexRow);
-    sourceInput->setReflowSpacing(ReflowSpacing::eStart);
-    sourceInput->setReflowWrapping(ReflowWrapping::eNoWrap);
-    sourceInput->setReflowOverflow(ReflowOverflow::eDiscard);
-
+    /*
     sourceInput->_baseBackground = color::Dark::backgroundInnerField;
     sourceInput->_raisedBackground = color::Dark::backgroundInnerFieldDarken;
     sourceInput->_focusBackground = color::Dark::backgroundInnerFieldDarken;
     sourceInput->_baseColor = color::Dark::grey;
     sourceInput->_raisedColor = color::Dark::white;
     sourceInput->_focusColor = color::Dark::white;
-
-    sourceInput->_extent.x = 1.F;
-    sourceInput->_extent.y = -1.F;
-    sourceInput->_minExtent.x = -1.F;
-    sourceInput->_minExtent.y = 20.F;
-    sourceInput->_maxExtent.x = -1.F;
-    sourceInput->_maxExtent.y = -1.F;
-
-    sourceInput->_padding = math::vec4 { 4.F, 2.F };
-    sourceInput->_reflowShrink = 1.F;
+     */
 
     const auto src { _STD filesystem::path { source_.path() } };
 
     const string esrc { src.string() };
     sourceInput->setPlaceholder(esrc);
-    sourceInput->_font = font;
-    sourceInput->_fontSize = 16.F;
-    sourceInput->_textAlign = 0b0010'0001ui8;
 
-    container->add(sourceInput);
+    container->addChild(sourceInput);
 
     /**/
 
-    auto sourceButton = make_sptr<Button>();
-    auto sourceButtonTitle = make_sptr<Text>();
+    auto sourceButton = make_sptr<
+        Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TextButtonKey)));
+    auto sourceButtonTitle = make_sptr<Text>(BoundStyleSheet::make(StyleSheet {
+        .color = { true, color::Dark::white },
+        .font = { true, font },
+        .fontSize = { true, 16.F },
+    }));
+    sourceButtonTitle->setText("...");
+    sourceButton->addChild(sourceButtonTitle);
 
-    sourceButtonTitle->_text = "..."sv;
-    sourceButtonTitle->_font = font;
-    sourceButtonTitle->_fontSize = 16.F;
-    sourceButton->add(sourceButtonTitle);
-
-    sourceButton->_color = color::Dark::backgroundDefault;
-    sourceButton->_padding = math::vec4 { 4.F, 2.F };
-    container->add(sourceButton);
+    container->addChild(sourceButton);
 }
 
-void configureTargetDomain(cref<sptr<Widget>> parent_, cref<Url> source_, cref<Url> path_) {
+void configureTargetDomain(cref<sptr<VBox>> parent_, cref<Url> source_, cref<Url> path_) {
 
     auto* font { getDefaultFont() };
 
     /**/
 
-    parent_->setReflowType(ReflowType::eFlexCol);
-    parent_->setReflowSpacing(ReflowSpacing::eStart);
-
-    parent_->_color = color::Dark::backgroundDefault;
-
-    parent_->_extent.x = 1.F;
-    parent_->_extent.y = -1.F;
-    parent_->_minExtent.x = -1.F;
-    parent_->_minExtent.y = -1.F;
+    auto inputTitle = make_sptr<Text>(BoundStyleSheet::make(StyleSheet {
+        .color = { true, color::Dark::white },
+        .font = { true, font },
+        .fontSize = { true, 12.F },
+    }));
+    inputTitle->setText("Target File");
+    parent_->addChild(inputTitle);
 
     /**/
 
-    auto inputTitle = make_sptr<Text>();
-
-    inputTitle->_text = "Target File"sv;
-    inputTitle->_font = font;
-    inputTitle->_fontSize = 12.F;
-
-    parent_->add(inputTitle);
-
-    /**/
-
-    auto container = make_sptr<ReflowContainer>();
-
-    container->setReflowType(ReflowType::eFlexRow);
-    container->setReflowSpacing(ReflowSpacing::eStart);
-
-    container->_color = color::Dark::backgroundDefault;
-
-    container->_extent.x = 1.F;
-    container->_extent.y = -1.F;
-    container->_minExtent.x = -1.F;
-    container->_minExtent.y = -1.F;
-    container->_maxExtent.x = 1.F;
-    container->_maxExtent.y = -1.F;
-
-    container->_margin = math::vec4 { 0.F, 2.F, 0.F, 0.F };
-
-    parent_->add(container);
+    auto container = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .margin = { true, Margin { 0.F, 2.F, 0.F, 0.F } },
+        .reflowSpacing = { true, ReflowSpacing::eStart },
+        .color = { true, color::Dark::backgroundDefault },
+    }));
+    parent_->addChild(container);
 
     /**/
 
-    auto targetInput = make_sptr<InputText>();
+    auto targetInput = make_sptr<InputText>(BoundStyleSheet::make(StyleSheet {
+        .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .padding = { true, Padding { 4.F, 2.F } },
+        .margin = { true, Margin { 0.F, 2.F, 0.F, 0.F } },
+        .reflowSpacing = { true, ReflowSpacing::eStart },
+        .reflowShrink = { true, 1.F },
+        .color = { true, color::Dark::backgroundInnerField },
+    }), BoundStyleSheet::make(StyleSheet {
+        .color = { true, color::Dark::white },
+        .font = { true, font },
+        .fontSize = { true, 16.F },
+        .textAlign = { true, TextAlign::eLeftMiddle }
+    }));
 
-    targetInput->setReflowType(ReflowType::eFlexRow);
-    targetInput->setReflowSpacing(ReflowSpacing::eStart);
-    targetInput->setReflowWrapping(ReflowWrapping::eNoWrap);
-    targetInput->setReflowOverflow(ReflowOverflow::eDiscard);
-
+    /*
     targetInput->_baseBackground = color::Dark::backgroundInnerField;
     targetInput->_raisedBackground = color::Dark::backgroundInnerFieldDarken;
     targetInput->_focusBackground = color::Dark::backgroundInnerFieldDarken;
     targetInput->_baseColor = color::Dark::grey;
     targetInput->_raisedColor = color::Dark::white;
     targetInput->_focusColor = color::Dark::white;
-
-    targetInput->_extent.x = 1.F;
-    targetInput->_extent.y = -1.F;
-    targetInput->_minExtent.x = -1.F;
-    targetInput->_minExtent.y = 20.F;
-
-    targetInput->_padding = math::vec4 { 4.F, 2.F };
-    targetInput->_reflowShrink = 1.F;
+     */
 
     const auto filename { _STD filesystem::path { source_.path() }.filename().string() };
     const auto& dst { path_.path() };
@@ -393,172 +312,136 @@ void configureTargetDomain(cref<sptr<Widget>> parent_, cref<Url> source_, cref<U
     edst.append(filename);
 
     targetInput->setPlaceholder(edst);
-    targetInput->_font = font;
-    targetInput->_fontSize = 16.F;
-    targetInput->_textAlign = 0b0010'0001ui8;
-
-    container->add(targetInput);
+    container->addChild(targetInput);
 
     /**/
 
-    auto targetButton = make_sptr<Button>();
-    auto targetButtonTitle = make_sptr<Text>();
+    auto targetButton = make_sptr<
+        Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TextButtonKey)));
+    auto targetButtonTitle = make_sptr<Text>(BoundStyleSheet::make(StyleSheet {
+        .color = { true, color::Dark::white },
+        .font = { true, font },
+        .fontSize = { true, 16.F },
+    }));
+    targetButtonTitle->setText("...");
+    targetButton->addChild(targetButtonTitle);
 
-    targetButtonTitle->_text = "..."sv;
-    targetButtonTitle->_font = font;
-    targetButtonTitle->_fontSize = 16.F;
-    targetButton->add(targetButtonTitle);
-
-    targetButton->_color = color::Dark::backgroundDefault;
-    targetButton->_padding = math::vec4 { 4.F, 2.F };
-    container->add(targetButton);
+    container->addChild(targetButton);
 
 }
 
-void configureFooter(cref<sptr<Widget>> parent_) {
+void configureFooter(cref<sptr<Dialog>> dialog_, cref<sptr<Form>> form_, cref<sptr<HBox>> parent_) {
 
     auto* font { getDefaultFont() };
 
     /**/
 
-    parent_->setReflowType(ReflowType::eFlexRow);
-    parent_->setReflowSpacing(ReflowSpacing::eSpaceBetween);
+    auto cancelBtnStyle { BoundStyleSheet::make() };
+    cancelBtnStyle->pushStyle({ Style::TextButtonKey, nullptr, Style::get()->getStyleSheet(Style::TextButtonKey) });
+    cancelBtnStyle->pushStyle({
+        Style::ButtonRaisedKey,
+        style::isRaised,
+        Style::get()->getStyleSheet(Style::ButtonRaisedKey)
+    });
 
-    parent_->_color = color::Dark::backgroundDefault;
+    auto cancelTextStyle { BoundStyleSheet::make() };
+    cancelTextStyle->pushStyle({ Style::TitleKey, nullptr, Style::get()->getStyleSheet(Style::TitleKey) });
+    cancelTextStyle->pushStyle({
+        Style::ButtonRaisedKey,
+        style::isNever,
+        Style::get()->getStyleSheet(Style::TitleRaisedKey)
+    });
 
-    parent_->_extent.x = 1.F;
-    parent_->_extent.y = -1.F;
-    parent_->_minExtent.x = -1.F;
-    parent_->_minExtent.y = -1.F;
-
-    /**/
-
-    auto cancelButton = make_sptr<Button>();
-    auto cancelText = make_sptr<Text>();
-
-    /**/
-
-    cancelText->_text = "Cancel"sv;
-    cancelText->_font = font;
-    cancelText->_fontSize = 16.F;
-    cancelButton->add(cancelText);
-
-    cancelButton->_color = color::Dark::backgroundDefault;
-    cancelButton->_raisedColor = color::Dark::raisedColor;
-    cancelButton->_padding = math::vec4 { 8.F };
-
-    parent_->add(cancelButton);
+    auto cancelButton = make_sptr<Button>(_STD move(cancelBtnStyle));
+    auto cancelText = make_sptr<Text>(_STD move(cancelTextStyle));
 
     /**/
 
-    auto submitButton = make_sptr<Button>();
-    auto submitText = make_sptr<Text>();
+    cancelText->setText("Cancel");
+    cancelButton->addChild(cancelText);
+
+    parent_->addChild(cancelButton);
 
     /**/
 
-    submitText->_text = "Import"sv;
-    submitText->_font = font;
-    submitText->_fontSize = 16.F;
-    submitButton->add(submitText);
+    auto submitButton = make_sptr<Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::ButtonKey)));
+    auto submitText = make_sptr<Text>(BoundStyleSheet::make(StyleSheet {
+        .color = { true, color::Dark::white },
+        .font = { true, font },
+        .fontSize = { true, 16.F },
+    }));
 
-    submitButton->_color = color::Dark::backgroundDefault;
-    submitButton->_raisedColor = color::Dark::raisedColor;
-    submitButton->_padding = math::vec4 { 8.F };
+    /**/
 
-    parent_->add(submitButton);
+    submitText->setText("Import");
+    submitButton->addChild(submitText);
+
+    parent_->addChild(submitButton);
 
     /**/
 
     [[maybe_unused]] auto _ = cancelButton->addOnClick(
-        [dialog = parent_->root()](cref<engine::input::event::MouseButtonEvent> event_) {
+        [dialog = wptr<Dialog> { dialog_ }](cref<engine::input::event::MouseButtonEvent> event_) {
             if (!event_._down)
                 return;
-            dialog->markAsDeleted();
+
+            if (dialog.expired()) {
+                return;
+            }
+
+            // TODO: dialog->markAsDeleted();
+            dialog.lock()->getPopupLayer()->getWindow()->dropPopLayer(dialog.lock()->getPopupLayer());
         }
     );
 
     [[maybe_unused]] auto submitId = submitButton->addOnClick(
-        [dialog = parent_->root()](cref<engine::input::event::MouseButtonEvent> event_) {
+        [form = wptr<Form> { form_ }](cref<engine::input::event::MouseButtonEvent> event_) {
             if (!event_._down) {
                 return;
             }
 
-            const auto form { static_cast<ptr<Form>>(dialog->nodes().front().get()) };
-            form->submitForm();
+            if (form.expired()) {
+                return;
+            }
+
+            form.lock()->submitForm();
         }
     );
 }
 
-void configureContent(cref<sptr<Widget>> parent_, cref<Url> source_, cref<Url> target_) {
+void configureContent(cref<sptr<Dialog>> dialog_, cref<sptr<Form>> form_, cref<sptr<VScrollBox>> parent_,
+    cref<Url> source_,
+    cref<Url> target_) {
 
     auto* font { getDefaultFont() };
 
     /**/
 
-    parent_->setReflowType(ReflowType::eFlexCol);
-    parent_->setReflowSpacing(ReflowSpacing::eSpaceBetween);
+    const StyleSheet colStyle {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .margin = { true, Margin { 0.F, 16.F, 0.F, 0.F } },
+        .reflowSpacing = { true, ReflowSpacing::eStart },
+        .color = { true, color::Dark::backgroundDefault },
+    };
 
-    parent_->_color = color::Dark::backgroundDefault;
-
-    parent_->_extent.x = 1.F;
-    parent_->_extent.y = 1.F;
-    parent_->_minExtent.x = -1.F;
-    parent_->_minExtent.y = -1.F;
-
-    parent_->_padding = math::vec4 { 0.F, 4.F, 0.F, 0.F };
-
-    /**/
-
-    auto content = make_sptr<ScrollContainer>();
-
-    content->setReflowType(ReflowType::eFlexCol);
-    content->setReflowSpacing(ReflowSpacing::eStart);
-
-    content->_color = color::Dark::backgroundDefault;
-
-    content->_extent.x = 1.F;
-    content->_extent.y = 1.F;
-    content->_minExtent.x = -1.F;
-    content->_minExtent.y = -1.F;
-
-    content->_padding = math::vec4 { 6.F };
-
-    content->_reflowShrink = 1.F;
-    content->_reflowGrow = 1.F;
-
-    parent_->add(content);
-
-    /**/
-
-    auto importAs = make_sptr<ReflowContainer>();
+    auto importAs = make_sptr<VBox>(BoundStyleSheet::make(colStyle));
     configureImportAs(importAs, source_);
 
-    importAs->_margin.y += 16.F;
-    content->add(importAs);
+    parent_->addChild(importAs);
 
     /**/
 
-    auto sourceDomain = make_sptr<ReflowContainer>();
+    auto sourceDomain = make_sptr<VBox>(BoundStyleSheet::make(colStyle));
     configureSourceDomain(sourceDomain, source_);
 
-    sourceDomain->_margin.y += 16.F;
-    content->add(sourceDomain);
+    parent_->addChild(sourceDomain);
 
     /**/
 
-    auto targetDomain = make_sptr<ReflowContainer>();
+    auto targetDomain = make_sptr<VBox>(BoundStyleSheet::make(colStyle));
     configureTargetDomain(targetDomain, source_, target_);
 
-    targetDomain->_margin.y += 16.F;
-    content->add(targetDomain);
-
-    /**/
-
-    auto footer = make_sptr<ReflowContainer>();
-    parent_->add(footer);
-
-    configureFooter(footer);
-    footer->_margin.y += 16.F;
+    parent_->addChild(targetDomain);
 }
 
 sptr<Dialog> AssetFileImportDialog::make(const ptr<AssetBrowser> browser_, cref<Url> source_, cref<Url> target_) {
@@ -570,46 +453,57 @@ sptr<Dialog> AssetFileImportDialog::make(const ptr<AssetBrowser> browser_, cref<
 
     /**/
 
-    dialog->_extent.x = -1.F;
-    dialog->_extent.y = -1.F;
-    dialog->_minExtent.x = 380.F;
-    dialog->_minExtent.y = 460.F;
-    dialog->_maxExtent.x = 1.F;
-    dialog->_maxExtent.y = 1.F;
-
-    dialog->_reflowShrink = 1.F;
-
     const auto form { make_sptr<Form>() };
+    const auto formContent { make_sptr<VBox>(makeStyleSheet()) };
 
-    dialog->add(form);
-    form->setReflowType(ReflowType::eFlexCol);
-    form->_minExtent.x = 380.F;
-    form->_minExtent.y = 460.F;
-    form->_maxExtent.x = 1.F;
-    form->_maxExtent.y = 1.F;
+    dialog->setContent(form);
+    form->setContent(formContent);
 
     /**/
 
-    [[maybe_unused]] auto _ = form->onSubmit([dialog](cref<event::FormSubmitEvent> event_) {
-        dialog->markAsDeleted();
-        DEBUG_MSG(
-            _STD format("Importing new asset from `{}` to `{}`.", dialog->_source.path(), dialog->_target.path())
-        )
+    [[maybe_unused]] auto _ = form->onSubmit(
+        [dialog = wptr<AssetFileImportDialog> { dialog }](cref<FormSubmitEvent> event_) {
 
-        /**/
-        testCreateAsset(dialog->_source);
-    });
+            if (dialog.expired()) {
+                return;
+            }
+
+            auto diag { dialog.lock() };
+
+            // TODO: dialog->markAsDeleted();
+            diag->getPopupLayer()->getWindow()->dropPopLayer(diag->getPopupLayer());
+
+            DEBUG_MSG(
+                _STD format("Importing new asset from `{}` to `{}`.", diag->_source.path(), diag->_target.path())
+            )
+
+            /**/
+            testCreateAsset(diag->_source);
+        });
 
     /**/
 
-    auto nav = make_sptr<ReflowContainer>();
-    auto content = make_sptr<ReflowContainer>();
+    auto nav = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
+        .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+        .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
+        .color = { true, color::Dark::backgroundDefault },
+    }));
+    auto content = make_sptr<VScrollBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::ScrollBoxKey)));
+    auto footer = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
+        .color = { true, color::Dark::backgroundDefault },
+    }));
 
-    form->add(nav);
-    form->add(content);
+    formContent->addChild(nav);
+    formContent->addChild(content);
+    formContent->addChild(footer);
 
-    configureNav(nav);
-    configureContent(content, source_, target_);
+    configureNav(dialog, nav);
+    configureContent(dialog, form, content, source_, target_);
+    configureFooter(dialog, form, footer);
 
     return dialog;
 }
