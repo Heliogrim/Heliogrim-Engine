@@ -20,6 +20,7 @@
 #include <Engine.Event/TickEvent.hpp>
 #include <Engine.Session/Session.hpp>
 
+#include "Assets/GfxMaterials/Cannon01.hpp"
 #include "Assets/GfxMaterials/Cerberus.hpp"
 #include "Assets/GfxMaterials/Dandelion01.hpp"
 #include "Assets/GfxMaterials/DryGroundRocks01.hpp"
@@ -32,6 +33,7 @@
 #include "Assets/GfxMaterials/WoodenBucket01.hpp"
 #include "Assets/GfxMaterials/WoodenBucket02.hpp"
 #include "Assets/Images/ForestGround01Diffuse.hpp"
+#include "Assets/Meshes/Cannon01.hpp"
 #include "Assets/Meshes/Cerberus.hpp"
 #include "Assets/Meshes/Cylinder.hpp"
 #include "Assets/Meshes/Dandelion01.hpp"
@@ -245,7 +247,7 @@ void try_load_texture(cref<_STD filesystem::path> path_) {
 
     /**/
 
-    if (path_.filename().string().ends_with("_diff_8k.imasset")) {
+    if (path_.filename().string().ends_with("_diff_8k.imasset") && false) {
         auto query = Ember::assets()[game::assets::material::Cerberus::unstable_auto_guid()];
         auto* ia = static_cast<ptr<GfxMaterialAsset>>(&query.value)->internal();
         static_cast<ptr<engine::assets::GfxMaterial>>(ia)->setDiffuse(texture->get_guid());
@@ -847,25 +849,25 @@ void buildGlobalPlane(s32 dim_) {
                 (static_cast<float>(y - (dim_ >> 1)) / static_cast<float>(dim_)) * ext,
             };
 
-    globalPlaneActor = await(CreateActor(traits::async));
+            globalPlaneActor = await(CreateActor(traits::async));
 
-    auto& initializer { ActorInitializer::get() };
-    auto* cmp { initializer.createComponent<StaticGeometryComponent>(globalPlaneActor) };
+            auto& initializer { ActorInitializer::get() };
+            auto* cmp { initializer.createComponent<StaticGeometryComponent>(globalPlaneActor) };
 
             auto query { Ember::assets()[game::assets::meshes::PlaneD128::unstable_auto_guid()] };
-    cmp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&query.value));
+            cmp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&query.value));
 
             query = Ember::assets()[game::assets::material::ForestGround01::unstable_auto_guid()];
-    auto& materials { const_cast<ref<_STD decay_t<cref<Vector<GfxMaterialAsset>>>>>(cmp->overrideMaterials()) };
-    materials.push_back(*static_cast<ptr<GfxMaterialAsset>>(&query.value));
+            auto& materials { const_cast<ref<_STD decay_t<cref<Vector<GfxMaterialAsset>>>>>(cmp->overrideMaterials()) };
+            materials.push_back(*static_cast<ptr<GfxMaterialAsset>>(&query.value));
 
-    cref<math::Transform> transform { globalPlaneActor->getWorldTransform() };
+            cref<math::Transform> transform { globalPlaneActor->getWorldTransform() };
             const_cast<ref<math::Transform>>(transform).setPosition(position);
             const_cast<ref<math::Transform>>(transform).setScale(math::vec3(2.F, 1.F, 2.F));
 
-    GetWorld()->addActor(globalPlaneActor);
+            GetWorld()->addActor(globalPlaneActor);
 
-}
+        }
     }
 }
 
@@ -992,6 +994,38 @@ ptr<Actor> buildDandelion01() {
     cref<math::Transform> transform { actor->getWorldTransform() };
     const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, .5F, 5.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 5.F });
+
+    GetWorld()->addActor(actor);
+
+    return actor;
+}
+
+ptr<Actor> buildCannon01() {
+
+    auto* actor = buildSimpleAsset(
+        game::assets::meshes::Cannon01::unstable_auto_guid(),
+        game::assets::material::Cannon01::unstable_auto_guid()
+    );
+
+    cref<math::Transform> transform { actor->getWorldTransform() };
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, 0.F });
+    const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
+
+    GetWorld()->addActor(actor);
+
+    return actor;
+}
+
+ptr<Actor> buildSphere() {
+
+    auto* actor = buildSimpleAsset(
+        game::assets::meshes::Sphere::unstable_auto_guid(),
+        game::assets::material::ForestGround01::unstable_auto_guid()
+    );
+
+    cref<math::Transform> transform { actor->getWorldTransform() };
+    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, 0.F });
+    const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
     GetWorld()->addActor(actor);
 
