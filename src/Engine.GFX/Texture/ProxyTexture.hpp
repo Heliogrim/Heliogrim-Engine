@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include "__fwd.hpp"
@@ -66,7 +67,7 @@ namespace ember::engine::gfx {
 
         ProxyTexture(mref<ptr_type<VirtualTextureView>> virtualTextureView_) :
             _subject(_STD move(virtualTextureView_)),
-            _subjectType(ProxyTextureType::eVirtualTexture) {}
+            _subjectType(ProxyTextureType::eVirtualTextureView) {}
 
         // TODO: Check whether we can copy underlying pointer type like `ptr` or `sptr` but prevent `uptr`
         ProxyTexture(cref<this_type> other_) :

@@ -31,16 +31,20 @@ using namespace ember;
 #define IMAGE_DESCRIPTOR_INDEX 0
 
 #if TRUE
-#include "../Widget/Panel.hpp"
+#include "Engine.Reflow/Widget/Panel.hpp"
+#include "Engine.Reflow/Window/Window.hpp"
 #include "../TestUI.hpp"
 #include <Engine.Session/Session.hpp>
 #include <Engine.Input/MouseButtonEvent.hpp>
 #include <Engine.Input/MouseMoveEvent.hpp>
 #include <Engine.Input/MouseWheelEvent.hpp>
 #include <Engine.Input/DragDropEvent.hpp>
+#include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
+#include <Engine.Reflow/Window/WindowManager.hpp>
+#include <Engine.Reflow/Style/StyleKeyStack.hpp>
 #include <mutex>
 #include <atomic>
-static sptr<glow::ui::Panel> uiTestPanel {};
+static sptr<engine::reflow::Window> uiTestPanel {};
 _STD mutex uiTestMtx = _STD mutex {};
 #endif
 
@@ -243,29 +247,29 @@ void UiMainStageNode::before(const non_owning_rptr<HORenderPass> renderPass_,
 
     #if TRUE
     if (!uiTestPanel) {
+
+        reflow::WindowManager::make();
+
         testLoad(_device);
         uiTestPanel = buildTestUI(_device);
 
         const auto session { ember::engine::Session::get() };
         session->emitter().on<input::event::MouseButtonEvent>([](cref<input::event::MouseButtonEvent> event_) {
             _STD unique_lock<_STD mutex> lck { uiTestMtx };
-            uiTestPanel->onMouseButtonEvent(event_._pointer, event_._button, event_._down, event_._modifier);
+            reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
         });
         session->emitter().on<input::event::MouseMoveEvent>([](cref<input::event::MouseMoveEvent> event_) {
             _STD unique_lock<_STD mutex> lck { uiTestMtx };
-            uiTestPanel->onMouseMotionEvent(event_._pointer, event_._delta, event_._button, event_._modifier);
+
+            reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
         });
         session->emitter().on<input::event::MouseWheelEvent>([](cref<input::event::MouseWheelEvent> event_) {
             _STD unique_lock<_STD mutex> lck { uiTestMtx };
-            uiTestPanel->onScrollEvent(event_._pointer, event_._value);
-        });
-        session->emitter().on<input::event::MouseWheelEvent>([](cref<input::event::MouseWheelEvent> event_) {
-            _STD unique_lock<_STD mutex> lck { uiTestMtx };
-            uiTestPanel->onScrollEvent(event_._pointer, event_._value);
+            reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
         });
         session->emitter().on<input::event::DragDropEvent>([](cref<input::event::DragDropEvent> event_) {
             _STD unique_lock<_STD mutex> lck { uiTestMtx };
-            uiTestPanel->onDragDropEvent(event_);
+            reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
         });
     }
     #endif
@@ -326,7 +330,7 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     /**
      *
      */
-    UICommandBuffer uiCmd {};
+    reflow::ReflowCommandBuffer uiCmd {};
     uiCmd._runningIndexes.reserve(32ui64 * 1024ui64);
     uiCmd._runningVertices.reserve(32ui64 * 1024ui64);
 
@@ -336,13 +340,14 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     };
     math::vec2 one { 1.F };
     math::vec2 zero { 0.F };
-    UIContext context {
+    reflow::FlowContext context {
         math::fExtent2D { ava.x, ava.y, 0.F, 0.F },
         math::fExtent2D { ava.x, ava.y, 0.F, 0.F },
     };
 
     _STD unique_lock<_STD mutex> lck { uiTestMtx };
-    uiTestPanel->flow(context, ava);
+    reflow::StyleKeyStack stack {};
+    uiTestPanel->flow(context, ava, stack);
     uiTestPanel->shift(context, zero);
 
     math::fExtent2D rootScissor { context.scissor };
@@ -364,6 +369,12 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     const u64 vertexSize { sizeof(uivertex) * rv.size() };
     const u64 indexSize { sizeof(u32) * ri.size() };
     const u64 imageCount { uiCmd._images.size() + /* Default Image*/ 1 };
+
+    /**/
+    if (vertexSize == 0 || indexSize == 0) {
+        return;
+    }
+    /**/
 
     if (vertexBuffer->size != vertexSize) {
 
@@ -508,6 +519,15 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     }
 
     /**/
+    if (uiCmd._scissorIndices.empty()) {
+        uiCmd._scissorIndices.push_back(_STD make_pair(~0ui32, ~0ui32));
+    }
+
+    if (uiCmd._imageIndices.empty()) {
+        uiCmd._imageIndices.push_back(_STD make_pair(~0ui32, ~0ui32));
+    }
+
+    /**/
     auto sciIdxIt { 0ui32 };
     auto imgIdxIt { 0ui32 };
 
@@ -558,6 +578,10 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
             //dbind.getById(1).store(*uiCmd._images[idx]);
             if (uiCmd._images[imgIdx].is<Texture>()) {
                 dbind.getById(1).storeAs(*uiCmd._images[imgIdx].as<Texture>(), vk::ImageLayout::eShaderReadOnlyOptimal);
+
+            } else if (uiCmd._images[imgIdx].is<VirtualTexture>()) {
+                const auto* view { uiCmd._images[imgIdx].as<VirtualTexture>() };
+                dbind.getById(1).store(view);
 
             } else if (uiCmd._images[imgIdx].is<VirtualTextureView>()) {
                 const auto* view { uiCmd._images[imgIdx].as<VirtualTextureView>() };
@@ -867,7 +891,8 @@ void UiMainStageNode::rebuildImageDescriptors(
         sizes.push_back(poolReq.pPoolSizes[i]);
         sizes.back().descriptorCount *= count_;
     }
-    poolReq.setPoolSizes(sizes);
+    poolReq.setPPoolSizes(sizes.data());
+    poolReq.setPoolSizeCount(sizes.size());
 
     auto pool { _device->vkDevice().createDescriptorPool(poolReq) };
 

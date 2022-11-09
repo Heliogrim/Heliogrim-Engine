@@ -93,21 +93,28 @@
     <ClInclude Include="..\..\src\Editor.UI\Color\Dark.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Dialog\AssetFileImportDialog.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Helper\AssetBrowserHelper.hpp" />
+    <ClInclude Include="..\..\src\Editor.UI\Menu\ContextMenu.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Modules\AssetBrowser.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Panel\ProjectViewportPanel.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Panel\SceneHierarchyPanel.hpp" />
+    <ClInclude Include="..\..\src\Editor.UI\Style\Style.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Widget\AssetBrowserItem.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Widget\AssetImportTypeItem.hpp" />
+    <ClInclude Include="..\..\src\Editor.UI\Widget\Breadcrumb.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.UI\Dialog\AssetFileImportDialog.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Helper\AssetBrowserHelper.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Menu\ContextMenu.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Modules\AssetBrowser.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Panel\ProjectViewportPanel.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Panel\SceneHierarchyPanel.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Style\Style.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Widget\AssetBrowserItem.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Widget\AssetImportTypeItem.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Widget\Breadcrumb.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ember\Ember.vcxproj">

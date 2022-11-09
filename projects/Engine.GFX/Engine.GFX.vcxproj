@@ -185,7 +185,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSurfaceSwapchain.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\TextureFormat.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureAtlas.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureSampler.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Texture\Texture.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureBuffer.cpp" />
@@ -354,10 +353,10 @@
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\Swapchain.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSurfaceSwapchain.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Swapchain\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\TextureFormat.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\ProxyTexture.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\Texture.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureAtlas.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureSampler.hpp" />

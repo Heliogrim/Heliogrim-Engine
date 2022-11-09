@@ -1,111 +1,94 @@
 #include "ProjectViewportPanel.hpp"
 
-#include <Engine.GFX.Glow.UI/Widget/Button.hpp>
-#include <Engine.GFX.Glow.UI/Widget/Text.hpp>
+#include <Engine.Common/Make.hpp>
+#include <Engine.Reflow/Widget/Button.hpp>
+#include <Engine.Reflow/Widget/Text.hpp>
+#include "Engine.Reflow/Widget/Viewport.hpp"
 
-#include "Engine.GFX.Glow.UI/Widget/Viewport.hpp"
+#include "../Style/Style.hpp"
+#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
 
-using namespace ember::engine::gfx::glow::ui;
+#include "Editor.UI/Color/Dark.hpp"
+#include "Engine.GFX.Glow.UI/TestUI.hpp"
+
 using namespace ember::editor::ui;
+using namespace ember::engine::reflow;
 using namespace ember;
 
 ProjectViewportPanel::ProjectViewportPanel() :
-    Panel() {}
+    Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::DefaultKey))) {}
 
-void configureCtrls(cref<sptr<Widget>> parent_) {
-    parent_->setReflowType(ReflowType::eFlexRow);
-    parent_->setReflowSpacing(ReflowSpacing::eSpaceAround);
+void configureCtrls(cref<sptr<HBox>> parent_) {
 
-    parent_->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
-
-    parent_->_extent.x = 1.F;
-    parent_->_extent.y = 0.F;
-    parent_->_minExtent.x = -1.F;
-    parent_->_minExtent.y = 24.F;
+    auto playButton = make_sptr<Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TextButtonKey)));
+    auto pauseButton = make_sptr<Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TextButtonKey)));
+    auto stopButton = make_sptr<Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TextButtonKey)));
 
     /**/
 
-    auto playButton = make_sptr<Button>();
-    auto pauseButton = make_sptr<Button>();
-    auto stopButton = make_sptr<Button>();
+    auto* font { getDefaultFont() };
+    const StyleSheet titleStyle {
+        .color = { true, color::Dark::white },
+        .font = { true, font },
+        .fontSize = { true, 16.F },
+    };
+
+    auto playText = make_sptr<Text>(BoundStyleSheet::make(titleStyle));
+    auto pauseText = make_sptr<Text>(BoundStyleSheet::make(titleStyle));
+    auto stopText = make_sptr<Text>(BoundStyleSheet::make(titleStyle));
 
     /**/
 
-    auto playText = make_sptr<Text>();
-    auto pauseText = make_sptr<Text>();
-    auto stopText = make_sptr<Text>();
+    playText->setText("Play");
+    playButton->addChild(playText);
+    parent_->addChild(playButton);
 
     /**/
 
-    playText->_text = "Play"sv;
-    playButton->add(playText);
-
-    playButton->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
-    playButton->_margin = math::vec4 { 4.F };
-    playButton->_padding = math::vec4 { 8.F, 4.F };
-    parent_->add(playButton);
+    pauseText->setText("Pause");
+    pauseButton->addChild(pauseText);
+    parent_->addChild(pauseButton);
 
     /**/
 
-    pauseText->_text = "Pause"sv;
-    pauseButton->add(pauseText);
-
-    pauseButton->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
-    pauseButton->_margin = math::vec4 { 4.F };
-    pauseButton->_padding = math::vec4 { 8.F, 4.F };
-    parent_->add(pauseButton);
-
-    /**/
-
-    stopText->_text = "Play"sv;
-    stopButton->add(stopText);
-
-    stopButton->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
-    stopButton->_margin = math::vec4 { 4.F };
-    stopButton->_padding = math::vec4 { 8.F, 4.F };
-    parent_->add(stopButton);
+    stopText->setText("Play");
+    stopButton->addChild(stopText);
+    parent_->addChild(stopButton);
 }
 
-void configureViewport(cref<sptr<Widget>> parent_) {
-    parent_->setReflowType(ReflowType::eFlexRow);
-    parent_->setReflowSpacing(ReflowSpacing::eSpaceAround);
-
-    parent_->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
-
-    parent_->_extent.x = 1.F;
-    parent_->_extent.y = 1.F;
-    parent_->_reflowShrink = 1.F;
-
-    /**/
-
-    auto viewport = make_sptr<Viewport>();
-
-    /**/
-
-    viewport->_color = engine::color { 46.F, 50.F, 58.F, 255.F };
-    viewport->_extent.x = 1.F;
-    viewport->_extent.y = 1.F;
-
-    /**/
-
-    parent_->add(viewport);
+void configureViewport(cref<sptr<HBox>> parent_) {
+    auto viewport = make_sptr<Viewport>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .color = { true, color::Dark::white }
+    }));
+    parent_->addChild(viewport);
 }
 
 sptr<Panel> ProjectViewportPanel::make() {
 
     auto panel { _STD shared_ptr<ProjectViewportPanel>(new ProjectViewportPanel()) };
 
-    panel->setReflowType(ReflowType::eFlexCol);
-    panel->setReflowSpacing(ReflowSpacing::eStart);
-
-    auto ctrls = make_sptr<ReflowContainer>();
-    auto wrapper = make_sptr<ReflowContainer>();
+    auto ctrls = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
+        .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+        .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
+        .color = { true, color::Dark::backgroundDefault },
+    }));
+    auto wrapper = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
+        .reflowShrink = { true, 1.F },
+        .color = { true, color::Dark::backgroundDefault },
+    }));
 
     configureCtrls(ctrls);
     configureViewport(wrapper);
 
-    panel->add(ctrls);
-    panel->add(wrapper);
+    panel->addChild(ctrls);
+    panel->addChild(wrapper);
 
     return panel;
 }

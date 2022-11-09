@@ -2,7 +2,7 @@
 
 #include <Engine.Resource/Manage/Resource.hpp>
 
-#include "Engine.GFX.Glow.UI/Font/Font.hpp"
+#include "Engine.Reflow/Font/Font.hpp"
 
 namespace ember::engine::gfx {
 
@@ -21,7 +21,7 @@ namespace ember::engine::gfx {
         void tidy();
 
     public:
-        ptr<glow::ui::Font> _fontData;
+        ptr<reflow::Font> _fontData;
 
     public:
         [[nodiscard]] loaded_flag_type loaded() const noexcept override;

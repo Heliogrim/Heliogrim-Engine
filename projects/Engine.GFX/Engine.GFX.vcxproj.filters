@@ -690,14 +690,14 @@
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureView.hpp">
       <Filter>Headerdateien\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureAtlas.hpp">
-      <Filter>Headerdateien\Texture</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Geometry\UIVertex.hpp">
       <Filter>Headerdateien\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Texture\ProxyTexture.hpp">
       <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Swapchain\__fwd.hpp">
+      <Filter>Headerdateien\Swapchain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1017,9 +1017,6 @@
       <Filter>Quelldateien\Swapchain</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureView.cpp">
-      <Filter>Quelldateien\Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureAtlas.cpp">
       <Filter>Quelldateien\Texture</Filter>
     </ClCompile>
   </ItemGroup>

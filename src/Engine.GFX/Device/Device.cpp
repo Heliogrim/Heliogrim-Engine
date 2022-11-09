@@ -68,7 +68,7 @@ void Device::setup() {
         _STD unordered_set<std::string> requiredExtension(deviceExtensions.begin(), deviceExtensions.end());
 
         for (const auto& extension : extensions) {
-            requiredExtension.erase(extension.extensionName);
+            requiredExtension.erase(string { extension.extensionName });
         }
 
         const bool extSupport = requiredExtension.empty();

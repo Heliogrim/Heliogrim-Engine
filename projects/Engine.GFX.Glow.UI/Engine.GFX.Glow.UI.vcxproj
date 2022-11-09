@@ -108,76 +108,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Command\UICommandBuffer.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Event\FormSubmitEvent.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Font\Font.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Font\FontGlyph.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Font\GlyphCode.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Font\GlyphRanges.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Reflow.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowOverflow.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowPosition.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowSpacing.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowType.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\ReflowWrapping.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStageNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UIRenderer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Scene\UISceneModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\TestUI.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\UIContext.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Button.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Checkbox.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Dialog.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Form.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\IDockable.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Image.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Input.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\InputFloat.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\InputIntegral.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\InputSelect.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\InputSlider.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\InputText.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\InputVector.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Menu.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\MenuButton.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Overlay.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Panel.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Popup.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\ReflowContainer.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\ScrollContainer.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Table.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Text.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Tree.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Viewport.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\Widget.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Widget\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Command\UICommandBuffer.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Font\Font.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Font\FontGlyph.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Reflow.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStageNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UIRenderer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Scene\UISceneModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\TestUI.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Button.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Dialog.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Form.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Image.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\InputText.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Menu.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\MenuButton.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Overlay.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Panel.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Popup.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\ReflowContainer.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\ScrollContainer.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Text.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Viewport.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Widget\Widget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
@@ -189,9 +131,9 @@
     <ProjectReference Include="..\Engine.GFX\Engine.GFX.vcxproj">
       <Project>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\src\Engine.GFX.Glow.UI\Font\stb_font_consolas_24_latin1.inl" />
+    <ProjectReference Include="..\Engine.Reflow\Engine.Reflow.vcxproj">
+      <Project>{a4bf2bd3-c9ab-4566-b684-569e77d54e48}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

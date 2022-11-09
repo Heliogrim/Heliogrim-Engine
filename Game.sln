@@ -143,6 +143,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Serialization", "pro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Serialization.Test", "projects\Engine.Serialization.Test\Engine.Serialization.Test.vcxproj", "{90A5BE97-C78A-469D-A622-51E1CF9A6487}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Reflow", "projects\Engine.Reflow\Engine.Reflow.vcxproj", "{A4BF2BD3-C9AB-4566-B684-569E77D54E48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -591,6 +593,15 @@ Global
 		{90A5BE97-C78A-469D-A622-51E1CF9A6487}.Profile|x86.ActiveCfg = Debug|x64
 		{90A5BE97-C78A-469D-A622-51E1CF9A6487}.Release|x64.ActiveCfg = Release|x64
 		{90A5BE97-C78A-469D-A622-51E1CF9A6487}.Release|x86.ActiveCfg = Release|x64
+		{A4BF2BD3-C9AB-4566-B684-569E77D54E48}.Debug|x64.ActiveCfg = Debug|x64
+		{A4BF2BD3-C9AB-4566-B684-569E77D54E48}.Debug|x64.Build.0 = Debug|x64
+		{A4BF2BD3-C9AB-4566-B684-569E77D54E48}.Debug|x86.ActiveCfg = Debug|x64
+		{A4BF2BD3-C9AB-4566-B684-569E77D54E48}.Profile|x64.ActiveCfg = Profile|x64
+		{A4BF2BD3-C9AB-4566-B684-569E77D54E48}.Profile|x64.Build.0 = Profile|x64
+		{A4BF2BD3-C9AB-4566-B684-569E77D54E48}.Profile|x86.ActiveCfg = Debug|x64
+		{A4BF2BD3-C9AB-4566-B684-569E77D54E48}.Release|x64.ActiveCfg = Release|x64
+		{A4BF2BD3-C9AB-4566-B684-569E77D54E48}.Release|x64.Build.0 = Release|x64
+		{A4BF2BD3-C9AB-4566-B684-569E77D54E48}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

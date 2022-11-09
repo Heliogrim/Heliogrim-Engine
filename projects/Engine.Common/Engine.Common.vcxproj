@@ -54,6 +54,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Hash\Murmur3.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Inc.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Make.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Managed\SharedFromThis.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Bezier.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Bounding.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Complex.hpp" />

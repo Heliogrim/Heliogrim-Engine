@@ -1,25 +1,25 @@
 #include "TestUI.hpp"
 
-#include "Widget/Panel.hpp"
+#include "Engine.Reflow/Widget/Panel.hpp"
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/String.hpp>
 
 #include "Editor.UI/Color/Dark.hpp"
+#include "Editor.UI/Style/Style.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
-#include "Widget/Button.hpp"
-#include "Widget/Image.hpp"
-#include "Widget/InputFloat.hpp"
-#include "Widget/InputIntegral.hpp"
-#include "Widget/InputSelect.hpp"
-#include "Widget/InputSlider.hpp"
-#include "Widget/InputText.hpp"
-#include "Widget/InputVector.hpp"
-#include "Widget/Menu.hpp"
-#include "Widget/MenuButton.hpp"
-#include "Widget/Overlay.hpp"
-#include "Widget/Text.hpp"
-#include "Widget/Viewport.hpp"
+#include "Engine.Reflow/Widget/Button.hpp"
+#include "Engine.Reflow/Widget/Image.hpp"
+#include "Engine.Reflow/Widget/Input/InputText.hpp"
+#include "Engine.Reflow/Widget/Menu.hpp"
+#include "Engine.Reflow/Widget/Overlay.hpp"
+#include "Engine.Reflow/Widget/Text.hpp"
+#include "Engine.Reflow/Widget/Viewport.hpp"
+#include "Engine.Reflow/Widget/HBox.hpp"
+#include "Engine.Reflow/Widget/VBox.hpp"
+
+#include "Engine.Reflow/Style/BoundStyleSheet.hpp"
+#include "Engine.Reflow/Window/WindowManager.hpp"
 
 #if TRUE
 #include "Engine.GFX/Command/CommandBuffer.hpp"
@@ -42,14 +42,15 @@
 #include "Editor.UI/Helper/AssetBrowserHelper.hpp"
 #endif
 
-using namespace ember::engine::gfx::glow::ui;
+using namespace ember::editor::ui;
+using namespace ember::engine::reflow;
 using namespace ember;
 
 // Warning: Memory leak
 sptr<ember::engine::gfx::Texture> testTexture {};
 
-wptr<ember::engine::gfx::glow::ui::Widget> testFrameDisplay {};
-wptr<ember::engine::gfx::glow::ui::Widget> testFrameTime {};
+wptr<ember::engine::reflow::Widget> testFrameDisplay {};
+wptr<ember::engine::reflow::Widget> testFrameTime {};
 
 sptr<editor::ui::AssetBrowser> testAssetBrowser {};
 
@@ -58,6 +59,10 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
     if (!testAssetBrowser) {
         editor::ui::AssetBrowserHelper::make();
         testAssetBrowser = make_sptr<editor::ui::AssetBrowser>();
+
+        if (!Style::get()) {
+            Style::make();
+        }
     }
 
     // TODO:
@@ -110,150 +115,184 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
     }
 }
 
-ember::sptr<ember::engine::gfx::glow::ui::Panel> buildTestUI(cref<sptr<engine::gfx::Device>> device_) {
+ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::Device>> device_) {
+
+    if (!Style::get()) {
+        Style::make();
+    }
 
     /**
      *
      */
-    auto root = make_sptr<Panel>();
+    auto root = make_sptr<Panel>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey)));
+    ptr<engine::reflow::Font> defaultFont { getDefaultFont() };
 
-    ptr<engine::gfx::glow::ui::Font> defaultFont { getDefaultFont() };
+    /**/
+
+    auto navStyle = BoundStyleSheet::make(StyleSheet {
+        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
+        .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+        .reflowShrink = { true, 0.F },
+    });
+    navStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
+
+    auto contentStyle = BoundStyleSheet::make(StyleSheet {
+        .reflowSpacing = { true, ReflowSpacing::eSpaceEvenly }
+    });
+    contentStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
+
+    /**/
 
     /**
      *
      */
-    root->setReflowType(ReflowType::eFlexCol);
-    root->setReflowSpacing(ReflowSpacing::eStart);
+    auto navSection = make_sptr<HBox>(_STD move(navStyle));
+    auto contentSection = make_sptr<HBox>(_STD move(contentStyle));
 
-    auto navSection = make_sptr<ReflowContainer>();
-    auto contentSection = make_sptr<ReflowContainer>();
-
-    root->add(navSection);
-    root->add(contentSection);
+    root->addChild(navSection);
+    root->addChild(contentSection);
 
     /**
      *
      */
-    navSection->setReflowType(ReflowType::eFlexRow);
-    navSection->setReflowSpacing(ReflowSpacing::eStart);
-    navSection->_extent.x = 1.F;
-    navSection->_extent.y = 0;
-    navSection->_minExtent.x = -1.F;
-    navSection->_minExtent.y = 24.F;
+    StyleSheet navBtnStyle {
+        .padding = { true, Padding { 4.F, 2.F } },
+        .margin = { true, Margin { 2.F, 6.F } },
+        .color = { true, color::Dark::backgroundDefault }
+    };
 
-    auto navBrandIcon = make_sptr<Image>();
-    navBrandIcon->_extent.x = 0.F;
-    navBrandIcon->_extent.y = 0.F;
-    navBrandIcon->_minExtent.x = 32.F;
-    navBrandIcon->_minExtent.y = 32.F;
-    navBrandIcon->_image = testTexture;
+    StyleSheet navTxtStyle {
+        .color = { true, color::Dark::grey },
+        .font = { true, defaultFont },
+        .fontSize = { true, 16.F }
+    };
 
-    auto navFileButton = make_sptr<MenuButton>();
-    auto navFileText = make_sptr<Text>();
-    navFileButton->add(navFileText);
-    navFileText->_text = "File"sv;
-    navFileText->_font = defaultFont;
-    navFileButton->_padding = math::vec4 { 4.F, 2.F };
-    navFileButton->_margin = math::vec4 { 2.F, 6.F };
+    auto navBrandIcon = make_sptr<Image>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::Icon32Key)));
+    auto testImage = testTexture.get();
+    navBrandIcon->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(testImage)), nullptr);
 
-    auto navSaveAllButton = make_sptr<Button>();
-    auto navSaveAllText = make_sptr<Text>();
-    navSaveAllButton->add(navSaveAllText);
-    navSaveAllText->_text = "Save All"sv;
-    navSaveAllText->_font = defaultFont;
-    navSaveAllButton->_padding = math::vec4 { 4.F, 2.F };
-    navSaveAllButton->_margin = math::vec4 { 0.F };
+    StyleSheet menuBtnStyle {
+        .padding = { true, Padding { 4.F, 2.F } },
+        .color = { true, color::Dark::backgroundDefault }
+    };
 
-    auto navQuitButton = make_sptr<Button>();
-    auto navQuitText = make_sptr<Text>();
-    navQuitButton->add(navQuitText);
-    navQuitText->_text = "Quit"sv;
-    navQuitText->_font = defaultFont;
-    navQuitButton->_padding = math::vec4 { 4.F, 2.F };
-    navQuitButton->_margin = math::vec4 { 0.F };
+    auto navFileButton = make_sptr<Button>(BoundStyleSheet::make(navBtnStyle));
+    auto navFileText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
+    navFileButton->addChild(navFileText);
+    navFileText->setText("File");
+
+    auto navSaveAllButton = make_sptr<Button>(BoundStyleSheet::make(menuBtnStyle));
+    auto navSaveAllText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
+    navSaveAllButton->addChild(navSaveAllText);
+    navSaveAllText->setText("Save All");
+
+    auto navQuitButton = make_sptr<Button>(BoundStyleSheet::make(menuBtnStyle));
+    auto navQuitText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
+    navQuitButton->addChild(navQuitText);
+    navQuitText->setText("Quit");
+
     [[maybe_unused]] auto qblid = navQuitButton->addOnClick([](cref<engine::input::event::MouseButtonEvent> event_) {
+        if (not event_._down)
+            return;
         engine::Scheduler::get().exec(engine::scheduler::task::make_task(engine::Session::stop));
     });
 
     auto navFileMenu = make_sptr<Menu>();
+    auto nfmw = make_sptr<VBox>(BoundStyleSheet::make(StyleSheet {
+        .color = { true, color::Dark::backgroundDefault }
+    }));
 
-    navFileMenu->setVisible(false);
-    navFileMenu->setRoot(root);
+    navFileMenu->setContent(nfmw);
+    navFileMenu->closeMenu();
 
-    root->add(navFileMenu);
+    root->addChild(navFileMenu);
 
-    navFileButton->setMenu(navFileMenu);
+    [[maybe_unused]] auto handle = navFileButton->addOnClick(
+        [self = wptr<Widget> { navFileButton }, nfm = wptr<Menu> { navFileMenu }](auto event_) {
+            if (not event_._down || nfm.expired()) {
+                return;
+            }
 
-    navFileMenu->add(navSaveAllButton);
-    navFileMenu->add(navQuitButton);
+            auto lck { nfm.lock() };
+            if (lck) {
+                lck->openMenu();
 
-    auto navEditButton = make_sptr<Button>();
-    auto navEditText = make_sptr<Text>();
-    navEditButton->add(navEditText);
-    navEditText->_text = "Edit"sv;
-    navEditText->_font = defaultFont;
-    navEditButton->_padding = math::vec4 { 4.F, 2.F };
-    navEditButton->_margin = math::vec4 { 2.F, 6.F };
+                FocusEvent focusEvent { lck };
+                auto root { self.lock()->root() };
 
-    auto navWindowButton = make_sptr<Button>();
-    auto navWindowText = make_sptr<Text>();
-    navWindowButton->add(navWindowText);
-    navWindowText->_text = "Window"sv;
-    navWindowText->_font = defaultFont;
-    navWindowButton->_padding = math::vec4 { 4.F, 2.F };
-    navWindowButton->_margin = math::vec4 { 2.F, 6.F };
+                WindowManager::get()->dispatch(_STD static_pointer_cast<Window, Widget>(root), focusEvent);
+            }
+        });
 
-    auto navProjectButton = make_sptr<Button>();
-    auto navProjectText = make_sptr<Text>();
-    navProjectButton->add(navProjectText);
-    navProjectText->_text = "Project"sv;
-    navProjectText->_font = defaultFont;
-    navProjectButton->_padding = math::vec4 { 4.F, 2.F };
-    navProjectButton->_margin = math::vec4 { 2.F, 6.F };
+    nfmw->addChild(navSaveAllButton);
+    nfmw->addChild(navQuitButton);
 
-    auto navMoreButton = make_sptr<Button>();
-    auto navMoreText = make_sptr<Text>();
-    navMoreButton->add(navMoreText);
-    navMoreText->_text = "More"sv;
-    navMoreText->_font = defaultFont;
-    navMoreButton->_padding = math::vec4 { 4.F, 2.F };
-    navMoreButton->_margin = math::vec4 { 2.F, 6.F };
+    auto testStyle = BoundStyleSheet::make(navBtnStyle);
+    testStyle->color.unset();
+    testStyle->pushStyle({
+        Style::key_type::from("Button::Hover"),
+        [](cref<sptr<Widget>> self_) {
+            return self_->state().hover;
+        },
+        make_sptr<StyleSheet>(StyleSheet {
+            .color = { true, color::Dark::raisedColor }
+        })
+    });
 
-    auto navHelpButton = make_sptr<Button>();
-    auto navHelpText = make_sptr<Text>();
-    navHelpButton->add(navHelpText);
-    navHelpText->_text = "Help"sv;
-    navHelpText->_font = defaultFont;
-    navHelpButton->_padding = math::vec4 { 4.F, 2.F };
-    navHelpButton->_margin = math::vec4 { 2.F, 6.F };
+    auto navEditButton = make_sptr<Button>(_STD move(testStyle));
+    auto navEditText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
+    navEditButton->addChild(navEditText);
+    navEditText->setText("Edit");
+
+    auto navWindowButton = make_sptr<Button>(BoundStyleSheet::make(navBtnStyle));
+    auto navWindowText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
+    navWindowButton->addChild(navWindowText);
+    navWindowText->setText("Window");
+
+    auto navProjectButton = make_sptr<Button>(BoundStyleSheet::make(navBtnStyle));
+    auto navProjectText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
+    navProjectButton->addChild(navProjectText);
+    navProjectText->setText("Project");
+
+    auto navMoreButton = make_sptr<Button>(BoundStyleSheet::make(navBtnStyle));
+    auto navMoreText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
+    navMoreButton->addChild(navMoreText);
+    navMoreText->setText("More");
+
+    auto navHelpButton = make_sptr<Button>(BoundStyleSheet::make(navBtnStyle));
+    auto navHelpText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
+    navHelpButton->addChild(navHelpText);
+    navHelpText->setText("Help");
 
     //
-    navSection->_color = ember::engine::color(46.F, 50.F, 58.F, 255.F);
-
-    //
-    navSection->add(navBrandIcon);
-    navSection->add(navFileButton);
-    navSection->add(navEditButton);
-    navSection->add(navWindowButton);
-    navSection->add(navProjectButton);
-    navSection->add(navMoreButton);
-    navSection->add(navHelpButton);
+    navSection->addChild(navBrandIcon);
+    navSection->addChild(navFileButton);
+    navSection->addChild(navEditButton);
+    navSection->addChild(navWindowButton);
+    navSection->addChild(navProjectButton);
+    navSection->addChild(navMoreButton);
+    navSection->addChild(navHelpButton);
 
     /**
      *
      */
-    contentSection->setReflowType(ReflowType::eFlexRow);
-    contentSection->setReflowSpacing(ReflowSpacing::eSpaceEvenly);
-    contentSection->_extent.x = 1.F;
-    contentSection->_extent.y = 1.F;
+    auto lsbStyle = BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, .2F } },
+        .reflowSpacing = { true, ReflowSpacing::eSpaceBetween }
+    });
+    lsbStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
-    contentSection->_reflowShrink = 1.F;
+    auto leftSection = make_sptr<VBox>(_STD move(lsbStyle));
+    contentSection->addChild(leftSection);
 
-    auto leftSection = make_sptr<ReflowContainer>();
-    contentSection->add(leftSection);
+    auto msbStyle = BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, .8F } },
+        .reflowSpacing = { true, ReflowSpacing::eStart }
+    });
+    msbStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
-    auto mainSection = make_sptr<ReflowContainer>();
-    contentSection->add(mainSection);
+    auto mainSection = make_sptr<VBox>(_STD move(msbStyle));
+    contentSection->addChild(mainSection);
 
     #if false
     auto rightSection = make_sptr<ReflowContainer>();
@@ -265,32 +304,23 @@ ember::sptr<ember::engine::gfx::glow::ui::Panel> buildTestUI(cref<sptr<engine::g
     /**
      * Section (Left)
      */
-    leftSection->setReflowType(ReflowType::eFlexCol);
-    leftSection->setReflowSpacing(ReflowSpacing::eSpaceBetween);
-    leftSection->_extent.x = 0.25F;
-    leftSection->_extent.y = 1.F;
+    auto ltbsStyle = BoundStyleSheet::make(StyleSheet {
+        .height = { true, ReflowUnit { ReflowUnitType::eRelative, .5F } },
+        .reflowSpacing = { true, ReflowSpacing::eStart }
+    });
+    ltbsStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
-    auto leftTopSection = make_sptr<ReflowContainer>();
-    auto leftBottomSection = make_sptr<ReflowContainer>();
+    auto leftTopSection = make_sptr<VBox>(_STD move(ltbsStyle));
+    leftSection->addChild(leftTopSection);
 
-    leftSection->add(leftTopSection);
-    leftSection->add(leftBottomSection);
+    ltbsStyle = BoundStyleSheet::make(StyleSheet {
+        .height = { true, ReflowUnit { ReflowUnitType::eRelative, .5F } },
+        .reflowSpacing = { true, ReflowSpacing::eStart }
+    });
+    ltbsStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
-    /**
-     *
-     */
-    leftTopSection->setReflowType(ReflowType::eFlexCol);
-    leftTopSection->setReflowSpacing(ReflowSpacing::eStart);
-    leftTopSection->_extent.x = 1.F;
-    leftTopSection->_extent.y = 0.6F;
-
-    /**
-     *
-     */
-    leftBottomSection->setReflowType(ReflowType::eFlexCol);
-    leftBottomSection->setReflowSpacing(ReflowSpacing::eStart);
-    leftBottomSection->_extent.x = 1.F;
-    leftBottomSection->_extent.y = 0.4F;
+    auto leftBottomSection = make_sptr<VBox>(BoundStyleSheet::make(ltbsStyle));
+    leftSection->addChild(leftBottomSection);
 
     #pragma endregion
     #pragma region Main Section
@@ -298,215 +328,149 @@ ember::sptr<ember::engine::gfx::glow::ui::Panel> buildTestUI(cref<sptr<engine::g
     /**
      * Section (Main)
      */
-    mainSection->setReflowType(ReflowType::eFlexCol);
-    mainSection->setReflowSpacing(ReflowSpacing::eStart);
-    mainSection->_extent.x = 0.75F;
-    mainSection->_extent.y = 1.F;
+    auto mtsStyle = BoundStyleSheet::make(StyleSheet {
+        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F } },
+        .reflowSpacing = { true, ReflowSpacing::eStart }
+    });
+    mtsStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
-    auto mainTopSection = make_sptr<Panel>();
+    auto mainTopSection = make_sptr<Panel>(_STD move(mtsStyle));
+    mainTopSection->style()->height = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
+    mainTopSection->style()->maxHeight = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
+
     auto assetBrowsePanel = testAssetBrowser->makePanel();
+    assetBrowsePanel->style()->height = ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F };
+    assetBrowsePanel->style()->maxHeight = ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F };
 
-    mainSection->add(mainTopSection);
-
-    assetBrowsePanel->_extent.x = 1.F;
-    assetBrowsePanel->_extent.y = 1.F / 3.F;
-    mainSection->add(assetBrowsePanel);
-
-    /**
-     *
-     */
-    mainTopSection->setReflowType(ReflowType::eFlexCol);
-    mainTopSection->setReflowSpacing(ReflowSpacing::eStart);
-    mainTopSection->_extent.x = 1.F;
-    mainTopSection->_extent.y = 2.F / 3.F;
-
-    auto viewportCtrls = make_sptr<ReflowContainer>();
-    auto viewportWrapper = make_sptr<ReflowContainer>();
-
-    mainTopSection->add(viewportCtrls);
-    mainTopSection->add(viewportWrapper);
+    mainSection->addChild(mainTopSection);
+    mainSection->addChild(assetBrowsePanel);
 
     /**
      *
      */
-    viewportCtrls->setReflowType(ReflowType::eFlexRow);
-    viewportCtrls->setReflowSpacing(ReflowSpacing::eSpaceAround);
+    auto vctrlStyle = BoundStyleSheet::make(StyleSheet {
+        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
+        .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+        .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
+        .reflowShrink = { true, 0.F },
+    });
+    vctrlStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
-    viewportCtrls->_color = ember::engine::color(48.F, 48.F, 48.F, 255.F);
+    auto vwrapStyle = BoundStyleSheet::make(StyleSheet {
+        .reflowSpacing = { true, ReflowSpacing::eSpaceAround }
+    });
+    vwrapStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
-    viewportCtrls->_extent.x = 1.F;
-    viewportCtrls->_extent.y = 0.0F;
-    viewportCtrls->_minExtent.x = -1.F;
-    viewportCtrls->_minExtent.y = 24.F;
+    auto viewportCtrls = make_sptr<HBox>(_STD move(vctrlStyle));
+    auto viewportWrapper = make_sptr<HBox>(_STD move(vwrapStyle));
 
-    auto playButton = make_sptr<Button>();
-    auto pauseButton = make_sptr<Button>();
-    auto stopButton = make_sptr<Button>();
-
-    auto playText = make_sptr<Text>();
-    playText->_font = defaultFont;
-    playText->_text = "Play"sv;
-
-    auto pauseText = make_sptr<Text>();
-    pauseText->_font = defaultFont;
-    pauseText->_text = "Pause"sv;
-
-    auto stopText = make_sptr<Text>();
-    stopText->_font = defaultFont;
-    stopText->_text = "Stop"sv;
-
-    viewportCtrls->add(playButton);
-    viewportCtrls->add(pauseButton);
-    viewportCtrls->add(stopButton);
-
-    playButton->_color = ember::engine::color(94.F, 64.F, 64.F, 255.F);
-    playButton->_margin = math::vec4 { 4.F };
-    playButton->_padding = math::vec4 { 8.F, 4.F };
-    playButton->add(playText);
-
-    pauseButton->_color = ember::engine::color(64.F, 94.F, 64.F, 255.F);
-    pauseButton->_margin = math::vec4 { 4.F };
-    pauseButton->_padding = math::vec4 { 8.F, 4.F };
-    pauseButton->add(pauseText);
-
-    stopButton->_color = ember::engine::color(64.F, 64.F, 94.F, 255.F);
-    stopButton->_margin = math::vec4 { 4.F };
-    stopButton->_padding = math::vec4 { 8.F, 4.F };
-    stopButton->add(stopText);
+    mainTopSection->addChild(viewportCtrls);
+    mainTopSection->addChild(viewportWrapper);
 
     /**
      *
      */
-    viewportWrapper->setReflowType(ReflowType::eFlexRow);
-    viewportWrapper->setReflowSpacing(ReflowSpacing::eSpaceAround);
-    viewportWrapper->_extent.x = 1.F;
-    viewportWrapper->_extent.y = 1.F;
-    viewportWrapper->_reflowShrink = 1.F;
+    const StyleSheet cttxtStyle {
+        .color = { true, color::Dark::white },
+        .font = { true, defaultFont },
+        .textAlign = { true, TextAlign::eCenterMiddle }
+    };
 
-    auto viewport = make_sptr<Viewport>();
+    const StyleSheet ctbtnStyle {
+        .padding = { true, Padding { 8.F, 4.F } },
+        .margin = { true, Margin { 4.F } },
+        .color = { true, color::Dark::backgroundInnerField },
+    };
+
+    auto playButton = make_sptr<Button>(BoundStyleSheet::make(ctbtnStyle));
+    auto pauseButton = make_sptr<Button>(BoundStyleSheet::make(ctbtnStyle));
+    auto stopButton = make_sptr<Button>(BoundStyleSheet::make(ctbtnStyle));
+
+    auto playText = make_sptr<Text>(BoundStyleSheet::make(cttxtStyle));
+    playText->setText("Play");
+
+    auto pauseText = make_sptr<Text>(BoundStyleSheet::make(cttxtStyle));
+    pauseText->setText("Pause");
+
+    auto stopText = make_sptr<Text>(BoundStyleSheet::make(cttxtStyle));
+    stopText->setText("Stop");
+
+    viewportCtrls->addChild(playButton);
+    viewportCtrls->addChild(pauseButton);
+    viewportCtrls->addChild(stopButton);
+
+    playButton->addChild(playText);
+    pauseButton->addChild(pauseText);
+    stopButton->addChild(stopText);
+
+    /**
+     *
+     */
+    auto viewport = make_sptr<Viewport>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .color = { true, color::Dark::white }
+    }));
+
     auto viewportOverlay = make_sptr<Overlay>();
+    auto viewOverBox = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .wrap = { true, ReflowWrap::eNoWrap },
+        .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
+        .color = { true, color::Dark::transparent },
+    }));
 
-    viewportWrapper->add(viewport);
-    viewport->_extent.x = 1.F;
-    viewport->_extent.y = 1.F;
-
-    viewportWrapper->add(viewportOverlay);
-
-    viewportOverlay->_extent.x = 1.F;
-    viewportOverlay->_extent.y = 1.F;
-    viewportOverlay->_color = engine::color { 0.F, 0.F, 0.F, 0.F };
-
-    viewportOverlay->setReflowType(ReflowType::eFlexRow);
-    viewportOverlay->setReflowSpacing(ReflowSpacing::eSpaceBetween);
-    viewportOverlay->setReflowOverflow(ReflowOverflow::eDiscard);
-    viewportOverlay->setReflowWrapping(ReflowWrapping::eNoWrap);
+    viewportWrapper->addChild(viewport);
+    viewportWrapper->addChild(viewportOverlay);
+    viewportOverlay->setContent(viewOverBox);
 
     {
-        auto alignHelper = make_sptr<ReflowContainer>();
-        alignHelper->_extent.x = 0.F;
-        alignHelper->_extent.y = 0.F;
-        alignHelper->_color = engine::color { 0.F, 0.F, 0.F, 0.F };
-        alignHelper->setReflowType(ReflowType::eFlexRow);
-        alignHelper->setReflowSpacing(ReflowSpacing::eStart);
-        alignHelper->_reflowShrink = 1.F;
-
-        viewportOverlay->add(alignHelper);
+        auto alignHelper = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+            .reflowShrink = { true, 1.F },
+            .color = { true, color::Dark::transparent },
+        }));
+        viewOverBox->addChild(alignHelper);
 
         /**/
 
-        auto statsWrapper = make_sptr<ReflowContainer>();
-        statsWrapper->setReflowType(ReflowType::eFlexCol);
-        statsWrapper->setReflowSpacing(ReflowSpacing::eStart);
-        statsWrapper->setReflowOverflow(ReflowOverflow::eDiscard);
-        statsWrapper->setReflowWrapping(ReflowWrapping::eNoWrap);
-
-        statsWrapper->_extent.x = -1.F;
-        statsWrapper->_extent.y = -1.F;
-        statsWrapper->_maxExtent.x = 1.F;
-        statsWrapper->_maxExtent.y = 1.F;
-
-        statsWrapper->_padding = math::vec4 { 8.F, 16.F };
-
-        statsWrapper->_color = engine::color { 0.F, 0.F, 0.F, 0.2F };
-
-        viewportOverlay->add(statsWrapper);
+        auto statsWrapper = make_sptr<VBox>(BoundStyleSheet::make(StyleSheet {
+            .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .padding = { true, Padding { 8.F, 16.F } },
+            .color = { true, engine::color { 0.F, 0.F, 0.F, 0.2F } },
+        }));
+        viewOverBox->addChild(statsWrapper);
 
         /**/
 
-        auto sceneName = make_sptr<Text>();
-        sceneName->_font = defaultFont;
-        sceneName->_text = "Test Scene"sv;
-        sceneName->_fontSize = 16.F;
-        sceneName->_color = editor::ui::color::Dark::white;
-        sceneName->_textAlign = 0b0001'0100ui8;
-        sceneName->_minExtent.x = 156.F;
+        const StyleSheet stxtStyle {
+            .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
+            .color = { true, color::Dark::white },
+            .font = { true, defaultFont },
+            .fontSize = { true, 16.F },
+            .textAlign = { true, TextAlign::eRightTop }
+        };
 
-        statsWrapper->add(sceneName);
+        auto sceneName = make_sptr<Text>(BoundStyleSheet::make(stxtStyle));
+        sceneName->setText("Test Scene");
 
-        auto sceneCalcTime = make_sptr<Text>();
-        sceneCalcTime->_font = defaultFont;
-        sceneCalcTime->_text = "15.42 ms"sv;
-        sceneCalcTime->_fontSize = 16.F;
-        sceneCalcTime->_color = editor::ui::color::Dark::white;
-        sceneCalcTime->_textAlign = 0b0001'0100ui8;
-        sceneCalcTime->_minExtent.x = 156.F;
+        statsWrapper->addChild(sceneName);
+
+        auto sceneCalcTime = make_sptr<Text>(BoundStyleSheet::make(stxtStyle));
+        sceneCalcTime->setText("15.42 ms");
 
         testFrameTime = sceneCalcTime;
-        statsWrapper->add(sceneCalcTime);
+        statsWrapper->addChild(sceneCalcTime);
 
-        auto sceneFrames = make_sptr<Text>();
-        sceneFrames->_font = defaultFont;
-        sceneFrames->_text = "63 FPS"sv;
-        sceneFrames->_fontSize = 16.F;
-        sceneFrames->_color = editor::ui::color::Dark::white;
-        sceneFrames->_textAlign = 0b0001'0100ui8;
-        sceneFrames->_minExtent.x = 156.F;
+        auto sceneFrames = make_sptr<Text>(BoundStyleSheet::make(stxtStyle));
+        sceneFrames->setText("63 FPS");
 
         testFrameDisplay = sceneFrames;
-        statsWrapper->add(sceneFrames);
+        statsWrapper->addChild(sceneFrames);
     }
 
     #pragma endregion
-    #pragma region Right Section
-    #if false
-
-    /**
-     * Section (Right)
-     */
-    rightSection->setReflowType(ReflowType::eFlexCol);
-    rightSection->setReflowSpacing(ReflowSpacing::eSpaceBetween);
-    rightSection->_extent.x = 0.2F;
-    rightSection->_extent.y = 1.F;
-
-    auto rightTopSection = make_sptr<ReflowContainer>();
-    auto rightBottomSection = make_sptr<ReflowContainer>();
-
-    rightSection->add(rightTopSection);
-    rightSection->add(rightBottomSection);
-
-    /**
-     *
-     */
-    rightTopSection->setReflowType(ReflowType::eFlexCol);
-    rightTopSection->setReflowSpacing(ReflowSpacing::eStart);
-    rightTopSection->_extent.x = 1.F;
-    rightTopSection->_extent.y = 0.6F;
-
-    /**
-     *
-     */
-    rightBottomSection->setReflowType(ReflowType::eFlexCol);
-    rightBottomSection->setReflowSpacing(ReflowSpacing::eStart);
-    rightBottomSection->_extent.x = 1.F;
-    rightBottomSection->_extent.y = 0.4F;
-
-    #endif
-    #pragma endregion
-
-    /**/
-    auto* vi = new InputVector<InputFloat, InputInt, InputSelect<string>, InputSlider<float>, InputText>();
-    //auto [floatIn, intIn, select, slide, text] = vi->value();
-    delete vi;
 
     /**
      *
@@ -514,20 +478,26 @@ ember::sptr<ember::engine::gfx::glow::ui::Panel> buildTestUI(cref<sptr<engine::g
     constexpr math::vec2 available { 1280.F, 720.F };
     constexpr math::vec2 shift { 0.F };
 
-    root->_extent = math::vec2 { 1.F };
-
-    UIContext ctx {
+    FlowContext ctx {
         math::fExtent2D { 1280.F, 720.F, 0.F, 0.F },
         math::fExtent2D { 1280.F, 720.F, 0.F, 0.F },
     };
 
-    root->flow(ctx, available);
+    StyleKeyStack stack {};
+    root->flow(ctx, available, stack);
     root->shift(ctx, shift);
 
-    return root;
+    /**/
+
+    auto window = make_sptr<Window>();
+    window->setContent(root);
+
+    /**/
+
+    return window;
 }
 
-ember::ptr<ember::engine::gfx::glow::ui::Font> getDefaultFont() {
+ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
 
     using font_default_type = game::assets::font::Consolas24Latin1;
 
