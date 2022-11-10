@@ -52,9 +52,11 @@ void Style::setup() {
 
     style->width = ReflowUnit { ReflowUnitType::eRelative, 1.F };
     style->height = ReflowUnit { ReflowUnitType::eRelative, 1.F };
+    style->maxHeight = ReflowUnit { ReflowUnitType::eRelative, 1.F };
 
     style->padding = Padding { 6.F };
 
+    style->reflowSpacing = ReflowSpacing::eStart;
     style->reflowShrink = 1.F;
     style->reflowGrow = 1.F;
 
@@ -217,6 +219,22 @@ void Style::setup() {
     });
 
     _styles.insert_or_assign(Style::BreadcrumbKey, _STD move(style));
+
+    /* Nav Bar */
+
+    style = make_sptr<StyleSheet>(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+        .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .wrap = { true, ReflowWrap::eNoWrap },
+        .padding = { true, Padding { 0.F } },
+        .reflowSpacing { true, ReflowSpacing::eSpaceBetween },
+        .reflowShrink { true, 0.F },
+        .color = { true, color::Dark::backgroundDefault }
+    });
+
+    _styles.insert_or_assign(Style::NavBarKey, _STD move(style));
 
 }
 
