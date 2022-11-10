@@ -15,6 +15,10 @@ Text::Text(mref<sptr<BoundStyleSheet>> style_) :
 
 Text::~Text() = default;
 
+ref<BoundStyleSheet> Text::style() noexcept {
+    return *_style;
+}
+
 cref<string> Text::getText() const noexcept {
     return _text;
 }

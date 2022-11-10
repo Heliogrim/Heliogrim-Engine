@@ -21,6 +21,9 @@ namespace ember::engine::reflow {
         string _text;
 
     public:
+        [[nodiscard]] ref<BoundStyleSheet> style() noexcept;
+
+    public:
         [[nodiscard]] cref<string> getText() const noexcept;
 
         void setText(cref<string> text_);

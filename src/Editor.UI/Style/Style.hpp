@@ -65,6 +65,7 @@ namespace ember::editor::ui {
         /**/
 
         inline static const key_type BreadcrumbKey { key_type::from("Breadcrumb") };
+        inline static const key_type NavBarKey { key_type::from("NavBar") };
     };
 
 }

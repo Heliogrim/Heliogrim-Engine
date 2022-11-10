@@ -6,6 +6,7 @@
 #include <Engine.Common/String.hpp>
 
 #include "Editor.UI/Color/Dark.hpp"
+#include "Editor.UI/Panel/SceneHierarchyPanel.hpp"
 #include "Editor.UI/Style/Style.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Reflow/Widget/Button.hpp"
@@ -304,17 +305,17 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
     /**
      * Section (Left)
      */
+    const auto shp { SceneHierarchyPanel::make() };
+    leftSection->addChild(shp);
+
+    shp->style()->height = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
+    shp->style()->maxHeight = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
+
+    /**/
+
     auto ltbsStyle = BoundStyleSheet::make(StyleSheet {
-        .height = { true, ReflowUnit { ReflowUnitType::eRelative, .5F } },
-        .reflowSpacing = { true, ReflowSpacing::eStart }
-    });
-    ltbsStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
-
-    auto leftTopSection = make_sptr<VBox>(_STD move(ltbsStyle));
-    leftSection->addChild(leftTopSection);
-
-    ltbsStyle = BoundStyleSheet::make(StyleSheet {
-        .height = { true, ReflowUnit { ReflowUnitType::eRelative, .5F } },
+        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F } },
+        .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F } },
         .reflowSpacing = { true, ReflowSpacing::eStart }
     });
     ltbsStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
