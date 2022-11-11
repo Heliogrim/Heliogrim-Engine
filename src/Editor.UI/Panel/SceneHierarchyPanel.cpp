@@ -19,7 +19,7 @@ using namespace ember;
 SceneHierarchyPanel::SceneHierarchyPanel() :
     Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))) {}
 
-void configureNav(cref<sptr<HBox>> navBar_) {
+static void configureNav(cref<sptr<HBox>> navBar_) {
 
     const auto title { make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))) };
     title->style().margin = Margin { 0.F, 4.F };
@@ -55,13 +55,28 @@ void configureNav(cref<sptr<HBox>> navBar_) {
 
 void configureHeader(cref<sptr<VBox>> header_) {
 
-    const auto upper { make_sptr<HBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))) };
-    upper->style()->height = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
-    upper->style()->maxHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
+    const auto row { make_sptr<HBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))) };
+    row->style()->height = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
+    row->style()->maxHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
 
-    const auto lower { make_sptr<HBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))) };
-    lower->style()->height = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
-    lower->style()->maxHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
+    /**/
+
+    const auto search {
+        make_sptr<InputText>(BoundStyleSheet::make(StyleSheet {
+            .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
+            .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
+            .padding { true, Padding { 4.F, 2.F } },
+            .margin { true, Margin { 4.F, 2.F } },
+            .borderRadius { true, BorderRadius { 4.F } },
+            .color { true, color::Dark::backgroundInnerField }
+        }), BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey)))
+    };
+
+    search->setPlaceholder(R"(Search Hierarchy...)");
+
+    row->addChild(search);
 
     /**/
 
@@ -87,32 +102,13 @@ void configureHeader(cref<sptr<VBox>> header_) {
     homeTxt->setText(R"(H)");
     homeBtn->addChild(homeTxt);
 
-    upper->addChild(homeBtn);
-
-    /**/
-
-    const auto search {
-        make_sptr<InputText>(BoundStyleSheet::make(StyleSheet {
-            .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-            .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-            .padding { true, Padding { 4.F, 2.F } },
-            .margin { true, Margin { 4.F, 2.F } },
-            .borderRadius { true, BorderRadius { 4.F } },
-            .color { true, color::Dark::backgroundInnerField }
-        }), BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey)))
-    };
-
-    search->setPlaceholder(R"(Search Hierarchy...)");
-
-    lower->addChild(search);
+    row->addChild(homeBtn);
 }
 
 sptr<Panel> SceneHierarchyPanel::make() {
 
     auto panel { _STD shared_ptr<SceneHierarchyPanel>(new SceneHierarchyPanel()) };
-    panel->_style->minHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F + 20.F + 20.F };
+    panel->_style->minHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F + 20.F };
 
     /**/
 
@@ -124,7 +120,7 @@ sptr<Panel> SceneHierarchyPanel::make() {
     /**/
 
     auto header { make_sptr<VBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::NavBarKey))) };
-    header->style()->minHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F + 20.F };
+    header->style()->minHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
     panel->addChild(header);
 
     configureHeader(header);

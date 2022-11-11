@@ -13,6 +13,7 @@
 #include <Engine.Input/MouseMoveEvent.hpp>
 #include <Engine.Input/MouseWheelEvent.hpp>
 #include "Engine.Input/DragDropEvent.hpp"
+#include "Engine.Input/KeyboardEvent.hpp"
 #endif
 
 #include "Win32Window.hpp"
@@ -101,16 +102,6 @@ void Session::setup() {
                 while (SDL_PollEvent(&event)) {
                     // TODO: Replace
                     switch (event.type) {
-                        case SDL_EventType::SDL_KEYDOWN: {
-                            if (event.key.keysym.sym != SDLK_ESCAPE) {
-                                break;
-                            }
-
-                            // Warning: We need to call stop via scheduler, cause this thread will deadlock itself (recursive) due to window ownership and close behavior
-                            // Warning: Undefined behavior if called multiple times
-                            Scheduler::get().exec(scheduler::task::make_task(Session::stop));
-                            break;
-                        }
                         case SDL_EventType::SDL_QUIT: {
                             // Warning: We need to call stop via scheduler, cause this thread will deadlock itself (recursive) due to window ownership and close behavior
                             // Warning: Undefined behavior if called multiple times
@@ -138,6 +129,21 @@ void Session::setup() {
                                 Scheduler::get().exec(_STD move(resizeTask));
                                 break;
                             }
+                        }
+                        case SDL_EventType::SDL_KEYDOWN: {
+                            // Warning: Temporary solution
+
+                            if (event.key.keysym.sym == SDLK_UNKNOWN) {
+                                break;
+                            }
+
+                            const input::event::KeyboardEvent ke {
+                                static_cast<char>(event.key.keysym.sym),
+                                true,
+                                event.key.keysym.mod
+                            };
+                            emitter().emit(ke);
+                            break;
                         }
                         case SDL_EventType::SDL_MOUSEMOTION: {
                             // Warning: Temporary solution

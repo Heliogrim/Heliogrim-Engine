@@ -18,7 +18,7 @@ using namespace ember;
 ProjectViewportPanel::ProjectViewportPanel() :
     Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::DefaultKey))) {}
 
-void configureCtrls(cref<sptr<HBox>> parent_) {
+static void configureCtrls(cref<sptr<HBox>> parent_) {
 
     auto playButton = make_sptr<Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TextButtonKey)));
     auto pauseButton = make_sptr<Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TextButtonKey)));
@@ -56,7 +56,7 @@ void configureCtrls(cref<sptr<HBox>> parent_) {
     parent_->addChild(stopButton);
 }
 
-void configureViewport(cref<sptr<HBox>> parent_) {
+static void configureViewport(cref<sptr<HBox>> parent_) {
     auto viewport = make_sptr<Viewport>(BoundStyleSheet::make(StyleSheet {
         .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
         .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },

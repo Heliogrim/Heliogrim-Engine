@@ -271,6 +271,10 @@ void UiMainStageNode::before(const non_owning_rptr<HORenderPass> renderPass_,
             _STD unique_lock<_STD mutex> lck { uiTestMtx };
             reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
         });
+        session->emitter().on<input::event::KeyboardEvent>([](cref<input::event::KeyboardEvent> event_) {
+            _STD unique_lock<_STD mutex> lck { uiTestMtx };
+            reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
+        });
     }
     #endif
 

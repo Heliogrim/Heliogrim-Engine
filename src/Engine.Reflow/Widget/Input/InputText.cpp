@@ -23,7 +23,7 @@ void InputText::setPlaceholder(cref<string> placeholder_) {
     }
 }
 
-Input<std::string>::input_type InputText::value() const noexcept {
+InputText::input_type InputText::value() const noexcept {
     return _value;
 }
 
@@ -54,10 +54,19 @@ math::vec2 InputText::screenOffset() const noexcept {
 }
 
 EventResponse InputText::onFocus(cref<FocusEvent> event_) {
+    _text->setText(_value);
+
+    _wrapper->state().focus = true;
     return Input<std::string>::onFocus(event_);
 }
 
 EventResponse InputText::onBlur(cref<FocusEvent> event_) {
+
+    if (_value.empty()) {
+        _text->setText(_placeholder);
+    }
+
+    _wrapper->state().focus = false;
     return Input<std::string>::onBlur(event_);
 }
 
@@ -68,21 +77,41 @@ EventResponse InputText::onKeyDown(cref<KeyboardEvent> event_) {
     }
 
     if (event_._key == /* Backspace */'\b') {
-        // TODO:
-
-    } else if (event_._key == /* Return */'\r') {
         if (not _value.empty()) {
             _value = _value.substr(0, _value.size() - 1);
         }
+        // TODO:
+
+    } else if (event_._key == /* Return */'\r') {
+        // TODO:
 
     } else if (event_._key == /* Escape */'\x1B') {
         // TODO:
 
+    } else if (event_._key < 0x20 || event_._key > 0x7E) {
+        return EventResponse::eConsumed;
+
+    } else {
+
+        if (event_._modifier & 0x40 || event_._modifier & 0x80 /* Ctrl + <> */) {
+            // TODO:
+
+        } else if (event_._modifier & 0x1 || event_._modifier & 0x2 /* Shift L/R */) {
+
+            char code { event_._key };
+            if (code >= 0x61 && code < 0x7A) {
+                code -= 32;
+            }
+
+            _value.append(&code, 1);
+
+        } else {
+            _value.append(&event_._key, 1);
+        }
+
     }
 
-    _value.append(&event_._key, 1);
     _text->setText(_value);
-
     return EventResponse::eConsumed;
 }
 

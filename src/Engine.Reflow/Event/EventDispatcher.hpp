@@ -41,6 +41,34 @@ namespace ember::engine::reflow {
         }
 
         template <>
+        EventResponse dispatch(cref<sptr<Window>> window_, cref<KeyboardEvent> event_) {
+
+            const auto& path { window_->getFocusPath() };
+            EventResponse state { EventResponse::eUnhandled };
+
+            for (
+                auto it { path.rbegin() };
+                it != path.rend() && state != EventResponse::eConsumed;
+                ++it
+            ) {
+
+                if (it->expired()) {
+                    continue;
+                }
+
+                const auto lck { it->lock() };
+                if (not lck->state().focus) {
+                    continue;
+                }
+
+                const auto result { event_._down ? lck->onKeyDown(event_) : lck->onKeyUp(event_) };
+                state = MAX(state, result);
+            }
+
+            return state;
+        }
+
+        template <>
         EventResponse dispatch(cref<sptr<Window>> window_, cref<MouseEvent> event_) {
 
             const math::vec2 point { static_cast<float>(event_._pointer.x), static_cast<float>(event_._pointer.y) };
@@ -74,18 +102,20 @@ namespace ember::engine::reflow {
 
             /**/
 
+            if (not backlog.empty()) {
+                // Warning: Temporary Solution
+                if (event_._down && not backlog.top()->state().focus) {
+                    const FocusEvent focusEvent { backlog.top() };
+                    dispatch(window_, focusEvent);
+                }
+            }
+
             while (not backlog.empty() && state != EventResponse::eConsumed) {
 
                 const auto& next { backlog.top() };
 
                 const auto result = (event_._down) ? next->onMouseButtonDown(event_) : next->onMouseButtonUp(event_);
                 state = MAX(state, result);
-
-                // Warning: Temporary Solution
-                if (state == EventResponse::eUnhandled && event_._down && not next->state().focus) {
-                    FocusEvent focusEvent { next };
-                    dispatch(window_, focusEvent);
-                }
 
                 backlog.pop();
             }
@@ -250,13 +280,10 @@ namespace ember::engine::reflow {
             backlog.push(event_._target);
 
             u64 size { 0ui64 };
-            while (size != backlog.size() && state != EventResponse::eConsumed) {
+            while (size != backlog.size()) {
 
                 size = backlog.size();
                 const auto& next { backlog.top() };
-
-                const auto result = next->onFocus(event_);
-                state = MAX(state, result);
 
                 if (next->hasParent()) {
                     backlog.push(next->parent());
@@ -276,7 +303,7 @@ namespace ember::engine::reflow {
 
             if (changeIt != endIt) {
 
-                for (auto it { window_->getFocusPath().end() }; it != changeIt;) {
+                for (auto it { endIt }; it != changeIt;) {
 
                     if ((--it)->expired()) {
                         continue;
@@ -285,16 +312,27 @@ namespace ember::engine::reflow {
                     it->lock()->onBlur(event_);
                 }
 
-                window_->_focus.erase(changeIt, window_->_focus.end());
+                window_->_focus.erase(changeIt, endIt);
             }
 
             /**/
 
             window_->_focus.reserve(backlog.size());
+            const auto persistSize { window_->_focus.size() };
 
             while (not backlog.empty()) {
-                window_->_focus.push_back(backlog.top());
+
+                const auto& next { backlog.top() };
+                window_->_focus.push_back(next);
                 backlog.pop();
+            }
+
+            /**/
+
+            const auto persistIt { window_->_focus.begin() + MIN(persistSize - 1, 0) };
+            for (auto it { window_->_focus.end() }; it != persistIt && state != EventResponse::eConsumed;) {
+                const auto result = (--it)->lock()->onFocus(event_);
+                state = MAX(state, result);
             }
 
             return state;

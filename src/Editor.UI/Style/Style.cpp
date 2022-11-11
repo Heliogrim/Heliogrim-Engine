@@ -228,7 +228,7 @@ void Style::setup() {
         .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
         .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
         .wrap = { true, ReflowWrap::eNoWrap },
-        .padding = { true, Padding { 0.F } },
+        .padding = { true, Padding { 4.F, 0.F } },
         .reflowSpacing { true, ReflowSpacing::eSpaceBetween },
         .reflowShrink { true, 0.F },
         .color = { true, color::Dark::backgroundDefault }

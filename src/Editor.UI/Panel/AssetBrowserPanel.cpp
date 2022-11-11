@@ -8,6 +8,7 @@
 #include <Engine.Reflow/Widget/Scroll/VScrollBox.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Reflow/Style/BoundStyleSheet.hpp>
+#include <Engine.Reflow/Style/StyleCondition.hpp>
 
 #include "Editor.UI/Color/Dark.hpp"
 #include "Editor.UI/Widget/AssetBrowserItem.hpp"
@@ -347,7 +348,7 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
     return EventResponse::eConsumed;
 }
 
-void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<HBox>> parent_) {
+static void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<HBox>> parent_) {
 
     auto* font { getDefaultFont() };
 
@@ -376,22 +377,44 @@ void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<HBox>> parent_)
 
     /**/
 
-    auto searchbar = make_sptr<InputText>(BoundStyleSheet::make(StyleSheet {
+    auto searchBoxStyle = BoundStyleSheet::make(StyleSheet {
         .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 212.F } },
-        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 212.F } },
         .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
         .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
         .padding = { true, Padding { 4.F, 0.F } },
         .margin = { true, Margin { 4.F, 2.F } },
         .borderRadius = { true, BorderRadius { 4.F } },
-        .color = { true, color::Dark::backgroundInnerField },
-    }), BoundStyleSheet::make(StyleSheet {
+        .color = { false, color::Dark::backgroundInnerField },
+    });
+
+    searchBoxStyle->pushStyle({
+        Style::key_type::from("SearchBar::Focused"),
+        style::isFocused,
+        make_sptr<StyleSheet>(StyleSheet {
+            .color = { true, color::Dark::backgroundInnerFieldDarken }
+        })
+    });
+
+    auto searchTextStyle = BoundStyleSheet::make(StyleSheet {
+        .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 204.F } },
+        .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 204.F } },
         .margin = { true, Margin { 0.F, 2.F } },
-        .color = { true, color::Dark::grey },
+        .color = { false, color::Dark::grey },
         .font = { true, font },
         .fontSize = { true, 12.F },
-        .textAlign = { true, TextAlign::eLeftMiddle }
-    }));
+        .textAlign = { true, TextAlign::eLeftMiddle },
+        .textEllipse = { true, 1ui32 },
+    });
+    searchTextStyle->pushStyle({
+        Style::key_type::from("SearchBar::Focused"),
+        style::isNever,
+        make_sptr<StyleSheet>(StyleSheet {
+            .color = { true, color::Dark::white }
+        })
+    });
+
+    auto searchbar = make_sptr<InputText>(_STD move(searchBoxStyle), _STD move(searchTextStyle));
     searchbar->setPlaceholder("Search...");
 
     /*

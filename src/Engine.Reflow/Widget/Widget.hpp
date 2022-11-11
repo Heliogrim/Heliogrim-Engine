@@ -40,6 +40,8 @@ namespace ember::engine::reflow {
     public:
         [[nodiscard]] cref<WidgetState> state() const noexcept;
 
+        [[nodiscard]] ref<WidgetState> state() noexcept;
+
         /**
          * Abstract System Clocking
          */
@@ -126,8 +128,6 @@ namespace ember::engine::reflow {
          * @param styleStack_ The key stack to support cascaded styles
          */
         virtual void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, _Inout_ ref<StyleKeyStack> styleStack_) = 0;
-
-        // virtual math::vec2 reflow(cref<math::vec2> space_, cref<math::vec2> reflow_);
 
         /**
          * Forward offset control ui elements

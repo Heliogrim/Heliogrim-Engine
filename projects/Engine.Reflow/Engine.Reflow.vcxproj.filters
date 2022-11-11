@@ -73,6 +73,9 @@
     <Filter Include="Quelldateien\Layout">
       <UniqueIdentifier>{82ba03bd-d260-4e45-8e6f-f4463d93d3e5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Widget\Tree">
+      <UniqueIdentifier>{a909cb9c-29d7-40d6-938d-4851d1b7a4a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Reflow\Window\WindowManager.hpp">
@@ -267,6 +270,18 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Layout\Constraints.hpp">
       <Filter>Headerdateien\Layout</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\Tree\TreeView.hpp">
+      <Filter>Headerdateien\Widget\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputIntegral.hpp">
+      <Filter>Headerdateien\Widget\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputFloat.hpp">
+      <Filter>Headerdateien\Widget\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputNumber.hpp">
+      <Filter>Headerdateien\Widget\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflow\Window\WindowManager.cpp">
@@ -358,6 +373,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Reflow\Layout\Constraints.cpp">
       <Filter>Quelldateien\Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\Input.cpp">
+      <Filter>Quelldateien\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\Input\InputIntegral.cpp">
+      <Filter>Quelldateien\Widget\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\Input\InputFloat.cpp">
+      <Filter>Quelldateien\Widget\Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
