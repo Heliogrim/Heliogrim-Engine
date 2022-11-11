@@ -44,5 +44,8 @@
     <ClCompile Include="..\..\src\Engine.Input\DragDropEvent.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Input\KeyboardEvent.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

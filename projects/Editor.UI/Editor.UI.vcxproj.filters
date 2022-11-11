@@ -58,6 +58,9 @@
     <Filter Include="Quelldateien\Style">
       <UniqueIdentifier>{46e2f6d0-666a-4acf-bae8-4f9265038837}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Modules\ObjectEditor">
+      <UniqueIdentifier>{d0e0e63e-b965-4753-a308-f74f28324308}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.UI\Panel\SceneHierarchyPanel.hpp">
@@ -96,6 +99,15 @@
     <ClInclude Include="..\..\src\Editor.UI\Widget\Breadcrumb.hpp">
       <Filter>Headerdateien\Widget</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Panel\ObjectEditorPanel.hpp">
+      <Filter>Headerdateien\Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Modules\ObjectEditor.hpp">
+      <Filter>Headerdateien\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Modules\ObjectEditor\ObjectValueMapper.hpp">
+      <Filter>Headerdateien\Modules\ObjectEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.cpp">
@@ -130,6 +142,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.UI\Widget\Breadcrumb.cpp">
       <Filter>Quelldateien\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Panel\ObjectEditorPanel.cpp">
+      <Filter>Quelldateien\Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Modules\ObjectEditor.cpp">
+      <Filter>Quelldateien\Modules</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

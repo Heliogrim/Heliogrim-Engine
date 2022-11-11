@@ -12,6 +12,10 @@ cref<WidgetState> Widget::state() const noexcept {
     return _state;
 }
 
+ref<WidgetState> Widget::state() noexcept {
+    return _state;
+}
+
 bool Widget::shouldTick() const noexcept {
     return false;
 }

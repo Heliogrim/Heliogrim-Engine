@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Input\DragDropEvent.cpp" />
+    <ClCompile Include="..\..\src\Engine.Input\KeyboardEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Input\MouseButtonEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Input\MouseMoveEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Input\MouseWheelEvent.cpp" />

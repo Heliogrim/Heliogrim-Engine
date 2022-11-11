@@ -141,6 +141,9 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Image.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\Form.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputFloat.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputIntegral.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputNumber.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputText.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Menu.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Overlay.hpp" />
@@ -148,6 +151,7 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Popup.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Scroll\VScrollBox.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Text.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\Tree\TreeView.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\VBox.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Viewport.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Widget.hpp" />
@@ -176,7 +180,10 @@
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Dialog.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\HBox.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Image.cpp" />
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\Input.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Input\Form.cpp" />
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\Input\InputFloat.cpp" />
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\Input\InputIntegral.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Input\InputText.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Menu.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Overlay.cpp" />

@@ -7,6 +7,7 @@
 
 #include "Editor.UI/Color/Dark.hpp"
 #include "Editor.UI/Panel/SceneHierarchyPanel.hpp"
+#include "Editor.UI/Panel/ObjectEditorPanel.hpp"
 #include "Editor.UI/Style/Style.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Reflow/Widget/Button.hpp"
@@ -308,20 +309,18 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
     const auto shp { SceneHierarchyPanel::make() };
     leftSection->addChild(shp);
 
-    shp->style()->height = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
-    shp->style()->maxHeight = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
+    shp->style()->minHeight = ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F };
+    shp->style()->height = ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F };
+    shp->style()->maxHeight = ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F };
 
     /**/
 
-    auto ltbsStyle = BoundStyleSheet::make(StyleSheet {
-        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F } },
-        .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F } },
-        .reflowSpacing = { true, ReflowSpacing::eStart }
-    });
-    ltbsStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
+    const auto oep { ObjectEditorPanel::make(nullptr) };
+    leftSection->addChild(oep);
 
-    auto leftBottomSection = make_sptr<VBox>(BoundStyleSheet::make(ltbsStyle));
-    leftSection->addChild(leftBottomSection);
+    oep->style()->minHeight = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
+    oep->style()->height = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
+    oep->style()->maxHeight = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
 
     #pragma endregion
     #pragma region Main Section
