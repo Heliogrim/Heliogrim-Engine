@@ -50,6 +50,9 @@ namespace ember::engine::reflow {
         void updateValueAndValidity(const bool propagate_, const bool emit_) override;
 
     public:
+        _STD function<void(input_type)> _callback = nullptr;
+
+    public:
         [[nodiscard]] input_type value() const noexcept override;
 
     public:

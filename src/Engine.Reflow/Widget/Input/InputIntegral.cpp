@@ -46,6 +46,10 @@ void InputIntegral::updateValueAndValidity(const bool propagate_, const bool emi
 }
 
 Input<s64>::input_type InputIntegral::value() const noexcept {
+    if (_value.empty()) {
+        return 0;
+    }
+
     return _STD stoll(_value);
 }
 
@@ -105,7 +109,7 @@ EventResponse InputIntegral::onKeyDown(cref<KeyboardEvent> event_) {
             return EventResponse::eConsumed;
         }
 
-        _value.append(event_._key, 1);
+        _value.append(&event_._key, 1);
 
     } else if (event_._key == /* Backspace */'\b') {
 
@@ -118,9 +122,10 @@ EventResponse InputIntegral::onKeyDown(cref<KeyboardEvent> event_) {
     } else if (event_._key == /* Return */'\r' || event_._key == /* Escape */'\x1B') {
 
         const auto window { root() };
-        const FocusEvent focusEvent { nullptr };
+        const FocusEvent focusEvent { window };
 
         WindowManager::get()->dispatch<FocusEvent>(_STD static_pointer_cast<Window, Widget>(window), focusEvent);
+        return EventResponse::eConsumed;
     }
 
     updateValueAndValidity(true, true);

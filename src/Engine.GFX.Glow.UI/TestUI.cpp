@@ -42,6 +42,10 @@
 #include "Editor.UI/Panel/AssetBrowserPanel.hpp"
 #include "Editor.UI/Modules/AssetBrowser.hpp"
 #include "Editor.UI/Helper/AssetBrowserHelper.hpp"
+#include "Editor.UI/Modules/SceneHierarchy.hpp"
+#include "Editor.UI/Modules/SceneHierarchy/HierarchyGenerator.hpp"
+#include "Editor.UI/Modules/SceneHierarchy/HierarchyResolver.hpp"
+#include "Editor.UI/Modules/SceneHierarchy/SceneViewEntry.hpp"
 #endif
 
 using namespace ember::editor::ui;
@@ -54,13 +58,28 @@ sptr<ember::engine::gfx::Texture> testTexture {};
 wptr<ember::engine::reflow::Widget> testFrameDisplay {};
 wptr<ember::engine::reflow::Widget> testFrameTime {};
 
-sptr<editor::ui::AssetBrowser> testAssetBrowser {};
+sptr<editor::ui::AssetBrowser> testAssetBrowser { nullptr };
+sptr<editor::ui::ObjectEditor> testObjectEditor { nullptr };
+sptr<editor::ui::SceneHierarchy> testHierarchy { nullptr };
+
+ember::ptr<ember::Actor> editorSelectedTarget { nullptr };
+
+void storeActorMapping();
+
+void storeHierarchyMeta();
+
+void loadActorMappingExp(cref<sptr<ObjectEditorPanel>> panel_);
 
 void testLoad(cref<sptr<engine::gfx::Device>> device_) {
 
     if (!testAssetBrowser) {
         editor::ui::AssetBrowserHelper::make();
         testAssetBrowser = make_sptr<editor::ui::AssetBrowser>();
+        testObjectEditor = make_sptr<editor::ui::ObjectEditor>();
+        testHierarchy = make_sptr<editor::ui::SceneHierarchy>();
+
+        storeActorMapping();
+        storeHierarchyMeta();
 
         if (!Style::get()) {
             Style::make();
@@ -306,7 +325,7 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
     /**
      * Section (Left)
      */
-    const auto shp { SceneHierarchyPanel::make() };
+    const auto shp { testHierarchy->makePanel() };
     leftSection->addChild(shp);
 
     shp->style()->minHeight = ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F };
@@ -315,7 +334,7 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
 
     /**/
 
-    const auto oep { ObjectEditorPanel::make(nullptr) };
+    const auto oep { testObjectEditor->makePanel() };
     leftSection->addChild(oep);
 
     oep->style()->minHeight = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
@@ -524,4 +543,64 @@ ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
     delete res;
 
     return data;
+}
+
+/**/
+
+void storeActorMapping() {
+    testObjectEditor->storeObjectMapper("ember::Actor"_typeId, make_uptr<ObjectValueMapper<::ember::Actor>>());
+}
+
+void loadActorMappingExp(cref<sptr<ObjectEditorPanel>> panel_) {
+
+    if (not editorSelectedTarget) {
+        __debugbreak();
+        return;
+    }
+
+    panel_->setEditorTarget("ember::Actor"_typeId, editorSelectedTarget);
+
+}
+
+void storeEditorSelectedTarget(const ember::ptr<ember::Actor> target_) {
+
+    if (!testObjectEditor) {
+        return;
+    }
+
+    const auto& panels { testObjectEditor->_panels };
+    if (panels.empty()) {
+        return;
+    }
+
+    const auto panel { panels.front().lock() };
+    editorSelectedTarget = target_;
+    loadActorMappingExp(panel);
+}
+
+/**/
+
+void storeHierarchyMeta() {
+
+    testHierarchy->storeGenerator("sptr<SceneViewEntry>"_typeId, make_uptr<HierarchyGenerator<sptr<SceneViewEntry>>>());
+    testHierarchy->storeResolver("sptr<SceneViewEntry>"_typeId, make_uptr<HierarchyResolver<sptr<SceneViewEntry>>>());
+}
+
+void storeHierarchyActor(const ember::ptr<ember::Actor> target_) {
+
+    if (!testHierarchy) {
+        return;
+    }
+
+    const auto& panels { testHierarchy->_panels };
+    if (panels.empty()) {
+        return;
+    }
+
+    const auto panel { panels.front().lock() };
+
+    Vector<sptr<SceneViewEntry>> sources { make_sptr<SceneViewEntry>() };
+    sources.front()->storeTarget<Actor>(target_);
+    panel->setHierarchyTarget<SceneViewEntry>("sptr<SceneViewEntry>"_typeId, sources);
+
 }

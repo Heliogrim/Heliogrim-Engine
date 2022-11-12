@@ -1,6 +1,7 @@
 #include "InputText.hpp"
 
 #include <Engine.Common/Make.hpp>
+#include <Engine.Reflow/Window/WindowManager.hpp>
 
 using namespace ember::engine::reflow;
 using namespace ember;
@@ -64,6 +65,7 @@ EventResponse InputText::onBlur(cref<FocusEvent> event_) {
 
     if (_value.empty()) {
         _text->setText(_placeholder);
+        markAsPending();
     }
 
     _wrapper->state().focus = false;
@@ -82,11 +84,13 @@ EventResponse InputText::onKeyDown(cref<KeyboardEvent> event_) {
         }
         // TODO:
 
-    } else if (event_._key == /* Return */'\r') {
-        // TODO:
+    } else if (event_._key == /* Return */'\r' || event_._key == /* Escape */'\x1B') {
 
-    } else if (event_._key == /* Escape */'\x1B') {
-        // TODO:
+        const auto window { root() };
+        const FocusEvent focusEvent { window };
+
+        WindowManager::get()->dispatch<FocusEvent>(_STD static_pointer_cast<Window, Widget>(window), focusEvent);
+        return EventResponse::eConsumed;
 
     } else if (event_._key < 0x20 || event_._key > 0x7E) {
         return EventResponse::eConsumed;

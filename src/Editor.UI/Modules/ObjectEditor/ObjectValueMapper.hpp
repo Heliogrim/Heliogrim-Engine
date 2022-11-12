@@ -20,7 +20,7 @@ namespace ember::editor::ui {
         virtual ~ObjectValueMapperBase() = default;
 
     public:
-        virtual void update(const ptr<void> obj_) = 0;
+        virtual void update(cref<sptr<engine::reflow::Box>> parent_, const ptr<void> obj_) = 0;
 
         virtual void build(cref<sptr<engine::reflow::Box>> parent_) = 0;
 
@@ -40,7 +40,7 @@ namespace ember::editor::ui {
         ~ObjectValueMapper() override = default;
 
     public:
-        void update(const ptr<void> obj_) override;
+        void update(cref<sptr<engine::reflow::Box>> parent_, const ptr<void> obj_) override;
 
         void build(cref<sptr<engine::reflow::Box>> parent_) override;
 
@@ -48,7 +48,7 @@ namespace ember::editor::ui {
     };
 
     template <>
-    inline void ObjectValueMapper<void>::update(const ptr<void> obj_) {}
+    inline void ObjectValueMapper<void>::update(cref<sptr<engine::reflow::Box>> parent_, const ptr<void> obj_) {}
 
     template <>
     inline void ObjectValueMapper<void>::build(cref<sptr<engine::reflow::Box>> parent_) {}

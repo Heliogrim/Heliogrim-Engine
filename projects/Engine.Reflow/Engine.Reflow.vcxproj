@@ -145,6 +145,7 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputIntegral.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputNumber.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputText.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputVector.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Menu.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Overlay.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Panel.hpp" />

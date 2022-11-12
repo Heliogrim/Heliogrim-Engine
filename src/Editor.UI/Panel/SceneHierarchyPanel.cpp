@@ -17,7 +17,10 @@ using namespace ember::engine::reflow;
 using namespace ember;
 
 SceneHierarchyPanel::SceneHierarchyPanel() :
-    Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))) {}
+    Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))),
+    _content(nullptr),
+    _module(nullptr),
+    _resolver(nullptr) {}
 
 static void configureNav(cref<sptr<HBox>> navBar_) {
 
@@ -105,10 +108,14 @@ void configureHeader(cref<sptr<VBox>> header_) {
     row->addChild(homeBtn);
 }
 
-sptr<Panel> SceneHierarchyPanel::make() {
+sptr<SceneHierarchyPanel> SceneHierarchyPanel::make(const non_owning_rptr<SceneHierarchy> module_) {
 
     auto panel { _STD shared_ptr<SceneHierarchyPanel>(new SceneHierarchyPanel()) };
     panel->_style->minHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F + 20.F };
+
+    /**/
+
+    panel->_module = module_;
 
     /**/
 
@@ -129,6 +136,8 @@ sptr<Panel> SceneHierarchyPanel::make() {
 
     auto content { make_sptr<VScrollBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::ScrollBoxKey))) };
     content->style()->color = color::Dark::backgroundInnerField;
+
+    panel->_content = content;
     panel->addChild(content);
 
     return panel;
