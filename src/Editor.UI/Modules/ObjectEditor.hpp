@@ -7,6 +7,10 @@
 #include "ObjectEditor/ObjectValueMapper.hpp"
 
 namespace ember::editor::ui {
+    class ObjectEditorPanel;
+}
+
+namespace ember::editor::ui {
 
     class ObjectEditor {
     public:
@@ -16,6 +20,13 @@ namespace ember::editor::ui {
         ObjectEditor();
 
         ~ObjectEditor();
+
+    private:
+    public:
+        Vector<wptr<ObjectEditorPanel>> _panels;
+
+    public:
+        [[nodiscard]] sptr<ObjectEditorPanel> makePanel();
 
     private:
         ska::bytell_hash_map<type_id, uptr<ObjectValueMapperBase>> _mapper;

@@ -97,6 +97,10 @@
     <ClInclude Include="..\..\src\Editor.UI\Modules\AssetBrowser.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Modules\ObjectEditor.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Modules\ObjectEditor\ObjectValueMapper.hpp" />
+    <ClInclude Include="..\..\src\Editor.UI\Modules\SceneHierarchy.hpp" />
+    <ClInclude Include="..\..\src\Editor.UI\Modules\SceneHierarchy\HierarchyGenerator.hpp" />
+    <ClInclude Include="..\..\src\Editor.UI\Modules\SceneHierarchy\HierarchyResolver.hpp" />
+    <ClInclude Include="..\..\src\Editor.UI\Modules\SceneHierarchy\SceneViewEntry.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Panel\ObjectEditorPanel.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Panel\ProjectViewportPanel.hpp" />
@@ -112,6 +116,10 @@
     <ClCompile Include="..\..\src\Editor.UI\Menu\ContextMenu.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Modules\AssetBrowser.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Modules\ObjectEditor.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Modules\ObjectEditor\ActorValueMapper.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Modules\SceneHierarchy.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Modules\SceneHierarchy\SceneGenerator.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Modules\SceneHierarchy\SceneResolver.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Panel\ObjectEditorPanel.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Panel\ProjectViewportPanel.cpp" />

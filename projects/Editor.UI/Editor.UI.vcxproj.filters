@@ -61,6 +61,15 @@
     <Filter Include="Headerdateien\Modules\ObjectEditor">
       <UniqueIdentifier>{d0e0e63e-b965-4753-a308-f74f28324308}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Modules\ObjectEditor">
+      <UniqueIdentifier>{624088e6-0e91-4444-a162-887355a516d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Modules\SceneHierarchy">
+      <UniqueIdentifier>{d74cdde8-0b0d-49eb-8520-8f0c06531be4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Modules\SceneHierarchy">
+      <UniqueIdentifier>{feb4a6c6-9cad-4154-bcc9-314f6126a85a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.UI\Panel\SceneHierarchyPanel.hpp">
@@ -108,6 +117,18 @@
     <ClInclude Include="..\..\src\Editor.UI\Modules\ObjectEditor\ObjectValueMapper.hpp">
       <Filter>Headerdateien\Modules\ObjectEditor</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Modules\SceneHierarchy.hpp">
+      <Filter>Headerdateien\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Modules\SceneHierarchy\HierarchyResolver.hpp">
+      <Filter>Headerdateien\Modules\SceneHierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Modules\SceneHierarchy\HierarchyGenerator.hpp">
+      <Filter>Headerdateien\Modules\SceneHierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Modules\SceneHierarchy\SceneViewEntry.hpp">
+      <Filter>Headerdateien\Modules\SceneHierarchy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.cpp">
@@ -148,6 +169,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.UI\Modules\ObjectEditor.cpp">
       <Filter>Quelldateien\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Modules\ObjectEditor\ActorValueMapper.cpp">
+      <Filter>Quelldateien\Modules\ObjectEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Modules\SceneHierarchy.cpp">
+      <Filter>Quelldateien\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Modules\SceneHierarchy\SceneResolver.cpp">
+      <Filter>Quelldateien\Modules\SceneHierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Modules\SceneHierarchy\SceneGenerator.cpp">
+      <Filter>Quelldateien\Modules\SceneHierarchy</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

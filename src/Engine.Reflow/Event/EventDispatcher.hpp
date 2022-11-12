@@ -43,7 +43,8 @@ namespace ember::engine::reflow {
         template <>
         EventResponse dispatch(cref<sptr<Window>> window_, cref<KeyboardEvent> event_) {
 
-            const auto& path { window_->getFocusPath() };
+            // Attention: We need a copy, cause key event could cause blur event ( modify on read )
+            const auto path { window_->getFocusPath() };
             EventResponse state { EventResponse::eUnhandled };
 
             for (

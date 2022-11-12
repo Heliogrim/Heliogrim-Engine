@@ -372,6 +372,12 @@ void ReflowCommandBuffer::drawText(math::vec2 pos_, cref<string_view> text_, ref
     float accw { 0.F };
     for (const auto& letter : text_) {
         const auto& glyph { font_.glyph(static_cast<u32>(letter), fss) };
+
+        // TODO: Cleanup <=> Command Invocation should not be required to validate draw command
+        if (glyph == nullptr) {
+            continue;
+        }
+
         accw += glyph->_advance * charScale.x;
     }
 
@@ -408,6 +414,11 @@ void ReflowCommandBuffer::drawText(math::vec2 pos_, cref<string_view> text_, ref
 
         /**/
         const auto& glyph { font_.glyph(static_cast<u32>(letter), fss) };
+
+        // TODO: Cleanup <=> Command Invocation should not be required to validate draw command
+        if (glyph == nullptr) {
+            continue;
+        }
 
         /**/
         const u32 cbv { static_cast<u32>(_runningVertices.size()) };

@@ -46,7 +46,12 @@ math::vec2 Text::contentSize(cref<math::vec2> space_) const {
 
     for (const auto& letter : _text) {
 
-        const auto& glyph { (_computedStyle.font.attr)->glyph(static_cast<u32>(letter), fss) };
+        const auto* glyph { (_computedStyle.font.attr)->glyph(static_cast<u32>(letter), fss) };
+
+        if (glyph == nullptr) {
+            continue;
+        }
+
         fwd += glyph->_advance * fontScale;
 
         if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto && fwd > lineBound) {
@@ -137,7 +142,11 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
         for (u32 i { 0ui32 }; i < _text.length(); ++i) {
 
             const auto& letter { _text[i] };
-            const auto& glyph { (_computedStyle.font.attr)->glyph(static_cast<u32>(letter), fss) };
+            const auto* glyph { (_computedStyle.font.attr)->glyph(static_cast<u32>(letter), fss) };
+
+            if (glyph == nullptr) {
+                continue;
+            }
 
             fccw += glyph->_advance * fontScale;
 

@@ -282,6 +282,9 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputNumber.hpp">
       <Filter>Headerdateien\Widget\Input</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\Input\InputVector.hpp">
+      <Filter>Headerdateien\Widget\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflow\Window\WindowManager.cpp">

@@ -18,21 +18,46 @@ using namespace ember;
 
 ObjectEditorPanel::ObjectEditorPanel() :
     Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))),
+    _nav(nullptr),
+    _content(nullptr),
     _editor(nullptr),
-    _mapper(nullptr) {}
+    _mapper(nullptr),
+    _mappedTarget(nullptr) {}
 
 ObjectEditorPanel::~ObjectEditorPanel() {
     clearEditor();
 }
 
-void ObjectEditorPanel::setEditorTarget(cref<type_id> typeId_, const ptr<void> obj_) {}
+void ObjectEditorPanel::setEditorTarget(cref<type_id> typeId_, const ptr<void> obj_) {
 
-void ObjectEditorPanel::clearEditor() {
+    if (_mapper || _mappedTarget) {
+        clearEditor();
+    }
 
-    if (_mapper == nullptr) {
+    _mapper = _editor->getObjectMapper(typeId_);
+
+    if (not _mapper) {
         return;
     }
 
+    _mapper->build(_content);
+    _mapper->update(_content, obj_);
+    _mappedTarget = obj_;
+}
+
+void ObjectEditorPanel::clearEditor() {
+
+    if (_mapper == nullptr && _mappedTarget == nullptr) {
+        return;
+    }
+
+    /**/
+
+    if (_mapper) {
+        _mapper->cleanup(_content);
+    }
+
+    _mappedTarget = nullptr;
 }
 
 static void configureNav(cref<sptr<HBox>> navBar_) {
@@ -81,9 +106,17 @@ sptr<ObjectEditorPanel> ObjectEditorPanel::make(const non_owning_rptr<ObjectEdit
     /**/
 
     auto nav { make_sptr<HBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::NavBarKey))) };
+    panel->_nav = nav;
     panel->addChild(nav);
 
     configureNav(nav);
+
+    /**/
+
+    auto scroll { make_sptr<VScrollBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::ScrollBoxKey))) };
+    scroll->style()->rowGap = ReflowUnit { ReflowUnitType::eAbsolute, 4.F };
+    panel->_content = scroll;
+    panel->addChild(scroll);
 
     /**/
 

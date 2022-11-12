@@ -1058,6 +1058,10 @@ ptr<Actor> buildSkyboxAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
 
 #pragma endregion
 
+#if TRUE
+#include "Engine.GFX.Glow.UI/TestUI.hpp"
+#endif
+
 void buildTestScene() {
 
     //buildGlobalPlane(12i32);
@@ -1080,6 +1084,8 @@ void buildTestScene() {
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
     GetWorld()->addActor(actor);
+    storeEditorSelectedTarget(actor);
+    storeHierarchyActor(actor);
 
     return;
     #endif
