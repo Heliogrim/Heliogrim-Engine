@@ -39,6 +39,15 @@ namespace ember::editor::ui {
 
         template <typename Type_>
         [[nodiscard]] const ptr<Type_> target() const noexcept;
+
+    public:
+        [[nodiscard]] bool operator==(cref<this_type> other_) const noexcept {
+            return _type == other_._type && _target == other_._target;
+        }
+
+        [[nodiscard]] bool operator!=(cref<this_type> other_) const noexcept {
+            return _type != other_._type || _target != other_._target;
+        }
     };
 
     template <>
@@ -73,7 +82,18 @@ namespace ember::editor::ui {
 
     template <>
     inline const ptr<void> SceneViewEntry::target() const noexcept {
-        assert(_type == SceneViewEntryType::eEmpty);
+        //assert(_type == SceneViewEntryType::eEmpty);
         return static_cast<const ptr<void>>(_target);
     }
+}
+
+namespace std {
+    template <>
+    struct hash<ember::editor::ui::SceneViewEntry> {
+        [[nodiscard]] size_t operator()(
+            ::ember::cref<ember::editor::ui::SceneViewEntry> entry_
+        ) const noexcept {
+            return _STD hash<ember::u64> {}(reinterpret_cast<ember::u64>(entry_.target<void>()));
+        }
+    };
 }

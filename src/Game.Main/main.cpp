@@ -560,6 +560,7 @@ void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const 
 
 #include "Ember/ActorInitializer.hpp"
 #include "Ember/StaticGeometryComponent.hpp"
+#include "Ember/SkeletalGeometryComponent.hpp"
 
 Vector<Actor*> testActors {};
 
@@ -1079,13 +1080,84 @@ void buildTestScene() {
         game::assets::material::Cerberus::unstable_auto_guid()
     );
 
+    {
+        auto& initializer { ActorInitializer::get() };
+        auto* cmp { initializer.createSubComponent<SkeletalGeometryComponent>(actor, actor->getRootComponent()) };
+
+        cref<math::Transform> transform { cmp->getWorldTransform() };
+        const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, -1.F, 0.F });
+        const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { .2F });
+    }
+
     cref<math::Transform> transform { actor->getWorldTransform() };
     const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, 0.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
     GetWorld()->addActor(actor);
     storeEditorSelectedTarget(actor);
-    storeHierarchyActor(actor);
+
+    Vector<ptr<Actor>> sceneActors {};
+    sceneActors.push_back(actor);
+
+    /**/
+
+    {
+        auto* actor = buildSimpleAsset(
+            game::assets::meshes::Cerberus::unstable_auto_guid(),
+            game::assets::material::Cerberus::unstable_auto_guid()
+        );
+
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setPosition(math::vec3 { .8F, -1.F, 0.F });
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setScale(math::vec3 { .6F });
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({0.F, glm::radians(-90.F), 0.F}));
+
+        GetWorld()->addActor(actor);
+        sceneActors.push_back(actor);
+
+        /**/
+
+        actor = buildSimpleAsset(
+            game::assets::meshes::Cerberus::unstable_auto_guid(),
+            game::assets::material::Cerberus::unstable_auto_guid()
+        );
+
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setPosition(math::vec3 { -.8F, -1.F, 0.F });
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setScale(math::vec3 { .6F });
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({0.F, glm::radians(90.F), 0.F}));
+
+        GetWorld()->addActor(actor);
+        sceneActors.push_back(actor);
+
+        /**/
+
+        actor = buildSimpleAsset(
+            game::assets::meshes::Cerberus::unstable_auto_guid(),
+            game::assets::material::Cerberus::unstable_auto_guid()
+        );
+
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setPosition(math::vec3 { 0.F, -1.F, .8F });
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setScale(math::vec3 { .6F });
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({0.F, glm::radians(180.F), 0.F}));
+
+        GetWorld()->addActor(actor);
+        sceneActors.push_back(actor);
+
+        /**/
+
+        actor = buildSimpleAsset(
+            game::assets::meshes::Cerberus::unstable_auto_guid(),
+            game::assets::material::Cerberus::unstable_auto_guid()
+        );
+
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setPosition(math::vec3 { 0.F, -1.F, -.8F });
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setScale(math::vec3 { .6F });
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({0.F, glm::radians(0.F), 0.F}));
+
+        GetWorld()->addActor(actor);
+        sceneActors.push_back(actor);
+    }
+
+    storeHierarchyActor(sceneActors);
 
     return;
     #endif

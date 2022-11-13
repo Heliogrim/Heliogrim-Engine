@@ -586,7 +586,7 @@ void storeHierarchyMeta() {
     testHierarchy->storeResolver("sptr<SceneViewEntry>"_typeId, make_uptr<HierarchyResolver<sptr<SceneViewEntry>>>());
 }
 
-void storeHierarchyActor(const ember::ptr<ember::Actor> target_) {
+void storeHierarchyActor(cref<Vector<ptr<Actor>>> targets_) {
 
     if (!testHierarchy) {
         return;
@@ -599,8 +599,13 @@ void storeHierarchyActor(const ember::ptr<ember::Actor> target_) {
 
     const auto panel { panels.front().lock() };
 
-    Vector<sptr<SceneViewEntry>> sources { make_sptr<SceneViewEntry>() };
-    sources.front()->storeTarget<Actor>(target_);
-    panel->setHierarchyTarget<SceneViewEntry>("sptr<SceneViewEntry>"_typeId, sources);
+    Vector<sptr<SceneViewEntry>> sources {};
 
+    for (const auto& actor : targets_) {
+        auto sve { make_sptr<SceneViewEntry>() };
+        sve->storeTarget<Actor>(actor);
+        sources.push_back(_STD move(sve));
+    }
+
+    panel->setHierarchyTarget<SceneViewEntry>("sptr<SceneViewEntry>"_typeId, sources);
 }

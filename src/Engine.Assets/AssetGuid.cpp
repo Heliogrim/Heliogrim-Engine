@@ -1,5 +1,6 @@
 #include "AssetGuid.hpp"
 
+#include <atomic>
 #include <chrono>
 
 using namespace ember;

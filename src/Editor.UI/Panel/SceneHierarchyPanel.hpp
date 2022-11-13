@@ -1,12 +1,18 @@
 #pragma once
 #include <Engine.Common/Make.hpp>
-#include <Engine.Reflow/Widget/Panel.hpp>
-
-#include "../Modules/SceneHierarchy.hpp"
-#include <Engine.Reflow/Widget/Tree/TreeView.hpp>
 #include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-#include "../Style/Style.hpp"
+#include <Engine.Reflow/Widget/Panel.hpp>
+#include <Engine.Reflow/Widget/Tree/TreeView.hpp>
+
 #include "../Color/Dark.hpp"
+#include "../Modules/SceneHierarchy.hpp"
+#include "../Style/Style.hpp"
+
+#if TRUE
+#include "Engine.GFX.Glow.UI/TestUI.hpp"
+#include "../Modules/SceneHierarchy/SceneViewEntry.hpp"
+#include "Ember/Actor.hpp"
+#endif
 
 namespace ember::editor::ui {
 
@@ -81,6 +87,22 @@ namespace ember::editor::ui {
 
                 tree->_generateFromData = [generator](cref<data_type> data_) {
                     return (*static_cast<const ptr<const generator_type>>(generator))(data_);
+                };
+
+                /**/
+
+                tree->_selectedFnc = [](cref<typename tree_view_type::selected_set_type> data_) {
+                    if (data_.empty()) {
+                        return;
+                    }
+
+                    const auto& sel { *(data_.begin()) };
+                    if (sel->type() != SceneViewEntryType::eActor) {
+                        return;
+                    }
+
+                    auto* actor { sel->template target<void>() };
+                    storeEditorSelectedTarget(static_cast<const ptr<Actor>>(actor));
                 };
             }
 
