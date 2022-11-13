@@ -1,8 +1,16 @@
 #pragma once
 
+#ifdef _DEBUG
+#include <Engine.Common/__macro.hpp>
+#include <iostream>
+#include <Windows.h>
+#include <string>
+#include <Engine.Common/stddg.h>
+#endif
+
 #include <atomic>
 #include <cassert>
-#include <Engine.Common/stdafx.h>
+#include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::scheduler {
