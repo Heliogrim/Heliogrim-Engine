@@ -238,7 +238,7 @@ void VBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySta
         }
 
         #if TRUE
-        if (diff.y > 0.F) {
+        if (shrinkFrac > 0.F && diff.y > 0.F) {
             DEBUG_MSG("Failed to compensate overflow in VBox.")
         }
         #endif

@@ -152,6 +152,7 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Popup.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Scroll\VScrollBox.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Text.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\Tree\TreeItem.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Tree\TreeView.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\VBox.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Viewport.hpp" />
@@ -192,6 +193,8 @@
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Popup.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Scroll\VScrollBox.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Text.cpp" />
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\Tree\TreeItem.cpp" />
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\Tree\TreeView.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\VBox.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Viewport.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Widget.cpp" />

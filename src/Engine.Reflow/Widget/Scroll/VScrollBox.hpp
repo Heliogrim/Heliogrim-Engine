@@ -27,6 +27,11 @@ namespace ember::engine::reflow {
         math::vec2 _overflow;
 
     public:
+        [[nodiscard]] math::vec2 getScrollValue() const noexcept;
+
+        void scrollTo(cref<math::vec2> point_, cref<math::vec2> size_);
+
+    public:
         void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
         void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) override;

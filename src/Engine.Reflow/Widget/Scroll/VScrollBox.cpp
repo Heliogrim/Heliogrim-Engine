@@ -38,6 +38,46 @@ void VScrollBox::setScrollThumb(cref<sptr<Widget>> thumb_) {
     markAsPending();
 }
 
+math::vec2 VScrollBox::getScrollValue() const noexcept {
+    return _scrollValue;
+}
+
+void VScrollBox::scrollTo(cref<math::vec2> point_, cref<math::vec2> size_) {
+
+    const auto off { screenOffset() };
+    const auto size { contentSize() };
+
+    if (point_.y < off.y) {
+
+        const math::vec2 diff { point_ - off };
+
+        _scrollValue.y += (diff.y / _overflow.y);// We expect diff.y to be negative
+        _scrollValue.y = math::clamp(_scrollValue.y, 0.F, 1.F);
+
+    } else if (point_.y < off.y + size.y) {
+
+        const math::vec2 inner { point_ - off };
+        const math::vec2 diff { (point_ + size_) - (off + size) };
+
+        if (diff.y > 0.F && inner.y > 0.F) {
+
+            const float correct { MAX(diff.y, inner.y) };
+
+            _scrollValue.y += (correct / _overflow.y);// We expect diff.y to be positive
+            _scrollValue.y = math::clamp(_scrollValue.y, 0.F, 1.F);
+
+        }
+
+    } else /* if (point_.y >= off.y + size.y) */ {
+
+        const math::vec2 diff { (point_ + size_) - (off + size) };
+
+        _scrollValue.y += (diff.y / _overflow.y);// We expect diff.y to be positive
+        _scrollValue.y = math::clamp(_scrollValue.y, 0.F, 1.F);
+
+    }
+}
+
 void VScrollBox::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     const auto cs { contentSize() };

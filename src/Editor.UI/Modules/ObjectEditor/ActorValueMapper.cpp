@@ -114,11 +114,27 @@ void ObjectValueMapper<Actor>::update(cref<sptr<engine::reflow::Box>> parent_, c
 
     /**/
 
+    _STD static_pointer_cast<InputFloat, Widget>(children[1])->_callback = [actor = &actor](
+        InputFloat::input_type value_) {
+
+            auto pos { actor->getRootComponent()->getWorldTransform().position() };
+            pos.x = static_cast<decltype(pos)::value_type>(value_);
+            const_cast<ref<Transform>>(actor->getRootComponent()->getWorldTransform()).setPosition(_STD move(pos));
+        };
+
     _STD static_pointer_cast<InputFloat, Widget>(children[2])->_callback = [actor = &actor](
         InputFloat::input_type value_) {
 
             auto pos { actor->getRootComponent()->getWorldTransform().position() };
             pos.y = static_cast<decltype(pos)::value_type>(value_);
+            const_cast<ref<Transform>>(actor->getRootComponent()->getWorldTransform()).setPosition(_STD move(pos));
+        };
+
+    _STD static_pointer_cast<InputFloat, Widget>(children[3])->_callback = [actor = &actor](
+        InputFloat::input_type value_) {
+
+            auto pos { actor->getRootComponent()->getWorldTransform().position() };
+            pos.z = static_cast<decltype(pos)::value_type>(value_);
             const_cast<ref<Transform>>(actor->getRootComponent()->getWorldTransform()).setPosition(_STD move(pos));
         };
 }

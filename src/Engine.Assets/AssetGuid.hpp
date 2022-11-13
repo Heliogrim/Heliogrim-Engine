@@ -1,6 +1,5 @@
 #pragma once
 
-#include <atomic>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Hash/Murmur3.hpp>
 

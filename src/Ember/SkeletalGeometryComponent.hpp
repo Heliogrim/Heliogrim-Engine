@@ -12,5 +12,8 @@ namespace ember {
         inline constexpr static component_type_id typeId { "SkeletalGeometryComponent"_typeId };
 
     public:
+        SkeletalGeometryComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_);
+
+        ~SkeletalGeometryComponent() = default;
     };
 }

@@ -23,7 +23,7 @@ extern ember::ptr<ember::Actor> editorSelectedTarget;
 
 void storeEditorSelectedTarget(const ember::ptr<ember::Actor> target_);
 
-void storeHierarchyActor(const ember::ptr<ember::Actor> target_);
+void storeHierarchyActor(ember::cref<ember::Vector<ember::ptr<ember::Actor>>> targets_);
 
 void testLoad(ember::cref<ember::sptr<ember::engine::gfx::Device>> device_);
 

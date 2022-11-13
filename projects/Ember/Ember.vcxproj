@@ -97,6 +97,7 @@
     <ClCompile Include="..\..\src\Ember\SceneComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\SfxMaterialAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\SkeletalGeometryAsset.cpp" />
+    <ClCompile Include="..\..\src\Ember\SkeletalGeometryComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\SkyboxComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\SoundAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\StaticGeometryActor.cpp" />

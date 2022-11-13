@@ -2,6 +2,7 @@
 #include <Engine.Reflow/Widget/Widget.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Reflow/Style/BoundStyleSheet.hpp>
+#include <Engine.Reflow/Style/StyleCondition.hpp>
 
 #include "HierarchyGenerator.hpp"
 #include "SceneViewEntry.hpp"
@@ -21,6 +22,13 @@ sptr<Widget> HierarchyGenerator<sptr<SceneViewEntry>>::operator()(
         const ptr<Actor> actor { source_->target<Actor>() };
 
         auto txt { make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))) };
+        txt->style().color.unset();
+        txt->style().pushStyle({
+            AssocKey<string>::from(R"(TreeItem::Selected)"),
+            style::isNever,
+            Style::get()->getStyleSheet(Style::TitleRaisedKey)
+        });
+
         txt->setText(_STD format(R"(Actor << {} >>)", actor->guid().as_uint64()));
 
         return txt;
@@ -31,6 +39,12 @@ sptr<Widget> HierarchyGenerator<sptr<SceneViewEntry>>::operator()(
         const ptr<ActorComponent> comp { source_->target<ActorComponent>() };
 
         auto txt { make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))) };
+        txt->style().color.unset();
+        txt->style().pushStyle({
+            AssocKey<string>::from(R"(TreeItem::Selected)"),
+            style::isNever,
+            Style::get()->getStyleSheet(Style::TitleRaisedKey)
+        });
 
         u64 depth { 0ui64 };
         auto parent { comp };

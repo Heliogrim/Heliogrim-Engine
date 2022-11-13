@@ -305,5 +305,8 @@
     <ClCompile Include="..\..\src\Ember\FontAsset.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Ember\SkeletalGeometryComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
