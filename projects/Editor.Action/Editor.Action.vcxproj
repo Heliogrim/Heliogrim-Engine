@@ -17,21 +17,21 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{acc2d3d1-ebdd-439a-9325-81bf04642027}</ProjectGuid>
-    <RootNamespace>EditorMain</RootNamespace>
+    <ProjectGuid>{6733136c-88db-487a-943e-d52a1190e9cd}</ProjectGuid>
+    <RootNamespace>EditorAction</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -61,65 +61,53 @@
     <Import Project="..\Build.__Any__.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
-    <CopyLocalProjectReference>true</CopyLocalProjectReference>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
-    <CopyLocalProjectReference>true</CopyLocalProjectReference>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)dist\$(Configuration)\</OutDir>
-    <CopyLocalProjectReference>true</CopyLocalProjectReference>
-  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
+    <ClCompile />
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
+    <ClCompile />
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>
+      </SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <ClCompile>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
+    <ClCompile />
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>
+      </SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Editor.Main\Editor.Main.cpp" />
+    <ClInclude Include="..\..\src\Editor.Action\ActionManager.hpp" />
+    <ClInclude Include="..\..\src\Editor.Action\Action\Action.hpp" />
+    <ClInclude Include="..\..\src\Editor.Action\Action\ActionTypeId.hpp" />
+    <ClInclude Include="..\..\src\Editor.Action\Action\DelegateAction.hpp" />
+    <ClInclude Include="..\..\src\Editor.Action\Action\Import\ImportAction.hpp" />
+    <ClInclude Include="..\..\src\Editor.Action\Action\SimpleAction.hpp" />
+    <ClInclude Include="..\..\src\Editor.Action\Log\ActionDispatcher.hpp" />
+    <ClInclude Include="..\..\src\Editor.Action\Log\ActionLog.hpp" />
+    <ClInclude Include="..\..\src\Editor.Action\Log\ActionSaveState.hpp" />
+    <ClInclude Include="..\..\src\Editor.Action\Log\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Editor.Action\Editor.Action.vcxproj">
-      <Project>{6733136c-88db-487a-943e-d52a1190e9cd}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Editor.UI\Editor.UI.vcxproj">
-      <Project>{88b1a2bc-57f1-4969-918a-221f15decb23}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Ember.Default\Ember.Default.vcxproj">
-      <Project>{3700b064-da76-4d4e-b21b-a264d80e701a}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Ember.Main\Ember.Main.vcxproj">
-      <Project>{cdc04280-5f97-45d3-9c47-8b60219d8578}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Ember\Ember.vcxproj">
-      <Project>{8d01b7e3-273a-4a0b-8099-ad227fbdaf9c}</Project>
-    </ProjectReference>
+    <ClCompile Include="..\..\src\Editor.Action\ActionManager.cpp" />
+    <ClCompile Include="..\..\src\Editor.Action\Action\Action.cpp" />
+    <ClCompile Include="..\..\src\Editor.Action\Action\DelegateAction.cpp" />
+    <ClCompile Include="..\..\src\Editor.Action\Action\SimpleAction.cpp" />
+    <ClCompile Include="..\..\src\Editor.Action\Log\ActionDispatcher.cpp" />
+    <ClCompile Include="..\..\src\Editor.Action\Log\ActionLog.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

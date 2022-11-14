@@ -8,6 +8,8 @@
 #include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Editor.Action/ActionManager.hpp>
+#include <Editor.Action/Action/DelegateAction.hpp>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Profiler.hpp>
@@ -56,6 +58,7 @@
 #include "Engine.Assets/Types/GfxMaterial.hpp"
 #include "Engine.Assets/Types/Texture/Texture.hpp"
 #include "Engine.Assets/Types/Image.hpp"
+#include "Engine.Common/Concurrent/Promise.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
 #include "Engine.Event/ShutdownEvent.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
@@ -311,6 +314,60 @@ void try_load_asset_files() {
 
 }
 
+void test_editor_actions_internal() {
+
+    using namespace ember::editor;
+
+    const bool scoped { not ActionManager::get() };
+    if (scoped) {
+        ActionManager::make();
+    }
+
+    const auto* manager { ActionManager::get() };
+
+    auto action = make_sptr<DelegateAction>();
+
+    action->store([]() {}, nullptr);
+    assert(not action->isReversible());
+
+    action->store([]() {}, []() {});
+    assert(action->isReversible());
+
+    action->store([]() {
+
+            const auto test { _STD chrono::high_resolution_clock::now() };
+            auto next { _STD chrono::high_resolution_clock::now() };
+            while (_STD chrono::duration_cast<_STD chrono::seconds>(next - test).count() < 5) {
+                ::ember::yield();
+                next = _STD chrono::high_resolution_clock::now();
+            }
+
+        }, []() {});
+
+    manager->apply(action);
+
+    if (scoped) {
+        ActionManager::destroy();
+    }
+}
+
+void test_editor_actions() {
+
+    concurrent::promise<void> p {
+        []() {
+            test_editor_actions_internal();
+        }
+    };
+
+    auto f { p.get() };
+    execute(p);
+
+    while (not f.ready()) {
+        ::ember::engine::scheduler::thread::self::sleepFor(5000L);
+    }
+
+}
+
 /**
  * Ember main entry
  *
@@ -320,6 +377,10 @@ void try_load_asset_files() {
 void ember_main_entry() {
 
     SCOPED_STOPWATCH
+
+    /**/
+    test_editor_actions();
+    /**/
 
     /**/
     try_load_asset_files();
