@@ -12,6 +12,7 @@
 #include <Engine.GFX/Renderer/RenderPassState.hpp>
 #include <Engine.GFX/Renderer/RenderStagePass.hpp>
 #include <Engine.GFX/Renderer/RenderDataToken.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "Engine.GFX/VkFixedPipeline.hpp"
 #include "Engine.GFX/API/VkTranslate.hpp"
@@ -44,6 +45,7 @@ using namespace ember;
 #include <Engine.Reflow/Style/StyleKeyStack.hpp>
 #include <mutex>
 #include <atomic>
+
 static sptr<engine::reflow::Window> uiTestPanel {};
 _STD mutex uiTestMtx = _STD mutex {};
 #endif
@@ -351,13 +353,27 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
 
     _STD unique_lock<_STD mutex> lck { uiTestMtx };
     reflow::StyleKeyStack stack {};
-    uiTestPanel->flow(context, ava, stack);
-    uiTestPanel->shift(context, zero);
 
+    auto start = _STD chrono::high_resolution_clock::now();
+    uiTestPanel->flow(context, ava, ava, stack);
+    auto end = _STD chrono::high_resolution_clock::now();
+
+    IM_DEBUG_LOGF("Flow took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
+
+    start = _STD chrono::high_resolution_clock::now();
+    uiTestPanel->shift(context, zero);
+    end = _STD chrono::high_resolution_clock::now();
+
+    IM_DEBUG_LOGF("Shift took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
+
+    start = _STD chrono::high_resolution_clock::now();
     math::fExtent2D rootScissor { context.scissor };
     uiCmd.pushScissor(rootScissor);
     uiTestPanel->render(&uiCmd);
     assert(rootScissor == uiCmd.popScissor());
+    end = _STD chrono::high_resolution_clock::now();
+
+    IM_DEBUG_LOGF("Render took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
 
     lck.unlock();
 

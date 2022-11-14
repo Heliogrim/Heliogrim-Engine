@@ -11,6 +11,10 @@ Dialog::Dialog(mref<sptr<BoundStyleSheet>> style_) :
 
 Dialog::~Dialog() = default;
 
+string Dialog::getTag() const noexcept {
+    return _STD format(R"(Dialog <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
 void Dialog::repackChildren() {
 
     _children.clear();
@@ -63,7 +67,12 @@ void Dialog::render(const ptr<ReflowCommandBuffer> cmd_) {
     }
 }
 
-void Dialog::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
+void Dialog::flow(
+    cref<FlowContext> ctx_,
+    cref<math::vec2> space_,
+    cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_
+) {
 
     styleStack_.pushLayer();
     _computedStyle = _style->compute(shared_from_this(), styleStack_);
@@ -105,12 +114,12 @@ void Dialog::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyS
     math::vec2 contentBound { 0.F };
 
     if (_titleBar) {
-        _titleBar->flow(ctx_, local, styleStack_);
+        _titleBar->flow(ctx_, local, limit_, styleStack_);
         titleBound = _titleBar->outerSize();
     }
 
     if (_content) {
-        _content->flow(ctx_, local, styleStack_);
+        _content->flow(ctx_, local, limit_, styleStack_);
         contentBound = _content->outerSize();
     }
 
@@ -147,11 +156,11 @@ void Dialog::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyS
     if (diff.x < 0.F || diff.y < 0.F) {
 
         if (_titleBar) {
-            _titleBar->flow(ctx_, math::vec2 { local.x, local.y - contentBound.y }, styleStack_);
+            _titleBar->flow(ctx_, local, math::vec2 { local.x, local.y - contentBound.y }, styleStack_);
         }
 
         if (_content) {
-            _content->flow(ctx_, math::vec2 { local.x, local.y - titleBound.y }, styleStack_);
+            _content->flow(ctx_, local, math::vec2 { local.x, local.y - titleBound.y }, styleStack_);
         }
     }
 

@@ -1,11 +1,7 @@
 #pragma once
 
 #ifdef _DEBUG
-#include <Engine.Common/__macro.hpp>
-#include <iostream>
-#include <Windows.h>
-#include <string>
-#include <Engine.Common/stddg.h>
+#include <Engine.Logging/Logger.hpp>
 #endif
 
 #include <atomic>
@@ -250,7 +246,7 @@ namespace ember::engine::scheduler {
                 return;
             }
 
-            DEBUG_SNMSG(false, "WARN", "Destructing atomic ctrl block with active store resource.")
+            IM_CORE_WARN("Destructing atomic ctrl block with active store resource.");
 
             /**
              *

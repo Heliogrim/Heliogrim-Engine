@@ -7,6 +7,7 @@
 #include "Renderer/HORenderPass.hpp"
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
+#include <Engine.Logging/Logger.hpp>
 
 using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
@@ -226,7 +227,7 @@ const non_owning_rptr<render::HORenderPass> RenderTarget::next() {
         auto* pass { _passes[_syncIdx] };
 
         if (!pass->await()) {
-            DEBUG_SNMSG(false, "WARN", "Failed to validate await state of render invocation.")
+            IM_CORE_WARN("Failed to validate await state of render invocation.");
         }
     }
 

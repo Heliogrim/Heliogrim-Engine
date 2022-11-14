@@ -10,6 +10,10 @@ Button::Button(mref<sptr<BoundStyleSheet>> style_) :
 
 Button::~Button() = default;
 
+string Button::getTag() const noexcept {
+    return _STD format(R"(Button <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
 void Button::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     //const engine::color cl { (_state.hover || _state.focus) ? _computedStyle.raisedColor : _computedStyle.color };

@@ -3,8 +3,17 @@
 using namespace ember::engine::reflow;
 using namespace ember;
 
+constexpr static WidgetState defaultWidgetState = WidgetState {
+    static_cast<WidgetState::value_type>(WidgetStateFlagBits::eVisible) |
+    static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePending) |
+    static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit) |
+    static_cast<WidgetState::value_type>(WidgetStateFlagBits::eShift) |
+    static_cast<WidgetState::value_type>(WidgetStateFlagBits::eShiftInherit) |
+    static_cast<WidgetState::value_type>(WidgetStateFlagBits::eCapture)
+};
+
 Widget::Widget() :
-    _state() {}
+    _state(defaultWidgetState) {}
 
 Widget::~Widget() = default;
 
@@ -44,8 +53,8 @@ EventResponse Widget::onMouseMove(cref<MouseMoveEvent> event_) {
 
 EventResponse Widget::onMouseEnter(cref<MouseMoveEvent> event_) {
 
-    if (not _state.hover) {
-        _state.hover = true;
+    if (not _state.isHover()) {
+        _state |= WidgetStateFlagBits::eHover;
         markAsPending();
     }
 
@@ -54,8 +63,8 @@ EventResponse Widget::onMouseEnter(cref<MouseMoveEvent> event_) {
 
 EventResponse Widget::onMouseLeave(cref<MouseMoveEvent> event_) {
 
-    if (_state.hover) {
-        _state.hover = false;
+    if (_state.isHover()) {
+        _state.unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eHover));
         markAsPending();
     }
 
@@ -156,27 +165,60 @@ math::vec2 Widget::screenOffset() const noexcept {
 }
 
 bool Widget::willChangeLayout(cref<math::vec2> space_, cref<StyleKeyStack> styleStack_) const noexcept {
-    return _state.pending;
+    return _state.isProxyPending();
     //return true;
 }
 
-void Widget::markAsPending(const bool suppress_) {
+void Widget::markAsPending(const bool inherited_, const bool suppress_) {
 
+    /*
     if (_state.pending) {
         return;
     }
+     */
 
-    _state.pending = true;
+    if (inherited_) {
+        _state |= WidgetStateFlagBits::ePendingInherit;
+        _state |= WidgetStateFlagBits::eShiftInherit;
+    } else {
+        _state |= WidgetStateFlagBits::ePending;
+        _state |= WidgetStateFlagBits::eShift;
+    }
 
     if (suppress_) {
         return;
     }
 
     if (hasParent()) {
-        parent()->markAsPending();
+        parent()->markAsPending(true);
     }
 }
 
 void Widget::clearPending() {
-    _state.pending = false;
+    _state.unwrap &= ~(
+        static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePending) |
+        static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit)
+    );
+}
+
+void Widget::clearShiftState() {
+    _state.unwrap &= ~(
+        static_cast<WidgetState::value_type>(WidgetStateFlagBits::eShift) |
+        static_cast<WidgetState::value_type>(WidgetStateFlagBits::eShiftInherit)
+    );
+}
+
+void Widget::markCaptureState(const bool inherited_) {
+
+    _state |= WidgetStateFlagBits::eCapture;
+
+    if (hasParent()) {
+        parent()->markCaptureState(true);
+    }
+}
+
+void Widget::clearCaptureState() {
+    _state.unwrap &= ~(
+        static_cast<WidgetState::value_type>(WidgetStateFlagBits::eCapture)
+    );
 }

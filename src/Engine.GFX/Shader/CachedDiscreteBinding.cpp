@@ -1,6 +1,7 @@
 #include "CachedDiscreteBinding.hpp"
 
 #include "DiscreteBindingPool.hpp"
+#include <Engine.Logging/Logger.hpp>
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -41,7 +42,7 @@ ref<CachedDiscreteBinding> CachedDiscreteBinding::operator=(mref<shader::Discret
 
     #ifdef _DEBUG
     if (_binding.vkSet() == dbg_.vkSet()) {
-        DEBUG_SNMSG(false, "WARN", "Reassignment of DiscreteBindingGroup to cache object will cause use after release.")
+        IM_CORE_WARN("Reassignment of DiscreteBindingGroup to cache object will cause use after release.");
     }
     #endif
 

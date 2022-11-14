@@ -20,6 +20,10 @@ Window::~Window() {
     tidy();
 }
 
+string Window::getTag() const noexcept {
+    return _STD format(R"(Window <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
 void Window::tidy() {
 
     Vector<uptr<PopupLayer>> tmp {};
@@ -138,7 +142,7 @@ void Window::render(const ptr<ReflowCommandBuffer> cmd_) {
     }
 }
 
-void Window::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
+void Window::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_, ref<StyleKeyStack> styleStack_) {
 
     /* Warning: Replace */
     _clientSize = space_;
@@ -151,7 +155,7 @@ void Window::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyS
      */
 
     if (_content) {
-        _content->flow(ctx_, space_, styleStack_);
+        _content->flow(ctx_, space_, limit_, styleStack_);
     }
 
     /**/
@@ -170,7 +174,7 @@ void Window::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyS
             space = layer->getOverrideSize();
         }
 
-        content->flow(ctx_, space, styleStack_);
+        content->flow(ctx_, space, limit_, styleStack_);
     }
 }
 

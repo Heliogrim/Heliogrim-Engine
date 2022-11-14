@@ -252,7 +252,7 @@ void AssetBrowserPanel::openImportDialog(cref<Url> fqUrlSource_) {
 
     const FlowContext ctx { { size.x, size.y, off.x, off.y }, { size.x, size.y, off.x, off.y } };
     StyleKeyStack stack {};
-    dialog->flow(ctx, size, stack);
+    dialog->flow(ctx, size, size, stack);
 
     /**/
 

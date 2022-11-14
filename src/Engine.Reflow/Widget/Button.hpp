@@ -17,6 +17,9 @@ namespace ember::engine::reflow {
         ~Button() override;
 
     public:
+        [[nodiscard]] string getTag() const noexcept override;
+
+    public:
         void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
     private:

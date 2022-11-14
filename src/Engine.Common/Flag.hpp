@@ -53,6 +53,17 @@ namespace ember {
             unwrap(static_cast<value_type>(initial_)) {}
 
         /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 14.11.2022
+         *
+         * @params initial_ The initial underlying value
+         */
+        constexpr Flag(const value_type& initial_) noexcept :
+            unwrap(initial_) {}
+
+        /**
          * Destructor
          *
          * @author Julius

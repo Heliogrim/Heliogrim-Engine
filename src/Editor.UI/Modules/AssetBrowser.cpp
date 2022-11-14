@@ -1,6 +1,6 @@
 #include "AssetBrowser.hpp"
 
-#include <Engine.Common/stdafx.h>
+#include <Engine.Logging/Logger.hpp>
 #include "../Panel/AssetBrowserPanel.hpp"
 
 using namespace ember::editor::ui;
@@ -157,7 +157,7 @@ bool AssetBrowser::retrieveEntries(cref<Url> cwd_, ref<Vector<_STD pair<string, 
 
         const auto virtMappedIter { _virtualMountPoints.find(string { root.path() }) };
         if (virtMappedIter == _virtualMountPoints.end()) {
-            DEBUG_MSG("Failed to find any virtual mounting points for virtual browser root ?!?")
+            IM_CORE_LOG("Failed to find any virtual mounting points for virtual browser root ?!?");
             return true;
         }
 

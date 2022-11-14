@@ -5,6 +5,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "Engine.GFX/Memory/AllocationResult.hpp"
 #include "Engine.GFX/Memory/VkAllocator.hpp"
@@ -74,7 +75,7 @@ void StaticGeometryLoader::loadWithAssimp(const ptr<assets::StaticGeometry> asse
     const aiScene* scene { importer.ReadFile(src.path().data(), ppFlags) };
 
     if (scene == nullptr) {
-        DEBUG_SNMSG(false, "ASSIMP", importer.GetErrorString())
+        IM_CORE_ERROR(importer.GetErrorString());
         return;// Failed to import
     }
 

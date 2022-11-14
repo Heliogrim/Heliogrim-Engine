@@ -2,6 +2,7 @@
 
 #include "../Device/Device.hpp"
 #include "DiscreteBindingPool.hpp"
+#include "Engine.Common/Exception/NotImplementedException.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;

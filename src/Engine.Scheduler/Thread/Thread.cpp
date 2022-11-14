@@ -1,5 +1,6 @@
 #include "Thread.hpp"
 
+#include <Engine.Common/__macro.hpp>
 #include <Windows.h>
 #include <processthreadsapi.h>
 #include <stdexcept>

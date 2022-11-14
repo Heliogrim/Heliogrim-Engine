@@ -1,10 +1,7 @@
 #include "HBox.hpp"
 
 #include "../Style/BoundStyleSheet.hpp"
-
-#if TRUE
-#include <Engine.Common/stdafx.h>
-#endif
+#include <Engine.Logging/Logger.hpp>
 
 using namespace ember::engine::reflow;
 using namespace ember;
@@ -14,13 +11,31 @@ HBox::HBox(mref<sptr<BoundStyleSheet>> style_) :
 
 HBox::~HBox() = default;
 
-void HBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
+string HBox::getTag() const noexcept {
+    return _STD format(R"(HBox <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
+static void applyPaddingToOuter(cref<StyleSheet> style_, ref<math::vec2> target_) {
+    target_.x -= style_.padding->x;
+    target_.y -= style_.padding->y;
+    target_.x -= style_.padding->z;
+    target_.y -= style_.padding->w;
+}
+
+void HBox::flow(
+    cref<FlowContext> ctx_,
+    cref<math::vec2> space_,
+    cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_
+) {
 
     styleStack_.pushLayer();
     _computedStyle = _style->compute(shared_from_this(), styleStack_);
 
     const bool autoWidth { _computedStyle.width.attr.type == ReflowUnitType::eAuto };
     const bool autoHeight { _computedStyle.height.attr.type == ReflowUnitType::eAuto };
+
+    /**/
 
     math::vec2 local { 0.F };
 
@@ -54,18 +69,51 @@ void HBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySta
     }
 
     /**/
+
+    math::vec2 maxSize { limit_ };
+    applyPaddingToOuter(_computedStyle, maxSize);
+
+    if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
+        if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
+            maxSize.x = MIN(maxSize.x,
+                MAX(_computedStyle.maxWidth->value * space_.x - (_computedStyle.padding->x + _computedStyle.padding->z),
+                    0));
+        } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
+            maxSize.x = MIN(maxSize.x,
+                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0));
+        }
+    }
+
+    if (_computedStyle.maxHeight->type != ReflowUnitType::eAuto) {
+        if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
+            maxSize.y = MIN(maxSize.y,
+                MAX(_computedStyle.maxHeight->value * space_.y - (_computedStyle.padding->y + _computedStyle.padding->w)
+                    , 0));
+        } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
+            maxSize.y = MIN(maxSize.y,
+                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0));
+        }
+    }
+
+    /**/
     if (not _computedStyle.padding->zero()) {
         local.x = MAX(local.x - (_computedStyle.padding->x + _computedStyle.padding->z), 0.F);
         local.y = MAX(local.y - (_computedStyle.padding->y + _computedStyle.padding->w), 0.F);
     }
 
     /**/
+    local = math::compMin<float>(local, maxSize);
+
+    /**/
+
     math::vec2 innerChildAgg { 0.F };
     math::vec2 innerChildMax { 0.F };
     for (const auto& widget : *children()) {
 
+        constexpr math::vec2 limit { _STD numeric_limits<float>::infinity() };
+
         if (widget->willChangeLayout(local, styleStack_)) {
-            widget->flow(ctx_, local, styleStack_);
+            widget->flow(ctx_, local, limit, styleStack_);
         }
         const auto bounding = widget->outerSize();
 
@@ -82,9 +130,11 @@ void HBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySta
     /**/
     if (_computedStyle.rowGap.attr.type != ReflowUnitType::eAuto && children()->size() > 1) {
         if (_computedStyle.rowGap.attr.type == ReflowUnitType::eRelative) {
-            local.x += static_cast<float>(children()->size() - 1) * _computedStyle.rowGap.attr.value * local.x;
+            //local.x += static_cast<float>(children()->size() - 1) * _computedStyle.rowGap.attr.value * local.x;
+            innerChildAgg.x += static_cast<float>(children()->size() - 1) * _computedStyle.rowGap.attr.value * local.x;
         } else if (_computedStyle.rowGap.attr.type == ReflowUnitType::eAbsolute) {
-            local.x += static_cast<float>(children()->size() - 1) * _computedStyle.rowGap.attr.value;
+            //local.x += static_cast<float>(children()->size() - 1) * _computedStyle.rowGap.attr.value;
+            innerChildAgg.x += static_cast<float>(children()->size() - 1) * _computedStyle.rowGap.attr.value;
         }
     }
 
@@ -97,27 +147,7 @@ void HBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySta
     }
 
     /**/
-    if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
-        if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
-            local.x = MIN(local.x,
-                MAX(_computedStyle.maxWidth->value * space_.x - (_computedStyle.padding->x + _computedStyle.padding->z),
-                    0));
-        } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
-            local.x = MIN(local.x,
-                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0));
-        }
-    }
-
-    if (_computedStyle.maxHeight->type != ReflowUnitType::eAuto) {
-        if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
-            local.y = MIN(local.y,
-                MAX(_computedStyle.maxHeight->value * space_.y - (_computedStyle.padding->y + _computedStyle.padding->w)
-                    , 0));
-        } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
-            local.y = MIN(local.y,
-                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0));
-        }
-    }
+    local = math::compMin<float>(local, maxSize);
 
     /**/
     math::vec2 diff { innerChildAgg - local };
@@ -135,6 +165,7 @@ void HBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySta
         innerChildAgg.y = 0.F;
 
         const auto& bounds { local };
+        constexpr math::vec2 limit { _STD numeric_limits<float>::infinity() };
 
         float forward { 0.F };
         math::vec2 maxForward { 0.F };
@@ -144,7 +175,7 @@ void HBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySta
                 continue;
             }
 
-            widget->flow(ctx_, local, styleStack_);
+            widget->flow(ctx_, local, limit, styleStack_);
             const auto bounding { widget->outerSize() };
 
             if (forward + bounding.x >= bounds.x) {
@@ -186,6 +217,9 @@ void HBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySta
         }
 
         /**/
+        local = math::compMin<float>(local, maxSize);
+
+        /**/
         diff = innerChildAgg - local;
     }
 
@@ -216,17 +250,18 @@ void HBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySta
 
         #if TRUE
         if (not perNode.zero() && _computedStyle.wrap.attr != ReflowWrap::eNoWrap) {
-            DEBUG_NMSG("WARN",
-                "Applying flex shrinking and wrapping at the same time will break layout (not supported).")
+            IM_CORE_WARN("Applying flex shrinking and wrapping at the same time will break layout (not supported).");
         }
         #endif
 
         /**/
         for (const auto& pair : rw) {
-            math::vec2 modified { local - perNode * pair.first->shrinkFactor() };
-            modified = math::compMax<float>(modified, math::vec2 { 0.F });
+            const math::vec2 limit {
+                pair.second.x - perNode.x * pair.first->shrinkFactor(),
+                _STD numeric_limits<float>::infinity()
+            };
 
-            pair.first->flow(ctx_, modified, styleStack_);
+            pair.first->flow(ctx_, local, limit, styleStack_);
         }
 
         /**/
@@ -238,8 +273,8 @@ void HBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySta
         }
 
         #if TRUE
-        if (diff.x > 0.F) {
-            DEBUG_MSG("Failed to compensate overflow in HBox.")
+        if (diff.x > 0.F && shrinkFrac > 0.F) {
+            //DEBUG_MSG("Failed to compensate overflow in HBox.")
         }
         #endif
     }
@@ -259,6 +294,7 @@ void HBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySta
      * State Changes
      */
     clearPending();
+    markCaptureState();
 
     _prevSpace = space_;
     _prevStyleStack.clear();
@@ -266,6 +302,10 @@ void HBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySta
 }
 
 void HBox::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
+
+    if (_screenOff != offset_) {
+        markCaptureState();
+    }
 
     _screenOff = offset_;
 
@@ -287,6 +327,12 @@ void HBox::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
     const math::vec2 inner { innerSize() };
     math::vec2 left { inner };
     left += aggregate * -1.F;
+
+    /**/
+    if (_computedStyle.rowGap.attr.type != ReflowUnitType::eAuto && !children()->empty()) {
+        left.x -= _computedStyle.rowGap.attr.value * (children()->size() - 1);
+    }
+    /**/
 
     left = math::compMax<float>(left, math::vec2 { 0.F });
 
@@ -395,4 +441,7 @@ void HBox::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
         /**/
         ++fwdIdx;
     }
+
+    /**/
+    clearShiftState();
 }

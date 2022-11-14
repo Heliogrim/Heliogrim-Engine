@@ -4,6 +4,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #ifdef ENV_MSVC
+#include <Engine.Common/__macro.hpp>
 #include <Windows.h>
 #include <fileapi.h>
 #endif

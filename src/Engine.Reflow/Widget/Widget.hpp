@@ -42,6 +42,9 @@ namespace ember::engine::reflow {
 
         [[nodiscard]] ref<WidgetState> state() noexcept;
 
+    public:
+        [[nodiscard]] virtual string getTag() const noexcept = 0;
+
         /**
          * Abstract System Clocking
          */
@@ -125,9 +128,11 @@ namespace ember::engine::reflow {
          *
          * @param ctx_ The context the flow is related to
          * @param space_ The forwarded available space
+         * @param limit_ The forwarded maximum space this widget can occupy
          * @param styleStack_ The key stack to support cascaded styles
          */
-        virtual void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, _Inout_ ref<StyleKeyStack> styleStack_) = 0;
+        virtual void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+            _Inout_ ref<StyleKeyStack> styleStack_) = 0;
 
         /**
          * Forward offset control ui elements
@@ -159,9 +164,15 @@ namespace ember::engine::reflow {
             cref<StyleKeyStack> styleStack_
         ) const noexcept;
 
-        void markAsPending(const bool suppress_ = false);
+        void markAsPending(const bool inherited_ = false, const bool suppress_ = false);
 
         void clearPending();
+
+        void clearShiftState();
+
+        void markCaptureState(const bool inherited_ = false);
+
+        void clearCaptureState();
     };
 
 }

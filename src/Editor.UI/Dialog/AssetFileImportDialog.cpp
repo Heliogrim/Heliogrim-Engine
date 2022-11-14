@@ -5,7 +5,7 @@
 #include "Editor.UI/Color/Dark.hpp"
 #include "Editor.UI/Widget/AssetImportTypeItem.hpp"
 #include "Engine.Common/Make.hpp"
-#include "Engine.Common/stdafx.h"
+#include <Engine.Logging/Logger.hpp>
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
 #include "Engine.Reflow/Widget/Button.hpp"
 #include "Engine.Reflow/Widget/Input/Form.hpp"
@@ -473,9 +473,7 @@ sptr<Dialog> AssetFileImportDialog::make(const ptr<AssetBrowser> browser_, cref<
             // TODO: dialog->markAsDeleted();
             diag->getPopupLayer()->getWindow()->dropPopLayer(diag->getPopupLayer());
 
-            DEBUG_MSG(
-                _STD format("Importing new asset from `{}` to `{}`.", diag->_source.path(), diag->_target.path())
-            )
+            IM_CORE_LOGF("Importing new asset from `{}` to `{}`.", diag->_source.path(), diag->_target.path());
 
             /**/
             testCreateAsset(diag->_source);

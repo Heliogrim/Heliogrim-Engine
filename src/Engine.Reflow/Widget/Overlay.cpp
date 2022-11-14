@@ -8,6 +8,10 @@ Overlay::Overlay() :
 
 Overlay::~Overlay() = default;
 
+string Overlay::getTag() const noexcept {
+    return _STD format(R"(Overlay <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
 sptr<Widget> Overlay::getContent() const noexcept {
     return _content;
 }
@@ -32,13 +36,13 @@ void Overlay::render(const ptr<ReflowCommandBuffer> cmd_) {
     _content->render(cmd_);
 }
 
-void Overlay::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
+void Overlay::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_, ref<StyleKeyStack> styleStack_) {
 
     if (!_content) {
         return;
     }
 
-    _content->flow(ctx_, space_, styleStack_);
+    _content->flow(ctx_, space_, limit_, styleStack_);
 }
 
 void Overlay::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {

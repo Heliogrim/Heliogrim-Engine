@@ -62,7 +62,7 @@ sptr<editor::ui::AssetBrowser> testAssetBrowser { nullptr };
 sptr<editor::ui::ObjectEditor> testObjectEditor { nullptr };
 sptr<editor::ui::SceneHierarchy> testHierarchy { nullptr };
 
-ember::ptr<ember::Actor> editorSelectedTarget { nullptr };
+ember::ptr<void> editorSelectedTarget { nullptr };
 
 void storeActorMapping();
 
@@ -253,7 +253,7 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
     testStyle->pushStyle({
         Style::key_type::from("Button::Hover"),
         [](cref<sptr<Widget>> self_) {
-            return self_->state().hover;
+            return self_->state().isHover();
         },
         make_sptr<StyleSheet>(StyleSheet {
             .color = { true, color::Dark::raisedColor }
@@ -503,7 +503,7 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
     };
 
     StyleKeyStack stack {};
-    root->flow(ctx, available, stack);
+    root->flow(ctx, available, available, stack);
     root->shift(ctx, shift);
 
     /**/
@@ -547,18 +547,21 @@ ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
 
 /**/
 
+#include "Ember/StaticGeometryComponent.hpp"
+
 void storeActorMapping() {
     testObjectEditor->storeObjectMapper("ember::Actor"_typeId, make_uptr<ObjectValueMapper<::ember::Actor>>());
+    testObjectEditor->storeObjectMapper(::ember::StaticGeometryComponent::typeId, make_uptr<ObjectValueMapper<::ember::StaticGeometryComponent>>());
 }
 
-void loadActorMappingExp(cref<sptr<ObjectEditorPanel>> panel_) {
+void loadActorMappingExp(const type_id typeId_, cref<sptr<ObjectEditorPanel>> panel_) {
 
     if (not editorSelectedTarget) {
         __debugbreak();
         return;
     }
 
-    panel_->setEditorTarget("ember::Actor"_typeId, editorSelectedTarget);
+    panel_->setEditorTarget(typeId_, editorSelectedTarget);
 
 }
 
@@ -575,7 +578,23 @@ void storeEditorSelectedTarget(const ember::ptr<ember::Actor> target_) {
 
     const auto panel { panels.front().lock() };
     editorSelectedTarget = target_;
-    loadActorMappingExp(panel);
+    loadActorMappingExp("ember::Actor"_typeId, panel);
+}
+
+void storeEditorSelectedTarget(const ember::ptr<ember::ActorComponent> target_) {
+
+    if (!testObjectEditor) {
+        return;
+    }
+
+    const auto& panels { testObjectEditor->_panels };
+    if (panels.empty()) {
+        return;
+    }
+
+    const auto panel { panels.front().lock() };
+    editorSelectedTarget = target_;
+    loadActorMappingExp(target_->getTypeId(), panel);
 }
 
 /**/

@@ -3,6 +3,7 @@
 #include <functional>
 #include <unordered_map>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Math/Hash.hpp>
 
 #include "Shader.hpp"
 

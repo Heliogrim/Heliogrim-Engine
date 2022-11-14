@@ -175,3 +175,29 @@
 #endif
 
 #define _EDITOR
+
+#if defined (_DEBUG) || defined(_PROFILING)
+#define IM_CORE_LOG(msg_) ::ember::Logger::info(msg_)
+#define IM_CORE_INFO(msg_) ::ember::Logger::info(msg_)
+#define IM_CORE_WARN(msg_) ::ember::Logger::warn(msg_)
+#define IM_CORE_ERROR(msg_) ::ember::Logger::error(msg_)
+#define IM_DEBUG_LOG(msg_) ::ember::Logger::debug(msg_)
+
+#define IM_CORE_LOGF(format_, ...) ::ember::Logger::info(format_, ##__VA_ARGS__)
+#define IM_CORE_INFOF(format_, ...) ::ember::Logger::info(format_, ##__VA_ARGS__)
+#define IM_CORE_WARNF(format_, ...) ::ember::Logger::warn(format_, ##__VA_ARGS__)
+#define IM_CORE_ERRORF(format_, ...) ::ember::Logger::error(format_, ##__VA_ARGS__)
+#define IM_DEBUG_LOGF(format_, ...) ::ember::Logger::debug(format_, ##__VA_ARGS__)
+#else
+#define IM_CORE_LOG(msg_) ::ember::Logger::info(msg_)
+#define IM_CORE_INFO(msg_) ::ember::Logger::info(msg_)
+#define IM_CORE_WARN(msg_) ::ember::Logger::warn(msg_)
+#define IM_CORE_ERROR(msg_) ::ember::Logger::error(msg_)
+#define IM_DEBUG_LOG(msg_)
+
+#define IM_CORE_LOGF(format_, ...) ::ember::Logger::info(format_, ##__VA_ARGS__)
+#define IM_CORE_INFOF(format_, ...) ::ember::Logger::info(format_, ##__VA_ARGS__)
+#define IM_CORE_WARNF(format_, ...) ::ember::Logger::warn(format_, ##__VA_ARGS__)
+#define IM_CORE_ERRORF(format_, ...) ::ember::Logger::error(format_, ##__VA_ARGS__)
+#define IM_DEBUG_LOGF(format_, ...)
+#endif

@@ -20,6 +20,10 @@ InputFloat::InputFloat(mref<sptr<BoundStyleSheet>> style_, mref<sptr<BoundStyleS
 
 InputFloat::~InputFloat() = default;
 
+string InputFloat::getTag() const noexcept {
+    return _STD format(R"(InputFloat <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
 void InputFloat::valueToText() {
 
     const auto val { value() };
@@ -101,9 +105,10 @@ void InputFloat::render(const ptr<ReflowCommandBuffer> cmd_) {
     _wrapper->render(cmd_);
 }
 
-void InputFloat::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
+void InputFloat::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_) {
     _wrapper->setParent(shared_from_this());
-    _wrapper->flow(ctx_, space_, styleStack_);
+    _wrapper->flow(ctx_, space_, limit_, styleStack_);
 }
 
 void InputFloat::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
@@ -122,15 +127,30 @@ math::vec2 InputFloat::screenOffset() const noexcept {
     return _wrapper->screenOffset();
 }
 
+float InputFloat::shrinkFactor() const noexcept {
+    return _wrapper->shrinkFactor();
+}
+
+float InputFloat::growFactor() const noexcept {
+    return _wrapper->growFactor();
+}
+
+EventResponse InputFloat::onFocus(cref<FocusEvent> event_) {
+    _wrapper->state() |= WidgetStateFlagBits::eFocus;
+    return Input<InputFloat::input_type>::onFocus(event_);
+}
+
 EventResponse InputFloat::onBlur(cref<FocusEvent> event_) {
     updateValueAndValidity(true, false);
     valueToText();
+
+    _wrapper->state().unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eFocus));
     return Input<InputFloat::input_type>::onBlur(event_);
 }
 
 EventResponse InputFloat::onKeyDown(cref<KeyboardEvent> event_) {
 
-    if (not _state.focus) {
+    if (not _state.isFocus()) {
         return EventResponse::eUnhandled;
     }
 
@@ -206,7 +226,7 @@ EventResponse InputFloat::onKeyDown(cref<KeyboardEvent> event_) {
 
 EventResponse InputFloat::onKeyUp(cref<KeyboardEvent> event_) {
 
-    if (not _state.focus) {
+    if (not _state.isFocus()) {
         return EventResponse::eUnhandled;
     }
 

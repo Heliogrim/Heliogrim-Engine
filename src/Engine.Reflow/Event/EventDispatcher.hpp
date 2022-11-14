@@ -58,7 +58,7 @@ namespace ember::engine::reflow {
                 }
 
                 const auto lck { it->lock() };
-                if (not lck->state().focus) {
+                if (not lck->state().isFocus()) {
                     continue;
                 }
 
@@ -94,7 +94,7 @@ namespace ember::engine::reflow {
 
                     const auto& child { *it };
 
-                    if (child->state().visible && intersects(child->screenOffset(), child->outerSize(), point)) {
+                    if (child->state().isVisible() && intersects(child->screenOffset(), child->outerSize(), point)) {
                         backlog.push(child);
                         break;
                     }
@@ -105,7 +105,7 @@ namespace ember::engine::reflow {
 
             if (not backlog.empty()) {
                 // Warning: Temporary Solution
-                if (event_._down && not backlog.top()->state().focus) {
+                if (event_._down && not backlog.top()->state().isFocus()) {
                     const FocusEvent focusEvent { backlog.top() };
                     dispatch(window_, focusEvent);
                 }
@@ -139,7 +139,7 @@ namespace ember::engine::reflow {
                 const auto next { backlog.back() };
 
                 const auto contained { intersects(next->screenOffset(), next->outerSize(), point) };
-                const auto hovered { next->state().hover };
+                const auto hovered { next->state().isHover() };
 
                 if (not contained && hovered) {
                     next->onMouseLeave(event_);
@@ -163,7 +163,7 @@ namespace ember::engine::reflow {
 
                     const auto& child { *it };
 
-                    if (child->state().hover) {
+                    if (child->state().isHover()) {
                         backlog.push_back(child);
 
                     } else if (intersects(child->screenOffset(), child->outerSize(), point)) {

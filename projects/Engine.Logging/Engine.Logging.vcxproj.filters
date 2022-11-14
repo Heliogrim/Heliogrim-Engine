@@ -18,6 +18,9 @@
     <ClInclude Include="..\..\src\Engine.Logging\Logger.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Logging\LogLevel.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Logging\Logger.cpp">

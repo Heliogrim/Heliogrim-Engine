@@ -24,6 +24,11 @@ namespace ember::engine::reflow {
 
         ~InputVector() override = default;
 
+    public:
+        [[nodiscard]] string getTag() const noexcept override {
+            return _STD format(R"(InputVector <{:#x}>)", reinterpret_cast<u64>(this));
+        }
+
     private:
         Vector<sptr<InputBase>> _inputs;
 

@@ -9,6 +9,7 @@
 #include "../Command/CommandBatch.hpp"
 #include "../Device/Device.hpp"
 #include "Engine.GFX/Graphics.hpp"
+#include <Engine.Logging/Logger.hpp>
 
 using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
@@ -108,7 +109,7 @@ bool Renderer::free(mref<ptr<HORenderPass>> renderPass_) {
 
     #ifdef _DEBUG
     if (!renderPass_->state()->data.empty() || renderPass_->state()->framebuffer != nullptr) {
-        DEBUG_SNMSG(false, "WARN", "Failed to free all HORenderPass resources.")
+        IM_CORE_WARN("Failed to free all HORenderPass resources.");
         __debugbreak();
     }
     #endif

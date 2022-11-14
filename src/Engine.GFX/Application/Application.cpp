@@ -1,6 +1,7 @@
 #include "Application.hpp"
 
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Common/stdafx.h>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
@@ -78,9 +79,9 @@ void Application::setup() {
             throw std::runtime_error(std::to_string(static_cast<VkResult>(res)));
         }
 
-        DEBUG_SNMSG(true, "VK", "Created vk::Instance successfully.")
+        IM_DEBUG_LOG("Created vk::Instance successfully.");
     } catch (const std::exception& e_) {
-        DEBUG_SNMSG(false, "VK", "Failed to create vk::Instance.")
+        IM_DEBUG_LOG("Failed to create vk::Instance.");
         std::cout << "Could not create a Vulkan Instance: " << e_.what() << std::endl;
         exit(-1);
     }

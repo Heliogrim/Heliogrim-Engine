@@ -2,6 +2,7 @@
 #include "FiberPool.hpp"
 
 #ifdef ENV_MSVC
+#include <Engine.Common/__macro.hpp>
 #include <Windows.h>
 #elif defined ENV_GCC
 #include <ucontext.h>

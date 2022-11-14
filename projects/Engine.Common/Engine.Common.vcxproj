@@ -82,7 +82,6 @@
     <ClInclude Include="..\..\src\Engine.Common\RingBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Singleton.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\stdafx.h" />
-    <ClInclude Include="..\..\src\Engine.Common\stddg.h" />
     <ClInclude Include="..\..\src\Engine.Common\Stream.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\String.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Types.hpp" />

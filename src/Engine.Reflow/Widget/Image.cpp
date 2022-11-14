@@ -24,6 +24,10 @@ Image::~Image() {
     }
 }
 
+string Image::getTag() const noexcept {
+    return _STD format(R"(Image <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
 void Image::setImage(cref<decltype(_image)> image_, ptr<void> resource_) {
     _image = image_;
     _imageResource = resource_;
@@ -54,13 +58,40 @@ void Image::render(const ptr<ReflowCommandBuffer> cmd_) {
     );
 }
 
-void Image::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
+void Image::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_) {
 
     styleStack_.pushLayer();
     _computedStyle = _style->compute(shared_from_this(), styleStack_);
 
     const bool autoWidth { _computedStyle.width->type == ReflowUnitType::eAuto };
     const bool autoHeight { _computedStyle.height->type == ReflowUnitType::eAuto };
+
+    /**/
+
+    math::vec2 maxSize { limit_ };
+
+    if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
+        if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
+            maxSize.x = MIN(maxSize.x,
+                MAX(_computedStyle.maxWidth->value * space_.x - (_computedStyle.padding->x + _computedStyle.padding->z),
+                    0));
+        } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
+            maxSize.x = MIN(maxSize.x,
+                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0));
+        }
+    }
+
+    if (_computedStyle.maxHeight->type != ReflowUnitType::eAuto) {
+        if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
+            maxSize.y = MIN(maxSize.y,
+                MAX(_computedStyle.maxHeight->value * space_.y - (_computedStyle.padding->y + _computedStyle.padding->w)
+                    , 0));
+        } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
+            maxSize.y = MIN(maxSize.y,
+                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0));
+        }
+    }
 
     /**/
 
@@ -94,17 +125,7 @@ void Image::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySt
 
     /**/
 
-    if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
-        local.x = MIN(local.x, _computedStyle.maxWidth->value * space_.x);
-    } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
-        local.x = MIN(local.x, _computedStyle.maxWidth->value);
-    }
-
-    if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
-        local.y = MIN(local.y, _computedStyle.maxHeight->value * space_.y);
-    } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
-        local.y = MIN(local.y, _computedStyle.maxHeight->value);
-    }
+    local = math::compMin<float>(local, maxSize);
 
     /**/
 

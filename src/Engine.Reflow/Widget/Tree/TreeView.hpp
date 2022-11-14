@@ -51,6 +51,9 @@ namespace ember::engine::reflow {
     public:
         ~TreeViewBase() override = default;
 
+    public:
+        [[nodiscard]] string getTag() const noexcept override;
+
     protected:
         /**
          * Will generate a row component of type TreeItem
@@ -132,14 +135,14 @@ namespace ember::engine::reflow {
         }
 
     public:
-        void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) override {
+        void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_, ref<StyleKeyStack> styleStack_) override {
 
             if (_requiresRefresh) {
                 refreshTreeView();
                 _requiresRefresh = false;
             }
 
-            TreeViewBase::flow(ctx_, space_, styleStack_);
+            TreeViewBase::flow(ctx_, space_, limit_, styleStack_);
         }
 
     private:

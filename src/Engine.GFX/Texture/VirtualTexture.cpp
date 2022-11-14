@@ -2,6 +2,7 @@
 
 #include <ranges>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/Exception/NotImplementedException.hpp>
 
 #include "VirtualTexturePage.hpp"
 #include "VirtualTextureView.hpp"

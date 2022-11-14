@@ -3,6 +3,7 @@
 #include <fstream>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "../API/VkTranslate.hpp"
 #include "../Buffer/Buffer.hpp"

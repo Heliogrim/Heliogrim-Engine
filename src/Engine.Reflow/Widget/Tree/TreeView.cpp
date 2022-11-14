@@ -14,6 +14,10 @@ using namespace ember;
 static constexpr float ident_per_level = 12.F;
 static constexpr float row_min_height = 20.F;
 
+string TreeViewBase::getTag() const noexcept {
+    return _STD format(R"(TreeView <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
 sptr<Widget> TreeViewBase::generateRow(cref<TreeViewItem> view_, cref<sptr<Widget>> content_) {
 
     auto wrapper = make_sptr<TreeItem>();
@@ -30,14 +34,14 @@ void TreeViewBase::changeStateSelection(cref<sptr<Widget>> item_, const bool sel
 }
 
 EventResponse TreeViewBase::onFocus(cref<FocusEvent> event_) {
-    _state.focus = true;
+    _state |= WidgetStateFlagBits::eFocus;
     markAsPending();
 
     return VScrollBox::onFocus(event_);
 }
 
 EventResponse TreeViewBase::onBlur(cref<FocusEvent> event_) {
-    _state.focus = false;
+    _state.unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eFocus));
     markAsPending();
 
     return VScrollBox::onBlur(event_);

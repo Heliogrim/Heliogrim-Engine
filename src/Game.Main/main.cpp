@@ -1,3 +1,4 @@
+#include <Engine.Common/__macro.hpp>
 #include <Windows.h>
 
 #define DEBUG_CPP
@@ -6,6 +7,7 @@
 #include <Engine.Resource/File.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Profiler.hpp>
@@ -359,7 +361,7 @@ void ember_main_entry() {
                 constexpr auto raw { R"(Counted ticks '{}' with '{}' cycles)" };
                 auto formatted = std::string("Counted ticks '") + _STD to_string(event.tick) + "' with '" +
                     _STD to_string(markCounter) + "' cycles";
-                DEBUG_NMSG("TickEvent", formatted)
+                IM_DEBUG_LOG("TickEvent", formatted);
 
                 ++tmpTick;
                 tmpNextTick = now + _STD chrono::nanoseconds { delay };
@@ -1109,7 +1111,11 @@ void buildTestScene() {
 
         const_cast<ref<math::Transform>>(actor->getWorldTransform()).setPosition(math::vec3 { .8F, -1.F, 0.F });
         const_cast<ref<math::Transform>>(actor->getWorldTransform()).setScale(math::vec3 { .6F });
-        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({0.F, glm::radians(-90.F), 0.F}));
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({
+            0.F,
+            glm::radians(-90.F),
+            0.F
+        }));
 
         GetWorld()->addActor(actor);
         sceneActors.push_back(actor);
@@ -1123,7 +1129,11 @@ void buildTestScene() {
 
         const_cast<ref<math::Transform>>(actor->getWorldTransform()).setPosition(math::vec3 { -.8F, -1.F, 0.F });
         const_cast<ref<math::Transform>>(actor->getWorldTransform()).setScale(math::vec3 { .6F });
-        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({0.F, glm::radians(90.F), 0.F}));
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({
+            0.F,
+            glm::radians(90.F),
+            0.F
+        }));
 
         GetWorld()->addActor(actor);
         sceneActors.push_back(actor);
@@ -1137,7 +1147,11 @@ void buildTestScene() {
 
         const_cast<ref<math::Transform>>(actor->getWorldTransform()).setPosition(math::vec3 { 0.F, -1.F, .8F });
         const_cast<ref<math::Transform>>(actor->getWorldTransform()).setScale(math::vec3 { .6F });
-        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({0.F, glm::radians(180.F), 0.F}));
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({
+            0.F,
+            glm::radians(180.F),
+            0.F
+        }));
 
         GetWorld()->addActor(actor);
         sceneActors.push_back(actor);
@@ -1151,7 +1165,11 @@ void buildTestScene() {
 
         const_cast<ref<math::Transform>>(actor->getWorldTransform()).setPosition(math::vec3 { 0.F, -1.F, -.8F });
         const_cast<ref<math::Transform>>(actor->getWorldTransform()).setScale(math::vec3 { .6F });
-        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({0.F, glm::radians(0.F), 0.F}));
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({
+            0.F,
+            glm::radians(0.F),
+            0.F
+        }));
 
         GetWorld()->addActor(actor);
         sceneActors.push_back(actor);
