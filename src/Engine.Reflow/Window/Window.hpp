@@ -28,6 +28,9 @@ namespace ember::engine::reflow {
 
         ~Window() override;
 
+    public:
+        [[nodiscard]] string getTag() const noexcept override;
+
     private:
         void tidy();
 
@@ -85,7 +88,7 @@ namespace ember::engine::reflow {
     public:
         void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
-        void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) override;
+        void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_, ref<StyleKeyStack> styleStack_) override;
 
         void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
 

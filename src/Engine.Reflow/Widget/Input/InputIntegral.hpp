@@ -16,6 +16,9 @@ namespace ember::engine::reflow {
 
         ~InputIntegral() override;
 
+    public:
+        [[nodiscard]] string getTag() const noexcept override;
+
     private:
         sptr<HBox> _wrapper;
         sptr<Text> _text;
@@ -38,12 +41,16 @@ namespace ember::engine::reflow {
         void updateValueAndValidity(const bool propagate_, const bool emit_) override;
 
     public:
+        _STD function<void(input_type)> _callback = nullptr;
+
+    public:
         [[nodiscard]] input_type value() const noexcept override;
 
     public:
         void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
-        void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) override;
+        void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+            ref<StyleKeyStack> styleStack_) override;
 
         void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
 
@@ -54,7 +61,15 @@ namespace ember::engine::reflow {
 
         [[nodiscard]] math::vec2 screenOffset() const noexcept override;
 
+        [[nodiscard]] float shrinkFactor() const noexcept override;
+
+        [[nodiscard]] float growFactor() const noexcept override;
+
     public:
+        EventResponse onFocus(cref<FocusEvent> event_) override;
+
+        EventResponse onBlur(cref<FocusEvent> event_) override;
+
         EventResponse onKeyDown(cref<KeyboardEvent> event_) override;
 
         EventResponse onKeyUp(cref<KeyboardEvent> event_) override;

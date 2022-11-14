@@ -1,7 +1,7 @@
 #include "Scheduler.hpp"
 
 #include <Engine.Common/Make.hpp>
-#include <Engine.Common/stdafx.h>
+#include <Engine.Logging/Logger.hpp>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
@@ -65,8 +65,8 @@ void validate_task_ordering(task::__TaskDelegate task_) {
      * Warning: IO tasks are most common not guaranteed to return immediatly, causing unpredictable latency for other tasks.
      */
     if (src.strong() && task_->mask() == task::TaskMask::eIO) {
-        DEBUG_SNMSG(false, "WARN",
-            "Scheduled task with strong barrier guarantee and `TaskMask::eIO`. Could block scheduler for unexpected time...")
+        IM_CORE_WARN(
+            "Scheduled task with strong barrier guarantee and `TaskMask::eIO`. Could block scheduler for unexpected time...");
     }
 
     /**
@@ -75,16 +75,16 @@ void validate_task_ordering(task::__TaskDelegate task_) {
      * Warning: This might enforce serialized execution order, breaking parallel execution performance.
      */
     if (src.strong() && task_->mask() == task::TaskMask::eLower) {
-        DEBUG_SNMSG(false, "WARN",
-            "Scheduled task with strong barrier guarantee and `TaskMask::eLower`. Low(est) priority tasks should most likly be scheduled with weak guarantee...")
+        IM_CORE_WARN(
+            "Scheduled task with strong barrier guarantee and `TaskMask::eLower`. Low(est) priority tasks should most likly be scheduled with weak guarantee...");
     }
 
     /**
      *
      */
     if (src.stage == dst.stage && src.weak() && dst.weak()) {
-        DEBUG_SNMSG(false, "ERROR",
-            "Scheduled task with weak barrier guarantee at src stage, while src stage, dst stage and current stage are the same, is not allowed and will cause undefined execution order for this task.")
+        IM_CORE_WARN(
+            "Scheduled task with weak barrier guarantee at src stage, while src stage, dst stage and current stage are the same, is not allowed and will cause undefined execution order for this task.");
     }
 }
 #endif

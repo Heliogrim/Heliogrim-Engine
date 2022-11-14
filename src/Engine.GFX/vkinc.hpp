@@ -1,5 +1,18 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
+
+/**
+ * Graphic includes
+ */
+#if defined(__ANDROID__)
+#define VK_USE_PLATFORM_ANDROID_KHR
+#elif defined(__linux__)
+#define VK_USE_PLATFORM_XLIB_KHR
+#elif defined(_WIN32)
+#define VK_USE_PLATFORM_WIN32_KHR
+#endif
+
 // #define VULKAN_HPP_DISABLE_ENHANCED_MODE
 // #define VULKAN_HPP_NO_CONSTRUCTORS
 // #define VULKAN_HPP_NO_SETTERS

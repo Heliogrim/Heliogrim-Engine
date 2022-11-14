@@ -19,6 +19,10 @@ InputIntegral::InputIntegral(mref<sptr<BoundStyleSheet>> style_, mref<sptr<Bound
 
 InputIntegral::~InputIntegral() = default;
 
+string InputIntegral::getTag() const noexcept {
+    return _STD format(R"(InputIntegral <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
 void InputIntegral::setValue(const s64 value_) {
     _value = _STD to_string(value_);
     _text->setText(_value);
@@ -43,6 +47,11 @@ void InputIntegral::updateValueAndValidity(const bool propagate_, const bool emi
     }
 
     _status = InputControlStatus::eValid;
+
+    // TODO:
+    if (_callback) {
+        _callback(value());
+    }
 }
 
 Input<s64>::input_type InputIntegral::value() const noexcept {
@@ -58,9 +67,10 @@ void InputIntegral::render(const ptr<ReflowCommandBuffer> cmd_) {
     _text->render(cmd_);
 }
 
-void InputIntegral::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
+void InputIntegral::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_) {
     _wrapper->setParent(shared_from_this());
-    _wrapper->flow(ctx_, space_, styleStack_);
+    _wrapper->flow(ctx_, space_, limit_, styleStack_);
 }
 
 void InputIntegral::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
@@ -79,9 +89,27 @@ math::vec2 InputIntegral::screenOffset() const noexcept {
     return _wrapper->screenOffset();
 }
 
+float InputIntegral::shrinkFactor() const noexcept {
+    return _wrapper->shrinkFactor();
+}
+
+float InputIntegral::growFactor() const noexcept {
+    return _wrapper->growFactor();
+}
+
+EventResponse InputIntegral::onFocus(cref<FocusEvent> event_) {
+    _wrapper->state() |= WidgetStateFlagBits::eFocus;
+    return Input<long long>::onFocus(event_);
+}
+
+EventResponse InputIntegral::onBlur(cref<FocusEvent> event_) {
+    _wrapper->state().unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eFocus));
+    return Input<long long>::onBlur(event_);
+}
+
 EventResponse InputIntegral::onKeyDown(cref<KeyboardEvent> event_) {
 
-    if (not _state.focus) {
+    if (not _state.isFocus()) {
         return EventResponse::eUnhandled;
     }
 
@@ -136,7 +164,7 @@ EventResponse InputIntegral::onKeyDown(cref<KeyboardEvent> event_) {
 
 EventResponse InputIntegral::onKeyUp(cref<KeyboardEvent> event_) {
 
-    if (not _state.focus) {
+    if (not _state.isFocus()) {
         return EventResponse::eUnhandled;
     }
 

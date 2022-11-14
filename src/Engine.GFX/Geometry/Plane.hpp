@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Math/Vector.hpp>
+
 #include "Geometry.hpp"
 #include "../Device/Device.hpp"
 

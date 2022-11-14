@@ -11,6 +11,7 @@
 #include <Engine.Common/Math/__default.inl>
 #include <Engine.GFX.Glow.3D/Renderer/RevRenderer.hpp>
 #include <Engine.GFX.Glow.UI/Renderer/UIRenderer.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "RenderTarget.hpp"
 #include "todo.h"
@@ -301,16 +302,15 @@ void Graphics::tick(
      * Tick RenderTarget
      */
     if (not target_->ready()) {
-        DEBUG_SNMSG(false, "GFX",
-            "Tried to tick an unready RenderTarget. Please ensure the completness of RenderTargets before ticking/dispatching...")
+        IM_DEBUG_LOG(
+            "Tried to tick an unready RenderTarget. Please ensure the completness of RenderTargets before ticking/dispatching...");
         return;
     }
 
     auto* renderPass = target_->next();
 
     if (not renderPass) {
-        DEBUG_SNMSG(false, "GFX",
-            "Skipping graphics tick due to missing RenderPass (No next Swapchain Image) at RenderTarget")
+        IM_DEBUG_LOG("Skipping graphics tick due to missing RenderPass (No next Swapchain Image) at RenderTarget");
         return;
     }
 

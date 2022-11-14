@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Logging\Logger.hpp" />
+    <ClInclude Include="..\..\src\Engine.Logging\LogLevel.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Logging\Logger.cpp" />

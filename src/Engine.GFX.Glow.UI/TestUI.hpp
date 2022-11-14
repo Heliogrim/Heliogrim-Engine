@@ -8,6 +8,7 @@
 
 namespace ember {
     class Actor;
+    class ActorComponent;
 }
 
 namespace ember::engine::gfx {
@@ -19,9 +20,11 @@ extern ember::sptr<ember::engine::gfx::Texture> testTexture;
 extern ember::wptr<ember::engine::reflow::Widget> testFrameDisplay;
 extern ember::wptr<ember::engine::reflow::Widget> testFrameTime;
 
-extern ember::ptr<ember::Actor> editorSelectedTarget;
+extern ember::ptr<void> editorSelectedTarget;
 
 void storeEditorSelectedTarget(const ember::ptr<ember::Actor> target_);
+
+void storeEditorSelectedTarget(const ember::ptr<ember::ActorComponent> target_);
 
 void storeHierarchyActor(ember::cref<ember::Vector<ember::ptr<ember::Actor>>> targets_);
 

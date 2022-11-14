@@ -6,6 +6,7 @@
 
 #include "../__macro.hpp"
 #include "../API/VkTranslate.hpp"
+#include <Engine.Logging/Logger.hpp>
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -30,13 +31,13 @@ void Surface::setup() {
         createWindow(width, height);
         _surface = createApiSurface();
     } catch (std::exception& ex) {
-        std::cout << "Failed to create Vulkan surface: " << ex.what() << std::endl;
+        IM_CORE_ERRORF("Failed to create Vulkan surface: {}", ex.what());
         _application->destroy();
         exit(-1);
     }
 
     assert(_surface);
-    DEBUG_SNMSG(true, "VK", "Created vk::Surface successfully.")
+    IM_DEBUG_LOG("Created vk::Surface successfully.");
 }
 
 void Surface::destroy() {
@@ -93,7 +94,7 @@ ptr<engine::session::Window> Surface::createWindow(const uint32_t width_, const 
     _window->create().get();
 
     if (_window == nullptr) {
-        std::cout << "Could not create window." << std::endl;
+        IM_CORE_ERROR("Could not create window.");
         return nullptr;
     }
 

@@ -9,6 +9,7 @@
 #include "../Library/Types.hpp"
 #include "../Surface/Surface.hpp"
 #include "../Memory/VkAllocator.hpp"
+#include <Engine.Logging/Logger.hpp>
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -83,7 +84,7 @@ void Device::setup() {
 
         if (extSupport && swapChainAdequate) {
             _physicalDevice = entry;
-            DEBUG_SNMSG(true, "VK", "Found vk::PhysicDevice matching requirements.")
+            IM_DEBUG_LOG("Found vk::PhysicDevice matching requirements.");
             break;
         }
     }
@@ -167,7 +168,7 @@ void Device::setup() {
     #ifdef _DEBUG
     assert(_physicalDevice.createDevice(&dCi, nullptr, &_device) == vk::Result::eSuccess);
     assert(_physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface));
-    DEBUG_SNMSG(true, "VK", "Created vk::Device successfully.")
+    IM_DEBUG_LOG("Created vk::Device successfully.");
 
     #else
     _physicalDevice.createDevice(&dCi, nullptr, &_device);
@@ -212,7 +213,7 @@ void Device::setup() {
     assert(_graphicsQueue);
     assert(_computeQueue);
     assert(_transferQueue);
-    DEBUG_SNMSG(true, "VK", "Created vk::Queue's successfully.")
+    IM_DEBUG_LOG("Created vk::Queue's successfully.");
 
     /**
      * Setup
@@ -226,7 +227,7 @@ void Device::setup() {
     if (!_transferQueue->vkQueue()) {
         _transferQueue->setup();
     }
-    DEBUG_SNMSG(true, "VK", "Acquired vk::Queue's successfully.")
+    IM_DEBUG_LOG("Acquired vk::Queue's successfully.");
 }
 
 void Device::destroy() {

@@ -97,12 +97,17 @@ namespace ember::editor::ui {
                     }
 
                     const auto& sel { *(data_.begin()) };
-                    if (sel->type() != SceneViewEntryType::eActor) {
+                    if (sel->type() == SceneViewEntryType::eActor) {
+                        auto* actor { sel->template target<void>() };
+                        storeEditorSelectedTarget(static_cast<const ptr<Actor>>(actor));
                         return;
                     }
 
-                    auto* actor { sel->template target<void>() };
-                    storeEditorSelectedTarget(static_cast<const ptr<Actor>>(actor));
+                    if (sel->type() == SceneViewEntryType::eComponent) {
+                        auto* actor { sel->template target<void>() };
+                        storeEditorSelectedTarget(static_cast<const ptr<ActorComponent>>(actor));
+                        return;
+                    }
                 };
             }
 

@@ -16,6 +16,10 @@ InputText::InputText(mref<sptr<BoundStyleSheet>> style_, mref<sptr<BoundStyleShe
 
 InputText::~InputText() = default;
 
+string InputText::getTag() const noexcept {
+    return _STD format(R"(InputText <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
 void InputText::setPlaceholder(cref<string> placeholder_) {
     _placeholder = placeholder_;
 
@@ -33,9 +37,10 @@ void InputText::render(const ptr<ReflowCommandBuffer> cmd_) {
     _text->render(cmd_);
 }
 
-void InputText::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
+void InputText::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_) {
     _wrapper->setParent(shared_from_this());
-    _wrapper->flow(ctx_, space_, styleStack_);
+    _wrapper->flow(ctx_, space_, limit_, styleStack_);
 }
 
 void InputText::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
@@ -57,7 +62,7 @@ math::vec2 InputText::screenOffset() const noexcept {
 EventResponse InputText::onFocus(cref<FocusEvent> event_) {
     _text->setText(_value);
 
-    _wrapper->state().focus = true;
+    _wrapper->state() |= WidgetStateFlagBits::eFocus;
     return Input<std::string>::onFocus(event_);
 }
 
@@ -68,13 +73,13 @@ EventResponse InputText::onBlur(cref<FocusEvent> event_) {
         markAsPending();
     }
 
-    _wrapper->state().focus = false;
+    _wrapper->state().unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eFocus));
     return Input<std::string>::onBlur(event_);
 }
 
 EventResponse InputText::onKeyDown(cref<KeyboardEvent> event_) {
 
-    if (not _state.focus) {
+    if (not _state.isFocus()) {
         return EventResponse::eUnhandled;
     }
 
@@ -121,7 +126,7 @@ EventResponse InputText::onKeyDown(cref<KeyboardEvent> event_) {
 
 EventResponse InputText::onKeyUp(cref<KeyboardEvent> event_) {
 
-    if (not _state.focus) {
+    if (not _state.isFocus()) {
         return EventResponse::eUnhandled;
     }
 

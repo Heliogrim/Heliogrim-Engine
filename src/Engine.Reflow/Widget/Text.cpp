@@ -15,6 +15,10 @@ Text::Text(mref<sptr<BoundStyleSheet>> style_) :
 
 Text::~Text() = default;
 
+string Text::getTag() const noexcept {
+    return _STD format(R"(Text <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
 ref<BoundStyleSheet> Text::style() noexcept {
     return *_style;
 }
@@ -179,13 +183,42 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
     cmd_->popScissor();
 }
 
-void Text::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
+void Text::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_) {
 
     styleStack_.pushLayer();
     _computedStyle = _style->compute(shared_from_this(), styleStack_);
 
     const bool autoWidth { _computedStyle.width->type == ReflowUnitType::eAuto };
     const bool autoHeight { _computedStyle.height->type == ReflowUnitType::eAuto };
+
+    /**/
+
+    math::vec2 maxSize { limit_ };
+
+    if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
+        if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
+            maxSize.x = MIN(maxSize.x,
+                MAX(_computedStyle.maxWidth->value * space_.x - (_computedStyle.padding->x + _computedStyle.padding->z),
+                    0));
+        } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
+            maxSize.x = MIN(maxSize.x,
+                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0));
+        }
+    }
+
+    if (_computedStyle.maxHeight->type != ReflowUnitType::eAuto) {
+        if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
+            maxSize.y = MIN(maxSize.y,
+                MAX(_computedStyle.maxHeight->value * space_.y - (_computedStyle.padding->y + _computedStyle.padding->w)
+                    , 0));
+        } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
+            maxSize.y = MIN(maxSize.y,
+                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0));
+        }
+    }
+
+    /**/
 
     math::vec2 local { 0.F };
 
@@ -219,7 +252,9 @@ void Text::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeySta
 
     const auto baseSize { contentSize(space_) };
     _contentSize = baseSize;
+
     _innerSize = math::compMax<float>(baseSize, local);
+    _innerSize = math::compMin<float>(_innerSize, maxSize);
 
     styleStack_.popLayer();
     clearPending();
@@ -257,7 +292,7 @@ math::vec2 Text::screenOffset() const noexcept {
 
 bool Text::willChangeLayout(cref<math::vec2> space_, cref<StyleKeyStack> styleStack_) const noexcept {
 
-    if (_state.pending) {
+    if (_state.isProxyPending()) {
         return true;
     }
 

@@ -8,12 +8,16 @@ Menu::Menu() :
 
 Menu::~Menu() = default;
 
+string Menu::getTag() const noexcept {
+    return _STD format(R"(Menu <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
 void Menu::openMenu() {
-    Widget::_state.visible = true;
+    Widget::_state |= WidgetStateFlagBits::eVisible;
 }
 
 void Menu::closeMenu() {
-    Widget::_state.visible = false;
+    Widget::_state.unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eVisible));
 }
 
 sptr<Widget> Menu::getContent() const noexcept {
@@ -39,8 +43,9 @@ void Menu::render(const ptr<ReflowCommandBuffer> cmd_) {
     _content->render(cmd_);
 }
 
-void Menu::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
-    _content->flow(ctx_, space_, styleStack_);
+void Menu::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_) {
+    _content->flow(ctx_, space_, limit_, styleStack_);
 }
 
 void Menu::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {

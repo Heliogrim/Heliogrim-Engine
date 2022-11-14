@@ -4,6 +4,7 @@
 
 #include "../Fiber/FiberLaunchPad.hpp"
 #include "../Fiber/FiberPool.hpp"
+#include <Engine.Common/stdafx.h>
 
 using namespace ember::engine::scheduler::worker;
 using namespace ember::engine::scheduler::thread;

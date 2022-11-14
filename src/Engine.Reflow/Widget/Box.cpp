@@ -178,7 +178,7 @@ void Box::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     /* TODO: Relocate */
     for (const auto& child : *children()) {
-        if (child->state().visible && not cmd_->scissorCull(child->screenOffset(), child->outerSize())) {
+        if (child->state().isVisible() && not cmd_->scissorCull(child->screenOffset(), child->outerSize())) {
             child->render(cmd_);
         }
     }
@@ -233,7 +233,7 @@ math::vec2 Box::screenOffset() const noexcept {
 
 bool Box::willChangeLayout(cref<math::vec2> space_, cref<StyleKeyStack> styleStack_) const noexcept {
 
-    if (_state.pending) {
+    if (_state.isProxyPending()) {
         return true;
     }
 

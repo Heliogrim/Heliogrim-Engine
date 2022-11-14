@@ -22,6 +22,7 @@
 #include "RevDepthSharedNode.hpp"
 #include "Ember/StaticGeometryComponent.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
+#include <Engine.Logging/Logger.hpp>
 #include "Engine.GFX/Scene/StaticGeometryModel.hpp"
 
 #include "Engine.GFX/Texture/TextureFactory.hpp"
@@ -165,7 +166,7 @@ void RevEarlyBrdfLutNode::setup(cref<sptr<Device>> device_) {
     ss << (_STD chrono::duration_cast<_STD chrono::milliseconds>(end - start).count());
     ss << " ms"sv;
 
-    DEBUG_SNMSG(true, "LOG", ss.str());
+    IM_DEBUG_LOG(ss.str());
 }
 
 void RevEarlyBrdfLutNode::destroy() {

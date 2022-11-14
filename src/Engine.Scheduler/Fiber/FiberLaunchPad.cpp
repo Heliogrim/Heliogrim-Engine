@@ -1,5 +1,6 @@
 #include "FiberLaunchPad.hpp"
 
+#include <Engine.Common/__macro.hpp>
 #include <Windows.h>
 
 #ifdef _DEBUG

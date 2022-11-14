@@ -1,12 +1,11 @@
 #pragma once
-#include <Engine.Common/stdafx.h>
 #include <Engine.Common/Collection/Vector.hpp>
+#include "../vkinc.hpp"
 
 namespace ember::engine::gfx {
 
     class Application {
     public:
-
         using value_type = Application;
         using reference_type = Application&;
         using const_reference_type = const Application&;

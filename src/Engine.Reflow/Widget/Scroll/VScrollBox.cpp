@@ -1,10 +1,7 @@
 #include "VScrollBox.hpp"
 
 #include "../../Style/BoundStyleSheet.hpp"
-
-#if TRUE
-#include <Engine.Common/stdafx.h>
-#endif
+#include <Engine.Logging/Logger.hpp>
 
 using namespace ember::engine::reflow;
 using namespace ember;
@@ -13,6 +10,10 @@ VScrollBox::VScrollBox(mref<sptr<BoundStyleSheet>> style_) :
     VBox(_STD move(style_)) {}
 
 VScrollBox::~VScrollBox() = default;
+
+string VScrollBox::getTag() const noexcept {
+    return _STD format(R"(VScrollBox <{:#x}>)", reinterpret_cast<u64>(this));
+}
 
 void VScrollBox::setScrollTrack(cref<sptr<Widget>> track_) {
 
@@ -105,13 +106,16 @@ void VScrollBox::render(const ptr<ReflowCommandBuffer> cmd_) {
     cmd_->popScissor();
 }
 
-void VScrollBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
+void VScrollBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_) {
 
     styleStack_.pushLayer();
     _computedStyle = _style->compute(shared_from_this(), styleStack_);
 
     const bool autoWidth { _computedStyle.width->type == ReflowUnitType::eAuto };
     const bool autoHeight { _computedStyle.height->type == ReflowUnitType::eAuto };
+
+    /**/
 
     math::vec2 local { 0.F };
 
@@ -145,6 +149,35 @@ void VScrollBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<Style
     }
 
     /**/
+
+    math::vec2 maxSize { limit_ };
+
+    if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
+        if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
+            maxSize.x = MIN(maxSize.x,
+                MAX(_computedStyle.maxWidth->value * space_.x - (_computedStyle.padding->x + _computedStyle.padding->z),
+                    0));
+        } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
+            maxSize.x = MIN(maxSize.x,
+                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0));
+        }
+    }
+
+    if (_computedStyle.maxHeight->type != ReflowUnitType::eAuto) {
+        if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
+            maxSize.y = MIN(maxSize.y,
+                MAX(_computedStyle.maxHeight->value * space_.y - (_computedStyle.padding->y + _computedStyle.padding->w)
+                    , 0));
+        } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
+            maxSize.y = MIN(maxSize.y,
+                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0));
+        }
+    }
+
+    /**/
+    local = math::compMin<float>(local, maxSize);
+
+    /**/
     if (not _computedStyle.padding->zero()) {
         local.x = MAX(local.x - (_computedStyle.padding->x + _computedStyle.padding->z), 0.F);
         local.y = MAX(local.y - (_computedStyle.padding->y + _computedStyle.padding->w), 0.F);
@@ -155,7 +188,9 @@ void VScrollBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<Style
     math::vec2 innerChildMax { 0.F };
     for (const auto& widget : *children()) {
 
-        widget->flow(ctx_, local, styleStack_);
+        constexpr math::vec2 limit { _STD numeric_limits<float>::infinity() };
+
+        widget->flow(ctx_, local, limit, styleStack_);
         const auto bounding = widget->outerSize();
 
         if (widget->position() == ReflowPosition::eAbsolute) {
@@ -177,27 +212,7 @@ void VScrollBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<Style
     }
 
     /**/
-    if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
-        if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
-            local.x = MIN(local.x,
-                MAX(_computedStyle.maxWidth->value * space_.x - (_computedStyle.padding->x + _computedStyle.padding->z),
-                    0));
-        } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
-            local.x = MIN(local.x,
-                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0));
-        }
-    }
-
-    if (_computedStyle.maxHeight->type != ReflowUnitType::eAuto) {
-        if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
-            local.y = MIN(local.y,
-                MAX(_computedStyle.maxHeight->value * space_.y - (_computedStyle.padding->y + _computedStyle.padding->w)
-                    , 0));
-        } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
-            local.y = MIN(local.y,
-                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0));
-        }
-    }
+    local = math::compMin<float>(local, maxSize);
 
     /**/
     math::vec2 diff { innerChildAgg - local };
@@ -235,17 +250,18 @@ void VScrollBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<Style
 
         #if TRUE
         if (not perNode.zero() && _computedStyle.wrap.attr != ReflowWrap::eNoWrap) {
-            DEBUG_NMSG("WARN",
-                "Applying flex shrinking and wrapping at the same time will break layout (not supported).")
+            IM_DEBUG_LOG("Applying flex shrinking and wrapping at the same time will break layout (not supported).");
         }
         #endif
 
         /**/
         for (const auto& pair : rw) {
-            math::vec2 modified { local - perNode * pair.first->shrinkFactor() };
-            modified = math::compMax<float>(modified, math::vec2 { 0.F });
+            const math::vec2 limit {
+                _STD numeric_limits<float>::infinity(),
+                local.y - perNode.y * pair.first->shrinkFactor()
+            };
 
-            pair.first->flow(ctx_, modified, styleStack_);
+            pair.first->flow(ctx_, local, limit, styleStack_);
         }
 
         /**/
@@ -280,13 +296,13 @@ void VScrollBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<Style
     scrollSpace.x = 8.F;
 
     if (_scrollTrack) {
-        _scrollTrack->flow(ctx_, scrollSpace, styleStack_);
+        _scrollTrack->flow(ctx_, scrollSpace, limit_, styleStack_);
     }
 
     scrollSpace.y = 48.F;
 
     if (_scrollThumb) {
-        _scrollThumb->flow(ctx_, space_, styleStack_);
+        _scrollThumb->flow(ctx_, space_, limit_, styleStack_);
     }
 }
 

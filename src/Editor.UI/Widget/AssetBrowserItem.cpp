@@ -1,7 +1,6 @@
 #include "AssetBrowserItem.hpp"
 
 #include <iostream>
-#include <Engine.Common/stddg.h>
 #include <Engine.Common/stdafx.h>
 
 #include <Engine.Common/Collection/Vector.hpp>

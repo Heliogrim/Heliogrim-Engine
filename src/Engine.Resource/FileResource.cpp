@@ -1,4 +1,5 @@
 #include <fstream>
+#include <Engine.Common/__macro.hpp>
 #include <Windows.h>
 #include <string>
 

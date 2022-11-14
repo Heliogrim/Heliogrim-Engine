@@ -1,6 +1,7 @@
 #include "Session.hpp"
 
 #include <Ember/Ember.hpp>
+#include <Engine.Logging/Logger.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Event/ShutdownEvent.hpp>
@@ -66,8 +67,8 @@ void Session::setup() {
     #ifdef _DEBUG
     auto code = SDL_Init(SDL_INIT_VIDEO);
     if (code != 0) {
-        DEBUG_SNMSG(false, "SDL", "SDL should init correctly")
-        DEBUG_SNMSG(false, "SDL", SDL_GetError())
+        IM_CORE_ERROR("SDL should init correctly");
+        IM_CORE_ERROR(SDL_GetError());
         throw _STD runtime_error("Could not initialize SDL.");
     }
     #else

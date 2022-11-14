@@ -9,6 +9,10 @@ Form::Form() :
 
 Form::~Form() = default;
 
+string Form::getTag() const noexcept {
+    return R"(Form)";
+}
+
 void Form::setContent(cref<sptr<Widget>> content_) {
 
     content_->setParent(shared_from_this());
@@ -52,13 +56,14 @@ void Form::render(const ptr<ReflowCommandBuffer> cmd_) {
     _children.front()->render(cmd_);
 }
 
-void Form::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
+void Form::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_) {
 
     if (_children.empty()) {
         return;
     }
 
-    _children.front()->flow(ctx_, space_, styleStack_);
+    _children.front()->flow(ctx_, space_, limit_, styleStack_);
 }
 
 void Form::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../stdafx.h"
+#include <Engine.Logging/Logger.hpp>
 #include <unordered_map>
 #include <algorithm>
 #ifdef DEBUG_CPP
@@ -70,7 +71,7 @@ namespace ember::debug {
             if (ptr_) {
                 const auto pptr = std::find(stats->ptrs.begin(), stats->ptrs.end(), ptr_);
                 if (pptr == stats->ptrs.end()) {
-                    DEBUG_SNMSG(false, "Dbg", "Free memory block which is not tracked by this pointer.")
+                    IM_DEBUG_LOG("Free memory block which is not tracked by this pointer.");
                 } else {
                     stats->ptrs.erase(pptr);
                 }
@@ -79,7 +80,7 @@ namespace ember::debug {
             stats->allocated -= static_cast<intptr_t>(size_);
 
             if (stats->allocated < 0) {
-                DEBUG_SNMSG(false, "Dbg", "More memory freeed than allocated. Seam to have untracked memory.")
+                IM_DEBUG_LOG("More memory freeed than allocated. Seam to have untracked memory.");
             }
 
             updateDisplay();
@@ -90,8 +91,8 @@ namespace ember::debug {
 			std::unique_lock<std::mutex> lock(_mtx);
             #endif
 
-            DEBUG_MSG("")
-            DEBUG_SNMSG(true, "Dbg", "##### Memory Stats Tracking #####")
+            IM_DEBUG_LOG("");
+            IM_DEBUG_LOG("##### Memory Stats Tracking #####");
 
             for (const auto& mapEntry : _stats) {
                 const std::string key = mapEntry.first;
@@ -117,9 +118,7 @@ namespace ember::debug {
                         suffix = "GB";
                     }
 
-                    DEBUG_NMSG("Dbg",
-                        " " + key + " -> [ Flags: " + std::to_string(stats.flags) + " Size: " + std::to_string(size) +
-                        suffix + " ( " + std::to_string(stats.allocated) + " )]")
+                    IM_DEBUG_LOGF(R"( {} -> [ Flags: {} Size: {}{} ({})])", key, stats.flags, size, suffix, stats.allocated);
                 }
             }
         }

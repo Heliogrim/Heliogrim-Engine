@@ -4,6 +4,7 @@
 #include "Engine.Reflow/Style/BoundStyleSheet.hpp"
 
 #if TRUE
+#include <Engine.Logging/Logger.hpp>
 #include <Engine.Session/Session.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX/Device/Device.hpp>
@@ -30,6 +31,10 @@ Viewport::Viewport(mref<sptr<BoundStyleSheet>> style_) :
 
 Viewport::~Viewport() {
     tidy();
+}
+
+string Viewport::getTag() const noexcept {
+    return _STD format(R"(Viewport <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 void Viewport::tidy() {
@@ -157,7 +162,7 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     const auto result { _swapchain->consumeNext(image, imageSignal, imageWaits) };
     if (!result) {
-        DEBUG_SNMSG(false, "GFX", "Skipping viewporw draw due to missing next swapchain frame.")
+        IM_CORE_ERROR("Skipping viewporw draw due to missing next swapchain frame.");
     }
 
     if (result) {
@@ -179,7 +184,8 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 }
 
-void Viewport::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKeyStack> styleStack_) {
+void Viewport::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_) {
 
     styleStack_.pushLayer();
     _computedStyle = _style->compute(shared_from_this(), styleStack_);
@@ -187,6 +193,32 @@ void Viewport::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKe
 
     const bool autoWidth { style.width.attr.type == ReflowUnitType::eAuto };
     const bool autoHeight { style.height.attr.type == ReflowUnitType::eAuto };
+
+    /**/
+
+    math::vec2 maxSize { limit_ };
+
+    if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
+        if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
+            maxSize.x = MIN(maxSize.x,
+                MAX(_computedStyle.maxWidth->value * space_.x - (_computedStyle.padding->x + _computedStyle.padding->z),
+                    0));
+        } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
+            maxSize.x = MIN(maxSize.x,
+                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0));
+        }
+    }
+
+    if (_computedStyle.maxHeight->type != ReflowUnitType::eAuto) {
+        if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
+            maxSize.y = MIN(maxSize.y,
+                MAX(_computedStyle.maxHeight->value * space_.y - (_computedStyle.padding->y + _computedStyle.padding->w)
+                    , 0));
+        } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
+            maxSize.y = MIN(maxSize.y,
+                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0));
+        }
+    }
 
     /**/
 
@@ -220,17 +252,7 @@ void Viewport::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, ref<StyleKe
 
     /**/
 
-    if (style.maxWidth.attr.type == ReflowUnitType::eRelative) {
-        local.x = MIN(local.x, style.maxWidth.attr.value * space_.x);
-    } else if (style.maxWidth.attr.type == ReflowUnitType::eAbsolute) {
-        local.x = MIN(local.x, style.maxWidth.attr.value);
-    }
-
-    if (style.maxHeight.attr.type == ReflowUnitType::eRelative) {
-        local.y = MIN(local.y, style.maxHeight.attr.value * space_.y);
-    } else if (style.maxHeight.attr.type == ReflowUnitType::eAbsolute) {
-        local.y = MIN(local.y, style.maxHeight.attr.value);
-    }
+    local = math::compMin<float>(local, maxSize);
 
     /**/
 
