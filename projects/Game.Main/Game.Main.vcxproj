@@ -137,6 +137,9 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Editor.Action\Editor.Action.vcxproj">
+      <Project>{6733136c-88db-487a-943e-d52a1190e9cd}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Editor.UI\Editor.UI.vcxproj">
       <Project>{88b1a2bc-57f1-4969-918a-221f15decb23}</Project>
     </ProjectReference>
