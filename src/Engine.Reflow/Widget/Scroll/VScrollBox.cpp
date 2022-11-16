@@ -204,6 +204,15 @@ void VScrollBox::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math
     }
 
     /**/
+    if (_computedStyle.colGap.attr.type != ReflowUnitType::eAuto && children()->size() > 1) {
+        if (_computedStyle.colGap.attr.type == ReflowUnitType::eRelative) {
+            local.x += static_cast<float>(children()->size() - 1) * _computedStyle.colGap.attr.value * local.x;
+        } else if (_computedStyle.colGap.attr.type == ReflowUnitType::eAbsolute) {
+            local.x += static_cast<float>(children()->size() - 1) * _computedStyle.colGap.attr.value;
+        }
+    }
+
+    /**/
     local.x = MAX(local.x, innerChildMax.x);
 
     /**/
