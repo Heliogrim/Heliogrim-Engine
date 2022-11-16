@@ -115,6 +115,8 @@ sptr<ObjectEditorPanel> ObjectEditorPanel::make(const non_owning_rptr<ObjectEdit
 
     auto scroll { make_sptr<VScrollBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::ScrollBoxKey))) };
     scroll->style()->rowGap = ReflowUnit { ReflowUnitType::eAbsolute, 4.F };
+    scroll->style()->colGap = ReflowUnit { ReflowUnitType::eAbsolute, 4.F };
+
     panel->_content = scroll;
     panel->addChild(scroll);
 

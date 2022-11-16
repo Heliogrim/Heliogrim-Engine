@@ -109,6 +109,7 @@
     <ClInclude Include="..\..\src\Editor.UI\Widget\AssetBrowserItem.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Widget\AssetImportTypeItem.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Widget\Breadcrumb.hpp" />
+    <ClInclude Include="..\..\src\Editor.UI\Widget\Input\InputAsset.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Widget\Input\InputVec.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -130,6 +131,7 @@
     <ClCompile Include="..\..\src\Editor.UI\Widget\AssetBrowserItem.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Widget\AssetImportTypeItem.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Widget\Breadcrumb.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Widget\Input\InputAsset.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ember\Ember.vcxproj">

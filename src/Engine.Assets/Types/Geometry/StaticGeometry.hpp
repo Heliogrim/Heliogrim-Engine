@@ -49,7 +49,7 @@ namespace ember::engine::assets {
 
         [[nodiscard, deprecated]] u64 getFaceCount() const;
 
-        [[nodiscard, deprecated]] u32 getMaterialCount() const;
+        [[nodiscard]] u32 getMaterialCount() const;
 
         [[nodiscard, deprecated]] bool hasUvCoords();
 

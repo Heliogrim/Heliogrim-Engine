@@ -16,6 +16,7 @@
 #include "../../Color/Dark.hpp"
 #include "../../Style/Style.hpp"
 #include "../../Widget/Input/InputVec.hpp"
+#include "Editor.UI/Widget/Input/InputAsset.hpp"
 #include "Ember/Ember.hpp"
 
 using namespace ember::editor::ui;
@@ -100,8 +101,6 @@ void ObjectValueMapper<StaticGeometryComponent>::build(cref<sptr<engine::reflow:
     auto rot = make_sptr<InputVec3>();
     auto scale = make_sptr<InputVec3>();
 
-    auto assetGuid = make_sptr<InputIntegral>(makeInputBoxStyle(), makeInputTextStyle());
-
     pos->setLabel(0, "X");
     pos->setLabel(1, "Y");
     pos->setLabel(2, "Z");
@@ -122,7 +121,26 @@ void ObjectValueMapper<StaticGeometryComponent>::build(cref<sptr<engine::reflow:
     parent_->addChild(rot);
     parent_->addChild(scale);
 
-    parent_->addChild(assetGuid);
+    /**/
+
+    auto staticMesh { make_sptr<InputAsset>() };
+    parent_->addChild(staticMesh);
+
+    /**/
+
+    auto materials {
+        make_sptr<VBox>(BoundStyleSheet::make(StyleSheet {
+            .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .height { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+            .maxHeight { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .wrap { true, ReflowWrap::eNoWrap },
+            .colGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
+            .color { true, color::Dark::backgroundDefault },
+        }))
+    };
+    parent_->addChild(materials);
 }
 
 template <>
@@ -136,7 +154,7 @@ void ObjectValueMapper<StaticGeometryComponent>::update(cref<sptr<engine::reflow
     _STD static_pointer_cast<InputVec3, Widget>(children[2])->setValue(mat.rotation().euler());
     _STD static_pointer_cast<InputVec3, Widget>(children[3])->setValue(mat.scale());
 
-    _STD static_pointer_cast<InputIntegral, Widget>(children[4])->setValue(sgc.getStaticGeometryGuid().as_uint64());
+    _STD static_pointer_cast<InputAsset, Widget>(children[4])->setValue(sgc.getStaticGeometryGuid());
 
     /**/
 
@@ -156,26 +174,38 @@ void ObjectValueMapper<StaticGeometryComponent>::update(cref<sptr<engine::reflow
 
     /**/
 
-    _STD static_pointer_cast<InputIntegral, Widget>(children[4])->_callback = [sgc = &sgc](const s64 value_) {
+    const auto& sga { sgc.getStaticGeometryAsset() };
+    const auto materials { _STD static_pointer_cast<VBox, Widget>(children[5]) };
+    const auto overrides { sgc.overrideMaterials() };
 
-        const auto session { engine::Session::get() };
-        const auto db { session->modules().assetDatabase() };
+    const auto materialSlotCount { materials->children()->size() };
+    if (materialSlotCount > sga.getMaterialCount()) {
+        const Vector<sptr<Widget>> remove {
+            materials->children()->end() - (materialSlotCount - sga.getMaterialCount()),
+            materials->children()->end()
+        };
 
-        asset_guid guid {};
-        guid.as_uint64() = value_;
-        const auto query { db->query(guid) };
-
-        if (not query.exists()) {
-            return;
+        for (const auto& entry : remove) {
+            materials->removeChild(entry);
         }
 
-        if (query.get()->getTypeId() != engine::assets::StaticGeometry::typeId) {
-            return;
-        }
+    } else if (materialSlotCount < sga.getMaterialCount()) {
 
-        const auto dbe { Ember::assets().operator[]<StaticGeometryAsset>(query.guid()) };
-        sgc->setStaticGeometryByAsset(dbe.value);
-    };
+        for (auto i { materialSlotCount }; i < sga.getMaterialCount(); ++i) {
+            auto slot { make_sptr<InputAsset>() };
+            materials->addChild(slot);
+        }
+    }
+
+    for (u32 matIdx { 0ui32 }; matIdx < sga.getMaterialCount(); ++matIdx) {
+
+        if (matIdx < overrides.size()) {
+            static_cast<ptr<InputAsset>>((*materials->children())[matIdx].get())->setValue(overrides[matIdx].guid());
+
+        } else {
+            static_cast<ptr<InputAsset>>((*materials->children())[matIdx].get())->reset();
+        }
+    }
 }
 
 template <>

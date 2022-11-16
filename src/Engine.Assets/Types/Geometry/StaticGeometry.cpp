@@ -28,3 +28,8 @@ u64 StaticGeometry::getVertexCount() const {
 u64 StaticGeometry::getIndexCount() const {
     return _indexCount;
 }
+
+u32 StaticGeometry::getMaterialCount() const {
+    // TODO:
+    return 1ui32;
+}
