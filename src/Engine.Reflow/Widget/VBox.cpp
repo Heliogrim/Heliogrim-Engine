@@ -325,6 +325,12 @@ void VBox::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
     math::vec2 left { inner };
     left += aggregate * -1.F;
 
+    /**/
+    if (_computedStyle.colGap.attr.type != ReflowUnitType::eAuto && !children()->empty()) {
+        left.y -= _computedStyle.colGap.attr.value * (children()->size() - 1);
+    }
+    /**/
+
     left = math::compMax<float>(left, math::vec2 { 0.F });
 
     /**/
@@ -423,9 +429,9 @@ void VBox::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
         /**/
         if (_computedStyle.colGap->type != ReflowUnitType::eAuto) {
             if (_computedStyle.colGap->type == ReflowUnitType::eRelative) {
-                fwd.x += _computedStyle.colGap->value * inner.x;
+                fwd.y += _computedStyle.colGap->value * inner.y;
             } else if (_computedStyle.colGap->type == ReflowUnitType::eAbsolute) {
-                fwd.x += _computedStyle.colGap->value;
+                fwd.y += _computedStyle.colGap->value;
             }
         }
 
