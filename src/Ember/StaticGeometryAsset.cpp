@@ -36,6 +36,11 @@ bool StaticGeometryAsset::isValidType() const noexcept {
     return _typeId == engine::assets::StaticGeometry::typeId;
 }
 
-cref<string> StaticGeometryAsset::url() const noexcept {
-    throw NotImplementedException();
+u32 StaticGeometryAsset::getMaterialCount() const {
+
+    if (not internal()) {
+        return 0ui32;
+    }
+
+    return static_cast<ptr<engine::assets::StaticGeometry>>(internal())->getMaterialCount();
 }

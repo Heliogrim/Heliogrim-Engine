@@ -73,6 +73,9 @@
     <Filter Include="Headerdateien\Widget\Input">
       <UniqueIdentifier>{aef8e98b-99f3-4157-9972-4dc858f0d883}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Widget\Input">
+      <UniqueIdentifier>{9825410c-6437-435a-be95-f5c053ae33b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.UI\Panel\SceneHierarchyPanel.hpp">
@@ -135,6 +138,9 @@
     <ClInclude Include="..\..\src\Editor.UI\Widget\Input\InputVec.hpp">
       <Filter>Headerdateien\Widget\Input</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Widget\Input\InputAsset.hpp">
+      <Filter>Headerdateien\Widget\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.cpp">
@@ -190,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.UI\Modules\ObjectEditor\GeometryComponentValueMapper.cpp">
       <Filter>Quelldateien\Modules\ObjectEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Widget\Input\InputAsset.cpp">
+      <Filter>Quelldateien\Widget\Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

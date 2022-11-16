@@ -62,7 +62,7 @@ namespace ember {
         [[nodiscard]] bool isValidType() const noexcept;
 
     public:
-        [[nodiscard]] cref<string> url() const noexcept;
+        [[nodiscard]] u32 getMaterialCount() const;
     };
 
 }
