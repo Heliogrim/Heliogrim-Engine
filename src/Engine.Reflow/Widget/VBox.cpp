@@ -22,6 +22,94 @@ static void applyPaddingToOuter(cref<StyleSheet> style_, ref<math::vec2> target_
     target_.y -= style_.padding->w;
 }
 
+static math::vec2 calcImplicitInnerSize(cref<StyleSheet> style_, cref<math::vec2> space_, cref<math::vec2> limit_) {
+
+    math::vec2 local {};
+
+    /**/
+
+    if (style_.width->type == ReflowUnitType::eRelative) {
+        local.x = space_.x * style_.width->value;
+    } else if (style_.width->type == ReflowUnitType::eAbsolute) {
+        local.x = MIN(style_.width->value, space_.x);
+    }
+
+    if (style_.height->type == ReflowUnitType::eRelative) {
+        local.y = space_.y * style_.height->value;
+    } else if (style_.height->type == ReflowUnitType::eAbsolute) {
+        local.y = MIN(style_.height->value, space_.y);
+    }
+
+    /**/
+
+    if (style_.minWidth->type != ReflowUnitType::eAuto) {
+        if (style_.minWidth->type == ReflowUnitType::eAbsolute) {
+            local.x = MAX(local.x, style_.minWidth->value);
+        } else if (style_.minWidth->type == ReflowUnitType::eRelative) {
+            local.x = space_.x * style_.minWidth->value;
+        }
+    }
+
+    if (style_.minHeight->type != ReflowUnitType::eAuto) {
+        if (style_.minHeight->type == ReflowUnitType::eAbsolute) {
+            local.y = MAX(local.y, style_.minHeight->value);
+        } else if (style_.minHeight->type == ReflowUnitType::eRelative) {
+            local.y = space_.y * style_.minHeight->value;
+        }
+    }
+
+    /**/
+
+    math::vec2 maxSize { limit_ };
+
+    if (style_.maxWidth->type != ReflowUnitType::eAuto) {
+        if (style_.maxWidth->type == ReflowUnitType::eRelative) {
+            maxSize.x = MIN(maxSize.x, style_.maxWidth->value * space_.x);
+        } else if (style_.maxWidth->type == ReflowUnitType::eAbsolute) {
+            maxSize.x = MIN(maxSize.x, style_.maxWidth->value);
+        }
+    }
+
+    if (style_.maxHeight->type != ReflowUnitType::eAuto) {
+        if (style_.maxHeight->type == ReflowUnitType::eRelative) {
+            maxSize.y = MIN(maxSize.y, style_.maxHeight->value * space_.y);
+        } else if (style_.maxHeight->type == ReflowUnitType::eAbsolute) {
+            maxSize.y = MIN(maxSize.y, style_.maxHeight->value);
+        }
+    }
+
+    /**/
+
+    return local = compMin<float>(local, maxSize);
+}
+
+void clampInnerSize(cref<StyleSheet> style_, cref<math::vec2> space_, cref<math::vec2> limit_,
+    ref<math::vec2> target_) {
+
+    math::vec2 maxSize { limit_ };
+
+    if (style_.maxWidth->type != ReflowUnitType::eAuto) {
+        if (style_.maxWidth->type == ReflowUnitType::eRelative) {
+            maxSize.x = MIN(maxSize.x, style_.maxWidth->value * space_.x);
+        } else if (style_.maxWidth->type == ReflowUnitType::eAbsolute) {
+            maxSize.x = MIN(maxSize.x, style_.maxWidth->value);
+        }
+    }
+
+    if (style_.maxHeight->type != ReflowUnitType::eAuto) {
+        if (style_.maxHeight->type == ReflowUnitType::eRelative) {
+            maxSize.y = MIN(maxSize.y, style_.maxHeight->value * space_.y);
+        } else if (style_.maxHeight->type == ReflowUnitType::eAbsolute) {
+            maxSize.y = MIN(maxSize.y, style_.maxHeight->value);
+        }
+    }
+
+    /**/
+
+    applyPaddingToOuter(style_, maxSize);
+    target_ = math::compMin<float>(target_, maxSize);
+}
+
 void VBox::flow(
     cref<FlowContext> ctx_,
     cref<math::vec2> space_,
@@ -37,72 +125,8 @@ void VBox::flow(
 
     /**/
 
-    math::vec2 local { 0.F };
-
-    if (_computedStyle.width->type == ReflowUnitType::eRelative) {
-        local.x = space_.x * _computedStyle.width->value;
-    } else if (_computedStyle.width->type == ReflowUnitType::eAbsolute) {
-        local.x = MIN(_computedStyle.width->value, space_.x);
-    }
-
-    if (_computedStyle.height->type == ReflowUnitType::eRelative) {
-        local.y = space_.y * _computedStyle.height->value;
-    } else if (_computedStyle.height->type == ReflowUnitType::eAbsolute) {
-        local.y = MIN(_computedStyle.height->value, space_.y);
-    }
-
-    /**/
-    if (_computedStyle.minWidth->type != ReflowUnitType::eAuto) {
-        if (_computedStyle.minWidth->type == ReflowUnitType::eAbsolute) {
-            local.x = MAX(local.x, _computedStyle.minWidth->value);
-        } else if (_computedStyle.minWidth->type == ReflowUnitType::eRelative) {
-            local.x = space_.x * _computedStyle.minWidth->value;
-        }
-    }
-
-    if (_computedStyle.minHeight->type != ReflowUnitType::eAuto) {
-        if (_computedStyle.minHeight->type == ReflowUnitType::eAbsolute) {
-            local.y = MAX(local.y, _computedStyle.minHeight->value);
-        } else if (_computedStyle.minHeight->type == ReflowUnitType::eRelative) {
-            local.y = space_.y * _computedStyle.minHeight->value;
-        }
-    }
-
-    /**/
-
-    math::vec2 maxSize { limit_ };
-    applyPaddingToOuter(_computedStyle, maxSize);
-
-    if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
-        if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
-            maxSize.x = MIN(maxSize.x,
-                MAX(_computedStyle.maxWidth->value * space_.x - (_computedStyle.padding->x + _computedStyle.padding->z),
-                    0));
-        } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
-            maxSize.x = MIN(maxSize.x,
-                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0));
-        }
-    }
-
-    if (_computedStyle.maxHeight->type != ReflowUnitType::eAuto) {
-        if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
-            maxSize.y = MIN(maxSize.y,
-                MAX(_computedStyle.maxHeight->value * space_.y - (_computedStyle.padding->y + _computedStyle.padding->w)
-                    , 0));
-        } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
-            maxSize.y = MIN(maxSize.y,
-                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0));
-        }
-    }
-
-    /**/
-    if (not _computedStyle.padding->zero()) {
-        local.x = MAX(local.x - (_computedStyle.padding->x + _computedStyle.padding->z), 0.F);
-        local.y = MAX(local.y - (_computedStyle.padding->y + _computedStyle.padding->w), 0.F);
-    }
-
-    /**/
-    local = compMin<float>(local, maxSize);
+    math::vec2 local { calcImplicitInnerSize(_computedStyle, space_, limit_) };
+    applyPaddingToOuter(_computedStyle, local);
 
     /**/
     math::vec2 innerChildAgg { 0.F };
@@ -129,9 +153,11 @@ void VBox::flow(
     /**/
     if (_computedStyle.colGap.attr.type != ReflowUnitType::eAuto && children()->size() > 1) {
         if (_computedStyle.colGap.attr.type == ReflowUnitType::eRelative) {
-            local.x += static_cast<float>(children()->size() - 1) * _computedStyle.colGap.attr.value * local.x;
+            //local.y += static_cast<float>(children()->size() - 1) * _computedStyle.colGap.attr.value * local.y;
+            innerChildAgg.y += static_cast<float>(children()->size() - 1) * _computedStyle.colGap.attr.value * local.y;
         } else if (_computedStyle.colGap.attr.type == ReflowUnitType::eAbsolute) {
-            local.x += static_cast<float>(children()->size() - 1) * _computedStyle.colGap.attr.value;
+            //local.y += static_cast<float>(children()->size() - 1) * _computedStyle.colGap.attr.value;
+            innerChildAgg.y += static_cast<float>(children()->size() - 1) * _computedStyle.colGap.attr.value;
         }
     }
 
@@ -144,7 +170,7 @@ void VBox::flow(
     }
 
     /**/
-    local = math::compMin<float>(local, maxSize);
+    clampInnerSize(_computedStyle, space_, limit_, local);
 
     /**/
     math::vec2 diff { innerChildAgg - local };
@@ -214,7 +240,7 @@ void VBox::flow(
         }
 
         /**/
-        local = compMin<float>(local, maxSize);
+        clampInnerSize(_computedStyle, space_, limit_, local);
 
         /**/
         diff = innerChildAgg - local;
