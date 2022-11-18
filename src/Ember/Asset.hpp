@@ -134,6 +134,25 @@ namespace ember {
 
     public:
         /**
+         * Will get the name of the underlying internal asset
+         *
+         * @author Julius
+         * @date 18.11.2022
+         *
+         * @returns A view of the string name if present, otherwise an empty string_view
+         */
+        [[nodiscard]] string_view getAssetName() const noexcept;
+
+        /**
+         * Will set the name for the underlying internal asset, otherwise drop the call silently
+         *
+         * @author Julius
+         * @date 18.11.2022
+         */
+        void setAssetName(string_view assetName_);
+
+    public:
+        /**
          * Query if 'other_' is equal asset type
          *
          * @author Julius

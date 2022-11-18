@@ -39,6 +39,9 @@ namespace ember::editor {
 
     public:
         [[nodiscard]] virtual operator ptr<await_signal_sub_type>() const noexcept = 0;
+
+    public:
+        [[nodiscard]] virtual bool failed() const noexcept = 0;
     };
 
 }

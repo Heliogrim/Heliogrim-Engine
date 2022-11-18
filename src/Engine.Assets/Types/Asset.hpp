@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 #include <Engine.Reflect/EmberReflect.hpp>
@@ -85,5 +86,16 @@ namespace ember::engine::assets {
          * @returns The type identifier.
          */
         [[nodiscard]] asset_type_id getTypeId() const noexcept;
+
+    protected:
+        /**
+         * Asset Name
+         */
+        string _assetName;
+
+    public:
+        [[nodiscard]] string_view getAssetName() const noexcept;
+
+        void setAssetName(string_view assetName_);
     };
 }

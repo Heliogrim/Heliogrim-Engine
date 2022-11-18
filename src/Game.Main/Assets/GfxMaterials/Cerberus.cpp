@@ -22,4 +22,6 @@ Cerberus::Cerberus() :
         texture::CerberusMetalness::unstable_auto_guid(),
         invalid_asset_guid,
         invalid_asset_guid
-    ) {}
+    ) {
+    setAssetName("Cerberus Material"sv);
+}

@@ -25,5 +25,5 @@ bool ActionDispatcher::operator()(cref<sptr<Action>> action_, const bool reverti
     }
 
     await(*action_);
-    return true;
+    return not action_->failed();
 }

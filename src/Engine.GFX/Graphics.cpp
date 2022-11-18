@@ -23,6 +23,8 @@
 #include "Loader/MaterialLoader.hpp"
 #include "Loader/RevTextureLoader.hpp"
 #include "Loader/StaticGeometryLoader.hpp"
+#include "Importer/ImageImporter.hpp"
+#include "Importer/ImageFileTypes.hpp"
 #include "Renderer/HORenderPass.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Shader/ShaderStorage.hpp"
@@ -569,7 +571,16 @@ void Graphics::registerLoader() {
     loader.registerLoader<assets::GfxMaterial>(mtl);
 }
 
-void Graphics::registerImporter() {}
+void Graphics::registerImporter() {
+
+    /**
+     *
+     */
+    auto* manager { _session->modules().resourceManager() };
+    auto& importer { manager->importer() };
+
+    importer.registerImporter(gfx::ImageFileType::Ktx2, make_ptr<KtxImporter>());
+}
 
 #if TRUE
 // Warning: Experimental Test

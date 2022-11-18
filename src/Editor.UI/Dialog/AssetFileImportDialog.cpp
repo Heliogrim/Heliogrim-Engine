@@ -20,6 +20,9 @@
 #include "Editor.UI/Style/Style.hpp"
 #include "Engine.Reflow/Window/PopupLayer.hpp"
 #include "Engine.Reflow/Window/Window.hpp"
+#include "Editor.Action/ActionManager.hpp"
+#include "Editor.Action/Action/Import/SimpleImportAction.hpp"
+#include "Ember/Ember.hpp"
 
 #if TRUE
 void testCreateAsset(ember::cref<ember::Url> target_);
@@ -476,7 +479,20 @@ sptr<Dialog> AssetFileImportDialog::make(const ptr<AssetBrowser> browser_, cref<
             IM_CORE_LOGF("Importing new asset from `{}` to `{}`.", diag->_source.path(), diag->_target.path());
 
             /**/
-            testCreateAsset(diag->_source);
+            //testCreateAsset(diag->_source);
+            if (not ActionManager::get()) {
+                ActionManager::make();
+            }
+
+            const auto action { make_sptr<SimpleImportAction>(diag->_source, diag->_target) };
+
+            execute([action]() {
+                ActionManager::get()->apply(action);
+
+                for (const auto& asset : action->importedAssets()) {
+                    Ember::assets().__tmp__internal().insert(asset->get_guid(), asset->getTypeId(), asset);
+                }
+            });
         });
 
     /**/

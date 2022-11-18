@@ -128,6 +128,8 @@
     <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\ProcessedModelBatch.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\GraphicPipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Graphics.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Importer\ImageFileTypes.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Importer\KtxImporter.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Loader\FontLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Loader\MaterialLoader.cpp" />
@@ -253,6 +255,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Handle\MaterialHandler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Handle\ModelHandler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Handle\TextureHandler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Importer\ImageFileTypes.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Importer\ImageImporter.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Importer\ModelImporter.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Inc.hpp" />

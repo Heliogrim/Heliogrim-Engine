@@ -1,5 +1,7 @@
 #include "Asset.hpp"
 
+#include <Engine.Assets/Types/Asset.hpp>
+
 using namespace ember;
 
 Asset::Asset(cref<asset_guid> guid_, cref<asset_type_id> typeId_, ptr<void> internal_) noexcept :
@@ -39,6 +41,20 @@ Asset::operator const asset_type_id&() const noexcept {
 
 Asset::operator asset_type_id() noexcept {
     return _typeId;
+}
+
+string_view Asset::getAssetName() const noexcept {
+    if (_internal) {
+        return static_cast<ptr<::ember::engine::assets::Asset>>(_internal)->getAssetName();
+    }
+
+    return {};
+}
+
+void Asset::setAssetName(string_view assetName_) {
+    if (_internal) {
+        static_cast<ptr<::ember::engine::assets::Asset>>(_internal)->setAssetName(assetName_);
+    }
 }
 
 bool Asset::isEqualType(const ptr<const Asset> other_) const noexcept {
