@@ -40,3 +40,7 @@ void DelegateAction::reverse() {
     _bwd();
     setFinished();
 }
+
+bool DelegateAction::failed() const noexcept {
+    return false;
+}

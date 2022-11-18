@@ -15,6 +15,10 @@ namespace ember::engine::serialization {
         assetGuidLayout->reflect().storeType<asset_guid>();
         assetGuidLayout->describe();
 
+        const auto assetNameLayout = make_sptr<DataLayout<u8>>();
+        assetNameLayout->reflect().storeType<u8>();
+        assetNameLayout->describe();
+
         const auto urlLayout = make_sptr<DataLayout<Url>>();
         urlLayout->reflect().storeType<Url>();
         urlLayout->describe();
@@ -22,6 +26,7 @@ namespace ember::engine::serialization {
         /**/
         defineValue<LayoutDefineValueType::eUInt64>(offsetof(Image, _guid));
         defineValue<LayoutDefineValueType::eUInt64>(offsetof(Image, _type));
+        defineSlice<string>(offsetof(Image, _assetName), assetNameLayout);
 
         /**/
         defineSlice<Vector<Url>>(offsetof(Image, _sources), urlLayout);

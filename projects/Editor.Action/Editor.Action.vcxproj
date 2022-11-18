@@ -95,6 +95,7 @@
     <ClInclude Include="..\..\src\Editor.Action\Action\ActionTypeId.hpp" />
     <ClInclude Include="..\..\src\Editor.Action\Action\DelegateAction.hpp" />
     <ClInclude Include="..\..\src\Editor.Action\Action\Import\ImportAction.hpp" />
+    <ClInclude Include="..\..\src\Editor.Action\Action\Import\SimpleImportAction.hpp" />
     <ClInclude Include="..\..\src\Editor.Action\Action\SimpleAction.hpp" />
     <ClInclude Include="..\..\src\Editor.Action\Log\ActionDispatcher.hpp" />
     <ClInclude Include="..\..\src\Editor.Action\Log\ActionLog.hpp" />
@@ -105,6 +106,8 @@
     <ClCompile Include="..\..\src\Editor.Action\ActionManager.cpp" />
     <ClCompile Include="..\..\src\Editor.Action\Action\Action.cpp" />
     <ClCompile Include="..\..\src\Editor.Action\Action\DelegateAction.cpp" />
+    <ClCompile Include="..\..\src\Editor.Action\Action\Import\ImportAction.cpp" />
+    <ClCompile Include="..\..\src\Editor.Action\Action\Import\SimpleImportAction.cpp" />
     <ClCompile Include="..\..\src\Editor.Action\Action\SimpleAction.cpp" />
     <ClCompile Include="..\..\src\Editor.Action\Log\ActionDispatcher.cpp" />
     <ClCompile Include="..\..\src\Editor.Action\Log\ActionLog.cpp" />

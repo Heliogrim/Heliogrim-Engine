@@ -39,6 +39,9 @@ namespace ember::editor {
         void apply() override;
 
         void reverse() override;
+
+    public:
+        [[nodiscard]] bool failed() const noexcept override;
     };
 
 }

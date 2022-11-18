@@ -169,6 +169,9 @@
     <Filter Include="Quelldateien\Resource">
       <UniqueIdentifier>{3948f78b-e611-4f87-a3f5-d6f5b8a12c2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Importer">
+      <UniqueIdentifier>{aff54484-1f05-4ac8-a451-0d191109256b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX\Inc.hpp">
@@ -699,6 +702,9 @@
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\__fwd.hpp">
       <Filter>Headerdateien\Swapchain</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Importer\ImageFileTypes.hpp">
+      <Filter>Headerdateien\Importer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
@@ -1018,6 +1024,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureView.cpp">
       <Filter>Quelldateien\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Importer\KtxImporter.cpp">
+      <Filter>Quelldateien\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Importer\ImageFileTypes.cpp">
+      <Filter>Quelldateien\Importer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

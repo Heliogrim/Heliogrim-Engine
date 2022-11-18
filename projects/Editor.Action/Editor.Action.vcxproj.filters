@@ -28,6 +28,9 @@
     <Filter Include="Quelldateien\Log">
       <UniqueIdentifier>{19c5d7ca-84e3-43a5-9468-950fbd2b2cf9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Action\Import">
+      <UniqueIdentifier>{444591e8-7591-4f98-a9ca-a94f6cf17fef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.Action\Action\Action.hpp">
@@ -60,6 +63,9 @@
     <ClInclude Include="..\..\src\Editor.Action\Action\DelegateAction.hpp">
       <Filter>Headerdateien\Action</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Editor.Action\Action\Import\SimpleImportAction.hpp">
+      <Filter>Headerdateien\Action\Import</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.Action\Action\Action.cpp">
@@ -79,6 +85,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.Action\Action\DelegateAction.cpp">
       <Filter>Quelldateien\Action</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.Action\Action\Import\SimpleImportAction.cpp">
+      <Filter>Quelldateien\Action\Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.Action\Action\Import\ImportAction.cpp">
+      <Filter>Quelldateien\Action\Import</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -13,6 +13,10 @@
 #include "Engine.GFX/Resource/TextureResource.hpp"
 #include "Engine.Resource/LoaderManager.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
+#include <Ember/AssetDatabase.hpp>
+#include <Ember/AssetDatabaseResult.hpp>
+
+#include "Ember/Ember.hpp"
 
 using namespace ember::editor::ui;
 using namespace ember::engine::reflow;
@@ -82,7 +86,8 @@ using namespace ember;
 }
 
 InputAsset::InputAsset() :
-    Input() {
+    Input(),
+    _value(invalid_asset_guid) {
     setup();
 }
 
@@ -278,5 +283,18 @@ Input<asset_guid>::input_type InputAsset::value() const noexcept {
 
 void InputAsset::setValue(cref<asset_guid> assetGuid_) {
     _value = assetGuid_;
-    _input->setPlaceholder(_STD to_string(_value.as_uint64()));
+    _input->setPlaceholder(_STD format(R"(<<{}>>)", _value.as_uint64()));
+
+    /**/
+
+    const auto query = Ember::assets()[assetGuid_];
+    if (query.flags & AssetDatabaseResultType::eSuccess) {
+
+        const auto name { query.value.getAssetName() };
+        if (name.empty()) {
+            return;
+        }
+
+        _input->setPlaceholder(string { name });
+    }
 }
