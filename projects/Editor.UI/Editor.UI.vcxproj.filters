@@ -141,6 +141,9 @@
     <ClInclude Include="..\..\src\Editor.UI\Widget\Input\InputAsset.hpp">
       <Filter>Headerdateien\Widget\Input</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Widget\Collapse.hpp">
+      <Filter>Headerdateien\Widget</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.cpp">
@@ -199,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.UI\Widget\Input\InputAsset.cpp">
       <Filter>Quelldateien\Widget\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Widget\Collapse.cpp">
+      <Filter>Quelldateien\Widget</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
