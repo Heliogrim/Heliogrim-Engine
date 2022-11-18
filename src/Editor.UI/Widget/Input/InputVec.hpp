@@ -128,9 +128,9 @@ namespace ember::editor::ui {
                 StyleSheet {
                     .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
                     .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .minHeight = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-                    .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-                    .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                    .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                    .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                    .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
                     .wrap = { true, ReflowWrap::eNoWrap },
                     .colGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
                     .rowGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 8.F } },
