@@ -18,6 +18,7 @@
 #include "../Helper/AssetBrowserHelper.hpp"
 #include "../Panel/AssetBrowserPanel.hpp"
 #include "../Style/Style.hpp"
+#include "Engine.Input/Input.hpp"
 
 using namespace ember::engine::reflow;
 using namespace ember::editor::ui;
@@ -164,6 +165,29 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
     } else {
 
         assert(not self->_fqUrls.empty());
+
+        [[maybe_unused]] const auto _ = self->addOnClick(
+            [self, panel = wptr<AssetBrowserPanel> { panel_ }](cref<engine::input::event::MouseButtonEvent> event_) {
+                if (not event_._down || event_._button != /* SDL_BUTTON_LEFT */1) {
+                    return;
+                }
+
+                if (panel.expired()) {
+                    return;
+                }
+
+                /**/
+                if (self->_virtUrl.path().contains("rock_08_diff_8k.imasset")) {
+                    const ptr<engine::input::DragDropSender> sender = engine::Session::get()->modules().input()->
+                        dragDropSender();
+
+                    Vector<string> paths {};
+                    paths.push_back(string { self->_virtUrl.path() });
+
+                    sender->sendDragFiles(paths);
+                }
+                /**/
+            });
 
         assetType = helper->getAssetTypeByFile(self->_fqUrls.front());
         iconAsset = helper->getItemIconByAssetType(assetType);

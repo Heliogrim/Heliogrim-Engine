@@ -1,5 +1,8 @@
 #include "Win32Window.hpp"
 
+#include "Session.hpp"
+#include "Engine.Input/Input.hpp"
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 #include <SDL2/SDL_vulkan.h>
@@ -34,6 +37,9 @@ concurrent::future<void> Win32Window::create() {
 
         DEBUG_ASSERT(_wnd != nullptr, "Window should be created.")
 
+        /**/
+        Session::get()->modules().input()->captureWindow(this);
+        /**/
     });
 
     auto res { p.get() };
@@ -46,6 +52,10 @@ concurrent::future<void> Win32Window::create() {
 concurrent::future<void> Win32Window::destroy() {
 
     ember::concurrent::promise<void> p([this]() {
+        /**/
+        Session::get()->modules().input()->releaseWindow(this);
+        /**/
+
         SDL_DestroyWindow(_wnd);
         _wnd = nullptr;
     });

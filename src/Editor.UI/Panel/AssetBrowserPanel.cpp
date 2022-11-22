@@ -22,6 +22,9 @@
 #if TRUE
 #include <Engine.GFX.Glow.UI/TestUI.hpp>
 #include "../Menu/ContextMenu.hpp"
+#include "Editor.Action/ActionManager.hpp"
+#include "Editor.Action/Action/Import/SimpleImportAction.hpp"
+#include "Ember/Ember.hpp"
 #endif
 
 using namespace ember::editor::ui;
@@ -342,8 +345,30 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
         return result;
     }
 
-    const Url source { "file"sv, static_cast<const char*>(event_._data) };
-    openImportDialog(source);
+    if (event_._data.files->paths.size() == 1ui64) {
+        const Url source { "file"sv, event_._data.files->paths.front() };
+        openImportDialog(source);
+
+    } else {
+
+        if (not ActionManager::get()) {
+            ActionManager::make();
+        }
+
+        for (const auto& path : event_._data.files->paths) {
+
+            _STD filesystem::path cwd { _browserCwd.path() };
+            const auto action { make_sptr<SimpleImportAction>(Url { "file"sv, path }, Url { ""sv, cwd.string() }) };
+
+            execute([action]() {
+                ActionManager::get()->apply(action);
+
+                for (const auto& asset : action->importedAssets()) {
+                    Ember::assets().__tmp__internal().insert(asset->get_guid(), asset->getTypeId(), asset);
+                }
+            });
+        }
+    }
 
     return EventResponse::eConsumed;
 }

@@ -114,6 +114,13 @@ namespace ember::engine {
         _STD thread _thread;
         scheduler::task::SignaledQueue _queue;
 
+    public:
+        [[nodiscard]] ref<scheduler::task::SignaledQueue> sessionSignalQueue() noexcept;
+
+    private:
+    public:
+        u64 _threadId;
+
     private:
         Vector<ptr<session::Window>> _windows;
 

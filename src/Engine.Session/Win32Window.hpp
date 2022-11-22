@@ -44,6 +44,7 @@ namespace ember::engine::session {
         ~Win32Window() noexcept override;
 
     private:
+    public:
         ptr<SDL_Window> _wnd;
 
         ptr<scheduler::task::SignaledQueue> _queue;

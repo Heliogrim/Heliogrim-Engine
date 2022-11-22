@@ -358,13 +358,13 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     uiTestPanel->flow(context, ava, ava, stack);
     auto end = _STD chrono::high_resolution_clock::now();
 
-    IM_DEBUG_LOGF("Flow took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
+    //IM_DEBUG_LOGF("Flow took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
 
     start = _STD chrono::high_resolution_clock::now();
     uiTestPanel->shift(context, zero);
     end = _STD chrono::high_resolution_clock::now();
 
-    IM_DEBUG_LOGF("Shift took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
+    //IM_DEBUG_LOGF("Shift took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
 
     start = _STD chrono::high_resolution_clock::now();
     math::fExtent2D rootScissor { context.scissor };
@@ -373,7 +373,7 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     assert(rootScissor == uiCmd.popScissor());
     end = _STD chrono::high_resolution_clock::now();
 
-    IM_DEBUG_LOGF("Render took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
+    //IM_DEBUG_LOGF("Render took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
 
     lck.unlock();
 
