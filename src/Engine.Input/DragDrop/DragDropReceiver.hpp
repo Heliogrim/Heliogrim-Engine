@@ -1,0 +1,38 @@
+#pragma once
+
+#include <functional>
+#include <Engine.Common/Wrapper.hpp>
+
+#include "../DragDropEvent.hpp"
+
+namespace ember::engine::input {
+
+    class __declspec(novtable) DragDropReceiver {
+    public:
+        using this_type = DragDropReceiver;
+
+    protected:
+        DragDropReceiver() = default;
+
+    public:
+        virtual ~DragDropReceiver() noexcept = default;
+
+    public:
+        virtual void setup() = 0;
+
+        virtual void destroy() = 0;
+
+    protected:
+        _STD function<bool(sptr<event::DragDropEvent> event_)> _onDrag;
+        _STD function<bool(sptr<event::DragDropEvent> event_)> _onDrop;
+        _STD function<bool(sptr<event::DragDropEvent> event_)> _onMove;
+
+    public:
+        void setOnDrag(mref<decltype(_onDrag)> onDrag_);
+
+        void setOnDrop(mref<decltype(_onDrag)> onDrop_);
+
+        void setOnMove(mref<decltype(_onDrag)> onMove_);
+    };
+
+}

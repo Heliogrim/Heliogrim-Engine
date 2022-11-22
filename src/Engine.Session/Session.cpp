@@ -56,6 +56,12 @@ void Session::tidy() {
 
 void Session::setup() {
 
+    #if ENV_MSVC
+    const auto oleInitRes = OleInitialize(NULL);
+    assert(oleInitRes == S_OK);
+    #else
+    #endif
+
     /**
      *
      */
@@ -81,11 +87,18 @@ void Session::setup() {
         [&, this]() {
 
             #ifdef WIN32
+            _threadId = GetCurrentThreadId();
             SetThreadDescription(GetCurrentThread(), L"Session Thread");
             #endif
 
+            #if ENV_MSVC
+            const auto oleInitRes = OleInitialize(NULL);
+            assert(oleInitRes == S_OK);
+            #else
+            #endif
+
             #if TRUE
-            SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
+            //SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
             #endif
 
             SDL_Event event;
@@ -187,6 +200,7 @@ void Session::setup() {
 
                             auto* rfile { event.drop.file };
 
+                            /*
                             math::ivec2 point { lastPoint };
                             SDL_PumpEvents();
                             [[maybe_unused]] u32 _ { SDL_GetMouseState(&point.x, &point.y) };
@@ -196,6 +210,7 @@ void Session::setup() {
 
                             const input::event::DragDropEvent dde { point, type, data };
                             emitter().emit(dde);
+                             */
 
                             SDL_free(rfile);
                         }
@@ -331,6 +346,10 @@ cref<sptr<Session::value_type>> Session::get() noexcept {
     }
 
     return session;
+}
+
+ref<scheduler::task::SignaledQueue> Session::sessionSignalQueue() noexcept {
+    return _queue;
 }
 
 ptr<session::Window> Session::makeWindow(cref<string_view> title_, cref<math::uExtent2D> extent_) {

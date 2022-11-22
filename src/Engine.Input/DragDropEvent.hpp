@@ -1,13 +1,28 @@
 #pragma once
 
+#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/String.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Event/Event.hpp>
 
+#include "DragDrop/DragDropObject.hpp"
+
 namespace ember::engine::input::event {
 
-    enum class DragDropEventType : u64 {
-        eDropFileType = ("Drop::File"_typeId).data,
-        eDropTextType = ("Drop::Text"_typeId).data
+    using DragDropEventType = ::ember::engine::input::DragDropObjectType;
+
+    struct DragDropEventFilePayload final {
+        Vector<string> paths;
+    };
+
+    struct DragDropEventTextPayload final {
+        string data;
+    };
+
+    union DragDropEventPayload {
+        ptr<void> _;
+        ptr<DragDropEventFilePayload> files;
+        ptr<DragDropEventTextPayload> text;
     };
 
     class DragDropEvent final :
@@ -24,21 +39,21 @@ namespace ember::engine::input::event {
         explicit DragDropEvent(
             cref<math::ivec2> pointer_,
             cref<DragDropEventType> type_,
-            ptr<void> data_
+            mref<DragDropEventPayload> data_
         ) noexcept;
 
         DragDropEvent(cref<this_type> other_) noexcept = default;
 
         DragDropEvent(mref<this_type> other_) noexcept = default;
 
-        ~DragDropEvent() noexcept = default;
+        ~DragDropEvent() noexcept;
 
-    //private:
+        //private:
     public:
         math::ivec2 _pointer;
 
         DragDropEventType _type;
-        ptr<void> _data;
+        DragDropEventPayload _data;
     };
 
 }

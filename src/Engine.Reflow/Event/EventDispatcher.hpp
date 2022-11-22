@@ -178,7 +178,10 @@ namespace ember::engine::reflow {
         template <>
         EventResponse dispatch(cref<sptr<Window>> window_, cref<DragDropEvent> event_) {
 
-            const math::vec2 point { static_cast<float>(event_._pointer.x), static_cast<float>(event_._pointer.y) };
+            const math::vec2 point {
+                static_cast<float>(event_._pointer.x),
+                static_cast<float>(event_._pointer.y)
+            };
 
             Stack<sptr<Widget>> backlog {};
             EventResponse state { EventResponse::eUnhandled };

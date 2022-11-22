@@ -8,6 +8,7 @@
 namespace ember::engine {
     class Audio;
     class Graphics;
+    class Input;
     class Network;
     class Physics;
     class ResourceManager;
@@ -69,6 +70,18 @@ namespace ember::engine::session {
 
         void setGraphics(const ptr<Graphics> graphics_) {
             _graphics = graphics_;
+        }
+
+    private:
+        ptr<Input> _input;
+
+    public:
+        [[nodiscard]] ptr<Input> input() const {
+            return _input;
+        }
+
+        void setInput(const ptr<Input> input_) {
+            _input = input_;
         }
 
     private:

@@ -11,6 +11,8 @@
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.SFX/Audio.hpp>
 
+#include "Engine.Input/Input.hpp"
+
 using namespace ember::engine::session;
 using namespace ember;
 
@@ -81,6 +83,7 @@ void EmberModuleManager::start() {
      */
     _audio = make_ptr<Audio>();
     _graphics = make_ptr<Graphics>();
+    _input = make_ptr<Input>();
     _network = make_ptr<Network>();
     _physics = make_ptr<Physics>();
     _acsRegistry = make_ptr<acs::Registry>();
@@ -90,6 +93,7 @@ void EmberModuleManager::start() {
      */
     _audio->setup();
     _graphics->setup();
+    _input->setup();
     _network->setup();
     _physics->setup();
 
@@ -117,6 +121,9 @@ void EmberModuleManager::stop() {
 
     delete _graphics;
     _graphics = nullptr;
+
+    delete _input;
+    _input = nullptr;
 
     delete _network;
     _network = nullptr;

@@ -92,6 +92,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Input\DragDropEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Input\DragDrop\DragDropObject.hpp" />
+    <ClInclude Include="..\..\src\Engine.Input\DragDrop\DragDropReceiver.hpp" />
+    <ClInclude Include="..\..\src\Engine.Input\DragDrop\DragDropSender.hpp" />
+    <ClInclude Include="..\..\src\Engine.Input\DragDrop\Win32DragDropObject.hpp" />
+    <ClInclude Include="..\..\src\Engine.Input\DragDrop\Win32DragDropReceiver.hpp" />
+    <ClInclude Include="..\..\src\Engine.Input\DragDrop\Win32DragDropSender.hpp" />
+    <ClInclude Include="..\..\src\Engine.Input\Input.hpp" />
     <ClInclude Include="..\..\src\Engine.Input\KeyboardEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Input\MouseButtonEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Input\MouseMoveEvent.hpp" />
@@ -107,6 +114,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Input\DragDropEvent.cpp" />
+    <ClCompile Include="..\..\src\Engine.Input\DragDrop\DragDropObject.cpp" />
+    <ClCompile Include="..\..\src\Engine.Input\DragDrop\DragDropReceiver.cpp" />
+    <ClCompile Include="..\..\src\Engine.Input\DragDrop\DragDropSender.cpp" />
+    <ClCompile Include="..\..\src\Engine.Input\DragDrop\Win32DragDropObject.cpp" />
+    <ClCompile Include="..\..\src\Engine.Input\DragDrop\Win32DragDropReceiver.cpp" />
+    <ClCompile Include="..\..\src\Engine.Input\DragDrop\Win32DragDropSender.cpp" />
+    <ClCompile Include="..\..\src\Engine.Input\Input.cpp" />
     <ClCompile Include="..\..\src\Engine.Input\KeyboardEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Input\MouseButtonEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Input\MouseMoveEvent.cpp" />
