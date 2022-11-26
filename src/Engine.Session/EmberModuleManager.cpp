@@ -67,6 +67,7 @@ void EmberModuleManager::setup() {
      *
      */
     _resourceManager = make_ptr<ResourceManager>();
+    _assetFactory->prepare();
 
     /**
      *

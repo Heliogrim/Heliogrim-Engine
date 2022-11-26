@@ -6,6 +6,8 @@
 
 #include <Engine.Session/Session.hpp>
 
+#include <Engine.Serialization.Layouts/LayoutManager.hpp>
+
 using namespace ember::engine::res;
 using namespace ember::engine;
 using namespace ember;
@@ -14,9 +16,20 @@ ResourceManager::ResourceManager(cref<sptr<Session>> session_) noexcept :
     _session(session_),
     _importer(nullptr),
     _loader(nullptr),
-    _locator(nullptr) {}
+    _locator(nullptr) {
 
-ResourceManager::~ResourceManager() noexcept = default;
+    /**/
+    serialization::LayoutManager::make();
+    /**/
+
+}
+
+ResourceManager::~ResourceManager() noexcept {
+
+    /**/
+    serialization::LayoutManager::destroy();
+    /**/
+}
 
 void ResourceManager::setup() {
 

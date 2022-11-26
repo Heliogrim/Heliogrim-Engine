@@ -37,9 +37,6 @@
     <Filter Include="Quelldateien\Layout">
       <UniqueIdentifier>{11499094-e580-48b7-8be7-edb69a3eceb2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Quelldateien\Native">
-      <UniqueIdentifier>{2cf3137a-a9e2-4d97-964e-9d47e7b18b1b}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\Archive.hpp">
@@ -157,9 +154,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Serialization\Layout\LayoutDefineObject.cpp">
       <Filter>Quelldateien\Layout</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Serialization\Native\U8DataLayout.cpp">
-      <Filter>Quelldateien\Native</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

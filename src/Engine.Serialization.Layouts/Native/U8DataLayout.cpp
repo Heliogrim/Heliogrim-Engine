@@ -1,9 +1,9 @@
-#include "../Layout/DataLayout.hpp"
+#include <Engine.Serialization/Layout/DataLayout.hpp>
 
 namespace ember::engine::serialization {
 
     template <>
-    void DataLayout<unsigned char>::describe() {
+    void DataLayout<u8>::describe() {
         defineValue<layout::LayoutDefineValueType::eUInt8>(0);
     }
 
