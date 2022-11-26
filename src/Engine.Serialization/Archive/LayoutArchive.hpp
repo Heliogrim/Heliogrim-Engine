@@ -126,7 +126,6 @@ namespace ember::engine::serialization {
             };
 
             getDataLayout()->dispatch().store(*getArchive(), src);
-
         }
 
         template <typename Type_>
@@ -138,7 +137,6 @@ namespace ember::engine::serialization {
             };
 
             getDataLayout()->dispatch().load(*getArchive(), dst);
-
         }
 
     public:

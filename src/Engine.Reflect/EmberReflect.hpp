@@ -3,6 +3,7 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
+#include <Engine.Common/Functional/Function.hpp>
 
 #include "EmberStruct.hpp"
 #include "Engine.Common/Exception/NotImplementedException.hpp"
@@ -65,8 +66,11 @@ namespace ember {
         // Warning: Change static singleton behaviour of class definitions
         template <typename Type_>
         [[nodiscard]] static sptr<EmberClass> __makeFromType() {
+
             auto ec { sptr<EmberClass> { new EmberClass() } };
             ec->typeId() = EmberClass::stid<Type_>();
+            ec->capture<Type_>();
+
             return ec;
         }
 
@@ -180,6 +184,26 @@ namespace ember {
         [[nodiscard]] bool isExactType() const noexcept {
             return this == EmberClass::__getOrCreate<TargetType_>();
         }
+
+    private:
+        nular_fnc<ptr<EmberObject>> _rnctor;
+        unary_fnc<void, mref<ptr<EmberObject>>> _rndtor;
+
+        unary_fnc<ptr<EmberObject>, ptr<void>> _rctor;
+        unary_fnc<void, const ptr<EmberObject>> _rdtor;
+
+    private:
+        template <typename Type_>
+        void capture();
+
+    public:
+        [[nodiscard]] ptr<EmberObject> instantiate() const;
+
+        void destroy(mref<ptr<EmberObject>> obj_) const;
+
+        [[nodiscard]] ptr<EmberObject> construct(ptr<void> dst_) const;
+
+        void destruct(ptr<EmberObject> obj_) const;
     };
 
     template <IsEmberObject ClassType_, typename... Args_>
@@ -196,4 +220,23 @@ namespace ember {
         return obj;
     }
 
+    template <typename Type_>
+    void EmberClass::capture() {
+
+        if constexpr (_STD is_default_constructible_v<Type_>) {
+            _rctor = reinterpret_cast<unary_fnc<ptr<EmberObject>, ptr<void>>>(EmberObject::createInPlace<Type_>);
+            _rnctor = reinterpret_cast<nular_fnc<ptr<EmberObject>>>(EmberObject::create<Type_>);
+        } else {
+            _rctor = nullptr;
+            _rnctor = nullptr;
+        }
+
+        if constexpr (_STD is_destructible_v<Type_>) {
+            _rdtor = reinterpret_cast<unary_fnc<void, const ptr<EmberObject>>>(EmberObject::destroyInPlace<Type_>);
+            _rndtor = reinterpret_cast<unary_fnc<void, mref<ptr<EmberObject>>>>(EmberObject::destroy<Type_>);
+        } else {
+            _rdtor = nullptr;
+            _rndtor = nullptr;
+        }
+    }
 }

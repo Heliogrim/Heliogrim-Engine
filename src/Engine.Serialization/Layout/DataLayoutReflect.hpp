@@ -5,6 +5,8 @@
 #include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Reflect/EmberReflect.hpp>
 
+#include <cassert>
+
 namespace ember::engine::serialization {
 
     class DataLayoutReflect {
@@ -29,9 +31,21 @@ namespace ember::engine::serialization {
         // unary_fnc<void, const ptr<void>> _post; // `self->shrink_to_fit()` | `self->clear()`
 
     public:
-        void constructInPlace(const ptr<void> dst_);
+        [[nodiscard]] ptr<EmberObject> instantiate() const;
 
-        void destroyInPlace(const ptr<void> dst_);
+        [[deprecated]] void destroy(mref<ptr<EmberObject>> obj_) const;
+
+        void constructInPlace(const ptr<void> dst_) const;
+
+        void destroyInPlace(const ptr<void> dst_) const;
+
+    private:
+        ptr<EmberClass> _rclass;
+
+    public:
+        [[nodiscard]] bool hasClass() const noexcept;
+
+        [[nodiscard]] non_owning_rptr<EmberClass> getClass() const noexcept;
 
     private:
         template <typename Type_>
@@ -39,19 +53,9 @@ namespace ember::engine::serialization {
             return new(dst_) Type_;
         }
 
-        template <IsEmberObject Type_>
-        static ptr<void> ripch(const ptr<void> dst_) {
-            return EmberObject::createInPlace<Type_>(dst_);
-        }
-
         template <typename Type_>
         static void sipdh(const ptr<void> dst_) {
             static_cast<const ptr<Type_>>(dst_)->~Type_();
-        }
-
-        template <IsEmberObject Type_>
-        static void ripdh(const ptr<void> dst_) {
-            EmberObject::destroyInPlace<Type_>(static_cast<const ptr<Type_>>(dst_));
         }
 
     public:
@@ -59,20 +63,14 @@ namespace ember::engine::serialization {
         void storeType() {
 
             if constexpr (IsEmberObject<SubjectType_>) {
-                this_type::_ipc = this_type::ripch<SubjectType_>;
+                _rclass = EmberClass::of<SubjectType_>();
+                assert(_rclass);
+
             } else {
+
                 this_type::_ipc = this_type::sipch<SubjectType_>;
-            }
-
-            /**/
-
-            if constexpr (IsEmberObject<SubjectType_>) {
-                this_type::_ipd = this_type::ripdh<SubjectType_>;
-            } else {
                 this_type::_ipd = this_type::sipdh<SubjectType_>;
             }
-
-            /**/
 
             // TODO: optimization functions
 
