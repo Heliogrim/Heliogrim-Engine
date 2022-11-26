@@ -114,6 +114,7 @@ void Win32DragDropSender::sendDragFiles(Vector<string> paths_) {
 
     _cur = new Win32DragDropObject();
     _cur->storeFiles(paths_);
+    static_cast<ptr<Win32DragDropObject>>(_cur)->AddRef();
 
     /**/
     dispatchDragDrop();
@@ -128,6 +129,7 @@ void Win32DragDropSender::sendDragText(cref<string> text_) {
 
     _cur = new Win32DragDropObject();
     _cur->storeText(text_);
+    static_cast<ptr<Win32DragDropObject>>(_cur)->AddRef();
 
     /**/
     dispatchDragDrop();

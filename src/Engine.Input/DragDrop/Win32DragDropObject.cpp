@@ -23,10 +23,25 @@ using namespace ember;
 Win32DragDropObject::Win32DragDropObject() :
     DragDropObject(),
     _useCount(1ui32),
-    _mediums(),
-    _formats() {}
+    _formats(),
+    _mediums() {}
 
 Win32DragDropObject::~Win32DragDropObject() = default;
+
+void Win32DragDropObject::tidy() {
+
+    if (not _formats.empty()) {
+        _formats.clear();
+    }
+
+    if (not _mediums.empty()) {
+        for (auto& entry : _mediums) {
+            ::ReleaseStgMedium(&entry);
+        }
+        _mediums.clear();
+    }
+
+}
 
 bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
 
