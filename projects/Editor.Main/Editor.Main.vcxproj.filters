@@ -13,10 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Headerdateien\Boot">
+      <UniqueIdentifier>{fd119bcf-b4a9-4d21-a92b-f18b5e2f9ce4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Boot">
+      <UniqueIdentifier>{1d5f3b69-ceb8-46da-bfe6-920f61f251c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.Main\Editor.Main.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Editor.Main\Boot\AssetInit.cpp">
+      <Filter>Quelldateien\Boot</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Editor.Main\Boot\AssetInit.hpp">
+      <Filter>Headerdateien\Boot</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
