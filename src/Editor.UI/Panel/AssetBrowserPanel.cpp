@@ -336,7 +336,7 @@ engine::reflow::EventResponse AssetBrowserPanel::onMouseButtonDown(cref<engine::
 
 engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::DragDropEvent> event_) {
 
-    if (event_._type != engine::input::event::DragDropEventType::eDropFileType/* || !_dialog.expired()*/) {
+    if (event_._type != engine::input::event::DragDropEventType::eFileType/* || !_dialog.expired()*/) {
         return Panel::onDrop(event_);
     }
 
