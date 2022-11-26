@@ -102,6 +102,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Editor.Main\Boot\AssetInit.cpp" />
     <ClCompile Include="..\..\src\Editor.Main\Editor.Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +121,9 @@
     <ProjectReference Include="..\Ember\Ember.vcxproj">
       <Project>{8d01b7e3-273a-4a0b-8099-ad227fbdaf9c}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Editor.Main\Boot\AssetInit.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
