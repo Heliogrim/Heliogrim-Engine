@@ -11,6 +11,5 @@
 using namespace ember;
 
 void ember_main_entry() {
-
     execute(editor::boot::initAssets);
 }
