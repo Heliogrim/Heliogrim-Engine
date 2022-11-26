@@ -17,6 +17,9 @@ namespace ember::engine::input {
 
         ~Win32DragDropObject() override;
 
+    private:
+        void tidy();
+
     public:
         bool storeFiles(cref<Vector<string>> paths_) override;
 
