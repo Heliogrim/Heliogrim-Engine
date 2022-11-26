@@ -1,6 +1,8 @@
 #include "AssetFactory.hpp"
 
 #include <filesystem>
+#include <Engine.Serialization/Layout/DataLayout.hpp>
+#include <Engine.Serialization.Layouts/LayoutManager.hpp>
 
 #include "Types/Font.hpp"
 #include "Types/GfxMaterial.hpp"
@@ -10,8 +12,8 @@
 #include "Types/PfxMaterial.hpp"
 #include "Types/SfxMaterial.hpp"
 #include "Types/SkeletalGeometry.hpp"
-#include "Types/Geometry/StaticGeometry.hpp"
 #include "Types/Sound.hpp"
+#include "Types/Geometry/StaticGeometry.hpp"
 #include "Types/Texture/Texture.hpp"
 
 using namespace ember::engine::assets;
@@ -28,6 +30,37 @@ Url AssetFactory::resolveAsSource(cref<string> url_) const noexcept {
     cwd.append(url_);
 
     return Url { "file"sv, cwd.generic_string() };
+}
+
+void AssetFactory::prepare() {
+
+    using namespace ::ember::engine::serialization;
+
+    auto& layouts { LayoutManager::get() };
+    sptr<DataLayoutBase> cur { nullptr };
+
+    /* Geometry */
+
+    /* Material */
+
+    /* Sound */
+
+    /* Texture */
+    cur = make_sptr<DataLayout<Texture>>();
+    cur->reflect().storeType<Texture>();
+    cur->describe();
+
+    layouts.storeLayout("Assets::Texture"sv, cur);
+    layouts.storeLayout(Texture::typeId, cur);
+    layouts.storeLayout(EmberClass::of<Texture>(), cur);
+
+    cur = make_sptr<DataLayout<Image>>();
+    cur->reflect().storeType<Image>();
+    cur->describe();
+
+    layouts.storeLayout("Assets::Image"sv, cur);
+    layouts.storeLayout(Image::typeId, cur);
+    layouts.storeLayout(EmberClass::of<Image>(), cur);
 }
 
 ptr<Asset> AssetFactory::createFontAsset(cref<asset_guid> guid_) {

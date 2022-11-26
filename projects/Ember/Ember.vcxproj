@@ -171,6 +171,9 @@
     <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
       <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.Serialization.Layouts\Engine.Serialization.Layouts.vcxproj">
+      <Project>{652ccab6-c9cc-409d-a374-8818b88f760f}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Serialization\Engine.Serialization.vcxproj">
       <Project>{24b7f6ae-1ec1-4268-9b1a-584f44aad1fe}</Project>
     </ProjectReference>

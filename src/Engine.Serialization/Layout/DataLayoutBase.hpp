@@ -31,6 +31,9 @@ namespace ember::engine::serialization {
         virtual ~DataLayoutBase();
 
     public:
+        void tidy();
+
+    public:
         cref<DataLayoutReflect> reflect() const noexcept;
 
         ref<DataLayoutReflect> reflect() noexcept;

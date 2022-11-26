@@ -47,6 +47,12 @@ namespace ember::engine::assets {
         [[nodiscard]] Url resolveAsSource(cref<string> url_) const noexcept;
 
     public:
+        /**
+         * Will generate serialization/deserialization hooks for asset types
+         */
+        void prepare();
+
+    public:
         [[nodiscard]] ptr<Asset> createFontAsset(cref<asset_guid> guid_);
 
         [[nodiscard]] ptr<Asset> createFontAsset(cref<asset_guid> guid_, cref<string> url_);

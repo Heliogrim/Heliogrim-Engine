@@ -13,8 +13,21 @@ DataLayoutBase::DataLayoutBase(const bool hasReflectedClass_) :
     _hasReflectedClass(hasReflectedClass_) {}
 
 DataLayoutBase::~DataLayoutBase() {
+
+    tidy();
+
     DataLayoutReflect::~DataLayoutReflect();
     DataLayoutDispatch::~DataLayoutDispatch();
+}
+
+void DataLayoutBase::tidy() {
+
+    for (auto& define : _defines) {
+        delete define;
+        define = nullptr;
+    }
+
+    _defines.clear();
 }
 
 cref<DataLayoutReflect> DataLayoutBase::reflect() const noexcept {

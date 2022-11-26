@@ -15,57 +15,27 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Serialization\Archive\Archive.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Archive\ArchiveStreamMode.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Archive\BufferArchive.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Archive\LayoutArchive.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Archive\MemoryArchive.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Archive\MemoryReadonlyArchive.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Archive\MemoryReadWriteArchive.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Archive\MemoryWriteonlyArchive.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Archive\StructuredArchive.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Archive\__fwd.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Compression\ArchiveCompression.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Compression\__fwd.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Filter\ArchiveFilter.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Filter\__fwd.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Layout\DataLayout.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Layout\DataLayoutBase.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Layout\DataLayoutDispatch.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Layout\DataLayoutReflect.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefine.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineObject.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineSlice.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineSpan.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineValue.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineValueType.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization\Layout\__fwd.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization.Layouts\LayoutManager.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization.Layouts\LayoutOptimizer.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Serialization\Archive\Archive.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization\Archive\BufferArchive.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization\Archive\LayoutArchive.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryArchive.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryReadonlyArchive.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryReadWriteArchive.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryWriteonlyArchive.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayoutBase.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayoutDispatch.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayoutReflect.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization\Layout\LayoutDefineObject.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization\Layout\LayoutDefineSpan.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
-      <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
-    </ProjectReference>
+    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\LayoutManager.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\DoubleDataLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\FloatDataLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\S16DataLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\S32DataLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\S64DataLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\S8DataLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\U16DataLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\U32DataLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\U64DataLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\U8DataLayout.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{24b7f6ae-1ec1-4268-9b1a-584f44aad1fe}</ProjectGuid>
-    <RootNamespace>EngineSerialization</RootNamespace>
+    <ProjectGuid>{652ccab6-c9cc-409d-a374-8818b88f760f}</ProjectGuid>
+    <RootNamespace>EngineSerializationLayouts</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
