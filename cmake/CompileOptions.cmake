@@ -34,6 +34,7 @@ set(DEFAULT_INCLUDE_DIRECTORIES
         "${META_PROJECT_LIB_DIR}/assimp"
         "${META_PROJECT_LIB_DIR}/dr_flac"
         "${META_PROJECT_LIB_DIR}/dr_wav"
+	"${META_PROJECT_LIB_DIR}/freetype2"
         "${META_PROJECT_LIB_DIR}/gli"
         "${META_PROJECT_LIB_DIR}/glm"
         "${META_PROJECT_LIB_DIR}/ryml"
@@ -66,11 +67,13 @@ set(TEST_LIBRARIES
 if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     set(DEFAULT_LIBRARIES
             ${DEFAULT_LIBRARIES}
+            "${META_PROJECT_LIB_DIR}/bin/freetype2/${CMAKE_BUILD_TYPE}/freetyped.lib"
             "${META_PROJECT_LIB_DIR}/bin/assimp/${CMAKE_BUILD_TYPE}/assimp-vc142-mtd.lib")
 
 else ()
     set(DEFAULT_LIBRARIES
             ${DEFAULT_LIBRARIES}
+	    "${META_PROJECT_LIB_DIR}/bin/freetype2/${CMAKE_BUILD_TYPE}/freetype.lib"
             "${META_PROJECT_LIB_DIR}/bin/assimp/${CMAKE_BUILD_TYPE}/assimp-vc142-mt.lib")
 endif ()
 
