@@ -359,7 +359,7 @@ void RevDepthSharedNode::postProcessAllocated(const ptr<HORenderPass> renderPass
 
         imgBarriers.push_back({
             vk::AccessFlags {},
-            vk::AccessFlagBits::eShaderRead,
+            vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
             vk::ImageLayout::eUndefined,
             vk::ImageLayout::eDepthStencilAttachmentOptimal,
             VK_QUEUE_FAMILY_IGNORED,
@@ -389,7 +389,8 @@ void RevDepthSharedNode::postProcessAllocated(const ptr<HORenderPass> renderPass
      * Transform
      */
     cmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-        vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
+        vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
+        vk::DependencyFlags {},
         0, nullptr,
         0, nullptr,
         static_cast<u32>(imgBarriers.size()), imgBarriers.data()

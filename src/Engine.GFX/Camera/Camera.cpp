@@ -79,6 +79,14 @@ const math::mat4& Camera::view() const noexcept {
     return _view;
 }
 
+void Camera::view(ref<math::mat4> view_, const bool flippedY_) const {
+    if (flippedY_) {
+        view_ = math::lookAt(_position * math::vec3 { 1.F, -1.F, 1.F }, _lookAt, math::vec3_up);
+    } else {
+        view_ = _view;
+    }
+}
+
 void Camera::update() {
     /**
      * View

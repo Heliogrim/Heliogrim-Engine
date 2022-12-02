@@ -130,7 +130,7 @@ namespace ember::math {
          * @param v32_ The 32.
          * @param v33_ The 33.
          */
-        matq4_t(const T& v00_, const T& v01_, const T& v02_, const T& v03_,
+        constexpr matq4_t(const T& v00_, const T& v01_, const T& v02_, const T& v03_,
             const T& v10_, const T& v11_, const T& v12_, const T& v13_,
             const T& v20_, const T& v21_, const T& v22_, const T& v23_,
             const T& v30_, const T& v31_, const T& v32_, const T& v33_) :

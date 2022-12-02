@@ -91,7 +91,8 @@ void ember_main_entry() {
     SCOPED_STOPWATCH
 
     /**/
-    execute(::ember::editor::boot::initAssets);
+    // Warning: Will cause error, cause Editor.Main is a Executable not a linkable lib
+    //execute(::ember::editor::boot::initAssets);
     /**/
 
     /**

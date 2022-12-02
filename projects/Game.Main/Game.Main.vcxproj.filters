@@ -1018,5 +1018,17 @@
     <None Include="..\..\resources\shader\uipass.vert.spv">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
+    <None Include="..\..\resources\shader\edgrid.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\edgrid.vs">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\edgrid.frag.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="..\..\resources\shader\edgrid.vert.spv">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -151,6 +151,10 @@ inline bool guaranteeUnique(cref<Vector<sptr<RenderStage>>> stages_, cref<sptr<R
     return it == stages_.end();
 }
 
+cref<Vector<sptr<RenderStage>>> RenderPipeline::stages() const noexcept {
+    return _stages;
+}
+
 RenderPipelineValidationResult RenderPipeline::push(cref<sptr<RenderStage>> stage_) {
 
     if (!guaranteeUnique(_stages, stage_)) {

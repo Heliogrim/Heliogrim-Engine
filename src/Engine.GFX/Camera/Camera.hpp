@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Math/Matrix.hpp>
+#include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::gfx {
 
@@ -194,6 +195,17 @@ namespace ember::engine::gfx {
          * @returns A const.
          */
         const math::mat4& view() const noexcept;
+
+        /**
+         * Store the view matrix into provided reference
+         *
+         * @author Julius
+         * @date 30.11.2022
+         *
+         * @param [Out] view_ The reference where to store the matrix
+         * @param flippedY_ Whether storing should flip the y coordinate
+         */
+        void view(_Out_ ref<math::mat4> view_, const bool flippedY_ = false) const;
 
     public:
         /**

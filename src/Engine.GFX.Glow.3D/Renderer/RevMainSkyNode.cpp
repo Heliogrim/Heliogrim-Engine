@@ -225,8 +225,7 @@ bool RevMainSkyNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Default insert data
      */
-    const ptr<Camera> camera { renderPass_->camera() };
-    math::mat4 mv { camera->view() * math::mat4::make_identity() };
+    math::mat4 mv { math::mat4::make_identity() };
     mv[3] = math::vec4(0.F, 0.F, 0.F, 1.F);
     uniform.write<math::mat4>(&mv, 1ui32);
 
@@ -414,17 +413,18 @@ void RevMainSkyNode::before(
     const auto uniformEntry { data.at("RevMainSkyNode::UniformBuffer"sv) };
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
-    const static math::mat4 clip_matrix = math::mat4(
-        1.0F, 0.0F, 0.0F, 0.0F,
-        0.0F, -1.0F, 0.0F, 0.0F,
-        0.0F, 0.0F, 1.F, 0.F,
-        0.0F, 0.0F, 0.F, 1.0F
-    );
-
     const auto* camera { renderPass_->camera() };
-    math::mat4 mv { camera->view() * math::mat4::make_identity() };
-    mv[3] = math::vec4(0.F, 0.F, 0.F, 1.F);
-    math::mat4 mvp { clip_matrix * camera->projection() * mv };
+
+    math::mat4 view { camera->view() };
+
+    // Erase Translation from view, cause we only need applied rotation of camera for sky box
+    view[0][3] = 0.0;
+    view[0][3] = 0.0;
+    view[0][3] = 0.0;
+    view[0][3] = 0.0;
+    view[3] = math::vec4(0.0);
+
+    math::mat4 mvp { vk_norm_mat_m * camera->projection() * view };
     uniform.write<math::mat4>(&mvp, 1ui32);
 }
 

@@ -451,8 +451,8 @@ void RevFinalComposeNode::before(
         };
 
         vk::ImageMemoryBarrier dpb {
-            vk::AccessFlagBits::eNone,
-            vk::AccessFlagBits::eNone,
+            vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+            vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eShaderRead,
             vk::ImageLayout::eDepthStencilAttachmentOptimal,
             vk::ImageLayout::eDepthStencilReadOnlyOptimal,
             VK_QUEUE_FAMILY_IGNORED,

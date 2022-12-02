@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Math/Matrix.hpp>
 
 /**
  * Graphic includes
@@ -33,4 +34,24 @@ namespace ember::engine::gfx {
 
         throw std::runtime_error("Failed to find suitable memory type.");
     }
+
+    /**
+     * Matrix used to "normalize" vectors like "position" or "normal" (only when applied to matrix-vector chain)
+     */
+    constexpr static inline math::mat4 vk_norm_mat_v {
+        1.0, 0.0, 0.0, 0.0,
+        0.0, -1.0, 0.0, 0.0,
+        0.0, 0.0, 0.5, 0.5,
+        0.0, 0.0, 0.0, 1.0
+    };
+
+    /**
+     * Matrix used to "normalize" matrices like "model matrix" (only when used with matrix chain or to inverse corrected projection)
+     */
+    constexpr static inline math::mat4 vk_norm_mat_m {
+        1.0, 0.0, 0.0, 0.0,
+        0.0, -1.0, 0.0, 0.0,
+        0.0, 0.0, 0.5, 0.0,
+        0.0, 0.0, 0.5, 1.0
+    };
 }
