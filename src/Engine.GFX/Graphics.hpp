@@ -249,7 +249,7 @@ namespace ember::engine {
         //private:
     public:
         // Warning: Temporary
-        ptr<gfx::Camera> _camera;
+        sptr<gfx::Camera> _camera;
 
         //private:
     public:

@@ -119,7 +119,7 @@ void Graphics::setup() {
     _renderer->setup(_device);
 
     // Warning: Temporary
-    _camera = new Camera();
+    _camera = make_sptr<Camera>();
     _camera->setPosition({ 0.F, /*-1.8F*/2.5F, -5.F });
     _camera->setLookAt({ 0.F, /*-1.8F*/0.F, 0.F });
     _camera->setPerspective(60.F,
@@ -151,7 +151,7 @@ void Graphics::setup() {
     _uiRenderTarget->use(_swapchain);
     _uiRenderTarget->use(_uiRenderer);
 
-    _uiRenderTarget->buildPasses(_camera);
+    _uiRenderTarget->buildPasses(_camera.get());
     #endif
 
     /**
@@ -206,8 +206,7 @@ void Graphics::tidy() {
     _renderTarget.reset();
 
     // Warning: Temporary
-    delete _camera;
-    _camera = nullptr;
+    _camera.reset();
 
     /**
      * Destroy device queues
@@ -497,7 +496,7 @@ bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
         _scheduledTargets.erase(stit);
     }
 
-    _scheduledTargets.push_back({ _renderTarget, scene_, _camera });
+    _scheduledTargets.push_back({ _renderTarget, scene_, _camera.get() });
 
     /**/
     return true;
@@ -533,7 +532,7 @@ bool Graphics::useAsUIRenderScene(const ptr<scene::IRenderScene> scene_) {
         _scheduledTargets.erase(stit);
     }
 
-    _scheduledTargets.push_back({ _uiRenderTarget, scene_, _camera });
+    _scheduledTargets.push_back({ _uiRenderTarget, scene_, _camera.get() });
 
     /**/
     return true;
