@@ -91,8 +91,8 @@ void RevMainStaticNode::setup(cref<sptr<Device>> device_) {
     _pipeline->vertexStage().shaderSlot().name() = "staticMainPass";
     _pipeline->fragmentStage().shaderSlot().name() = "staticMainPass";
 
-    _pipeline->rasterizationStage().cullFace() = RasterCullFace::eBack;
-    // TODO: Default => RasterCullFace::eBack | Foliage => RasterCullFace::eNone
+    _pipeline->rasterizationStage().cullFace() = RasterCullFace::eNone;
+    // TODO: Default => RasterCullFace::eFront | Foliage => RasterCullFace::eNone
     //_pipeline->rasterizationStage().depthWrite() = true;// TODO: Revert to `false`, currently true for debugging purpose
     _pipeline->rasterizationStage().depthWrite() = false;
 
@@ -191,8 +191,7 @@ bool RevMainStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Default insert data
      */
-    const ptr<Camera> camera { renderPass_->camera() };
-    math::mat4 mvp { camera->projection() * camera->view() * math::mat4::make_identity() };
+    const math::mat4 mvp { math::mat4::make_identity() };
     uniform.write<math::mat4>(&mvp, 1ui32);
 
     /**
@@ -419,15 +418,8 @@ void RevMainStaticNode::before(
     const auto uniformEntry { data.at("RevMainStaticNode::UniformBuffer"sv) };
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
-    const static auto clip_matrix = math::mat4(
-        1.0F, 0.0F, 0.0F, 0.0F,
-        0.0F, -1.0F, 0.0F, 0.0F,
-        0.0F, 0.0F, 0.5F, 0.5F,
-        0.0F, 0.0F, 0.5F, 1.0F
-    );
-
     const auto* camera { renderPass_->camera() };
-    math::mat4 mvpc { clip_matrix * camera->projection() * camera->view() * math::mat4::make_identity() };
+    math::mat4 mvpc { vk_norm_mat_m * camera->projection() * camera->view() };
     uniform.write<math::mat4>(&mvpc, 1ui32);
 
     /**
@@ -671,57 +663,6 @@ void RevMainStaticNode::invoke(
                             state->cacheCtrl.markAsUsed(rough, aksr);
                             state->cacheCtrl.markAsUsed(metal, aksr);
                             state->cacheCtrl.markAsUsed(ao, aksr);
-                        }
-                    }
-                }
-            }
-            #endif
-            #pragma endregion
-
-            #pragma region Test Virtual Texture Streaming
-            #if FALSE
-            auto* diff { first->_payload.diffuse };
-            auto& view { diff->_payload.view };
-
-            for (auto mip { 6ui32 }; mip <= view->maxMipLevel(); ++mip) {
-                // TODO:
-                // Warning: This only works if view extent is pow of 2
-                state->cacheCtrl.markAsUsed(diff, {
-                    .layer = view->baseLayer(),
-                    //.mip = view->minMipLevel(),
-                    .mip = mip,
-                    .offset = math::uivec3 {},
-                    .extent = math::uivec3 {
-                        view->width() >> mip,
-                        view->height() >> mip,
-                        //view->depth() >> mip
-                        view->depth()
-                    }
-                });
-            }
-
-            for (u32 i { 5ui32 }; i > 2; --i) {
-                const auto th = view->height() >> i;
-                const auto tw = view->width() >> i;
-
-                for (u32 d = 1; d < 2; ++d) {
-                    for (u32 h = 128ui32; h <= th; h += 128ui32) {
-                        for (u32 w = 128ui32; w <= tw; w += 128ui32) {
-                            state->cacheCtrl.markAsUsed(diff, {
-                                .layer = view->baseLayer(),
-                                //.mip = view->minMipLevel(),
-                                .mip = i,
-                                .offset = math::uivec3 {
-                                    w - 128ui32,
-                                    h - 128ui32,
-                                    d - 1ui32
-                                },
-                                .extent = math::uivec3 {
-                                    128ui32,
-                                    128ui32,
-                                    1ui32
-                                }
-                            });
                         }
                     }
                 }

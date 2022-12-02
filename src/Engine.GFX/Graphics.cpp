@@ -33,6 +33,10 @@
 #include "Swapchain/VkSwapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
 
+#if TRUE
+#include <Editor.GFX/Renderer/EdRevRenderer.hpp>
+#endif
+
 using namespace ember::engine::gfx;
 using namespace ember::engine;
 using namespace ember;
@@ -110,16 +114,17 @@ void Graphics::setup() {
     _uiRenderer = new glow::ui::render::UiRenderer();
     _uiRenderer->setup(_device);
 
-    _renderer = new glow::render::RevRenderer();
+    //_renderer = new glow::render::RevRenderer();
+    _renderer = new editor::gfx::EdRevRenderer();
     _renderer->setup(_device);
 
     // Warning: Temporary
     _camera = new Camera();
-    _camera->setPosition({ 8.F, /*-1.8F*/1.8F, 8.F });
+    _camera->setPosition({ 0.F, /*-1.8F*/2.5F, -5.F });
     _camera->setLookAt({ 0.F, /*-1.8F*/0.F, 0.F });
     _camera->setPerspective(60.F,
         static_cast<float>(_swapchain->extent().x) / static_cast<float>(_swapchain->extent().y),
-        0.1F, 100.F);
+        0.01F, 100.F);
 
     _camera->update();
 
@@ -332,7 +337,7 @@ void reportStats(float fps_, float time_);
 
 void Graphics::_tick() {
 
-    #if TRUE
+    #if FALSE
     /**
      * Warning: Temporary Update to change state
      */
@@ -343,12 +348,11 @@ void Graphics::_tick() {
         };
         auto timeToVal { static_cast<double>(millis) / 5000.0 };
 
-        constexpr auto dist { 3.F };
+        constexpr auto dist { 5.F };
         _camera->setPosition({
             static_cast<float>(_STD sin(timeToVal)) * dist,
             /*-1.8F*/
-            /*1.2F*/
-            0.F,
+            0.6F,
             static_cast<float>(_STD cos(timeToVal)) * dist
         });
         //_camera->setLookAt({ 0.F, /*-1.8F*/0.F, 0.F });

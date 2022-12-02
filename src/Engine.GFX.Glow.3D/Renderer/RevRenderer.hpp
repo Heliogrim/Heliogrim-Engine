@@ -18,5 +18,8 @@ namespace ember::engine::gfx::glow::render {
         void setup(cref<sptr<Device>> device_) override;
 
         void destroy() override;
+
+    protected:
+        virtual void registerStages();
     };
 }

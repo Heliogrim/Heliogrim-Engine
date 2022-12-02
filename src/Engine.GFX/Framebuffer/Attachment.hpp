@@ -20,7 +20,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 12.12.2020
          */
-        FramebufferAttachment(const FramebufferAttachment&) = default;;
+        FramebufferAttachment(const FramebufferAttachment&) = default;
 
         /**
          * Move Constructor

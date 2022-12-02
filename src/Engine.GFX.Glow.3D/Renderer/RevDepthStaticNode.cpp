@@ -94,9 +94,6 @@ void RevDepthStaticNode::setup(cref<sptr<Device>> device_) {
      *
      * @see https://stackoverflow.com/a/46920273
      */
-    // Prevent depth artifacts while re-using depth buffer
-    //_pipeline->rasterizationStage().setDepthBias(1.25F, 0.F, 1.75F);
-    //_pipeline->rasterizationStage().setDepthBias(0.F, 0.F, 1.F);
 
     auto& blending { static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->blending() };
     const vk::PipelineColorBlendAttachmentState colorState {
@@ -192,8 +189,7 @@ bool RevDepthStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Default insert data
      */
-    const ptr<Camera> camera { renderPass_->camera() };
-    math::mat4 mvp { camera->projection() * camera->view() * math::mat4::make_identity() };
+    const math::mat4 mvp { math::mat4::make_identity() };
     uniform.write<math::mat4>(&mvp, 1ui32);
 
     /**
@@ -410,15 +406,8 @@ void RevDepthStaticNode::before(
     const auto uniformEntry { data.at("RevDepthStaticNode::UniformBuffer"sv) };
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
-    const static math::mat4 clip_matrix = math::mat4(
-        1.0F, 0.0F, 0.0F, 0.0F,
-        0.0F, -1.0F, 0.0F, 0.0F,
-        0.0F, 0.0F, 0.5F, 0.5F,
-        0.0F, 0.0F, 0.5F, 1.0F
-    );
-
     const auto* camera { renderPass_->camera() };
-    math::mat4 mvpc { clip_matrix * camera->projection() * camera->view() * math::mat4::make_identity() };
+    math::mat4 mvpc { vk_norm_mat_m * camera->projection() * camera->view() };
     uniform.write<math::mat4>(&mvpc, 1ui32);
 
     /**

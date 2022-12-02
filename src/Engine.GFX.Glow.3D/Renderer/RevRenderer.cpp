@@ -20,6 +20,19 @@ RevRenderer::RevRenderer() :
 void RevRenderer::setup(cref<sptr<Device>> device_) {
 
     const auto pipe { getOrCreatePipeline() };
+    registerStages();
+
+    /**
+     * Setup Pipeline & Store Device
+     */
+    Renderer::setup(device_);
+}
+
+void RevRenderer::destroy() {}
+
+void RevRenderer::registerStages() {
+
+    const auto pipe { getOrCreatePipeline() };
 
     /**
      * Create Stages
@@ -83,11 +96,4 @@ void RevRenderer::setup(cref<sptr<Device>> device_) {
     pipe->push(earlyStage);
     pipe->push(mainStage);
     pipe->push(finalStage);
-
-    /**
-     * Setup Pipeline & Store Device
-     */
-    Renderer::setup(device_);
 }
-
-void RevRenderer::destroy() {}

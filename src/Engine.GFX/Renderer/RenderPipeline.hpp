@@ -54,6 +54,9 @@ namespace ember::engine::gfx::render {
         Vector<sptr<RenderStage>> _stages;
 
     public:
+        // Warning: We should not access stages
+        [[nodiscard]] cref<Vector<sptr<RenderStage>>> stages() const noexcept;
+
         RenderPipelineValidationResult push(cref<sptr<RenderStage>> stage_);
 
         bool pop(cref<sptr<RenderStage>> stage_);
