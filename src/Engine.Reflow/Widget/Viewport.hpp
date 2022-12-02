@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.GFX/Camera/Camera.hpp>
 #include <Engine.GFX/Swapchain/__fwd.hpp>
 
 #include "Widget.hpp"
@@ -29,7 +30,17 @@ namespace ember::engine::reflow {
         StyleSheet _computedStyle;
 
     private:
-        ptr<gfx::VkSwapchain> _swapchain;
+        uptr<gfx::VkSwapchain> _swapchain;
+        sptr<gfx::Camera> _camera;
+
+    public:
+        [[nodiscard]] const non_owning_rptr<gfx::Swapchain> getSwapchain() const noexcept;
+
+        [[nodiscard]] const non_owning_rptr<gfx::Camera> getCamera() const noexcept;
+
+        void setCamera(cref<sptr<gfx::Camera>> camera_);
+
+    private:
         _STD array<math::vec2, 4> _uvs;
 
         math::uivec2 _viewSize;
@@ -54,7 +65,8 @@ namespace ember::engine::reflow {
     public:
         void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
-        void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_, ref<StyleKeyStack> styleStack_) override;
+        void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+            ref<StyleKeyStack> styleStack_) override;
 
         void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
 

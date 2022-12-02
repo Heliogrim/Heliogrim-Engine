@@ -20,6 +20,7 @@ Viewport::Viewport(mref<sptr<BoundStyleSheet>> style_) :
     Widget(),
     _style(style_),
     _swapchain(nullptr),
+    _camera(nullptr),
     _uvs({
         math::vec2 { 0.F, 0.F },
         math::vec2 { 1.F, 0.F },
@@ -41,15 +42,25 @@ void Viewport::tidy() {
 
     if (_swapchain) {
         _swapchain->destroy();
-
-        delete _swapchain;
-        _swapchain = nullptr;
+        _swapchain.reset();
     }
 
     /**/
 
     _viewListen.clear();
     _viewListen.shrink_to_fit();
+}
+
+const non_owning_rptr<engine::gfx::Swapchain> Viewport::getSwapchain() const noexcept {
+    return _swapchain.get();
+}
+
+const non_owning_rptr<engine::gfx::Camera> Viewport::getCamera() const noexcept {
+    return _camera.get();
+}
+
+void Viewport::setCamera(cref<sptr<gfx::Camera>> camera_) {
+    _camera = camera_;
 }
 
 math::uivec2 Viewport::actualViewExtent() const noexcept {
@@ -77,7 +88,7 @@ bool Viewport::viewHasChanged() const noexcept {
 void Viewport::rebuildView() {
 
     const auto extent { actualViewExtent() };
-    auto* nextSwapchain { make_ptr<gfx::VkSwapchain>() };
+    auto nextSwapchain { make_uptr<gfx::VkSwapchain>() };
 
     nextSwapchain->setExtent(extent);
     nextSwapchain->setFormat(gfx::TextureFormat::eB8G8R8A8Unorm);
@@ -89,16 +100,14 @@ void Viewport::rebuildView() {
 
     /**/
 
-    handleViewListener(nextSwapchain);
-    auto* prevSwapchain { _STD exchange(_swapchain, nextSwapchain) };
+    handleViewListener(nextSwapchain.get());
 
     /**/
 
-    if (prevSwapchain) {
-        prevSwapchain->destroy();
-        delete prevSwapchain;
+    if (_swapchain) {
+        _swapchain->destroy();
     }
-
+    _swapchain = _STD move(nextSwapchain);
 }
 
 void Viewport::handleViewListener(const ptr<gfx::VkSwapchain> next_) {
@@ -130,15 +139,21 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
         rebuildView();
 
         auto gfx { engine::Session::get()->modules().graphics() };
-        gfx->_secondarySwapchain = _swapchain;
+        gfx->_secondarySwapchain = _swapchain.get();
 
-        gfx->_camera->setAspect(_swapchain->extent().x / _swapchain->extent().y);
+        if (not _camera) {
+            _camera = gfx->_camera;
+        }
+
+        _camera->setAspect(
+            static_cast<float>(_swapchain->extent().x) / static_cast<float>(_swapchain->extent().y)
+        );
 
         if (gfx->_renderTarget->ready()) {
-            gfx->_renderTarget->rebuildPasses(_swapchain);
+            gfx->_renderTarget->rebuildPasses(_swapchain.get());
         } else {
-            gfx->_renderTarget->use(_swapchain);
-            gfx->_renderTarget->buildPasses(gfx->_camera);
+            gfx->_renderTarget->use(_swapchain.get());
+            gfx->_renderTarget->buildPasses(_camera.get());
         }
 
     }
@@ -162,7 +177,7 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     const auto result { _swapchain->consumeNext(image, imageSignal, imageWaits) };
     if (!result) {
-        IM_CORE_ERROR("Skipping viewporw draw due to missing next swapchain frame.");
+        IM_CORE_ERROR("Skipping viewport draw due to missing next swapchain frame.");
     }
 
     if (result) {
