@@ -430,7 +430,9 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
         .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
         .color = { true, color::Dark::white }
     }));
+    viewportWrapper->addChild(viewport);
 
+    #if FALSE
     auto viewportOverlay = make_sptr<Overlay>();
     auto viewOverBox = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
         .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
@@ -440,7 +442,6 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
         .color = { true, color::Dark::transparent },
     }));
 
-    viewportWrapper->addChild(viewport);
     viewportWrapper->addChild(viewportOverlay);
     viewportOverlay->setContent(viewOverBox);
 
@@ -488,6 +489,7 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
         testFrameDisplay = sceneFrames;
         statsWrapper->addChild(sceneFrames);
     }
+    #endif
 
     #pragma endregion
 
@@ -551,7 +553,8 @@ ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
 
 void storeActorMapping() {
     testObjectEditor->storeObjectMapper("ember::Actor"_typeId, make_uptr<ObjectValueMapper<::ember::Actor>>());
-    testObjectEditor->storeObjectMapper(::ember::StaticGeometryComponent::typeId, make_uptr<ObjectValueMapper<::ember::StaticGeometryComponent>>());
+    testObjectEditor->storeObjectMapper(::ember::StaticGeometryComponent::typeId,
+        make_uptr<ObjectValueMapper<::ember::StaticGeometryComponent>>());
 }
 
 void loadActorMappingExp(const type_id typeId_, cref<sptr<ObjectEditorPanel>> panel_) {

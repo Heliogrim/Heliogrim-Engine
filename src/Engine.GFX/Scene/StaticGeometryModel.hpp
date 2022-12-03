@@ -25,11 +25,11 @@ namespace ember::engine::gfx {
         void tidy();
 
     public:
-        void create(const ptr<scene::Scene> scene_) override final;
+        void create(const ptr<::ember::engine::scene::Scene> scene_) override final;
 
-        void update(const ptr<scene::Scene> scene_) override final;
+        void update(const ptr<::ember::engine::scene::Scene> scene_) override final;
 
-        void destroy(const ptr<scene::Scene> scene_) override final;
+        void destroy(const ptr<::ember::engine::scene::Scene> scene_) override final;
 
     public:
         [[nodiscard]] Vector<render::RenderDataToken> providedToken() const noexcept override;

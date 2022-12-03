@@ -61,7 +61,7 @@ namespace ember::engine::gfx::render {
         [[nodiscard]] dispatch_result_type dispatch() const;
 
     private:
-        [[nodiscard]] bool operator()(const ptr<scene::RenderGraph::node_type> node_) const;
+        [[nodiscard]] bool operator()(const ptr<::ember::engine::scene::RenderGraph::node_type> node_) const;
 
     private:
         non_owning_rptr<HORenderPass> _renderPass;

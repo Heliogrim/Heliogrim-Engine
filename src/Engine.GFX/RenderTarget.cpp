@@ -1,13 +1,15 @@
 #include "RenderTarget.hpp"
 
+#include <Engine.GFX.Scene/View/SceneView.hpp>
+#include <Engine.Logging/Logger.hpp>
+
 #include "Command/CommandBatch.hpp"
 #include "Command/CommandQueue.hpp"
 #include "Device/Device.hpp"
-#include "Renderer/Renderer.hpp"
 #include "Renderer/HORenderPass.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
-#include <Engine.Logging/Logger.hpp>
 
 using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
@@ -102,7 +104,17 @@ bool RenderTarget::ready() const noexcept {
     return _device && _renderer && _swapchain && !_passes.empty();
 }
 
-void RenderTarget::buildPasses(cref<ptr<Camera>> camera_, cref<ptr<scene::IRenderScene>> scene_) {
+bool RenderTarget::active() const noexcept {
+    return _active;
+}
+
+bool RenderTarget::setActive(const bool active_) {
+    const auto changed { _active != active_ };
+    _active = active_;
+    return changed;
+}
+
+void RenderTarget::buildPasses(const ptr<scene::SceneView> sceneView_) {
 
     assert(_device);
     assert(_renderer);
@@ -118,8 +130,8 @@ void RenderTarget::buildPasses(cref<ptr<Camera>> camera_, cref<ptr<scene::IRende
     for (u32 i { 0ui32 }; i < req; ++i) {
         _passes.push_back(_renderer->allocate({
             _swapchain->at(i),
-            scene_,
-            camera_
+            sceneView_->getScene(),
+            sceneView_
         }));
     }
 

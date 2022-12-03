@@ -10,7 +10,9 @@
 #include <Engine.GFX/Device/Device.hpp>
 #include "Engine.GFX/RenderTarget.hpp"
 #include "Engine.GFX/Camera/Camera.hpp"
+#include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.GFX/Texture/ProxyTexture.hpp>
+#include <Ember/Actors/CameraActor.hpp>
 #endif
 
 using namespace ember::engine::reflow;
@@ -20,7 +22,7 @@ Viewport::Viewport(mref<sptr<BoundStyleSheet>> style_) :
     Widget(),
     _style(style_),
     _swapchain(nullptr),
-    _camera(nullptr),
+    _cameraActor(nullptr),
     _uvs({
         math::vec2 { 0.F, 0.F },
         math::vec2 { 1.F, 0.F },
@@ -55,12 +57,12 @@ const non_owning_rptr<engine::gfx::Swapchain> Viewport::getSwapchain() const noe
     return _swapchain.get();
 }
 
-const non_owning_rptr<engine::gfx::Camera> Viewport::getCamera() const noexcept {
-    return _camera.get();
+const non_owning_rptr<CameraActor> Viewport::getCameraActor() const noexcept {
+    return _cameraActor;
 }
 
-void Viewport::setCamera(cref<sptr<gfx::Camera>> camera_) {
-    _camera = camera_;
+void Viewport::setCameraActor(const ptr<CameraActor> actor_) {
+    _cameraActor = actor_;
 }
 
 math::uivec2 Viewport::actualViewExtent() const noexcept {
@@ -141,20 +143,22 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
         auto gfx { engine::Session::get()->modules().graphics() };
         gfx->_secondarySwapchain = _swapchain.get();
 
-        if (not _camera) {
-            _camera = gfx->_camera;
+        if (not _cameraActor) {
+            // TODO: Most likely generate a new camera actor
         }
 
-        _camera->setAspect(
+        _cameraActor->getCameraComponent()->setAspectRatio(
             static_cast<float>(_swapchain->extent().x) / static_cast<float>(_swapchain->extent().y)
         );
 
+        /*
         if (gfx->_renderTarget->ready()) {
             gfx->_renderTarget->rebuildPasses(_swapchain.get());
         } else {
             gfx->_renderTarget->use(_swapchain.get());
             gfx->_renderTarget->buildPasses(_camera.get());
         }
+         */
 
     }
 
@@ -299,4 +303,151 @@ math::vec2 Viewport::innerSize() const noexcept {
 
 math::vec2 Viewport::screenOffset() const noexcept {
     return _screenOff;
+}
+
+EventResponse Viewport::onFocus(cref<FocusEvent> event_) {
+    _state.set(WidgetStateFlagBits::eFocus);
+    markAsPending();
+    return EventResponse::eConsumed;
+}
+
+EventResponse Viewport::onBlur(cref<FocusEvent> event_) {
+    _state.unset(WidgetStateFlagBits::eFocus);
+    markAsPending();
+    return EventResponse::eConsumed;
+}
+
+EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
+
+    // Early exit on ESC Key to drop focus and ctrl
+    if (event_._key == '\x1B') {
+        _state.unset(WidgetStateFlagBits::eFocus);
+        markAsPending();
+        return EventResponse::eConsumed;
+    }
+
+    const auto isShift { (event_._modifier & 0x3) != 0x0 };
+    const float factor { 0.1 };
+
+    auto response { EventResponse::eHandled };
+    switch (event_._key) {
+        case 'a': {
+            response = EventResponse::eConsumed;
+
+            math::mat4 rotation { 1.F };
+            cref<Transform> tf { _cameraActor->getWorldTransform() };
+
+            const_cast<ref<Transform>>(tf).setPosition(
+                tf.position() + (rotation * math::vec4 { math::vec3_left, 0.F }).xyz().normalize() * factor
+            );
+            break;
+        }
+        case 'd': {
+            response = EventResponse::eConsumed;
+
+            math::mat4 rotation { 1.F };
+            cref<Transform> tf { _cameraActor->getWorldTransform() };
+
+            const_cast<ref<Transform>>(tf).setPosition(
+                tf.position() + (rotation * math::vec4 { math::vec3_right, 0.F }).xyz().normalize() * factor
+            );
+            break;
+        }
+        case 's': {
+            response = EventResponse::eConsumed;
+
+            math::mat4 rotation { 1.F };
+            cref<Transform> tf { _cameraActor->getWorldTransform() };
+
+            const_cast<ref<Transform>>(tf).setPosition(
+                tf.position() + (rotation * math::vec4 { math::vec3_backward, 0.F }).xyz().normalize() * factor
+            );
+            break;
+        }
+        case 'w': {
+            response = EventResponse::eConsumed;
+
+            math::mat4 rotation { 1.F };
+            cref<Transform> tf { _cameraActor->getWorldTransform() };
+
+            const_cast<ref<Transform>>(tf).setPosition(
+                tf.position() + (rotation * math::vec4 { math::vec3_forward, 0.F }).xyz().normalize() * factor
+            );
+            break;
+        }
+        case 'q': {
+            response = EventResponse::eConsumed;
+
+            math::mat4 rotation { 1.F };
+            cref<Transform> tf { _cameraActor->getWorldTransform() };
+
+            const_cast<ref<Transform>>(tf).setPosition(
+                tf.position() + (rotation * math::vec4 { math::vec3_up, 0.F }).xyz().normalize() * factor
+            );
+            break;
+        }
+
+        case 'c': {
+            response = EventResponse::eConsumed;
+
+            math::mat4 rotation { 1.F };
+            cref<Transform> tf { _cameraActor->getWorldTransform() };
+
+            const_cast<ref<Transform>>(tf).setPosition(
+                tf.position() + (rotation * math::vec4 { math::vec3_down, 0.F }).xyz().normalize() * factor
+            );
+            break;
+        }
+        default: { }
+    }
+
+    return response;
+}
+
+EventResponse Viewport::onKeyUp(cref<KeyboardEvent> event_) {
+    return Widget::onKeyUp(event_);
+}
+
+EventResponse Viewport::onMouseEnter(cref<MouseMoveEvent> event_) {
+    return Widget::onMouseEnter(event_);
+}
+
+EventResponse Viewport::onMouseMove(cref<MouseMoveEvent> event_) {
+
+    const auto isShift { (event_._modifier & 0x3) != 0x0 };
+    const auto rbtn { (event_._button & 0x4) != 0x0 };
+
+    if (!rbtn) {
+        return EventResponse::eConsumed;
+    }
+
+    constexpr float deltaTime { (1000.F / 60.F) / 1000.F };
+    constexpr float speed { 4.F };
+
+    math::vec2 dxdy {
+        math::vec2 {
+            static_cast<float>(event_._delta.x),
+            static_cast<float>(event_._delta.y)
+        }
+        * speed
+        * deltaTime
+    };
+
+    dxdy.x = glm::radians(dxdy.x);
+    dxdy.y = glm::radians(dxdy.y);
+
+    const auto pitch { math::quaternion::euler({ -dxdy.y, 0.F, 0.F }) };
+    const auto yaw { math::quaternion::euler({ 0.F, dxdy.x, 0.F }) };
+
+    cref<Transform> rtf { _cameraActor->getRootComponent()->getWorldTransform() };
+    cref<Transform> ctf { _cameraActor->getCameraComponent()->getWorldTransform() };
+
+    const_cast<ref<Transform>>(rtf).setRotation(rtf.rotation() * yaw);
+    const_cast<ref<Transform>>(ctf).setRotation(ctf.rotation() * pitch);
+
+    return EventResponse::eConsumed;
+}
+
+EventResponse Viewport::onMouseLeave(cref<MouseMoveEvent> event_) {
+    return Widget::onMouseLeave(event_);
 }

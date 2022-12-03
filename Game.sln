@@ -151,6 +151,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Serialization.Layout
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor.GFX", "projects\Editor.GFX\Editor.GFX.vcxproj", "{312443AA-53A2-43D9-B8A2-33F44808C432}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.GFX.Scene", "projects\Engine.GFX.Scene\Engine.GFX.Scene.vcxproj", "{8FEC3EAE-4526-4991-A3A8-F9D562EFBCBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -389,6 +391,12 @@ Global
 		{312443AA-53A2-43D9-B8A2-33F44808C432}.Profile|x64.Build.0 = Profile|x64
 		{312443AA-53A2-43D9-B8A2-33F44808C432}.Release|x64.ActiveCfg = Release|x64
 		{312443AA-53A2-43D9-B8A2-33F44808C432}.Release|x64.Build.0 = Release|x64
+		{8FEC3EAE-4526-4991-A3A8-F9D562EFBCBA}.Debug|x64.ActiveCfg = Debug|x64
+		{8FEC3EAE-4526-4991-A3A8-F9D562EFBCBA}.Debug|x64.Build.0 = Debug|x64
+		{8FEC3EAE-4526-4991-A3A8-F9D562EFBCBA}.Profile|x64.ActiveCfg = Profile|x64
+		{8FEC3EAE-4526-4991-A3A8-F9D562EFBCBA}.Profile|x64.Build.0 = Profile|x64
+		{8FEC3EAE-4526-4991-A3A8-F9D562EFBCBA}.Release|x64.ActiveCfg = Release|x64
+		{8FEC3EAE-4526-4991-A3A8-F9D562EFBCBA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

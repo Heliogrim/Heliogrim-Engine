@@ -5,7 +5,6 @@
 #include "HORenderPassCreateData.hpp"
 #include "Renderer.hpp"
 #include "RenderPassState.hpp"
-#include "../Camera/Camera.hpp"
 #include "../Command/CommandBatch.hpp"
 #include "../Texture/Texture.hpp"
 
@@ -13,11 +12,14 @@ using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-HORenderPass::HORenderPass(const non_owning_rptr<Renderer> renderer_, HORenderPassCreateData data_,
-    cref<sptr<RenderPassState>> state_) :
+HORenderPass::HORenderPass(
+    const non_owning_rptr<Renderer> renderer_,
+    HORenderPassCreateData data_,
+    cref<sptr<RenderPassState>> state_
+) :
     _reset(),
     _scene(data_.scene),
-    _camera(data_.camera),
+    _sceneView(data_.sceneView),
     _target(data_.target),
     _renderer(renderer_),
     _state(state_) {
@@ -31,7 +33,7 @@ HORenderPass::HORenderPass(const non_owning_rptr<Renderer> renderer_, HORenderPa
 HORenderPass::HORenderPass(mref<this_type> other_) noexcept :
     _reset(),
     _scene(other_._scene),
-    _camera(other_._camera),
+    _sceneView(other_._sceneView),
     _target(_STD exchange(other_._target, nullptr)),
     _renderer(_STD exchange(other_._renderer, nullptr)),
     _state(_STD exchange(other_._state, nullptr)),
@@ -93,7 +95,7 @@ const ptr<engine::scene::IRenderScene> HORenderPass::scene() const noexcept {
     return _scene;
 }
 
-bool HORenderPass::use(const ptr<scene::IRenderScene> scene_) noexcept {
+bool HORenderPass::use(const ptr<RenderScene> scene_) noexcept {
 
     if (!await()) {
         return false;
@@ -103,17 +105,17 @@ bool HORenderPass::use(const ptr<scene::IRenderScene> scene_) noexcept {
     return true;
 }
 
-const ptr<Camera> HORenderPass::camera() const noexcept {
-    return _camera;
+const ptr<scene::SceneView> HORenderPass::sceneView() const noexcept {
+    return _sceneView;
 }
 
-bool HORenderPass::use(const ptr<Camera> camera_) noexcept {
+bool HORenderPass::use(const ptr<scene::SceneView> sceneView_) noexcept {
 
-    if (!await()) {
+    if (not await()) {
         return false;
     }
 
-    _camera = camera_;
+    _sceneView = sceneView_;
     return true;
 }
 

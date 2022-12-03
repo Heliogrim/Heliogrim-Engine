@@ -32,6 +32,7 @@
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Resource/LoaderManager.hpp"
 #include "Game.Main/Assets/Textures/DefaultSkybox.hpp"
+#include <Engine.GFX.Scene/View/SceneView.hpp>
 
 using namespace ember::engine::gfx::glow::render;
 using namespace ember::engine::gfx::render;
@@ -413,9 +414,8 @@ void RevMainSkyNode::before(
     const auto uniformEntry { data.at("RevMainSkyNode::UniformBuffer"sv) };
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
-    const auto* camera { renderPass_->camera() };
-
-    math::mat4 view { camera->view() };
+    cref<scene::SceneViewEye> eye { *renderPass_->sceneView() };
+    math::mat4 view { eye.getViewMatrix() };
 
     // Erase Translation from view, cause we only need applied rotation of camera for sky box
     view[0][3] = 0.0;
@@ -424,7 +424,7 @@ void RevMainSkyNode::before(
     view[0][3] = 0.0;
     view[3] = math::vec4(0.0);
 
-    math::mat4 mvp { vk_norm_mat_m * camera->projection() * view };
+    math::mat4 mvp { vk_norm_mat_m * eye.getProjectionMatrix() * view };
     uniform.write<math::mat4>(&mvp, 1ui32);
 }
 

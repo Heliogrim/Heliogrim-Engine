@@ -28,6 +28,18 @@
     <Filter Include="Headerdateien\Components\__UI__">
       <UniqueIdentifier>{00906c5e-3db1-463d-9b0f-00439945b848}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Actors\Camera">
+      <UniqueIdentifier>{10e1531d-a791-4636-8fc1-dce01a06f96d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Components\Camera">
+      <UniqueIdentifier>{87cefc6a-7250-4da1-8fc4-942d4f065804}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Components\Camera">
+      <UniqueIdentifier>{249ff097-18ff-4713-8dbb-15880138e636}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Actors\Camera">
+      <UniqueIdentifier>{920ab0e3-051c-414a-9141-d3a664906a83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Ember\Texture.hpp">
@@ -192,6 +204,12 @@
     <ClInclude Include="..\..\src\Ember\FontAsset.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Actors\CameraActor.hpp">
+      <Filter>Headerdateien\Actors\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Components\CameraComponent.hpp">
+      <Filter>Headerdateien\Components\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember\AudioFormat.cpp">
@@ -307,6 +325,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\SkeletalGeometryComponent.cpp">
       <Filter>Quelldateien\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Components\CameraComponent.cpp">
+      <Filter>Quelldateien\Components\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Actors\CameraActor.cpp">
+      <Filter>Quelldateien\Actors\Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

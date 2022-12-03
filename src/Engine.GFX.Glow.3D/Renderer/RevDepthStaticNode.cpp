@@ -20,6 +20,7 @@
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
 #include <Engine.GFX/Renderer/RenderDataToken.hpp>
+#include <Engine.GFX.Scene/View/SceneView.hpp>
 
 #include "__macro.hpp"
 #include "RevDepthSharedNode.hpp"
@@ -406,8 +407,8 @@ void RevDepthStaticNode::before(
     const auto uniformEntry { data.at("RevDepthStaticNode::UniformBuffer"sv) };
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
-    const auto* camera { renderPass_->camera() };
-    math::mat4 mvpc { vk_norm_mat_m * camera->projection() * camera->view() };
+    cref<scene::SceneViewEye> eye { *renderPass_->sceneView() };
+    math::mat4 mvpc { vk_norm_mat_m * eye.getProjectionMatrix() * eye.getViewMatrix() };
     uniform.write<math::mat4>(&mvpc, 1ui32);
 
     /**

@@ -19,6 +19,7 @@
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
 #include <Engine.Session/Session.hpp>
+#include <Engine.GFX.Scene/View/SceneView.hpp>
 
 #include "__macro.hpp"
 #include "Engine.GFX/Graphics.hpp"
@@ -486,8 +487,8 @@ void RevFinalComposeNode::before(
     const auto uniformEntry { data.at("RevFinalComposeNode::UniformBuffer"sv) };
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
-    const auto* camera { renderPass_->camera() };
-    auto pos { camera->position() };
+    cref<scene::SceneViewEye> eye { *renderPass_->sceneView() };
+    auto pos { eye.getOrigin() };
     uniform.write<math::vec3>(&pos, 1ui32);
 
     /**
@@ -583,11 +584,11 @@ void RevFinalComposeNode::setupLORenderPass() {
         vk::AttachmentLoadOp::eDontCare,
         vk::AttachmentStoreOp::eDontCare,
         vk::ImageLayout::eUndefined,
-#if FALSE
+        #if FALSE
         vk::ImageLayout::ePresentSrcKHR
-#else
+        #else
         vk::ImageLayout::eShaderReadOnlyOptimal
-#endif
+        #endif
     });
 
     /**

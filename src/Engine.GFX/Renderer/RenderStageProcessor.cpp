@@ -8,6 +8,7 @@
 #include "HORenderPass.hpp"
 #include "RenderStagePass.hpp"
 #include "../Scene/SceneNodeModel.hpp"
+#include <Engine.Scene/IRenderScene.hpp>
 
 using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
@@ -65,7 +66,7 @@ RenderStageProcessor::dispatch_result_type RenderStageProcessor::dispatch() cons
     return &_signal;
 }
 
-bool RenderStageProcessor::operator()(const ptr<scene::RenderGraph::node_type> node_) const {
+bool RenderStageProcessor::operator()(const ptr<::ember::engine::scene::RenderGraph::node_type> node_) const {
 
     SCOPED_STOPWATCH
 

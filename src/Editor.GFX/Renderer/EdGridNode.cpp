@@ -15,6 +15,7 @@
 #include "Engine.GFX/Shader/Factory.hpp"
 #include "Engine.GFX/Shader/ShaderStorage.hpp"
 #include "Engine.GFX/Renderer/RenderDataToken.hpp"
+#include <Engine.GFX.Scene/View/SceneView.hpp>
 
 using namespace ember::editor::gfx;
 using namespace ember::engine::gfx::render;
@@ -260,9 +261,9 @@ void EdGridNode::before(
      */
     auto& cam { *_STD static_pointer_cast<Buffer, void>(data.at("EdGridNode::CamBuffer"sv)) };
 
-    const auto* camera { renderPass_->camera() };
-    math::mat4 camData[] { camera->view(), vk_norm_mat_m * camera->projection() };
-    cam.write<math::mat4>(&camData, 2ui32);
+    cref<scene::SceneViewEye> eye { *renderPass_->sceneView() };
+    math::mat4 viewData[] { eye.getViewMatrix(), vk_norm_mat_m * eye.getProjectionMatrix() };
+    cam.write<math::mat4>(&viewData, 2ui32);
 
     /**/
     cmd.beginRenderPass(*_loRenderPass, fb);
