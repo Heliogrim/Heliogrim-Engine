@@ -94,7 +94,18 @@ namespace ember::math {
          *
          * @return The indexed value.
          */
-        row_type& operator[](const size_t index_) const {
+        const row_type& operator[](const size_t index_) const {
+            return value[index_];
+        }
+
+        /**
+         * Array indexer operator
+         *
+         * @param index_ Zero-based index of the.
+         *
+         * @return The indexed value.
+         */
+        row_type& operator[](const size_t index_) {
             return value[index_];
         }
 
@@ -501,6 +512,18 @@ namespace ember::math {
             mat_[1][0] * vec_[0] + mat_[1][1] * vec_[1] + mat_[1][2] * vec_[2] + mat_[1][3] * vec_[3],
             mat_[2][0] * vec_[0] + mat_[2][1] * vec_[1] + mat_[2][2] * vec_[2] + mat_[2][3] * vec_[3],
             mat_[3][0] * vec_[0] + mat_[3][1] * vec_[1] + mat_[3][2] * vec_[2] + mat_[3][3] * vec_[3]);
+    }
+
+    template <typename T>
+    typename matq3_t<T>::row_type operator*(const typename matq3_t<T>::col_type& vec_, const matq3_t<T>& mat_) {
+
+        const typename matq3_t<T>::col_type res {
+            mat_[0].dot(vec_),
+            mat_[1].dot(vec_),
+            mat_[2].dot(vec_)
+        };
+
+        return res;
     }
 
     template <typename T>
