@@ -3,6 +3,7 @@
 #include <Engine.Common/stdafx.h>
 #include <Engine.Common/Math/Quaternion.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Common/Math/Convertion.hpp>
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -15,6 +16,14 @@ const static math::mat4 clip_matrix = (
     0.0F, 0.0F, 0.5F, 1.0F
 );
 */
+
+CameraViewMode Camera::viewMode() const noexcept {
+    return _mode;
+}
+
+void Camera::setViewMode(const CameraViewMode mode_) {
+    _mode = mode_;
+}
 
 float Camera::aspect() const noexcept {
     return _aspect;
@@ -45,20 +54,26 @@ math::mat4 Camera::projection() const noexcept {
     return _perspective;
 }
 
-const math::vec3& Camera::lookAt() const noexcept {
-    return _lookAt;
-}
-
-void Camera::setLookAt(const math::vec3& lookAt_) {
-    _lookAt = lookAt_;
-}
-
 const math::vec3& Camera::position() const noexcept {
     return _position;
 }
 
 void Camera::setPosition(const math::vec3& position_) {
     _position = position_;
+    updateView();
+}
+
+cref<math::quaternion> Camera::rotation() const noexcept {
+    return _rotation;
+}
+
+void Camera::setRotation(cref<math::quaternion> rotation_) {
+    _rotation = rotation_;
+    updateView();
+}
+
+void Camera::setRotation(cref<math::vec3> euler_) {
+    setRotation(math::quaternion::euler(euler_));
 }
 
 void Camera::setPerspective(const float fov_, const float aspectRatio_, const float near_, const float far_) {
@@ -79,27 +94,21 @@ const math::mat4& Camera::view() const noexcept {
     return _view;
 }
 
-void Camera::view(ref<math::mat4> view_, const bool flippedY_) const {
-    if (flippedY_) {
-        view_ = math::lookAt(_position * math::vec3 { 1.F, -1.F, 1.F }, _lookAt, math::vec3_up);
+void Camera::updateView() {
+
+    math::mat4 translate { math::mat4::make_identity() };
+    translate.translate(_position);
+
+    const math::mat4 rotate { math::as<math::quaternion, math::mat4>(_rotation) };
+
+    if (_mode == CameraViewMode::eFirstPerson) {
+        _view = rotate * translate;
     } else {
-        view_ = _view;
+        _view = translate * rotate;
     }
 }
 
-void Camera::update() {
-    /**
-     * View
-     */
-    _view = math::lookAt(_position, _lookAt, math::vec3_up);
-
-    /**
-     * Perspective
-     */
-    _perspective = math::perspective(
-        glm::radians(_fov),
-        _aspect,
-        _znear,
-        _zfar
-    );
+void Camera::lookAt(cref<math::vec3> target_) {
+    // TODO: Calculate quaternion rotation from delta vectors
+    _view = math::lookAt(_position, target_, math::vec3_up);
 }

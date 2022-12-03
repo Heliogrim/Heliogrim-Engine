@@ -219,6 +219,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Cache\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Camera\Camera.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Camera\CameraFrustum.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Camera\CameraModes.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Color\Color.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Command\CommandBatch.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Command\CommandBuffer.hpp" />

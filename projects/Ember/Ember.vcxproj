@@ -18,6 +18,7 @@
     <ClInclude Include="..\..\src\Ember\Actor.hpp" />
     <ClInclude Include="..\..\src\Ember\ActorComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\ActorInitializer.hpp" />
+    <ClInclude Include="..\..\src\Ember\Actors\CameraActor.hpp" />
     <ClInclude Include="..\..\src\Ember\CachedActorPointer.hpp" />
     <ClInclude Include="..\..\src\Ember\Asset.hpp" />
     <ClInclude Include="..\..\src\Ember\AssetAutoGuid.hpp" />
@@ -27,6 +28,7 @@
     <ClInclude Include="..\..\src\Ember\Audio.hpp" />
     <ClInclude Include="..\..\src\Ember\AudioFormat.hpp" />
     <ClInclude Include="..\..\src\Ember\CollisionComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\Components\CameraComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\FontAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\IComponentRegisterContext.hpp" />
     <ClInclude Include="..\..\src\Ember\Ember.hpp" />
@@ -74,9 +76,11 @@
     <ClCompile Include="..\..\src\Ember\Actor.cpp" />
     <ClCompile Include="..\..\src\Ember\ActorComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\ActorInitializer.cpp" />
+    <ClCompile Include="..\..\src\Ember\Actors\CameraActor.cpp" />
     <ClCompile Include="..\..\src\Ember\Asset.cpp" />
     <ClCompile Include="..\..\src\Ember\AssetDatabase.cpp" />
     <ClCompile Include="..\..\src\Ember\AudioFormat.cpp" />
+    <ClCompile Include="..\..\src\Ember\Components\CameraComponent.cpp" />
     <ClCompile Include="..\..\src\Ember\Ember.cpp" />
     <ClCompile Include="..\..\src\Ember\FontAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\GfxMaterial.cpp" />
@@ -140,6 +144,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.Glow\Engine.GFX.Glow.vcxproj">
       <Project>{7c46da1c-1139-4e4b-8d34-0ed78d12c1f2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Scene\Engine.GFX.Scene.vcxproj">
+      <Project>{8fec3eae-4526-4991-a3a8-f9d562efbcba}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.GFX\Engine.GFX.vcxproj">
       <Project>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</Project>

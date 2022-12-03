@@ -1,11 +1,14 @@
 #pragma once
 
-#include <Engine.GFX/Camera/Camera.hpp>
 #include <Engine.GFX/Swapchain/__fwd.hpp>
 
 #include "Widget.hpp"
 #include "../Style/__fwd.hpp"
 #include "../Style/StyleSheet.hpp"
+
+namespace ember {
+    class CameraActor;
+}
 
 namespace ember::engine::reflow {
 
@@ -31,14 +34,14 @@ namespace ember::engine::reflow {
 
     private:
         uptr<gfx::VkSwapchain> _swapchain;
-        sptr<gfx::Camera> _camera;
+        ptr<CameraActor> _cameraActor;
 
     public:
         [[nodiscard]] const non_owning_rptr<gfx::Swapchain> getSwapchain() const noexcept;
 
-        [[nodiscard]] const non_owning_rptr<gfx::Camera> getCamera() const noexcept;
+        [[nodiscard]] const non_owning_rptr<CameraActor> getCameraActor() const noexcept;
 
-        void setCamera(cref<sptr<gfx::Camera>> camera_);
+        void setCameraActor(const ptr<CameraActor> actor_);
 
     private:
         _STD array<math::vec2, 4> _uvs;
@@ -80,6 +83,21 @@ namespace ember::engine::reflow {
         [[nodiscard]] math::vec2 innerSize() const noexcept override;
 
         [[nodiscard]] math::vec2 screenOffset() const noexcept override;
+
+    public:
+        EventResponse onFocus(cref<FocusEvent> event_) override;
+
+        EventResponse onBlur(cref<FocusEvent> event_) override;
+
+        EventResponse onKeyDown(cref<KeyboardEvent> event_) override;
+
+        EventResponse onKeyUp(cref<KeyboardEvent> event_) override;
+
+        EventResponse onMouseEnter(cref<MouseMoveEvent> event_) override;
+
+        EventResponse onMouseMove(cref<MouseMoveEvent> event_) override;
+
+        EventResponse onMouseLeave(cref<MouseMoveEvent> event_) override;
     };
 
 }

@@ -1,9 +1,17 @@
 #pragma once
-#include <Engine.Scene/IRenderScene.hpp>
-#include <Engine.Scheduler/Fiber/Awaitable.hpp>
+#include <Engine.Common/Wrapper.hpp>
 
-#include "../Camera/Camera.hpp"
-#include "../Texture/Texture.hpp"
+namespace ember::engine::gfx {
+    class Texture;
+}
+
+namespace ember::engine::gfx::scene {
+    class SceneView;
+}
+
+namespace ember::engine::scene {
+    class IRenderScene;
+}
 
 namespace ember::engine::gfx::render {
 
@@ -11,8 +19,7 @@ namespace ember::engine::gfx::render {
 
         sptr<Texture> target;
 
-        ptr<scene::IRenderScene> scene = nullptr;
-
-        ptr<Camera> camera = nullptr;
+        ptr<::ember::engine::scene::IRenderScene> scene = nullptr;
+        ptr<scene::SceneView> sceneView = nullptr;
     };
 }

@@ -1,6 +1,5 @@
 #include "Graphics.hpp"
 
-#include <Engine.Scene/IRenderScene.hpp>
 #include <Engine.Scheduler/Async.hpp>
 
 #ifdef _PROFILING
@@ -12,6 +11,7 @@
 #include <Engine.GFX.Glow.3D/Renderer/RevRenderer.hpp>
 #include <Engine.GFX.Glow.UI/Renderer/UIRenderer.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.GFX.Scene/RenderSceneManager.hpp>
 
 #include "RenderTarget.hpp"
 #include "todo.h"
@@ -30,7 +30,6 @@
 #include "Shader/ShaderStorage.hpp"
 #include "Swapchain/Swapchain.hpp"
 #include "Swapchain/VkSurfaceSwapchain.hpp"
-#include "Swapchain/VkSwapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
 
 #if TRUE
@@ -48,13 +47,7 @@ Graphics::Graphics(cref<sptr<Session>> session_) noexcept :
     _computeQueue(nullptr),
     _graphicsQueue(nullptr),
     _transferQueue(nullptr),
-    _cacheCtrl(nullptr),
-    _renderer(nullptr),
-    _uiRenderer(nullptr),
-    _camera(nullptr),
-    _renderTarget(nullptr),
-    _renderScene(nullptr),
-    _uiRenderScene(nullptr) {}
+    _cacheCtrl(nullptr) {}
 
 Graphics::~Graphics() {
     tidy();
@@ -111,48 +104,25 @@ void Graphics::setup() {
     /**
      * Create Renderer
      */
-    _uiRenderer = new glow::ui::render::UiRenderer();
-    _uiRenderer->setup(_device);
+    {
+        auto renderer = make_sptr<glow::ui::render::UiRenderer>();
+        renderer->setup(_device);
 
-    //_renderer = new glow::render::RevRenderer();
-    _renderer = new editor::gfx::EdRevRenderer();
-    _renderer->setup(_device);
+        _cachedRenderer.insert_or_assign(AssocKey<string>::from("UIRenderer"), _STD move(renderer));
+    }
 
-    // Warning: Temporary
-    _camera = make_sptr<Camera>();
-    _camera->setPosition({ 0.F, /*-1.8F*/2.5F, -5.F });
-    _camera->setLookAt({ 0.F, /*-1.8F*/0.F, 0.F });
-    _camera->setPerspective(60.F,
-        static_cast<float>(_swapchain->extent().x) / static_cast<float>(_swapchain->extent().y),
-        0.01F, 100.F);
+    {
+        auto renderer = make_sptr<glow::render::RevRenderer>();
+        //auto renderer = make_sptr<editor::gfx::EdRevRenderer>();
+        renderer->setup(_device);
 
-    _camera->update();
+        _cachedRenderer.insert_or_assign(AssocKey<string>::from("3DRenderer"), _STD move(renderer));
+    }
 
     /**
-     * Setup (Main) RenderTarget
+     * Render Scenes
      */
-    _renderTarget = make_sptr<RenderTarget>();
-
-    _renderTarget->use(_device);
-    _renderTarget->use(&_surface);
-    //_renderTarget->use(_swapchain);
-    _renderTarget->use(_renderer);
-
-    //_renderTarget->buildPasses(_camera);
-
-    #if TRUE
-    /**
-     * Setup (Main) UI RenderTarget
-     */
-    _uiRenderTarget = make_sptr<RenderTarget>();
-
-    _uiRenderTarget->use(_device);
-    _uiRenderTarget->use(&_surface);
-    _uiRenderTarget->use(_swapchain);
-    _uiRenderTarget->use(_uiRenderer);
-
-    _uiRenderTarget->buildPasses(_camera.get());
-    #endif
+    _sceneManager = ::gfx::scene::RenderSceneManager::make();
 
     /**
      * Signal Setup
@@ -193,21 +163,6 @@ void Graphics::tidy() {
     _device->graphicsQueue()->vkQueue().waitIdle();
     _device->transferQueue()->vkQueue().waitIdle();
 
-    #if TRUE
-    /**
-     * Cleanup (Main) UI RenderTarget
-     */
-    _uiRenderTarget.reset();
-    #endif
-
-    /**
-     * Cleanup (Main) RenderTarget
-     */
-    _renderTarget.reset();
-
-    // Warning: Temporary
-    _camera.reset();
-
     /**
      * Destroy device queues
      */
@@ -218,13 +173,10 @@ void Graphics::tidy() {
     /**
      * Renderer
      */
-    _renderer->destroy();
-    delete _renderer;
-    _renderer = nullptr;
-
-    _uiRenderer->destroy();
-    delete _uiRenderer;
-    _uiRenderer = nullptr;
+    for (const auto& entry : _cachedRenderer) {
+        entry.second->destroy();
+    }
+    _cachedRenderer.clear();
 
     /**
      * Swapchain
@@ -296,71 +248,18 @@ bool Graphics::removeRenderer(cref<AssocKey<string>> key_) {
     return _cachedRenderer.erase(key_);
 }
 
-void Graphics::tick(
-    cref<sptr<gfx::RenderTarget>> target_,
-    ptr<scene::IRenderScene> scene_,
-    ptr<gfx::Camera> camera_
-) const {
-
-    SCOPED_STOPWATCH
-
-    /**
-     * Tick RenderTarget
-     */
-    if (not target_->ready()) {
-        IM_DEBUG_LOG(
-            "Tried to tick an unready RenderTarget. Please ensure the completness of RenderTargets before ticking/dispatching...");
-        return;
-    }
-
-    auto* renderPass = target_->next();
-
-    if (not renderPass) {
-        IM_DEBUG_LOG("Skipping graphics tick due to missing RenderPass (No next Swapchain Image) at RenderTarget");
-        return;
-    }
-
-    renderPass->use(scene_);
-    renderPass->use(camera_);
-
-    target_->update();
-
-    const auto result = target_->finish({});
-    assert(result != RenderEnqueueResult::eFailed);
-}
-
 #if TRUE
 // Warning: Temporary Experimental
 void reportStats(float fps_, float time_);
 #endif
 
-void Graphics::_tick() {
+void Graphics::tick() {
 
-    #if FALSE
-    /**
-     * Warning: Temporary Update to change state
-     */
-    {
-        auto millis {
-            _STD chrono::duration_cast<_STD chrono::milliseconds>(
-                _STD chrono::high_resolution_clock::now().time_since_epoch()).count()
-        };
-        auto timeToVal { static_cast<double>(millis) / 5000.0 };
+    CompactSet<sptr<RenderTarget>> targets {};
+    _sceneManager->selectInvokeTargets(targets);
 
-        constexpr auto dist { 5.F };
-        _camera->setPosition({
-            static_cast<float>(_STD sin(timeToVal)) * dist,
-            /*-1.8F*/
-            0.6F,
-            static_cast<float>(_STD cos(timeToVal)) * dist
-        });
-        //_camera->setLookAt({ 0.F, /*-1.8F*/0.F, 0.F });
-        _camera->update();
-    }
-    #endif
-
-    for (const auto& entry : _scheduledTargets) {
-        tick(entry.target, entry.scene, entry.camera);
+    for (const auto& target : targets) {
+        invokeRenderTarget(target);
     }
 
     /**
@@ -398,6 +297,32 @@ void Graphics::_tick() {
     reportStats(static_cast<float>(1000'000'000.0 / avg), static_cast<float>(diff));
 }
 
+void Graphics::invokeRenderTarget(cref<sptr<gfx::RenderTarget>> target_) const {
+
+    SCOPED_STOPWATCH
+
+    /**
+     * Tick RenderTarget
+     */
+    if (not target_->ready()) {
+        IM_DEBUG_LOG(
+            "Tried to tick an unready RenderTarget. Please ensure the completness of RenderTargets before ticking/dispatching...");
+        return;
+    }
+
+    const auto* renderPass = target_->next();
+
+    if (not renderPass) {
+        IM_DEBUG_LOG("Skipping graphics tick due to missing RenderPass (No next Swapchain Image) at RenderTarget");
+        return;
+    }
+
+    target_->update();
+
+    const auto result = target_->finish({});
+    assert(result != RenderEnqueueResult::eFailed);
+}
+
 void Graphics::__tmp__resize(cref<math::uivec2> extent_) {
 
     /**
@@ -410,8 +335,8 @@ void Graphics::__tmp__resize(cref<math::uivec2> extent_) {
     /**
      * Block Render Passes related to swapchain to rebuild passes
      */
-    auto succeeded = _uiRenderTarget->rebuildPasses(nextSwapchain);
-    assert(succeeded);
+    // TODO: auto succeeded = _uiRenderTarget->rebuildPasses(nextSwapchain);
+    // TODO: assert(succeeded);
 
     /**
      * Cleanup
@@ -436,7 +361,7 @@ void Graphics::reschedule() {
 
                 u8 expect { 1 };
                 if (_scheduled.load(_STD memory_order_relaxed) == expect) {
-                    _tick();
+                    tick();
                     return true;
                 }
 
@@ -453,90 +378,8 @@ void Graphics::reschedule() {
 
 }
 
-#include <Ember/SkyboxComponent.hpp>
 #include <Ember/StaticGeometryComponent.hpp>
-#include <Ember/UIComponent.hpp>
-#include <Engine.GFX.Glow.UI/Scene/UISceneModel.hpp>
-#include <Engine.Scene/RevScene.hpp>
-
-#include "Scene/SceneTag.hpp"
-#include "Scene/SkyboxModel.hpp"
-#include "Scene/StaticGeometryModel.hpp"
-
-bool Graphics::useAsRenderScene(const ptr<scene::IRenderScene> scene_) {
-    _renderScene = scene_;
-
-    if (scene_ == nullptr) {
-        return true;
-    }
-
-    // TODO: Move callback register to other position and reconcider lifecycle \
-    //  cause elements added to scene before callback register will be lost data
-
-    /**
-     *
-     */
-    auto* const scene { static_cast<const ptr<scene::RevScene>>(scene_) };
-
-    scene->setNodeType(GfxSceneTag {}, StaticGeometryComponent::typeId,
-        EmberObject::create<StaticGeometryModel, const ptr<SceneComponent>>);
-
-    scene->setNodeType(GfxSceneTag {}, SkyboxComponent::typeId,
-        EmberObject::create<SkyboxModel, const ptr<SceneComponent>>);
-
-    /**/
-
-    const auto stit {
-        _STD find_if(_scheduledTargets.begin(), _scheduledTargets.end(),
-            [renderTarget = _renderTarget](const auto& entry) {
-                return entry.target == renderTarget;
-            })
-    };
-    if (stit != _scheduledTargets.end()) {
-        _scheduledTargets.erase(stit);
-    }
-
-    _scheduledTargets.push_back({ _renderTarget, scene_, _camera.get() });
-
-    /**/
-    return true;
-}
-
-bool Graphics::useAsUIRenderScene(const ptr<scene::IRenderScene> scene_) {
-    _uiRenderScene = scene_;
-
-    if (scene_ == nullptr) {
-        return true;
-    }
-
-    // TODO: Move callback register to other position and reconcider lifecycle \
-    //  cause elements added to scene before callback register will be lost data
-
-    /**
-     *
-     */
-    auto* const scene { static_cast<const ptr<scene::RevScene>>(scene_) };
-
-    scene->setNodeType(GfxSceneTag {}, UIComponent::typeId,
-        EmberObject::create<glow::ui::UISceneModel, const ptr<SceneComponent>>);
-
-    /**/
-
-    const auto stit {
-        _STD find_if(_scheduledTargets.begin(), _scheduledTargets.end(),
-            [renderTarget = _uiRenderTarget](const auto& entry) {
-                return entry.target == renderTarget;
-            })
-    };
-    if (stit != _scheduledTargets.end()) {
-        _scheduledTargets.erase(stit);
-    }
-
-    _scheduledTargets.push_back({ _uiRenderTarget, scene_, _camera.get() });
-
-    /**/
-    return true;
-}
+#include <Engine.GFX/Scene/StaticGeometryModel.hpp>
 
 void Graphics::registerLoader() {
     /**

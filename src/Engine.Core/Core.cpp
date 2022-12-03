@@ -77,23 +77,7 @@ void Core::start() {
     /**
      * Use current scene
      */
-    session->modules().graphics()->useAsRenderScene(
-        static_cast<ptr<scene::IRenderScene>>(
-            static_cast<scene::RevScene*>(_currentMainScene)
-        )
-    );
-
-    #pragma region Temporary UI Override
-    session->modules().graphics()->useAsUIRenderScene(
-        static_cast<ptr<scene::IRenderScene>>(static_cast<ptr<scene::RevScene>>(_currentUiScene)
-        )
-    );
-    #pragma endregion
-
-    /**
-     * Pseudo workload
-     */
-    // scheduler::thread::self::sleepFor(10000);
+    // TODO: Store associated render scenes and render targets to ::ember::engine::gfx::scene::RenderSceneManager
 }
 
 void Core::stop() {
@@ -101,20 +85,7 @@ void Core::stop() {
     const auto session { Session::get() };
     _stopped.test_and_set(_STD memory_order_release);
 
-    /**
-     * Unuse current scene
-     */
-    auto graphics { session->modules().graphics() };
-    if (graphics) {
-        graphics->useAsRenderScene(nullptr);
-        graphics->useAsUIRenderScene(nullptr);
-    }
-
-    /**
-     * Pseudo workload
-     */
-    scheduler::thread::self::sleepFor(1000);
-
+    // TODO: Shutdown scenes
 }
 
 const ptr<scene::Scene> Core::getCurrentScene() const noexcept {

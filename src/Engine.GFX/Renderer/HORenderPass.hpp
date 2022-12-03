@@ -1,17 +1,22 @@
 #pragma once
 
 #include <Engine.Scheduler/Fiber/Awaitable.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "HORenderPassCreateData.hpp"
 #include "__fwd.hpp"
+#include "../vkinc.hpp"
 
 namespace ember::engine::gfx {
     /**
      * Forward Declaration
      */
-    class Camera;
-    class Texture;
     class CommandBatch;
+    class Texture;
+}
+
+namespace ember::engine::gfx::scene {
+    class SceneView;
 }
 
 namespace ember::engine::scene {
@@ -23,6 +28,8 @@ namespace ember::engine::gfx::render {
     class HORenderPass {
     public:
         using this_type = HORenderPass;
+
+        using RenderScene = ::ember::engine::scene::IRenderScene;
 
     public:
         HORenderPass(const non_owning_rptr<Renderer> renderer_, HORenderPassCreateData data_,
@@ -54,20 +61,20 @@ namespace ember::engine::gfx::render {
         void markAsTouched();
 
     private:
-        ptr<scene::IRenderScene> _scene;
+        ptr<RenderScene> _scene;
 
     public:
-        [[nodiscard]] const ptr<scene::IRenderScene> scene() const noexcept;
+        [[nodiscard]] const ptr<RenderScene> scene() const noexcept;
 
-        bool use(const ptr<scene::IRenderScene> scene_) noexcept;
+        bool use(const ptr<RenderScene> scene_) noexcept;
 
     private:
-        ptr<Camera> _camera;
+        ptr<scene::SceneView> _sceneView;
 
     public:
-        [[nodiscard]] const ptr<Camera> camera() const noexcept;
+        [[nodiscard]] const ptr<scene::SceneView> sceneView() const noexcept;
 
-        bool use(const ptr<Camera> camera_) noexcept;
+        bool use(const ptr<scene::SceneView> sceneView_) noexcept;
 
     private:
         sptr<Texture> _target;

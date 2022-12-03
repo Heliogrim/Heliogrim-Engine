@@ -705,6 +705,9 @@
     <ClInclude Include="..\..\src\Engine.GFX\Importer\ImageFileTypes.hpp">
       <Filter>Headerdateien\Importer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Camera\CameraModes.hpp">
+      <Filter>Headerdateien\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">

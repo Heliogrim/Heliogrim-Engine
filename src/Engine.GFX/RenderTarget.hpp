@@ -17,8 +17,8 @@ namespace ember::engine::gfx {
     class Swapchain;
 }
 
-namespace ember::engine::scene {
-    class IRenderScene;
+namespace ember::engine::gfx::scene {
+    class SceneView;
 }
 
 namespace ember::engine::gfx {
@@ -110,18 +110,33 @@ namespace ember::engine::gfx {
     private:
         void nextSync();
 
+    private:
+        /*_STD atomic_flag*/
+        bool _active;
+
     public:
         /**
          *
          */
         [[nodiscard]] bool ready() const noexcept;
 
+        [[nodiscard]] bool active() const noexcept;
+
+        /**
+         * Set this render target active or inactive
+         *
+         * @param active_ Flag to set
+         *
+         * @returns True when active state has changed, otherwise false.
+         */
+        bool setActive(const bool active_);
+
     public:
         /**
          *
          * @blocking
          */
-        void buildPasses(cref<ptr<Camera>> camera_, cref<ptr<scene::IRenderScene>> scene_ = nullptr);
+        void buildPasses(const ptr<scene::SceneView> sceneView_);
 
         /**
          *

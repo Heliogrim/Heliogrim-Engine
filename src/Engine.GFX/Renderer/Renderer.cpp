@@ -90,7 +90,7 @@ ptr<HORenderPass> Renderer::reallocate(mref<ptr<HORenderPass>> renderPass_, mref
     }
 
     // Warning: Temporary implementation
-    HORenderPassCreateData tmp { changes_.target, renderPass_->scene(), renderPass_->camera() };
+    HORenderPassCreateData tmp { changes_.target, renderPass_->scene(), renderPass_->sceneView() };
     free(_STD move(renderPass_));
 
     return allocate(_STD move(tmp));

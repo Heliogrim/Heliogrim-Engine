@@ -26,7 +26,7 @@ StaticGeometryModel::~StaticGeometryModel() {
 
 void StaticGeometryModel::tidy() {}
 
-void StaticGeometryModel::create(const ptr<scene::Scene> scene_) {
+void StaticGeometryModel::create(const ptr<::ember::engine::scene::Scene> scene_) {
 
     auto* origin { static_cast<ptr<StaticGeometryComponent>>(_owner) };
 
@@ -48,9 +48,9 @@ void StaticGeometryModel::create(const ptr<scene::Scene> scene_) {
     }
 }
 
-void StaticGeometryModel::update(const ptr<scene::Scene> scene_) {}
+void StaticGeometryModel::update(const ptr<::ember::engine::scene::Scene> scene_) {}
 
-void StaticGeometryModel::destroy(const ptr<scene::Scene> scene_) {}
+void StaticGeometryModel::destroy(const ptr<::ember::engine::scene::Scene> scene_) {}
 
 Vector<render::RenderDataToken> StaticGeometryModel::providedToken() const noexcept {
     using namespace ::ember::engine::gfx::render;

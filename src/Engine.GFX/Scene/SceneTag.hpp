@@ -5,11 +5,11 @@
 namespace ember::engine::gfx {
 
     struct GfxSceneTag :
-        public scene::SceneTag {
+        public ::ember::engine::scene::SceneTag {
 
-        static constexpr type_id typeId = "GfxSceneGraphTag"_typeId;
+        constexpr static inline type_id typeId = "GfxSceneGraphTag"_typeId;
 
         constexpr GfxSceneTag() noexcept :
-            scene::SceneTag(typeId) {}
+            ::ember::engine::scene::SceneTag(typeId) {}
     };
 }

@@ -185,6 +185,9 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     <ProjectReference Include="..\Engine.GFX.Glow\Engine.GFX.Glow.vcxproj">
       <Project>{7c46da1c-1139-4e4b-8d34-0ed78d12c1f2}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Scene\Engine.GFX.Scene.vcxproj">
+      <Project>{8fec3eae-4526-4991-a3a8-f9d562efbcba}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.GFX\Engine.GFX.vcxproj">
       <Project>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</Project>
     </ProjectReference>

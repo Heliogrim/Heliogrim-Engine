@@ -1,7 +1,10 @@
 #pragma once
 
 #include <Engine.Common/Math/Matrix.hpp>
+#include <Engine.Common/Math/Quaternion.hpp>
 #include <Engine.Common/Wrapper.hpp>
+
+#include "CameraModes.hpp"
 
 namespace ember::engine::gfx {
 
@@ -14,6 +17,14 @@ namespace ember::engine::gfx {
          * @date 20.11.2020
          */
         Camera() = default;
+
+    protected:
+        CameraViewMode _mode;
+
+    public:
+        [[nodiscard]] CameraViewMode viewMode() const noexcept;
+
+        void setViewMode(const CameraViewMode mode_);
 
     private:
         /**
@@ -42,7 +53,7 @@ namespace ember::engine::gfx {
          */
         void setAspect(const float ratio_);
 
-    private:
+    protected:
         /**
          * FOV
          */
@@ -69,7 +80,7 @@ namespace ember::engine::gfx {
          */
         void setFov(const float fov_);
 
-    private:
+    protected:
         /**
          * Clipping Planes
          */
@@ -105,34 +116,7 @@ namespace ember::engine::gfx {
          */
         [[nodiscard]] math::mat4 projection() const noexcept;
 
-    private:
-        /**
-         * Look At
-         */
-        math::vec3 _lookAt;
-
-    public:
-        /**
-         * Look at
-         *
-         * @author Julius
-         * @date 20.11.2020
-         *
-         * @returns A const.
-         */
-        [[nodiscard]] const math::vec3& lookAt() const noexcept;
-
-        /**
-         * Sets look at
-         *
-         * @author Julius
-         * @date 20.11.2020
-         *
-         * @param  lookAt_ The look at.
-         */
-        void setLookAt(const math::vec3& lookAt_);
-
-    private:
+    protected:
         /**
          * Position
          */
@@ -159,7 +143,17 @@ namespace ember::engine::gfx {
          */
         void setPosition(const math::vec3& position_);
 
-    private:
+    protected:
+        math::quaternion _rotation;
+
+    public:
+        [[nodiscard]] cref<math::quaternion> rotation() const noexcept;
+
+        void setRotation(cref<math::quaternion> rotation_);
+
+        void setRotation(cref<math::vec3> euler_);
+
+    protected:
         /**
          * Perspective Matrix
          */
@@ -179,7 +173,7 @@ namespace ember::engine::gfx {
          */
         void setPerspective(const float fov_, const float aspectRatio_, const float near_, const float far_);
 
-    private:
+    protected:
         /**
          * View Matrix
          */
@@ -196,28 +190,13 @@ namespace ember::engine::gfx {
          */
         const math::mat4& view() const noexcept;
 
-        /**
-         * Store the view matrix into provided reference
-         *
-         * @author Julius
-         * @date 30.11.2022
-         *
-         * @param [Out] view_ The reference where to store the matrix
-         * @param flippedY_ Whether storing should flip the y coordinate
-         */
-        void view(_Out_ ref<math::mat4> view_, const bool flippedY_ = false) const;
+    private:
+        void updateView();
 
     public:
         /**
-         * Mutations
-         */
-
-        /**
-         * Updates this 
          *
-         * @author Julius
-         * @date 20.11.2020
          */
-        void update();
+        void lookAt(cref<math::vec3> target_);
     };
 }

@@ -27,7 +27,7 @@ namespace ember {
 
     public:
         template <std::derived_from<ActorComponent> Component>
-        ptr<Component> createComponent(const ptr<Actor> actor_) {
+        ptr<Component> createComponent(_Inout_ const ptr<Actor> actor_) {
 
             /**
              *
@@ -55,7 +55,7 @@ namespace ember {
         }
 
         template <std::derived_from<ActorComponent> Component>
-        ptr<Component> createSubComponent(const ptr<Actor> actor_, ptr<ActorComponent> parent_) {
+        ptr<Component> createSubComponent(_Inout_ const ptr<Actor> actor_, ptr<ActorComponent> parent_) {
 
             /**
              *

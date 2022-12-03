@@ -23,6 +23,7 @@
 #include <Engine.GFX/Shader/Prototype.hpp>
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
+#include <Engine.GFX.Scene/View/SceneView.hpp>
 
 #include "RevMainSharedNode.hpp"
 #include "__macro.hpp"
@@ -418,8 +419,8 @@ void RevMainStaticNode::before(
     const auto uniformEntry { data.at("RevMainStaticNode::UniformBuffer"sv) };
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
-    const auto* camera { renderPass_->camera() };
-    math::mat4 mvpc { vk_norm_mat_m * camera->projection() * camera->view() };
+    cref<scene::SceneViewEye> eye { *renderPass_->sceneView() };
+    math::mat4 mvpc { vk_norm_mat_m * eye.getProjectionMatrix() * eye.getViewMatrix() };
     uniform.write<math::mat4>(&mvpc, 1ui32);
 
     /**
