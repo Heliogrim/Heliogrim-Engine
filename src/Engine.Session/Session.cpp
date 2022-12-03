@@ -164,10 +164,11 @@ void Session::setup() {
 
                             math::ivec2 point { event.motion.x, event.motion.y };
                             math::ivec2 delta { event.motion.xrel, event.motion.yrel };
+                            const auto button { event.motion.state };
 
                             lastPoint = point;
 
-                            const input::event::MouseMoveEvent mme { point, delta, 0ui32, 0ui32 };
+                            const input::event::MouseMoveEvent mme { point, delta, button, 0ui32 };
                             emitter().emit(mme);
                             break;
                         }
