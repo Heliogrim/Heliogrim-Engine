@@ -62,5 +62,14 @@ namespace ember::engine::reflow {
             return unwrap & (static_cast<value_type>(WidgetStateFlagBits::eShift) |
                 static_cast<value_type>(WidgetStateFlagBits::eShiftInherit));
         }
+
+    public:
+        void set(const WidgetStateFlagBits flag_) {
+            (*this) |= flag_;
+        }
+
+        void unset(const WidgetStateFlagBits flag_) {
+            this->unwrap &= (~static_cast<WidgetState::value_type>(flag_));
+        }
     };
 }
