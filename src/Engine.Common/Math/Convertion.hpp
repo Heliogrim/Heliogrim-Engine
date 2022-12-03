@@ -40,7 +40,7 @@ namespace ember::math {
         mat[1][1] = mat3::value_type { 1 } - mat3::value_type { 2 } * (xx + zz);
         mat[1][2] = mat3::value_type { 2 } * (yz + wx);
 
-        mat[2][0] = mat3::value_type { 2 } * (xy * wy);
+        mat[2][0] = mat3::value_type { 2 } * (xy + wy);
         mat[2][1] = mat3::value_type { 2 } * (yz - wx);
         mat[2][2] = mat3::value_type { 1 } - mat3::value_type { 2 } * (xx + yy);
 
