@@ -16,9 +16,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Core\Core.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Event\WorldAddedEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Event\WorldChangeEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Event\WorldRemoveEvent.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Core\Core.cpp" />
+    <ClCompile Include="..\..\src\Engine.Core\Event\WorldAddedEvent.cpp" />
+    <ClCompile Include="..\..\src\Engine.Core\Event\WorldChangeEvent.cpp" />
+    <ClCompile Include="..\..\src\Engine.Core\Event\WorldRemoveEvent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">

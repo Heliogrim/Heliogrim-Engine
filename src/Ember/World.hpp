@@ -3,7 +3,6 @@
 #include "Inbuilt.hpp"
 
 #include "Level.hpp"
-#include "Scene.hpp"
 
 namespace ember {
 
@@ -23,7 +22,7 @@ namespace ember {
          * @author Julius
          * @date 01.12.2021
          */
-        World(const non_owning_rptr<Scene> scene_);
+        World(const non_owning_rptr<void> internal_);
 
         /**
          * Copy Constructor
@@ -71,7 +70,21 @@ namespace ember {
         ref<World> operator=(mref<World>) noexcept = delete;
 
     private:
-        non_owning_rptr<Scene> _scene;
+        /**
+         * Internal
+         */
+        non_owning_rptr<void> _internal;
+
+    public:
+        /**
+         * Gets the internal state
+         *
+         * @author Julius
+         * @date 04.12.2022
+         *
+         * @returns A const reference to the raw internal pointer
+         */
+        [[nodiscard]] cref<non_owning_rptr<void>> unwrap() const noexcept;
 
     public:
         /**
@@ -167,4 +180,10 @@ namespace ember {
      * @returns A future, representing whether the world was successfully destroyed.
      */
     extern Future<bool> Destroy(mref<ptr<World>> world_);
+
+    /* Warning: Experimental Feature */
+    extern void SetWorld(const ptr<World> world_);
+
+    /* Warning: Experimental Feature */
+    extern void TransitionToWorld(const ptr<World> world_);
 }

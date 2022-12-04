@@ -13,15 +13,39 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Headerdateien\Event">
+      <UniqueIdentifier>{8c4c8e85-c790-4d78-9a88-217b006bd2ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Event">
+      <UniqueIdentifier>{26c947a1-00b6-421c-9fab-c1cc7d5382dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Core\Core.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Event\WorldAddedEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Event\WorldRemoveEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Event\WorldChangeEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Core\Core.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Core\Event\WorldAddedEvent.cpp">
+      <Filter>Quelldateien\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Core\Event\WorldChangeEvent.cpp">
+      <Filter>Quelldateien\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Core\Event\WorldRemoveEvent.cpp">
+      <Filter>Quelldateien\Event</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

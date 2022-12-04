@@ -120,6 +120,9 @@
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeElement.hpp">
       <Filter>Headerdateien\Node</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scene\SceneFactory.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp">
@@ -148,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodePath.cpp">
       <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scene\SceneFactory.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

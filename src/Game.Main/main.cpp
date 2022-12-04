@@ -148,105 +148,6 @@ void ember_main_entry() {
 
     execute(_STD move(task));
 
-    /**
-     * --- [ 4 ] ---
-     * rows : 1ui32 << 4 := 16
-     * cols : 1ui32 << 4 := 16
-     * count : rows * cols := 256
-     * 
-     * --- [ 5 ] ---
-     * rows : 1ui32 << 5 := 32
-     * cols : 1ui32 << 5 := 32
-     * count : rows * cols := 1024
-     * 
-     * --- [ 6 ] --
-     * rows : 1ui32 << 6 := 64
-     * cols : 1ui32 << 6 := 64
-     * count : rows * colls := 4096
-     */
-    #if not defined(_DEBUG) && FALSE
-    constexpr u64 rows { 1ui64 << 11 };
-    constexpr u64 cols { 1ui64 << 11 };
-    constexpr u64 count { rows * cols };
-
-    constexpr u64 perCycle = 4ui64;
-
-    #else
-    constexpr u64 rows { 1ui64 << 5 };
-    constexpr u64 cols { 1ui64 << 5 };
-    constexpr u64 count { rows * cols };
-
-    constexpr u64 perCycle = 4ui64;
-
-    #endif
-
-    /**
-     * [ 5 - 5 ]    : 77MiB
-     * [ 6 - 6 ]    : 80MiB
-     * [ 7 - 7 ]    : 92MiB
-     * [ 8 - 8 ]    : 153MiB
-     * [ 9 - 9 ]    : 331MiB
-     * [ 10 - 10 ]  : 1,1GiB
-     * [ 11 - 11 ]  : 4,1GiB
-     * [ 12 - 12 ]  : 16,4GiB
-     */
-
-    //const u64 perCycle = static_cast<u64>(_STD log10(count));// `_STD log10` is not constexpr
-    //constexpr u64 perCycle = count;
-
-    /**
-     * Generic Animation Task
-     */
-    RepetitiveTask animTask {
-        []() {
-            waveActors();
-            return !suspended.test(_STD memory_order::consume);
-        }
-    };
-
-    animTask.srcStage() = TaskStages::eUserUpdateStrong;
-    animTask.dstStage() = TaskStages::eUserUpdateStrong;
-
-    /**
-     * Generic Generator Task
-     */
-    RepetitiveTask buildTask {
-        [count = count, perCycle = perCycle, animTask = animTask]() {
-
-            auto timestamp = _STD chrono::high_resolution_clock::now();
-
-            static u64 static_idx = 0;
-            static u64 static_log = 0;
-
-            u64& idx = static_idx;
-            u64& log = static_log;
-
-            const u64 nextCycleLimit = _STD min(idx + perCycle, count);
-            for (; idx < nextCycleLimit; ++idx) {
-                buildActor(idx, rows, cols);
-            }
-
-            if (idx >= count) {
-                std::cout << "Finished creating " << std::to_string(count) << " entities." << std::endl;
-            }
-
-            auto end = _STD chrono::high_resolution_clock::now();
-            std::cout << "Creating cycle took " << _STD chrono::duration_cast<
-                _STD chrono::microseconds>(end - timestamp) << "" << std::endl;
-
-            const auto repeat { idx < count };
-            if (!repeat) {
-                execute(RepetitiveTask { animTask });
-            }
-            return repeat;
-        }
-    };
-
-    buildTask.srcStage() = TaskStages::eUserUpdateStrong;
-    buildTask.dstStage() = TaskStages::eUserUpdateStrong;
-
-    execute(_STD move(buildTask));
-
     //
     execute(buildTestScene);
 }
@@ -547,10 +448,17 @@ ptr<Actor> buildSkyboxAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
 
 void buildTestScene() {
 
-    //buildGlobalPlane(12i32);
+    /**/
+    assert(GetWorld() == nullptr);
+    auto world = await(CreateWorld());
+    assert(world != nullptr);
+    await(Destroy(_STD move(world)));
 
-    //buildRock01();
+    assert(GetWorld() == nullptr);
+    world = await(CreateWorld());
+    SetWorld(world);
 
+    /**/
     auto* skyboxActor = buildSkyboxAsset(
         game::assets::meshes::Sphere::unstable_auto_guid(),
         game::assets::material::Skybox01::unstable_auto_guid()
