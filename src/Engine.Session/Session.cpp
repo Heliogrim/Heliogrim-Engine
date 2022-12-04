@@ -337,6 +337,10 @@ cref<Core> Session::core() const noexcept {
     return _core;
 }
 
+ref<Core> Session::core() noexcept {
+    return _core;
+}
+
 cref<sptr<Session::value_type>> Session::get() noexcept {
     static sptr<Session> session = nullptr;
 

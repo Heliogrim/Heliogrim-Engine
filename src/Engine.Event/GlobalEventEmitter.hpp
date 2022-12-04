@@ -134,7 +134,7 @@ namespace ember {
 
     public:
         template <IsStatefulEvent EventType_>
-        void emit(ref<EventType_> event_) {
+        void emit(ref<EventType_> event_) const {
 
             const auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
@@ -145,7 +145,7 @@ namespace ember {
         }
 
         template <IsStatefulEvent EventType_> requires _STD is_trivially_default_constructible_v<EventType_>
-        void emit() {
+        void emit() const {
 
             const auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
@@ -157,7 +157,7 @@ namespace ember {
 
         template <IsStatefulEvent EventType_, typename Arg0_, typename... Args_> requires _STD is_constructible_v<
             EventType_, Arg0_, Args_...>
-        void emit(Arg0_&& arg0_, Args_&&... args_) {
+        void emit(Arg0_&& arg0_, Args_&&... args_) const {
 
             const auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
@@ -171,7 +171,7 @@ namespace ember {
         }
 
         template <IsStatelessEvent EventType_>
-        void emit(cref<EventType_> event_) {
+        void emit(cref<EventType_> event_) const {
 
             const auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
@@ -182,7 +182,7 @@ namespace ember {
         }
 
         template <IsStatelessEvent EventType_> requires _STD is_trivially_default_constructible_v<EventType_>
-        void emit() {
+        void emit() const {
 
             const auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
@@ -194,7 +194,7 @@ namespace ember {
 
         template <IsStatelessEvent EventType_, typename Arg0_, typename... Args_> requires _STD is_constructible_v<
             EventType_, Arg0_, Args_...>
-        void emit(Arg0_&& arg0_, Args_&&... args_) {
+        void emit(Arg0_&& arg0_, Args_&&... args_) const {
 
             const auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
@@ -208,7 +208,7 @@ namespace ember {
         }
 
         template <IsEvent EventType_>
-        void emit(ptr<EventType_> event_) {
+        void emit(ptr<EventType_> event_) const {
 
             if constexpr (IsStatefulEvent<EventType_>) {
                 emit<EventType_>(static_cast<ref<EventType_>>(*event_));

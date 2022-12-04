@@ -99,6 +99,8 @@ namespace ember::engine {
     public:
         [[nodiscard]] cref<Core> core() const noexcept;
 
+        [[nodiscard]] ref<Core> core() noexcept;
+
     public:
         /**
          * Gets the singleton instance

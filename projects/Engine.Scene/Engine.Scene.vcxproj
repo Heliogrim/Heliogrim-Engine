@@ -39,6 +39,7 @@
     <ClInclude Include="..\..\src\Engine.Scene\RevScene.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Scene.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeConsumer.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\SceneFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\SceneNodeModel.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\SceneTag.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\SceneTraits.hpp" />
@@ -58,6 +59,7 @@
     <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeVersion.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\RevScene.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp" />
+    <ClCompile Include="..\..\src\Engine.Scene\SceneFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\SceneNodeModel.cpp" />
     <ClCompile Include="..\..\src\Engine.Scene\Storage\SceneNodeStorage.cpp" />
   </ItemGroup>
