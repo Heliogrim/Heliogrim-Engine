@@ -35,7 +35,6 @@ using namespace ember;
 #include "Engine.Reflow/Widget/Panel.hpp"
 #include "Engine.Reflow/Window/Window.hpp"
 #include "../TestUI.hpp"
-#include <Engine.Session/Session.hpp>
 #include <Engine.Input/MouseButtonEvent.hpp>
 #include <Engine.Input/MouseMoveEvent.hpp>
 #include <Engine.Input/MouseWheelEvent.hpp>
@@ -43,6 +42,8 @@ using namespace ember;
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
 #include <Engine.Reflow/Style/StyleKeyStack.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Event/GlobalEventEmitter.hpp>
 #include <mutex>
 #include <atomic>
 
@@ -61,7 +62,6 @@ UiMainStageNode::UiMainStageNode() :
 UiMainStageNode::~UiMainStageNode() = default;
 
 void UiMainStageNode::setup(cref<sptr<Device>> device_) {
-
     SCOPED_STOPWATCH
 
     /**
@@ -91,7 +91,6 @@ void UiMainStageNode::setup(cref<sptr<Device>> device_) {
 }
 
 void UiMainStageNode::destroy() {
-
     SCOPED_STOPWATCH
 
     /**
@@ -137,7 +136,6 @@ void UiMainStageNode::destroy() {
 }
 
 bool UiMainStageNode::allocate(const ptr<HORenderPass> renderPass_) {
-
     const auto state { renderPass_->state() };
 
     /**
@@ -166,7 +164,6 @@ bool UiMainStageNode::allocate(const ptr<HORenderPass> renderPass_) {
 }
 
 bool UiMainStageNode::free(const ptr<HORenderPass> renderPass_) {
-
     const auto state { renderPass_->state() };
 
     /**
@@ -246,34 +243,32 @@ Vector<RenderDataToken> UiMainStageNode::optionalToken() noexcept {
 
 void UiMainStageNode::before(const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_) const {
-
     #if TRUE
     if (!uiTestPanel) {
-
         reflow::WindowManager::make();
 
         testLoad(_device);
         uiTestPanel = buildTestUI(_device);
 
-        const auto session { ember::engine::Session::get() };
-        session->emitter().on<input::event::MouseButtonEvent>([](cref<input::event::MouseButtonEvent> event_) {
+        auto& emitter { engine::Engine::getEngine()->getEmitter() };
+        emitter.on<input::event::MouseButtonEvent>([](cref<input::event::MouseButtonEvent> event_) {
             _STD unique_lock<_STD mutex> lck { uiTestMtx };
             reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
         });
-        session->emitter().on<input::event::MouseMoveEvent>([](cref<input::event::MouseMoveEvent> event_) {
+        emitter.on<input::event::MouseMoveEvent>([](cref<input::event::MouseMoveEvent> event_) {
             _STD unique_lock<_STD mutex> lck { uiTestMtx };
 
             reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
         });
-        session->emitter().on<input::event::MouseWheelEvent>([](cref<input::event::MouseWheelEvent> event_) {
+        emitter.on<input::event::MouseWheelEvent>([](cref<input::event::MouseWheelEvent> event_) {
             _STD unique_lock<_STD mutex> lck { uiTestMtx };
             reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
         });
-        session->emitter().on<input::event::DragDropEvent>([](cref<input::event::DragDropEvent> event_) {
+        emitter.on<input::event::DragDropEvent>([](cref<input::event::DragDropEvent> event_) {
             _STD unique_lock<_STD mutex> lck { uiTestMtx };
             reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
         });
-        session->emitter().on<input::event::KeyboardEvent>([](cref<input::event::KeyboardEvent> event_) {
+        emitter.on<input::event::KeyboardEvent>([](cref<input::event::KeyboardEvent> event_) {
             _STD unique_lock<_STD mutex> lck { uiTestMtx };
             reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
         });
@@ -286,7 +281,6 @@ void UiMainStageNode::before(const non_owning_rptr<HORenderPass> renderPass_,
 void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_,
     const non_owning_rptr<SceneNodeModel> model_) const {
-
     if (!uiTestPanel) {
         return;
     }
@@ -397,7 +391,6 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     /**/
 
     if (vertexBuffer->size != vertexSize) {
-
         vertexBuffer->destroy();
 
         auto& buffer { *vertexBuffer };
@@ -427,7 +420,6 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     vertexBuffer->write<uivertex>(uiCmd._runningVertices.data(), uiCmd._runningVertices.size());
 
     if (indexBuffer->size != indexSize) {
-
         indexBuffer->destroy();
 
         auto& buffer { *indexBuffer };
@@ -563,7 +555,6 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     /**/
     u32 idx { firstIndices };
     while (idx < lastStartIndices) {
-
         const auto sciIdx { idx >= uiCmd._scissorIndices[sciIdxIt].second ? ++sciIdxIt : sciIdxIt };
         const auto imgIdx { idx >= uiCmd._imageIndices[imgIdxIt].second ? ++imgIdxIt : imgIdxIt };
 
@@ -593,23 +584,19 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
 
         /**/
         if (uiCmd._imageIndices[imgIdxIt].first <= idx && idx < uiCmd._imageIndices[imgIdxIt].second) {
-
             auto& dbind { (*imageDescriptors)[imgIdx + 1] };
             //dbind.getById(1).store(*uiCmd._images[idx]);
             if (uiCmd._images[imgIdx].is<Texture>()) {
                 dbind.getById(1).storeAs(*uiCmd._images[imgIdx].as<Texture>(), vk::ImageLayout::eShaderReadOnlyOptimal);
-
             } else if (uiCmd._images[imgIdx].is<VirtualTexture>()) {
                 const auto* view { uiCmd._images[imgIdx].as<VirtualTexture>() };
                 dbind.getById(1).store(view);
-
             } else if (uiCmd._images[imgIdx].is<VirtualTextureView>()) {
                 const auto* view { uiCmd._images[imgIdx].as<VirtualTextureView>() };
                 dbind.getById(1).store(view->owner());
             }
 
             cmd.bindDescriptor(0, dbind.vkSet());
-
         } else {
             cmd.bindDescriptor(0, imageDescriptors->at(0).vkSet());
         }
@@ -622,7 +609,6 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     }
 
     if (lastStartIndices < uiCmd._runningIndexes.size()) {
-
         vkScissor.offset.x = static_cast<s32>(rootScissor.offsetX);
         vkScissor.offset.y = static_cast<s32>(rootScissor.offsetY);
         vkScissor.extent.width = static_cast<u32>(rootScissor.width);
@@ -631,7 +617,6 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
         cmd.vkCommandBuffer().setScissor(0, 1, &vkScissor);
         cmd.bindDescriptor(0, imageDescriptors->at(0).vkSet());
         cmd.drawIndexed(1, 0, uiCmd._runningIndexes.size() - lastStartIndices, lastStartIndices, 0);
-
     }
 
     /**
@@ -660,7 +645,6 @@ void UiMainStageNode::after(const non_owning_rptr<HORenderPass> renderPass_,
 }
 
 void UiMainStageNode::setupShader() {
-
     /**
      *
      */
@@ -712,10 +696,8 @@ void UiMainStageNode::setupShader() {
      * Prepare required Descriptor Pools
      */
     for (const auto& group : factoryResult.groups) {
-
         Vector<vk::DescriptorPoolSize> sizes {};
         for (const auto& binding : group.shaderBindings()) {
-
             auto it {
                 _STD find_if(sizes.begin(), sizes.end(),
                     [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
@@ -747,11 +729,9 @@ void UiMainStageNode::setupShader() {
         _requiredDescriptorPools.push_back(dpci);
         _requiredBindingGroups.push_back(group);
     }
-
 }
 
 void UiMainStageNode::setupPipeline() {
-
     assert(!_pipeline);
 
     _pipeline = make_sptr<VkFixedPipeline>(_device, _loRenderPass);
@@ -809,7 +789,6 @@ void UiMainStageNode::setupPipeline() {
 }
 
 void UiMainStageNode::setupLORenderPass() {
-
     /**
      *
      */
@@ -835,16 +814,13 @@ void UiMainStageNode::setupLORenderPass() {
 }
 
 void UiMainStageNode::destroyLORenderPass() {
-
     if (_loRenderPass) {
         _loRenderPass->destroy();
         _loRenderPass.reset();
     }
-
 }
 
 Framebuffer UiMainStageNode::allocateFramebuffer(const non_owning_rptr<HORenderPass> renderPass_) {
-
     /**
      * Create Framebuffer
      */
@@ -872,7 +848,6 @@ Framebuffer UiMainStageNode::allocateFramebuffer(const non_owning_rptr<HORenderP
 }
 
 void UiMainStageNode::freeFramebuffer(mref<Framebuffer> framebuffer_) {
-
     auto forwarded { _STD move(framebuffer_) };
     forwarded.destroy();
 }
@@ -882,7 +857,6 @@ void UiMainStageNode::rebuildImageDescriptors(
     ref<sptr<Vector<shader::DiscreteBindingGroup>>> groups_,
     u32 count_
 ) const {
-
     const auto* prevPool { pool_.get() };
     // Warning: Do not free descriptor sets individually when not using free-able pools
     /*
@@ -930,18 +904,15 @@ void UiMainStageNode::rebuildImageDescriptors(
     for (const auto& set : sets) {
         groups->push_back(setReq.useDiscrete(set));
     }
-
 }
 
 #if TRUE
 #include <Engine.GFX/Loader/RevTextureLoader.hpp>
-#include <Engine.Session/Session.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #endif
 
 void UiMainStageNode::setupDefaultImage() {
-
-    engine::gfx::RevTextureLoader loader { engine::Session::get()->modules().graphics()->cacheCtrl() };
+    engine::gfx::RevTextureLoader loader { engine::Engine::getEngine()->getGraphics()->cacheCtrl() };
     _defaultImage = loader.__tmp__load({
         ""sv,
         R"(R:\\Development\C++\Vulkan API\Game\resources\imports\ktx\default_ui.ktx)"
@@ -989,7 +960,6 @@ void UiMainStageNode::setupDefaultImage() {
     _defaultImage.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 
     engine::gfx::TextureFactory::get()->buildView(_defaultImage);
-
 }
 
 void UiMainStageNode::destroyDefaultImage() {

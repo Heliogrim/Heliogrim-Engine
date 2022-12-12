@@ -1,9 +1,12 @@
 #include "MaterialLoader.hpp"
 
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets/Database/AssetDatabase.hpp>
 #include <Engine.Assets/Types/Texture/Texture.hpp>
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/Engine.hpp>
 
+#include "../Command/CommandBuffer.hpp"
+#include "../Command/CommandQueue.hpp"
 #include "../Resource/MaterialResource.hpp"
 #include "../Resource/TextureResource.hpp"
 #include "Engine.GFX/Buffer/Buffer.hpp"
@@ -11,8 +14,6 @@
 #include "Engine.GFX/Cache/GlobalResourceCache.hpp"
 #include "Engine.GFX/Material/MaterialMetaDto.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
-#include "../Command/CommandBuffer.hpp"
-#include "../Command/CommandQueue.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -90,7 +91,7 @@ void MaterialLoader::destroyStageBuffer(mref<Buffer> stageBuffer_) {
 
 MaterialLoader::result_type MaterialLoader::operator()(const ptr<assets::GfxMaterial> asset_, options_type options_) {
 
-    const auto* const db { Session::get()->modules().assetDatabase() };
+    const auto* const db { Engine::getEngine()->getAssets()->getDatabase() };
 
     /**
      *
@@ -102,7 +103,7 @@ MaterialLoader::result_type MaterialLoader::operator()(const ptr<assets::GfxMate
      */
     if (!res->_payload.__pseudo_stored) {
 
-        auto& loader { Session::get()->modules().resourceManager()->loader() };
+        auto& loader { Engine::getEngine()->getResources()->loader() };
 
         res->_payload.diffuse = resolveTextureResource(asset_->diffuse(), db, &loader);
 

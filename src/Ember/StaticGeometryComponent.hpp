@@ -1,4 +1,7 @@
 #pragma once
+
+#include <Engine.Common/Collection/CompactArray.hpp>
+
 #include "ModelComponent.hpp"
 #include "StaticGeometryAsset.hpp"
 #include "GfxMaterialAsset.hpp"

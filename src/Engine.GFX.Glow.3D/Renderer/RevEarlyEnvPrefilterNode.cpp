@@ -32,6 +32,7 @@
 #include "Engine.GFX/Scene/SkyboxModel.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.GFX/Texture/Texture.hpp"
+#include <Engine.Core/Engine.hpp>
 
 using namespace ember::engine::gfx::glow::render;
 using namespace ember::engine::gfx::render;
@@ -53,7 +54,6 @@ RevEarlyEnvPrefilterNode::RevEarlyEnvPrefilterNode() :
     _envPrefilterFormat(TextureFormat::eR16G16B16A16Sfloat) {}
 
 void RevEarlyEnvPrefilterNode::setup(cref<sptr<Device>> device_) {
-
     SCOPED_STOPWATCH
 
     /**
@@ -74,7 +74,7 @@ void RevEarlyEnvPrefilterNode::setup(cref<sptr<Device>> device_) {
     {
         // TODO:
         if (!testCubeMap) {
-            RevTextureLoader loader { Session::get()->modules().graphics()->cacheCtrl() };
+            RevTextureLoader loader { Engine::getEngine()->getGraphics()->cacheCtrl() };
             testCubeMap = loader.__tmp__load({ ""sv, R"(R:\\sky_monbachtal.ktx)" });
 
             Vector<vk::ImageMemoryBarrier> imgBarriers {};
@@ -124,7 +124,6 @@ void RevEarlyEnvPrefilterNode::setup(cref<sptr<Device>> device_) {
 }
 
 void RevEarlyEnvPrefilterNode::destroy() {
-
     SCOPED_STOPWATCH
 
     // Pipeline
@@ -158,7 +157,6 @@ void RevEarlyEnvPrefilterNode::destroy() {
 }
 
 bool RevEarlyEnvPrefilterNode::allocate(const ptr<HORenderPass> renderPass_) {
-
     SCOPED_STOPWATCH
 
     const auto state { renderPass_->state() };
@@ -278,7 +276,6 @@ bool RevEarlyEnvPrefilterNode::allocate(const ptr<HORenderPass> renderPass_) {
     Vector<vk::DescriptorPool> pools {};
 
     for (u64 rdp = 0; rdp < _requiredDescriptorPools.size(); ++rdp) {
-
         vk::DescriptorPool pool { _device->vkDevice().createDescriptorPool(_requiredDescriptorPools[rdp]) };
         assert(pool);
 
@@ -318,7 +315,6 @@ bool RevEarlyEnvPrefilterNode::allocate(const ptr<HORenderPass> renderPass_) {
 }
 
 bool RevEarlyEnvPrefilterNode::free(const ptr<HORenderPass> renderPass_) {
-
     SCOPED_STOPWATCH
 
     const auto state { renderPass_->state() };
@@ -328,7 +324,6 @@ bool RevEarlyEnvPrefilterNode::free(const ptr<HORenderPass> renderPass_) {
      */
     auto it { state->data.find("RevEarlyEnvPrefilterNode::CommandBuffer"sv) };
     if (it != state->data.end()) {
-
         auto cmd { _STD static_pointer_cast<CommandBuffer, void>(it->second) };
 
         if (cmd->vkCommandBuffer()) {
@@ -347,7 +342,6 @@ bool RevEarlyEnvPrefilterNode::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevEarlyEnvPrefilterNode::Framebuffer"sv);
     if (it != state->data.end()) {
-
         auto framebuffer { _STD static_pointer_cast<Framebuffer, void>(it->second) };
         freeFramebuffer(_STD move(*framebuffer));
 
@@ -360,7 +354,6 @@ bool RevEarlyEnvPrefilterNode::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevEarlyEnvPrefilterNode::PrefilterCube"sv);
     if (it != state->data.end()) {
-
         auto prefiltered { _STD static_pointer_cast<Texture, void>(it->second) };
         prefiltered->destroy();
 
@@ -373,7 +366,6 @@ bool RevEarlyEnvPrefilterNode::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevEarlyEnvPrefilterNode::UniformBuffer"sv);
     if (it != state->data.end()) {
-
         auto uniform { _STD static_pointer_cast<Buffer, void>(it->second) };
         uniform->destroy();
 
@@ -386,7 +378,6 @@ bool RevEarlyEnvPrefilterNode::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevEarlyEnvPrefilterNode::DiscreteBindingGroups"sv);
     if (it != state->data.end()) {
-
         sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
             _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(it->second)
         };
@@ -415,7 +406,6 @@ bool RevEarlyEnvPrefilterNode::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevEarlyEnvPrefilterNode::LastRecordedActor"sv);
     if (it != state->data.end()) {
-
         sptr<ptr<void>> dbgs {
             _STD static_pointer_cast<ptr<void>, void>(it->second)
         };
@@ -445,7 +435,6 @@ void RevEarlyEnvPrefilterNode::before(
     const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_
 ) const {
-
     SCOPED_STOPWATCH
 
     auto* state { renderPass_->state().get() };
@@ -457,7 +446,6 @@ void RevEarlyEnvPrefilterNode::invoke(
     const non_owning_rptr<RenderStagePass> stagePass_,
     const non_owning_rptr<SceneNodeModel> model_
 ) const {
-
     SCOPED_STOPWATCH
 
     auto* state { renderPass_->state().get() };
@@ -486,7 +474,6 @@ void RevEarlyEnvPrefilterNode::invoke(
      *
      */
     if (shouldUpdate) {
-
         /**
          * Prepare Command Bufferr
          */
@@ -543,7 +530,6 @@ void RevEarlyEnvPrefilterNode::invoke(
          * Loop for every mip level to prefilter/sample to the proxy texture and then transfer to the target cube map
          */
         for (auto mip { 0ui32 }; mip < prefiltered.mipLevels(); ++mip) {
-
             /**
              *
              */
@@ -577,7 +563,6 @@ void RevEarlyEnvPrefilterNode::invoke(
             };
 
             for (u32 idx = 0; idx < dbgs->size(); ++idx) {
-
                 const auto& grp { (*dbgs)[idx] };
 
                 if (grp.super().interval() == shader::BindingUpdateInterval::ePerFrame) {
@@ -740,7 +725,6 @@ void RevEarlyEnvPrefilterNode::after(
     const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_
 ) const {
-
     SCOPED_STOPWATCH
 
     const auto& data { renderPass_->state()->data };
@@ -748,7 +732,6 @@ void RevEarlyEnvPrefilterNode::after(
     const bool shouldUpdate { data.find("RevEarlyEnvPrefilterNode::ShouldUpdate"sv) != data.end() };
 
     if (shouldUpdate) {
-
         /**
          * Get Command Buffer
          */
@@ -768,7 +751,6 @@ void RevEarlyEnvPrefilterNode::after(
 }
 
 void RevEarlyEnvPrefilterNode::setupShader(cref<sptr<Device>> device_) {
-
     /**
      *
      */
@@ -827,10 +809,8 @@ void RevEarlyEnvPrefilterNode::setupShader(cref<sptr<Device>> device_) {
      * Prepare required Descriptor Pools
      */
     for (const auto& group : factoryResult.groups) {
-
         Vector<vk::DescriptorPoolSize> sizes {};
         for (const auto& binding : group.shaderBindings()) {
-
             auto it {
                 _STD find_if(sizes.begin(), sizes.end(), [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
                     return entry_.type == api::vkTranslateBindingType(type);
@@ -861,11 +841,9 @@ void RevEarlyEnvPrefilterNode::setupShader(cref<sptr<Device>> device_) {
         _requiredDescriptorPools.push_back(dpci);
         _requiredBindingGroups.push_back(group);
     }
-
 }
 
 void RevEarlyEnvPrefilterNode::setupLORenderPass() {
-
     /**
      * LORenderPass
      */
@@ -904,7 +882,6 @@ void RevEarlyEnvPrefilterNode::destroyLORenderPass() {
 }
 
 void RevEarlyEnvPrefilterNode::setupPipeline() {
-
     /**
      * Fixed Pipeline
      */
@@ -954,7 +931,6 @@ void RevEarlyEnvPrefilterNode::setupPipeline() {
 }
 
 [[nodiscard]] engine::gfx::Framebuffer RevEarlyEnvPrefilterNode::allocateFramebuffer() {
-
     /**
      * Create Framebuffer
      */
@@ -995,7 +971,6 @@ void RevEarlyEnvPrefilterNode::setupPipeline() {
 }
 
 void RevEarlyEnvPrefilterNode::freeFramebuffer(mref<Framebuffer> framebuffer_) {
-
     auto fb { _STD move(framebuffer_) };
 
     //
@@ -1007,7 +982,6 @@ void RevEarlyEnvPrefilterNode::freeFramebuffer(mref<Framebuffer> framebuffer_) {
 }
 
 void RevEarlyEnvPrefilterNode::postProcessAllocated(const ptr<HORenderPass> renderPass_) const {
-
     auto& data { renderPass_->state()->data };
 
     const auto frameEntry { data.at("RevEarlyEnvPrefilterNode::Framebuffer"sv) };
@@ -1015,7 +989,6 @@ void RevEarlyEnvPrefilterNode::postProcessAllocated(const ptr<HORenderPass> rend
 
     Vector<vk::ImageMemoryBarrier> imgBarriers {};
     for (const auto& entry : framebuffer.attachments()) {
-
         auto& attachment { *entry.unwrapped() };
 
         if (isDepthFormat(attachment.format()) || isStencilFormat(attachment.format())) {
@@ -1080,5 +1053,4 @@ void RevEarlyEnvPrefilterNode::postProcessAllocated(const ptr<HORenderPass> rend
     cmd.release();
 
     pool->lck().release();
-
 }

@@ -5,7 +5,6 @@
 #include "Ember/IComponentRegisterContext.hpp"
 
 namespace ember::engine::scene {
-
     class RevScene final :
         public Scene,
         public IRenderScene,
@@ -48,11 +47,5 @@ namespace ember::engine::scene {
         void add(const ptr<ActorComponent> component_) override;
 
         void add(cref<ComponentHierarchy> hierarchy_) override;
-
-    private:
-        uptr<World> _world;
-
-    public:
-        [[nodiscard]] ptr<World> getWorld() noexcept override final;
     };
 }

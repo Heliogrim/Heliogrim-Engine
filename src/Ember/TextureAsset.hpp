@@ -1,14 +1,13 @@
 #pragma once
 
-#include <Engine.Common/Collection/List.hpp>
 #include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include "StreamableRenderableAsset.hpp"
 #include "TextureFormat.hpp"
 #include "TextureType.hpp"
 
 namespace ember {
-
     class ImageAsset;
 
     class TextureAsset :

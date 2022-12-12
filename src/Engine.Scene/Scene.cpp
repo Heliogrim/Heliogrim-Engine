@@ -42,7 +42,3 @@ void Scene::setNodeType(
      */
     _nodeTypeRegistry.setGfxModel(typeId_, _STD move(callback_));
 }
-
-ptr<World> Scene::getWorld() noexcept {
-    return nullptr;
-}

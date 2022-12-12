@@ -3,7 +3,6 @@
 #include "StaticGeometryComponent.hpp"
 
 namespace ember {
-
     class StaticGeometryActor :
         public Actor {
     public:
@@ -12,6 +11,8 @@ namespace ember {
 
     public:
         StaticGeometryActor();
+
+        StaticGeometryActor(cref<ActorInitializer> initializer_);
 
     private:
         ptr<StaticGeometryComponent> _staticGeometryComponent;

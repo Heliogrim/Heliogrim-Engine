@@ -1,12 +1,20 @@
 #pragma once
 
-#include "Inbuilt.hpp"
+#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Assets/AssetGuid.hpp>
 
-#include "Level.hpp"
+#include "Actor.hpp"
+#include "Future.hpp"
 
 namespace ember {
+    class Level;
+}
 
+namespace ember {
     class World {
+    public:
+        using this_type = World;
+
     public:
         /**
          * Default constructor
@@ -14,7 +22,7 @@ namespace ember {
          * @author Julius
          * @date 24.10.2021
          */
-        World() = delete;
+        World();
 
         /**
          * Constructor
@@ -22,23 +30,11 @@ namespace ember {
          * @author Julius
          * @date 01.12.2021
          */
-        World(const non_owning_rptr<void> internal_);
+        World(const managed<void> internal_);
 
-        /**
-         * Copy Constructor
-         *
-         * @author Julius
-         * @date 24.10.2021
-         */
-        World(cref<World>) = delete;
+        World(cref<this_type> other_) = default;
 
-        /**
-         * Move Constructor
-         *
-         * @author Julius
-         * @date 24.10.2021
-         */
-        World(mref<World>) noexcept = delete;
+        World(mref<this_type> other_) noexcept = default;
 
         /**
          * Destructor
@@ -57,7 +53,7 @@ namespace ember {
          *
          * @returns A shallow copy of this.
          */
-        ref<World> operator=(cref<World>) = delete;
+        ref<World> operator=(cref<World> other_) = default;
 
         /**
          * Move Assignment operator
@@ -67,13 +63,16 @@ namespace ember {
          *
          * @returns A shallow copy of this.
          */
-        ref<World> operator=(mref<World>) noexcept = delete;
+        ref<World> operator=(mref<World> other_) noexcept = default;
+
+    public:
+        [[nodiscard]] bool valid() const noexcept;
 
     private:
         /**
          * Internal
          */
-        non_owning_rptr<void> _internal;
+        managed<void> _internal;
 
     public:
         /**
@@ -82,9 +81,9 @@ namespace ember {
          * @author Julius
          * @date 04.12.2022
          *
-         * @returns A const reference to the raw internal pointer
+         * @returns A reference to the internal managed world representation
          */
-        [[nodiscard]] cref<non_owning_rptr<void>> unwrap() const noexcept;
+        [[nodiscard]] cref<managed<void>> unwrap() const noexcept;
 
     public:
         /**
@@ -143,31 +142,46 @@ namespace ember {
      * @author Julius
      * @date 25.11.2021
      *
-     * @returns A future, containing the newly created world if succeeded, otherwise nullptr
+     * @returns A future, containing the newly created world
      */
-    [[nodiscard]] extern Future<ptr<World>> CreateWorld() noexcept;
+    [[nodiscard]] extern Future<World> CreateWorld() noexcept;
 
     /**
-     * Gets the current active World
+     * Query the session's current world
+     *
+     * @author Julius
+     * @date 09.12.2022
+     *
+     * @param session_ The session where to lookup the current world.
+     *
+     * @returns A representation for the currently internal stored world.
+     */
+    [[nodiscard]] extern World GetWorld(cref<Session> session_) noexcept;
+
+    /**
+     * Query the current primary core session's world representation
+     *
+     * @details A convenient shortcut for obtaining the current primary
+     *  core session's world instance.
      *
      * @author Julius
      * @date 25.11.2021
      *
-     * @returns A const pointer to the current active world instance.
+     * @returns A representation for the current internal world.
      */
-    [[nodiscard]] extern const ptr<World> GetWorld() noexcept;
+    [[nodiscard]] extern World GetWorld() noexcept;
 
     /**
-     * Gets a world instance it's guid
+     * Gets a world instance by it's guid
      *
      * @author Julius
      * @date 25.11.2021
      *
      * @param guid_ The guid of the world to lookup.
      *
-     * @returns A future, containing the resolved world instance if exists, otherwise nullptr
+     * @returns A future, containing a world instance
      */
-    [[nodiscard]] extern Future<ptr<World>> GetWorld(cref<asset_guid> guid_) noexcept;
+    [[nodiscard]] extern Future<World> GetWorld(cref<asset_guid> guid_) noexcept;
 
     /**
      * Destroys the given world and it's implicit resources
@@ -179,11 +193,40 @@ namespace ember {
      *
      * @returns A future, representing whether the world was successfully destroyed.
      */
-    extern Future<bool> Destroy(mref<ptr<World>> world_);
+    extern Future<bool> Destroy(mref<World> world_);
 
     /* Warning: Experimental Feature */
-    extern void SetWorld(const ptr<World> world_);
+    /**
+     * Set's the world of a core session
+     *
+     * @note The world *must* have been created with a engine wide propagation,
+     *  otherwise this would result in ub.
+     *
+     * @warning This method is currently unsafe. The implicit internal changes
+     *  aspecially at the session's world-context may result in memory corruption or
+     *  modify-on-read behaviour. Further this change is required to propagate through
+     *  whole engine and modules, therefore providing an endless amount of conflict points.
+     *
+     * @note We might want this to return a future result, due to the most likely asynchronous fix
+     *  to the described problems. This might result in a full schedule tick to complete the
+     *  required changes.
+     *
+     * @author Julius
+     * @date 10.12.2022
+     *
+     * @param session_ The session where to set the current world
+     * @param world_ The world to use next.
+     */
+    extern void SetWorld(cref<Session> session_, cref<World> world_);
 
     /* Warning: Experimental Feature */
-    extern void TransitionToWorld(const ptr<World> world_);
+    /**
+     * Transition from the session's current world to another one
+     *
+     * @author Julius
+     * @date 10.12.2022
+     *
+     * @see ::ember::SetWorld(...)
+     */
+    extern void TransitionToWorld(cref<Session> session_, cref<World> world_);
 }

@@ -2,7 +2,6 @@
 #include <Ember/Actor.hpp>
 
 namespace ember::game::actors {
-
     class WoodenTable :
         public Actor {
     public:
@@ -18,5 +17,7 @@ namespace ember::game::actors {
          * @see Actor::Actor
          */
         WoodenTable();
+
+        WoodenTable(cref<ActorInitializer> initializer_);
     };
 }

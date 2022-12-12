@@ -3,10 +3,10 @@
 using namespace ember::engine::core;
 using namespace ember;
 
-WorldRemoveEvent::WorldRemoveEvent(const ptr<ember::engine::scene::Scene> worldScene_) :
+WorldRemoveEvent::WorldRemoveEvent(cref<sptr<ember::engine::core::World>> world_) :
     StatelessEvent(),
-    _worldScene(worldScene_) {}
+    _world(world_) {}
 
-const ptr<ember::engine::scene::Scene> WorldRemoveEvent::getWorldScene() const noexcept {
-    return _worldScene;
+const sptr<ember::engine::core::World> WorldRemoveEvent::getWorld() const noexcept {
+    return _world;
 }

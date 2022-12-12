@@ -18,6 +18,7 @@
 #include "Cache/GlobalCacheCtrl.hpp"
 #include "Cache/GlobalResourceCache.hpp"
 #include "Command/CommandBatch.hpp"
+#include "Engine.Core/Engine.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Loader/FontLoader.hpp"
 #include "Loader/MaterialLoader.hpp"
@@ -40,8 +41,8 @@ using namespace ember::engine::gfx;
 using namespace ember::engine;
 using namespace ember;
 
-Graphics::Graphics(cref<sptr<Session>> session_) noexcept :
-    _session(session_),
+Graphics::Graphics(const non_owning_rptr<Engine> engine_) noexcept :
+    CoreModule(engine_),
     _swapchain(nullptr),
     _secondarySwapchain(nullptr),
     _computeQueue(nullptr),
@@ -53,8 +54,11 @@ Graphics::~Graphics() {
     tidy();
 }
 
-void Graphics::setup() {
+void Graphics::tidy() {
+    __noop();
+}
 
+void Graphics::setup() {
     SCOPED_STOPWATCH
 
     /**
@@ -66,7 +70,10 @@ void Graphics::setup() {
     /**
      * Create a new Surface (aka. Window)
      */
-    _surface = { _session, &_application };
+    _window = _engine->getPlatform()->makeNativeWindow(
+        "Test"sv, math::iExtent2D { 1280, 720 }
+    ).get();
+    _surface = Surface { _window.get(), &_application };
     _surface.setup();
 
     /**
@@ -131,7 +138,6 @@ void Graphics::setup() {
 }
 
 void Graphics::schedule() {
-
     u8 expect = { 0 };
     if (!_scheduled.compare_exchange_strong(expect, 1)) {
         throw _STD runtime_error("Tried to schedule already running graphics handle.");
@@ -140,8 +146,9 @@ void Graphics::schedule() {
     reschedule();
 }
 
-void Graphics::tidy() {
+void Graphics::desync() {}
 
+void Graphics::destroy() {
     SCOPED_STOPWATCH
 
     /**
@@ -203,10 +210,6 @@ void Graphics::tidy() {
     _application.destroy();
 }
 
-sptr<Session> Graphics::session() const noexcept {
-    return _session;
-}
-
 sptr<Device> Graphics::getCurrentDevice() const noexcept {
     return _device;
 }
@@ -254,7 +257,6 @@ void reportStats(float fps_, float time_);
 #endif
 
 void Graphics::tick() {
-
     CompactSet<sptr<RenderTarget>> targets {};
     _sceneManager->selectInvokeTargets(targets);
 
@@ -298,7 +300,6 @@ void Graphics::tick() {
 }
 
 void Graphics::invokeRenderTarget(cref<sptr<gfx::RenderTarget>> target_) const {
-
     SCOPED_STOPWATCH
 
     /**
@@ -324,7 +325,6 @@ void Graphics::invokeRenderTarget(cref<sptr<gfx::RenderTarget>> target_) const {
 }
 
 void Graphics::__tmp__resize(cref<math::uivec2> extent_) {
-
     /**
      * Create a new swapchain to present image
      */
@@ -348,7 +348,6 @@ void Graphics::__tmp__resize(cref<math::uivec2> extent_) {
 }
 
 void Graphics::reschedule() {
-
     /**
      * Guard already stopped scheduling
      */
@@ -358,7 +357,6 @@ void Graphics::reschedule() {
 
     scheduler::exec(
         make_repetitive_task([this]() {
-
                 u8 expect { 1 };
                 if (_scheduled.load(_STD memory_order_relaxed) == expect) {
                     tick();
@@ -368,24 +366,20 @@ void Graphics::reschedule() {
                 expect = { 2 };
                 _scheduled.compare_exchange_strong(expect, 0);
                 return false;
-
             },
             scheduler::task::TaskMask::eCritical,
             scheduler::ScheduleStageBarriers::eGraphicNodeCollectWeak,
             scheduler::ScheduleStageBarriers::eBottomStrong
         )
     );
-
 }
 
 #include <Ember/StaticGeometryComponent.hpp>
 #include <Engine.GFX/Scene/StaticGeometryModel.hpp>
 
 void Graphics::registerLoader() {
-    /**
-     *
-     */
-    auto* manager { _session->modules().resourceManager() };
+    /**/
+    auto* manager { _engine->getResources() };
     auto& loader { manager->loader() };
 
     /**
@@ -418,11 +412,8 @@ void Graphics::registerLoader() {
 }
 
 void Graphics::registerImporter() {
-
-    /**
-     *
-     */
-    auto* manager { _session->modules().resourceManager() };
+    /**/
+    auto* manager { _engine->getResources() };
     auto& importer { manager->importer() };
 
     importer.registerImporter(gfx::ImageFileType::Ktx2, make_ptr<KtxImporter>());
@@ -436,7 +427,6 @@ void Graphics::registerImporter() {
 #include <Engine.Reflow/Widget/Text.hpp>
 
 void reportStats(float fps_, float time_) {
-
     if (not testFrameDisplay.expired()) {
         auto* tfd { static_cast<ptr<engine::reflow::Text>>(testFrameDisplay.lock().get()) };
         tfd->setText(std::format("{:.0f} FPS", fps_));

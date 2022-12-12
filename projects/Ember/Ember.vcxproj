@@ -25,16 +25,16 @@
     <ClInclude Include="..\..\src\Ember\AssetAutoRegister.hpp" />
     <ClInclude Include="..\..\src\Ember\AssetDatabase.hpp" />
     <ClInclude Include="..\..\src\Ember\AssetDatabaseResult.hpp" />
-    <ClInclude Include="..\..\src\Ember\Audio.hpp" />
     <ClInclude Include="..\..\src\Ember\AudioFormat.hpp" />
     <ClInclude Include="..\..\src\Ember\CollisionComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\Components\CameraComponent.hpp" />
+    <ClInclude Include="..\..\src\Ember\EmberStatic.hpp" />
     <ClInclude Include="..\..\src\Ember\FontAsset.hpp" />
+    <ClInclude Include="..\..\src\Ember\Future.hpp" />
     <ClInclude Include="..\..\src\Ember\IComponentRegisterContext.hpp" />
     <ClInclude Include="..\..\src\Ember\Ember.hpp" />
     <ClInclude Include="..\..\src\Ember\GfxMaterial.hpp" />
     <ClInclude Include="..\..\src\Ember\GfxMaterialAsset.hpp" />
-    <ClInclude Include="..\..\src\Ember\Graphics.hpp" />
     <ClInclude Include="..\..\src\Ember\ImageAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\Inbuilt.hpp" />
     <ClInclude Include="..\..\src\Ember\LandscapeGeometryAsset.hpp" />
@@ -43,13 +43,12 @@
     <ClInclude Include="..\..\src\Ember\LightComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\LogicComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\ModelComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Network.hpp" />
     <ClInclude Include="..\..\src\Ember\PfxMaterial.hpp" />
     <ClInclude Include="..\..\src\Ember\PfxMaterialAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\RenderableAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\Scene.hpp" />
     <ClInclude Include="..\..\src\Ember\SceneComponent.hpp" />
-    <ClInclude Include="..\..\src\Ember\Scheduler.hpp" />
+    <ClInclude Include="..\..\src\Ember\Session.hpp" />
     <ClInclude Include="..\..\src\Ember\SfxMaterialAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\SkeletalGeometryAsset.hpp" />
     <ClInclude Include="..\..\src\Ember\SkeletalGeometryComponent.hpp" />
@@ -68,7 +67,6 @@
     <ClInclude Include="..\..\src\Ember\TextureFormat.hpp" />
     <ClInclude Include="..\..\src\Ember\TextureType.hpp" />
     <ClInclude Include="..\..\src\Ember\Traits.hpp" />
-    <ClInclude Include="..\..\src\Ember\TypedEntity.hpp" />
     <ClInclude Include="..\..\src\Ember\UIComponent.hpp" />
     <ClInclude Include="..\..\src\Ember\World.hpp" />
   </ItemGroup>
@@ -99,6 +97,7 @@
     <ClCompile Include="..\..\src\Ember\PfxMaterialAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\RenderableAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\SceneComponent.cpp" />
+    <ClCompile Include="..\..\src\Ember\Session.cpp" />
     <ClCompile Include="..\..\src\Ember\SfxMaterialAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\SkeletalGeometryAsset.cpp" />
     <ClCompile Include="..\..\src\Ember\SkeletalGeometryComponent.cpp" />
@@ -126,6 +125,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
       <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Core.Game\Engine.Core.Game.vcxproj">
+      <Project>{6c9e813f-787c-46c1-b7be-b6d535299a45}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Core\Engine.Core.vcxproj">
       <Project>{c4a9ab6d-512c-472a-ae8d-5242e7ba4ec3}</Project>
@@ -163,6 +165,9 @@
     <ProjectReference Include="..\Engine.PFX\Engine.PFX.vcxproj">
       <Project>{9e26faad-2541-4e80-a913-cc87a40bb745}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.Platform\Engine.Platform.vcxproj">
+      <Project>{28897150-dbdc-45fd-bd8a-6aaa2b6bba8d}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Reflect\Engine.Reflect.vcxproj">
       <Project>{9058623e-8475-4683-8131-0845fa5aa877}</Project>
     </ProjectReference>
@@ -183,9 +188,6 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine.Serialization\Engine.Serialization.vcxproj">
       <Project>{24b7f6ae-1ec1-4268-9b1a-584f44aad1fe}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.Session\Engine.Session.vcxproj">
-      <Project>{bba6c152-0160-4156-a5ac-cd3068df2311}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.SFX\Engine.SFX.vcxproj">
       <Project>{9f2b4b6e-1de8-4b52-b2e4-f7c44df0d3b9}</Project>

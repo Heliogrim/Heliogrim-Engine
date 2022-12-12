@@ -1,12 +1,11 @@
 #pragma once
 
-#include "Inbuilt.hpp"
-
+#include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/String.hpp>
 
 namespace ember {
-
     class Asset {
     public:
         friend class AssetDatabase;
@@ -232,5 +231,4 @@ namespace ember {
     public:
         [[nodiscard]] ptr<void> internal() const noexcept;
     };
-
 }

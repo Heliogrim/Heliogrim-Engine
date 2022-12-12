@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Session/Session.hpp>
 
 #include "ImporterManager.hpp"
 #include "LoaderManager.hpp"
@@ -12,7 +11,6 @@
 #endif
 
 namespace ember::engine {
-
     class ResourceManager {
     public:
         using value_type = ResourceManager;
@@ -25,10 +23,8 @@ namespace ember::engine {
          *
          * @author Julius
          * @date 30.08.2021
-         *
-         * @param session_ (Optional) The session related.
          */
-        ResourceManager(cref<sptr<Session>> session_ = Session::get()) noexcept;
+        ResourceManager() noexcept;
 
         /**
          * Destructor
@@ -47,6 +43,8 @@ namespace ember::engine {
          */
         void setup();
 
+        void destroy();
+
         /**
          * Schedules this
          *
@@ -54,23 +52,6 @@ namespace ember::engine {
          * @date 22.09.2021
          */
         void schedule();
-
-    private:
-        /**
-         * The session this module is associated with
-         */
-        sptr<Session> _session;
-
-    public:
-        /**
-         * Gets the session this module is associated with
-         *
-         * @author Julius
-         * @date 14.10.2021
-         *
-         * @returns A sptr<Session>
-         */
-        [[nodiscard]] sptr<Session> session() const noexcept;
 
     private:
         uptr<res::ImporterManager> _importer;
@@ -85,6 +66,7 @@ namespace ember::engine {
         [[nodiscard]] ptr<res::ImporterManager> importer(_STD nothrow_t) noexcept;
 
         #ifdef _EDITOR
+
     private:
         uptr<res::Indexer> _indexer;
 

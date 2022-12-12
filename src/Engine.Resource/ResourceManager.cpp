@@ -4,35 +4,28 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-#include <Engine.Session/Session.hpp>
-
 #include <Engine.Serialization.Layouts/LayoutManager.hpp>
 
 using namespace ember::engine::res;
 using namespace ember::engine;
 using namespace ember;
 
-ResourceManager::ResourceManager(cref<sptr<Session>> session_) noexcept :
-    _session(session_),
+ResourceManager::ResourceManager() noexcept :
     _importer(nullptr),
     _loader(nullptr),
     _locator(nullptr) {
-
     /**/
     serialization::LayoutManager::make();
     /**/
-
 }
 
 ResourceManager::~ResourceManager() noexcept {
-
     /**/
     serialization::LayoutManager::destroy();
     /**/
 }
 
 void ResourceManager::setup() {
-
     SCOPED_STOPWATCH
 
     if (!_importer) {
@@ -54,11 +47,14 @@ void ResourceManager::setup() {
     }
 }
 
-void ResourceManager::schedule() {}
-
-sptr<Session> ResourceManager::session() const noexcept {
-    return _session;
+void ResourceManager::destroy() {
+    _importer.reset();
+    _indexer.reset();
+    _loader.reset();
+    _locator.reset();
 }
+
+void ResourceManager::schedule() {}
 
 cref<ImporterManager> ResourceManager::importer() const {
     return *_importer;

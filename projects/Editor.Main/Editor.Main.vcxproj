@@ -109,6 +109,9 @@
     <ProjectReference Include="..\Editor.Action\Editor.Action.vcxproj">
       <Project>{6733136c-88db-487a-943e-d52a1190e9cd}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Editor.Core\Editor.Core.vcxproj">
+      <Project>{fba11ae8-1072-48a0-8508-910405a46795}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Editor.GFX\Editor.GFX.vcxproj">
       <Project>{312443aa-53a2-43d9-b8a2-33f44808c432}</Project>
     </ProjectReference>
@@ -117,9 +120,6 @@
     </ProjectReference>
     <ProjectReference Include="..\Ember.Default\Ember.Default.vcxproj">
       <Project>{3700b064-da76-4d4e-b21b-a264d80e701a}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Ember.Main\Ember.Main.vcxproj">
-      <Project>{cdc04280-5f97-45d3-9c47-8b60219d8578}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Ember\Ember.vcxproj">
       <Project>{8d01b7e3-273a-4a0b-8099-ad227fbdaf9c}</Project>

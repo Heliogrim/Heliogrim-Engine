@@ -27,6 +27,7 @@
 #include "Engine.Reflect/EmberReflect.hpp"
 #include <Engine.GFX/Scene/StaticGeometryBatch.hpp>
 
+#include <Engine.Core/Engine.hpp>
 #include "Engine.GFX/Graphics.hpp"
 #include "Engine.GFX/Loader/RevTextureLoader.hpp"
 #include "Engine.GFX/Scene/SkyboxModel.hpp"
@@ -48,7 +49,6 @@ RevEarlyEnvIrradiance::RevEarlyEnvIrradiance() :
     _envIrradFormat(TextureFormat::eR32G32B32A32Sfloat) {}
 
 void RevEarlyEnvIrradiance::setup(cref<sptr<Device>> device_) {
-
     SCOPED_STOPWATCH
 
     /**
@@ -69,7 +69,7 @@ void RevEarlyEnvIrradiance::setup(cref<sptr<Device>> device_) {
     {
         // TODO:
         if (!testCubeMap) {
-            RevTextureLoader loader { Session::get()->modules().graphics()->cacheCtrl() };
+            RevTextureLoader loader { Engine::getEngine()->getGraphics()->cacheCtrl() };
             testCubeMap = loader.__tmp__load({ ""sv, R"(R:\\sky_monbachtal.ktx)" });
 
             Vector<vk::ImageMemoryBarrier> imgBarriers {};
@@ -119,7 +119,6 @@ void RevEarlyEnvIrradiance::setup(cref<sptr<Device>> device_) {
 }
 
 void RevEarlyEnvIrradiance::destroy() {
-
     SCOPED_STOPWATCH
 
     // Pipeline
@@ -153,7 +152,6 @@ void RevEarlyEnvIrradiance::destroy() {
 }
 
 bool RevEarlyEnvIrradiance::allocate(const ptr<HORenderPass> renderPass_) {
-
     SCOPED_STOPWATCH
 
     const auto state { renderPass_->state() };
@@ -273,7 +271,6 @@ bool RevEarlyEnvIrradiance::allocate(const ptr<HORenderPass> renderPass_) {
     Vector<vk::DescriptorPool> pools {};
 
     for (u64 rdp = 0; rdp < _requiredDescriptorPools.size(); ++rdp) {
-
         vk::DescriptorPool pool { _device->vkDevice().createDescriptorPool(_requiredDescriptorPools[rdp]) };
         assert(pool);
 
@@ -313,7 +310,6 @@ bool RevEarlyEnvIrradiance::allocate(const ptr<HORenderPass> renderPass_) {
 }
 
 bool RevEarlyEnvIrradiance::free(const ptr<HORenderPass> renderPass_) {
-
     SCOPED_STOPWATCH
 
     const auto state { renderPass_->state() };
@@ -323,7 +319,6 @@ bool RevEarlyEnvIrradiance::free(const ptr<HORenderPass> renderPass_) {
      */
     auto it { state->data.find("RevEarlyEnvIrradianceNode::CommandBuffer"sv) };
     if (it != state->data.end()) {
-
         auto cmd { _STD static_pointer_cast<CommandBuffer, void>(it->second) };
 
         if (cmd->vkCommandBuffer()) {
@@ -342,7 +337,6 @@ bool RevEarlyEnvIrradiance::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevEarlyEnvIrradianceNode::Framebuffer"sv);
     if (it != state->data.end()) {
-
         auto framebuffer { _STD static_pointer_cast<Framebuffer, void>(it->second) };
         freeFramebuffer(_STD move(*framebuffer));
 
@@ -355,7 +349,6 @@ bool RevEarlyEnvIrradiance::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevEarlyEnvIrradianceNode::IrradianceCube"sv);
     if (it != state->data.end()) {
-
         auto irradiance { _STD static_pointer_cast<Texture, void>(it->second) };
         irradiance->destroy();
 
@@ -368,7 +361,6 @@ bool RevEarlyEnvIrradiance::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevEarlyEnvIrradianceNode::UniformBuffer"sv);
     if (it != state->data.end()) {
-
         auto uniform { _STD static_pointer_cast<Buffer, void>(it->second) };
         uniform->destroy();
 
@@ -381,7 +373,6 @@ bool RevEarlyEnvIrradiance::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevEarlyEnvIrradianceNode::DiscreteBindingGroups"sv);
     if (it != state->data.end()) {
-
         sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
             _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(it->second)
         };
@@ -410,7 +401,6 @@ bool RevEarlyEnvIrradiance::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevEarlyEnvIrradianceNode::LastRecordedActor"sv);
     if (it != state->data.end()) {
-
         sptr<ptr<void>> dbgs {
             _STD static_pointer_cast<ptr<void>, void>(it->second)
         };
@@ -440,7 +430,6 @@ void RevEarlyEnvIrradiance::before(
     const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_
 ) const {
-
     SCOPED_STOPWATCH
 
     auto* state { renderPass_->state().get() };
@@ -452,7 +441,6 @@ void RevEarlyEnvIrradiance::invoke(
     const non_owning_rptr<RenderStagePass> stagePass_,
     const non_owning_rptr<SceneNodeModel> model_
 ) const {
-
     SCOPED_STOPWATCH
 
     auto* state { renderPass_->state().get() };
@@ -481,7 +469,6 @@ void RevEarlyEnvIrradiance::invoke(
      *
      */
     if (shouldUpdate) {
-
         /**
          * Prepare Command Bufferr
          */
@@ -561,7 +548,6 @@ void RevEarlyEnvIrradiance::invoke(
             };
 
             for (u32 idx = 0; idx < dbgs->size(); ++idx) {
-
                 const auto& grp { (*dbgs)[idx] };
 
                 if (grp.super().interval() == shader::BindingUpdateInterval::ePerFrame) {
@@ -714,7 +700,6 @@ void RevEarlyEnvIrradiance::after(
     const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_
 ) const {
-
     SCOPED_STOPWATCH
 
     const auto& data { renderPass_->state()->data };
@@ -722,7 +707,6 @@ void RevEarlyEnvIrradiance::after(
     const bool shouldUpdate { data.find("RevEarlyEnvIrradianceNode::ShouldUpdate"sv) != data.end() };
 
     if (shouldUpdate) {
-
         /**
          * Get Command Buffer
          */
@@ -742,7 +726,6 @@ void RevEarlyEnvIrradiance::after(
 }
 
 void RevEarlyEnvIrradiance::setupShader(cref<sptr<Device>> device_) {
-
     /**
      *
      */
@@ -801,10 +784,8 @@ void RevEarlyEnvIrradiance::setupShader(cref<sptr<Device>> device_) {
      * Prepare required Descriptor Pools
      */
     for (const auto& group : factoryResult.groups) {
-
         Vector<vk::DescriptorPoolSize> sizes {};
         for (const auto& binding : group.shaderBindings()) {
-
             auto it {
                 _STD find_if(sizes.begin(), sizes.end(), [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
                     return entry_.type == api::vkTranslateBindingType(type);
@@ -835,11 +816,9 @@ void RevEarlyEnvIrradiance::setupShader(cref<sptr<Device>> device_) {
         _requiredDescriptorPools.push_back(dpci);
         _requiredBindingGroups.push_back(group);
     }
-
 }
 
 void RevEarlyEnvIrradiance::setupLORenderPass() {
-
     /**
      * LORenderPass
      */
@@ -878,7 +857,6 @@ void RevEarlyEnvIrradiance::destroyLORenderPass() {
 }
 
 void RevEarlyEnvIrradiance::setupPipeline() {
-
     /**
      * Fixed Pipeline
      */
@@ -922,7 +900,6 @@ void RevEarlyEnvIrradiance::setupPipeline() {
 }
 
 [[nodiscard]] engine::gfx::Framebuffer RevEarlyEnvIrradiance::allocateFramebuffer() {
-
     /**
      * Create Framebuffer
      */
@@ -963,7 +940,6 @@ void RevEarlyEnvIrradiance::setupPipeline() {
 }
 
 void RevEarlyEnvIrradiance::freeFramebuffer(mref<Framebuffer> framebuffer_) {
-
     auto fb { _STD move(framebuffer_) };
 
     //
@@ -975,7 +951,6 @@ void RevEarlyEnvIrradiance::freeFramebuffer(mref<Framebuffer> framebuffer_) {
 }
 
 void RevEarlyEnvIrradiance::postProcessAllocated(const ptr<HORenderPass> renderPass_) const {
-
     auto& data { renderPass_->state()->data };
 
     const auto frameEntry { data.at("RevEarlyEnvIrradianceNode::Framebuffer"sv) };
@@ -983,7 +958,6 @@ void RevEarlyEnvIrradiance::postProcessAllocated(const ptr<HORenderPass> renderP
 
     Vector<vk::ImageMemoryBarrier> imgBarriers {};
     for (const auto& entry : framebuffer.attachments()) {
-
         auto& attachment { *entry.unwrapped() };
 
         if (isDepthFormat(attachment.format()) || isStencilFormat(attachment.format())) {
@@ -1048,5 +1022,4 @@ void RevEarlyEnvIrradiance::postProcessAllocated(const ptr<HORenderPass> renderP
     cmd.release();
 
     pool->lck().release();
-
 }

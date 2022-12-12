@@ -1,14 +1,16 @@
 #include "AssetInit.hpp"
 
-#include <Engine.Session/Session.hpp>
+#include <Ember/Ember.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Scheduler/Async.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Ember/Inbuilt.hpp>
 #include <Engine.Serialization/Archive/BufferArchive.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 
 #include <filesystem>
 #include <fstream>
 
+#include "Engine.Assets/Assets.hpp"
 #include "Engine.Assets/Database/AssetDatabase.hpp"
 #include "Engine.Serialization/Layout/DataLayoutBase.hpp"
 #include "Engine.Serialization.Layouts/LayoutManager.hpp"
@@ -20,7 +22,7 @@ using namespace ember;
 using path = _STD filesystem::path;
 
 void dispatchLoad(cref<path> path_) {
-    execute([file = path_]() {
+    scheduler::exec([file = path_]() {
         // TODO:
 
         constexpr auto minLength = sizeof(asset_guid) + sizeof(asset_type_id);
@@ -106,7 +108,7 @@ void dispatchLoad(cref<path> path_) {
         /**/
 
         auto* asset { static_cast<ptr<engine::assets::Asset>>(obj) };
-        engine::Session::get()->modules().assetDatabase()->insert(asset->get_guid(), asset->getTypeId(), asset);
+        Engine::getEngine()->getAssets()->getDatabase()->insert(asset->get_guid(), asset->getTypeId(), asset);
     });
 }
 
@@ -140,10 +142,6 @@ void indexLoadable(cref<path> path_, ref<Vector<path>> backlog_) {
 }
 
 void editor::boot::initAssets() {
-
-    const auto session { Session::get() };
-
-    /**/
 
     const auto root { _STD filesystem::current_path().append(R"(..\..\resources\assets)") };
     Vector<path> backlog {};

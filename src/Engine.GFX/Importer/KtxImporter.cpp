@@ -8,10 +8,11 @@
 #include <Engine.Serialization/Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/Engine.hpp>
 
 #include "ImageImporter.hpp"
 #include "../API/VkTranslate.hpp"
+#include "Engine.Assets/Assets.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -170,8 +171,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     using namespace ::ember::engine::serialization;
     using namespace ::ember::engine::assets;
 
-    const auto session { Session::get() };
-    auto& factory { *session->modules().assetFactory() };
+    auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
 
     auto* imgAsset { factory.createImageAsset() };
     auto* img { static_cast<ptr<Image>>(imgAsset) };

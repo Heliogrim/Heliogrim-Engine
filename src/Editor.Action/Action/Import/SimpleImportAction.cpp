@@ -1,8 +1,8 @@
 #include "SimpleImportAction.hpp"
 
+#include <Engine.Core/Engine.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Resource/ImporterManager.hpp>
-#include <Engine.Session/Session.hpp>
 
 #include "Engine.Assets/Types/Texture/Texture.hpp"
 #include "Engine.Assets/Types/Image.hpp"
@@ -71,12 +71,11 @@ bool SimpleImportAction::isFinished() const noexcept {
 #include "Engine.GFX/Importer/ImageFileTypes.hpp"
 
 void SimpleImportAction::apply() {
-
     setRunning();
     _failed = false;
 
-    const auto session { engine::Session::get() };
-    const auto& importer { session->modules().resourceManager()->importer() };
+    const auto* const manager { engine::Engine::getEngine()->getResources() };
+    const auto& importer { manager->importer() };
 
     /**/
 

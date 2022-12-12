@@ -5,6 +5,7 @@
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene/RevScene.hpp>
+#include <Engine.Core/Engine.hpp>
 
 #include "ModelDataTokens.hpp"
 #include "StaticGeometryBatch.hpp"
@@ -35,14 +36,14 @@ void StaticGeometryModel::create(const ptr<::ember::engine::scene::Scene> scene_
      */
     _boundary = origin->getBoundaries();
     _staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(origin->getStaticGeometryAsset().internal());
-    _staticGeometryResource = Session::get()->modules().resourceManager()->loader().load(_staticGeometryAsset, nullptr);
+    _staticGeometryResource = Engine::getEngine()->getResources()->loader().load(_staticGeometryAsset, nullptr);
 
     /**
      *
      */
     for (const auto& material : origin->overrideMaterials()) {
         auto* const wrapped { static_cast<ptr<assets::GfxMaterial>>(material.internal()) };
-        const auto resource { Session::get()->modules().resourceManager()->loader().load(wrapped, nullptr) };
+        const auto resource { Engine::getEngine()->getResources()->loader().load(wrapped, nullptr) };
 
         _overrideMaterials.push_back(static_cast<ptr<gfx::MaterialResource>>(resource));
     }

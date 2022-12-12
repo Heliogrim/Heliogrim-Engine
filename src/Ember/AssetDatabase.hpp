@@ -4,14 +4,12 @@
 #include <cassert>
 #endif
 
-#include <Engine.Assets/Database/AssetDatabase.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
 #include "Asset.hpp"
 #include "AssetDatabaseResult.hpp"
 
 namespace ember {
-
     class AssetDatabase {
     public:
         using value_type = AssetDatabase;
@@ -20,18 +18,16 @@ namespace ember {
         friend class Ember;
 
     private:
-        AssetDatabase(const ptr<void> internal_);
+        AssetDatabase(const non_owning_rptr<void> internal_);
 
     public:
         ~AssetDatabase();
 
     private:
-        const ptr<void> _internal;
+        const non_owning_rptr<void> _internal;
 
     public:
-        ref<engine::assets::AssetDatabase> __tmp__internal() {
-            return *static_cast<const ptr<engine::assets::AssetDatabase>>(_internal);
-        }
+        [[nodiscard]] const non_owning_rptr<void> unwrap() const noexcept;
 
     public:
         /**
@@ -70,7 +66,6 @@ namespace ember {
 
             return operator[](guid_);
             #endif
-
         }
 
     public:

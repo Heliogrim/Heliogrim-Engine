@@ -1,13 +1,12 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Session/Session.hpp>
+#include <Engine.Platform/Platform.hpp>
 
 #include "../TextureFormat.hpp"
 #include "../Application/Application.hpp"
 #include "../Device/Device.hpp"
 
 namespace ember::engine::gfx {
-
     class Surface {
     public:
         using value_type = Surface;
@@ -28,10 +27,10 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 09.11.2020
          *
-         * @param  session_ The session.
+         * @param  window_ The platform used.
          * @param  application_ The application.
          */
-        Surface(sptr<Session> session_, ptr<Application> application_);
+        Surface(const non_owning_rptr<platform::NativeWindow> window_, ptr<Application> application_);
 
         /**
          * Destructor
@@ -78,10 +77,8 @@ namespace ember::engine::gfx {
         operator vk::SurfaceKHR() const;
 
     private:
-        sptr<Session> _session;
+        ptr<platform::NativeWindow> _window;
         ptr<Application> _application;
-
-        ptr<session::Window> _window;
 
         vk::SurfaceKHR _surface;
 
@@ -94,18 +91,5 @@ namespace ember::engine::gfx {
          * @returns The new API surface.
          */
         vk::SurfaceKHR createApiSurface();
-
-        /**
-         * Creates a window
-         *
-         * @author Julius
-         * @date 09.11.2020
-         *
-         * @param  width_ The width.
-         * @param  height_ The height.
-         *
-         * @returns Null if it fails, else the new window.
-         */
-        ptr<session::Window> createWindow(const uint32_t width_, const uint32_t height_);
     };
 }

@@ -1,18 +1,21 @@
 #pragma once
+#include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Scene/SceneNodeModel.hpp>
+
 #include "ActorComponent.hpp"
 
 namespace ember {
-
     class SceneComponent :
         public ActorComponent {
     public:
         using this_type = SceneComponent;
         using underlying_type = ActorComponent;
 
+        using SceneNodeModel = ::ember::engine::scene::SceneNodeModel;
+
     public:
         SceneComponent(mref<component_type_id> typeId_, mref<CachedActorPointer> owner_,
             mref<ptr<ActorComponent>> parent_);
-
 
         // Warning: does not propagate currently
         ~SceneComponent();
@@ -36,7 +39,6 @@ namespace ember {
 
         template <typename Selector_>
         [[nodiscard]] Vector<non_owning_rptr<SceneNodeModel>> selectSceneNodeModels(mref<Selector_> selector_) const {
-
             Vector<non_owning_rptr<SceneNodeModel>> result {};
             eachSceneNodeModel([&](const non_owning_rptr<SceneNodeModel> model_) {
                 if (selector_(model_)) {

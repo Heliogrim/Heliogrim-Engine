@@ -1,7 +1,8 @@
 #include "Renderer.hpp"
 
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
-#include <Engine.Session/Session.hpp>
 
 #include "HORenderPass.hpp"
 #include "RenderPassState.hpp"
@@ -9,7 +10,6 @@
 #include "../Command/CommandBatch.hpp"
 #include "../Device/Device.hpp"
 #include "Engine.GFX/Graphics.hpp"
-#include <Engine.Logging/Logger.hpp>
 
 using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
@@ -52,8 +52,7 @@ cref<sptr<Device>> Renderer::device() const noexcept {
 
 sptr<RenderPassState> Renderer::makeRenderPassState() const {
 
-    auto session { Session::get() };
-    auto* const globalCacheCtrl { session->modules().graphics()->cacheCtrl() };
+    auto* const globalCacheCtrl { Engine::getEngine()->getGraphics()->cacheCtrl() };
 
     auto localCache { make_uptr<cache::LocalResourceCache>(globalCacheCtrl) };
 

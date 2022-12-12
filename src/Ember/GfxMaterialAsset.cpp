@@ -2,7 +2,9 @@
 
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Types/GfxMaterial.hpp>
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/Engine.hpp>
+
+#include "Engine.Assets/Assets.hpp"
 
 using namespace ember;
 
@@ -10,7 +12,7 @@ GfxMaterialAsset::GfxMaterialAsset(cref<asset_guid> guid_) noexcept :
     StreamableRenderableAsset(
         guid_,
         engine::assets::GfxMaterial::typeId,
-        engine::Session::get()->modules().assetFactory()->createGfxMaterialAsset(guid_)
+        engine::Engine::getEngine()->getAssets()->getFactory()->createGfxMaterialAsset(guid_)
     ) {}
 
 GfxMaterialAsset::GfxMaterialAsset(
@@ -29,7 +31,7 @@ GfxMaterialAsset::GfxMaterialAsset(
     StreamableRenderableAsset(
         guid_,
         engine::assets::GfxMaterial::typeId,
-        engine::Session::get()->modules().assetFactory()->createGfxMaterialAsset(
+        engine::Engine::getEngine()->getAssets()->getFactory()->createGfxMaterialAsset(
             guid_,
             albedo_,
             ao_,

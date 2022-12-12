@@ -18,6 +18,9 @@
 #include "Engine.Reflow/Window/WindowManager.hpp"
 #include "Engine.Reflow/Window/Window.hpp"
 #include "../Widget/Breadcrumb.hpp"
+#include "Engine.Assets/Assets.hpp"
+#include "Engine.Assets/Database/AssetDatabase.hpp"
+#include "Engine.Core/Engine.hpp"
 
 #if TRUE
 #include <Engine.GFX.Glow.UI/TestUI.hpp>
@@ -364,7 +367,9 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
                 ActionManager::get()->apply(action);
 
                 for (const auto& asset : action->importedAssets()) {
-                    Ember::assets().__tmp__internal().insert(asset->get_guid(), asset->getTypeId(), asset);
+                    engine::Engine::getEngine()->getAssets()->getDatabase()->insert(
+                        asset->get_guid(), asset->getTypeId(), asset
+                    );
                 }
             });
         }

@@ -18,8 +18,8 @@
 #include <Engine.GFX/Shader/Prototype.hpp>
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
-#include <Engine.Session/Session.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
+#include <Engine.Core/Engine.hpp>
 
 #include "__macro.hpp"
 #include "Engine.GFX/Graphics.hpp"
@@ -42,7 +42,6 @@ RevFinalComposeNode::~RevFinalComposeNode() {
 }
 
 void RevFinalComposeNode::setup(cref<sptr<Device>> device_) {
-
     // Store Device
     _device = device_;
 
@@ -57,7 +56,6 @@ void RevFinalComposeNode::setup(cref<sptr<Device>> device_) {
 }
 
 void RevFinalComposeNode::destroy() {
-
     // Pipeline
     if (_pipeline) {
         _pipeline->destroy();
@@ -81,7 +79,6 @@ void RevFinalComposeNode::destroy() {
 }
 
 bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
-
     SCOPED_STOPWATCH
 
     const auto state { renderPass_->state() };
@@ -153,7 +150,7 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
      * Allocate Textures
      */
     if (!test) {
-        RevTextureLoader loader { Session::get()->modules().graphics()->cacheCtrl() };
+        RevTextureLoader loader { Engine::getEngine()->getGraphics()->cacheCtrl() };
         test = loader.__tmp__load({ ""sv, R"(R:\\test.ktx)"sv });
 
         const vk::ImageMemoryBarrier imgBarrier {
@@ -241,7 +238,6 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
     Vector<vk::DescriptorPool> pools {};
 
     for (u64 rdp = 0; rdp < _requiredDescriptorPools.size(); ++rdp) {
-
         vk::DescriptorPool pool { _device->vkDevice().createDescriptorPool(_requiredDescriptorPools[rdp]) };
         assert(pool);
 
@@ -291,7 +287,6 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
 }
 
 bool RevFinalComposeNode::free(const ptr<HORenderPass> renderPass_) {
-
     SCOPED_STOPWATCH
 
     const auto state { renderPass_->state() };
@@ -301,7 +296,6 @@ bool RevFinalComposeNode::free(const ptr<HORenderPass> renderPass_) {
      */
     auto it { state->data.find("RevFinalComposeNode::DiscreteBindingGroups"sv) };
     if (it != state->data.end()) {
-
         sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
             _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(it->second)
         };
@@ -315,7 +309,6 @@ bool RevFinalComposeNode::free(const ptr<HORenderPass> renderPass_) {
          *
          */
         for (u32 i = 0; i < dbgs->size(); ++i) {
-
             const auto& dbg { (*dbgs)[i] };
             const auto& pool { (*pools)[i] };
 
@@ -346,7 +339,6 @@ bool RevFinalComposeNode::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevFinalComposeNode::UniformBuffer"sv);
     if (it != state->data.end()) {
-
         sptr<Buffer> uniform {
             _STD static_pointer_cast<Buffer, void>(it->second)
         };
@@ -367,7 +359,6 @@ bool RevFinalComposeNode::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevFinalComposeNode::Framebuffer"sv);
     if (it != state->data.end()) {
-
         sptr<Framebuffer> buffer {
             _STD static_pointer_cast<Framebuffer, void>(it->second)
         };
@@ -395,7 +386,6 @@ bool RevFinalComposeNode::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevFinalComposeNode::CommandBuffer"sv);
     if (it != state->data.end()) {
-
         sptr<CommandBuffer> cmd {
             _STD static_pointer_cast<CommandBuffer, void>(it->second)
         };
@@ -431,7 +421,6 @@ void RevFinalComposeNode::before(
     const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_
 ) const {
-
     SCOPED_STOPWATCH
 
     const auto& data { renderPass_->state()->data };
@@ -512,7 +501,6 @@ void RevFinalComposeNode::before(
     };
 
     for (u32 idx = 0; idx < dbgs->size(); ++idx) {
-
         const auto& grp { (*dbgs)[idx] };
 
         if (grp.super().interval() == shader::BindingUpdateInterval::ePerFrame) {
@@ -527,7 +515,6 @@ void RevFinalComposeNode::invoke(
     const non_owning_rptr<RenderStagePass> stagePass_,
     const non_owning_rptr<SceneNodeModel> model_
 ) const {
-
     SCOPED_STOPWATCH
 
     const auto& data { renderPass_->state()->data };
@@ -546,7 +533,6 @@ void RevFinalComposeNode::after(
     const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_
 ) const {
-
     SCOPED_STOPWATCH
 
     /**
@@ -568,7 +554,6 @@ void RevFinalComposeNode::after(
 }
 
 void RevFinalComposeNode::setupLORenderPass() {
-
     /**
      * LORenderPass
      */
@@ -598,7 +583,6 @@ void RevFinalComposeNode::setupLORenderPass() {
 }
 
 void RevFinalComposeNode::destroyLORenderPass() {
-
     if (_loRenderPass) {
         _loRenderPass->destroy();
         _loRenderPass.reset();
@@ -606,7 +590,6 @@ void RevFinalComposeNode::destroyLORenderPass() {
 }
 
 void RevFinalComposeNode::setupShader() {
-
     /**
      *
      */
@@ -723,10 +706,8 @@ void RevFinalComposeNode::setupShader() {
      * Acquire Descriptor Pools
      */
     for (const auto& group : factoryResult.groups) {
-
         Vector<vk::DescriptorPoolSize> sizes {};
         for (const auto& binding : group.shaderBindings()) {
-
             auto it {
                 _STD find_if(sizes.begin(), sizes.end(), [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
                     return entry_.type == api::vkTranslateBindingType(type);
@@ -760,7 +741,6 @@ void RevFinalComposeNode::setupShader() {
 }
 
 void RevFinalComposeNode::setupPipeline() {
-
     /**
      * Fixed Pipeline
      */

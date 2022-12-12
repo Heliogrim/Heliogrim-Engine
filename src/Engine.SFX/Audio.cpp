@@ -1,12 +1,11 @@
 #include "Audio.hpp"
 
 #include <Engine.Resource/ResourceManager.hpp>
+#include <Engine.Core/Engine.hpp>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
-
-#include <Engine.Session/Session.hpp>
 
 #include "Importer/AudioFileTypes.hpp"
 #include "Importer/FlacImporter.hpp"
@@ -16,17 +15,16 @@
 using namespace ember::engine;
 using namespace ember;
 
-Audio::Audio(cref<sptr<Session>> session_) noexcept :
-    _session(session_) {}
+Audio::Audio(const non_owning_rptr<Engine> engine_) noexcept :
+    CoreModule(engine_) {}
 
-Audio::~Audio() noexcept {}
+Audio::~Audio() noexcept = default;
 
 void Audio::setupImporter() {
-
     SCOPED_STOPWATCH
 
     //
-    auto* manager { _session->modules().resourceManager() };
+    auto* manager { _engine->getResources() };
 
     //
     manager->importer().registerImporter(sfx::AudioFileType::Flac, new sfx::FlacImporter());
@@ -35,7 +33,6 @@ void Audio::setupImporter() {
 }
 
 void Audio::setup() {
-
     SCOPED_STOPWATCH
 
     setupImporter();
@@ -43,6 +40,6 @@ void Audio::setup() {
 
 void Audio::schedule() {}
 
-sptr<Session> Audio::session() const noexcept {
-    return _session;
-}
+void Audio::desync() {}
+
+void Audio::destroy() {}

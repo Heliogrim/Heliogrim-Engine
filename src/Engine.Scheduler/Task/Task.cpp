@@ -1,5 +1,7 @@
 #include "Task.hpp"
 
+#include <Engine.Core/Engine.hpp>
+
 #include "../Scheduler.hpp"
 
 using namespace ember::engine::scheduler::task;
@@ -42,7 +44,8 @@ void TaskDelegate::delegate() const {
                  * If invocation returns success, re-scheduler the task
                  */
                 const_cast<ptr<TaskDelegate>>(this)->_fiber = nullptr;
-                Scheduler::get(_STD nothrow_t {})->exec(this);
+                // Warning: This might break, and will hit performance pretty badly
+                Engine::getEngine()->getScheduler()->exec(this);
             } else {
                 // TODO: destruct
                 /* TODO: Temporary */

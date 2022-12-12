@@ -1,7 +1,6 @@
 #include "RevScene.hpp"
 
 #include <Ember/SceneComponent.hpp>
-#include <Ember/World.hpp>
 #include <Engine.GFX/Scene/SceneTag.hpp>
 #include <Engine.GFX/Scene/SceneNodeModel.hpp>
 
@@ -29,11 +28,7 @@ RenderGraph makeRenderGraph() {
 RevScene::RevScene() noexcept :
     Scene(),
     _renderGraph(makeRenderGraph()),
-    _cached(),
-    _world(nullptr) {
-
-    _world = make_uptr<World>(this);
-}
+    _cached() {}
 
 RevScene::~RevScene() = default;
 
@@ -193,8 +188,4 @@ void RevScene::add(const ptr<ActorComponent> component_) {
 
 void RevScene::add(cref<ComponentHierarchy> hierarchy_) {
     throw NotImplementedException {};
-}
-
-ember::ptr<ember::World> RevScene::getWorld() noexcept {
-    return _world.get();
 }

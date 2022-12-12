@@ -63,18 +63,6 @@
     <ClInclude Include="..\..\src\Ember\Ember.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Graphics.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Audio.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Network.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\Scheduler.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Ember\Traits.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -139,9 +127,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\Level.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Ember\TypedEntity.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\World.hpp">
@@ -209,6 +194,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Ember\Components\CameraComponent.hpp">
       <Filter>Headerdateien\Components\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\EmberStatic.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Session.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember\Future.hpp">
+      <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -331,6 +325,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Ember\Actors\CameraActor.cpp">
       <Filter>Quelldateien\Actors\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember\Session.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

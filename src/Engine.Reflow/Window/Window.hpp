@@ -3,7 +3,7 @@
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Session/Window.hpp>
+#include <Engine.Platform/NativeWindow.hpp>
 
 #include "../Style/__fwd.hpp"
 #include "../Widget/__fwd.hpp"
@@ -14,7 +14,6 @@
 #include "PopupLayer.hpp"
 
 namespace ember::engine::reflow {
-
     class Window :
         public Widget {
     public:
@@ -62,7 +61,7 @@ namespace ember::engine::reflow {
         void setContent(sptr<Widget> content_);
 
     private:
-        ptr<session::Window> _nativeWindow;
+        ptr<platform::NativeWindow> _nativeWindow;
 
     public:
         [[nodiscard]] sptr<Widget> root() const override;
@@ -88,7 +87,8 @@ namespace ember::engine::reflow {
     public:
         void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
-        void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_, ref<StyleKeyStack> styleStack_) override;
+        void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
+            ref<StyleKeyStack> styleStack_) override;
 
         void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
 
@@ -97,5 +97,4 @@ namespace ember::engine::reflow {
 
         [[nodiscard]] math::vec2 innerSize() const noexcept override;
     };
-
 }

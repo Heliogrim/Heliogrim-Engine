@@ -16,7 +16,7 @@ SceneComponent::~SceneComponent() {
     }
 }
 
-cref<CompactSet<non_owning_rptr<SceneNodeModel>>> SceneComponent::getSceneNodeModels() const noexcept {
+cref<CompactSet<non_owning_rptr<SceneComponent::SceneNodeModel>>> SceneComponent::getSceneNodeModels() const noexcept {
     return _sceneNodeModels;
 }
 

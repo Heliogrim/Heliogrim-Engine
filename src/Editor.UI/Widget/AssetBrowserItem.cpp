@@ -12,7 +12,7 @@
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/Engine.hpp>
 
 #include "../Color/Dark.hpp"
 #include "../Helper/AssetBrowserHelper.hpp"
@@ -127,8 +127,6 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 
     /**/
 
-    const auto& session { engine::Session::get() };
-
     auto* font { getDefaultFont() };
     const auto* helper { AssetBrowserHelper::get() };
 
@@ -178,7 +176,7 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 
                 /**/
                 if (self->_virtUrl.path().contains("rock_08_diff_8k.imasset")) {
-                    const ptr<engine::input::DragDropSender> sender = engine::Session::get()->modules().input()->
+                    const ptr<engine::input::DragDropSender> sender = engine::Engine::getEngine()->getInput()->
                         dragDropSender();
 
                     Vector<string> paths {};
@@ -195,7 +193,7 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 
     auto iconRes {
         static_cast<ptr<engine::gfx::TextureResource>>(
-            session->modules().resourceManager()->loader().loadImmediately(iconAsset)
+            engine::Engine::getEngine()->getResources()->loader().loadImmediately(iconAsset)
         )
     };
 

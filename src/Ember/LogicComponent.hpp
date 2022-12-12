@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Scene.hpp"
+#include <Engine.Reflect/EmberReflect.hpp>
+#include <Engine.ACS/ComponentTypeId.hpp>
 
 namespace ember {
 

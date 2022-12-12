@@ -5,11 +5,12 @@
 #include "Worker/Worker.hpp"
 
 namespace ember::engine {
-
     class Scheduler final {
     public:
         using aligned_worker = ALIGNED(scheduler::worker::Worker, CACHE_LINE_SIZE);
         using fiber_pool_type = scheduler::fiber::FiberPool;
+
+        constexpr static inline u32 auto_worker_count { 0ui32 };
 
     public:
         /**
@@ -27,49 +28,6 @@ namespace ember::engine {
          * @date 13.11.2020
          */
         ~Scheduler();
-
-    private:
-        /** The instance */
-        static ptr<Scheduler> _instance;
-
-    public:
-        /**
-         * Gets the instance
-         *
-         * @author Julius
-         * @date 13.11.2020
-         *
-         * @returns A reference to a Scheduler.
-         */
-        [[nodiscard]] static Scheduler& get();
-
-        /**
-         * Gets the singleton instance pointer
-         *
-         * @author Julius
-         * @date 13.10.2021
-         *
-         * @returns A pointer to a Scheduler, otherwise nullptr
-         */
-        [[nodiscard]] static ptr<Scheduler> get(_STD nothrow_t) noexcept;
-
-        /**
-         * Create a instance of scheduler and stores it's global static instance
-         *
-         * @author Julius
-         * @date 16.11.2020
-         *
-         * @returns A pointer to a Scheduler.
-         */
-        static ptr<Scheduler> make();
-
-        /**
-         * Destroys this and flushes static internal stored instance
-         *
-         * @author Julius
-         * @date 22.07.2021
-         */
-        static void destroy() noexcept;
 
     public:
         /**
@@ -104,14 +62,6 @@ namespace ember::engine {
         [[nodiscard]] size_t getWorkerCount() const;
 
         /**
-         * Tidy up
-         *
-         * @author Julius
-         * @date 22.07.2021
-         */
-        void tidy();
-
-        /**
          * Setups the given workers
          *
          * @author Julius
@@ -120,6 +70,8 @@ namespace ember::engine {
          * @param  workers_ The workers.
          */
         void setup(u32 workers_);
+
+        void destroy();
 
         /**
          * Waits this 

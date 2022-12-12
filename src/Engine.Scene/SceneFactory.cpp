@@ -1,16 +1,17 @@
 #include "SceneFactory.hpp"
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Make.hpp>
 
 #include "RevScene.hpp"
 
 using namespace ember::engine::scene;
 using namespace ember;
 
-sptr<Scene> SceneFactory::createDefaultScene() {
-    return make_sptr<RevScene>();
+uptr<Scene> SceneFactory::createDefaultScene() {
+    return make_uptr<RevScene>();
 }
 
-sptr<Scene> SceneFactory::createPreviewScene() {
+uptr<Scene> SceneFactory::createPreviewScene() {
     return nullptr;
 }

@@ -4,11 +4,16 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/String.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Event/SignalShutdownEvent.hpp>
 
 #include "Editor.UI/Color/Dark.hpp"
 #include "Editor.UI/Panel/SceneHierarchyPanel.hpp"
 #include "Editor.UI/Panel/ObjectEditorPanel.hpp"
 #include "Editor.UI/Style/Style.hpp"
+#include "Engine.Assets/Assets.hpp"
+#include "Engine.Core/Engine.hpp"
+#include "Engine.Event/GlobalEventEmitter.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Reflow/Widget/Button.hpp"
 #include "Engine.Reflow/Widget/Image.hpp"
@@ -26,10 +31,9 @@
 #if TRUE
 #include "Engine.GFX/Command/CommandBuffer.hpp"
 #include "Engine.GFX/Loader/RevTextureLoader.hpp"
-#include "Engine.Session/Session.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.GFX/Graphics.hpp"
-#include "Engine.Scheduler/Scheduler.hpp"
+#include "Engine.Scheduler/Async.hpp"
 #include "Engine.Scheduler/Task/Task.hpp"
 #include "Engine.Assets/Database/AssetDatabase.hpp"
 #include "Engine.Assets/Database/AssetDatabaseQuery.hpp"
@@ -71,7 +75,6 @@ void storeHierarchyMeta();
 void loadActorMappingExp(cref<sptr<ObjectEditorPanel>> panel_);
 
 void testLoad(cref<sptr<engine::gfx::Device>> device_) {
-
     if (!testAssetBrowser) {
         editor::ui::AssetBrowserHelper::make();
         testAssetBrowser = make_sptr<editor::ui::AssetBrowser>();
@@ -88,7 +91,7 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
 
     // TODO:
     if (!testTexture) {
-        engine::gfx::RevTextureLoader loader { engine::Session::get()->modules().graphics()->cacheCtrl() };
+        engine::gfx::RevTextureLoader loader { engine::Engine::getEngine()->getGraphics()->cacheCtrl() };
         testTexture = make_sptr<engine::gfx::Texture>(loader.__tmp__load({ ""sv, R"(R:\\test.ktx)" }));
 
         Vector<vk::ImageMemoryBarrier> imgBarriers {};
@@ -137,7 +140,6 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
 }
 
 ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::Device>> device_) {
-
     if (!Style::get()) {
         Style::make();
     }
@@ -215,7 +217,9 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
     [[maybe_unused]] auto qblid = navQuitButton->addOnClick([](cref<engine::input::event::MouseButtonEvent> event_) {
         if (not event_._down)
             return;
-        engine::Scheduler::get().exec(engine::scheduler::task::make_task(engine::Session::stop));
+        ::ember::engine::scheduler::exec([] {
+            engine::Engine::getEngine()->getEmitter().emit(engine::core::SignalShutdownEvent {});
+        });
     });
 
     auto navFileMenu = make_sptr<Menu>();
@@ -519,10 +523,9 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
 }
 
 ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
-
     using font_default_type = game::assets::font::Consolas24Latin1;
 
-    auto* db { engine::Session::get()->modules().assetDatabase() };
+    auto* db { engine::Engine::getEngine()->getAssets()->getDatabase() };
     auto query { db->query(font_default_type::unstable_auto_guid()) };
 
     if (!query.exists()) {
@@ -535,7 +538,7 @@ ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
 
     /**/
 
-    auto* rm = engine::Session::get()->modules().resourceManager();
+    auto* rm = engine::Engine::getEngine()->getResources();
     auto* loaded = rm->loader().load(font, nullptr);
 
     /**/
@@ -558,18 +561,15 @@ void storeActorMapping() {
 }
 
 void loadActorMappingExp(const type_id typeId_, cref<sptr<ObjectEditorPanel>> panel_) {
-
     if (not editorSelectedTarget) {
         __debugbreak();
         return;
     }
 
     panel_->setEditorTarget(typeId_, editorSelectedTarget);
-
 }
 
 void storeEditorSelectedTarget(const ember::ptr<ember::Actor> target_) {
-
     if (!testObjectEditor) {
         return;
     }
@@ -585,7 +585,6 @@ void storeEditorSelectedTarget(const ember::ptr<ember::Actor> target_) {
 }
 
 void storeEditorSelectedTarget(const ember::ptr<ember::ActorComponent> target_) {
-
     if (!testObjectEditor) {
         return;
     }
@@ -603,13 +602,11 @@ void storeEditorSelectedTarget(const ember::ptr<ember::ActorComponent> target_) 
 /**/
 
 void storeHierarchyMeta() {
-
     testHierarchy->storeGenerator("sptr<SceneViewEntry>"_typeId, make_uptr<HierarchyGenerator<sptr<SceneViewEntry>>>());
     testHierarchy->storeResolver("sptr<SceneViewEntry>"_typeId, make_uptr<HierarchyResolver<sptr<SceneViewEntry>>>());
 }
 
 void storeHierarchyActor(cref<Vector<ptr<Actor>>> targets_) {
-
     if (!testHierarchy) {
         return;
     }

@@ -2,7 +2,7 @@
 
 #include "ActionSaveState.hpp"
 
-#include <Ember/Inbuilt.hpp>
+#include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 using namespace ember::editor;
@@ -14,7 +14,6 @@ ActionLog::ActionLog() :
     _saveState(NULL) {}
 
 void ActionLog::storeLog(cref<sptr<Action>> entry_) {
-
     if (_log.size() >= action_log_size) {
         _log.pop_front();
     }
@@ -23,7 +22,6 @@ void ActionLog::storeLog(cref<sptr<Action>> entry_) {
 }
 
 sptr<Action> ActionLog::popLog() {
-
     if (_log.empty()) {
         return nullptr;
     }
@@ -40,7 +38,6 @@ void ActionLog::storeRevertLog(cref<sptr<Action>> entry_) {
 }
 
 sptr<Action> ActionLog::popRevertLog() {
-
     if (_relog.empty()) {
         return nullptr;
     }
@@ -51,11 +48,11 @@ sptr<Action> ActionLog::popRevertLog() {
 }
 
 void ActionLog::storeActionState(cref<sptr<Action>> action_) {
-
     ptr<ActionSaveState> state { make_ptr<ActionSaveState>() };
 
     uintptr_t expect { NULL };
-    while (not _saveState.compare_exchange_strong(expect, reinterpret_cast<uintptr_t>(state), _STD memory_order::seq_cst)) {
+    while (not _saveState.compare_exchange_strong(expect, reinterpret_cast<uintptr_t>(state),
+        _STD memory_order::seq_cst)) {
         expect = NULL;
         ::ember::yield();
     }
@@ -65,7 +62,6 @@ void ActionLog::storeActionState(cref<sptr<Action>> action_) {
 }
 
 void ActionLog::dropActionState() {
-
     uintptr_t stored { _saveState.load() };
     if (not _saveState.compare_exchange_strong(stored, NULL, _STD memory_order::seq_cst)) {
         return;
@@ -77,7 +73,6 @@ void ActionLog::dropActionState() {
 }
 
 bool ActionLog::revertActionState(cref<sptr<Action>> action_) {
-
     uintptr_t stored { _saveState.load() };
     if (not _saveState.compare_exchange_strong(stored, NULL, _STD memory_order::seq_cst)) {
         return false;
@@ -96,7 +91,6 @@ void ActionLog::apply(cref<sptr<Action>> action_) {
 }
 
 sptr<Action> ActionLog::revert() {
-
     auto action = popLog();
     if (not action) {
         return action;
@@ -107,7 +101,6 @@ sptr<Action> ActionLog::revert() {
 }
 
 sptr<Action> ActionLog::reapply() {
-
     auto action = popRevertLog();
     if (not action) {
         return action;
@@ -122,7 +115,6 @@ void ActionLog::succeed(cref<sptr<Action>> action_) {
 }
 
 void ActionLog::fail(cref<sptr<Action>> action_) {
-
     const auto result = revertActionState(action_);
     if (not result) {
         IM_CORE_ERROR("Failed to revert action state.");

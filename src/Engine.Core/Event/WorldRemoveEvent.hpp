@@ -2,8 +2,8 @@
 
 #include <Engine.Event/Event.hpp>
 
-namespace ember::engine::scene {
-    class Scene;
+namespace ember::engine::core {
+    class World;
 }
 
 namespace ember::engine::core {
@@ -17,7 +17,7 @@ namespace ember::engine::core {
         inline static constexpr event_type_id typeId { "WorldRemoveEvent"_typeId };
 
     public:
-        WorldRemoveEvent(const ptr<::ember::engine::scene::Scene> worldScene_);
+        WorldRemoveEvent(cref<sptr<::ember::engine::core::World>> world_);
 
         WorldRemoveEvent(cref<this_type> other_) noexcept = default;
 
@@ -26,10 +26,10 @@ namespace ember::engine::core {
         ~WorldRemoveEvent() = default;
 
     private:
-        ptr<::ember::engine::scene::Scene> _worldScene;
+        sptr<::ember::engine::core::World> _world;
 
     public:
-        [[nodiscard]] const ptr<::ember::engine::scene::Scene> getWorldScene() const noexcept;
+        [[nodiscard]] const sptr<::ember::engine::core::World> getWorld() const noexcept;
     };
 
 }

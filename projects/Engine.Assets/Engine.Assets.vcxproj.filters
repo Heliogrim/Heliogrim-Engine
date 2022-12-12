@@ -120,6 +120,9 @@
     <ClInclude Include="..\..\src\Engine.Assets\Types\Font.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Assets.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Asset.cpp">
@@ -169,6 +172,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\ImageDataLayout.cpp">
       <Filter>Quelldateien\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Assets.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

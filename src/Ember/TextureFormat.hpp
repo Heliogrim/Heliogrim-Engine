@@ -1,9 +1,7 @@
 #pragma once
-#include <Engine.Common/Types.hpp>
 #include <Engine.GFX/TextureFormat.hpp>
 
 namespace ember {
-
     using TextureFormat = engine::gfx::TextureFormat;
 
     /**

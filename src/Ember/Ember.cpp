@@ -1,66 +1,77 @@
 #include "Ember.hpp"
 
-#include <Engine.Assets/AssetFactory.hpp>
-#include <Engine.Assets/Database/AssetDatabase.hpp>
-#include <Engine.Common/Exception/NotImplementedException.hpp>
 #include <Engine.ACS/Registry.hpp>
-#include <Engine.Event/BootEvent.hpp>
-#include <Engine.Event/GlobalEventEmitter.hpp>
-#include <Engine.Event/SchedulerBootEvent.hpp>
-#include <Engine.Event/ShutdownEvent.hpp>
+#include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets/Database/AssetDatabase.hpp>
+#include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
-#include <Engine.Network/Network.hpp>
-#include <Engine.PFX/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Scene/Scene.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Session/Session.hpp>
-#include <Engine.SFX/Audio.hpp>
+
+#include "EmberStatic.hpp"
 
 using namespace ember;
 
-ref<Audio> Ember::audio() noexcept {
-    throw NotImplementedException();
+uptr<engine::Engine> Ember::_engine = nullptr;
+
+static void startEngine(const non_owning_rptr<engine::Engine> engine_) {
+    #ifdef _DEBUG
+    assert(engine_->preInit());
+    assert(engine_->init());
+    assert(engine_->postInit());
+    assert(engine_->start());
+    #else
+    engine_->preInit();
+    engine_->init();
+    engine_->postInit();
+    engine_->start();
+    #endif
+}
+
+void Ember::instantiate() {
+    if (Ember::_engine) {
+        throw _STD runtime_error("Ember engine already instantiated.");
+    }
+
+    Ember::_engine = EmberStatic::initialize();
+
+    if (not Ember::_engine) {
+        throw _STD runtime_error("Failed to initialize Ember Engine.");
+    }
+}
+
+void Ember::destroy() {
+    if (not Ember::_engine) {
+        return;
+    }
+
+    Ember::_engine.reset();
+}
+
+const non_owning_rptr<engine::Engine> Ember::getEngine() noexcept {
+    return Ember::_engine.get();
+}
+
+Session Ember::getSession() {
+    const auto fnc { EmberStatic::sessionGetter() };
+    const auto session = (Ember::_engine.get()->*fnc)();
+
+    managed<void> dummy {};
+    return Session {
+        managed<void> { _STD move(dummy), session }
+    };
+}
+
+Session Ember::getSession(std::nothrow_t) noexcept {
+    if (not Ember::_engine || not EmberStatic::sessionGetter()) {
+        return Session {};
+    }
+
+    return Ember::getSession();
 }
 
 AssetDatabase Ember::assets() noexcept {
     return AssetDatabase {
-        engine::Session::get()->modules().assetDatabase()
+        _engine.get()->getAssets()->getDatabase()
     };
-}
-
-Graphics Ember::graphics() noexcept {
-    return Graphics {
-        engine::Session::get()->modules().graphics()
-    };
-}
-
-ref<Network> Ember::network() noexcept {
-    throw NotImplementedException();
-}
-
-ref<Scheduler> Ember::scheduler() noexcept {
-    throw NotImplementedException();
-}
-
-void Ember::launch() {
-
-    /**
-     *
-     */
-    auto session = engine::Session::get();
-    session->start();
-}
-
-void Ember::wait() {
-    /**
-     *
-     */
-    if (auto session = engine::Session::get()) {
-        session->wait();
-    }
-}
-
-ref<World> Ember::world() noexcept {
-    throw NotImplementedException();
 }

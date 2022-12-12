@@ -9,18 +9,17 @@
 using namespace ember::engine;
 using namespace ember;
 
-Network::Network(cref<sptr<Session>> session_) noexcept :
-    _session(session_) {}
+Network::Network(const non_owning_rptr<Engine> engine_) noexcept :
+    CoreModule(engine_) {}
 
 Network::~Network() = default;
 
 void Network::setup() {
-
     SCOPED_STOPWATCH
 }
 
 void Network::schedule() {}
 
-sptr<Session> Network::session() const noexcept {
-    return _session;
-}
+void Network::desync() {}
+
+void Network::destroy() {}

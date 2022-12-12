@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Core\Core.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Core\Event\WorldAddedEvent.hpp">
       <Filter>Headerdateien\Event</Filter>
     </ClInclude>
@@ -33,11 +30,56 @@
     <ClInclude Include="..\..\src\Engine.Core\Event\WorldChangeEvent.hpp">
       <Filter>Headerdateien\Event</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Engine.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\World.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\WorldContext.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Session.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\SessionState.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\WorldType.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\EngineState.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\CoreModule.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Event\SignalShutdownEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Event\EnginePreInitEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Event\EngineInitEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Event\EnginePostInitEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Event\EngineStartEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Event\EngineStopEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Event\EngineShutdownEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Event\EngineExitEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Core\Core.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Core\Event\WorldAddedEvent.cpp">
       <Filter>Quelldateien\Event</Filter>
     </ClCompile>
@@ -45,6 +87,24 @@
       <Filter>Quelldateien\Event</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Core\Event\WorldRemoveEvent.cpp">
+      <Filter>Quelldateien\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Core\Session.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Core\SessionState.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Core\WorldContext.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Core\World.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Core\Engine.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Core\Event\SignalShutdownEvent.cpp">
       <Filter>Quelldateien\Event</Filter>
     </ClCompile>
   </ItemGroup>

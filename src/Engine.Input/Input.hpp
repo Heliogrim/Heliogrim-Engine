@@ -1,33 +1,30 @@
 #pragma once
 
-#include <Engine.Session/Session.hpp>
-#include <Engine.Session/Window.hpp>
+#include <Engine.Core/CoreModule.hpp>
+#include <Engine.Platform/NativeWindow.hpp>
 
 #include "DragDrop/DragDropReceiver.hpp"
 #include "DragDrop/DragDropSender.hpp"
 
 namespace ember::engine {
-
-    class Input {
+    class Input :
+        public core::CoreModule {
     public:
         using this_type = Input;
 
     public:
-        Input(cref<sptr<Session>> session_ = Session::get()) noexcept;
+        Input(const non_owning_rptr<Engine> engine_) noexcept;
 
-        ~Input();
-
-    public:
-        void setup();
-
-    private:
-        void tidy();
-
-    private:
-        sptr<Session> _session;
+        ~Input() override;
 
     public:
-        [[nodiscard]] sptr<Session> session() const noexcept;
+        void setup() override;
+
+        void schedule() override;
+
+        void desync() override;
+
+        void destroy() override;
 
     private:
         ptr<input::DragDropReceiver> _dragDropReceiver;
@@ -37,9 +34,8 @@ namespace ember::engine {
         [[nodiscard]] const ptr<input::DragDropSender> dragDropSender() const noexcept;
 
     public:
-        void captureWindow(const ptr<session::Window> window_);
+        void captureWindow(const non_owning_rptr<platform::NativeWindow> nativeWindow_);
 
-        void releaseWindow(const ptr<session::Window> window_);
+        void releaseWindow(const non_owning_rptr<platform::NativeWindow> nativeWindow_);
     };
-
 }
