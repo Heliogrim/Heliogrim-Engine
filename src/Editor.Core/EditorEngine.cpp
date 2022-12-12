@@ -11,7 +11,11 @@
 #include <Engine.PFX/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
+#include <Engine.Scheduler/Async.hpp>
+#include <Engine.Scheduler/Helper/Wait.hpp>
 #include <Engine.SFX/Audio.hpp>
+#include <Editor.Main/Boot/AssetInit.hpp>
+#include <Editor.Main/Boot/GfxInit.hpp>
 
 #ifdef WIN32
 #include <Engine.Platform/Windows/WinPlatform.hpp>
@@ -65,18 +69,52 @@ bool EditorEngine::init() {
         return false;
     }
 
-    /**/
+    /* Base module are setup via direct call without fiber context guarantee (which is unlikely) */
+    _platform->setup();
     _scheduler->setup(Scheduler::auto_worker_count);
     _resources->setup();
 
-    /**/
-    _assets->setup();
-    _audio->setup();
-    _graphics->setup();
-    _input->setup();
-    _network->setup();
-    _physics->setup();
+    /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
+    _STD atomic_uint_fast8_t setupCounter { 0ui8 };
 
+    scheduler::exec([this, &setupCounter] {
+        _assets->setup();
+        ++setupCounter;
+        setupCounter.notify_one();
+    });
+
+    scheduler::exec([this, &setupCounter] {
+        _audio->setup();
+        ++setupCounter;
+        setupCounter.notify_one();
+    });
+
+    scheduler::exec([this, &setupCounter] {
+        _graphics->setup();
+        ++setupCounter;
+        setupCounter.notify_one();
+    });
+
+    scheduler::exec([this, &setupCounter] {
+        _input->setup();
+        ++setupCounter;
+        setupCounter.notify_one();
+    });
+
+    scheduler::exec([this, &setupCounter] {
+        _network->setup();
+        ++setupCounter;
+        setupCounter.notify_one();
+    });
+
+    scheduler::exec([this, &setupCounter] {
+        _physics->setup();
+        ++setupCounter;
+        setupCounter.notify_one();
+    });
+
+    /**/
+    scheduler::waitUntilAtomic(setupCounter, 6ui8);
     return setEngineState(EngineState::eInitialized);
 }
 
@@ -97,20 +135,42 @@ bool EditorEngine::start() {
     }
 
     /**/
-    _assets->schedule();
-    _audio->schedule();
-    _graphics->schedule();
-    _input->schedule();
-    _network->schedule();
-    _physics->schedule();
+    _STD atomic_flag next {};
+    scheduler::exec([this, &next] {
+        _assets->schedule();
+        _audio->schedule();
+        _graphics->schedule();
+        _input->schedule();
+        _network->schedule();
+        _physics->schedule();
+
+        /**/
+        boot::initAssets();
+        boot::initGfx();
+        /**/
+
+        next.test_and_set(std::memory_order::relaxed);
+        next.notify_one();
+    });
 
     /**/
-    _editorSession = make_uptr<core::Session>();
-    _worldContexts.push_back(_editorSession->getWorldContext());
+    scheduler::waitUntilAtomic(next, true);
+    next.clear(std::memory_order::release);
 
-    _primaryGameSession = make_uptr<core::Session>();
-    _worldContexts.push_back(_primaryGameSession->getWorldContext());
+    /**/
+    scheduler::exec([this, &next] {
+        _editorSession = make_uptr<core::Session>();
+        _worldContexts.push_back(_editorSession->getWorldContext());
 
+        _primaryGameSession = make_uptr<core::Session>();
+        _worldContexts.push_back(_primaryGameSession->getWorldContext());
+
+        next.test_and_set(std::memory_order::relaxed);
+        next.notify_one();
+    });
+
+    /**/
+    scheduler::waitUntilAtomic(next, true);
     return setEngineState(EngineState::eStarted);
 }
 
@@ -120,22 +180,39 @@ bool EditorEngine::stop() {
     }
 
     /**/
-    auto where = std::ranges::remove(_worldContexts, _primaryGameSession->getWorldContext());
-    _worldContexts.erase(where.begin(), where.end());
-    _primaryGameSession.reset();
+    _STD atomic_flag next {};
+    scheduler::exec([this, &next] {
+        auto where = std::ranges::remove(_worldContexts, _primaryGameSession->getWorldContext());
+        _worldContexts.erase(where.begin(), where.end());
+        _primaryGameSession.reset();
 
-    where = std::ranges::remove(_worldContexts, _editorSession->getWorldContext());
-    _worldContexts.erase(where.begin(), where.end());
-    _editorSession.reset();
+        where = std::ranges::remove(_worldContexts, _editorSession->getWorldContext());
+        _worldContexts.erase(where.begin(), where.end());
+        _editorSession.reset();
+
+        next.test_and_set(std::memory_order::relaxed);
+        next.notify_one();
+    });
 
     /**/
-    _physics->desync();
-    _network->desync();
-    _input->desync();
-    _graphics->desync();
-    _audio->desync();
-    _assets->desync();
+    scheduler::waitUntilAtomic(next, true);
+    next.clear(std::memory_order::release);
 
+    /**/
+    scheduler::exec([this, &next] {
+        _physics->desync();
+        _network->desync();
+        _input->desync();
+        _graphics->desync();
+        _audio->desync();
+        _assets->desync();
+
+        next.test_and_set(std::memory_order::relaxed);
+        next.notify_one();
+    });
+
+    /**/
+    scheduler::waitUntilAtomic(next, true);
     return setEngineState(EngineState::eStopped);
 }
 
@@ -144,17 +221,52 @@ bool EditorEngine::shutdown() {
         return false;
     }
 
-    /**/
-    _physics->destroy();
-    _network->destroy();
-    _input->destroy();
-    _graphics->destroy();
-    _audio->destroy();
-    _assets->destroy();
+    /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
+    _STD atomic_uint_fast8_t moduleCount { 0ui8 };
+
+    scheduler::exec([this, &moduleCount] {
+        _physics->destroy();
+        ++moduleCount;
+        moduleCount.notify_one();
+    });
+
+    scheduler::exec([this, &moduleCount] {
+        _network->destroy();
+        ++moduleCount;
+        moduleCount.notify_one();
+    });
+
+    scheduler::exec([this, &moduleCount] {
+        _input->destroy();
+        ++moduleCount;
+        moduleCount.notify_one();
+    });
+
+    scheduler::exec([this, &moduleCount] {
+        _graphics->destroy();
+        ++moduleCount;
+        moduleCount.notify_one();
+    });
+
+    scheduler::exec([this, &moduleCount] {
+        _audio->destroy();
+        ++moduleCount;
+        moduleCount.notify_one();
+    });
+
+    scheduler::exec([this, &moduleCount] {
+        _assets->destroy();
+        ++moduleCount;
+        moduleCount.notify_one();
+    });
 
     /**/
+    scheduler::waitUntilAtomic(moduleCount, 6ui8);
+
+    /* Base module are setup via direct call without fiber context guarantee (which is unlikely) */
     _resources->destroy();
     _scheduler->destroy();
+    _platform->tidy();
 
     return setEngineState(EngineState::eShutdown);
 }
