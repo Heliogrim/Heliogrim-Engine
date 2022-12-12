@@ -4,10 +4,8 @@
 
 #include "Asset.hpp"
 #include "AssetAutoGuid.hpp"
-#include "AssetAutoRegister.hpp"
 
 namespace ember {
-
     class ImageAsset :
         public Asset {
     public:

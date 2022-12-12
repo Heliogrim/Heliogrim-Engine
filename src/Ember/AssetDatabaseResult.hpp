@@ -4,7 +4,6 @@
 #include <Engine.Common/Flag.hpp>
 
 namespace ember {
-
     enum class AssetDatabaseResultType : u8 {
         eFailed = 0b0000,
         eSuccess = 0b0001,
@@ -16,7 +15,6 @@ namespace ember {
 
     template <typename ValueType_ = ptr<void>>
     struct AssetDatabaseResult {
-
         using value_type = _STD remove_cvref_t<ValueType_>;
 
         constexpr explicit AssetDatabaseResult(cref<AssetDatabaseResultFlags> flags_, cref<value_type> value_):
@@ -46,5 +44,4 @@ namespace ember {
             };
         }
     };
-
 }

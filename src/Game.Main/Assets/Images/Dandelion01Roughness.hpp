@@ -11,6 +11,4 @@ namespace ember::game::assets::image {
             ImageAsset(Dandelion01Roughness::unstable_auto_guid(),
                 R"(resources\assets\texture\dandelion_01_roughness.ktx2)") {}
     };
-
-    AUTO_REGISTER_ASSET(Dandelion01Roughness)
 }

@@ -11,6 +11,4 @@ namespace ember::game::assets::image {
             ImageAsset(Dandelion01Alpha::unstable_auto_guid(),
                 R"(resources\assets\texture\dandelion_01_alpha.ktx2)") {}
     };
-
-    AUTO_REGISTER_ASSET(Dandelion01Alpha)
 }

@@ -3,7 +3,6 @@
 #include "StreamableRenderableAsset.hpp"
 
 namespace ember {
-
     class SkeletalGeometryAsset :
         public StreamableRenderableAsset {
     public:

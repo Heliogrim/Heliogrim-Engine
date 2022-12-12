@@ -2,10 +2,8 @@
 
 #include "Asset.hpp"
 #include "AssetAutoGuid.hpp"
-#include "AssetAutoRegister.hpp"
 
 namespace ember {
-
     class RenderableAsset :
         public Asset {
     public:
@@ -37,5 +35,4 @@ namespace ember {
          */
         ~RenderableAsset() noexcept;
     };
-
 }

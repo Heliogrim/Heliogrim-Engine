@@ -1,7 +1,6 @@
 #pragma once
 
 namespace ember {
-
     struct sync_t {
         constexpr explicit sync_t() = default;
     };
@@ -17,5 +16,4 @@ namespace ember {
     namespace traits {
         extern async_t const async;
     }
-
 }

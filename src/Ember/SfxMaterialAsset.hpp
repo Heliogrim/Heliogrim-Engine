@@ -2,10 +2,8 @@
 
 #include "Asset.hpp"
 #include "AssetAutoGuid.hpp"
-#include "AssetAutoRegister.hpp"
 
 namespace ember {
-
     class SfxMaterialAsset :
         public Asset {
     public:
@@ -45,6 +43,5 @@ namespace ember {
          * @returns True if valid type, false if not.
          */
         [[nodiscard]] bool isValidType() const noexcept;
-
     };
 }

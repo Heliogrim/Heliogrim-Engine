@@ -3,7 +3,6 @@
 #include "StreamableAsset.hpp"
 
 namespace ember {
-
     class SoundAsset :
         public StreamableAsset {
     public:
@@ -44,5 +43,4 @@ namespace ember {
          */
         [[nodiscard]] bool isValidType() const noexcept;
     };
-
 }

@@ -4,7 +4,6 @@
 #include "StreamableAsset.hpp"
 
 namespace ember {
-
     class StreamableRenderableAsset :
         public RenderableAsset {
     public:
@@ -36,5 +35,4 @@ namespace ember {
          */
         ~StreamableRenderableAsset() noexcept;
     };
-
 }
