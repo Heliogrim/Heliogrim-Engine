@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class FolderAudio :
         public ImageAsset,
         public AssetAutoGuid<FolderAudio> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(FolderAudio::unstable_auto_guid(),
                 R"(resources\imports\ktx\folder-audio.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(FolderAudio)
 }

@@ -5,13 +5,10 @@
 #include <Engine.Assets/AssetGuid.hpp>
 
 namespace ember::game::assets::material {
-
     class Stick01 :
         public GfxMaterialAsset,
         public AssetAutoGuid<Stick01> {
     public:
         Stick01();
     };
-
-    AUTO_REGISTER_ASSET(Stick01)
 }

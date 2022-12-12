@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class GrassWild01Specular :
         public ImageAsset,
         public AssetAutoGuid<GrassWild01Specular> {
@@ -10,6 +9,4 @@ namespace ember::game::assets::image {
         GrassWild01Specular() :
             ImageAsset(GrassWild01Specular::unstable_auto_guid()) {}
     };
-
-    AUTO_REGISTER_ASSET(GrassWild01Specular)
 }

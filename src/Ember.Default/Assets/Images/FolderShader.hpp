@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class FolderShader :
         public ImageAsset,
         public AssetAutoGuid<FolderShader> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(FolderShader::unstable_auto_guid(),
                 R"(resources\imports\ktx\folder-shader.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(FolderShader)
 }

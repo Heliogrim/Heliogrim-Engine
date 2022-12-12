@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class Rock01Roughness :
         public ImageAsset,
         public AssetAutoGuid<Rock01Roughness> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(Rock01Roughness::unstable_auto_guid(),
                 R"(resources\imports\ktx2\rock_01_roughness.ktx2)") {}
     };
-
-    AUTO_REGISTER_ASSET(Rock01Roughness)
 }

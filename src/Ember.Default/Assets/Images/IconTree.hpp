@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class IconTree :
         public ImageAsset,
         public AssetAutoGuid<IconTree> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(IconTree::unstable_auto_guid(),
                 R"(resources\imports\ktx\tree.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(IconTree)
 }

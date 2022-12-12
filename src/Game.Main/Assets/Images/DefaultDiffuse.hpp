@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class DefaultDiffuse :
         public ImageAsset,
         public AssetAutoGuid<DefaultDiffuse> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(DefaultDiffuse::unstable_auto_guid(),
                 R"(resources\imports\ktx\default_diffuse.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(DefaultDiffuse)
 }

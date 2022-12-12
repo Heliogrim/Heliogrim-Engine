@@ -16,5 +16,3 @@ texture::IconAudio::IconAudio() :
         1ui32,
         engine::gfx::TextureType::e2d
     ) { }
-
-

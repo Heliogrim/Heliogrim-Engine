@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class GrassWild01Roughness :
         public ImageAsset,
         public AssetAutoGuid<GrassWild01Roughness> {
@@ -10,6 +9,4 @@ namespace ember::game::assets::image {
         GrassWild01Roughness() :
             ImageAsset(GrassWild01Roughness::unstable_auto_guid()) {}
     };
-
-    AUTO_REGISTER_ASSET(GrassWild01Roughness)
 }

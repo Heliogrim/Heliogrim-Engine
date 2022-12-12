@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class IconConsole :
         public ImageAsset,
         public AssetAutoGuid<IconConsole> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(IconConsole::unstable_auto_guid(),
                 R"(resources\imports\ktx\console.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(IconConsole)
 }

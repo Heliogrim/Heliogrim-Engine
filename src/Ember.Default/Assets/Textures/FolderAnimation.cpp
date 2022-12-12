@@ -16,5 +16,3 @@ texture::FolderAnimation::FolderAnimation() :
         1ui32,
         engine::gfx::TextureType::e2d
     ) { }
-
-

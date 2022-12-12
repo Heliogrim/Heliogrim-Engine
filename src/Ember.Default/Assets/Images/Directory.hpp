@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class Directory :
         public ImageAsset,
         public AssetAutoGuid<Directory> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(Directory::unstable_auto_guid(),
                 R"(resources\imports\ktx\icons8-folder-144.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(Directory)
 }

@@ -22,7 +22,6 @@
     <ClInclude Include="..\..\src\Ember\CachedActorPointer.hpp" />
     <ClInclude Include="..\..\src\Ember\Asset.hpp" />
     <ClInclude Include="..\..\src\Ember\AssetAutoGuid.hpp" />
-    <ClInclude Include="..\..\src\Ember\AssetAutoRegister.hpp" />
     <ClInclude Include="..\..\src\Ember\AssetDatabase.hpp" />
     <ClInclude Include="..\..\src\Ember\AssetDatabaseResult.hpp" />
     <ClInclude Include="..\..\src\Ember\AudioFormat.hpp" />

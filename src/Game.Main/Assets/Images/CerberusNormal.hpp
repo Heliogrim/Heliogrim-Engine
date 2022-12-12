@@ -2,8 +2,7 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
-    class CerberusNormal:
+    class CerberusNormal :
         public ImageAsset,
         public AssetAutoGuid<CerberusNormal> {
     public:
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(CerberusNormal::unstable_auto_guid(),
                 R"(resources\imports\ktx2\cerberus_normal.ktx2)") {}
     };
-
-    AUTO_REGISTER_ASSET(CerberusNormal)
 }

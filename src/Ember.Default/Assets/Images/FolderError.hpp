@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class FolderError :
         public ImageAsset,
         public AssetAutoGuid<FolderError> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(FolderError::unstable_auto_guid(),
                 R"(resources\imports\ktx\folder-error.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(FolderError)
 }

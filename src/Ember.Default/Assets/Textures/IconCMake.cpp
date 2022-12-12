@@ -16,5 +16,3 @@ texture::IconCMake::IconCMake() :
         1ui32,
         engine::gfx::TextureType::e2d
     ) { }
-
-

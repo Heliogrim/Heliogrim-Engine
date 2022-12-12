@@ -2,8 +2,7 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
-    class CerberusRoughness:
+    class CerberusRoughness :
         public ImageAsset,
         public AssetAutoGuid<CerberusRoughness> {
     public:
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(CerberusRoughness::unstable_auto_guid(),
                 R"(resources\imports\ktx2\cerberus_roughness.ktx2)") {}
     };
-
-    AUTO_REGISTER_ASSET(CerberusRoughness)
 }

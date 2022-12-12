@@ -5,13 +5,10 @@
 #include <Engine.Assets/AssetGuid.hpp>
 
 namespace ember::game::assets::material {
-
     class Cerberus :
         public GfxMaterialAsset,
         public AssetAutoGuid<Cerberus> {
     public:
         Cerberus();
     };
-
-    AUTO_REGISTER_ASSET(Cerberus)
 }

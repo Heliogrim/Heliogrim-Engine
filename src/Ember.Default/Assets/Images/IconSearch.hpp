@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class IconSearch :
         public ImageAsset,
         public AssetAutoGuid<IconSearch> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(IconSearch::unstable_auto_guid(),
                 R"(resources\imports\ktx\search.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(IconSearch)
 }

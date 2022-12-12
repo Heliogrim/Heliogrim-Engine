@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class Rock01Diffuse :
         public ImageAsset,
         public AssetAutoGuid<Rock01Diffuse> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(Rock01Diffuse::unstable_auto_guid(),
                 R"(resources\imports\ktx2\rock_01_diffuse.ktx2)") {}
     };
-
-    AUTO_REGISTER_ASSET(Rock01Diffuse)
 }

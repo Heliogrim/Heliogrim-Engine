@@ -25,6 +25,7 @@ namespace ember {
         ActorInitializer(cref<managed<void>> internal_) :
             _internal(internal_) {}
 
+    public:
         ~ActorInitializer() noexcept = default;
 
     private:
