@@ -20,6 +20,7 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\Fiber.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberLaunchPad.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\FiberPool.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scheduler\Helper\Wait.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Queue\AtomicCtrlBlockPage.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Queue\DynamicBufferPages.hpp" />
     <ClInclude Include="..\..\src\Engine.Scheduler\Queue\PooledBuffer.hpp" />
@@ -47,6 +48,7 @@
     <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\Fiber.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\FiberLaunchPad.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\FiberPool.cpp" />
+    <ClCompile Include="..\..\src\Engine.Scheduler\Helper\Wait.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Queue\DynamicBufferPages.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Queue\PooledBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueue.cpp" />

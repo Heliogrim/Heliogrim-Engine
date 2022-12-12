@@ -52,6 +52,12 @@
     <Filter Include="Quelldateien\Queue">
       <UniqueIdentifier>{b8b4c422-767f-4567-b29c-21af91629b18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Helper">
+      <UniqueIdentifier>{4c6a6786-95bd-49f1-b941-ed286ce5cc70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Helper">
+      <UniqueIdentifier>{e7c7500e-e9d2-4e1a-af15-b27bd4093cd5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Scheduler\Tick\Tick.hpp">
@@ -129,6 +135,9 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Queue\DynamicBufferPages.hpp">
       <Filter>Headerdateien\Queue</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Helper\Wait.hpp">
+      <Filter>Headerdateien\Helper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Scheduler\Thread\Thread.cpp">
@@ -187,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\Awaitable.cpp">
       <Filter>Quelldateien\Fiber</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Helper\Wait.cpp">
+      <Filter>Quelldateien\Helper</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
