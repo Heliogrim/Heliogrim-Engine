@@ -7,7 +7,6 @@
 #include "../Memory/GlobalPooledAllocator.hpp"
 
 namespace ember::engine::gfx {
-
     /**
      * Forward Declaration CommandQueue.
      *
@@ -27,6 +26,16 @@ namespace ember::engine::gfx {
     class Device final :
         public _STD enable_shared_from_this<Device> {
     public:
+        /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 12.12.2022
+         *
+         * @param application_ The application instances used for tracking and encapsulation.
+         */
+        Device(const Application& application_);
+
         /**
          * Constructor
          *
