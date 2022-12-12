@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class FolderContent :
         public ImageAsset,
         public AssetAutoGuid<FolderContent> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(FolderContent::unstable_auto_guid(),
                 R"(resources\imports\ktx\folder-content.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(FolderContent)
 }

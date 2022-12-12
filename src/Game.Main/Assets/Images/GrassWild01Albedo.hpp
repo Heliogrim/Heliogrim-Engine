@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class GrassWild01Albedo :
         public ImageAsset,
         public AssetAutoGuid<GrassWild01Albedo> {
@@ -15,6 +14,4 @@ namespace ember::game::assets::image {
          */
         GrassWild01Albedo();
     };
-
-    AUTO_REGISTER_ASSET(GrassWild01Albedo)
 }

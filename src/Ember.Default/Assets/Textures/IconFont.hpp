@@ -1,17 +1,12 @@
 ﻿#pragma once
 #include <Ember/AssetAutoGuid.hpp>
 #include <Ember/TextureAsset.hpp>
-#include <Ember/AssetAutoRegister.hpp>
 
 namespace ember::game::assets::texture {
-
     class IconFont :
         public TextureAsset,
         public AssetAutoGuid<IconFont> {
     public:
         IconFont();
     };
-
-    AUTO_REGISTER_ASSET(IconFont)
-
 }

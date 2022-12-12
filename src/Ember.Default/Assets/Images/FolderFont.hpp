@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class FolderFont :
         public ImageAsset,
         public AssetAutoGuid<FolderFont> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(FolderFont::unstable_auto_guid(),
                 R"(resources\imports\ktx\folder-font.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(FolderFont)
 }

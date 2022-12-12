@@ -2,8 +2,7 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
-    class WoodenBucket01Diffuse:
+    class WoodenBucket01Diffuse :
         public ImageAsset,
         public AssetAutoGuid<WoodenBucket01Diffuse> {
     public:
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(WoodenBucket01Diffuse::unstable_auto_guid(),
                 R"(resources\imports\ktx2\wooden_bucket_01_diffuse.ktx2)") {}
     };
-
-    AUTO_REGISTER_ASSET(WoodenBucket01Diffuse)
 }

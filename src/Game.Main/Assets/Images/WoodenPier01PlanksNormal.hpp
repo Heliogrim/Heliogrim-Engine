@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class WoodenPier01PlanksNormal :
         public ImageAsset,
         public AssetAutoGuid<WoodenPier01PlanksNormal> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(WoodenPier01PlanksNormal::unstable_auto_guid(),
                 R"(resources\imports\ktx2\wooden_pier_01_planks_normal.ktx2)") {}
     };
-
-    AUTO_REGISTER_ASSET(WoodenPier01PlanksNormal)
 }

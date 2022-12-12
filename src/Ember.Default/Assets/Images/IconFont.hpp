@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class IconFont :
         public ImageAsset,
         public AssetAutoGuid<IconFont> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(IconFont::unstable_auto_guid(),
                 R"(resources\imports\ktx\font.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(IconFont)
 }

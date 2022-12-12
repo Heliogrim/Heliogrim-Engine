@@ -4,13 +4,10 @@
 #include <Ember/GfxMaterialAsset.hpp>
 
 namespace ember::game::assets::material {
-
     class ForestGround01 :
         public GfxMaterialAsset,
         public AssetAutoGuid<ForestGround01> {
     public:
         ForestGround01();
     };
-
-    AUTO_REGISTER_ASSET(ForestGround01)
 }

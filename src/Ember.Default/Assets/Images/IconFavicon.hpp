@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class IconFavicon :
         public ImageAsset,
         public AssetAutoGuid<IconFavicon> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(IconFavicon::unstable_auto_guid(),
                 R"(resources\imports\ktx\favicon.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(IconFavicon)
 }

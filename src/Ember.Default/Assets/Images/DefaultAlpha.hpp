@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class DefaultAlpha :
         public ImageAsset,
         public AssetAutoGuid<DefaultAlpha> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(DefaultAlpha::unstable_auto_guid(),
                 R"(resources\imports\ktx\default_alpha.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(DefaultAlpha)
 }

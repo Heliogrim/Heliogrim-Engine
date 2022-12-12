@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class IconReadme :
         public ImageAsset,
         public AssetAutoGuid<IconReadme> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(IconReadme::unstable_auto_guid(),
                 R"(resources\imports\ktx\readme.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(IconReadme)
 }

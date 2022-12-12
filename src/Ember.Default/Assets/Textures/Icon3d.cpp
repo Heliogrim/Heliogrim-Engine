@@ -16,5 +16,3 @@ texture::Icon3d::Icon3d() :
         1ui32,
         engine::gfx::TextureType::e2d
     ) { }
-
-

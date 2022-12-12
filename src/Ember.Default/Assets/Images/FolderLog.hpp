@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class FolderLog :
         public ImageAsset,
         public AssetAutoGuid<FolderLog> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(FolderLog::unstable_auto_guid(),
                 R"(resources\imports\ktx\folder-log.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(FolderLog)
 }

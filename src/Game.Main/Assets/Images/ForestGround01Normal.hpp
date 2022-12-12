@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class ForestGround01Normal :
         public ImageAsset,
         public AssetAutoGuid<ForestGround01Normal> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(ForestGround01Normal::unstable_auto_guid(),
                 R"(resources\imports\ktx2\forest_ground_01_normal.ktx2)") {}
     };
-
-    AUTO_REGISTER_ASSET(ForestGround01Normal)
 }

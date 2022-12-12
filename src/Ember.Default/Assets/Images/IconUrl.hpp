@@ -2,7 +2,6 @@
 #include <Ember/ImageAsset.hpp>
 
 namespace ember::game::assets::image {
-
     class IconUrl :
         public ImageAsset,
         public AssetAutoGuid<IconUrl> {
@@ -11,6 +10,4 @@ namespace ember::game::assets::image {
             ImageAsset(IconUrl::unstable_auto_guid(),
                 R"(resources\imports\ktx\url.ktx)") {}
     };
-
-    AUTO_REGISTER_ASSET(IconUrl)
 }
