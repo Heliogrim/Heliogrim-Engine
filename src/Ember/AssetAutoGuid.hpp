@@ -4,7 +4,6 @@
 #include <Engine.Common/Meta/TypeId.hpp>
 
 namespace ember {
-
     template <typename AssetType_>
     class AssetAutoGuid {
     public:

@@ -3,7 +3,6 @@
 #include "StreamableRenderableAsset.hpp"
 
 namespace ember {
-
     class TextureAsset;
 
     class GfxMaterialAsset :
@@ -120,5 +119,4 @@ namespace ember {
 
         [[nodiscard]] cref<asset_guid> alphaGuid() const noexcept;
     };
-
 }

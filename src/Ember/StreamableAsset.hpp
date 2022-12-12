@@ -2,10 +2,8 @@
 
 #include "Asset.hpp"
 #include "AssetAutoGuid.hpp"
-#include "AssetAutoRegister.hpp"
 
 namespace ember {
-
     class StreamableAsset :
         public Asset {
     public:
@@ -36,5 +34,4 @@ namespace ember {
          */
         ~StreamableAsset() noexcept;
     };
-
 }

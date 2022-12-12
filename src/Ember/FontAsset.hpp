@@ -4,10 +4,8 @@
 
 #include "Asset.hpp"
 #include "AssetAutoGuid.hpp"
-#include "AssetAutoRegister.hpp"
 
 namespace ember {
-
     class FontAsset :
         public Asset {
     public:
@@ -25,5 +23,4 @@ namespace ember {
     public:
         [[nodiscard]] cref<string> url() const noexcept;
     };
-
 }

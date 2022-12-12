@@ -3,7 +3,6 @@
 #include "StreamableRenderableAsset.hpp"
 
 namespace ember {
-
     class StaticGeometryAsset :
         public StreamableRenderableAsset {
     public:
@@ -64,5 +63,4 @@ namespace ember {
     public:
         [[nodiscard]] u32 getMaterialCount() const;
     };
-
 }

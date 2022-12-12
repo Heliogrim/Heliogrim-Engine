@@ -6,7 +6,6 @@
 #include <Engine.Scheduler/Stage/ScheduleStage.hpp>
 
 namespace ember {
-
     using TaskMask = engine::scheduler::task::TaskMask;
     using TaskType = engine::scheduler::task::TaskType;
 

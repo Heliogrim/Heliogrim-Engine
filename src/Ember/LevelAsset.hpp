@@ -2,10 +2,8 @@
 
 #include "Asset.hpp"
 #include "AssetAutoGuid.hpp"
-#include "AssetAutoRegister.hpp"
 
 namespace ember {
-
     class LevelAsset :
         public Asset {
     public:
@@ -46,5 +44,4 @@ namespace ember {
          */
         [[nodiscard]] bool isValidType() const noexcept;
     };
-
 }

@@ -3,7 +3,6 @@
 #include "Inbuilt.hpp"
 
 namespace ember {
-
     /**
      * Forward Declaration
      */

@@ -6,10 +6,8 @@
 #include <Engine.Scene/SceneNodeModel.hpp>
 
 namespace ember {
-
     using Scene = ::ember::engine::scene::Scene;
     using RevScene = ::ember::engine::scene::RevScene;
 
     using SceneNodeModel = ::ember::engine::scene::SceneNodeModel;
-
 }

@@ -4,12 +4,12 @@
 #include "Inbuilt.hpp"
 
 namespace ember {
-
     class Level :
         public EmberObject {
     public:
         using this_type = Level;
         using underlying_type = EmberObject;
+
     public:
         /**
          * Default constructor

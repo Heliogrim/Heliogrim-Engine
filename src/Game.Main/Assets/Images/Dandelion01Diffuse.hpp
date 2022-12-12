@@ -12,5 +12,4 @@ namespace ember::game::assets::image {
                 R"(resources\assets\texture\dandelion_01_diffuse.ktx2)") {}
     };
 
-    AUTO_REGISTER_ASSET(Dandelion01Diffuse)
 }

@@ -2,10 +2,8 @@
 
 #include "Asset.hpp"
 #include "AssetAutoGuid.hpp"
-#include "AssetAutoRegister.hpp"
 
 namespace ember {
-
     class PfxMaterialAsset :
         public Asset {
     public:
