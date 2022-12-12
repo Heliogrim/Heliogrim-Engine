@@ -97,6 +97,16 @@ void onEnginePostInit(const ember::non_owning_rptr<Engine> engine_) {}
 
 void onEngineStart(const ember::non_owning_rptr<Engine> engine_) {}
 
+void onEngineRunning(const ember::non_owning_rptr<Engine> engine_) {}
+
+void onEngineStop(const ember::non_owning_rptr<Engine> engine_) {}
+
+void onEngineShutdown(const ember::non_owning_rptr<Engine> engine_) {}
+
+void onEngineExit(const ember::non_owning_rptr<Engine> engine_) {}
+
+void afterRoutine() {}
+
 #pragma endregion
 
 /**
