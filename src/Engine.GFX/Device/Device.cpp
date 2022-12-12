@@ -10,6 +10,7 @@
 #include "../Surface/Surface.hpp"
 #include "../Memory/VkAllocator.hpp"
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Common/Collection/Set.hpp>
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -37,6 +38,9 @@ static std::vector<const char*> validationLayers = {
     #endif
 };
 
+Device::Device(Application::const_reference_type application_) :
+    Device(application_, nullptr) {}
+
 Device::Device(Application::const_reference_type application_, ptr<Surface> surface_) :
     _alloc(nullptr),
     _computeQueue(nullptr),
@@ -49,48 +53,56 @@ Device::Device(Application::const_reference_type application_, ptr<Surface> surf
 
 Device::~Device() = default;
 
+static bool supportsSurface(cref<vk::PhysicalDevice> device_, const non_owning_rptr<const Surface> surface_) {
+
+    if (not surface_) {
+        return false;
+    }
+
+    vk::SurfaceCapabilitiesKHR caps = device_.getSurfaceCapabilitiesKHR(*surface_);
+    const auto formats = device_.getSurfaceFormatsKHR(*surface_);
+    const auto modes = device_.getSurfacePresentModesKHR(*surface_);
+
+    return not formats.empty() && not modes.empty();
+}
+
+static bool supportsExtensions(cref<vk::PhysicalDevice> device_) {
+
+    const auto properties { device_.enumerateDeviceExtensionProperties(nullptr) };
+    Set<string> requiredExtensions { deviceExtensions.begin(), deviceExtensions.end() };
+
+    for (const auto& extension : properties) {
+        requiredExtensions.erase(string { extension.extensionName });
+    }
+
+    return requiredExtensions.empty();
+}
+
 void Device::setup() {
 
     SCOPED_STOPWATCH
 
-    // Device
-    std::vector<vk::PhysicalDevice, std::allocator<vk::PhysicalDevice>> physicalCandidates = _application->
-        enumeratePhysicalDevices();
-    //QueueFamilyIndices indices;
+    const auto checkSurfaceSupport { _surface != nullptr };
 
+    const std::vector<vk::PhysicalDevice> physicalCandidates = _application->enumeratePhysicalDevices();
     for (const auto& entry : physicalCandidates) {
-        //indices = QueueFamilyIndices();
-        //indices.graphicsFamily = _device->getQueueFamilyIndex(vk::QueueFlagBits::eGraphics);
-        //indices.presentFamily = NULL;
 
-        bool swapChainAdequate = false;
-
-        auto extensions = entry.enumerateDeviceExtensionProperties(nullptr);
-        _STD unordered_set<std::string> requiredExtension(deviceExtensions.begin(), deviceExtensions.end());
-
-        for (const auto& extension : extensions) {
-            requiredExtension.erase(string { extension.extensionName });
+        const bool extension { supportsExtensions(entry) };
+        if (not extension) {
+            continue;
         }
 
-        const bool extSupport = requiredExtension.empty();
-
-        if (extSupport) {
-            vk::SurfaceCapabilitiesKHR caps = entry.getSurfaceCapabilitiesKHR(*_surface);
-            auto formats = entry.getSurfaceFormatsKHR(*_surface);
-            auto modes = entry.getSurfacePresentModesKHR(*_surface);
-
-            swapChainAdequate = (!formats.empty() && !modes.empty());
+        const bool surface { supportsSurface(entry, _surface) };
+        if (checkSurfaceSupport && not surface) {
+            continue;
         }
 
-        if (extSupport && swapChainAdequate) {
-            _physicalDevice = entry;
-            IM_DEBUG_LOG("Found vk::PhysicDevice matching requirements.");
-            break;
-        }
+        IM_DEBUG_LOG("Found vk::PhysicsDevice matching the requirements");
+        break;
     }
 
-    const float defaultQueuePriority = 0.0F;
-    std::vector<vk::DeviceQueueCreateInfo> dqcis = std::vector<vk::DeviceQueueCreateInfo>(0);
+    constexpr float defaultQueuePriority = 0.0F;
+    std::vector<vk::DeviceQueueCreateInfo> dqcis {};
 
     auto requestedQueueType = vk::QueueFlagBits::eCompute | vk::QueueFlagBits::eGraphics;
 
@@ -167,12 +179,19 @@ void Device::setup() {
 
     #ifdef _DEBUG
     assert(_physicalDevice.createDevice(&dCi, nullptr, &_device) == vk::Result::eSuccess);
-    assert(_physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface));
+
+    if (checkSurfaceSupport) {
+        assert(_physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface));
+    }
     IM_DEBUG_LOG("Created vk::Device successfully.");
 
     #else
+
     _physicalDevice.createDevice(&dCi, nullptr, &_device);
-    _physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface);
+
+    if (checkSurfaceSupport) {
+        _physicalDevice.getSurfaceSupportKHR(qFamIndices.graphicsFamily, *_surface);
+    }
     #endif
 
     /**

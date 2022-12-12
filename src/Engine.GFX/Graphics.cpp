@@ -256,6 +256,10 @@ bool Graphics::removeRenderer(cref<AssocKey<string>> key_) {
 void reportStats(float fps_, float time_);
 #endif
 
+const non_owning_rptr<gfx::scene::RenderSceneManager> Graphics::getSceneManager() const noexcept {
+    return _sceneManager;
+}
+
 void Graphics::tick() {
     CompactSet<sptr<RenderTarget>> targets {};
     _sceneManager->selectInvokeTargets(targets);
