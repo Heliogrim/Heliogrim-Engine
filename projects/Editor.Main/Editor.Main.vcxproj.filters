@@ -27,9 +27,15 @@
     <ClCompile Include="..\..\src\Editor.Main\Boot\AssetInit.cpp">
       <Filter>Quelldateien\Boot</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Editor.Main\Boot\GfxInit.cpp">
+      <Filter>Quelldateien\Boot</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.Main\Boot\AssetInit.hpp">
+      <Filter>Headerdateien\Boot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.Main\Boot\GfxInit.hpp">
       <Filter>Headerdateien\Boot</Filter>
     </ClInclude>
   </ItemGroup>

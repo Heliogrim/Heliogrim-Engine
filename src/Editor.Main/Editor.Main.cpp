@@ -35,16 +35,14 @@ int main() {
     /**
      * Register Shutdown Sequence
      */
-    _STD condition_variable sleepCnd {};
-    _STD mutex sleepMtx {};
+    _STD atomic_flag sleepFlag {};
+    sleepFlag.test_and_set(_STD memory_order::release);
 
     engine->getEmitter().on<SignalShutdownEvent>(
-        [sleepMtx = &sleepMtx, sleepCnd = &sleepCnd](cref<SignalShutdownEvent>) {
-            sleepMtx->unlock();
-            sleepCnd->notify_all();
+        [sleepFlag = ptr<_STD atomic_flag> { &sleepFlag }](cref<SignalShutdownEvent>) {
+            sleepFlag->clear(_STD memory_order::relaxed);
+            sleepFlag->notify_one();
         });
-
-    sleepMtx.lock();
 
     /**
      * Boot Engine
@@ -58,8 +56,7 @@ int main() {
     /**
      * Set thread asleep
      */
-    _STD unique_lock<_STD mutex> lck { sleepMtx };
-    sleepCnd.wait(lck);
+    sleepFlag.wait(true, std::memory_order::consume);
 
     /**
      * Shutdown Engine
