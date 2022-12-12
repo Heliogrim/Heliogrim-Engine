@@ -6,7 +6,6 @@
 namespace ember::engine::assets {
     class AssetDatabase;
     class AssetFactory;
-    class AssetSeeder;
 }
 
 namespace ember::engine {
@@ -17,7 +16,6 @@ namespace ember::engine {
 
         using AssetDatabase = ::ember::engine::assets::AssetDatabase;
         using AssetFactory = ::ember::engine::assets::AssetFactory;
-        using AssetSeeder = ::ember::engine::assets::AssetSeeder;
 
     public:
         Assets(const non_owning_rptr<Engine> engine_);
@@ -40,13 +38,10 @@ namespace ember::engine {
     private:
         uptr<AssetDatabase> _database;
         uptr<AssetFactory> _factory;
-        uptr<AssetSeeder> _seeder;
 
     public:
         [[nodiscard]] const non_owning_rptr<AssetDatabase> getDatabase() const noexcept;
 
         [[nodiscard]] const non_owning_rptr<AssetFactory> getFactory() const noexcept;
-
-        [[nodiscard]] const non_owning_rptr<AssetSeeder> getSeeder() const noexcept;
     };
 }
