@@ -3,10 +3,10 @@
 using namespace ember::engine::core;
 using namespace ember;
 
-WorldAddedEvent::WorldAddedEvent(cref<sptr<::ember::engine::scene::Scene>> worldScene_) :
+WorldAddedEvent::WorldAddedEvent(cref<sptr<::ember::engine::core::World>> world_) :
     StatelessEvent(),
-    _worldScene(worldScene_) {}
+    _world(world_) {}
 
-cref<sptr<::ember::engine::scene::Scene>> WorldAddedEvent::getWorldScene() const noexcept {
-    return _worldScene;
+cref<sptr<::ember::engine::core::World>> WorldAddedEvent::getWorld() const noexcept {
+    return _world;
 }

@@ -1,12 +1,13 @@
 #include "RevTextureLoader.hpp"
 
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/Engine.hpp>
 
 #include "Engine.Assets/Database/AssetDatabase.hpp"
 #include "Engine.Assets/Types/Image.hpp"
 
 #include "../Cache/GlobalCacheCtrl.hpp"
 #include "../Cache/GlobalResourceCache.hpp"
+#include "Engine.Assets/Assets.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -16,7 +17,7 @@ RevTextureLoader::RevTextureLoader(const ptr<cache::GlobalCacheCtrl> cache_) :
 
 RevTextureLoader::result_type RevTextureLoader::operator()(const ptr<assets::Texture> asset_, options_type options_) {
 
-    const auto* const db { Session::get()->modules().assetDatabase() };
+    const auto* const db { Engine::getEngine()->getAssets()->getDatabase() };
 
     // TODO: Rewrite
     const asset_guid baseImageGuid { asset_->baseImage() };
@@ -77,7 +78,7 @@ void RevTextureLoader::streamLoad(const ptr<res::partial::Streamable<res::Resour
 
     const ptr<TextureResource> texture { static_cast<const ptr<TextureResource>>(resource_) };
     const auto* const asset { static_cast<const non_owning_rptr<const assets::Texture>>(resource_->origin()) };
-    const auto* const db { Session::get()->modules().assetDatabase() };
+    const auto* const db { Engine::getEngine()->getAssets()->getDatabase() };
 
     /**/
     if (texture->_payload.view->width() == 1ui32) {

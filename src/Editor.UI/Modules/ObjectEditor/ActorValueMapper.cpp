@@ -1,4 +1,5 @@
 #include <Ember/Actor.hpp>
+#include <Ember/ActorComponent.hpp>
 #include <Engine.Reflow/Style/BoundStyleSheet.hpp>
 #include <Engine.Reflow/Style/StyleCondition.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>

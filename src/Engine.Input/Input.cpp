@@ -1,33 +1,36 @@
 #include "Input.hpp"
 
-#include <Engine.Session/Win32Window.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Event/GlobalEventEmitter.hpp>
+#include <Engine.Platform/Windows/Win32Window.hpp>
+#include <Engine.Scheduler/Async.hpp>
 
 #include "DragDrop/Win32DragDropReceiver.hpp"
 #include "DragDrop/Win32DragDropSender.hpp"
-#include <Engine.Scheduler/Async.hpp>
 
 using namespace ember::engine::input;
 using namespace ember::engine;
 using namespace ember;
 
-Input::Input(cref<sptr<Session>> session_) noexcept :
-    _session(session_),
+Input::Input(const non_owning_rptr<Engine> engine_) noexcept :
+    CoreModule(engine_),
     _dragDropReceiver(nullptr),
     _dragDropSender(nullptr) {}
 
 Input::~Input() {
-    tidy();
+    Input::destroy();
 }
 
 void Input::setup() {
-
     _dragDropSender = new Win32DragDropSender();
     _dragDropSender->setup();
-
 }
 
-void Input::tidy() {
+void Input::schedule() {}
 
+void Input::desync() {}
+
+void Input::destroy() {
     if (_dragDropReceiver) {
         _dragDropReceiver->destroy();
 
@@ -43,19 +46,15 @@ void Input::tidy() {
     }
 }
 
-sptr<Session> Input::session() const noexcept {
-    return _session;
-}
-
 const ptr<input::DragDropSender> Input::dragDropSender() const noexcept {
     return _dragDropSender;
 }
 
-void Input::captureWindow(const ptr<session::Window> window_) {
-
+void Input::captureWindow(const non_owning_rptr<platform::NativeWindow> nativeWindow_) {
     assert(not _dragDropReceiver);
 
-    auto* sdlWnd = static_cast<const ptr<session::Win32Window>>(window_)->_wnd;
+    #ifdef WIN32
+    auto* sdlWnd = static_cast<ptr<platform::Win32Window>>(nativeWindow_)->sdl();
     SDL_SysWMinfo info {};
     SDL_VERSION(&info.version);
     SDL_GetWindowWMInfo(sdlWnd, &info);
@@ -67,27 +66,26 @@ void Input::captureWindow(const ptr<session::Window> window_) {
 
     /**/
 
-    _dragDropReceiver->setOnDrop([session = _session](sptr<event::DragDropEvent> event_) {
-
+    _dragDropReceiver->setOnDrop([engine = _engine](sptr<event::DragDropEvent> event_) {
         // Attention: This function callback is actual external thread context
         // Attention: Not allowed to use default/fiber control flow
 
-        scheduler::exec([event = _STD move(event_), session]() {
+        scheduler::exec([event = _STD move(event_), engine]() {
             // Dispatch event with fiber context
-            session->emitter().emit(*event);
+            engine->getEmitter().emit(*event);
         });
 
         return false;
     });
+    #else
+    #endif
 }
 
-void Input::releaseWindow(const ptr<session::Window> window_) {
-
+void Input::releaseWindow(const non_owning_rptr<platform::NativeWindow> nativeWindow_) {
     if (_dragDropReceiver) {
         _dragDropReceiver->destroy();
 
         delete _dragDropReceiver;
         _dragDropReceiver = nullptr;
     }
-
 }

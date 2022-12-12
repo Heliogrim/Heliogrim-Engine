@@ -1,8 +1,9 @@
 #include "StaticGeometryAsset.hpp"
 
 #include <Engine.Assets/AssetFactory.hpp>
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/Engine.hpp>
 
 using namespace ember;
 
@@ -10,7 +11,7 @@ StaticGeometryAsset::StaticGeometryAsset(cref<asset_guid> guid_) noexcept :
     StreamableRenderableAsset(
         guid_,
         engine::assets::StaticGeometry::typeId,
-        engine::Session::get()->modules().assetFactory()->createStaticGeometryAsset(guid_)
+        engine::Engine::getEngine()->getAssets()->getFactory()->createStaticGeometryAsset(guid_)
     ) {}
 
 StaticGeometryAsset::StaticGeometryAsset(
@@ -22,7 +23,7 @@ StaticGeometryAsset::StaticGeometryAsset(
     StreamableRenderableAsset(
         guid_,
         engine::assets::StaticGeometry::typeId,
-        engine::Session::get()->modules().assetFactory()->createStaticGeometryAsset(
+        engine::Engine::getEngine()->getAssets()->getFactory()->createStaticGeometryAsset(
             guid_,
             url_,
             vertexCount_,

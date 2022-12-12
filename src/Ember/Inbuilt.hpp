@@ -2,25 +2,18 @@
 
 #include <concepts>
 
-#include <Engine.Assets/AssetGuid.hpp>
-#include <Engine.Common/__macro.hpp>
-#include <Engine.Common/String.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/__default.inl>
-#include <Engine.Common/Collection/Array.hpp>
-#include <Engine.Common/Collection/CompactArray.hpp>
 #include <Engine.Common/Collection/Set.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
 #include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Scheduler/Fiber/Awaitable.hpp>
-#include <Engine.Reflect/EmberReflect.hpp>
 
+#include "Future.hpp"
 #include "Task.hpp"
 
 namespace ember {
-
     /**
      * Section: Basic Data Types
      */
@@ -48,58 +41,6 @@ namespace ember {
      */
     using await_signal_type = engine::scheduler::fiber::await_signal_type;
     using await_signal_sub_type = engine::scheduler::fiber::await_signal_sub_type;
-
-    /**
-     * Subsection: Results
-     */
-    template <typename Type_>
-    class Future :
-        protected concurrent::future<Type_> {
-    public:
-        using underlying_type = concurrent::future<Type_>;
-
-    public:
-        Future(_Inout_ mref<underlying_type> other_) noexcept :
-            underlying_type(_STD move(other_)) {}
-
-    public:
-        /**
-         * Check whether this future has taken part
-         *
-         * @author Julius
-         * @date 25.10.2021
-         *
-         * @returns True if future as taken part, otherwise false.
-         */
-        [[nodiscard]] _Success_(return) bool ready() const noexcept {
-            return underlying_type::ready();
-        }
-
-        /**
-         * Get the stored value of this future state
-         *
-         * @author Julius
-         * @date 25.10.2021
-         *
-         * @returns A reference to the value to move from
-         */
-        [[nodiscard]] Type_&& get() const {
-            return _STD forward<Type_>(underlying_type::retrieve());
-        }
-
-    public:
-        /**
-         * Get the underlying awaitable signal of this future
-         *
-         * @author Julius
-         * @date 25.10.2021
-         *
-         * @returns A pointer to the awaitable signal.
-         */
-        [[nodiscard]] operator ptr<await_signal_sub_type>() const noexcept {
-            return underlying_type::signal();
-        }
-    };
 
     /**
      * Subsection: Ticks

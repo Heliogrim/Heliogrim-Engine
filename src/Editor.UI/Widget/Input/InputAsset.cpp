@@ -9,12 +9,12 @@
 #include "../../Helper/AssetBrowserHelper.hpp"
 
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
-#include "Engine.Session/Session.hpp"
 #include "Engine.GFX/Resource/TextureResource.hpp"
 #include "Engine.Resource/LoaderManager.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include <Ember/AssetDatabase.hpp>
 #include <Ember/AssetDatabaseResult.hpp>
+#include <Engine.Core/Engine.hpp>
 
 #include "Ember/Ember.hpp"
 
@@ -130,8 +130,8 @@ void InputAsset::setup() {
     _preview = make_sptr<Image>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::Icon72Key)));
     auto previewAsset = AssetBrowserHelper::get()->getItemIconByAssetType(asset_type_id {});
     auto iconRes {
-        static_cast<ptr<engine::gfx::TextureResource>>(engine::Session::get()->modules().resourceManager()->loader().
-                                                                               loadImmediately(previewAsset))
+        static_cast<ptr<engine::gfx::TextureResource>>(engine::Engine::getEngine()->getResources()->loader().
+            loadImmediately(previewAsset))
     };
     auto* view { iconRes->_payload.view.get() };
     _preview->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(view)), iconRes);

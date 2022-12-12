@@ -5,14 +5,13 @@
 
 #if TRUE
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Session/Session.hpp>
 #include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX/Device/Device.hpp>
 #include "Engine.GFX/RenderTarget.hpp"
 #include "Engine.GFX/Camera/Camera.hpp"
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.GFX/Texture/ProxyTexture.hpp>
 #include <Ember/Actors/CameraActor.hpp>
+#include <Engine.Core/Engine.hpp>
 #endif
 
 using namespace ember::engine::reflow;
@@ -41,7 +40,6 @@ string Viewport::getTag() const noexcept {
 }
 
 void Viewport::tidy() {
-
     if (_swapchain) {
         _swapchain->destroy();
         _swapchain.reset();
@@ -66,7 +64,6 @@ void Viewport::setCameraActor(const ptr<CameraActor> actor_) {
 }
 
 math::uivec2 Viewport::actualViewExtent() const noexcept {
-
     if (_viewSize.zero()) {
         return math::uivec2 {
             static_cast<u32>(_innerSize.x),
@@ -78,7 +75,6 @@ math::uivec2 Viewport::actualViewExtent() const noexcept {
 }
 
 bool Viewport::viewHasChanged() const noexcept {
-
     if (!_swapchain) {
         return true;
     }
@@ -88,7 +84,6 @@ bool Viewport::viewHasChanged() const noexcept {
 }
 
 void Viewport::rebuildView() {
-
     const auto extent { actualViewExtent() };
     auto nextSwapchain { make_uptr<gfx::VkSwapchain>() };
 
@@ -96,7 +91,7 @@ void Viewport::rebuildView() {
     nextSwapchain->setFormat(gfx::TextureFormat::eB8G8R8A8Unorm);
     nextSwapchain->setDesiredImages(2ui32);
 
-    const auto device { engine::Session::get()->modules().graphics()->getCurrentDevice() };
+    const auto device { Engine::getEngine()->getGraphics()->getCurrentDevice() };
 
     nextSwapchain->setup(device);
 
@@ -131,16 +126,14 @@ void Viewport::removeResizeListener() {
 }
 
 void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
-
     if (_innerSize.zero()) {
         return;
     }
 
     if (viewHasChanged()) {
-
         rebuildView();
 
-        auto gfx { engine::Session::get()->modules().graphics() };
+        auto* const gfx { Engine::getEngine()->getGraphics() };
         gfx->_secondarySwapchain = _swapchain.get();
 
         if (not _cameraActor) {
@@ -159,7 +152,6 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
             gfx->_renderTarget->buildPasses(_camera.get());
         }
          */
-
     }
 
     /**/
@@ -185,7 +177,6 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
     }
 
     if (result) {
-
         gfx::ProxyTexture<non_owning_rptr> proxy { _STD move(image.get()) };
 
         cmd_->drawImageAsync(
@@ -198,14 +189,11 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
             imageSignal,
             _computedStyle.color.attr
         );
-
     }
-
 }
 
 void Viewport::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
     ref<StyleKeyStack> styleStack_) {
-
     styleStack_.pushLayer();
     _computedStyle = _style->compute(shared_from_this(), styleStack_);
     const auto& style { _computedStyle };
@@ -284,7 +272,6 @@ void Viewport::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
 }
 
 math::vec2 Viewport::outerSize() const noexcept {
-
     auto size { innerSize() };
 
     if (not _computedStyle.margin.attr.zero()) {
@@ -318,7 +305,6 @@ EventResponse Viewport::onBlur(cref<FocusEvent> event_) {
 }
 
 EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
-
     // Early exit on ESC Key to drop focus and ctrl
     if (event_._key == '\x1B') {
         _state.unset(WidgetStateFlagBits::eFocus);
@@ -413,7 +399,6 @@ EventResponse Viewport::onMouseEnter(cref<MouseMoveEvent> event_) {
 }
 
 EventResponse Viewport::onMouseMove(cref<MouseMoveEvent> event_) {
-
     const auto isShift { (event_._modifier & 0x3) != 0x0 };
     const auto rbtn { (event_._button & 0x4) != 0x0 };
 

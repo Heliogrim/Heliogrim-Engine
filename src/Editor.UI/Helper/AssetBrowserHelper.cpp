@@ -1,6 +1,6 @@
 #include "AssetBrowserHelper.hpp"
 
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/Engine.hpp>
 
 #include <Ember.Default/Assets/Textures/Brand.hpp>
 #include <Ember.Default/Assets/Textures/Directory.hpp>
@@ -13,6 +13,8 @@
 #include <Ember.Default/Assets/Textures/FolderResource.hpp>
 #include <Ember.Default/Assets/Textures/FolderShader.hpp>
 #include <Ember.Default/Assets/Textures/FolderVideo.hpp>
+
+#include "Engine.Assets/Assets.hpp"
 
 using namespace ember::editor::ui;
 using namespace ember;
@@ -46,8 +48,7 @@ AssetBrowserHelper::~AssetBrowserHelper() noexcept = default;
 
 void AssetBrowserHelper::setup() {
 
-    const auto& session { engine::Session::get() };
-    _assetDb = session->modules().assetDatabase();
+    _assetDb = engine::Engine::getEngine()->getAssets()->getDatabase();
 
     /**/
 

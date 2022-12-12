@@ -1,23 +1,31 @@
 #pragma once
 
 #include <Engine.ACS/Traits.hpp>
+#include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/CompactArray.hpp>
+#include <Engine.Common/Collection/Set.hpp>
+#include <Engine.Common/Math/Transform.hpp>
+#include <Engine.Reflect/EmberReflect.hpp>
 
 #if TRUE
 #include <Engine.Reflect/Reflect.hpp>
 #endif
 
-#include "ActorComponent.hpp"
-#include "Inbuilt.hpp"
+#include "Future.hpp"
 #include "Traits.hpp"
 
 namespace ember {
-
     /**
      * Forward Declaration
      */
     struct ActorClass;
-    class IComponentRegisterContext;
+    class ActorComponent;
+    class ActorInitializer;
     struct SerializedActor;
+
+    class IComponentRegisterContext;
+    class Session;
+    class World;
 
     /**
      * The base class of every actor
@@ -41,7 +49,7 @@ namespace ember {
         Actor() noexcept;
 
         // Warning: Temporary Debug Solution
-        Actor(mref<Actor> other_);
+        Actor(mref<Actor> other_) noexcept;
 
         /**
          * Destructor
@@ -111,7 +119,6 @@ namespace ember {
 
         template <typename Selector_>
         [[nodiscard]] CompactArray<ptr<ActorComponent>> selectComponents(mref<Selector_> selector_) const {
-
             CompactArray<ptr<ActorComponent>> result {};
             eachComponent([&](const ptr<ActorComponent> component_) {
                 if (selector_(component_)) {
@@ -171,9 +178,27 @@ namespace ember {
      * @author Julius
      * @date 25.11.2021
      *
+     * @param session_ The core session where to create the actor
+     *
      * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
      */
-    [[nodiscard]] extern ptr<Actor> CreateActor() noexcept;
+    [[nodiscard]] extern ptr<Actor> CreateActor(cref<Session> session_);
+
+    /**
+     * Create a new default actor object
+     *
+     * @details An active or mounted world is guaranteed to be scoped with a session,
+     *  therefore a data management layer is resolvable. This will not populate the scene
+     *  like calling a actor spawn function.
+     *
+     * @author Julius
+     * @date 25.11.2021
+     *
+     * @param activeWorld_ The world where to create the actor
+     *
+     * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
+     */
+    [[nodiscard]] extern ptr<Actor> CreateActor(cref<World> activeWorld_);
 
     /**
      * Create a new default actor object
@@ -181,9 +206,27 @@ namespace ember {
      * @author Julius
      * @date 25.11.2021
      *
+     * @param session_ The core session where to create the actor
+     *
      * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
      */
-    [[nodiscard]] extern Future<ptr<Actor>> CreateActor(async_t) noexcept;
+    [[nodiscard]] extern Future<ptr<Actor>> CreateActor(cref<Session> session_, async_t);
+
+    /**
+     * Create a new default actor object
+     *
+     * @details An active or mounted world is guaranteed to be scoped with a session,
+     *  therefore a data management layer is resolvable. This will not populate the scene
+     *  like calling a actor spawn function.
+     *
+     * @author Julius
+     * @date 25.11.2021
+     *
+     * @param activeWorld_ The world where to create the actor
+     *
+     * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
+     */
+    [[nodiscard]] extern Future<ptr<Actor>> CreateActor(cref<World> activeWorld_, async_t);
 
     /**
      * Creates a new actor object based on given actor class
@@ -192,10 +235,34 @@ namespace ember {
      * @date 25.11.2021
      *
      * @param class_ The actor class to instantiate
+     * @param session_ The core session where to create the actor
      *
      * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
      */
-    [[nodiscard]] extern Future<ptr<Actor>> CreateActor(cref<ActorClass> class_) noexcept;
+    [[nodiscard]] extern Future<ptr<Actor>> CreateActor(
+        cref<ActorClass> class_,
+        cref<Session> session_
+    ) noexcept;
+
+    /**
+     * Creates a new actor object based on given actor class
+     *
+     * @details An active or mounted world is guaranteed to be scoped with a session,
+     *  therefore a data management layer is resolvable. This will not populate the scene
+     *  like calling a actor spawn function.
+     *
+     * @author Julius
+     * @date 25.11.2021
+     *
+     * @param class_ The actor class to instantiate
+     * @param activeWorld_ The world where to create the actor
+     *
+     * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
+     */
+    [[nodiscard]] extern Future<ptr<Actor>> CreateActor(
+        cref<ActorClass> class_,
+        cref<World> activeWorld_
+    ) noexcept;
 
     /**
      * Create a new actor object based on given actor class
@@ -205,21 +272,37 @@ namespace ember {
      *
      * @param class_ The actor class to instantiate.
      * @param serialized_ The serialized data to use.
+     * @param session_ The core session where to create the actor
+     *
+     * @returns A future, containing the newly created actor is succeeded, otherwise nullptr
      */
-    [[nodiscard]] extern Future<ptr<Actor>> CreateActor(cref<ActorClass> class_,
-        const ptr<SerializedActor> serialized_) noexcept;
+    [[nodiscard]] extern Future<ptr<Actor>> CreateActor(
+        cref<ActorClass> class_,
+        const ptr<SerializedActor> serialized_,
+        cref<Session> session_
+    ) noexcept;
 
     /**
-     * Will mount the given actor into engine state
+     * Create a new actor object based on given actor class
+     *
+     * @details An active or mounted world is guaranteed to be scoped with a session,
+     *  therefore a data management layer is resolvable. This will not populate the scene
+     *  like calling a actor spawn function.
      *
      * @author Julius
-     * @date 25.11.2021
+     * @date 26.11.2021
      *
-     * @param actor_ The actor to mount into engine state
+     * @param class_ The actor class to instantiate.
+     * @param serialized_ The serialized data to use.
+     * @param activeWorld_ The world where to create the actor
      *
-     * @returns True if succeeded, otherwise false
+     * @returns A future, containing the newly created actor is succeeded, otherwise nullptr
      */
-    [[nodiscard]] extern bool MountActor(const ptr<Actor> actor_) noexcept;
+    [[nodiscard]] extern Future<ptr<Actor>> CreateActor(
+        cref<ActorClass> class_,
+        const ptr<SerializedActor> serialized_,
+        cref<World> activeWorld_
+    ) noexcept;
 
     /**
      * Creates a new actor object equivalent to given actor object
@@ -228,10 +311,32 @@ namespace ember {
      * @date 25.11.2021
      *
      * @param actor_ The actor to clone from.
+     * @param session_ The core session where to create the new actor
      *
      * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
      */
-    [[nodiscard]] extern Future<ptr<Actor>> CloneActor(const ptr<Actor> actor_) noexcept;
+    [[nodiscard]] extern Future<ptr<Actor>> CloneActorInto(
+        const ptr<Actor> actor_, cref<Session> session_
+    ) noexcept;
+
+    /**
+     * Creates a new actor object equivalent to given actor object
+     *
+     * @details An active or mounted world is guaranteed to be scoped with a session,
+     *  therefore a data management layer is resolvable. This will not populate the scene
+     *  like calling a actor spawn function.
+     *
+     * @author Julius
+     * @date 25.11.2021
+     *
+     * @param actor_ The actor to clone from.
+     * @param activeWorld_ The world where to create the new actor
+     *
+     * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
+     */
+    [[nodiscard]] extern Future<ptr<Actor>> CloneActorInto(
+        const ptr<Actor> actor_, cref<World> activeWorld_
+    ) noexcept;
 
     /**
      * Creates a new actor object based on given actor class and mounts it
@@ -240,10 +345,13 @@ namespace ember {
      * @date 25.11.2021
      *
      * @param class_ The actor class to instantiate.
+     * @param activeWorld_ The world where to create and place the new actor
      *
      * @returns A future, containing the newly created and mounted actor if succeeded, otherwise nullptr
      */
-    [[nodiscard]] extern Future<ptr<Actor>> SpawnActor(cref<ActorClass> class_) noexcept;
+    [[nodiscard]] extern Future<ptr<Actor>> SpawnActor(
+        cref<ActorClass> class_, cref<World> activeWorld_
+    ) noexcept;
 
     /**
      * Creates a new actor object based on given actor class and mounts it
@@ -255,11 +363,15 @@ namespace ember {
      *
      * @param class_ The actor class to instantiate.
      * @param serialized_ The serialized data to use.
+     * @param activeWorld_ The world where to create and place the new actor
      *
      * @returns A future, containing the newly created and mounted actor if succeeded, otherwise nullptr
      */
-    [[nodiscard]] extern Future<ptr<Actor>> SpawnActor(cref<ActorClass> class_,
-        const ptr<SerializedActor> serialized_) noexcept;
+    [[nodiscard]] extern Future<ptr<Actor>> SpawnActor(
+        cref<ActorClass> class_,
+        const ptr<SerializedActor> serialized_,
+        cref<World> activeWorld_
+    ) noexcept;
 
     /**
      * Destroys the given actor
@@ -267,9 +379,23 @@ namespace ember {
      * @author Julius
      * @date 25.11.2021
      *
+     * @param session_ The session where to destroy the actor.
      * @param actor_ The actor to destroy.
      *
      * @returns A future, representing whether the actor was successfully destroyed.
      */
-    [[nodiscard]] extern Future<bool> Destroy(mref<ptr<Actor>> actor_) noexcept;
+    [[nodiscard]] extern Future<bool> Destroy(cref<Session> session_, mref<ptr<Actor>> actor_) noexcept;
+
+    /**
+     * Destroys the given actor
+     *
+     * @author Julius
+     * @date 25.11.2021
+     *
+     * @param activeWorld_ The world where to destroy the actor.
+     * @param actor_ The actor to destroy.
+     *
+     * @returns A future, representing whether the actor was successfully destroyed.
+     */
+    [[nodiscard]] extern Future<bool> Destroy(cref<World> activeWorld_, mref<ptr<Actor>> actor_) noexcept;
 }

@@ -6,7 +6,7 @@
 
 // TODO: Remove
 #include "Engine.GFX/Graphics.hpp"
-#include "Engine.Session/Session.hpp"
+#include <Engine.Core/Engine.hpp>
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -40,7 +40,6 @@ VirtualBuffer::~VirtualBuffer() {
 }
 
 ref<VirtualBuffer::this_type> VirtualBuffer::operator=(mref<this_type> other_) noexcept {
-
     if (_STD addressof(other_) != this) {
         /**
          * Might be equal to `_STD swap(*this, other_)`
@@ -59,19 +58,18 @@ ref<VirtualBuffer::this_type> VirtualBuffer::operator=(mref<this_type> other_) n
 }
 
 void VirtualBuffer::tidy() {
-
     /**
      * Destroy Buffer before backing memory or pages
      */
     if (_vkBuffer) {
-        Session::get()->modules().graphics()->getCurrentDevice()->vkDevice().destroyBuffer(_vkBuffer);
+        // TODO: Check whether virtual buffer should get a reference to the device
+        Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice().destroyBuffer(_vkBuffer);
     }
 
     /**
      * Cleanup Pages
      */
     for (auto& entry : _pages) {
-
         // Unhook paged memory
         _memory->undefinePage(entry->memory());
 
@@ -110,7 +108,6 @@ cref<vk::BufferUsageFlags> VirtualBuffer::vkBufferUsageFlags() const noexcept {
 }
 
 non_owning_rptr<VirtualBufferPage> VirtualBuffer::addPage(const u64 size_, const u64 offset_) {
-
     #ifdef _DEBUG
     for (const auto& entry : _pages) {
         if (entry->resourceOffset() >= (offset_ + size_)) {
@@ -149,12 +146,10 @@ void VirtualBuffer::selectPages(
     const u64 size_,
     ref<Vector<non_owning_rptr<VirtualBufferPage>>> pages_
 ) {
-
     const u64 lowerBound { offset_ };
     const u64 upperBound { offset_ + size_ };
 
     for (auto* const entry : _pages) {
-
         const u64 pageUpperBound { entry->resourceOffset() + entry->resourceSize() };
 
         if (entry->resourceOffset() > upperBound || lowerBound > pageUpperBound) {
@@ -163,11 +158,9 @@ void VirtualBuffer::selectPages(
 
         pages_.push_back(entry);
     }
-
 }
 
 uptr<VirtualBufferView> VirtualBuffer::makeView(const u64 offset_, const u64 size_) {
-
     assureTiledPages(offset_, size_);
 
     Vector<non_owning_rptr<VirtualBufferPage>> pages {};
@@ -196,7 +189,6 @@ uptr<VirtualBufferView> VirtualBuffer::makeView(const u64 offset_, const u64 siz
 }
 
 void VirtualBuffer::updateBindingData() {
-
     cref<Vector<ptr<VirtualBufferPage>>> updates { _pages };
     for (const auto& page : updates) {
         _bindings.push_back(page->vkSparseMemoryBind());
@@ -213,7 +205,6 @@ void VirtualBuffer::updateBindingData() {
 }
 
 void VirtualBuffer::enqueueBinding(const ptr<CommandQueue> queue_) {
-
     vk::BindSparseInfo bsi {
         0,
         nullptr,
@@ -238,7 +229,6 @@ void VirtualBuffer::enqueueBinding(const ptr<CommandQueue> queue_) {
 
 void VirtualBuffer::enqueueBinding(const ptr<CommandQueue> queue_, cref<Vector<vk::Semaphore>> waits_,
     cref<Vector<vk::Semaphore>> signals_) {
-
     vk::BindSparseInfo bsi {
         static_cast<u32>(waits_.size()),
         waits_.data(),
@@ -259,11 +249,9 @@ void VirtualBuffer::enqueueBinding(const ptr<CommandQueue> queue_, cref<Vector<v
     #else
     [[maybe_unused]] const auto res { queue_->vkQueue().bindSparse(1, &bsi, nullptr) };
     #endif
-
 }
 
 void VirtualBuffer::enqueueBindingSync(const ptr<CommandQueue> queue_) {
-
     vk::BindSparseInfo bsi {
         0,
         nullptr,

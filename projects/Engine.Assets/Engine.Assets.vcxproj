@@ -20,6 +20,7 @@
     <ClInclude Include="..\..\src\Engine.Assets\AssetInputStream.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\AssetIOStream.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\AssetOutputStream.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Assets.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\AssetTypeId.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Database\AssetDatabase.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Database\AssetDatabaseEntry.hpp" />
@@ -50,6 +51,7 @@
     <ClCompile Include="..\..\src\Engine.Assets\AssetFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\AssetGuid.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\AssetGuidDataLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Assets.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabase.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabaseEntry.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabaseQuery.cpp" />

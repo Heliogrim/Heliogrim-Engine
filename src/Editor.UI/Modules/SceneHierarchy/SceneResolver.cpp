@@ -1,4 +1,5 @@
 #include <Ember/Actor.hpp>
+#include <Ember/ActorComponent.hpp>
 
 #include "HierarchyResolver.hpp"
 #include "SceneViewEntry.hpp"

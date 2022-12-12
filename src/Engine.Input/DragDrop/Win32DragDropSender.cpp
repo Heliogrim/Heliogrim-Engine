@@ -1,10 +1,11 @@
 #include "Win32DragDropSender.hpp"
 
+#include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Platform/Platform.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
 #include "Win32DragDropObject.hpp"
-#include "Engine.Session/Session.hpp"
 
 using namespace ember::engine::input;
 using namespace ember;
@@ -22,7 +23,7 @@ void Win32DragDropSender::setup() {}
 void Win32DragDropSender::destroy() {}
 
 void Win32DragDropSender::dispatchDragDrop() {
-    Session::get()->sessionSignalQueue().try_push([this]() {
+    Engine::getEngine()->getPlatform()->platformQueue().try_push([this]() {
         startDragDrop();
     });
 }

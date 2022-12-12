@@ -15,8 +15,8 @@ namespace ember::engine::scene {
         ~SceneFactory() = default;
 
     public:
-        [[nodiscard]] static sptr<Scene> createDefaultScene();
+        [[nodiscard]] static uptr<Scene> createDefaultScene();
 
-        [[nodiscard]] static sptr<Scene> createPreviewScene();
+        [[nodiscard]] static uptr<Scene> createPreviewScene();
     };
 }

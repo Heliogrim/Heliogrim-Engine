@@ -9,7 +9,7 @@
 
 // TODO: Remove
 #include "Engine.GFX/Graphics.hpp"
-#include "Engine.Session/Session.hpp"
+#include "Engine.Core/Engine.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -65,7 +65,7 @@ void VirtualTexture::tidy() {
      * Destroy Image before backing memory or pages
      */
     if (_vkImage) {
-        Session::get()->modules().graphics()->getCurrentDevice()->vkDevice().destroyImage(_vkImage);
+        Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice().destroyImage(_vkImage);
     }
 
     /**

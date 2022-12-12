@@ -1,62 +1,130 @@
 #include "Ember.Main.hpp"
 
-#include <Ember/Ember.hpp>
-
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Profiler.hpp>
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Ember/Ember.hpp>
+#include <Ember/EmberStatic.hpp>
+
+#include <Engine.Core/Event/SignalShutdownEvent.hpp>
+#include <Engine.Core.Game/GameEngine.hpp>
+#include <Engine.Event/GlobalEventEmitter.hpp>
+
 using namespace ember;
 
-/**
- * Main entry-point for this application
- *
- * @author Julius
- * @date 13.10.2021
- *
- * @returns Exit-code for the process - 0 for success, else an error code.
- */
-int main() {
+using SignalShutdownEvent = ::ember::engine::core::SignalShutdownEvent;
 
+int main() {
     #ifdef _PROFILING
     profiling::Profiler::make().startSession("main");
     SCOPED_STOPWATCH_V(__main__stopwatch)
     #endif
 
-    /**
-     * Start Ember Framework
-     *
-     * @author Julius
-     * @date 13.10.2021
-     *
-     * @see static void Ember::start()
-     */
-    Ember::launch();
+    #if USE_MAIN_THREAD_INJECTION
+    beforeRoutine();
+    #endif
 
     /**
-     * Callback for user defined framework main entry point
+     * Pre-Configure Engine Startup
      */
-    ember_main_entry();
+    EmberStatic::useEngine<engine::GameEngine>();
+    EmberStatic::useSessionGetter<engine::GameEngine>(&engine::GameEngine::getGameSession);
 
     /**
-     * Waiting for Ember Framework to shutdown via exit call of user action
-     *  This should happen in any case, cause we need to free every resource correctly acquired by ember session
-     *
-     * @author Julius
-     * @date 16.01.2020
-     *
-     * @see Ember::wait()
+     * Instantiate Engine
      */
-    Ember::wait();
+    Ember::instantiate();
+    auto* const engine { Ember::getEngine() };
+
+    #if USE_MAIN_THREAD_INJECTION
+    onEngineCreate(engine);
+    #endif
+
+    #if not PREVENT_MAIN_AUTO_SLEEP
+    /**
+     * Register Shutdown Sequence
+     */
+    _STD condition_variable sleepCnd {};
+    _STD mutex sleepMtx {};
+
+    engine->getEmitter().on<SignalShutdownEvent>(
+        [sleepMtx = &sleepMtx, sleepCnd = &sleepCnd](cref<SignalShutdownEvent>) {
+            sleepMtx->unlock();
+            sleepCnd->notify_all();
+        });
+
+    sleepMtx.lock();
+    #endif
+
+    /**
+     * Boot Engine
+     */
+    engine->preInit();
+    #if USE_MAIN_THREAD_INJECTION
+    onEnginePreInit(engine);
+    #endif
+
+    engine->init();
+    #if USE_MAIN_THREAD_INJECTION
+    onEngineInit(engine);
+    #endif
+
+    engine->postInit();
+    #if USE_MAIN_THREAD_INJECTION
+    onEnginePostInit(engine);
+    #endif
+
+    engine->start();
+    #if USE_MAIN_THREAD_INJECTION
+    onEngineStart(engine);
+    #endif
+
+    /**
+     * Running State
+     */
+    #if USE_MAIN_THREAD_INJECTION
+    onEngineRunning(engine);
+    #endif
+
+    #if not PREVENT_MAIN_AUTO_SLEEP
+    /**
+     * Set thread asleep
+     */
+    _STD unique_lock<_STD mutex> lck { sleepMtx };
+    sleepCnd.wait(lck);
+    #endif
+
+    /**
+     * Shutdown Engine
+     */
+    engine->stop();
+    #if USE_MAIN_THREAD_INJECTION
+    onEngineStop(engine);
+    #endif
+
+    engine->shutdown();
+    #if USE_MAIN_THREAD_INJECTION
+    onEngineShutdown(engine);
+    #endif
+
+    engine->exit();
+    #if USE_MAIN_THREAD_INJECTION
+    onEngineExit(engine);
+    #endif
+
+    /**
+     * Destroy Engine
+     */
+    Ember::destroy();
+
+    #if USE_MAIN_THREAD_INJECTION
+    afterRoutine();
+    #endif
 
     #ifdef _PROFILING
     __main__stopwatch.stop();
     profiling::Profiler::destroy();
     #endif
-
-    /**
-     * Return successful execution result
-     */
-    return 0;
 }

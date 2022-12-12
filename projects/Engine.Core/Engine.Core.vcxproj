@@ -15,16 +15,36 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Core\Core.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\CoreModule.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Engine.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\EngineState.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Event\EngineExitEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Event\EngineInitEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Event\EnginePostInitEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Event\EnginePreInitEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Event\EngineShutdownEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Event\EngineStartEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Event\EngineStopEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Event\SignalShutdownEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Core\Event\WorldAddedEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Core\Event\WorldChangeEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Core\Event\WorldRemoveEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Session.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\SessionState.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\World.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\WorldContext.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\WorldType.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Core\Core.cpp" />
+    <ClCompile Include="..\..\src\Engine.Core\Engine.cpp" />
+    <ClCompile Include="..\..\src\Engine.Core\Event\SignalShutdownEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Core\Event\WorldAddedEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Core\Event\WorldChangeEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Core\Event\WorldRemoveEvent.cpp" />
+    <ClCompile Include="..\..\src\Engine.Core\Session.cpp" />
+    <ClCompile Include="..\..\src\Engine.Core\SessionState.cpp" />
+    <ClCompile Include="..\..\src\Engine.Core\World.cpp" />
+    <ClCompile Include="..\..\src\Engine.Core\WorldContext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">

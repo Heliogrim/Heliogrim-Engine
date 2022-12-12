@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/CoreModule.hpp>
 
 #include "Application/Application.hpp"
 #include "Command/CommandQueue.hpp"
@@ -37,8 +37,8 @@ namespace ember::engine::gfx::loader {
 }
 
 namespace ember::engine {
-
-    class Graphics {
+    class Graphics final :
+        public core::CoreModule {
     public:
         using this_type = Graphics;
 
@@ -48,10 +48,8 @@ namespace ember::engine {
          *
          * @author Julius
          * @date 09.11.2020
-         *
-         * @param session_ (Optional) The session.
          */
-        Graphics(cref<sptr<Session>> session_ = Session::get()) noexcept;
+        Graphics(const non_owning_rptr<Engine> engine_) noexcept;
 
         /**
          * Destructor
@@ -59,24 +57,7 @@ namespace ember::engine {
          * @author Julius
          * @date 09.11.2020
          */
-        ~Graphics();
-
-    public:
-        /**
-         * Setups this 
-         *
-         * @author Julius
-         * @date 09.11.2020
-         */
-        void setup();
-
-        /**
-         * Schedules this module
-         *
-         * @author Julius
-         * @date 19.12.2020
-         */
-        void schedule();
+        ~Graphics() override;
 
     private:
         /**
@@ -87,22 +68,14 @@ namespace ember::engine {
          */
         void tidy();
 
-    private:
-        /**
-         * The session this module is associated with
-         */
-        sptr<Session> _session;
-
     public:
-        /**
-         * Gets the session this module is associated with
-         *
-         * @author Julius
-         * @date 14.10.2021
-         *
-         * @returns A ptr<Session>
-         */
-        [[nodiscard]] sptr<Session> session() const noexcept;
+        void setup();
+
+        void schedule();
+
+        void desync() override;
+
+        void destroy() override;
 
     private:
         /**
@@ -113,6 +86,7 @@ namespace ember::engine {
     private:
         gfx::Application _application;
         gfx::Surface _surface;
+        uptr<platform::NativeWindow> _window;
 
     private:
         /**
@@ -138,6 +112,7 @@ namespace ember::engine {
         ptr<gfx::Swapchain> _swapchain;
 
         #if TRUE
+
     public:
         ptr<gfx::Swapchain> _secondarySwapchain;
         #endif
@@ -260,6 +235,7 @@ namespace ember::engine {
         #pragma endregion
 
         #if TRUE
+
     public:
         void __tmp__resize(cref<math::uivec2> extent_);
         #endif

@@ -5,15 +5,27 @@
 #include <Engine.Core/Event/WorldAddedEvent.hpp>
 #include <Engine.Core/Event/WorldChangeEvent.hpp>
 #include <Engine.Core/Event/WorldRemoveEvent.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Session.hpp>
+#include <Engine.Core/WorldContext.hpp>
+#include <Engine.Core/World.hpp>
+#include <Engine.Scene/Scene.hpp>
 
 #include "Scene.hpp"
+#include "Session.hpp"
 
 using namespace ember;
 
-World::World(const non_owning_rptr<void> internal_) :
+World::World() = default;
+
+World::World(const managed<void> internal_) :
     _internal(internal_) {}
 
-cref<non_owning_rptr<void>> World::unwrap() const noexcept {
+bool World::valid() const noexcept {
+    return _internal.get() && _internal.use_count();
+}
+
+cref<managed<void>> World::unwrap() const noexcept {
     return _internal;
 }
 
@@ -26,10 +38,9 @@ bool World::removeLevel(const ptr<Level> level_) {
 }
 
 bool World::addActor(const ptr<Actor> actor_) {
-    /**
-     *
-     */
-    const ptr<IComponentRegisterContext> ctx { static_cast<ptr<Scene>>(_internal)->registerContext() };
+    const auto* const world { static_cast<ptr<engine::core::World>>(_internal.get()) };
+    auto* const scene { world->getScene() };
+    auto* const ctx { scene->registerContext() };
     actor_->registerComponents(ctx);
 
     /**
@@ -39,10 +50,9 @@ bool World::addActor(const ptr<Actor> actor_) {
 }
 
 bool World::removeActor(const ptr<Actor> actor_) {
-    /**
-     *
-     */
-    const ptr<IComponentRegisterContext> ctx { static_cast<ptr<Scene>>(_internal)->registerContext() };
+    const auto* const world { static_cast<ptr<engine::core::World>>(_internal.get()) };
+    auto* const scene { world->getScene() };
+    auto* const ctx { scene->registerContext() };
     // actor_->unregisterComponents(ctx);
 
     /**
@@ -51,16 +61,15 @@ bool World::removeActor(const ptr<Actor> actor_) {
     return true;
 }
 
-Future<ptr<World>> ember::CreateWorld() noexcept {
-
+Future<World> ember::CreateWorld() noexcept {
     auto prom {
-        ember::concurrent::promise<ptr<World>>([]() {
+        ember::concurrent::promise<World>([]() {
+            auto scene { ::ember::engine::scene::SceneFactory::createDefaultScene() };
+            const auto world { make_sptr<engine::core::World>(_STD move(scene)) };
 
-            const auto scene { ::ember::engine::scene::SceneFactory::createDefaultScene() };
-            engine::Session::get()->core().addScene(scene);
-            engine::Session::get()->emitter().emit<::ember::engine::core::WorldAddedEvent>(scene);
+            engine::Engine::getEngine()->addWorld(world);
 
-            return scene->getWorld();
+            return World { world };
         })
     };
 
@@ -70,37 +79,31 @@ Future<ptr<World>> ember::CreateWorld() noexcept {
     return fut;
 }
 
-const ptr<World> ember::GetWorld() noexcept {
-    const auto& core { engine::Session::get()->core() };
+World ember::GetWorld(cref<Session> session_) noexcept {
+    const auto* session { static_cast<ptr<::ember::engine::core::Session>>(session_.unwrap().get()) };
+    const auto* context { session->getWorldContext() };
+    const auto world { context->getCurrentWorld() };
 
-    if (core.getCurrentScene()) {
-        return core.getCurrentScene()->getWorld();
-    }
-
-    return nullptr;
+    return World { world };
 }
 
-Future<ptr<World>> ember::GetWorld(cref<asset_guid> guid_) noexcept {
+World ember::GetWorld() noexcept {
+    return GetWorld(GetSession());
+}
+
+Future<World> ember::GetWorld(cref<asset_guid> guid_) noexcept {
     throw NotImplementedException {};
 }
 
-Future<bool> ember::Destroy(mref<ptr<World>> world_) {
-
+Future<bool> ember::Destroy(mref<World> world_) {
     auto prom {
-        ember::concurrent::promise<bool>([world = _STD move(world_)]() {
+        ember::concurrent::promise<bool>([world_ = _STD move(world_)]() {
+            const auto world { _STD static_pointer_cast<engine::core::World, void>(world_.unwrap()) };
 
-            ptr<Scene> scene { static_cast<ptr<Scene>>(world->unwrap()) };
+            // TODO: Remove world from every context / session where it might be used currently
+            // TODO: Check whether we want to auto handle session's world transition when engine propagated world erase happens
 
-            auto& core { engine::Session::get()->core() };
-            const auto& emitter { engine::Session::get()->emitter() };
-
-            if (core.getCurrentScene() == scene) {
-                emitter.emit<::ember::engine::core::WorldChangeEvent>(core.getCurrentScene(), nullptr);
-                core.setCurrentScene(nullptr);
-            }
-
-            emitter.emit<::ember::engine::core::WorldRemoveEvent>(scene);
-            core.removeScene(_STD move(scene));
+            engine::Engine::getEngine()->removeWorld(world);
 
             return true;
         })
@@ -110,29 +113,21 @@ Future<bool> ember::Destroy(mref<ptr<World>> world_) {
     execute(prom);
 
     return fut;
-
 }
 
-void ember::SetWorld(const ptr<World> world_) {
+void ember::SetWorld(cref<Session> session_, cref<World> world_) {
+    const auto* const session { static_cast<ptr<engine::core::Session>>(session_.unwrap().get()) };
+    auto* const context { session->getWorldContext() };
+    const sptr<engine::core::World> world { _STD static_pointer_cast<engine::core::World, void>(world_.unwrap()) };
 
-    if (not world_ || world_ == GetWorld()) {
+    if (context->getCurrentWorld() == world) {
         return;
     }
 
-    auto& core { engine::Session::get()->core() };
-    const auto& emitter { engine::Session::get()->emitter() };
-
-    const auto nextScene { core.resolveScene(world_) };
-    if (not nextScene) {
-        return;
-    }
-
-    emitter.emit<::ember::engine::core::WorldChangeEvent>(core.getCurrentScene(), nextScene);
-    engine::Session::get()->core().setCurrentScene(nextScene.get());
+    context->setCurrentWorld(world);
 }
 
-void ember::TransitionToWorld(const ptr<World> world_) {
-
+void ember::TransitionToWorld(cref<Session> session_, cref<World> world_) {
     // TODO:
-    SetWorld(world_);
+    SetWorld(session_, world_);
 }

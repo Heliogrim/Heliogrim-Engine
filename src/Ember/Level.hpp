@@ -102,7 +102,7 @@ namespace ember {
      *
      * @returns A future, containing the newly created level if succeeded, otherwise nullptr.
      */
-    [[nodiscard]] extern Future<ptr<Level>> CreateLevel() noexcept;
+    [[nodiscard, deprecated]] extern Future<ptr<Level>> CreateLevel() noexcept;
 
     /**
      * Gets a collection of the current active Levels
@@ -112,7 +112,7 @@ namespace ember {
      *
      * @returns A collection containing the pointers to and amount of active levels.
      */
-    [[nodiscard]] extern Vector<ptr<Level>> GetLevels() noexcept;
+    [[nodiscard, deprecated]] extern Vector<ptr<Level>> GetLevels() noexcept;
 
     /**
      * Gets the primary active level at the given location
@@ -124,7 +124,7 @@ namespace ember {
      *
      * @returns The pointer to the active level instance, otherwise nullptr
      */
-    [[nodiscard]] extern ptr<Level> GetLevelAt(Vector3 location_) noexcept;
+    [[nodiscard, deprecated]] extern ptr<Level> GetLevelAt(Vector3 location_) noexcept;
 
     /**
      * Destroy the given level and it's implicit resources
@@ -136,5 +136,5 @@ namespace ember {
      *
      * @returns A future, representing whether the entity was successfully destroyed.
      */
-    [[nodiscard]] extern Future<bool> Destroy(mref<ptr<Level>> level_) noexcept;
+    [[nodiscard, deprecated]] extern Future<bool> Destroy(mref<ptr<Level>> level_) noexcept;
 }

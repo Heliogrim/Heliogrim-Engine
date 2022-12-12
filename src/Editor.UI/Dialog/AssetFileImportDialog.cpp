@@ -1,28 +1,30 @@
 #include "AssetFileImportDialog.hpp"
 
 #include <filesystem>
-
-#include "Editor.UI/Color/Dark.hpp"
-#include "Editor.UI/Widget/AssetImportTypeItem.hpp"
-#include "Engine.Common/Make.hpp"
+#include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets/Database/AssetDatabase.hpp>
+#include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include "Engine.GFX.Glow.UI/TestUI.hpp"
-#include "Engine.Reflow/Widget/Button.hpp"
-#include "Engine.Reflow/Widget/Input/Form.hpp"
-#include "Engine.Reflow/Widget/Image.hpp"
-#include "Engine.Reflow/Widget/Input/InputText.hpp"
-#include "Engine.Reflow/Widget/Scroll/VScrollBox.hpp"
-#include "Engine.Reflow/Widget/Text.hpp"
-#include "Engine.Reflow/Style/BoundStyleSheet.hpp"
-#include "Engine.Reflow/Style/StyleCondition.hpp"
 
 #include "../Modules/AssetBrowser.hpp"
-#include "Editor.UI/Style/Style.hpp"
-#include "Engine.Reflow/Window/PopupLayer.hpp"
-#include "Engine.Reflow/Window/Window.hpp"
 #include "Editor.Action/ActionManager.hpp"
 #include "Editor.Action/Action/Import/SimpleImportAction.hpp"
+#include "Editor.UI/Color/Dark.hpp"
+#include "Editor.UI/Style/Style.hpp"
+#include "Editor.UI/Widget/AssetImportTypeItem.hpp"
 #include "Ember/Ember.hpp"
+#include "Engine.Common/Make.hpp"
+#include "Engine.GFX.Glow.UI/TestUI.hpp"
+#include "Engine.Reflow/Style/BoundStyleSheet.hpp"
+#include "Engine.Reflow/Style/StyleCondition.hpp"
+#include "Engine.Reflow/Widget/Button.hpp"
+#include "Engine.Reflow/Widget/Image.hpp"
+#include "Engine.Reflow/Widget/Text.hpp"
+#include "Engine.Reflow/Widget/Input/Form.hpp"
+#include "Engine.Reflow/Widget/Input/InputText.hpp"
+#include "Engine.Reflow/Widget/Scroll/VScrollBox.hpp"
+#include "Engine.Reflow/Window/PopupLayer.hpp"
+#include "Engine.Reflow/Window/Window.hpp"
 
 #if TRUE
 void testCreateAsset(ember::cref<ember::Url> target_);
@@ -490,7 +492,9 @@ sptr<Dialog> AssetFileImportDialog::make(const ptr<AssetBrowser> browser_, cref<
                 ActionManager::get()->apply(action);
 
                 for (const auto& asset : action->importedAssets()) {
-                    Ember::assets().__tmp__internal().insert(asset->get_guid(), asset->getTypeId(), asset);
+                    engine::Engine::getEngine()->getAssets()->getDatabase()->insert(
+                        asset->get_guid(), asset->getTypeId(), asset
+                    );
                 }
             });
         });

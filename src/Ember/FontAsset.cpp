@@ -2,7 +2,9 @@
 
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Types/Font.hpp>
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/Engine.hpp>
+
+#include "Engine.Assets/Assets.hpp"
 
 using namespace ember;
 
@@ -10,14 +12,14 @@ FontAsset::FontAsset(cref<asset_guid> guid_) noexcept :
     Asset(
         guid_,
         engine::assets::Font::typeId,
-        engine::Session::get()->modules().assetFactory()->createFontAsset(guid_)
+        engine::Engine::getEngine()->getAssets()->getFactory()->createFontAsset(guid_)
     ) {}
 
 FontAsset::FontAsset(cref<asset_guid> guid_, cref<string> url_) noexcept :
     Asset(
         guid_,
         engine::assets::Font::typeId,
-        engine::Session::get()->modules().assetFactory()->createFontAsset(guid_, url_)
+        engine::Engine::getEngine()->getAssets()->getFactory()->createFontAsset(guid_, url_)
     ) {}
 
 FontAsset::~FontAsset() noexcept = default;

@@ -11,8 +11,6 @@ using namespace ember::engine::scheduler;
 using namespace ember::engine;
 using namespace ember;
 
-ptr<Scheduler> Scheduler::_instance = nullptr;
-
 Scheduler::Scheduler() noexcept :
     _pipeline(),
     _workerCount(0),
@@ -20,33 +18,7 @@ Scheduler::Scheduler() noexcept :
     _fiberPool(0) {}
 
 Scheduler::~Scheduler() {
-    tidy();
-}
-
-Scheduler& Scheduler::get() {
-    return *_instance;
-}
-
-ptr<Scheduler> Scheduler::get(_STD nothrow_t) noexcept {
-    return _instance;
-}
-
-ptr<Scheduler> Scheduler::make() {
-    if (_instance != nullptr) {
-        return _instance;
-    }
-
-    _instance = make_ptr<Scheduler>();
-    return _instance;
-}
-
-void Scheduler::destroy() noexcept {
-
-    if (_instance == nullptr)
-        return;
-
-    delete _instance;
-    _instance = nullptr;
+    destroy();
 }
 
 #ifdef _DEBUG
@@ -120,47 +92,7 @@ size_t Scheduler::getWorkerCount() const {
     return _workerCount;
 }
 
-void Scheduler::tidy() {
-
-    SCOPED_STOPWATCH
-
-    if (_workerCount) {
-
-        waitReadyAll(_workerCount, _workers);
-
-        /**
-         * Destroy workers and transitive destroy threads
-         */
-        for (u32 idx = 0; idx < _workerCount; ++idx) {
-            #if _DEBUG
-            assert(_workers[idx].stop());
-            #else
-            _workers[idx].stop();
-            #endif
-        }
-
-        /**
-         * Destruct workers
-         */
-        for (u32 idx = 0; idx < _workerCount; ++idx) {
-            (&_workers[idx])->~Worker();
-        }
-
-        /**
-         * Free allocated memory
-         */
-        free(_workers);
-
-        /**
-         * Reset variable to be safe
-         */
-        _workerCount = 0;
-        _workers = nullptr;
-    }
-}
-
 void Scheduler::setup(u32 workers_) {
-
     SCOPED_STOPWATCH
 
     #ifdef USE_WORKER_COUNT
@@ -234,6 +166,43 @@ void Scheduler::setup(u32 workers_) {
     }
 
     _workerCount = workers_;
+}
+
+void Scheduler::destroy() {
+    SCOPED_STOPWATCH
+
+    if (_workerCount) {
+        waitReadyAll(_workerCount, _workers);
+
+        /**
+         * Destroy workers and transitive destroy threads
+         */
+        for (u32 idx = 0; idx < _workerCount; ++idx) {
+            #if _DEBUG
+            assert(_workers[idx].stop());
+            #else
+            _workers[idx].stop();
+            #endif
+        }
+
+        /**
+         * Destruct workers
+         */
+        for (u32 idx = 0; idx < _workerCount; ++idx) {
+            (&_workers[idx])->~Worker();
+        }
+
+        /**
+         * Free allocated memory
+         */
+        free(_workers);
+
+        /**
+         * Reset variable to be safe
+         */
+        _workerCount = 0;
+        _workers = nullptr;
+    }
 }
 
 void Scheduler::wait() const {

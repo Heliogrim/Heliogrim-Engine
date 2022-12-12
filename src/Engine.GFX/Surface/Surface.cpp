@@ -1,5 +1,7 @@
 #include "Surface.hpp"
 
+#include <Engine.Common/stdafx.h>
+
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
@@ -7,28 +9,24 @@
 #include "../__macro.hpp"
 #include "../API/VkTranslate.hpp"
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Platform/Windows/Win32Window.hpp>
 
 using namespace ember::engine::gfx;
 using namespace ember;
 
 Surface::Surface() noexcept :
-    _application(nullptr),
-    _window(nullptr) {}
+    _window(nullptr),
+    _application(nullptr) {}
 
-Surface::Surface(sptr<Session> session_, ptr<Application> application_) :
-    _session(session_),
-    _application(application_),
-    _window(nullptr) {}
+Surface::Surface(const non_owning_rptr<platform::NativeWindow> window_, ptr<Application> application_) :
+    _window(window_),
+    _application(application_) {}
 
 void Surface::setup() {
 
     SCOPED_STOPWATCH
 
-    // const uint32_t width = 1920, height = 1080;
-    const uint32_t width = 1280, height = 720;
-
     try {
-        createWindow(width, height);
         _surface = createApiSurface();
     } catch (std::exception& ex) {
         IM_CORE_ERRORF("Failed to create Vulkan surface: {}", ex.what());
@@ -46,11 +44,6 @@ void Surface::destroy() {
 
     if (_surface) {
         (*_application)->destroySurfaceKHR(_surface);
-    }
-
-    if (_window) {
-        _window->destroy().get();
-        _window = nullptr;
     }
 }
 
@@ -81,22 +74,19 @@ Surface::operator vk::SurfaceKHR() const {
 }
 
 vk::SurfaceKHR Surface::createApiSurface() {
-    return _window->createSurface(*_application);
-}
 
-ptr<engine::session::Window> Surface::createWindow(const uint32_t width_, const uint32_t height_) {
+    #ifdef WIN32
 
-    SCOPED_STOPWATCH
+    const auto window { static_cast<ptr<platform::Win32Window>>(_window) };
+    const auto sdlWnd { window->sdl() };
 
-    constexpr auto title = "Project Game - Vulkan C++";
-
-    _window = _session->makeWindow(title, { width_, height_ });
-    _window->create().get();
-
-    if (_window == nullptr) {
-        IM_CORE_ERROR("Could not create window.");
-        return nullptr;
+    VkSurfaceKHR tmp {};
+    if (!SDL_Vulkan_CreateSurface(sdlWnd, static_cast<vk::Instance>(*_application), &tmp)) {
+        throw _STD runtime_error("Could not get vulkan surface from window.");
     }
 
-    return _window;
+    return tmp;
+
+    #else
+    #endif
 }

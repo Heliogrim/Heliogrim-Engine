@@ -21,7 +21,8 @@
 #include <Engine.GFX/Shader/Prototype.hpp>
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Assets/Database/AssetDatabase.hpp>
 
 #include "RevMainSharedNode.hpp"
 #include "__macro.hpp"
@@ -33,6 +34,8 @@
 #include "Engine.Resource/LoaderManager.hpp"
 #include "Game.Main/Assets/Textures/DefaultSkybox.hpp"
 #include <Engine.GFX.Scene/View/SceneView.hpp>
+
+#include "Engine.Assets/Assets.hpp"
 
 using namespace ember::engine::gfx::glow::render;
 using namespace ember::engine::gfx::render;
@@ -48,7 +51,6 @@ RevMainSkyNode::RevMainSkyNode(const ptr<RevMainSharedNode> sharedNode_) :
     _sharedNode(sharedNode_) {}
 
 void RevMainSkyNode::setup(cref<sptr<Device>> device_) {
-
     SCOPED_STOPWATCH
 
     /**
@@ -100,7 +102,7 @@ void RevMainSkyNode::setup(cref<sptr<Device>> device_) {
 
     // TODO:
     if (!testCubeMap) {
-        RevTextureLoader loader { Session::get()->modules().graphics()->cacheCtrl() };
+        RevTextureLoader loader { Engine::getEngine()->getGraphics()->cacheCtrl() };
         testCubeMap = loader.__tmp__load({ ""sv, R"(R:\\sky_monbachtal.ktx)" });
 
         Vector<vk::ImageMemoryBarrier> imgBarriers {};
@@ -149,7 +151,6 @@ void RevMainSkyNode::setup(cref<sptr<Device>> device_) {
 }
 
 void RevMainSkyNode::destroy() {
-
     SCOPED_STOPWATCH
 
     /**
@@ -181,11 +182,9 @@ void RevMainSkyNode::destroy() {
     for (auto& entry : _requiredBindingGroups) {
         _device->vkDevice().destroyDescriptorSetLayout(entry.vkSetLayout());
     }
-
 }
 
 bool RevMainSkyNode::allocate(const ptr<HORenderPass> renderPass_) {
-
     SCOPED_STOPWATCH
 
     const auto state { renderPass_->state() };
@@ -237,7 +236,6 @@ bool RevMainSkyNode::allocate(const ptr<HORenderPass> renderPass_) {
     Vector<vk::DescriptorPool> pools {};
 
     for (u64 rdp = 0; rdp < _requiredDescriptorPools.size(); ++rdp) {
-
         vk::DescriptorPool pool { _device->vkDevice().createDescriptorPool(_requiredDescriptorPools[rdp]) };
         assert(pool);
 
@@ -271,7 +269,6 @@ bool RevMainSkyNode::allocate(const ptr<HORenderPass> renderPass_) {
 }
 
 bool RevMainSkyNode::free(const ptr<HORenderPass> renderPass_) {
-
     SCOPED_STOPWATCH
 
     const auto state { renderPass_->state() };
@@ -281,7 +278,6 @@ bool RevMainSkyNode::free(const ptr<HORenderPass> renderPass_) {
      */
     auto it { state->data.find("RevMainSkyNode::DiscreteBindingGroups"sv) };
     if (it != state->data.end()) {
-
         sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
             _STD static_pointer_cast<Vector<shader::DiscreteBindingGroup>, void>(it->second)
         };
@@ -295,7 +291,6 @@ bool RevMainSkyNode::free(const ptr<HORenderPass> renderPass_) {
          *
          */
         for (u32 i = 0; i < dbgs->size(); ++i) {
-
             const auto& dbg { (*dbgs)[i] };
             const auto& pool { (*pools)[i] };
 
@@ -326,7 +321,6 @@ bool RevMainSkyNode::free(const ptr<HORenderPass> renderPass_) {
      */
     it = state->data.find("RevMainSkyNode::UniformBuffer"sv);
     if (it != state->data.end()) {
-
         sptr<Buffer> uniform {
             _STD static_pointer_cast<Buffer, void>(it->second)
         };
@@ -347,7 +341,6 @@ bool RevMainSkyNode::free(const ptr<HORenderPass> renderPass_) {
      */
     it = renderPass_->state()->data.find("RevMainSkyNode::CommandBuffer"sv);
     if (it != renderPass_->state()->data.end()) {
-
         sptr<CommandBuffer> cmd {
             _STD static_pointer_cast<CommandBuffer, void>(it->second)
         };
@@ -373,7 +366,6 @@ bool RevMainSkyNode::free(const ptr<HORenderPass> renderPass_) {
      */
     it = renderPass_->state()->data.find("RevMainSkyNode::LastRecordedActor"sv);
     if (it != renderPass_->state()->data.end()) {
-
         sptr<ptr<void>> cmd {
             _STD static_pointer_cast<ptr<void>, void>(it->second)
         };
@@ -403,7 +395,6 @@ void RevMainSkyNode::before(
     const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_
 ) const {
-
     SCOPED_STOPWATCH
 
     const auto& data { renderPass_->state()->data };
@@ -433,7 +424,6 @@ void RevMainSkyNode::invoke(
     const non_owning_rptr<RenderStagePass> stagePass_,
     const non_owning_rptr<SceneNodeModel> model_
 ) const {
-
     SCOPED_STOPWATCH
 
     auto& data { renderPass_->state()->data };
@@ -451,7 +441,6 @@ void RevMainSkyNode::invoke(
 
     const bool skyboxChanged { lastOwner != model->owner() };
     if (skyboxChanged) {
-
         /**
          * Prepare Command Buffer
          */
@@ -497,7 +486,6 @@ void RevMainSkyNode::invoke(
         };
 
         for (u32 idx = 0; idx < dbgs->size(); ++idx) {
-
             const auto& grp { (*dbgs)[idx] };
 
             if (grp.super().interval() == shader::BindingUpdateInterval::ePerFrame) {
@@ -513,14 +501,12 @@ void RevMainSkyNode::invoke(
          *
          */
         if (model->hasOverrideMaterials()) {
-
             const auto* first { model->overrideMaterials().front() };
 
             ptr<const VirtualTextureView> skyboxView { nullptr };
 
             if (first->_payload.diffuse) {
                 skyboxView = first->_payload.diffuse->_payload.view.get();
-
             } else {
                 skyboxView = getDefaultSkybox();
             }
@@ -546,7 +532,6 @@ void RevMainSkyNode::after(
     const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_
 ) const {
-
     SCOPED_STOPWATCH
 
     const auto& data { renderPass_->state()->data };
@@ -578,7 +563,6 @@ void RevMainSkyNode::after(
 }
 
 void RevMainSkyNode::setupShader(cref<sptr<Device>> device_) {
-
     /**
      *
      */
@@ -638,10 +622,8 @@ void RevMainSkyNode::setupShader(cref<sptr<Device>> device_) {
      * Prepare required Descriptor Pools
      */
     for (const auto& group : factoryResult.groups) {
-
         Vector<vk::DescriptorPoolSize> sizes {};
         for (const auto& binding : group.shaderBindings()) {
-
             auto it {
                 _STD find_if(sizes.begin(), sizes.end(), [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
                     return entry_.type == api::vkTranslateBindingType(type);
@@ -672,15 +654,13 @@ void RevMainSkyNode::setupShader(cref<sptr<Device>> device_) {
         _requiredDescriptorPools.push_back(dpci);
         _requiredBindingGroups.push_back(group);
     }
-
 }
 
 const ptr<const VirtualTextureView> RevMainSkyNode::getDefaultSkybox() const {
-
     const auto defaultSkyboxGuid { game::assets::texture::DefaultSkybox::unstable_auto_guid() };
 
-    const auto* const db { Session::get()->modules().assetDatabase() };
-    auto& loader { Session::get()->modules().resourceManager()->loader() };
+    const auto* const db { Engine::getEngine()->getAssets()->getDatabase() };
+    auto& loader { Engine::getEngine()->getResources()->loader() };
 
     /**
      * Load texture assets -> Get resource handler

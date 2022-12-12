@@ -1,6 +1,7 @@
 #pragma once
 #include "CachedActorPointer.hpp"
 #include "LogicComponent.hpp"
+#include "Inbuilt.hpp"
 
 namespace ember {
 

@@ -1,60 +1,22 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/CoreModule.hpp>
 
 namespace ember::engine {
-    class Physics {
+    class Physics :
+        public core::CoreModule {
     public:
-        /**
-         * Constructor
-         *
-         * @author Julius
-         * @date 14.10.2021
-         *
-         * @param session_ (Optional) The session.
-         */
-        Physics(cref<sptr<Session>> session_ = Session::get()) noexcept;
+        Physics(const non_owning_rptr<Engine> engine_) noexcept;
 
-        /**
-         * Destructor
-         *
-         * @author Julius
-         * @date 14.10.2021
-         */
-        ~Physics();
+        ~Physics() override;
 
     public:
-        /**
-         * Setups this 
-         *
-         * @author Julius
-         * @date 09.01.2021
-         */
-        void setup();
+        void setup() override;
 
-        /**
-         * Schedules this 
-         *
-         * @author Julius
-         * @date 09.01.2021
-         */
-        void schedule();
+        void schedule() override;
 
-    private:
-        /**
-         * The session this module is associated with
-         */
-        sptr<Session> _session;
+        void desync() override;
 
-    public:
-        /**
-         * Gets the session this module is associated with
-         *
-         * @author Julius
-         * @date 14.10.2021
-         *
-         * @returns A sptr<Session>
-         */
-        [[nodiscard]] sptr<Session> session() const noexcept;
+        void destroy() override;
     };
 }

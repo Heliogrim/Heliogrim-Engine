@@ -5,6 +5,7 @@
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene/RevScene.hpp>
+#include <Engine.Core/Engine.hpp>
 
 #include "ModelDataTokens.hpp"
 #include "StaticGeometryBatch.hpp"
@@ -34,13 +35,13 @@ void SkyboxModel::create(const ptr<scene::Scene> scene_) {
      */
     _boundary = origin->getBoundaries();
     _skyboxGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(origin->getSkyboxGeometryAsset().internal());
-    _skyboxGeometryResource = Session::get()->modules().resourceManager()->loader().load(_skyboxGeometryAsset, nullptr);
+    _skyboxGeometryResource = Engine::getEngine()->getResources()->loader().load(_skyboxGeometryAsset, nullptr);
 
     /**
      *
      */
     auto materialAsset = static_cast<ptr<assets::GfxMaterial>>(origin->getSkyboxMaterialAsset().internal());
-    auto materialResource = Session::get()->modules().resourceManager()->loader().load(materialAsset, nullptr);
+    auto materialResource = Engine::getEngine()->getResources()->loader().load(materialAsset, nullptr);
 
     _overrideMaterials.push_back(static_cast<ptr<gfx::MaterialResource>>(materialResource));
 }

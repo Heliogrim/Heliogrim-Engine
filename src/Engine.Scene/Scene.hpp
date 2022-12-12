@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Session/Session.hpp>
-
 #include "Graph/SceneGraph.hpp"
 #include "SceneTag.hpp"
 #include "NodeTypeRegistry.hpp"
@@ -12,11 +10,9 @@
 namespace ember {
     class SceneComponent;
     class IComponentRegisterContext;
-    class World;
 }
 
 namespace ember::engine::scene {
-
     class __declspec(novtable) Scene {
     public:
         using this_type = Scene;
@@ -56,8 +52,5 @@ namespace ember::engine::scene {
 
     public:
         virtual ptr<IComponentRegisterContext> registerContext() noexcept = 0;
-
-    public:
-        [[nodiscard]] virtual ptr<World> getWorld() noexcept;
     };
 }

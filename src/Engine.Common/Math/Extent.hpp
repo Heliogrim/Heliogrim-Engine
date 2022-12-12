@@ -114,7 +114,7 @@ namespace ember::math {
          *
          * @returns True is all values are evaluated equal.
          */
-        [[nodiscard]] bool operator==(cref<Extent2D<T>> other_) const noexcept {
+        [[nodiscard]] bool operator==(const Extent2D<T>& other_) const noexcept {
             return width == other_.width && height == other_.height &&
                 offsetX == other_.offsetX && offsetY == other_.offsetY;
         }

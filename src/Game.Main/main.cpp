@@ -22,8 +22,9 @@
 #include <Ember/TextureAsset.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Event/TickEvent.hpp>
-#include <Engine.Session/Session.hpp>
 #include <Editor.Main/Boot/AssetInit.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Event/SignalShutdownEvent.hpp>
 
 #include "Assets/GfxMaterials/Cannon01.hpp"
 #include "Assets/GfxMaterials/Cerberus.hpp"
@@ -64,6 +65,8 @@
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 
+#include "Engine.Core/Engine.hpp"
+
 using namespace ember;
 
 ptr<Actor> globalPlaneActor = nullptr;
@@ -80,6 +83,22 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_);
 
 #pragma endregion
 
+#pragma region Ember Injection Declarations
+
+void beforeRoutine() {}
+
+void onEngineCreate(const ember::non_owning_rptr<Engine> engine_) {}
+
+void onEnginePreInit(const ember::non_owning_rptr<Engine> engine_) {}
+
+void onEngineInit(const ember::non_owning_rptr<Engine> engine_) {}
+
+void onEnginePostInit(const ember::non_owning_rptr<Engine> engine_) {}
+
+void onEngineStart(const ember::non_owning_rptr<Engine> engine_) {}
+
+#pragma endregion
+
 /**
  * Ember main entry
  *
@@ -87,7 +106,6 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_);
  * @date 20.10.2021
  */
 void ember_main_entry() {
-
     SCOPED_STOPWATCH
 
     /**/
@@ -98,16 +116,16 @@ void ember_main_entry() {
     /**
      * Create suspend callback for event emitter
      */
-    engine::Session::get()->emitter().on<ShutdownEvent>([](cref<ShutdownEvent> event_) {
-        suspended.test_and_set(_STD memory_order::release);
-    });
+    engine::Engine::getEngine()->getEmitter().on<engine::core::SignalShutdownEvent>(
+        [](cref<engine::core::SignalShutdownEvent> event_) {
+            suspended.test_and_set(_STD memory_order::release);
+        });
 
     /**
      * Make a repetitive task to emit TickEvent
      */
     RepetitiveTask task {
         []() {
-
             static u64 markCounter = 0ui64;
             ++markCounter;
 
@@ -120,11 +138,10 @@ void ember_main_entry() {
                 _STD chrono::high_resolution_clock::now()
             };
 
-            static ref<GlobalEventEmitter> emitter = engine::Session::get()->emitter();
+            static ref<GlobalEventEmitter> emitter = engine::Engine::getEngine()->getEmitter();
 
             const auto now { _STD chrono::high_resolution_clock::now() };
             if (now >= tmpNextTick) {
-
                 const TickEvent event { tmpTick };
                 emitter.emit(event);
 
@@ -156,7 +173,6 @@ void ember_main_entry() {
 
 void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const u64 cols_, _In_ const float scalar_,
     _Inout_ ref<ember::math::vec3> position_) {
-
     const float rdxf { static_cast<float>(rows_) };
     const float rdyf { static_cast<float>(cols_) };
 
@@ -184,8 +200,7 @@ void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const 
 Vector<Actor*> testActors {};
 
 void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
-
-    auto possible = CreateActor(traits::async);
+    auto possible = CreateActor(GetSession(), traits::async);
     // await(possible);
 
     Actor* actor = possible.get();
@@ -196,7 +211,7 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
     /**
      *
      */
-    auto& initializer { ActorInitializer::get() };
+    ActorInitializer initializer { GetSession().getActorInitializer() };
     //initializer.createComponent<ActorComponent>(actor);
     auto* comp = initializer.createComponent<StaticGeometryComponent>(actor);
 
@@ -232,8 +247,8 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
     const_cast<math::Transform&>(transform).setPosition(previous);
     */
 
-    const ptr<World> world { GetWorld() };
-    world->addActor(actor);
+    World world { GetWorld() };
+    world.addActor(actor);
 
     auto previous { transform.position() };
 
@@ -252,7 +267,6 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
 }
 
 void waveActors() {
-
     static float timescale { 2000.F };
     static float waveScale { 5.F };
     static float fracScale { 2.F };
@@ -270,7 +284,6 @@ void waveActors() {
     const u32 limit { static_cast<u32>(_STD floor(sqrLength)) };
     for (u32 x { 0ui32 }; x < limit; ++x) {
         for (u32 z { 0ui32 }; z < limit; ++z) {
-
             const auto idx { x * limit + z };
             Actor* cur { testActors[idx] };
 
@@ -284,7 +297,6 @@ void waveActors() {
             const_cast<math::Transform&>(transform).setPosition(prev.setY(_STD sinf(progress + frac) * waveScale));
         }
     }
-
 }
 
 #pragma endregion
@@ -292,10 +304,9 @@ void waveActors() {
 #pragma region Simple Assets
 
 ptr<Actor> buildSimpleAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
+    auto* actor = await(CreateActor(GetSession(), traits::async));
 
-    auto* actor = await(CreateActor(traits::async));
-
-    auto& initializer { ActorInitializer::get() };
+    auto initializer { GetSession().getActorInitializer() };
     auto* cmp { initializer.createComponent<StaticGeometryComponent>(actor) };
 
     auto query { Ember::assets()[meshGuid_] };
@@ -309,7 +320,6 @@ ptr<Actor> buildSimpleAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
 }
 
 ptr<Actor> buildStick01() {
-
     auto* actor = buildSimpleAsset(
         game::assets::meshes::Stick01::unstable_auto_guid(),
         game::assets::material::Stick01::unstable_auto_guid()
@@ -319,13 +329,12 @@ ptr<Actor> buildStick01() {
     const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 1.F, 0.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 10.F });
 
-    GetWorld()->addActor(actor);
+    GetWorld().addActor(actor);
 
     return actor;
 }
 
 ptr<Actor> buildWoodenPier01Poles() {
-
     auto* actor = buildSimpleAsset(
         game::assets::meshes::WoodenPier01Poles::unstable_auto_guid(),
         game::assets::material::WoodenPier01Poles::unstable_auto_guid()
@@ -335,13 +344,12 @@ ptr<Actor> buildWoodenPier01Poles() {
     const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, .5F, -1.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
-    GetWorld()->addActor(actor);
+    GetWorld().addActor(actor);
 
     return actor;
 }
 
 ptr<Actor> buildWoodenPier01Planks() {
-
     auto* actor = buildSimpleAsset(
         game::assets::meshes::WoodenPier01Planks::unstable_auto_guid(),
         game::assets::material::WoodenPier01Planks::unstable_auto_guid()
@@ -351,13 +359,12 @@ ptr<Actor> buildWoodenPier01Planks() {
     const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -1.F, 0.F, -1.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
-    GetWorld()->addActor(actor);
+    GetWorld().addActor(actor);
 
     return actor;
 }
 
 ptr<Actor> buildWoodenBucket01() {
-
     auto* actor = buildSimpleAsset(
         game::assets::meshes::WoodenBucket01::unstable_auto_guid(),
         game::assets::material::WoodenBucket01::unstable_auto_guid()
@@ -367,13 +374,12 @@ ptr<Actor> buildWoodenBucket01() {
     const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, .5F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
-    GetWorld()->addActor(actor);
+    GetWorld().addActor(actor);
 
     return actor;
 }
 
 ptr<Actor> buildWoodenBucket02() {
-
     auto* actor = buildSimpleAsset(
         game::assets::meshes::WoodenBucket02::unstable_auto_guid(),
         game::assets::material::WoodenBucket02::unstable_auto_guid()
@@ -383,13 +389,12 @@ ptr<Actor> buildWoodenBucket02() {
     const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, -.5F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
-    GetWorld()->addActor(actor);
+    GetWorld().addActor(actor);
 
     return actor;
 }
 
 ptr<Actor> buildDandelion01() {
-
     auto* actor = buildSimpleAsset(
         game::assets::meshes::Dandelion01::unstable_auto_guid(),
         game::assets::material::Dandelion01::unstable_auto_guid()
@@ -399,13 +404,12 @@ ptr<Actor> buildDandelion01() {
     const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, .5F, 5.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 5.F });
 
-    GetWorld()->addActor(actor);
+    GetWorld().addActor(actor);
 
     return actor;
 }
 
 ptr<Actor> buildCannon01() {
-
     auto* actor = buildSimpleAsset(
         game::assets::meshes::Cannon01::unstable_auto_guid(),
         game::assets::material::Cannon01::unstable_auto_guid()
@@ -415,7 +419,7 @@ ptr<Actor> buildCannon01() {
     const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, 0.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
-    GetWorld()->addActor(actor);
+    GetWorld().addActor(actor);
 
     return actor;
 }
@@ -427,10 +431,9 @@ ptr<Actor> buildCannon01() {
 #pragma region Skybox Assets
 
 ptr<Actor> buildSkyboxAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
+    auto* actor = await(CreateActor(GetSession(), traits::async));
 
-    auto* actor = await(CreateActor(traits::async));
-
-    auto& initializer { ActorInitializer::get() };
+    auto initializer { GetSession().getActorInitializer() };
     auto* cmp { initializer.createComponent<SkyboxComponent>(actor) };
 
     auto query { Ember::assets()[meshGuid_] };
@@ -439,7 +442,7 @@ ptr<Actor> buildSkyboxAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
     query = Ember::assets()[materialGuid_];
     cmp->setSkyboxMaterialByAsset(*static_cast<ptr<GfxMaterialAsset>>(&query.value));
 
-    GetWorld()->addActor(actor);
+    GetWorld().addActor(actor);
 
     return actor;
 }
@@ -447,17 +450,6 @@ ptr<Actor> buildSkyboxAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
 #pragma endregion
 
 void buildTestScene() {
-
-    /**/
-    assert(GetWorld() == nullptr);
-    auto world = await(CreateWorld());
-    assert(world != nullptr);
-    await(Destroy(_STD move(world)));
-
-    assert(GetWorld() == nullptr);
-    world = await(CreateWorld());
-    SetWorld(world);
-
     /**/
     auto* skyboxActor = buildSkyboxAsset(
         game::assets::meshes::Sphere::unstable_auto_guid(),
@@ -470,7 +462,7 @@ void buildTestScene() {
     );
 
     {
-        auto& initializer { ActorInitializer::get() };
+        auto initializer { GetSession().getActorInitializer() };
         auto* cmp { initializer.createSubComponent<SkeletalGeometryComponent>(actor, actor->getRootComponent()) };
 
         cref<math::Transform> transform { cmp->getWorldTransform() };
@@ -482,7 +474,7 @@ void buildTestScene() {
     const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, 0.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
-    GetWorld()->addActor(actor);
+    GetWorld().addActor(actor);
     ::storeEditorSelectedTarget(actor);
 
     Vector<ptr<Actor>> sceneActors {};
@@ -504,7 +496,7 @@ void buildTestScene() {
             0.F
         }));
 
-        GetWorld()->addActor(actor);
+        GetWorld().addActor(actor);
         sceneActors.push_back(actor);
 
         /**/
@@ -522,7 +514,7 @@ void buildTestScene() {
             0.F
         }));
 
-        GetWorld()->addActor(actor);
+        GetWorld().addActor(actor);
         sceneActors.push_back(actor);
 
         /**/
@@ -540,7 +532,7 @@ void buildTestScene() {
             0.F
         }));
 
-        GetWorld()->addActor(actor);
+        GetWorld().addActor(actor);
         sceneActors.push_back(actor);
 
         /**/
@@ -558,7 +550,7 @@ void buildTestScene() {
             0.F
         }));
 
-        GetWorld()->addActor(actor);
+        GetWorld().addActor(actor);
         sceneActors.push_back(actor);
     }
 

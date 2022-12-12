@@ -1,13 +1,14 @@
 #pragma once
 
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/Session.hpp>
+#include <Engine.Core/SessionState.hpp>
+#include <Engine.ACS/Registry.hpp>
 
 #include "Actor.hpp"
-#include "Inbuilt.hpp"
-#include "Engine.ACS/Registry.hpp"
+#include "ActorComponent.hpp"
+#include "CachedActorPointer.hpp"
 
 namespace ember {
-
     /**
      * Forward Declaration
      */
@@ -15,25 +16,35 @@ namespace ember {
 
     class ActorInitializer {
     public:
+        friend class Session;
+
+    public:
         using this_type = ActorInitializer;
 
     protected:
-        ActorInitializer() = default;
+        ActorInitializer(cref<managed<void>> internal_) :
+            _internal(internal_) {}
 
         ~ActorInitializer() noexcept = default;
 
-    public:
-        static ref<ActorInitializer> get() noexcept;
+    private:
+        /**
+         *
+         */
+        managed<void> _internal;
+
+    protected:
+        // Warning: Temporary Solution
+        [[nodiscard]] cref<engine::core::Session> getCoreSession() const noexcept {
+            return *static_cast<const ptr<const engine::core::Session>>(_internal.get());
+        }
 
     public:
         template <std::derived_from<ActorComponent> Component>
-        ptr<Component> createComponent(_Inout_ const ptr<Actor> actor_) {
+        ptr<Component> createComponent(_Inout_ const ptr<Actor> actor_) const {
 
-            /**
-             *
-             */
-            const auto& session { engine::Session::get() };
-            auto* registry { session->modules().acsRegistry() };
+            /**/
+            auto* registry { getCoreSession().getState()->getRegistry() };
 
             auto* component {
                 registry->acquireActorComponent<
@@ -55,13 +66,10 @@ namespace ember {
         }
 
         template <std::derived_from<ActorComponent> Component>
-        ptr<Component> createSubComponent(_Inout_ const ptr<Actor> actor_, ptr<ActorComponent> parent_) {
+        ptr<Component> createSubComponent(_Inout_ const ptr<Actor> actor_, ptr<ActorComponent> parent_) const {
 
-            /**
-             *
-             */
-            const auto& session { engine::Session::get() };
-            auto* registry { session->modules().acsRegistry() };
+            /**/
+            auto* registry { getCoreSession().getState()->getRegistry() };
 
             auto* actor { actor_ ? actor_ : parent_->getOwner() };
 
@@ -84,5 +92,4 @@ namespace ember {
             return component;
         }
     };
-
 }

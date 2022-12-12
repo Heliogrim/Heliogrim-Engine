@@ -1,8 +1,9 @@
 #include "TextureAsset.hpp"
 
 #include <Engine.Assets/AssetFactory.hpp>
+#include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets/Types/Texture/Texture.hpp>
-#include <Engine.Session/Session.hpp>
+#include <Engine.Core/Engine.hpp>
 
 using namespace ember;
 
@@ -10,7 +11,7 @@ TextureAsset::TextureAsset(cref<asset_guid> guid_) noexcept :
     StreamableRenderableAsset(
         guid_,
         engine::assets::Texture::typeId,
-        engine::Session::get()->modules().assetFactory()->createTextureAsset(guid_)
+        engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(guid_)
     ) {}
 
 TextureAsset::TextureAsset(
@@ -25,7 +26,7 @@ TextureAsset::TextureAsset(
     StreamableRenderableAsset(
         guid_,
         engine::assets::Texture::typeId,
-        engine::Session::get()->modules().assetFactory()->createTextureAsset(
+        engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(
             guid_,
             baseImage_,
             _STD forward<Vector<asset_guid>>(images_),

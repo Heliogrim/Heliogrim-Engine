@@ -4,7 +4,6 @@
 #include "../Components/CameraComponent.hpp"
 
 namespace ember {
-
     class CameraActor :
         public Actor {
     public:
@@ -14,6 +13,8 @@ namespace ember {
     public:
         CameraActor();
 
+        CameraActor(cref<ActorInitializer> initializer_);
+
     private:
         ptr<CameraComponent> _cameraComponent;
         ptr<ActorComponent> _mountComponent;
@@ -21,5 +22,4 @@ namespace ember {
     public:
         [[nodiscard]] const ptr<CameraComponent> getCameraComponent() const noexcept;
     };
-
 }

@@ -2,12 +2,12 @@
 
 #include <Engine.Event/Event.hpp>
 
-namespace ember::engine::scene {
-    class Scene;
+namespace ember::engine::core {
+    class Session;
+    class World;
 }
 
 namespace ember::engine::core {
-
     class WorldChangeEvent :
         public StatelessEvent {
     public:
@@ -18,8 +18,9 @@ namespace ember::engine::core {
 
     public:
         WorldChangeEvent(
-            const ptr<::ember::engine::scene::Scene> prevScene_,
-            cref<sptr<::ember::engine::scene::Scene>> nextScene_
+            const non_owning_rptr<Session> session_,
+            cref<sptr<::ember::engine::core::World>> prevWorld_,
+            cref<sptr<::ember::engine::core::World>> nextWorld_
         );
 
         WorldChangeEvent(cref<this_type> other_) noexcept = default;
@@ -29,13 +30,15 @@ namespace ember::engine::core {
         ~WorldChangeEvent() = default;
 
     private:
-        ptr<::ember::engine::scene::Scene> _prevScene;
-        sptr<::ember::engine::scene::Scene> _nextScene;
+        non_owning_rptr<Session> _session;
+        sptr<World> _prevWorld;
+        sptr<World> _nextWorld;
 
     public:
-        [[nodiscard]] const ptr<::ember::engine::scene::Scene> getPrevScene() const noexcept;
+        [[nodiscard]] const non_owning_rptr<Session> getSession() const noexcept;
 
-        [[nodiscard]] cref<sptr<::ember::engine::scene::Scene>> getNextScene() const noexcept;
+        [[nodiscard]] cref<sptr<World>> getPrevWorld() const noexcept;
+
+        [[nodiscard]] cref<sptr<World>> getNextWorld() const noexcept;
     };
-
 }
