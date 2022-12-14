@@ -63,7 +63,7 @@ void AssetFactory::prepare() {
     layouts.storeLayout(EmberClass::of<Image>(), cur);
 }
 
-ptr<Asset> AssetFactory::createFontAsset(cref<asset_guid> guid_) {
+ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_) const {
 
     auto* instance = EmberObject::create<Font>(guid_, Vector<Url> {});
 
@@ -71,7 +71,7 @@ ptr<Asset> AssetFactory::createFontAsset(cref<asset_guid> guid_) {
     return instance;
 }
 
-ptr<Asset> AssetFactory::createFontAsset(cref<asset_guid> guid_, cref<string> url_) {
+ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_, cref<string> url_) const {
 
     auto src { resolveAsSource(url_) };
     Vector<Url> sources {};
@@ -86,13 +86,13 @@ ptr<Asset> AssetFactory::createFontAsset(cref<asset_guid> guid_, cref<string> ur
     return instance;
 }
 
-ptr<Asset> AssetFactory::createGfxMaterialAsset() {
+ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset() const {
 
     auto guid = generate_asset_guid();
     return createGfxMaterialAsset(guid);
 }
 
-ptr<Asset> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) {
+ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) const {
 
     auto* instance = EmberObject::create<GfxMaterial>(
         guid_,
@@ -113,7 +113,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) {
     return instance;
 }
 
-ptr<Asset> AssetFactory::createGfxMaterialAsset(
+ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(
     cref<asset_guid> guid_,
     cref<asset_guid> albedo_,
     cref<asset_guid> ao_,
@@ -125,7 +125,7 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(
     cref<asset_guid> metalness_,
     cref<asset_guid> specular_,
     cref<asset_guid> alpha_
-) {
+) const {
 
     auto* instance = EmberObject::create<GfxMaterial>(
         guid_,
@@ -145,13 +145,13 @@ ptr<Asset> AssetFactory::createGfxMaterialAsset(
     return instance;
 }
 
-ptr<Asset> AssetFactory::createImageAsset() {
+ptr<Image> AssetFactory::createImageAsset() const {
 
     auto guid = generate_asset_guid();
     return createImageAsset(guid);
 }
 
-ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_) {
+ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_) const {
 
     auto* instance = EmberObject::create<Image>(guid_, Vector<Url> {});
 
@@ -159,7 +159,7 @@ ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_) {
     return instance;
 }
 
-ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> url_) {
+ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> url_) const {
 
     auto src { resolveAsSource(url_) };
     Vector<Url> sources {};
@@ -174,7 +174,7 @@ ptr<Asset> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> u
     return instance;
 }
 
-ptr<Asset> AssetFactory::createLandscapeGeometryAsset(cref<asset_guid> guid_) {
+ptr<LandscapeGeometry> AssetFactory::createLandscapeGeometryAsset(cref<asset_guid> guid_) const {
 
     auto* instance = EmberObject::create<LandscapeGeometry>(guid_, Vector<Url> {});
 
@@ -182,7 +182,7 @@ ptr<Asset> AssetFactory::createLandscapeGeometryAsset(cref<asset_guid> guid_) {
     return instance;
 }
 
-ptr<Asset> AssetFactory::createStaticGeometryAsset(cref<asset_guid> guid_) {
+ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(cref<asset_guid> guid_) const {
 
     auto* instance = EmberObject::create<StaticGeometry>(
         guid_,
@@ -195,12 +195,12 @@ ptr<Asset> AssetFactory::createStaticGeometryAsset(cref<asset_guid> guid_) {
     return instance;
 }
 
-ptr<Asset> AssetFactory::createStaticGeometryAsset(
+ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(
     cref<asset_guid> guid_,
     cref<string> url_,
     cref<u64> vertexCount_,
     cref<u64> indexCount_
-) {
+) const {
 
     auto src { resolveAsSource(url_) };
     Vector<Url> sources {};
@@ -220,13 +220,13 @@ ptr<Asset> AssetFactory::createStaticGeometryAsset(
     return instance;
 }
 
-ptr<Asset> AssetFactory::createTextureAsset() {
+ptr<Texture> AssetFactory::createTextureAsset() const {
 
     auto guid = generate_asset_guid();
     return createTextureAsset(guid);
 }
 
-ptr<Asset> AssetFactory::createTextureAsset(cref<asset_guid> guid_) {
+ptr<Texture> AssetFactory::createTextureAsset(cref<asset_guid> guid_) const {
 
     auto* instance = EmberObject::create<Texture>(
         guid_,
@@ -242,7 +242,7 @@ ptr<Asset> AssetFactory::createTextureAsset(cref<asset_guid> guid_) {
     return instance;
 }
 
-ptr<Asset> AssetFactory::createTextureAsset(
+ptr<Texture> AssetFactory::createTextureAsset(
     cref<asset_guid> guid_,
     cref<asset_guid> baseImage_,
     mref<Vector<asset_guid>> images_,
@@ -250,7 +250,7 @@ ptr<Asset> AssetFactory::createTextureAsset(
     cref<gfx::TextureFormat> format_,
     cref<u32> mipLevel_,
     cref<gfx::TextureType> type_
-) {
+) const {
     auto* instance = EmberObject::create<Texture>(
         guid_,
         baseImage_,

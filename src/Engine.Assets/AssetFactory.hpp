@@ -11,7 +11,20 @@
 #include "Types/Asset.hpp"
 
 namespace ember::engine::assets {
+    class Font;
+    class GfxMaterial;
+    class Image;
+    class LandscapeGeometry;
+    class Level;
+    class PfxMaterial;
+    class SfxMaterial;
+    class SkeletalGeometry;
+    class Sound;
+    class StaticGeometry;
+    class Texture;
+}
 
+namespace ember::engine::assets {
     class AssetFactory {
     public:
         using value_type = AssetFactory;
@@ -53,9 +66,9 @@ namespace ember::engine::assets {
         void prepare();
 
     public:
-        [[nodiscard]] ptr<Asset> createFontAsset(cref<asset_guid> guid_);
+        [[nodiscard]] ptr<Font> createFontAsset(cref<asset_guid> guid_) const;
 
-        [[nodiscard]] ptr<Asset> createFontAsset(cref<asset_guid> guid_, cref<string> url_);
+        [[nodiscard]] ptr<Font> createFontAsset(cref<asset_guid> guid_, cref<string> url_) const;
 
         /**
          * Creates a graphics material asset
@@ -65,7 +78,7 @@ namespace ember::engine::assets {
          *
          * @returns The new graphics material asset.
          */
-        [[nodiscard]] ptr<Asset> createGfxMaterialAsset();
+        [[nodiscard]] ptr<GfxMaterial> createGfxMaterialAsset() const;
 
         /**
          * Creates a graphics material asset
@@ -77,7 +90,7 @@ namespace ember::engine::assets {
          *
          * @returns The new graphics material asset.
          */
-        [[nodiscard]] ptr<Asset> createGfxMaterialAsset(cref<asset_guid> guid_);
+        [[nodiscard]] ptr<GfxMaterial> createGfxMaterialAsset(cref<asset_guid> guid_) const;
 
         /**
          * Creates a graphics material asset
@@ -99,7 +112,7 @@ namespace ember::engine::assets {
          *
          * @returns The new graphics material asset.
          */
-        [[nodiscard]] ptr<Asset> createGfxMaterialAsset(
+        [[nodiscard]] ptr<GfxMaterial> createGfxMaterialAsset(
             cref<asset_guid> guid_,
             cref<asset_guid> albedo_,
             cref<asset_guid> ao_,
@@ -111,7 +124,7 @@ namespace ember::engine::assets {
             cref<asset_guid> metalness_,
             cref<asset_guid> specular_,
             cref<asset_guid> alpha_
-        );
+        ) const;
 
     public:
         /**
@@ -122,7 +135,7 @@ namespace ember::engine::assets {
          *
          * @returns The new image asset.
          */
-        [[nodiscard]] ptr<Asset> createImageAsset();
+        [[nodiscard]] ptr<Image> createImageAsset() const;
 
         /**
          * Creates image asset
@@ -134,7 +147,7 @@ namespace ember::engine::assets {
          *
          * @returns The new image asset.
          */
-        [[nodiscard]] ptr<Asset> createImageAsset(cref<asset_guid> guid_);
+        [[nodiscard]] ptr<Image> createImageAsset(cref<asset_guid> guid_) const;
 
         /**
          * Creates a image asset
@@ -147,7 +160,7 @@ namespace ember::engine::assets {
          *
          * @returns The new image asset.
          */
-        [[nodiscard]] ptr<Asset> createImageAsset(cref<asset_guid> guid_, cref<string> url_);
+        [[nodiscard]] ptr<Image> createImageAsset(cref<asset_guid> guid_, cref<string> url_) const;
 
     public:
         /**
@@ -158,7 +171,7 @@ namespace ember::engine::assets {
          *
          * @returns The new texture asset.
          */
-        [[nodiscard]] ptr<Asset> createTextureAsset();
+        [[nodiscard]] ptr<Texture> createTextureAsset() const;
 
         /**
          * Creates texture asset
@@ -170,7 +183,7 @@ namespace ember::engine::assets {
          *
          * @returns The new texture asset.
          */
-        [[nodiscard]] ptr<Asset> createTextureAsset(cref<asset_guid> guid_);
+        [[nodiscard]] ptr<Texture> createTextureAsset(cref<asset_guid> guid_) const;
 
         /**
          * Creates a texture asset
@@ -188,7 +201,7 @@ namespace ember::engine::assets {
          *
          * @returns The new texture asset.
          */
-        [[nodiscard]] ptr<Asset> createTextureAsset(
+        [[nodiscard]] ptr<Texture> createTextureAsset(
             cref<asset_guid> guid_,
             cref<asset_guid> baseImage_,
             mref<Vector<asset_guid>> images_,
@@ -196,20 +209,19 @@ namespace ember::engine::assets {
             cref<gfx::TextureFormat> format_,
             cref<u32> mipLevel_,
             cref<gfx::TextureType> type_
-        );
+        ) const;
 
         // TODO:
     public:
-        [[nodiscard]] ptr<Asset> createStaticGeometryAsset(cref<asset_guid> guid_);
+        [[nodiscard]] ptr<StaticGeometry> createStaticGeometryAsset(cref<asset_guid> guid_) const;
 
-        [[nodiscard]] ptr<Asset> createStaticGeometryAsset(
+        [[nodiscard]] ptr<StaticGeometry> createStaticGeometryAsset(
             cref<asset_guid> guid_,
             cref<string> url_,
             cref<u64> vertexCount_,
             cref<u64> indexCount_
-        );
+        ) const;
 
-        [[nodiscard]] ptr<Asset> createLandscapeGeometryAsset(cref<asset_guid> guid_);
+        [[nodiscard]] ptr<LandscapeGeometry> createLandscapeGeometryAsset(cref<asset_guid> guid_) const;
     };
-
 }
