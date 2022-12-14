@@ -64,6 +64,16 @@ bool AssetDatabase::insert(cref<asset_guid> guid_, cref<asset_type_id> type_,
     return pos.second;
 }
 
+bool AssetDatabase::insert(ptr<Asset> asset_) noexcept {
+    const auto* const assetClass { asset_->getClass() };
+
+    if (not assetClass) {
+        return false;
+    }
+
+    return insert(asset_->get_guid(), asset_->getTypeId(), asset_);
+}
+
 ptr<Asset> AssetDatabase::remove(cref<asset_guid> guid_) noexcept {
 
     SCOPED_STOPWATCH
