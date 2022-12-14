@@ -12,6 +12,9 @@
 #include <Engine.GFX.Glow.UI/Renderer/UIRenderer.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.GFX.Scene/RenderSceneManager.hpp>
+#include <Engine.Core/Event/WorldAddedEvent.hpp>
+#include <Engine.Core/Event/WorldRemoveEvent.hpp>
+#include <Engine.Core/Event/WorldChangeEvent.hpp>
 
 #include "RenderTarget.hpp"
 #include "todo.h"
@@ -19,7 +22,10 @@
 #include "Cache/GlobalResourceCache.hpp"
 #include "Command/CommandBatch.hpp"
 #include "Engine.Core/Engine.hpp"
+#include "Engine.Core/World.hpp"
+#include "Engine.Event/GlobalEventEmitter.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
+#include "Engine.Scene/Scene.hpp"
 #include "Loader/FontLoader.hpp"
 #include "Loader/MaterialLoader.hpp"
 #include "Loader/RevTextureLoader.hpp"
@@ -30,12 +36,10 @@
 #include "Renderer/Renderer.hpp"
 #include "Shader/ShaderStorage.hpp"
 #include "Swapchain/Swapchain.hpp"
-#include "Swapchain/VkSurfaceSwapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
-
-#if TRUE
-#include <Editor.GFX/Renderer/EdRevRenderer.hpp>
-#endif
+#include "Surface/SurfaceManager.hpp"
+#include "Engine.Scene/IRenderScene.hpp"
+#include "Engine.Scene/RevScene.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember::engine;
@@ -43,12 +47,12 @@ using namespace ember;
 
 Graphics::Graphics(const non_owning_rptr<Engine> engine_) noexcept :
     CoreModule(engine_),
-    _swapchain(nullptr),
-    _secondarySwapchain(nullptr),
     _computeQueue(nullptr),
     _graphicsQueue(nullptr),
     _transferQueue(nullptr),
-    _cacheCtrl(nullptr) {}
+    _cacheCtrl(nullptr),
+    _sceneManager(nullptr),
+    _surfaceManager(nullptr) {}
 
 Graphics::~Graphics() {
     tidy();
@@ -56,6 +60,78 @@ Graphics::~Graphics() {
 
 void Graphics::tidy() {
     __noop();
+}
+
+void Graphics::hookEngineState() {
+
+    const auto owae = _engine->getEmitter().on<core::WorldAddedEvent>([this](cref<core::WorldAddedEvent> event_) {
+
+        auto* const scene { event_.getWorld()->getScene() };
+        const auto* const sceneClass { scene->getClass() };
+
+        /*
+        if (not sceneClass->isType<scene::IRenderScene>()) {
+            return;
+        }
+         */
+
+        if (not sceneClass->isExactType<scene::RevScene>()) {
+            return;
+        }
+
+        _sceneManager->registerScene(static_cast<const ptr<scene::RevScene>>(scene));
+    });
+    _hooks.push_back({ core::WorldAddedEvent::typeId.data, owae });
+
+    const auto owre = _engine->getEmitter().on<core::WorldRemoveEvent>([this](cref<core::WorldRemoveEvent> event_) {
+
+        auto* const scene { event_.getWorld()->getScene() };
+        const auto* const sceneClass { scene->getClass() };
+
+        /*
+        if (not sceneClass->isType<scene::IRenderScene>()) {
+            return;
+        }
+         */
+
+        if (not sceneClass->isExactType<scene::RevScene>()) {
+            return;
+        }
+
+        _sceneManager->unregisterScene(static_cast<const ptr<scene::RevScene>>(scene));
+    });
+    _hooks.push_back({ core::WorldRemoveEvent::typeId.data, owre });
+
+    const auto owce = _engine->getEmitter().on<core::WorldChangeEvent>([this](cref<core::WorldChangeEvent> event_) {
+
+        event_.getSession();
+        event_.getPrevWorld();
+        event_.getNextWorld();
+
+    });
+    _hooks.push_back({ core::WorldChangeEvent::typeId.data, owce });
+}
+
+void Graphics::unhookEngineState() {
+
+    for (const auto& entry : _hooks) {
+        switch (entry.first) {
+            case core::WorldAddedEvent::typeId.data: {
+                _engine->getEmitter().remove<core::WorldAddedEvent>(entry.second);
+                break;
+            }
+            case core::WorldRemoveEvent::typeId.data: {
+                _engine->getEmitter().remove<core::WorldChangeEvent>(entry.second);
+                break;
+            }
+            case core::WorldChangeEvent::typeId.data: {
+                _engine->getEmitter().remove<core::WorldChangeEvent>(entry.second);
+                break;
+            }
+        }
+    }
+
+    _hooks.clear();
 }
 
 void Graphics::setup() {
@@ -68,20 +144,16 @@ void Graphics::setup() {
     _application.setup();
 
     /**
-     * Create a new Surface (aka. Window)
+     * Surfaces
      */
-    _window = _engine->getPlatform()->makeNativeWindow(
-        "Test"sv, math::iExtent2D { 1280, 720 }
-    ).get();
-    _surface = Surface { _window.get(), &_application };
-    _surface.setup();
+    _surfaceManager = make_uptr<SurfaceManager>(&_application);
 
     /**
      * Prepare rendering specific data structures
      *
      *	a: create a new device to access graphics architecture
      */
-    _device = make_sptr<Device>(_application, &_surface);
+    _device = make_sptr<Device>(_application);
     _device->setup();
 
     _computeQueue = _device->computeQueue();
@@ -94,13 +166,6 @@ void Graphics::setup() {
     auto* globalCache { cache::GlobalResourceCache::make(_device) };
     _cacheCtrl = make_uptr<cache::GlobalCacheCtrl>(globalCache);
     VkTextureFactory::make(_device);
-
-    /**
-     * Create a new swapchain to present image
-     */
-    _swapchain = new VkSurfaceSwapchain();
-    static_cast<ptr<VkSurfaceSwapchain>>(_swapchain)->useSurface(_surface);
-    _swapchain->setup(_device);
 
     /**
      * Create Shader Storage
@@ -130,6 +195,13 @@ void Graphics::setup() {
      * Render Scenes
      */
     _sceneManager = ::gfx::scene::RenderSceneManager::make();
+
+    /**
+     * Register Hooks and consume EngineState
+     */
+    hookEngineState();
+    registerLoader();
+    registerImporter();
 
     /**
      * Signal Setup
@@ -164,6 +236,16 @@ void Graphics::destroy() {
     }
 
     /**
+     * Unregister Hooks and consume EngineState
+     */
+    unhookEngineState();
+
+    /**
+     * Surfaces
+     */
+    _surfaceManager.reset();
+
+    /**
      * Wait until graphics queues stopped execution
      */
     _device->computeQueue()->vkQueue().waitIdle();
@@ -185,12 +267,7 @@ void Graphics::destroy() {
     }
     _cachedRenderer.clear();
 
-    /**
-     * Swapchain
-     */
-    delete _swapchain;
-    _swapchain = nullptr;
-
+    /**/
     ShaderStorage::destroy();
 
     /**
@@ -206,16 +283,11 @@ void Graphics::destroy() {
     _device->destroy();
     _device.reset();
 
-    _surface.destroy();
     _application.destroy();
 }
 
 sptr<Device> Graphics::getCurrentDevice() const noexcept {
     return _device;
-}
-
-ptr<Swapchain> Graphics::getCurrentSwapchain() const noexcept {
-    return _swapchain;
 }
 
 CommandQueue::reference_type Graphics::getComputeQueue() const noexcept {
@@ -258,6 +330,10 @@ void reportStats(float fps_, float time_);
 
 const non_owning_rptr<gfx::scene::RenderSceneManager> Graphics::getSceneManager() const noexcept {
     return _sceneManager;
+}
+
+const non_owning_rptr<gfx::SurfaceManager> Graphics::getSurfaceManager() const noexcept {
+    return _surfaceManager.get();
 }
 
 void Graphics::tick() {
@@ -328,29 +404,6 @@ void Graphics::invokeRenderTarget(cref<sptr<gfx::RenderTarget>> target_) const {
     assert(result != RenderEnqueueResult::eFailed);
 }
 
-void Graphics::__tmp__resize(cref<math::uivec2> extent_) {
-    /**
-     * Create a new swapchain to present image
-     */
-    auto* nextSwapchain = new VkSurfaceSwapchain();
-    nextSwapchain->useSurface(_surface);
-    nextSwapchain->setup(_device);
-
-    /**
-     * Block Render Passes related to swapchain to rebuild passes
-     */
-    // TODO: auto succeeded = _uiRenderTarget->rebuildPasses(nextSwapchain);
-    // TODO: assert(succeeded);
-
-    /**
-     * Cleanup
-     */
-    _swapchain->destroy();
-    delete _swapchain;
-
-    _swapchain = nextSwapchain;
-}
-
 void Graphics::reschedule() {
     /**
      * Guard already stopped scheduling
@@ -379,7 +432,6 @@ void Graphics::reschedule() {
 }
 
 #include <Ember/StaticGeometryComponent.hpp>
-#include <Engine.GFX/Scene/StaticGeometryModel.hpp>
 
 void Graphics::registerLoader() {
     /**/
