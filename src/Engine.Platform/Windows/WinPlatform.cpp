@@ -184,7 +184,7 @@ void WinPlatform::processInternal() {
                     };
                     auto resizeTask {
                         scheduler::task::make_task([extent]() {
-                            Engine::getEngine()->getGraphics()->__tmp__resize(extent);
+                            //Engine::getEngine()->getGraphics()->__tmp__resize(extent);
                         })
                     };
 

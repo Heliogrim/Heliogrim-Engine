@@ -1,19 +1,18 @@
 #pragma once
 
+#include <Engine.Common/String.hpp>
+#include <Engine.Common/Collection/AssociativeKey.hpp>
+#include <Engine.Common/Collection/RobinMap.hpp>
+#include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Core/CoreModule.hpp>
 
 #include "Application/Application.hpp"
+#include "Cache/__fwd.hpp"
 #include "Command/CommandQueue.hpp"
 #include "Device/Device.hpp"
 #include "Renderer/__fwd.hpp"
-#include "Cache/__fwd.hpp"
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
-
-#include <Engine.Common/Math/Vector.hpp>
-
-#include "Engine.Common/Collection/AssociativeKey.hpp"
-#include "Engine.Common/Collection/RobinMap.hpp"
 
 /**
  * Forward Declaration
@@ -24,6 +23,7 @@ namespace ember::engine::scene {
 
 namespace ember::engine::gfx {
     class RenderTarget;
+    class SurfaceManager;
 }
 
 namespace ember::engine::gfx::scene {
@@ -68,6 +68,13 @@ namespace ember::engine {
          */
         void tidy();
 
+    private:
+        Vector<_STD pair<u64, u64>> _hooks;
+
+        void hookEngineState();
+
+        void unhookEngineState();
+
     public:
         void setup();
 
@@ -84,14 +91,10 @@ namespace ember::engine {
         _STD atomic_uint8_t _scheduled { 0 };
 
     private:
-        gfx::Application _application;
-        gfx::Surface _surface;
-        uptr<platform::NativeWindow> _window;
-
-    private:
         /**
          * Device
          */
+        gfx::Application _application;
         sptr<gfx::Device> _device;
 
     public:
@@ -104,29 +107,6 @@ namespace ember::engine {
          * @returns The current device.
          */
         [[nodiscard]] sptr<gfx::Device> getCurrentDevice() const noexcept;
-
-    private:
-        /**
-         * Swapchain
-         */
-        ptr<gfx::Swapchain> _swapchain;
-
-        #if TRUE
-
-    public:
-        ptr<gfx::Swapchain> _secondarySwapchain;
-        #endif
-
-    public:
-        /**
-         * Gets current swapchain
-         *
-         * @author Julius
-         * @date 29.01.2021
-         *
-         * @returns The current swapchain.
-         */
-        [[nodiscard]] ptr<gfx::Swapchain> getCurrentSwapchain() const noexcept;
 
     private:
         /**
@@ -210,11 +190,15 @@ namespace ember::engine {
         [[nodiscard]] const non_owning_rptr<gfx::scene::RenderSceneManager> getSceneManager() const noexcept;
 
     private:
+        uptr<gfx::SurfaceManager> _surfaceManager;
+
+    public:
+        [[nodiscard]] const non_owning_rptr<gfx::SurfaceManager> getSurfaceManager() const noexcept;
+
+    private:
         void tick();
 
         void invokeRenderTarget(cref<sptr<gfx::RenderTarget>> target_) const;
-
-        #pragma region Ember Graphics
 
     private:
         void reschedule();
@@ -231,13 +215,5 @@ namespace ember::engine {
 
     public:
         void registerImporter();
-
-        #pragma endregion
-
-        #if TRUE
-
-    public:
-        void __tmp__resize(cref<math::uivec2> extent_);
-        #endif
     };
 }
