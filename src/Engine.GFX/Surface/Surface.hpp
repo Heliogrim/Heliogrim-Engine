@@ -1,10 +1,17 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Platform/Platform.hpp>
 
 #include "../TextureFormat.hpp"
 #include "../Application/Application.hpp"
 #include "../Device/Device.hpp"
+
+namespace ember::engine::platform {
+    class NativeWindow;
+}
+
+namespace ember::engine::gfx {
+    class Swapchain;
+}
 
 namespace ember::engine::gfx {
     class Surface {
@@ -30,7 +37,7 @@ namespace ember::engine::gfx {
          * @param  window_ The platform used.
          * @param  application_ The application.
          */
-        Surface(const non_owning_rptr<platform::NativeWindow> window_, ptr<Application> application_);
+        Surface(mref<uptr<platform::NativeWindow>> window_, ptr<Application> application_);
 
         /**
          * Destructor
@@ -38,7 +45,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 09.11.2020
          */
-        ~Surface() = default;
+        ~Surface();
 
         /**
          * Setups this
@@ -66,6 +73,12 @@ namespace ember::engine::gfx {
          */
         TextureFormat getImageFormat(const Device& device_) const;
 
+        [[nodiscard]] const ptr<Application> getApplication() const noexcept;
+
+        [[nodiscard]] const ptr<platform::NativeWindow> getNativeWindow() const noexcept;
+
+        [[nodiscard]] cref<vk::SurfaceKHR> getVkSurfaceKhr() const noexcept;
+
         /**
          * Cast that converts the given  to a SurfaceKHR
          *
@@ -77,7 +90,7 @@ namespace ember::engine::gfx {
         operator vk::SurfaceKHR() const;
 
     private:
-        ptr<platform::NativeWindow> _window;
+        uptr<platform::NativeWindow> _window;
         ptr<Application> _application;
 
         vk::SurfaceKHR _surface;
@@ -91,5 +104,13 @@ namespace ember::engine::gfx {
          * @returns The new API surface.
          */
         vk::SurfaceKHR createApiSurface();
+
+    private:
+        sptr<Swapchain> _swapchain;
+
+    public:
+        [[nodiscard]] cref<sptr<Swapchain>> swapchain() const noexcept;
+
+        bool setSwapchain(cref<sptr<Swapchain>> swapchain_) noexcept;
     };
 }

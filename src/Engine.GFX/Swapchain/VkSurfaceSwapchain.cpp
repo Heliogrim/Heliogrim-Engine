@@ -31,7 +31,6 @@ VkSurfaceSwapchain::~VkSurfaceSwapchain() {
     destroy();
 }
 
-
 void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
     /**/
     Swapchain::setup(device_);
@@ -40,13 +39,15 @@ void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
     assert(_device);
     assert(/*_surface*/true);
 
-    const auto capabilities = _device->vkPhysicalDevice().getSurfaceCapabilitiesKHR(_surface);
-    const auto modes = _device->vkPhysicalDevice().getSurfacePresentModesKHR(_surface);
+    /**/
+
+    const auto capabilities = _device->vkPhysicalDevice().getSurfaceCapabilitiesKHR(*_surface);
+    const auto modes = _device->vkPhysicalDevice().getSurfacePresentModesKHR(*_surface);
 
     _extent = clampExtent({ 1920, 1080 }, capabilities);
     const auto mode = selectPresentMode(modes);
 
-    _format = _surface.getImageFormat(*_device);
+    _format = _surface->getImageFormat(*_device);
 
     vk::SurfaceTransformFlagBitsKHR surfaceTransform;
     if (capabilities.supportedTransforms & vk::SurfaceTransformFlagBitsKHR::eIdentity) {
@@ -62,7 +63,7 @@ void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
 
     vk::SwapchainCreateInfoKHR sci {
         vk::SwapchainCreateFlagsKHR(),
-        _surface,
+        *_surface,
         length,
         api::vkTranslateFormat(_format),
         vk::ColorSpaceKHR::eSrgbNonlinear,
@@ -235,7 +236,8 @@ vk::Result VkSurfaceSwapchain::presentNext(u64 idx_, cref<Vector<vk::Semaphore>>
     return vkResult;
 }
 
-bool VkSurfaceSwapchain::consumeNext(ref<sptr<Texture>> image_, ref<vk::Semaphore> signal_, ref<Vector<vk::Semaphore>> waits_) {
+bool VkSurfaceSwapchain::consumeNext(ref<sptr<Texture>> image_, ref<vk::Semaphore> signal_,
+    ref<Vector<vk::Semaphore>> waits_) {
     return false;
 }
 
@@ -261,7 +263,7 @@ void VkSurfaceSwapchain::restoreSignal(const vk::Semaphore signal_) {
     _signals.push_back(signal_);
 }
 
-void VkSurfaceSwapchain::useSurface(cref<Surface> surface_) {
+void VkSurfaceSwapchain::useSurface(const non_owning_rptr<Surface> surface_) {
     _surface = surface_;
 }
 

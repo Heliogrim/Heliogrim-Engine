@@ -8,19 +8,30 @@
 
 #include "../__macro.hpp"
 #include "../API/VkTranslate.hpp"
+#include "../Swapchain/Swapchain.hpp"
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Platform/Windows/Win32Window.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Platform/Platform.hpp>
+#include <Ember/Future.hpp>
+#include <Engine.Scheduler/Fiber/Fiber.hpp>
 
 using namespace ember::engine::gfx;
 using namespace ember;
 
 Surface::Surface() noexcept :
     _window(nullptr),
-    _application(nullptr) {}
+    _application(nullptr),
+    _swapchain(nullptr) {}
 
-Surface::Surface(const non_owning_rptr<platform::NativeWindow> window_, ptr<Application> application_) :
-    _window(window_),
-    _application(application_) {}
+Surface::Surface(mref<uptr<platform::NativeWindow>> window_, ptr<Application> application_) :
+    _window(_STD move(window_)),
+    _application(application_),
+    _swapchain(nullptr) {}
+
+Surface::~Surface() {
+    assert(not _window);
+}
 
 void Surface::setup() {
 
@@ -42,9 +53,16 @@ void Surface::destroy() {
 
     SCOPED_STOPWATCH
 
+    assert(not _swapchain);
+
     if (_surface) {
         (*_application)->destroySurfaceKHR(_surface);
     }
+
+    /**/
+
+    const auto pending = Engine::getEngine()->getPlatform()->destroyNativeWindow(_STD move(_window));
+    scheduler::fiber::self::await_signal(pending.signal());
 }
 
 TextureFormat Surface::getImageFormat(const Device& device_) const {
@@ -69,6 +87,18 @@ TextureFormat Surface::getImageFormat(const Device& device_) const {
     return api::vkTranslateFormat(format);
 }
 
+const ptr<Application> Surface::getApplication() const noexcept {
+    return _application;
+}
+
+const ptr<engine::platform::NativeWindow> Surface::getNativeWindow() const noexcept {
+    return _window.get();
+}
+
+cref<vk::SurfaceKHR> Surface::getVkSurfaceKhr() const noexcept {
+    return _surface;
+}
+
 Surface::operator vk::SurfaceKHR() const {
     return _surface;
 }
@@ -77,7 +107,7 @@ vk::SurfaceKHR Surface::createApiSurface() {
 
     #ifdef WIN32
 
-    const auto window { static_cast<ptr<platform::Win32Window>>(_window) };
+    const auto window { static_cast<ptr<platform::Win32Window>>(_window.get()) };
     const auto sdlWnd { window->sdl() };
 
     VkSurfaceKHR tmp {};
@@ -89,4 +119,16 @@ vk::SurfaceKHR Surface::createApiSurface() {
 
     #else
     #endif
+}
+
+cref<sptr<Swapchain>> Surface::swapchain() const noexcept {
+    return _swapchain;
+}
+
+bool Surface::setSwapchain(cref<sptr<Swapchain>> swapchain_) noexcept {
+    if (not _swapchain || (_swapchain && not swapchain_)) {
+        _swapchain = swapchain_;
+        return true;
+    }
+    return false;
 }
