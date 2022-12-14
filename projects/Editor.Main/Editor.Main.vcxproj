@@ -104,6 +104,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.Main\Boot\AssetInit.cpp" />
     <ClCompile Include="..\..\src\Editor.Main\Boot\GfxInit.cpp" />
+    <ClCompile Include="..\..\src\Editor.Main\Boot\WorldInit.cpp" />
     <ClCompile Include="..\..\src\Editor.Main\Editor.Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +130,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.Main\Boot\AssetInit.hpp" />
     <ClInclude Include="..\..\src\Editor.Main\Boot\GfxInit.hpp" />
+    <ClInclude Include="..\..\src\Editor.Main\Boot\WorldInit.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
