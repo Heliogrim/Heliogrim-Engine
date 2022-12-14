@@ -1,26 +1,27 @@
 #pragma once
 
+#include <Ember/Actor.hpp>
 #include "Pool.hpp"
 #include "Traits.hpp"
 
 namespace ember::engine::acs {
-    class __declspec(novtable) PoolWrapperBase {
+    class __declspec(novtable) ActorPoolWrapperBase {
     public:
-        virtual void insert(cref<actor_guid> key_) = 0;
+        virtual void insert(cref<actor_guid> key_, cref<ActorInitializer> initializer_) = 0;
 
-        virtual ptr<void> get(cref<actor_guid> key_) = 0;
+        virtual ptr<Actor> get(cref<actor_guid> key_) = 0;
 
         virtual void erase(cref<actor_guid> key_) = 0;
     };
 
     template <typename PooledType_>
-    class PoolWrapper final :
-        public PoolWrapperBase {
+    class ActorPoolWrapper final :
+        public ActorPoolWrapperBase {
     public:
         using pool_type = Pool<actor_guid, PooledType_, invalid_actor_guid>;
 
     public:
-        PoolWrapper(const ptr<pool_type> actual_) noexcept :
+        ActorPoolWrapper(const ptr<pool_type> actual_) noexcept :
             _actual(actual_) {}
 
     private:
@@ -32,14 +33,12 @@ namespace ember::engine::acs {
         }
 
     public:
-        void insert(cref<actor_guid> key_) override {
-            if constexpr (_STD is_default_constructible_v<typename pool_type::assign_value_type>) {
-                _actual->insert(key_);
-            }
+        void insert(cref<actor_guid> key_, cref<ActorInitializer> initializer_) override {
+            _actual->emplace(key_, initializer_);
         }
 
-        ptr<void> get(cref<actor_guid> key_) override {
-            return _actual->get(key_);
+        ptr<Actor> get(cref<actor_guid> key_) override {
+            return static_cast<ptr<Actor>>(_actual->get(key_));
         }
 
         void erase(cref<actor_guid> key_) override {

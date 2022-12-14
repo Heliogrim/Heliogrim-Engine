@@ -9,6 +9,7 @@
 #include "Traits.hpp"
 #include "Pool.hpp"
 #include "PoolWrapper.hpp"
+#include "ActorPoolWrapper.hpp"
 #include "Registry.hpp"
 
 namespace ember {
@@ -19,7 +20,6 @@ namespace ember {
 }
 
 namespace ember::engine::acs {
-
     class Registry {
     public:
         using size_type = size_t;
@@ -153,7 +153,7 @@ namespace ember::engine::acs {
 
     public:
         template <class ValueType_, typename... Args_>
-        [[nodiscard]] ptr<ValueType_> acquireActorComponent(cref<actor_guid> guid_, Args_&& ...args_) {
+        [[nodiscard]] ptr<ValueType_> acquireActorComponent(cref<actor_guid> guid_, Args_&&... args_) {
 
             auto& pool { getOrCreatePool<ValueType_>() };
             const auto result = pool.emplace(guid_, _STD forward<Args_>(args_)...);
@@ -170,10 +170,51 @@ namespace ember::engine::acs {
         }
 
     private:
-        ptr<pool_type<Actor>> _defaultActorPool = &pool_type<Actor>::getOrCreate();
+        ska::bytell_hash_map<type_id, ptr<ActorPoolWrapperBase>> _actorPools;
 
     public:
-        [[nodiscard]] ptr<Actor> createActor() noexcept;
+        template <IsEmberObject ActorType_>
+        const ptr<pool_type<ActorType_>> getOrCreateActorPool() {
+
+            using pool_type = pool_type<ActorType_>;
+            using wrapper_type = ActorPoolWrapper<ActorType_>;
+
+            // TODO: Change static lifetime to scoped one
+            auto* const pool { &pool_type::getOrCreate() };
+
+            const auto typeId { EmberClass::stid<ActorType_>() };
+            const auto* const mapped { _actorPools[typeId] };
+
+            if (mapped == nullptr) {
+                _actorPools[typeId] = new wrapper_type(pool);
+            }
+
+            return pool;
+        }
+
+    public:
+        template <IsEmberObject ActorType_> requires _STD derived_from<ActorType_, Actor>
+        [[nodiscard]] ptr<ActorType_> createActor(cref<ActorInitializer> initializer_) noexcept {
+
+            const auto guid = generate_actor_guid();
+
+            auto* const pool { getOrCreateActorPool<ActorType_>() };
+            const auto result { pool->insert(guid, ActorType_(initializer_)) };
+
+            auto* actor { pool->get(guid) };
+            actor->unsafe_set_guid(guid);
+
+            return actor;
+        }
+
+        [[nodiscard]] ptr<Actor> createActor(const ptr<const ActorClass> actorClass_,
+            cref<ActorInitializer> initializer_);
+
+        [[nodiscard]] ptr<Actor> createActor(const ptr<const ActorClass> actorClass_,
+            cref<ActorInitializer> initializer_, _STD nothrow_t) noexcept;
+
+    public:
+        [[nodiscard]] ptr<Actor> createActor(cref<ActorInitializer> initializer_) noexcept;
 
         void destroyActor(mref<ptr<Actor>> actor_);
     };

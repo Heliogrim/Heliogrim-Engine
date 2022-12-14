@@ -15,6 +15,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.ACS\ActorPoolWrapper.hpp" />
     <ClInclude Include="..\..\src\Engine.ACS\Component.hpp" />
     <ClInclude Include="..\..\src\Engine.ACS\ComponentTypeId.hpp" />
     <ClInclude Include="..\..\src\Engine.ACS\Pool.hpp" />
