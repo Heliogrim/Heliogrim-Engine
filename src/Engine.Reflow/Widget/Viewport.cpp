@@ -130,11 +130,14 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
         return;
     }
 
+    return;
+
     if (viewHasChanged()) {
         rebuildView();
 
         auto* const gfx { Engine::getEngine()->getGraphics() };
-        gfx->_secondarySwapchain = _swapchain.get();
+        throw _STD runtime_error("");
+        //gfx->_secondarySwapchain = _swapchain.get();
 
         if (not _cameraActor) {
             // TODO: Most likely generate a new camera actor
@@ -402,7 +405,7 @@ EventResponse Viewport::onMouseMove(cref<MouseMoveEvent> event_) {
     const auto isShift { (event_._modifier & 0x3) != 0x0 };
     const auto rbtn { (event_._button & 0x4) != 0x0 };
 
-    if (!rbtn) {
+    if (!rbtn || not _cameraActor) {
         return EventResponse::eConsumed;
     }
 

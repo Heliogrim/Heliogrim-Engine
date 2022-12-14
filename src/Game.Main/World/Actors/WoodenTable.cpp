@@ -7,11 +7,8 @@
 using namespace ember::game::actors;
 using namespace ember;
 
-WoodenTable::WoodenTable() :
-    Actor() {}
-
 WoodenTable::WoodenTable(cref<ActorInitializer> initializer_) :
-    Actor() {
+    Actor(initializer_) {
 
     initializer_.createComponent<ActorComponent>(this);
     initializer_.createSubComponent<StaticGeometryComponent>(this, _rootComponent);
