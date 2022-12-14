@@ -12,6 +12,12 @@ namespace ember::editor {
         ~EditorEngine() override;
 
     public:
+        /**
+         * Get the cached engine instance pointer
+         */
+        [[nodiscard]] static non_owning_rptr<EditorEngine> getEngine() noexcept;
+
+    public:
         bool preInit() override;
 
         bool init() override;
