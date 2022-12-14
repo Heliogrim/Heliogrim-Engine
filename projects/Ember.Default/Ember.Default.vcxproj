@@ -90,6 +90,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Fonts\CascadiaCode.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Fonts\Consolas24Latin1.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\Brand.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultAlpha.hpp" />

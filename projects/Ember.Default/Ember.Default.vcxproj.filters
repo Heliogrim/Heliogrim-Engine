@@ -468,6 +468,9 @@
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\IconAudio.hpp">
       <Filter>Headerdateien\Assets\Images</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Fonts\CascadiaCode.hpp">
+      <Filter>Headerdateien\Assets\Font</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultAlpha.cpp">
