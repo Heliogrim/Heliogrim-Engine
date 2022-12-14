@@ -16,6 +16,7 @@
 #include <Engine.SFX/Audio.hpp>
 #include <Editor.Main/Boot/AssetInit.hpp>
 #include <Editor.Main/Boot/GfxInit.hpp>
+#include <Editor.Main/Boot/WorldInit.hpp>
 
 #ifdef WIN32
 #include <Engine.Platform/Windows/WinPlatform.hpp>
@@ -148,11 +149,6 @@ bool EditorEngine::start() {
         _network->schedule();
         _physics->schedule();
 
-        /**/
-        boot::initAssets();
-        boot::initGfx();
-        /**/
-
         next.test_and_set(std::memory_order::relaxed);
         next.notify_one();
     });
@@ -168,6 +164,13 @@ bool EditorEngine::start() {
 
         _primaryGameSession = make_uptr<core::Session>();
         _worldContexts.push_back(_primaryGameSession->getWorldContext());
+
+        /**/
+        boot::initEditorWorld();
+        boot::initPrimaryWorld();
+        boot::initAssets();
+        boot::initGfx();
+        /**/
 
         next.test_and_set(std::memory_order::relaxed);
         next.notify_one();
