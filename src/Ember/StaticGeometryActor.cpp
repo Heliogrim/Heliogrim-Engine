@@ -4,11 +4,8 @@
 
 using namespace ember;
 
-StaticGeometryActor::StaticGeometryActor() :
-    _staticGeometryComponent(nullptr) {}
-
 StaticGeometryActor::StaticGeometryActor(cref<ActorInitializer> initializer_) :
-    Actor(),
+    Actor(initializer_),
     _staticGeometryComponent(nullptr) {
     _staticGeometryComponent = initializer_.createComponent<StaticGeometryComponent>(this);
 }

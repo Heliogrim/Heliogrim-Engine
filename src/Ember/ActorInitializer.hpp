@@ -22,6 +22,7 @@ namespace ember {
         using this_type = ActorInitializer;
 
     protected:
+    public:
         ActorInitializer(cref<managed<void>> internal_) :
             _internal(internal_) {}
 

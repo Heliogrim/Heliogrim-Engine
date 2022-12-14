@@ -5,11 +5,8 @@
 #include <Engine.Common/Collection/CompactArray.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Math/Transform.hpp>
-#include <Engine.Reflect/EmberReflect.hpp>
-
-#if TRUE
 #include <Engine.Reflect/Reflect.hpp>
-#endif
+#include <Engine.Reflect/Cast.hpp>
 
 #include "Future.hpp"
 #include "Traits.hpp"
@@ -18,7 +15,6 @@ namespace ember {
     /**
      * Forward Declaration
      */
-    struct ActorClass;
     class ActorComponent;
     class ActorInitializer;
     struct SerializedActor;
@@ -26,6 +22,8 @@ namespace ember {
     class IComponentRegisterContext;
     class Session;
     class World;
+
+    using ActorClass = ::ember::EmberClass;
 
     /**
      * The base class of every actor
@@ -39,17 +37,20 @@ namespace ember {
         using this_type = Actor;
         using underlying_type = EmberObject;
 
+        inline constexpr static type_id typeId { "Actor"_typeId };
+
     public:
         /**
-         * Default Constructor
+         * Constructor
          *
          * @author Julius
          * @date 25.11.2021
          */
-        Actor() noexcept;
+        Actor(cref<ActorInitializer> initializer_) noexcept;
 
-        // Warning: Temporary Debug Solution
-        Actor(mref<Actor> other_) noexcept;
+        Actor(cref<this_type>) = delete;
+
+        Actor(mref<this_type>) noexcept = delete;
 
         /**
          * Destructor
@@ -153,7 +154,7 @@ namespace ember {
      *
      * @returns True if register succeeded, otherwise false
      */
-    extern bool RegisterActorClass(cref<ActorClass> class_) noexcept;
+    extern bool RegisterActorClass(const ptr<const ActorClass> class_) noexcept;
 
     /**
      * Registers a new ActorType to the engine
@@ -169,7 +170,7 @@ namespace ember {
      */
     template <class ActorType_>
     bool RegisterActorClass() noexcept {
-        return RegisterActorClass(Reflect::SubstitudeActorClass<ActorType_> {});
+        return RegisterActorClass(Reflect::SubstitudeActorClass<ActorType_>::Unknown());
     }
 
     /**
@@ -237,12 +238,19 @@ namespace ember {
      * @param class_ The actor class to instantiate
      * @param session_ The core session where to create the actor
      *
-     * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
+     * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
      */
-    [[nodiscard]] extern Future<ptr<Actor>> CreateActor(
-        cref<ActorClass> class_,
+    [[nodiscard]] extern ptr<Actor> CreateActor(
+        const ptr<const ActorClass> class_,
         cref<Session> session_
     ) noexcept;
+
+    template <class ActorType_>
+    [[nodiscard]] ptr<ActorType_> CreateActor(cref<Session> session_) {
+        return Cast<ActorType_, Actor, false>(
+            CreateActor(Reflect::SubstitudeActorClass<ActorType_>::Known(), session_)
+        );
+    }
 
     /**
      * Creates a new actor object based on given actor class
@@ -257,12 +265,19 @@ namespace ember {
      * @param class_ The actor class to instantiate
      * @param activeWorld_ The world where to create the actor
      *
-     * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
+     * @returns A pointer to the newly created actor if succeeded, otherwise nullptr
      */
-    [[nodiscard]] extern Future<ptr<Actor>> CreateActor(
-        cref<ActorClass> class_,
+    [[nodiscard]] extern ptr<Actor> CreateActor(
+        const ptr<const ActorClass> class_,
         cref<World> activeWorld_
     ) noexcept;
+
+    template <class ActorType_>
+    [[nodiscard]] ptr<ActorType_> CreateActor(cref<World> activeWorld_) {
+        return Cast<ActorType_, Actor, false>(
+            CreateActor(Reflect::SubstitudeActorClass<ActorType_>::Known(), activeWorld_)
+        );
+    }
 
     /**
      * Create a new actor object based on given actor class
@@ -277,7 +292,7 @@ namespace ember {
      * @returns A future, containing the newly created actor is succeeded, otherwise nullptr
      */
     [[nodiscard]] extern Future<ptr<Actor>> CreateActor(
-        cref<ActorClass> class_,
+        const ptr<const ActorClass> class_,
         const ptr<SerializedActor> serialized_,
         cref<Session> session_
     ) noexcept;
@@ -299,7 +314,7 @@ namespace ember {
      * @returns A future, containing the newly created actor is succeeded, otherwise nullptr
      */
     [[nodiscard]] extern Future<ptr<Actor>> CreateActor(
-        cref<ActorClass> class_,
+        const ptr<const ActorClass> class_,
         const ptr<SerializedActor> serialized_,
         cref<World> activeWorld_
     ) noexcept;
@@ -350,7 +365,7 @@ namespace ember {
      * @returns A future, containing the newly created and mounted actor if succeeded, otherwise nullptr
      */
     [[nodiscard]] extern Future<ptr<Actor>> SpawnActor(
-        cref<ActorClass> class_, cref<World> activeWorld_
+        const ptr<const ActorClass> class_, cref<World> activeWorld_
     ) noexcept;
 
     /**
@@ -368,7 +383,7 @@ namespace ember {
      * @returns A future, containing the newly created and mounted actor if succeeded, otherwise nullptr
      */
     [[nodiscard]] extern Future<ptr<Actor>> SpawnActor(
-        cref<ActorClass> class_,
+        const ptr<const ActorClass> class_,
         const ptr<SerializedActor> serialized_,
         cref<World> activeWorld_
     ) noexcept;
@@ -379,12 +394,12 @@ namespace ember {
      * @author Julius
      * @date 25.11.2021
      *
-     * @param session_ The session where to destroy the actor.
      * @param actor_ The actor to destroy.
+     * @param session_ The session where to destroy the actor.
      *
      * @returns A future, representing whether the actor was successfully destroyed.
      */
-    [[nodiscard]] extern Future<bool> Destroy(cref<Session> session_, mref<ptr<Actor>> actor_) noexcept;
+    [[nodiscard]] extern Future<bool> Destroy(mref<ptr<Actor>> actor_, cref<Session> session_) noexcept;
 
     /**
      * Destroys the given actor
@@ -392,10 +407,10 @@ namespace ember {
      * @author Julius
      * @date 25.11.2021
      *
-     * @param activeWorld_ The world where to destroy the actor.
      * @param actor_ The actor to destroy.
+     * @param activeWorld_ The world where to destroy the actor.
      *
      * @returns A future, representing whether the actor was successfully destroyed.
      */
-    [[nodiscard]] extern Future<bool> Destroy(cref<World> activeWorld_, mref<ptr<Actor>> actor_) noexcept;
+    [[nodiscard]] extern Future<bool> Destroy(mref<ptr<Actor>> actor_, cref<World> activeWorld_) noexcept;
 }

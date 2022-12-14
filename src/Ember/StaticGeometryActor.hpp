@@ -10,8 +10,6 @@ namespace ember {
         using underlying_type = Actor;
 
     public:
-        StaticGeometryActor();
-
         StaticGeometryActor(cref<ActorInitializer> initializer_);
 
     private:
