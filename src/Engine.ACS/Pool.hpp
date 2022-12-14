@@ -6,7 +6,6 @@
 #include "Storage.hpp"
 
 namespace ember::engine::acs {
-
     template <typename KeyType, typename PooledType, KeyType InvalidKey>
     class Pool {
     public:
@@ -144,6 +143,7 @@ namespace ember::engine::acs {
          *
          * @param  key_ The key.
          */
+        template <_STD same_as<PooledType> Type_ = PooledType> requires _STD is_default_constructible_v<Type_>
         void insert(const KeyType& key_) {
             _storage.emplace(key_);
         }
@@ -157,6 +157,7 @@ namespace ember::engine::acs {
          * @param 		   key_ The key.
          * @param [in,out] value_ The value to insert.
          */
+        template <_STD same_as<PooledType> Type_ = PooledType> requires _STD is_move_constructible_v<Type_>
         void insert(const KeyType& key_, PooledType&& value_) {
             _storage.emplace(key_, _STD forward<PooledType>(value_));
         }
@@ -172,6 +173,9 @@ namespace ember::engine::acs {
          *
          * @returns A reference to a PooledType.
          */
+        template <_STD same_as<PooledType> Type_ = PooledType> requires
+            _STD is_move_constructible_v<Type_> &&
+            _STD is_move_assignable_v<Type_>
         PooledType& insert_or_assign(const KeyType& key_, PooledType&& value_) {
             return _storage.insert_or_assign(key_, _STD forward<PooledType>(value_));
         }
@@ -189,8 +193,9 @@ namespace ember::engine::acs {
          *
          * @returns A pointer to the keyed target element and expression whether it was newly constructed
          */
-        template <typename... Args_>
-        _STD pair<ptr<PooledType>, bool> emplace(cref<KeyType> key_, Args_&& ...args_) {
+        template <_STD same_as<PooledType> Type_ = PooledType, typename... Args_> requires
+            _STD is_constructible_v<Type_, Args_...>
+        std::pair<ptr<PooledType>, bool> emplace(cref<KeyType> key_, Args_&&... args_) {
             return _storage.emplace(key_, _STD forward<Args_>(args_)...);
         }
 

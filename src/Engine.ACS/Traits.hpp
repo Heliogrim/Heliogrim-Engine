@@ -4,7 +4,6 @@
 #include <Engine.Common/Meta/TypeId.hpp>
 
 namespace ember {
-
     /**
      * An guid actor identifier.
      *
@@ -16,6 +15,8 @@ namespace ember {
         uint8_t b1;
         uint8_t b2;
         uint32_t post;
+
+        // constexpr actor_guid(cref<actor_guid> other_) noexcept = default;
 
         /**
          * Cast that converts the given to a bool
@@ -64,7 +65,6 @@ namespace ember {
         const uint64_t& as_uint64() const {
             return *(reinterpret_cast<const uint64_t*>(this));
         }
-
     } actor_guid;
 
     /**

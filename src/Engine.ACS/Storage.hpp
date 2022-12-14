@@ -5,7 +5,6 @@
 #include <Engine.Common/Collection/Vector.hpp>
 
 namespace ember::engine::acs {
-
     template <typename Ty>
     FORCE_INLINE Ty* construct_inplace(void* destination_) {
         return new(destination_) Ty;
@@ -54,7 +53,6 @@ namespace ember::engine::acs {
      */
     template <typename ValueType, typename KeyType, KeyType InvalidKey, typename IndexType = size_t>
     class hybrid_storage_page final {
-
         friend class hybrid_storage<KeyType, ValueType, InvalidKey>;
 
     public:
@@ -135,7 +133,7 @@ namespace ember::engine::acs {
          * @returns True if it succeeds, false if it fails.
          */
         template <typename... Args_>
-        bool emplace(const key_type& key_, Args_&& ...args_, index_type& idx_) {
+        bool emplace(const key_type& key_, Args_&&... args_, index_type& idx_) {
             /**
              * Get empty slot
              */
@@ -1155,7 +1153,7 @@ namespace ember::engine::acs {
          * @param args_ The packed parameter list to construct element.
          */
         template <typename... Args_>
-        FORCE_INLINE void place(const index_type& idx_, const key_type& key_, Args_&& ...args_) {
+        FORCE_INLINE void place(const index_type& idx_, const key_type& key_, Args_&&... args_) {
             /**
              *
              */
@@ -1700,7 +1698,7 @@ namespace ember::engine::acs {
          *
          * @returns A pair of the stored type and boolean
          */
-        [[nodiscard]] _STD pair<StoredType_*, bool> emplace(const KeyType_& key_) {
+        _STD pair<StoredType_*, bool> emplace(const KeyType_& key_) {
 
             _STD pair<typename mapping_container::iterator, bool> er = _indirection.emplace(storage_kv_pair {
                 key_,
@@ -1751,7 +1749,7 @@ namespace ember::engine::acs {
          * @returns A pair of a pointer of the stored value and a boolean
          */
         template <typename... Args_>
-        [[nodiscard]] _STD pair<StoredType_*, bool> emplace(const KeyType_& key_, Args_&& ...args_) {
+        _STD pair<StoredType_*, bool> emplace(const KeyType_& key_, Args_&&... args_) {
 
             auto er = _indirection.emplace(storage_kv_pair {
                 key_,
@@ -2357,7 +2355,7 @@ namespace ember::engine::acs {
         }
 
         template <typename... Args_>
-        [[nodiscard]] index_type pages_insert_pair(const KeyType_& key_, Args_&& ...args_) {
+        [[nodiscard]] index_type pages_insert_pair(const KeyType_& key_, Args_&&... args_) {
 
             // TODO: optimize way to find storage page with empty sequence
             // TODO: optimize way reusage of pages / using reverse iterator will speed up linear insert, but slow down on reusage
