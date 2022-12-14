@@ -12,7 +12,6 @@
 #include "../Types/AssetConcept.hpp"
 
 namespace ember::engine::assets {
-
     /**
      * An asset database.
      *
@@ -135,6 +134,11 @@ namespace ember::engine::assets {
             return insert(asset_->get_guid(), AssetType_::typeId, asset_);
         }
 
+        /**
+         *
+         */
+        bool insert(ptr<Asset> asset_) noexcept;
+
     public:
         /**
          * Removes a database entry and returns the stored element
@@ -161,5 +165,4 @@ namespace ember::engine::assets {
          */
         [[nodiscard]] AssetDatabaseQuery query(cref<asset_guid> guid_) const noexcept;
     };
-
 }
