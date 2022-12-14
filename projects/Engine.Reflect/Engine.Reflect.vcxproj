@@ -99,6 +99,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Reflect\Cast.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\EmberReflect.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\EmberStruct.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Reflect.hpp" />
