@@ -98,6 +98,7 @@ void Device::setup() {
         }
 
         IM_DEBUG_LOG("Found vk::PhysicsDevice matching the requirements");
+        _physicalDevice = entry;
         break;
     }
 
