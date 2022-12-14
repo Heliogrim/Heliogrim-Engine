@@ -42,7 +42,7 @@ namespace ember::engine {
     public:
         virtual ~Engine();
 
-    private:
+    protected:
         /**
          * The cached engine instance pointer
          *  This is used for more easier access due to unknown or ambiguous entry points
