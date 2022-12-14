@@ -1,6 +1,7 @@
 #include "SceneViewEye.hpp"
 
 #include <Engine.Common/Math/Convertion.hpp>
+#include <Engine.Common/Math/Coordinates.hpp>
 
 using namespace ember::engine::gfx::scene;
 using namespace ember;
@@ -15,7 +16,23 @@ void SceneViewEye::updateProjection(cref<math::mat4> projection_) {
 }
 
 void SceneViewEye::updateView(cref<math::vec3> origin_, cref<math::vec3> eulerRotation_) {
-    updateView(origin_, math::quaternion::euler(eulerRotation_));
+
+    _position = origin_;
+
+    math::mat4 rotationMatrix { math::mat4::make_identity() };
+    rotationMatrix.rotate(eulerRotation_.x, math::vec3_right);
+    rotationMatrix.rotate(eulerRotation_.y, math::vec3_up);
+    rotationMatrix.rotate(eulerRotation_.z, math::vec3_forward);
+
+    const auto translateMatrix { math::mat4::make_identity().translate(origin_) };
+
+    constexpr bool fpc = true;// Using first person as default
+    if constexpr (fpc) {
+        _view = rotationMatrix * translateMatrix;
+    } else {
+        _view = translateMatrix * rotationMatrix;
+    }
+
 }
 
 void SceneViewEye::updateView(cref<math::vec3> origin_, cref<math::quaternion> rotation_) {

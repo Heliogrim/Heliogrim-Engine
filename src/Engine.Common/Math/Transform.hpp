@@ -5,7 +5,6 @@
 #include "../Wrapper.hpp"
 
 namespace ember::math {
-
     class Transform {
     public:
         using this_type = Transform;
@@ -18,9 +17,9 @@ namespace ember::math {
          * @date 26.11.2021
          */
         constexpr Transform() noexcept :
-            _position(),
-            _rotation(),
-            _scale() {}
+            _position(0.F),
+            _rotation(quaternion::make_identity()),
+            _scale(1.F) {}
 
         /**
          * Constructor
@@ -138,5 +137,4 @@ namespace ember::math {
             _scale = scale_;
         }
     };
-
 }

@@ -8,7 +8,6 @@
 #include "Vector.hpp"
 
 namespace ember::math {
-
     /**
      * \brief 
      * \tparam Ly 
@@ -79,7 +78,7 @@ namespace ember::math {
          * @param  z_ (Optional) The z coordinate.
          * @param  w_ (Optional) The w.
          */
-        quaternion_t(value_type x_, value_type y_ = 0, value_type z_ = 0, value_type w_ = 0) noexcept :
+        constexpr quaternion_t(value_type x_, value_type y_ = 0, value_type z_ = 0, value_type w_ = 0) noexcept :
             _quat(w_, x_, y_, z_) { }
 
         /**
@@ -173,6 +172,13 @@ namespace ember::math {
             result._quat = pitch * yaw * roll;
 
             return result;
+        }
+
+        /**
+         *
+         */
+        constexpr static type make_identity() {
+            return type { 0, 0, 0, 1 };
         }
 
         /**

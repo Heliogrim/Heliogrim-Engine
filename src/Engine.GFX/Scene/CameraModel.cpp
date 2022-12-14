@@ -42,9 +42,9 @@ void CameraModel::update(const ptr<engine::scene::Scene> scene_) {
     /**/
 
     const auto ct { _owner->getLocalTransform() };
-    const auto rt { _owner->getRootComponent()->getWorldTransform() };
+    const auto rt { _owner->getRootComponent()->getLocalTransform() };
 
-    view.updateView(rt.position(), rt.rotation() * ct.rotation());
+    view.updateView(rt.position(), (rt.rotation() * ct.rotation()).euler());
 
     /**/
 
