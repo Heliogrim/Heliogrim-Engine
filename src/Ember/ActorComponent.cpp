@@ -26,11 +26,11 @@ ptr<Actor> ActorComponent::getRootActor() const noexcept {
 
 ptr<ActorComponent> ActorComponent::getRootComponent() const noexcept {
 
-    if (_parent) {
-        return _parent->getRootComponent();
+    if (not _parent) {
+        return const_cast<ptr<ActorComponent>>(this);
     }
 
-    return nullptr;
+    return _parent->getRootComponent();
 }
 
 ptr<ActorComponent> ActorComponent::getParentComponent() const noexcept {
