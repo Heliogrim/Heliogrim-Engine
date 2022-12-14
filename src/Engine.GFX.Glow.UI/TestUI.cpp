@@ -3,7 +3,6 @@
 #include "Engine.Reflow/Widget/Panel.hpp"
 
 #include <Engine.Common/Make.hpp>
-#include <Engine.Common/String.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>
 
@@ -11,15 +10,13 @@
 #include "Editor.UI/Panel/SceneHierarchyPanel.hpp"
 #include "Editor.UI/Panel/ObjectEditorPanel.hpp"
 #include "Editor.UI/Style/Style.hpp"
+#include "Ember.Default/Assets/Fonts/CascadiaCode.hpp"
 #include "Engine.Assets/Assets.hpp"
-#include "Engine.Core/Engine.hpp"
 #include "Engine.Event/GlobalEventEmitter.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Reflow/Widget/Button.hpp"
 #include "Engine.Reflow/Widget/Image.hpp"
-#include "Engine.Reflow/Widget/Input/InputText.hpp"
 #include "Engine.Reflow/Widget/Menu.hpp"
-#include "Engine.Reflow/Widget/Overlay.hpp"
 #include "Engine.Reflow/Widget/Text.hpp"
 #include "Engine.Reflow/Widget/Viewport.hpp"
 #include "Engine.Reflow/Widget/HBox.hpp"
@@ -34,10 +31,8 @@
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.GFX/Graphics.hpp"
 #include "Engine.Scheduler/Async.hpp"
-#include "Engine.Scheduler/Task/Task.hpp"
 #include "Engine.Assets/Database/AssetDatabase.hpp"
 #include "Engine.Assets/Database/AssetDatabaseQuery.hpp"
-#include "Ember.Default/Assets/Fonts/Consolas24Latin1.hpp"
 #include "Engine.Assets/Types/Font.hpp"
 #include "Engine.GFX/Resource/FontResource.hpp"
 #endif
@@ -523,7 +518,7 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
 }
 
 ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
-    using font_default_type = game::assets::font::Consolas24Latin1;
+    using font_default_type = game::assets::font::CascadiaCode;
 
     auto* db { engine::Engine::getEngine()->getAssets()->getDatabase() };
     auto query { db->query(font_default_type::unstable_auto_guid()) };

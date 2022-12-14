@@ -8,16 +8,6 @@ namespace ember::game::actors {
         using this_type = WoodenTable;
 
     public:
-        /**
-         * Constructor
-         *
-         * @author Julius
-         * @date 25.11.2021
-         *
-         * @see Actor::Actor
-         */
-        WoodenTable();
-
         WoodenTable(cref<ActorInitializer> initializer_);
     };
 }
