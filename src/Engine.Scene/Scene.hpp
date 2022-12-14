@@ -3,6 +3,7 @@
 #include "Graph/SceneGraph.hpp"
 #include "SceneTag.hpp"
 #include "NodeTypeRegistry.hpp"
+#include <Engine.Reflect/EmberReflect.hpp>
 
 /**
  * Forward Declaration
@@ -13,7 +14,8 @@ namespace ember {
 }
 
 namespace ember::engine::scene {
-    class __declspec(novtable) Scene {
+    class __declspec(novtable) Scene :
+        public EmberObject {
     public:
         using this_type = Scene;
 
