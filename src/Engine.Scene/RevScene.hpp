@@ -13,6 +13,8 @@ namespace ember::engine::scene {
         using this_type = RevScene;
         using underlying_type = Scene;
 
+        inline constexpr static type_id typeId { "RevScene"_typeId };
+
     public:
         RevScene() noexcept;
 

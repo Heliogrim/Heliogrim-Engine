@@ -9,7 +9,7 @@ using namespace ember::engine::scene;
 using namespace ember;
 
 uptr<Scene> SceneFactory::createDefaultScene() {
-    return make_uptr<RevScene>();
+    return uptr<Scene>(EmberObject::create<RevScene>());
 }
 
 uptr<Scene> SceneFactory::createPreviewScene() {
