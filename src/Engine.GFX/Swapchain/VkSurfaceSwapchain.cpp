@@ -21,11 +21,11 @@ void pretransform(cref<sptr<Device>> device_, cref<Vector<SwapchainImage>> textu
  *
  */
 
-VkSurfaceSwapchain::VkSurfaceSwapchain() :
+VkSurfaceSwapchain::VkSurfaceSwapchain(const non_owning_rptr<Surface> owner_) :
     Swapchain(),
     _signals(),
     _vkSwapchain(),
-    _surface() {}
+    _surface(owner_) {}
 
 VkSurfaceSwapchain::~VkSurfaceSwapchain() {
     destroy();
@@ -261,10 +261,6 @@ void VkSurfaceSwapchain::restoreSignal(const vk::Semaphore signal_) {
     }
 
     _signals.push_back(signal_);
-}
-
-void VkSurfaceSwapchain::useSurface(const non_owning_rptr<Surface> surface_) {
-    _surface = surface_;
 }
 
 /**

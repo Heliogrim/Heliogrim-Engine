@@ -53,7 +53,10 @@ void Surface::destroy() {
 
     SCOPED_STOPWATCH
 
-    assert(not _swapchain);
+    if (_swapchain) {
+        _swapchain->destroy();
+        _swapchain.reset();
+    }
 
     if (_surface) {
         (*_application)->destroySurfaceKHR(_surface);

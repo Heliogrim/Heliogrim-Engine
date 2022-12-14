@@ -20,26 +20,36 @@ Audio::Audio(const non_owning_rptr<Engine> engine_) noexcept :
 
 Audio::~Audio() noexcept = default;
 
-void Audio::setupImporter() {
-    SCOPED_STOPWATCH
-
-    //
-    auto* manager { _engine->getResources() };
-
-    //
-    manager->importer().registerImporter(sfx::AudioFileType::Flac, new sfx::FlacImporter());
-    manager->importer().registerImporter(sfx::AudioFileType::Ogg, new sfx::VorbisImporter());
-    manager->importer().registerImporter(sfx::AudioFileType::Wav, new sfx::WavImporter());
-}
-
 void Audio::setup() {
     SCOPED_STOPWATCH
 
-    setupImporter();
+    registerImporter();
 }
 
 void Audio::schedule() {}
 
 void Audio::desync() {}
 
-void Audio::destroy() {}
+void Audio::destroy() {
+    unregisterImporter();
+}
+
+void Audio::registerImporter() {
+
+    auto* manager { _engine->getResources() };
+
+    //
+    manager->importer().registerImporter(sfx::AudioFileType::Flac, make_sptr<sfx::FlacImporter>());
+    manager->importer().registerImporter(sfx::AudioFileType::Ogg, make_sptr<sfx::VorbisImporter>());
+    manager->importer().registerImporter(sfx::AudioFileType::Wav, make_sptr<sfx::WavImporter>());
+}
+
+void Audio::unregisterImporter() {
+
+    auto* manager { _engine->getResources() };
+
+    /**/
+    manager->importer().unregisterImporter(sfx::AudioFileType::Flac);
+    manager->importer().unregisterImporter(sfx::AudioFileType::Ogg);
+    manager->importer().unregisterImporter(sfx::AudioFileType::Wav);
+}

@@ -46,8 +46,7 @@ void editor::boot::initGfx() {
     auto* const surface { gfxSurfaces->makeSurface(_STD move(window)) };
     surface->setup();
 
-    const auto swapchain { make_sptr<gfx::VkSurfaceSwapchain>() };
-    swapchain->useSurface(surface);
+    const auto swapchain { make_sptr<gfx::VkSurfaceSwapchain>(surface) };
     swapchain->setup(gfx->getCurrentDevice());
 
     [[maybe_unused]] const auto boundSurface = surface->setSwapchain(swapchain);

@@ -31,6 +31,8 @@ namespace ember::engine {
          * @author Julius
          * @date 12.09.2021
          */
-        void setupImporter();
+        void registerImporter();
+
+        void unregisterImporter();
     };
 }

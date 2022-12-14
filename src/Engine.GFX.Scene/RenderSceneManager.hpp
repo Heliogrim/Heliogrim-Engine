@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/CompactArray.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Utils/_CTRL.hpp>
 
@@ -13,7 +14,6 @@ namespace ember::engine::gfx {
 }
 
 namespace ember::engine::gfx::scene {
-
     class RenderSceneManager final {
     public:
         using this_type = RenderSceneManager;
@@ -70,6 +70,38 @@ namespace ember::engine::gfx::scene {
 
     public:
         void selectInvokeTargets(_Inout_ ref<CompactSet<sptr<RenderTarget>>> targets_) const noexcept;
-    };
 
+        template <typename Selector_>
+        void selectPrimaryTargets(
+            _Inout_ ref<CompactArray<sptr<RenderTarget>>> targets_,
+            Selector_&& selector_
+        ) const noexcept(_STD is_nothrow_invocable_v<Selector_, cref<sptr<RenderTarget>>>) {
+            for (const auto& target : _primaryTargets) {
+                if (selector_(target)) {
+                    targets_.push_back(target);
+                }
+            }
+        }
+
+        template <typename Selector_>
+        void selectSecondaryTargets(
+            _Inout_ ref<CompactArray<sptr<RenderTarget>>> targets_,
+            Selector_&& selector_
+        ) const noexcept(_STD is_nothrow_invocable_v<Selector_, cref<sptr<RenderTarget>>>) {
+            for (const auto& target : _secondaryTargets) {
+                if (selector_(target)) {
+                    targets_.push_back(target);
+                }
+            }
+        }
+
+        template <typename Selector_>
+        void selectTargets(
+            _Inout_ ref<CompactArray<sptr<RenderTarget>>> targets_,
+            Selector_&& selector_
+        ) const noexcept(_STD is_nothrow_invocable_v<Selector_, cref<sptr<RenderTarget>>>) {
+            selectPrimaryTargets<Selector_>(targets_, _STD forward<Selector_>(selector_));
+            selectSecondaryTargets<Selector_>(targets_, _STD forward<Selector_>(selector_));
+        }
+    };
 }

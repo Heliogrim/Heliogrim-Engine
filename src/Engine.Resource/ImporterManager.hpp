@@ -7,7 +7,6 @@
 #include "Importer/Importer.hpp"
 
 namespace ember::engine::res {
-
     class ImporterManager {
     public:
         using value_type = ImporterManager;
@@ -32,18 +31,9 @@ namespace ember::engine::res {
         ~ImporterManager() noexcept;
 
     private:
-        /**
-         * Tidy this up
-         *
-         * @author Julius
-         * @date 12.09.2021
-         */
-        void tidy();
-
-    private:
         using map_type = std::map<
             FileTypeId,
-            ptr<ImporterBase>
+            sptr<ImporterBase>
         >;
 
         map_type _mapping;
@@ -60,7 +50,7 @@ namespace ember::engine::res {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool registerImporter(cref<FileTypeId> fileTypeId_, ptr<ImporterBase> importer_) noexcept;
+        bool registerImporter(cref<FileTypeId> fileTypeId_, cref<sptr<ImporterBase>> importer_) noexcept;
 
         /**
          * Unregisters the given importer for all FileTypeIds
@@ -72,7 +62,7 @@ namespace ember::engine::res {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool unregisterImporter(ptr<ImporterBase> importer_) noexcept;
+        bool unregisterImporter(sptr<ImporterBase> importer_) noexcept;
 
         /**
          * Unregisters the importer for the referenced fileTypeId_
@@ -98,7 +88,7 @@ namespace ember::engine::res {
          *
          * @returns A ptr&lt;ImporterBase&gt;
          */
-        [[nodiscard]] ptr<ImporterBase> importer(cref<FileTypeId> fileType_, cref<File> file_) const;
+        [[nodiscard]] sptr<ImporterBase> importer(cref<FileTypeId> fileType_, cref<File> file_) const;
 
     public:
         /**
@@ -114,13 +104,13 @@ namespace ember::engine::res {
         [[nodiscard]] typename Importer<ImportType_, void>::import_result_type import(cref<FileTypeId> fileType_,
             cref<File> file_) const {
 
-            const ptr<ImporterBase> im = importer(fileType_, file_);
+            const sptr<ImporterBase> im = importer(fileType_, file_);
 
             if (im == nullptr) {
                 throw _STD runtime_error("No suitable importer found for FileTypeId and File.");
             }
 
-            return static_cast<const ptr<Importer<ImportType_, void>>>(im)->import(fileType_, file_);
+            return static_cast<const ptr<Importer<ImportType_, void>>>(im.get())->import(fileType_, file_);
         }
     };
 }

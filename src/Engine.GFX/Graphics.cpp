@@ -99,6 +99,7 @@ void Graphics::hookEngineState() {
         }
 
         _sceneManager->unregisterScene(static_cast<const ptr<scene::RevScene>>(scene));
+        cleanupTargetsByScene(static_cast<const ptr<scene::RevScene>>(scene));
     });
     _hooks.push_back({ core::WorldRemoveEvent::typeId.data, owre });
 
@@ -218,11 +219,7 @@ void Graphics::schedule() {
     reschedule();
 }
 
-void Graphics::desync() {}
-
-void Graphics::destroy() {
-    SCOPED_STOPWATCH
-
+void Graphics::desync() {
     /**
      * Wait until schedule stopped execution
      */
@@ -234,10 +231,20 @@ void Graphics::destroy() {
         // scheduler::thread::self::yield();
         scheduler::fiber::self::yield();
     }
+}
+
+void Graphics::destroy() {
+    SCOPED_STOPWATCH
+
+    if (_scheduled.load() != 0) {
+        desync();
+    }
 
     /**
      * Unregister Hooks and consume EngineState
      */
+    unregisterImporter();
+    unregisterLoader();
     unhookEngineState();
 
     /**
@@ -330,6 +337,37 @@ void reportStats(float fps_, float time_);
 
 const non_owning_rptr<gfx::scene::RenderSceneManager> Graphics::getSceneManager() const noexcept {
     return _sceneManager;
+}
+
+void Graphics::cleanupTargetsByScene(const non_owning_rptr<scene::IRenderScene> scene_) {
+
+    CompactArray<sptr<RenderTarget>> targets {};
+    _sceneManager->selectPrimaryTargets(targets, [scene_](cref<sptr<RenderTarget>> target_) {
+        // TODO: Check whether we want this with a query to the render targets to check whether
+        // TODO:    the render target is effected by scene changes ( deletion )
+        // return target_->hasScene(scene_);
+        return true;
+    });
+
+    for (auto&& target : targets) {
+        target->setActive(false);
+        _sceneManager->dropPrimaryTarget(target);
+    }
+
+    /**/
+
+    targets.clear();
+    _sceneManager->selectSecondaryTargets(targets, [scene_](cref<sptr<RenderTarget>> target_) {
+        // TODO: Check whether we want this with a query to the render targets to check whether
+        // TODO:    the render target is effected by scene changes ( deletion )
+        // return target_->hasScene(scene_);
+        return true;
+    });
+
+    for (auto&& target : targets) {
+        target->setActive(false);
+        _sceneManager->dropSecondaryTarget(target);
+    }
 }
 
 const non_owning_rptr<gfx::SurfaceManager> Graphics::getSurfaceManager() const noexcept {
@@ -467,12 +505,31 @@ void Graphics::registerLoader() {
     loader.registerLoader<assets::GfxMaterial>(mtl);
 }
 
+void Graphics::unregisterLoader() {
+
+    auto* const manager { _engine->getResources() };
+    auto& loader { manager->loader() };
+
+    loader.unregisterLoader<assets::Font>();
+    loader.unregisterLoader<assets::StaticGeometry>();
+    loader.unregisterLoader<assets::Texture>();
+    loader.unregisterLoader<assets::GfxMaterial>();
+}
+
 void Graphics::registerImporter() {
     /**/
     auto* manager { _engine->getResources() };
     auto& importer { manager->importer() };
 
-    importer.registerImporter(gfx::ImageFileType::Ktx2, make_ptr<KtxImporter>());
+    importer.registerImporter(gfx::ImageFileType::Ktx2, make_sptr<KtxImporter>());
+}
+
+void Graphics::unregisterImporter() {
+
+    auto* const manager { _engine->getResources() };
+    auto& importer { manager->importer() };
+
+    importer.unregisterImporter(gfx::ImageFileType::Ktx2);
 }
 
 #if TRUE

@@ -190,6 +190,9 @@ namespace ember::engine {
         [[nodiscard]] const non_owning_rptr<gfx::scene::RenderSceneManager> getSceneManager() const noexcept;
 
     private:
+        void cleanupTargetsByScene(const non_owning_rptr<scene::IRenderScene> scene_);
+
+    private:
         uptr<gfx::SurfaceManager> _surfaceManager;
 
     public:
@@ -210,10 +213,14 @@ namespace ember::engine {
     public:
         void registerLoader();
 
+        void unregisterLoader();
+
     private:
         Vector<ptr<void>> _importer;
 
     public:
         void registerImporter();
+
+        void unregisterImporter();
     };
 }
