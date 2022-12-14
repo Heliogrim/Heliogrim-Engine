@@ -92,6 +92,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Ember.Default\Assets\Fonts\CascadiaCode.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Fonts\Consolas24Latin1.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\GfxMaterials\DefaultSkybox.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\Brand.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultAlpha.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\DefaultAO.hpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\IconZip.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\GfxMaterials\DefaultSkybox.cpp" />
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\Brand.cpp" />
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultAlpha.cpp" />
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultAO.cpp" />
