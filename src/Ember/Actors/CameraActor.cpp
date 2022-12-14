@@ -4,13 +4,8 @@
 
 using namespace ember;
 
-CameraActor::CameraActor() :
-    Actor(),
-    _cameraComponent(nullptr),
-    _mountComponent(nullptr) {}
-
 CameraActor::CameraActor(cref<ActorInitializer> initializer_) :
-    Actor(),
+    Actor(initializer_),
     _cameraComponent(nullptr),
     _mountComponent(nullptr) {
 

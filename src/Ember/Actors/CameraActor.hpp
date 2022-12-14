@@ -10,9 +10,9 @@ namespace ember {
         using this_type = CameraActor;
         using underlying_type = Actor;
 
-    public:
-        CameraActor();
+        inline constexpr static type_id typeId { "CameraActor"_typeId };
 
+    public:
         CameraActor(cref<ActorInitializer> initializer_);
 
     private:

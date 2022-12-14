@@ -15,19 +15,10 @@
 
 using namespace ember;
 
-Actor::Actor() noexcept :
+Actor::Actor([[maybe_unused]] cref<ActorInitializer> initializer_) noexcept :
     _guid(invalid_actor_guid),
     _rootComponent(nullptr),
     _components() {}
-
-Actor::Actor(mref<Actor> other_) noexcept :
-    _guid(_STD move(other_._guid)),
-    _rootComponent(_STD move(other_._rootComponent)),
-    _components(_STD move(other_._components)) {
-    assert(_guid == invalid_actor_guid && other_._guid == invalid_actor_guid);
-    assert(_rootComponent == other_._rootComponent && _rootComponent == nullptr);
-    assert(_components.empty() && other_._components.empty());
-}
 
 Actor::~Actor() noexcept = default;
 
@@ -122,7 +113,7 @@ ptr<Actor> ember::CreateActor(cref<Session> session_) {
     const auto* session { static_cast<ptr<engine::core::Session>>(session_.unwrap().get()) };
     auto* registry { session->getState()->getRegistry() };
 
-    auto* actor { registry->createActor() };
+    auto* actor { registry->createActor(session_.getActorInitializer()) };
     return actor;
 }
 
@@ -141,21 +132,25 @@ ptr<Actor> ember::CreateActor(cref<World> activeWorld_) {
         return nullptr;
     }
 
-    const auto* session { (*where)->getOwner() };
-    auto* registry { session->getState()->getRegistry() };
+    auto* const session { (*where)->getOwner() };
+    auto* const registry { session->getState()->getRegistry() };
 
-    auto* actor { registry->createActor() };
+    managed<void> dummy {};
+    managed<void> alias { _STD move(dummy), session };
+
+    auto* actor { registry->createActor(ActorInitializer { alias }) };
     return actor;
 }
 
 Future<ptr<Actor>> ember::CreateActor(cref<Session> session_, async_t) {
+    const auto initializer { session_.getActorInitializer() };
     const auto* session { static_cast<ptr<engine::core::Session>>(session_.unwrap().get()) };
 
     concurrent::promise<ptr<Actor>> p {
-        [session]() {
+        [session, initializer]() {
             auto* registry { session->getState()->getRegistry() };
 
-            auto* actor { registry->createActor() };
+            auto* actor { registry->createActor(initializer) };
             return actor;
         }
     };
@@ -176,14 +171,17 @@ Future<ptr<Actor>> ember::CreateActor(cref<World> activeWorld_, async_t) {
         return ctx_->getCurrentWorld().get() == world;
     });
 
-    const auto* session { where == _STD ranges::end(ctxs) ? nullptr : (*where)->getOwner() };
+    auto* const session { where == _STD ranges::end(ctxs) ? nullptr : (*where)->getOwner() };
     concurrent::promise<ptr<Actor>> p {
         [session]() -> ptr<Actor> {
             if (session) [[likely]]
             {
                 auto* registry { session->getState()->getRegistry() };
 
-                auto* actor { registry->createActor() };
+                managed<void> dummy {};
+                managed<void> alias { _STD move(dummy), session };
+
+                auto* actor { registry->createActor(ActorInitializer { alias }) };
                 return actor;
             }
 
@@ -197,20 +195,26 @@ Future<ptr<Actor>> ember::CreateActor(cref<World> activeWorld_, async_t) {
     return Future { _STD move(f) };
 }
 
-Future<ptr<Actor>> ember::CreateActor(cref<ActorClass> class_, cref<Session> session_) noexcept {
+ptr<Actor> ember::CreateActor(const ptr<const ActorClass> class_, cref<Session> session_) noexcept {
+
+    auto initializer { session_.getActorInitializer() };
+    const auto* session { static_cast<ptr<engine::core::Session>>(session_.unwrap().get()) };
+    auto* registry { session->getState()->getRegistry() };
+
+    auto* actor { registry->createActor(class_, initializer) };
+    return actor;
+}
+
+ptr<Actor> ember::CreateActor(const ptr<const ActorClass> class_, cref<World> activeWorld_) noexcept {
     throw NotImplementedException();
 }
 
-Future<ptr<Actor>> ember::CreateActor(cref<ActorClass> class_, cref<World> activeWorld_) noexcept {
-    throw NotImplementedException();
-}
-
-Future<ptr<Actor>> ember::CreateActor(cref<ActorClass> class_, const ptr<SerializedActor> serialized_,
+Future<ptr<Actor>> ember::CreateActor(const ptr<const ActorClass> class_, const ptr<SerializedActor> serialized_,
     cref<Session> session_) noexcept {
     throw NotImplementedException();
 }
 
-Future<ptr<Actor>> ember::CreateActor(cref<ActorClass> class_, const ptr<SerializedActor> serialized_,
+Future<ptr<Actor>> ember::CreateActor(const ptr<const ActorClass> class_, const ptr<SerializedActor> serialized_,
     cref<World> activeWorld_) noexcept {
     throw NotImplementedException();
 }
@@ -223,16 +227,16 @@ Future<ptr<Actor>> ember::CloneActorInto(const ptr<Actor> actor_, cref<World> ac
     throw NotImplementedException();
 }
 
-Future<ptr<Actor>> ember::SpawnActor(cref<ActorClass> class_, cref<World> activeWorld_) noexcept {
+Future<ptr<Actor>> ember::SpawnActor(const ptr<const ActorClass> class_, cref<World> activeWorld_) noexcept {
     throw NotImplementedException();
 }
 
-Future<ptr<Actor>> ember::SpawnActor(cref<ActorClass> class_, const ptr<SerializedActor> serialized_,
+Future<ptr<Actor>> ember::SpawnActor(const ptr<const ActorClass> class_, const ptr<SerializedActor> serialized_,
     cref<World> activeWorld_) noexcept {
     throw NotImplementedException();
 }
 
-Future<bool> ember::Destroy(cref<Session> session_, mref<ptr<Actor>> actor_) noexcept {
+Future<bool> ember::Destroy(mref<ptr<Actor>> actor_, cref<Session> session_) noexcept {
     const auto* const session { static_cast<ptr<engine::core::Session>>(session_.unwrap().get()) };
     auto* const registry { session->getState()->getRegistry() };
 
@@ -260,7 +264,7 @@ Future<bool> ember::Destroy(cref<Session> session_, mref<ptr<Actor>> actor_) noe
     return Future { _STD move(f) };
 }
 
-Future<bool> ember::Destroy(cref<World> activeWorld_, mref<ptr<Actor>> actor_) noexcept {
+Future<bool> ember::Destroy(mref<ptr<Actor>> actor_, cref<World> activeWorld_) noexcept {
     const auto* world { activeWorld_.unwrap().get() };
 
     const auto* engine { engine::Engine::getEngine() };
@@ -277,5 +281,5 @@ Future<bool> ember::Destroy(cref<World> activeWorld_, mref<ptr<Actor>> actor_) n
         managed<void> { _STD move(dummy), coreSession }
     };
 
-    return Destroy(session, _STD move(actor_));
+    return Destroy(_STD move(actor_), session);
 }
