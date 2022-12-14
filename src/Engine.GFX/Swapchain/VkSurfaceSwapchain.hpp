@@ -10,7 +10,7 @@ namespace ember::engine::gfx {
         using underlying_type = Swapchain;
 
     public:
-        VkSurfaceSwapchain();
+        VkSurfaceSwapchain(const non_owning_rptr<Surface> owner_);
 
         ~VkSurfaceSwapchain() override;
 
@@ -40,8 +40,5 @@ namespace ember::engine::gfx {
         [[nodiscard]] vk::Semaphore nextSignal();
 
         void restoreSignal(vk::Semaphore signal_);
-
-    public:
-        void useSurface(const non_owning_rptr<Surface> surface_);
     };
 }

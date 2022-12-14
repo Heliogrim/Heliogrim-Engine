@@ -18,6 +18,8 @@
 #include <Editor.Main/Boot/GfxInit.hpp>
 #include <Editor.Main/Boot/WorldInit.hpp>
 
+#include "Engine.Core/WorldContext.hpp"
+
 #ifdef WIN32
 #include <Engine.Platform/Windows/WinPlatform.hpp>
 #else
@@ -189,13 +191,12 @@ bool EditorEngine::stop() {
     /**/
     _STD atomic_flag next {};
     scheduler::exec([this, &next] {
-        auto where = std::ranges::remove(_worldContexts, _primaryGameSession->getWorldContext());
-        _worldContexts.erase(where.begin(), where.end());
-        _primaryGameSession.reset();
-
-        where = std::ranges::remove(_worldContexts, _editorSession->getWorldContext());
-        _worldContexts.erase(where.begin(), where.end());
-        _editorSession.reset();
+        _physics->desync();
+        _network->desync();
+        _input->desync();
+        _graphics->desync();
+        _audio->desync();
+        _assets->desync();
 
         next.test_and_set(std::memory_order::relaxed);
         next.notify_one();
@@ -207,12 +208,24 @@ bool EditorEngine::stop() {
 
     /**/
     scheduler::exec([this, &next] {
-        _physics->desync();
-        _network->desync();
-        _input->desync();
-        _graphics->desync();
-        _audio->desync();
-        _assets->desync();
+
+        auto prevWorld = _primaryGameSession->getWorldContext()->getCurrentWorld();
+        _primaryGameSession->getWorldContext()->setCurrentWorld(nullptr);
+        removeWorld(prevWorld);
+
+        auto where = std::ranges::remove(_worldContexts, _primaryGameSession->getWorldContext());
+        _worldContexts.erase(where.begin(), where.end());
+        _primaryGameSession.reset();
+
+        /**/
+
+        prevWorld = _editorSession->getWorldContext()->getCurrentWorld();
+        _editorSession->getWorldContext()->setCurrentWorld(nullptr);
+        removeWorld(prevWorld);
+
+        where = std::ranges::remove(_worldContexts, _editorSession->getWorldContext());
+        _worldContexts.erase(where.begin(), where.end());
+        _editorSession.reset();
 
         next.test_and_set(std::memory_order::relaxed);
         next.notify_one();

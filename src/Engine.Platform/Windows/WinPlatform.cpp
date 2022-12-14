@@ -239,6 +239,8 @@ void WinPlatform::processInternal() {
                 math::ivec2 point { -1, -1 };
                 math::vec2 value { event.wheel.preciseX, event.wheel.preciseY };
 
+                SDL_GetMouseState(&point.x, &point.y);
+
                 const input::event::MouseWheelEvent mwe { point, value };
                 Engine::getEngine()->getEmitter().emit(mwe);
                 break;

@@ -24,6 +24,31 @@ bool LoaderManager::registerLoader(cref<asset_type_id> typeId_, cref<sptr<Loader
     return result.second;
 }
 
+bool LoaderManager::unregisterLoader(sptr<LoaderBase> loader_) noexcept {
+
+    const auto iter = _STD ranges::find_if(_loader, [loader_](const auto& pair_) {
+        return pair_.second == loader_;
+    });
+
+    if (iter == _loader.cend()) {
+        return false;
+    }
+
+    _loader.erase(iter);
+    return true;
+}
+
+bool LoaderManager::unregisterLoader(cref<asset_type_id> typeId_) noexcept {
+
+    const auto iter = _loader.find(typeId_);
+    if (iter == _loader.cend()) {
+        return false;
+    }
+
+    _loader.erase(iter);
+    return true;
+}
+
 LoaderManager::load_type LoaderManager::preload(const ptr<assets::Asset> asset_, ptr<void> options_) {
     // TODO:
     return load(asset_, options_);

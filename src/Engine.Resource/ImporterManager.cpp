@@ -5,32 +5,40 @@
 using namespace ember::engine::res;
 using namespace ember;
 
-ImporterManager::~ImporterManager() noexcept {
-    tidy();
-}
+ImporterManager::~ImporterManager() noexcept = default;
 
-void ImporterManager::tidy() {
-
-    for (const auto& entry : _mapping) {
-        delete entry.second;
-    }
-
-    _mapping.clear();
-}
-
-bool ImporterManager::registerImporter(cref<FileTypeId> fileTypeId_, ptr<ImporterBase> importer_) noexcept {
+bool ImporterManager::registerImporter(cref<FileTypeId> fileTypeId_, cref<sptr<ImporterBase>> importer_) noexcept {
     return _mapping.insert({ fileTypeId_, importer_ }).second;
 }
 
-bool ImporterManager::unregisterImporter(ptr<ImporterBase> importer_) noexcept {
-    throw NotImplementedException();
+bool ImporterManager::unregisterImporter(sptr<ImporterBase> importer_) noexcept {
+
+    const auto iter = _STD ranges::find_if(_mapping, [importer_](const auto& pair_) {
+        return pair_.second == importer_;
+    });
+
+    if (iter == _mapping.cend()) {
+        return false;
+    }
+
+    // Warning: Potential Memory Leak
+    _mapping.erase(iter);
+    return true;
 }
 
 bool ImporterManager::unregisterImporter(cref<FileTypeId> fileTypeId_) noexcept {
-    throw NotImplementedException();
+
+    const auto iter = _mapping.find(fileTypeId_);
+    if (iter == _mapping.cend()) {
+        return false;
+    }
+
+    // Warning: Memory Leak
+    _mapping.erase(iter);
+    return true;
 }
 
-ptr<ImporterBase> ImporterManager::importer(cref<FileTypeId> fileType_, cref<File> file_) const {
+sptr<ImporterBase> ImporterManager::importer(cref<FileTypeId> fileType_, cref<File> file_) const {
 
     auto mapped = _mapping.find(fileType_);
     if (mapped == _mapping.cend()) {
