@@ -708,6 +708,12 @@
     <ClInclude Include="..\..\src\Engine.GFX\Camera\CameraModes.hpp">
       <Filter>Headerdateien\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Surface\SurfaceManager.hpp">
+      <Filter>Headerdateien\Surface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\CameraModel.hpp">
+      <Filter>Headerdateien\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
@@ -1033,6 +1039,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Importer\ImageFileTypes.cpp">
       <Filter>Quelldateien\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Surface\SurfaceManager.cpp">
+      <Filter>Quelldateien\Surface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Scene\CameraModel.cpp">
+      <Filter>Quelldateien\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

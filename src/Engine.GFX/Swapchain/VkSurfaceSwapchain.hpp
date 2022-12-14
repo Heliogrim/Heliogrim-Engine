@@ -3,7 +3,6 @@
 #include "Swapchain.hpp"
 
 namespace ember::engine::gfx {
-
     class VkSurfaceSwapchain final :
         public Swapchain {
     public:
@@ -28,13 +27,14 @@ namespace ember::engine::gfx {
         vk::Result presentNext(u64 idx_, cref<Vector<vk::Semaphore>> waits_) override;
 
     public:
-        bool consumeNext(_Out_ ref<sptr<Texture>> image_, _Out_ ref<vk::Semaphore> signal_, _Out_ ref<Vector<vk::Semaphore>> waits_) override;
+        bool consumeNext(_Out_ ref<sptr<Texture>> image_, _Out_ ref<vk::Semaphore> signal_,
+            _Out_ ref<Vector<vk::Semaphore>> waits_) override;
 
     private:
         Vector<vk::Semaphore> _signals;
         vk::SwapchainKHR _vkSwapchain;
 
-        Surface _surface;
+        non_owning_rptr<Surface> _surface;
 
     private:
         [[nodiscard]] vk::Semaphore nextSignal();
@@ -42,7 +42,6 @@ namespace ember::engine::gfx {
         void restoreSignal(vk::Semaphore signal_);
 
     public:
-        void useSurface(cref<Surface> surface_);
+        void useSurface(const non_owning_rptr<Surface> surface_);
     };
-
 }

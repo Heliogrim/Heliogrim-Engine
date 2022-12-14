@@ -161,6 +161,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Resource\FontResource.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Resource\MaterialResource.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Resource\TextureResource.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Scene\CameraModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\GeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SkyboxModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\StaticGeometryBatch.cpp" />
@@ -181,6 +182,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Shader\ShaderStorage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Surface\Surface.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Surface\SurfaceManager.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Swapchain\Swapchain.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSurfaceSwapchain.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.cpp" />
@@ -326,6 +328,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Resource\MaterialResource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Resource\StaticGeometryResource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Resource\TextureResource.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Scene\CameraModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\GeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\LandscapeGeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\ModelDataTokens.hpp" />
@@ -352,6 +355,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Shader\Type.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Skybox\Skybox.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Surface\Surface.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Surface\SurfaceManager.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\Swapchain.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSurfaceSwapchain.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.hpp" />

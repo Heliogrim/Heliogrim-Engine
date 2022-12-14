@@ -2,8 +2,9 @@
 
 #include "Swapchain.hpp"
 
-namespace ember::engine::gfx {
+#include <Engine.Common/Concurrent/Collection/RingBuffer.hpp>
 
+namespace ember::engine::gfx {
     class VkSwapchain final :
         public Swapchain {
     public:
@@ -49,5 +50,4 @@ namespace ember::engine::gfx {
     private:
         [[nodiscard]] vk::Semaphore nextSignal();
     };
-
 }
