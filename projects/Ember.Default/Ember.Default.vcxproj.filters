@@ -471,6 +471,9 @@
     <ClInclude Include="..\..\src\Ember.Default\Assets\Fonts\CascadiaCode.hpp">
       <Filter>Headerdateien\Assets\Font</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\GfxMaterials\DefaultSkybox.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultAlpha.cpp">
@@ -676,6 +679,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\IconZip.cpp">
       <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\GfxMaterials\DefaultSkybox.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
