@@ -3,8 +3,6 @@
 #include <Engine.Common/Collection/BytellHashMap.hpp>
 #include <Engine.Common/Make.hpp>
 
-#include <Ember/Actor.hpp>
-
 #include "ComponentTypeId.hpp"
 #include "Traits.hpp"
 #include "Pool.hpp"
@@ -17,6 +15,7 @@ namespace ember {
      * Forward Declaration
      */
     class Actor;
+    class ActorInitializer;
 }
 
 namespace ember::engine::acs {
@@ -197,6 +196,7 @@ namespace ember::engine::acs {
         [[nodiscard]] ptr<ActorType_> createActor(cref<ActorInitializer> initializer_) noexcept {
 
             const auto guid = generate_actor_guid();
+            hackActorInit(initializer_, guid);
 
             auto* const pool { getOrCreateActorPool<ActorType_>() };
             const auto result { pool->insert(guid, ActorType_(initializer_)) };
@@ -217,5 +217,8 @@ namespace ember::engine::acs {
         [[nodiscard]] ptr<Actor> createActor(cref<ActorInitializer> initializer_) noexcept;
 
         void destroyActor(mref<ptr<Actor>> actor_);
+
+    private:
+        void hackActorInit(cref<ActorInitializer> initializer_, cref<actor_guid> guid_) const noexcept;
     };
 }

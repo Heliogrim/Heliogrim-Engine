@@ -276,14 +276,6 @@ RenderEnqueueResult
 RenderTarget::finish(cref<Vector<vk::Semaphore>> waits_/* , cref<Vector<vk::Semaphore>> signals_ */) {
 
     /**
-     * If we got no surface, we can't present results
-     */
-    if (!_surface) {
-        nextSync();
-        return RenderEnqueueResult::eFailed;
-    }
-
-    /**
      * Combine Semaphores
      */
     Vector<vk::Semaphore> waits {};

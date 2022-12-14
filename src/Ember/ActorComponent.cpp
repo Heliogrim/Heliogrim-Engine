@@ -41,12 +41,12 @@ cref<math::Bounding> ActorComponent::getBoundaries() const noexcept {
     return _boundaries;
 }
 
-Transform ActorComponent::getLocalTransform() const noexcept {
-    return Transform {
-        _localPosition,
-        _localRotation,
-        _localScale
-    };
+cref<Transform> ActorComponent::getLocalTransform() const noexcept {
+    return _localTransform;
+}
+
+ref<Transform> ActorComponent::getLocalTransform() noexcept {
+    return _localTransform;
 }
 
 cref<Transform> ActorComponent::getWorldTransform() const noexcept {

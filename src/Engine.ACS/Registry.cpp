@@ -2,6 +2,8 @@
 
 #include <Ember/Actor.hpp>
 
+#include "Ember/ActorInitializer.hpp"
+
 using namespace ember::engine::acs;
 using namespace ember;
 
@@ -17,6 +19,7 @@ void Registry::releaseActorComponent(cref<actor_guid> guid_, cref<type_id> typeI
 ptr<Actor> Registry::createActor(const ptr<const ActorClass> actorClass_, cref<ActorInitializer> initializer_) {
 
     const auto guid = generate_actor_guid();
+    hackActorInit(initializer_, guid);
 
     /**/
 
@@ -47,6 +50,7 @@ ptr<Actor> Registry::createActor(const ptr<const ActorClass> actorClass_, cref<A
     std::nothrow_t) noexcept {
 
     const auto guid = generate_actor_guid();
+    hackActorInit(initializer_, guid);
 
     const auto poolIter { _actorPools.find(actorClass_->typeId()) };
     if (poolIter == _actorPools.end()) {
@@ -87,6 +91,7 @@ ptr<Actor> Registry::createActor(const ptr<const ActorClass> actorClass_, cref<A
 ptr<Actor> Registry::createActor(cref<ActorInitializer> initializer_) noexcept {
 
     const auto guid = generate_actor_guid();
+    hackActorInit(initializer_, guid);
 
     /**/
 
@@ -122,4 +127,9 @@ ptr<Actor> Registry::createActor(cref<ActorInitializer> initializer_) noexcept {
 void Registry::destroyActor(mref<ptr<Actor>> actor_) {
     auto* const pool { _actorPools.at(actor_->getClass()->typeId()) };
     pool->erase(actor_->guid());
+}
+
+void Registry::hackActorInit(cref<ActorInitializer> initializer_, cref<actor_guid> guid_) const noexcept {
+    // Warning: Hotfix - Hack
+    const_cast<ref<ActorInitializer>>(initializer_)._guid = guid_;
 }

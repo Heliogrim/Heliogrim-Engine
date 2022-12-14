@@ -6,13 +6,24 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>
 
+#include "Editor.Core/EditorEngine.hpp"
+#include "Editor.Core/EmberEditor.hpp"
 #include "Editor.UI/Color/Dark.hpp"
 #include "Editor.UI/Panel/SceneHierarchyPanel.hpp"
 #include "Editor.UI/Panel/ObjectEditorPanel.hpp"
 #include "Editor.UI/Style/Style.hpp"
+#include "Ember/Ember.hpp"
+#include "Ember/World.hpp"
+#include "Ember/Actors/CameraActor.hpp"
 #include "Ember.Default/Assets/Fonts/CascadiaCode.hpp"
 #include "Engine.Assets/Assets.hpp"
+#include "Engine.Core/World.hpp"
+#include "Engine.Core/WorldContext.hpp"
 #include "Engine.Event/GlobalEventEmitter.hpp"
+#include "Engine.GFX/RenderTarget.hpp"
+#include "Engine.GFX/Scene/CameraModel.hpp"
+#include "Engine.GFX/Swapchain/VkSwapchain.hpp"
+#include "Engine.GFX.Scene/RenderSceneManager.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Reflow/Widget/Button.hpp"
 #include "Engine.Reflow/Widget/Image.hpp"
@@ -24,6 +35,7 @@
 
 #include "Engine.Reflow/Style/BoundStyleSheet.hpp"
 #include "Engine.Reflow/Window/WindowManager.hpp"
+#include "Engine.Scene/Scene.hpp"
 
 #if TRUE
 #include "Engine.GFX/Command/CommandBuffer.hpp"
@@ -139,9 +151,18 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
         Style::make();
     }
 
-    /**
-     *
-     */
+    /**/
+    constexpr math::vec2 available { 1280.F, 720.F };
+    constexpr math::vec2 shift { 0.F };
+
+    FlowContext ctx {
+        math::fExtent2D { 1280.F, 720.F, 0.F, 0.F },
+        math::fExtent2D { 1280.F, 720.F, 0.F, 0.F },
+    };
+
+    StyleKeyStack stack {};
+
+    /**/
     auto root = make_sptr<Panel>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey)));
     ptr<engine::reflow::Font> defaultFont { getDefaultFont() };
 
@@ -431,6 +452,50 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
     }));
     viewportWrapper->addChild(viewport);
 
+    /**/
+
+    const auto* const gfx { editor::EditorEngine::getEngine()->getGraphics() };
+    const auto* const coreSession = editor::EditorEngine::getEngine()->getPrimaryGameSession();
+    const auto coreWorld { coreSession->getWorldContext()->getCurrentWorld() };
+    const auto scene { coreWorld->getScene() };
+
+    //RegisterActorClass<CameraActor>();
+    coreSession->getState()->getRegistry()->getOrCreateActorPool<CameraActor>();
+
+    auto session = EmberEditor::getSession();
+    ptr<CameraActor> camera { CreateActor<CameraActor>(session) };
+    auto world = GetWorld(session);
+
+    world.addActor(camera);
+    scene->update();
+
+    viewport->setCameraActor(camera);
+    viewport->flow(ctx, available, available, stack);
+    viewport->rebuildView();
+
+    const auto target { make_sptr<engine::gfx::RenderTarget>() };
+    target->use(gfx->getCurrentDevice());
+    target->use(gfx->getRenderer(AssocKey<string>::from("3DRenderer")).get());
+    target->use(viewport->getSwapchain());
+
+    const auto* const cc { camera->getCameraComponent() };
+    const auto* const cm { *cc->getSceneNodeModels().begin() };
+    target->buildPasses(static_cast<const ptr<const engine::gfx::CameraModel>>(cm)->getSceneView());
+
+    // TODO: Should be Secondary Target
+    gfx->getSceneManager()->addPrimaryTarget(target);
+
+    viewport->addResizeListener(
+        [target = wptr<engine::gfx::RenderTarget>(target)](const non_owning_rptr<engine::gfx::VkSwapchain> next_) {
+            if (target.expired()) {
+                return;
+            }
+
+            target.lock()->rebuildPasses(next_);
+        });
+
+    /**/
+
     #if FALSE
     auto viewportOverlay = make_sptr<Overlay>();
     auto viewOverBox = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
@@ -495,15 +560,6 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
     /**
      *
      */
-    constexpr math::vec2 available { 1280.F, 720.F };
-    constexpr math::vec2 shift { 0.F };
-
-    FlowContext ctx {
-        math::fExtent2D { 1280.F, 720.F, 0.F, 0.F },
-        math::fExtent2D { 1280.F, 720.F, 0.F, 0.F },
-    };
-
-    StyleKeyStack stack {};
     root->flow(ctx, available, available, stack);
     root->shift(ctx, shift);
 

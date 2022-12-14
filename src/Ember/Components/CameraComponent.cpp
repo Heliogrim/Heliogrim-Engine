@@ -4,7 +4,7 @@ using namespace ember;
 
 CameraComponent::CameraComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_) :
     ModelComponent(component_type_id { typeId }, _STD move(owner_), _STD move(parent_)),
-    _fov(90.F),
+    _fov(70.F),
     _aspectRation(16.F / 9.F),
     _lockedAspect(false),
     _visibleFrustum(false),

@@ -41,6 +41,10 @@ namespace ember {
             return *static_cast<const ptr<const engine::core::Session>>(_internal.get());
         }
 
+    private:
+    public:
+        actor_guid _guid = invalid_actor_guid;
+
     public:
         template <std::derived_from<ActorComponent> Component>
         ptr<Component> createComponent(_Inout_ const ptr<Actor> actor_) const {
@@ -80,8 +84,11 @@ namespace ember {
                     Component,
                     CachedActorPointer,
                     ptr<ActorComponent>
-                >(actor->guid(), { actor_->guid(), actor },
-                    _STD move(ptr<ActorComponent> { parent_ }))
+                >(
+                    actor->guid(),
+                    CachedActorPointer { actor_->guid(), actor },
+                    ptr<ActorComponent> { parent_ }
+                )
             };
             assert(component != nullptr && "Failed to ensure successful created component.");
 

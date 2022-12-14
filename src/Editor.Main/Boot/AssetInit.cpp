@@ -11,6 +11,7 @@
 #include <fstream>
 
 #include "Ember.Default/Assets/Fonts/CascadiaCode.hpp"
+#include "Ember.Default/Assets/GfxMaterials/DefaultSkybox.hpp"
 #include "Ember.Default/Assets/Images/Brand.hpp"
 #include "Ember.Default/Assets/Images/DefaultMetalness.hpp"
 #include "Ember.Default/Assets/Images/DefaultRoughness.hpp"
@@ -142,6 +143,7 @@
 #include "Engine.Assets/Database/AssetDatabase.hpp"
 #include "Engine.Assets/Types/Image.hpp"
 #include "Engine.Assets/Types/Font.hpp"
+#include "Engine.Assets/Types/Geometry/StaticGeometry.hpp"
 #include "Engine.Serialization/Layout/DataLayoutBase.hpp"
 #include "Engine.Serialization.Layouts/LayoutManager.hpp"
 #include "Game.Main/Assets/Images/DefaultAlpha.hpp"
@@ -149,6 +151,7 @@
 #include "Game.Main/Assets/Images/DefaultDiffuse.hpp"
 #include "Game.Main/Assets/Images/DefaultNormal.hpp"
 #include "Game.Main/Assets/Images/DefaultSkybox.hpp"
+#include "Game.Main/Assets/Meshes/Sphere.hpp"
 #include "Game.Main/Assets/Textures/DefaultAlpha.hpp"
 #include "Game.Main/Assets/Textures/DefaultAO.hpp"
 #include "Game.Main/Assets/Textures/DefaultMetalness.hpp"
@@ -313,7 +316,6 @@ static void initMaterialDefaults() {
     delete(new(texture::DefaultMetalness));
     delete(new(texture::DefaultNormal));
     delete(new(texture::DefaultRoughness));
-
 }
 
 static void initSkyboxDefaults() {
@@ -328,6 +330,10 @@ static void initSkyboxDefaults() {
     /**/
 
     delete(new(texture::DefaultSkybox));
+
+    /**/
+
+    delete(new(material::DefaultSkybox));
 }
 
 static void initDirectoryIcons() {
@@ -546,6 +552,16 @@ static void initFontDefaults() {
         R"(resources\imports\ttf\CascadiaCode.ttf)"));
 }
 
+static void initStaticGeometryDefaults() {
+
+    using namespace ::ember::game::assets;
+    const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
+    auto* const db = Engine::getEngine()->getAssets()->getDatabase();
+
+    db->insert(factory->createStaticGeometryAsset(meshes::Sphere::unstable_auto_guid(),
+        R"(resources\imports\obj\sphere.obj)", 11520ui64, 11520ui64));
+}
+
 #pragma endregion
 
 void editor::boot::initAssets() {
@@ -555,6 +571,7 @@ void editor::boot::initAssets() {
     initDirectoryIcons();
     initFileIcons();
     initFontDefaults();
+    initStaticGeometryDefaults();
 
     /**/
 

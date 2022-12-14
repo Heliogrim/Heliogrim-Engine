@@ -4,7 +4,6 @@
 #include "Inbuilt.hpp"
 
 namespace ember {
-
     /**
      * Forward Declaration
      */
@@ -53,12 +52,12 @@ namespace ember {
         [[nodiscard]] cref<math::Bounding> getBoundaries() const noexcept;
 
     private:
-        Vector3 _localPosition;
-        Quatern _localRotation;
-        Vector3 _localScale;
+        Transform _localTransform;
 
     public:
-        [[nodiscard]] Transform getLocalTransform() const noexcept;
+        [[nodiscard]] cref<Transform> getLocalTransform() const noexcept;
+
+        [[nodiscard]] ref<Transform> getLocalTransform() noexcept;
 
     private:
         Transform _worldTransform;
@@ -66,5 +65,4 @@ namespace ember {
     public:
         [[nodiscard]] cref<Transform> getWorldTransform() const noexcept;
     };
-
 }

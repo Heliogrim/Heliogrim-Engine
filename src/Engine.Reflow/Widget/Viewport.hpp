@@ -11,7 +11,6 @@ namespace ember {
 }
 
 namespace ember::engine::reflow {
-
     class Viewport :
         public Widget {
     public:
@@ -54,11 +53,11 @@ namespace ember::engine::reflow {
 
         [[nodiscard]] bool viewHasChanged() const noexcept;
 
-        void rebuildView();
-
         void handleViewListener(const ptr<gfx::VkSwapchain> next_);
 
     public:
+        void rebuildView();
+
         void resizeView(cref<math::uivec2> extent_);
 
         void addResizeListener(mref<_STD function<void(const ptr<gfx::VkSwapchain>)>> fnc_);
@@ -99,5 +98,4 @@ namespace ember::engine::reflow {
 
         EventResponse onMouseLeave(cref<MouseMoveEvent> event_) override;
     };
-
 }

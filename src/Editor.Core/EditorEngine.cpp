@@ -18,7 +18,9 @@
 #include <Editor.Main/Boot/GfxInit.hpp>
 #include <Editor.Main/Boot/WorldInit.hpp>
 
+#include "Engine.Core/World.hpp"
 #include "Engine.Core/WorldContext.hpp"
+#include "Engine.Scene/Scene.hpp"
 
 #ifdef WIN32
 #include <Engine.Platform/Windows/WinPlatform.hpp>
@@ -168,11 +170,39 @@ bool EditorEngine::start() {
         _worldContexts.push_back(_primaryGameSession->getWorldContext());
 
         /**/
+        boot::initAssets();
         boot::initEditorWorld();
         boot::initPrimaryWorld();
-        boot::initAssets();
         boot::initGfx();
         /**/
+
+        scheduler::exec(scheduler::task::make_repetitive_task([] {
+                auto* const editorSession { EditorEngine::getEngine()->getEditorSession() };
+                if (not editorSession || not editorSession->getWorldContext()->getCurrentWorld()) {
+                    return false;
+                }
+
+                editorSession->getWorldContext()->getCurrentWorld()->getScene()->update();
+                return true;
+            },
+            scheduler::task::TaskMask::eAll,
+            scheduler::ScheduleStageBarriers::ePublishStrong,
+            scheduler::ScheduleStageBarriers::ePublishStrong
+        ));
+
+        scheduler::exec(scheduler::task::make_repetitive_task([] {
+                auto* const primarySession { EditorEngine::getEngine()->getPrimaryGameSession() };
+                if (not primarySession || not primarySession->getWorldContext()->getCurrentWorld()) {
+                    return false;
+                }
+
+                primarySession->getWorldContext()->getCurrentWorld()->getScene()->update();
+                return true;
+            },
+            scheduler::task::TaskMask::eAll,
+            scheduler::ScheduleStageBarriers::ePublishStrong,
+            scheduler::ScheduleStageBarriers::ePublishStrong
+        ));
 
         next.test_and_set(std::memory_order::relaxed);
         next.notify_one();

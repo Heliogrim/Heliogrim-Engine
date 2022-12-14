@@ -97,6 +97,15 @@ void Viewport::rebuildView() {
 
     /**/
 
+    if (_cameraActor) {
+        auto* const cc { _cameraActor->getCameraComponent() };
+        cc->setAspectRatio(
+            static_cast<float>(nextSwapchain->extent().x) / static_cast<float>(nextSwapchain->extent().y)
+        );
+    }
+
+    /**/
+
     handleViewListener(nextSwapchain.get());
 
     /**/
@@ -130,22 +139,8 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
         return;
     }
 
-    return;
-
     if (viewHasChanged()) {
         rebuildView();
-
-        auto* const gfx { Engine::getEngine()->getGraphics() };
-        throw _STD runtime_error("");
-        //gfx->_secondarySwapchain = _swapchain.get();
-
-        if (not _cameraActor) {
-            // TODO: Most likely generate a new camera actor
-        }
-
-        _cameraActor->getCameraComponent()->setAspectRatio(
-            static_cast<float>(_swapchain->extent().x) / static_cast<float>(_swapchain->extent().y)
-        );
 
         /*
         if (gfx->_renderTarget->ready()) {
@@ -315,8 +310,12 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
         return EventResponse::eConsumed;
     }
 
+    if (not _cameraActor) {
+        return EventResponse::eHandled;
+    }
+
     const auto isShift { (event_._modifier & 0x3) != 0x0 };
-    const float factor { 0.1 };
+    const float factor { 0.1F };
 
     auto response { EventResponse::eHandled };
     switch (event_._key) {
@@ -324,9 +323,9 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
             response = EventResponse::eConsumed;
 
             math::mat4 rotation { 1.F };
-            cref<Transform> tf { _cameraActor->getWorldTransform() };
+            ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
 
-            const_cast<ref<Transform>>(tf).setPosition(
+            tf.setPosition(
                 tf.position() + (rotation * math::vec4 { math::vec3_left, 0.F }).xyz().normalize() * factor
             );
             break;
@@ -335,9 +334,9 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
             response = EventResponse::eConsumed;
 
             math::mat4 rotation { 1.F };
-            cref<Transform> tf { _cameraActor->getWorldTransform() };
+            ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
 
-            const_cast<ref<Transform>>(tf).setPosition(
+            tf.setPosition(
                 tf.position() + (rotation * math::vec4 { math::vec3_right, 0.F }).xyz().normalize() * factor
             );
             break;
@@ -346,9 +345,9 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
             response = EventResponse::eConsumed;
 
             math::mat4 rotation { 1.F };
-            cref<Transform> tf { _cameraActor->getWorldTransform() };
+            ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
 
-            const_cast<ref<Transform>>(tf).setPosition(
+            tf.setPosition(
                 tf.position() + (rotation * math::vec4 { math::vec3_backward, 0.F }).xyz().normalize() * factor
             );
             break;
@@ -357,9 +356,9 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
             response = EventResponse::eConsumed;
 
             math::mat4 rotation { 1.F };
-            cref<Transform> tf { _cameraActor->getWorldTransform() };
+            ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
 
-            const_cast<ref<Transform>>(tf).setPosition(
+            tf.setPosition(
                 tf.position() + (rotation * math::vec4 { math::vec3_forward, 0.F }).xyz().normalize() * factor
             );
             break;
@@ -368,9 +367,9 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
             response = EventResponse::eConsumed;
 
             math::mat4 rotation { 1.F };
-            cref<Transform> tf { _cameraActor->getWorldTransform() };
+            ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
 
-            const_cast<ref<Transform>>(tf).setPosition(
+            tf.setPosition(
                 tf.position() + (rotation * math::vec4 { math::vec3_up, 0.F }).xyz().normalize() * factor
             );
             break;
@@ -380,9 +379,9 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
             response = EventResponse::eConsumed;
 
             math::mat4 rotation { 1.F };
-            cref<Transform> tf { _cameraActor->getWorldTransform() };
+            ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
 
-            const_cast<ref<Transform>>(tf).setPosition(
+            tf.setPosition(
                 tf.position() + (rotation * math::vec4 { math::vec3_down, 0.F }).xyz().normalize() * factor
             );
             break;
@@ -427,11 +426,11 @@ EventResponse Viewport::onMouseMove(cref<MouseMoveEvent> event_) {
     const auto pitch { math::quaternion::euler({ -dxdy.y, 0.F, 0.F }) };
     const auto yaw { math::quaternion::euler({ 0.F, dxdy.x, 0.F }) };
 
-    cref<Transform> rtf { _cameraActor->getRootComponent()->getWorldTransform() };
-    cref<Transform> ctf { _cameraActor->getCameraComponent()->getWorldTransform() };
+    ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
+    ref<Transform> ctf { _cameraActor->getCameraComponent()->getLocalTransform() };
 
-    const_cast<ref<Transform>>(rtf).setRotation(rtf.rotation() * yaw);
-    const_cast<ref<Transform>>(ctf).setRotation(ctf.rotation() * pitch);
+    rtf.setRotation(rtf.rotation() * yaw);
+    ctf.setRotation(ctf.rotation() * pitch);
 
     return EventResponse::eConsumed;
 }
