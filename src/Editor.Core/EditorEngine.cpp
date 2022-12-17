@@ -29,6 +29,8 @@
 #endif
 
 #include "Engine.Reflow/Window/WindowManager.hpp"
+#include "Engine.GFX.Glow.UI/TestUI.hpp"
+#include "Editor.UI/Style/Style.hpp"
 
 using namespace ember::editor;
 using namespace ember::engine::core;
@@ -242,6 +244,8 @@ bool EditorEngine::stop() {
     /**/
     scheduler::exec([this, &next] {
 
+        destroyLoaded();
+        ui::Style::destroy();
         engine::reflow::WindowManager::destroy();
 
         auto prevWorld = _primaryGameSession->getWorldContext()->getCurrentWorld();

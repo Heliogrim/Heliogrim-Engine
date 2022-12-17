@@ -81,6 +81,22 @@ void storeHierarchyMeta();
 
 void loadActorMappingExp(cref<sptr<ObjectEditorPanel>> panel_);
 
+void destroyLoaded() {
+
+    if (not testAssetBrowser) {
+        return;
+    }
+
+    testHierarchy.reset();
+    testObjectEditor.reset();
+    testAssetBrowser.reset();
+    editor::ui::AssetBrowserHelper::destroy();
+
+    if (testTexture) {
+        testTexture.reset();
+    }
+}
+
 void testLoad(cref<sptr<engine::gfx::Device>> device_) {
     if (!testAssetBrowser) {
         editor::ui::AssetBrowserHelper::make();
@@ -146,7 +162,10 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
     }
 }
 
-ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::Device>> device_) {
+void buildTestUI(
+    cref<sptr<engine::gfx::Device>> device_,
+    const non_owning_rptr<engine::reflow::Window> window_
+) {
     if (!Style::get()) {
         Style::make();
     }
@@ -565,12 +584,7 @@ ember::sptr<ember::engine::reflow::Window> buildTestUI(cref<sptr<engine::gfx::De
 
     /**/
 
-    auto window = make_sptr<Window>();
-    window->setContent(root);
-
-    /**/
-
-    return window;
+    window_->setContent(root);
 }
 
 ember::ptr<ember::engine::reflow::Font> getDefaultFont() {

@@ -8,13 +8,7 @@
 
 #include "Engine.GFX/Texture/Texture.hpp"
 
-#if TRUE
-#include <mutex>
-extern _STD mutex uiTestMtx;
-#endif
-
 namespace ember::engine::gfx::glow::ui::render {
-
     class UiMainStageNode final :
         public gfx::render::RenderStageNode {
     public:
@@ -39,6 +33,12 @@ namespace ember::engine::gfx::glow::ui::render {
         Vector<gfx::render::RenderDataToken> requiredToken() noexcept override;
 
         Vector<gfx::render::RenderDataToken> optionalToken() noexcept override;
+
+    private:
+        Vector<type_id> _modelTypes;
+
+    public:
+        [[nodiscard]] const non_owning_rptr<const Vector<type_id>> modelTypes() const noexcept override;
 
     public:
         void before(const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
@@ -86,5 +86,4 @@ namespace ember::engine::gfx::glow::ui::render {
         void rebuildImageDescriptors(ref<sptr<vk::DescriptorPool>> pool_,
             ref<sptr<Vector<shader::DiscreteBindingGroup>>> groups_, u32 count_) const;
     };
-
 }

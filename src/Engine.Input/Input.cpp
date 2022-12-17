@@ -4,6 +4,14 @@
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Platform/Windows/Win32Window.hpp>
 #include <Engine.Scheduler/Async.hpp>
+#include <Engine.Scheduler/Task/Task.hpp>
+#include <Engine.Scheduler/Helper/Wait.hpp>
+
+#include "MouseButtonEvent.hpp"
+#include "MouseMoveEvent.hpp"
+#include "MouseWheelEvent.hpp"
+#include "KeyboardEvent.hpp"
+#include "DragDropEvent.hpp"
 
 #include "DragDrop/Win32DragDropReceiver.hpp"
 #include "DragDrop/Win32DragDropSender.hpp"
@@ -26,9 +34,31 @@ void Input::setup() {
     _dragDropSender->setup();
 }
 
-void Input::schedule() {}
+void Input::schedule() {
 
-void Input::desync() {}
+    u8 expect = 0ui8;
+    if (!_scheduled.compare_exchange_strong(expect, 1ui8)) {
+        IM_CORE_ERROR("Failed to schedule input, cause is might already run.");
+        return;
+    }
+
+    reschedule();
+}
+
+void Input::desync() {
+
+    u8 expect { 1ui8 };
+    if (not _scheduled.compare_exchange_strong(expect, 2ui8)) {
+        IM_CORE_ERROR("Failed to desync input module with unexpected schedule state.");
+        return;
+    }
+
+    expect = 0ui8;
+    while (_scheduled.load(_STD memory_order::relaxed) != expect) {
+        scheduler::fiber::self::yield();
+    }
+    //scheduler::waitUntilAtomic(_scheduled, 0ui8);
+}
 
 void Input::destroy() {
     if (_dragDropReceiver) {
@@ -44,6 +74,92 @@ void Input::destroy() {
         delete _dragDropSender;
         _dragDropSender = nullptr;
     }
+}
+
+void Input::tick() {
+
+    _STD unique_lock<_STD mutex> lck { _bufferMtx };
+
+    for (const auto& entry : _buffered) {
+
+        switch (entry.first.data) {
+            case event::MouseMoveEvent::typeId.data: {
+                _emitter.emit<event::MouseMoveEvent>(static_cast<ref<event::MouseMoveEvent>>(*entry.second));
+                break;
+            }
+            case event::MouseWheelEvent::typeId.data: {
+                _emitter.emit<event::MouseWheelEvent>(static_cast<ref<event::MouseWheelEvent>>(*entry.second));
+                break;
+            }
+            case event::MouseButtonEvent::typeId.data: {
+                _emitter.emit<event::MouseButtonEvent>(static_cast<ref<event::MouseButtonEvent>>(*entry.second));
+                break;
+            }
+            case event::DragDropEvent::typeId.data: {
+                _emitter.emit<event::DragDropEvent>(static_cast<ref<event::DragDropEvent>>(*entry.second));
+                break;
+            }
+            case event::KeyboardEvent::typeId.data: {
+                _emitter.emit<event::KeyboardEvent>(static_cast<ref<event::KeyboardEvent>>(*entry.second));
+                break;
+            }
+            default: {}
+        }
+
+    }
+
+    _buffered.clear();
+}
+
+void Input::reschedule() {
+    if (_scheduled.load(_STD memory_order_relaxed) != 1ui8) {
+        return;
+    }
+
+    /**/
+
+    const auto task = scheduler::task::make_repetitive_task([this]() {
+        u8 expect { 1ui8 };
+        if (_scheduled.load(_STD memory_order_relaxed) == expect) {
+            tick();
+            return true;
+        }
+
+        expect = 2ui8;
+        _scheduled.compare_exchange_strong(expect, 0ui8);
+        return false;
+    });
+
+    task->srcStage() = scheduler::ScheduleStageBarriers::eNetworkFetchStrong;
+    task->dstStage() = scheduler::ScheduleStageBarriers::eNetworkFetchStrong;
+
+    /**/
+
+    scheduler::exec(task);
+}
+
+cref<GlobalEventEmitter> Input::emitter() const noexcept {
+    return _emitter;
+}
+
+ref<GlobalEventEmitter> Input::emitter() noexcept {
+    return _emitter;
+}
+
+bool Input::tryBufferEvent(const event_type_id eventType_, mref<uptr<Event>> event_) {
+
+    _STD unique_lock<_STD mutex> lck { _bufferMtx, _STD defer_lock };
+    if (not lck.try_lock()) {
+        return false;
+    }
+
+    _buffered.push_back({ eventType_, _STD move(event_) });
+    return true;
+}
+
+void Input::bufferEvent(const event_type_id eventType_, mref<uptr<Event>> event_) {
+    _STD unique_lock<_STD mutex> lck { _bufferMtx };
+    _buffered.push_back({ eventType_, _STD move(event_) });
 }
 
 const ptr<input::DragDropSender> Input::dragDropSender() const noexcept {
