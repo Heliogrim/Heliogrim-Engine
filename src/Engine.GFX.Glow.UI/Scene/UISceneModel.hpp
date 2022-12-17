@@ -2,8 +2,9 @@
 #include <Engine.GFX/Scene/SceneNodeModel.hpp>
 #include <Engine.GFX/Renderer/__fwd.hpp>
 
-namespace ember::engine::gfx::glow::ui {
+#include "Engine.Reflow/Window/__fwd.hpp"
 
+namespace ember::engine::gfx::glow::ui {
     class UISceneModel final :
         public SceneNodeModel {
     public:
@@ -18,17 +19,19 @@ namespace ember::engine::gfx::glow::ui {
         ~UISceneModel() override final = default;
 
     public:
-        void create(const ptr<scene::Scene> scene_) override;
+        void create(const ptr<engine::scene::Scene> scene_) override;
 
-        void update(const ptr<scene::Scene> scene_) override;
+        void update(const ptr<engine::scene::Scene> scene_) override;
 
-        void destroy(const ptr<scene::Scene> scene_) override;
+        void destroy(const ptr<engine::scene::Scene> scene_) override;
 
     public:
         Vector<gfx::render::RenderDataToken> providedToken() const noexcept override;
 
     public:
         ptr<cache::ModelBatch> batch(const ptr<gfx::render::RenderPassState> state_) override;
-    };
 
+    public:
+        [[nodiscard]] sptr<reflow::Window> getWindow() const noexcept;
+    };
 }

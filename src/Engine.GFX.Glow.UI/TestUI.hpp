@@ -30,7 +30,11 @@ void storeHierarchyActor(ember::cref<ember::Vector<ember::ptr<ember::Actor>>> ta
 
 void testLoad(ember::cref<ember::sptr<ember::engine::gfx::Device>> device_);
 
-ember::sptr<ember::engine::reflow::Window> buildTestUI(
-    ember::cref<ember::sptr<ember::engine::gfx::Device>> device_);
+void destroyLoaded();
+
+void buildTestUI(
+    ember::cref<ember::sptr<ember::engine::gfx::Device>> device_,
+    const ember::non_owning_rptr<ember::engine::reflow::Window> window_
+);
 
 ember::ptr<ember::engine::reflow::Font> getDefaultFont();

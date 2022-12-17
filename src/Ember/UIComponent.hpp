@@ -1,8 +1,9 @@
 #pragma once
 #include "SceneComponent.hpp"
 
-namespace ember {
+#include <Engine.Reflow/Window/Window.hpp>
 
+namespace ember {
     class UIComponent :
         public SceneComponent {
     public:
@@ -15,8 +16,21 @@ namespace ember {
         UIComponent(
             mref<CachedActorPointer> owner_,
             mref<ptr<ActorComponent>> parent_
-        );
+        ) :
+            SceneComponent(component_type_id { typeId }, _STD move(owner_), _STD move(parent_)) {}
 
         ~UIComponent() = default;
+
+    private:
+        sptr<engine::reflow::Window> _window;
+
+    public:
+        [[nodiscard]] cref<sptr<engine::reflow::Window>> getWindow() const noexcept {
+            return _window;
+        }
+
+        void setWindow(cref<sptr<engine::reflow::Window>> window_) {
+            _window = window_;
+        }
     };
 }

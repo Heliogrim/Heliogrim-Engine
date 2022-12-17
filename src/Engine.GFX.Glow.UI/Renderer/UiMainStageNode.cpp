@@ -23,6 +23,7 @@
 #include "Engine.GFX/Shader/PrototypeBinding.hpp"
 #include "Engine.GFX/Shader/ShaderStorage.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
+#include "Engine.GFX.Glow.UI/Scene/UISceneModel.hpp"
 
 using namespace ember::engine::gfx::glow::ui::render;
 using namespace ember::engine::gfx::render;
@@ -32,23 +33,12 @@ using namespace ember;
 #define IMAGE_DESCRIPTOR_INDEX 0
 
 #if TRUE
-#include "Engine.Reflow/Widget/Panel.hpp"
 #include "Engine.Reflow/Window/Window.hpp"
-#include "../TestUI.hpp"
-#include <Engine.Input/MouseButtonEvent.hpp>
-#include <Engine.Input/MouseMoveEvent.hpp>
-#include <Engine.Input/MouseWheelEvent.hpp>
-#include <Engine.Input/DragDropEvent.hpp>
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
 #include <Engine.Reflow/Style/StyleKeyStack.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
-#include <mutex>
-#include <atomic>
-
-static sptr<engine::reflow::Window> uiTestPanel {};
-_STD mutex uiTestMtx = _STD mutex {};
 #endif
 
 struct UiTransformBlock {
@@ -57,7 +47,10 @@ struct UiTransformBlock {
 };
 
 UiMainStageNode::UiMainStageNode() :
-    RenderStageNode() {}
+    RenderStageNode(),
+    _modelTypes({
+        EmberClass::stid<UISceneModel>()
+    }) {}
 
 UiMainStageNode::~UiMainStageNode() = default;
 
@@ -127,12 +120,6 @@ void UiMainStageNode::destroy() {
      *
      */
     destroyDefaultImage();
-
-    #if TRUE
-    if (uiTestPanel) {
-        uiTestPanel.reset();
-    }
-    #endif
 }
 
 bool UiMainStageNode::allocate(const ptr<HORenderPass> renderPass_) {
@@ -241,52 +228,30 @@ Vector<RenderDataToken> UiMainStageNode::optionalToken() noexcept {
     return {};
 }
 
+const non_owning_rptr<const Vector<type_id>> UiMainStageNode::modelTypes() const noexcept {
+    return &_modelTypes;
+}
+
 void UiMainStageNode::before(const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_) const {
-    #if TRUE
-    if (!uiTestPanel) {
-        reflow::WindowManager::make();
-
-        testLoad(_device);
-        uiTestPanel = buildTestUI(_device);
-
-        auto& emitter { engine::Engine::getEngine()->getEmitter() };
-        emitter.on<input::event::MouseButtonEvent>([](cref<input::event::MouseButtonEvent> event_) {
-            _STD unique_lock<_STD mutex> lck { uiTestMtx };
-            reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
-        });
-        emitter.on<input::event::MouseMoveEvent>([](cref<input::event::MouseMoveEvent> event_) {
-            _STD unique_lock<_STD mutex> lck { uiTestMtx };
-
-            reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
-        });
-        emitter.on<input::event::MouseWheelEvent>([](cref<input::event::MouseWheelEvent> event_) {
-            _STD unique_lock<_STD mutex> lck { uiTestMtx };
-            reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
-        });
-        emitter.on<input::event::DragDropEvent>([](cref<input::event::DragDropEvent> event_) {
-            _STD unique_lock<_STD mutex> lck { uiTestMtx };
-            reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
-        });
-        emitter.on<input::event::KeyboardEvent>([](cref<input::event::KeyboardEvent> event_) {
-            _STD unique_lock<_STD mutex> lck { uiTestMtx };
-            reflow::WindowManager::get()->dispatch(uiTestPanel, event_);
-        });
-    }
-    #endif
-
     RenderStageNode::before(renderPass_, stagePass_);
 }
 
 void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_,
     const non_owning_rptr<SceneNodeModel> model_) const {
-    if (!uiTestPanel) {
-        return;
-    }
 
     auto* state { renderPass_->state().get() };
     auto& data { state->data };
+
+    /**/
+
+    const auto* model { static_cast<const ptr<UISceneModel>>(model_) };
+    if (not model || not model->getWindow()) {
+        return;
+    }
+
+    auto wnd { model->getWindow() };
 
     /**
      *
@@ -345,17 +310,16 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
         math::fExtent2D { ava.x, ava.y, 0.F, 0.F },
     };
 
-    _STD unique_lock<_STD mutex> lck { uiTestMtx };
     reflow::StyleKeyStack stack {};
 
     auto start = _STD chrono::high_resolution_clock::now();
-    uiTestPanel->flow(context, ava, ava, stack);
+    wnd->flow(context, ava, ava, stack);
     auto end = _STD chrono::high_resolution_clock::now();
 
     //IM_DEBUG_LOGF("Flow took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
 
     start = _STD chrono::high_resolution_clock::now();
-    uiTestPanel->shift(context, zero);
+    wnd->shift(context, zero);
     end = _STD chrono::high_resolution_clock::now();
 
     //IM_DEBUG_LOGF("Shift took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
@@ -363,13 +327,11 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     start = _STD chrono::high_resolution_clock::now();
     math::fExtent2D rootScissor { context.scissor };
     uiCmd.pushScissor(rootScissor);
-    uiTestPanel->render(&uiCmd);
+    wnd->render(&uiCmd);
     assert(rootScissor == uiCmd.popScissor());
     end = _STD chrono::high_resolution_clock::now();
 
     //IM_DEBUG_LOGF("Render took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
-
-    lck.unlock();
 
     /**
      *

@@ -214,6 +214,11 @@ void WinPlatform::processInternal() {
                     scheduler::exec(_STD move(resizeTask));
                     break;
                 }
+
+                if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+                    // TODO:
+                    break;
+                }
             }
             case SDL_EventType::SDL_KEYDOWN: {
                 // Warning: Temporary solution
@@ -222,12 +227,14 @@ void WinPlatform::processInternal() {
                     break;
                 }
 
-                const input::event::KeyboardEvent ke {
-                    static_cast<char>(event.key.keysym.sym),
-                    true,
-                    event.key.keysym.mod
-                };
-                Engine::getEngine()->getEmitter().emit(ke);
+                Engine::getEngine()->getInput()->bufferEvent(
+                    input::event::KeyboardEvent::typeId,
+                    make_uptr<input::event::KeyboardEvent>(
+                        static_cast<char>(event.key.keysym.sym),
+                        true,
+                        event.key.keysym.mod
+                    )
+                );
                 break;
             }
             case SDL_EventType::SDL_MOUSEMOTION: {
@@ -237,8 +244,15 @@ void WinPlatform::processInternal() {
                 math::ivec2 delta { event.motion.xrel, event.motion.yrel };
                 const auto button { event.motion.state };
 
-                const input::event::MouseMoveEvent mme { point, delta, button, 0ui32 };
-                Engine::getEngine()->getEmitter().emit(mme);
+                Engine::getEngine()->getInput()->bufferEvent(
+                    input::event::MouseMoveEvent::typeId,
+                    make_uptr<input::event::MouseMoveEvent>(
+                        point,
+                        delta,
+                        button,
+                        0ui32
+                    )
+                );
                 break;
             }
             case SDL_EventType::SDL_MOUSEBUTTONDOWN:
@@ -249,8 +263,15 @@ void WinPlatform::processInternal() {
                 const bool down { event.button.state == SDL_PRESSED };
                 u32 button { event.button.button };
 
-                const input::event::MouseButtonEvent mbe { point, button, down, 0ui32 };
-                Engine::getEngine()->getEmitter().emit(mbe);
+                Engine::getEngine()->getInput()->bufferEvent(
+                    input::event::MouseButtonEvent::typeId,
+                    make_uptr<input::event::MouseButtonEvent>(
+                        point,
+                        button,
+                        down,
+                        0ui32
+                    )
+                );
                 break;
             }
             case SDL_EventType::SDL_MOUSEWHEEL: {
@@ -261,8 +282,13 @@ void WinPlatform::processInternal() {
 
                 SDL_GetMouseState(&point.x, &point.y);
 
-                const input::event::MouseWheelEvent mwe { point, value };
-                Engine::getEngine()->getEmitter().emit(mwe);
+                Engine::getEngine()->getInput()->bufferEvent(
+                    input::event::MouseWheelEvent::typeId,
+                    make_uptr<input::event::MouseWheelEvent>(
+                        point,
+                        value
+                    )
+                );
                 break;
             }
             case SDL_EventType::SDL_DROPFILE: {

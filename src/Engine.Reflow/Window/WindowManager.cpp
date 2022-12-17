@@ -6,6 +6,7 @@
 #include <Engine.GFX/RenderTarget.hpp>
 #include <Engine.GFX/Surface/Surface.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Input/Input.hpp>
 
 #include "BoundWindow.hpp"
 #include "Window.hpp"
@@ -28,6 +29,7 @@ cref<sptr<WindowManager::this_type>> WindowManager::get() {
 cref<sptr<WindowManager::this_type>> WindowManager::make() {
     if (!_instance) {
         _instance = sptr<WindowManager>(new WindowManager());
+        _instance->setup();
     }
     return _instance;
 }
@@ -42,7 +44,62 @@ WindowManager::~WindowManager() {
     tidy();
 }
 
+void WindowManager::setup() {
+
+    auto* const input { Engine::getEngine()->getInput() };
+    auto& emitter { input->emitter() };
+
+    /**/
+
+    emitter.on<input::event::MouseButtonEvent>([this](const auto& event_) {
+        const auto wnd { resolveWindow(event_._pointer) };
+        if (wnd) {
+            dispatch(wnd, event_);
+        }
+    });
+    emitter.on<input::event::MouseMoveEvent>([this](const auto& event_) {
+        const auto prevWnd { resolveWindow(event_._pointer - event_._delta) };
+        const auto nextWnd { resolveWindow(event_._pointer) };
+
+        if (prevWnd && prevWnd != nextWnd) {
+            dispatch(prevWnd, event_);
+        }
+
+        if (nextWnd) {
+            dispatch(nextWnd, event_);
+        }
+    });
+    emitter.on<input::event::MouseWheelEvent>([this](const auto& event_) {
+        const auto wnd { resolveWindow(event_._pointer) };
+        if (wnd) {
+            dispatch(wnd, event_);
+        }
+    });
+    emitter.on<input::event::DragDropEvent>([this](const auto& event_) {
+        const auto wnd { resolveWindow(event_._pointer) };
+        if (wnd) {
+            dispatch(wnd, event_);
+        }
+    });
+    emitter.on<input::event::KeyboardEvent>([this](const auto& event_) {
+
+        sptr<Window> wnd { nullptr };
+        for (const auto& entry : _focusOrder) {
+            if (not entry.expired()) {
+                wnd = entry.lock();
+                break;
+            }
+        }
+
+        if (wnd != nullptr) {
+            dispatch(wnd, event_);
+        }
+    });
+}
+
 void WindowManager::tidy() {
+
+    _focusOrder.clear();
 
     if (_windows.empty()) {
         return;
@@ -63,6 +120,20 @@ void WindowManager::tidy() {
         destroyWindow(_STD move(entry));
     }
 
+}
+
+sptr<Window> WindowManager::resolveWindow(cref<math::ivec2> position_) const noexcept {
+
+    const math::vec2 pos { static_cast<float>(position_.x), static_cast<float>(position_.y) };
+    for (const auto& entry : _windows) {
+
+        const auto* const wnd { entry->window.get() };
+        if (intersects(wnd->screenOffset(), wnd->outerSize(), pos)) {
+            return entry->window;
+        }
+    }
+
+    return nullptr;
 }
 
 non_owning_rptr<engine::scene::IRenderScene> WindowManager::resolveScene(cref<sptr<Window>> window_) {
@@ -230,4 +301,27 @@ sptr<Window> WindowManager::requestWindow(
 
     _windows.push_back(_STD move(bound));
     return wnd;
+}
+
+void WindowManager::interceptFocusEvent(cref<sptr<Window>> window_, cref<FocusEvent> event_) {
+
+    if (not _focusOrder.empty()) {
+
+        if (not _focusOrder.back().expired() && _focusOrder.back().lock() == window_) {
+            return;
+        }
+
+        auto where = _STD ranges::remove_if(_focusOrder, [window_](const auto& entry_) {
+            if (entry_.expired()) {
+                return true;
+            }
+
+            const auto wnd { entry_.lock() };
+            return wnd == window_;
+        });
+
+        _focusOrder.erase(where.begin(), where.end());
+    }
+
+    _focusOrder.push_back(window_);
 }

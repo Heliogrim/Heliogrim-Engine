@@ -15,13 +15,13 @@
 #include "Engine.Reflow/Widget/Widget.hpp"
 
 namespace ember::engine::reflow {
-
     class EventDispatcher {
     public:
         using this_type = EventDispatcher;
 
     protected:
-        [[nodiscard]] bool intersects(cref<math::vec2> off_, cref<math::vec2> size_, cref<math::vec2> point_) {
+        [[nodiscard]] bool intersects(cref<math::vec2> off_, cref<math::vec2> size_,
+            cref<math::vec2> point_) const noexcept {
 
             if (point_.x < off_.x || point_.x >= (off_.x + size_.x)) {
                 return false;
@@ -33,6 +33,9 @@ namespace ember::engine::reflow {
 
             return true;
         }
+
+    protected:
+        virtual void interceptFocusEvent(cref<sptr<Window>> window_, cref<FocusEvent> event_) = 0;
 
     public:
         template <typename EventType_>
@@ -278,6 +281,10 @@ namespace ember::engine::reflow {
         template <>
         EventResponse dispatch(cref<sptr<Window>> window_, cref<FocusEvent> event_) {
 
+            interceptFocusEvent(window_, event_);
+
+            /**/
+
             Stack<sptr<Widget>> backlog {};
             EventResponse state { EventResponse::eUnhandled };
 
@@ -342,5 +349,4 @@ namespace ember::engine::reflow {
             return state;
         }
     };
-
 }
