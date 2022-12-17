@@ -78,6 +78,33 @@ non_owning_rptr<engine::scene::IRenderScene> WindowManager::resolveScene(cref<sp
     return iter->get()->sceneView->getScene();
 }
 
+void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::ivec2> nextSize_) const {
+
+    const auto* const gfx = Engine::getEngine()->getGraphics();
+
+    /**/
+
+    const auto nextSwapchain = make_sptr<gfx::VkSurfaceSwapchain>(wnd_->surface);
+    nextSwapchain->setup(gfx->getCurrentDevice());
+
+    const auto prevSwapchain = wnd_->surface->swapchain();
+    wnd_->surface->setSwapchain(nextSwapchain);
+
+    /**/
+
+    wnd_->renderTarget->rebuildPasses(nextSwapchain.get());
+
+    /**/
+
+    #ifdef _DEBUG
+    if (prevSwapchain.use_count() > 1) {
+        IM_DEBUG_LOG("Destroying swapchain which is still referenced multiple times.");
+    }
+    #endif
+
+    prevSwapchain->destroy();
+}
+
 void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
 
     const auto wnd { _STD move(window_) };
@@ -95,6 +122,10 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
 
     auto bound = _STD move(*iter);
     _windows.erase(iter);
+
+    /**/
+
+    bound->surface->getNativeWindow()->resizeEmitter().remove(bound->resizeListen);
 
     /**/
 
@@ -126,6 +157,7 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
 }
 
 sptr<Window> WindowManager::requestWindow(
+    string_view title_,
     cref<math::ivec2> size_,
     const wptr<Window> parent_,
     const non_owning_rptr<scene::IRenderScene> scene_
@@ -143,7 +175,7 @@ sptr<Window> WindowManager::requestWindow(
     const auto* const gfx = Engine::getEngine()->getGraphics();
 
     auto window = await(Future {
-        platform->makeNativeWindow("New Window"sv, math::iExtent2D { size_.x, size_.y })
+        platform->makeNativeWindow(title_, math::iExtent2D { size_.x, size_.y })
     });
 
     /**/
@@ -177,15 +209,25 @@ sptr<Window> WindowManager::requestWindow(
     /**/
 
     auto wnd { make_sptr<Window>() };
-
-    _windows.push_back(make_uptr<BoundWindow>(
-        target,
-        _STD move(sceneView),
-        surface,
-        wnd
-    ));
+    auto bound {
+        make_uptr<BoundWindow>(
+            target,
+            _STD move(sceneView),
+            surface,
+            wnd,
+            ~0
+        )
+    };
 
     /**/
 
+    bound->resizeListen = surface->getNativeWindow()->resizeEmitter().on(
+        [this, wnd = bound.get()](cref<engine::platform::PlatformResizeEvent> event_) {
+            handleWindowResize(wnd, event_.getNextSize());
+        });
+
+    /**/
+
+    _windows.push_back(_STD move(bound));
     return wnd;
 }

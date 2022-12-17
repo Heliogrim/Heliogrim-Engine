@@ -63,6 +63,7 @@ void editor::boot::initGfx() {
     renderTarget->use(swapchain.get());
     renderTarget->use(surface);
 
+    renderTarget->setActive(false);
     gfxScenes->addPrimaryTarget(renderTarget);
 
     /**/
@@ -97,5 +98,10 @@ void editor::boot::initGfx() {
 
     renderTarget->buildPasses(sceneView);
 
-    engine::reflow::WindowManager::get()->requestWindow(math::ivec2 { 320, 320 }, {}, sceneView->getScene());
+    engine::reflow::WindowManager::get()->requestWindow(
+        "Ember Editor"sv,
+        math::ivec2 { 1280, 720 },
+        {},
+        sceneView->getScene()
+    );
 }

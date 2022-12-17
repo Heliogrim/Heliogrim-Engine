@@ -44,10 +44,13 @@ namespace ember::engine::reflow {
     private:
         [[nodiscard]] non_owning_rptr<scene::IRenderScene> resolveScene(cref<sptr<Window>> window_);
 
+        void handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::ivec2> nextSize_) const;
+
     public:
         void destroyWindow(mref<sptr<Window>> window_);
 
         [[nodiscard]] sptr<Window> requestWindow(
+            string_view title_,
             cref<math::ivec2> size_,
             const wptr<Window> parent_,
             const non_owning_rptr<scene::IRenderScene> scene_ = nullptr);

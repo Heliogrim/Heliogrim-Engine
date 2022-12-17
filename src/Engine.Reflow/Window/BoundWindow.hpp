@@ -21,5 +21,9 @@ namespace ember::engine::reflow {
         uptr<gfx::scene::SceneView> sceneView;
         non_owning_rptr<gfx::Surface> surface;
         sptr<Window> window;
+
+        /**/
+
+        u64 resizeListen;
     };
 }
