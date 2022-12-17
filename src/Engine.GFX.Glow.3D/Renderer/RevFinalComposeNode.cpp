@@ -31,8 +31,6 @@ using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-static Texture test {};
-
 RevFinalComposeNode::RevFinalComposeNode() :
     RenderStageNode(),
     _device(nullptr) {}
@@ -149,53 +147,6 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Allocate Textures
      */
-    if (!test) {
-        RevTextureLoader loader { Engine::getEngine()->getGraphics()->cacheCtrl() };
-        test = loader.__tmp__load({ ""sv, R"(R:\\test.ktx)"sv });
-
-        const vk::ImageMemoryBarrier imgBarrier {
-            vk::AccessFlags {},
-            vk::AccessFlagBits::eShaderRead,
-            vk::ImageLayout::eTransferSrcOptimal,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            test.buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                test.mipLevels(),
-                0,
-                test.layer()
-            }
-
-        };
-
-        auto pool = _device->graphicsQueue()->pool();
-        pool->lck().acquire();
-        CommandBuffer iiCmd = pool->make();
-        iiCmd.begin();
-
-        /**
-         * Transform
-         */
-        iiCmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-            vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
-            0, nullptr,
-            0, nullptr,
-            1, &imgBarrier
-        );
-
-        iiCmd.end();
-        iiCmd.submitWait();
-        iiCmd.release();
-
-        pool->lck().release();
-
-        test.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-        TextureFactory::get()->buildView(test);
-    }
-
     const sptr<Framebuffer> depthFrame {
         _STD static_pointer_cast<Framebuffer, void>(state->data.find("RevDepthStage::Framebuffer"sv)->second)
     };

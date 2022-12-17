@@ -42,8 +42,6 @@ using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-static Texture testCubeMap {};
-
 RevMainSkyNode::RevMainSkyNode(const ptr<RevMainSharedNode> sharedNode_) :
     _modelTypes({
         EmberClass::stid<SkyboxModel>()
@@ -99,55 +97,6 @@ void RevMainSkyNode::setup(cref<sptr<Device>> device_) {
      *
      */
     _pipeline->setup();
-
-    // TODO:
-    if (!testCubeMap) {
-        RevTextureLoader loader { Engine::getEngine()->getGraphics()->cacheCtrl() };
-        testCubeMap = loader.__tmp__load({ ""sv, R"(R:\\sky_monbachtal.ktx)" });
-
-        Vector<vk::ImageMemoryBarrier> imgBarriers {};
-        imgBarriers.push_back({
-            vk::AccessFlags {},
-            vk::AccessFlagBits::eShaderRead,
-            vk::ImageLayout::eTransferSrcOptimal,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            testCubeMap.buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                testCubeMap.mipLevels(),
-                0,
-                testCubeMap.layer()
-            }
-        });
-
-        auto pool = _device->graphicsQueue()->pool();
-        pool->lck().acquire();
-        CommandBuffer iiCmd = pool->make();
-        iiCmd.begin();
-
-        /**
-         * Transform
-         */
-        iiCmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-            vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
-            0, nullptr,
-            0, nullptr,
-            static_cast<uint32_t>(imgBarriers.size()), imgBarriers.data()
-        );
-
-        iiCmd.end();
-        iiCmd.submitWait();
-        iiCmd.release();
-
-        pool->lck().release();
-
-        testCubeMap.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-
-        TextureFactory::get()->buildView(testCubeMap);
-    }
 }
 
 void RevMainSkyNode::destroy() {
@@ -169,11 +118,6 @@ void RevMainSkyNode::destroy() {
 
         entry.pPoolSizes = nullptr;
         entry.poolSizeCount = 0ui32;
-    }
-
-    // TODO:
-    if (testCubeMap) {
-        testCubeMap.destroy();
     }
 
     /**

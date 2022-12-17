@@ -20,6 +20,7 @@
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
 #include <Engine.GFX/Renderer/RenderDataToken.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "RevDepthSharedNode.hpp"
 #include "Ember/StaticGeometryComponent.hpp"
@@ -37,8 +38,6 @@
 using namespace ember::engine::gfx::glow::render;
 using namespace ember::engine::gfx::render;
 using namespace ember;
-
-static engine::gfx::Texture testCubeMap {};
 
 RevEarlyEnvIrradiance::RevEarlyEnvIrradiance() :
     RenderStageNode(),
@@ -64,58 +63,6 @@ void RevEarlyEnvIrradiance::setup(cref<sptr<Device>> device_) {
 
     // Pipeline
     setupPipeline();
-
-    /**/
-    {
-        // TODO:
-        if (!testCubeMap) {
-            RevTextureLoader loader { Engine::getEngine()->getGraphics()->cacheCtrl() };
-            testCubeMap = loader.__tmp__load({ ""sv, R"(R:\\sky_monbachtal.ktx)" });
-
-            Vector<vk::ImageMemoryBarrier> imgBarriers {};
-            imgBarriers.push_back({
-                vk::AccessFlags {},
-                vk::AccessFlagBits::eShaderRead,
-                vk::ImageLayout::eTransferSrcOptimal,
-                vk::ImageLayout::eShaderReadOnlyOptimal,
-                VK_QUEUE_FAMILY_IGNORED,
-                VK_QUEUE_FAMILY_IGNORED,
-                testCubeMap.buffer().image(),
-                vk::ImageSubresourceRange {
-                    vk::ImageAspectFlagBits::eColor,
-                    0,
-                    testCubeMap.mipLevels(),
-                    0,
-                    testCubeMap.layer()
-                }
-            });
-
-            auto pool = _device->graphicsQueue()->pool();
-            pool->lck().acquire();
-            CommandBuffer iiCmd = pool->make();
-            iiCmd.begin();
-
-            /**
-             * Transform
-             */
-            iiCmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-                vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
-                0, nullptr,
-                0, nullptr,
-                static_cast<uint32_t>(imgBarriers.size()), imgBarriers.data()
-            );
-
-            iiCmd.end();
-            iiCmd.submitWait();
-            iiCmd.release();
-
-            pool->lck().release();
-
-            testCubeMap.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-
-            TextureFactory::get()->buildView(testCubeMap);
-        }
-    }
 }
 
 void RevEarlyEnvIrradiance::destroy() {
@@ -141,14 +88,6 @@ void RevEarlyEnvIrradiance::destroy() {
 
     // LORenderPass
     destroyLORenderPass();
-
-    /**/
-    {
-        // TODO:
-        if (testCubeMap) {
-            testCubeMap.destroy();
-        }
-    }
 }
 
 bool RevEarlyEnvIrradiance::allocate(const ptr<HORenderPass> renderPass_) {
@@ -283,7 +222,7 @@ bool RevEarlyEnvIrradiance::allocate(const ptr<HORenderPass> renderPass_) {
         pools.push_back(pool);
     }
     dbgs[0].getById(shader::ShaderBinding::id_type { 1 }).store(uniform);
-    dbgs[1].getById(shader::ShaderBinding::id_type { 2 }).storeAs(testCubeMap, vk::ImageLayout::eShaderReadOnlyOptimal);
+    //dbgs[1].getById(shader::ShaderBinding::id_type { 2 }).storeAs(..., vk::ImageLayout::eShaderReadOnlyOptimal);
 
     /**
      * Store State
@@ -477,6 +416,30 @@ void RevEarlyEnvIrradiance::invoke(
 
         cmd.reset();
         cmd.begin();
+
+        /**
+         * Bind Skybox Resources
+         */
+        if (model->hasOverrideMaterials()) {
+            const auto* first { model->overrideMaterials().front() };
+
+            ptr<const VirtualTextureView> skyboxView { nullptr };
+            if (first->_payload.diffuse) {
+                skyboxView = first->_payload.diffuse->_payload.view.get();
+
+                auto* const dbgs {
+                    static_cast<const ptr<Vector<shader::DiscreteBindingGroup>>>(data.at(
+                        "RevEarlyEnvIrradianceNode::DiscreteBindingGroups"sv).get())
+                };
+                (*dbgs)[1].getById(shader::ShaderBinding::id_type { 2 }).storeAs(
+                    skyboxView->owner(),
+                    vk::ImageLayout::eShaderReadOnlyOptimal
+                );
+
+            } else {
+                IM_DEBUG_LOG("Irradiance generator picked up a skybox instance without satisfying resources.");
+            }
+        }
 
         /**
          * Get Irradiance Cube
