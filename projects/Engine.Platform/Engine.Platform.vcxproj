@@ -90,6 +90,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Platform\Event\PlatformResizeEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Platform\NativeWindow.hpp" />
     <ClInclude Include="..\..\src\Engine.Platform\NativeWindowFlags.hpp" />
     <ClInclude Include="..\..\src\Engine.Platform\Platform.hpp" />
@@ -97,6 +98,7 @@
     <ClInclude Include="..\..\src\Engine.Platform\Windows\WinPlatform.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Platform\Event\PlatformResizeEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Platform\NativeWindow.cpp" />
     <ClCompile Include="..\..\src\Engine.Platform\Platform.cpp" />
     <ClCompile Include="..\..\src\Engine.Platform\Windows\Win32Window.cpp" />

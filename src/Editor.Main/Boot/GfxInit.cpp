@@ -22,6 +22,9 @@
 #include <Engine.Scene/Scene.hpp>
 #include <Engine.Platform/Platform.hpp>
 
+#include "Engine.GFX.Scene/View/SceneView.hpp"
+#include "Engine.Reflow/Window/WindowManager.hpp"
+
 using namespace ember::editor::boot;
 using namespace ember::engine;
 using namespace ember;
@@ -93,4 +96,6 @@ void editor::boot::initGfx() {
     auto* const sceneView { camModel->getSceneView() };
 
     renderTarget->buildPasses(sceneView);
+
+    engine::reflow::WindowManager::get()->requestWindow(math::ivec2 { 320, 320 }, {}, sceneView->getScene());
 }

@@ -63,6 +63,15 @@ void WinPlatform::tidy() {
 
     /**/
 
+    if (not _windows.empty()) {
+        IM_CORE_ERROR("Tidy up platform interface failed due to undestructed windows.");
+        #ifdef _DEBUG
+        __debugbreak();
+        #endif
+    }
+
+    /**/
+
     SDL_Quit();
 }
 
@@ -94,7 +103,7 @@ ember::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
 ) {
 
     ::ember::concurrent::promise<uptr<NativeWindow>> promise {
-        [title = title_, extent = extent_] {
+        [this, title = title_, extent = extent_] {
 
             /**/
             auto wnd = make_uptr<Win32Window>(
@@ -116,6 +125,7 @@ ember::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
 
             /**/
             //Engine::getEngine()->getInput()->captureWindow(wnd);
+            _windows.push_back(wnd.get());
             /**/
 
             return wnd;
@@ -137,10 +147,11 @@ ember::concurrent::future<bool> WinPlatform::destroyNativeWindow(
     _STD shared_ptr<NativeWindow> holder { _STD move(window_) };
 
     ::ember::concurrent::promise<bool> promise {
-        [window = holder] {
+        [this, window = holder] {
 
             /**/
             //Engine::getEngine()->getInput()->releaseWindow(wnd);
+            _windows.erase(_STD remove(_windows.begin(), _windows.end(), window.get()));
             /**/
 
             const auto sdlWnd { static_cast<ptr<Win32Window>>(window.get())->sdl() };
@@ -178,17 +189,26 @@ void WinPlatform::processInternal() {
                 // Warning: We need to call stop via scheduler
                 // Warning: Temporary solution
                 if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                    math::uivec2 extent {
-                        static_cast<u32>(event.window.data1),
-                        static_cast<u32>(event.window.data2)
-                    };
-                    auto resizeTask {
-                        scheduler::task::make_task([extent]() {
-                            //Engine::getEngine()->getGraphics()->__tmp__resize(extent);
+
+                    auto* targetWnd = SDL_GetWindowFromID(event.window.windowID);
+                    const auto iter {
+                        _STD find_if(_windows.begin(), _windows.end(), [targetWnd](const auto& entry_) {
+                            return static_cast<ptr<Win32Window>>(entry_)->sdl() == targetWnd;
                         })
                     };
 
-                    resizeTask->srcStage() = scheduler::ScheduleStageBarriers::eAll;
+                    if (iter == _windows.end()) {
+                        break;
+                    }
+
+                    PlatformResizeEvent resizeEvent { *iter, math::ivec2 { event.window.data1, event.window.data2 } };
+                    auto resizeTask {
+                        scheduler::task::make_task([wnd = *iter, resizeEvent = _STD move(resizeEvent)]() {
+                            wnd->resizeEmitter().emit(resizeEvent);
+                        })
+                    };
+
+                    resizeTask->srcStage() = scheduler::ScheduleStageBarriers::ePublishStrong;
                     resizeTask->dstStage() = scheduler::ScheduleStageBarriers::eNetworkPushStrong;
 
                     scheduler::exec(_STD move(resizeTask));

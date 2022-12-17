@@ -3,8 +3,10 @@
 #include <Engine.Common/Math/Extent.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Common/String.hpp>
+#include <Engine.Event/EventEmitter.hpp>
 
 #include "NativeWindowFlags.hpp"
+#include "Event/PlatformResizeEvent.hpp"
 
 namespace ember::engine::platform {
     /**
@@ -33,5 +35,13 @@ namespace ember::engine::platform {
         [[nodiscard]] virtual string_view title() const noexcept = 0;
 
         virtual void setTitle(const string_view title_) = 0;
+
+    private:
+        StatelessEventEmitter<PlatformResizeEvent> _resizeEmitter;
+
+    public:
+        [[nodiscard]] cref<decltype(_resizeEmitter)> resizeEmitter() const noexcept;
+
+        [[nodiscard]] ref<decltype(_resizeEmitter)> resizeEmitter() noexcept;
     };
 }

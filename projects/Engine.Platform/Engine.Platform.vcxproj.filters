@@ -22,6 +22,12 @@
     <Filter Include="Quelldateien\Windows">
       <UniqueIdentifier>{5d0c94dc-b80b-412e-aecb-e737b4706e70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Event">
+      <UniqueIdentifier>{80d65f85-0c2d-4afa-89ce-ccd385b4a8b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Event">
+      <UniqueIdentifier>{eb60d2ce-a5ca-4f58-8e80-e6803bc1e977}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Platform\Windows\WinPlatform.hpp">
@@ -39,6 +45,9 @@
     <ClInclude Include="..\..\src\Engine.Platform\NativeWindowFlags.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Platform\Event\PlatformResizeEvent.hpp">
+      <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Platform\Windows\WinPlatform.cpp">
@@ -52,6 +61,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Platform\NativeWindow.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Platform\Event\PlatformResizeEvent.cpp">
+      <Filter>Quelldateien\Event</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

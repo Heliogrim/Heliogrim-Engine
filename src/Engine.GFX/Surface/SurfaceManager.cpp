@@ -50,14 +50,24 @@ non_owning_rptr<Surface> SurfaceManager::makeSurface(mref<uptr<platform::NativeW
     auto surface { make_uptr<Surface>(_STD move(window_), _application) };
     const auto result = _surfaces.insert_or_assign(surface->getNativeWindow(), _STD move(surface));
 
-    if (result.second) {
-        return result.first->second.get();
+    if (not result.second) {
+        // TODO: This is invalid behaviour; Need to check what insert_or_assign does on duplicated entry
+        IM_CORE_ERROR("Tried to create multiple a surfaces for a single native window");
+        destroySurface(_STD move(surface));
+        return nullptr;
     }
 
-    // TODO: This is invalid behaviour; Need to check what insert_or_assign does on duplicated entry
-    IM_CORE_ERROR("Tried to create multiple a surfaces for a single native window");
-    destroySurface(_STD move(surface));
-    return nullptr;
+    /**/
+
+    /*
+    result.first->first->resizeEmitter().on([this](cref<platform::PlatformResizeEvent> event_) {
+        const auto* const surface { _surfaces.at(event_.getWindow()).get() };
+    });
+     */
+
+    /**/
+
+    return result.first->second.get();
 }
 
 bool SurfaceManager::destroySurface(mref<uptr<Surface>> surface_) {

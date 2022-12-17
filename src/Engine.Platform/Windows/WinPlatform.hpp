@@ -27,6 +27,8 @@ namespace ember::engine {
         _STD thread _thread;
         scheduler::task::SignaledQueue _platformQueue;
 
+        Vector<ptr<platform::NativeWindow>> _windows;
+
     public:
         [[nodiscard]] ref<scheduler::task::SignaledQueue> platformQueue() const noexcept override;
 

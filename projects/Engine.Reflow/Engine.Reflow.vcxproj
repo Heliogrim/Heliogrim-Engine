@@ -159,6 +159,7 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Widget.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\WidgetState.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\__fwd.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Window\BoundWindow.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Window\PopupLayer.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Window\Window.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Window\WindowManager.hpp" />

@@ -291,6 +291,9 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Tree\TreeItem.hpp">
       <Filter>Headerdateien\Widget\Tree</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Window\BoundWindow.hpp">
+      <Filter>Headerdateien\Window</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflow\Window\WindowManager.cpp">
