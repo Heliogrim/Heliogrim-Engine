@@ -424,7 +424,7 @@ EventResponse Viewport::onMouseMove(cref<MouseMoveEvent> event_) {
     dxdy.y = glm::radians(dxdy.y);
 
     const auto pitch { math::quaternion::euler({ -dxdy.y, 0.F, 0.F }) };
-    const auto yaw { math::quaternion::euler({ 0.F, dxdy.x, 0.F }) };
+    const auto yaw { math::quaternion::euler({ 0.F, -dxdy.x, 0.F }) };
 
     ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
     ref<Transform> ctf { _cameraActor->getCameraComponent()->getLocalTransform() };

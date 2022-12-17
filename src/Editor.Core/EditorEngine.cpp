@@ -28,6 +28,8 @@
 #include <Engine.Platform/Linux>
 #endif
 
+#include "Engine.Reflow/Window/WindowManager.hpp"
+
 using namespace ember::editor;
 using namespace ember::engine::core;
 using namespace ember::engine;
@@ -170,6 +172,7 @@ bool EditorEngine::start() {
         _worldContexts.push_back(_primaryGameSession->getWorldContext());
 
         /**/
+        engine::reflow::WindowManager::make();
         boot::initAssets();
         boot::initEditorWorld();
         boot::initPrimaryWorld();
@@ -238,6 +241,8 @@ bool EditorEngine::stop() {
 
     /**/
     scheduler::exec([this, &next] {
+
+        engine::reflow::WindowManager::destroy();
 
         auto prevWorld = _primaryGameSession->getWorldContext()->getCurrentWorld();
         _primaryGameSession->getWorldContext()->setCurrentWorld(nullptr);

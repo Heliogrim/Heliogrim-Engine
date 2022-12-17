@@ -7,8 +7,11 @@
 #include "__fwd.hpp"
 #include "../Event/EventDispatcher.hpp"
 
-namespace ember::engine::reflow {
+namespace ember::engine::scene {
+    class IRenderScene;
+}
 
+namespace ember::engine::reflow {
     class WindowManager :
         public EventDispatcher {
     public:
@@ -32,8 +35,21 @@ namespace ember::engine::reflow {
     public:
         ~WindowManager();
 
-    public:
-        [[nodiscard]] sptr<Window> requestWindow(cref<math::uivec2> size_, const wptr<Window> parent_);
-    };
+    private:
+        void tidy();
 
+    private:
+        Vector<uptr<BoundWindow>> _windows;
+
+    private:
+        [[nodiscard]] non_owning_rptr<scene::IRenderScene> resolveScene(cref<sptr<Window>> window_);
+
+    public:
+        void destroyWindow(mref<sptr<Window>> window_);
+
+        [[nodiscard]] sptr<Window> requestWindow(
+            cref<math::ivec2> size_,
+            const wptr<Window> parent_,
+            const non_owning_rptr<scene::IRenderScene> scene_ = nullptr);
+    };
 }
