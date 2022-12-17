@@ -129,9 +129,6 @@ cref<sptr<Swapchain>> Surface::swapchain() const noexcept {
 }
 
 bool Surface::setSwapchain(cref<sptr<Swapchain>> swapchain_) noexcept {
-    if (not _swapchain || (_swapchain && not swapchain_)) {
-        _swapchain = swapchain_;
-        return true;
-    }
-    return false;
+    _swapchain = swapchain_;
+    return true;
 }
