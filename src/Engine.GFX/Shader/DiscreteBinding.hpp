@@ -8,7 +8,6 @@
 #include "../Texture/TextureSampler.hpp"
 
 namespace ember::engine::gfx::shader {
-
     class DiscreteBinding {
     public:
         using id_type = u32;
@@ -138,5 +137,7 @@ namespace ember::engine::gfx::shader {
 
     public:
         void store(const ptr<const VirtualTexture> texture_);
+
+        void storeAs(const ptr<const VirtualTexture> texture_, cref<vk::ImageLayout> layout_);
     };
 }
