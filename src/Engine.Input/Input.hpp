@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Core/CoreModule.hpp>
+#include <Engine.Core/Module/CoreModule.hpp>
 #include <Engine.Platform/NativeWindow.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 

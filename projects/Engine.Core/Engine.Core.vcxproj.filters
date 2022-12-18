@@ -19,6 +19,12 @@
     <Filter Include="Quelldateien\Event">
       <UniqueIdentifier>{26c947a1-00b6-421c-9fab-c1cc7d5382dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Module">
+      <UniqueIdentifier>{045babee-200d-4b49-bfe0-a3ae930a6e5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Module">
+      <UniqueIdentifier>{cefc5d6e-0980-46ce-9e1b-fa572944d9f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Core\Event\WorldAddedEvent.hpp">
@@ -51,9 +57,6 @@
     <ClInclude Include="..\..\src\Engine.Core\EngineState.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Core\CoreModule.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Core\Event\SignalShutdownEvent.hpp">
       <Filter>Headerdateien\Event</Filter>
     </ClInclude>
@@ -77,6 +80,27 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Core\Event\EngineExitEvent.hpp">
       <Filter>Headerdateien\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Module\Modules.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Module\DependencyValidationResult.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Module\CoreDependencies.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Module\CoreModule.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Module\DependencyKey.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Module\SubModule.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Core\Module\SubModuleDependency.hpp">
+      <Filter>Headerdateien\Module</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +130,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Core\Event\SignalShutdownEvent.cpp">
       <Filter>Quelldateien\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Core\Module\Modules.cpp">
+      <Filter>Quelldateien\Module</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

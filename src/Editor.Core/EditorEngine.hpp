@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
 namespace ember::editor {
@@ -46,6 +47,8 @@ namespace ember::editor {
 
         GlobalEventEmitter _emitter;
 
+        engine::core::Modules _modules;
+
     public:
         [[nodiscard]] non_owning_rptr<engine::Assets> getAssets() const noexcept override;
 
@@ -67,6 +70,9 @@ namespace ember::editor {
 
     public:
         [[nodiscard]] ref<GlobalEventEmitter> getEmitter() const noexcept override;
+
+    public:
+        [[nodiscard]] ref<engine::core::Modules> getModules() const noexcept;
 
     private:
         Vector<non_owning_rptr<engine::core::WorldContext>> _worldContexts;

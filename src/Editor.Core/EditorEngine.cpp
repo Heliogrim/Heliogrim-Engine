@@ -1,22 +1,22 @@
 #include "EditorEngine.hpp"
 
+#include <Editor.Main/Boot/SubModuleInit.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Core/EngineState.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Event/WorldAddedEvent.hpp>
 #include <Engine.Core/Event/WorldRemoveEvent.hpp>
+#include <Engine.Core/Module/SubModule.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
+#include <Engine.Logging/Logger.hpp>
 #include <Engine.Network/Network.hpp>
 #include <Engine.PFX/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Async.hpp>
+#include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Helper/Wait.hpp>
 #include <Engine.SFX/Audio.hpp>
-#include <Editor.Main/Boot/AssetInit.hpp>
-#include <Editor.Main/Boot/GfxInit.hpp>
-#include <Editor.Main/Boot/WorldInit.hpp>
 
 #include "Engine.Core/World.hpp"
 #include "Engine.Core/WorldContext.hpp"
@@ -27,10 +27,6 @@
 #else
 #include <Engine.Platform/Linux>
 #endif
-
-#include "Engine.Reflow/Window/WindowManager.hpp"
-#include "Engine.GFX.Glow.UI/TestUI.hpp"
-#include "Editor.UI/Style/Style.hpp"
 
 using namespace ember::editor;
 using namespace ember::engine::core;
@@ -73,6 +69,21 @@ bool EditorEngine::preInit() {
     _input = make_uptr<Input>(this);
     _network = make_uptr<Network>(this);
     _physics = make_uptr<Physics>(this);
+
+    /**/
+
+    boot::preInitSubModules();
+
+    const auto result = _modules.validate();
+    if (result == DependencyValidationResult::eSuccess) {
+        IM_CORE_LOG("Module dependencies and order resolved correctly.");
+    } else if (result == DependencyValidationResult::eFailedRequired) {
+        IM_CORE_ERROR("Failed to resolve all module dependencies.");
+    } else {
+        IM_CORE_ERROR("Module dependency and order resolving failed.");
+    }
+
+    /**/
 
     return setEngineState(EngineState::ePreInitialized);
 }
@@ -128,6 +139,20 @@ bool EditorEngine::init() {
 
     /**/
     scheduler::waitUntilAtomic(setupCounter, 6ui8);
+    setupCounter.store(0ui8, _STD memory_order_relaxed);
+
+    scheduler::exec([this, &setupCounter] {
+
+        for (const auto& subModule : _modules.getSubModules()) {
+            subModule->setup();
+        }
+
+        ++setupCounter;
+        setupCounter.notify_one();
+    });
+
+    /**/
+    scheduler::waitUntilAtomic(setupCounter, 1ui8);
     return setEngineState(EngineState::eInitialized);
 }
 
@@ -174,12 +199,10 @@ bool EditorEngine::start() {
         _worldContexts.push_back(_primaryGameSession->getWorldContext());
 
         /**/
-        engine::reflow::WindowManager::make();
-        boot::initAssets();
-        boot::initEditorWorld();
-        boot::initPrimaryWorld();
-        boot::initGfx();
-        /**/
+
+        for (const auto& subModule : _modules.getSubModules()) {
+            subModule->start();
+        }
 
         scheduler::exec(scheduler::task::make_repetitive_task([] {
                 auto* const editorSession { EditorEngine::getEngine()->getEditorSession() };
@@ -244,9 +267,12 @@ bool EditorEngine::stop() {
     /**/
     scheduler::exec([this, &next] {
 
-        destroyLoaded();
-        ui::Style::destroy();
-        engine::reflow::WindowManager::destroy();
+        const auto& modules = _modules.getSubModules();
+        for (auto iter = modules.rbegin(); iter != modules.rend(); ++iter) {
+            (*iter)->stop();
+        }
+
+        /**/
 
         auto prevWorld = _primaryGameSession->getWorldContext()->getCurrentWorld();
         _primaryGameSession->getWorldContext()->setCurrentWorld(nullptr);
@@ -279,6 +305,20 @@ bool EditorEngine::shutdown() {
     if (getEngineState() != EngineState::eStopped && getEngineState() != EngineState::eInitialized) {
         return false;
     }
+
+    _STD atomic_flag subModuleFlag {};
+    scheduler::exec([this, &subModuleFlag] {
+
+        const auto& modules = _modules.getSubModules();
+        for (auto iter = modules.rbegin(); iter != modules.rend(); ++iter) {
+            (*iter)->destroy();
+        }
+
+        subModuleFlag.test_and_set(_STD memory_order_relaxed);
+        subModuleFlag.notify_one();
+    });
+
+    scheduler::waitOnAtomic(subModuleFlag, false);
 
     /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
     _STD atomic_uint_fast8_t moduleCount { 0ui8 };
@@ -389,6 +429,10 @@ non_owning_rptr<engine::Scheduler> EditorEngine::getScheduler() const noexcept {
 
 ref<GlobalEventEmitter> EditorEngine::getEmitter() const noexcept {
     return const_cast<ref<GlobalEventEmitter>>(_emitter);
+}
+
+ref<engine::core::Modules> EditorEngine::getModules() const noexcept {
+    return const_cast<ref<engine::core::Modules>>(_modules);
 }
 
 Vector<non_owning_rptr<engine::core::WorldContext>> EditorEngine::getWorldContexts() const noexcept {
