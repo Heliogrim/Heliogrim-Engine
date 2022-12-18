@@ -22,7 +22,7 @@ namespace ember::editor {
         ~ActionLog() noexcept = default;
 
     private:
-        deque<sptr<Action>> _log;
+        Deque<sptr<Action>> _log;
         Stack<sptr<Action>> _relog;
 
         _STD atomic_uintptr_t _saveState;

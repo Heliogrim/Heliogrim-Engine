@@ -79,6 +79,9 @@
     <Filter Include="Quelldateien\Widget\Tree">
       <UniqueIdentifier>{c14b6648-30ed-4b73-a057-355870bc6df9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Module">
+      <UniqueIdentifier>{980da2e7-3b14-49f4-9eca-3e30016383f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Reflow\Window\WindowManager.hpp">
@@ -294,6 +297,12 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Window\BoundWindow.hpp">
       <Filter>Headerdateien\Window</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Reflow.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Module\Reflow.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflow\Window\WindowManager.cpp">
@@ -400,6 +409,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Tree\TreeItem.cpp">
       <Filter>Quelldateien\Widget\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\Reflow.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

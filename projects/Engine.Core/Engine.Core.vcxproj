@@ -15,7 +15,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Core\CoreModule.hpp" />
     <ClInclude Include="..\..\src\Engine.Core\Engine.hpp" />
     <ClInclude Include="..\..\src\Engine.Core\EngineState.hpp" />
     <ClInclude Include="..\..\src\Engine.Core\Event\EngineExitEvent.hpp" />
@@ -29,6 +28,13 @@
     <ClInclude Include="..\..\src\Engine.Core\Event\WorldAddedEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Core\Event\WorldChangeEvent.hpp" />
     <ClInclude Include="..\..\src\Engine.Core\Event\WorldRemoveEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Module\CoreDependencies.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Module\CoreModule.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Module\DependencyKey.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Module\DependencyValidationResult.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Module\Modules.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Module\SubModule.hpp" />
+    <ClInclude Include="..\..\src\Engine.Core\Module\SubModuleDependency.hpp" />
     <ClInclude Include="..\..\src\Engine.Core\Session.hpp" />
     <ClInclude Include="..\..\src\Engine.Core\SessionState.hpp" />
     <ClInclude Include="..\..\src\Engine.Core\World.hpp" />
@@ -41,6 +47,7 @@
     <ClCompile Include="..\..\src\Engine.Core\Event\WorldAddedEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Core\Event\WorldChangeEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Core\Event\WorldRemoveEvent.cpp" />
+    <ClCompile Include="..\..\src\Engine.Core\Module\Modules.cpp" />
     <ClCompile Include="..\..\src\Engine.Core\Session.cpp" />
     <ClCompile Include="..\..\src\Engine.Core\SessionState.cpp" />
     <ClCompile Include="..\..\src\Engine.Core\World.cpp" />

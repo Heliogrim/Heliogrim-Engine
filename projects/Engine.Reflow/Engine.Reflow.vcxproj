@@ -115,7 +115,9 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Font\GlyphRanges.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Layout\Constraints.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Margin.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Module\Reflow.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Padding.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Reflow.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowPosition.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowSpacing.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowType.hpp" />
@@ -172,6 +174,7 @@
     <ClCompile Include="..\..\src\Engine.Reflow\Font\Font.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Font\FontGlyph.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Layout\Constraints.cpp" />
+    <ClCompile Include="..\..\src\Engine.Reflow\Reflow.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Scene\UISceneModel.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Style\BoundStyleSheet.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Style\StyleChain.cpp" />

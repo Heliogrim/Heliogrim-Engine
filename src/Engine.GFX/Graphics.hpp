@@ -4,7 +4,7 @@
 #include <Engine.Common/Collection/AssociativeKey.hpp>
 #include <Engine.Common/Collection/RobinMap.hpp>
 #include <Engine.Common/Math/Vector.hpp>
-#include <Engine.Core/CoreModule.hpp>
+#include <Engine.Core/Module/CoreModule.hpp>
 
 #include "Application/Application.hpp"
 #include "Cache/__fwd.hpp"

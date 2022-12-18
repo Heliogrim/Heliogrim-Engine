@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Core/CoreModule.hpp>
+#include <Engine.Core/Module/CoreModule.hpp>
 
 namespace ember::engine {
     class Network :

@@ -19,6 +19,9 @@
     <Filter Include="Quelldateien\Boot">
       <UniqueIdentifier>{1d5f3b69-ceb8-46da-bfe6-920f61f251c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Module">
+      <UniqueIdentifier>{c2dd0f9a-7c5e-4a4b-88bb-fabce63ff87a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.Main\Editor.Main.cpp">
@@ -33,6 +36,12 @@
     <ClCompile Include="..\..\src\Editor.Main\Boot\WorldInit.cpp">
       <Filter>Quelldateien\Boot</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Editor.Main\Boot\SubModuleInit.cpp">
+      <Filter>Quelldateien\Boot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.Main\Editor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.Main\Boot\AssetInit.hpp">
@@ -43,6 +52,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Editor.Main\Boot\WorldInit.hpp">
       <Filter>Headerdateien\Boot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.Main\Boot\SubModuleInit.hpp">
+      <Filter>Headerdateien\Boot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.Main\Editor.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.Main\Module\Editor.hpp">
+      <Filter>Headerdateien\Module</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
