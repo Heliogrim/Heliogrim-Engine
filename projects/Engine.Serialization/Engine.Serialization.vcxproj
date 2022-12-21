@@ -40,6 +40,26 @@
     <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineValue.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineValueType.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Layout\__fwd.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\IntegralScopedSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\MapEntryScopedSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\MapScopedSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\RecordScopedSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\RootStructureSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\ScopedSlotState.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\ScopedStructureSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\SeqScopedSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\SliceScopedSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StringScopedSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructIdentifierScopedSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructScopedSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructurePath.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructureSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructureSlotState.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructureSlotStateFlags.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructureSlotType.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructureSlotTypeTraits.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\SubstitutionSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Serialization\Archive\Archive.cpp" />
@@ -49,12 +69,23 @@
     <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryReadonlyArchive.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryReadWriteArchive.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryWriteonlyArchive.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\StructuredArchive.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayout.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayoutBase.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayoutDispatch.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayoutReflect.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Layout\LayoutDefineObject.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Layout\LayoutDefineSpan.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\RecordScopedSlot.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\RootStructureSlot.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\ScopedSlotState.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\ScopedStructureSlot.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\SeqScopedSlot.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\StringScopedSlot.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\StructIdentifierScopedSlot.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\StructScopedSlot.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\StructureSlotState.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\StructureSlotTypeTraits.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
