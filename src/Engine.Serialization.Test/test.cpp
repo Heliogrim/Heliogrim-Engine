@@ -8,6 +8,16 @@
 #include <Engine.Serialization/Layout/LayoutDefineValue.hpp>
 #include <Engine.Serialization/Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
+#include <Engine.Serialization/Archive/StructuredArchive.hpp>
+
+#include "Engine.Serialization/Structure/IntegralScopedSlot.hpp"
+#include "Engine.Serialization/Structure/MapEntryScopedSlot.hpp"
+#include "Engine.Serialization/Structure/MapScopedSlot.hpp"
+#include "Engine.Serialization/Structure/ScopedStructureSlot.hpp"
+#include "Engine.Serialization/Structure/SeqScopedSlot.hpp"
+#include "Engine.Serialization/Structure/SliceScopedSlot.hpp"
+#include "Engine.Serialization/Structure/StringScopedSlot.hpp"
+#include "Engine.Serialization/Structure/StructScopedSlot.hpp"
 
 using namespace ember::engine::serialization;
 using namespace ember;
@@ -17,7 +27,6 @@ TEST(__DummyTest__, Exists) {
 }
 
 namespace SerializationModule {
-
     template <typename ValueType_>
     void simpleBufferTest() {
 
@@ -205,7 +214,6 @@ namespace SerializationModule {
         // TODO: EnumValueType t10 = EnumValueType::eEntryTwo;
         EnumValueU8 t10 = EnumValueU8::eEntryZero;
     };
-
 }
 
 namespace ember::engine::serialization {
@@ -231,7 +239,6 @@ namespace ember::engine::serialization {
 }
 
 namespace SerializationModule {
-
     TEST(LayoutArchive, SimpleReadWrite) {
 
         BufferArchive archive {};
@@ -300,11 +307,9 @@ namespace SerializationModule {
             _type = type_;
         }
     };
-
 }
 
 namespace ember::engine::serialization {
-
     template <>
     void DataLayout<SerializationModule::TestSerialDataBaseAsset>::describe() {
 
@@ -314,11 +319,9 @@ namespace ember::engine::serialization {
         defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _guid));
         defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _type));
     }
-
 }
 
 namespace SerializationModule {
-
     TEST(LayoutArchive, DataBase) {
 
         BufferArchive archive {};
@@ -370,11 +373,9 @@ namespace SerializationModule {
     public:
         TestSubTypePayload payload;
     };
-
 }
 
 namespace ember::engine::serialization {
-
     template <>
     void DataLayout<SerializationModule::TestSubTypePayload>::describe() {
 
@@ -401,11 +402,9 @@ namespace ember::engine::serialization {
         defineObject(offsetof(TestSerialSubTypeAsset, payload), subLayout);
 
     }
-
 }
 
 namespace SerializationModule {
-
     TEST(LayoutArchive, SimpleSubType) {
 
         BufferArchive archive {};
@@ -455,11 +454,9 @@ namespace SerializationModule {
     public:
         Array<TestSubTypePayload, 5> payload;
     };
-
 }
 
 namespace ember::engine::serialization {
-
     template <>
     void DataLayout<SerializationModule::TestSerialSubTypeSpanAsset>::describe() {
 
@@ -473,11 +470,9 @@ namespace ember::engine::serialization {
         defineSpan(offsetof(TestSerialSubTypeSpanAsset, payload), subLayout, 5ui64);
 
     }
-
 }
 
 namespace SerializationModule {
-
     TEST(LayoutArchive, SpanSubType) {
 
         BufferArchive archive {};
@@ -526,11 +521,9 @@ namespace SerializationModule {
     public:
         _STD list<TestSubTypePayload> payload;
     };
-
 }
 
 namespace ember::engine::serialization {
-
     template <>
     void DataLayout<SerializationModule::TestSerialSubTypeSliceAsset>::describe() {
 
@@ -544,11 +537,9 @@ namespace ember::engine::serialization {
         // TODO: make define for sub objects
         defineSlice<_STD list<TestSubTypePayload>>(offsetof(TestSerialSubTypeSliceAsset, payload), subLayout);
     }
-
 }
 
 namespace SerializationModule {
-
     TEST(LayoutArchive, SliceSubType) {
 
         BufferArchive archive {};
@@ -597,11 +588,9 @@ namespace SerializationModule {
     public:
         Vector<TestSubTypePayload> payload;
     };
-
 }
 
 namespace ember::engine::serialization {
-
     template <>
     void DataLayout<SerializationModule::TestSerialSubTypeVectorizedSliceAsset>::describe() {
 
@@ -615,11 +604,9 @@ namespace ember::engine::serialization {
         // TODO: make define for sub objects
         defineSlice<Vector<TestSubTypePayload>>(offsetof(TestSerialSubTypeVectorizedSliceAsset, payload), subLayout);
     }
-
 }
 
 namespace SerializationModule {
-
     TEST(LayoutArchive, VectorizedSliceSubType) {
 
         BufferArchive archive {};
@@ -701,11 +688,9 @@ namespace SerializationModule {
     public:
         string payload;
     };
-
 }
 
 namespace ember::engine::serialization {
-
     template <>
     void DataLayout<SerializationModule::TestSerialSubTypeStringAsset>::describe() {
 
@@ -719,11 +704,9 @@ namespace ember::engine::serialization {
         // TODO: make define for sub objects
         defineSlice<string>(offsetof(TestSerialSubTypeStringAsset, payload), subLayout);
     }
-
 }
 
 namespace SerializationModule {
-
     TEST(LayoutArchive, StringSubType) {
 
         BufferArchive archive {};
@@ -747,5 +730,213 @@ namespace SerializationModule {
         EmberObject::destroy(_STD move(writeAsset));
         EmberObject::destroy(_STD move(readAsset));
     }
+}
 
+namespace SerializationModule {
+    TEST(StructureArchive, SimpleReadWrite) {
+
+        BufferArchive archive {};
+        StructuredArchive arch { &archive };
+
+        struct TI3Obj {
+            string data0;
+            u64 data1;
+
+            void serialize(mref<RecordScopedSlot> slot_) {
+                auto slot = slot_.intoStruct();
+                slot.insertSlot<string>("data0") << data0;
+                slot.insertSlot<u64>("data1") << data1;
+            }
+
+            void deserialize(cref<RecordScopedSlot> slot_) {
+                const auto slot = slot_.intoStruct();
+                slot.getSlot<string>("data0") >> data0;
+                slot.getSlot<u64>("data1") >> data1;
+            }
+
+            [[nodiscard]] bool operator==(cref<TI3Obj> other_) const noexcept {
+                if (data0 != other_.data0 || data1 != other_.data1) {
+                    return false;
+                }
+                return true;
+            }
+        };
+
+        struct TI2Obj {
+            string data0;
+            u32 data1;
+            u32 data2;
+
+            _STD map<string, u64> data3;
+
+            TI3Obj obj0;
+
+            void serialize(mref<RecordScopedSlot> slot_) {
+                auto slot = slot_.intoStruct();
+                slot.insertSlot<string>("data0") << data0;
+                slot.insertSlot<u32>("data1") << data1;
+                slot.insertSlot<u32>("data2") << data2;
+                slot.insertSlot<string, u64, _STD map>("data3") << data3;
+
+                obj0.serialize(slot.insertSlot<void>("obj0"));
+            }
+
+            void deserialize(cref<RecordScopedSlot> slot_) {
+                const auto slot = slot_.intoStruct();
+                slot.getSlot<string>("data0") >> data0;
+                slot.getSlot<u32>("data1") >> data1;
+                slot.getSlot<u32>("data2") >> data2;
+                slot.getSlot<string, u64, _STD map>("data3") >> data3;
+
+                obj0.deserialize(slot["obj0"]);
+            }
+
+            [[nodiscard]] bool operator==(cref<TI2Obj> other_) const noexcept {
+                if (data0 != other_.data0 || data1 != other_.data1 || data2 != other_.data2 || data3 != other_.data3) {
+                    return false;
+                }
+                return (obj0 == other_.obj0);
+            }
+        };
+
+        struct TI1Obj {
+            u64 data0;
+
+            TI2Obj obj0;
+            TI2Obj obj1;
+
+            u64 data1;
+
+            _STD vector<string> data2;
+
+            void serialize(mref<RecordScopedSlot> slot_) {
+                auto slot = slot_.intoStruct();
+                slot.insertSlot<u64>("data0") << data0;
+
+                obj0.serialize(slot.insertSlot<void>("obj0"));
+                obj1.serialize(slot.insertSlot<void>("obj1"));
+
+                slot.insertSlot<u64>("data1") << data1;
+                slot.insertSlot<string, _STD vector>("data2") << data2;
+            }
+
+            void deserialize(cref<RecordScopedSlot> slot_) {
+                auto& slot = slot_.intoStruct();
+                slot.getSlot<u64>("data0") >> data0;
+
+                //obj0.deserialize(slot["obj0"]); // TODO: Currently failing cause we are still order-dependent
+                obj1.deserialize(slot["obj1"]);
+                obj0.deserialize(slot["obj0"]);
+
+                slot.getSlot<u64>("data1") >> data1;
+                slot.getSlot<string, _STD vector>("data2") >> data2;
+            }
+
+            [[nodiscard]] bool operator==(cref<TI1Obj> other_) const noexcept {
+                if (data0 != other_.data0 || data1 != other_.data1 || data2 != other_.data2) {
+                    return false;
+                }
+                return (obj0 == other_.obj0) && (obj1 == other_.obj1);
+            }
+        };
+
+        struct TRObj {
+            string data0;
+            u64 data1;
+            u32 data2;
+            _STD vector<u16> data3;
+
+            TI1Obj obj0;
+
+            void serialize(mref<RecordScopedSlot> slot_) {
+                auto slot = slot_.intoStruct();
+                slot.insertSlot<string>("data0") << data0;
+                slot.insertSlot<u64>("data1") << data1;
+                slot.insertSlot<u32>("data2") << data2;
+                slot.insertSlot<u16, _STD vector>("data3") << data3;
+
+                obj0.serialize(slot.insertSlot<void>("obj0"));
+            }
+
+            void deserialize(cref<RecordScopedSlot> slot_) {
+                const auto slot = slot_.intoStruct();
+                slot.getSlot<string>("data0") >> data0;
+                //slot.getSlot<u64>("data1") >> data1;
+                slot.getSlot<s64>("data1") >> *reinterpret_cast<ptr<s64>>(&data1);
+                //slot.getSlot<u32>("data2") >> data2;
+                slot.getSlot<s32>("data2") >> *reinterpret_cast<ptr<s32>>(&data2);
+                slot.getSlot<u16, _STD vector>("data3") >> data3;
+
+                obj0.deserialize(slot["obj0"]);
+            }
+
+            [[nodiscard]] bool operator==(cref<TRObj> other_) const noexcept {
+                if (data0 != other_.data0 || data1 != other_.data1 || data2 != other_.data2 || data3 != other_.data3) {
+                    return false;
+                }
+                return obj0 == other_.obj0;
+            }
+        };
+
+        /**/
+
+        _STD vector<string> dummyStrList {
+            {
+                "TRObj::<obj0>::<data2>$0",
+                "TRObj::<obj0>::<data2>$1",
+                "TRObj::<obj0>::<data2>$2",
+                "TRObj::<obj0>::<data2>$3"
+            }
+        };
+
+        _STD vector<u16> dummyU16List {
+            {
+                62751ui16,
+                7891ui16,
+                3152ui16,
+                316ui16,
+                1135ui16,
+                32867ui16
+            }
+        };
+
+        TRObj writeDummy {
+            .data0 = "TRObj::data0",
+            .data1 = 3256750268772ui64,
+            .data3 = dummyU16List,
+            .obj0 = TI1Obj {
+                .data0 = 265386243627ui64,
+                .obj0 = TI2Obj {
+                    .data0 = "TRObj::<obj0>::<obj0>::data0",
+                    .data1 = 1234ui32,
+                },
+                .obj1 = TI2Obj {
+                    .data0 = "TRObj::<obj0>::<obj1>::data0",
+                    .data1 = 6789ui32
+                },
+                .data2 = dummyStrList
+            }
+        };
+        {
+            auto rootSlot = arch.getRootSlot();
+            writeDummy.serialize(_STD move(rootSlot));
+        }
+
+        /**/
+
+        const auto size = archive.size();
+        archive.seek(0);
+
+        /**/
+
+        TRObj loadDummy {};
+        {
+            const auto rootSlot = arch.getRootSlot();
+            loadDummy.deserialize(rootSlot);
+        }
+
+        /**/
+
+        EXPECT_EQ(loadDummy, writeDummy);
+    }
 }
