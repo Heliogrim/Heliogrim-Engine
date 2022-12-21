@@ -45,6 +45,7 @@
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\MapScopedSlot.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\RecordScopedSlot.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\RootStructureSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\ScopedSlotGuard.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\ScopedSlotState.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\ScopedStructureSlot.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\SeqScopedSlot.hpp" />
@@ -78,6 +79,7 @@
     <ClCompile Include="..\..\src\Engine.Serialization\Layout\LayoutDefineSpan.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Structure\RecordScopedSlot.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Structure\RootStructureSlot.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\ScopedSlotGuard.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Structure\ScopedSlotState.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Structure\ScopedStructureSlot.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Structure\SeqScopedSlot.cpp" />

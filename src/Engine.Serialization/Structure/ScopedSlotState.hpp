@@ -25,6 +25,9 @@ namespace ember::engine::serialization {
 
         sptr<StructureSlotState> rootState;
 
+        s64 offset = -1;
+        s64 size = 0;
+
     public:
         [[nodiscard]] bool isImmutable() const noexcept;
 

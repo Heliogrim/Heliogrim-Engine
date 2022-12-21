@@ -22,9 +22,9 @@ namespace ember::engine::serialization {
         [[nodiscard]] virtual StructureSlotType getSlotType() const noexcept = 0;
 
     protected:
-        virtual const non_owning_rptr<ScopedStructureSlotBase> enter() = 0;
+        virtual void enter(const bool mutating_) = 0;
 
-        virtual const non_owning_rptr<ScopedStructureSlotBase> leave() = 0;
+        virtual void leave(const bool mutating_) = 0;
 
     public:
         /*

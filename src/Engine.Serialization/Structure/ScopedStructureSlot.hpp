@@ -9,6 +9,7 @@ namespace ember::engine::serialization {
     public:
         template <typename>
         friend class ScopedStructureSlot;
+        friend class ScopedSlotGuard;
 
     public:
         using this_type = ScopedStructureSlotBase;
@@ -29,7 +30,7 @@ namespace ember::engine::serialization {
         ptr<void> operator new(size_t, ptr<void>) = delete;
 
     protected:
-        ScopedSlotState _state;
+        mutable ScopedSlotState _state;
 
     public:
         [[nodiscard]] cref<ScopedSlotState> getState() const noexcept;
@@ -41,10 +42,22 @@ namespace ember::engine::serialization {
 
         void setSlotName(const string_view name_);
 
-    public:
-        virtual void subStateEnter(cref<ScopedStructureSlotBase> subState_) const;
+    protected:
+        void ensureEntered(const bool mutating_);
 
-        virtual void subStateLeave(cref<ScopedStructureSlotBase> subState_) const;
+        void ensureLeft(const bool mutating_);
+
+    protected:
+        void enter(const bool mutating_) override;
+
+        void leave(const bool mutating_) override;
+
+        virtual void reenter(const bool mutating_);
+
+    public:
+        virtual void subStateEnter(cref<ScopedStructureSlotBase> subState_);
+
+        virtual void subStateLeave(cref<ScopedStructureSlotBase> subState_);
     };
 
     template <typename DataType_>
