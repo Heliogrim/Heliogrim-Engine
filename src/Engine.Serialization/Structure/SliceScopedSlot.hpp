@@ -4,6 +4,7 @@
 
 #include "ScopedStructureSlot.hpp"
 #include "StructureSlotState.hpp"
+#include "ScopedSlotGuard.hpp"
 
 #include "SubstitutionSlot.hpp"
 #include "StructureSlotTypeTraits.hpp"
@@ -39,13 +40,9 @@ namespace ember::engine::serialization {
         }
 
     protected:
-        const non_owning_rptr<ScopedStructureSlotBase> enter() override {
-            return nullptr;
-        }
+        void enter(const bool mutating_) override { }
 
-        const non_owning_rptr<ScopedStructureSlotBase> leave() override {
-            return nullptr;
-        }
+        void leave(const bool mutating_) override { }
 
     public:
         [[nodiscard]] const scoped_entry_type getSliceEntry(const size_t index_) const {
@@ -59,6 +56,7 @@ namespace ember::engine::serialization {
     public:
         void operator<<(cref<slice_type> object_) override {
 
+            const ScopedSlotGuard guard { this, true };
             auto* archive = this_type::_state.rootState->getArchive();
 
             (*archive) << StructureSlotType::eSlice;

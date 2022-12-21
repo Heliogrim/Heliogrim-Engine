@@ -29,9 +29,9 @@ namespace ember::engine::serialization {
         [[nodiscard]] StructureSlotType getSlotType() const noexcept override;
 
     protected:
-        const non_owning_rptr<ScopedStructureSlotBase> enter() override;
+        void enter(const bool mutating_) override;
 
-        const non_owning_rptr<ScopedStructureSlotBase> leave() override;
+        void leave(const bool mutating_) override;
 
     private:
         [[nodiscard]] const StringScopedSlot intoString() const;

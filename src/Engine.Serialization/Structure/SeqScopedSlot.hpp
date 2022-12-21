@@ -21,13 +21,9 @@ namespace ember::engine::serialization {
         }
 
     protected:
-        const non_owning_rptr<ScopedStructureSlotBase> enter() override {
-            return nullptr;
-        }
+        void enter(const bool mutating_) override { }
 
-        const non_owning_rptr<ScopedStructureSlotBase> leave() override {
-            return nullptr;
-        }
+        void leave(const bool mutating_) override { }
 
     public:
         [[nodiscard]] const RecordScopedSlot getSeqEntry(const size_t index_) const;

@@ -6,6 +6,7 @@
 #include "../Archive/Archive.hpp"
 #include "ScopedStructureSlot.hpp"
 #include "StructureSlotState.hpp"
+#include "ScopedSlotGuard.hpp"
 
 #ifdef _DEBUG
 #include <Engine.Logging/Logger.hpp>
@@ -40,16 +41,14 @@ namespace ember::engine::serialization {
         }
 
     protected:
-        const non_owning_rptr<ScopedStructureSlotBase> enter() override {
-            return nullptr;
-        }
+        void enter(const bool mutating_) override { }
 
-        const non_owning_rptr<ScopedStructureSlotBase> leave() override {
-            return nullptr;
-        }
+        void leave(const bool mutating_) override { }
 
     public:
         void operator<<(cref<data_type> object_) override {
+            const ScopedSlotGuard guard { this, true };
+
             auto* const archive = this_type::_state.rootState->getArchive();
             (*archive) << trait_type::slot_type;
             (*archive) << object_;

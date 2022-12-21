@@ -180,6 +180,9 @@
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructIdentifierScopedSlot.hpp">
       <Filter>Headerdateien\Structure</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\ScopedSlotGuard.hpp">
+      <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Serialization\Archive\LayoutArchive.cpp">
@@ -252,6 +255,9 @@
       <Filter>Quelldateien\Structure</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Serialization\Structure\StructIdentifierScopedSlot.cpp">
+      <Filter>Quelldateien\Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\ScopedSlotGuard.cpp">
       <Filter>Quelldateien\Structure</Filter>
     </ClCompile>
   </ItemGroup>

@@ -15,13 +15,9 @@ StructureSlotType StructIdentifierScopedSlot::getSlotType() const noexcept {
     return StructureSlotType::eUndefined;
 }
 
-const non_owning_rptr<ScopedStructureSlotBase> StructIdentifierScopedSlot::enter() {
-    return nullptr;
-}
+void StructIdentifierScopedSlot::enter(const bool mutating_) {}
 
-const non_owning_rptr<ScopedStructureSlotBase> StructIdentifierScopedSlot::leave() {
-    return nullptr;
-}
+void StructIdentifierScopedSlot::leave(const bool mutating_) {}
 
 const StringScopedSlot StructIdentifierScopedSlot::intoString() const {
     return StringScopedSlot { _STD move(_state) };

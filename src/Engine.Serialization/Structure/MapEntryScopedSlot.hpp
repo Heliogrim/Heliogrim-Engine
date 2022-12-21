@@ -28,11 +28,11 @@ namespace ember::engine::serialization {
         }
 
     protected:
-        const non_owning_rptr<ScopedStructureSlotBase> enter() override {
+        void enter(const bool mutating_) override {
             return nullptr;
         }
 
-        const non_owning_rptr<ScopedStructureSlotBase> leave() override {
+        void leave(const bool mutating_) override {
             return nullptr;
         }
 
