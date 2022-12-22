@@ -1,55 +1,30 @@
 #include "ScopedStructureSlot.hpp"
 
-#include "StructureSlotState.hpp"
 #include "../Archive/Archive.hpp"
 
 using namespace ember::engine::serialization;
 using namespace ember;
 
-ScopedStructureSlotBase::ScopedStructureSlotBase(cref<ScopedSlotState> state_) :
-    StructureSlotBase(),
-    _state(state_) {}
+ScopedSlot::ScopedSlot(
+    mref<ScopedSlotState> state_,
+    mref<sptr<StructureSlotBase>> slot_
+) :
+    _state(_STD move(state_)),
+    _slot(_STD move(slot_)) {}
 
-ScopedStructureSlotBase::ScopedStructureSlotBase(mref<ScopedSlotState> state_) :
-    StructureSlotBase(),
-    _state(_STD move(state_)) {}
-
-ScopedStructureSlotBase::~ScopedStructureSlotBase() = default;
-
-cref<ScopedSlotState> ScopedStructureSlotBase::getState() const noexcept {
+cref<ScopedSlotState> ScopedSlot::getScopedState() const noexcept {
     return _state;
 }
 
-bool ScopedStructureSlotBase::emptyState() const noexcept {
-    return static_cast<bool>(_state.rootState);
+ref<ScopedSlotState> ScopedSlot::getScopedState() noexcept {
+    return _state;
 }
 
-void ScopedStructureSlotBase::ensureEntered(const bool mutating_) {
-
-    if (mutating_ && _state.isScopedDirty()) {
-        return;
-    }
-
-    enter(mutating_);
-
-    if (mutating_ && _STD addressof(_state.parent) != nullptr) {
-        const_cast<ref<ScopedStructureSlotBase>>(_state.parent).subStateEnter(*this);
-    }
+const non_owning_rptr<StructureSlotBase> ScopedSlot::slot() const noexcept {
+    return _slot.get();
 }
 
-void ScopedStructureSlotBase::ensureLeft(const bool mutating_) {
-
-    if (mutating_ && not _state.isScopedDirty()) {
-        return;
-    }
-
-    leave(mutating_);
-
-    if (mutating_ && _STD addressof(_state.parent) != nullptr) {
-        const_cast<ref<ScopedStructureSlotBase>>(_state.parent).subStateLeave(*this);
-    }
-}
-
+#if FALSE
 void ScopedStructureSlotBase::enter(const bool mutating_) {
 
     if (_state.offset != -1i64) {
@@ -78,9 +53,4 @@ void ScopedStructureSlotBase::leave(const bool mutating_) {
 
     _state.flags.unwrap &= ~(static_cast<ScopedSlotStateFlags::value_type>(ScopedSlotStateFlag::eDirty));
 }
-
-void ScopedStructureSlotBase::reenter(const bool mutating_) {}
-
-void ScopedStructureSlotBase::subStateEnter(cref<ScopedStructureSlotBase> subState_) {}
-
-void ScopedStructureSlotBase::subStateLeave(cref<ScopedStructureSlotBase> subState_) {}
+#endif

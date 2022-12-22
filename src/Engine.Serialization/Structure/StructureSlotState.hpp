@@ -3,30 +3,23 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "../Archive/__fwd.hpp"
+#include "__fwd.hpp"
 #include "StructureSlotStateFlags.hpp"
+#include "StructureSlotHeader.hpp"
 
 namespace ember::engine::serialization {
-    class StructureSlotState final {
-    public:
-        using this_type = StructureSlotState;
+    struct StructureSlotState {
+        StructureSlotStateFlags flags = StructureSlotStateFlag::eUndefined;
+        s64 offset = -1;
+        //
+        StructureSlotHeader header;
+        //
+        sptr<StructureSlotBase> parent;
+        sptr<struct RootStructureSlotState> root;
+    };
 
-    public:
-        StructureSlotState(const non_owning_rptr<Archive> archive_);
-
-        ~StructureSlotState();
-
-    private:
-        StructureSlotStateFlags _flags;
-
-    public:
-        [[nodiscard]] cref<StructureSlotStateFlags> getStateFlags() const noexcept;
-
-        [[nodiscard]] ref<StructureSlotStateFlags> stateFlags() noexcept;
-
-    private:
-        non_owning_rptr<Archive> _archive;
-
-    public:
-        [[nodiscard]] const non_owning_rptr<Archive> getArchive() const noexcept;
+    struct RootStructureSlotState final :
+        public StructureSlotState {
+        non_owning_rptr<Archive> archive = nullptr;
     };
 }

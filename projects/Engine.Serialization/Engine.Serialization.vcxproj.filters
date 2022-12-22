@@ -150,9 +150,6 @@
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\ScopedStructureSlot.hpp">
       <Filter>Headerdateien\Structure</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Serialization\Structure\RootStructureSlot.hpp">
-      <Filter>Headerdateien\Structure</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructScopedSlot.hpp">
       <Filter>Headerdateien\Structure</Filter>
     </ClInclude>
@@ -177,10 +174,40 @@
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructureSlotTypeTraits.hpp">
       <Filter>Headerdateien\Structure</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructIdentifierScopedSlot.hpp">
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\ScopedSlotGuard.hpp">
       <Filter>Headerdateien\Structure</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Serialization\Structure\ScopedSlotGuard.hpp">
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructureSlotHeader.hpp">
+      <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StringSlot.hpp">
+      <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\IntegralSlot.hpp">
+      <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\MapEntrySlot.hpp">
+      <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\MapSlot.hpp">
+      <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\SliceSlot.hpp">
+      <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\SeqSlot.hpp">
+      <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\RecordSlot.hpp">
+      <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructSlot.hpp">
+      <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\RootSlot.hpp">
+      <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\RootScopedSlot.hpp">
       <Filter>Headerdateien\Structure</Filter>
     </ClInclude>
   </ItemGroup>
@@ -242,22 +269,31 @@
     <ClCompile Include="..\..\src\Engine.Serialization\Archive\StructuredArchive.cpp">
       <Filter>Quelldateien\Archive</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Serialization\Structure\StructureSlotState.cpp">
-      <Filter>Quelldateien\Structure</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Serialization\Structure\ScopedSlotState.cpp">
-      <Filter>Quelldateien\Structure</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Serialization\Structure\RootStructureSlot.cpp">
-      <Filter>Quelldateien\Structure</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Serialization\Structure\StructureSlotTypeTraits.cpp">
       <Filter>Quelldateien\Structure</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Serialization\Structure\StructIdentifierScopedSlot.cpp">
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\ScopedSlotGuard.cpp">
       <Filter>Quelldateien\Structure</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Serialization\Structure\ScopedSlotGuard.cpp">
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\StructureSlot.cpp">
+      <Filter>Quelldateien\Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\StringSlot.cpp">
+      <Filter>Quelldateien\Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\RootSlot.cpp">
+      <Filter>Quelldateien\Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\RootScopedSlot.cpp">
+      <Filter>Quelldateien\Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\RecordSlot.cpp">
+      <Filter>Quelldateien\Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\StructSlot.cpp">
+      <Filter>Quelldateien\Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Structure\SeqSlot.cpp">
       <Filter>Quelldateien\Structure</Filter>
     </ClCompile>
   </ItemGroup>

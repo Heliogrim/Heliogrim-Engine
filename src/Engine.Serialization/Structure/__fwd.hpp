@@ -8,8 +8,8 @@ namespace ember::engine::serialization {
     class StructureSlotBase;
 
     template <typename>
-    class ScopedStructureSlot;
-    class ScopedStructureSlotBase;
+    class TypeScopedSlot;
+    class ScopedSlot;
 
     class StructurePath;
 
@@ -31,6 +31,7 @@ namespace ember::engine::serialization {
 
     /**/
 
+    class RecordSlot;
     class RecordScopedSlot;
     class StructScopedSlot;
     class SeqScopedSlot;

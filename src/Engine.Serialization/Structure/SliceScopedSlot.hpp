@@ -1,19 +1,31 @@
 #pragma once
 
-#include "../Archive/Archive.hpp"
-
 #include "ScopedStructureSlot.hpp"
-#include "StructureSlotState.hpp"
-#include "ScopedSlotGuard.hpp"
-
 #include "SubstitutionSlot.hpp"
-#include "StructureSlotTypeTraits.hpp"
-
-#ifdef _DEBUG
-#include <Engine.Logging/Logger.hpp>
-#endif
 
 namespace ember::engine::serialization {
+    template <typename ValueType_, template <typename...> typename SliceType_>
+    class SliceScopedSlot final :
+        TypeScopedSlot<SliceType_<ValueType_>> {
+    public:
+        using this_type = SliceScopedSlot<ValueType_, SliceType_>;
+        using underlying_type = TypeScopedSlot<SliceType_<ValueType_>>;
+
+        using value_type = typename underlying_type::value_type;
+
+    public:
+        SliceScopedSlot(mref<ScopedSlotState> scopedState_, mref<sptr<StructureSlotBase>> slot_) :
+            underlying_type(_STD move(scopedState_), _STD move(slot_)) {}
+
+        ~SliceScopedSlot() override = default;
+
+    public:
+        void operator<<(cref<value_type> value_) override {}
+
+        void operator>>(ref<value_type> value_) const override {}
+    };
+
+    #if FALSE
     template <typename ValueType_, template <typename...> typename SliceType_>
     class SliceScopedSlot final :
         public ScopedStructureSlot<SliceType_<ValueType_>> {
@@ -58,7 +70,7 @@ namespace ember::engine::serialization {
                 StructureSlotType storedType = StructureSlotType::eUndefined;
                 (*archive) >> storedType;
 
-                #ifdef _DEBUG
+    #ifdef _DEBUG
                 if (storedType != StructureSlotType::eSlice) {
                     IM_CORE_WARNF(
                         "Tried to deserialize a `{}` into a `{}`.",
@@ -66,7 +78,7 @@ namespace ember::engine::serialization {
                         StructureSlotTypeTraits<StructureSlotType::eSlice>::canonical
                     );
                 }
-                #endif
+    #endif
 
                 (*archive) >> this_type::_state.size;
                 return;
@@ -189,4 +201,5 @@ namespace ember::engine::serialization {
 
         }
     };
+    #endif
 }

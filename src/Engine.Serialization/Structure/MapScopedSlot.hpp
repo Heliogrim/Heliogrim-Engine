@@ -6,56 +6,22 @@
 namespace ember::engine::serialization {
     template <typename KeyType_, typename ValueType_, template <typename, typename...> typename MapType_>
     class MapScopedSlot final :
-        public ScopedStructureSlot<MapType_<KeyType_, ValueType_>> {
+        TypeScopedSlot<MapType_<KeyType_, ValueType_>> {
     public:
         using this_type = MapScopedSlot<KeyType_, ValueType_, MapType_>;
+        using underlying_type = TypeScopedSlot<MapType_<KeyType_, ValueType_>>;
 
-        using map_type = MapType_<KeyType_, ValueType_>;
-        using key_type = KeyType_;
-        using value_type = ValueType_;
-
-        using scoped_entry_type = MapEntryScopedSlot<KeyType_, ValueType_>;
+        using value_type = typename underlying_type::value_type;
 
     public:
-        MapScopedSlot(cref<ScopedSlotState> state_) :
-            ScopedStructureSlot<map_type>(state_) {
-            this_type::ensureEntered(not this_type::_state.isScopedImmutable());
-        }
-
-        MapScopedSlot(mref<ScopedSlotState> state_) :
-            ScopedStructureSlot<map_type>(_STD move(state_)) {
-            this_type::ensureEntered(not this_type::_state.isScopedImmutable());
-        }
+        MapScopedSlot(mref<sptr<StructureSlotBase>> slot_) :
+            TypeScopedSlot(_STD move(slot_)) {}
 
         ~MapScopedSlot() override = default;
 
     public:
-        [[nodiscard]] StructureSlotType getSlotType() const noexcept override {
-            return StructureSlotType::eMap;
-        }
+        void operator<<(cref<value_type> value_) override {}
 
-    protected:
-        void enter(const bool mutating_) override { }
-
-        void leave(const bool mutating_) override { }
-
-    public:
-        [[nodiscard]] size_t getMapSize() const noexcept {
-            return ~0;
-        }
-
-    public:
-        [[nodiscard]] const scoped_entry_type getMapEntry(const size_t index_) const {
-            return *static_cast<const ptr<scoped_entry_type>>(nullptr);
-        }
-
-        [[nodiscard]] scoped_entry_type getMapEntry(const size_t index_) {
-            return *static_cast<ptr<scoped_entry_type>>(nullptr);
-        }
-
-    public:
-        void operator<<(cref<map_type> object_) override {}
-
-        void operator>>(ref<map_type> object_) const override {}
+        void operator>>(ref<value_type> value_) const override {}
     };
 }

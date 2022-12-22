@@ -1,7 +1,9 @@
 #include "StructScopedSlot.hpp"
 
-#include "StructIdentifierScopedSlot.hpp"
 #include "StructureSlotTypeTraits.hpp"
+#include "StructSlot.hpp"
+#include <Engine.Common/Make.hpp>
+#include <Engine.Common/Exception/NotImplementedException.hpp>
 
 #ifdef _DEBUG
 #include <Engine.Logging/Logger.hpp>
@@ -10,6 +12,56 @@
 using namespace ember::engine::serialization;
 using namespace ember;
 
+StructScopedSlot::StructScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
+    ScopedSlot(_STD move(scopedState_), make_sptr<StructSlot>(_STD move(state_))) {
+
+    if (not slot()) {
+        return;
+    }
+
+    if ((static_cast<cref<ScopedSlotStateFlags>>(_state.flags) & ScopedSlotStateFlag::eDirty)) {
+        slot()->writeHeader();
+    } else {
+        slot()->readHeader();
+    }
+
+    slot()->enter();
+}
+
+StructScopedSlot::~StructScopedSlot() {
+
+    if (not slot()) {
+        return;
+    }
+
+    slot()->leave();
+
+    if ((static_cast<cref<ScopedSlotStateFlags>>(_state.flags) & ScopedSlotStateFlag::eDirty)) {
+        slot()->writeHeader();
+    }
+}
+
+RecordScopedSlot StructScopedSlot::insertRecordSlot(cref<record_key_type> key_) {
+
+    auto record = static_cast<ptr<StructSlot>>(slot())->insertRecord(key_);
+    ScopedSlotState scopedState { ScopedSlotStateFlag::eDirty };
+
+    return RecordScopedSlot { _STD move(scopedState), _STD move(record) };
+}
+
+const RecordScopedSlot StructScopedSlot::getRecordSlot(cref<record_key_type> key_) const {
+
+    auto record = static_cast<ptr<StructSlot>>(slot())->getRecord(key_);
+    ScopedSlotState scopedState { ScopedSlotStateFlag::eClean };
+
+    return RecordScopedSlot { _STD move(scopedState), _STD move(record) };
+}
+
+const RecordScopedSlot StructScopedSlot::getRecordSlot(const size_t index_) const {
+    throw NotImplementedException();
+}
+
+#if FALSE
 StructScopedSlot::StructScopedSlot(cref<ScopedSlotState> state_) :
     ScopedStructureSlotBase(state_) {
     ensureEntered(not _state.isScopedImmutable());
@@ -33,7 +85,7 @@ void StructScopedSlot::enter(const bool mutating_) {
         StructureSlotType storedType = StructureSlotType::eUndefined;
         (*archive) >> storedType;
 
-        #ifdef _DEBUG
+#ifdef _DEBUG
         if (storedType != StructureSlotType::eStruct) {
             IM_CORE_WARNF(
                 "Tried to deserialize a `{}` into a `{}`",
@@ -41,7 +93,7 @@ void StructScopedSlot::enter(const bool mutating_) {
                 StructureSlotTypeTraits<StructureSlotType::eStruct>::canonical
             );
         }
-        #endif
+#endif
 
         (*archive) >> _state.size;
         return;
@@ -194,7 +246,7 @@ const RecordScopedSlot StructScopedSlot::getRecordSlot(cref<record_key_type> key
     string identifier {};
     (StructIdentifierScopedSlot { _STD move(identifierState) }) >> identifier;
 
-    #ifdef _DEBUG
+#ifdef _DEBUG
     if (identifier != key_) {
         IM_CORE_WARNF(
             "Tried to access serialized record `{}` with identifier key `{}`.",
@@ -202,7 +254,7 @@ const RecordScopedSlot StructScopedSlot::getRecordSlot(cref<record_key_type> key
             key_
         );
     }
-    #endif
+#endif
 
     /**/
 
@@ -229,3 +281,5 @@ const RecordScopedSlot StructScopedSlot::getRecordSlot(const size_t index_) cons
 const RecordScopedSlot StructScopedSlot::operator[](cref<record_key_type> key_) const {
     return getRecordSlot(key_);
 }
+
+#endif

@@ -90,48 +90,48 @@ namespace ember::engine::serialization {
     struct StructureSlotTypeTraits<StructureSlotType::eString> {
         inline constexpr static string_view canonical = "String"sv;
 
-        inline constexpr static s64 const_size = -1i64;
+        inline constexpr static s64 const_size = 0i64;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eSlice> {
         inline constexpr static string_view canonical = "Slice"sv;
 
-        inline constexpr static s64 const_size = -1i64;
+        inline constexpr static s64 const_size = 0i64;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eMap> {
         inline constexpr static string_view canonical = "Map"sv;
 
-        inline constexpr static s64 const_size = -1i64;
+        inline constexpr static s64 const_size = 0i64;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eMapEntry> {
         inline constexpr static string_view canonical = "MapEntry"sv;
 
-        inline constexpr static s64 const_size = -1i64;
+        inline constexpr static s64 const_size = 0i64;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eRecord> {
         inline constexpr static string_view canonical = "Record"sv;
 
-        inline constexpr static s64 const_size = -1i64;
+        inline constexpr static s64 const_size = 0i64;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eStruct> {
         inline constexpr static string_view canonical = "Struct"sv;
 
-        inline constexpr static s64 const_size = -1i64;
+        inline constexpr static s64 const_size = 0i64;
     };
 
     template <>
     struct StructureSlotTypeTraits<StructureSlotType::eSeq> {
         inline constexpr static string_view canonical = "Seq"sv;
 
-        inline constexpr static s64 const_size = -1i64;
+        inline constexpr static s64 const_size = 0i64;
     };
 }

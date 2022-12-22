@@ -1,18 +1,45 @@
 #include "ScopedSlotGuard.hpp"
 
+#include <cassert>
+
 #include "ScopedStructureSlot.hpp"
 
 using namespace ember::engine::serialization;
 using namespace ember;
 
-ScopedSlotGuard::ScopedSlotGuard(const non_owning_rptr<const ScopedStructureSlotBase> slot_, const bool mutating_) :
-    _mutating(mutating_),
-    _slot(slot_) {
-    const_cast<ptr<ScopedStructureSlotBase>>(_slot)->ensureEntered(_mutating);
+ScopedSlotGuard::ScopedSlotGuard(
+    const non_owning_rptr<const ScopedSlot> scopedSlot_,
+    const ScopedSlotGuardMode mode_
+) :
+    _mode(mode_),
+    _scopedSlot(scopedSlot_) {
+
+    auto* const slot = _scopedSlot->slot();
+    if (_mode == ScopedSlotGuardMode::eRead) {
+        slot->readHeader();
+        assert(slot->validateType());
+
+    } else {
+        slot->writeHeader();
+    }
+
+    slot->enter();
 }
 
 ScopedSlotGuard::~ScopedSlotGuard() {
-    if (_slot) {
-        const_cast<ptr<ScopedStructureSlotBase>>(_slot)->ensureLeft(_mutating);
+
+    auto* const slot = _scopedSlot->slot();
+    slot->leave();
+
+    if (_mode == ScopedSlotGuardMode::eRead) {
+        // __noop();
+
+    } else {
+        slot->writeHeader();
+
+        const auto& slotState = slot->getState();
+        if (slotState.parent) {
+            slotState.parent->feedback(slot);
+        }
     }
 }

@@ -7,8 +7,10 @@ namespace ember::engine::serialization {
     enum class StructureSlotStateFlag : u8 {
         eUndefined = 0x0,
         /**/
-        eImmutable,
-        //eDirty
+        eMutable = 0x1,
+        eImmutable = 0x2,
+        /**/
+        eDirty = 0x4
     };
 
     typedef Flag<StructureSlotStateFlag, u8> StructureSlotStateFlags;

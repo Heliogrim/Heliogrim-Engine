@@ -6,31 +6,69 @@
 #include "__fwd.hpp"
 
 #include "StructureSlotType.hpp"
+#include "StructureSlotState.hpp"
 
 namespace ember::engine::serialization {
-    class __declspec(novtable) StructureSlotBase {
+    class __declspec(novtable) StructureSlotBase :
+        public _STD enable_shared_from_this<StructureSlotBase> {
     public:
         using this_type = StructureSlotBase;
 
     protected:
-        StructureSlotBase() = default;
+        StructureSlotBase(cref<StructureSlotState> state_);
+
+        StructureSlotBase(mref<StructureSlotState> state_);
 
     public:
         virtual ~StructureSlotBase() = default;
 
+    protected:
+        StructureSlotState _state;
+
     public:
-        [[nodiscard]] virtual StructureSlotType getSlotType() const noexcept = 0;
+        [[nodiscard]] ref<StructureSlotState> getState() noexcept {
+            return _state;
+        }
+
+        [[nodiscard]] cref<StructureSlotHeader> getSlotHeader() const noexcept;
+
+        [[nodiscard]] ref<StructureSlotHeader> getSlotHeader() noexcept;
+
+        [[nodiscard]] StructureSlotType getSlotType() const noexcept;
+
+    public:
+        [[nodiscard]] virtual bool validateType() const noexcept = 0;
+
+    public:
+        virtual void writeHeader();
+
+        virtual void readHeader();
+
+    public:
+        virtual void enter();
+
+        virtual void leave();
+
+        virtual void feedback(const non_owning_rptr<const StructureSlotBase> other_);
+    };
+
+    template <typename ValueType_>
+    class __declspec(novtable) TypedStructureSlotBase :
+        public StructureSlotBase {
+    public:
+        using this_type = TypedStructureSlotBase<ValueType_>;
+        using value_type = _STD decay_t<ValueType_>;
 
     protected:
-        virtual void enter(const bool mutating_) = 0;
+        TypedStructureSlotBase(cref<StructureSlotState> state_) :
+            StructureSlotBase(state_) {}
 
-        virtual void leave(const bool mutating_) = 0;
+        TypedStructureSlotBase(mref<StructureSlotState> state_) :
+            StructureSlotBase(_STD move(state_)) {}
 
     public:
-        /*
-        virtual void enumerateSlots(
-            _Inout_ ref<Vector<const non_owning_rptr<ScopedStructureSlotBase>>> enum_
-        ) const noexcept;
-         */
+        virtual void operator<<(cref<value_type> value_) = 0;
+
+        virtual void operator>>(ref<value_type> value_) = 0;
     };
 }

@@ -5,6 +5,11 @@
 #include "__fwd.hpp"
 
 namespace ember::engine::serialization {
+    enum class ScopedSlotGuardMode : bool {
+        eRead = false,
+        eWrite = true
+    };
+
     /**
      * RAII Guard for `complete` mutating slot operations
      */
@@ -13,7 +18,10 @@ namespace ember::engine::serialization {
         using this_type = ScopedSlotGuard;
 
     public:
-        explicit ScopedSlotGuard(const non_owning_rptr<const ScopedStructureSlotBase> slot_, const bool mutating_);
+        explicit ScopedSlotGuard(
+            const non_owning_rptr<const ScopedSlot> scopedSlot_,
+            const ScopedSlotGuardMode mode_
+        );
 
         ScopedSlotGuard(cref<this_type>) = delete;
 
@@ -22,7 +30,7 @@ namespace ember::engine::serialization {
         ~ScopedSlotGuard();
 
     private:
-        const bool _mutating;
-        const non_owning_rptr<const ScopedStructureSlotBase> _slot;
+        const ScopedSlotGuardMode _mode;
+        const non_owning_rptr<const ScopedSlot> _scopedSlot;
     };
 }
