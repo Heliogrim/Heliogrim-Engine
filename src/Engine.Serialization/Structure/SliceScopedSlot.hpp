@@ -27,10 +27,14 @@ namespace ember::engine::serialization {
 
     public:
         SliceScopedSlot(cref<ScopedSlotState> state_) :
-            ScopedStructureSlot<slice_type>(state_) {}
+            ScopedStructureSlot<slice_type>(state_) {
+            this_type::ensureEntered(not this_type::_state.isScopedImmutable());
+        }
 
         SliceScopedSlot(mref<ScopedSlotState> state_) :
-            ScopedStructureSlot<slice_type>(_STD move(state_)) {}
+            ScopedStructureSlot<slice_type>(_STD move(state_)) {
+            this_type::ensureEntered(not this_type::_state.isScopedImmutable());
+        }
 
         ~SliceScopedSlot() override = default;
 
@@ -40,9 +44,63 @@ namespace ember::engine::serialization {
         }
 
     protected:
-        void enter(const bool mutating_) override { }
+        void enter(const bool mutating_) override {
 
-        void leave(const bool mutating_) override { }
+            ScopedStructureSlot<slice_type>::enter(mutating_);
+
+            /**/
+
+            if (not mutating_ && not this_type::_state.size) {
+
+                auto* archive = this_type::_state.rootState->getArchive();
+                archive->seek(this_type::_state.offset);
+
+                StructureSlotType storedType = StructureSlotType::eUndefined;
+                (*archive) >> storedType;
+
+                #ifdef _DEBUG
+                if (storedType != StructureSlotType::eSlice) {
+                    IM_CORE_WARNF(
+                        "Tried to deserialize a `{}` into a `{}`.",
+                        StructureSlotTypeTrait::canonical(storedType),
+                        StructureSlotTypeTraits<StructureSlotType::eSlice>::canonical
+                    );
+                }
+                #endif
+
+                (*archive) >> this_type::_state.size;
+                return;
+            }
+
+            /**/
+
+            if (mutating_ && not this_type::_state.size) {
+                auto* archive = this_type::_state.rootState->getArchive();
+                (*archive) << StructureSlotType::eSlice;
+                (*archive) << 0ui64;
+            }
+        }
+
+        void leave(const bool mutating_) override {
+
+            ScopedStructureSlot<slice_type>::leave(mutating_);
+
+            /**/
+
+            if (not mutating_) {
+                return;
+            }
+
+            /**/
+
+            auto* archive = this_type::_state.rootState->getArchive();
+            archive->seek(this_type::_state.offset);
+
+            (*archive) << StructureSlotType::eSlice;
+            (*archive) << (this_type::_state.size - sizeof(StructureSlotType::eSlice) - sizeof(u64));
+
+            archive->seek(this_type::_state.offset + this_type::_state.size);
+        }
 
     public:
         [[nodiscard]] const scoped_entry_type getSliceEntry(const size_t index_) const {
@@ -58,8 +116,6 @@ namespace ember::engine::serialization {
 
             const ScopedSlotGuard guard { this, true };
             auto* archive = this_type::_state.rootState->getArchive();
-
-            (*archive) << StructureSlotType::eSlice;
 
             /* Write dummy / placeholder to archive and safe position */
             const auto countMarker = archive->tell();
@@ -99,22 +155,8 @@ namespace ember::engine::serialization {
 
         void operator>>(ref<slice_type> object_) const override {
 
+            const ScopedSlotGuard guard { this, false };
             auto* const archive = this_type::_state.rootState->getArchive();
-
-            /**/
-
-            StructureSlotType storedType = StructureSlotType::eUndefined;
-            (*archive) >> storedType;
-
-            #ifdef _DEBUG
-            if (storedType != StructureSlotType::eSlice) {
-                IM_CORE_WARNF(
-                    "Tried to deserialize a `{}` into `{}`",
-                    StructureSlotTypeTrait::canonical(storedType),
-                    StructureSlotTypeTraits<StructureSlotType::eSlice>::canonical
-                );
-            }
-            #endif
 
             /**/
 

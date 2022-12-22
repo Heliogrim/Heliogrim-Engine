@@ -1,20 +1,24 @@
 #include "StructScopedSlot.hpp"
 
 #include "StructIdentifierScopedSlot.hpp"
+#include "StructureSlotTypeTraits.hpp"
 
 #ifdef _DEBUG
 #include <Engine.Logging/Logger.hpp>
-#include "StructureSlotTypeTraits.hpp"
 #endif
 
 using namespace ember::engine::serialization;
 using namespace ember;
 
 StructScopedSlot::StructScopedSlot(cref<ScopedSlotState> state_) :
-    ScopedStructureSlotBase(state_) {}
+    ScopedStructureSlotBase(state_) {
+    ensureEntered(not _state.isScopedImmutable());
+}
 
 StructScopedSlot::StructScopedSlot(mref<ScopedSlotState> state_) :
-    ScopedStructureSlotBase(_STD move(state_)) {}
+    ScopedStructureSlotBase(_STD move(state_)) {
+    ensureEntered(not _state.isScopedImmutable());
+}
 
 void StructScopedSlot::enter(const bool mutating_) {
 
@@ -109,9 +113,75 @@ RecordScopedSlot StructScopedSlot::insertRecordSlot(cref<record_key_type> key_) 
     return RecordScopedSlot { _STD move(state) };
 }
 
+s64 StructScopedSlot::findRecord(cref<record_key_type> key_) const {
+
+    auto* archive = _state.rootState->getArchive();
+
+    const s64 start = _state.offset + static_cast<s64>(sizeof(StructureSlotType::eStruct) + sizeof(u64));
+    if (archive->tell() != start) {
+        archive->seek(start);
+    }
+
+    /**/
+
+    auto leftSize = _state.size;
+    while (leftSize >= 0) {
+
+        ScopedSlotState identifierState {
+            ScopedSlotStateFlag::eImmutable,
+            *this,
+            _state.rootState
+        };
+
+        string identifier {};
+        (StructIdentifierScopedSlot { _STD move(identifierState) }) >> identifier;
+
+        /**/
+
+        if (identifier == key_) {
+            //return start + (_state.size - leftSize);
+            return archive->tell();
+        }
+
+        /**/
+
+        s64 skipSize = 0;
+        {
+            StructureSlotType storedType = StructureSlotType::eUndefined;
+            (*archive) >> storedType;
+
+            const auto constTypeSize = StructureSlotTypeTrait::const_size(storedType);
+            if (constTypeSize >= 0) {
+                skipSize = constTypeSize;
+
+            } else {
+
+                s64 storedSize = -1;
+                (*archive) >> storedSize;
+
+                skipSize = storedSize;
+            }
+        }
+
+        /**/
+        archive->seek(archive->tell() + skipSize);
+        leftSize = _state.size - (archive->tell() - start);
+    }
+
+    /**/
+
+    return -1;
+}
+
 const RecordScopedSlot StructScopedSlot::getRecordSlot(cref<record_key_type> key_) const {
 
     const ScopedSlotGuard guard { this, false };
+
+    /**/
+
+    const auto testTell = _state.rootState->getArchive()->tell();
+    auto result = findRecord(key_);
+    _state.rootState->getArchive()->seek(testTell);
 
     /**/
 

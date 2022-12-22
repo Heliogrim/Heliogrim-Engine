@@ -7,6 +7,8 @@
 namespace ember::engine::serialization {
     struct StructureSlotTypeTrait {
         [[nodiscard]] static string_view canonical(StructureSlotType type_) noexcept;
+
+        [[nodiscard]] static s64 const_size(StructureSlotType type_) noexcept;
     };
 
     template <StructureSlotType Value_>

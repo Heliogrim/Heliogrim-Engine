@@ -29,5 +29,28 @@ string_view StructureSlotTypeTrait::canonical(StructureSlotType type_) noexcept 
     }
 }
 
+s64 StructureSlotTypeTrait::const_size(StructureSlotType type_) noexcept {
+    switch (type_) {
+        RESOLVE_R(StructureSlotType::eUndefined)::const_size;
+        RESOLVE_R(StructureSlotType::eBool)::const_size;
+        RESOLVE_R(StructureSlotType::eU8)::const_size;
+        RESOLVE_R(StructureSlotType::eU16)::const_size;
+        RESOLVE_R(StructureSlotType::eU32)::const_size;
+        RESOLVE_R(StructureSlotType::eU64)::const_size;
+        RESOLVE_R(StructureSlotType::eS8)::const_size;
+        RESOLVE_R(StructureSlotType::eS16)::const_size;
+        RESOLVE_R(StructureSlotType::eS32)::const_size;
+        RESOLVE_R(StructureSlotType::eS64)::const_size;
+        RESOLVE_R(StructureSlotType::eString)::const_size;
+        RESOLVE_R(StructureSlotType::eSlice)::const_size;
+        RESOLVE_R(StructureSlotType::eMap)::const_size;
+        RESOLVE_R(StructureSlotType::eMapEntry)::const_size;
+        RESOLVE_R(StructureSlotType::eRecord)::const_size;
+        RESOLVE_R(StructureSlotType::eStruct)::const_size;
+        RESOLVE_R(StructureSlotType::eSeq)::const_size;
+        default: return StructureSlotTypeTraits<StructureSlotType::eUndefined>::const_size;
+    }
+}
+
 #undef RESOLVE_R
 #undef RESOLVE

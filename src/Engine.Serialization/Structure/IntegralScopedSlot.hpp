@@ -7,10 +7,10 @@
 #include "ScopedStructureSlot.hpp"
 #include "StructureSlotState.hpp"
 #include "ScopedSlotGuard.hpp"
+#include "StructureSlotTypeTraits.hpp"
 
 #ifdef _DEBUG
 #include <Engine.Logging/Logger.hpp>
-#include "StructureSlotTypeTraits.hpp"
 #endif
 
 namespace ember::engine::serialization {
@@ -28,10 +28,14 @@ namespace ember::engine::serialization {
 
     public:
         IntegralScopedSlot(cref<ScopedSlotState> state_) :
-            ScopedStructureSlot<data_type>(state_) {}
+            ScopedStructureSlot<data_type>(state_) {
+            this_type::ensureEntered(not this_type::_state.isScopedImmutable());
+        }
 
         IntegralScopedSlot(mref<ScopedSlotState> state_) :
-            ScopedStructureSlot<data_type>(_STD move(state_)) {}
+            ScopedStructureSlot<data_type>(_STD move(state_)) {
+            this_type::ensureEntered(not this_type::_state.isScopedImmutable());
+        }
 
         ~IntegralScopedSlot() override = default;
 
@@ -41,39 +45,72 @@ namespace ember::engine::serialization {
         }
 
     protected:
-        void enter(const bool mutating_) override { }
+        void enter(const bool mutating_) override {
 
-        void leave(const bool mutating_) override { }
+            ScopedStructureSlot<data_type>::enter(mutating_);
+
+            /**/
+
+            if (not mutating_) {
+
+                auto* archive = this_type::_state.rootState->getArchive();
+                archive->seek(this_type::_state.offset);
+
+                StructureSlotType storedType = StructureSlotType::eUndefined;
+                (*archive) >> storedType;
+
+                #ifdef _DEBUG
+                if (storedType != trait_type::slot_type) {
+                    IM_CORE_WARNF(
+                        "Tried to deserialize a `{}` into a `{}`.",
+                        StructureSlotTypeTrait::canonical(storedType),
+                        StructureSlotTypeTraits<trait_type::slot_type>::canonical
+                    );
+                }
+                #endif
+
+                this_type::_state.size = StructureSlotTypeTraits<trait_type::slot_type>::const_size;
+                return;
+            }
+
+            /**/
+
+            if (mutating_ && not this_type::_state.size) {
+                auto* archive = this_type::_state.rootState->getArchive();
+                (*archive) << trait_type::slot_type;
+            }
+        }
+
+        void leave(const bool mutating_) override {
+
+            ScopedStructureSlot<data_type>::leave(mutating_);
+
+            /**/
+
+            if (not mutating_) {
+                return;
+            }
+
+            /**/
+
+            auto* archive = this_type::_state.rootState->getArchive();
+            archive->seek(this_type::_state.offset);
+
+            archive->seek(this_type::_state.offset + this_type::_state.size);
+        }
 
     public:
         void operator<<(cref<data_type> object_) override {
             const ScopedSlotGuard guard { this, true };
-
             auto* const archive = this_type::_state.rootState->getArchive();
-            (*archive) << trait_type::slot_type;
+
             (*archive) << object_;
         }
 
         void operator>>(ref<data_type> object_) const override {
 
+            const ScopedSlotGuard guard { this, false };
             auto* const archive = this_type::_state.rootState->getArchive();
-
-            /**/
-
-            StructureSlotType storedType { StructureSlotType::eUndefined };
-            (*archive) >> storedType;
-
-            #ifdef _DEBUG
-            if (storedType != trait_type::slot_type) {
-                IM_CORE_WARNF(
-                    "Tried to deserialize a `{}` into a `{}`.",
-                    StructureSlotTypeTrait::canonical(storedType),
-                    StructureSlotTypeTraits<trait_type::slot_type>::canonical
-                );
-            }
-            #endif
-
-            /**/
 
             (*archive) >> object_;
         }

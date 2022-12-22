@@ -15,10 +15,14 @@ using namespace ember::engine::serialization;
 using namespace ember;
 
 StringScopedSlot::StringScopedSlot(cref<ScopedSlotState> state_) :
-    ScopedStructureSlot(state_) {}
+    ScopedStructureSlot(state_) {
+    ensureEntered(not _state.isScopedImmutable());
+}
 
 StringScopedSlot::StringScopedSlot(mref<ScopedSlotState> state_) :
-    ScopedStructureSlot(_STD move(state_)) {}
+    ScopedStructureSlot(_STD move(state_)) {
+    ensureEntered(not _state.isScopedImmutable());
+}
 
 StringScopedSlot::~StringScopedSlot() = default;
 

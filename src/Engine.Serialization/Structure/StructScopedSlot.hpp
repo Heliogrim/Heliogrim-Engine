@@ -5,7 +5,7 @@
 #include "StringScopedSlot.hpp"
 
 namespace ember::engine::serialization {
-    class StructScopedSlot :
+    class StructScopedSlot final :
         public ScopedStructureSlotBase {
     public:
         using this_type = StructScopedSlot;
@@ -67,6 +67,9 @@ namespace ember::engine::serialization {
         [[nodiscard]] MapScopedSlot<KeyType_, ValueType_, MapType_> insertSlot(cref<record_key_type> key_) {
             return insertRecordSlot(key_).intoMap<KeyType_, ValueType_, MapType_>();
         }
+
+    private:
+        [[nodiscard]] s64 findRecord(cref<record_key_type> key_) const;
 
     public:
         [[nodiscard]] const RecordScopedSlot getRecordSlot(cref<record_key_type> key_) const;

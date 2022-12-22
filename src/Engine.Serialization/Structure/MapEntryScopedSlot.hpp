@@ -15,10 +15,14 @@ namespace ember::engine::serialization {
 
     public:
         MapEntryScopedSlot(cref<ScopedSlotState> state_) :
-            ScopedStructureSlot(state_) {}
+            ScopedStructureSlot(state_) {
+            this_type::ensureEntered(not this_type::_state.isScopedImmutable());
+        }
 
         MapEntryScopedSlot(mref<ScopedSlotState> state_) :
-            ScopedStructureSlot(_STD move(state_)) {}
+            ScopedStructureSlot(_STD move(state_)) {
+            this_type::ensureEntered(not this_type::_state.isScopedImmutable());
+        }
 
         ~MapEntryScopedSlot() override = default;
 
@@ -28,13 +32,9 @@ namespace ember::engine::serialization {
         }
 
     protected:
-        void enter(const bool mutating_) override {
-            return nullptr;
-        }
+        void enter(const bool mutating_) override { }
 
-        void leave(const bool mutating_) override {
-            return nullptr;
-        }
+        void leave(const bool mutating_) override { }
 
     public:
         [[nodiscard]] const ScopedStructureSlot<KeyType_> getKeySlot() const noexcept {
