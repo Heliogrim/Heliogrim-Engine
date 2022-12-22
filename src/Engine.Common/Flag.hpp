@@ -5,7 +5,6 @@
 #include "Wrapper.hpp"
 
 namespace ember {
-
     template <typename Ty, class UTy = u8>
     struct Flag {
         static_assert(_STD is_enum<Ty>::value, "Enumeration required.");
@@ -142,7 +141,7 @@ namespace ember {
          *
          * @returns The result of the operation.
          */
-        bool operator&(const Flag& other_) {
+        bool operator&(const Flag& other_) const noexcept {
             return unwrap & other_.unwrap;
         }
 

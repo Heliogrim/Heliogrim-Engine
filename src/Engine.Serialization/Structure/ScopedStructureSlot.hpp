@@ -4,83 +4,64 @@
 #include "ScopedSlotState.hpp"
 
 namespace ember::engine::serialization {
-    class __declspec(novtable) ScopedStructureSlotBase :
-        public StructureSlotBase {
+    class __declspec(novtable) ScopedSlot {
     public:
-        template <typename>
-        friend class ScopedStructureSlot;
-        friend class ScopedSlotGuard;
+        using this_type = ScopedSlot;
 
-    public:
-        using this_type = ScopedStructureSlotBase;
+        using slot_type = StructureSlotBase;
 
     protected:
-        ScopedStructureSlotBase(cref<ScopedSlotState> state_);
-
-        ScopedStructureSlotBase(mref<ScopedSlotState> state_);
-
-    public:
-        ScopedStructureSlotBase(cref<this_type>) = delete;
-
-        ScopedStructureSlotBase(mref<this_type>) noexcept = delete;
-
-        ~ScopedStructureSlotBase() override;
+        ScopedSlot(
+            mref<ScopedSlotState> state_,
+            mref<sptr<StructureSlotBase>> slot_
+        );
 
     public:
-        ptr<void> operator new(size_t, ptr<void>) = delete;
+        virtual ~ScopedSlot() = default;
 
     protected:
         mutable ScopedSlotState _state;
 
     public:
-        [[nodiscard]] cref<ScopedSlotState> getState() const noexcept;
+        [[nodiscard]] cref<ScopedSlotState> getScopedState() const noexcept;
 
-        [[nodiscard]] bool emptyState() const noexcept;
-
-    public:
-        [[nodiscard]] string_view getSlotName() const noexcept;
-
-        void setSlotName(const string_view name_);
+        [[nodiscard]] ref<ScopedSlotState> getScopedState() noexcept;
 
     protected:
-        void ensureEntered(const bool mutating_);
-
-        void ensureLeft(const bool mutating_);
-
-    protected:
-        void enter(const bool mutating_) override;
-
-        void leave(const bool mutating_) override;
-
-        virtual void reenter(const bool mutating_);
+        mutable sptr<StructureSlotBase> _slot;
 
     public:
-        virtual void subStateEnter(cref<ScopedStructureSlotBase> subState_);
-
-        virtual void subStateLeave(cref<ScopedStructureSlotBase> subState_);
+        // ReSharper disable once CppHiddenFunction
+        [[nodiscard]] const non_owning_rptr<StructureSlotBase> slot() const noexcept;
     };
 
-    template <typename DataType_>
-    class ScopedStructureSlot :
-        public ScopedStructureSlotBase {
+    template <typename ValueType_>
+    class __declspec(novtable) TypeScopedSlot :
+        public ScopedSlot {
     public:
-        using this_type = ScopedStructureSlot<DataType_>;
+        using this_type = TypeScopedSlot<ValueType_>;
 
-        using data_type = DataType_;
+        using slot_type = TypedStructureSlotBase<ValueType_>;
+        using value_type = typename slot_type::value_type;
 
     protected:
-        ScopedStructureSlot(cref<ScopedSlotState> state_) :
-            ScopedStructureSlotBase(state_) {}
-
-        ScopedStructureSlot(mref<ScopedSlotState> state_) :
-            ScopedStructureSlotBase(_STD move(state_)) { }
-
-    public:
-        ~ScopedStructureSlot() override = default;
+        TypeScopedSlot(
+            mref<ScopedSlotState> state_,
+            mref<sptr<StructureSlotBase>> slot_
+        ) :
+            ScopedSlot(_STD move(state_), _STD move(slot_)) {}
 
     public:
-        virtual void operator<<(cref<data_type> object_) = 0;
+        ~TypeScopedSlot() override = default;
 
-        virtual void operator>>(ref<data_type> object_) const = 0;
+    public:
+        [[nodiscard]] const non_owning_rptr<slot_type> slot() const noexcept {
+            return static_cast<const non_owning_rptr<slot_type>>(ScopedSlot::slot());
+        }
+
+    public:
+        virtual void operator<<(cref<value_type> value_) = 0;
+
+        virtual void operator>>(ref<value_type> value_) const = 0;
     };
 }

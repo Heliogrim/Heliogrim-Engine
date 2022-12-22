@@ -5,36 +5,21 @@
 #include <Engine.Common/Flag.hpp>
 
 namespace ember::engine::serialization {
-    class ScopedStructureSlotBase;
     class StructureSlotState;
+    class StructureSlotBase;
 }
 
 namespace ember::engine::serialization {
-    enum class ScopedSlotStateFlag : u8 {
-        eUndefined = 0x0,
+    enum class ScopedSlotStateFlag : bool {
+        eUndefined = false,
         /**/
-        eImmutable,
-        eDirty
+        eClean = eUndefined,
+        eDirty = true
     };
 
-    typedef Flag<ScopedSlotStateFlag, u8> ScopedSlotStateFlags;
+    typedef Flag<ScopedSlotStateFlag, bool> ScopedSlotStateFlags;
 
     struct ScopedSlotState {
         ScopedSlotStateFlags flags;
-        cref<ScopedStructureSlotBase> parent;
-
-        sptr<StructureSlotState> rootState;
-
-        s64 offset = -1;
-        s64 size = 0;
-
-    public:
-        [[nodiscard]] bool isImmutable() const noexcept;
-
-        [[nodiscard]] bool isScopedImmutable() const noexcept;
-
-        [[nodiscard]] bool isDirty() const noexcept;
-
-        [[nodiscard]] bool isScopedDirty() const noexcept;
     };
 }
