@@ -3,7 +3,7 @@
 #include "ScopedStructureSlot.hpp"
 
 namespace ember::engine::serialization {
-    class SeqScopedSlot :
+    class SeqScopedSlot final :
         public ScopedStructureSlotBase {
     public:
         using this_type = SeqScopedSlot;

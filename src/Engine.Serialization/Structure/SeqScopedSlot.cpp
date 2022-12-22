@@ -6,10 +6,14 @@ using namespace ember::engine::serialization;
 using namespace ember;
 
 SeqScopedSlot::SeqScopedSlot(cref<ScopedSlotState> state_) :
-    ScopedStructureSlotBase(state_) {}
+    ScopedStructureSlotBase(state_) {
+    ensureEntered(not _state.isScopedImmutable());
+}
 
 SeqScopedSlot::SeqScopedSlot(mref<ScopedSlotState> state_) :
-    ScopedStructureSlotBase(_STD move(state_)) {}
+    ScopedStructureSlotBase(_STD move(state_)) {
+    ensureEntered(not _state.isScopedImmutable());
+}
 
 SeqScopedSlot::~SeqScopedSlot() = default;
 

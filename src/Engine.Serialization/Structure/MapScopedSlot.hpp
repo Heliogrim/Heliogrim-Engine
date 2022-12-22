@@ -18,10 +18,14 @@ namespace ember::engine::serialization {
 
     public:
         MapScopedSlot(cref<ScopedSlotState> state_) :
-            ScopedStructureSlot<map_type>(state_) {}
+            ScopedStructureSlot<map_type>(state_) {
+            this_type::ensureEntered(not this_type::_state.isScopedImmutable());
+        }
 
         MapScopedSlot(mref<ScopedSlotState> state_) :
-            ScopedStructureSlot<map_type>(_STD move(state_)) {}
+            ScopedStructureSlot<map_type>(_STD move(state_)) {
+            this_type::ensureEntered(not this_type::_state.isScopedImmutable());
+        }
 
         ~MapScopedSlot() override = default;
 

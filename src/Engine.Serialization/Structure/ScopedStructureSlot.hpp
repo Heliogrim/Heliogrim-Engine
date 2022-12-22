@@ -73,7 +73,7 @@ namespace ember::engine::serialization {
             ScopedStructureSlotBase(state_) {}
 
         ScopedStructureSlot(mref<ScopedSlotState> state_) :
-            ScopedStructureSlotBase(_STD move(state_)) {}
+            ScopedStructureSlotBase(_STD move(state_)) { }
 
     public:
         ~ScopedStructureSlot() override = default;
