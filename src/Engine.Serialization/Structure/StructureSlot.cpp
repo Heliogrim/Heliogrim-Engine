@@ -20,7 +20,7 @@ ref<StructureSlotHeader> StructureSlotBase::getSlotHeader() noexcept {
 }
 
 StructureSlotType StructureSlotBase::getSlotType() const noexcept {
-    return _state.header.type;
+    return StructureSlotType::eUndefined;
 }
 
 void StructureSlotBase::writeHeader() {
@@ -63,18 +63,15 @@ void StructureSlotBase::enter() {
 }
 
 void StructureSlotBase::leave() {
-
-    const auto* const archive = _state.root->archive;
-
-    if (_state.header.sizeInferred) {
-        return;
-
-    } else {
-        constexpr s64 off = sizeof(_state.header.type) + sizeof(_state.header.size);
-        const auto start = _state.offset + off;
-
-        _state.header.size = archive->tell() - start;
+    if (
+        _state.flags & StructureSlotStateFlag::eMutable &&
+        _state.flags & StructureSlotStateFlag::eDirty &&
+        _state.parent
+    ) {
+        _state.parent->feedback(this);
     }
+
+    _state.flags.unwrap &= ~(static_cast<StructureSlotStateFlags::value_type>(StructureSlotStateFlag::eDirty));
 }
 
 void StructureSlotBase::feedback(const non_owning_rptr<const StructureSlotBase> other_) {}

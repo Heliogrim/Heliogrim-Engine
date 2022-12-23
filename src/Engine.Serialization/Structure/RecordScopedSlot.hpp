@@ -32,17 +32,17 @@ namespace ember::engine::serialization {
 
         template <typename ValueType_, template <typename...> typename SliceType_>
         [[nodiscard]] SliceScopedSlot<ValueType_, SliceType_> intoSlice() const {
-            return SliceScopedSlot<ValueType_, SliceType_> { _STD move(_state), _STD move(_slot) };
+            return SliceScopedSlot<ValueType_, SliceType_> { _STD move(_state), _STD move(_slot->getState()) };
         }
 
         template <typename Key_, typename Value_, template <typename, typename...> typename MapType_>
         [[nodiscard]] MapScopedSlot<Key_, Value_, MapType_> intoMap() const {
-            return MapScopedSlot<Key_, Value_, MapType_> { _STD move(_slot) };
+            return MapScopedSlot<Key_, Value_, MapType_> { _STD move(_state), _STD move(_slot->getState()) };
         }
 
         template <typename Key_, typename Value_, template <typename, typename...> typename PackType_ = _STD pair>
         [[nodiscard]] MapEntryScopedSlot<Key_, Value_, PackType_> intoMapEntry() const {
-            return MapEntryScopedSlot<Key_, Value_, PackType_> { _STD move(_slot) };
+            return MapEntryScopedSlot<Key_, Value_, PackType_> { _STD move(_state), _STD move(_slot->getState()) };
         }
     };
 

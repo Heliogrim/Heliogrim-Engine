@@ -33,6 +33,11 @@ namespace ember::engine::serialization {
     public:
         // ReSharper disable once CppHiddenFunction
         [[nodiscard]] const non_owning_rptr<StructureSlotBase> slot() const noexcept;
+
+    public:
+        void enterSlot() const;
+
+        void leaveSlot() const;
     };
 
     template <typename ValueType_>

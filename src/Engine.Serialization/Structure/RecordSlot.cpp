@@ -20,14 +20,10 @@ RecordSlot::~RecordSlot() {
     }
 }
 
-bool RecordSlot::validateType() const noexcept {
-    return _state.header.type == StructureSlotType::eRecord;
+StructureSlotType RecordSlot::getSlotType() const noexcept {
+    return StructureSlotType::eRecord;
 }
 
-void RecordSlot::leave() {
-    if (_state.flags & StructureSlotStateFlag::eMutable && _state.parent) {
-        _state.parent->feedback(this);
-    }
-
-    _state.flags.unwrap &= ~(static_cast<StructureSlotStateFlags::value_type>(StructureSlotStateFlag::eDirty));
+bool RecordSlot::validateType() const noexcept {
+    return _state.header.type == StructureSlotType::eRecord;
 }

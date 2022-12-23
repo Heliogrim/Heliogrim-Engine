@@ -5,8 +5,8 @@
 
 #include "__fwd.hpp"
 
-#include "IntegralScopedSlot.hpp"
-#include "StringScopedSlot.hpp"
+#include "IntegralSlot.hpp"
+#include "StringSlot.hpp"
 
 namespace ember::engine::serialization {
     template <typename ValueType_>
@@ -14,11 +14,11 @@ namespace ember::engine::serialization {
 
     template <typename StringType_> requires _STD is_same_v<StringType_, string>
     struct SubstitutionSlot<StringType_> {
-        using type = StringScopedSlot;
+        using type = StringSlot;
     };
 
     template <typename ValueType_> requires _STD is_integral_v<ValueType_>
     struct SubstitutionSlot<ValueType_> {
-        using type = IntegralScopedSlot<ValueType_>;
+        using type = IntegralSlot<ValueType_>;
     };
 }

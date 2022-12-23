@@ -1049,32 +1049,159 @@ namespace SerializationModule {
         EXPECT_EQ(dst, src);
     }
 
-    TEST(StructureArchive, StructIntegralReadWrite) {
+    TEST(StructureArchive, NestedStructReadWrite2) {
 
         BufferArchive archive {};
         StructuredArchive arch { &archive };
 
-        u64 src { 1563716ui64 };
-        u64 dst { 0 };
+        const u64 src1 = 126784ui64;
+        const u64 src2 = 6312785ui64;
+        {
+            auto write = arch.insertRootSlot();
+            auto struct0 = write.intoStruct();
 
-        /**/
+            auto struct1 = struct0.insertSlot<void>("obj1").intoStruct();
+            struct1.insertSlot<u64>("test1") << src1;
+            struct1.leaveSlot();
 
-        auto write = arch.insertRootSlot();
-        write.intoStruct().insertSlot<u64>("value") << src;
+            auto struct2 = struct0.insertSlot<void>("obj2").intoStruct();
+            struct2.insertSlot<u64>("test2") << src2;
+            struct2.leaveSlot();
+        }
 
         /**/
 
         archive.seek(0);
-        EXPECT_EQ(archive.size(), (1 + 8) + (1 + 8 + 5) + (1 + 8));
 
         /**/
 
-        auto read = arch.getRootSlot();
-        read.intoStruct().getSlot<u64>("value") >> dst;
+        u64 dst1 = 0ui64;
+        u64 dst2 = 0ui64;
+        {
+            const auto read = arch.getRootSlot();
+            auto struct0 = read.intoStruct();
+
+            auto struct1 = struct0.getSlot<void>("obj1").intoStruct();
+            struct1.getSlot<u64>("test1") >> dst1;
+
+            auto struct2 = struct0.getSlot<void>("obj2").intoStruct();
+            struct2.getSlot<u64>("test2") >> dst2;
+        }
 
         /**/
 
-        EXPECT_EQ(src, dst);
+        EXPECT_EQ(dst1, src1);
+        EXPECT_EQ(dst2, src2);
+    }
+
+    TEST(StructureArchive, SliceReadWrite) {
+
+        BufferArchive archive {};
+        StructuredArchive arch { &archive };
+
+        const Vector<u64> src { { 2165787ui64, 7826523ui64, 32597698ui64 } };
+
+        {
+            auto write = arch.getRootSlot();
+            write.intoSlice<u64, Vector>() << src;
+        }
+
+        /**/
+
+        archive.seek(0);
+
+        /**/
+
+        {
+            const auto read = arch.getRootSlot();
+
+            Vector<u64> dst {};
+            read.intoSlice<u64, Vector>() >> dst;
+
+            /**/
+
+            EXPECT_EQ(dst.size(), src.size());
+
+            for (u64 i = 0; i < dst.size(); i++) {
+                EXPECT_EQ(dst[i], src[i]);
+            }
+        }
+    }
+
+    TEST(StructureArchive, StringSliceReadWrite) {
+
+        BufferArchive archive {};
+        StructuredArchive arch { &archive };
+
+        const Vector<string> src { { "$0::Test String", "$1::Test String", "$2::Test String" } };
+
+        {
+            auto write = arch.getRootSlot();
+            write.intoSlice<string, Vector>() << src;
+        }
+
+        /**/
+
+        archive.seek(0);
+
+        /**/
+
+        {
+            const auto read = arch.getRootSlot();
+
+            Vector<string> dst {};
+            read.intoSlice<string, Vector>() >> dst;
+
+            /**/
+
+            EXPECT_EQ(dst.size(), src.size());
+
+            for (u64 i = 0; i < dst.size(); i++) {
+                EXPECT_EQ(dst[i], src[i]);
+            }
+        }
+    }
+
+    TEST(StructureArchive, MapReadWrite) {
+
+        BufferArchive archive {};
+        StructuredArchive arch { &archive };
+
+        _STD map<string, u64> src {
+            { "$0::key", 3657876ui64 },
+            { "$1::key", 32876797ui64 },
+            { "$3::key", 4267198ui64 }
+        };
+
+        {
+            auto write = arch.getRootSlot();
+            write.intoMap<string, u64, _STD map>() << src;
+        }
+
+        /**/
+
+        archive.seek(0);
+
+        /**/
+
+        {
+            const auto read = arch.getRootSlot();
+
+            _STD map<string, u64> dst {};
+            read.intoMap<string, u64, _STD map>() >> dst;
+
+            /**/
+
+            EXPECT_EQ(dst.size(), src.size());
+
+            for (const auto& srcEntry : src) {
+                EXPECT_TRUE(dst.contains(srcEntry.first));
+
+                if (dst.contains(srcEntry.first)) {
+                    EXPECT_EQ(dst[srcEntry.first], srcEntry.second);
+                }
+            }
+        }
     }
 
     TEST(StructureArchive, SimpleReadWrite) {
@@ -1117,26 +1244,24 @@ namespace SerializationModule {
 
             void serialize(mref<RecordScopedSlot> slot_) {
                 auto slot = slot_.intoStruct();
-                /*
+
                 slot.insertSlot<string>("data0") << data0;
                 slot.insertSlot<u32>("data1") << data1;
                 slot.insertSlot<u32>("data2") << data2;
                 slot.insertSlot<string, u64, _STD map>("data3") << data3;
-                 */
 
-                //obj0.serialize(slot.insertSlot<void>("obj0"));
+                obj0.serialize(slot.insertSlot<void>("obj0"));
             }
 
             void deserialize(cref<RecordScopedSlot> slot_) {
                 const auto slot = slot_.intoStruct();
-                /*
+
                 slot.getSlot<string>("data0") >> data0;
                 slot.getSlot<u32>("data1") >> data1;
                 slot.getSlot<u32>("data2") >> data2;
                 slot.getSlot<string, u64, _STD map>("data3") >> data3;
-                 */
 
-                //obj0.deserialize(slot["obj0"]);
+                obj0.deserialize(slot.getSlot<void>("obj0"));
             }
 
             [[nodiscard]] bool operator==(cref<TI2Obj> other_) const noexcept {
@@ -1164,10 +1289,10 @@ namespace SerializationModule {
                 slot.insertSlot<string>("test") << "test";
 
                 obj0.serialize(slot.insertSlot<void>("obj0"));
-                //obj1.serialize(slot.insertSlot<void>("obj1"));
+                obj1.serialize(slot.insertSlot<void>("obj1"));
 
-                //slot.insertSlot<u64>("data1") << data1;
-                //slot.insertSlot<string, _STD vector>("data2") << data2;
+                slot.insertSlot<u64>("data1") << data1;
+                slot.insertSlot<string, _STD vector>("data2") << data2;
             }
 
             void deserialize(cref<RecordScopedSlot> slot_) {
@@ -1177,12 +1302,11 @@ namespace SerializationModule {
                 string test {};
                 slot.getSlot<string>("test") >> test;
 
-                //obj0.deserialize(slot["obj0"]); // TODO: Currently failing cause we are still order-dependent
-                //obj1.deserialize(slot["obj1"]);
+                obj1.deserialize(slot.getSlot<void>("obj1"));
                 obj0.deserialize(slot.getSlot<void>("obj0"));
 
-                //slot.getSlot<u64>("data1") >> data1;
-                //slot.getSlot<string, _STD vector>("data2") >> data2;
+                slot.getSlot<u64>("data1") >> data1;
+                slot.getSlot<string, _STD vector>("data2") >> data2;
             }
 
             [[nodiscard]] bool operator==(cref<TI1Obj> other_) const noexcept {
@@ -1214,10 +1338,8 @@ namespace SerializationModule {
             void deserialize(cref<RecordScopedSlot> slot_) {
                 const auto slot = slot_.intoStruct();
                 slot.getSlot<string>("data0") >> data0;
-                //slot.getSlot<u64>("data1") >> data1;
-                slot.getSlot<s64>("data1") >> *reinterpret_cast<ptr<s64>>(&data1);
-                //slot.getSlot<u32>("data2") >> data2;
-                slot.getSlot<s32>("data2") >> *reinterpret_cast<ptr<s32>>(&data2);
+                slot.getSlot<u64>("data1") >> data1;
+                slot.getSlot<u32>("data2") >> data2;
                 slot.getSlot<u16, _STD vector>("data3") >> data3;
 
                 obj0.deserialize(slot.getSlot<void>("obj0"));
@@ -1271,7 +1393,7 @@ namespace SerializationModule {
             }
         };
         {
-            auto rootSlot = arch.getRootSlot();
+            auto rootSlot = arch.insertRootSlot();
             writeDummy.serialize(_STD move(rootSlot));
         }
 

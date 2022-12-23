@@ -14,11 +14,13 @@ namespace ember::engine::serialization {
         StringSlot(mref<StructureSlotState> state_);
 
     public:
+        [[nodiscard]] StructureSlotType getSlotType() const noexcept override;
+
         [[nodiscard]] bool validateType() const noexcept override;
 
     public:
         void operator<<(cref<value_type> value_) override;
 
-        void operator>>(ref<value_type> value_) override;
+        SlotOpResult operator>>(ref<value_type> value_) override;
     };
 }

@@ -210,6 +210,9 @@
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\RootScopedSlot.hpp">
       <Filter>Headerdateien\Structure</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\SlotOpResult.hpp">
+      <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Serialization\Archive\LayoutArchive.cpp">

@@ -2,6 +2,7 @@
 
 #include "ScopedStructureSlot.hpp"
 #include "SubstitutionSlot.hpp"
+#include "SliceSlot.hpp"
 
 namespace ember::engine::serialization {
     template <typename ValueType_, template <typename...> typename SliceType_>
@@ -14,15 +15,21 @@ namespace ember::engine::serialization {
         using value_type = typename underlying_type::value_type;
 
     public:
-        SliceScopedSlot(mref<ScopedSlotState> scopedState_, mref<sptr<StructureSlotBase>> slot_) :
-            underlying_type(_STD move(scopedState_), _STD move(slot_)) {}
+        SliceScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
+            underlying_type(_STD move(scopedState_), make_sptr<SliceSlot<ValueType_, SliceType_>>(_STD move(state_))) {}
 
         ~SliceScopedSlot() override = default;
 
     public:
-        void operator<<(cref<value_type> value_) override {}
+        void operator<<(cref<value_type> value_) override {
+            const ScopedSlotGuard guard { this, ScopedSlotGuardMode::eWrite };
+            (*underlying_type::slot()) << value_;
+        }
 
-        void operator>>(ref<value_type> value_) const override {}
+        void operator>>(ref<value_type> value_) const override {
+            const ScopedSlotGuard guard { this, ScopedSlotGuardMode::eRead };
+            (*underlying_type::slot()) >> value_;
+        }
     };
 
     #if FALSE

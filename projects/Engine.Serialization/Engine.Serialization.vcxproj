@@ -57,6 +57,7 @@
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\SeqSlot.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\SliceScopedSlot.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\SliceSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\SlotOpResult.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\StringScopedSlot.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\StringSlot.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\StructScopedSlot.hpp" />

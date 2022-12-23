@@ -6,7 +6,7 @@
 
 namespace ember::engine::serialization {
     class StructScopedSlot final :
-        ScopedSlot {
+        public ScopedSlot {
     public:
         using this_type = StructScopedSlot;
         using underlying_type = ScopedSlot;

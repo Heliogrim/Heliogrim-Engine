@@ -1,6 +1,10 @@
 #include "ScopedSlotGuard.hpp"
 
+#ifdef _DEBUG
 #include <cassert>
+#include <Engine.Logging/Logger.hpp>
+#include "StructureSlotTypeTraits.hpp"
+#endif
 
 #include "ScopedStructureSlot.hpp"
 
@@ -17,7 +21,17 @@ ScopedSlotGuard::ScopedSlotGuard(
     auto* const slot = _scopedSlot->slot();
     if (_mode == ScopedSlotGuardMode::eRead) {
         slot->readHeader();
-        assert(slot->validateType());
+
+        #ifdef _DEBUG
+        if (not slot->validateType()) {
+            IM_CORE_ERRORF(
+                "Tried to deserialize a `{}` into a `{}`.",
+                StructureSlotTypeTrait::canonical(slot->getSlotHeader().type),
+                StructureSlotTypeTrait::canonical(slot->getSlotType())
+            );
+            assert(slot->validateType());
+        }
+        #endif
 
     } else {
         slot->writeHeader();
@@ -36,10 +50,5 @@ ScopedSlotGuard::~ScopedSlotGuard() {
 
     } else {
         slot->writeHeader();
-
-        const auto& slotState = slot->getState();
-        if (slotState.parent) {
-            slotState.parent->feedback(slot);
-        }
     }
 }
