@@ -23,16 +23,12 @@ StructSlot::~StructSlot() {
     }
 }
 
-bool StructSlot::validateType() const noexcept {
-    return _state.header.type == StructureSlotType::eStruct;
+StructureSlotType StructSlot::getSlotType() const noexcept {
+    return StructureSlotType::eStruct;
 }
 
-void StructSlot::leave() {
-    if (_state.flags & StructureSlotStateFlag::eMutable && _state.parent) {
-        _state.parent->feedback(this);
-    }
-
-    _state.flags.unwrap &= ~(static_cast<StructureSlotStateFlags::value_type>(StructureSlotStateFlag::eDirty));
+bool StructSlot::validateType() const noexcept {
+    return _state.header.type == StructureSlotType::eStruct;
 }
 
 void StructSlot::feedback(const non_owning_rptr<const StructureSlotBase> other_) {
@@ -142,10 +138,6 @@ sptr<RecordSlot> StructSlot::insertRecord(cref<record_key_type> key_) {
         identifier << key_;
         identifier.leave();
         identifier.writeHeader();
-
-        /**/
-
-        feedback(&identifier);
 
         /**/
 

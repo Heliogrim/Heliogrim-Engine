@@ -17,6 +17,10 @@ StringSlot::StringSlot(mref<StructureSlotState> state_) :
     _state.header = StructureSlotHeader::from<StructureSlotType::eString>();
 }
 
+StructureSlotType StringSlot::getSlotType() const noexcept {
+    return StructureSlotType::eString;
+}
+
 bool StringSlot::validateType() const noexcept {
     return _state.header.type == StructureSlotType::eString;
 }
@@ -30,9 +34,13 @@ void StringSlot::operator<<(cref<value_type> value_) {
 
     auto* const archive = _state.root->archive;
     archive->serializeBytes(src.data(), src.size(), ArchiveStreamMode::eIn);
+
+    /**/
+
+    _state.header.size = src.size();
 }
 
-void StringSlot::operator>>(ref<value_type> value_) {
+SlotOpResult StringSlot::operator>>(ref<value_type> value_) {
 
     value_.resize(_state.header.size / sizeof(value_type::value_type));
 
@@ -43,4 +51,6 @@ void StringSlot::operator>>(ref<value_type> value_) {
 
     auto* const archive = _state.root->archive;
     archive->serializeBytes(dst.data(), dst.size(), ArchiveStreamMode::eOut);
+
+    return SlotOpResult::eSuccess;
 }

@@ -28,6 +28,10 @@ namespace ember::engine::serialization {
         }
 
     public:
+        [[nodiscard]] StructureSlotType getSlotType() const noexcept override {
+            return trait_type::slot_type;
+        }
+
         [[nodiscard]] bool validateType() const noexcept override {
             return this_type::_state.header.type == trait_type::slot_type;
         }
@@ -40,27 +44,16 @@ namespace ember::engine::serialization {
             archive->seek(this_type::_state.offset + off);
         }
 
-        void leave() override {
-            // Note: Integral Slot is used with inferred size type
-            /*
-            const auto* const archive = this_type::_state.root->archive;
-
-            constexpr s64 off = sizeof(trait_type::slot_type);
-            const auto start = this_type::_state.offset + off;
-
-            this_type::_state.header.size = archive->tell() - start;
-             */
-        }
-
     public:
         void operator<<(cref<value_type> value_) override {
             auto* const archive = this_type::_state.root->archive;
             (*archive) << value_;
         }
 
-        void operator>>(ref<value_type> value_) override {
+        SlotOpResult operator>>(ref<value_type> value_) override {
             auto* const archive = this_type::_state.root->archive;
             (*archive) >> value_;
+            return SlotOpResult::eSuccess;
         }
     };
 

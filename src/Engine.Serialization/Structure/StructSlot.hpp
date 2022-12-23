@@ -19,11 +19,11 @@ namespace ember::engine::serialization {
         ~StructSlot() override;
 
     public:
+        [[nodiscard]] StructureSlotType getSlotType() const noexcept override;
+
         [[nodiscard]] bool validateType() const noexcept override;
 
     public:
-        void leave() override;
-
         void feedback(const non_owning_rptr<const StructureSlotBase> other_) override;
 
     private:

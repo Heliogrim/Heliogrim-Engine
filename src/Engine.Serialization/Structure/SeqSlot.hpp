@@ -14,6 +14,8 @@ namespace ember::engine::serialization {
         SeqSlot(mref<StructureSlotState> state_);
 
     public:
+        [[nodiscard]] StructureSlotType getSlotType() const noexcept override;
+
         [[nodiscard]] bool validateType() const noexcept override;
     };
 }

@@ -7,6 +7,7 @@
 
 #include "StructureSlotType.hpp"
 #include "StructureSlotState.hpp"
+#include "SlotOpResult.hpp"
 
 namespace ember::engine::serialization {
     class __declspec(novtable) StructureSlotBase :
@@ -34,7 +35,7 @@ namespace ember::engine::serialization {
 
         [[nodiscard]] ref<StructureSlotHeader> getSlotHeader() noexcept;
 
-        [[nodiscard]] StructureSlotType getSlotType() const noexcept;
+        [[nodiscard]] virtual StructureSlotType getSlotType() const noexcept;
 
     public:
         [[nodiscard]] virtual bool validateType() const noexcept = 0;
@@ -69,6 +70,6 @@ namespace ember::engine::serialization {
     public:
         virtual void operator<<(cref<value_type> value_) = 0;
 
-        virtual void operator>>(ref<value_type> value_) = 0;
+        virtual SlotOpResult operator>>(ref<value_type> value_) = 0;
     };
 }

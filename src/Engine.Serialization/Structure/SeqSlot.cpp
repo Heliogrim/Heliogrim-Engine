@@ -13,6 +13,10 @@ SeqSlot::SeqSlot(mref<StructureSlotState> state_) :
     _state.header = StructureSlotHeader::from<StructureSlotType::eSeq>();
 }
 
+StructureSlotType SeqSlot::getSlotType() const noexcept {
+    return StructureSlotType::eSeq;
+}
+
 bool SeqSlot::validateType() const noexcept {
     return _state.header.type == StructureSlotType::eSeq;
 }

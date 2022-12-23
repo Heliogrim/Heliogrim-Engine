@@ -16,9 +16,8 @@ namespace ember::engine::serialization {
         ~RecordSlot() override;
 
     public:
-        [[nodiscard]] bool validateType() const noexcept override;
+        [[nodiscard]] StructureSlotType getSlotType() const noexcept override;
 
-    public:
-        void leave() override;
+        [[nodiscard]] bool validateType() const noexcept override;
     };
 }
