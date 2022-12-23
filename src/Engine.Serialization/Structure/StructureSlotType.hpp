@@ -3,7 +3,6 @@
 #include <Engine.Common/Types.hpp>
 
 namespace ember::engine::serialization {
-
     enum class StructureSlotType : u8 {
         eUndefined = 0x0,
         /* Integral ( signed ~ 0x1 ) */
@@ -17,7 +16,10 @@ namespace ember::engine::serialization {
         eS32 = eU32 | 0x1,
         eS64 = eU64 | 0x1,
         /**/
-        eString = 0xA,
+        eFloat = 0xA,
+        eDouble = 0xB,
+        /**/
+        eString = 0xF,
         /**/
         eSlice = 0x10,
         eMap = 0x20,

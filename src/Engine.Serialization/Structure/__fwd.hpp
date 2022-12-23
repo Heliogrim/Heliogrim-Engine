@@ -20,6 +20,9 @@ namespace ember::engine::serialization {
     template <_STD integral IntegralType_>
     class IntegralScopedSlot;
 
+    template <_STD floating_point IntegralType_>
+    class FloatScopedSlot;
+
     template <typename ValueType_, template <typename...> typename SliceType_>
     class SliceScopedSlot;
 

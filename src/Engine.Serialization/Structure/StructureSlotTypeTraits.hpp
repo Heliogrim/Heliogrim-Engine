@@ -87,6 +87,20 @@ namespace ember::engine::serialization {
     };
 
     template <>
+    struct StructureSlotTypeTraits<StructureSlotType::eFloat> {
+        inline constexpr static string_view canonical = "Float"sv;
+
+        inline constexpr static s64 const_size = 4i64;
+    };
+
+    template <>
+    struct StructureSlotTypeTraits<StructureSlotType::eDouble> {
+        inline constexpr static string_view canonical = "Double"sv;
+
+        inline constexpr static s64 const_size = 8i64;
+    };
+
+    template <>
     struct StructureSlotTypeTraits<StructureSlotType::eString> {
         inline constexpr static string_view canonical = "String"sv;
 

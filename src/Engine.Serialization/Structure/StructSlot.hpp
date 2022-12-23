@@ -32,6 +32,8 @@ namespace ember::engine::serialization {
     public:
         [[nodiscard]] sptr<RecordSlot> insertRecord(cref<record_key_type> key_);
 
+        [[nodiscard]] bool hasRecord(cref<record_key_type> key_);
+
         [[nodiscard]] sptr<RecordSlot> getRecord(cref<record_key_type> key_);
     };
 }

@@ -17,7 +17,7 @@ namespace ember::engine::serialization {
         );
 
     public:
-        virtual ~ScopedSlot() = default;
+        virtual ~ScopedSlot();
 
     protected:
         mutable ScopedSlotState _state;

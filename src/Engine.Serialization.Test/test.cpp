@@ -18,6 +18,7 @@
 #include "Engine.Serialization/Structure/SliceScopedSlot.hpp"
 #include "Engine.Serialization/Structure/StringScopedSlot.hpp"
 #include "Engine.Serialization/Structure/StructScopedSlot.hpp"
+#include "Engine.Serialization/Structure/FloatScopedSlot.hpp"
 
 using namespace ember::engine::serialization;
 using namespace ember;
@@ -1204,6 +1205,128 @@ namespace SerializationModule {
         }
     }
 
+    TEST(StructureArchive, SeqReadWrite) {
+
+        BufferArchive archive {};
+        StructuredArchive arch { &archive };
+
+        struct Obj0 {
+            string name;
+            string surname;
+
+            u16 age;
+            s64 money;
+
+            void serialize(mref<RecordScopedSlot> slot_) const {
+                auto slot = slot_.intoStruct();
+
+                slot.insertSlot<string>("name") << name;
+                slot.insertSlot<string>("surname") << surname;
+                slot.insertSlot<u16>("age") << age;
+                slot.insertSlot<s64>("money") << money;
+            }
+
+            void deserialize(cref<RecordScopedSlot> slot_) {
+                auto slot = slot_.intoStruct();
+
+                slot.getSlot<string>("name") >> name;
+                slot.getSlot<string>("surname") >> surname;
+                slot.getSlot<u16>("age") >> age;
+                slot.getSlot<s64>("money") >> money;
+            }
+
+            bool operator==(cref<Obj0> other_) const {
+                return name == other_.name && surname == other_.surname & age == other_.age && money == other_.money;
+            }
+        };
+
+        struct Obj1 {
+            string name;
+            string path;
+
+            float range;
+            float dmg;
+
+            s64 cost;
+
+            void serialize(mref<RecordScopedSlot> slot_) const {
+                auto slot = slot_.intoStruct();
+
+                slot.insertSlot<string>("name") << name;
+                slot.insertSlot<string>("path") << path;
+                slot.insertSlot<float>("range") << range;
+                slot.insertSlot<float>("dmg") << dmg;
+                slot.insertSlot<s64>("cost") << cost;
+            }
+
+            void deserialize(cref<RecordScopedSlot> slot_) {
+                auto slot = slot_.intoStruct();
+
+                slot.getSlot<string>("name") >> name;
+                slot.getSlot<string>("path") >> path;
+                slot.getSlot<float>("range") >> range;
+                slot.getSlot<float>("dmg") >> dmg;
+                slot.getSlot<s64>("cost") >> cost;
+            }
+
+            bool operator==(cref<Obj1> other_) const {
+                return name == other_.name &&
+                    path == other_.path &&
+                    range == other_.range &&
+                    dmg == other_.dmg &&
+                    cost == other_.cost;
+            }
+        };
+
+        struct Obj2 {
+            void serialize(mref<RecordScopedSlot> slot_) const {}
+
+            void deserialize(cref<RecordScopedSlot> slot_) {}
+
+            bool operator==(cref<Obj2> other_) const {
+                return true;
+            }
+        };
+
+        const Obj0 src0 {};
+        const Obj1 src1 {};
+        const Obj2 src2 {};
+
+        {
+            auto write = arch.insertRootSlot();
+            auto slot = write.intoSeq();
+
+            src0.serialize(slot.addRecordSlot());
+            src1.serialize(slot.addRecordSlot());
+            src2.serialize(slot.addRecordSlot());
+        }
+
+        /**/
+
+        archive.seek(0);
+
+        /**/
+
+        Obj0 dst0 {};
+        Obj1 dst1 {};
+        Obj2 dst2 {};
+
+        {
+            const auto read = arch.getRootSlot();
+            auto slot = read.intoSeq();
+
+            dst0.deserialize(slot.getRecordSlot(0));
+            dst1.deserialize(slot.getRecordSlot(1));
+            dst2.deserialize(slot.getRecordSlot(2));
+        }
+
+        /**/
+
+        EXPECT_EQ(dst0, src0);
+        EXPECT_EQ(dst1, src1);
+        EXPECT_EQ(dst2, src2);
+    }
+
     TEST(StructureArchive, SimpleReadWrite) {
 
         BufferArchive archive {};
@@ -1413,5 +1536,37 @@ namespace SerializationModule {
         /**/
 
         EXPECT_EQ(loadDummy, writeDummy);
+    }
+
+    TEST(StructureArchive, StructUnknownIdentifier) {
+
+        BufferArchive archive {};
+        StructuredArchive arch { &archive };
+
+        {
+            auto write = arch.insertRootSlot();
+            auto slot = write.intoStruct();
+
+            slot.insertRecordSlot("known");
+        }
+
+        /**/
+
+        archive.seek(0);
+
+        /**/
+
+        {
+            const auto read = arch.getRootSlot();
+            auto slot = read.intoStruct();
+
+            EXPECT_FALSE(slot.hasRecordSlot("unknown"));
+            EXPECT_TRUE(slot.hasRecordSlot("known"));
+
+            /*
+            auto test = slot.getSlot<string>("unknown");
+            EXPECT_EQ(test.slot(), nullptr);
+             */
+        }
     }
 }
