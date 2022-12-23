@@ -4,7 +4,7 @@
 
 namespace ember::engine::serialization {
     class StringScopedSlot final :
-        TypeScopedSlot<string> {
+        public TypeScopedSlot<string> {
     public:
         using this_type = StringScopedSlot;
 

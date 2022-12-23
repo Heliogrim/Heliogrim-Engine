@@ -12,6 +12,8 @@ ScopedSlot::ScopedSlot(
     _state(_STD move(state_)),
     _slot(_STD move(slot_)) {}
 
+ScopedSlot::~ScopedSlot() = default;
+
 cref<ScopedSlotState> ScopedSlot::getScopedState() const noexcept {
     return _state;
 }

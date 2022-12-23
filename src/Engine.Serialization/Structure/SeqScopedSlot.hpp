@@ -13,5 +13,10 @@ namespace ember::engine::serialization {
         SeqScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_);
 
         ~SeqScopedSlot() override;
+
+    public:
+        [[nodiscard]] RecordScopedSlot addRecordSlot();
+
+        [[nodiscard]] RecordScopedSlot getRecordSlot(const u64 index_) const;
     };
 }

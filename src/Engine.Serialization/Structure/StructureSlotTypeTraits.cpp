@@ -18,6 +18,8 @@ string_view StructureSlotTypeTrait::canonical(StructureSlotType type_) noexcept 
         RESOLVE_R(StructureSlotType::eS16)::canonical;
         RESOLVE_R(StructureSlotType::eS32)::canonical;
         RESOLVE_R(StructureSlotType::eS64)::canonical;
+        RESOLVE_R(StructureSlotType::eFloat)::canonical;
+        RESOLVE_R(StructureSlotType::eDouble)::canonical;
         RESOLVE_R(StructureSlotType::eString)::canonical;
         RESOLVE_R(StructureSlotType::eSlice)::canonical;
         RESOLVE_R(StructureSlotType::eMap)::canonical;
@@ -41,6 +43,8 @@ s64 StructureSlotTypeTrait::const_size(StructureSlotType type_) noexcept {
         RESOLVE_R(StructureSlotType::eS16)::const_size;
         RESOLVE_R(StructureSlotType::eS32)::const_size;
         RESOLVE_R(StructureSlotType::eS64)::const_size;
+        RESOLVE_R(StructureSlotType::eFloat)::const_size;
+        RESOLVE_R(StructureSlotType::eDouble)::const_size;
         RESOLVE_R(StructureSlotType::eString)::const_size;
         RESOLVE_R(StructureSlotType::eSlice)::const_size;
         RESOLVE_R(StructureSlotType::eMap)::const_size;

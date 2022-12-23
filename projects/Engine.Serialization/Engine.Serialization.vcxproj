@@ -40,6 +40,8 @@
     <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineValue.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Layout\LayoutDefineValueType.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Layout\__fwd.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\FloatScopedSlot.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Structure\FloatSlot.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\IntegralScopedSlot.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\IntegralSlot.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\MapEntryScopedSlot.hpp" />

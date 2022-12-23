@@ -56,6 +56,8 @@ s64 StructSlot::findRecord(cref<record_key_type> key_) const {
     /**/
 
     const auto end = _state.offset + _state.header.size;
+    string tmp {};
+
     while (offset < end) {
 
         StructureSlotState identifierState {
@@ -70,7 +72,6 @@ s64 StructSlot::findRecord(cref<record_key_type> key_) const {
         identifier.readHeader();
         identifier.enter();
 
-        string tmp {};
         identifier >> tmp;
 
         identifier.leave();
@@ -109,7 +110,7 @@ s64 StructSlot::findRecord(cref<record_key_type> key_) const {
 
     /**/
 
-    return offset;
+    return tmp == key_ ? offset : -1i64;
 }
 
 sptr<RecordSlot> StructSlot::insertRecord(cref<record_key_type> key_) {
@@ -159,9 +160,19 @@ sptr<RecordSlot> StructSlot::insertRecord(cref<record_key_type> key_) {
     return make_sptr<RecordSlot>(_STD move(slotState));
 }
 
+bool StructSlot::hasRecord(cref<record_key_type> key_) {
+    return findRecord(key_) != -1;
+}
+
 sptr<RecordSlot> StructSlot::getRecord(cref<record_key_type> key_) {
 
     const s64 offset = findRecord(key_);
+
+    /**/
+
+    if (offset == -1) {
+        return nullptr;
+    }
 
     /**/
 
