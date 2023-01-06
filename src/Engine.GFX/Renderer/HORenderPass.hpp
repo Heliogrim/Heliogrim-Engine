@@ -24,7 +24,6 @@ namespace ember::engine::scene {
 }
 
 namespace ember::engine::gfx::render {
-
     class HORenderPass {
     public:
         using this_type = HORenderPass;
@@ -125,5 +124,5 @@ namespace ember::engine::gfx::render {
         [[nodiscard]] bool await() const noexcept;
     };
 
-    static_assert(scheduler::fiber::IsAwaitable<HORenderPass>);
+    static_assert(::ember::engine::scheduler::fiber::IsAwaitable<HORenderPass>);
 }

@@ -131,6 +131,7 @@ void ember_main_entry() {
             suspended.test_and_set(_STD memory_order::release);
         });
 
+    #if FALSE
     /**
      * Make a repetitive task to emit TickEvent
      */
@@ -174,6 +175,7 @@ void ember_main_entry() {
     task.dstStage() = TaskStages::eTopStrong;
 
     execute(_STD move(task));
+    #endif
 
     //
     execute(buildTestScene);

@@ -18,8 +18,8 @@ void Physics::setup() {
     SCOPED_STOPWATCH
 }
 
-void Physics::schedule() { }
+void Physics::start() { }
 
-void Physics::desync() {}
+void Physics::stop() {}
 
 void Physics::destroy() {}

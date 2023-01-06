@@ -29,9 +29,9 @@ namespace ember::engine {
     public:
         void setup() override;
 
-        void schedule() override;
+        void start() override;
 
-        void desync() override;
+        void stop() override;
 
         void destroy() override;
 

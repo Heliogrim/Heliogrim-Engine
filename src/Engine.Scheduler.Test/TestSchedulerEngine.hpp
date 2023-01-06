@@ -1,0 +1,108 @@
+#pragma once
+
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Core/EngineState.hpp>
+#include <Engine.Scheduler/Scheduler.hpp>
+#include <Engine.Scheduler/CompScheduler.hpp>
+#include <Engine.Event/GlobalEventEmitter.hpp>
+
+namespace ember::test {
+    class TestSchedulerEngine final :
+        public engine::Engine {
+    public:
+        TestSchedulerEngine() = default;
+
+        ~TestSchedulerEngine() override = default;
+
+    private:
+        uptr<engine::Scheduler> _scheduler;
+
+    public:
+        bool preInit() override {
+            _scheduler = make_uptr<engine::CompScheduler>();
+            return setEngineState(engine::core::EngineState::ePreInitialized);
+        }
+
+        bool init() override {
+            _scheduler->setup(engine::Scheduler::auto_worker_count);
+            return setEngineState(engine::core::EngineState::eInitialized);
+        }
+
+        bool postInit() override {
+            return setEngineState(engine::core::EngineState::ePostInitialized);
+        }
+
+        bool start() override {
+            return setEngineState(engine::core::EngineState::eStarted);
+        }
+
+        bool stop() override {
+            return setEngineState(engine::core::EngineState::eStopped);
+        }
+
+        bool shutdown() override {
+            return setEngineState(engine::core::EngineState::eShutdown);
+        }
+
+        bool exit() override {
+            _scheduler.reset();
+            return setEngineState(engine::core::EngineState::eExited);
+        }
+
+    public:
+        [[nodiscard]] non_owning_rptr<engine::Assets> getAssets() const noexcept override {
+            return nullptr;
+        }
+
+        [[nodiscard]] non_owning_rptr<engine::Audio> getAudio() const noexcept override {
+            return nullptr;
+        }
+
+        [[nodiscard]] non_owning_rptr<engine::Graphics> getGraphics() const noexcept override {
+            return nullptr;
+        }
+
+        [[nodiscard]] non_owning_rptr<engine::Input> getInput() const noexcept override {
+            return nullptr;
+        }
+
+        [[nodiscard]] non_owning_rptr<engine::Network> getNetwork() const noexcept override {
+            return nullptr;
+        }
+
+        [[nodiscard]] non_owning_rptr<engine::Physics> getPhysics() const noexcept override {
+            return nullptr;
+        }
+
+        [[nodiscard]] non_owning_rptr<engine::Platform> getPlatform() const noexcept override {
+            return nullptr;
+        }
+
+        [[nodiscard]] non_owning_rptr<engine::ResourceManager> getResources() const noexcept override {
+            return nullptr;
+        }
+
+        [[nodiscard]] non_owning_rptr<engine::Scheduler> getScheduler() const noexcept override {
+            return _scheduler.get();
+        }
+
+    private:
+        mutable GlobalEventEmitter _emitter;
+
+    public:
+        [[nodiscard]] ref<GlobalEventEmitter> getEmitter() const noexcept override {
+            return _emitter;
+        }
+
+    private:
+        Vector<non_owning_rptr<engine::core::WorldContext>> _worldContexts;
+
+        [[nodiscard]] Vector<non_owning_rptr<engine::core::WorldContext>> getWorldContexts() const noexcept override {
+            return _worldContexts;
+        }
+
+        void addWorld(cref<sptr<engine::core::World>> world_) override {}
+
+        void removeWorld(cref<sptr<engine::core::World>> world_) override {}
+    };
+}

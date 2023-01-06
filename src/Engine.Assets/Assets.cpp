@@ -23,9 +23,9 @@ void Assets::setup() {
     _factory = make_uptr<AssetFactory>(_database.get());
 }
 
-void Assets::schedule() {}
+void Assets::start() {}
 
-void Assets::desync() {}
+void Assets::stop() {}
 
 void Assets::destroy() {
     _factory.reset();

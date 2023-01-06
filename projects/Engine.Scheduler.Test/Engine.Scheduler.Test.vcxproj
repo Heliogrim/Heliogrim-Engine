@@ -41,6 +41,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
+    <ProjectReference Include="..\Engine.Core\Engine.Core.vcxproj">
+      <Project>{c4a9ab6d-512c-472a-ae8d-5242e7ba4ec3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Event\Engine.Event.vcxproj">
+      <Project>{4551b6e7-4a5e-4576-87a2-dc5fa7959a9c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Logging\Engine.Logging.vcxproj">
+      <Project>{9d1b3213-b18e-4551-9a75-9ecd3f6196ee}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
       <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
     </ProjectReference>
@@ -54,6 +63,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Scheduler.Test\pch.h" />
+    <ClInclude Include="..\..\src\Engine.Scheduler.Test\TestCompScheduler.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scheduler.Test\TestSchedulerEngine.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

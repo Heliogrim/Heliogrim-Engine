@@ -4,16 +4,15 @@
 #include "../Task/Task.hpp"
 
 namespace ember::engine::scheduler {
-
     /**
      * Forward Declaration
      */
     class SharedBufferPool;
 
     class PooledBuffer :
-        protected concurrent::RingBuffer<task::__TaskDelegate> {
+        protected concurrent::RingBuffer<non_owning_rptr<const task::TaskDelegate>> {
     public:
-        using underlying_type = concurrent::RingBuffer<task::__TaskDelegate>;
+        using underlying_type = concurrent::RingBuffer<non_owning_rptr<const task::TaskDelegate>>;
 
     public:
         PooledBuffer(_In_ const ptr<SharedBufferPool> pool_) noexcept;
@@ -39,9 +38,9 @@ namespace ember::engine::scheduler {
         _STD atomic_flag _reader;
 
     public:
-        [[nodiscard]] bool try_pop(_Out_ ref<task::__TaskDelegate> value_);
+        [[nodiscard]] bool try_pop(_Out_ ref<non_owning_rptr<const task::TaskDelegate>> value_);
 
-        [[nodiscard]] bool try_push(_Inout_ mref<task::__TaskDelegate> value_);
+        [[nodiscard]] bool try_push(_In_ mref<non_owning_rptr<const task::TaskDelegate>> value_);
 
         [[nodiscard]] bool empty() const noexcept;
 

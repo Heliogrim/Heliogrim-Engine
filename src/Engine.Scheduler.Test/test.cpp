@@ -1,9 +1,13 @@
 #include "pch.h"
 
+#include <Engine.Common/Make.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
-#include <Engine.Scheduler/Queue/ProcessingQueue.hpp>
 #include <Engine.Scheduler/Queue/SharedBufferPool.hpp>
+#include <Engine.Scheduler/Helper/Wait.hpp>
+#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
+#include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
+#include <Engine.Scheduler/CompScheduler.hpp>
 
 using namespace ember::engine::scheduler;
 using namespace ember;
@@ -13,7 +17,6 @@ TEST(__DummyTest__, Exists) {
 }
 
 namespace SchedulerModule {
-
     TEST(SharedBufferPool, Default) {
         //
         auto pool = SharedBufferPool();
@@ -41,14 +44,21 @@ namespace SchedulerModule {
 
     void structuredRuntimeTest(_STD function<void(const ptr<engine::Scheduler>)> callback_) {
         //
-        auto scheduler { engine::Scheduler::make() };
+        auto engine = make_uptr<test::TestSchedulerEngine>();
+        engine->preInit();
+
+        auto* const scheduler = engine->getScheduler();
 
         //
         EXPECT_EQ(scheduler->getWorkerCount(), 0ui32);
 
         //
-        scheduler->setup(0);
+        engine->init();
         EXPECT_NE(scheduler->getWorkerCount(), 0ui32);
+
+        //
+        engine->postInit();
+        engine->start();
 
         //
         if (callback_) {
@@ -56,7 +66,12 @@ namespace SchedulerModule {
         }
 
         //
-        delete scheduler;
+        engine->stop();
+        engine->shutdown();
+        engine->exit();
+
+        //
+        engine.reset();
     }
 
     TEST(RuntimeTest, Default) {
@@ -268,7 +283,7 @@ namespace SchedulerModule {
             auto carrier {
                 task::make_task(
                     [&task, &signal, &scheduler_]() {
-                        scheduler_->exec(task);
+                        scheduler_->exec(_STD move(task));
 
                         thread::self::sleepFor(5);
 
@@ -283,7 +298,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(carrier);
+            scheduler_->exec(_STD move(carrier));
 
             /**
              *
@@ -336,8 +351,8 @@ namespace SchedulerModule {
             auto carrier {
                 task::make_task(
                     [&task0, &t0, &task1, &t1, &scheduler_]() {
-                        scheduler_->exec(task0);
-                        scheduler_->exec(task1);
+                        scheduler_->exec(_STD move(task0));
+                        scheduler_->exec(_STD move(task1));
 
                         thread::self::sleepFor(5);
 
@@ -353,7 +368,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(carrier);
+            scheduler_->exec(_STD move(carrier));
 
             /**
              *
@@ -405,8 +420,8 @@ namespace SchedulerModule {
             auto carrier {
                 task::make_task(
                     [&task0, &task1, &scheduler_]() {
-                        scheduler_->exec(task0);
-                        scheduler_->exec(task1);
+                        scheduler_->exec(_STD move(task0));
+                        scheduler_->exec(_STD move(task1));
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::ePhysicsSimulateStrong,
@@ -417,7 +432,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(carrier);
+            scheduler_->exec(_STD move(carrier));
 
             /**
              *
@@ -469,8 +484,8 @@ namespace SchedulerModule {
             auto carrier {
                 task::make_task(
                     [&task0, &task1, &scheduler_]() {
-                        scheduler_->exec(task0);
-                        scheduler_->exec(task1);
+                        scheduler_->exec(_STD move(task0));
+                        scheduler_->exec(_STD move(task1));
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eTopStrong,
@@ -481,7 +496,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(carrier);
+            scheduler_->exec(_STD move(carrier));
 
             /**
              *
@@ -533,8 +548,8 @@ namespace SchedulerModule {
             auto carrier {
                 task::make_task(
                     [&task0, &task1, &scheduler_]() {
-                        scheduler_->exec(task0);
-                        scheduler_->exec(task1);
+                        scheduler_->exec(_STD move(task0));
+                        scheduler_->exec(_STD move(task1));
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eTopStrong,
@@ -545,7 +560,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(carrier);
+            scheduler_->exec(_STD move(carrier));
 
             /**
              *
@@ -602,8 +617,8 @@ namespace SchedulerModule {
             auto carrier {
                 task::make_task(
                     [&task0, &task1, &scheduler_]() {
-                        scheduler_->exec(task0);
-                        scheduler_->exec(task1);
+                        scheduler_->exec(_STD move(task0));
+                        scheduler_->exec(_STD move(task1));
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eTopStrong,
@@ -614,7 +629,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(carrier);
+            scheduler_->exec(_STD move(carrier));
 
             /**
              *
@@ -629,6 +644,451 @@ namespace SchedulerModule {
              *
              */
             EXPECT_TRUE(t0.load() < t1.load());
+        });
+    }
+
+    TEST(RuntimeTest, PrioritySorting) {
+
+        _STD chrono::high_resolution_clock::time_point minorTimestamp {};
+        _STD chrono::high_resolution_clock::time_point majorTimestamp {};
+
+        structuredRuntimeTest([&minorTimestamp, &majorTimestamp](const ptr<engine::Scheduler> scheduler_) {
+
+            _STD atomic_uint_fast8_t done { 0 };
+
+            auto minorTask = engine::scheduler::task::make_task([&minorTimestamp, &done]() {
+                minorTimestamp = _STD chrono::high_resolution_clock::now();
+                ++done;
+                done.notify_one();
+            }, task::TaskMask::eLower);
+
+            auto majorTask = engine::scheduler::task::make_task([&majorTimestamp, &done]() {
+                majorTimestamp = _STD chrono::high_resolution_clock::now();
+                ++done;
+                done.notify_one();
+            }, task::TaskMask::eHigher);
+
+            /**/
+
+            auto dispatchTask = engine::scheduler::task::make_task([&minorTask, &majorTask, &scheduler_, &done]() {
+                scheduler_->exec(_STD move(minorTask));
+                scheduler_->exec(_STD move(majorTask));
+                ++done;
+                done.notify_one();
+            });
+
+            scheduler_->exec(_STD move(dispatchTask));
+
+            /**
+             *
+             */
+            engine::scheduler::waitUntilAtomic(done, 3ui8);
+        });
+
+        EXPECT_LT(majorTimestamp, minorTimestamp);
+    }
+
+    TEST(RuntimeTest, PriorityShifting) {
+
+        _STD chrono::high_resolution_clock::time_point minorTimestamp {};
+        _STD chrono::high_resolution_clock::time_point majorTimestamp {};
+
+        structuredRuntimeTest([&minorTimestamp, &majorTimestamp](const ptr<engine::Scheduler> scheduler_) {
+
+            _STD atomic_uint_fast8_t done { 0 };
+
+            auto minorTask = engine::scheduler::task::make_task([&minorTimestamp, &done]() {
+                minorTimestamp = _STD chrono::high_resolution_clock::now();
+                ++done;
+                done.notify_one();
+            }, task::TaskMask::eLower);
+
+            auto majorTask = engine::scheduler::task::make_task([&majorTimestamp, &done]() {
+                majorTimestamp = _STD chrono::high_resolution_clock::now();
+                ++done;
+                done.notify_one();
+            }, task::TaskMask::eHigher);
+
+            auto barrierTask = engine::scheduler::task::make_repetitive_task([&done]() {
+                return done.load() != 3ui8;
+            }, task::TaskMask::eAll, ScheduleStageBarriers::eTopStrong, ScheduleStageBarriers::eBottomStrong);
+
+            /**/
+
+            auto dispatchTask = engine::scheduler::task::make_task(
+                [&minorTask, &majorTask, &barrierTask, &scheduler_, &done]() {
+                    scheduler_->exec(_STD move(barrierTask));
+                    scheduler_->exec(_STD move(minorTask));
+                    scheduler_->exec(_STD move(majorTask));
+                    ++done;
+                    done.notify_one();
+                });
+
+            scheduler_->exec(_STD move(dispatchTask));
+
+            /**
+             *
+             */
+            engine::scheduler::waitUntilAtomic(done, 3ui8);
+        });
+
+        EXPECT_LT(majorTimestamp, minorTimestamp);
+    }
+
+    TEST(CompositePipeline, EmptyCreation) {
+        structuredRuntimeTest([](auto* const scheduler_) {
+
+            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+
+            CompositePipeline composite { scheduler->testGetSchedule() };
+            composite.setup();
+            composite.destroy();
+        });
+    }
+
+    TEST(CompositePipeline, StandaloneStage) {
+        structuredRuntimeTest([](auto* const scheduler_) {
+
+            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+
+            CompositePipeline composite { scheduler->testGetSchedule() };
+
+            composite.registerStage("::test::stage::standalone");
+
+            composite.setup();
+            composite.destroy();
+        });
+    }
+
+    TEST(CompositePipeline, PipelineStage) {
+        structuredRuntimeTest([](auto* const scheduler_) {
+
+            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+
+            CompositePipeline composite { scheduler->testGetSchedule() };
+
+            /**/
+
+            class StagePipelineTestObj0 final :
+                public StagePipeline {
+            public:
+                StagePipelineTestObj0() :
+                    StagePipeline(AssocKey<string>::from("::test::pipeline")) {}
+
+                ~StagePipelineTestObj0() override = default;
+
+                void mount(const non_owning_rptr<StageRegister> register_) override {
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline"));
+                }
+
+                void declareDependencies(const non_owning_rptr<const StageRegister> register_,
+                    ref<CompactSet<non_owning_rptr<StageDependency>>> collection_) override { }
+
+                void dismount(const non_owning_rptr<StageRegister> register_) override {
+                    register_->removeStage("::test::stage::pipeline");
+                }
+
+                [[nodiscard]] bool isSkippable() const noexcept override {
+                    return false;
+                }
+            };
+
+            composite.addPipeline(uptr<StagePipelineTestObj0>(new StagePipelineTestObj0()));
+
+            composite.setup();
+            composite.destroy();
+        });
+    }
+
+    TEST(CompositePipeline, PipelineStages) {
+        structuredRuntimeTest([](auto* const scheduler_) {
+
+            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+
+            CompositePipeline composite { scheduler->testGetSchedule() };
+
+            /**/
+
+            class StagePipelineTestObj0 final :
+                public StagePipeline {
+            public:
+                StagePipelineTestObj0() :
+                    StagePipeline(AssocKey<string>::from("::test::pipeline")) {}
+
+                ~StagePipelineTestObj0() override = default;
+
+                void mount(const non_owning_rptr<StageRegister> register_) override {
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline::begin"));
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline::end"));
+                }
+
+                void declareDependencies(const non_owning_rptr<const StageRegister> register_,
+                    ref<CompactSet<non_owning_rptr<StageDependency>>> collection_) override { }
+
+                void dismount(const non_owning_rptr<StageRegister> register_) override {
+                    register_->removeStage("::test::stage::pipeline::begin");
+                    register_->removeStage("::test::stage::pipeline::end");
+                }
+
+                [[nodiscard]] bool isSkippable() const noexcept override {
+                    return false;
+                }
+            };
+
+            composite.addPipeline(uptr<StagePipelineTestObj0>(new StagePipelineTestObj0()));
+
+            composite.setup();
+            composite.destroy();
+        });
+    }
+
+    TEST(CompositePipeline, PipelineInternalDependendStages) {
+        structuredRuntimeTest([](auto* const scheduler_) {
+
+            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+
+            CompositePipeline composite { scheduler->testGetSchedule() };
+
+            /**/
+
+            class StagePipelineTestObj1 final :
+                public StagePipeline {
+            public:
+                StagePipelineTestObj1() :
+                    StagePipeline(AssocKey<string>::from("::test::pipeline")) {}
+
+                ~StagePipelineTestObj1() override = default;
+
+                void mount(const non_owning_rptr<StageRegister> register_) override {
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline::begin"));
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline::end"));
+                }
+
+                uptr<StageDependency> internalDep;
+
+                void declareDependencies(
+                    const non_owning_rptr<const StageRegister> register_,
+                    ref<CompactSet<non_owning_rptr<StageDependency>>> collection_
+                ) override {
+
+                    if (not internalDep) {
+                        internalDep = make_uptr<StageDependency>(StageDependency {
+                            { _orderedStages.front() },
+                            this,
+                            _orderedStages.back()
+                        });
+                    }
+
+                    collection_.insert(internalDep.get());
+                }
+
+                void dismount(const non_owning_rptr<StageRegister> register_) override {
+                    register_->removeStage("::test::stage::pipeline::begin");
+                    register_->removeStage("::test::stage::pipeline::end");
+                }
+
+                [[nodiscard]] bool isSkippable() const noexcept override {
+                    return false;
+                }
+            };
+
+            composite.addPipeline(make_uptr<StagePipelineTestObj1>());
+
+            composite.setup();
+            composite.destroy();
+        });
+    }
+
+    TEST(CompositePipeline, MultiPipelineInternalStages) {
+        structuredRuntimeTest([](auto* const scheduler_) {
+
+            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+
+            CompositePipeline composite { scheduler->testGetSchedule() };
+
+            /**/
+
+            class StagePipelineTestObj0 final :
+                public StagePipeline {
+            public:
+                StagePipelineTestObj0() :
+                    StagePipeline(AssocKey<string>::from("::test::pipeline")) {}
+
+                ~StagePipelineTestObj0() override = default;
+
+                void mount(const non_owning_rptr<StageRegister> register_) override {
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline::begin"));
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline::end"));
+                }
+
+                void declareDependencies(const non_owning_rptr<const StageRegister> register_,
+                    ref<CompactSet<non_owning_rptr<StageDependency>>> collection_) override { }
+
+                void dismount(const non_owning_rptr<StageRegister> register_) override {
+                    register_->removeStage("::test::stage::pipeline::begin");
+                    register_->removeStage("::test::stage::pipeline::end");
+                }
+
+                [[nodiscard]] bool isSkippable() const noexcept override {
+                    return false;
+                }
+            };
+
+            class StagePipelineTestObj2 final :
+                public StagePipeline {
+            public:
+                StagePipelineTestObj2() :
+                    StagePipeline(AssocKey<string>::from("::test::pipeline$2")) {}
+
+                ~StagePipelineTestObj2() override = default;
+
+                void mount(const non_owning_rptr<StageRegister> register_) override {
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline$2::begin"));
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline$2::end"));
+                }
+
+                void declareDependencies(const non_owning_rptr<const StageRegister> register_,
+                    ref<CompactSet<non_owning_rptr<StageDependency>>> collection_) override { }
+
+                void dismount(const non_owning_rptr<StageRegister> register_) override {
+                    register_->removeStage("::test::stage::pipeline$2::begin");
+                    register_->removeStage("::test::stage::pipeline$2::end");
+                }
+
+                [[nodiscard]] bool isSkippable() const noexcept override {
+                    return false;
+                }
+            };
+
+            composite.addPipeline(make_uptr<StagePipelineTestObj0>());
+            composite.addPipeline(make_uptr<StagePipelineTestObj2>());
+
+            composite.setup();
+            composite.destroy();
+        });
+    }
+
+    TEST(CompositePipeline, MultiPipelineInterDependentStages) {
+        structuredRuntimeTest([](auto* const scheduler_) {
+
+            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+
+            CompositePipeline composite { scheduler->testGetSchedule() };
+
+            /**/
+
+            class StagePipelineTestObj3 final :
+                public StagePipeline {
+            public:
+                StagePipelineTestObj3() :
+                    StagePipeline(AssocKey<string>::from("::test::pipeline$3")) {}
+
+                ~StagePipelineTestObj3() override = default;
+
+                void mount(const non_owning_rptr<StageRegister> register_) override {
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline$3::begin"));
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline$3::end"));
+                }
+
+                void declareDependencies(const non_owning_rptr<const StageRegister> register_,
+                    ref<CompactSet<non_owning_rptr<StageDependency>>> collection_) override { }
+
+                void dismount(const non_owning_rptr<StageRegister> register_) override {
+                    register_->removeStage("::test::stage::pipeline$3::begin");
+                    register_->removeStage("::test::stage::pipeline$3::end");
+                }
+
+                [[nodiscard]] bool isSkippable() const noexcept override {
+                    return false;
+                }
+            };
+
+            class StagePipelineTestObj4 final :
+                public StagePipeline {
+            public:
+                StagePipelineTestObj4() :
+                    StagePipeline(AssocKey<string>::from("::test::pipeline$4")) {}
+
+                ~StagePipelineTestObj4() override = default;
+
+                void mount(const non_owning_rptr<StageRegister> register_) override {
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline$4::begin"));
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline$4::end"));
+                }
+
+                uptr<StageDependency> interDep;
+
+                void declareDependencies(const non_owning_rptr<const StageRegister> register_,
+                    ref<CompactSet<non_owning_rptr<StageDependency>>> collection_) override {
+
+                    if (not interDep) {
+                        auto* const otherBegin = register_->getStage("::test::stage::pipeline$5::begin");
+                        interDep = make_uptr<StageDependency>(StageDependency {
+                            { otherBegin },
+                            this,
+                            _orderedStages.back()
+                        });
+                    }
+
+                    collection_.insert(interDep.get());
+                }
+
+                void dismount(const non_owning_rptr<StageRegister> register_) override {
+                    register_->removeStage("::test::stage::pipeline$4::begin");
+                    register_->removeStage("::test::stage::pipeline$4::end");
+                }
+
+                [[nodiscard]] bool isSkippable() const noexcept override {
+                    return false;
+                }
+            };
+
+            class StagePipelineTestObj5 final :
+                public StagePipeline {
+            public:
+                StagePipelineTestObj5() :
+                    StagePipeline(AssocKey<string>::from("::test::pipeline$5")) {}
+
+                ~StagePipelineTestObj5() override = default;
+
+                void mount(const non_owning_rptr<StageRegister> register_) override {
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline$5::begin"));
+                    _orderedStages.push_back(register_->registerStage("::test::stage::pipeline$5::end"));
+                }
+
+                uptr<StageDependency> interDep;
+
+                void declareDependencies(const non_owning_rptr<const StageRegister> register_,
+                    ref<CompactSet<non_owning_rptr<StageDependency>>> collection_) override {
+
+                    if (not interDep) {
+                        auto* const otherEnd = register_->getStage("::test::stage::pipeline$3::end");
+                        interDep = make_uptr<StageDependency>(StageDependency {
+                            { otherEnd },
+                            this,
+                            _orderedStages.front()
+                        });
+                    }
+
+                    collection_.insert(interDep.get());
+                }
+
+                void dismount(const non_owning_rptr<StageRegister> register_) override {
+                    register_->removeStage("::test::stage::pipeline$5::begin");
+                    register_->removeStage("::test::stage::pipeline$5::end");
+                }
+
+                [[nodiscard]] bool isSkippable() const noexcept override {
+                    return false;
+                }
+            };
+
+            composite.addPipeline(make_uptr<StagePipelineTestObj4>());
+            composite.addPipeline(make_uptr<StagePipelineTestObj5>());
+            composite.addPipeline(make_uptr<StagePipelineTestObj3>());
+
+            composite.setup();
+            composite.destroy();
         });
     }
 }

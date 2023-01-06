@@ -29,8 +29,10 @@ int main() {
     /**
      * Pre-Configure Engine Startup
      */
-    EmberStatic::useEngine<engine::GameEngine>();
-    EmberStatic::useSessionGetter<engine::GameEngine>(&engine::GameEngine::getGameSession);
+    if (not EmberStatic::hasInitializer()) {
+        EmberStatic::useEngine<engine::GameEngine>();
+        EmberStatic::useSessionGetter<engine::GameEngine>(&engine::GameEngine::getGameSession);
+    }
 
     /**
      * Instantiate Engine

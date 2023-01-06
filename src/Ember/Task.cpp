@@ -4,15 +4,11 @@ using namespace ember;
 
 TaskBase::TaskBase(cref<TaskType> type_) noexcept :
     _type(type_),
-    _mask(TaskMask::eNormal),
-    _srcStage(TaskStages::eAll),
-    _dstStage(TaskStages::eUndefined) {}
+    _mask(TaskMask::eNormal) {}
 
 TaskBase::TaskBase(mref<TaskBase> other_) noexcept :
     _type(other_._type),
-    _mask(other_._mask),
-    _srcStage(other_._srcStage),
-    _dstStage(other_._dstStage) {}
+    _mask(other_._mask) {}
 
 TaskBase::~TaskBase() noexcept = default;
 
@@ -26,22 +22,6 @@ TaskMask TaskBase::mask() const noexcept {
 
 ref<TaskMask> TaskBase::mask() noexcept {
     return _mask;
-}
-
-TaskStage TaskBase::srcStage() const noexcept {
-    return _srcStage;
-}
-
-ref<TaskStage> TaskBase::srcStage() noexcept {
-    return _srcStage;
-}
-
-TaskStage TaskBase::dstStage() const noexcept {
-    return _dstStage;
-}
-
-ref<TaskStage> TaskBase::dstStage() noexcept {
-    return _dstStage;
 }
 
 Task::Task() noexcept :

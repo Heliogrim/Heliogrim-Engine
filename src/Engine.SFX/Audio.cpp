@@ -26,9 +26,9 @@ void Audio::setup() {
     registerImporter();
 }
 
-void Audio::schedule() {}
+void Audio::start() {}
 
-void Audio::desync() {}
+void Audio::stop() {}
 
 void Audio::destroy() {
     unregisterImporter();

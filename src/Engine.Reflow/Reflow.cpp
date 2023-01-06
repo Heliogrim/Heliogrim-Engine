@@ -1,11 +1,16 @@
 #include "Reflow.hpp"
-
-#include <Engine.Core/Module/DependencyKey.hpp>
-#include <Engine.Core/Module/CoreDependencies.hpp>
-#include <Engine.Core/Module/SubModuleDependency.hpp>
-
-#include "Window/WindowManager.hpp"
 #include "Module/Reflow.hpp"
+
+#include <Engine.Common/Make.hpp>
+#include <Engine.Core/Module/CoreDependencies.hpp>
+#include <Engine.Core/Module/DependencyKey.hpp>
+#include <Engine.Core/Module/SubModuleDependency.hpp>
+#include <Engine.Reflow.Schedule/ReflowPipeline.hpp>
+#include <Engine.Scheduler/Scheduler.hpp>
+#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
+
+#include "Engine.Core/Engine.hpp"
+#include "Window/WindowManager.hpp"
 
 using namespace ember::engine::core;
 using namespace ember::engine;
@@ -31,7 +36,14 @@ cref<CompactSet<core::SubModuleDependency>> Reflow::dependencies() const noexcep
     return _dependencies;
 }
 
-void Reflow::setup() {}
+void Reflow::setup() {
+
+    /**
+     * Scheduling Pipelines
+     */
+    auto reflowPipeline = make_uptr<reflow::schedule::ReflowPipeline>();
+    _engine->getScheduler()->getCompositePipeline()->addPipeline(_STD move(reflowPipeline));
+}
 
 void Reflow::start() {
     reflow::WindowManager::make();

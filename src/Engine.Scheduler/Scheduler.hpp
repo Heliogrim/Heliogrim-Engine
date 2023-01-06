@@ -1,33 +1,39 @@
 #pragma once
-#include "Queue/SchedulePipeline.hpp"
-#include "Task/SignaledQueue.hpp"
 #include "Task/Task.hpp"
-#include "Worker/Worker.hpp"
+
+namespace ember::engine::scheduler {
+    class CompositePipeline;
+    class Stage;
+}
 
 namespace ember::engine {
-    class Scheduler final {
+    class __declspec(novtable) Scheduler {
     public:
-        using aligned_worker = ALIGNED(scheduler::worker::Worker, CACHE_LINE_SIZE);
-        using fiber_pool_type = scheduler::fiber::FiberPool;
+        using task_type = ::ember::engine::scheduler::task::TaskDelegate;
+        using task_handle_type = non_owning_rptr<const task_type>;
 
         constexpr static inline u32 auto_worker_count { 0ui32 };
 
+    protected:
+        Scheduler() noexcept = default;
+
+    public:
+        virtual ~Scheduler() = default;
+
     public:
         /**
-         * Default constructor
-         *
-         * @author Julius
-         * @date 14.11.2020
-         */
-        Scheduler() noexcept;
-
-        /**
-         * Destructor
+         * Setups the given workers
          *
          * @author Julius
          * @date 13.11.2020
+         *
+         * @param  workers_ The workers.
          */
-        ~Scheduler();
+        virtual void setup(u32 workers_) = 0;
+
+        virtual void finalize() = 0;
+
+        virtual void destroy() = 0;
 
     public:
         /**
@@ -39,7 +45,7 @@ namespace ember::engine {
          * @param [in] task_ The task.
          * @param 	   ticks_ The ticks.
          */
-        void delay(IN scheduler::task::__TaskDelegate task_, const u32 ticks_);
+        virtual void delay(_In_ mref<task_handle_type> task_, const u32 ticks_) = 0;
 
         /**
          * Executes the given task
@@ -49,8 +55,25 @@ namespace ember::engine {
          *
          * @param [in] task_ The task.
          */
-        void exec(_Inout_ scheduler::task::__TaskDelegate task_);
+        virtual void exec(_In_ mref<task_handle_type> task_) = 0;
 
+    public:
+        [[nodiscard]] virtual const non_owning_rptr<scheduler::CompositePipeline> getCompositePipeline() const noexcept
+        = 0;
+
+    public:
+        virtual bool execOnStage(
+            _In_ mref<task_handle_type> task_,
+            const non_owning_rptr<const scheduler::Stage> stage_
+        ) = 0;
+
+        virtual bool execOnStages(
+            _In_ mref<task_handle_type> task_,
+            const non_owning_rptr<const scheduler::Stage> begin_,
+            const non_owning_rptr<const scheduler::Stage> end_
+        ) = 0;
+
+    public:
         /**
          * Gets worker count
          *
@@ -59,19 +82,7 @@ namespace ember::engine {
          *
          * @returns The worker count.
          */
-        [[nodiscard]] size_t getWorkerCount() const;
-
-        /**
-         * Setups the given workers
-         *
-         * @author Julius
-         * @date 13.11.2020
-         *
-         * @param  workers_ The workers.
-         */
-        void setup(u32 workers_);
-
-        void destroy();
+        [[nodiscard]] virtual size_t getWorkerCount() const = 0;
 
         /**
          * Waits this 
@@ -79,16 +90,6 @@ namespace ember::engine {
          * @author Julius
          * @date 13.11.2020
          */
-        void wait() const;
-
-    private:
-        scheduler::SchedulePipeline _pipeline;
-
-        u32 _workerCount;
-        aligned_worker* _workers;
-
-    private:
-        /** The fiber pool */
-        fiber_pool_type _fiberPool;
+        virtual void wait() const = 0;
     };
 }

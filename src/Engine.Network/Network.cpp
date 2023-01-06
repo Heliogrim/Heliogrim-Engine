@@ -18,8 +18,8 @@ void Network::setup() {
     SCOPED_STOPWATCH
 }
 
-void Network::schedule() {}
+void Network::start() {}
 
-void Network::desync() {}
+void Network::stop() {}
 
 void Network::destroy() {}

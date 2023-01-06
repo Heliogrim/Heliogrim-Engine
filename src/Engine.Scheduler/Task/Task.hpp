@@ -7,14 +7,13 @@
 
 #include "TaskMask.hpp"
 #include "TaskType.hpp"
-#include "../Stage/ScheduleStage.hpp"
+#include "TaskCtrl.hpp"
 
 namespace ember::engine::scheduler::fiber {
     struct Fiber;
 }
 
 namespace ember::engine::scheduler::task {
-
     /**
      * ! Important !
      *
@@ -24,6 +23,39 @@ namespace ember::engine::scheduler::task {
      */
 
     class TaskDelegate {
+    public:
+        using this_type = TaskDelegate;
+
+    protected:
+        /**
+         * Constructor
+         *
+         * @author Julius
+         * @date 16.11.2020
+         *
+         * @param  type_ The type.
+         * @param  mask_ The mask.
+         */
+        TaskDelegate(const TaskType type_, const TaskMask mask_) noexcept;
+
+    public:
+        TaskDelegate(const TaskDelegate&) = delete;
+
+        TaskDelegate(TaskDelegate&&) noexcept = delete;
+
+        /**
+         * Destructor
+         *
+         * @author Julius
+         * @date 16.11.2020
+         */
+        ~TaskDelegate() = default;
+
+    private:
+        ref<TaskDelegate> operator=(cref<TaskDelegate>) = delete;
+
+        ref<TaskDelegate> operator=(mref<TaskDelegate>) noexcept = delete;
+
     public:
         /**
          * Will downcast to masked type and execute via static cast
@@ -94,98 +126,14 @@ namespace ember::engine::scheduler::task {
          */
         [[nodiscard]] ref<ptr<fiber::Fiber>> fiber() noexcept;
 
-    protected:
-        /**
-         * Execution order and timing
-         */
-
-        /** The schedule stage barrier, describing the start point for this task */
-        const ScheduleStageBarrier _srcStage;
-        /** The schedule stage barrier, describing the latest completion for this task */
-        const ScheduleStageBarrier _dstStage;
-        _STD uint_fast16_t _dstBarrierIdx;
+    private:
+        ptr<TaskCtrl> _ctrl;
 
     public:
-        /**
-         * Get the source schedule stage
-         *
-         * @author Julius
-         * @date 11.11.2021
-         *
-         * @returns The schedule stage barrier, used as source.
-         */
-        [[nodiscard]] ScheduleStageBarrier srcStage() const noexcept;
+        [[nodiscard]] ptr<TaskCtrl> ctrl() const noexcept;
 
-        /**
-         * Get the destination schedule stage
-         *
-         * @author Julius
-         * @date 11.11.2021
-         *
-         * @returns The schedule stage barrier, used as destination.
-         */
-        [[nodiscard]] ScheduleStageBarrier dstStage() const noexcept;
-
-        /**
-         * Get the index of the destination barrier
-         *
-         * @author Julius
-         * @date 18.11.2021
-         *
-         * @returns The stored destination barrier index.
-         */
-        [[nodiscard]] _STD uint_fast16_t dstBarrierIdx() const noexcept;
-
-        /**
-         * Get the index of the destination barrier
-         *
-         * @author Julius
-         * @date 18.11.2021
-         *
-         * @returns A reference to the stored destination barrier index.
-         */
-        [[nodiscard]] ref<_STD uint_fast16_t> dstBarrierIdx() noexcept;
-
-    protected:
-        /**
-         * Constructor
-         *
-         * @author Julius
-         * @date 16.11.2020
-         *
-         * @param  type_ The type.
-         * @param  mask_ The mask.
-         * @param srcStage_ The schedule stage barrier, when to execute the task.
-         * @param dstStage_ The schedule stage barrier, when the task should be completed.
-         */
-        TaskDelegate(const TaskType type_, const TaskMask mask_,
-            _In_ const ScheduleStageBarrier srcStage_,
-            _In_ const ScheduleStageBarrier dstStage_) noexcept;
-
-        /**
-         * Destructor
-         *
-         * @author Julius
-         * @date 16.11.2020
-         */
-        ~TaskDelegate() = default;
-
-    private:
-        /**
-         * Make TaskDelegate public unassignable to any type
-         */
-
-        TaskDelegate(const TaskDelegate&) noexcept = default;
-
-        TaskDelegate(TaskDelegate&&) noexcept = default;
-
-    private:
-        ref<TaskDelegate> operator=(cref<TaskDelegate>) = delete;
-
-        ref<TaskDelegate> operator=(mref<TaskDelegate>) noexcept = delete;
+        [[nodiscard]] ref<ptr<TaskCtrl>> ctrl() noexcept;
     };
-
-    typedef const TaskDelegate* __TaskDelegate;
 
     class Task :
         public TaskDelegate {
@@ -214,9 +162,7 @@ namespace ember::engine::scheduler::task {
          */
         function_type _fnc;
 
-        friend __TaskDelegate make_task(function_type&&, TaskMask,
-            const ScheduleStageBarrier,
-            const ScheduleStageBarrier);
+        friend const non_owning_rptr<const TaskDelegate> make_task(function_type&&, TaskMask);
 
         /**
          * Constructor
@@ -224,14 +170,10 @@ namespace ember::engine::scheduler::task {
          * @author Julius
          * @date 16.11.2020
          *
-         * @param [in] fnc_ The function.
-         * @param 	   mask_ The mask.
-         * @param srcStage_ (Optional) The schedule stage barrier, when to execute the task.
-         * @param dstStage_ (Optional) The schedule stage barrier, when the task should be completed.
+         * @param fnc_ The function.
+         * @param mask_ The mask.
          */
-        Task(IN _STD function<void()>&& fnc_, TaskMask mask_,
-            _In_ const ScheduleStageBarrier srcStage_,
-            _In_ const ScheduleStageBarrier dstStage_) noexcept;
+        Task(_In_ function_type&& fnc_, TaskMask mask_) noexcept;
     };
 
     /**
@@ -240,14 +182,13 @@ namespace ember::engine::scheduler::task {
      * @author Julius
      * @date 16.11.2020
      *
-     * @param [in,out] fnc_ The function.
-     * @param 		   mask_ (Optional) The mask.
-     * @param srcStage_ (Optional) The schedule stage barrier, when to execute the task.
-     * @param dstStage_ (Optional) The schedule stage barrier, when the task should be completed.
+     * @param fnc_ The function.
+     * @param mask_ (Optional) The mask.
      */
-    __TaskDelegate make_task(Task::function_type&& fnc_, TaskMask mask_ = TaskMask::eNormal,
-        _In_ const ScheduleStageBarrier srcStage_ = ScheduleStageBarriers::eAll,
-        _In_ const ScheduleStageBarrier dstStage_ = ScheduleStageBarriers::eUndefined);
+    const non_owning_rptr<const TaskDelegate> make_task(
+        _In_ Task::function_type&& fnc_,
+        TaskMask mask_ = TaskMask::eNormal
+    );
 
     class RepetitiveTask :
         public TaskDelegate {
@@ -278,9 +219,7 @@ namespace ember::engine::scheduler::task {
          */
         function_type _fnc;
 
-        friend __TaskDelegate make_repetitive_task(function_type&&, TaskMask,
-            const ScheduleStageBarrier,
-            const ScheduleStageBarrier);
+        friend const non_owning_rptr<const TaskDelegate> make_repetitive_task(function_type&&, TaskMask);
 
         /**
          * Constructor
@@ -288,14 +227,10 @@ namespace ember::engine::scheduler::task {
          * @author Julius
          * @date 16.11.2020
          *
-         * @param [in,out] fnc_ The function.
-         * @param 		   mask_ The mask.
-         * @param srcStage_ (Optional) The schedule stage barrier, when to execute the task.
-         * @param dstStage_ (Optional) The schedule stage barrier, when the task should be completed.
+         * @param fnc_ The function.
+         * @param mask_ The mask.
          */
-        RepetitiveTask(function_type&& fnc_, TaskMask mask_,
-            _In_ const ScheduleStageBarrier srcStage_,
-            _In_ const ScheduleStageBarrier dstStage_) noexcept;
+        RepetitiveTask(_In_ function_type&& fnc_, TaskMask mask_) noexcept;
     };
 
     /**
@@ -304,14 +239,13 @@ namespace ember::engine::scheduler::task {
      * @author Julius
      * @date 16.11.2020
      *
-     * @param [in,out] fnc_ The function.
-     * @param 		   mask_ (Optional) The mask.
-     * @param srcStage_ (Optional) The schedule stage barrier, when to execute the task.
-     * @param dstStage_ (Optional) The schedule stage barrier, when the task should be completed.
+     * @param fnc_ The function.
+     * @param mask_ (Optional) The mask.
      */
-    __TaskDelegate make_repetitive_task(RepetitiveTask::function_type&& fnc_, TaskMask mask_ = TaskMask::eNormal,
-        _In_ const ScheduleStageBarrier srcStage_ = ScheduleStageBarriers::eAll,
-        _In_ const ScheduleStageBarrier dstStage_ = ScheduleStageBarriers::eUndefined);
+    const non_owning_rptr<const TaskDelegate> make_repetitive_task(
+        _In_ RepetitiveTask::function_type&& fnc_,
+        TaskMask mask_ = TaskMask::eNormal
+    );
 
     class BatchTask :
         public TaskDelegate {
@@ -340,9 +274,7 @@ namespace ember::engine::scheduler::task {
          */
         function_type _fnc;
 
-        friend __TaskDelegate make_batch_task(function_type&&, TaskMask,
-            const ScheduleStageBarrier,
-            const ScheduleStageBarrier);
+        friend const non_owning_rptr<const TaskDelegate> make_batch_task(function_type&&, TaskMask);
 
         /**
          * Constructor
@@ -350,14 +282,10 @@ namespace ember::engine::scheduler::task {
          * @author Julius
          * @date 16.11.2020
          *
-         * @param [in,out] fnc_ The function.
-         * @param 		   mask_ The mask.
-         * @param srcStage_ (Optional) The schedule stage barrier, when to execute the task.
-         * @param dstStage_ (Optional) The schedule stage barrier, when the task should be completed.
+         * @param fnc_ The function.
+         * @param mask_ The mask.
          */
-        BatchTask(function_type&& fnc_, TaskMask mask_,
-            _In_ const ScheduleStageBarrier srcStage_,
-            _In_ const ScheduleStageBarrier dstStage_) noexcept;
+        BatchTask(_In_ function_type&& fnc_, TaskMask mask_) noexcept;
     };
 
     /**
@@ -366,12 +294,11 @@ namespace ember::engine::scheduler::task {
      * @author Julius
      * @date 16.11.2020
      *
-     * @param [in,out] fnc_ The function.
-     * @param 		   mask_ (Optional) The mask.
-     * @param srcStage_ (Optional) The schedule stage barrier, when to execute the task.
-     * @param dstStage_ (Optional) The schedule stage barrier, when the task should be completed.
+     * @param fnc_ The function.
+     * @param mask_ (Optional) The mask.
      */
-    __TaskDelegate make_batch_task(BatchTask::function_type&& fnc_, TaskMask mask_ = TaskMask::eNormal,
-        _In_ const ScheduleStageBarrier srcStage_ = ScheduleStageBarriers::eAll,
-        _In_ const ScheduleStageBarrier dstStage_ = ScheduleStageBarriers::eUndefined);
+    const non_owning_rptr<const TaskDelegate> make_batch_task(
+        _In_ BatchTask::function_type&& fnc_,
+        TaskMask mask_ = TaskMask::eNormal
+    );
 }

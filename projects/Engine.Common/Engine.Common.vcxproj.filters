@@ -294,6 +294,9 @@
     <ClInclude Include="..\..\src\Engine.Common\Managed\SharedFromThis.hpp">
       <Filter>Headerdateien\Managed</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Concurrent\SharedMemoryReference.hpp">
+      <Filter>Headerdateien\Concurrent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">

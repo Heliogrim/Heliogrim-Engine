@@ -28,6 +28,10 @@ namespace ember {
             _staticInitializer = EmberStatic::useEngineHelper<EngineType_>;
         }
 
+        [[nodiscard]] static bool hasInitializer() noexcept {
+            return _staticInitializer != nullptr;
+        }
+
         [[nodiscard]] static uptr<engine::Engine> initialize() {
             if (_staticInitializer) {
                 return _staticInitializer();
@@ -42,6 +46,10 @@ namespace ember {
     public:
         [[nodiscard]] static decltype(_staticBoundSessionGetter) sessionGetter() noexcept {
             return _staticBoundSessionGetter;
+        }
+
+        [[nodiscard]] static bool hasSessionGetter() noexcept {
+            return _staticBoundSessionGetter != nullptr;
         }
 
         template <class EngineType_> requires

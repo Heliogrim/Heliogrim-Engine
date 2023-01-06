@@ -101,5 +101,8 @@ namespace ember::editor {
         [[nodiscard]] const non_owning_rptr<engine::core::Session> getEditorSession() const noexcept;
 
         [[nodiscard]] const non_owning_rptr<engine::core::Session> getPrimaryGameSession() const noexcept;
+
+    private:
+        void setupCorePipelines();
     };
 }

@@ -20,9 +20,7 @@ namespace ember::engine::scheduler {
     }
 
     namespace task {
-
         struct SharedSubQueue {
-
             /**
              * Constructor
              *
@@ -37,7 +35,7 @@ namespace ember::engine::scheduler {
 
             _STD atomic<thread::thread_id> owner { 0 };
 
-            concurrent::RingBuffer<__TaskDelegate> buffer;
+            concurrent::RingBuffer<non_owning_rptr<const task::TaskDelegate>> buffer;
 
             /**
              * Copy Constructor
@@ -130,7 +128,7 @@ namespace ember::engine::scheduler {
              *
              * @param [in,out] task_ The task to push.
              */
-            void push(__TaskDelegate&& task_);
+            void push(mref<non_owning_rptr<const task::TaskDelegate>> task_);
 
             /**
              * Pops an object from this queue
@@ -141,7 +139,7 @@ namespace ember::engine::scheduler {
              * @param          mask_ The mask to pop.
              * @param [out] result_ The result.
              */
-            void pop(TaskMask mask_, OUT __TaskDelegate& result_) noexcept;
+            void pop(TaskMask mask_, _Out_ ref<non_owning_rptr<const task::TaskDelegate>> result_) noexcept;
 
         private:
             /**
