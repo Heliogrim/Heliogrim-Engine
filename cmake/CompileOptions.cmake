@@ -18,7 +18,7 @@ endif ()
 
 set(DEFAULT_PROJECT_OPTIONS
         C_STANDARD 17
-        CXX_STANDARD 20
+        CXX_STANDARD 23
         LINKER_LANGUAGE "CXX"
         POSITION_INDEPENDENT_CODE ON
         CXX_VISIBILITY_PRESET "hidden"
@@ -34,7 +34,7 @@ set(DEFAULT_INCLUDE_DIRECTORIES
         "${META_PROJECT_LIB_DIR}/assimp"
         "${META_PROJECT_LIB_DIR}/dr_flac"
         "${META_PROJECT_LIB_DIR}/dr_wav"
-	"${META_PROJECT_LIB_DIR}/freetype2"
+	    "${META_PROJECT_LIB_DIR}/freetype2"
         "${META_PROJECT_LIB_DIR}/gli"
         "${META_PROJECT_LIB_DIR}/glm"
         "${META_PROJECT_LIB_DIR}/ryml"
@@ -206,7 +206,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
 
             # Required for CMake < 3.1; should be removed if minimum required CMake version is raised.
             $<$<VERSION_LESS:${CMAKE_VERSION},3.1>:
-            -std=c++20
+            -std=c++23
             >
             )
 endif ()
