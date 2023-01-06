@@ -3,43 +3,10 @@
 #include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Scheduler/Task/TaskMask.hpp>
 #include <Engine.Scheduler/Task/TaskType.hpp>
-#include <Engine.Scheduler/Stage/ScheduleStage.hpp>
 
 namespace ember {
     using TaskMask = engine::scheduler::task::TaskMask;
     using TaskType = engine::scheduler::task::TaskType;
-
-    using TaskStage = engine::scheduler::ScheduleStageBarrier;
-
-    namespace TaskStages {
-        /**
-         *
-         */
-        constexpr auto eUndefined = engine::scheduler::ScheduleStageBarriers::eUndefined;
-        /**
-         *
-         */
-        constexpr auto eTopStrong = engine::scheduler::ScheduleStageBarriers::eTopStrong;
-        constexpr auto eTopWeak = engine::scheduler::ScheduleStageBarriers::eTopWeak;
-        constexpr auto eNetworkFetchStrong = engine::scheduler::ScheduleStageBarriers::eNetworkFetchStrong;
-        constexpr auto eNetworkFetchWeak = engine::scheduler::ScheduleStageBarriers::eNetworkFetchWeak;
-        constexpr auto eUserUpdateStrong = engine::scheduler::ScheduleStageBarriers::eUserUpdateStrong;
-        constexpr auto eUserUpdateWeak = engine::scheduler::ScheduleStageBarriers::eUserUpdateWeak;
-        constexpr auto ePublishStrong = engine::scheduler::ScheduleStageBarriers::ePublishStrong;
-        constexpr auto ePublishWeak = engine::scheduler::ScheduleStageBarriers::ePublishWeak;
-        constexpr auto ePhysicsSimulateStrong = engine::scheduler::ScheduleStageBarriers::ePhysicsSimulateStrong;
-        constexpr auto ePhysicsSimulateWeak = engine::scheduler::ScheduleStageBarriers::ePhysicsSimulateWeak;
-        constexpr auto eNetworkPushStrong = engine::scheduler::ScheduleStageBarriers::eNetworkPushStrong;
-        constexpr auto eNetworkPushWeak = engine::scheduler::ScheduleStageBarriers::eNetworkPushWeak;
-        constexpr auto eGraphicNodeCollectStrong = engine::scheduler::ScheduleStageBarriers::eGraphicNodeCollectStrong;
-        constexpr auto eGraphicNodeCollectWeak = engine::scheduler::ScheduleStageBarriers::eGraphicNodeCollectWeak;
-        constexpr auto eBottomStrong = engine::scheduler::ScheduleStageBarriers::eBottomStrong;
-        constexpr auto eBottomWeak = engine::scheduler::ScheduleStageBarriers::eBottomWeak;
-        /**
-         *
-         */
-        constexpr auto eAll = engine::scheduler::ScheduleStageBarriers::eAll;
-    };
 
     class TaskBase {
     public:
@@ -117,51 +84,6 @@ namespace ember {
          * @returns A reference to the TaskMask of this task.
          */
         [[nodiscard]] ref<TaskMask> mask() noexcept;
-
-    protected:
-        TaskStage _srcStage;
-        TaskStage _dstStage;
-
-    public:
-        /**
-         * Get the tasks source stage
-         *
-         * @author Julius
-         * @date 20.11.2021
-         *
-         * @returns The TaskStage used as source
-         */
-        [[nodiscard]] TaskStage srcStage() const noexcept;
-
-        /**
-         * Get the tasks source stage
-         *
-         * @author Julius
-         * @date 20.11.2021
-         *
-         * @returns A reference to the TaskStage used as source
-         */
-        [[nodiscard]] ref<TaskStage> srcStage() noexcept;
-
-        /**
-         * Get the tasks destination stage
-         *
-         * @author Julius
-         * @date 20.11.2021
-         *
-         * @returns The TaskStage used as destination
-         */
-        [[nodiscard]] TaskStage dstStage() const noexcept;
-
-        /**
-         * Get the tasks destination stage
-         *
-         * @author Julius
-         * @date 20.11.2021
-         *
-         * @returns A reference to the TaskStage used as destination
-         */
-        [[nodiscard]] ref<TaskStage> dstStage() noexcept;
     };
 
     struct Task final : public TaskBase {

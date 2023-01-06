@@ -197,7 +197,7 @@ namespace ember {
      *
      * @returns True if guarantee was removed, otherwise false.
      */
-    extern bool desync();
+    //extern bool desync();
 
     /**
      * Try to sync this context to scheduling with given guarantees
@@ -209,5 +209,5 @@ namespace ember {
      *
      * @returns True if context enforced guarantees, otherwise false.
      */
-    extern bool sync(_In_ cref<TaskStage> src_, _In_ cref<TaskStage> dst_);
+    //extern bool sync(_In_ cref<TaskStage> src_, _In_ cref<TaskStage> dst_);
 }

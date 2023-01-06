@@ -32,7 +32,8 @@ void SharedSubQueue::acquire() {
 void SharedSubQueue::release() {
     #if _DEBUG
     auto expect { thread::self::getId() };
-    const auto result = owner.compare_exchange_strong(expect, thread::thread_id { 0 }, _STD memory_order::release, _STD memory_order::acquire);
+    const auto result = owner.compare_exchange_strong(expect, thread::thread_id { 0 }, _STD memory_order::release,
+        _STD memory_order::acquire);
     assert(result);
     #else
     owner.store(thread::thread_id { 0 }, _STD memory_order::relaxed);
@@ -77,7 +78,7 @@ void SharedQueue::destroy() {
     _queueCount = 0;
 }
 
-void SharedQueue::push(__TaskDelegate&& task_) {
+void SharedQueue::push(mref<non_owning_rptr<const task::TaskDelegate>> task_) {
     bool done = false;
 
     while (!done) {
@@ -87,7 +88,7 @@ void SharedQueue::push(__TaskDelegate&& task_) {
             if (cur.mask & task_->mask()) {
 
                 cur.acquire();
-                done = cur.buffer.try_push(_STD forward<__TaskDelegate>(task_));
+                done = cur.buffer.try_push(_STD forward<non_owning_rptr<const task::TaskDelegate>>(task_));
                 cur.release();
 
                 if (done) {
@@ -98,7 +99,7 @@ void SharedQueue::push(__TaskDelegate&& task_) {
     }
 }
 
-void SharedQueue::pop(TaskMask mask_, __TaskDelegate& result_) noexcept {
+void SharedQueue::pop(TaskMask mask_, ref<non_owning_rptr<const task::TaskDelegate>> result_) noexcept {
 
     for (u8 i = 0; i < _queueCount; ++i) {
         auto& cur = _queues[i];

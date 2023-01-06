@@ -201,6 +201,7 @@ void WinPlatform::processInternal() {
                         break;
                     }
 
+                    #if FALSE
                     PlatformResizeEvent resizeEvent { *iter, math::ivec2 { event.window.data1, event.window.data2 } };
                     auto resizeTask {
                         scheduler::task::make_task([wnd = *iter, resizeEvent = _STD move(resizeEvent)]() {
@@ -212,6 +213,7 @@ void WinPlatform::processInternal() {
                     resizeTask->dstStage() = scheduler::ScheduleStageBarriers::eNetworkPushStrong;
 
                     scheduler::exec(_STD move(resizeTask));
+                    #endif
                     break;
                 }
 

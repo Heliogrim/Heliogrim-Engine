@@ -7,9 +7,16 @@
 #include "DragDrop/DragDropReceiver.hpp"
 #include "DragDrop/DragDropSender.hpp"
 
+namespace ember::engine::input::schedule {
+    class InputTickStage;
+}
+
 namespace ember::engine {
     class Input :
         public core::CoreModule {
+    public:
+        friend class ::ember::engine::input::schedule::InputTickStage;
+
     public:
         using this_type = Input;
 
@@ -21,22 +28,14 @@ namespace ember::engine {
     public:
         void setup() override;
 
-        void schedule() override;
+        void start() override;
 
-        void desync() override;
+        void stop() override;
 
         void destroy() override;
 
     private:
-        /**
-         * Internal schedule state
-         */
-        _STD atomic_uint_fast8_t _scheduled { 0 };
-
-    private:
         void tick();
-
-        void reschedule();
 
     private:
         GlobalEventEmitter _emitter;

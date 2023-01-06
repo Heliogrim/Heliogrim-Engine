@@ -1,20 +1,24 @@
 #include "Worker.hpp"
 
 #include <stdexcept>
+#include <Engine.Common/stdafx.h>
 
 #include "../Fiber/FiberLaunchPad.hpp"
 #include "../Fiber/FiberPool.hpp"
-#include <Engine.Common/stdafx.h>
 
 using namespace ember::engine::scheduler::worker;
 using namespace ember::engine::scheduler::thread;
 using namespace ember::engine::scheduler;
 using namespace ember;
 
-Worker::Worker(ptr<SchedulePipeline> pipeline_, ptr<fiber::FiberPool> fiberPool_, task::TaskMask mask_) noexcept :
+Worker::Worker(
+    const non_owning_rptr<Schedule> schedule_,
+    const ptr<fiber::FiberPool> fiberPool_,
+    const task::TaskMask mask_
+) noexcept :
     _fiber(nullptr),
     _fiberPool(fiberPool_),
-    _pipeline(pipeline_),
+    _schedule(schedule_),
     _thread(),
     _mask(mask_) {}
 
@@ -65,11 +69,11 @@ bool Worker::destroy() {
     return _thread.destroy();
 }
 
-ptr<SchedulePipeline> Worker::pipeline() const noexcept {
-    return _pipeline;
+const non_owning_rptr<Schedule> Worker::schedule() const noexcept {
+    return _schedule;
 }
 
-engine::scheduler::task::TaskMask Worker::mask() const {
+task::TaskMask Worker::mask() const {
     return _mask;
 }
 
@@ -79,6 +83,10 @@ void Worker::setInterruptPtr(ptr<volatile bool> pointer_) noexcept {
 
 void Worker::setFiberHandle(fiber::Fiber::handle_type fiber_) noexcept {
     _fiber = fiber_;
+}
+
+ptr<fiber::FiberPool> Worker::fiberPool() const noexcept {
+    return _fiberPool;
 }
 
 void Worker::handle(void* args_) {
@@ -91,7 +99,7 @@ void Worker::handle(void* args_) {
     /**
      * Convert this thread to fiber
      */
-    auto* fiber { ::ConvertThreadToFiber(nullptr) };
+    auto* fiber { ConvertThreadToFiber(nullptr) };
 
     if (fiber == nullptr) {
         throw _STD runtime_error("Could not convert this thread to fiber.");
@@ -103,14 +111,14 @@ void Worker::handle(void* args_) {
      * Presolve used data
      */
     const auto mask { worker->mask() };
-    auto* const pipeline { worker->pipeline() };
+    auto* const schedule { worker->schedule() };
 
     /**
      * Resolve required objects
      */
     fiber::FiberPool& pool { *worker->_fiberPool };
     fiber::FiberLaunchPad launcher { nullptr };
-    task::__TaskDelegate task = nullptr;
+    non_owning_rptr<const task::TaskDelegate> task = nullptr;
 
     /**
      * Prepare worker sync variables
@@ -124,16 +132,12 @@ void Worker::handle(void* args_) {
          * Acquire next task or nullptr
          */
         task = nullptr;
-        pipeline->pop(mask, task);
+        schedule->pop(mask, task);
 
         /**
          * Process Task
          */
         if (task != nullptr) {
-
-            // Temporary
-            auto dst = task->dstStage();
-            const auto dstIdx = task->dstBarrierIdx();
 
             launcher.self = task->fiber();
 
@@ -144,11 +148,6 @@ void Worker::handle(void* args_) {
                 launcher.self = pool.acquire();
                 launcher.self->task = task;
                 const_cast<ptr<task::TaskDelegate>>(task)->fiber() = launcher.self;
-
-                // Temporary
-                if (dst.weak()) {
-                    worker->pipeline()->decBarrier(dstIdx);
-                }
             }
 
             /**
@@ -179,7 +178,7 @@ void Worker::handle(void* args_) {
                 /**
                  * Reschedule suspended task
                  */
-                worker->pipeline()->push(_STD move(task));
+                schedule->push(_STD move(task));
 
             } else {
 
@@ -193,11 +192,6 @@ void Worker::handle(void* args_) {
                  * Release execution context
                  */
                 pool.release(_STD move(launcher.self));
-
-                // Temporary
-                if (dst.strong()) {
-                    worker->pipeline()->decBarrier(dstIdx);
-                }
             }
         }
 
@@ -212,6 +206,6 @@ void Worker::handle(void* args_) {
     /**
      * Convert this fiber back to a thread and exit as intended
      */
-    [[maybe_unused]] const auto result = ::ConvertFiberToThread();
+    [[maybe_unused]] const auto result = ConvertFiberToThread();
     DEBUG_ASSERT(result, "Failed to convert fiber back to thread.")
 }

@@ -10,10 +10,12 @@
 #include <Engine.Network/Network.hpp>
 #include <Engine.PFX/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
+#include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Async.hpp>
 #include <Engine.Scheduler/Helper/Wait.hpp>
 #include <Engine.SFX/Audio.hpp>
+#include <Engine.Core.Schedule/CorePipeline.hpp>
+#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
 #ifdef WIN32
 #include <Engine.Platform/Windows/WinPlatform.hpp>
@@ -47,7 +49,7 @@ bool GameEngine::preInit() {
     #endif
 
     _resources = make_uptr<ResourceManager>();
-    _scheduler = make_uptr<Scheduler>();
+    _scheduler = make_uptr<CompScheduler>();
 
     /**/
 
@@ -70,6 +72,10 @@ bool GameEngine::init() {
     _platform->setup();
     _scheduler->setup(Scheduler::auto_worker_count);
     _resources->setup();
+
+    /**/
+
+    setupCorePipelines();
 
     /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
     _STD atomic_uint_fast8_t setupCounter { 0ui8 };
@@ -120,6 +126,9 @@ bool GameEngine::postInit() {
         return false;
     }
 
+    /**/
+    _scheduler->finalize();
+
     // TODO: Asset seeder resolving
     // TODO: 
 
@@ -134,12 +143,12 @@ bool GameEngine::start() {
     /**/
     _STD atomic_flag next {};
     scheduler::exec([this, &next] {
-        _assets->schedule();
-        _audio->schedule();
-        _graphics->schedule();
-        _input->schedule();
-        _network->schedule();
-        _physics->schedule();
+        _assets->start();
+        _audio->start();
+        _graphics->start();
+        _input->start();
+        _network->start();
+        _physics->start();
 
         next.test_and_set(std::memory_order::relaxed);
         next.notify_one();
@@ -185,12 +194,12 @@ bool GameEngine::stop() {
 
     /**/
     scheduler::exec([this, &next] {
-        _physics->desync();
-        _network->desync();
-        _input->desync();
-        _graphics->desync();
-        _audio->desync();
-        _assets->desync();
+        _physics->stop();
+        _network->stop();
+        _input->stop();
+        _graphics->stop();
+        _audio->stop();
+        _assets->stop();
 
         next.test_and_set(std::memory_order::relaxed);
         next.notify_one();
@@ -331,4 +340,9 @@ void GameEngine::removeWorld(cref<sptr<core::World>> world_) {
 
 const non_owning_rptr<core::Session> GameEngine::getGameSession() const noexcept {
     return _gameSession.get();
+}
+
+void GameEngine::setupCorePipelines() {
+    auto corePipeline = make_uptr<schedule::CorePipeline>();
+    _scheduler->getCompositePipeline()->addPipeline(_STD move(corePipeline));
 }

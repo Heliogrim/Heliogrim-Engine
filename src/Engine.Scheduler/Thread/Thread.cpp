@@ -27,7 +27,7 @@ thread_local static thread_id __threadId { cast_ntid_tid(_STD this_thread::get_i
     return idx.fetch_add(1, _STD memory_order_relaxed);
 }
 
-thread_local static uint64_t __threadIdx {};
+thread_local static uint64_t __threadIdx { generate_thread_idx() };
 
 FORCE_INLINE bool set_priority(HANDLE handle_, priority priority_) {
     #if defined(_WIN32) || defined(_WIN64)

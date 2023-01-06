@@ -22,7 +22,7 @@ void PooledBuffer::release() {
     _pool->release(_STD move(this));
 }
 
-bool PooledBuffer::try_pop(ref<task::__TaskDelegate> value_) {
+bool PooledBuffer::try_pop(ref<non_owning_rptr<const task::TaskDelegate>> value_) {
     /**
      *
      */
@@ -39,7 +39,7 @@ bool PooledBuffer::try_pop(ref<task::__TaskDelegate> value_) {
     return result;
 }
 
-bool PooledBuffer::try_push(mref<task::__TaskDelegate> value_) {
+bool PooledBuffer::try_push(mref<non_owning_rptr<const task::TaskDelegate>> value_) {
     /**
      *
      */

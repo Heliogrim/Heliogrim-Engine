@@ -152,6 +152,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Core.Game", "project
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Platform", "projects\Engine.Platform\Engine.Platform.vcxproj", "{28897150-DBDC-45FD-BD8A-6AAA2B6BBA8D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.GFX.Schedule", "projects\Engine.GFX.Schedule\Engine.GFX.Schedule.vcxproj", "{F8C6BDE2-1B2C-48CD-B2C4-BA8D64599C3D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Reflow.Schedule", "projects\Engine.Reflow.Schedule\Engine.Reflow.Schedule.vcxproj", "{A5EDEBE9-F7FB-4B23-8415-58B4013A45D6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Input.Schedule", "projects\Engine.Input.Schedule\Engine.Input.Schedule.vcxproj", "{FFB48705-D51D-4E2E-AF46-33AFD4344741}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Core.Schedule", "projects\Engine.Core.Schedule\Engine.Core.Schedule.vcxproj", "{532CC27A-CE28-4D9B-9EBC-1A90DC920D08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -408,6 +416,30 @@ Global
 		{28897150-DBDC-45FD-BD8A-6AAA2B6BBA8D}.Profile|x64.Build.0 = Profile|x64
 		{28897150-DBDC-45FD-BD8A-6AAA2B6BBA8D}.Release|x64.ActiveCfg = Release|x64
 		{28897150-DBDC-45FD-BD8A-6AAA2B6BBA8D}.Release|x64.Build.0 = Release|x64
+		{F8C6BDE2-1B2C-48CD-B2C4-BA8D64599C3D}.Debug|x64.ActiveCfg = Debug|x64
+		{F8C6BDE2-1B2C-48CD-B2C4-BA8D64599C3D}.Debug|x64.Build.0 = Debug|x64
+		{F8C6BDE2-1B2C-48CD-B2C4-BA8D64599C3D}.Profile|x64.ActiveCfg = Profile|x64
+		{F8C6BDE2-1B2C-48CD-B2C4-BA8D64599C3D}.Profile|x64.Build.0 = Profile|x64
+		{F8C6BDE2-1B2C-48CD-B2C4-BA8D64599C3D}.Release|x64.ActiveCfg = Release|x64
+		{F8C6BDE2-1B2C-48CD-B2C4-BA8D64599C3D}.Release|x64.Build.0 = Release|x64
+		{A5EDEBE9-F7FB-4B23-8415-58B4013A45D6}.Debug|x64.ActiveCfg = Debug|x64
+		{A5EDEBE9-F7FB-4B23-8415-58B4013A45D6}.Debug|x64.Build.0 = Debug|x64
+		{A5EDEBE9-F7FB-4B23-8415-58B4013A45D6}.Profile|x64.ActiveCfg = Profile|x64
+		{A5EDEBE9-F7FB-4B23-8415-58B4013A45D6}.Profile|x64.Build.0 = Profile|x64
+		{A5EDEBE9-F7FB-4B23-8415-58B4013A45D6}.Release|x64.ActiveCfg = Release|x64
+		{A5EDEBE9-F7FB-4B23-8415-58B4013A45D6}.Release|x64.Build.0 = Release|x64
+		{FFB48705-D51D-4E2E-AF46-33AFD4344741}.Debug|x64.ActiveCfg = Debug|x64
+		{FFB48705-D51D-4E2E-AF46-33AFD4344741}.Debug|x64.Build.0 = Debug|x64
+		{FFB48705-D51D-4E2E-AF46-33AFD4344741}.Profile|x64.ActiveCfg = Profile|x64
+		{FFB48705-D51D-4E2E-AF46-33AFD4344741}.Profile|x64.Build.0 = Profile|x64
+		{FFB48705-D51D-4E2E-AF46-33AFD4344741}.Release|x64.ActiveCfg = Release|x64
+		{FFB48705-D51D-4E2E-AF46-33AFD4344741}.Release|x64.Build.0 = Release|x64
+		{532CC27A-CE28-4D9B-9EBC-1A90DC920D08}.Debug|x64.ActiveCfg = Debug|x64
+		{532CC27A-CE28-4D9B-9EBC-1A90DC920D08}.Debug|x64.Build.0 = Debug|x64
+		{532CC27A-CE28-4D9B-9EBC-1A90DC920D08}.Profile|x64.ActiveCfg = Profile|x64
+		{532CC27A-CE28-4D9B-9EBC-1A90DC920D08}.Profile|x64.Build.0 = Profile|x64
+		{532CC27A-CE28-4D9B-9EBC-1A90DC920D08}.Release|x64.ActiveCfg = Release|x64
+		{532CC27A-CE28-4D9B-9EBC-1A90DC920D08}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

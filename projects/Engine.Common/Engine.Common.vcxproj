@@ -45,6 +45,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Collection\RingBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Future.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\Promise.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Concurrent\SharedMemoryReference.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\SpinLock.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Exception\NotImplementedException.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Exception\__macro.hpp" />
@@ -159,7 +160,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -170,7 +171,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -181,8 +182,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile />
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

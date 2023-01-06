@@ -4,6 +4,7 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Scheduler/Scheduler.hpp>
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
+#include <Engine.Scheduler/Thread/Thread.hpp>
 
 void ember::delay(mref<execute_function_type> function_, ticks delay_) {
     throw NotImplementedException {};
@@ -18,7 +19,7 @@ void ember::delay(mref<execute_function_type> function_, ticks delay_) {
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(task);
+    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
 }
 
 void ember::delay(execute_function_pointer_type function_, ticks delay_) {
@@ -35,7 +36,7 @@ void ember::delay(execute_function_pointer_type function_, ticks delay_) {
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(task);
+    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
 }
 
 void ember::execute(mref<execute_function_type> function_) {
@@ -50,7 +51,7 @@ void ember::execute(mref<execute_function_type> function_) {
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(task);
+    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
 }
 
 void ember::execute(const execute_function_pointer_type function_) {
@@ -65,7 +66,7 @@ void ember::execute(const execute_function_pointer_type function_) {
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(task);
+    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
 }
 
 void ember::execute(mref<Task> task_) {
@@ -74,15 +75,13 @@ void ember::execute(mref<Task> task_) {
      */
     auto task = engine::scheduler::task::make_task(
         _STD forward<Task::function_type>(task_.fnc()),
-        engine::scheduler::task::TaskMask::eNormal,
-        task_.srcStage(),
-        task_.dstStage()
+        engine::scheduler::task::TaskMask::eNormal
     );
 
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(task);
+    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
 }
 
 void ember::execute(mref<RepetitiveTask> task_) {
@@ -91,15 +90,13 @@ void ember::execute(mref<RepetitiveTask> task_) {
      */
     auto task = engine::scheduler::task::make_repetitive_task(
         _STD forward<RepetitiveTask::function_type>(task_.fnc()),
-        engine::scheduler::task::TaskMask::eNormal,
-        task_.srcStage(),
-        task_.dstStage()
+        engine::scheduler::task::TaskMask::eNormal
     );
 
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(task);
+    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
 }
 
 void ember::execute(mref<TickTask> task_) {
@@ -108,15 +105,13 @@ void ember::execute(mref<TickTask> task_) {
      */
     auto task = engine::scheduler::task::make_task(
         _STD forward<TickTask::function_type>(task_.fnc()),
-        engine::scheduler::task::TaskMask::eNormal,
-        task_.srcStage(),
-        task_.dstStage()
+        engine::scheduler::task::TaskMask::eNormal
     );
 
     /**
      * Schedule task
      */
-    engine::Engine::getEngine()->getScheduler()->exec(task);
+    engine::Engine::getEngine()->getScheduler()->exec(_STD move(task));
 }
 
 void ember::await(const ptr<await_signal_sub_type> signal_) {
@@ -140,10 +135,14 @@ void ember::yield() {
     engine::scheduler::fiber::self::yield();
 }
 
+/*
 bool ember::desync() {
     throw NotImplementedException {};
 }
+ */
 
+/*
 bool ember::sync(cref<TaskStage> src_, cref<TaskStage> dst_) {
     throw NotImplementedException {};
 }
+ */

@@ -11,9 +11,18 @@ namespace ember::engine::scene {
     class IRenderScene;
 }
 
+namespace ember::engine::reflow::schedule {
+    class ReflowFlowStage;
+    class ReflowShiftStage;
+}
+
 namespace ember::engine::reflow {
     class WindowManager :
         public EventDispatcher {
+    public:
+        friend class ::ember::engine::reflow::schedule::ReflowFlowStage;
+        friend class ::ember::engine::reflow::schedule::ReflowShiftStage;
+
     public:
         using this_type = WindowManager;
 

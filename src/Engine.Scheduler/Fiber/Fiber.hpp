@@ -7,7 +7,6 @@
 #include "../Task/Task.hpp"
 
 namespace ember::engine::scheduler::fiber {
-
     struct Fiber {
     public:
         using handle_type = ptr<void>;
@@ -24,7 +23,7 @@ namespace ember::engine::scheduler::fiber {
         /**
          * Execution Model
          */
-        task::__TaskDelegate task;
+        non_owning_rptr<const task::TaskDelegate> task;
 
         FiberAwaitable awaiter;
 
@@ -71,7 +70,6 @@ namespace ember::engine::scheduler::fiber {
     };
 
     namespace self {
-
         /**
          * Yields the current fiber
          *

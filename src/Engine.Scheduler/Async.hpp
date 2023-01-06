@@ -2,6 +2,8 @@
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include "Scheduler.hpp"
 
+#include "Pipeline/Stage/StageIdentifier.hpp"
+
 namespace ember::engine::scheduler {
     /**
      * Delays
@@ -12,7 +14,7 @@ namespace ember::engine::scheduler {
      * @param [in] task_ The task.
      * @param 	   ticks_ The ticks.
      */
-    void delay(IN task::__TaskDelegate task_, const ember::u32 ticks_);
+    void delay(_In_ mref<non_owning_rptr<const task::TaskDelegate>> task_, const ember::u32 ticks_);
 
     /**
      * Delays
@@ -23,7 +25,7 @@ namespace ember::engine::scheduler {
      * @param [in] fnc_ The function.
      * @param 	   ticks_ The ticks.
      */
-    void delay(IN task::Task::function_type&& fnc_, const ember::u32 ticks_);
+    void delay(_In_ mref<task::Task::function_type> fnc_, const ember::u32 ticks_);
 
     /**
      * Executes the given task
@@ -33,7 +35,7 @@ namespace ember::engine::scheduler {
      *
      * @param [in] task_ The task.
      */
-    void exec(IN task::__TaskDelegate task_);
+    void exec(_In_ mref<non_owning_rptr<const task::TaskDelegate>> task_);
 
     /**
      * Executes the given function as task
@@ -43,7 +45,51 @@ namespace ember::engine::scheduler {
      *
      * @param [in] fnc_ The function.
      */
-    void exec(IN task::Task::function_type&& fnc_);
+    void exec(_In_ mref<task::Task::function_type> fnc_);
+
+    void execOnStage(
+        _In_ mref<non_owning_rptr<const task::TaskDelegate>> task_,
+        const non_owning_rptr<const Stage> stage_
+    );
+
+    void execOnStage(
+        _In_ mref<non_owning_rptr<const task::TaskDelegate>> task_,
+        cref<StageIdentifier> stage_
+    );
+
+    void execOnStage(
+        _In_ mref<task::Task::function_type> fnc_,
+        const non_owning_rptr<const Stage> stage_
+    );
+
+    void execOnStage(
+        _In_ mref<task::Task::function_type> fnc_,
+        cref<StageIdentifier> stage_
+    );
+
+    void execOnStages(
+        _In_ mref<non_owning_rptr<const task::TaskDelegate>> task_,
+        const non_owning_rptr<const Stage> begin_,
+        const non_owning_rptr<const Stage> end_
+    );
+
+    void execOnStages(
+        _In_ mref<non_owning_rptr<const task::TaskDelegate>> task_,
+        cref<StageIdentifier> begin_,
+        cref<StageIdentifier> end_
+    );
+
+    void execOnStages(
+        _In_ mref<task::Task::function_type> task_,
+        const non_owning_rptr<const Stage> begin_,
+        const non_owning_rptr<const Stage> end_
+    );
+
+    void execOnStages(
+        _In_ mref<task::Task::function_type> task_,
+        cref<StageIdentifier> begin_,
+        cref<StageIdentifier> end_
+    );
 
     /**
      * Schedules the function and return a async resolved future
@@ -54,7 +100,7 @@ namespace ember::engine::scheduler {
      * @returns A concurrent::future&lt;Ty&gt;
      */
     template <typename Ty>
-    ember::concurrent::future<Ty> async(IN _STD function<Ty()>&& fnc_) {
+    ember::concurrent::future<Ty> async(_In_ mref<_STD function<Ty()>> fnc_) {
         ember::concurrent::promise<Ty> p { fnc_ };
         ember::concurrent::future<Ty> f = p.get();
 
@@ -73,7 +119,7 @@ namespace ember::engine::scheduler {
      * @returns A concurrent::future&lt;Ty&gt;
      */
     template <typename Ty>
-    ember::concurrent::future<Ty> async(IN _STD function<Ty()>&& fnc_, ember::u32 ticks_) {
+    ember::concurrent::future<Ty> async(_In_ mref<_STD function<Ty()>> fnc_, ember::u32 ticks_) {
         ember::concurrent::promise<Ty> p { fnc_ };
         ember::concurrent::future<Ty> f = p.get();
 

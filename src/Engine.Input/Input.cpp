@@ -2,17 +2,17 @@
 
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
+#include <Engine.Input.Schedule/InputPipeline.hpp>
 #include <Engine.Platform/Windows/Win32Window.hpp>
 #include <Engine.Scheduler/Async.hpp>
-#include <Engine.Scheduler/Task/Task.hpp>
-#include <Engine.Scheduler/Helper/Wait.hpp>
+#include <Engine.Scheduler/Fiber/Fiber.hpp>
+#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
+#include "DragDropEvent.hpp"
+#include "KeyboardEvent.hpp"
 #include "MouseButtonEvent.hpp"
 #include "MouseMoveEvent.hpp"
 #include "MouseWheelEvent.hpp"
-#include "KeyboardEvent.hpp"
-#include "DragDropEvent.hpp"
-
 #include "DragDrop/Win32DragDropReceiver.hpp"
 #include "DragDrop/Win32DragDropSender.hpp"
 
@@ -32,33 +32,17 @@ Input::~Input() {
 void Input::setup() {
     _dragDropSender = new Win32DragDropSender();
     _dragDropSender->setup();
+
+    /**
+     * Scheduling Pipelines
+     */
+    auto inputPipeline = make_uptr<schedule::InputPipeline>();
+    _engine->getScheduler()->getCompositePipeline()->addPipeline(_STD move(inputPipeline));
 }
 
-void Input::schedule() {
+void Input::start() {}
 
-    u8 expect = 0ui8;
-    if (!_scheduled.compare_exchange_strong(expect, 1ui8)) {
-        IM_CORE_ERROR("Failed to schedule input, cause is might already run.");
-        return;
-    }
-
-    reschedule();
-}
-
-void Input::desync() {
-
-    u8 expect { 1ui8 };
-    if (not _scheduled.compare_exchange_strong(expect, 2ui8)) {
-        IM_CORE_ERROR("Failed to desync input module with unexpected schedule state.");
-        return;
-    }
-
-    expect = 0ui8;
-    while (_scheduled.load(_STD memory_order::relaxed) != expect) {
-        scheduler::fiber::self::yield();
-    }
-    //scheduler::waitUntilAtomic(_scheduled, 0ui8);
-}
+void Input::stop() {}
 
 void Input::destroy() {
     if (_dragDropReceiver) {
@@ -109,33 +93,6 @@ void Input::tick() {
     }
 
     _buffered.clear();
-}
-
-void Input::reschedule() {
-    if (_scheduled.load(_STD memory_order_relaxed) != 1ui8) {
-        return;
-    }
-
-    /**/
-
-    const auto task = scheduler::task::make_repetitive_task([this]() {
-        u8 expect { 1ui8 };
-        if (_scheduled.load(_STD memory_order_relaxed) == expect) {
-            tick();
-            return true;
-        }
-
-        expect = 2ui8;
-        _scheduled.compare_exchange_strong(expect, 0ui8);
-        return false;
-    });
-
-    task->srcStage() = scheduler::ScheduleStageBarriers::eNetworkFetchStrong;
-    task->dstStage() = scheduler::ScheduleStageBarriers::eNetworkFetchStrong;
-
-    /**/
-
-    scheduler::exec(task);
 }
 
 cref<GlobalEventEmitter> Input::emitter() const noexcept {

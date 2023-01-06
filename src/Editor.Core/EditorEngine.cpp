@@ -2,11 +2,12 @@
 
 #include <Editor.Main/Boot/SubModuleInit.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Core/EngineState.hpp>
-#include <Engine.Core/Session.hpp>
 #include <Engine.Core/Event/WorldAddedEvent.hpp>
 #include <Engine.Core/Event/WorldRemoveEvent.hpp>
 #include <Engine.Core/Module/SubModule.hpp>
+#include <Engine.Core.Schedule/CorePipeline.hpp>
+#include <Engine.Core/EngineState.hpp>
+#include <Engine.Core/Session.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -14,7 +15,7 @@
 #include <Engine.PFX/Physics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scheduler/Async.hpp>
-#include <Engine.Scheduler/Scheduler.hpp>
+#include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Scheduler/Helper/Wait.hpp>
 #include <Engine.SFX/Audio.hpp>
 
@@ -59,7 +60,7 @@ bool EditorEngine::preInit() {
     #endif
 
     _resources = make_uptr<ResourceManager>();
-    _scheduler = make_uptr<Scheduler>();
+    _scheduler = make_uptr<CompScheduler>();
 
     /**/
 
@@ -97,6 +98,10 @@ bool EditorEngine::init() {
     _platform->setup();
     _scheduler->setup(Scheduler::auto_worker_count);
     _resources->setup();
+
+    /**/
+
+    setupCorePipelines();
 
     /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
     _STD atomic_uint_fast8_t setupCounter { 0ui8 };
@@ -161,6 +166,9 @@ bool EditorEngine::postInit() {
         return false;
     }
 
+    /**/
+    _scheduler->finalize();
+
     // TODO: Asset seeder resolving
     // TODO: 
 
@@ -173,14 +181,17 @@ bool EditorEngine::start() {
     }
 
     /**/
+    _scheduler->getCompositePipeline()->start();
+
+    /**/
     _STD atomic_flag next {};
     scheduler::exec([this, &next] {
-        _assets->schedule();
-        _audio->schedule();
-        _graphics->schedule();
-        _input->schedule();
-        _network->schedule();
-        _physics->schedule();
+        _assets->start();
+        _audio->start();
+        _graphics->start();
+        _input->start();
+        _network->start();
+        _physics->start();
 
         next.test_and_set(std::memory_order::relaxed);
         next.notify_one();
@@ -204,34 +215,6 @@ bool EditorEngine::start() {
             subModule->start();
         }
 
-        scheduler::exec(scheduler::task::make_repetitive_task([] {
-                auto* const editorSession { EditorEngine::getEngine()->getEditorSession() };
-                if (not editorSession || not editorSession->getWorldContext()->getCurrentWorld()) {
-                    return false;
-                }
-
-                editorSession->getWorldContext()->getCurrentWorld()->getScene()->update();
-                return true;
-            },
-            scheduler::task::TaskMask::eAll,
-            scheduler::ScheduleStageBarriers::ePublishStrong,
-            scheduler::ScheduleStageBarriers::ePublishStrong
-        ));
-
-        scheduler::exec(scheduler::task::make_repetitive_task([] {
-                auto* const primarySession { EditorEngine::getEngine()->getPrimaryGameSession() };
-                if (not primarySession || not primarySession->getWorldContext()->getCurrentWorld()) {
-                    return false;
-                }
-
-                primarySession->getWorldContext()->getCurrentWorld()->getScene()->update();
-                return true;
-            },
-            scheduler::task::TaskMask::eAll,
-            scheduler::ScheduleStageBarriers::ePublishStrong,
-            scheduler::ScheduleStageBarriers::ePublishStrong
-        ));
-
         next.test_and_set(std::memory_order::relaxed);
         next.notify_one();
     });
@@ -249,12 +232,12 @@ bool EditorEngine::stop() {
     /**/
     _STD atomic_flag next {};
     scheduler::exec([this, &next] {
-        _physics->desync();
-        _network->desync();
-        _input->desync();
-        _graphics->desync();
-        _audio->desync();
-        _assets->desync();
+        _physics->stop();
+        _network->stop();
+        _input->stop();
+        _graphics->stop();
+        _audio->stop();
+        _assets->stop();
 
         next.test_and_set(std::memory_order::relaxed);
         next.notify_one();
@@ -298,6 +281,10 @@ bool EditorEngine::stop() {
 
     /**/
     scheduler::waitUntilAtomic(next, true);
+
+    /**/
+    _scheduler->getCompositePipeline()->stop();
+
     return setEngineState(EngineState::eStopped);
 }
 
@@ -453,4 +440,9 @@ const non_owning_rptr<engine::core::Session> EditorEngine::getEditorSession() co
 
 const non_owning_rptr<engine::core::Session> EditorEngine::getPrimaryGameSession() const noexcept {
     return _primaryGameSession.get();
+}
+
+void EditorEngine::setupCorePipelines() {
+    auto corePipeline = make_uptr<schedule::CorePipeline>();
+    _scheduler->getCompositePipeline()->addPipeline(_STD move(corePipeline));
 }

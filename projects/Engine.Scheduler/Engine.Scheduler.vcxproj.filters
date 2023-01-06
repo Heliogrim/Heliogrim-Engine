@@ -43,9 +43,6 @@
     <Filter Include="Quelldateien\Fiber">
       <UniqueIdentifier>{24a81973-9414-4b57-b8e6-3c1f40769eb9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Stage">
-      <UniqueIdentifier>{85b444c2-d6b9-4583-a467-c4ec428c6d1e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Queue">
       <UniqueIdentifier>{031366d3-1220-4296-9fa0-9e374efbb374}</UniqueIdentifier>
     </Filter>
@@ -57,6 +54,36 @@
     </Filter>
     <Filter Include="Quelldateien\Helper">
       <UniqueIdentifier>{e7c7500e-e9d2-4e1a-af15-b27bd4093cd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Process">
+      <UniqueIdentifier>{19980ac0-167e-4718-88a8-130729dd84ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Process">
+      <UniqueIdentifier>{04a9590d-92e2-43e5-9a91-a5713da55c81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Process\WorkSet">
+      <UniqueIdentifier>{ff4e0674-8cde-4e66-acaa-5c86c252a7ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Process\WorkSet">
+      <UniqueIdentifier>{260ad33b-2852-4739-bd8e-2c6547b2b352}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Pipeline">
+      <UniqueIdentifier>{c3bc6919-c584-4cd6-8675-aa10a889e11b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Pipeline">
+      <UniqueIdentifier>{9185e0b5-6b55-4d14-a5f6-c85d3f9e0aaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Pipeline\Composite">
+      <UniqueIdentifier>{3553065f-4ee8-45b7-84f0-a4399e35a7c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Pipeline\Stage">
+      <UniqueIdentifier>{e363ed05-b226-4f14-be44-53652c323002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Pipeline\Stage">
+      <UniqueIdentifier>{b3e0c530-3e2b-4d7d-ab12-9c88f240e5fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Pipeline\Composite">
+      <UniqueIdentifier>{7a55218b-10e4-4dab-9000-ec9de4f272f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -105,38 +132,71 @@
     <ClInclude Include="..\..\src\Engine.Scheduler\Fiber\Awaitable.hpp">
       <Filter>Headerdateien\Fiber</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scheduler\Stage\ScheduleStage.hpp">
-      <Filter>Headerdateien\Stage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\SchedulePipeline.hpp">
-      <Filter>Headerdateien\Queue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\SharedQueue.hpp">
-      <Filter>Headerdateien\Queue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\StagedQueue.hpp">
-      <Filter>Headerdateien\Queue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueue.hpp">
-      <Filter>Headerdateien\Queue</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Scheduler\Queue\SharedBufferPool.hpp">
-      <Filter>Headerdateien\Queue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueueGuard.hpp">
-      <Filter>Headerdateien\Queue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\AtomicCtrlBlockPage.hpp">
       <Filter>Headerdateien\Queue</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Scheduler\Queue\PooledBuffer.hpp">
       <Filter>Headerdateien\Queue</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Scheduler\Queue\DynamicBufferPages.hpp">
-      <Filter>Headerdateien\Queue</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Scheduler\Helper\Wait.hpp">
       <Filter>Headerdateien\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Process\Schedule.hpp">
+      <Filter>Headerdateien\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Process\ScheduleWorkSet.hpp">
+      <Filter>Headerdateien\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Process\WorkSet\FifoWorkSet.hpp">
+      <Filter>Headerdateien\Process\WorkSet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\CompScheduler.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\StagePipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\CompositePipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\Composite\StageDependency.hpp">
+      <Filter>Headerdateien\Pipeline\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\Composite\CompositeStage.hpp">
+      <Filter>Headerdateien\Pipeline\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\Composite\CompositeDependency.hpp">
+      <Filter>Headerdateien\Pipeline\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\Stage\Stage.hpp">
+      <Filter>Headerdateien\Pipeline\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\Stage\StageRegister.hpp">
+      <Filter>Headerdateien\Pipeline\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\CompositeDispatcher.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Tick\TickPipeline.hpp">
+      <Filter>Headerdateien\Tick</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\Stage\StageIdentifier.hpp">
+      <Filter>Headerdateien\Pipeline\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\Stage\PipelineStage.hpp">
+      <Filter>Headerdateien\Pipeline\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\Stage\StageDispatcher.hpp">
+      <Filter>Headerdateien\Pipeline\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\Stage\EmptyPipelineStage.hpp">
+      <Filter>Headerdateien\Pipeline\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Task\TaskCtrl.hpp">
+      <Filter>Headerdateien\Task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Scheduler\Pipeline\Composite\CompositeSlot.hpp">
+      <Filter>Headerdateien\Pipeline\Composite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -167,28 +227,10 @@
     <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\FiberPool.cpp">
       <Filter>Quelldateien\Fiber</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\SchedulePipeline.cpp">
-      <Filter>Quelldateien\Queue</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\StagedQueue.cpp">
-      <Filter>Quelldateien\Queue</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Queue\SharedBufferPool.cpp">
       <Filter>Quelldateien\Queue</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\SharedQueue.cpp">
-      <Filter>Quelldateien\Queue</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueue.cpp">
-      <Filter>Quelldateien\Queue</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\ProcessingQueueGuard.cpp">
-      <Filter>Quelldateien\Queue</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Queue\PooledBuffer.cpp">
-      <Filter>Quelldateien\Queue</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Scheduler\Queue\DynamicBufferPages.cpp">
       <Filter>Quelldateien\Queue</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Fiber\FiberLaunchPad.cpp">
@@ -199,6 +241,39 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Scheduler\Helper\Wait.cpp">
       <Filter>Quelldateien\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Process\Schedule.cpp">
+      <Filter>Quelldateien\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Process\WorkSet\FifoWorkSet.cpp">
+      <Filter>Quelldateien\Process\WorkSet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\CompScheduler.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Pipeline\CompositePipeline.cpp">
+      <Filter>Quelldateien\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Process\ScheduleWorkSet.cpp">
+      <Filter>Quelldateien\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Pipeline\Stage\Stage.cpp">
+      <Filter>Quelldateien\Pipeline\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Pipeline\StagePipeline.cpp">
+      <Filter>Quelldateien\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Tick\TickPipeline.cpp">
+      <Filter>Quelldateien\Tick</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Pipeline\Stage\EmptyPipelineStage.cpp">
+      <Filter>Quelldateien\Pipeline\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Pipeline\Stage\PipelineStage.cpp">
+      <Filter>Quelldateien\Pipeline\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Scheduler\Pipeline\Composite\CompositeSlot.cpp">
+      <Filter>Quelldateien\Pipeline\Composite</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

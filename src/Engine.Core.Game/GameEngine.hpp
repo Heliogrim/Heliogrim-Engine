@@ -86,5 +86,8 @@ namespace ember::engine {
 
     public:
         [[nodiscard]] const non_owning_rptr<core::Session> getGameSession() const noexcept;
+
+    private:
+        void setupCorePipelines();
     };
 }

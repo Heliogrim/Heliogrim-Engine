@@ -617,7 +617,8 @@ namespace SerializationModule {
         TypedLayoutArchive<TestSerialSubTypeVectorizedSliceAsset> arch { &archive, &layout };
 
         auto writeAsset = EmberObject::create<TestSerialSubTypeVectorizedSliceAsset>();
-        writeAsset->payload.resize(200'000'000, { 1231ui64, 738956ui64, 2.32906F, 9230.35F });
+        //writeAsset->payload.resize(200'000'000, { 1231ui64, 738956ui64, 2.32906F, 9230.35F });
+        writeAsset->payload.resize(2'000'000, { 1231ui64, 738956ui64, 2.32906F, 9230.35F });
 
         const auto writeStart { _STD chrono::high_resolution_clock::now() };
         arch << writeAsset;

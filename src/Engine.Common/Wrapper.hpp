@@ -18,7 +18,7 @@ namespace ember {
     template <class Ty>
     using pointer = Ty*;
 
-    template<typename Type_>
+    template <typename Type_>
     using non_owning_rptr = Type_*;
 
     template <class Ty>
@@ -32,4 +32,12 @@ namespace ember {
 
     template <class Ty>
     using managed = _STD shared_ptr<Ty>;
+
+    /**/
+
+    template <typename>
+    class SharedMemoryReference;
+
+    template <typename Ty>
+    using smr = SharedMemoryReference<Ty>;
 }

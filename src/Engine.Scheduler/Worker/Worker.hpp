@@ -4,10 +4,9 @@
 #include "../Thread/Thread.hpp"
 #include "../Fiber/Fiber.hpp"
 #include "../Fiber/FiberPool.hpp"
-#include "../Queue/SchedulePipeline.hpp"
+#include "../Process/Schedule.hpp"
 
 namespace ember::engine::scheduler::worker {
-
     class Worker final {
     public:
         /**
@@ -16,12 +15,15 @@ namespace ember::engine::scheduler::worker {
          * @author Julius
          * @date 14.11.2020
          *
-         * @param  pipeline_ The pipeline to work with.
-         * @param  fiberPool_ The fiber pool.
-         * @param  mask_ The mask.
+         * @param schedule_ The schedule to work with.
+         * @param fiberPool_ The fiber pool.
+         * @param mask_ The mask.
          */
-        Worker(_In_ ptr<SchedulePipeline> pipeline_, _In_ ptr<fiber::FiberPool> fiberPool_,
-            IN task::TaskMask mask_) noexcept;
+        Worker(
+            _In_ non_owning_rptr<Schedule> schedule_,
+            _In_ ptr<fiber::FiberPool> fiberPool_,
+            _In_ task::TaskMask mask_
+        ) noexcept;
 
         /**
          * Destructor
@@ -126,14 +128,14 @@ namespace ember::engine::scheduler::worker {
         [[nodiscard]] bool destroy();
 
         /**
-         * Gets the pipeline
+         * Gets the underlying schedule
          *
          * @author Julius
          * @date 15.12.2020
          *
-         * @returns A pointer to the used pipeline
+         * @returns A const pointer to a schedule object.
          */
-        [[nodiscard]] ptr<SchedulePipeline> pipeline() const noexcept;
+        [[nodiscard]] const non_owning_rptr<Schedule> schedule() const noexcept;
 
         /**
          * Gets the mask
@@ -189,7 +191,7 @@ namespace ember::engine::scheduler::worker {
         [[nodiscard]] ptr<fiber::FiberPool> fiberPool() const noexcept;
 
     private:
-        ptr<SchedulePipeline> _pipeline;
+        non_owning_rptr<Schedule> _schedule;
         thread::Thread _thread;
         task::TaskMask _mask;
 

@@ -8,13 +8,16 @@
 
 #include <Engine.Common/Concurrent/Collection/RingBuffer.hpp>
 #include <Engine.Common/Math/__default.inl>
+#include <Engine.Core/Event/WorldAddedEvent.hpp>
+#include <Engine.Core/Event/WorldChangeEvent.hpp>
+#include <Engine.Core/Event/WorldRemoveEvent.hpp>
 #include <Engine.GFX.Glow.3D/Renderer/RevRenderer.hpp>
 #include <Engine.GFX.Glow.UI/Renderer/UIRenderer.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.GFX.Scene/RenderSceneManager.hpp>
-#include <Engine.Core/Event/WorldAddedEvent.hpp>
-#include <Engine.Core/Event/WorldRemoveEvent.hpp>
-#include <Engine.Core/Event/WorldChangeEvent.hpp>
+#include <Engine.GFX.Schedule/RenderScenePipeline.hpp>
+#include <Engine.Logging/Logger.hpp>
+#include <Engine.Scheduler/Fiber/Fiber.hpp>
+#include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
 #include "RenderTarget.hpp"
 #include "todo.h"
@@ -25,21 +28,21 @@
 #include "Engine.Core/World.hpp"
 #include "Engine.Event/GlobalEventEmitter.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
+#include "Engine.Scene/IRenderScene.hpp"
+#include "Engine.Scene/RevScene.hpp"
 #include "Engine.Scene/Scene.hpp"
+#include "Importer/ImageFileTypes.hpp"
+#include "Importer/ImageImporter.hpp"
 #include "Loader/FontLoader.hpp"
 #include "Loader/MaterialLoader.hpp"
 #include "Loader/RevTextureLoader.hpp"
 #include "Loader/StaticGeometryLoader.hpp"
-#include "Importer/ImageImporter.hpp"
-#include "Importer/ImageFileTypes.hpp"
 #include "Renderer/HORenderPass.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Shader/ShaderStorage.hpp"
+#include "Surface/SurfaceManager.hpp"
 #include "Swapchain/Swapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
-#include "Surface/SurfaceManager.hpp"
-#include "Engine.Scene/IRenderScene.hpp"
-#include "Engine.Scene/RevScene.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember::engine;
@@ -205,40 +208,18 @@ void Graphics::setup() {
     registerImporter();
 
     /**
-     * Signal Setup
+     * Scheduling Pipelines
      */
-    _scheduled.store(0);
+    auto renderScenePipeline = make_uptr<gfx::schedule::RenderScenePipeline>();
+    _engine->getScheduler()->getCompositePipeline()->addPipeline(_STD move(renderScenePipeline));
 }
 
-void Graphics::schedule() {
-    u8 expect = { 0 };
-    if (!_scheduled.compare_exchange_strong(expect, 1)) {
-        throw _STD runtime_error("Tried to schedule already running graphics handle.");
-    }
+void Graphics::start() {}
 
-    reschedule();
-}
-
-void Graphics::desync() {
-    /**
-     * Wait until schedule stopped execution
-     */
-    u8 expect { 1 };
-    _scheduled.compare_exchange_strong(expect, 2);
-
-    expect = 0;
-    while (_scheduled.load() != expect) {
-        // scheduler::thread::self::yield();
-        scheduler::fiber::self::yield();
-    }
-}
+void Graphics::stop() {}
 
 void Graphics::destroy() {
     SCOPED_STOPWATCH
-
-    if (_scheduled.load() != 0) {
-        desync();
-    }
 
     /**
      * Unregister Hooks and consume EngineState
@@ -330,11 +311,6 @@ bool Graphics::removeRenderer(cref<AssocKey<string>> key_) {
     return _cachedRenderer.erase(key_);
 }
 
-#if TRUE
-// Warning: Temporary Experimental
-void reportStats(float fps_, float time_);
-#endif
-
 const non_owning_rptr<gfx::scene::RenderSceneManager> Graphics::getSceneManager() const noexcept {
     return _sceneManager;
 }
@@ -372,101 +348,6 @@ void Graphics::cleanupTargetsByScene(const non_owning_rptr<scene::IRenderScene> 
 
 const non_owning_rptr<gfx::SurfaceManager> Graphics::getSurfaceManager() const noexcept {
     return _surfaceManager.get();
-}
-
-void Graphics::tick() {
-    CompactSet<sptr<RenderTarget>> targets {};
-    _sceneManager->selectInvokeTargets(targets);
-
-    for (const auto& target : targets) {
-        invokeRenderTarget(target);
-    }
-
-    /**
-     * Debug Metrics
-     */
-    static concurrent::RingBuffer<_STD chrono::nanoseconds> timeBuffer { 17 };
-
-    static auto lastFrame = std::chrono::high_resolution_clock::now();
-    const auto now = _STD chrono::high_resolution_clock::now();
-
-    auto duration { _STD chrono::duration_cast<_STD chrono::nanoseconds>(now - lastFrame) };
-    timeBuffer.try_push(_STD move(duration));
-
-    if (timeBuffer.full()) {
-        _STD chrono::nanoseconds tmp {};
-        timeBuffer.try_pop(tmp);
-    }
-
-    lastFrame = now;
-
-    /**/
-
-    _STD chrono::nanoseconds accValue {};
-    u32 accCount { 0ui32 };
-    for (const auto& entry : timeBuffer.unsafe_container()) {
-        if (entry.count() > 0) {
-            accValue += entry;
-            ++accCount;
-        }
-    }
-
-    const double avg { static_cast<double>(accValue.count()) / static_cast<double>(accCount) };
-    const double diff { static_cast<double>(duration.count()) / 1000'000.0 };
-
-    reportStats(static_cast<float>(1000'000'000.0 / avg), static_cast<float>(diff));
-}
-
-void Graphics::invokeRenderTarget(cref<sptr<gfx::RenderTarget>> target_) const {
-    SCOPED_STOPWATCH
-
-    /**
-     * Tick RenderTarget
-     */
-    if (not target_->ready()) {
-        IM_DEBUG_LOG(
-            "Tried to tick an unready RenderTarget. Please ensure the completness of RenderTargets before ticking/dispatching...");
-        return;
-    }
-
-    const auto* renderPass = target_->next();
-
-    if (not renderPass) {
-        IM_DEBUG_LOG("Skipping graphics tick due to missing RenderPass (No next Swapchain Image) at RenderTarget");
-        return;
-    }
-
-    target_->update();
-
-    const auto result = target_->finish({});
-    assert(result != RenderEnqueueResult::eFailed);
-}
-
-void Graphics::reschedule() {
-    /**
-     * Guard already stopped scheduling
-     */
-    if (_scheduled.load(_STD memory_order_relaxed) != 1ui8) {
-        return;
-    }
-
-    scheduler::exec(
-        make_repetitive_task([this]() {
-                u8 expect { 1 };
-                if (_scheduled.load(_STD memory_order_relaxed) == expect) {
-                    tick();
-                    return true;
-                }
-
-                expect = { 2 };
-                _scheduled.compare_exchange_strong(expect, 0);
-                return false;
-            },
-            scheduler::task::TaskMask::eCritical,
-            scheduler::ScheduleStageBarriers::eGraphicNodeCollectWeak,
-            scheduler::ScheduleStageBarriers::eBottomStrong
-        )
-    );
 }
 
 #include <Ember/StaticGeometryComponent.hpp>
@@ -531,23 +412,3 @@ void Graphics::unregisterImporter() {
 
     importer.unregisterImporter(gfx::ImageFileType::Ktx2);
 }
-
-#if TRUE
-// Warning: Experimental Test
-
-#include <format>
-#include <Engine.GFX.Glow.UI/TestUI.hpp>
-#include <Engine.Reflow/Widget/Text.hpp>
-
-void reportStats(float fps_, float time_) {
-    if (not testFrameDisplay.expired()) {
-        auto* tfd { static_cast<ptr<engine::reflow::Text>>(testFrameDisplay.lock().get()) };
-        tfd->setText(std::format("{:.0f} FPS", fps_));
-    }
-
-    if (not testFrameTime.expired()) {
-        auto* tft { static_cast<ptr<engine::reflow::Text>>(testFrameTime.lock().get()) };
-        tft->setText(std::format("{:.2f} ms", time_));
-    }
-}
-#endif

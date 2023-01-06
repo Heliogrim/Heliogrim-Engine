@@ -76,19 +76,13 @@ namespace ember::engine {
         void unhookEngineState();
 
     public:
-        void setup();
+        void setup() override;
 
-        void schedule();
+        void start() override;
 
-        void desync() override;
+        void stop() override;
 
         void destroy() override;
-
-    private:
-        /**
-         * The internal state of scheduler
-         */
-        _STD atomic_uint8_t _scheduled { 0 };
 
     private:
         /**
@@ -197,14 +191,6 @@ namespace ember::engine {
 
     public:
         [[nodiscard]] const non_owning_rptr<gfx::SurfaceManager> getSurfaceManager() const noexcept;
-
-    private:
-        void tick();
-
-        void invokeRenderTarget(cref<sptr<gfx::RenderTarget>> target_) const;
-
-    private:
-        void reschedule();
 
     private:
         Vector<ptr<gfx::loader::GeometryLoader>> _geometryLoader;

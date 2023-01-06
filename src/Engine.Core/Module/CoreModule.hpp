@@ -20,9 +20,9 @@ namespace ember::engine::core {
     public:
         virtual void setup() = 0;
 
-        virtual void schedule() = 0;
+        virtual void start() = 0;
 
-        virtual void desync() = 0;
+        virtual void stop() = 0;
 
         virtual void destroy() = 0;
     };

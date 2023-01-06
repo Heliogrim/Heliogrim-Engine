@@ -128,6 +128,9 @@
     <ProjectReference Include="..\Engine.Core.Game\Engine.Core.Game.vcxproj">
       <Project>{6c9e813f-787c-46c1-b7be-b6d535299a45}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.Core.Schedule\Engine.Core.Schedule.vcxproj">
+      <Project>{532cc27a-ce28-4d9b-9ebc-1a90dc920d08}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Core\Engine.Core.vcxproj">
       <Project>{c4a9ab6d-512c-472a-ae8d-5242e7ba4ec3}</Project>
     </ProjectReference>
@@ -149,8 +152,14 @@
     <ProjectReference Include="..\Engine.GFX.Scene\Engine.GFX.Scene.vcxproj">
       <Project>{8fec3eae-4526-4991-a3a8-f9d562efbcba}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Schedule\Engine.GFX.Schedule.vcxproj">
+      <Project>{f8c6bde2-1b2c-48cd-b2c4-ba8d64599c3d}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.GFX\Engine.GFX.vcxproj">
       <Project>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Input.Schedule\Engine.Input.Schedule.vcxproj">
+      <Project>{ffb48705-d51d-4e2e-af46-33afd4344741}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Input\Engine.Input.vcxproj">
       <Project>{0d2545d9-3df6-4319-b726-1c22ca1cede0}</Project>
@@ -169,6 +178,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine.Reflect\Engine.Reflect.vcxproj">
       <Project>{9058623e-8475-4683-8131-0845fa5aa877}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Reflow.Schedule\Engine.Reflow.Schedule.vcxproj">
+      <Project>{a5edebe9-f7fb-4b23-8415-58b4013a45d6}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Reflow\Engine.Reflow.vcxproj">
       <Project>{a4bf2bd3-c9ab-4566-b684-569e77d54e48}</Project>
