@@ -4,21 +4,16 @@
 #include <Engine.Common/Collection/BytellHashMap.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
-#include <Engine.GFX/Device/Device.hpp>
 
 #include "__fwd.hpp"
 
 namespace ember::engine::gfx {
-    /**
-     * Forward Declaration
-     */
+    class Device;
     class SceneNodeModel;
 }
 
 namespace ember::engine::gfx::render {
-
     struct MultiplexerNodeMesh {
-
         using node_container_type = Vector<ptr<RenderStageNode>>;
         using mapping_type = ska::bytell_hash_map<type_id, node_container_type>;
 
@@ -109,6 +104,5 @@ namespace ember::engine::gfx::render {
 
         node_container_type _nodes;
         MultiplexerNodeMesh _mesh;
-
     };
 }

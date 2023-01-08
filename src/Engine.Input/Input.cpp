@@ -87,6 +87,16 @@ void Input::tick() {
                 _emitter.emit<event::KeyboardEvent>(static_cast<ref<event::KeyboardEvent>>(*entry.second));
                 break;
             }
+            case platform::PlatformResizeEvent::typeId.data: {
+
+                auto* const event = static_cast<
+                    const ptr<platform::PlatformResizeEvent>>(entry.second.get());
+                event->getWindow()->resizeEmitter().emit(event);
+
+                _emitter.emit<platform::PlatformResizeEvent>(
+                    *event
+                );
+            }
             default: {}
         }
 

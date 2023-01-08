@@ -143,6 +143,18 @@ bool GameEngine::start() {
     /**/
     _STD atomic_flag next {};
     scheduler::exec([this, &next] {
+        _scheduler->getCompositePipeline()->start();
+
+        next.test_and_set(_STD memory_order_relaxed);
+        next.notify_one();
+    });
+
+    /**/
+    scheduler::waitUntilAtomic(next, true);
+    next.clear(std::memory_order::release);
+
+    /**/
+    scheduler::exec([this, &next] {
         _assets->start();
         _audio->start();
         _graphics->start();
@@ -202,6 +214,18 @@ bool GameEngine::stop() {
         _assets->stop();
 
         next.test_and_set(std::memory_order::relaxed);
+        next.notify_one();
+    });
+
+    /**/
+    scheduler::waitUntilAtomic(next, true);
+    next.clear(std::memory_order::release);
+
+    /**/
+    scheduler::exec([this, &next] {
+        _scheduler->getCompositePipeline()->stop();
+
+        next.test_and_set(_STD memory_order_relaxed);
         next.notify_one();
     });
 
