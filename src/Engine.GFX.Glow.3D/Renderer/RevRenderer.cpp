@@ -1,6 +1,7 @@
 #include "RevRenderer.hpp"
 
 #include <Engine.GFX/Renderer/RenderPipeline.hpp>
+#include <Engine.Common/Make.hpp>
 
 #include "RevDepthStage.hpp"
 #include "RevEarlyStage.hpp"

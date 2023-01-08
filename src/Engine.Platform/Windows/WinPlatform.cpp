@@ -201,19 +201,10 @@ void WinPlatform::processInternal() {
                         break;
                     }
 
-                    #if FALSE
-                    PlatformResizeEvent resizeEvent { *iter, math::ivec2 { event.window.data1, event.window.data2 } };
-                    auto resizeTask {
-                        scheduler::task::make_task([wnd = *iter, resizeEvent = _STD move(resizeEvent)]() {
-                            wnd->resizeEmitter().emit(resizeEvent);
-                        })
-                    };
-
-                    resizeTask->srcStage() = scheduler::ScheduleStageBarriers::ePublishStrong;
-                    resizeTask->dstStage() = scheduler::ScheduleStageBarriers::eNetworkPushStrong;
-
-                    scheduler::exec(_STD move(resizeTask));
-                    #endif
+                    Engine::getEngine()->getInput()->bufferEvent(
+                        PlatformResizeEvent::typeId,
+                        make_uptr<PlatformResizeEvent>(*iter, math::ivec2 { event.window.data1, event.window.data2 })
+                    );
                     break;
                 }
 

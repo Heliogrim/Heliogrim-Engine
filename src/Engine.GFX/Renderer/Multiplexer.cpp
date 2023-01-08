@@ -10,6 +10,7 @@
 #include "RenderStageNode.hpp"
 #include "Engine.GFX/Scene/SceneNodeModel.hpp"
 #include "Engine.Reflect/EmberReflect.hpp"
+#include "../Device/Device.hpp"
 
 using namespace ember::engine::gfx::render;
 using namespace ember::engine::gfx;

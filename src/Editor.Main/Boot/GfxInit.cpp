@@ -1,20 +1,17 @@
 #include "GfxInit.hpp"
 
 #include <Editor.Core/EmberEditor.hpp>
+#include <Ember/UIComponent.hpp>
 #include <Ember/World.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/World.hpp>
+#include <Engine.Core/WorldContext.hpp>
 #include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX/RenderTarget.hpp>
-#include <Engine.GFX.Glow.UI/Renderer/UIRenderer.hpp>
-#include <Engine.GFX/Scene/CameraModel.hpp>
+#include <Engine.Reflow/Window/WindowManager.hpp>
 #include <Engine.Scene/RevScene.hpp>
 
-#include "Engine.Core/WorldContext.hpp"
-#include "Engine.Reflow/Window/WindowManager.hpp"
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
-#include "Ember/UIComponent.hpp"
 
 using namespace ember::editor::boot;
 using namespace ember::engine;

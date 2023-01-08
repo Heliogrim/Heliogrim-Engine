@@ -181,10 +181,19 @@ bool EditorEngine::start() {
     }
 
     /**/
-    _scheduler->getCompositePipeline()->start();
+    _STD atomic_flag next {};
+    scheduler::exec([this, &next] {
+        _scheduler->getCompositePipeline()->start();
+
+        next.test_and_set(_STD memory_order_relaxed);
+        next.notify_one();
+    });
 
     /**/
-    _STD atomic_flag next {};
+    scheduler::waitUntilAtomic(next, true);
+    next.clear(std::memory_order::release);
+
+    /**/
     scheduler::exec([this, &next] {
         _assets->start();
         _audio->start();
@@ -281,10 +290,18 @@ bool EditorEngine::stop() {
 
     /**/
     scheduler::waitUntilAtomic(next, true);
+    next.clear(std::memory_order::release);
 
     /**/
-    _scheduler->getCompositePipeline()->stop();
+    scheduler::exec([this, &next] {
+        _scheduler->getCompositePipeline()->stop();
 
+        next.test_and_set(_STD memory_order_relaxed);
+        next.notify_one();
+    });
+
+    /**/
+    scheduler::waitUntilAtomic(next, true);
     return setEngineState(EngineState::eStopped);
 }
 
