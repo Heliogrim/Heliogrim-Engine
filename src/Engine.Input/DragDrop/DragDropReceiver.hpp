@@ -6,7 +6,6 @@
 #include "../DragDropEvent.hpp"
 
 namespace ember::engine::input {
-
     class __declspec(novtable) DragDropReceiver {
     public:
         using this_type = DragDropReceiver;
@@ -23,9 +22,9 @@ namespace ember::engine::input {
         virtual void destroy() = 0;
 
     protected:
-        _STD function<bool(sptr<event::DragDropEvent> event_)> _onDrag;
-        _STD function<bool(sptr<event::DragDropEvent> event_)> _onDrop;
-        _STD function<bool(sptr<event::DragDropEvent> event_)> _onMove;
+        _STD function<bool(mref<uptr<event::DragDropEvent>> event_)> _onDrag;
+        _STD function<bool(mref<uptr<event::DragDropEvent>> event_)> _onDrop;
+        _STD function<bool(mref<uptr<event::DragDropEvent>> event_)> _onMove;
 
     public:
         void setOnDrag(mref<decltype(_onDrag)> onDrag_);
@@ -34,5 +33,4 @@ namespace ember::engine::input {
 
         void setOnMove(mref<decltype(_onDrag)> onMove_);
     };
-
 }

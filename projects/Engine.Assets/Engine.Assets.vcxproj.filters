@@ -170,5 +170,11 @@
     <ClCompile Include="..\..\src\Engine.Assets\Assets.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\ImageStructure.cpp">
+      <Filter>Quelldateien\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\TextureStructure.cpp">
+      <Filter>Quelldateien\Types\Texture</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

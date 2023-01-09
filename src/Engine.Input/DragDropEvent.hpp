@@ -8,7 +8,6 @@
 #include "DragDrop/DragDropObject.hpp"
 
 namespace ember::engine::input::event {
-
     using DragDropEventType = ::ember::engine::input::DragDropObjectType;
 
     struct DragDropEventFilePayload final {
@@ -42,9 +41,9 @@ namespace ember::engine::input::event {
             mref<DragDropEventPayload> data_
         ) noexcept;
 
-        DragDropEvent(cref<this_type> other_) noexcept = default;
+        DragDropEvent(cref<this_type> other_) noexcept;
 
-        DragDropEvent(mref<this_type> other_) noexcept = default;
+        DragDropEvent(mref<this_type> other_) noexcept;
 
         ~DragDropEvent() noexcept;
 
@@ -55,5 +54,4 @@ namespace ember::engine::input::event {
         DragDropEventType _type;
         DragDropEventPayload _data;
     };
-
 }

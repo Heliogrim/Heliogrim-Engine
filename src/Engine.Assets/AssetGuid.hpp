@@ -4,12 +4,20 @@
 #include <Engine.Common/Hash/Murmur3.hpp>
 
 namespace ember {
-
     struct asset_guid {
         uint16_t pred;
         uint8_t b1;
         uint8_t b2;
         uint32_t post;
+
+        static asset_guid from(const u64 data_) noexcept {
+            return asset_guid {
+                { static_cast<uint16_t>(data_ >> 48) },
+                { static_cast<uint8_t>(data_ >> 40) },
+                { static_cast<uint8_t>(data_ >> 32) },
+                { static_cast<uint32_t>(data_) }
+            };
+        }
 
         /**
          * Cast that converts the given  to a bool
@@ -74,7 +82,6 @@ namespace ember {
      * @returns The asset unique identifier.
      */
     extern asset_guid generate_asset_guid();
-
 }
 
 namespace std {

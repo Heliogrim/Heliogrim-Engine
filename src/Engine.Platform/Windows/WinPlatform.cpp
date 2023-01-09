@@ -124,7 +124,7 @@ ember::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
             assert(wnd && wnd->sdl());
 
             /**/
-            //Engine::getEngine()->getInput()->captureWindow(wnd);
+            Engine::getEngine()->getInput()->captureWindow(wnd.get());
             _windows.push_back(wnd.get());
             /**/
 
@@ -150,7 +150,7 @@ ember::concurrent::future<bool> WinPlatform::destroyNativeWindow(
         [this, window = holder] {
 
             /**/
-            //Engine::getEngine()->getInput()->releaseWindow(wnd);
+            Engine::getEngine()->getInput()->releaseWindow(window.get());
             _windows.erase(_STD remove(_windows.begin(), _windows.end(), window.get()));
             /**/
 
