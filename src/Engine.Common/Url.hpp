@@ -9,7 +9,6 @@
 #include <Engine.Serialization/Layout/__fwd.hpp>
 
 namespace ember {
-
     class Url {
     public:
         template <typename>
@@ -170,25 +169,25 @@ namespace ember {
          *
          * @details `<scheme>://<user><:?><password><@?><host><:?><port><path><?:><query><#?><fragment>`
          */
-        [[nodiscard]] string_view encode() const noexcept {
+        [[nodiscard]] string encode() const noexcept {
 
             _STD stringstream ss {};
             ss << _scheme << "://"sv;
             // TODO: user, password, host, port
             ss << _path;
 
-            return ss.view();
+            return ss.str();
         }
 
         /**
-         * Cast this to a string_view
+         * Cast this to a string
          *
          * @author Julius
          * @date 08.12.2021
          *
-         * @returns A string_view encoding this url.
+         * @returns A string encoding this url.
          */
-        [[nodiscard]] operator string_view() const noexcept {
+        [[nodiscard]] operator string() const noexcept {
             return encode();
         }
     };

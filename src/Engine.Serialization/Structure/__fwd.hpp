@@ -15,9 +15,15 @@ namespace ember::engine::serialization {
 
     /**/
 
+    template <typename Type_>
+    concept IsIntegralSlotType = _STD is_integral_v<Type_> ||
+        (_STD is_enum_v<Type_> && _STD is_integral_v<_STD underlying_type_t<Type_>>);
+
+    /**/
+
     class StringScopedSlot;
 
-    template <_STD integral IntegralType_>
+    template <IsIntegralSlotType IntegralType_>
     class IntegralScopedSlot;
 
     template <_STD floating_point IntegralType_>

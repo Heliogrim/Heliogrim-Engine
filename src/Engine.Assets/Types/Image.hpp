@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Url.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "Asset.hpp"
 
@@ -11,6 +12,9 @@ namespace ember::engine::assets {
     public:
         template <typename>
         friend class serialization::DataLayout;
+
+        template <class>
+        friend class serialization::access::Structure;
 
     public:
         inline static constexpr asset_type_id typeId { "Image"_typeId };

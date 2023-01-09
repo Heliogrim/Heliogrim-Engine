@@ -4,16 +4,19 @@
 #include <Engine.GFX/TextureFormat.hpp>
 #include <Engine.GFX/Texture/TextureType.hpp>
 #include <Engine.Resource/Loader/StreamLoader.hpp>
+#include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../Asset.hpp"
 
 namespace ember::engine::assets {
-
     class Texture :
         public Asset {
     public:
         template <typename>
         friend class serialization::DataLayout;
+
+        ACCESS_LAYOUT
+        ACCESS_STRUCTURE
 
     public:
         static constexpr asset_type_id typeId { "Texture"_typeId };

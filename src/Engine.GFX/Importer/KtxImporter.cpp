@@ -13,6 +13,8 @@
 #include "ImageImporter.hpp"
 #include "../API/VkTranslate.hpp"
 #include "Engine.Assets/Assets.hpp"
+#include "Engine.Serialization/Access/Structure.hpp"
+#include "Engine.Serialization/Archive/StructuredArchive.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -233,8 +235,20 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
 
+    #define EDITOR TRUE
+    #ifdef EDITOR
+
+    BufferArchive imgBuffer {};
+    StructuredArchive imgArch { &imgBuffer };
+
+    {
+        auto root = imgArch.insertRootSlot();
+        access::Structure<Image>::serialize(img, _STD move(root));
+    }
+
+    #else
+
     auto imgLayout { make_sptr<DataLayout<Image>>() };
-    auto texLayout { make_sptr<DataLayout<Texture>>() };
 
     imgLayout->reflect().storeType<Image>();
     imgLayout->describe();
@@ -243,6 +257,8 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     LayoutArchive<DataLayout<Image>> imgArch { &imgBuffer, imgLayout.get() };
 
     imgArch << img;
+
+    #endif
 
     const auto imgPath {
         _STD filesystem::path { rootCwd }.append(targetDirPath.string()).append(sourceName).concat(R"(.img.imasset)")
@@ -262,6 +278,20 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
 
+    #ifdef EDITOR
+
+    BufferArchive texBuffer {};
+    StructuredArchive texArch { &texBuffer };
+
+    {
+        auto root = texArch.insertRootSlot();
+        access::Structure<Texture>::serialize(tex, _STD move(root));
+    }
+
+    #else
+
+    auto texLayout { make_sptr<DataLayout<Texture>>() };
+
     texLayout->reflect().storeType<Texture>();
     texLayout->describe();
 
@@ -269,6 +299,8 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     LayoutArchive<DataLayout<Texture>> texArch { &texBuffer, texLayout.get() };
 
     texArch << tex;
+
+    #endif
 
     const auto texPath {
         _STD filesystem::path { rootCwd }.append(targetDirPath.string()).append(sourceName).concat(R"(.imasset)")

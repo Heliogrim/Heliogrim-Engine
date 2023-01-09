@@ -68,23 +68,23 @@ void Input::tick() {
 
         switch (entry.first.data) {
             case event::MouseMoveEvent::typeId.data: {
-                _emitter.emit<event::MouseMoveEvent>(static_cast<ref<event::MouseMoveEvent>>(*entry.second));
+                _emitter.emit<event::MouseMoveEvent>(static_cast<ptr<event::MouseMoveEvent>>(entry.second.get()));
                 break;
             }
             case event::MouseWheelEvent::typeId.data: {
-                _emitter.emit<event::MouseWheelEvent>(static_cast<ref<event::MouseWheelEvent>>(*entry.second));
+                _emitter.emit<event::MouseWheelEvent>(static_cast<ptr<event::MouseWheelEvent>>(entry.second.get()));
                 break;
             }
             case event::MouseButtonEvent::typeId.data: {
-                _emitter.emit<event::MouseButtonEvent>(static_cast<ref<event::MouseButtonEvent>>(*entry.second));
+                _emitter.emit<event::MouseButtonEvent>(static_cast<ptr<event::MouseButtonEvent>>(entry.second.get()));
                 break;
             }
             case event::DragDropEvent::typeId.data: {
-                _emitter.emit<event::DragDropEvent>(static_cast<ref<event::DragDropEvent>>(*entry.second));
+                _emitter.emit<event::DragDropEvent>(static_cast<ptr<event::DragDropEvent>>(entry.second.get()));
                 break;
             }
             case event::KeyboardEvent::typeId.data: {
-                _emitter.emit<event::KeyboardEvent>(static_cast<ref<event::KeyboardEvent>>(*entry.second));
+                _emitter.emit<event::KeyboardEvent>(static_cast<ptr<event::KeyboardEvent>>(entry.second.get()));
                 break;
             }
             case platform::PlatformResizeEvent::typeId.data: {
@@ -149,15 +149,10 @@ void Input::captureWindow(const non_owning_rptr<platform::NativeWindow> nativeWi
 
     /**/
 
-    _dragDropReceiver->setOnDrop([engine = _engine](sptr<event::DragDropEvent> event_) {
+    _dragDropReceiver->setOnDrop([this](mref<uptr<event::DragDropEvent>> event_) {
         // Attention: This function callback is actual external thread context
         // Attention: Not allowed to use default/fiber control flow
-
-        scheduler::exec([event = _STD move(event_), engine]() {
-            // Dispatch event with fiber context
-            engine->getEmitter().emit(*event);
-        });
-
+        bufferEvent(event::DragDropEvent::typeId, _STD move(event_));
         return false;
     });
     #else

@@ -256,8 +256,8 @@ HRESULT Win32DragDropReceiver::Drop(IDataObject* pDataObj, DWORD grfKeyState, PO
     RECT rect {};
     GetWindowRect(_hwnd, &rect);
 
-    sptr<input::event::DragDropEvent> event {
-        make_sptr<input::event::DragDropEvent>(
+    uptr<input::event::DragDropEvent> event {
+        make_uptr<input::event::DragDropEvent>(
             _cursorPos - math::ivec2 { rect.left, rect.top },
             event::DragDropEventType::eNone,
             event::DragDropEventPayload { nullptr }
@@ -303,7 +303,7 @@ HRESULT Win32DragDropReceiver::Drop(IDataObject* pDataObj, DWORD grfKeyState, PO
 
     /**/
 
-    if (_onDrop(event)) {
+    if (_onDrop && _onDrop(_STD move(event))) {
         *pdwEffect = DROPEFFECT_COPY;
         return S_OK;
     }
