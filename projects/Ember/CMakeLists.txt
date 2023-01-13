@@ -27,6 +27,7 @@ set(
 		${META_PROJECT_NAME}::Engine.Reflow
 		${META_PROJECT_NAME}::Engine.Reflow.Schedule
 		${META_PROJECT_NAME}::Engine.Resource
+		${META_PROJECT_NAME}::Engine.Resource.Package
 		${META_PROJECT_NAME}::Engine.Scene
 		${META_PROJECT_NAME}::Engine.Scheduler
 		${META_PROJECT_NAME}::Engine.Serialization
