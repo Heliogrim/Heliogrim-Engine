@@ -5,15 +5,14 @@
 using namespace ember::engine::assets;
 
 namespace ember::engine::serialization {
-
     template <>
     void DataLayout<Image>::describe() {
 
         using namespace ::ember::engine::serialization::layout;
 
-        const auto assetGuidLayout = make_sptr<DataLayout<asset_guid>>();
-        assetGuidLayout->reflect().storeType<asset_guid>();
-        assetGuidLayout->describe();
+        const auto guidLayout = make_sptr<DataLayout<Guid>>();
+        guidLayout->reflect().storeType<asset_guid>();
+        guidLayout->describe();
 
         const auto assetNameLayout = make_sptr<DataLayout<u8>>();
         assetNameLayout->reflect().storeType<u8>();
@@ -24,12 +23,11 @@ namespace ember::engine::serialization {
         urlLayout->describe();
 
         /**/
-        defineValue<LayoutDefineValueType::eUInt64>(offsetof(Image, _guid));
+        defineObject(offsetof(Image, _guid), guidLayout);
         defineValue<LayoutDefineValueType::eUInt64>(offsetof(Image, _type));
         defineSlice<string>(offsetof(Image, _assetName), assetNameLayout);
 
         /**/
         defineSlice<Vector<Url>>(offsetof(Image, _sources), urlLayout);
     }
-
 }

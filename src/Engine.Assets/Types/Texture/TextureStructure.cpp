@@ -5,6 +5,7 @@
 #include <Engine.Serialization/Structure/SliceScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StringScopedSlot.hpp>
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 
 using namespace ember::engine::serialization;
 using namespace ember::engine::assets;
@@ -31,20 +32,19 @@ void access::Structure<Texture>::serialize(const Texture* const self_, mref<Reco
 
     auto slot = slot_.intoStruct();
 
-    slot.insertSlot<u64>("__guid__") << self_->_guid.as_uint64();
+    Structure<Guid>::serialize(&self_->_guid, slot.insertSlot<void>("__guid__"));
     slot.insertSlot<u64>("__type__") << self_->_type.data;
     slot.insertSlot<string>("name") << self_->_assetName;
 
-    slot.insertSlot<u64>("baseImage") << self_->_baseImage.as_uint64();
+    Structure<Guid>::serialize(&self_->_baseImage, slot.insertSlot<void>("baseImage"));
 
-    Vector<u64> images {};
-    images.reserve(self_->_images.size());
+    {
+        auto images = slot.insertSlot<void>("images").intoSeq();
 
-    for (const auto& entry : self_->_images) {
-        images.push_back(entry.as_uint64());
+        for (const auto& entry : self_->_images) {
+            Structure<Guid>::serialize(&entry, images.addRecordSlot());
+        }
     }
-
-    slot.insertSlot<u64, Vector>("images") << images;
 
     Structure<math::uivec3>::serialize(&self_->_extent, slot.insertRecordSlot("extent"));
     slot.insertSlot<gfx::TextureFormat>("format") << self_->_format;
@@ -57,18 +57,23 @@ void access::Structure<Texture>::deserialize(Texture* const self_, cref<RecordSc
 
     const auto slot = slot_.intoStruct();
 
-    slot.getSlot<u64>("__guid__") >> self_->_guid.as_uint64();
+    Structure<Guid>::deserialize(&self_->_guid, slot.getSlot<void>("__guid__"));
     slot.getSlot<u64>("__type__") >> self_->_type.data;
     slot.getSlot<string>("name") >> self_->_assetName;
 
-    slot.getSlot<u64>("baseImage") >> self_->_baseImage.as_uint64();
+    Structure<Guid>::deserialize(&self_->_baseImage, slot.getSlot<void>("baseImage"));
 
-    Vector<u64> images {};
-    slot.getSlot<u64, Vector>("images") >> images;
+    {
+        const auto images = slot.getSlot<void>("images").intoSeq();
+        const auto count = images.getRecordCount();
 
-    self_->_images.reserve(images.size());
-    for (const auto& entry : images) {
-        self_->_images.push_back(asset_guid::from(entry));
+        self_->_images.reserve(count);
+        for (s64 i = 0; i < count; ++i) {
+            Guid tmp {};
+            Structure<Guid>::deserialize(&tmp, images.getRecordSlot(i));
+
+            self_->_images.push_back(static_cast<mref<asset_guid>>(tmp));
+        }
     }
 
     Structure<math::uivec3>::deserialize(&self_->_extent, slot.getRecordSlot("extent"));

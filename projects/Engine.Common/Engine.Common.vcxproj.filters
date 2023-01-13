@@ -153,9 +153,6 @@
     <ClInclude Include="..\..\src\Engine.Common\String.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Common\Uuid.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\Exception\__macro.hpp">
       <Filter>Headerdateien\Exception</Filter>
     </ClInclude>
@@ -297,6 +294,12 @@
     <ClInclude Include="..\..\src\Engine.Common\Concurrent\SharedMemoryReference.hpp">
       <Filter>Headerdateien\Concurrent</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Guid.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Integral128.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">
@@ -304,9 +307,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Common\Memory\DbgMemoryStats.cpp">
       <Filter>Quelldateien\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Common\Uuid.cpp">
-      <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Common\Hash\Murmur3.cpp">
       <Filter>Quelldateien\Hash</Filter>

@@ -65,11 +65,11 @@ void Archive::setCompression(const ptr<ArchiveCompression> compression_) {
     _compression = compression_;
 }
 
-Uuid Archive::getArchiveVersion() const noexcept {
+ArchiveVersion Archive::getArchiveVersion() const noexcept {
     return _version;
 }
 
-void Archive::setArchiveVersion(cref<Uuid> version_) noexcept {
+void Archive::setArchiveVersion(cref<ArchiveVersion> version_) noexcept {
     _version = version_;
 }
 

@@ -15,8 +15,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Serialization\Access\Structure.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Access\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\Archive.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\ArchiveStreamMode.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\ArchiveVersion.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\BufferArchive.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\LayoutArchive.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\MemoryArchive.hpp" />

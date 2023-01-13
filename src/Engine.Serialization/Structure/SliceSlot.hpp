@@ -5,6 +5,13 @@
 #include "StructureSlot.hpp"
 #include "SubstitutionSlot.hpp"
 
+namespace ember {
+    template <class Type_>
+    concept HasResizeFnc = requires(Type_ obj_, u64 count_) {
+        { obj_.resize(count_) };
+    };
+}
+
 namespace ember::engine::serialization {
     template <typename ValueType_, template <typename...> typename SliceType_>
     class SliceSlot final :
@@ -129,7 +136,11 @@ namespace ember::engine::serialization {
 
             // TODO: if constexpr (_STD is_constructible_v<slice_value_type, ...>)
 
-            value_.resize(storedCount);
+            if constexpr (HasResizeFnc<value_type>) {
+                value_.resize(storedCount);
+            } else {
+                assert(value_.size() >= storedCount);
+            }
 
             auto begin = _STD ranges::begin(value_);
             const auto end = _STD ranges::end(value_);

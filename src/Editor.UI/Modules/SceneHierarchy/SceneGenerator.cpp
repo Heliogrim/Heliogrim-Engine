@@ -30,7 +30,11 @@ sptr<Widget> HierarchyGenerator<sptr<SceneViewEntry>>::operator()(
             Style::get()->getStyleSheet(Style::TitleRaisedKey)
         });
 
-        txt->setText(_STD format(R"(Actor << {} >>)", actor->guid().as_uint64()));
+        const auto actorGuid = actor->guid();
+        txt->setText(_STD format(
+            R"(Actor << {}-{}-{}-{} >>)",
+            actorGuid.pre, actorGuid.c0, actorGuid.c1, actorGuid.post
+        ));
 
         return txt;
     }
