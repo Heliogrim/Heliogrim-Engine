@@ -53,3 +53,7 @@ RecordScopedSlot SeqScopedSlot::getRecordSlot(const u64 index_) const {
 
     return RecordScopedSlot { _STD move(scopedState), _STD move(record) };
 }
+
+s64 SeqScopedSlot::getRecordCount() const {
+    return static_cast<ptr<SeqSlot>>(slot())->getRecordCount();
+}

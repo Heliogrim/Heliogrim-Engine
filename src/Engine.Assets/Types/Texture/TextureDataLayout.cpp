@@ -11,9 +11,9 @@ namespace ember::engine::serialization {
 
         using namespace ::ember::engine::serialization::layout;
 
-        const auto assetGuidLayout = make_sptr<DataLayout<asset_guid>>();
-        assetGuidLayout->reflect().storeType<asset_guid>();
-        assetGuidLayout->describe();
+        const auto guidLayout = make_sptr<DataLayout<Guid>>();
+        guidLayout->reflect().storeType<asset_guid>();
+        guidLayout->describe();
 
         const auto assetNameLayout = make_sptr<DataLayout<u8>>();
         assetNameLayout->reflect().storeType<u8>();
@@ -25,8 +25,8 @@ namespace ember::engine::serialization {
         defineSlice<string>(offsetof(Texture, _assetName), assetNameLayout);
 
         /**/
-        defineObject(offsetof(Texture, _baseImage), assetGuidLayout);
-        defineSlice<Vector<asset_guid>>(offsetof(Texture, _images), assetGuidLayout);
+        defineObject(offsetof(Texture, _baseImage), guidLayout);
+        defineSlice<Vector<asset_guid>>(offsetof(Texture, _images), guidLayout);
 
         #if USE_SPAN_LAYOUT
     defineSpan(offsetof(Texture, _extent), sizeof(Texture::_extent));

@@ -14,29 +14,11 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Serialization.Layouts\LayoutManager.hpp" />
-    <ClInclude Include="..\..\src\Engine.Serialization.Layouts\LayoutOptimizer.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Common\GuidLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\LayoutManager.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\DoubleDataLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\FloatDataLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\S16DataLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\S32DataLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\S64DataLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\S8DataLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\U16DataLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\U32DataLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\U64DataLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\U8DataLayout.cpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{652ccab6-c9cc-409d-a374-8818b88f760f}</ProjectGuid>
-    <RootNamespace>EngineSerializationLayouts</RootNamespace>
+    <ProjectGuid>{611262d2-0414-4894-a873-6596174719c7}</ProjectGuid>
+    <RootNamespace>EngineSerializationStructures</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -107,6 +89,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Serialization.Structures\Common\GuidStructure.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

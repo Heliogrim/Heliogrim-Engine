@@ -19,6 +19,12 @@
     <Filter Include="Quelldateien\Native">
       <UniqueIdentifier>{a42ff024-46ee-43b3-aee7-c45326a1ee95}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Common">
+      <UniqueIdentifier>{48751065-d170-4df5-b484-1d1339ed5d49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Common">
+      <UniqueIdentifier>{ef0e6a09-f423-4f41-b264-d02827ddbe99}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Serialization.Layouts\LayoutManager.hpp">
@@ -61,6 +67,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Native\DoubleDataLayout.cpp">
       <Filter>Quelldateien\Native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization.Layouts\Common\GuidLayout.cpp">
+      <Filter>Quelldateien\Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

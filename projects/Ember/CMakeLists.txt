@@ -30,6 +30,8 @@ set(
 		${META_PROJECT_NAME}::Engine.Scene
 		${META_PROJECT_NAME}::Engine.Scheduler
 		${META_PROJECT_NAME}::Engine.Serialization
+		${META_PROJECT_NAME}::Engine.Serialization.Layouts
+		${META_PROJECT_NAME}::Engine.Serialization.Structures
 		${META_PROJECT_NAME}::Engine.SFX
 		${META_PROJECT_NAME}::Engine.Utils
 )

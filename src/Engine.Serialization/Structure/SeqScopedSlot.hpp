@@ -18,5 +18,7 @@ namespace ember::engine::serialization {
         [[nodiscard]] RecordScopedSlot addRecordSlot();
 
         [[nodiscard]] RecordScopedSlot getRecordSlot(const u64 index_) const;
+
+        [[nodiscard]] s64 getRecordCount() const;
     };
 }

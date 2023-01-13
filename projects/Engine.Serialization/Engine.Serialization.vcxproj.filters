@@ -43,6 +43,9 @@
     <Filter Include="Quelldateien\Structure">
       <UniqueIdentifier>{c4010975-a87b-48d0-835a-0065ba7bd060}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Access">
+      <UniqueIdentifier>{441dcc8a-b852-443a-b10b-852eb6236d95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\Archive.hpp">
@@ -218,6 +221,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Serialization\Structure\FloatScopedSlot.hpp">
       <Filter>Headerdateien\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Access\Structure.hpp">
+      <Filter>Headerdateien\Access</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Access\__fwd.hpp">
+      <Filter>Headerdateien\Access</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\ArchiveVersion.hpp">
+      <Filter>Headerdateien\Archive</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

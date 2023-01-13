@@ -16,7 +16,7 @@
 using namespace ember;
 
 Actor::Actor([[maybe_unused]] cref<ActorInitializer> initializer_) noexcept :
-    _guid({ initializer_._guid.pred, initializer_._guid.b1, initializer_._guid.b2, initializer_._guid.post }),
+    _guid(initializer_._guid),
     _rootComponent(nullptr),
     _components() {}
 

@@ -14,7 +14,7 @@ void access::Structure<Image>::serialize(const Image* const self_, mref<RecordSc
 
     auto slot = slot_.intoStruct();
 
-    slot.insertSlot<u64>("__guid__") << self_->_guid.as_uint64();
+    Structure<Guid>::serialize(&self_->_guid, slot.insertSlot<void>("__guid__"));
     slot.insertSlot<u64>("__type__") << self_->_type.data;
     slot.insertSlot<string>("name") << self_->_assetName;
 
@@ -33,7 +33,7 @@ void access::Structure<Image>::deserialize(Image* const self_, cref<RecordScoped
 
     const auto slot = slot_.intoStruct();
 
-    slot.getSlot<u64>("__guid__") >> self_->_guid.as_uint64();
+    Structure<Guid>::deserialize(&self_->_guid, slot.getSlot<void>("__guid__"));
     slot.getSlot<u64>("__type__") >> self_->_type.data;
     slot.getSlot<string>("name") >> self_->_assetName;
 

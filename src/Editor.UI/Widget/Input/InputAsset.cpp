@@ -283,7 +283,7 @@ Input<asset_guid>::input_type InputAsset::value() const noexcept {
 
 void InputAsset::setValue(cref<asset_guid> assetGuid_) {
     _value = assetGuid_;
-    _input->setPlaceholder(_STD format(R"(<<{}>>)", _value.as_uint64()));
+    _input->setPlaceholder(_STD format(R"(<<{}-{}-{}-{}>>)", _value.pre, _value.c0, _value.c1, _value.post));
 
     /**/
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Uuid.hpp>
 #include <Engine.Common/Url.hpp>
 
 #include <Engine.Reflect/__fwd.hpp>
@@ -10,9 +9,9 @@
 #include "../Compression/__fwd.hpp"
 #include "../Filter/__fwd.hpp"
 #include "ArchiveStreamMode.hpp"
+#include "ArchiveVersion.hpp"
 
 namespace ember::engine::serialization {
-
     class __declspec(novtable) Archive {
     public:
         using this_type = Archive;
@@ -24,6 +23,7 @@ namespace ember::engine::serialization {
         virtual ~Archive() = default;
 
         #pragma region Meta Archive Attributes
+
     public:
         [[nodiscard]] FORCE_INLINE bool shouldSwapBytes() const noexcept {
             #if ENV_MSVC
@@ -35,6 +35,7 @@ namespace ember::engine::serialization {
         #pragma endregion
 
         #pragma region Archive State
+
     protected:
         bool _error;
 
@@ -47,6 +48,7 @@ namespace ember::engine::serialization {
 
         #pragma endregion
         #pragma region Naming / Locating
+
     public:
         [[nodiscard]] virtual Url getArchiveUrl() const noexcept = 0;
 
@@ -54,6 +56,7 @@ namespace ember::engine::serialization {
 
         #pragma endregion
         #pragma region Input / Output
+
     public:
         virtual void seek(const s64 pos_);
 
@@ -90,16 +93,18 @@ namespace ember::engine::serialization {
 
         #pragma endregion
         #pragma region Integrity
+
     protected:
-        Uuid _version;
+        ArchiveVersion _version;
 
     public:
-        [[nodiscard]] Uuid getArchiveVersion() const noexcept;
+        [[nodiscard]] ArchiveVersion getArchiveVersion() const noexcept;
 
-        void setArchiveVersion(cref<Uuid> version_) noexcept;
+        void setArchiveVersion(cref<ArchiveVersion> version_) noexcept;
 
         #pragma endregion
         #pragma region Stream Serializer
+
     public:
         virtual void serializeBytes(const ptr<void> value_, u64 size_, const ArchiveStreamMode mode_) = 0;
 
@@ -142,6 +147,7 @@ namespace ember::engine::serialization {
 
         #pragma endregion
         #pragma region Input Serialization
+
     public:
         FORCE_INLINE friend ref<this_type> operator>>(ref<this_type> self_, ref<bool> value_) {
             u8 rep {};
@@ -225,6 +231,7 @@ namespace ember::engine::serialization {
 
         #pragma endregion
         #pragma region Output Serialization
+
     public:
         FORCE_INLINE friend ref<this_type> operator<<(ref<this_type> self_, cref<bool> value_) {
             u8 rep { value_ ? 0x1ui8 : 0x0ui8 };
@@ -328,5 +335,4 @@ namespace ember::engine::serialization {
         }
         #pragma endregion
     };
-
 }

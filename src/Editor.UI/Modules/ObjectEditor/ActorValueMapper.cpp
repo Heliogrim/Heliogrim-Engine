@@ -121,7 +121,10 @@ void ObjectValueMapper<Actor>::update(cref<sptr<engine::reflow::Box>> parent_, c
     const auto& mat { actor.getWorldTransform() };
     const auto& children { *parent_->children() };
 
-    _STD static_pointer_cast<Text, Widget>(children.front())->setText(_STD format(R"({})", actor.guid().as_uint64()));
+    const auto actorGuid = actor.guid();
+    _STD static_pointer_cast<Text, Widget>(children.front())->setText(
+        _STD format(R"({}-{}-{}-{})", actorGuid.pre, actorGuid.c0, actorGuid.c1, actorGuid.post)
+    );
 
     _STD static_pointer_cast<InputVec3, Widget>(children[1])->setValue(mat.position());
     _STD static_pointer_cast<InputVec3, Widget>(children[2])->setValue(mat.rotation().euler());

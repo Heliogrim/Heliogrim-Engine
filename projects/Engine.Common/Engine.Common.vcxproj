@@ -51,9 +51,11 @@
     <ClInclude Include="..\..\src\Engine.Common\Exception\__macro.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Flag.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Functional\Function.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Guid.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Hash\Fnv-1a.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Hash\Murmur3.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Inc.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Integral128.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Make.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Managed\SharedFromThis.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Bezier.hpp" />
@@ -87,7 +89,6 @@
     <ClInclude Include="..\..\src\Engine.Common\String.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Types.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Url.hpp" />
-    <ClInclude Include="..\..\src\Engine.Common\Uuid.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Wrapper.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\__macro.hpp" />
   </ItemGroup>
@@ -103,7 +104,6 @@
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Stopwatch.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\UrlDataLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.Common\Uuid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Engine.Common\Math\__default.inl" />
