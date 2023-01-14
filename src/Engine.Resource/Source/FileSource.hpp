@@ -3,7 +3,6 @@
 #include "../File.hpp"
 
 namespace ember::engine::res {
-
     class FileSource :
         public Source {
     public:
@@ -52,7 +51,7 @@ namespace ember::engine::res {
          * @param  size_ (Optional) The size.
          * @param  offset_ (Optional) The offset.
          */
-        FileSource(cref<File> file_, u64 size_ = 0ui64, u64 offset_ = 0ui64) noexcept;
+        FileSource(cref<File> file_, streamsize size_ = 0i64, streamoff offset_ = 0i64) noexcept;
 
         /**
          * Destructor
@@ -99,12 +98,12 @@ namespace ember::engine::res {
          *  _size <= 0  :: read and write to whole file
          *  _size > 0   :: read and write only until size_ reached ( could cut write sequence, will not write over extent )
          */
-        u64 _size;
+        streamsize _size;
 
         /**
          * The offset from the beginning of the file to read data
          */
-        u64 _offset;
+        streamoff _offset;
 
     public:
         [[nodiscard]] bool isAsync() const noexcept override;
@@ -116,8 +115,30 @@ namespace ember::engine::res {
         [[nodiscard]] bool isWritable() const noexcept override;
 
     public:
-        [[nodiscard]] bool get(u64 offset_, u64 size_, ptr<void> dst_, ref<u64> actualSize_) override;
+        [[nodiscard]] bool get(
+            streamoff offset_,
+            streamsize size_,
+            ptr<void> dst_,
+            ref<streamsize> actualSize_
+        ) override;
 
-        [[nodiscard]] ember::concurrent::future<async_result_value> get(u64 offset_, u64 size_) override;
+        [[nodiscard]] ember::concurrent::future<async_result_value> get(
+            streamoff offset_,
+            streamsize size_
+        ) override;
+
+    public:
+        [[nodiscard]] bool write(
+            streamoff offset_,
+            streamsize size_,
+            const ptr<void> src_,
+            ref<streamsize> actualSize_
+        ) override;
+
+        [[nodiscard]] ember::concurrent::future<async_write_result> write(
+            streamoff offset_,
+            streamsize size_,
+            const ptr<void> src_
+        ) override;
     };
 }

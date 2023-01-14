@@ -5,9 +5,8 @@
 #include "MemoryArchive.hpp"
 
 namespace ember::engine::serialization {
-
     class MemoryReadWriteArchive :
-        public MemoryArchive {
+        public MemoryBaseArchive {
     public:
         using this_type = MemoryReadWriteArchive;
 
@@ -33,7 +32,5 @@ namespace ember::engine::serialization {
         void setSizeLimit(const s64 limit_);
 
         void serializeBytes(const ptr<void> value_, u64 size_, const ArchiveStreamMode) override;
-
     };
-
 }

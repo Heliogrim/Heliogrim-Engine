@@ -6,12 +6,12 @@ using namespace ember::engine::serialization;
 using namespace ember;
 
 MemoryReadWriteArchive::MemoryReadWriteArchive(ref<AutoArray<u8>> bytes_) :
-    MemoryArchive(),
+    MemoryBaseArchive(),
     _bytes(bytes_),
     _limit(-1) {}
 
 MemoryReadWriteArchive::MemoryReadWriteArchive(ref<AutoArray<u8>> bytes_, const s64 limit_) :
-    MemoryArchive(),
+    MemoryBaseArchive(),
     _bytes(bytes_),
     _limit(limit_) {}
 

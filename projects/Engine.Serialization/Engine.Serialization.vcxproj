@@ -26,6 +26,9 @@
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\MemoryReadonlyArchive.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\MemoryReadWriteArchive.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\MemoryWriteonlyArchive.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\SourceBaseArchive.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\SourceReadWriteArchive.hpp" />
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\SourceWriteonlyArchive.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\StructuredArchive.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.Serialization\Compression\ArchiveCompression.hpp" />
@@ -85,6 +88,10 @@
     <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryReadonlyArchive.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryReadWriteArchive.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Archive\MemoryWriteonlyArchive.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\SourceBaseArchive.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\SourceReadonlyArchive.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\SourceReadWriteArchive.cpp" />
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\SourceWriteonlyArchive.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Archive\StructuredArchive.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayout.cpp" />
     <ClCompile Include="..\..\src\Engine.Serialization\Layout\DataLayoutBase.cpp" />
@@ -111,6 +118,9 @@
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
       <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\SourceReadonlyArchive.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

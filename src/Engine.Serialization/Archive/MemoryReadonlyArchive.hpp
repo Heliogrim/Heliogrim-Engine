@@ -5,12 +5,11 @@
 #include "MemoryArchive.hpp"
 
 namespace ember::engine::serialization {
-
     class MemoryReadonlyArchive :
-        public MemoryArchive {
+        public MemoryBaseArchive {
     public:
         using this_type = MemoryReadonlyArchive;
-        using underlying_type = MemoryArchive;
+        using underlying_type = MemoryBaseArchive;
 
     public:
         MemoryReadonlyArchive(_In_ ref<_STD span<u8, _STD dynamic_extent>> bytes_);
@@ -35,5 +34,4 @@ namespace ember::engine::serialization {
 
         void serializeBytes(const ptr<void> value_, u64 size_, const ArchiveStreamMode mode_) override;
     };
-
 }

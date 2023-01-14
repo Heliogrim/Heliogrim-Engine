@@ -10,7 +10,7 @@
 #include "../__macro.hpp"
 #include "../Wrapper.hpp"
 
-namespace ember::concurrent {
+namespace ember {
     namespace {
         using packed_type = _STD uintptr_t;
         using atomic_packed_type = _STD atomic_uintptr_t;
@@ -48,7 +48,7 @@ namespace ember::concurrent {
             _ctrlBlock(ctrlBlock_),
             _packed(packed_) {}
 
-        SharedMemoryReference (cref<this_type>) = delete;
+        SharedMemoryReference(cref<this_type>) = delete;
 
         SharedMemoryReference(_Inout_ mref<this_type> other_) noexcept :
             _ctrlBlock(_STD exchange(other_._ctrlBlock, nullptr)),
@@ -113,11 +113,11 @@ namespace ember::concurrent {
         }
 
     public:
-        [[nodiscard]] value_type operator*() const noexcept {
-            return unwrap();
+        [[nodiscard]] ref<value_type> operator*() const noexcept {
+            return *unwrap();
         }
 
-        [[nodiscard]] value_type operator->() const noexcept {
+        [[nodiscard]] non_owning_rptr<value_type> operator->() const noexcept {
             return unwrap();
         }
 
@@ -151,7 +151,7 @@ namespace ember::concurrent {
             this_type::push(_STD move(payload_));
         }
 
-        SharedMemoryReferenceCtrlBlock (cref<this_type>) = delete;
+        SharedMemoryReferenceCtrlBlock(cref<this_type>) = delete;
 
         SharedMemoryReferenceCtrlBlock(mref<this_type>) noexcept = delete;
 
@@ -257,7 +257,7 @@ namespace ember::concurrent {
                 // if (expect & packed_ref_mask)
                 if ((expect & packed_ref_mask) == 0 && maskedPtr) {
                     auto* ctrlp = reinterpret_cast<ptr<value_type>>(packed >> packed_shift);
-                    this_type::destroy(ctrlp);
+                    this_type::destroy(_STD move(ctrlp));
                 }
             }
         }

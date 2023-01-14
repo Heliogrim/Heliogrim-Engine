@@ -2,14 +2,13 @@
 #include "Archive.hpp"
 
 namespace ember::engine::serialization {
-
-    class MemoryArchive :
+    class __declspec(novtable) MemoryBaseArchive :
         public Archive {
     public:
-        using this_type = MemoryArchive;
+        using this_type = MemoryBaseArchive;
 
     protected:
-        MemoryArchive();
+        MemoryBaseArchive();
 
     public:
         [[nodiscard]] string_view getArchiveName() const noexcept override;
@@ -22,5 +21,4 @@ namespace ember::engine::serialization {
 
         [[nodiscard]] s64 tell() const noexcept final;
     };
-
 }

@@ -9,7 +9,7 @@
 using namespace ember::engine::res;
 using namespace ember;
 
-FileSource::FileSource(cref<File> file_, const u64 size_, const u64 offset_) noexcept :
+FileSource::FileSource(cref<File> file_, const streamsize size_, const streamoff offset_) noexcept :
     _file(file_),
     _size(size_),
     _offset(offset_) {}
@@ -41,7 +41,7 @@ bool FileSource::isWritable() const noexcept {
     return _size <= 0ui64;
 }
 
-bool FileSource::get(const u64 offset_, const u64 size_, ptr<void> dst_, ref<u64> actualSize_) {
+bool FileSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<streamsize> actualSize_) {
 
     SCOPED_STOPWATCH
 
@@ -49,10 +49,10 @@ bool FileSource::get(const u64 offset_, const u64 size_, ptr<void> dst_, ref<u64
     stream.open(_file, _STD ifstream::in | _STD ifstream::binary);
     stream.seekg(0, _STD ios::end);
 
-    u64 cmpSize = _size;
+    streamsize cmpSize = _size;
     if (cmpSize <= 0) {
         stream.seekg(0, _STD ios::end);
-        const u64 fsize = stream.tellg();
+        const streamsize fsize = stream.tellg();
         stream.seekg(0, _STD ios::beg);
 
         cmpSize = fsize - _offset;
@@ -62,8 +62,8 @@ bool FileSource::get(const u64 offset_, const u64 size_, ptr<void> dst_, ref<u64
         return false;
     }
 
-    const u64 begin = _offset * offset_;
-    const u64 length = MIN(size_, cmpSize);
+    const streampos begin = _offset + offset_;
+    const streamsize length = MIN(size_, cmpSize);
 
     stream.seekg(begin);
 
@@ -75,6 +75,45 @@ bool FileSource::get(const u64 offset_, const u64 size_, ptr<void> dst_, ref<u64
     return true;
 }
 
-concurrent::future<Source::async_result_value> FileSource::get(u64 offset_, u64 size_) {
+ember::concurrent::future<Source::async_result_value> FileSource::get(streamoff offset_, streamsize size_) {
+    throw NotImplementedException {};
+}
+
+bool FileSource::write(streamoff offset_, streamsize size_, const ptr<void> src_, ref<streamsize> actualSize_) {
+
+    SCOPED_STOPWATCH
+
+    _STD ofstream stream {};
+    stream.open(_file, _STD ifstream::in | _STD ifstream::binary);
+    stream.seekp(0, _STD ios::end);
+
+    streamsize cmpSize = _size;
+    if (cmpSize <= 0) {
+        stream.seekp(0, _STD ios::end);
+        const streamsize fsize = stream.tellp();
+        stream.seekp(0, _STD ios::beg);
+
+        cmpSize = fsize - _offset;
+    }
+
+    if (_offset > cmpSize) {
+        return false;
+    }
+
+    const streampos begin = _offset + offset_;
+    stream.seekp(begin);
+
+    stream.write(static_cast<const ptr<char>>(src_), size_);
+    actualSize_ = size_;
+
+    stream.close();
+    return true;
+}
+
+ember::concurrent::future<Source::async_write_result> FileSource::write(
+    streamoff offset_,
+    streamsize size_,
+    const ptr<void> src_
+) {
     throw NotImplementedException {};
 }

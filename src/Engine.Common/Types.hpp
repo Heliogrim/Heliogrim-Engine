@@ -1,7 +1,6 @@
 #pragma once
 
 namespace ember {
-
     typedef signed char s8;
     typedef short s16;
     typedef int s32;
@@ -17,6 +16,14 @@ namespace ember {
 
     typedef unsigned long uL;
     typedef unsigned long long uLL;
+
+    /**/
+
+    typedef s64 streamoff;
+    typedef streamoff streampos;
+    typedef s64 streamsize;
+
+    /**/
 
     constexpr s8 s8_min = -127i8 - 1;
     constexpr s16 s16_min = -32767i16 - 1;

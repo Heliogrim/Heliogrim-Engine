@@ -6,7 +6,7 @@ using namespace ember::engine::serialization;
 using namespace ember;
 
 MemoryWriteonlyArchive::MemoryWriteonlyArchive(ref<AutoArray<u8>> bytes_) :
-    MemoryArchive(),
+    MemoryBaseArchive(),
     _bytes(bytes_) {}
 
 Url MemoryWriteonlyArchive::getArchiveUrl() const noexcept {

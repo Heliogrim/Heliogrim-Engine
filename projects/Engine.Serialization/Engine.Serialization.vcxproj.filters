@@ -231,6 +231,18 @@
     <ClInclude Include="..\..\src\Engine.Serialization\Archive\ArchiveVersion.hpp">
       <Filter>Headerdateien\Archive</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\SourceBaseArchive.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\SourceWriteonlyArchive.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\SourceReadWriteArchive.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Serialization\Archive\SourceReadonlyArchive.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Serialization\Archive\LayoutArchive.cpp">
@@ -316,6 +328,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Serialization\Structure\SeqSlot.cpp">
       <Filter>Quelldateien\Structure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\SourceBaseArchive.cpp">
+      <Filter>Quelldateien\Archive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\SourceReadWriteArchive.cpp">
+      <Filter>Quelldateien\Archive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\SourceReadonlyArchive.cpp">
+      <Filter>Quelldateien\Archive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Serialization\Archive\SourceWriteonlyArchive.cpp">
+      <Filter>Quelldateien\Archive</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
