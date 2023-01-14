@@ -39,10 +39,22 @@ bool ParallelSource::isWritable() const noexcept {
     });
 }
 
-bool ParallelSource::get(u64 offset_, u64 size_, ptr<void> dst_, ref<u64> actualSize_) {
+bool ParallelSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<streamsize> actualSize_) {
     throw NotImplementedException {};
 }
 
-concurrent::future<Source::async_result_value> ParallelSource::get(u64 offset_, u64 size_) {
+ember::concurrent::future<Source::async_result_value> ParallelSource::get(streamoff offset_, streamsize size_) {
+    throw NotImplementedException {};
+}
+
+bool ParallelSource::write(streamoff offset_, streamsize size_, const ptr<void> src_, ref<streamsize> actualSize_) {
+    throw NotImplementedException {};
+}
+
+ember::concurrent::future<Source::async_write_result> ParallelSource::write(
+    streamoff offset_,
+    streamsize size_,
+    const ptr<void> src_
+) {
     throw NotImplementedException {};
 }

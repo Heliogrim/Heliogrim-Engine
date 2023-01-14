@@ -6,12 +6,12 @@ using namespace ember::engine::serialization;
 using namespace ember;
 
 MemoryReadonlyArchive::MemoryReadonlyArchive(ref<_STD span<u8, _STD dynamic_extent>> bytes_) :
-    MemoryArchive(),
+    MemoryBaseArchive(),
     _bytes(bytes_),
     _limit(-1) {}
 
 MemoryReadonlyArchive::MemoryReadonlyArchive(ref<_STD span<u8, _STD dynamic_extent>> bytes_, const s64 limit_) :
-    MemoryArchive(),
+    MemoryBaseArchive(),
     _bytes(bytes_),
     _limit(limit_) {}
 

@@ -12,8 +12,12 @@ namespace ember::engine::res {
         using const_reference_type = cref<value_type>;
 
         using async_result_value = struct {
-            u64 actualSize;
+            streamsize actualSize;
             ptr<void> buffer;
+        };
+
+        using async_write_result = struct {
+            streamsize actualSize;
         };
 
     protected:
@@ -89,7 +93,12 @@ namespace ember::engine::res {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        [[nodiscard]] virtual bool get(IN u64 offset_, IN u64 size_, ptr<void> dst_, OUT ref<u64> actualSize_) = 0;
+        [[nodiscard]] virtual bool get(
+            _In_ streamoff offset_,
+            _In_ streamsize size_,
+            _Out_writes_bytes_(actualSize_) ptr<void> dst_,
+            _Out_ ref<streamsize> actualSize_
+        ) = 0;
 
         /**
          * Get some data async from the underlying source by offset_ and size_
@@ -104,6 +113,23 @@ namespace ember::engine::res {
          *  
          *  TODO: could be defaulted with promise wrapping sync get call.
          */
-        [[nodiscard]] virtual ember::concurrent::future<async_result_value> get(IN u64 offset_, IN u64 size_) = 0;
+        [[nodiscard]] virtual ember::concurrent::future<async_result_value> get(
+            _In_ streamoff offset_,
+            _In_ streamsize size_
+        ) = 0;
+
+    public:
+        [[nodiscard]] virtual bool write(
+            _In_ streamoff offset_,
+            _In_ streamsize size_,
+            _In_reads_bytes_(size_) const ptr<void> src_,
+            _Out_ ref<streamsize> actualSize_
+        ) = 0;
+
+        [[nodiscard]] virtual ember::concurrent::future<async_write_result> write(
+            _In_ streamoff offset_,
+            _In_ streamsize size_,
+            _In_reads_bytes_(size_) const ptr<void> src_
+        ) = 0;
     };
 }

@@ -29,7 +29,8 @@ bool BufferSource::isWritable() const noexcept {
     return true;
 }
 
-bool BufferSource::get(u64 offset_, u64 size_, ptr<void> dst_, ref<u64> actualSize_) {
+bool BufferSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<streamsize> actualSize_) {
+
     if (!isReady() || offset_ >= _buffer.size) {
         return false;
     }
@@ -40,6 +41,26 @@ bool BufferSource::get(u64 offset_, u64 size_, ptr<void> dst_, ref<u64> actualSi
     return true;
 }
 
-concurrent::future<Source::async_result_value> BufferSource::get(u64 offset_, u64 size_) {
+ember::concurrent::future<Source::async_result_value> BufferSource::get(streamoff offset_, streamsize size_) {
+    throw NotImplementedException {};
+}
+
+bool BufferSource::write(streamoff offset_, streamsize size_, const ptr<void> src_, ref<streamsize> actualSize_) {
+
+    if (not isReady() || offset_ >= _buffer.size) {
+        return false;
+    }
+
+    actualSize_ = MIN(_buffer.size - offset_, size_);
+    memcpy(_buffer.mem, src_, actualSize_);
+
+    return true;
+}
+
+ember::concurrent::future<Source::async_write_result> BufferSource::write(
+    streamoff offset_,
+    streamsize size_,
+    const ptr<void> src_
+) {
     throw NotImplementedException {};
 }

@@ -3,18 +3,18 @@
 using namespace ember::engine::serialization;
 using namespace ember;
 
-MemoryArchive::MemoryArchive() :
+MemoryBaseArchive::MemoryBaseArchive() :
     Archive(),
     _pos(0i64) {}
 
-string_view MemoryArchive::getArchiveName() const noexcept {
+string_view MemoryBaseArchive::getArchiveName() const noexcept {
     return "MemoryArchive"sv;
 }
 
-void MemoryArchive::seek(const s64 pos_) {
+void MemoryBaseArchive::seek(const s64 pos_) {
     _pos = pos_;
 }
 
-s64 MemoryArchive::tell() const noexcept {
+s64 MemoryBaseArchive::tell() const noexcept {
     return _pos;
 }

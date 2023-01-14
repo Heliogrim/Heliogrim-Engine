@@ -5,7 +5,6 @@
 #include "Source.hpp"
 
 namespace ember::engine::res {
-
     class BufferSource :
         public Source {
     public:
@@ -90,8 +89,30 @@ namespace ember::engine::res {
         [[nodiscard]] bool isWritable() const noexcept override;
 
     public:
-        [[nodiscard]] bool get(u64 offset_, u64 size_, ptr<void> dst_, ref<u64> actualSize_) override;
+        [[nodiscard]] bool get(
+            streamoff offset_,
+            streamsize size_,
+            ptr<void> dst_,
+            ref<streamsize> actualSize_
+        ) override;
 
-        [[nodiscard]] concurrent::future<async_result_value> get(u64 offset_, u64 size_) override;
+        [[nodiscard]] ember::concurrent::future<async_result_value> get(
+            streamoff offset_,
+            streamsize size_
+        ) override;
+
+    public:
+        [[nodiscard]] bool write(
+            streamoff offset_,
+            streamsize size_,
+            const ptr<void> src_,
+            ref<streamsize> actualSize_
+        ) override;
+
+        [[nodiscard]] ember::concurrent::future<async_write_result> write(
+            streamoff offset_,
+            streamsize size_,
+            const ptr<void> src_
+        ) override;
     };
 }
