@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Headerdateien\Archive">
+      <UniqueIdentifier>{5ba99c23-516b-4644-8767-1ca499818fd1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Resource.Package\PackageHeader.hpp">
@@ -38,6 +41,21 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource.Package\PackageEndianess.hpp">
       <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\__fwd.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\ArchiveHeader.hpp">
+      <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageIndexEntry.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageIndex.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\ArchiveHeaderType.hpp">
+      <Filter>Headerdateien\Archive</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
