@@ -90,12 +90,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\ArchiveHeader.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\ArchiveHeaderType.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\MagicBytes.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Package.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\PackageCompression.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\PackageEndianess.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\PackageFooter.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\PackageHeader.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageIndex.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageIndexEntry.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\PackageVersion.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\__fwd.hpp" />
   </ItemGroup>
