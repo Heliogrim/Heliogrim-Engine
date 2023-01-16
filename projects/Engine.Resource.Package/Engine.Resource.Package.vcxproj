@@ -93,6 +93,10 @@
     <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\ArchiveHeader.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\ArchiveHeaderType.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\__fwd.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\LinkedArchive.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\LinkedArchiveIterator.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\PackageLinker.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\MagicBytes.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Package.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\PackageCompression.hpp" />

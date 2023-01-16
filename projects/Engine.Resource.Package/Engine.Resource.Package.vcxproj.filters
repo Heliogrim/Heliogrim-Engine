@@ -16,6 +16,9 @@
     <Filter Include="Headerdateien\Archive">
       <UniqueIdentifier>{5ba99c23-516b-4644-8767-1ca499818fd1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Linker">
+      <UniqueIdentifier>{40a9f605-c8f8-472b-96c1-fdbf015905ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Resource.Package\PackageHeader.hpp">
@@ -56,6 +59,18 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\ArchiveHeaderType.hpp">
       <Filter>Headerdateien\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\PackageLinker.hpp">
+      <Filter>Headerdateien\Linker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\LinkedArchive.hpp">
+      <Filter>Headerdateien\Linker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\LinkedArchiveIterator.hpp">
+      <Filter>Headerdateien\Linker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\__fwd.hpp">
+      <Filter>Headerdateien\Linker</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
