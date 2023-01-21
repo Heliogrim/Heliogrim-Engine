@@ -32,7 +32,7 @@ s64 Archive::totalSize() const noexcept {
 }
 
 bool Archive::isEOA() const noexcept {
-    return (totalSize() == -1i64) || tell() < totalSize();
+    return (totalSize() == -1i64) || tell() >= totalSize();
 }
 
 void Archive::flush() {}
