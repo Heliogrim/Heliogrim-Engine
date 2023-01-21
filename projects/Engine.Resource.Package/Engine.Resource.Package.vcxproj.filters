@@ -19,43 +19,22 @@
     <Filter Include="Headerdateien\Linker">
       <UniqueIdentifier>{40a9f605-c8f8-472b-96c1-fdbf015905ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Package">
+      <UniqueIdentifier>{ee445712-1dd2-4308-a934-f9b5dfb3eedc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Package">
+      <UniqueIdentifier>{8abb98a5-5f7b-41a4-b0ac-dba7ace2fbc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Linker">
+      <UniqueIdentifier>{690e3a8d-3b28-41d5-8653-61c4b99a0d06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageHeader.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource.Package\Package.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource.Package\__fwd.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageVersion.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageCompression.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageFooter.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource.Package\MagicBytes.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageEndianess.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\__fwd.hpp">
       <Filter>Headerdateien\Archive</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\ArchiveHeader.hpp">
       <Filter>Headerdateien\Archive</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageIndexEntry.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageIndex.hpp">
-      <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\ArchiveHeaderType.hpp">
       <Filter>Headerdateien\Archive</Filter>
@@ -72,10 +51,55 @@
     <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\__fwd.hpp">
       <Filter>Headerdateien\Linker</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\__fwd.hpp">
+      <Filter>Headerdateien\Package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\MagicBytes.hpp">
+      <Filter>Headerdateien\Package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\Package.hpp">
+      <Filter>Headerdateien\Package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageCompression.hpp">
+      <Filter>Headerdateien\Package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageEndianness.hpp">
+      <Filter>Headerdateien\Package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageFooter.hpp">
+      <Filter>Headerdateien\Package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageHeader.hpp">
+      <Filter>Headerdateien\Package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageIndex.hpp">
+      <Filter>Headerdateien\Package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageIndexEntry.hpp">
+      <Filter>Headerdateien\Package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageVersion.hpp">
+      <Filter>Headerdateien\Package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageMeta.hpp">
+      <Filter>Headerdateien\Package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageFactory.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageGuid.hpp">
+      <Filter>Headerdateien\Package</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Resource.Package\Package.cpp">
+    <ClCompile Include="..\..\src\Engine.Resource.Package\Package\Package.cpp">
+      <Filter>Quelldateien\Package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource.Package\PackageFactory.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource.Package\Linker\PackageLinker.cpp">
+      <Filter>Quelldateien\Linker</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

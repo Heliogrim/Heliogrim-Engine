@@ -97,19 +97,24 @@
     <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\LinkedArchiveIterator.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\PackageLinker.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\__fwd.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource.Package\MagicBytes.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource.Package\Package.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageCompression.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageEndianess.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageFooter.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageHeader.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageIndex.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageIndexEntry.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageVersion.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource.Package\__fwd.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageFactory.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\MagicBytes.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\Package.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageCompression.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageEndianness.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageFooter.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageGuid.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageHeader.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageIndex.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageIndexEntry.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageMeta.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageVersion.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Package\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Resource.Package\Package.cpp" />
+    <ClCompile Include="..\..\src\Engine.Resource.Package\Linker\PackageLinker.cpp" />
+    <ClCompile Include="..\..\src\Engine.Resource.Package\PackageFactory.cpp" />
+    <ClCompile Include="..\..\src\Engine.Resource.Package\Package\Package.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

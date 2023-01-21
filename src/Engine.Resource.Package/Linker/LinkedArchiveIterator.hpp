@@ -22,10 +22,11 @@ namespace ember::engine::resource {
 
         using archive_type = _STD conditional_t<
             Const_,
-            const serialization::SourceBaseArchive,
+            serialization::SourceReadonlyArchive,
             serialization::SourceBaseArchive
         >;
         using header_type = _STD conditional_t<Const_, const ArchiveHeader, ArchiveHeader>;
+        using linker_type = _STD conditional_t<Const_, const PackageLinker, PackageLinker>;
 
         // Iterator Traits
         using difference_type = _STD ptrdiff_t;
@@ -45,22 +46,26 @@ namespace ember::engine::resource {
     public:
         LinkedArchiveIterator() = delete;
 
-        LinkedArchiveIterator(const non_owning_rptr<const PackageLinker> linker_) :
+        LinkedArchiveIterator(const non_owning_rptr<linker_type> linker_) :
+            _linker(linker_),
             _cursor(linker_->_links.data()) {}
 
-        LinkedArchiveIterator(const non_owning_rptr<const PackageLinker> linker_, const size_type pos_) :
+        LinkedArchiveIterator(const non_owning_rptr<linker_type> linker_, const size_type pos_) :
+            _linker(linker_),
             _cursor(linker_->_links.data() + pos_) {}
 
         LinkedArchiveIterator(cref<this_type> other_) noexcept :
+            _linker(other_._linker),
             _cursor(other_._cursor) {}
 
         LinkedArchiveIterator(mref<this_type> other_) noexcept :
+            _linker(_STD exchange(other_._linker, nullptr)),
             _cursor(_STD exchange(other_._cursor, nullptr)) {}
 
         ~LinkedArchiveIterator() noexcept = default;
 
     private:
-        non_owning_rptr<const PackageLinker> _linker;
+        non_owning_rptr<linker_type> _linker;
         pointer_type _cursor;
 
     public:
@@ -99,7 +104,7 @@ namespace ember::engine::resource {
             return ++_cursor, *this;
         }
 
-        [[nodiscard]] this_type operator++(size_type) {
+        [[nodiscard]] this_type operator++(int) {
             auto tmp { *this };
             ++_cursor;
             return tmp;
@@ -109,7 +114,7 @@ namespace ember::engine::resource {
             return --_cursor, *this;
         }
 
-        [[nodiscard]] this_type operator--(size_type) {
+        [[nodiscard]] this_type operator--(int) {
             auto tmp { *this };
             --_cursor;
             return tmp;

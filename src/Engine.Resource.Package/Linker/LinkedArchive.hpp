@@ -4,7 +4,7 @@
 #include <Engine.Serialization/Archive/__fwd.hpp>
 
 #include "../Archive/ArchiveHeader.hpp"
-#include "../PackageIndexEntry.hpp"
+#include "../Package/PackageIndexEntry.hpp"
 
 namespace ember::engine::resource {
     struct LinkedArchive {

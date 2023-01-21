@@ -8,7 +8,7 @@
 
 namespace ember::engine::resource {
     struct ArchiveHeader {
-        Guid guid;
         ArchiveHeaderType type;
+        Guid guid;
     };
 }

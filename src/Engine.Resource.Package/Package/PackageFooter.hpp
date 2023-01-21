@@ -3,6 +3,8 @@
 #include <type_traits>
 #include <Engine.Common/Types.hpp>
 
+#include "PackageEndianness.hpp"
+
 namespace ember::engine::resource {
     #pragma pack(push)
     #pragma pack(1)
@@ -13,7 +15,7 @@ namespace ember::engine::resource {
         // 0x10
         u8 magicBytes[6];
         u8 magicVersion;
-        u8 endianess;
+        PackageEndianness endianess;
         // 0x18
     };
     #pragma pack(pop)
