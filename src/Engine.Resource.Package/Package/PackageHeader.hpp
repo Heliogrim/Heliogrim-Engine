@@ -5,7 +5,7 @@
 
 #include "PackageVersion.hpp"
 #include "PackageCompression.hpp"
-#include "PackageEndianess.hpp"
+#include "PackageEndianness.hpp"
 
 namespace ember::engine::resource {
     #pragma pack(push)
@@ -14,7 +14,7 @@ namespace ember::engine::resource {
         // 0x00
         u8 magicBytes[6];
         u8 magicVersion;
-        PackageEndianess endianess;
+        PackageEndianness endianness;
         // 0x08
         PackageVersion version;
         // 0x10
@@ -26,17 +26,18 @@ namespace ember::engine::resource {
         u64 packageSize;
         u64 inflatedSize;
         // 0x34
-        u32 indexOffset;
-        u32 indexSize;
-        u32 metaOffset;
-        u32 metaSize;
+        u64 indexOffset;
+        u64 indexSize;
         // 0x44
+        u64 metaOffset;
+        u64 metaSize;
+        // 0x54
         u64 compDataOffset;
         u64 compDataSize;
-        // 0x54
+        // 0x64
     };
     #pragma pack(pop)
 
     static_assert(_STD is_trivial_v<PackageHeader>);
-    static_assert(sizeof(PackageHeader) == 0x54);
+    static_assert(sizeof(PackageHeader) == 0x64);
 }

@@ -5,7 +5,7 @@
 
 #include "LinkedArchive.hpp"
 #include "__fwd.hpp"
-#include "../Package.hpp"
+#include "../Package/Package.hpp"
 
 namespace ember::engine::resource {
     class PackageLinker {
@@ -33,13 +33,19 @@ namespace ember::engine::resource {
     public:
         [[nodiscard]] const non_owning_rptr<const Package> getPackage() const noexcept;
 
+        [[nodiscard]] bool canLoad() const noexcept;
+
+        [[nodiscard]] bool canStore() const noexcept;
+
     private:
         Vector<LinkedArchive> _links;
 
     public:
         bool store(mref<ArchiveHeader> header_, mref<uptr<serialization::Archive>> archive_);
 
-        [[nodiscard]] uptr<serialization::SourceBaseArchive> load(
+        bool store(_STD initializer_list<_STD pair<ArchiveHeader, uptr<serialization::Archive>>> archives_);
+
+        [[nodiscard]] uptr<serialization::SourceReadonlyArchive> load(
             const Guid archiveGuid_
         ) const noexcept;
 
@@ -47,6 +53,8 @@ namespace ember::engine::resource {
         [[nodiscard]] bool containsArchive(const Guid archiveGuid_) const noexcept;
 
         [[nodiscard]] u64 getArchiveCount() const noexcept;
+
+        [[nodiscard]] s64 getArchiveSize() const noexcept;
 
     public:
         [[deprecated]] void remove(const Guid archiveGuid_);
@@ -65,7 +73,9 @@ namespace ember::engine::resource {
         [[nodiscard]] const_iterator_type cend() const noexcept;
 
     protected:
-        [[nodiscard]] uptr<serialization::SourceBaseArchive> operator[](const_iterator_type where_) const noexcept;
+        [[nodiscard]] uptr<serialization::SourceReadonlyArchive> operator[](const_iterator_type where_) const noexcept;
+
+        [[nodiscard]] uptr<serialization::SourceBaseArchive> operator[](iterator_type where_) const noexcept;
 
     public:
         [[deprecated]] bool read();
