@@ -3,8 +3,16 @@
 using namespace ember::engine::serialization;
 using namespace ember;
 
-SourceWriteonlyArchive::SourceWriteonlyArchive(mref<smr<res::Source>> source_) :
-    SourceBaseArchive(_STD move(source_)) {
+SourceWriteonlyArchive::SourceWriteonlyArchive(
+    mref<smr<res::Source>> source_,
+    mref<streamoff> srcOff_,
+    mref<streamsize> srcSize_
+) :
+    SourceBaseArchive(
+        _STD move(source_),
+        _STD move(srcOff_),
+        _STD move(srcSize_)
+    ) {
     assert(_source->isWritable());
 }
 
@@ -17,7 +25,7 @@ void SourceWriteonlyArchive::serializeBytes(const ptr<void> value_, u64 size_, c
         return;
     }
 
-    auto* const source = _source.unwrap();
+    auto* const source = _source.get();
     streamsize wroteSize = 0;
 
     const auto success = source->write(_pos, size_, value_, wroteSize);

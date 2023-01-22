@@ -13,7 +13,11 @@ namespace ember::engine::serialization {
         using this_type = SourceBaseArchive;
 
     protected:
-        SourceBaseArchive(mref<smr<res::Source>> source_);
+        SourceBaseArchive(
+            mref<smr<res::Source>> source_,
+            mref<streamoff> srcOff_,
+            mref<streamsize> srcSize_
+        );
 
     public:
         ~SourceBaseArchive() noexcept override;
@@ -25,6 +29,8 @@ namespace ember::engine::serialization {
 
     protected:
         smr<res::Source> _source;
+        streamoff _srcOff;
+        streamsize _srcSize;
 
     public:
         [[nodiscard]] smr<res::Source> getSource() const noexcept;
