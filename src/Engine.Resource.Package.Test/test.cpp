@@ -21,17 +21,17 @@ TEST(__DummyTest__, Exists) {
 }
 
 namespace PackageModule {
-    [[nodiscard]] _STD pair<BufferArchive, uptr<BufferSource>> makeTestSource() {
+    [[nodiscard]] _STD pair<BufferArchive, uptr<BufferSource>> makeTestSource(const size_t size_ = 4096) {
 
         auto helper = BufferArchive {};
-        helper.resize(4096, 0ui8);
+        helper.resize(size_, 0ui8);
 
         auto* const ptr = helper.data();
 
         return _STD make_pair<>(
             _STD move(helper),
             make_uptr<BufferSource>(Buffer {
-                4096,
+                size_,
                 0,
                 ptr
             })
@@ -321,11 +321,127 @@ namespace PackageModule {
             (*storedArchive) >> value;
 
             value_type check {};
-            (*storedArchive) >> check;
+            replica >> check;
 
             EXPECT_EQ(value, check);
         }
     }
 
-    TEST(Package, MultiReadWrite) { }
+    TEST(Package, MultiReadWrite) {
+
+        // Attention: TBD: Check for system endianness
+
+        constexpr size_t buffer_size = 8192;
+        constexpr size_t archive_count = 17;
+        constexpr size_t value_count = 48;
+
+        static_assert(
+            buffer_size > (
+                (sizeof(u32) * archive_count * value_count) +
+                sizeof(PackageHeader) +
+                sizeof(PackageFooter) +
+                sizeof(PackageIndexEntry) * archive_count +
+                sizeof(ArchiveHeader) * archive_count
+            )
+        );
+
+        auto [helper, source] = makeTestSource(buffer_size);
+
+        Package package = PackageFactory::createEmptyPackage(_STD move(source));
+
+        /**/
+
+        // Create Payload
+        Vector<uptr<BufferArchive>> payloads {};
+        for (auto i = 0; i < archive_count; ++i) {
+            payloads.push_back(make_uptr<BufferArchive>());
+            generatePayload(*payloads.back(), value_count);
+        }
+
+        Vector<uptr<BufferArchive>> replicas {};
+        replicas.reserve(payloads.size());
+
+        for (size_t i = 0; i < payloads.size(); ++i) {
+
+            const auto payload = *payloads[i];
+
+            replicas.push_back(make_uptr<BufferArchive>());
+            auto& replica = *replicas[i];
+
+            replica.reserve(payload.size());
+            replica.insert(replica.end(), payload.begin(), payload.end());
+        }
+
+        // Write payload to linker and underlying package
+
+        auto* const srcLinker = package.getLinker();
+        Guid payloadGuid {};
+
+        for (auto&& payload : payloads) {
+
+            ++payloadGuid.post;
+
+            srcLinker->store(
+                ArchiveHeader {
+                    ArchiveHeaderType::eRaw,
+                    payloadGuid
+                },
+                _STD move(payload)
+            );
+        }
+
+        // Write Package data
+
+        // TODO: Where should the write call occure?
+        // TODO: `package.write(...)` vs `linker.write(...)`
+
+        package.unsafeWrite();// ??
+
+        /**/
+
+        uptr<Source> dstSource = make_uptr<BufferSource>(Buffer {
+            buffer_size,
+            0ui64,
+            helper.data()
+        });
+
+        Package dst = PackageFactory::createFromSource(_STD move(dstSource));
+        const auto* const dstLinker = package.getLinker();
+
+        EXPECT_EQ(dstLinker->getArchiveCount(), archive_count);
+        EXPECT_NE(dstLinker->begin(), dstLinker->end());
+
+        size_t idx = 0;
+        for (auto iter = dstLinker->begin(); iter != dstLinker->end(); ++iter, ++idx) {
+
+            auto storedHeader = iter.header();
+            auto storedArchive = iter.archive();
+
+            EXPECT_EQ(storedHeader.type, ArchiveHeaderType::eRaw);
+            EXPECT_EQ(storedHeader.guid.post, (idx + 1));
+
+            EXPECT_NE(storedArchive, nullptr);
+
+            // TODO: Check whether `memcmp(...)` might be possible with `storedArchive` and `replica`
+            // TODO: Currently value iterated compare to prevent source loading issue cause there are not memory blocks at SourceArchive
+
+            auto& replica = *replicas[idx];
+
+            storedArchive->seek(0);
+            replica.seek(0);
+            for (size_t i = 0; i < value_count; ++i) {
+
+                using value_type = _STD mt19937::result_type;
+
+                value_type value {};
+                (*storedArchive) >> value;
+
+                value_type check {};
+                replica >> check;
+
+                EXPECT_EQ(value, check);
+            }
+
+        }
+    }
 }
