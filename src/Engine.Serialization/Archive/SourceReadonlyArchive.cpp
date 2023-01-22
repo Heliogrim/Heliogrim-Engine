@@ -3,8 +3,16 @@
 using namespace ember::engine::serialization;
 using namespace ember;
 
-SourceReadonlyArchive::SourceReadonlyArchive(mref<smr<res::Source>> source_) :
-    SourceBaseArchive(_STD move(source_)) {
+SourceReadonlyArchive::SourceReadonlyArchive(
+    mref<smr<res::Source>> source_,
+    mref<streamoff> srcOff_,
+    mref<streamsize> srcSize_
+) :
+    SourceBaseArchive(
+        _STD move(source_),
+        _STD move(srcOff_),
+        _STD move(srcSize_)
+    ) {
     assert(_source->isReadable());
 }
 
@@ -17,10 +25,10 @@ void SourceReadonlyArchive::serializeBytes(const ptr<void> value_, u64 size_, co
         return;
     }
 
-    auto* const source = _source.unwrap();
+    auto* const source = _source.get();
     streamsize readSize = 0ui64;
 
-    const auto success = source->get(_pos, size_, value_, readSize);
+    const auto success = source->get(_srcOff + _pos, size_, value_, readSize);
 
     if (not success || readSize != size_) {
         setError();

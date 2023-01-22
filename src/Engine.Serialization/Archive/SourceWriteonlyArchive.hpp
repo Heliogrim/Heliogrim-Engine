@@ -9,7 +9,11 @@ namespace ember::engine::serialization {
         using this_type = SourceWriteonlyArchive;
 
     public:
-        SourceWriteonlyArchive(mref<smr<res::Source>> source_);
+        SourceWriteonlyArchive(
+            mref<smr<res::Source>> source_,
+            mref<streamoff> srcOff_,
+            mref<streamsize> srcSize_
+        );
 
         ~SourceWriteonlyArchive() override;
 

@@ -3,8 +3,14 @@
 using namespace ember::engine::serialization;
 using namespace ember;
 
-SourceBaseArchive::SourceBaseArchive(mref<smr<res::Source>> source_) :
+SourceBaseArchive::SourceBaseArchive(
+    mref<smr<res::Source>> source_,
+    mref<streamoff> srcOff_,
+    mref<streamsize> srcSize_
+) :
     _source(_STD move(source_)),
+    _srcOff(_STD move(srcOff_)),
+    _srcSize(_STD move(srcSize_)),
     _pos(0) {}
 
 SourceBaseArchive::~SourceBaseArchive() noexcept = default;
@@ -13,7 +19,7 @@ Url SourceBaseArchive::getArchiveUrl() const noexcept {
     const string path {
         _STD format(
             "SourceArchive<<{:#016x}>>",
-            reinterpret_cast<ptrdiff_t>(_source.unwrap())
+            reinterpret_cast<ptrdiff_t>(_source.get())
         )
     };
     return Url { ""sv, path };
