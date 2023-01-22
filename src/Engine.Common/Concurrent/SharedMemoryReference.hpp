@@ -48,7 +48,13 @@ namespace ember {
             _ctrlBlock(ctrlBlock_),
             _packed(packed_) {}
 
-        SharedMemoryReference(cref<this_type>) = delete;
+        SharedMemoryReference(_In_ cref<this_type> other_) :
+            SharedMemoryReference() {
+
+            if (not other_.empty()) {
+                *this = _STD move(other_._ctrlBlock->acq());
+            }
+        }
 
         SharedMemoryReference(_Inout_ mref<this_type> other_) noexcept :
             _ctrlBlock(_STD exchange(other_._ctrlBlock, nullptr)),
@@ -89,14 +95,14 @@ namespace ember {
         }
 
         /**
-         * Will unwrap the stored pointer
+         * Will get the stored pointer
          *
          * @author Julius
          * @date 15.11.2021
          *
          * @returns The stored pointer or nullptr.
          */
-        [[nodiscard]] non_owning_rptr<value_type> unwrap() const noexcept {
+        [[nodiscard]] non_owning_rptr<value_type> get() const noexcept {
             return reinterpret_cast<non_owning_rptr<value_type>>(_packed >> packed_shift);
         }
 
@@ -114,11 +120,11 @@ namespace ember {
 
     public:
         [[nodiscard]] ref<value_type> operator*() const noexcept {
-            return *unwrap();
+            return *get();
         }
 
         [[nodiscard]] non_owning_rptr<value_type> operator->() const noexcept {
-            return unwrap();
+            return get();
         }
 
     public:
@@ -148,7 +154,7 @@ namespace ember {
 
         SharedMemoryReferenceCtrlBlock(_In_ mref<ptr<value_type>> payload_) :
             _packed(0) {
-            this_type::push(_STD move(payload_));
+            this_type::store(_STD move(payload_));
         }
 
         SharedMemoryReferenceCtrlBlock(cref<this_type>) = delete;
@@ -174,7 +180,7 @@ namespace ember {
             const auto packed = _packed.load(_STD memory_order_relaxed);
 
             /**/
-            auto* ctrlp = reinterpret_cast<value_type>(packed >> packed_shift);
+            auto* ctrlp = reinterpret_cast<ptr<value_type>>(packed >> packed_shift);
             if (ctrlp == nullptr) {
                 return;
             }
@@ -183,6 +189,10 @@ namespace ember {
 
             /**/
             this_type::destroy(_STD move(ctrlp));
+        }
+
+        void delete_this() const {
+            delete this;
         }
 
         void destroy(mref<ptr<value_type>> obj_) {
@@ -258,6 +268,8 @@ namespace ember {
                 if ((expect & packed_ref_mask) == 0 && maskedPtr) {
                     auto* ctrlp = reinterpret_cast<ptr<value_type>>(packed >> packed_shift);
                     this_type::destroy(_STD move(ctrlp));
+
+                    delete_this();
                 }
             }
         }
@@ -270,7 +282,7 @@ namespace ember {
          *
          * @param ptr_ The pointer to store into this ctrl block
          */
-        void store(_In_ const value_type ptr_) {
+        void store(_In_ const ptr<value_type> ptr_) {
             const auto original = reinterpret_cast<packed_type>(ptr_);
             const auto packed = original << packed_shift;
 
@@ -288,7 +300,7 @@ namespace ember {
          *
          * @param ptr_ The pointer to store into the ctrl block
          */
-        void push(_In_ const value_type ptr_) {
+        void push(_In_ const ptr<value_type> ptr_) {
             ++_packed;
             store(ptr_);
         }
@@ -303,7 +315,7 @@ namespace ember {
          *
          * @returns True if succeeded, otherwise false
          */
-        [[nodiscard]] bool try_push(_In_ const value_type ptr_) {
+        [[nodiscard]] bool try_push(_In_ const ptr<value_type> ptr_) {
 
             const auto original = reinterpret_cast<packed_type>(ptr_);
             const auto packed = (original << packed_shift) | 0x1;
