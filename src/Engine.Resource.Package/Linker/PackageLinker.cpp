@@ -1,6 +1,6 @@
 #include "PackageLinker.hpp"
 
-#include <Engine.Serialization/Archive/SourceBaseArchive.hpp>
+#include <Engine.Serialization/Archive/SourceReadWriteArchive.hpp>
 #include <Engine.Serialization/Archive/SourceReadonlyArchive.hpp>
 
 #include "LinkedArchiveIterator.hpp"
@@ -23,6 +23,55 @@ bool PackageLinker::canLoad() const noexcept {
 
 bool PackageLinker::canStore() const noexcept {
     return false;
+}
+
+void PackageLinker::restoreLinks() {
+
+    if (not _package || _package->header().indexSize <= 0) {
+        return;
+    }
+
+    PackageIndexEntry index {};
+
+    const streamoff begin = _package->header().indexOffset;
+    const streamoff end = begin + _package->header().indexSize;
+    streampos pos = begin;
+
+    auto* const source = _package->_source.get();
+
+    while (pos < end) {
+
+        streamsize readBytes {};
+        source->get(pos, sizeof(PackageIndexEntry), &index, readBytes);
+
+        /**/
+
+        if (index.offset < sizeof(PackageHeader) || index.offset >= begin) {
+            __debugbreak();
+            throw _STD runtime_error("Invalid offset stored at `PackageIndexEntry`.");
+        }
+
+        if ((index.offset + index.size) > begin) {
+            __debugbreak();
+            throw _STD runtime_error("Invalid size stored at `PackageIndexEntry`.");
+        }
+
+        /**/
+
+        ArchiveHeader header {};
+        source->get(index.offset, sizeof(ArchiveHeader), &header, readBytes);
+
+        /**/
+
+        _links.push_back(LinkedArchive {
+            _STD move(header),
+            _STD move(index)
+        });
+
+        /**/
+
+        pos += sizeof(PackageIndexEntry);
+    }
 }
 
 bool PackageLinker::store(mref<ArchiveHeader> header_, mref<uptr<serialization::Archive>> archive_) {
@@ -53,7 +102,7 @@ bool PackageLinker::store(mref<ArchiveHeader> header_, mref<uptr<serialization::
         archive->serializeBytes(buffer, chunkSize, serialization::ArchiveStreamMode::eOut);
 
         [[maybe_unused]] streamsize wrote {};
-        [[maybe_unused]] auto succeeded = _package->_source->write(nextOffset, chunkSize, buffer, wrote);
+        _package->_source->write(nextOffset, chunkSize, buffer, wrote);
 
         done += chunkSize;
     }
@@ -72,11 +121,31 @@ bool PackageLinker::store(mref<ArchiveHeader> header_, mref<uptr<serialization::
 }
 
 bool PackageLinker::store(std::initializer_list<std::pair<ArchiveHeader, uptr<serialization::Archive>>> archives_) {
-    return false;
+
+    bool succeeded = false;
+    for (auto&& pair : archives_) {
+        //succeeded = store(_STD move(pair.first), _STD move(pair.second)) && succeeded;
+    }
+
+    return succeeded;
 }
 
 uptr<engine::serialization::SourceReadonlyArchive> PackageLinker::load(const Guid archiveGuid_) const noexcept {
-    return nullptr;
+
+    const auto where = _STD ranges::find(_links, archiveGuid_, [](cref<LinkedArchive> linked_) {
+        return linked_.header.guid;
+    });
+
+    if (where == _links.end()) {
+        return nullptr;
+    }
+
+    const auto index = where->index;
+    return make_uptr<serialization::SourceReadonlyArchive>(
+        smr<res::Source>(_package->_source),
+        static_cast<streamoff>(index.offset),
+        static_cast<streamsize>(index.size)
+    );
 }
 
 bool PackageLinker::containsArchive(const Guid archiveGuid_) const noexcept {
@@ -84,7 +153,7 @@ bool PackageLinker::containsArchive(const Guid archiveGuid_) const noexcept {
 }
 
 u64 PackageLinker::getArchiveCount() const noexcept {
-    return 0ui64;
+    return _links.size();
 }
 
 s64 PackageLinker::getArchiveSize() const noexcept {
@@ -128,23 +197,24 @@ PackageLinker::const_iterator_type PackageLinker::cend() const noexcept {
     return const_iterator_type { this, _links.size() };
 }
 
-uptr<engine::serialization::SourceReadonlyArchive> PackageLinker::operator[
-](const_iterator_type where_) const noexcept {
-    return nullptr;
+uptr<PackageLinker::readonly_iter_archive> PackageLinker::operator[](const_iterator_type where_) const noexcept {
+
+    const auto index = where_->index;
+
+    return make_uptr<readonly_iter_archive>(
+        smr<res::Source>(_package->_source),
+        static_cast<streamoff>(index.offset),
+        static_cast<streamsize>(index.size)
+    );
 }
 
-uptr<engine::serialization::SourceBaseArchive> PackageLinker::operator[](iterator_type where_) const noexcept {
-    return nullptr;
+uptr<PackageLinker::iter_archive> PackageLinker::operator[](iterator_type where_) const noexcept {
+
+    const auto index = where_->index;
+
+    return make_uptr<serialization::SourceReadWriteArchive>(
+        smr<res::Source>(_package->_source),
+        static_cast<streamoff>(index.offset),
+        static_cast<streamsize>(index.size)
+    );
 }
-
-bool PackageLinker::read() {
-    return false;
-}
-
-bool PackageLinker::write() {
-    return false;
-}
-
-void PackageLinker::readPackageIndex() {}
-
-void PackageLinker::writePackageIndex() {}

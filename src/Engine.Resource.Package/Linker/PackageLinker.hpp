@@ -21,6 +21,9 @@ namespace ember::engine::resource {
         using iterator_type = LinkedArchiveIterator<false>;
         using const_iterator_type = LinkedArchiveIterator<true>;
 
+        using iter_archive = serialization::SourceBaseArchive;
+        using readonly_iter_archive = serialization::SourceReadonlyArchive;
+
     protected:
         PackageLinker(const non_owning_rptr<Package> package_);
 
@@ -39,6 +42,9 @@ namespace ember::engine::resource {
 
     private:
         Vector<LinkedArchive> _links;
+
+    protected:
+        void restoreLinks();
 
     public:
         bool store(mref<ArchiveHeader> header_, mref<uptr<serialization::Archive>> archive_);
@@ -73,18 +79,8 @@ namespace ember::engine::resource {
         [[nodiscard]] const_iterator_type cend() const noexcept;
 
     protected:
-        [[nodiscard]] uptr<serialization::SourceReadonlyArchive> operator[](const_iterator_type where_) const noexcept;
+        [[nodiscard]] uptr<readonly_iter_archive> operator[](const_iterator_type where_) const noexcept;
 
-        [[nodiscard]] uptr<serialization::SourceBaseArchive> operator[](iterator_type where_) const noexcept;
-
-    public:
-        [[deprecated]] bool read();
-
-        [[deprecated]] bool write();
-
-    private:
-        [[deprecated]] void readPackageIndex();
-
-        [[deprecated]] void writePackageIndex();
+        [[nodiscard]] uptr<iter_archive> operator[](iterator_type where_) const noexcept;
     };
 }

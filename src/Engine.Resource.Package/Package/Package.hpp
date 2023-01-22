@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Resource/Source/Source.hpp>
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 #include "__fwd.hpp"
 #include "../Linker/__fwd.hpp"
@@ -37,14 +38,17 @@ namespace ember::engine::resource {
         [[nodiscard]] ref<PackageFooter> footer() noexcept;
 
     private:
-        uptr<res::Source> _source;
+        smr<res::Source> _source;
         uptr<PackageLinker> _linker;
+
+    private:
+        void makeLinker();
 
     public:
         [[nodiscard]] const non_owning_rptr<PackageLinker> getLinker() const noexcept;
 
     public:
-        void unsafeReleaseSource(_Out_ ref<uptr<res::Source>> dst_);
+        void unsafeReleaseSource(_Out_ ref<smr<res::Source>> dst_);
 
     public:
         void unsafeWrite();
