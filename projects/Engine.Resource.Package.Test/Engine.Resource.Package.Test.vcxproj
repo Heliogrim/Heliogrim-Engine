@@ -49,6 +49,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
+    <ProjectReference Include="..\Engine.Logging\Engine.Logging.vcxproj">
+      <Project>{9d1b3213-b18e-4551-9a75-9ecd3f6196ee}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Resource.Package\Engine.Resource.Package.vcxproj">
       <Project>{3922e176-b912-4e38-b342-bc3cf890ea4a}</Project>
     </ProjectReference>
