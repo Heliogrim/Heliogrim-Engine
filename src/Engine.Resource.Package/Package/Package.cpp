@@ -4,6 +4,7 @@
 
 #include "MagicBytes.hpp"
 
+#include <Engine.Common/Make.hpp>
 #include <Engine.Serialization/Archive/BufferArchive.hpp>
 
 using namespace ember::engine::resource;
@@ -16,8 +17,9 @@ Package::Package(
 ) :
     _header(_STD move(header_)),
     _footer(_STD move(footer_)),
-    _source(_STD move(source_)) {
-    _linker = uptr<PackageLinker>(new PackageLinker(this));
+    _source(make_smr<res::Source>(_STD move(source_))) {
+
+    makeLinker();
 }
 
 Package::~Package() {}
@@ -30,11 +32,16 @@ ref<PackageFooter> Package::footer() noexcept {
     return _footer;
 }
 
+void Package::makeLinker() {
+    _linker = uptr<PackageLinker>(new PackageLinker(this));
+    _linker->restoreLinks();
+}
+
 const non_owning_rptr<PackageLinker> Package::getLinker() const noexcept {
     return _linker.get();
 }
 
-void Package::unsafeReleaseSource(ref<uptr<res::Source>> dst_) {
+void Package::unsafeReleaseSource(ref<smr<res::Source>> dst_) {
     dst_ = _STD move(_source);
 }
 
