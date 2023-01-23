@@ -40,6 +40,12 @@
     <Filter Include="Quelldateien\Manage">
       <UniqueIdentifier>{de227ce9-06f9-4dc7-8942-2e12e5dd4add}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Stream">
+      <UniqueIdentifier>{c2cfb6f5-2351-49f3-8f7c-4a4846bb555e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Stream">
+      <UniqueIdentifier>{39223e18-870c-4353-8921-e4e4fa88acf6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Resource\FileResource.hpp">
@@ -55,9 +61,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\Manage\Resource.hpp">
-      <Filter>Headerdateien\Manage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Manage\StreamResource.hpp">
       <Filter>Headerdateien\Manage</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\Manage\SharedResource.hpp">
@@ -123,13 +126,31 @@
     <ClInclude Include="..\..\src\Engine.Resource\Indexer\MetaFile.hpp">
       <Filter>Headerdateien\Indexer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Manage\Streamable.hpp">
-      <Filter>Headerdateien\Manage</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\Loader\StreamLoader.hpp">
       <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\Manage\ResourceConcept.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Stream\Streamable.hpp">
+      <Filter>Headerdateien\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\ResourceBase.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\ManageGuard.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\TypedManageGuard.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\ConcurrentSharedResource.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\MutexSharedResource.hpp">
+      <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\__fwd.hpp">
       <Filter>Headerdateien\Manage</Filter>
     </ClInclude>
   </ItemGroup>
