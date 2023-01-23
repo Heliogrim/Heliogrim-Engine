@@ -2,6 +2,8 @@
 
 #include "__fwd.hpp"
 #include "LoaderStage.hpp"
+#include "CacheRequest.hpp"
+#include "CacheResponse.hpp"
 
 namespace ember::engine::resource::loader {
     template <typename AssetType_, typename ResourceType_>
