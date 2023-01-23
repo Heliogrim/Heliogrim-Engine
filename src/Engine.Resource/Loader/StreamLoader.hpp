@@ -1,10 +1,9 @@
 #pragma once
 
 #include "Loader.hpp"
-#include "../Manage/Streamable.hpp"
+#include "../Stream/Streamable.hpp"
 
-namespace ember::engine::res {
-
+namespace ember::engine::resource {
     template <assets::IsStreamableAsset AssetType_>
     struct StreamLoaderOptions;
 
@@ -53,8 +52,10 @@ namespace ember::engine::res {
          * @param resource_ The resource where to apply stream data changes (loading/allocating) and apply meta information.
          * @param options_  The meta information to mutate resource.
          */
-        virtual void streamLoad(_Inout_ const ptr<partial::Streamable<Resource>> resource_,
-            stream_options_type options_) = 0;
+        virtual void streamLoad(
+            _Inout_ const ptr<partial::Streamable<ResourceBase>> resource_,
+            stream_options_type options_
+        ) = 0;
 
         /**
          * Stream unloading operation on given resource_ based on provided meta information
@@ -65,7 +66,9 @@ namespace ember::engine::res {
          * @param resource_ The resource where to apply stream data changes (unloading/freeing) and apply meta information.
          * @param options_  The meta information to mutate resource.
          */
-        virtual void streamUnload(_Inout_ const ptr<partial::Streamable<Resource>> resource_,
-            stream_options_type options_) = 0;
+        virtual void streamUnload(
+            _Inout_ const ptr<partial::Streamable<ResourceBase>> resource_,
+            stream_options_type options_
+        ) = 0;
     };
 }

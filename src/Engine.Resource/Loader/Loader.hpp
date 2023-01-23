@@ -9,8 +9,7 @@
 #include "../Manage/Resource.hpp"
 #include "../Manage/ResourceConcept.hpp"
 
-namespace ember::engine::res {
-
+namespace ember::engine::resource {
     template <assets::IsAsset Type_>
     struct LoaderOptions;
 
@@ -30,7 +29,7 @@ namespace ember::engine::res {
 
         template <typename Type_>
         using result_wrapper_type = _STD type_identity_t<Type_>;
-        using result_data_type = ptr<Resource>;
+        using result_data_type = ptr<ResourceBase>;
         using result_type = result_wrapper_type<result_data_type>;
 
     private:
@@ -76,9 +75,9 @@ namespace ember::engine::res {
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
-        static_assert(IsResource<PartialType_<Resource>>);
+        static_assert(IsResource<PartialType_<ResourceBase>>);
 
-        using result_type = base_type::result_wrapper_type<ptr<PartialType_<Resource>>>;
+        using result_type = base_type::result_wrapper_type<ptr<PartialType_<ResourceBase>>>;
         using options_type = ptr<LoaderOptions<AssetType_>>;
 
     protected:
@@ -107,6 +106,5 @@ namespace ember::engine::res {
 
     public:
         [[nodiscard]] virtual result_type operator()(const ptr<AssetType_> asset_, options_type options_ = nullptr) = 0;
-
     };
 }

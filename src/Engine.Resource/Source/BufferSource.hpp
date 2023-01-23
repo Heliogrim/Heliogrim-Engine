@@ -23,6 +23,8 @@ namespace ember::engine::res {
          */
         BufferSource() noexcept = delete;
 
+        BufferSource(mref<Buffer> buffer_);
+
         /**
          * Move Constructor
          *
@@ -76,7 +78,8 @@ namespace ember::engine::res {
          */
         reference_type operator=(cref<value_type> other_) noexcept = default;
 
-    private:
+        //private:
+    public:
         Buffer _buffer;
 
     public:

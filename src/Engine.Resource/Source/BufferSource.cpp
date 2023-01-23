@@ -5,6 +5,9 @@
 using namespace ember::engine::res;
 using namespace ember;
 
+BufferSource::BufferSource(mref<Buffer> buffer_) :
+    _buffer(_STD move(buffer_)) {}
+
 BufferSource::reference_type BufferSource::operator=(mref<value_type> other_) noexcept {
     if (this != _STD addressof(other_)) {
         _buffer = _STD move(other_._buffer);
@@ -36,7 +39,7 @@ bool BufferSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<
     }
 
     actualSize_ = MIN(_buffer.size - offset_, size_);
-    memcpy(dst_, _buffer.mem, actualSize_);
+    memcpy(dst_, static_cast<ptr<u8>>(_buffer.mem) + offset_, actualSize_);
 
     return true;
 }
@@ -52,7 +55,7 @@ bool BufferSource::write(streamoff offset_, streamsize size_, const ptr<void> sr
     }
 
     actualSize_ = MIN(_buffer.size - offset_, size_);
-    memcpy(_buffer.mem, src_, actualSize_);
+    memcpy(static_cast<ptr<u8>>(_buffer.mem) + offset_, src_, actualSize_);
 
     return true;
 }

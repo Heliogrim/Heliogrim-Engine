@@ -4,11 +4,14 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Assets/Types/Asset.hpp>
 
+#include "__fwd.hpp"
 #include "../ResourceUsageFlag.hpp"
-#include "ManageGuard.hpp"
 
 namespace ember::engine::resource {
     class __declspec(novtable) ResourceBase {
+    public:
+        friend class ManageGuard;
+
     public:
         using this_type = ResourceBase;
 
@@ -68,16 +71,23 @@ namespace ember::engine::resource {
          * @returns True if it succeeds, false if it fails.
          */
         [[nodiscard]] virtual bool try_acquire(
-            _Inout_ ref<ManageGuard> guard_,
+            _Out_ ref<ManageGuard> guard_,
             const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault
         ) noexcept = 0;
 
+    protected:
         /**
          * Releases this resource of use
+         *
+         * @details Should be guarded or only used with caution, cause most locks
+         *  or resource handlers won't save the acquirer signature.
          *
          * @author Julius
          * @date 28.08.2021
          */
         virtual void release(const ResourceUsageFlags flags_) = 0;
+
+    protected:
+        [[nodiscard]] virtual const non_owning_rptr<void> value() const noexcept = 0;
     };
 }

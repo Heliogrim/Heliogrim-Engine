@@ -30,7 +30,6 @@
     <ClInclude Include="..\..\src\Engine.Resource\Locator.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Manage\ConcurrentSharedResource.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Manage\CopyOnWriteResource.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource\Manage\Guard.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Manage\ManageGuard.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Manage\MutexSharedResource.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Manage\Resource.hpp" />
@@ -59,7 +58,9 @@
     <ClCompile Include="..\..\src\Engine.Resource\Indexer\Watcher.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\LoaderManager.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\Locator.cpp" />
+    <ClCompile Include="..\..\src\Engine.Resource\Manage\ManageGuard.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\Manage\Resource.cpp" />
+    <ClCompile Include="..\..\src\Engine.Resource\Manage\ResourceBase.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\Source\BufferSource.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\Source\FileSource.cpp" />

@@ -10,7 +10,7 @@
 #include "Loader/StreamLoader.hpp"
 #include "Manage/Resource.hpp"
 
-namespace ember::engine::res {
+namespace ember::engine::resource {
 
     class LoaderManager {
     public:
@@ -114,7 +114,7 @@ namespace ember::engine::res {
          *
          * @returns A pointer of the resource which should be loaded.
          */
-        [[nodiscard]] ptr<Resource> preload(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
+        [[nodiscard]] ptr<ResourceBase> preload(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
 
         /**
          * Preloads the requested type of resource by unique identifier
