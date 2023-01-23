@@ -84,9 +84,6 @@
     <ClInclude Include="..\..\src\Engine.Resource\Loader\Loader.hpp">
       <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderStages.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\Locator.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -149,6 +146,24 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\Manage\__fwd.hpp">
       <Filter>Headerdateien\Manage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoader.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderStage.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\__fwd.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\Transformer.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\Feedback.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\Cache.hpp">
+      <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
