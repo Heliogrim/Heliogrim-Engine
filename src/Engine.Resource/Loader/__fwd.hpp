@@ -40,6 +40,9 @@ namespace ember::engine::resource::loader {
     template <typename, typename>
     struct RequestOptions;
 
+    template <typename, typename>
+    struct StreamOptions;
+
     /**/
 
     template <IsResponseValueType>

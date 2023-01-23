@@ -1,8 +1,9 @@
 #pragma once
 
-#include "LoaderStage.hpp"
-
 #include "__fwd.hpp"
+#include "LoaderStage.hpp"
+#include "SourceLoaderRequest.hpp"
+#include "SourceLoaderResponse.hpp"
 
 namespace ember::engine::resource::loader {
     class SourceLoader :
