@@ -72,9 +72,6 @@
     <ClInclude Include="..\..\src\Engine.Resource\Manage\UniqueResource.hpp">
       <Filter>Headerdateien\Manage</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Manage\Guard.hpp">
-      <Filter>Headerdateien\Manage</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\ResourceUsageFlag.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -192,6 +189,12 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Resource\Manage\Resource.cpp">
+      <Filter>Quelldateien\Manage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\Manage\ManageGuard.cpp">
+      <Filter>Quelldateien\Manage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\Manage\ResourceBase.cpp">
       <Filter>Quelldateien\Manage</Filter>
     </ClCompile>
   </ItemGroup>

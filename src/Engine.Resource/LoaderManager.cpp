@@ -1,6 +1,6 @@
 #include "LoaderManager.hpp"
 
-using namespace ember::engine::res;
+using namespace ember::engine::resource;
 using namespace ember;
 
 LoaderManager::LoaderManager() noexcept = default;
@@ -26,9 +26,12 @@ bool LoaderManager::registerLoader(cref<asset_type_id> typeId_, cref<sptr<Loader
 
 bool LoaderManager::unregisterLoader(sptr<LoaderBase> loader_) noexcept {
 
-    const auto iter = _STD ranges::find_if(_loader, [loader_](const auto& pair_) {
-        return pair_.second == loader_;
-    });
+    const auto iter = _STD ranges::find_if(
+        _loader,
+        [loader_](const auto& pair_) {
+            return pair_.second == loader_;
+        }
+    );
 
     if (iter == _loader.cend()) {
         return false;

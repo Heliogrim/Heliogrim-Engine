@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Resource.hpp"
+#include "../Manage/ResourceBase.hpp"
 #include "../Loader/Loader.hpp"
 
-namespace ember::engine::res::partial {
-
+namespace ember::engine::resource::partial {
     template <IsResource Type_>
     class __declspec(novtable) Streamable :
         public Type_ {

@@ -75,16 +75,16 @@ namespace ember::engine {
         #endif
 
     private:
-        uptr<res::LoaderManager> _loader;
+        uptr<resource::LoaderManager> _loader;
 
     public:
-        [[nodiscard]] cref<res::LoaderManager> loader() const;
+        [[nodiscard]] cref<resource::LoaderManager> loader() const;
 
-        [[nodiscard]] ptr<const res::LoaderManager> loader(_STD nothrow_t) const noexcept;
+        [[nodiscard]] ptr<const resource::LoaderManager> loader(_STD nothrow_t) const noexcept;
 
-        [[nodiscard]] ref<res::LoaderManager> loader();
+        [[nodiscard]] ref<resource::LoaderManager> loader();
 
-        [[nodiscard]] ptr<res::LoaderManager> loader(_STD nothrow_t) noexcept;
+        [[nodiscard]] ptr<resource::LoaderManager> loader(_STD nothrow_t) noexcept;
 
     private:
         uptr<res::Locator> _locator;

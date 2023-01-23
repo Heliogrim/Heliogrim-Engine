@@ -36,6 +36,19 @@ namespace ember::engine::resource {
          */
         ~Resource() override = default;
 
+    private:
+        ptr<value_type> _value;
+
+    public:
+        loaded_flag_type loaded() const noexcept override {
+            return (loaded_flag_type)(_value != nullptr);
+        }
+
+    protected:
+        [[nodiscard]] const non_owning_rptr<void> value() const noexcept override {
+            return _value;
+        }
+
     public:
         /**
          * Acquire this resource to use
@@ -47,9 +60,11 @@ namespace ember::engine::resource {
          *
          * @returns A TypedManageGuard instance.
          */
-        [[nodiscard]] TypedManageGuard<value_type> acquire(
-            const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault) {
-            return this->acquire(flags_);
+        template <typename Type_ = ManagedType_> requires _STD is_same_v<Type_, ManagedType_>
+        [[nodiscard]] TypedManageGuard<Type_> acquire(
+            const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault
+        ) {
+            return static_cast<ptr<ResourceBase>>(this)->acquire(flags_);
         }
 
         /**
@@ -63,11 +78,12 @@ namespace ember::engine::resource {
          *
          * @returns True if it succeeds, false if it fails.
          */
+        template <typename Type_ = ManagedType_> requires _STD is_same_v<Type_, ManagedType_>
         [[nodiscard]] bool try_acquire(
-            _Out_ ref<TypedManageGuard<value_type>> guard_,
+            _Out_ ref<TypedManageGuard<Type_>> guard_,
             const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault
         ) noexcept {
-            return this->try_acquire(static_cast<ref<ManageGuard>>(guard_), flags_);
+            return static_cast<ptr<ResourceBase>>(this)->try_acquire(static_cast<ref<ManageGuard>>(guard_), flags_);
         }
     };
 }

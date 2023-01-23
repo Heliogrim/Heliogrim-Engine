@@ -4,10 +4,7 @@
 #include "ManageGuard.hpp"
 
 namespace ember::engine::resource {
-    template <typename Type_>
-    concept IsManageType = true;
-
-    template <IsManageType ValueType_>
+    template <typename ValueType_>
     class TypedManageGuard :
         public ManageGuard {
     public:
@@ -66,7 +63,8 @@ namespace ember::engine::resource {
         TypedManageGuard(
             const ptr<typed_resource_type> resource_,
             const ResourceUsageFlags flags_,
-            const _STD defer_lock_t) :
+            const _STD defer_lock_t
+        ) :
             ManageGuard(resource_, flags_, _STD defer_lock) {}
 
         /**
@@ -104,6 +102,7 @@ namespace ember::engine::resource {
             return ManageGuard::acquire(resource_, flags_);
         }
 
+        // ReSharper disable once CppHidingFunction
         ref<this_type> release() {
             return ManageGuard::release();
         }
@@ -153,7 +152,7 @@ namespace ember::engine::resource {
         using underlying_type::value_type;
 
     public:
-        using underlying_type::this_type;
+        constexpr MutTypedManageGuard() = default;
 
     public:
         [[nodiscard]] const ptr<typename value_type> operator->() const noexcept {
