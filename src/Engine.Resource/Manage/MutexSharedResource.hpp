@@ -1,18 +1,21 @@
 #pragma once
-#include "Resource.hpp"
+
+#include "SharedResource.hpp"
 
 namespace ember::engine::resource {
     template <typename ManagedType_>
-    class UniqueResource final :
-        public Resource<ManagedType_> {
+    class MutexSharedResource final :
+        public SharedResource<ManagedType_> {
     public:
-        using this_type = UniqueResource<ManagedType_>;
-        using underlying_type = Resource<ManagedType_>;
+        using this_type = MutexSharedResource<ManagedType_>;
+        using underlying_type = SharedResource<ManagedType_>;
 
         using underlying_type::value_type;
 
     public:
-        using underlying_type::this_type;
+        MutexSharedResource();
+
+        ~MutexSharedResource() override;
 
     public:
         [[nodiscard]] ResourceBase::loaded_flag_type loaded() const noexcept override;

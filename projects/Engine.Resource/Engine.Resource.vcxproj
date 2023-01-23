@@ -28,14 +28,18 @@
     <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderStages.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Loader\StreamLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Locator.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\ConcurrentSharedResource.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Manage\CopyOnWriteResource.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Manage\Guard.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\ManageGuard.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\MutexSharedResource.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Manage\Resource.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\ResourceBase.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Manage\ResourceConcept.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Manage\SharedResource.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource\Manage\Streamable.hpp" />
-    <ClInclude Include="..\..\src\Engine.Resource\Manage\StreamResource.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\TypedManageGuard.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Manage\UniqueResource.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Manage\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\ResourceManager.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\ResourceUsageFlag.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Source\BufferSource.hpp" />
@@ -44,6 +48,7 @@
     <ClInclude Include="..\..\src\Engine.Resource\Source\ParallelSource.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Source\Source.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\StreamUtils.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Stream\Streamable.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\tmp.hpp" />
   </ItemGroup>
   <ItemGroup>

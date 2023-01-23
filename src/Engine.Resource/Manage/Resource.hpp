@@ -4,19 +4,18 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Assets/Types/Asset.hpp>
 
-#include "Guard.hpp"
 #include "../ResourceUsageFlag.hpp"
+#include "ResourceBase.hpp"
+#include "TypedManageGuard.hpp"
 
-namespace ember::engine::res {
-
-    // TODO: Make subtypes of resource partial compositions to make explicit comps for every use case
-    //  TODO: like: `Streamable<Shared<Resource>>` vs `Streamable<Unique<Resource>>` vs `Streamable<CopyOnWrite<Shared<Resource>>>`
-    class __declspec(novtable) Resource {
+namespace ember::engine::resource {
+    template <typename ManagedType_>
+    class __declspec(novtable) Resource :
+        public ResourceBase {
     public:
-        using value_type = Resource;
-        using reference_type = ref<value_type>;
-        using const_reference_type = cref<value_type>;
+        using this_type = Resource;
 
+        using value_type = ManagedType_;
         using loaded_flag_type = u8;
 
     protected:
@@ -35,28 +34,7 @@ namespace ember::engine::res {
          * @author Julius
          * @date 27.08.2021
          */
-        virtual ~Resource() = default;
-
-    public:
-        /**
-         * Get the current loading state of this resource
-         *
-         * @author Julius
-         * @date 27.08.2021
-         *
-         * @returns The loaded_flag_type value.
-         */
-        [[nodiscard]] virtual loaded_flag_type loaded() const noexcept = 0;
-
-        /**
-         * Check whether this is loaded
-         *
-         * @author Julius
-         * @date 27.08.2021
-         *
-         * @returns True if loaded, false if not.
-         */
-        [[nodiscard]] bool isLoaded() const noexcept;
+        ~Resource() override = default;
 
     public:
         /**
@@ -67,10 +45,12 @@ namespace ember::engine::res {
          *
          * @param  flags_ (Optional) The flags.
          *
-         * @returns A ManageGuard&lt;value_type&gt;
+         * @returns A TypedManageGuard instance.
          */
-        [[nodiscard]] virtual ManageGuard<value_type> acquire(
-            const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault) = 0;
+        [[nodiscard]] TypedManageGuard<value_type> acquire(
+            const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault) {
+            return this->acquire(flags_);
+        }
 
         /**
          * Attempts to acquire this resource to use
@@ -83,26 +63,11 @@ namespace ember::engine::res {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        [[nodiscard]] virtual bool try_acquire(_Inout_ ref<ManageGuard<value_type>> guard_,
-            const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault) noexcept = 0;
-
-        /**
-         * Releases this resource of use
-         *
-         * @author Julius
-         * @date 28.08.2021
-         */
-        virtual void release(const ResourceUsageFlags flags_) = 0;
-
-    protected:
-        non_owning_rptr<const assets::Asset> _origin;
-
-    public:
-        [[nodiscard]] bool hasOrigin() const noexcept;
-
-        [[nodiscard]] const non_owning_rptr<const assets::Asset> origin() const noexcept;
-
-        void setOrigin(const non_owning_rptr<const assets::Asset> origin_) noexcept;
-
+        [[nodiscard]] bool try_acquire(
+            _Out_ ref<TypedManageGuard<value_type>> guard_,
+            const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault
+        ) noexcept {
+            return this->try_acquire(static_cast<ref<ManageGuard>>(guard_), flags_);
+        }
     };
 }
