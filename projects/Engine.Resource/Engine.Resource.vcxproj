@@ -31,7 +31,9 @@
     <ClInclude Include="..\..\src\Engine.Resource\Loader\FeedbackRequest.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Loader\FeedbackResponse.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Loader\Loader.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderChain.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderStageTraits.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoaderRequest.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoaderResponse.hpp" />

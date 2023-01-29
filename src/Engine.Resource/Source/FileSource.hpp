@@ -2,7 +2,7 @@
 #include "Source.hpp"
 #include "../File.hpp"
 
-namespace ember::engine::res {
+namespace ember::engine::resource {
     class FileSource :
         public Source {
     public:

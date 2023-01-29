@@ -4,7 +4,7 @@
 #include <ranges>
 #include <Engine.Common/Exception/NotImplementedException.hpp>
 
-using namespace ember::engine::res;
+using namespace ember::engine::resource;
 using namespace ember;
 
 ParallelSource::reference_type ParallelSource::operator=(mref<value_type> other_) noexcept {

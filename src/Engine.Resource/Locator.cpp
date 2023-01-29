@@ -1,6 +1,6 @@
 #include "Locator.hpp"
 
-using namespace ember::engine::res;
+using namespace ember::engine::resource;
 using namespace ember;
 
 Locator::reference_type Locator::operator=(mref<value_type> other_) noexcept {

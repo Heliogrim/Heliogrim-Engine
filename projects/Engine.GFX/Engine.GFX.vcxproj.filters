@@ -142,9 +142,6 @@
     <Filter Include="Quelldateien\Buffer">
       <UniqueIdentifier>{5b815bb9-5634-4f24-b243-ecd2ea6ba842}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Resource">
-      <UniqueIdentifier>{a7655799-8be3-4ab2-ab83-dfc6c55b23f7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Renderer">
       <UniqueIdentifier>{dac75928-366b-42b9-ba25-372eed727a4d}</UniqueIdentifier>
     </Filter>
@@ -165,9 +162,6 @@
     </Filter>
     <Filter Include="Headerdateien\Performance">
       <UniqueIdentifier>{259d905f-fc81-4fa0-a355-47773a272938}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Resource">
-      <UniqueIdentifier>{3948f78b-e611-4f87-a3f5-d6f5b8a12c2d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Quelldateien\Importer">
       <UniqueIdentifier>{aff54484-1f05-4ac8-a451-0d191109256b}</UniqueIdentifier>
@@ -235,9 +229,6 @@
       <Filter>Headerdateien\Library</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Loader\GeometryLoader.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Loader\TextureLoader.hpp">
       <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Material\Material.hpp">
@@ -456,9 +447,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Loader\StaticGeometryLoader.hpp">
       <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Loader\RevTextureLoader.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Memory\VirtualMemory.hpp">
       <Filter>Headerdateien\Memory</Filter>
     </ClInclude>
@@ -488,9 +476,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBufferPage.hpp">
       <Filter>Headerdateien\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Resource\StaticGeometryResource.hpp">
-      <Filter>Headerdateien\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Shader\ShaderBinding.hpp">
       <Filter>Headerdateien\Shader</Filter>
@@ -615,9 +600,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Cache\GlobalResourceCache.hpp">
       <Filter>Headerdateien\Cache</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Resource\TextureResource.hpp">
-      <Filter>Headerdateien\Resource</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTextureView.hpp">
       <Filter>Headerdateien\Texture</Filter>
     </ClInclude>
@@ -641,9 +623,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Scene\GeometryModel.hpp">
       <Filter>Headerdateien\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Resource\MaterialResource.hpp">
-      <Filter>Headerdateien\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Loader\MaterialLoader.hpp">
       <Filter>Headerdateien\Loader</Filter>
@@ -683,9 +662,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Loader\FontLoader.hpp">
       <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Resource\FontResource.hpp">
-      <Filter>Headerdateien\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.hpp">
       <Filter>Headerdateien\Swapchain</Filter>
@@ -992,14 +968,8 @@
     <ClCompile Include="..\..\src\Engine.GFX\Loader\MaterialLoader.cpp">
       <Filter>Quelldateien\Loader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Resource\MaterialResource.cpp">
-      <Filter>Quelldateien\Resource</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Cache\LocalCacheCtrl.cpp">
       <Filter>Quelldateien\Cache</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Resource\TextureResource.cpp">
-      <Filter>Quelldateien\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\Buffer.cpp">
       <Filter>Quelldateien\Buffer</Filter>
@@ -1024,9 +994,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Loader\FontLoader.cpp">
       <Filter>Quelldateien\Loader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Resource\FontResource.cpp">
-      <Filter>Quelldateien\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.cpp">
       <Filter>Quelldateien\Swapchain</Filter>

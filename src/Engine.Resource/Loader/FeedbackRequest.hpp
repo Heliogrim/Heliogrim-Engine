@@ -8,7 +8,7 @@ namespace ember::engine::resource::loader {
         using this_type = FeedbackRequest<ValueType_>;
 
         using value_type = ValueType_;
-        using option_type = RequestOptions<this_type, ValueType_>;
+        using options_type = RequestOptions<this_type, ValueType_>;
 
         using stream_type = _STD conditional_t<
             assets::IsStreamableAsset<ValueType_>,

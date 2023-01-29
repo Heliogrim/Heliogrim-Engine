@@ -1,60 +1,65 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Assets/Types/AssetConcept.hpp>
 
 #include "__fwd.hpp"
+#include "LoaderStageTraits.hpp"
+
+#include "CacheRequest.hpp"
+#include "FeedbackRequest.hpp"
+#include "TransformerRequest.hpp"
+#include "SourceLoaderRequest.hpp"
+
+#include "CacheResponse.hpp"
+#include "FeedbackResponse.hpp"
+#include "TransformerResponse.hpp"
+#include "SourceLoaderResponse.hpp"
 
 namespace ember::engine::resource::loader {
     namespace {
-        template <typename LoaderStage_, bool>
+        template <typename Traits_, bool>
         struct StreamLoaderStage;
 
-        template <typename LoaderStage_>
-        struct __declspec(novtable) StreamLoaderStage<LoaderStage_, false> {};
-
-        template <typename LoaderStage_>
-        struct __declspec(novtable) StreamLoaderStage<LoaderStage_, true> {
+        template <typename Traits_>
+        struct __declspec(novtable) StreamLoaderStage<Traits_, false> {
         public:
-            using loader_stage_type = LoaderStage_;
+            virtual ~StreamLoaderStage() = default;
+        };
 
-            using response_value_type = typename loader_stage_type::response_value_type;
-            using request_value_type = typename loader_stage_type::request_value_type;
-            using request_options_type = typename loader_stage_type::request_options_type;
-            using stream_options_type = typename loader_stage_type::stream_options_type;
+        template <typename Traits_>
+        struct __declspec(novtable) StreamLoaderStage<Traits_, true> {
+        public:
+            using traits = Traits_;
 
         public:
             virtual ~StreamLoaderStage() = default;
 
         public:
-            [[nodiscard]] virtual response_value_type operator()(
-                mref<request_value_type> request_,
-                mref<request_options_type> options_,
-                mref<stream_options_type> streamOptions_
+            [[nodiscard]] virtual typename traits::response_value_type operator()(
+                mref<typename traits::request_value_type> request_,
+                mref<typename traits::request_options_type> options_,
+                mref<typename traits::stream_options_type> streamOptions_
             ) const = 0;
         };
     }
 
-    template <IsRequestType RequestType_, IsResponseType ResponseType_>
+    template </*IsRequestType*/typename RequestType_, /*IsResponseType*/typename ResponseType_>
     class __declspec(novtable) LoaderStage :
         StreamLoaderStage<
-            LoaderStage<RequestType_, ResponseType_>,
+            LoaderStageTraits<RequestType_, ResponseType_>,
             assets::IsStreamableAsset<typename RequestType_::value_type>
         > {
     public:
-        using request_type = RequestType_;
-        using request_value_type = typename request_type::value_type;
-        using request_options_type = typename request_type::options_type;
-
-        using response_type = ResponseType_;
-        using response_value_type = typename response_type::value_type;
+        using traits = LoaderStageTraits<RequestType_, ResponseType_>;
 
     public:
-        virtual ~LoaderStage() override = default;
+        ~LoaderStage() override = default;
 
     public:
-        [[nodiscard]] virtual response_value_type operator()(
-            mref<request_value_type> request_,
-            mref<request_options_type> options_
+        [[nodiscard]] virtual typename traits::response_value_type operator()(
+            mref<typename traits::request_value_type> request_,
+            mref<typename traits::request_options_type> options_
         ) const = 0;
     };
 }

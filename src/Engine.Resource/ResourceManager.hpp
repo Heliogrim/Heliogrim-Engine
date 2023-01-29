@@ -87,15 +87,15 @@ namespace ember::engine {
         [[nodiscard]] ptr<resource::LoaderManager> loader(_STD nothrow_t) noexcept;
 
     private:
-        uptr<res::Locator> _locator;
+        uptr<resource::Locator> _locator;
 
     public:
-        [[nodiscard]] cref<res::Locator> locator() const;
+        [[nodiscard]] cref<resource::Locator> locator() const;
 
-        [[nodiscard]] ptr<const res::Locator> locator(_STD nothrow_t) const noexcept;
+        [[nodiscard]] ptr<const resource::Locator> locator(_STD nothrow_t) const noexcept;
 
-        [[nodiscard]] ref<res::Locator> locator();
+        [[nodiscard]] ref<resource::Locator> locator();
 
-        [[nodiscard]] ptr<res::Locator> locator(_STD nothrow_t) noexcept;
+        [[nodiscard]] ptr<resource::Locator> locator(_STD nothrow_t) noexcept;
     };
 }

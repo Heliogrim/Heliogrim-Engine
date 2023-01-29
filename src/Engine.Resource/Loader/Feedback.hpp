@@ -10,10 +10,12 @@ namespace ember::engine::resource::loader {
     class Feedback :
         public FeedbackStage<AssetType_, ResourceType_> {
     public:
+        using this_type = Feedback<AssetType_, ResourceType_>;
         using underlying_type = FeedbackStage<AssetType_, ResourceType_>;
 
-        using underlying_type::response_value_type;
-        using underlying_type::request_value_type;
-        using underlying_type::request_options_type;
+        using underlying_type::traits;
+
+        using sub_request_type = typename underlying_type::traits::request_type;
+        using sub_response_type = typename underlying_type::traits::response_type;
     };
 }

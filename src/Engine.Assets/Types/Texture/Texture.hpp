@@ -95,13 +95,3 @@ namespace ember::engine::assets {
         inline static constexpr bool value = true;
     };
 }
-
-namespace ember::engine::res {
-    template <>
-    struct StreamLoaderOptions<::ember::engine::assets::Texture> {
-        u32 layer;
-        u32 mip;
-        math::uivec3 offset;
-        math::uivec3 extent;
-    };
-}

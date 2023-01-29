@@ -4,7 +4,7 @@
 #include "Engine.Common/__macro.hpp"
 #include <Engine.Common/Concurrent/Future.hpp>
 
-namespace ember::engine::res {
+namespace ember::engine::resource {
     class __declspec(novtable) Source {
     public:
         using value_type = Source;

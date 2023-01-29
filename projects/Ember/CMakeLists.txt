@@ -15,6 +15,7 @@ set(
 		${META_PROJECT_NAME}::Engine.GFX.Glow
 		${META_PROJECT_NAME}::Engine.GFX.Glow.3D
 		${META_PROJECT_NAME}::Engine.GFX.Glow.UI
+		${META_PROJECT_NAME}::Engine.GFX.Loader
 		${META_PROJECT_NAME}::Engine.GFX.Scene
 		${META_PROJECT_NAME}::Engine.GFX.Schedule
 		${META_PROJECT_NAME}::Engine.Input

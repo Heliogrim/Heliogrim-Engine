@@ -1,110 +1,102 @@
 #pragma once
 
-#include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/Types/Asset.hpp>
-#include <Engine.Assets/Types/AssetConcept.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Concurrent/Future.hpp>
 
-#include "../Manage/Resource.hpp"
+#include "CacheRequest.hpp"
+#include "CacheResponse.hpp"
+#include "LoaderStageTraits.hpp"
+#include "__fwd.hpp"
 #include "../Manage/ResourceConcept.hpp"
 
-namespace ember::engine::resource {
-    template <assets::IsAsset Type_>
-    struct LoaderOptions;
+namespace ember::engine::resource::loader {
+    class LoaderBase;
 
-    template <assets::IsAsset AssetType_, template<IsResource> typename PartialType_ = PartialIdentity>
-    class Loader;
+    template <class Type_>
+    concept IsLoader = _STD derived_from<Type_, LoaderBase>;
 
     class __declspec(novtable) LoaderBase :
         public EmberObject {
     public:
-        template <assets::IsAsset AssetType_, template<IsResource> typename PartialType_>
+        template <IsRequestValueType, IsResponseValueType>
         friend class Loader;
 
     public:
-        using value_type = LoaderBase;
-        using reference_type = ref<value_type>;
-        using const_reference_type = cref<value_type>;
-
-        template <typename Type_>
-        using result_wrapper_type = _STD type_identity_t<Type_>;
-        using result_data_type = ptr<ResourceBase>;
-        using result_type = result_wrapper_type<result_data_type>;
+        using this_type = LoaderBase;
 
     private:
-        /**
-         * Default constructor
-         *
-         * @author Julius
-         * @date 10.09.2021
-         */
         LoaderBase() noexcept = default;
 
     public:
-        /**
-         * Destructor
-         *
-         * @author Julius
-         * @date 10.09.2021
-         */
         virtual ~LoaderBase() noexcept = default;
 
     public:
-        /**
-         * Function call operator
-         *
-         * @author Julius
-         * @date 09.09.2021
-         *
-         * @param  asset_ The asset to load.
-         * @param  options_ (Optional) Options for controlling the operation.
-         *
-         * @returns The result of the operation.
-         */
-        [[nodiscard]] virtual result_type operator()(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr) = 0;
+        [[nodiscard]] virtual smr<ResourceBase> operator()(
+            const ptr<const assets::Asset> asset_,
+            const ptr<const void> options_
+        ) = 0;
     };
 
-    template <assets::IsAsset AssetType_, template<IsResource> typename PartialType_>
+    template <IsRequestValueType RequestType_, IsResponseValueType ResponseType_>
     class __declspec(novtable) Loader :
         public LoaderBase {
     public:
-        using base_type = LoaderBase;
+        template <
+            IsRequestValueType,
+            IsResponseValueType,
+            typename,
+            class,
+            class,
+            class,
+            class
+        >
+        friend class LoaderChain;
 
-        using value_type = Loader<AssetType_>;
-        using reference_type = ref<value_type>;
-        using const_reference_type = cref<value_type>;
+    public:
+        using stage_traits = LoaderStageTraits<CacheRequest<RequestType_>, CacheResponse<ResponseType_>>;
 
-        static_assert(IsResource<PartialType_<ResourceBase>>);
-
-        using result_type = base_type::result_wrapper_type<ptr<PartialType_<ResourceBase>>>;
-        using options_type = ptr<LoaderOptions<AssetType_>>;
-
-    protected:
-        /**
-         * Default constructor
-         *
-         * @author Julius
-         * @date 30.08.2021
-         */
+    private:
         Loader() noexcept = default;
 
     public:
-        /**
-         * Destructor
-         *
-         * @author Julius
-         * @date 30.08.2021
-         */
-        ~Loader() override = default;
-
-    protected:
-        [[nodiscard]] result_type operator(
-        )(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr) final override {
-            return this->operator()(static_cast<const ptr<AssetType_>>(asset_), static_cast<options_type>(options_));
-        }
+        ~Loader() noexcept override = default;
 
     public:
-        [[nodiscard]] virtual result_type operator()(const ptr<AssetType_> asset_, options_type options_ = nullptr) = 0;
+        [[nodiscard]] virtual typename stage_traits::response_value_type operator()(
+            mref<typename stage_traits::request_value_type> request_,
+            mref<typename stage_traits::request_options_type> options_
+        ) = 0;
+
+        [[nodiscard]] virtual typename stage_traits::response_value_type operator()(
+            mref<typename stage_traits::request_value_type> request_,
+            mref<typename stage_traits::request_options_type> options_,
+            mref<typename stage_traits::stream_options_type> streamOptions_
+        ) = 0;
+
+    public:
+        [[nodiscard]] smr<ResourceBase> operator()(
+            const ptr<const assets::Asset> asset_,
+            const ptr<const void> options_
+        ) override {
+            static_assert(_STD is_convertible_v<decltype(asset_), typename stage_traits::request_value_type>);
+            static_assert(_STD is_convertible_v<decltype(options_), ptr<typename stage_traits::request_options_type>>);
+
+            if constexpr (_STD derived_from<
+                typename stage_traits::response_value_type,
+                smr<typename stage_traits::response_type::value_type>
+            >) {
+                return this->operator()(
+                    asset_,
+                    *static_cast<const ptr<const typename stage_traits::request_options_type>>(options_)
+                );
+            }
+
+            return make_smr(
+                this->operator()(
+                    asset_,
+                    *static_cast<const ptr<const typename stage_traits::request_options_type>>(options_)
+                )
+            );
+        }
     };
 }

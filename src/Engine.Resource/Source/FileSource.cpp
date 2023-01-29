@@ -6,7 +6,7 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-using namespace ember::engine::res;
+using namespace ember::engine::resource;
 using namespace ember;
 
 FileSource::FileSource(cref<File> file_, const streamsize size_, const streamoff offset_) noexcept :
