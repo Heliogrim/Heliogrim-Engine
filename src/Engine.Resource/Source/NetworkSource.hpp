@@ -1,7 +1,7 @@
 #pragma once
 #include "Source.hpp"
 
-namespace ember::engine::res {
+namespace ember::engine::resource {
     class NetworkSource :
         public Source {
     public:

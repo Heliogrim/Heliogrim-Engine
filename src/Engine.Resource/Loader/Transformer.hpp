@@ -12,8 +12,9 @@ namespace ember::engine::resource::loader {
     public:
         using underlying_type = TransformerStage<AssetType_, ResourceType_>;
 
-        using underlying_type::response_value_type;
-        using underlying_type::request_value_type;
-        using underlying_type::request_options_type;
+        using underlying_type::traits;
+
+        using sub_request_type = void;
+        using sub_response_type = void;
     };
 }

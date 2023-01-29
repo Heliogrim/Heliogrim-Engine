@@ -158,9 +158,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderStagePass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\RenderStageProcessor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\RenderTarget.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Resource\FontResource.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Resource\MaterialResource.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Resource\TextureResource.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\CameraModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\GeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SkyboxModel.cpp" />
@@ -271,9 +268,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Loader\FontLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Loader\GeometryLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Loader\MaterialLoader.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Loader\RevTextureLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Loader\StaticGeometryLoader.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Loader\TextureLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Material\Material.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMapFlags.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMeta.hpp" />
@@ -324,10 +319,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\RenderStageProcessor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Renderer\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RenderTarget.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Resource\FontResource.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Resource\MaterialResource.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Resource\StaticGeometryResource.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Resource\TextureResource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\CameraModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\GeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\LandscapeGeometryModel.hpp" />

@@ -166,6 +166,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Resource.Package", "
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Resource.Package.Test", "projects\Engine.Resource.Package.Test\Engine.Resource.Package.Test.vcxproj", "{B37F6CCB-42FF-4A35-BA70-8440C7F63E2E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.GFX.Loader", "projects\Engine.GFX.Loader\Engine.GFX.Loader.vcxproj", "{54D27C3D-6106-470F-8D9C-B9D0B000EFD9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -464,6 +466,12 @@ Global
 		{B37F6CCB-42FF-4A35-BA70-8440C7F63E2E}.Profile|x64.Build.0 = Profile|x64
 		{B37F6CCB-42FF-4A35-BA70-8440C7F63E2E}.Release|x64.ActiveCfg = Release|x64
 		{B37F6CCB-42FF-4A35-BA70-8440C7F63E2E}.Release|x64.Build.0 = Release|x64
+		{54D27C3D-6106-470F-8D9C-B9D0B000EFD9}.Debug|x64.ActiveCfg = Debug|x64
+		{54D27C3D-6106-470F-8D9C-B9D0B000EFD9}.Debug|x64.Build.0 = Debug|x64
+		{54D27C3D-6106-470F-8D9C-B9D0B000EFD9}.Profile|x64.ActiveCfg = Profile|x64
+		{54D27C3D-6106-470F-8D9C-B9D0B000EFD9}.Profile|x64.Build.0 = Profile|x64
+		{54D27C3D-6106-470F-8D9C-B9D0B000EFD9}.Release|x64.ActiveCfg = Release|x64
+		{54D27C3D-6106-470F-8D9C-B9D0B000EFD9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

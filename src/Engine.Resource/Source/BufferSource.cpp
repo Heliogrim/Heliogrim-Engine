@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Exception/NotImplementedException.hpp>
 
-using namespace ember::engine::res;
+using namespace ember::engine::resource;
 using namespace ember;
 
 BufferSource::BufferSource(mref<Buffer> buffer_) :

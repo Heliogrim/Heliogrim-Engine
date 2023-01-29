@@ -4,7 +4,7 @@
 
 #include "Source.hpp"
 
-namespace ember::engine::res {
+namespace ember::engine::resource {
     class BufferSource :
         public Source {
     public:

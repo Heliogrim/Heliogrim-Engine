@@ -149,6 +149,9 @@
     <ProjectReference Include="..\Engine.GFX.Glow\Engine.GFX.Glow.vcxproj">
       <Project>{7c46da1c-1139-4e4b-8d34-0ed78d12c1f2}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Loader\Engine.GFX.Loader.vcxproj">
+      <Project>{54d27c3d-6106-470f-8d9c-b9d0b000efd9}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.Scene\Engine.GFX.Scene.vcxproj">
       <Project>{8fec3eae-4526-4991-a3a8-f9d562efbcba}</Project>
     </ProjectReference>

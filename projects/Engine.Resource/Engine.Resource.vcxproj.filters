@@ -189,6 +189,12 @@
     <ClInclude Include="..\..\src\Engine.Resource\Loader\CacheResponse.hpp">
       <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderChain.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderStageTraits.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Resource\FileResource.cpp">

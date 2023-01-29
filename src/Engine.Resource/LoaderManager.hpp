@@ -11,15 +11,11 @@
 #include "Manage/Resource.hpp"
 
 namespace ember::engine::resource {
-
     class LoaderManager {
     public:
         using value_type = LoaderManager;
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
-
-        using load_type = LoaderBase::result_type;
-        using load_async_type = ember::concurrent::future<load_type>;
 
     public:
         /**
@@ -39,10 +35,10 @@ namespace ember::engine::resource {
         ~LoaderManager() noexcept;
 
     private:
-        StableUnorderedMap<asset_type_id, sptr<LoaderBase>> _loader;
+        StableUnorderedMap<asset_type_id, sptr<loader::LoaderBase>> _loader;
 
     private:
-        sptr<LoaderBase> selectLoader(cref<asset_type_id> typeId_, ptr<void> options_) const noexcept;
+        sptr<loader::LoaderBase> selectLoader(cref<asset_type_id> typeId_, ptr<void> options_) const noexcept;
 
     public:
         /**
@@ -56,10 +52,10 @@ namespace ember::engine::resource {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool registerLoader(cref<asset_type_id> typeId_, cref<sptr<LoaderBase>> loader_) noexcept;
+        bool registerLoader(cref<asset_type_id> typeId_, cref<sptr<loader::LoaderBase>> loader_) noexcept;
 
-        template <assets::IsAsset AssetType_>
-        bool registerLoader(cref<sptr<Loader<AssetType_>>> loader_) noexcept {
+        template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>
+        bool registerLoader(cref<sptr<loader::Loader<AssetType_, ResourceType_>>> loader_) noexcept {
             return this->registerLoader(AssetType_::typeId, loader_);
         }
 
@@ -78,7 +74,7 @@ namespace ember::engine::resource {
          *
          * @returns True if any succeeds, false if it fails.
          */
-        bool unregisterLoader(sptr<LoaderBase> loader_) noexcept;
+        bool unregisterLoader(mref<sptr<loader::LoaderBase>> loader_) noexcept;
 
         /**
          * Unregisters the given loader for the referenced typeId
@@ -112,24 +108,9 @@ namespace ember::engine::resource {
          * @param asset_ The asset from where to load the underlying resource.
          * @param options_ (Optional) Options for controlling the loading operation.
          *
-         * @returns A pointer of the resource which should be loaded.
+         * @returns A shared memory reference of the resource which should be loaded.
          */
-        [[nodiscard]] ptr<ResourceBase> preload(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
-
-        /**
-         * Preloads the requested type of resource by unique identifier
-         *
-         * @author Julius
-         * @date 02.09.2021
-         *
-         * @param  typeId_ Identifier for the type.
-         * @param  guid_ Unique identifier.
-         * @param  options_ (Optional) Options for controlling the operation.
-         *
-         * @returns A future object wrapping the requested resource.
-         */
-        [[nodiscard]] load_async_type preload(cref<asset_type_id> typeId_, cref<asset_guid> guid_,
-            ptr<void> options_ = nullptr);
+        [[nodiscard]] smr<ResourceBase> preload(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
 
         /**
          * Loads the requested resource underlying of given asset
@@ -140,24 +121,9 @@ namespace ember::engine::resource {
          * @param asset_ The asset from where to load the underlying resource.
          * @param options_ (Optional) Options for controlling the loading operation.
          *
-         * @returns A pointer of the resource which should be loaded.
+         * @returns A shared memory reference of the resource which should be loaded.
          */
-        [[nodiscard]] load_type load(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
-
-        /**
-         * Loads the requested type of resource by unique identifier deferred
-         *
-         * @author Julius
-         * @date 02.09.2021
-         *
-         * @param  typeId_ Identifier for the type.
-         * @param  guid_ Unique identifier.
-         * @param  options_ (Optional) Options for controlling the operation.
-         *
-         * @returns A future object wrapping the requested resource.
-         */
-        [[nodiscard]] load_async_type load(cref<asset_type_id> typeId_, cref<asset_guid> guid_,
-            ptr<void> options_ = nullptr);
+        [[nodiscard]] smr<ResourceBase> load(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
 
         /**
          * Loads the requested resource underlying of given asset immediately
@@ -168,42 +134,45 @@ namespace ember::engine::resource {
          * @param asset_ The asset from where to load the underlying resource.
          * @param options_ (Optional) Options for controlling the loading operation.
          *
-         * @returns A pointer of the resource which should be loaded.
+         * @returns A shared memory reference of the resource which should be loaded.
          */
-        [[nodiscard]] load_type loadImmediately(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
-
-        /**
-         * Loads the requested type of resource by unique identifier immediately
-         *
-         * @author Julius
-         * @date 02.09.2021
-         *
-         * @param  typeId_ Identifier for the type.
-         * @param  guid_ Unique identifier.
-         * @param  options_ (Optional) Options for controlling the operation.
-         *
-         * @returns A future object wrapping the requested resource.
-         */
-        [[nodiscard]] load_async_type loadImmediately(cref<asset_type_id> typeId_, cref<asset_guid> guid_,
-            ptr<void> options_ = nullptr);
+        [[nodiscard]] smr<ResourceBase> loadImmediately(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
 
     public:
-        template <assets::IsAsset AssetType_>
-        [[nodiscard]] load_async_type preload(cref<asset_guid> guid_,
-            const ptr<LoaderOptions<AssetType_>> options_ = nullptr) {
-            return this->preload(AssetType_::typeId, guid_, options_);
+        template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>
+        [[nodiscard]] loader::Loader<AssetType_, ResourceType_> preload(
+            typename loader::Loader<AssetType_, ResourceType_>::stage_traits::request_value_type request_,
+            typename loader::Loader<AssetType_, ResourceType_>::stage_traits::request_options_type options_ = {}
+        ) {
+            const auto loader = selectLoader(AssetType_::type_id, nullptr);
+            return static_cast<const ptr<loader::Loader<AssetType_, ResourceType_>>>(loader.get())->operator()(
+                _STD move(request_),
+                _STD move(options_)
+            );
         }
 
-        template <assets::IsAsset AssetType_>
-        [[nodiscard]] load_async_type load(cref<asset_guid> guid_,
-            const ptr<LoaderOptions<AssetType_>> options_ = nullptr) {
-            return this->load(AssetType_::typeId, guid_, options_);
+        template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>
+        [[nodiscard]] loader::Loader<AssetType_, ResourceType_> load(
+            typename loader::Loader<AssetType_, ResourceType_>::stage_traits::request_value_type request_,
+            typename loader::Loader<AssetType_, ResourceType_>::stage_traits::request_options_type options_ = {}
+        ) {
+            const auto loader = selectLoader(AssetType_::type_id, nullptr);
+            return static_cast<const ptr<loader::Loader<AssetType_, ResourceType_>>>(loader.get())->operator()(
+                _STD move(request_),
+                _STD move(options_)
+            );
         }
 
-        template <assets::IsAsset AssetType_>
-        [[nodiscard]] load_async_type loadImmediately(cref<asset_guid> guid_,
-            const ptr<LoaderOptions<AssetType_>> options_ = nullptr) {
-            return this->loadImmediately(AssetType_::typeId, guid_, options_);
+        template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>
+        [[nodiscard]] loader::Loader<AssetType_, ResourceType_> loadImmediately(
+            typename loader::Loader<AssetType_, ResourceType_>::stage_traits::request_value_type request_,
+            typename loader::Loader<AssetType_, ResourceType_>::stage_traits::request_options_type options_ = {}
+        ) {
+            const auto loader = selectLoader(AssetType_::type_id, nullptr);
+            return static_cast<const ptr<loader::Loader<AssetType_, ResourceType_>>>(loader.get())->operator()(
+                _STD move(request_),
+                _STD move(options_)
+            );
         }
     };
 }

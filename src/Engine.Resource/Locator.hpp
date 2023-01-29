@@ -6,7 +6,7 @@
 
 #include "Source/Source.hpp"
 
-namespace ember::engine::res {
+namespace ember::engine::resource {
 
     namespace {
 

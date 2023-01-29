@@ -3,7 +3,7 @@
 
 #include "Source.hpp"
 
-namespace ember::engine::res {
+namespace ember::engine::resource {
     class ParallelSource :
         public Source {
     public:

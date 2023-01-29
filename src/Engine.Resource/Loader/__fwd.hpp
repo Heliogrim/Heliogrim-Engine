@@ -18,7 +18,7 @@ namespace ember::engine::resource::loader {
     template <typename Type_>
     concept IsResponseType = IsResponseValueType<typename Type_::value_type>;
 
-    template <IsRequestType RequestType_, IsResponseType ResponseType_>
+    template </*IsRequestType*/typename RequestType_, /*IsResponseType*/typename ResponseType_>
     class LoaderStage;
 
     /**/
@@ -59,7 +59,10 @@ namespace ember::engine::resource::loader {
 
     /**/
 
-    using SourceLoaderStage = LoaderStage<SourceLoaderRequest<void>, SourceLoaderResponse<void>>;
+    template <typename AssetType_ = void, typename ResourceType_ = void> requires
+        _STD is_void_v<AssetType_> &&
+        _STD is_void_v<ResourceType_>
+    using SourceLoaderStage = LoaderStage<SourceLoaderRequest<AssetType_>, SourceLoaderResponse<ResourceType_>>;
 
     template <typename AssetType_, typename ResourceType_>
     using TransformerStage = LoaderStage<TransformerRequest<AssetType_>, TransformerResponse<ResourceType_>>;
