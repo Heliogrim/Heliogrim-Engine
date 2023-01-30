@@ -9,6 +9,7 @@
 
 #include "../__macro.hpp"
 #include "../Wrapper.hpp"
+#include "../Cast.hpp"
 
 namespace ember {
     namespace {
@@ -30,8 +31,17 @@ namespace ember {
 
     /**/
 
+    template <class Fty_, class Tty_>
+    concept IsSmrPointerCompatible = _STD is_convertible<ptr<Fty_>, ptr<Tty_>>::type::value;
+
+    /**/
+
     template <typename PayloadType_>
     class SharedMemoryReference final {
+    public:
+        template <typename Ux_>
+        friend class SharedMemoryReference;
+
     public:
         using this_type = SharedMemoryReference<PayloadType_>;
         using value_type = _STD remove_reference_t<PayloadType_>;
@@ -58,6 +68,11 @@ namespace ember {
 
         SharedMemoryReference(_Inout_ mref<this_type> other_) noexcept :
             _ctrlBlock(_STD exchange(other_._ctrlBlock, nullptr)),
+            _packed(_STD exchange(other_._packed, 0)) {}
+
+        template <class Fty_> requires IsSmrPointerCompatible<Fty_, PayloadType_>
+        SharedMemoryReference(_Inout_ mref<SharedMemoryReference<Fty_>> other_) noexcept :
+            _ctrlBlock(_void_cast<ctrl_block_type>(_STD exchange(other_._ctrlBlock, nullptr))),
             _packed(_STD exchange(other_._packed, 0)) {}
 
         ~SharedMemoryReference() {
