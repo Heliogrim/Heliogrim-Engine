@@ -54,6 +54,9 @@
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\Traits.hpp">
       <Filter>Headerdateien\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryResource.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.cpp">

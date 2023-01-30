@@ -5,14 +5,15 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/AssociativeKey.hpp>
 #include <Engine.Common/Collection/RobinMap.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
+#include <Engine.GFX.Loader/Geometry/StaticGeometryResource.hpp>
 
 #include "CacheCtrlSubject.hpp"
 #include "CacheStaticGeometrySubject.hpp"
 #include "CacheTextureSubject.hpp"
 #include "__fwd.hpp"
-#include "../Resource/StaticGeometryResource.hpp"
 
 namespace ember::engine::gfx::cache {
     struct TextureSubResourceRange {
@@ -51,26 +52,26 @@ namespace ember::engine::gfx::cache {
         /**
          * Texture Atlases
          */
-        RobinMap<ptr<loader::TextureResource>, RobinMap<AssocKey<TextureSubResource>, ptr<CacheCtrlSubject<
+        RobinMap<ptr<TextureResource>, RobinMap<AssocKey<TextureSubResource>, ptr<CacheCtrlSubject<
             TextureSubResource>>>> _textures;
 
     private:
-        void dispatchLoad(const ptr<loader::TextureResource> resource_, cref<TextureSubResource> subresource_);
+        void dispatchLoad(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_);
 
-        void dispatchUnload(const ptr<loader::TextureResource> resource_, cref<TextureSubResource> subresource_);
+        void dispatchUnload(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_);
 
     public:
-        void markAsUsed(ptr<loader::TextureResource> resource_, mref<TextureSubResource> subresource_);
+        void markAsUsed(ptr<TextureResource> resource_, mref<TextureSubResource> subresource_);
 
-        void markAsUsed(ptr<loader::TextureResource> resource_, cref<AssocKey<TextureSubResource>> subresource_);
+        void markAsUsed(ptr<TextureResource> resource_, cref<AssocKey<TextureSubResource>> subresource_);
 
-        [[deprecated]] void markAsUsed(ptr<loader::TextureResource>, mref<TextureSubResourceRange> subresourceRange_);
+        [[deprecated]] void markAsUsed(ptr<TextureResource>, mref<TextureSubResourceRange> subresourceRange_);
 
-        void unmark(ptr<loader::TextureResource> resource_, mref<TextureSubResource> subresource_);
+        void unmark(ptr<TextureResource> resource_, mref<TextureSubResource> subresource_);
 
-        void unmark(ptr<loader::TextureResource> resource_, cref<AssocKey<TextureSubResource>> subresource_);
+        void unmark(ptr<TextureResource> resource_, cref<AssocKey<TextureSubResource>> subresource_);
 
-        [[deprecated]] void unmark(ptr<loader::TextureResource>, mref<TextureSubResourceRange> subresourceRange_);
+        [[deprecated]] void unmark(ptr<TextureResource>, mref<TextureSubResourceRange> subresourceRange_);
 
     private:
         /**
