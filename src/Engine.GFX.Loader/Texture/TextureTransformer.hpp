@@ -26,7 +26,7 @@ namespace ember::engine::gfx::loader {
         [[nodiscard]] typename response_type::type operator()(
             _In_ mref<typename request_type::type> request_,
             _In_ mref<typename request_type::options> options_,
-            _In_ ref<next_type> next_
+            _In_ cref<next_type> next_
         ) const override {
             // TODO:
             const auto source = next_({}, {});
@@ -37,7 +37,7 @@ namespace ember::engine::gfx::loader {
             _In_ mref<typename request_type::type> request_,
             _In_ mref<typename request_type::options> options_,
             _In_ mref<typename request_type::stream> streamOptions_,
-            _In_ ref<next_type> next_
+            _In_ cref<next_type> next_
         ) const override {
             // TODO:
             const auto source = next_({}, {}, {});

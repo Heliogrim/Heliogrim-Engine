@@ -82,8 +82,14 @@ namespace ember::engine::resource::loader {
             using request_type = typename traits::request::type;
             using options_type = typename traits::request::options;
 
-            static_assert(_STD is_convertible_v<decltype(asset_), request_type>);
-            static_assert(_STD is_convertible_v<decltype(options_), ptr<options_type>>);
+            static_assert(
+                _STD derived_from<_STD remove_pointer_t<request_type>, _STD remove_pointer_t<decltype(asset_)>> ||
+                _STD is_convertible_v<decltype(asset_), request_type>
+            );
+            static_assert(
+                _STD is_void_v<_STD remove_pointer_t<decltype(options_)>> ||
+                _STD is_convertible_v<decltype(options_), ptr<options_type>>
+            );
 
             if constexpr (_STD derived_from<
                 typename traits::response::type,

@@ -35,8 +35,7 @@ namespace ember::engine::resource::loader {
         [[nodiscard]] virtual typename loader_traits::response::type operator()(
             _In_ mref<typename loader_traits::request::type> request_,
             _In_ mref<typename loader_traits::request::options> options_,
-            _In_ ref<next_type> next_,
-            _In_ mref<typename loader_traits::response::type> dst_
+            _In_ cref<next_type> next_
         ) const = 0;
     };
 
@@ -58,14 +57,14 @@ namespace ember::engine::resource::loader {
         [[nodiscard]] virtual typename loader_traits::response::type operator()(
             _In_ mref<typename loader_traits::request::type> request_,
             _In_ mref<typename loader_traits::request::options> options_,
-            _In_ ref<next_type> next_
+            _In_ cref<next_type> next_
         ) const = 0;
 
         [[nodiscard]] virtual typename loader_traits::response::type operator()(
             _In_ mref<typename loader_traits::request::type> request_,
             _In_ mref<typename loader_traits::request::options> options_,
             _In_ mref<typename loader_traits::request::stream> streamOptions,
-            _In_ ref<next_type> next_
+            _In_ cref<next_type> next_
         ) const = 0;
     };
 }
