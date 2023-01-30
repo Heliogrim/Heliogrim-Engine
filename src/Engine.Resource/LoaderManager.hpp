@@ -7,7 +7,6 @@
 #include <Engine.Common/Concurrent/Future.hpp>
 
 #include "Loader/Loader.hpp"
-#include "Loader/StreamLoader.hpp"
 #include "Manage/Resource.hpp"
 
 namespace ember::engine::resource {
@@ -16,6 +15,8 @@ namespace ember::engine::resource {
         using value_type = LoaderManager;
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
+
+        using response_base_type = smr<ResourceBase>;
 
     public:
         /**
@@ -59,10 +60,12 @@ namespace ember::engine::resource {
             return this->registerLoader(AssetType_::typeId, loader_);
         }
 
+        /*
         template <assets::IsStreamableAsset AssetType_>
         bool registerLoader(cref<sptr<StreamLoader<AssetType_>>> loader_) noexcept {
             return this->registerLoader(AssetType_::typeId, loader_);
         }
+         */
 
         /**
          * Unregisters the given loader for all typeIds
@@ -110,7 +113,7 @@ namespace ember::engine::resource {
          *
          * @returns A shared memory reference of the resource which should be loaded.
          */
-        [[nodiscard]] smr<ResourceBase> preload(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
+        [[nodiscard]] response_base_type preload(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
 
         /**
          * Loads the requested resource underlying of given asset
@@ -123,7 +126,7 @@ namespace ember::engine::resource {
          *
          * @returns A shared memory reference of the resource which should be loaded.
          */
-        [[nodiscard]] smr<ResourceBase> load(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
+        [[nodiscard]] response_base_type load(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
 
         /**
          * Loads the requested resource underlying of given asset immediately
@@ -136,7 +139,7 @@ namespace ember::engine::resource {
          *
          * @returns A shared memory reference of the resource which should be loaded.
          */
-        [[nodiscard]] smr<ResourceBase> loadImmediately(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
+        [[nodiscard]] response_base_type loadImmediately(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
 
     public:
         template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>

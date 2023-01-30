@@ -6,6 +6,8 @@
 #endif
 
 #include <atomic>
+#include <concepts>
+#include <type_traits>
 
 #include "../__macro.hpp"
 #include "../Wrapper.hpp"
@@ -53,8 +55,10 @@ namespace ember {
             _ctrlBlock(nullptr),
             _packed(0) {}
 
-        SharedMemoryReference(_In_ const non_owning_rptr<ctrl_block_type> ctrlBlock_,
-            _In_ const packed_type packed_) noexcept :
+        SharedMemoryReference(
+            _In_ const non_owning_rptr<ctrl_block_type> ctrlBlock_,
+            _In_ const packed_type packed_
+        ) noexcept :
             _ctrlBlock(ctrlBlock_),
             _packed(packed_) {}
 
@@ -308,8 +312,12 @@ namespace ember {
                      */
                     while (
                         (expect & packed_ref_mask) != 0 &&
-                        !_packed.compare_exchange_weak(expect, (expect & packed_ref_mask) | maskedPtr,
-                            _STD memory_order_release, _STD memory_order_relaxed)
+                        !_packed.compare_exchange_weak(
+                            expect,
+                            (expect & packed_ref_mask) | maskedPtr,
+                            _STD memory_order_release,
+                            _STD memory_order_relaxed
+                        )
                     ) { }
 
                 }
@@ -377,8 +385,10 @@ namespace ember {
 
             packed_type expect { 0 };
             return _packed.compare_exchange_strong(
-                expect, packed,
-                _STD memory_order_release, _STD memory_order_relaxed
+                expect,
+                packed,
+                _STD memory_order_release,
+                _STD memory_order_relaxed
             );
         }
     };

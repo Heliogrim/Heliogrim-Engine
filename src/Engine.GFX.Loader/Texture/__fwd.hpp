@@ -4,6 +4,10 @@
 
 #include <Engine.Resource/Loader/__fwd.hpp>
 
+namespace ember::engine::gfx {
+    //class TextureResource; -> Typedef
+}
+
 namespace ember::engine::gfx::loader {
     class TextureLoader;
     class TextureCache;
