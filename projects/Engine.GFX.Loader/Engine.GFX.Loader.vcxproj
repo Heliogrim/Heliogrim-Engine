@@ -98,6 +98,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureResource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureStreamOptions.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureTransformer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\Traits.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>

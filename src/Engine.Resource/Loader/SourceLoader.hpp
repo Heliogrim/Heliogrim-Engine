@@ -2,38 +2,55 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-#include "SourceLoaderRequest.hpp"
-#include "SourceLoaderResponse.hpp"
-#include "LoaderStage.hpp"
-
 #include "__fwd.hpp"
+#include "SourceLoaderTraits.hpp"
 
 namespace ember::engine::resource::loader {
-    /*
-    template <>
-    struct SourceLoaderRequest<void> {};
+    class __declspec(novtable) SourceLoaderStage {
+    public:
+        using this_type = SourceLoaderStage;
 
-    template <>
-    struct SourceLoaderResponse<void> {};
-     */
+        using request_type = SourceLoaderRequest<void>;
+        using response_type = SourceLoaderResponse<void>;
 
-    template <>
-    struct RequestOptions<SourceLoaderRequest<void>, void> {};
-}
+    public:
+        virtual ~SourceLoaderStage() noexcept = default;
 
-namespace ember::engine::resource::loader {
+    public:
+        [[nodiscard]] virtual response_type::type operator()(
+            _In_ mref<request_type::type> request_,
+            _In_ mref<request_type::options> options_
+        ) const = 0;
+
+        [[nodiscard]] virtual response_type::type operator()(
+            _In_ mref<request_type::type> request_,
+            _In_ mref<request_type::options> options_,
+            _In_ mref<request_type::stream> streamOptions_
+        ) const = 0;
+    };
+
     class SourceLoader :
-        public SourceLoaderStage<> {
+        public SourceLoaderStage {
     public:
         using this_type = SourceLoader;
-        using underlying_type = SourceLoaderStage<>;
+        using underlying_type = SourceLoaderStage;
 
-        using underlying_type::traits;
+        using underlying_type::request_type;
+        using underlying_type::response_type;
 
     public:
-        [[nodiscard]] traits::response_value_type operator()(
-            mref<traits::request_value_type> request_,
-            mref<traits::request_options_type> options_
+        ~SourceLoader() noexcept override;
+
+    public:
+        [[nodiscard]] response_type::type operator()(
+            mref<request_type::type> request_,
+            mref<request_type::options> options_
+        ) const override;
+
+        [[nodiscard]] response_type::type operator()(
+            mref<request_type::type> request_,
+            mref<request_type::options> options_,
+            mref<request_type::stream> streamOptions_
         ) const override;
     };
 }

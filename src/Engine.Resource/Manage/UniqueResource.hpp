@@ -14,7 +14,9 @@ namespace ember::engine::resource {
         using guard_type = TypedManageGuard<typename value_type>;
 
     public:
-        using underlying_type::this_type;
+        UniqueResource();
+
+        ~UniqueResource() override;
 
     private:
         _STD atomic_flag _lck;

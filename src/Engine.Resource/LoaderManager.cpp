@@ -7,7 +7,7 @@ LoaderManager::LoaderManager() noexcept = default;
 
 LoaderManager::~LoaderManager() noexcept = default;
 
-sptr<LoaderBase> LoaderManager::selectLoader(cref<asset_type_id> typeId_, ptr<void> options_) const noexcept {
+sptr<loader::LoaderBase> LoaderManager::selectLoader(cref<asset_type_id> typeId_, ptr<void> options_) const noexcept {
 
     const auto result { _loader.find(typeId_) };
     if (result == _loader.end()) {
@@ -19,12 +19,12 @@ sptr<LoaderBase> LoaderManager::selectLoader(cref<asset_type_id> typeId_, ptr<vo
     return result->second;
 }
 
-bool LoaderManager::registerLoader(cref<asset_type_id> typeId_, cref<sptr<LoaderBase>> loader_) noexcept {
+bool LoaderManager::registerLoader(cref<asset_type_id> typeId_, cref<sptr<loader::LoaderBase>> loader_) noexcept {
     const auto result { _loader.insert({ typeId_, loader_ }) };
     return result.second;
 }
 
-bool LoaderManager::unregisterLoader(sptr<LoaderBase> loader_) noexcept {
+bool LoaderManager::unregisterLoader(mref<sptr<loader::LoaderBase>> loader_) noexcept {
 
     const auto iter = _STD ranges::find_if(
         _loader,
@@ -52,28 +52,26 @@ bool LoaderManager::unregisterLoader(cref<asset_type_id> typeId_) noexcept {
     return true;
 }
 
-LoaderManager::load_type LoaderManager::preload(const ptr<assets::Asset> asset_, ptr<void> options_) {
+LoaderManager::response_base_type LoaderManager::preload(const ptr<assets::Asset> asset_, ptr<void> options_) {
     // TODO:
     return load(asset_, options_);
 }
 
-LoaderManager::load_type LoaderManager::load(const ptr<assets::Asset> asset_, ptr<void> options_) {
+LoaderManager::response_base_type LoaderManager::load(const ptr<assets::Asset> asset_, ptr<void> options_) {
     /**
      *
      */
     const auto loader { selectLoader(asset_->getTypeId(), options_) };
 
     if (loader == nullptr) {
-        return nullptr;
+        return {};
     }
 
-    /**
-     *
-     */
+    /**/
     return loader->operator()(asset_, options_);
 }
 
-LoaderManager::load_type LoaderManager::loadImmediately(const ptr<assets::Asset> asset_, ptr<void> options_) {
+LoaderManager::response_base_type LoaderManager::loadImmediately(const ptr<assets::Asset> asset_, ptr<void> options_) {
     // TODO:
     return load(asset_, options_);
 }

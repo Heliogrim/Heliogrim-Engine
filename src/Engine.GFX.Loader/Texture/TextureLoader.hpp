@@ -29,5 +29,11 @@ namespace ember::engine::gfx::loader {
         TextureLoader(
             const non_owning_rptr<cache::GlobalCacheCtrl> cache_
         );
+
+        void test() {
+
+            ptr<assets::Texture> request {};
+            auto result = (*this)(_STD move(request), {}, {});
+        }
     };
 }

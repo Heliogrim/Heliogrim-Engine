@@ -40,9 +40,6 @@
     <Filter Include="Quelldateien\Manage">
       <UniqueIdentifier>{de227ce9-06f9-4dc7-8942-2e12e5dd4add}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Stream">
-      <UniqueIdentifier>{c2cfb6f5-2351-49f3-8f7c-4a4846bb555e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\Stream">
       <UniqueIdentifier>{39223e18-870c-4353-8921-e4e4fa88acf6}</UniqueIdentifier>
     </Filter>
@@ -120,14 +117,8 @@
     <ClInclude Include="..\..\src\Engine.Resource\Indexer\MetaFile.hpp">
       <Filter>Headerdateien\Indexer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Loader\StreamLoader.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\Manage\ResourceConcept.hpp">
       <Filter>Headerdateien\Manage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Stream\Streamable.hpp">
-      <Filter>Headerdateien\Stream</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\Manage\ResourceBase.hpp">
       <Filter>Headerdateien\Manage</Filter>
@@ -150,9 +141,6 @@
     <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoader.hpp">
       <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderStage.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\Loader\__fwd.hpp">
       <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
@@ -165,34 +153,22 @@
     <ClInclude Include="..\..\src\Engine.Resource\Loader\Cache.hpp">
       <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoaderRequest.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Loader\TransformerRequest.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Loader\FeedbackRequest.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Loader\CacheRequest.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoaderResponse.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Loader\TransformerResponse.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Loader\FeedbackResponse.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Loader\CacheResponse.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderChain.hpp">
       <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderStageTraits.hpp">
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderTraits.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\CacheTraits.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\FeedbackTraits.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\TransformerTraits.hpp">
+      <Filter>Headerdateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoaderTraits.hpp">
       <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
   </ItemGroup>

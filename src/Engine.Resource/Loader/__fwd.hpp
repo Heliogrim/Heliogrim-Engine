@@ -12,64 +12,50 @@ namespace ember::engine::resource::loader {
     template <typename Type_>
     concept IsResponseValueType = _STD is_void_v<Type_> || IsResource<Type_>;
 
-    template <typename Type_>
-    concept IsRequestType = IsRequestValueType<typename Type_::value_type>;
-
-    template <typename Type_>
-    concept IsResponseType = IsResponseValueType<typename Type_::value_type>;
-
-    template </*IsRequestType*/typename RequestType_, /*IsResponseType*/typename ResponseType_>
-    class LoaderStage;
-
     /**/
 
-    template <IsRequestValueType>
-    struct SourceLoaderRequest;
-
-    template <IsRequestValueType>
-    struct TransformerRequest;
-
-    template <IsRequestValueType>
-    struct FeedbackRequest;
-
-    template <IsRequestValueType>
-    struct CacheRequest;
-
-    /**/
-
-    template <typename, typename>
+    template <typename>
     struct RequestOptions;
 
-    template <typename, typename>
+    template <typename>
     struct StreamOptions;
 
     /**/
 
-    template <IsResponseValueType>
-    struct SourceLoaderResponse;
+    template <IsRequestValueType AssetType_>
+    struct CacheRequest;
 
-    template <IsResponseValueType>
-    struct TransformerResponse;
+    template <IsResponseValueType ResourceType_>
+    struct CacheResponse;
 
-    template <IsResponseValueType>
+    template <IsRequestValueType AssetType_>
+    struct FeedbackRequest;
+
+    template <IsResponseValueType ResourceType_>
     struct FeedbackResponse;
 
-    template <IsResponseValueType>
-    struct CacheResponse;
+    template <IsRequestValueType AssetType_>
+    struct TransformerRequest;
+
+    template <IsResponseValueType ResourceType_>
+    struct TransformerResponse;
+
+    template <typename>
+    struct SourceLoaderRequest;
+
+    template <typename>
+    struct SourceLoaderResponse;
 
     /**/
 
-    template <typename AssetType_ = void, typename ResourceType_ = void> requires
-        _STD is_void_v<AssetType_> &&
-        _STD is_void_v<ResourceType_>
-    using SourceLoaderStage = LoaderStage<SourceLoaderRequest<AssetType_>, SourceLoaderResponse<ResourceType_>>;
+    class SourceLoaderStage;
 
-    template <typename AssetType_, typename ResourceType_>
-    using TransformerStage = LoaderStage<TransformerRequest<AssetType_>, TransformerResponse<ResourceType_>>;
+    template <typename AssetType_, typename ResourceType_, bool Streamable_>
+    class TransformerStage;
 
-    template <typename AssetType_, typename ResourceType_>
-    using FeedbackStage = LoaderStage<FeedbackRequest<AssetType_>, FeedbackResponse<ResourceType_>>;
+    template <typename AssetType_, typename ResourceType_, bool Streamable_>
+    class FeedbackStage;
 
-    template <typename AssetType_, typename ResourceType_>
-    using CacheStage = LoaderStage<CacheRequest<AssetType_>, CacheResponse<ResourceType_>>;
+    template <typename AssetType_, typename ResourceType_, bool Streamable_>
+    class CacheStage;
 }
