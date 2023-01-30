@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Wrapper.hpp>
+
 #include "__fwd.hpp"
 
 namespace ember::engine::resource::loader {

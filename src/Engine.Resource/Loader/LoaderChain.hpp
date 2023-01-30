@@ -104,24 +104,24 @@ namespace ember::engine::resource::loader {
 
     public:
         template <
-            typename CacheType_,
-            typename FeedbackType_,
-            typename TransformerType_,
-            typename SourceLoaderType_
+            typename CacheTx_,
+            typename FeedbackTx_,
+            typename TransformerTx_,
+            typename SourceLoaderTx_
         >
         constexpr LoaderChain(
-            CacheType_&& cache_,
-            FeedbackType_&& feedback_,
-            TransformerType_&& transformer_,
-            SourceLoaderType_&& sourceLoader_
+            CacheTx_&& cache_,
+            FeedbackTx_&& feedback_,
+            TransformerTx_&& transformer_,
+            SourceLoaderTx_&& sourceLoader_
         ) :
-            cache(_STD forward<CacheType_>(cache_)),
-            feedback(_STD forward<FeedbackType_>(feedback_)),
-            transformer(_STD forward<TransformerType_>(transformer_)),
-            sourceLoader(_STD forward<SourceLoaderType_>(sourceLoader_)),
-            transformerLink(transformer),
-            feedbackLink(feedback, transformerLink),
-            cacheLink(cache, cacheLink) {}
+            cache(_STD forward<CacheTx_>(cache_)),
+            feedback(_STD forward<FeedbackTx_>(feedback_)),
+            transformer(_STD forward<TransformerTx_>(transformer_)),
+            sourceLoader(_STD forward<SourceLoaderTx_>(sourceLoader_)),
+            transformerLink(sourceLoader),
+            feedbackLink(transformer, transformerLink),
+            cacheLink(feedback, feedbackLink) {}
 
     public:
         [[nodiscard]] typename traits::response::type operator()(
@@ -184,6 +184,9 @@ namespace ember::engine::resource::loader {
             using base_type::next_request_type;
 
         public:
+            constexpr TransformerChainLink(cref<source_loader_type> stage_) noexcept :
+                stage(stage_) {}
+
             ~TransformerChainLink() override = default;
 
         public:
@@ -223,6 +226,10 @@ namespace ember::engine::resource::loader {
             using base_type::next_request_type;
 
         public:
+            constexpr FeedbackChainLink(cref<transformer_type> stage_, cref<TransformerChainLink> nextLink_) noexcept :
+                stage(stage_),
+                nextLink(nextLink_) {}
+
             ~FeedbackChainLink() override = default;
 
         public:
@@ -265,6 +272,10 @@ namespace ember::engine::resource::loader {
             using base_type::next_request_type;
 
         public:
+            constexpr CacheChainLink(cref<feedback_type> stage_, cref<FeedbackChainLink> nextLink_) noexcept :
+                stage(stage_),
+                nextLink(nextLink_) {}
+
             ~CacheChainLink() override = default;
 
         public:
