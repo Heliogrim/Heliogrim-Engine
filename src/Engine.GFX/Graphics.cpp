@@ -13,6 +13,7 @@
 #include <Engine.Core/Event/WorldRemoveEvent.hpp>
 #include <Engine.GFX.Glow.3D/Renderer/RevRenderer.hpp>
 #include <Engine.GFX.Glow.UI/Renderer/UIRenderer.hpp>
+#include <Engine.GFX.Loader/Manager.hpp>
 #include <Engine.GFX.Scene/RenderSceneManager.hpp>
 #include <Engine.GFX.Schedule/RenderScenePipeline.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -33,10 +34,6 @@
 #include "Engine.Scene/Scene.hpp"
 #include "Importer/ImageFileTypes.hpp"
 #include "Importer/ImageImporter.hpp"
-#include "Loader/FontLoader.hpp"
-#include "Loader/MaterialLoader.hpp"
-#include "Loader/RevTextureLoader.hpp"
-#include "Loader/StaticGeometryLoader.hpp"
 #include "Renderer/HORenderPass.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Shader/ShaderStorage.hpp"
@@ -67,52 +64,58 @@ void Graphics::tidy() {
 
 void Graphics::hookEngineState() {
 
-    const auto owae = _engine->getEmitter().on<core::WorldAddedEvent>([this](cref<core::WorldAddedEvent> event_) {
+    const auto owae = _engine->getEmitter().on<core::WorldAddedEvent>(
+        [this](cref<core::WorldAddedEvent> event_) {
 
-        auto* const scene { event_.getWorld()->getScene() };
-        const auto* const sceneClass { scene->getClass() };
+            auto* const scene { event_.getWorld()->getScene() };
+            const auto* const sceneClass { scene->getClass() };
 
-        /*
-        if (not sceneClass->isType<scene::IRenderScene>()) {
-            return;
+            /*
+            if (not sceneClass->isType<scene::IRenderScene>()) {
+                return;
+            }
+             */
+
+            if (not sceneClass->isExactType<scene::RevScene>()) {
+                return;
+            }
+
+            _sceneManager->registerScene(static_cast<const ptr<scene::RevScene>>(scene));
         }
-         */
-
-        if (not sceneClass->isExactType<scene::RevScene>()) {
-            return;
-        }
-
-        _sceneManager->registerScene(static_cast<const ptr<scene::RevScene>>(scene));
-    });
+    );
     _hooks.push_back({ core::WorldAddedEvent::typeId.data, owae });
 
-    const auto owre = _engine->getEmitter().on<core::WorldRemoveEvent>([this](cref<core::WorldRemoveEvent> event_) {
+    const auto owre = _engine->getEmitter().on<core::WorldRemoveEvent>(
+        [this](cref<core::WorldRemoveEvent> event_) {
 
-        auto* const scene { event_.getWorld()->getScene() };
-        const auto* const sceneClass { scene->getClass() };
+            auto* const scene { event_.getWorld()->getScene() };
+            const auto* const sceneClass { scene->getClass() };
 
-        /*
-        if (not sceneClass->isType<scene::IRenderScene>()) {
-            return;
+            /*
+            if (not sceneClass->isType<scene::IRenderScene>()) {
+                return;
+            }
+             */
+
+            if (not sceneClass->isExactType<scene::RevScene>()) {
+                return;
+            }
+
+            _sceneManager->unregisterScene(static_cast<const ptr<scene::RevScene>>(scene));
+            cleanupTargetsByScene(static_cast<const ptr<scene::RevScene>>(scene));
         }
-         */
-
-        if (not sceneClass->isExactType<scene::RevScene>()) {
-            return;
-        }
-
-        _sceneManager->unregisterScene(static_cast<const ptr<scene::RevScene>>(scene));
-        cleanupTargetsByScene(static_cast<const ptr<scene::RevScene>>(scene));
-    });
+    );
     _hooks.push_back({ core::WorldRemoveEvent::typeId.data, owre });
 
-    const auto owce = _engine->getEmitter().on<core::WorldChangeEvent>([this](cref<core::WorldChangeEvent> event_) {
+    const auto owce = _engine->getEmitter().on<core::WorldChangeEvent>(
+        [this](cref<core::WorldChangeEvent> event_) {
 
-        event_.getSession();
-        event_.getPrevWorld();
-        event_.getNextWorld();
+            event_.getSession();
+            event_.getPrevWorld();
+            event_.getNextWorld();
 
-    });
+        }
+    );
     _hooks.push_back({ core::WorldChangeEvent::typeId.data, owce });
 }
 
@@ -204,7 +207,9 @@ void Graphics::setup() {
      * Register Hooks and consume EngineState
      */
     hookEngineState();
-    registerLoader();
+
+    auto& loader = _engine->getResources()->loader();
+    loader::register_loader(loader, this, _cacheCtrl.get());
     registerImporter();
 
     /**
@@ -225,7 +230,9 @@ void Graphics::destroy() {
      * Unregister Hooks and consume EngineState
      */
     unregisterImporter();
-    unregisterLoader();
+
+    auto& loader = _engine->getResources()->loader();
+    loader::unregister_loader(loader, this, _cacheCtrl.get());
     unhookEngineState();
 
     /**
@@ -318,12 +325,15 @@ const non_owning_rptr<gfx::scene::RenderSceneManager> Graphics::getSceneManager(
 void Graphics::cleanupTargetsByScene(const non_owning_rptr<scene::IRenderScene> scene_) {
 
     CompactArray<sptr<RenderTarget>> targets {};
-    _sceneManager->selectPrimaryTargets(targets, [scene_](cref<sptr<RenderTarget>> target_) {
-        // TODO: Check whether we want this with a query to the render targets to check whether
-        // TODO:    the render target is effected by scene changes ( deletion )
-        // return target_->hasScene(scene_);
-        return true;
-    });
+    _sceneManager->selectPrimaryTargets(
+        targets,
+        [scene_](cref<sptr<RenderTarget>> target_) {
+            // TODO: Check whether we want this with a query to the render targets to check whether
+            // TODO:    the render target is effected by scene changes ( deletion )
+            // return target_->hasScene(scene_);
+            return true;
+        }
+    );
 
     for (auto&& target : targets) {
         target->setActive(false);
@@ -333,12 +343,15 @@ void Graphics::cleanupTargetsByScene(const non_owning_rptr<scene::IRenderScene> 
     /**/
 
     targets.clear();
-    _sceneManager->selectSecondaryTargets(targets, [scene_](cref<sptr<RenderTarget>> target_) {
-        // TODO: Check whether we want this with a query to the render targets to check whether
-        // TODO:    the render target is effected by scene changes ( deletion )
-        // return target_->hasScene(scene_);
-        return true;
-    });
+    _sceneManager->selectSecondaryTargets(
+        targets,
+        [scene_](cref<sptr<RenderTarget>> target_) {
+            // TODO: Check whether we want this with a query to the render targets to check whether
+            // TODO:    the render target is effected by scene changes ( deletion )
+            // return target_->hasScene(scene_);
+            return true;
+        }
+    );
 
     for (auto&& target : targets) {
         target->setActive(false);
@@ -348,53 +361,6 @@ void Graphics::cleanupTargetsByScene(const non_owning_rptr<scene::IRenderScene> 
 
 const non_owning_rptr<gfx::SurfaceManager> Graphics::getSurfaceManager() const noexcept {
     return _surfaceManager.get();
-}
-
-#include <Ember/StaticGeometryComponent.hpp>
-
-void Graphics::registerLoader() {
-    /**/
-    auto* manager { _engine->getResources() };
-    auto& loader { manager->loader() };
-
-    /**
-     * Font Loader
-     */
-    const auto fl = make_sptr<FontLoader>(_cacheCtrl.get());
-
-    loader.registerLoader<assets::Font>(fl);
-
-    /**
-     * Geometry Loader
-     */
-    const auto sgl = make_sptr<StaticGeometryLoader>(_cacheCtrl.get());
-
-    loader.registerLoader<assets::StaticGeometry>(sgl);
-
-    /**
-     * Texture Loader
-     */
-    const auto rtl = make_sptr<RevTextureLoader>(_cacheCtrl.get());
-
-    loader.registerLoader<assets::Texture>(rtl);
-
-    /**
-     * Material Loader
-     */
-    const auto mtl = make_sptr<MaterialLoader>(_cacheCtrl.get());
-
-    loader.registerLoader<assets::GfxMaterial>(mtl);
-}
-
-void Graphics::unregisterLoader() {
-
-    auto* const manager { _engine->getResources() };
-    auto& loader { manager->loader() };
-
-    loader.unregisterLoader<assets::Font>();
-    loader.unregisterLoader<assets::StaticGeometry>();
-    loader.unregisterLoader<assets::Texture>();
-    loader.unregisterLoader<assets::GfxMaterial>();
 }
 
 void Graphics::registerImporter() {
