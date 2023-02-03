@@ -1,7 +1,10 @@
 #include "GlobalCacheCtrl.hpp"
 
 #include <Engine.Assets/Types/Texture/Texture.hpp>
-#include <Engine.Resource/Loader/StreamLoader.hpp>
+#include <Engine.GFX.Loader/Texture/Traits.hpp>
+#include <Engine.GFX.Loader/Texture/TextureLoader.hpp>
+
+#include "GlobalResourceCache.hpp"
 
 using namespace ember::engine::gfx::cache;
 using namespace ember;
@@ -20,39 +23,35 @@ const ptr<GlobalResourceCache> GlobalCacheCtrl::cache() const noexcept {
 void GlobalCacheCtrl::dispatchLoad(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_) {
     // TODO:
 
-    using stream_loader_type = res::StreamLoader<assets::Texture>;
-    using stream_options_type = _STD remove_pointer_t<stream_loader_type::stream_options_type>;
+    using stream_loader = loader::TextureLoader;
+    using stream_options = stream_loader::traits::request::stream_type;
 
-    auto* options = new stream_options_type {
+    stream_options options {
         .layer = subresource_.layer,
         .mip = subresource_.mip,
-        .offset = subresource_.offset,
+        .offset = math::ivec3(subresource_.offset),
         .extent = subresource_.extent
     };
 
-    //
-    resource_->streamLoad(static_cast<const ptr<EmberObject>>(static_cast<const ptr<void>>(options)));
-
-    delete options;
+    _cache->request(..., _STD move(options), ...);
+    // resource_->streamLoad(static_cast<const ptr<EmberObject>>(static_cast<const ptr<void>>(options)));
 }
 
 void GlobalCacheCtrl::dispatchUnload(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_) {
     // TODO:
 
-    using stream_loader_type = res::StreamLoader<assets::Texture>;
-    using stream_options_type = _STD remove_pointer_t<stream_loader_type::stream_options_type>;
+    using stream_loader = loader::TextureLoader;
+    using stream_options = stream_loader::traits::request::stream_type;
 
-    auto* options = new stream_options_type {
+    stream_options options {
         .layer = subresource_.layer,
         .mip = subresource_.mip,
-        .offset = subresource_.offset,
+        .offset = math::ivec3(subresource_.offset),
         .extent = subresource_.extent
     };
 
-    //
-    resource_->streamUnload(static_cast<const ptr<EmberObject>>(static_cast<const ptr<void>>(options)));
-
-    delete options;
+    _cache->unload(..., _STD move(options), ...);
+    // resource_->streamUnload(static_cast<const ptr<EmberObject>>(static_cast<const ptr<void>>(options)));
 }
 
 void GlobalCacheCtrl::markAsUsed(
@@ -176,11 +175,15 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource>, mref<TextureSubResourceRange>
 
 #pragma region StaticGeometryResource
 
-void GlobalCacheCtrl::dispatchLoad(const ptr<StaticGeometryResource> resource_,
-    cref<StaticGeometrySubResource> subresource_) {}
+void GlobalCacheCtrl::dispatchLoad(
+    const ptr<StaticGeometryResource> resource_,
+    cref<StaticGeometrySubResource> subresource_
+) {}
 
-void GlobalCacheCtrl::dispatchUnload(const ptr<StaticGeometryResource> resource_,
-    cref<StaticGeometrySubResource> subresource_) {}
+void GlobalCacheCtrl::dispatchUnload(
+    const ptr<StaticGeometryResource> resource_,
+    cref<StaticGeometrySubResource> subresource_
+) {}
 
 void GlobalCacheCtrl::markAsUsed(ptr<StaticGeometryResource> resource_, mref<CacheStaticGeometrySubject> subresource_) {
     throw NotImplementedException();

@@ -28,9 +28,6 @@
     <Filter Include="Headerdateien\Library">
       <UniqueIdentifier>{8c32f7ed-07ae-47e0-b2d9-c570f9eab5b3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Loader">
-      <UniqueIdentifier>{bcd7bbd1-c6fe-4ae6-8d18-0e4e3e097919}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Material">
       <UniqueIdentifier>{6d166ae2-2939-4d35-88c7-91f3d8f87203}</UniqueIdentifier>
     </Filter>
@@ -39,9 +36,6 @@
     </Filter>
     <Filter Include="Headerdateien\Texture">
       <UniqueIdentifier>{d027d163-1b6f-4fa0-881a-7a8a5f406b25}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Loader">
-      <UniqueIdentifier>{a730dd52-b83a-4680-9b02-d745be7668db}</UniqueIdentifier>
     </Filter>
     <Filter Include="Quelldateien\Skybox">
       <UniqueIdentifier>{d2ae031a-11a5-43cf-acae-3539f6b39dec}</UniqueIdentifier>
@@ -227,9 +221,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Library\Types.hpp">
       <Filter>Headerdateien\Library</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Loader\GeometryLoader.hpp">
-      <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Material\Material.hpp">
       <Filter>Headerdateien\Material</Filter>
@@ -444,9 +435,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Scene\LandscapeGeometryModel.hpp">
       <Filter>Headerdateien\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Loader\StaticGeometryLoader.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Memory\VirtualMemory.hpp">
       <Filter>Headerdateien\Memory</Filter>
     </ClInclude>
@@ -624,9 +612,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Scene\GeometryModel.hpp">
       <Filter>Headerdateien\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Loader\MaterialLoader.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Cache\LocalCacheCtrl.hpp">
       <Filter>Headerdateien\Cache</Filter>
     </ClInclude>
@@ -660,9 +645,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSurfaceSwapchain.hpp">
       <Filter>Headerdateien\Swapchain</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Loader\FontLoader.hpp">
-      <Filter>Headerdateien\Loader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.hpp">
       <Filter>Headerdateien\Swapchain</Filter>
     </ClInclude>
@@ -692,12 +674,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp">
-      <Filter>Quelldateien\Loader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Loader\TextureLoader.cpp">
-      <Filter>Quelldateien\Loader</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp">
       <Filter>Quelldateien\Skybox</Filter>
     </ClCompile>
@@ -848,12 +824,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.cpp">
       <Filter>Quelldateien\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Loader\StaticGeometryLoader.cpp">
-      <Filter>Quelldateien\Loader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Loader\RevTextureLoader.cpp">
-      <Filter>Quelldateien\Loader</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Memory\VirtualMemory.cpp">
       <Filter>Quelldateien\Memory</Filter>
     </ClCompile>
@@ -965,9 +935,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Scene\GeometryModel.cpp">
       <Filter>Quelldateien\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Loader\MaterialLoader.cpp">
-      <Filter>Quelldateien\Loader</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Cache\LocalCacheCtrl.cpp">
       <Filter>Quelldateien\Cache</Filter>
     </ClCompile>
@@ -991,9 +958,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSurfaceSwapchain.cpp">
       <Filter>Quelldateien\Swapchain</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Loader\FontLoader.cpp">
-      <Filter>Quelldateien\Loader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.cpp">
       <Filter>Quelldateien\Swapchain</Filter>

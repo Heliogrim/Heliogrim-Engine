@@ -1,14 +1,12 @@
 #pragma once
 
 #include <concepts>
-
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/AssociativeKey.hpp>
 #include <Engine.Common/Collection/RobinMap.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
-
-#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX.Loader/Geometry/StaticGeometryResource.hpp>
+#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 
 #include "CacheCtrlSubject.hpp"
 #include "CacheStaticGeometrySubject.hpp"

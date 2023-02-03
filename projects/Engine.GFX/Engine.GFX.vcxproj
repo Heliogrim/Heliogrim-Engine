@@ -128,11 +128,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Graphics.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Importer\ImageFileTypes.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Importer\KtxImporter.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Loader\FontLoader.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Loader\GeometryLoader.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Loader\MaterialLoader.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Loader\StaticGeometryLoader.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Loader\TextureLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Memory\AllocatedMemory.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Memory\Allocator.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Memory\GlobalPooledAllocator.cpp" />
@@ -265,10 +260,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Library\RenderObject.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Library\Types.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Light\LightAtlas.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Loader\FontLoader.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Loader\GeometryLoader.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Loader\MaterialLoader.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Loader\StaticGeometryLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Material\Material.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMapFlags.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMeta.hpp" />
@@ -374,9 +365,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX\todo.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.GFX\Loader\RevTextureLoader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
