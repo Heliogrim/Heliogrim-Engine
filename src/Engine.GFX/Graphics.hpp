@@ -31,11 +31,6 @@ namespace ember::engine::gfx::scene {
     class SceneView;
 }
 
-namespace ember::engine::gfx::loader {
-    class GeometryLoader;
-    class TextureLoader;
-}
-
 namespace ember::engine {
     class Graphics final :
         public core::CoreModule {
@@ -170,12 +165,14 @@ namespace ember::engine {
 
         [[nodiscard]] sptr<gfx::render::Renderer> getRenderer(
             cref<AssocKey<string>> key_,
-            _STD nothrow_t) const noexcept;
+            _STD nothrow_t
+        ) const noexcept;
 
         [[nodiscard]] bool hasRenderer(cref<AssocKey<string>> key_);
 
         [[nodiscard, deprecated("Might create memory leak and not-freeable resources")]] bool removeRenderer(
-            cref<AssocKey<string>> key_);
+            cref<AssocKey<string>> key_
+        );
 
     private:
         ptr<gfx::scene::RenderSceneManager> _sceneManager;
@@ -191,15 +188,6 @@ namespace ember::engine {
 
     public:
         [[nodiscard]] const non_owning_rptr<gfx::SurfaceManager> getSurfaceManager() const noexcept;
-
-    private:
-        Vector<ptr<gfx::loader::GeometryLoader>> _geometryLoader;
-        Vector<ptr<gfx::loader::TextureLoader>> _textureLoader;
-
-    public:
-        void registerLoader();
-
-        void unregisterLoader();
 
     private:
         Vector<ptr<void>> _importer;
