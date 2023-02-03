@@ -210,7 +210,8 @@ namespace ember::math {
          */
         [[nodiscard]] mathGenericType distance(const_reference_type other_) const {
             return static_cast<mathGenericType>(std::sqrt(
-                (x - other_.x) * (x - other_.x) + (y - other_.y) * (y - other_.y)));
+                (x - other_.x) * (x - other_.x) + (y - other_.y) * (y - other_.y)
+            ));
         }
 
         /**
@@ -475,7 +476,6 @@ namespace ember::math {
          * @date 16.01.2020
          */
         union {
-
             /**
              * An unnamed.
              *
@@ -620,6 +620,22 @@ namespace ember::math {
             z(xyzw_.z) { }
 
         /**
+         * Cast Constructor
+         *
+         * @author Julius
+         * @date 02.02.2023
+         *
+         * @tparam Ty_ The typename to cast the values from
+         *
+         * @param other_ The foreign vector to cast the values from.
+         */
+        template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
+        explicit constexpr vec3_t(const vec3_t<Ty_>& other_) :
+            x((value_type)(other_.x)),
+            y((value_type)(other_.y)),
+            z((value_type)(other_.z)) {}
+
+        /**
          * Sets an x coordinate
          *
          * @author Julius
@@ -715,7 +731,8 @@ namespace ember::math {
          */
         [[nodiscard]] mathGenericType distance(const_reference_type other_) const {
             return static_cast<mathGenericType>(std::sqrt(
-                (x - other_.x) * (x - other_.x) + (y - other_.y) * (y - other_.y) + (z - other_.z) * (z - other_.z)));
+                (x - other_.x) * (x - other_.x) + (y - other_.y) * (y - other_.y) + (z - other_.z) * (z - other_.z)
+            ));
         }
 
         /**
@@ -1053,7 +1070,6 @@ namespace ember::math {
          * @date 16.01.2020
          */
         union {
-
             /**
              * An unnamed.
              *
@@ -1129,8 +1145,12 @@ namespace ember::math {
          * @param  z_ The z coordinate.
          * @param  w_ The w.
          */
-        constexpr vec4_t(const value_type& x_, const value_type& y_, const value_type& z_,
-            const value_type& w_) noexcept :
+        constexpr vec4_t(
+            const value_type& x_,
+            const value_type& y_,
+            const value_type& z_,
+            const value_type& w_
+        ) noexcept :
             x(x_),
             y(y_),
             z(z_),
@@ -1174,8 +1194,10 @@ namespace ember::math {
          * @param  xy_ The xy.
          * @param  zw_ The zw.
          */
-        constexpr vec4_t(typename vec2_t<value_type>::const_reference_type xy_,
-            typename vec2_t<value_type>::const_reference_type zw_) noexcept :
+        constexpr vec4_t(
+            typename vec2_t<value_type>::const_reference_type xy_,
+            typename vec2_t<value_type>::const_reference_type zw_
+        ) noexcept :
             x(xy_.x),
             y(xy_.y),
             z(zw_.x),
@@ -1313,7 +1335,8 @@ namespace ember::math {
         [[nodiscard]] mathGenericType distance(const_reference_type other_) const {
             return static_cast<mathGenericType>(std::sqrt(
                 (x - other_.x) * (x - other_.x) + (y - other_.y) * (y - other_.y) + (z - other_.z) * (z - other_.z) + (w
-                    - other_.w) * (w - other_.w)));
+                    - other_.w) * (w - other_.w)
+            ));
         }
 
         /**
@@ -1560,7 +1583,6 @@ namespace ember::math {
          * @date 16.01.2020
          */
         union {
-
             /**
              * An unnamed.
              *
@@ -1788,7 +1810,6 @@ namespace ember::math {
 
 /** . */
 namespace std {
-
     /**
      * A vector 2 t.
      *
@@ -1799,7 +1820,6 @@ namespace std {
      */
     template <typename T>
     struct hash<ember::math::vec2_t<T>> {
-
         /**
          * Function call operator
          *
@@ -1831,7 +1851,6 @@ namespace std {
      */
     template <typename T>
     struct hash<ember::math::vec3_t<T>> {
-
         /**
          * Function call operator
          *
@@ -1864,7 +1883,6 @@ namespace std {
      */
     template <typename T>
     struct hash<ember::math::vec4_t<T>> {
-
         /**
          * Function call operator
          *
