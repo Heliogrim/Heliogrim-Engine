@@ -22,6 +22,9 @@
     <Filter Include="Quelldateien\Texture">
       <UniqueIdentifier>{63362285-28db-4b71-8750-3c363053d5ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Material">
+      <UniqueIdentifier>{8ccd1cbe-0a08-4d1a-9592-652edc77655e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.hpp">
@@ -55,6 +58,21 @@
       <Filter>Headerdateien\Texture</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryResource.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialResource.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\Traits.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\__fwd.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryLoadOptions.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryStreamOptions.hpp">
       <Filter>Headerdateien\Geometry</Filter>
     </ClInclude>
   </ItemGroup>

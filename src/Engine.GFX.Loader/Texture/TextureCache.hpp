@@ -4,6 +4,7 @@
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Resource/Loader/Cache.hpp>
 #include <Engine.GFX/Cache/__fwd.hpp>
+#include <Engine.GFX/Cache/CacheResult.hpp>
 
 #include "Traits.hpp"
 
@@ -18,30 +19,52 @@ namespace ember::engine::gfx::loader {
         using underlying_type::request_type;
         using underlying_type::response_type;
 
+        using cache_result_type = cache::Result<cache::CacheResultType, smr<TextureResource>>;
+
     public:
         TextureCache(
-            const non_owning_rptr<cache::GlobalCacheCtrl> cache_
+            const non_owning_rptr<cache::GlobalCacheCtrl> cacheCtrl_
         );
 
         ~TextureCache() override = default;
+
+    private:
+        const non_owning_rptr<cache::GlobalCacheCtrl> _cacheCtrl;
+
+    public:
+        [[nodiscard]] bool contains(const non_owning_rptr<const assets::Texture> asset_) const noexcept;
+
+        [[nodiscard]] cache::Result<cache::CacheResultType, smr<TextureResource>> query(
+            const non_owning_rptr<const assets::Texture> asset_
+        ) const noexcept;
+
+    public:
+        bool store(
+            const non_owning_rptr<const assets::Texture> asset_,
+            _In_ mref<smr<TextureResource>> resource_
+        ) noexcept;
+
+        [[nodiscard]] bool remove(const non_owning_rptr<const assets::Texture> asset_) noexcept;
+
+        [[nodiscard]] bool remove(
+            const non_owning_rptr<const assets::Texture> asset_,
+            _Out_ ref<smr<TextureResource>> resource_
+        ) noexcept;
+
+        void clear();
 
     public:
         [[nodiscard]] typename response_type::type operator()(
             _In_ mref<typename request_type::type> request_,
             _In_ mref<typename request_type::options> options_,
             _In_ cref<next_type> next_
-        ) const override {
-            return next_(_STD move(request_), _STD move(options_));
-        }
+        ) const override;
 
         [[nodiscard]] virtual typename response_type::type operator()(
             _In_ mref<typename request_type::type> request_,
             _In_ mref<typename request_type::options> options_,
             _In_ mref<typename request_type::stream> streamOptions_,
             _In_ cref<next_type> next_
-        ) const override {
-            // TODO:
-            return next_(_STD move(request_), _STD move(options_), _STD move(streamOptions_));
-        }
+        ) const override;
     };
 }

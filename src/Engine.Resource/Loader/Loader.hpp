@@ -6,7 +6,6 @@
 #include "LoaderTraits.hpp"
 #include "__fwd.hpp"
 #include "../Manage/ResourceConcept.hpp"
-
 #include "../Manage/UniqueResource.hpp"
 
 namespace ember::engine::resource::loader {

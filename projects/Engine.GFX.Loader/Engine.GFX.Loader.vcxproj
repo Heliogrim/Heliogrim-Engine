@@ -90,8 +90,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryLoadOptions.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryResource.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryStreamOptions.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\Traits.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Manager.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialResource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureCache.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureFeedback.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.hpp" />
