@@ -144,8 +144,8 @@ namespace ember::engine::resource {
     public:
         template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>
         [[nodiscard]] loader::Loader<AssetType_, ResourceType_> preload(
-            typename loader::Loader<AssetType_, ResourceType_>::stage_traits::request_value_type request_,
-            typename loader::Loader<AssetType_, ResourceType_>::stage_traits::request_options_type options_ = {}
+            typename loader::Loader<AssetType_, ResourceType_>::traits::request::type request_,
+            typename loader::Loader<AssetType_, ResourceType_>::traits::request::options options_ = {}
         ) {
             const auto loader = selectLoader(AssetType_::type_id, nullptr);
             return static_cast<const ptr<loader::Loader<AssetType_, ResourceType_>>>(loader.get())->operator()(
@@ -156,8 +156,8 @@ namespace ember::engine::resource {
 
         template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>
         [[nodiscard]] loader::Loader<AssetType_, ResourceType_> load(
-            typename loader::Loader<AssetType_, ResourceType_>::stage_traits::request_value_type request_,
-            typename loader::Loader<AssetType_, ResourceType_>::stage_traits::request_options_type options_ = {}
+            typename loader::Loader<AssetType_, ResourceType_>::traits::request::type request_,
+            typename loader::Loader<AssetType_, ResourceType_>::traits::request::options options_ = {}
         ) {
             const auto loader = selectLoader(AssetType_::type_id, nullptr);
             return static_cast<const ptr<loader::Loader<AssetType_, ResourceType_>>>(loader.get())->operator()(
@@ -168,8 +168,8 @@ namespace ember::engine::resource {
 
         template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>
         [[nodiscard]] loader::Loader<AssetType_, ResourceType_> loadImmediately(
-            typename loader::Loader<AssetType_, ResourceType_>::stage_traits::request_value_type request_,
-            typename loader::Loader<AssetType_, ResourceType_>::stage_traits::request_options_type options_ = {}
+            typename loader::Loader<AssetType_, ResourceType_>::traits::request::type request_,
+            typename loader::Loader<AssetType_, ResourceType_>::traits::request::options options_ = {}
         ) {
             const auto loader = selectLoader(AssetType_::type_id, nullptr);
             return static_cast<const ptr<loader::Loader<AssetType_, ResourceType_>>>(loader.get())->operator()(
