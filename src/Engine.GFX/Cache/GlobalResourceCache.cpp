@@ -5,6 +5,9 @@
 #include "../Texture/TextureFactory.hpp"
 #include "../Material/MaterialMetaDto.hpp"
 
+#include <Engine.GFX.Loader/Texture/Traits.hpp>
+#include <Engine.GFX.Loader/Geometry/Traits.hpp>
+
 using namespace ember::engine::gfx::cache;
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -13,6 +16,7 @@ ptr<GlobalResourceCache> GlobalResourceCache::_instance = nullptr;
 
 GlobalResourceCache::GlobalResourceCache(cref<sptr<Device>> device_) :
     _device(device_),
+    _loader(nullptr),
     _atlasMaxLayers(128ui32),
     _atlasMaxLayerExtent({ 8192ui32 }),
     _atlasMinLayerExtent({ 16ui32 }),
@@ -62,7 +66,7 @@ cref<sptr<Device>> GlobalResourceCache::device() const noexcept {
     return _device;
 }
 
-bool GlobalResourceCache::hook(cref<asset_guid> guid_, ptr<StaticGeometryResource> resource_) {
+bool GlobalResourceCache::hook(cref<asset_guid> guid_, mref<smr<StaticGeometryResource>> resource_) {
 
     /**
      * Hook must be unique
@@ -71,29 +75,39 @@ bool GlobalResourceCache::hook(cref<asset_guid> guid_, ptr<StaticGeometryResourc
         return false;
     }
 
-    auto managed { resource_->acquire(res::ResourceUsageFlag::eAll) };
+    auto managed { resource_->acquire(resource::ResourceUsageFlag::eAll) };
     managed.release();
 
     /**
      * Store hooked resource
      */
-    _mapped.insert_or_assign(guid_, resource_);
+    _mapped.insert_or_assign(guid_, _STD move(resource_));
     return true;
 }
 
-bool GlobalResourceCache::unhook(cref<asset_guid> guid_, ptr<StaticGeometryResource> resource_) {
+bool GlobalResourceCache::unhook(cref<asset_guid> guid_, smr<StaticGeometryResource> resource_) {
     return false;
 }
 
-ptr<StaticGeometryResource> GlobalResourceCache::request(const ptr<const assets::StaticGeometry> asset_) {
+smr<StaticGeometryResource> GlobalResourceCache::request(const ptr<const assets::StaticGeometry> asset_) {
 
     /**
      * Check whether resource does already exists
      */
     auto iter { _mapped.find(asset_->get_guid()) };
     if (iter != _mapped.end()) {
-        return static_cast<ptr<StaticGeometryResource>>(iter->second);
+        return cache_value_type { iter->second }.into<StaticGeometryResource>();
     }
+
+    /**/
+
+    using loader_type = void;
+    using option_type = loader::StaticGeometryLoadOptions;
+
+    const auto result = _loader->loadImmediately<assets::StaticGeometry, StaticGeometryResource>(
+        ptr<const assets::StaticGeometry> { asset_ },
+        option_type {}
+    );
 
     /**
      *
@@ -121,14 +135,14 @@ ptr<StaticGeometryResource> GlobalResourceCache::request(const ptr<const assets:
     return res;
 }
 
-ptr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Texture> asset_) {
+smr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Texture> asset_) {
 
     /**
      * Check whether resource does already exists
      */
     auto iter { _mapped.find(asset_->get_guid()) };
     if (iter != _mapped.end()) {
-        return static_cast<ptr<TextureResource>>(iter->second);
+        return cache_value_type { iter->second }.into<TextureResource>();
     }
 
     const auto& extent { asset_->getExtent() };
@@ -142,7 +156,7 @@ ptr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Textur
     } else if (extent.z != 1ui32 || type != TextureType::e2d) {
         // Warning: Currently only support single layer 2d images
         __debugbreak();
-        return nullptr;
+        return {};
     }
 
     assert(extent.x <= _atlasMaxLayerExtent.x);
@@ -182,17 +196,19 @@ ptr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Textur
         }
         /**/
 
-        atlas = TextureFactory::get()->buildVirtual({
-            layers/* TODO: Layers */,
-            extent,
-            format,
-            math::uivec2 { 0ui32, asset_->getMipLevelCount() - 1ui32 },
-            payloadType,
-            vk::ImageAspectFlagBits::eColor,
-            vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
-            vk::MemoryPropertyFlagBits::eDeviceLocal,
-            vk::SharingMode::eExclusive
-        });
+        atlas = TextureFactory::get()->buildVirtual(
+            {
+                layers/* TODO: Layers */,
+                extent,
+                format,
+                math::uivec2 { 0ui32, asset_->getMipLevelCount() - 1ui32 },
+                payloadType,
+                vk::ImageAspectFlagBits::eColor,
+                vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
+                vk::MemoryPropertyFlagBits::eDeviceLocal,
+                vk::SharingMode::eExclusive
+            }
+        );
 
         auto uatlas { _STD unique_ptr<VirtualTexture>(atlas) };
         _textureAtlas.push_back(_STD move(uatlas));
@@ -214,13 +230,13 @@ ptr<TextureResource> GlobalResourceCache::request(const ptr<const assets::Textur
     return res;
 }
 
-ptr<MaterialResource> GlobalResourceCache::request(const ptr<const assets::GfxMaterial> asset_) {
+smr<MaterialResource> GlobalResourceCache::request(const ptr<const assets::GfxMaterial> asset_) {
     /**
      * Check whether resource does already exists
      */
     auto iter { _mapped.find(asset_->get_guid()) };
     if (iter != _mapped.end()) {
-        return static_cast<ptr<MaterialResource>>(iter->second);
+        return cache_value_type { iter->second }.into<MaterialResource>();
     }
 
     /**
@@ -332,13 +348,13 @@ ptr<MaterialResource> GlobalResourceCache::request(const ptr<const assets::GfxMa
     return res;
 }
 
-void GlobalResourceCache::drop(cref<asset_guid> guid_, mref<ptr<StaticGeometryResource>> resource_) {
+void GlobalResourceCache::drop(cref<asset_guid> guid_, mref<smr<StaticGeometryResource>> resource_) {
 
     /**
      * Check whether resource exists
      */
     auto iter { _mapped.find(guid_) };
-    if (iter == _mapped.end() || iter->second != resource_) {
+    if (iter == _mapped.end() || iter->second.get() != resource_.get()) {
         return;
     }
 
@@ -352,7 +368,11 @@ void GlobalResourceCache::drop(cref<asset_guid> guid_, mref<ptr<StaticGeometryRe
      * Cleanup
      */
     _mapped.erase(iter);
-    delete resource_;
+    resource_.reset();
+}
+
+bool GlobalResourceCache::contains(const non_owning_rptr<const assets::Asset> asset_) const noexcept {
+    return _mapped.find(asset_->get_guid()) != _mapped.end();
 }
 
 non_owning_rptr<VirtualBuffer> GlobalResourceCache::requestVertexBuffer(mref<Vector<u64>> pageSizes_) {
