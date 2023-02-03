@@ -75,6 +75,13 @@ namespace ember {
             _ctrlBlock(_void_cast<ctrl_block_type>(_STD exchange(other_._ctrlBlock, nullptr))),
             _packed(_STD exchange(other_._packed, 0)) {}
 
+    protected:
+        template <class Fty_> requires IsSmrPointerCompatible<PayloadType_, Fty_>
+        explicit SharedMemoryReference(_Inout_ mref<SharedMemoryReference<Fty_>> other_) noexcept :
+            _ctrlBlock(_void_cast<ctrl_block_type>(_STD exchange(other_._ctrlBlock, nullptr))),
+            _packed(_STD exchange(other_._packed, 0)) {}
+
+    public:
         ~SharedMemoryReference() {
             if (_ctrlBlock != nullptr) {
                 _ctrlBlock->rel();
@@ -90,6 +97,27 @@ namespace ember {
                 _STD swap(_packed, other_._packed);
             }
             return *this;
+        }
+
+        template <class Fty_> requires IsSmrPointerCompatible<Fty_, PayloadType_>
+        ref<this_type> operator=(_Inout_ mref<SharedMemoryReference<Fty_>> other_) noexcept {
+            if (_STD addressof(other_) != this) {
+                reset();
+                _ctrlBlock = _void_cast<ctrl_block_type>(_STD exchange(other_._ctrlBlock, nullptr));
+                _packed = _STD exchange(other_._packed, 0);
+            }
+            return *this;
+        }
+
+    public:
+        template <class Fty_, template <typename> typename Pty_> requires (
+            IsSmrPointerCompatible<Fty_, PayloadType_> || IsSmrPointerCompatible<PayloadType_, Fty_>
+        )
+        [[nodiscard]] Pty_<Fty_> into();
+
+        template <class Fty_>
+        [[nodiscard]] smr<Fty_> into() {
+            return smr<Fty_> { _STD move(*this) };
         }
 
     private:
