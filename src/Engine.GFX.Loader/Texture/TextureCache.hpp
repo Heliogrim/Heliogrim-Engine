@@ -19,7 +19,9 @@ namespace ember::engine::gfx::loader {
         using underlying_type::request_type;
         using underlying_type::response_type;
 
-        using cache_result_type = cache::Result<cache::CacheResultType, smr<TextureResource>>;
+        using cache_key_type = const non_owning_rptr<const assets::Texture>;
+        using cache_value_type = smr<TextureResource>;
+        using cache_result_type = cache::Result<cache::QueryResultType, cache_value_type>;
 
     public:
         TextureCache(
@@ -34,7 +36,7 @@ namespace ember::engine::gfx::loader {
     public:
         [[nodiscard]] bool contains(const non_owning_rptr<const assets::Texture> asset_) const noexcept;
 
-        [[nodiscard]] cache::Result<cache::CacheResultType, smr<TextureResource>> query(
+        [[nodiscard]] cache::Result<cache::QueryResultType, smr<TextureResource>> query(
             const non_owning_rptr<const assets::Texture> asset_
         ) const noexcept;
 
@@ -42,7 +44,7 @@ namespace ember::engine::gfx::loader {
         bool store(
             const non_owning_rptr<const assets::Texture> asset_,
             _In_ mref<smr<TextureResource>> resource_
-        ) noexcept;
+        ) const noexcept;
 
         [[nodiscard]] bool remove(const non_owning_rptr<const assets::Texture> asset_) noexcept;
 
@@ -60,7 +62,7 @@ namespace ember::engine::gfx::loader {
             _In_ cref<next_type> next_
         ) const override;
 
-        [[nodiscard]] virtual typename response_type::type operator()(
+        [[nodiscard]] typename response_type::type operator()(
             _In_ mref<typename request_type::type> request_,
             _In_ mref<typename request_type::options> options_,
             _In_ mref<typename request_type::stream> streamOptions_,

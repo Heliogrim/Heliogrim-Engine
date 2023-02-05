@@ -10,10 +10,21 @@ namespace ember::engine::gfx::cache {
         eMiss = 0x2
     };
 
-    enum class CacheResultType : u8 {
+    enum class StoreResultType : bool {
+        eFail = false,
+        eSuccess = true
+    };
+
+    enum class QueryResultType : u8 {
         eUndefined = 0x0,
         eHit = 0x1,
         eMiss = 0x2
+    };
+
+    enum class StreamCacheResultType : u8 {
+        eUndefined = 0x0,
+        eResidential/* eStable | eSealed | eLocked */ = 0x1,
+        eTransient/* eVolatile */ = 0x2,
     };
 
     template <typename ResultTypeType_, typename ValueType_ = void> requires _STD is_integral_v<ResultTypeType_> ||
@@ -151,6 +162,27 @@ namespace ember::engine::gfx::cache {
         template <typename Type_ = ValueType_> requires supplement<Type_>::value
         [[nodiscard]] constexpr Type_ value() const noexcept {
             return data._Myval2;
+        }
+
+    public:
+        template <typename Type_ = ValueType_> requires supplement<Type_>::value
+        [[nodiscard]] cref<value_type> operator*() const noexcept {
+            return data._Myval2;
+        }
+
+        template <typename Type_ = ValueType_> requires supplement<Type_>::value
+        [[nodiscard]] ref<value_type> operator*() noexcept {
+            return data._Myval2;
+        }
+
+        template <typename Type_ = ValueType_> requires supplement<Type_>::value
+        [[nodiscard]] const ptr<value_type> operator->() const noexcept {
+            return &data._Myval2;
+        }
+
+        template <typename Type_ = ValueType_> requires supplement<Type_>::value
+        [[nodiscard]] const ptr<value_type> operator->() noexcept {
+            return &data._Myval2;
         }
     };
 }

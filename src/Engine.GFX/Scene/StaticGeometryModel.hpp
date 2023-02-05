@@ -1,13 +1,14 @@
 #pragma once
 #include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
+#include <Engine.GFX.Loader/Geometry/StaticGeometryResource.hpp>
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 #include "GeometryModel.hpp"
 #include "../Shader/CachedDiscreteBinding.hpp"
 #include "../Renderer/__fwd.hpp"
 
 namespace ember::engine::gfx {
-
     class StaticGeometryModel final :
         public GeometryModel {
     public:
@@ -39,13 +40,13 @@ namespace ember::engine::gfx {
 
     private:
         ptr<assets::StaticGeometry> _staticGeometryAsset = nullptr;
-        ptr<res::Resource> _staticGeometryResource = nullptr;
+        smr<StaticGeometryResource> _staticGeometryResource;
         bool _streamable = false;
 
     public:
         [[nodiscard]] const ptr<assets::StaticGeometry> geometryAsset() const noexcept;
 
-        [[nodiscard]] const ptr<res::Resource> geometryResource() const noexcept;
+        [[nodiscard]] cref<smr<StaticGeometryModel>> geometryResource() const noexcept;
 
         [[nodiscard]] bool streamable() const noexcept;
     };

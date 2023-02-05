@@ -143,6 +143,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\LORenderPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\VertexStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Pool\GlobalResourcePool.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\Multiplexer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\Renderer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Renderer\HORenderPass.cpp" />
@@ -288,6 +289,8 @@
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\LORenderPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\VertexStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Pool\GlobalResourcePool.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Pool\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\PrimitiveTopology.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RasterCullFace.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RasterPolyFront.hpp" />

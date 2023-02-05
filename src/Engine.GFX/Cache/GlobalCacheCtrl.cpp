@@ -54,15 +54,15 @@ void GlobalCacheCtrl::dispatchUnload(const ptr<TextureResource> resource_, cref<
     // resource_->streamUnload(static_cast<const ptr<EmberObject>>(static_cast<const ptr<void>>(options)));
 }
 
-void GlobalCacheCtrl::markAsUsed(
-    ptr<TextureResource> resource_,
+GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::makeAsUsed(
+    const non_owning_rptr<TextureResource> resource_,
     mref<TextureSubResource> subresource_
 ) {
-    markAsUsed(resource_, AssocKey<TextureSubResource>::from(_STD move(subresource_)));
+    return markAsUsed(resource_, AssocKey<TextureSubResource>::from(_STD move(subresource_)));
 }
 
-void GlobalCacheCtrl::markAsUsed(
-    ptr<TextureResource> resource_,
+GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
+    const non_owning_rptr<TextureResource> resource_,
     cref<AssocKey<TextureSubResource>> subresource_
 ) {
 
@@ -103,9 +103,16 @@ void GlobalCacheCtrl::markAsUsed(
          */
         ctrls.insert_or_assign(subresource_, new SubjectType { _STD move(subresource_), 1ui16 });
     }
+
+    /**/
+
+    return { StreamCacheResultType::eUndefined };
 }
 
-void GlobalCacheCtrl::markAsUsed(ptr<TextureResource>, mref<TextureSubResourceRange> subresourceRange_) {
+GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
+    ptr<TextureResource>,
+    mref<TextureSubResourceRange> subresourceRange_
+) {
     throw NotImplementedException();
 }
 

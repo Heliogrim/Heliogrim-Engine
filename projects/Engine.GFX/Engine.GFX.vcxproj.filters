@@ -160,6 +160,12 @@
     <Filter Include="Quelldateien\Importer">
       <UniqueIdentifier>{aff54484-1f05-4ac8-a451-0d191109256b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Pool">
+      <UniqueIdentifier>{04b591c2-35d0-4347-ad12-777dabc7a1dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Pool">
+      <UniqueIdentifier>{7f1a152b-e5ac-45ac-aa83-b66244863ef3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX\Inc.hpp">
@@ -672,6 +678,12 @@
     <ClInclude Include="..\..\src\Engine.GFX\Scene\CameraModel.hpp">
       <Filter>Headerdateien\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Pool\__fwd.hpp">
+      <Filter>Headerdateien\Pool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Pool\GlobalResourcePool.hpp">
+      <Filter>Headerdateien\Pool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp">
@@ -976,6 +988,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Scene\CameraModel.cpp">
       <Filter>Quelldateien\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Pool\GlobalResourcePool.cpp">
+      <Filter>Quelldateien\Pool</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
