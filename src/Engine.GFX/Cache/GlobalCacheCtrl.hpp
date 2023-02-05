@@ -8,6 +8,7 @@
 #include <Engine.GFX.Loader/Geometry/StaticGeometryResource.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 
+#include "CacheResult.hpp"
 #include "CacheCtrlSubject.hpp"
 #include "CacheStaticGeometrySubject.hpp"
 #include "CacheTextureSubject.hpp"
@@ -25,6 +26,9 @@ namespace ember::engine::gfx::cache {
     class GlobalCacheCtrl {
     public:
         using this_type = GlobalCacheCtrl;
+
+        template <typename Type_ = void>
+        using stream_result_type = Result<StreamCacheResultType, Type_>;
 
     public:
         GlobalCacheCtrl(const ptr<GlobalResourceCache> cache_);
@@ -59,11 +63,20 @@ namespace ember::engine::gfx::cache {
         void dispatchUnload(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_);
 
     public:
-        void markAsUsed(ptr<TextureResource> resource_, mref<TextureSubResource> subresource_);
+        [[nodiscard]] stream_result_type<> makeAsUsed(
+            _In_ const non_owning_rptr<TextureResource> resource_,
+            _In_ mref<TextureSubResource> subresource_
+        );
 
-        void markAsUsed(ptr<TextureResource> resource_, cref<AssocKey<TextureSubResource>> subresource_);
+        [[nodiscard]] stream_result_type<> markAsUsed(
+            _In_ const non_owning_rptr<TextureResource> resource_,
+            cref<AssocKey<TextureSubResource>> subresource_
+        );
 
-        [[deprecated]] void markAsUsed(ptr<TextureResource>, mref<TextureSubResourceRange> subresourceRange_);
+        [[deprecated]] stream_result_type<> markAsUsed(
+            _In_ const non_owning_rptr<TextureResource> resource_,
+            _In_ mref<TextureSubResourceRange> range_
+        );
 
         void unmark(ptr<TextureResource> resource_, mref<TextureSubResource> subresource_);
 

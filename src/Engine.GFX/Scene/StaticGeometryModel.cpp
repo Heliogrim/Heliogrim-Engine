@@ -10,7 +10,6 @@
 #include "ModelDataTokens.hpp"
 #include "StaticGeometryBatch.hpp"
 #include "../Cache/CacheResult.hpp"
-#include "../Resource/StaticGeometryResource.hpp"
 #include "Engine.Assets/Types/GfxMaterial.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "Engine.GFX.Glow.3D/Renderer/State/RevSfMtt.hpp"
@@ -113,8 +112,13 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
         assert(buffer.buffer);
 
         const auto result {
-            memory::allocate(&state_->alloc, state_->device, buffer.buffer, MemoryProperty::eHostVisible,
-                buffer.memory)
+            memory::allocate(
+                &state_->alloc,
+                state_->device,
+                buffer.buffer,
+                MemoryProperty::eHostVisible,
+                buffer.memory
+            )
         };// TODO: Handle failed allocation
         buffer.bind();
     }
@@ -153,8 +157,13 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
         assert(buffer.buffer);
 
         const auto result {
-            memory::allocate(&state_->alloc, state_->device, buffer.buffer, MemoryProperty::eHostVisible,
-                buffer.memory)
+            memory::allocate(
+                &state_->alloc,
+                state_->device,
+                buffer.buffer,
+                MemoryProperty::eHostVisible,
+                buffer.memory
+            )
         };// TODO: Handle failed allocation
         buffer.bind();
     }
@@ -198,7 +207,7 @@ const ptr<engine::assets::StaticGeometry> StaticGeometryModel::geometryAsset() c
     return _staticGeometryAsset;
 }
 
-const ptr<engine::res::Resource> StaticGeometryModel::geometryResource() const noexcept {
+cref<smr<StaticGeometryModel>> StaticGeometryModel::geometryResource() const noexcept {
     return _staticGeometryResource;
 }
 

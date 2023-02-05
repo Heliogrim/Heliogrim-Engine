@@ -14,16 +14,16 @@ bool TextureCache::contains(const non_owning_rptr<const assets::Texture> asset_)
     return _cacheCtrl->cache()->contains(asset_);
 }
 
-cache::Result<cache::CacheResultType, smr<TextureResource>> TextureCache::query(
+cache::Result<cache::QueryResultType, smr<TextureResource>> TextureCache::query(
     const non_owning_rptr<const assets::Texture> asset_
 ) const noexcept {
-    return cache_result_type { cache::CacheResultType::eMiss, {} };
+    return cache_result_type { cache::QueryResultType::eMiss, {} };
 }
 
 bool TextureCache::store(
     const non_owning_rptr<const assets::Texture> asset_,
     mref<smr<TextureResource>> resource_
-) noexcept {
+) const noexcept {
     _cacheCtrl->cache()->store(asset_->get_guid(), _STD move(resource_));
     return true;
 }
@@ -56,14 +56,21 @@ TextureCache::response_type::type TextureCache::operator()(
 
     const auto result = query(request_);
 
-    if (result == cache::CacheResultType::eHit) {
+    if (result == cache::QueryResultType::eHit) {
         return result.value();
     }
 
-    /**/
-
+    /**
+     * On cache miss, we need to load the whole resource
+     *  Further we need to clone the cache key to store the responding resource object to the cache
+     */
+    cache_key_type cacheKey = request_;
     auto response = next_(_STD move(request_), _STD move(options_));
-    const_cast<ptr<TextureCache>>(this)->store(request_, smr<TextureResource> { response });
+
+    /**
+     * Clone responding object as cache value
+     */
+    store(cacheKey, cache_value_type { response });
 
     return response;
 }
@@ -74,5 +81,42 @@ TextureCache::response_type::type TextureCache::operator()(
     _In_ mref<request_type::stream> streamOptions_,
     _In_ cref<next_type> next_
 ) const {
+
+    cache_key_type cacheKey = request_;
+    auto result = query(cacheKey);
+
+    if (result == cache::QueryResultType::eMiss) {
+
+        /**
+         * On cache miss, we need to loader the whole resource object with stream parameters
+         *  Further we need to store the responding resource object to the cache
+         */
+        auto response = next_(_STD move(request_), _STD move(options_), _STD move(streamOptions_));
+
+        /**
+         * Clone responding object as cache value
+         */
+        store(cacheKey, cache_value_type { response });
+
+        /**
+         * After loading and storing the resource object, we fall back to cach hit routine
+         */
+        result = query(cacheKey);
+    }
+
+    /**
+     * On cache hit, we need to check whether the required sub-resource (streaming) is alread present
+     *  If present, we just need to mark the required sub-resource ranges and return the cache response
+     */
+    cache::TextureSubResource sub = {};
+    if (_cacheCtrl->markAsUsed(result->get(), _STD move(sub)) == cache::StreamCacheResultType::eResidential) {
+        return result.value();
+    }
+
+    /**
+     * If sub-resource is not residential, we need to stream the required data segments
+     *  Due to the fact, that the texture should query the resource itself to check for residential segments
+     *  we are not required to introduce another store invocation, cause the chain will implicitly manipulate the resource.
+     */
     return next_(_STD move(request_), _STD move(options_), _STD move(streamOptions_));
 }
