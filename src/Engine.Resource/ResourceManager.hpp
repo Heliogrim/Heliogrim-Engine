@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Meta/NoThrow.hpp>
 
 #include "ImporterManager.hpp"
 #include "LoaderManager.hpp"
@@ -59,11 +60,11 @@ namespace ember::engine {
     public:
         [[nodiscard]] cref<res::ImporterManager> importer() const;
 
-        [[nodiscard]] ptr<const res::ImporterManager> importer(_STD nothrow_t) const noexcept;
+        [[nodiscard]] ptr<const res::ImporterManager> importer(nothrow_t) const noexcept;
 
         [[nodiscard]] ref<res::ImporterManager> importer();
 
-        [[nodiscard]] ptr<res::ImporterManager> importer(_STD nothrow_t) noexcept;
+        [[nodiscard]] ptr<res::ImporterManager> importer(nothrow_t) noexcept;
 
         #ifdef _EDITOR
 
@@ -80,11 +81,11 @@ namespace ember::engine {
     public:
         [[nodiscard]] cref<resource::LoaderManager> loader() const;
 
-        [[nodiscard]] ptr<const resource::LoaderManager> loader(_STD nothrow_t) const noexcept;
+        [[nodiscard]] ptr<const resource::LoaderManager> loader(nothrow_t) const noexcept;
 
         [[nodiscard]] ref<resource::LoaderManager> loader();
 
-        [[nodiscard]] ptr<resource::LoaderManager> loader(_STD nothrow_t) noexcept;
+        [[nodiscard]] ptr<resource::LoaderManager> loader(nothrow_t) noexcept;
 
     private:
         uptr<resource::Locator> _locator;
@@ -92,10 +93,10 @@ namespace ember::engine {
     public:
         [[nodiscard]] cref<resource::Locator> locator() const;
 
-        [[nodiscard]] ptr<const resource::Locator> locator(_STD nothrow_t) const noexcept;
+        [[nodiscard]] ptr<const resource::Locator> locator(nothrow_t) const noexcept;
 
         [[nodiscard]] ref<resource::Locator> locator();
 
-        [[nodiscard]] ptr<resource::Locator> locator(_STD nothrow_t) noexcept;
+        [[nodiscard]] ptr<resource::Locator> locator(nothrow_t) noexcept;
     };
 }
