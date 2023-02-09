@@ -170,8 +170,8 @@ void Graphics::setup() {
     /**
      * Create Utilities
      */
-    auto* globalCache { cache::GlobalResourceCache::make(_device) };
-    _cacheCtrl = make_uptr<cache::GlobalCacheCtrl>(globalCache);
+    auto globalCache = make_uptr<cache::GlobalResourceCache>(_device);
+    _cacheCtrl = make_uptr<cache::GlobalCacheCtrl>(_STD move(globalCache));
     VkTextureFactory::make(_device);
 
     /**
@@ -270,7 +270,6 @@ void Graphics::destroy() {
      */
     TextureFactory::destroy();
     _cacheCtrl.reset();
-    cache::GlobalResourceCache::destroy();
 
     /**
      * Device
