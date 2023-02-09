@@ -60,7 +60,7 @@ cref<res::ImporterManager> ResourceManager::importer() const {
     return *_importer;
 }
 
-ptr<const res::ImporterManager> ResourceManager::importer(std::nothrow_t) const noexcept {
+ptr<const res::ImporterManager> ResourceManager::importer(nothrow_t) const noexcept {
     return _importer.get();
 }
 
@@ -68,7 +68,7 @@ ref<res::ImporterManager> ResourceManager::importer() {
     return *_importer;
 }
 
-ptr<res::ImporterManager> ResourceManager::importer(std::nothrow_t) noexcept {
+ptr<res::ImporterManager> ResourceManager::importer(nothrow_t) noexcept {
     return _importer.get();
 }
 
@@ -80,7 +80,7 @@ cref<LoaderManager> ResourceManager::loader() const {
     return *_loader;
 }
 
-ptr<const LoaderManager> ResourceManager::loader(std::nothrow_t) const noexcept {
+ptr<const LoaderManager> ResourceManager::loader(nothrow_t) const noexcept {
     return _loader.get();
 }
 
@@ -88,6 +88,6 @@ ref<LoaderManager> ResourceManager::loader() {
     return *_loader;
 }
 
-ptr<LoaderManager> ResourceManager::loader(std::nothrow_t) noexcept {
+ptr<LoaderManager> ResourceManager::loader(nothrow_t) noexcept {
     return _loader.get();
 }
