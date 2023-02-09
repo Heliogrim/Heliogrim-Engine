@@ -32,8 +32,8 @@ namespace ember::engine::gfx::loader {
 
         void test() {
 
-            ptr<assets::Texture> request {};
-            auto result = (*this)(_STD move(request), {}, {});
+            smr<TextureResource> request {};
+            (*this)(_STD move(request), TextureStreamOptions {});
         }
     };
 }

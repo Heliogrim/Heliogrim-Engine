@@ -75,10 +75,39 @@ TextureCache::response_type::type TextureCache::operator()(
     return response;
 }
 
+TextureCache::stream_response_type::type TextureCache::operator()(
+    _In_ mref<stream_request_type::type> request_,
+    _In_ mref<stream_request_type::options> options_,
+    _In_ cref<next_type> next_
+) const {
+
+    /**
+     * On cache hit, we need to check whether the required sub-resource (streaming) is alread present
+     *  If present, we just need to mark the required sub-resource ranges and return the cache response
+     */
+    cache::TextureSubResource sub = {};
+    if (
+        _cacheCtrl->markAsUsed(
+            static_cast<non_owning_rptr<TextureResource>>(request_.get()),
+            _STD move(sub)
+        ) == cache::StreamCacheResultType::eResidential
+    ) {
+        //return result.value();
+        return;
+    }
+
+    /**
+     * If sub-resource is not residential, we need to stream the required data segments
+     *  Due to the fact, that the texture should query the resource itself to check for residential segments
+     *  we are not required to introduce another store invocation, cause the chain will implicitly manipulate the resource.
+     */
+    return next_(_STD move(request_), _STD move(options_));
+}
+
+#if FALSE
 TextureCache::response_type::type TextureCache::operator()(
     _In_ mref<request_type::type> request_,
-    _In_ mref<request_type::options> options_,
-    _In_ mref<request_type::stream> streamOptions_,
+    _In_ mref<stream_request_type::options> options_,
     _In_ cref<next_type> next_
 ) const {
 
@@ -91,7 +120,7 @@ TextureCache::response_type::type TextureCache::operator()(
          * On cache miss, we need to loader the whole resource object with stream parameters
          *  Further we need to store the responding resource object to the cache
          */
-        auto response = next_(_STD move(request_), _STD move(options_), _STD move(streamOptions_));
+        auto response = next_(_STD move(request_), _STD move(options_));
 
         /**
          * Clone responding object as cache value
@@ -118,5 +147,6 @@ TextureCache::response_type::type TextureCache::operator()(
      *  Due to the fact, that the texture should query the resource itself to check for residential segments
      *  we are not required to introduce another store invocation, cause the chain will implicitly manipulate the resource.
      */
-    return next_(_STD move(request_), _STD move(options_), _STD move(streamOptions_));
+    return next_(_STD move(request_), _STD move(options_));
 }
+#endif
