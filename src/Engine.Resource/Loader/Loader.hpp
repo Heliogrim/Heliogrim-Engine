@@ -36,9 +36,53 @@ namespace ember::engine::resource::loader {
         ) = 0;
     };
 
+    /**/
+
+    namespace {
+        template <typename RequestType_, typename ResponseType_, bool Streamable_>
+        struct LoaderTypeBase {
+        public:
+            using this_type = LoaderTypeBase<RequestType_, ResponseType_, Streamable_>;
+
+            using traits = LoaderTraits<RequestType_, ResponseType_>;
+
+        public:
+            virtual ~LoaderTypeBase() = default;
+
+            [[nodiscard]] virtual typename traits::response::type operator()(
+                mref<typename traits::request::type> request_,
+                mref<typename traits::request::options> options_
+            ) = 0;
+        };
+
+        template <typename RequestType_, typename ResponseType_>
+        struct LoaderTypeBase<RequestType_, ResponseType_, true> {
+        public:
+            using this_type = LoaderTypeBase<RequestType_, ResponseType_, true>;
+
+            using traits = LoaderTraits<RequestType_, ResponseType_>;
+
+        public:
+            virtual ~LoaderTypeBase() = default;
+
+            [[nodiscard]] virtual typename traits::response::type operator()(
+                mref<typename traits::request::type> request_,
+                mref<typename traits::request::options> options_
+            ) = 0;
+
+            [[nodiscard]] virtual typename traits::stream_response::type operator()(
+                mref<typename traits::stream_request::type> request_,
+                mref<typename traits::stream_request::options> options_
+            ) = 0;
+        };
+    }
+
+    /**/
+
     template <IsRequestValueType RequestType_, IsResponseValueType ResponseType_>
     class __declspec(novtable) Loader :
-        public LoaderBase {
+        public LoaderBase,
+        public LoaderTypeBase<RequestType_, ResponseType_, assets::IsStreamableAsset<RequestType_>> {
     public:
         template <
             IsRequestValueType,
@@ -52,6 +96,9 @@ namespace ember::engine::resource::loader {
         friend class LoaderChain;
 
     public:
+        using this_type = Loader<RequestType_, ResponseType_>;
+        using type_base = LoaderTypeBase<RequestType_, ResponseType_, assets::IsStreamableAsset<RequestType_>>;
+
         using traits = LoaderTraits<RequestType_, ResponseType_>;
 
     private:
@@ -59,18 +106,6 @@ namespace ember::engine::resource::loader {
 
     public:
         ~Loader() noexcept override = default;
-
-    public:
-        [[nodiscard]] virtual typename traits::response::type operator()(
-            mref<typename traits::request::type> request_,
-            mref<typename traits::request::options> options_
-        ) = 0;
-
-        [[nodiscard]] virtual typename traits::response::type operator()(
-            mref<typename traits::request::type> request_,
-            mref<typename traits::request::options> options_,
-            mref<typename traits::request::stream> streamOptions_
-        ) = 0;
 
     public:
         [[nodiscard]] smr<ResourceBase> operator()(
@@ -94,7 +129,7 @@ namespace ember::engine::resource::loader {
                 typename traits::response::type,
                 smr<typename traits::response::value_type>
             >) {
-                return this->operator()(
+                return static_cast<const ptr<type_base>>(this)->operator()(
                     _STD move(static_cast<request_type>(asset_)),
                     _STD move(*static_cast<ptr<options_type>>(options_))
                 );
@@ -102,7 +137,7 @@ namespace ember::engine::resource::loader {
 
             /*
             return make_smr(
-                this->operator()(
+                static_cast<const ptr<type_base>>(this)->operator()(
                     _STD move(static_cast<request_type>(asset_)),
                     _STD move(*static_cast<ptr<options_type>>(options_))
                 )

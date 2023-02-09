@@ -136,10 +136,9 @@ namespace ember::engine::resource::loader {
             );
         }
 
-        [[nodiscard]] typename traits::response::type operator()(
-            mref<typename traits::request::type> request_,
-            mref<typename traits::request::options> options_,
-            mref<typename traits::request::stream> streamOptions_
+        [[nodiscard]] typename traits::stream_response::type operator()(
+            mref<typename traits::stream_request::type> request_,
+            mref<typename traits::stream_request::options> options_
         ) override;
 
     private:
@@ -176,12 +175,49 @@ namespace ember::engine::resource::loader {
 
         /* Chain Link Implementations */
 
+        template <bool Streamable_>
         struct TransformerChainLink :
-            public TransformerNextLink<RequestType_, ResponseType_> {
-            using base_type = TransformerNextLink<RequestType_, ResponseType_>;
+            public TransformerNextLink<RequestType_, ResponseType_, Streamable_> {
+            using base_type = TransformerNextLink<RequestType_, ResponseType_, Streamable_>;
 
-            using base_type::next_response_type;
-            using base_type::next_request_type;
+            using next_response_type = typename base_type::next_response_type;
+            using next_request_type = typename base_type::next_request_type;
+
+            using next_stream_request_type = typename base_type::next_stream_request_type;
+            using next_stream_response_type = typename base_type::next_stream_response_type;
+
+        public:
+            constexpr TransformerChainLink(cref<source_loader_type> stage_) noexcept :
+                stage(stage_) {}
+
+            ~TransformerChainLink() override = default;
+
+        public:
+            cref<source_loader_type> stage;
+
+        public:
+            [[nodiscard]] typename next_response_type::type operator()(
+                _In_ mref<typename next_request_type::type> request_,
+                _In_ mref<typename next_request_type::options> options_
+            ) const noexcept override {
+                return invoke_stage<source_loader_stage_type, next_response_type::type>(
+                    stage,
+                    _STD move(request_),
+                    _STD move(options_)
+                );
+            };
+        };
+
+        template <>
+        struct TransformerChainLink<true> :
+            public TransformerNextLink<RequestType_, ResponseType_, true> {
+            using base_type = TransformerNextLink<RequestType_, ResponseType_, true>;
+
+            using next_response_type = typename base_type::next_response_type;
+            using next_request_type = typename base_type::next_request_type;
+
+            using next_stream_request_type = typename base_type::next_stream_request_type;
+            using next_stream_response_type = typename base_type::next_stream_response_type;
 
         public:
             constexpr TransformerChainLink(cref<source_loader_type> stage_) noexcept :
@@ -204,29 +240,36 @@ namespace ember::engine::resource::loader {
                 );
             };
 
-            [[nodiscard]] typename next_response_type::type operator()(
-                _In_ mref<typename next_request_type::type> request_,
-                _In_ mref<typename next_request_type::options> options_,
-                _In_ mref<typename next_request_type::stream> streamOptions_
+            [[nodiscard]] typename next_stream_response_type::type operator()(
+                _In_ mref<typename next_stream_request_type::type> request_,
+                _In_ mref<typename next_stream_request_type::options> options_
             ) const noexcept override {
                 return invoke_stage<source_loader_stage_type, next_response_type::type>(
                     stage,
                     _STD move(request_),
-                    _STD move(options_),
-                    _STD move(streamOptions_)
+                    _STD move(options_)
                 );
             };
         };
 
-        struct FeedbackChainLink :
-            public FeedbackNextLink<RequestType_, ResponseType_> {
-            using base_type = FeedbackNextLink<RequestType_, ResponseType_>;
+        /**/
 
-            using base_type::next_response_type;
-            using base_type::next_request_type;
+        template <bool Streamable_>
+        struct FeedbackChainLink :
+            public FeedbackNextLink<RequestType_, ResponseType_, Streamable_> {
+            using base_type = FeedbackNextLink<RequestType_, ResponseType_, Streamable_>;
+
+            using next_response_type = typename base_type::next_response_type;
+            using next_request_type = typename base_type::next_request_type;
+
+            using next_stream_request_type = typename base_type::next_stream_request_type;
+            using next_stream_response_type = typename base_type::next_stream_response_type;
 
         public:
-            constexpr FeedbackChainLink(cref<transformer_type> stage_, cref<TransformerChainLink> nextLink_) noexcept :
+            constexpr FeedbackChainLink(
+                cref<transformer_type> stage_,
+                cref<TransformerChainLink<Streamable_>> nextLink_
+            ) noexcept :
                 stage(stage_),
                 nextLink(nextLink_) {}
 
@@ -234,7 +277,46 @@ namespace ember::engine::resource::loader {
 
         public:
             cref<transformer_type> stage;
-            cref<TransformerChainLink> nextLink;
+            cref<TransformerChainLink<Streamable_>> nextLink;
+
+        public:
+            [[nodiscard]] typename next_response_type::type operator()(
+                _In_ mref<typename next_request_type::type> request_,
+                _In_ mref<typename next_request_type::options> options_
+            ) const noexcept override {
+                return invoke_stage<transformer_stage_type, next_response_type::type>(
+                    stage,
+                    _STD move(request_),
+                    _STD move(options_),
+                    nextLink
+                );
+            };
+        };
+
+        template <>
+        struct FeedbackChainLink<true> :
+            public FeedbackNextLink<RequestType_, ResponseType_, true> {
+            using base_type = FeedbackNextLink<RequestType_, ResponseType_, true>;
+
+            using next_response_type = typename base_type::next_response_type;
+            using next_request_type = typename base_type::next_request_type;
+
+            using next_stream_request_type = typename base_type::next_stream_request_type;
+            using next_stream_response_type = typename base_type::next_stream_response_type;
+
+        public:
+            constexpr FeedbackChainLink(
+                cref<transformer_type> stage_,
+                cref<TransformerChainLink<true>> nextLink_
+            ) noexcept :
+                stage(stage_),
+                nextLink(nextLink_) {}
+
+            ~FeedbackChainLink() override = default;
+
+        public:
+            cref<transformer_type> stage;
+            cref<TransformerChainLink<true>> nextLink;
 
         public:
             [[nodiscard]] typename next_response_type::type operator()(
@@ -249,30 +331,37 @@ namespace ember::engine::resource::loader {
                 );
             };
 
-            [[nodiscard]] typename next_response_type::type operator()(
-                _In_ mref<typename next_request_type::type> request_,
-                _In_ mref<typename next_request_type::options> options_,
-                _In_ mref<typename next_request_type::stream> streamOptions_
+            [[nodiscard]] typename next_stream_response_type::type operator()(
+                _In_ mref<typename next_stream_request_type::type> request_,
+                _In_ mref<typename next_stream_request_type::options> options_
             ) const noexcept override {
-                return invoke_stage<transformer_stage_type, next_response_type::type>(
+                return invoke_stage<transformer_stage_type, next_stream_response_type::type>(
                     stage,
                     _STD move(request_),
                     _STD move(options_),
-                    _STD move(streamOptions_),
                     nextLink
                 );
             };
         };
 
-        struct CacheChainLink :
-            public CacheNextLink<RequestType_, ResponseType_> {
-            using base_type = CacheNextLink<RequestType_, ResponseType_>;
+        /**/
 
-            using base_type::next_response_type;
-            using base_type::next_request_type;
+        template <bool Streamable_>
+        struct CacheChainLink :
+            public CacheNextLink<RequestType_, ResponseType_, Streamable_> {
+            using base_type = CacheNextLink<RequestType_, ResponseType_, Streamable_>;
+
+            using next_response_type = typename base_type::next_response_type;
+            using next_request_type = typename base_type::next_request_type;
+
+            using next_stream_request_type = typename base_type::next_stream_request_type;
+            using next_stream_response_type = typename base_type::next_stream_response_type;
 
         public:
-            constexpr CacheChainLink(cref<feedback_type> stage_, cref<FeedbackChainLink> nextLink_) noexcept :
+            constexpr CacheChainLink(
+                cref<feedback_type> stage_,
+                cref<FeedbackChainLink<Streamable_>> nextLink_
+            ) noexcept :
                 stage(stage_),
                 nextLink(nextLink_) {}
 
@@ -280,7 +369,7 @@ namespace ember::engine::resource::loader {
 
         public:
             cref<feedback_type> stage;
-            cref<FeedbackChainLink> nextLink;
+            cref<FeedbackChainLink<Streamable_>> nextLink;
 
         public:
             [[nodiscard]] typename next_response_type::type operator()(
@@ -293,26 +382,62 @@ namespace ember::engine::resource::loader {
                     _STD move(options_),
                     nextLink
                 );
-            };
+            }
+        };
 
+        template <>
+        struct CacheChainLink<true> :
+            public CacheNextLink<RequestType_, ResponseType_, true> {
+            using base_type = CacheNextLink<RequestType_, ResponseType_, true>;
+
+            using next_response_type = typename base_type::next_response_type;
+            using next_request_type = typename base_type::next_request_type;
+
+            using next_stream_request_type = typename base_type::next_stream_request_type;
+            using next_stream_response_type = typename base_type::next_stream_response_type;
+
+        public:
+            constexpr CacheChainLink(cref<feedback_type> stage_, cref<FeedbackChainLink<true>> nextLink_) noexcept :
+                stage(stage_),
+                nextLink(nextLink_) {}
+
+            ~CacheChainLink() override = default;
+
+        public:
+            cref<feedback_type> stage;
+            cref<FeedbackChainLink<true>> nextLink;
+
+        public:
             [[nodiscard]] typename next_response_type::type operator()(
                 _In_ mref<typename next_request_type::type> request_,
-                _In_ mref<typename next_request_type::options> options_,
-                _In_ mref<typename next_request_type::stream> streamOptions_
+                _In_ mref<typename next_request_type::options> options_
             ) const noexcept override {
                 return invoke_stage<feedback_stage_type, next_response_type::type>(
                     stage,
                     _STD move(request_),
                     _STD move(options_),
-                    _STD move(streamOptions_),
                     nextLink
                 );
-            };
+            }
+
+            [[nodiscard]] typename next_stream_response_type::type operator()(
+                _In_ mref<typename next_stream_request_type::type> request_,
+                _In_ mref<typename next_stream_request_type::options> options_
+            ) const noexcept override {
+                return invoke_stage<feedback_stage_type, next_stream_response_type::type>(
+                    stage,
+                    _STD move(request_),
+                    _STD move(options_),
+                    nextLink
+                );
+            }
         };
 
+        /**/
+
     private:
-        TransformerChainLink transformerLink;
-        FeedbackChainLink feedbackLink;
-        CacheChainLink cacheLink;
+        TransformerChainLink<assets::IsStreamableAsset<RequestType_>> transformerLink;
+        FeedbackChainLink<assets::IsStreamableAsset<RequestType_>> feedbackLink;
+        CacheChainLink<assets::IsStreamableAsset<RequestType_>> cacheLink;
     };
 }

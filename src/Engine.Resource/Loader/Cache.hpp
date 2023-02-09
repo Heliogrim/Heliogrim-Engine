@@ -15,6 +15,9 @@ namespace ember::engine::resource::loader {
         using underlying_type::loader_traits;
         using underlying_type::request_type;
         using underlying_type::response_type;
+
+        using underlying_type::stream_request_type;
+        using underlying_type::stream_response_type;
     };
 
     template <typename AssetType_, typename ResourceType_>
@@ -26,7 +29,10 @@ namespace ember::engine::resource::loader {
         using request_type = CacheRequest<AssetType_>;
         using response_type = CacheResponse<ResourceType_>;
 
-        using next_type = CacheNextLink<AssetType_, ResourceType_>;
+        using stream_request_type = void;
+        using stream_response_type = void;
+
+        using next_type = CacheNextLink<AssetType_, ResourceType_, false>;
 
     public:
         virtual ~CacheStage() noexcept = default;
@@ -48,7 +54,10 @@ namespace ember::engine::resource::loader {
         using request_type = CacheRequest<AssetType_>;
         using response_type = CacheResponse<ResourceType_>;
 
-        using next_type = CacheNextLink<AssetType_, ResourceType_>;
+        using stream_request_type = CacheStreamRequest<AssetType_>;
+        using stream_response_type = CacheStreamResponse<AssetType_>;
+
+        using next_type = CacheNextLink<AssetType_, ResourceType_, true>;
 
     public:
         virtual ~CacheStage() noexcept = default;
@@ -60,10 +69,9 @@ namespace ember::engine::resource::loader {
             _In_ cref<next_type> next_
         ) const = 0;
 
-        [[nodiscard]] virtual typename response_type::type operator()(
-            _In_ mref<typename request_type::type> request_,
-            _In_ mref<typename request_type::options> options_,
-            _In_ mref<typename request_type::stream> streamOptions_,
+        [[nodiscard]] virtual typename stream_response_type::type operator()(
+            _In_ mref<typename stream_request_type::type> request_,
+            _In_ mref<typename stream_request_type::options> options_,
             _In_ cref<next_type> next_
         ) const = 0;
     };

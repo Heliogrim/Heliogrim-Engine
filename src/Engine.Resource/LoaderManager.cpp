@@ -52,12 +52,12 @@ bool LoaderManager::unregisterLoader(cref<asset_type_id> typeId_) noexcept {
     return true;
 }
 
-LoaderManager::response_base_type LoaderManager::preload(const ptr<assets::Asset> asset_, ptr<void> options_) {
+LoaderManager::response_base_type LoaderManager::preload(const ptr<assets::Asset> asset_, ptr<void> options_) const {
     // TODO:
     return load(asset_, options_);
 }
 
-LoaderManager::response_base_type LoaderManager::load(const ptr<assets::Asset> asset_, ptr<void> options_) {
+LoaderManager::response_base_type LoaderManager::load(const ptr<assets::Asset> asset_, ptr<void> options_) const {
     /**
      *
      */
@@ -71,7 +71,10 @@ LoaderManager::response_base_type LoaderManager::load(const ptr<assets::Asset> a
     return loader->operator()(asset_, options_);
 }
 
-LoaderManager::response_base_type LoaderManager::loadImmediately(const ptr<assets::Asset> asset_, ptr<void> options_) {
+LoaderManager::response_base_type LoaderManager::loadImmediately(
+    const ptr<assets::Asset> asset_,
+    ptr<void> options_
+) const {
     // TODO:
     return load(asset_, options_);
 }

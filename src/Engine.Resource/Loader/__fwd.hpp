@@ -10,7 +10,13 @@ namespace ember::engine::resource::loader {
     concept IsRequestValueType = _STD is_void_v<Type_> || assets::IsAsset<Type_> || assets::IsStreamableAsset<Type_>;
 
     template <typename Type_>
+    concept IsStreamRequestSubjectType = assets::IsStreamableAsset<Type_>;
+
+    template <typename Type_>
     concept IsResponseValueType = _STD is_void_v<Type_> || IsResource<Type_>;
+
+    template <typename Type_>
+    concept IsStreamResponseSubjectType = assets::IsStreamableAsset<Type_>;
 
     /**/
 
@@ -25,26 +31,56 @@ namespace ember::engine::resource::loader {
     template <IsRequestValueType AssetType_>
     struct CacheRequest;
 
+    template <IsStreamRequestSubjectType SubjectType_>
+    struct CacheStreamRequest;
+
     template <IsResponseValueType ResourceType_>
     struct CacheResponse;
+
+    template <IsStreamResponseSubjectType SubjectType_>
+    struct CacheStreamResponse;
+
+    /**/
 
     template <IsRequestValueType AssetType_>
     struct FeedbackRequest;
 
+    template <IsStreamRequestSubjectType SubjectType_>
+    struct FeedbackStreamRequest;
+
     template <IsResponseValueType ResourceType_>
     struct FeedbackResponse;
+
+    template <IsStreamResponseSubjectType SubjectType_>
+    struct FeedbackStreamResponse;
+
+    /**/
 
     template <IsRequestValueType AssetType_>
     struct TransformerRequest;
 
+    template <IsStreamRequestSubjectType SubjectType_>
+    struct TransformerStreamRequest;
+
     template <IsResponseValueType ResourceType_>
     struct TransformerResponse;
+
+    template <IsStreamResponseSubjectType ResourceType_>
+    struct TransformerStreamResponse;
+
+    /**/
 
     template <typename>
     struct SourceLoaderRequest;
 
     template <typename>
+    struct SourceLoaderStreamRequest;
+
+    template <typename>
     struct SourceLoaderResponse;
+
+    template <typename>
+    struct SourceLoaderStreamResponse;
 
     /**/
 
