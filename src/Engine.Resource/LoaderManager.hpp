@@ -113,7 +113,7 @@ namespace ember::engine::resource {
          *
          * @returns A shared memory reference of the resource which should be loaded.
          */
-        [[nodiscard]] response_base_type preload(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
+        [[nodiscard]] response_base_type preload(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr) const;
 
         /**
          * Loads the requested resource underlying of given asset
@@ -126,7 +126,7 @@ namespace ember::engine::resource {
          *
          * @returns A shared memory reference of the resource which should be loaded.
          */
-        [[nodiscard]] response_base_type load(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
+        [[nodiscard]] response_base_type load(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr) const;
 
         /**
          * Loads the requested resource underlying of given asset immediately
@@ -139,14 +139,17 @@ namespace ember::engine::resource {
          *
          * @returns A shared memory reference of the resource which should be loaded.
          */
-        [[nodiscard]] response_base_type loadImmediately(const ptr<assets::Asset> asset_, ptr<void> options_ = nullptr);
+        [[nodiscard]] response_base_type loadImmediately(
+            const ptr<assets::Asset> asset_,
+            ptr<void> options_ = nullptr
+        ) const;
 
     public:
         template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>
         [[nodiscard]] loader::Loader<AssetType_, ResourceType_> preload(
             typename loader::Loader<AssetType_, ResourceType_>::traits::request::type request_,
             typename loader::Loader<AssetType_, ResourceType_>::traits::request::options options_ = {}
-        ) {
+        ) const {
             const auto loader = selectLoader(AssetType_::type_id, nullptr);
             return static_cast<const ptr<loader::Loader<AssetType_, ResourceType_>>>(loader.get())->operator()(
                 _STD move(request_),
@@ -158,7 +161,7 @@ namespace ember::engine::resource {
         [[nodiscard]] loader::Loader<AssetType_, ResourceType_> load(
             typename loader::Loader<AssetType_, ResourceType_>::traits::request::type request_,
             typename loader::Loader<AssetType_, ResourceType_>::traits::request::options options_ = {}
-        ) {
+        ) const {
             const auto loader = selectLoader(AssetType_::type_id, nullptr);
             return static_cast<const ptr<loader::Loader<AssetType_, ResourceType_>>>(loader.get())->operator()(
                 _STD move(request_),
@@ -170,12 +173,22 @@ namespace ember::engine::resource {
         [[nodiscard]] loader::Loader<AssetType_, ResourceType_> loadImmediately(
             typename loader::Loader<AssetType_, ResourceType_>::traits::request::type request_,
             typename loader::Loader<AssetType_, ResourceType_>::traits::request::options options_ = {}
-        ) {
+        ) const {
             const auto loader = selectLoader(AssetType_::type_id, nullptr);
             return static_cast<const ptr<loader::Loader<AssetType_, ResourceType_>>>(loader.get())->operator()(
                 _STD move(request_),
                 _STD move(options_)
             );
+        }
+
+        template <assets::IsStreamableAsset AssetType_, typename ResourceType_ = ResourceBase>
+        [[nodiscard]] typename loader::Loader<AssetType_, ResourceType_>::traits::stream_response::type loadImmediately(
+            typename loader::Loader<AssetType_, ResourceType_>::traits::stream_request::type request_,
+            typename loader::Loader<AssetType_, ResourceType_>::traits::stream_request::options options_
+        ) const {
+            const auto loader = selectLoader(AssetType_::type_id, nullptr);
+            return static_cast<const ptr<typename loader::Loader<AssetType_, ResourceType_>::type_base>>(loader.get())->
+                operator()(_STD move(request_), _STD move(options_));
         }
     };
 }

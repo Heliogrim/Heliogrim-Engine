@@ -13,6 +13,9 @@ namespace ember::engine::resource::loader {
         using request_type = SourceLoaderRequest<void>;
         using response_type = SourceLoaderResponse<void>;
 
+        using stream_request_type = SourceLoaderStreamRequest<void>;
+        using stream_response_type = SourceLoaderStreamResponse<void>;
+
     public:
         virtual ~SourceLoaderStage() noexcept = default;
 
@@ -22,10 +25,9 @@ namespace ember::engine::resource::loader {
             _In_ mref<request_type::options> options_
         ) const = 0;
 
-        [[nodiscard]] virtual response_type::type operator()(
-            _In_ mref<request_type::type> request_,
-            _In_ mref<request_type::options> options_,
-            _In_ mref<request_type::stream> streamOptions_
+        [[nodiscard]] virtual stream_response_type::type operator()(
+            _In_ mref<stream_request_type::type> request_,
+            _In_ mref<stream_request_type::options> options_
         ) const = 0;
     };
 
@@ -38,6 +40,9 @@ namespace ember::engine::resource::loader {
         using underlying_type::request_type;
         using underlying_type::response_type;
 
+        using underlying_type::stream_request_type;
+        using underlying_type::stream_response_type;
+
     public:
         ~SourceLoader() noexcept override;
 
@@ -47,10 +52,9 @@ namespace ember::engine::resource::loader {
             mref<request_type::options> options_
         ) const override;
 
-        [[nodiscard]] response_type::type operator()(
-            mref<request_type::type> request_,
-            mref<request_type::options> options_,
-            mref<request_type::stream> streamOptions_
+        [[nodiscard]] stream_response_type::type operator()(
+            mref<stream_request_type::type> request_,
+            mref<stream_request_type::options> options_
         ) const override;
     };
 }

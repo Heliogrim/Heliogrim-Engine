@@ -18,14 +18,14 @@ namespace ember::engine::resource::loader {
     };
 
     template <>
-    struct resource::loader::StreamOptions<SourceLoaderRequest<void>> {
-        using this_type = StreamOptions<SourceLoaderRequest<void>>;
+    struct resource::loader::StreamOptions<SourceLoaderStreamRequest<void>> {
+        using this_type = StreamOptions<SourceLoaderStreamRequest<void>>;
         using type = this_type;
     };
 
     template <typename AssetType_>
-    struct resource::loader::StreamOptions<SourceLoaderRequest<AssetType_>> {
-        using type = StreamOptions<SourceLoaderRequest<void>>::type;
+    struct resource::loader::StreamOptions<SourceLoaderStreamRequest<AssetType_>> {
+        using type = StreamOptions<SourceLoaderStreamRequest<void>>::type;
     };
 
     /**/
@@ -47,19 +47,43 @@ namespace ember::engine::resource::loader {
         using options_type = typename RequestOptions<this_type>::type;
 
         using options = options_wrapper_type<options_type>;
-
-        /**/
-
-        template <typename Type_>
-        using stream_wrapper_type = _STD type_identity_t<Type_>;
-        using stream_type = typename StreamOptions<this_type>::type;
-
-        using stream = stream_wrapper_type<stream_type>;
     };
 
     template <typename Ty_>
     struct SourceLoaderResponse {
         using this_type = SourceLoaderResponse<void>;
+
+        template <typename Type_>
+        using wrapper_type = smr<Type_>;
+        using value_type = resource::Source;
+
+        using type = wrapper_type<value_type>;
+    };
+
+    /**/
+
+    template <typename Ty_>
+    struct SourceLoaderStreamRequest {
+        using this_type = SourceLoaderStreamRequest<void>;
+
+        template <typename Type_>
+        using wrapper_type = smr<Type_>;
+        using value_type = assets::Asset;
+
+        using type = wrapper_type<value_type>;
+
+        /**/
+
+        template <typename Type_>
+        using options_wrapper_type = _STD type_identity_t<Type_>;
+        using options_type = typename StreamOptions<this_type>::type;
+
+        using options = options_wrapper_type<options_type>;
+    };
+
+    template <typename Ty_>
+    struct SourceLoaderStreamResponse {
+        using this_type = SourceLoaderStreamResponse<void>;
 
         template <typename Type_>
         using wrapper_type = smr<Type_>;
