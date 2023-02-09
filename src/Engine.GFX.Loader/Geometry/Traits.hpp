@@ -63,8 +63,8 @@ namespace ember::engine::resource::loader {
     };
 
     template <>
-    struct StreamOptions<SourceLoaderRequest<assets::StaticGeometry>> {
-        using type = StreamOptions<SourceLoaderRequest<void>>::type;
+    struct StreamOptions<SourceLoaderStreamRequest<assets::StaticGeometry>> {
+        using type = StreamOptions<SourceLoaderStreamRequest<void>>::type;
     };
 }
 

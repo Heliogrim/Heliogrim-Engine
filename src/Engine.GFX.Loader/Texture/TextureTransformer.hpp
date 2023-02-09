@@ -17,6 +17,9 @@ namespace ember::engine::gfx::loader {
         using underlying_type::request_type;
         using underlying_type::response_type;
 
+        using underlying_type::stream_request_type;
+        using underlying_type::stream_response_type;
+
     public:
         TextureTransformer() = default;
 
@@ -29,19 +32,18 @@ namespace ember::engine::gfx::loader {
             _In_ cref<next_type> next_
         ) const override {
             // TODO:
-            const auto source = next_({}, {});
+            const auto source = next_({}, next_type::next_request_type::options {});
             return {};
         }
 
-        [[nodiscard]] virtual typename response_type::type operator()(
-            _In_ mref<typename request_type::type> request_,
-            _In_ mref<typename request_type::options> options_,
-            _In_ mref<typename request_type::stream> streamOptions_,
+        [[nodiscard]] virtual typename stream_response_type::type operator()(
+            _In_ mref<typename stream_request_type::type> request_,
+            _In_ mref<typename stream_request_type::options> options_,
             _In_ cref<next_type> next_
         ) const override {
             // TODO:
-            const auto source = next_({}, {}, {});
-            return {};
+            const auto source = next_({}, next_type::next_stream_request_type::options {});
+            // return (void);
         }
     };
 }

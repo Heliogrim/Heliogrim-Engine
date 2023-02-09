@@ -19,6 +19,9 @@ namespace ember::engine::gfx::loader {
         using underlying_type::request_type;
         using underlying_type::response_type;
 
+        using underlying_type::stream_request_type;
+        using underlying_type::stream_response_type;
+
         using cache_key_type = const non_owning_rptr<const assets::Texture>;
         using cache_value_type = smr<TextureResource>;
         using cache_result_type = cache::Result<cache::QueryResultType, cache_value_type>;
@@ -62,10 +65,9 @@ namespace ember::engine::gfx::loader {
             _In_ cref<next_type> next_
         ) const override;
 
-        [[nodiscard]] typename response_type::type operator()(
-            _In_ mref<typename request_type::type> request_,
-            _In_ mref<typename request_type::options> options_,
-            _In_ mref<typename request_type::stream> streamOptions_,
+        [[nodiscard]] typename stream_response_type::type operator()(
+            _In_ mref<typename stream_request_type::type> request_,
+            _In_ mref<typename stream_request_type::options> options_,
             _In_ cref<next_type> next_
         ) const override;
     };

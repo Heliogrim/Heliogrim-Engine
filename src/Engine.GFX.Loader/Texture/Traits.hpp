@@ -21,7 +21,7 @@ namespace ember::engine::resource::loader {
     };
 
     template <>
-    struct resource::loader::StreamOptions<LoaderRequest<assets::Texture>> {
+    struct resource::loader::StreamOptions<LoaderStreamRequest<assets::Texture>> {
         using type = TextureStreamOptions;
     };
 }
@@ -35,7 +35,7 @@ namespace ember::engine::resource::loader {
     };
 
     template <>
-    struct resource::loader::StreamOptions<CacheRequest<assets::Texture>> {
+    struct resource::loader::StreamOptions<CacheStreamRequest<assets::Texture>> {
         using type = TextureStreamOptions;
     };
 }
@@ -49,7 +49,21 @@ namespace ember::engine::resource::loader {
     };
 
     template <>
-    struct resource::loader::StreamOptions<FeedbackRequest<assets::Texture>> {
+    struct resource::loader::StreamOptions<FeedbackStreamRequest<assets::Texture>> {
+        using type = TextureStreamOptions;
+    };
+}
+
+namespace ember::engine::resource::loader {
+    using namespace ::ember::engine::gfx::loader;
+
+    template <>
+    struct RequestOptions<TransformerRequest<assets::Texture>> {
+        using type = TextureLoadOptions;
+    };
+
+    template <>
+    struct StreamOptions<TransformerStreamRequest<assets::Texture>> {
         using type = TextureStreamOptions;
     };
 }
@@ -64,20 +78,6 @@ namespace ember::engine::resource::loader {
 
     template <>
     struct StreamOptions<SourceLoaderRequest<assets::Texture>> {
-        using type = StreamOptions<SourceLoaderRequest<void>>::type;
-    };
-}
-
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
-
-    template <>
-    struct RequestOptions<TransformerRequest<assets::Texture>> {
-        using type = TextureLoadOptions;
-    };
-
-    template <>
-    struct StreamOptions<TransformerRequest<assets::Texture>> {
-        using type = TextureStreamOptions;
+        using type = StreamOptions<SourceLoaderStreamRequest<void>>::type;
     };
 }
