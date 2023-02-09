@@ -166,22 +166,22 @@ namespace ember::engine::gfx::cache {
 
     public:
         template <typename Type_ = ValueType_> requires supplement<Type_>::value
-        [[nodiscard]] cref<value_type> operator*() const noexcept {
+        [[nodiscard]] cref<Type_> operator*() const noexcept {
             return data._Myval2;
         }
 
         template <typename Type_ = ValueType_> requires supplement<Type_>::value
-        [[nodiscard]] ref<value_type> operator*() noexcept {
+        [[nodiscard]] ref<Type_> operator*() noexcept {
             return data._Myval2;
         }
 
         template <typename Type_ = ValueType_> requires supplement<Type_>::value
-        [[nodiscard]] const ptr<value_type> operator->() const noexcept {
+        [[nodiscard]] const ptr<Type_> operator->() const noexcept {
             return &data._Myval2;
         }
 
         template <typename Type_ = ValueType_> requires supplement<Type_>::value
-        [[nodiscard]] const ptr<value_type> operator->() noexcept {
+        [[nodiscard]] const ptr<Type_> operator->() noexcept {
             return &data._Myval2;
         }
     };
