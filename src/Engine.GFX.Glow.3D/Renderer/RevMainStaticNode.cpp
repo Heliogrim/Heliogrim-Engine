@@ -9,34 +9,31 @@
 #endif
 
 #include <Ember/StaticGeometryComponent.hpp>
+#include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX/VkFixedPipeline.hpp>
+#include <Engine.GFX.Glow/Texture/RevVirtualMarkerTexture.hpp>
+#include <Engine.GFX.Loader/Geometry/StaticGeometryResource.hpp>
+#include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.GFX/API/VkTranslate.hpp>
 #include <Engine.GFX/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Memory/VkAllocator.hpp>
+#include <Engine.GFX/Performance/RenderTokens.hpp>
 #include <Engine.GFX/Renderer/HORenderPass.hpp>
 #include <Engine.GFX/Renderer/RenderDataToken.hpp>
 #include <Engine.GFX/Renderer/RenderPassState.hpp>
 #include <Engine.GFX/Renderer/RenderStagePass.hpp>
-#include <Engine.GFX/Resource/StaticGeometryResource.hpp>
+#include <Engine.GFX/Scene/ModelDataTokens.hpp>
+#include <Engine.GFX/Scene/StaticGeometryBatch.hpp>
+#include <Engine.GFX/Scene/StaticGeometryModel.hpp>
 #include <Engine.GFX/Shader/DiscreteBindingGroup.hpp>
 #include <Engine.GFX/Shader/Factory.hpp>
 #include <Engine.GFX/Shader/Prototype.hpp>
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
-#include <Engine.GFX.Scene/View/SceneView.hpp>
+#include <Engine.GFX/Texture/TextureFactory.hpp>
+#include <Engine.Reflect/EmberReflect.hpp>
 
 #include "RevMainSharedNode.hpp"
-#include "__macro.hpp"
-#include "Engine.Common/Math/Coordinates.hpp"
-#include "Engine.GFX/Graphics.hpp"
-#include "Engine.GFX/Loader/RevTextureLoader.hpp"
-#include "Engine.GFX/Performance/RenderTokens.hpp"
-#include "Engine.GFX/Scene/ModelDataTokens.hpp"
-#include "Engine.GFX/Scene/StaticGeometryBatch.hpp"
-#include "Engine.GFX/Scene/StaticGeometryModel.hpp"
-#include "Engine.GFX/Texture/TextureFactory.hpp"
-#include <Engine.GFX.Glow/Texture/RevVirtualMarkerTexture.hpp>
-#include "Engine.Reflect/EmberReflect.hpp"
 #include "State/RevSfMtt.hpp"
 
 using namespace ember::engine::gfx::glow::render;
@@ -48,9 +45,11 @@ using namespace ember;
 
 RevMainStaticNode::RevMainStaticNode(const ptr<RevMainSharedNode> sharedNode_) :
     RenderStageNode(),
-    _modelTypes({
-        EmberClass::stid<StaticGeometryModel>()
-    }),
+    _modelTypes(
+        {
+            EmberClass::stid<StaticGeometryModel>()
+        }
+    ),
     _sharedNode(sharedNode_) {}
 
 void RevMainStaticNode::setup(cref<sptr<Device>> device_) {
@@ -76,18 +75,20 @@ void RevMainStaticNode::setup(cref<sptr<Device>> device_) {
     _pipeline->topology() = PrimitiveTopology::eTriangleList;
     _pipeline->viewport() = Viewport {};
 
-    _pipeline->inputs().push_back(FixedPipelineInput {
-        0ui8,
-        InputRate::ePerVertex,
-        sizeof(vertex),
-        Vector<InputAttribute> {
-            { 0ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, position)) },
-            { 1ui32, TextureFormat::eR8G8B8Unorm, static_cast<u32>(offsetof(vertex, color)) },
-            { 2ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, uvm)) },
-            { 3ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, normal)) },
-            { 4ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, tangent)) }
+    _pipeline->inputs().push_back(
+        FixedPipelineInput {
+            0ui8,
+            InputRate::ePerVertex,
+            sizeof(vertex),
+            Vector<InputAttribute> {
+                { 0ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, position)) },
+                { 1ui32, TextureFormat::eR8G8B8Unorm, static_cast<u32>(offsetof(vertex, color)) },
+                { 2ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, uvm)) },
+                { 3ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, normal)) },
+                { 4ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, tangent)) }
+            }
         }
-    });
+    );
 
     _pipeline->vertexStage().shaderSlot().name() = "staticMainPass";
     _pipeline->fragmentStage().shaderSlot().name() = "staticMainPass";
@@ -227,14 +228,22 @@ bool RevMainStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Store State
      */
-    state->data.insert_or_assign("RevMainStaticNode::CommandBuffer"sv,
-        _STD make_shared<decltype(cmd)>(_STD move(cmd)));
-    state->data.insert_or_assign("RevMainStaticNode::UniformBuffer"sv,
-        _STD make_shared<decltype(uniform)>(_STD move(uniform)));
-    state->data.insert_or_assign("RevMainStaticNode::DiscreteBindingGroups"sv,
-        _STD make_shared<decltype(dbgs)>(_STD move(dbgs)));
-    state->data.insert_or_assign("RevMainStaticNode::DescriptorPools"sv,
-        _STD make_shared<decltype(pools)>(_STD move(pools)));
+    state->data.insert_or_assign(
+        "RevMainStaticNode::CommandBuffer"sv,
+        _STD make_shared<decltype(cmd)>(_STD move(cmd))
+    );
+    state->data.insert_or_assign(
+        "RevMainStaticNode::UniformBuffer"sv,
+        _STD make_shared<decltype(uniform)>(_STD move(uniform))
+    );
+    state->data.insert_or_assign(
+        "RevMainStaticNode::DiscreteBindingGroups"sv,
+        _STD make_shared<decltype(dbgs)>(_STD move(dbgs))
+    );
+    state->data.insert_or_assign(
+        "RevMainStaticNode::DescriptorPools"sv,
+        _STD make_shared<decltype(pools)>(_STD move(pools))
+    );
 
     using material_map_type = ska::bytell_hash_map<ptr<void>, shader::DiscreteBindingGroup>;
     state->data.insert_or_assign("RevMainStaticNode::MaterialDescriptors"sv, _STD make_shared<material_map_type>());
@@ -406,12 +415,15 @@ void RevMainStaticNode::before(
     /**
      *
      */
-    cmd.bindPipeline(_pipeline.get(), {
-        frame.width(),
-        frame.height(),
-        0.F,
-        1.F
-    });
+    cmd.bindPipeline(
+        _pipeline.get(),
+        {
+            frame.width(),
+            frame.height(),
+            0.F,
+            1.F
+        }
+    );
 
     /**
      * Update Resources [BindingUpdateInterval::ePerFrame]
@@ -462,12 +474,10 @@ void RevMainStaticNode::invoke(
     auto& cmd { *_STD static_pointer_cast<CommandBuffer, void>(cmdEntry) };
 
     // Temporary
-    const auto* model { static_cast<const ptr<StaticGeometryModel>>(model_) };
+    const auto* const model { static_cast<const ptr<StaticGeometryModel>>(model_) };
     if (!model->geometryResource()->isLoaded()) {
         return;
     }
-
-    const auto* res { static_cast<const ptr<StaticGeometryResource>>(model->geometryResource()) };
 
     if (model->hasOverrideMaterials()) {
         auto* first { model->overrideMaterials().front() };
@@ -491,27 +501,33 @@ void RevMainStaticNode::invoke(
             //
             if (first->_payload.normal) {
                 dbg.getById(shader::ShaderBinding::id_type { 5 }).store(
-                    first->_payload.normal->_payload.view->owner());
+                    first->_payload.normal->_payload.view->owner()
+                );
             }
             if (first->_payload.roughness) {
                 dbg.getById(shader::ShaderBinding::id_type { 6 }).store(
-                    first->_payload.roughness->_payload.view->owner());
+                    first->_payload.roughness->_payload.view->owner()
+                );
             }
             if (first->_payload.metalness) {
                 dbg.getById(shader::ShaderBinding::id_type { 7 }).store(
-                    first->_payload.metalness->_payload.view->owner());
+                    first->_payload.metalness->_payload.view->owner()
+                );
             }
             if (first->_payload.ao) {
                 dbg.getById(shader::ShaderBinding::id_type { 8 }).store(
-                    first->_payload.ao->_payload.view->owner());
+                    first->_payload.ao->_payload.view->owner()
+                );
             }
             if (first->_payload.alpha) {
                 dbg.getById(shader::ShaderBinding::id_type { 9 }).store(
-                    first->_payload.alpha->_payload.view->owner());
+                    first->_payload.alpha->_payload.view->owner()
+                );
             }
             if (first->_payload.ao) {
                 dbg.getById(shader::ShaderBinding::id_type { 10 }).store(
-                    first->_payload.ao->_payload.view->owner());
+                    first->_payload.ao->_payload.view->owner()
+                );
             }
 
             //
@@ -646,12 +662,14 @@ void RevMainStaticNode::invoke(
                             auto [mip, offset] = markerTexture->tileFromIndex(sfi);
 
                             auto aksr {
-                                AssocKey<cache::TextureSubResource>::from({
-                                    .layer = view->baseLayer(),
-                                    .mip = static_cast<u32>(mip),
-                                    .offset = offset,
-                                    .extent = markerTexture->tileExtent(mip)
-                                })
+                                AssocKey<cache::TextureSubResource>::from(
+                                    {
+                                        .layer = view->baseLayer(),
+                                        .mip = static_cast<u32>(mip),
+                                        .offset = offset,
+                                        .extent = markerTexture->tileExtent(mip)
+                                    }
+                                )
                             };
 
                             assert(normView->baseLayer() == aksr.value.layer);
@@ -675,11 +693,14 @@ void RevMainStaticNode::invoke(
         }
     }
 
+    /**/
+    const auto staticGeomGuard = model->geometryResource()->acquire(resource::ResourceUsageFlag::eRead);
+
     /**
      *
      */
-    cmd.bindVertexBuffer(0, res->_vertexData.buffer, 0);
-    cmd.bindIndexBuffer(res->_indexData.buffer, 0);
+    cmd.bindVertexBuffer(0, staticGeomGuard->vertices().buffer, 0);
+    cmd.bindIndexBuffer(staticGeomGuard->indices().buffer, 0);
 
     // TODO: Optimize finding binding group for model update [ePerInstance]
     u32 sbgIdx { 0ui32 };
@@ -874,10 +895,12 @@ void RevMainStaticNode::setupShader() {
      * Build Shader and Bindings
      */
     auto factoryResult {
-        shaderFactory.build({
-            vertexPrototype,
-            fragmentPrototype
-        })
+        shaderFactory.build(
+            {
+                vertexPrototype,
+                fragmentPrototype
+            }
+        )
     };
 
     /**
@@ -896,9 +919,13 @@ void RevMainStaticNode::setupShader() {
         for (const auto& binding : group.shaderBindings()) {
 
             auto it {
-                _STD find_if(sizes.begin(), sizes.end(), [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
-                    return entry_.type == api::vkTranslateBindingType(type);
-                })
+                _STD find_if(
+                    sizes.begin(),
+                    sizes.end(),
+                    [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
+                        return entry_.type == api::vkTranslateBindingType(type);
+                    }
+                )
             };
 
             if (it == sizes.end()) {
