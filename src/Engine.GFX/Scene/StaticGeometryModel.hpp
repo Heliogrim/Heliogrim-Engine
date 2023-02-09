@@ -46,7 +46,7 @@ namespace ember::engine::gfx {
     public:
         [[nodiscard]] const ptr<assets::StaticGeometry> geometryAsset() const noexcept;
 
-        [[nodiscard]] cref<smr<StaticGeometryModel>> geometryResource() const noexcept;
+        [[nodiscard]] cref<smr<StaticGeometryResource>> geometryResource() const noexcept;
 
         [[nodiscard]] bool streamable() const noexcept;
     };

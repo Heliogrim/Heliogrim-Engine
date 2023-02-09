@@ -207,7 +207,7 @@ const ptr<engine::assets::StaticGeometry> StaticGeometryModel::geometryAsset() c
     return _staticGeometryAsset;
 }
 
-cref<smr<StaticGeometryModel>> StaticGeometryModel::geometryResource() const noexcept {
+cref<smr<StaticGeometryResource>> StaticGeometryModel::geometryResource() const noexcept {
     return _staticGeometryResource;
 }
 
