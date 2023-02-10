@@ -1,6 +1,9 @@
 #include "GlobalCacheCtrl.hpp"
 
 #include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Resource/ResourceManager.hpp>
+#include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.GFX.Loader/Texture/Traits.hpp>
 #include <Engine.GFX.Loader/Texture/TextureLoader.hpp>
 
@@ -9,52 +12,83 @@
 using namespace ember::engine::gfx::cache;
 using namespace ember;
 
-GlobalCacheCtrl::GlobalCacheCtrl(const ptr<GlobalResourceCache> cache_) :
-    _cache(cache_) {}
+GlobalCacheCtrl::GlobalCacheCtrl(mref<uptr<GlobalResourceCache>> cache_) :
+    _cache(_STD move(cache_)),
+    _loader(Engine::getEngine()->getResources()->loader(traits::nothrow)) {}
 
 GlobalCacheCtrl::~GlobalCacheCtrl() = default;
 
-const ptr<GlobalResourceCache> GlobalCacheCtrl::cache() const noexcept {
-    return _cache;
+const non_owning_rptr<GlobalResourceCache> GlobalCacheCtrl::cache() const noexcept {
+    return _cache.get();
 }
 
-#pragma region TextureResource
+const non_owning_rptr<const engine::resource::LoaderManager> GlobalCacheCtrl::loader() const noexcept {
+    return _loader;
+}
 
-void GlobalCacheCtrl::dispatchLoad(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_) {
-    // TODO:
+GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markLoadedAsUsed(
+    mref<smr<TextureResource>> resource_,
+    mref<TextureSubResource> subresource_
+) {
+    return markLoadedAsUsed(_STD move(resource_), AssocKey<TextureSubResource>::from(_STD move(subresource_)));
+}
+
+GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markLoadedAsUsed(
+    mref<smr<TextureResource>> resource_,
+    cref<AssocKey<TextureSubResource>> subresource_
+) {
+    const auto markResult = markAsUsed(resource_.get(), subresource_);
+    if (markResult == StreamCacheResultType::eResidential) {
+        return markResult;
+    }
+
+    /* If markResult != eResidential (eTransient || eUndefined) ~ Cache Miss */
 
     using stream_loader = loader::TextureLoader;
-    using stream_options = stream_loader::traits::request::stream_type;
+    using stream_options = stream_loader::traits::stream_request::options;
 
     stream_options options {
-        .layer = subresource_.layer,
-        .mip = subresource_.mip,
-        .offset = math::ivec3(subresource_.offset),
-        .extent = subresource_.extent
+        .op = loader::TextureStreamOp::eLoad,
+        .layer = subresource_.value.layer,
+        .mip = subresource_.value.mip,
+        .offset = math::ivec3(subresource_.value.offset),
+        .extent = subresource_.value.extent
     };
 
-    _cache->request(..., _STD move(options), ...);
-    // resource_->streamLoad(static_cast<const ptr<EmberObject>>(static_cast<const ptr<void>>(options)));
+    _loader->streamImmediately<assets::Texture, TextureResource>(
+        smr<TextureResource> { resource_ },
+        _STD move(options)
+    );
+
+    /**/
+
+    // TODO: Check whether loader chain will subsequentially insert a marker to the subresource set
+    // TODO:    or whether we should do this within the loaded markup invocation
+
+    {
+        using SubjectType = CacheCtrlSubject<TextureSubResource>;
+        using SubMapType = RobinMap<AssocKey<TextureSubResource>, ptr<SubjectType>>;
+
+        const auto resEntry { _textures.find(resource_.get()) };
+        auto& ctrls { const_cast<SubMapType&>(resEntry->second) };
+
+        /**
+         * Create new ctrl object by given subject with intial mark count of 1ui16
+         */
+        ctrls.insert_or_assign(subresource_, new SubjectType { _STD move(subresource_), 1ui16 });
+    }
+
+    return { StreamCacheResultType::eTransient /* eResidential */ };
 }
 
-void GlobalCacheCtrl::dispatchUnload(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_) {
-    // TODO:
-
-    using stream_loader = loader::TextureLoader;
-    using stream_options = stream_loader::traits::request::stream_type;
-
-    stream_options options {
-        .layer = subresource_.layer,
-        .mip = subresource_.mip,
-        .offset = math::ivec3(subresource_.offset),
-        .extent = subresource_.extent
-    };
-
-    _cache->unload(..., _STD move(options), ...);
-    // resource_->streamUnload(static_cast<const ptr<EmberObject>>(static_cast<const ptr<void>>(options)));
+GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markLoadedAsUsed(
+    mref<smr<TextureResource>> resource_,
+    mref<TextureSubResourceRange> range_
+) {
+    throw NotImplementedException();
 }
 
-GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::makeAsUsed(
+GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
     const non_owning_rptr<TextureResource> resource_,
     mref<TextureSubResource> subresource_
 ) {
@@ -92,19 +126,8 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
          */
         (existing->second)->marks.operator++();
 
-    } else {
-        /**
-         * Dispatch loading of texture (stream loading if possible/available)
-         */
-        dispatchLoad(resource_, subresource_);
-
-        /**
-         * Create new ctrl object by given subject with intial mark count of 1ui16
-         */
-        ctrls.insert_or_assign(subresource_, new SubjectType { _STD move(subresource_), 1ui16 });
+        return { StreamCacheResultType::eResidential };
     }
-
-    /**/
 
     return { StreamCacheResultType::eUndefined };
 }
@@ -116,11 +139,11 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
     throw NotImplementedException();
 }
 
-void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, mref<TextureSubResource> subresource_) {
-    unmark(resource_, AssocKey<TextureSubResource>::from(_STD move(subresource_)));
+void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, mref<TextureSubResource> subresource_) {
+    unmark(_STD move(resource_), AssocKey<TextureSubResource>::from(_STD move(subresource_)));
 }
 
-void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, cref<AssocKey<TextureSubResource>> subresource_) {
+void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, cref<AssocKey<TextureSubResource>> subresource_) {
 
     using SubjectType = CacheCtrlSubject<CacheTextureSubject>;
     using SubMapType = RobinMap<AssocKey<CacheTextureSubject>, ptr<SubjectType>>;
@@ -128,7 +151,7 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, cref<AssocKey<Textu
     /**
      * Check whether resource is present within controls
      */
-    auto resEntry { _textures.find(resource_) };
+    auto resEntry { _textures.find(resource_.get()) };
     if (resEntry == _textures.end()) {
         return;
     }
@@ -161,7 +184,21 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, cref<AssocKey<Textu
      * Dispatch unloading of texture (stream unloading if possible/available)
      */
     if (left <= 0ui16) {
-        dispatchUnload(resource_, subresource_);
+        using stream_loader = loader::TextureLoader;
+        using stream_options = stream_loader::traits::stream_request::options;
+
+        stream_options options {
+            .op = loader::TextureStreamOp::eUnload,
+            .layer = subresource_.value.layer,
+            .mip = subresource_.value.mip,
+            .offset = math::ivec3(subresource_.value.offset),
+            .extent = subresource_.value.extent
+        };
+
+        _loader->streamImmediately<assets::Texture, TextureResource>(
+            _STD move(resource_),
+            _STD move(options)
+        );
     }
 
     // TODO: Check whether we want to erase subjects with no left marks
@@ -174,23 +211,9 @@ void GlobalCacheCtrl::unmark(ptr<TextureResource> resource_, cref<AssocKey<Textu
     }
 }
 
-void GlobalCacheCtrl::unmark(ptr<TextureResource>, mref<TextureSubResourceRange> subresourceRange_) {
+void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, mref<TextureSubResourceRange> subresourceRange_) {
     throw NotImplementedException();
 }
-
-#pragma endregion
-
-#pragma region StaticGeometryResource
-
-void GlobalCacheCtrl::dispatchLoad(
-    const ptr<StaticGeometryResource> resource_,
-    cref<StaticGeometrySubResource> subresource_
-) {}
-
-void GlobalCacheCtrl::dispatchUnload(
-    const ptr<StaticGeometryResource> resource_,
-    cref<StaticGeometrySubResource> subresource_
-) {}
 
 void GlobalCacheCtrl::markAsUsed(ptr<StaticGeometryResource> resource_, mref<CacheStaticGeometrySubject> subresource_) {
     throw NotImplementedException();
@@ -199,5 +222,3 @@ void GlobalCacheCtrl::markAsUsed(ptr<StaticGeometryResource> resource_, mref<Cac
 void GlobalCacheCtrl::unmark(ptr<StaticGeometryResource> resource_, mref<CacheStaticGeometrySubject> subresource_) {
     throw NotImplementedException();
 }
-
-#pragma endregion
