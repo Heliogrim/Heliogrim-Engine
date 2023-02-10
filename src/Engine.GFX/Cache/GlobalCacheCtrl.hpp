@@ -7,6 +7,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.GFX.Loader/Geometry/StaticGeometryResource.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
+#include <Engine.Resource/LoaderManager.hpp>
 
 #include "CacheResult.hpp"
 #include "CacheCtrlSubject.hpp"
@@ -31,7 +32,7 @@ namespace ember::engine::gfx::cache {
         using stream_result_type = Result<StreamCacheResultType, Type_>;
 
     public:
-        GlobalCacheCtrl(const ptr<GlobalResourceCache> cache_);
+        GlobalCacheCtrl(mref<uptr<GlobalResourceCache>> cache_);
 
         GlobalCacheCtrl(cref<this_type>) = delete;
 
@@ -45,10 +46,13 @@ namespace ember::engine::gfx::cache {
         ref<this_type> operator=(mref<this_type>) noexcept = delete;
 
     private:
-        const ptr<GlobalResourceCache> _cache;
+        uptr<GlobalResourceCache> _cache;
+        const non_owning_rptr<const resource::LoaderManager> _loader;
 
     public:
-        [[nodiscard]] const ptr<GlobalResourceCache> cache() const noexcept;
+        [[nodiscard]] const non_owning_rptr<GlobalResourceCache> cache() const noexcept;
+
+        [[nodiscard]] const non_owning_rptr<const resource::LoaderManager> loader() const noexcept;
 
     private:
         /**
@@ -57,13 +61,43 @@ namespace ember::engine::gfx::cache {
         RobinMap<ptr<TextureResource>, RobinMap<AssocKey<TextureSubResource>, ptr<CacheCtrlSubject<
             TextureSubResource>>>> _textures;
 
-    private:
-        void dispatchLoad(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_);
+    public:
+        /**
+         * Mark the sub-resource with usage marker to effect managed memory
+         *
+         * @details This function will implicitly load the targeted sub-resource definition if not present.
+         *  Therefore this function guarantees a preserved mark as long as no error occurs while loading.
+         *
+         * @param resource_ The effected managed resource
+         * @param subresource_ The sub-resource definition to preserve
+         *
+         * @returns A result of `eResidential` if main- and sub-resource got a cache hit, `eTransient` if currently in a volatile state, otherwise `eUndefined`
+         */
+        [[nodiscard]] stream_result_type<> markLoadedAsUsed(
+            _In_ mref<smr<TextureResource>> resource_,
+            _In_ mref<TextureSubResource> subresource_
+        );
 
-        void dispatchUnload(const ptr<TextureResource> resource_, cref<TextureSubResource> subresource_);
+        [[nodiscard]] stream_result_type<> markLoadedAsUsed(
+            _In_ mref<smr<TextureResource>> resource_,
+            cref<AssocKey<TextureSubResource>> subresource_
+        );
+
+        [[nodiscard]] stream_result_type<> markLoadedAsUsed(
+            _In_ mref<smr<TextureResource>> resource_,
+            _In_ mref<TextureSubResourceRange> range_
+        );
 
     public:
-        [[nodiscard]] stream_result_type<> makeAsUsed(
+        /**
+         * Mark the sub-resource with usage marker to effect managed memory
+         *
+         * @param resource_ The effected managed resource
+         * @param subresource_ The sub-resource definition to preserve
+         *
+         * @returns A result of `eResidential` if main- and sub-resource got a cache hit, otherwise `eUndefined`
+         */
+        [[nodiscard]] stream_result_type<> markAsUsed(
             _In_ const non_owning_rptr<TextureResource> resource_,
             _In_ mref<TextureSubResource> subresource_
         );
@@ -78,11 +112,12 @@ namespace ember::engine::gfx::cache {
             _In_ mref<TextureSubResourceRange> range_
         );
 
-        void unmark(ptr<TextureResource> resource_, mref<TextureSubResource> subresource_);
+    public:
+        void unmark(_In_ mref<smr<TextureResource>> resource_, mref<TextureSubResource> subresource_);
 
-        void unmark(ptr<TextureResource> resource_, cref<AssocKey<TextureSubResource>> subresource_);
+        void unmark(_In_ mref<smr<TextureResource>> resource_, cref<AssocKey<TextureSubResource>> subresource_);
 
-        [[deprecated]] void unmark(ptr<TextureResource>, mref<TextureSubResourceRange> subresourceRange_);
+        [[deprecated]] void unmark(_In_ mref<smr<TextureResource>>, mref<TextureSubResourceRange> subresourceRange_);
 
     private:
         /**
@@ -90,17 +125,6 @@ namespace ember::engine::gfx::cache {
          */
         RobinMap<ptr<StaticGeometryResource>, Vector<ptr<CacheCtrlSubject<StaticGeometrySubResource>>>>
         _staticGeometries;
-
-    private:
-        [[deprecated]] void dispatchLoad(
-            const ptr<StaticGeometryResource> resource_,
-            cref<StaticGeometrySubResource> subresource_
-        );
-
-        [[deprecated]] void dispatchUnload(
-            const ptr<StaticGeometryResource> resource_,
-            cref<StaticGeometrySubResource> subresource_
-        );
 
     public:
         [[deprecated]] void markAsUsed(
