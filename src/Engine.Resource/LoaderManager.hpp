@@ -181,8 +181,13 @@ namespace ember::engine::resource {
             );
         }
 
+        /**
+         * Will invoke a stream operation on the loader immediately
+         *  TODO: Check how we want to support stream ops of the loader chain specific for a certain project
+         */
         template <assets::IsStreamableAsset AssetType_, typename ResourceType_ = ResourceBase>
-        [[nodiscard]] typename loader::Loader<AssetType_, ResourceType_>::traits::stream_response::type loadImmediately(
+        [[nodiscard]] typename loader::Loader<AssetType_, ResourceType_>::traits::stream_response::type
+        streamImmediately(
             typename loader::Loader<AssetType_, ResourceType_>::traits::stream_request::type request_,
             typename loader::Loader<AssetType_, ResourceType_>::traits::stream_request::options options_
         ) const {

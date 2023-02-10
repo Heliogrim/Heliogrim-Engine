@@ -89,5 +89,31 @@ namespace ember::engine::resource {
 
     protected:
         [[nodiscard]] virtual const non_owning_rptr<void> value() const noexcept = 0;
+
+    protected:
+        /**/
+        non_owning_rptr<const EmberObject> _association;
+
+    public:
+        /**
+         * Get the stored association of this resource
+         *
+         * @note Previously defined as origin
+         *
+         * @returns A pointer to the stored association, otherwise nullptr
+         */
+        [[nodiscard]] non_owning_rptr<const EmberObject> getAssociation() const noexcept;
+
+        /**
+         * Store a suitable association for this resource
+         *
+         * @note Previously defined as origin
+         *
+         * @author Julius
+         * @date 09.02.2023
+         *
+         * @param association_ A pointer used as association for this resource.
+         */
+        void setAssociation(const non_owning_rptr<const EmberObject> association_) noexcept;
     };
 }
