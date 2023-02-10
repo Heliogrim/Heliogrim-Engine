@@ -105,6 +105,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureStreamOptions.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureTransformer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\Traits.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\Transformer\Ktx.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +114,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureFeedback.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureTransformer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\Transformer\Ktx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

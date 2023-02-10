@@ -25,6 +25,12 @@
     <Filter Include="Headerdateien\Material">
       <UniqueIdentifier>{8ccd1cbe-0a08-4d1a-9592-652edc77655e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Texture\Transformer">
+      <UniqueIdentifier>{0331ee14-3145-45e4-bf31-27f017dacab3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Texture\Transformer">
+      <UniqueIdentifier>{2096342a-1543-48c9-bdab-aaa8b28b6f75}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.hpp">
@@ -75,6 +81,9 @@
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryStreamOptions.hpp">
       <Filter>Headerdateien\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\Transformer\Ktx.hpp">
+      <Filter>Headerdateien\Texture\Transformer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.cpp">
@@ -91,6 +100,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Manager.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\Transformer\Ktx.cpp">
+      <Filter>Quelldateien\Texture\Transformer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
