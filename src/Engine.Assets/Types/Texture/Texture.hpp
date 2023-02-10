@@ -5,7 +5,7 @@
 #include <Engine.GFX/Texture/TextureType.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
-#include "../Asset.hpp"
+#include "../AssetConcept.hpp"
 
 namespace ember::engine::assets {
     class Texture :
