@@ -10,7 +10,6 @@
 #include "../AssetTypeId.hpp"
 
 namespace ember::engine::assets {
-
     /*
                                 Level   Entity	    Serialized<Component>	GfxMaterial	PfxMaterial	SfxMaterial	Texture     Image	    Sound	    Geometry
         Level	                -	    1 :: *      T 1 :: *	            T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *
