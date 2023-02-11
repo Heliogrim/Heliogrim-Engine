@@ -10,7 +10,7 @@ namespace ember::engine::serialization {
 
     public:
         SourceReadonlyArchive(
-            mref<smr<res::Source>> source_,
+            mref<smr<resource::Source>> source_,
             mref<streamoff> srcOff_,
             mref<streamsize> srcSize_
         );

@@ -4,7 +4,7 @@ using namespace ember::engine::serialization;
 using namespace ember;
 
 SourceReadWriteArchive::SourceReadWriteArchive(
-    mref<smr<res::Source>> source_,
+    mref<smr<resource::Source>> source_,
     mref<streamoff> srcOff_,
     mref<streamsize> srcSize_
 ) :

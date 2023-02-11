@@ -4,7 +4,7 @@ using namespace ember::engine::serialization;
 using namespace ember;
 
 SourceBaseArchive::SourceBaseArchive(
-    mref<smr<res::Source>> source_,
+    mref<smr<resource::Source>> source_,
     mref<streamoff> srcOff_,
     mref<streamsize> srcSize_
 ) :
@@ -29,7 +29,7 @@ string_view SourceBaseArchive::getArchiveName() const noexcept {
     return "SourceArchive"sv;
 }
 
-smr<engine::res::Source> SourceBaseArchive::getSource() const noexcept {
+smr<engine::resource::Source> SourceBaseArchive::getSource() const noexcept {
     return {};
 }
 
