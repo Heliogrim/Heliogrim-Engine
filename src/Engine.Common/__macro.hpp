@@ -161,6 +161,10 @@
 #endif
 #endif
 
+#if not defined(ENV_MSVC) && not defined(__restrict)
+#define __restrict RESTRICT
+#endif
+
 // Profiling
 #ifdef _PROFILING
 #define SCOPED_STOPWATCH_V(var_) ember::profiling::ScopedStopwatch var_ {__FUNCSIG__};
