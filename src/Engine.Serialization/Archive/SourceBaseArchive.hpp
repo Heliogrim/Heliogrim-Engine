@@ -14,7 +14,7 @@ namespace ember::engine::serialization {
 
     protected:
         SourceBaseArchive(
-            mref<smr<res::Source>> source_,
+            mref<smr<resource::Source>> source_,
             mref<streamoff> srcOff_,
             mref<streamsize> srcSize_
         );
@@ -28,12 +28,12 @@ namespace ember::engine::serialization {
         [[nodiscard]] string_view getArchiveName() const noexcept override;
 
     protected:
-        smr<res::Source> _source;
+        smr<resource::Source> _source;
         streamoff _srcOff;
         streamsize _srcSize;
 
     public:
-        [[nodiscard]] smr<res::Source> getSource() const noexcept;
+        [[nodiscard]] smr<resource::Source> getSource() const noexcept;
 
     protected:
         s64 _pos;
