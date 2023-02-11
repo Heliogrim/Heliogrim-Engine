@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Assets/Types/Asset.hpp>
@@ -13,7 +14,7 @@ namespace ember::engine::resource {
     class __declspec(novtable) Resource :
         public ResourceBase {
     public:
-        using this_type = Resource;
+        using this_type = Resource<ManagedType_>;
 
         using value_type = ManagedType_;
         using loaded_flag_type = u8;
@@ -25,7 +26,18 @@ namespace ember::engine::resource {
          * @author Julius
          * @date 27.08.2021
          */
-        Resource() = default;
+        constexpr Resource() noexcept:
+            ResourceBase(),
+            _value(nullptr) {}
+
+        constexpr Resource(value_type* __restrict value_) noexcept :
+            ResourceBase(),
+            _value(value_) {}
+
+        template <typename... Args_> requires _STD is_constructible_v<value_type, Args_...>
+        constexpr Resource(Args_&&... args_) noexcept(_STD is_nothrow_constructible_v<value_type, Args_...>) :
+            ResourceBase(),
+            _value(make_ptr<value_type, Args_...>(_STD forward<Args_>(args_)...)) {}
 
     public:
         /**
@@ -37,7 +49,7 @@ namespace ember::engine::resource {
         ~Resource() override = default;
 
     private:
-        ptr<value_type> _value;
+        __restricted_ptr<value_type> _value;
 
     public:
         loaded_flag_type loaded() const noexcept override {

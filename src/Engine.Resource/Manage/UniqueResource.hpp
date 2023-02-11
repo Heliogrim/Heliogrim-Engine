@@ -10,13 +10,24 @@ namespace ember::engine::resource {
         using this_type = UniqueResource<ManagedType_>;
         using underlying_type = Resource<ManagedType_>;
 
-        using underlying_type::value_type;
-        using guard_type = TypedManageGuard<typename value_type>;
+        using value_type = typename underlying_type::value_type;
+        using guard_type = TypedManageGuard<value_type>;
 
     public:
-        UniqueResource();
+        constexpr UniqueResource() noexcept :
+            underlying_type() {}
 
-        ~UniqueResource() override;
+        /**
+         * TODO: Check whether we want to hide this constructor with a `Ty_ make_*(...)` function
+         */
+        constexpr UniqueResource(__restricted_ptr<value_type> value_) noexcept :
+            underlying_type(value_) {}
+
+        template <typename... Args_> requires _STD is_constructible_v<value_type, Args_...>
+        constexpr UniqueResource(Args_&&... args_) noexcept (_STD is_nothrow_constructible_v<value_type, Args_...>) :
+            underlying_type(_STD forward<Args_>(args_)...) {}
+
+        ~UniqueResource() override = default;
 
     private:
         _STD atomic_flag _lck;
