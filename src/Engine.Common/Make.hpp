@@ -41,6 +41,14 @@ namespace ember {
         return ctrl->acq();
     }
 
+    template <class Ty_, class Tx_> requires
+        (not _STD is_same_v<Ty_, Tx_>) &&
+        (_STD is_nothrow_convertible_v<ptr<Tx_>, ptr<Ty_>>)
+    smr<Ty_> make_smr(mref<ptr<Tx_>> ptrTx_) {
+        const auto ctrl = new SharedMemoryReferenceCtrlBlock<Tx_>(_STD move(ptrTx_));
+        return ctrl->acq().template into<Ty_>();
+    }
+
     template <class Ty, class... Args>
     smr<Ty> make_smr(Args&&... args_) {
         auto* const ctrl = new SharedMemoryReferenceCtrlBlock<Ty>(new Ty(_STD forward<Args>(args_)...));

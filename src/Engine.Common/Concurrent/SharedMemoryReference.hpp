@@ -49,7 +49,7 @@ namespace ember {
         using ctrl_block_type = SharedMemoryReferenceCtrlBlock<value_type>;
 
     public:
-        SharedMemoryReference() noexcept :
+        constexpr SharedMemoryReference() noexcept :
             _ctrlBlock(nullptr),
             _packed(0) {}
 
@@ -192,7 +192,7 @@ namespace ember {
         using smr_type = SharedMemoryReference<value_type>;
 
     public:
-        SharedMemoryReferenceCtrlBlock() noexcept :
+        constexpr SharedMemoryReferenceCtrlBlock() noexcept :
             _packed(0) {}
 
         SharedMemoryReferenceCtrlBlock(_In_ mref<ptr<value_type>> payload_) :
