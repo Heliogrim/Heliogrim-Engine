@@ -9,7 +9,7 @@
 using namespace ember::engine::resource;
 using namespace ember;
 
-Package PackageFactory::createEmptyPackage(mref<uptr<res::Source>> source_) {
+Package PackageFactory::createEmptyPackage(mref<uptr<Source>> source_) {
 
     PackageGuid guid {};
     GuidGenerate(guid);
@@ -33,7 +33,7 @@ Package PackageFactory::createEmptyPackage(mref<uptr<res::Source>> source_) {
     };
 }
 
-Package PackageFactory::createFromSource(mref<uptr<res::Source>> source_) {
+Package PackageFactory::createFromSource(mref<uptr<Source>> source_) {
 
     PackageHeader storedHeader {};
     PackageFooter storedFooter {};
