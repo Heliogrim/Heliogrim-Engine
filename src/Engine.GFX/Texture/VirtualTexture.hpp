@@ -14,7 +14,6 @@ namespace ember::engine::gfx::loader {
 }
 
 namespace ember::engine::gfx {
-
     class VirtualTexture final {
     public:
         friend class ::ember::engine::gfx::loader::TextureLoader;
@@ -175,6 +174,19 @@ namespace ember::engine::gfx {
         u32 _mipTailSize;
         u32 _mipTailOffset;
         u32 _mipTailStride;
+
+        // TODO: Check whether we want to combine the mip tail into one struct
+
+    public:
+        [[nodiscard]] const decltype(_granularity) granularity() const noexcept;
+
+        [[nodiscard]] const decltype(_mipTailFirstLod) mipTailFirstLod() const noexcept;
+
+        [[nodiscard]] const decltype(_mipTailSize) mipTailSize() const noexcept;
+
+        [[nodiscard]] const decltype(_mipTailOffset) mipTailOffset() const noexcept;
+
+        [[nodiscard]] const decltype(_mipTailStride) mipTailStride() const noexcept;
 
     private:
         /**
