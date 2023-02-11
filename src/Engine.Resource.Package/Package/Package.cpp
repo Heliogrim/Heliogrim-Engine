@@ -11,13 +11,13 @@ using namespace ember::engine::resource;
 using namespace ember;
 
 Package::Package(
-    mref<uptr<res::Source>> source_,
+    mref<uptr<Source>> source_,
     mref<PackageHeader> header_,
     mref<PackageFooter> footer_
 ) :
     _header(_STD move(header_)),
     _footer(_STD move(footer_)),
-    _source(make_smr<res::Source>(_STD move(source_))) {
+    _source(make_smr<Source>(_STD move(source_))) {
 
     makeLinker();
 }
@@ -41,7 +41,7 @@ const non_owning_rptr<PackageLinker> Package::getLinker() const noexcept {
     return _linker.get();
 }
 
-void Package::unsafeReleaseSource(ref<smr<res::Source>> dst_) {
+void Package::unsafeReleaseSource(ref<smr<Source>> dst_) {
     dst_ = _STD move(_source);
 }
 
@@ -82,8 +82,11 @@ void Package::unsafeWriteHeader() {
 
     archive.seek(0);
 
-    archive.serializeBytes(const_cast<ptr<u8>>(PackageMagicBytes), sizeof(PackageMagicBytes),
-        serialization::ArchiveStreamMode::eIn);
+    archive.serializeBytes(
+        const_cast<ptr<u8>>(PackageMagicBytes),
+        sizeof(PackageMagicBytes),
+        serialization::ArchiveStreamMode::eIn
+    );
     archive << PackageMagicVersion[0];
     archive << PackageEndianness::eBigEndian;
 
@@ -170,8 +173,11 @@ void Package::unsafeWriteFooter(streamoff pos_) {
     u8 reserved[8] { 0ui8 };
     archive.serializeBytes(reserved, sizeof(reserved), serialization::ArchiveStreamMode::eIn);
 
-    archive.serializeBytes(const_cast<ptr<u8>>(PackageMagicBytes), sizeof(PackageMagicBytes),
-        serialization::ArchiveStreamMode::eIn);
+    archive.serializeBytes(
+        const_cast<ptr<u8>>(PackageMagicBytes),
+        sizeof(PackageMagicBytes),
+        serialization::ArchiveStreamMode::eIn
+    );
     archive << PackageMagicVersion[0];
     archive << PackageEndianness::eBigEndian;
 

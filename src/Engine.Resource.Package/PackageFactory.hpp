@@ -8,8 +8,8 @@ namespace ember::engine::resource {
         using this_type = PackageFactory;
 
     public:
-        [[nodiscard]] static Package createEmptyPackage(mref<uptr<res::Source>> source_);
+        [[nodiscard]] static Package createEmptyPackage(mref<uptr<Source>> source_);
 
-        [[nodiscard]] static Package createFromSource(mref<uptr<res::Source>> source_);
+        [[nodiscard]] static Package createFromSource(mref<uptr<Source>> source_);
     };
 }

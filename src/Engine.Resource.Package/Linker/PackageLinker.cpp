@@ -63,10 +63,12 @@ void PackageLinker::restoreLinks() {
 
         /**/
 
-        _links.push_back(LinkedArchive {
-            _STD move(header),
-            _STD move(index)
-        });
+        _links.push_back(
+            LinkedArchive {
+                _STD move(header),
+                _STD move(index)
+            }
+        );
 
         /**/
 
@@ -109,13 +111,15 @@ bool PackageLinker::store(mref<ArchiveHeader> header_, mref<uptr<serialization::
 
     /**/
 
-    _links.push_back(LinkedArchive {
-        _STD move(header_),
-        PackageIndexEntry {
-            static_cast<u64>(nextOffset),
-            static_cast<u64>(archiveSize)
+    _links.push_back(
+        LinkedArchive {
+            _STD move(header_),
+            PackageIndexEntry {
+                static_cast<u64>(nextOffset),
+                static_cast<u64>(archiveSize)
+            }
         }
-    });
+    );
 
     return false;
 }
@@ -132,9 +136,13 @@ bool PackageLinker::store(std::initializer_list<std::pair<ArchiveHeader, uptr<se
 
 uptr<engine::serialization::SourceReadonlyArchive> PackageLinker::load(const Guid archiveGuid_) const noexcept {
 
-    const auto where = _STD ranges::find(_links, archiveGuid_, [](cref<LinkedArchive> linked_) {
-        return linked_.header.guid;
-    });
+    const auto where = _STD ranges::find(
+        _links,
+        archiveGuid_,
+        [](cref<LinkedArchive> linked_) {
+            return linked_.header.guid;
+        }
+    );
 
     if (where == _links.end()) {
         return nullptr;
@@ -142,7 +150,7 @@ uptr<engine::serialization::SourceReadonlyArchive> PackageLinker::load(const Gui
 
     const auto index = where->index;
     return make_uptr<serialization::SourceReadonlyArchive>(
-        smr<res::Source>(_package->_source),
+        smr<Source>(_package->_source),
         static_cast<streamoff>(index.offset),
         static_cast<streamsize>(index.size)
     );
@@ -202,7 +210,7 @@ uptr<PackageLinker::readonly_iter_archive> PackageLinker::operator[](const_itera
     const auto index = where_->index;
 
     return make_uptr<readonly_iter_archive>(
-        smr<res::Source>(_package->_source),
+        smr<Source>(_package->_source),
         static_cast<streamoff>(index.offset),
         static_cast<streamsize>(index.size)
     );
@@ -213,7 +221,7 @@ uptr<PackageLinker::iter_archive> PackageLinker::operator[](iterator_type where_
     const auto index = where_->index;
 
     return make_uptr<serialization::SourceReadWriteArchive>(
-        smr<res::Source>(_package->_source),
+        smr<Source>(_package->_source),
         static_cast<streamoff>(index.offset),
         static_cast<streamsize>(index.size)
     );

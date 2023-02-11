@@ -20,7 +20,7 @@ namespace ember::engine::resource {
 
     public:
         Package(
-            mref<uptr<res::Source>> source_,
+            mref<uptr<Source>> source_,
             mref<PackageHeader> header_,
             mref<PackageFooter> footer_
         );
@@ -38,7 +38,7 @@ namespace ember::engine::resource {
         [[nodiscard]] ref<PackageFooter> footer() noexcept;
 
     private:
-        smr<res::Source> _source;
+        smr<Source> _source;
         uptr<PackageLinker> _linker;
 
     private:
@@ -48,7 +48,7 @@ namespace ember::engine::resource {
         [[nodiscard]] const non_owning_rptr<PackageLinker> getLinker() const noexcept;
 
     public:
-        void unsafeReleaseSource(_Out_ ref<smr<res::Source>> dst_);
+        void unsafeReleaseSource(_Out_ ref<smr<Source>> dst_);
 
     public:
         void unsafeWrite();
