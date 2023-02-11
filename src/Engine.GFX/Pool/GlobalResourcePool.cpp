@@ -42,10 +42,12 @@ cref<sptr<engine::gfx::Device>> GlobalResourcePool::device() const noexcept {
     return _device;
 }
 
-non_owning_rptr<engine::gfx::VirtualBuffer> GlobalResourcePool::requestIndexBuffer(mref<Vector<u64>> pageSizes_) {
+non_owning_rptr<engine::gfx::VirtualBuffer> GlobalResourcePool::allocateIndexBuffer(
+    mref<IndexBufferAllocation> allocation_
+) {
 
     u64 wholeSize { 0ui64 };
-    for (auto pageSize : pageSizes_) {
+    for (auto pageSize : allocation_.pageSizes) {
         wholeSize += pageSize;
     }
 
@@ -148,10 +150,12 @@ non_owning_rptr<engine::gfx::VirtualBuffer> GlobalResourcePool::requestIndexBuff
     return ptr;
 }
 
-non_owning_rptr<engine::gfx::VirtualBuffer> GlobalResourcePool::requestVertexBuffer(mref<Vector<u64>> pageSizes_) {
+non_owning_rptr<engine::gfx::VirtualBuffer> GlobalResourcePool::allocateVertexBuffer(
+    mref<VertexBufferAllocation> allocation_
+) {
 
     u64 wholeSize { 0ui64 };
-    for (auto pageSize : pageSizes_) {
+    for (auto pageSize : allocation_.pageSizes) {
         wholeSize += pageSize;
     }
 
@@ -254,8 +258,8 @@ non_owning_rptr<engine::gfx::VirtualBuffer> GlobalResourcePool::requestVertexBuf
     return ptr;
 }
 
-uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::requestVirtualBuffer(
-    mref<non_owning_rptr<const void>> material_
+uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateVirtualBuffer(
+    mref<MaterialBufferAllocation> allocation_
 ) {
     #if FALSE
     /**
@@ -378,8 +382,8 @@ uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::requestVirtualBuffer(
     return nullptr;
 }
 
-uptr<engine::gfx::VirtualTextureView> GlobalResourcePool::requestVirtualTexture(
-    mref<non_owning_rptr<const void>> texture_
+uptr<engine::gfx::VirtualTextureView> GlobalResourcePool::allocateVirtualTexture(
+    mref<VirtualTextureAllocation> allocation_
 ) {
     #if FALSE
     /**
