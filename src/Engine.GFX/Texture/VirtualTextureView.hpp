@@ -14,7 +14,6 @@ namespace ember::engine::gfx::loader {
 }
 
 namespace ember::engine::gfx {
-
     class VirtualTextureView final {
     public:
         friend class VirtualTexture;
@@ -24,9 +23,15 @@ namespace ember::engine::gfx {
         using this_type = VirtualTextureView;
 
     protected:
-        VirtualTextureView(non_owning_rptr<VirtualTexture> owner_,
-            mref<Vector<non_owning_rptr<VirtualTexturePage>>> pages_, math::uivec2 layers_, math::uivec3 extent_,
-            TextureFormat format_, math::uivec2 mipLevels_, TextureType type_);
+        VirtualTextureView(
+            non_owning_rptr<VirtualTexture> owner_,
+            mref<Vector<non_owning_rptr<VirtualTexturePage>>> pages_,
+            math::uivec2 layers_,
+            math::uivec3 extent_,
+            TextureFormat format_,
+            math::uivec2 mipLevels_,
+            TextureType type_
+        );
 
     public:
         VirtualTextureView(cref<this_type>) = delete;
@@ -52,6 +57,10 @@ namespace ember::engine::gfx {
     private:
         Vector<non_owning_rptr<VirtualTexturePage>> _pages;
 
+    public:
+        // TODO: Should be protected / private ...
+        [[nodiscard]] cref<Vector<non_owning_rptr<VirtualTexturePage>>> pages() const noexcept;
+
     private:
         math::uivec2 _layers;
 
@@ -64,6 +73,8 @@ namespace ember::engine::gfx {
         math::uivec3 _extent;
 
     public:
+        [[nodiscard]] math::uivec3 extent() const noexcept;
+
         [[nodiscard]] math::uivec3::value_type width() const noexcept;
 
         [[nodiscard]] math::uivec3::value_type height() const noexcept;
@@ -92,5 +103,4 @@ namespace ember::engine::gfx {
     public:
         [[nodiscard]] TextureType type() const noexcept;
     };
-
 }

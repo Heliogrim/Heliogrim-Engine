@@ -16,9 +16,12 @@ using namespace ember;
 
 VirtualTexture::VirtualTexture(
     mref<uptr<VirtualMemory>> memory_,
-    const u32 layers_, const math::uivec3 extent_,
-    const TextureFormat format_, const math::uivec2 mipLevels_,
-    const TextureType type_, vk::Image vkImage_
+    const u32 layers_,
+    const math::uivec3 extent_,
+    const TextureFormat format_,
+    const math::uivec2 mipLevels_,
+    const TextureType type_,
+    vk::Image vkImage_
 ) :
     _memory(_STD move(memory_)),
     _layers(layers_),
@@ -142,7 +145,8 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makePage(
         _format == TextureFormat::eR8G8B8A8Srgb ||
         _format == TextureFormat::eR16G16B16A16Sfloat ||
         _format == TextureFormat::eR32G32B32A32Sfloat ||
-        _format == TextureFormat::eR16Sfloat);
+        _format == TextureFormat::eR16Sfloat
+    );
 
     #ifdef _DEBUG
     assert(_layers >= layer_);
@@ -189,7 +193,8 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makeOpaquePage(u32 layer_) {
         _format == TextureFormat::eR8G8B8A8Unorm ||
         _format == TextureFormat::eR16G16B16A16Sfloat ||
         _format == TextureFormat::eR32G32B32A32Sfloat ||
-        _format == TextureFormat::eR16Sfloat);
+        _format == TextureFormat::eR16Sfloat
+    );
     assert(_type == TextureType::e2dArray || _type == TextureType::eCube);
 
     #ifdef _DEBUG
@@ -400,9 +405,12 @@ uptr<VirtualTextureView> VirtualTexture::makeView(math::uivec2 layers_, math::ui
     /**
      * Take the time to sort the pages by it's mip level (virtual backing)
      */
-    _STD ranges::sort(pages, [](non_owning_rptr<VirtualTexturePage> left_, non_owning_rptr<VirtualTexturePage> right_) {
-        return left_->mipLevel() < right_->mipLevel();
-    });
+    _STD ranges::sort(
+        pages,
+        [](non_owning_rptr<VirtualTexturePage> left_, non_owning_rptr<VirtualTexturePage> right_) {
+            return left_->mipLevel() < right_->mipLevel();
+        }
+    );
 
     /**
      *
@@ -422,8 +430,11 @@ uptr<VirtualTextureView> VirtualTexture::makeView(math::uivec2 layers_, math::ui
     return _STD unique_ptr<VirtualTextureView>(view);
 }
 
-uptr<VirtualTextureView> VirtualTexture::makeSpatialView(math::uivec2 offset_, math::uivec2 extent_,
-    math::uivec2 mipLevels_) {
+uptr<VirtualTextureView> VirtualTexture::makeSpatialView(
+    math::uivec2 offset_,
+    math::uivec2 extent_,
+    math::uivec2 mipLevels_
+) {
     #ifdef _DEBUG
     __debugbreak();
     #endif
@@ -464,6 +475,26 @@ math::uivec2::value_type VirtualTexture::maxMipLevel() const noexcept {
 
 TextureType VirtualTexture::type() const noexcept {
     return _type;
+}
+
+const decltype(VirtualTexture::_granularity) VirtualTexture::granularity() const noexcept {
+    return _granularity;
+}
+
+const decltype(VirtualTexture::_mipTailFirstLod) VirtualTexture::mipTailFirstLod() const noexcept {
+    return _mipTailFirstLod;
+}
+
+const decltype(VirtualTexture::_mipTailSize) VirtualTexture::mipTailSize() const noexcept {
+    return _mipTailSize;
+}
+
+const decltype(VirtualTexture::_mipTailOffset) VirtualTexture::mipTailOffset() const noexcept {
+    return _mipTailOffset;
+}
+
+const decltype(VirtualTexture::_mipTailStride) VirtualTexture::mipTailStride() const noexcept {
+    return _mipTailStride;
 }
 
 cref<vk::Image> VirtualTexture::vkImage() const noexcept {
