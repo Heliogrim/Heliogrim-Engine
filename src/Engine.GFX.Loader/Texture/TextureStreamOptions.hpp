@@ -13,7 +13,7 @@ namespace ember::engine::gfx::loader {
         /**/
         u32 layer;
         u32 mip;
-        math::ivec3 offset;
+        math::uivec3 offset;
         math::uivec3 extent;
     };
 }

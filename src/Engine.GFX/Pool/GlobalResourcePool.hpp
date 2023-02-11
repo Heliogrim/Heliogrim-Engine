@@ -8,6 +8,24 @@
 #include "../Texture/VirtualTexture.hpp"
 
 namespace ember::engine::gfx::pool {
+    struct IndexBufferAllocation {
+        Vector<u64> pageSizes;
+    };
+
+    struct VertexBufferAllocation {
+        Vector<u64> pageSizes;
+    };
+
+    struct MaterialBufferAllocation {
+        non_owning_rptr<const void> material;
+    };
+
+    struct VirtualTextureAllocation {
+        non_owning_rptr<const void> texture;
+    };
+
+    /**/
+
     class GlobalResourcePool final {
     public:
         using this_type = GlobalResourcePool;
@@ -65,20 +83,20 @@ namespace ember::engine::gfx::pool {
         Vector<uptr<VirtualBuffer>> _materialBuffer;
 
     public:
-        [[nodiscard]] _Success_(return != nullptr) non_owning_rptr<VirtualBuffer> requestIndexBuffer(
-            _In_ mref<Vector<u64>> pageSizes_
+        [[nodiscard]] _Success_(return != nullptr) non_owning_rptr<VirtualBuffer> allocateIndexBuffer(
+            _In_ mref<IndexBufferAllocation> allocation_
         );
 
-        [[nodiscard]] _Success_(return != nullptr) non_owning_rptr<VirtualBuffer> requestVertexBuffer(
-            _In_ mref<Vector<u64>> pageSizes_
+        [[nodiscard]] _Success_(return != nullptr) non_owning_rptr<VirtualBuffer> allocateVertexBuffer(
+            _In_ mref<VertexBufferAllocation> allocation_
         );
 
-        [[nodiscard]] _Success_(return != nullptr) uptr<VirtualBufferView> requestVirtualBuffer(
-            _In_ mref<non_owning_rptr<const void>> material_
+        [[nodiscard]] _Success_(return != nullptr) uptr<VirtualBufferView> allocateVirtualBuffer(
+            _In_ mref<MaterialBufferAllocation> allocation_
         );
 
-        [[nodiscard]] _Success_(return != nullptr) uptr<VirtualTextureView> requestVirtualTexture(
-            _In_ mref<non_owning_rptr<const void>> texture_
+        [[nodiscard]] _Success_(return != nullptr) uptr<VirtualTextureView> allocateVirtualTexture(
+            _In_ mref<VirtualTextureAllocation> allocation_
         );
     };
 }

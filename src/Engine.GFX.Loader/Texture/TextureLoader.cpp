@@ -13,6 +13,6 @@ TextureLoader::TextureLoader(const non_owning_rptr<cache::GlobalCacheCtrl> cache
     TextureLoaderType(
         TextureCache(cache_),
         TextureFeedback(),
-        TextureTransformer(),
+        TextureTransformer(nullptr),
         nullptr
     ) {}

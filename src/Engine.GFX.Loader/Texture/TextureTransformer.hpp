@@ -22,7 +22,9 @@ namespace ember::engine::gfx::loader {
         using underlying_type::stream_response_type;
 
     public:
-        TextureTransformer() = default;
+        constexpr TextureTransformer(
+            const non_owning_rptr<pool::GlobalResourcePool> pool_
+        );
 
         ~TextureTransformer() override = default;
 
@@ -30,13 +32,10 @@ namespace ember::engine::gfx::loader {
         const non_owning_rptr<pool::GlobalResourcePool> _pool;
 
     private:
-        [[nodiscard]] smr<TextureResource> makeEmptyResource() const;
-
         [[nodiscard]] smr<TextureResource> transpose(
             _In_ mref<request_type::type> request_,
             _In_ mref<request_type::options> options_,
-            _In_ mref<smr<resource::Source>> from_,
-            _In_ mref<smr<TextureResource>> to_
+            _In_ mref<smr<resource::Source>> from_
         ) const;
 
         [[nodiscard]] smr<TextureResource> partialTranspose(
