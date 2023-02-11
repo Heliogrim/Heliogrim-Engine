@@ -51,7 +51,7 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markLoadedAsUsed(
         .op = loader::TextureStreamOp::eLoad,
         .layer = subresource_.value.layer,
         .mip = subresource_.value.mip,
-        .offset = math::ivec3(subresource_.value.offset),
+        .offset = subresource_.value.offset,
         .extent = subresource_.value.extent
     };
 
@@ -139,6 +139,40 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markAsUsed(
     throw NotImplementedException();
 }
 
+void GlobalCacheCtrl::unmark(
+    const non_owning_rptr<TextureResource> resource_,
+    cref<AssocKey<TextureSubResource>> subresource_
+) {
+
+    #ifdef _DEBUG
+
+    auto texture = static_cast<non_owning_rptr<const assets::Texture>>(resource_->getAssociation());
+    if (texture == nullptr) {
+        Logger::error("Tried to unmark weak reference to texture resource without associative texture object.");
+        return;
+    }
+
+    auto result = _cache->query(texture->get_guid());
+    if (result != QueryResultType::eHit) {
+        Logger::error(
+            "Tried to unmark a already uncached texture resource of texture object `{}`",
+            texture->getAssetName()
+        );
+        return;
+    }
+
+    unmark(smr<resource::ResourceBase> { result.value<>() }.into<TextureResource>(), subresource_);
+
+    #else
+
+    auto texture = static_cast<non_owning_rptr<const assets::Texture>>(resource_->getAssociation());
+    auto result = _cache->query(texture->get_guid());
+
+    unmark(smr<resource::ResourceBase> { result.value<>() }.into<TextureResource>(), subresource_);
+
+    #endif
+}
+
 void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, mref<TextureSubResource> subresource_) {
     unmark(_STD move(resource_), AssocKey<TextureSubResource>::from(_STD move(subresource_)));
 }
@@ -191,7 +225,7 @@ void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, cref<AssocKey
             .op = loader::TextureStreamOp::eUnload,
             .layer = subresource_.value.layer,
             .mip = subresource_.value.mip,
-            .offset = math::ivec3(subresource_.value.offset),
+            .offset = subresource_.value.offset,
             .extent = subresource_.value.extent
         };
 
