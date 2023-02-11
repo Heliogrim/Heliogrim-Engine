@@ -4,7 +4,6 @@
 #include "LocalResourceCache.hpp"
 
 namespace ember::engine::gfx::cache {
-
     template <
         class SubjectType_,
         class SubResourceType_

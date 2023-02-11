@@ -113,6 +113,11 @@ namespace ember::engine::gfx::cache {
         );
 
     public:
+        void unmark(
+            const non_owning_rptr<TextureResource> resource_,
+            cref<AssocKey<TextureSubResource>> subresource_
+        );
+
         void unmark(_In_ mref<smr<TextureResource>> resource_, mref<TextureSubResource> subresource_);
 
         void unmark(_In_ mref<smr<TextureResource>> resource_, cref<AssocKey<TextureSubResource>> subresource_);
