@@ -1,11 +1,10 @@
 #pragma once
 #include <Engine.Common/Collection/CompactArray.hpp>
+#include <Engine.GFX.Loader/Material/MaterialResource.hpp>
 
 #include "SceneNodeModel.hpp"
-#include "../Resource/MaterialResource.hpp"
 
 namespace ember::engine::gfx {
-
     class GeometryModel :
         public SceneNodeModel {
     public:
@@ -18,13 +17,13 @@ namespace ember::engine::gfx {
         ~GeometryModel() override = default;
 
     protected:
-        CompactArray<ptr<MaterialResource>> _overrideMaterials;
+        CompactArray<smr<MaterialResource>> _overrideMaterials;
 
     public:
         [[nodiscard]] bool hasOverrideMaterials() const noexcept;
 
-        [[nodiscard]] cref<CompactArray<ptr<MaterialResource>>> overrideMaterials() const noexcept;
+        [[nodiscard]] cref<CompactArray<smr<MaterialResource>>> overrideMaterials() const noexcept;
 
-        [[nodiscard]] virtual const ptr<MaterialResource> material(const u32 index_) const noexcept;
+        [[nodiscard]] virtual cref<smr<MaterialResource>> material(const u32 index_) const noexcept;
     };
 }

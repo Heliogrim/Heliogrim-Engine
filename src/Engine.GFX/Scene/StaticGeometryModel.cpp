@@ -11,6 +11,8 @@
 #include "StaticGeometryBatch.hpp"
 #include "../Cache/CacheResult.hpp"
 #include "Engine.Assets/Types/GfxMaterial.hpp"
+#include "Engine.GFX.Loader/Geometry/Traits.hpp"
+#include "Engine.GFX.Loader/Material/Traits.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "Engine.GFX.Glow.3D/Renderer/State/RevSfMtt.hpp"
 
@@ -35,16 +37,21 @@ void StaticGeometryModel::create(const ptr<::ember::engine::scene::Scene> scene_
      */
     _boundary = origin->getBoundaries();
     _staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(origin->getStaticGeometryAsset().internal());
-    _staticGeometryResource = Engine::getEngine()->getResources()->loader().load(_staticGeometryAsset, nullptr);
+    _staticGeometryResource = Engine::getEngine()->getResources()->loader().
+                                                   load(_staticGeometryAsset, nullptr).
+                                                   into<StaticGeometryResource>();
 
     /**
      *
      */
     for (const auto& material : origin->overrideMaterials()) {
-        auto* const wrapped { static_cast<ptr<assets::GfxMaterial>>(material.internal()) };
-        const auto resource { Engine::getEngine()->getResources()->loader().load(wrapped, nullptr) };
+        auto* wrapped { static_cast<ptr<assets::GfxMaterial>>(material.internal()) };
+        auto resource = Engine::getEngine()->getResources()->loader().load<assets::GfxMaterial, MaterialResource>(
+            _STD move(wrapped),
+            {}
+        );
 
-        _overrideMaterials.push_back(static_cast<ptr<gfx::MaterialResource>>(resource));
+        _overrideMaterials.push_back(resource);
     }
 }
 
@@ -182,7 +189,7 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
         batch->mtt.map(dataSize);
 
         for (u32 i { 0ui32 }; i < _overrideMaterials.size(); ++i) {
-            const auto te { mtt.insert(_overrideMaterials[i]) };
+            const auto te { mtt.insert(_overrideMaterials[i].get()) };
             static_cast<ptr<u32>>(batch->mtt.memory->mapping)[i] = te;
         }
 
