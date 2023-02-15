@@ -23,11 +23,11 @@
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Assets/Database/AssetDatabase.hpp>
+#include <Engine.Reflect/Cast.hpp>
 
 #include "RevMainSharedNode.hpp"
 #include "__macro.hpp"
 #include "Engine.GFX/Graphics.hpp"
-#include "Engine.GFX/Loader/RevTextureLoader.hpp"
 #include "Engine.GFX/Scene/SkyboxModel.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
@@ -36,6 +36,9 @@
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 
 #include "Engine.Assets/Assets.hpp"
+#include "Engine.Assets/Types/Texture/Texture.hpp"
+#include "Engine.GFX/Texture/VirtualTextureView.hpp"
+#include "Engine.GFX.Loader/Texture/Traits.hpp"
 
 using namespace ember::engine::gfx::glow::render;
 using namespace ember::engine::gfx::render;
@@ -43,9 +46,11 @@ using namespace ember::engine::gfx;
 using namespace ember;
 
 RevMainSkyNode::RevMainSkyNode(const ptr<RevMainSharedNode> sharedNode_) :
-    _modelTypes({
-        EmberClass::stid<SkyboxModel>()
-    }),
+    _modelTypes(
+        {
+            EmberClass::stid<SkyboxModel>()
+        }
+    ),
     _sharedNode(sharedNode_) {}
 
 void RevMainSkyNode::setup(cref<sptr<Device>> device_) {
@@ -200,14 +205,22 @@ bool RevMainSkyNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Store State
      */
-    state->data.insert_or_assign("RevMainSkyNode::CommandBuffer"sv,
-        _STD make_shared<decltype(cmd)>(_STD move(cmd)));
-    state->data.insert_or_assign("RevMainSkyNode::UniformBuffer"sv,
-        _STD make_shared<decltype(uniform)>(_STD move(uniform)));
-    state->data.insert_or_assign("RevMainSkyNode::DiscreteBindingGroups"sv,
-        _STD make_shared<decltype(dbgs)>(_STD move(dbgs)));
-    state->data.insert_or_assign("RevMainSkyNode::DescriptorPools"sv,
-        _STD make_shared<decltype(pools)>(_STD move(pools)));
+    state->data.insert_or_assign(
+        "RevMainSkyNode::CommandBuffer"sv,
+        _STD make_shared<decltype(cmd)>(_STD move(cmd))
+    );
+    state->data.insert_or_assign(
+        "RevMainSkyNode::UniformBuffer"sv,
+        _STD make_shared<decltype(uniform)>(_STD move(uniform))
+    );
+    state->data.insert_or_assign(
+        "RevMainSkyNode::DiscreteBindingGroups"sv,
+        _STD make_shared<decltype(dbgs)>(_STD move(dbgs))
+    );
+    state->data.insert_or_assign(
+        "RevMainSkyNode::DescriptorPools"sv,
+        _STD make_shared<decltype(pools)>(_STD move(pools))
+    );
 
     return true;
 }
@@ -413,12 +426,15 @@ void RevMainSkyNode::invoke(
         /**
          *
          */
-        cmd.bindPipeline(_pipeline.get(), {
-            frame.width(),
-            frame.height(),
-            0.F,
-            1.F
-        });
+        cmd.bindPipeline(
+            _pipeline.get(),
+            {
+                frame.width(),
+                frame.height(),
+                0.F,
+                1.F
+            }
+        );
 
         /**
          * Bind Shared Resources for the whole Frame
@@ -445,12 +461,16 @@ void RevMainSkyNode::invoke(
          *
          */
         if (model->hasOverrideMaterials()) {
-            const auto* first { model->overrideMaterials().front() };
+            const auto& first { model->overrideMaterials().front() };
+            auto guard = first->acquire(resource::ResourceUsageFlag::eRead);
 
             ptr<const VirtualTextureView> skyboxView { nullptr };
 
-            if (first->_payload.diffuse) {
-                skyboxView = first->_payload.diffuse->_payload.view.get();
+            if (not guard.empty() && not guard->diffuse().empty()) {
+
+                auto viewGuard = guard->diffuse()->acquire(resource::ResourceUsageFlag::eRead);
+                skyboxView = viewGuard->as<VirtualTextureView>();
+
             } else {
                 skyboxView = getDefaultSkybox();
             }
@@ -549,10 +569,12 @@ void RevMainSkyNode::setupShader(cref<sptr<Device>> device_) {
      * Build Shader and Bindings
      */
     auto factoryResult {
-        shaderFactory.build({
-            vertexPrototype,
-            fragmentPrototype
-        })
+        shaderFactory.build(
+            {
+                vertexPrototype,
+                fragmentPrototype
+            }
+        )
     };
 
     /**
@@ -569,9 +591,13 @@ void RevMainSkyNode::setupShader(cref<sptr<Device>> device_) {
         Vector<vk::DescriptorPoolSize> sizes {};
         for (const auto& binding : group.shaderBindings()) {
             auto it {
-                _STD find_if(sizes.begin(), sizes.end(), [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
-                    return entry_.type == api::vkTranslateBindingType(type);
-                })
+                _STD find_if(
+                    sizes.begin(),
+                    sizes.end(),
+                    [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
+                        return entry_.type == api::vkTranslateBindingType(type);
+                    }
+                )
             };
 
             if (it == sizes.end()) {
@@ -618,40 +644,56 @@ const ptr<const VirtualTextureView> RevMainSkyNode::getDefaultSkybox() const {
 
     assert(query.exists());
 
-    auto* const defaultSkyboxAsset { query.get() };
+    auto* const defaultAsset { query.get() };
 
     #ifdef _DEBUG
-    if (!defaultSkyboxAsset->getClass()->isExactType<engine::assets::Texture>()) {
+    if (!defaultAsset->getClass()->isExactType<assets::Texture>()) {
         __debugbreak();
     }
     #endif
 
+    ptr<assets::Texture> defaultSkyboxAsset = static_cast<ptr<assets::Texture>>(defaultAsset);
+
+    // TODO:
+    /*
+    ptr<const assets::Texture> defaultAsset;
+    if (not (defaultAsset = Cast<assets::Texture>(query.get()))) {
+        __debugbreak();
+        return nullptr;
+    }
+     */
+
     /**/
-    auto skyboxTextureResource {
-        static_cast<const ptr<TextureResource>>(loader.loadImmediately(defaultSkyboxAsset))
-    };
-    VirtualTextureView* defaultSkybox = skyboxTextureResource->_payload.view.get();
+
+    auto skyboxTextureResource = loader.loadImmediately<assets::Texture, TextureResource>(
+        _STD move(defaultSkyboxAsset),
+        loader::TextureLoadOptions {}
+    );
+    auto guard = skyboxTextureResource->acquire(resource::ResourceUsageFlag::eRead);
+    VirtualTextureView* defaultSkybox = guard->as<VirtualTextureView>();
 
     /**
      * Pretransform Layout
      */
     Vector<vk::ImageMemoryBarrier> imgBarriers {};
-    imgBarriers.push_back({
-        vk::AccessFlags {},
-        vk::AccessFlagBits::eShaderRead,
-        vk::ImageLayout::eTransferSrcOptimal,
-        vk::ImageLayout::eShaderReadOnlyOptimal,
-        VK_QUEUE_FAMILY_IGNORED,
-        VK_QUEUE_FAMILY_IGNORED,
-        defaultSkybox->owner()->vkImage(),
-        vk::ImageSubresourceRange {
-            vk::ImageAspectFlagBits::eColor,
-            defaultSkybox->minMipLevel(),
-            defaultSkybox->mipLevels(),
-            defaultSkybox->baseLayer(),
-            defaultSkybox->layers()
+    imgBarriers.push_back(
+        {
+            vk::AccessFlags {},
+            vk::AccessFlagBits::eShaderRead,
+            vk::ImageLayout::eTransferSrcOptimal,
+            vk::ImageLayout::eShaderReadOnlyOptimal,
+            VK_QUEUE_FAMILY_IGNORED,
+            VK_QUEUE_FAMILY_IGNORED,
+            defaultSkybox->owner()->vkImage(),
+            vk::ImageSubresourceRange {
+                vk::ImageAspectFlagBits::eColor,
+                defaultSkybox->minMipLevel(),
+                defaultSkybox->mipLevels(),
+                defaultSkybox->baseLayer(),
+                defaultSkybox->layers()
+            }
         }
-    });
+    );
 
     auto pool = _device->graphicsQueue()->pool();
     pool->lck().acquire();
@@ -661,11 +703,16 @@ const ptr<const VirtualTextureView> RevMainSkyNode::getDefaultSkybox() const {
     /**
      * Transform
      */
-    iiCmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-        vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
-        0, nullptr,
-        0, nullptr,
-        static_cast<uint32_t>(imgBarriers.size()), imgBarriers.data()
+    iiCmd.vkCommandBuffer().pipelineBarrier(
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::DependencyFlags {},
+        0,
+        nullptr,
+        0,
+        nullptr,
+        static_cast<uint32_t>(imgBarriers.size()),
+        imgBarriers.data()
     );
 
     iiCmd.end();

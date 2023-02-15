@@ -23,7 +23,6 @@
 
 #include "__macro.hpp"
 #include "Engine.GFX/Graphics.hpp"
-#include "Engine.GFX/Loader/RevTextureLoader.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 
 using namespace ember::engine::gfx::glow::render;
@@ -206,16 +205,27 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
      */
     dbgs[0].getById(shader::ShaderBinding::id_type { 1 }).store(uniform);
     dbgs[0].getById(shader::ShaderBinding::id_type { 2 }).storeAs(*pbrAlbedo, vk::ImageLayout::eShaderReadOnlyOptimal);
-    dbgs[0].getById(shader::ShaderBinding::id_type { 3 }).storeAdv(*pbrNormals, vk::ImageLayout::eShaderReadOnlyOptimal,
-        vk::SamplerAddressMode::eClampToBorder, vk::SamplerMipmapMode::eNearest, vk::Filter::eNearest);
+    dbgs[0].getById(shader::ShaderBinding::id_type { 3 }).storeAdv(
+        *pbrNormals,
+        vk::ImageLayout::eShaderReadOnlyOptimal,
+        vk::SamplerAddressMode::eClampToBorder,
+        vk::SamplerMipmapMode::eNearest,
+        vk::Filter::eNearest
+    );
     dbgs[0].getById(shader::ShaderBinding::id_type { 4 }).
             storeAs(*pbrPosition, vk::ImageLayout::eShaderReadOnlyOptimal);
     dbgs[0].getById(shader::ShaderBinding::id_type { 5 }).storeAs(*pbrMrs, vk::ImageLayout::eShaderReadOnlyOptimal);
     dbgs[0].getById(shader::ShaderBinding::id_type { 6 }).
             storeAs(*depth, vk::ImageLayout::eDepthStencilReadOnlyOptimal);
     dbgs[0].getById(shader::ShaderBinding::id_type { 7 }).
-            storeAdv(*brdfLut, vk::ImageLayout::eShaderReadOnlyOptimal, vk::SamplerAddressMode::eClampToEdge,
-                vk::SamplerMipmapMode::eLinear, vk::Filter::eLinear, vk::BorderColor::eFloatOpaqueWhite);
+            storeAdv(
+                *brdfLut,
+                vk::ImageLayout::eShaderReadOnlyOptimal,
+                vk::SamplerAddressMode::eClampToEdge,
+                vk::SamplerMipmapMode::eLinear,
+                vk::Filter::eLinear,
+                vk::BorderColor::eFloatOpaqueWhite
+            );
     dbgs[0].getById(shader::ShaderBinding::id_type { 8 }).
             storeAs(*prefiltered, vk::ImageLayout::eShaderReadOnlyOptimal);
     dbgs[0].getById(shader::ShaderBinding::id_type { 9 }).storeAs(*irradiance, vk::ImageLayout::eShaderReadOnlyOptimal);
@@ -223,16 +233,26 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Store State
      */
-    state->data.insert_or_assign("RevFinalComposeNode::CommandBuffer"sv,
-        _STD make_shared<decltype(cmd)>(_STD move(cmd)));
-    state->data.insert_or_assign("RevFinalComposeNode::Framebuffer"sv,
-        _STD make_shared<decltype(framebuffer)>(_STD move(framebuffer)));
-    state->data.insert_or_assign("RevFinalComposeNode::UniformBuffer"sv,
-        _STD make_shared<decltype(uniform)>(_STD move(uniform)));
-    state->data.insert_or_assign("RevFinalComposeNode::DiscreteBindingGroups"sv,
-        _STD make_shared<decltype(dbgs)>(_STD move(dbgs)));
-    state->data.insert_or_assign("RevFinalComposeNode::DescriptorPools"sv,
-        _STD make_shared<decltype(pools)>(_STD move(pools)));
+    state->data.insert_or_assign(
+        "RevFinalComposeNode::CommandBuffer"sv,
+        _STD make_shared<decltype(cmd)>(_STD move(cmd))
+    );
+    state->data.insert_or_assign(
+        "RevFinalComposeNode::Framebuffer"sv,
+        _STD make_shared<decltype(framebuffer)>(_STD move(framebuffer))
+    );
+    state->data.insert_or_assign(
+        "RevFinalComposeNode::UniformBuffer"sv,
+        _STD make_shared<decltype(uniform)>(_STD move(uniform))
+    );
+    state->data.insert_or_assign(
+        "RevFinalComposeNode::DiscreteBindingGroups"sv,
+        _STD make_shared<decltype(dbgs)>(_STD move(dbgs))
+    );
+    state->data.insert_or_assign(
+        "RevFinalComposeNode::DescriptorPools"sv,
+        _STD make_shared<decltype(pools)>(_STD move(pools))
+    );
 
     return true;
 }
@@ -412,9 +432,12 @@ void RevFinalComposeNode::before(
             vk::PipelineStageFlagBits::eAllGraphics,
             vk::PipelineStageFlagBits::eAllGraphics,
             vk::DependencyFlagBits::eByRegion,
-            0, nullptr,
-            0, nullptr,
-            1, &dpb
+            0,
+            nullptr,
+            0,
+            nullptr,
+            1,
+            &dpb
         );
     }
 
@@ -435,12 +458,15 @@ void RevFinalComposeNode::before(
      *
      */
     cmd.beginRenderPass(*_loRenderPass, framebuffer);
-    cmd.bindPipeline(_pipeline.get(), {
-        framebuffer.width(),
-        framebuffer.height(),
-        0.F,
-        1.F
-    });
+    cmd.bindPipeline(
+        _pipeline.get(),
+        {
+            framebuffer.width(),
+            framebuffer.height(),
+            0.F,
+            1.F
+        }
+    );
 
     /**
      * Bind Shader Resources for the whole Frame
@@ -511,21 +537,24 @@ void RevFinalComposeNode::setupLORenderPass() {
     _loRenderPass = make_sptr<pipeline::LORenderPass>(_device);
 
     // Color Attachment :: Used to store composed color
-    _loRenderPass->set(0, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        vk::Format::eB8G8R8A8Unorm,
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        #if FALSE
+    _loRenderPass->set(
+        0,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            vk::Format::eB8G8R8A8Unorm,
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eClear,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            #if FALSE
         vk::ImageLayout::ePresentSrcKHR
-        #else
-        vk::ImageLayout::eShaderReadOnlyOptimal
-        #endif
-    });
+            #else
+            vk::ImageLayout::eShaderReadOnlyOptimal
+            #endif
+        }
+    );
 
     /**
      *
@@ -640,10 +669,12 @@ void RevFinalComposeNode::setupShader() {
      * Build Shader and Bindings
      */
     auto factoryResult {
-        shaderFactory.build({
-            vertexPrototype,
-            fragmentPrototype
-        })
+        shaderFactory.build(
+            {
+                vertexPrototype,
+                fragmentPrototype
+            }
+        )
     };
 
     /**
@@ -660,9 +691,13 @@ void RevFinalComposeNode::setupShader() {
         Vector<vk::DescriptorPoolSize> sizes {};
         for (const auto& binding : group.shaderBindings()) {
             auto it {
-                _STD find_if(sizes.begin(), sizes.end(), [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
-                    return entry_.type == api::vkTranslateBindingType(type);
-                })
+                _STD find_if(
+                    sizes.begin(),
+                    sizes.end(),
+                    [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
+                        return entry_.type == api::vkTranslateBindingType(type);
+                    }
+                )
             };
 
             if (it == sizes.end()) {
@@ -712,17 +747,19 @@ void RevFinalComposeNode::setupPipeline() {
     _pipeline->rasterizationStage().cullFace() = RasterCullFace::eNone;
     _pipeline->rasterizationStage().depthCheck() = false;
 
-    static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->blending().push_back(vk::PipelineColorBlendAttachmentState {
-        VK_FALSE,
-        vk::BlendFactor::eOne,
-        vk::BlendFactor::eZero,
-        vk::BlendOp::eAdd,
-        vk::BlendFactor::eOne,
-        vk::BlendFactor::eZero,
-        vk::BlendOp::eAdd,
-        vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB |
-        vk::ColorComponentFlagBits::eA
-    });
+    static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->blending().push_back(
+        vk::PipelineColorBlendAttachmentState {
+            VK_FALSE,
+            vk::BlendFactor::eOne,
+            vk::BlendFactor::eZero,
+            vk::BlendOp::eAdd,
+            vk::BlendFactor::eOne,
+            vk::BlendFactor::eZero,
+            vk::BlendOp::eAdd,
+            vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB |
+            vk::ColorComponentFlagBits::eA
+        }
+    );
 
     /**
      *

@@ -29,10 +29,10 @@
 #include <Engine.GFX/Scene/StaticGeometryBatch.hpp>
 
 #include "Engine.GFX/Graphics.hpp"
-#include "Engine.GFX/Loader/RevTextureLoader.hpp"
 #include "Engine.GFX/Scene/SkyboxModel.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.GFX/Texture/Texture.hpp"
+#include "Engine.GFX/Texture/VirtualTextureView.hpp"
 #include <Engine.Core/Engine.hpp>
 
 using namespace ember::engine::gfx::glow::render;
@@ -46,9 +46,11 @@ struct PrefilterPushBlock {
 
 RevEarlyEnvPrefilterNode::RevEarlyEnvPrefilterNode() :
     RenderStageNode(),
-    _modelTypes({
-        EmberClass::stid<SkyboxModel>()
-    }),
+    _modelTypes(
+        {
+            EmberClass::stid<SkyboxModel>()
+        }
+    ),
     _envPrefilterExtent(512ui32, 512ui32),
     _envPrefilterFormat(TextureFormat::eR16G16B16A16Sfloat) {}
 
@@ -115,16 +117,18 @@ bool RevEarlyEnvPrefilterNode::allocate(const ptr<HORenderPass> renderPass_) {
      */
     const auto* factory { TextureFactory::get() };
     auto prefiltered {
-        factory->build({
-            math::uivec3 { _envPrefilterExtent, 1ui32 },
-            _envPrefilterFormat,
-            static_cast<u32>(_STD floorf(_STD log2f(_envPrefilterExtent.x))) + 1ui32,
-            TextureType::eCube,
-            vk::ImageAspectFlagBits::eColor,
-            vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
-            vk::MemoryPropertyFlagBits::eDeviceLocal,
-            vk::SharingMode::eExclusive
-        })
+        factory->build(
+            {
+                math::uivec3 { _envPrefilterExtent, 1ui32 },
+                _envPrefilterFormat,
+                static_cast<u32>(_STD floorf(_STD log2f(_envPrefilterExtent.x))) + 1ui32,
+                TextureType::eCube,
+                vk::ImageAspectFlagBits::eColor,
+                vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
+                vk::MemoryPropertyFlagBits::eDeviceLocal,
+                vk::SharingMode::eExclusive
+            }
+        )
     };
 
     factory->buildView(prefiltered);
@@ -196,10 +200,22 @@ bool RevEarlyEnvPrefilterNode::allocate(const ptr<HORenderPass> renderPass_) {
 
     // Warning: Actualy the vulkan clip matrix, but we suppress the inversion for further usage, so only compress z
     const static math::mat4 clip_matrix = math::mat4(
-        1.0F, 0.0F, 0.0F, 0.0F,
-        0.0F, 1.0F, 0.0F, 0.0F,
-        0.0F, 0.0F, 0.5F, 0.F,
-        0.0F, 0.0F, 0.5F, 1.0F
+        1.0F,
+        0.0F,
+        0.0F,
+        0.0F,
+        0.0F,
+        1.0F,
+        0.0F,
+        0.0F,
+        0.0F,
+        0.0F,
+        0.5F,
+        0.F,
+        0.0F,
+        0.0F,
+        0.5F,
+        1.0F
     );
 
     for (auto& matrix : matrices) {
@@ -232,19 +248,31 @@ bool RevEarlyEnvPrefilterNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Store State
      */
-    renderPass_->state()->data.insert_or_assign("RevEarlyEnvPrefilterNode::CommandBuffer"sv,
-        make_sptr<decltype(cmd)>(_STD move(cmd)));
-    renderPass_->state()->data.insert_or_assign("RevEarlyEnvPrefilterNode::Framebuffer"sv,
-        make_sptr<decltype(framebuffer)>(_STD move(framebuffer)));
-    renderPass_->state()->data.insert_or_assign("RevEarlyEnvPrefilterNode::PrefilterCube"sv,
-        make_sptr<decltype(prefiltered)>(_STD move(prefiltered)));
-    renderPass_->state()->data.insert_or_assign("RevEarlyEnvPrefilterNode::UniformBuffer"sv,
-        make_sptr<decltype(uniform)>(_STD move(uniform)));
+    renderPass_->state()->data.insert_or_assign(
+        "RevEarlyEnvPrefilterNode::CommandBuffer"sv,
+        make_sptr<decltype(cmd)>(_STD move(cmd))
+    );
+    renderPass_->state()->data.insert_or_assign(
+        "RevEarlyEnvPrefilterNode::Framebuffer"sv,
+        make_sptr<decltype(framebuffer)>(_STD move(framebuffer))
+    );
+    renderPass_->state()->data.insert_or_assign(
+        "RevEarlyEnvPrefilterNode::PrefilterCube"sv,
+        make_sptr<decltype(prefiltered)>(_STD move(prefiltered))
+    );
+    renderPass_->state()->data.insert_or_assign(
+        "RevEarlyEnvPrefilterNode::UniformBuffer"sv,
+        make_sptr<decltype(uniform)>(_STD move(uniform))
+    );
 
-    renderPass_->state()->data.insert_or_assign("RevEarlyEnvPrefilterNode::DiscreteBindingGroups"sv,
-        make_sptr<decltype(dbgs)>(_STD move(dbgs)));
-    renderPass_->state()->data.insert_or_assign("RevEarlyEnvPrefilterNode::DescriptorPools"sv,
-        make_sptr<decltype(pools)>(_STD move(pools)));
+    renderPass_->state()->data.insert_or_assign(
+        "RevEarlyEnvPrefilterNode::DiscreteBindingGroups"sv,
+        make_sptr<decltype(dbgs)>(_STD move(dbgs))
+    );
+    renderPass_->state()->data.insert_or_assign(
+        "RevEarlyEnvPrefilterNode::DescriptorPools"sv,
+        make_sptr<decltype(pools)>(_STD move(pools))
+    );
 
     //
     postProcessAllocated(renderPass_);
@@ -426,15 +454,19 @@ void RevEarlyEnvPrefilterNode::invoke(
          * Bind Skybox Resources
          */
         if (model->hasOverrideMaterials()) {
-            const auto* first { model->overrideMaterials().front() };
+            const auto& first { model->overrideMaterials().front() };
+            auto guard = first->acquire(resource::ResourceUsageFlag::eRead);
 
             ptr<const VirtualTextureView> skyboxView { nullptr };
-            if (first->_payload.diffuse) {
-                skyboxView = first->_payload.diffuse->_payload.view.get();
+            if (not guard.empty() && not guard->diffuse().empty()) {
+
+                auto viewGuard = guard->diffuse()->acquire(resource::ResourceUsageFlag::eRead);
+                const auto* const skyboxView = viewGuard->as<VirtualTextureView>();
 
                 auto* const dbgs {
                     static_cast<const ptr<Vector<shader::DiscreteBindingGroup>>>(data.at(
-                        "RevEarlyEnvPrefilterNode::DiscreteBindingGroups"sv).get())
+                        "RevEarlyEnvPrefilterNode::DiscreteBindingGroups"sv
+                    ).get())
                 };
                 (*dbgs)[1].getById(shader::ShaderBinding::id_type { 2 }).storeAs(
                     skyboxView->owner(),
@@ -543,7 +575,8 @@ void RevEarlyEnvPrefilterNode::invoke(
             cmd.vkCommandBuffer().pushConstants(
                 static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->vkLayout(),
                 vk::ShaderStageFlagBits::eFragment,
-                0, sizeof(PrefilterPushBlock),
+                0,
+                sizeof(PrefilterPushBlock),
                 &pushBlock
             );
 
@@ -755,10 +788,12 @@ void RevEarlyEnvPrefilterNode::setupShader(cref<sptr<Device>> device_) {
      * Build Shader and Bindings
      */
     auto factoryResult {
-        shaderFactory.build({
-            vertexPrototype,
-            fragmentPrototype
-        })
+        shaderFactory.build(
+            {
+                vertexPrototype,
+                fragmentPrototype
+            }
+        )
     };
 
     /**
@@ -775,9 +810,13 @@ void RevEarlyEnvPrefilterNode::setupShader(cref<sptr<Device>> device_) {
         Vector<vk::DescriptorPoolSize> sizes {};
         for (const auto& binding : group.shaderBindings()) {
             auto it {
-                _STD find_if(sizes.begin(), sizes.end(), [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
-                    return entry_.type == api::vkTranslateBindingType(type);
-                })
+                _STD find_if(
+                    sizes.begin(),
+                    sizes.end(),
+                    [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
+                        return entry_.type == api::vkTranslateBindingType(type);
+                    }
+                )
             };
 
             if (it == sizes.end()) {
@@ -813,17 +852,20 @@ void RevEarlyEnvPrefilterNode::setupLORenderPass() {
     _loRenderPass = make_sptr<pipeline::LORenderPass>(_device);
 
     // Cube Attachment
-    _loRenderPass->set(0, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        api::vkTranslateFormat(_envPrefilterFormat),
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eColorAttachmentOptimal
-    });
+    _loRenderPass->set(
+        0,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            api::vkTranslateFormat(_envPrefilterFormat),
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eClear,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eColorAttachmentOptimal
+        }
+    );
 
     _loRenderPass->_viewMasks.push_back(0b0000'0000'0011'1111ui32);
     _loRenderPass->_correlationMasks.push_back(0ui32);
@@ -881,11 +923,13 @@ void RevEarlyEnvPrefilterNode::setupPipeline() {
 
     blending.push_back(colorState);
 
-    static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->pushConstants().push_back({
-        vk::ShaderStageFlagBits::eFragment,
-        0ui32,
-        sizeof(PrefilterPushBlock)
-    });
+    static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->pushConstants().push_back(
+        {
+            vk::ShaderStageFlagBits::eFragment,
+            0ui32,
+            sizeof(PrefilterPushBlock)
+        }
+    );
 
     /**
      *
@@ -906,17 +950,19 @@ void RevEarlyEnvPrefilterNode::setupPipeline() {
     /**
      * Create Framebuffer :: Attachments
      */
-    auto prefilter = factory->build({
-        buffer.extent(),
-        _envPrefilterFormat,
-        // Prefilter Sample Target
-        1ui32,
-        TextureType::eCube,
-        vk::ImageAspectFlagBits::eColor,
-        vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc,
-        vk::MemoryPropertyFlagBits::eDeviceLocal,
-        vk::SharingMode::eExclusive
-    });
+    auto prefilter = factory->build(
+        {
+            buffer.extent(),
+            _envPrefilterFormat,
+            // Prefilter Sample Target
+            1ui32,
+            TextureType::eCube,
+            vk::ImageAspectFlagBits::eColor,
+            vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            vk::SharingMode::eExclusive
+        }
+    );
 
     factory->buildView(prefilter);
 
@@ -958,43 +1004,47 @@ void RevEarlyEnvPrefilterNode::postProcessAllocated(const ptr<HORenderPass> rend
             continue;
         }
 
-        imgBarriers.push_back({
-            vk::AccessFlags {},
-            vk::AccessFlagBits::eColorAttachmentWrite,
-            vk::ImageLayout::eUndefined,
-            vk::ImageLayout::eColorAttachmentOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            attachment.buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                attachment.mipLevels(),
-                0,
-                attachment.layer()
+        imgBarriers.push_back(
+            {
+                vk::AccessFlags {},
+                vk::AccessFlagBits::eColorAttachmentWrite,
+                vk::ImageLayout::eUndefined,
+                vk::ImageLayout::eColorAttachmentOptimal,
+                VK_QUEUE_FAMILY_IGNORED,
+                VK_QUEUE_FAMILY_IGNORED,
+                attachment.buffer().image(),
+                vk::ImageSubresourceRange {
+                    vk::ImageAspectFlagBits::eColor,
+                    0,
+                    attachment.mipLevels(),
+                    0,
+                    attachment.layer()
+                }
             }
-        });
+        );
     }
 
     const auto prefilterEntry { data.at("RevEarlyEnvPrefilterNode::PrefilterCube"sv) };
     auto& prefiltered { *_STD static_pointer_cast<Texture, void>(prefilterEntry) };
 
-    imgBarriers.push_back({
-        vk::AccessFlags {},
-        vk::AccessFlagBits::eShaderRead,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eShaderReadOnlyOptimal,
-        VK_QUEUE_FAMILY_IGNORED,
-        VK_QUEUE_FAMILY_IGNORED,
-        prefiltered.buffer().image(),
-        vk::ImageSubresourceRange {
-            vk::ImageAspectFlagBits::eColor,
-            0,
-            prefiltered.mipLevels(),
-            0,
-            prefiltered.layer()
+    imgBarriers.push_back(
+        {
+            vk::AccessFlags {},
+            vk::AccessFlagBits::eShaderRead,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eShaderReadOnlyOptimal,
+            VK_QUEUE_FAMILY_IGNORED,
+            VK_QUEUE_FAMILY_IGNORED,
+            prefiltered.buffer().image(),
+            vk::ImageSubresourceRange {
+                vk::ImageAspectFlagBits::eColor,
+                0,
+                prefiltered.mipLevels(),
+                0,
+                prefiltered.layer()
+            }
         }
-    });
+    );
 
     auto pool = _device->graphicsQueue()->pool();
     pool->lck().acquire();
@@ -1004,11 +1054,16 @@ void RevEarlyEnvPrefilterNode::postProcessAllocated(const ptr<HORenderPass> rend
     /**
      * Transform
      */
-    cmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-        vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
-        0, nullptr,
-        0, nullptr,
-        static_cast<u32>(imgBarriers.size()), imgBarriers.data()
+    cmd.vkCommandBuffer().pipelineBarrier(
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::DependencyFlags {},
+        0,
+        nullptr,
+        0,
+        nullptr,
+        static_cast<u32>(imgBarriers.size()),
+        imgBarriers.data()
     );
 
     cmd.end();
