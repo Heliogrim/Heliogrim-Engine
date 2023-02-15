@@ -6,9 +6,7 @@
 #include "__fwd.hpp"
 
 namespace ember::engine::gfx {
-
     namespace {
-
         enum class ProxyTextureType : u8 {
             eNone = 0x0,
             //
@@ -18,7 +16,6 @@ namespace ember::engine::gfx {
             eVirtualTexture = 0x3,
             eVirtualTextureView = 0x4
         };
-
     }
 
     template <class Type_>
@@ -41,6 +38,10 @@ namespace ember::engine::gfx {
      */
     template <template <typename> typename PtrType_>
     class ProxyTexture {
+    public:
+        template <template <typename> typename>
+        friend class ProxyTexture;
+
     public:
         using this_type = ProxyTexture<PtrType_>;
 
@@ -70,11 +71,17 @@ namespace ember::engine::gfx {
             _subjectType(ProxyTextureType::eVirtualTextureView) {}
 
         // TODO: Check whether we can copy underlying pointer type like `ptr` or `sptr` but prevent `uptr`
-        ProxyTexture(cref<this_type> other_) :
+        ProxyTexture(cref<this_type> other_) noexcept :
             _subject(other_._subject),
             _subjectType(other_._subjectType) {}
 
-        ProxyTexture(mref<this_type> other_) :
+        ProxyTexture(mref<this_type> other_) noexcept :
+            _subject(_STD exchange(other_._subject, nullptr)),
+            _subjectType(_STD exchange(other_._subjectType, ProxyTextureType::eNone)) {}
+
+        template <template <typename> typename PxTy_> requires
+            _STD is_nothrow_convertible_v<PtrType_<void>, PxTy_<void>>
+        ProxyTexture(mref<ProxyTexture<PxTy_>> other_) noexcept :
             _subject(_STD exchange(other_._subject, nullptr)),
             _subjectType(_STD exchange(other_._subjectType, ProxyTextureType::eNone)) {}
 
@@ -84,23 +91,26 @@ namespace ember::engine::gfx {
 
     private:
         void _tidy() {
-            // Warning: We need to check whether this proxy has ownership and is required to free resources
-            if constexpr (HasResetMethod<subject_ptr_type>) {
-                // TODO: What should we do with probably a smart pointer
-                switch (_subjectType) {
-                    case ProxyTextureType::eTexture:
-                    case ProxyTextureType::eTextureView:
-                    case ProxyTextureType::eVirtualTexture:
-                    case ProxyTextureType::eVirtualTextureView: __noop;
-                }
 
-            } else {
-                // TODO: What should we do with a plain pointer
-                switch (_subjectType) {
-                    case ProxyTextureType::eTexture:
-                    case ProxyTextureType::eTextureView:
-                    case ProxyTextureType::eVirtualTexture:
-                    case ProxyTextureType::eVirtualTextureView: __noop;
+            if (_subject) {
+                // Warning: We need to check whether this proxy has ownership and is required to free resources
+                if constexpr (HasResetMethod<subject_ptr_type>) {
+                    // TODO: What should we do with probably a smart pointer
+                    switch (_subjectType) {
+                        case ProxyTextureType::eTexture:
+                        case ProxyTextureType::eTextureView:
+                        case ProxyTextureType::eVirtualTexture:
+                        case ProxyTextureType::eVirtualTextureView: __noop;
+                    }
+
+                } else {
+                    // TODO: What should we do with a plain pointer
+                    switch (_subjectType) {
+                        case ProxyTextureType::eTexture:
+                        case ProxyTextureType::eTextureView:
+                        case ProxyTextureType::eVirtualTexture:
+                        case ProxyTextureType::eVirtualTextureView: __noop;
+                    }
                 }
             }
 
@@ -270,5 +280,4 @@ namespace ember::engine::gfx {
             return *this;
         }
     };
-
 }
