@@ -18,11 +18,110 @@ using namespace ember::engine::gfx::loader;
 using namespace ember::engine::gfx;
 using namespace ember;
 
+/**/
+#pragma region KTX Format Specification
+struct InternalKtxHeader {
+    // Meta
+    u32 vkFormat;
+    u32 typeSize;
+    u32 pixelWidth;
+    u32 pixelHeight;
+    u32 pixelDepth;
+    u32 layerCount;
+    u32 faceCount;
+    u32 levelCount;
+    u32 ss;
+
+    // Indices
+    u32 dfdOff;
+    u32 dfdSize;
+    u32 kvdOff;
+    u32 kvdSize;
+    u32 sgdOff;
+    u32 sgdSize;
+};
+
+struct InternalKtxLevel {
+    u64 byteOff;
+    u64 byteSize;
+    u64 ucByteSize;
+};
+
+static constexpr unsigned char ktx20Identifier[] = {
+    0xAB,
+    0x4B,
+    0x54,
+    0x58,
+    0x20,
+    0x32,
+    0x30,
+    0xBB,
+    0x0D,
+    0x0A,
+    0x1A,
+    0x0A
+};
+#pragma endregion
+/**/
+
 void transformer::convertKtx(
     const non_owning_rptr<const assets::Texture> asset_,
     cref<smr<resource::Source>> src_,
-    const non_owning_rptr<VirtualTextureView> dst_
-) {}
+    const non_owning_rptr<VirtualTextureView> dst_,
+    const TextureLoadOptions options_
+) {
+
+    constexpr auto chunkSize = MAX(sizeof(gli::detail::FOURCC_KTX10), sizeof(ktx20Identifier));
+    Vector<unsigned char> raw { chunkSize };
+
+    streamsize bytes {};
+    src_->get(0, chunkSize, raw.data(), bytes);
+
+    assert(bytes >= chunkSize);
+
+    /**/
+
+    sptr<Device> device {};
+
+    /**/
+
+    bool isKtx20 = true;
+    for (size_t idx = 0; idx < sizeof(ktx20Identifier); ++idx) {
+        if (raw[idx] != ktx20Identifier[idx]) {
+            isKtx20 = false;
+            break;
+        }
+    }
+
+    if (isKtx20) {
+        convertKtx20(asset_, src_, dst_, device, options_);
+        return;
+    }
+
+    /**/
+
+    bool isKtx10 = true;
+    for (size_t idx = 0; idx < sizeof(gli::detail::FOURCC_KTX10); ++idx) {
+        if (raw[idx] != gli::detail::FOURCC_KTX10[idx]) {
+            isKtx10 = false;
+            break;
+        }
+    }
+
+    if (isKtx10) {
+        convertKtx10Gli(asset_, src_, dst_, device, options_);
+        return;
+    }
+
+    /**/
+
+    #ifdef _DEBUG
+    Logger::warn(
+        R"(Tried to convert binary data of `{}` as KTX into texture but got no valid identifier.)",
+        asset_->getAssetName()
+    );
+    #endif
+}
 
 void deduceFromFormat(cref<gli::format> format_, ref<vk::Format> vkFormat_, ref<vk::ImageAspectFlags> aspect_) {
 
@@ -193,7 +292,8 @@ void transformer::convertKtx10Gli(
     const non_owning_rptr<const engine::assets::Texture> asset_,
     cref<smr<engine::resource::Source>> src_,
     const non_owning_rptr<VirtualTextureView> dst_,
-    cref<sptr<Device>> device_
+    cref<sptr<Device>> device_,
+    const TextureLoadOptions options_
 ) {
     throw NotImplementedException();
     #if FALSE
@@ -460,52 +560,6 @@ void transformer::convertKtx10Gli(
     #endif
 }
 
-/**/
-#pragma region KTX Format Specification
-struct InternalKtxHeader {
-    // Meta
-    u32 vkFormat;
-    u32 typeSize;
-    u32 pixelWidth;
-    u32 pixelHeight;
-    u32 pixelDepth;
-    u32 layerCount;
-    u32 faceCount;
-    u32 levelCount;
-    u32 ss;
-
-    // Indices
-    u32 dfdOff;
-    u32 dfdSize;
-    u32 kvdOff;
-    u32 kvdSize;
-    u32 sgdOff;
-    u32 sgdSize;
-};
-
-struct InternalKtxLevel {
-    u64 byteOff;
-    u64 byteSize;
-    u64 ucByteSize;
-};
-
-static constexpr unsigned char ktx20Identifier[] = {
-    0xAB,
-    0x4B,
-    0x54,
-    0x58,
-    0x20,
-    0x32,
-    0x30,
-    0xBB,
-    0x0D,
-    0x0A,
-    0x1A,
-    0x0A
-};
-#pragma endregion
-/**/
-
 #define IS_LAZY_LOADING (true)
 #define IS_LOCKED_SEGMENT (false)
 
@@ -513,7 +567,8 @@ void transformer::convertKtx20(
     const non_owning_rptr<const engine::assets::Texture> asset_,
     cref<smr<engine::resource::Source>> src_,
     const non_owning_rptr<VirtualTextureView> dst_,
-    cref<sptr<Device>> device_
+    cref<sptr<Device>> device_,
+    const TextureLoadOptions options_
 ) {
 
     /**/
@@ -537,7 +592,7 @@ void transformer::convertKtx20(
     const u32 layerCount { dst->type() == TextureType::eCube ? 6ui32 : 1ui32 };
     /**/
 
-    if (IS_LAZY_LOADING) {
+    if (options_.dataFlag == TextureLoadDataFlagBits::eLazyDataLoading) {
         /**
          * Just load header and meta data
          *
@@ -567,7 +622,7 @@ void transformer::convertKtx20(
         deduceFromFormat(*reinterpret_cast<const vk::Format*>(&header.vkFormat), format, aspect);
 
         // Mip Levels
-        const_cast<ref<u32>>(effectedMipLevels) = _STD min(header.levelCount, dst->mipLevels());
+        effectedMipLevels = _STD min(header.levelCount, dst->mipLevels());
 
     } else {
 
@@ -580,9 +635,9 @@ void transformer::convertKtx20(
         _STD vector<char> raw(static_cast<size_t>(chunkSize));
 
         streamsize bytes {};
-        src_->get(0, sizeof(gli::detail::FOURCC_KTX10) + header_min_size, raw.data(), bytes);
+        src_->get(0, chunkSize, raw.data(), bytes);
 
-        assert(bytes >= sizeof(gli::detail::FOURCC_KTX10) + header_min_size);
+        assert(bytes >= chunkSize);
 
         auto* cursor { raw.data() + sizeof(gli::detail::FOURCC_KTX10) };
         cref<gli::detail::ktx_header10> header {
@@ -625,7 +680,7 @@ void transformer::convertKtx20(
 
     Vector<vk::BufferImageCopy> regions {};
 
-    if (not IS_LAZY_LOADING) {
+    if (options_.dataFlag != TextureLoadDataFlagBits::eLazyDataLoading) {
 
         /**
          * Setup vulkan stage buffer to eager load texture
@@ -776,7 +831,7 @@ void transformer::convertKtx20(
     vk::ImageMemoryBarrier postBarrier {};
     /**/
 
-    if (not IS_LAZY_LOADING) {
+    if (options_.dataFlag != TextureLoadDataFlagBits::eLazyDataLoading) {
         /**
          * Copy Data to Image
          */
@@ -861,7 +916,7 @@ void transformer::convertKtx20(
     /**
     * Cleanup
     */
-    if (not IS_LAZY_LOADING) {
+    if (options_.dataFlag != TextureLoadDataFlagBits::eLazyDataLoading) {
         stage.destroy();
         glitex.clear();
     }

@@ -22,7 +22,7 @@ namespace ember::engine::gfx::loader {
         using underlying_type::stream_response_type;
 
     public:
-        constexpr TextureTransformer(
+        TextureTransformer(
             const non_owning_rptr<pool::GlobalResourcePool> pool_
         );
 
@@ -52,14 +52,10 @@ namespace ember::engine::gfx::loader {
             _In_ cref<next_type> next_
         ) const override;
 
-        [[nodiscard]] virtual typename stream_response_type::type operator()(
+        [[nodiscard]] typename stream_response_type::type operator()(
             _In_ mref<typename stream_request_type::type> request_,
             _In_ mref<typename stream_request_type::options> options_,
             _In_ cref<next_type> next_
-        ) const override {
-            // TODO:
-            const auto source = next_({}, next_type::next_stream_request_type::options {});
-            // return (void);
-        }
+        ) const override;
     };
 }
