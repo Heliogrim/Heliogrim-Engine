@@ -9,8 +9,8 @@
 using namespace ember::engine::resource;
 using namespace ember;
 
-FileSource::FileSource(cref<File> file_, const streamsize size_, const streamoff offset_) noexcept :
-    _file(file_),
+FileSource::FileSource(mref<fs::File> file_, const streamsize size_, const streamoff offset_) noexcept :
+    _file(_STD move(file_)),
     _size(size_),
     _offset(offset_) {}
 
@@ -45,32 +45,33 @@ bool FileSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<st
 
     SCOPED_STOPWATCH
 
-    _STD ifstream stream {};
-    stream.open(_file, _STD ifstream::in | _STD ifstream::binary);
-    stream.seekg(0, _STD ios::end);
+    auto strPath = _file.path().string();
+    #pragma warning(push)
+    #pragma warning(disable : 4996)
+    FILE* fptr = _STD fopen(strPath.c_str(), "rb");
+    #pragma warning(pop)
 
     streamsize cmpSize = _size;
     if (cmpSize <= 0) {
-        stream.seekg(0, _STD ios::end);
-        const streamsize fsize = stream.tellg();
-        stream.seekg(0, _STD ios::beg);
+
+        _STD fseek(fptr, 0, SEEK_END);
+        const streamsize fsize = _STD ftell(fptr);
 
         cmpSize = fsize - _offset;
     }
 
-    if (_offset > cmpSize) {
+    if (cmpSize <= 0 || _offset > cmpSize) {
+        _STD fclose(fptr);
         return false;
     }
 
     const streampos begin = _offset + offset_;
     const streamsize length = MIN(size_, cmpSize);
 
-    stream.seekg(begin);
+    _STD fseek(fptr, begin, SEEK_SET);
+    actualSize_ = _STD fread(dst_, sizeof(_::byte), length, fptr);
 
-    stream.read(static_cast<ptr<char>>(dst_), length);
-    actualSize_ = length;
-
-    stream.close();
+    _STD fclose(fptr);
 
     return true;
 }
@@ -83,30 +84,33 @@ bool FileSource::write(streamoff offset_, streamsize size_, const ptr<void> src_
 
     SCOPED_STOPWATCH
 
-    _STD ofstream stream {};
-    stream.open(_file, _STD ifstream::in | _STD ifstream::binary);
-    stream.seekp(0, _STD ios::end);
+    const string strPath = _file;
+    #pragma warning(push)
+    #pragma warning(disable : 4996)
+    auto* fptr = _STD fopen(strPath.c_str(), "a+b");
+    #pragma warning(pop)
 
     streamsize cmpSize = _size;
     if (cmpSize <= 0) {
-        stream.seekp(0, _STD ios::end);
-        const streamsize fsize = stream.tellp();
-        stream.seekp(0, _STD ios::beg);
+
+        _STD fseek(fptr, 0, SEEK_END);
+        const streamsize fsize = _STD ftell(fptr);
 
         cmpSize = fsize - _offset;
     }
 
-    if (_offset > cmpSize) {
+    if (cmpSize <= 0 || _offset > cmpSize) {
+        _STD fclose(fptr);
         return false;
     }
 
     const streampos begin = _offset + offset_;
-    stream.seekp(begin);
+    // TODO: Check whether we need to check for max-length attributes, which could cause trimmed sequences
 
-    stream.write(static_cast<const ptr<char>>(src_), size_);
-    actualSize_ = size_;
+    _STD fseek(fptr, begin, SEEK_SET);
+    actualSize_ = _STD fwrite(src_, sizeof(_::byte), size_, fptr);
 
-    stream.close();
+    _STD fclose(fptr);
     return true;
 }
 

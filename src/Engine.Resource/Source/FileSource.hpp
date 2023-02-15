@@ -51,7 +51,7 @@ namespace ember::engine::resource {
          * @param  size_ (Optional) The size.
          * @param  offset_ (Optional) The offset.
          */
-        FileSource(cref<File> file_, streamsize size_ = 0i64, streamoff offset_ = 0i64) noexcept;
+        FileSource(mref<fs::File> file_, streamsize size_ = 0i64, streamoff offset_ = 0i64) noexcept;
 
         /**
          * Destructor
@@ -90,7 +90,7 @@ namespace ember::engine::resource {
         /**
          * The underlying file to access
          */
-        File _file;
+        fs::File _file;
 
         /**
          * The length of the source data to read at maximum
