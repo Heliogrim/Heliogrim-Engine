@@ -57,8 +57,17 @@ namespace ember::engine::gfx::cache {
         [[nodiscard]] const non_owning_rptr<LocalResourceCache> cache() noexcept;
 
     private:
+        // TODO: Check whether we want to use as high-load hash-set
         Vector<texture_subject_type> _textures;
         Vector<static_geometry_subject_type> _staticGeometries;
+
+    public:
+        void markLoadedAsUsed(_In_ mref<smr<TextureResource>> resource_, _In_ mref<TextureSubResource> subResource_);
+
+        void markLoadedAsUsed(
+            _In_ mref<smr<TextureResource>> resource_,
+            _In_ cref<AssocKey<TextureSubResource>> subResource_
+        );
 
     public:
         void markAsUsed(const ptr<TextureResource> resource_, mref<TextureSubResource> subResource_);
