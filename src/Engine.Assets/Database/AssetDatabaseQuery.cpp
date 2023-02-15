@@ -21,7 +21,7 @@ ptr<Asset> AssetDatabaseQuery::get() const {
     return (*_database)[_guid];
 }
 
-ptr<Asset> AssetDatabaseQuery::get(std::nothrow_t) const noexcept {
+ptr<Asset> AssetDatabaseQuery::get(nothrow_t) const noexcept {
     if (_database->has(_guid)) {
         return get();
     }

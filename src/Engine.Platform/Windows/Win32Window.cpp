@@ -1,6 +1,7 @@
 #include "Win32Window.hpp"
 
 #include <Engine.Common/stdafx.h>
+#include <Engine.Common/SDL2.hpp>
 
 using namespace ember::engine::platform;
 using namespace ember;

@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Engine.Common/stdafx.h>
-
+#include <Windows.h>
+#include <ole2.h>
 #include "DragDropReceiver.hpp"
 
 namespace ember::engine::input {
-
     class Win32DragDropReceiver :
         public DragDropReceiver,
         public IDropTarget {
@@ -51,5 +50,4 @@ namespace ember::engine::input {
 
         HRESULT Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
     };
-
 }

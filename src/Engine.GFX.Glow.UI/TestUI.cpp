@@ -39,14 +39,16 @@
 
 #if TRUE
 #include "Engine.GFX/Command/CommandBuffer.hpp"
-#include "Engine.GFX/Loader/RevTextureLoader.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.GFX/Graphics.hpp"
 #include "Engine.Scheduler/Async.hpp"
 #include "Engine.Assets/Database/AssetDatabase.hpp"
 #include "Engine.Assets/Database/AssetDatabaseQuery.hpp"
 #include "Engine.Assets/Types/Font.hpp"
-#include "Engine.GFX/Resource/FontResource.hpp"
+#include "Engine.Resource/LoaderManager.hpp"
+#include "Engine.GFX.Loader/Texture/Traits.hpp"
+#include "Engine.GFX.Loader/Font/Traits.hpp"
+#include "Engine.GFX.Loader/Font/FontResource.hpp"
 #endif
 
 #if TRUE
@@ -64,7 +66,8 @@ using namespace ember::engine::reflow;
 using namespace ember;
 
 // Warning: Memory leak
-sptr<ember::engine::gfx::Texture> testTexture {};
+smr<ember::engine::gfx::TextureResource> testTexture {};
+smr<ember::engine::gfx::FontResource> testFont {};
 
 wptr<ember::engine::reflow::Widget> testFrameDisplay {};
 wptr<ember::engine::reflow::Widget> testFrameTime {};
@@ -92,7 +95,7 @@ void destroyLoaded() {
     testAssetBrowser.reset();
     editor::ui::AssetBrowserHelper::destroy();
 
-    if (testTexture) {
+    if (!testTexture.empty()) {
         testTexture.reset();
     }
 }
@@ -113,41 +116,50 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
     }
 
     // TODO:
-    if (!testTexture) {
-        engine::gfx::RevTextureLoader loader { engine::Engine::getEngine()->getGraphics()->cacheCtrl() };
+    if (testTexture.empty()) {
+
+        ptr<engine::assets::Texture> request {};
+        testTexture = engine::Engine::getEngine()->getResources()->loader().load<engine::assets::Texture,
+            engine::gfx::TextureResource>(_STD move(request));
+
+        /*
         testTexture = make_sptr<engine::gfx::Texture>(loader.__tmp__load({ ""sv, R"(R:\\test.ktx)" }));
 
         Vector<vk::ImageMemoryBarrier> imgBarriers {};
-        imgBarriers.push_back({
-            vk::AccessFlags {},
-            vk::AccessFlagBits::eShaderRead,
-            vk::ImageLayout::eTransferSrcOptimal,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            testTexture->buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                testTexture->mipLevels(),
-                0,
-                testTexture->layer()
+        imgBarriers.push_back(
+            {
+                vk::AccessFlags {},
+                vk::AccessFlagBits::eShaderRead,
+                vk::ImageLayout::eTransferSrcOptimal,
+                vk::ImageLayout::eShaderReadOnlyOptimal,
+                VK_QUEUE_FAMILY_IGNORED,
+                VK_QUEUE_FAMILY_IGNORED,
+                testTexture->buffer().image(),
+                vk::ImageSubresourceRange {
+                    vk::ImageAspectFlagBits::eColor,
+                    0,
+                    testTexture->mipLevels(),
+                    0,
+                    testTexture->layer()
+                }
             }
-        });
+        );
 
         auto pool = device_->graphicsQueue()->pool();
         pool->lck().acquire();
         engine::gfx::CommandBuffer iiCmd = pool->make();
+        
         iiCmd.begin();
-
-        /**
-         * Transform
-         */
-        iiCmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-            vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
-            0, nullptr,
-            0, nullptr,
-            static_cast<uint32_t>(imgBarriers.size()), imgBarriers.data()
+        iiCmd.vkCommandBuffer().pipelineBarrier(
+            vk::PipelineStageFlagBits::eAllCommands,
+            vk::PipelineStageFlagBits::eAllCommands,
+            vk::DependencyFlags {},
+            0,
+            nullptr,
+            0,
+            nullptr,
+            static_cast<uint32_t>(imgBarriers.size()),
+            imgBarriers.data()
         );
 
         iiCmd.end();
@@ -159,6 +171,8 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
         testTexture->buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 
         engine::gfx::TextureFactory::get()->buildView(*testTexture);
+
+        */
     }
 }
 
@@ -183,20 +197,24 @@ void buildTestUI(
 
     /**/
     auto root = make_sptr<Panel>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey)));
-    ptr<engine::reflow::Font> defaultFont { getDefaultFont() };
+    const ptr<engine::reflow::Font> defaultFont = getDefaultFont();
 
     /**/
 
-    auto navStyle = BoundStyleSheet::make(StyleSheet {
-        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
-        .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-        .reflowShrink = { true, 0.F },
-    });
+    auto navStyle = BoundStyleSheet::make(
+        StyleSheet {
+            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
+            .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+            .reflowShrink = { true, 0.F },
+        }
+    );
     navStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
-    auto contentStyle = BoundStyleSheet::make(StyleSheet {
-        .reflowSpacing = { true, ReflowSpacing::eSpaceEvenly }
-    });
+    auto contentStyle = BoundStyleSheet::make(
+        StyleSheet {
+            .reflowSpacing = { true, ReflowSpacing::eSpaceEvenly }
+        }
+    );
     contentStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
     /**/
@@ -226,7 +244,10 @@ void buildTestUI(
     };
 
     auto navBrandIcon = make_sptr<Image>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::Icon32Key)));
-    auto testImage = testTexture.get();
+
+    // TODO: This will break
+    auto testGuard = testTexture->acquire(engine::resource::ResourceUsageFlag::eAll);
+    auto testImage = *testGuard.mut();
     navBrandIcon->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(testImage)), nullptr);
 
     StyleSheet menuBtnStyle {
@@ -249,18 +270,26 @@ void buildTestUI(
     navQuitButton->addChild(navQuitText);
     navQuitText->setText("Quit");
 
-    [[maybe_unused]] auto qblid = navQuitButton->addOnClick([](cref<engine::input::event::MouseButtonEvent> event_) {
-        if (not event_._down)
-            return;
-        ::ember::engine::scheduler::exec([] {
-            engine::Engine::getEngine()->getEmitter().emit(engine::core::SignalShutdownEvent {});
-        });
-    });
+    [[maybe_unused]] auto qblid = navQuitButton->addOnClick(
+        [](cref<engine::input::event::MouseButtonEvent> event_) {
+            if (not event_._down)
+                return;
+            ::ember::engine::scheduler::exec(
+                [] {
+                    engine::Engine::getEngine()->getEmitter().emit(engine::core::SignalShutdownEvent {});
+                }
+            );
+        }
+    );
 
     auto navFileMenu = make_sptr<Menu>();
-    auto nfmw = make_sptr<VBox>(BoundStyleSheet::make(StyleSheet {
-        .color = { true, color::Dark::backgroundDefault }
-    }));
+    auto nfmw = make_sptr<VBox>(
+        BoundStyleSheet::make(
+            StyleSheet {
+                .color = { true, color::Dark::backgroundDefault }
+            }
+        )
+    );
 
     navFileMenu->setContent(nfmw);
     navFileMenu->closeMenu();
@@ -282,22 +311,27 @@ void buildTestUI(
 
                 WindowManager::get()->dispatch(_STD static_pointer_cast<Window, Widget>(root), focusEvent);
             }
-        });
+        }
+    );
 
     nfmw->addChild(navSaveAllButton);
     nfmw->addChild(navQuitButton);
 
     auto testStyle = BoundStyleSheet::make(navBtnStyle);
     testStyle->color.unset();
-    testStyle->pushStyle({
-        Style::key_type::from("Button::Hover"),
-        [](cref<sptr<Widget>> self_) {
-            return self_->state().isHover();
-        },
-        make_sptr<StyleSheet>(StyleSheet {
-            .color = { true, color::Dark::raisedColor }
-        })
-    });
+    testStyle->pushStyle(
+        {
+            Style::key_type::from("Button::Hover"),
+            [](cref<sptr<Widget>> self_) {
+                return self_->state().isHover();
+            },
+            make_sptr<StyleSheet>(
+                StyleSheet {
+                    .color = { true, color::Dark::raisedColor }
+                }
+            )
+        }
+    );
 
     auto navEditButton = make_sptr<Button>(_STD move(testStyle));
     auto navEditText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
@@ -336,19 +370,23 @@ void buildTestUI(
     /**
      *
      */
-    auto lsbStyle = BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, .2F } },
-        .reflowSpacing = { true, ReflowSpacing::eSpaceBetween }
-    });
+    auto lsbStyle = BoundStyleSheet::make(
+        StyleSheet {
+            .width = { true, ReflowUnit { ReflowUnitType::eRelative, .2F } },
+            .reflowSpacing = { true, ReflowSpacing::eSpaceBetween }
+        }
+    );
     lsbStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
     auto leftSection = make_sptr<VBox>(_STD move(lsbStyle));
     contentSection->addChild(leftSection);
 
-    auto msbStyle = BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, .8F } },
-        .reflowSpacing = { true, ReflowSpacing::eStart }
-    });
+    auto msbStyle = BoundStyleSheet::make(
+        StyleSheet {
+            .width = { true, ReflowUnit { ReflowUnitType::eRelative, .8F } },
+            .reflowSpacing = { true, ReflowSpacing::eStart }
+        }
+    );
     msbStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
     auto mainSection = make_sptr<VBox>(_STD move(msbStyle));
@@ -386,10 +424,12 @@ void buildTestUI(
     /**
      * Section (Main)
      */
-    auto mtsStyle = BoundStyleSheet::make(StyleSheet {
-        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F } },
-        .reflowSpacing = { true, ReflowSpacing::eStart }
-    });
+    auto mtsStyle = BoundStyleSheet::make(
+        StyleSheet {
+            .height = { true, ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F } },
+            .reflowSpacing = { true, ReflowSpacing::eStart }
+        }
+    );
     mtsStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
     auto mainTopSection = make_sptr<Panel>(_STD move(mtsStyle));
@@ -406,17 +446,21 @@ void buildTestUI(
     /**
      *
      */
-    auto vctrlStyle = BoundStyleSheet::make(StyleSheet {
-        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
-        .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-        .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
-        .reflowShrink = { true, 0.F },
-    });
+    auto vctrlStyle = BoundStyleSheet::make(
+        StyleSheet {
+            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
+            .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+            .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
+            .reflowShrink = { true, 0.F },
+        }
+    );
     vctrlStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
-    auto vwrapStyle = BoundStyleSheet::make(StyleSheet {
-        .reflowSpacing = { true, ReflowSpacing::eSpaceAround }
-    });
+    auto vwrapStyle = BoundStyleSheet::make(
+        StyleSheet {
+            .reflowSpacing = { true, ReflowSpacing::eSpaceAround }
+        }
+    );
     vwrapStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
     auto viewportCtrls = make_sptr<HBox>(_STD move(vctrlStyle));
@@ -464,11 +508,15 @@ void buildTestUI(
     /**
      *
      */
-    auto viewport = make_sptr<Viewport>(BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .color = { true, color::Dark::white }
-    }));
+    auto viewport = make_sptr<Viewport>(
+        BoundStyleSheet::make(
+            StyleSheet {
+                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .color = { true, color::Dark::white }
+            }
+        )
+    );
     viewportWrapper->addChild(viewport);
 
     /**/
@@ -511,7 +559,8 @@ void buildTestUI(
             }
 
             target.lock()->rebuildPasses(next_);
-        });
+        }
+    );
 
     /**/
 
@@ -587,32 +636,31 @@ void buildTestUI(
     window_->setContent(root);
 }
 
-ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
+const ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
     using font_default_type = game::assets::font::CascadiaCode;
 
-    auto* db { engine::Engine::getEngine()->getAssets()->getDatabase() };
-    auto query { db->query(font_default_type::unstable_auto_guid()) };
+    if (testFont.empty()) {
 
-    if (!query.exists()) {
-        delete (new font_default_type);
+        auto* db { engine::Engine::getEngine()->getAssets()->getDatabase() };
+        auto query { db->query(font_default_type::unstable_auto_guid()) };
+
+        if (!query.exists()) {
+            delete (new font_default_type);
+        }
+
+        assert(query.exists());
+
+        auto* font { static_cast<ptr<engine::assets::Font>>(query.get()) };
+
+        /**/
+
+        testFont = engine::Engine::getEngine()->getResources()->loader().load<
+            engine::assets::Font,
+            engine::gfx::FontResource
+        >(_STD move(font));
     }
 
-    assert(query.exists());
-
-    auto* font { static_cast<ptr<engine::assets::Font>>(query.get()) };
-
-    /**/
-
-    auto* rm = engine::Engine::getEngine()->getResources();
-    auto* loaded = rm->loader().load(font, nullptr);
-
-    /**/
-
-    auto* res { static_cast<ptr<engine::gfx::FontResource>>(loaded) };
-    auto* data = res->_fontData;
-    delete res;
-
-    return data;
+    return testFont->acquire(engine::resource::ResourceUsageFlag::eAll).mut();
 }
 
 /**/
@@ -621,8 +669,10 @@ ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
 
 void storeActorMapping() {
     testObjectEditor->storeObjectMapper("ember::Actor"_typeId, make_uptr<ObjectValueMapper<::ember::Actor>>());
-    testObjectEditor->storeObjectMapper(::ember::StaticGeometryComponent::typeId,
-        make_uptr<ObjectValueMapper<::ember::StaticGeometryComponent>>());
+    testObjectEditor->storeObjectMapper(
+        ::ember::StaticGeometryComponent::typeId,
+        make_uptr<ObjectValueMapper<::ember::StaticGeometryComponent>>()
+    );
 }
 
 void loadActorMappingExp(const type_id typeId_, cref<sptr<ObjectEditorPanel>> panel_) {

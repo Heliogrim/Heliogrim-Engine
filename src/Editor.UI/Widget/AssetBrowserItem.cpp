@@ -1,10 +1,10 @@
 #include "AssetBrowserItem.hpp"
 
 #include <iostream>
-#include <Engine.Common/stdafx.h>
 
 #include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.GFX/Resource/TextureResource.hpp>
+#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
+#include <Engine.GFX.Loader/Texture/Traits.hpp>
 #include <Engine.GFX.Glow.UI/TestUI.hpp>
 #include <Engine.Reflow/Style/BoundStyleSheet.hpp>
 #include <Engine.Reflow/Style/StyleCondition.hpp>
@@ -30,17 +30,21 @@ using namespace ember;
 
     const auto* lib { Style::get() };
 
-    style->pushStyle({
-        Style::key_type::from("AssetBrowserItem::Hovered"),
-        style::isRaised,
-        lib->getStyleSheet(Style::DefaultKey)
-    });
+    style->pushStyle(
+        {
+            Style::key_type::from("AssetBrowserItem::Hovered"),
+            style::isRaised,
+            lib->getStyleSheet(Style::DefaultKey)
+        }
+    );
 
-    style->pushStyle({
-        Style::NeutralKey,
-        nullptr,
-        lib->getStyleSheet(Style::NeutralKey)
-    });
+    style->pushStyle(
+        {
+            Style::NeutralKey,
+            nullptr,
+            lib->getStyleSheet(Style::NeutralKey)
+        }
+    );
 
     return style;
 }
@@ -49,28 +53,34 @@ using namespace ember;
 
     auto* font { getDefaultFont() };
 
-    auto style = BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 84.F } },
-        //
-        .margin = { true, Margin { 0.F, 4.F, 0.F, 0.F } },
-        //
-        .color = { false, color::Dark::backgroundText },
-        //
-        .font = { true, font },
-        .fontSize = { true, 12.F },
-        .textAlign = { true, TextAlign::eLeftMiddle }
-    });
+    auto style = BoundStyleSheet::make(
+        StyleSheet {
+            .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 84.F } },
+            //
+            .margin = { true, Margin { 0.F, 4.F, 0.F, 0.F } },
+            //
+            .color = { false, color::Dark::backgroundText },
+            //
+            .font = { true, font },
+            .fontSize = { true, 12.F },
+            .textAlign = { true, TextAlign::eLeftMiddle }
+        }
+    );
 
     /**/
 
-    style->pushStyle({
-        Style::key_type::from("AssetBrowserItem::Hovered"),
-        style::isNever,
-        make_sptr<StyleSheet>(StyleSheet {
-            .color = { true, color::Dark::backgroundRaisedText }
-        })
-    });
+    style->pushStyle(
+        {
+            Style::key_type::from("AssetBrowserItem::Hovered"),
+            style::isNever,
+            make_sptr<StyleSheet>(
+                StyleSheet {
+                    .color = { true, color::Dark::backgroundRaisedText }
+                }
+            )
+        }
+    );
 
     /**/
 
@@ -81,26 +91,32 @@ using namespace ember;
 
     auto* font { getDefaultFont() };
 
-    auto style = BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 84.F } },
-        //
-        .color = { false, color::Dark::grey },
-        //
-        .font = { true, font },
-        .fontSize = { true, 12.F },
-        .textEllipse = { true, 2ui32 }
-    });
+    auto style = BoundStyleSheet::make(
+        StyleSheet {
+            .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 84.F } },
+            //
+            .color = { false, color::Dark::grey },
+            //
+            .font = { true, font },
+            .fontSize = { true, 12.F },
+            .textEllipse = { true, 2ui32 }
+        }
+    );
 
     /**/
 
-    style->pushStyle({
-        Style::key_type::from("AssetBrowserItem::Hovered"),
-        style::isNever,
-        make_sptr<StyleSheet>(StyleSheet {
-            .color = { true, color::Dark::white }
-        })
-    });
+    style->pushStyle(
+        {
+            Style::key_type::from("AssetBrowserItem::Hovered"),
+            style::isNever,
+            make_sptr<StyleSheet>(
+                StyleSheet {
+                    .color = { true, color::Dark::white }
+                }
+            )
+        }
+    );
 
     /**/
 
@@ -158,7 +174,8 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
                 }
 
                 panel.lock()->changeCwd(self->_virtUrl);
-            });
+            }
+        );
 
     } else {
 
@@ -185,34 +202,36 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
                     sender->sendDragFiles(paths);
                 }
                 /**/
-            });
+            }
+        );
 
         assetType = helper->getAssetTypeByFile(self->_fqUrls.front());
         iconAsset = helper->getItemIconByAssetType(assetType);
     }
 
-    auto iconRes {
-        static_cast<ptr<engine::gfx::TextureResource>>(
-            engine::Engine::getEngine()->getResources()->loader().loadImmediately(iconAsset)
-        )
-    };
+    auto iconRes = engine::Engine::getEngine()->getResources()->loader().loadImmediately<engine::assets::Texture,
+        engine::gfx::TextureResource>(_STD move(iconAsset));
 
     /**/
     auto item {
-        make_sptr<VBox>(BoundStyleSheet::make(StyleSheet {
-            .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-            .width = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-            //
-            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
-            .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
-            .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
-            //
-            //.margin = { true, Margin { 4.F } },
-            .borderRadius = { true, BorderRadius { 6.F } },
-            //
-            .color = { true, color::Dark::backgroundInnerFieldDarken },
-        }))
+        make_sptr<VBox>(
+            BoundStyleSheet::make(
+                StyleSheet {
+                    .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+                    .width = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+                    .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+                    //
+                    .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
+                    .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
+                    .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
+                    //
+                    //.margin = { true, Margin { 4.F } },
+                    .borderRadius = { true, BorderRadius { 6.F } },
+                    //
+                    .color = { true, color::Dark::backgroundInnerFieldDarken },
+                }
+            )
+        )
     };
     self->addChild(item);
 
@@ -221,25 +240,32 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
     const auto icon { make_sptr<Image>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::Icon96Key))) };
     item->addChild(icon);
 
-    auto* view { iconRes->_payload.view.get() };
-    icon->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(view)), iconRes);
+    auto iconGuard = iconRes->acquire(engine::resource::ResourceUsageFlag::eRead);
+    auto* view = iconGuard->as<engine::gfx::VirtualTextureView>();
+    icon->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(view)), iconRes.get());
 
     const auto infoWrapper {
-        make_sptr<VBox>(_STD move(BoundStyleSheet::make(StyleSheet {
-            .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-            .width = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-            //
-            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
-            .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
-            .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
-            //
-            .padding = { true, Padding { 6.F } },
-            .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
-            .borderRadius = { true, BorderRadius { 0.F, 0.F, 6.F, 6.F } },
-            //
-            .color = { true, color::Dark::backgroundDefault },
-        })))
+        make_sptr<VBox>(
+            _STD move(
+                BoundStyleSheet::make(
+                    StyleSheet {
+                        .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+                        .width = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+                        .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+                        //
+                        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
+                        .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
+                        .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
+                        //
+                        .padding = { true, Padding { 6.F } },
+                        .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
+                        .borderRadius = { true, BorderRadius { 0.F, 0.F, 6.F, 6.F } },
+                        //
+                        .color = { true, color::Dark::backgroundDefault },
+                    }
+                )
+            )
+        )
     };
     item->addChild(infoWrapper);
 

@@ -2,7 +2,6 @@
 #include <Engine.Resource/FileTypeId.hpp>
 
 namespace ember::engine::sfx {
-
     namespace AudioFileType {
         extern const res::FileTypeId Aac;
         extern const res::FileTypeId Flac;
@@ -12,7 +11,5 @@ namespace ember::engine::sfx {
         extern const res::FileTypeId Opus;
         extern const res::FileTypeId Raw;
         extern const res::FileTypeId Wav;
-
     }
-
 }

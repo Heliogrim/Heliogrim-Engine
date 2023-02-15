@@ -69,7 +69,7 @@ KtxImporter::KtxImporter() {}
 
 KtxImporter::~KtxImporter() {}
 
-bool KtxImporter::canImport(cref<res::FileTypeId> typeId_, cref<File> file_) const noexcept {
+bool KtxImporter::canImport(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const noexcept {
     if (typeId_.ext != ".ktx" && typeId_.ext != ".ktx2") {
         return false;
     }
@@ -125,7 +125,7 @@ static string normalizeDirName(cref<string> value_) {
     return tmp0;
 }
 
-KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId_, cref<File> file_) const {
+KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const {
 
     const auto rootCwd { _STD filesystem::current_path().append(R"(..\..)") };
     const auto rootAssetPath { _STD filesystem::path(R"(resources\assets\texture)") };
@@ -136,7 +136,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     Url targetUrl { "", rootAssetPath.string() };
 
     // TODO:
-    const auto sourcePath { _STD filesystem::path(file_.url()) };
+    const auto sourcePath { file_.path() };
     const auto sourceFileName { sourcePath.filename().string() };
     const auto sourceExt { sourcePath.extension().string() };
     const auto sourceName { sourceFileName.substr(0, sourceFileName.size() - sourceExt.size()) };
@@ -215,11 +215,13 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     tex->setAssetName(sourceName);
     tex->setBaseImage(img->get_guid());
 
-    tex->setExtent({
-        static_cast<u32>(header.pixelWidth),
-        _STD max(static_cast<u32>(header.pixelHeight), 1ui32),
-        _STD max(static_cast<u32>(header.pixelDepth), 1ui32)
-    });
+    tex->setExtent(
+        {
+            static_cast<u32>(header.pixelWidth),
+            _STD max(static_cast<u32>(header.pixelHeight), 1ui32),
+            _STD max(static_cast<u32>(header.pixelDepth), 1ui32)
+        }
+    );
 
     tex->setTextureFormat(api::vkTranslateFormat(*reinterpret_cast<const vk::Format*>(&header.vkFormat)));
     tex->setMipLevelCount(_STD max(header.levelCount, 1ui32));

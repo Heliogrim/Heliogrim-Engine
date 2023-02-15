@@ -80,7 +80,7 @@ void SimpleImportAction::apply() {
     /**/
 
     const auto srcPath { _source.path() };
-    const ::ember::File file { srcPath };
+    const ::ember::fs::File file { srcPath };
 
     if (srcPath.ends_with(".ktx2")) {
         const auto result = importer.import<

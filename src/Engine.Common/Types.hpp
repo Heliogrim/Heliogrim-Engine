@@ -91,3 +91,12 @@ namespace ember {
         constexpr static u64 min = 0x0i64;
     };
 }
+
+/*                                                  */
+/* Special Type Definitions (Conflict with _STD)    */
+/*                                                  */
+
+namespace ember::_ {
+    // @see <cstddef>
+    enum class byte : u8 {};
+}

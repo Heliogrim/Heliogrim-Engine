@@ -9,7 +9,6 @@
 #include "../FileTypeId.hpp"
 
 namespace ember::engine::res {
-
     class Indexer {
     public:
         using value_type = Indexer;
@@ -43,7 +42,7 @@ namespace ember::engine::res {
         void tidy();
 
     private:
-        Vector<File> _roots;
+        Vector<fs::File> _roots;
 
     public:
         /**
@@ -54,7 +53,7 @@ namespace ember::engine::res {
          *
          * @param  root_ The root.
          */
-        void addRoot(cref<File> root_) noexcept;
+        void addRoot(cref<fs::File> root_) noexcept;
 
         /**
          * Removes a file used as root from indexer
@@ -66,7 +65,7 @@ namespace ember::engine::res {
          *
          * @returns True if it succeeds, false if it fails.
          */
-        bool removeRoot(cref<File> root_) noexcept;
+        bool removeRoot(cref<fs::File> root_) noexcept;
 
     public:
         /**
@@ -77,7 +76,7 @@ namespace ember::engine::res {
          *
          * @param  root_ The root to scan.
          */
-        void scan(cref<File> root_);
+        void scan(cref<fs::File> root_);
 
         /**
          * Scans the stored list of roots to index files
@@ -99,7 +98,7 @@ namespace ember::engine::res {
          *
          * @param  root_ The root.
          */
-        void watch(cref<File> root_);
+        void watch(cref<fs::File> root_);
 
         /**
          * Watches the stored list of roots for any changes
@@ -110,13 +109,13 @@ namespace ember::engine::res {
         void watch();
 
     private:
-        _STD vector<_STD function<bool(cref<File>)>> _callbacks;
-        CompactSet<File> _ack;
+        _STD vector<_STD function<bool(cref<fs::File>)>> _callbacks;
+        CompactSet<fs::File> _ack;
 
     public:
-        void on(cref<std::function<bool(cref<File> file_)>> callback_);
+        void on(cref<std::function<bool(cref<fs::File> file_)>> callback_);
 
-        void on(mref<std::function<bool(cref<File> file_)>> callback_);
+        void on(mref<std::function<bool(cref<fs::File> file_)>> callback_);
 
     private:
         /**
@@ -127,7 +126,7 @@ namespace ember::engine::res {
          *
          * @param  file_ The file.
          */
-        void reindex(cref<File> file_);
+        void reindex(cref<fs::File> file_);
 
         /**
          * Removes the indexing for the given file
@@ -137,7 +136,6 @@ namespace ember::engine::res {
          *
          * @param  file_ The file.
          */
-        void removeIndex(cref<File> file_);
-
+        void removeIndex(cref<fs::File> file_);
     };
 }

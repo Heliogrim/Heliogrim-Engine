@@ -23,7 +23,9 @@
 #include "Engine.GFX/Shader/PrototypeBinding.hpp"
 #include "Engine.GFX/Shader/ShaderStorage.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
+#include "Engine.GFX/Texture/VirtualTextureView.hpp"
 #include "Engine.GFX.Glow.UI/Scene/UISceneModel.hpp"
+#include "Engine.Resource/ResourceManager.hpp"
 
 using namespace ember::engine::gfx::glow::ui::render;
 using namespace ember::engine::gfx::render;
@@ -48,9 +50,11 @@ struct UiTransformBlock {
 
 UiMainStageNode::UiMainStageNode() :
     RenderStageNode(),
-    _modelTypes({
-        EmberClass::stid<UISceneModel>()
-    }) {}
+    _modelTypes(
+        {
+            EmberClass::stid<UISceneModel>()
+        }
+    ) {}
 
 UiMainStageNode::~UiMainStageNode() = default;
 
@@ -139,13 +143,19 @@ bool UiMainStageNode::allocate(const ptr<HORenderPass> renderPass_) {
      * Store State
      */
     state->data.insert_or_assign("UiMainStageNode::CommandBuffer"sv, make_sptr<decltype(cmd)>(_STD move(cmd)));
-    state->data.insert_or_assign("UiMainStageNode::Framebuffer"sv,
-        make_sptr<decltype(framebuffer)>(_STD move(framebuffer)));
+    state->data.insert_or_assign(
+        "UiMainStageNode::Framebuffer"sv,
+        make_sptr<decltype(framebuffer)>(_STD move(framebuffer))
+    );
 
-    state->data.insert_or_assign("UiMainStageNode::ImageDescriptorPool"sv,
-        make_sptr<vk::DescriptorPool>(VK_NULL_HANDLE));
-    state->data.insert_or_assign("UiMainStageNode::ImageDescriptors"sv,
-        make_sptr<Vector<shader::DiscreteBindingGroup>>());
+    state->data.insert_or_assign(
+        "UiMainStageNode::ImageDescriptorPool"sv,
+        make_sptr<vk::DescriptorPool>(VK_NULL_HANDLE)
+    );
+    state->data.insert_or_assign(
+        "UiMainStageNode::ImageDescriptors"sv,
+        make_sptr<Vector<shader::DiscreteBindingGroup>>()
+    );
 
     return true;
 }
@@ -232,14 +242,18 @@ const non_owning_rptr<const Vector<type_id>> UiMainStageNode::modelTypes() const
     return &_modelTypes;
 }
 
-void UiMainStageNode::before(const non_owning_rptr<HORenderPass> renderPass_,
-    const non_owning_rptr<RenderStagePass> stagePass_) const {
+void UiMainStageNode::before(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    const non_owning_rptr<RenderStagePass> stagePass_
+) const {
     RenderStageNode::before(renderPass_, stagePass_);
 }
 
-void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
+void UiMainStageNode::invoke(
+    const non_owning_rptr<HORenderPass> renderPass_,
     const non_owning_rptr<RenderStagePass> stagePass_,
-    const non_owning_rptr<SceneNodeModel> model_) const {
+    const non_owning_rptr<SceneNodeModel> model_
+) const {
 
     auto* state { renderPass_->state().get() };
     auto& data { state->data };
@@ -373,8 +387,13 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
         assert(buffer.buffer);
 
         [[maybe_unused]] auto result {
-            memory::allocate(&state->alloc, _device, buffer.buffer,
-                MemoryProperty::eHostVisible | MemoryProperty::eHostCoherent, buffer.memory)
+            memory::allocate(
+                &state->alloc,
+                _device,
+                buffer.buffer,
+                MemoryProperty::eHostVisible | MemoryProperty::eHostCoherent,
+                buffer.memory
+            )
         };
         buffer.bind();
     }
@@ -402,8 +421,13 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
         assert(buffer.buffer);
 
         [[maybe_unused]] auto result {
-            memory::allocate(&state->alloc, _device, buffer.buffer,
-                MemoryProperty::eHostVisible | MemoryProperty::eHostCoherent, buffer.memory)
+            memory::allocate(
+                &state->alloc,
+                _device,
+                buffer.buffer,
+                MemoryProperty::eHostVisible | MemoryProperty::eHostCoherent,
+                buffer.memory
+            )
         };
         buffer.bind();
     }
@@ -443,12 +467,15 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
 
     cmd.beginRenderPass(*_loRenderPass, framebuffer);
 
-    cmd.bindPipeline(_pipeline.get(), Viewport {
-        renderPass_->target()->width(),
-        renderPass_->target()->height(),
-        0.F,
-        1.F
-    });
+    cmd.bindPipeline(
+        _pipeline.get(),
+        Viewport {
+            renderPass_->target()->width(),
+            renderPass_->target()->height(),
+            0.F,
+            1.F
+        }
+    );
 
     /**
      *
@@ -461,7 +488,8 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     cmd.vkCommandBuffer().pushConstants(
         static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->vkLayout(),
         vk::ShaderStageFlagBits::eVertex,
-        0, sizeof(UiTransformBlock),
+        0,
+        sizeof(UiTransformBlock),
         &consts
     );
 
@@ -601,8 +629,10 @@ void UiMainStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     stagePass_->batch().push(cmd);
 }
 
-void UiMainStageNode::after(const non_owning_rptr<HORenderPass> renderPass_,
-    const non_owning_rptr<RenderStagePass> stagePass_) const {
+void UiMainStageNode::after(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    const non_owning_rptr<RenderStagePass> stagePass_
+) const {
     RenderStageNode::after(renderPass_, stagePass_);
 }
 
@@ -641,10 +671,12 @@ void UiMainStageNode::setupShader() {
      * Build Shader and Bindings
      */
     auto factoryResult {
-        shaderFactory.build({
-            vertexPrototype,
-            fragmentPrototype
-        })
+        shaderFactory.build(
+            {
+                vertexPrototype,
+                fragmentPrototype
+            }
+        )
     };
 
     /**
@@ -661,10 +693,13 @@ void UiMainStageNode::setupShader() {
         Vector<vk::DescriptorPoolSize> sizes {};
         for (const auto& binding : group.shaderBindings()) {
             auto it {
-                _STD find_if(sizes.begin(), sizes.end(),
+                _STD find_if(
+                    sizes.begin(),
+                    sizes.end(),
                     [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
                         return entry_.type == api::vkTranslateBindingType(type);
-                    })
+                    }
+                )
             };
 
             if (it == sizes.end()) {
@@ -702,16 +737,18 @@ void UiMainStageNode::setupPipeline() {
     _pipeline->topology() = PrimitiveTopology::eTriangleList;
     _pipeline->viewport() = Viewport {};
 
-    _pipeline->inputs().push_back(FixedPipelineInput {
-        0ui8,
-        InputRate::ePerVertex,
-        sizeof(uivertex),
-        Vector<InputAttribute> {
-            { 0ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(uivertex, position)) },
-            { 1ui32, TextureFormat::eR8G8B8A8Unorm, static_cast<u32>(offsetof(uivertex, color)) },
-            { 2ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(uivertex, uvm)) }
+    _pipeline->inputs().push_back(
+        FixedPipelineInput {
+            0ui8,
+            InputRate::ePerVertex,
+            sizeof(uivertex),
+            Vector<InputAttribute> {
+                { 0ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(uivertex, position)) },
+                { 1ui32, TextureFormat::eR8G8B8A8Unorm, static_cast<u32>(offsetof(uivertex, color)) },
+                { 2ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(uivertex, uvm)) }
+            }
         }
-    });
+    );
 
     _pipeline->vertexStage().shaderSlot().name() = "uiMainPass";
     _pipeline->fragmentStage().shaderSlot().name() = "uiMainPass";
@@ -738,11 +775,13 @@ void UiMainStageNode::setupPipeline() {
     // Push color blending for output color
     blend.push_back(colorState);
 
-    static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->pushConstants().push_back({
-        vk::ShaderStageFlagBits::eVertex,
-        0ui32,
-        sizeof(UiTransformBlock)
-    });
+    static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->pushConstants().push_back(
+        {
+            vk::ShaderStageFlagBits::eVertex,
+            0ui32,
+            sizeof(UiTransformBlock)
+        }
+    );
 
     /**
      *
@@ -757,17 +796,20 @@ void UiMainStageNode::setupLORenderPass() {
     _loRenderPass = make_sptr<pipeline::LORenderPass>(_device);
 
     // Color Attachment :: Used to store composed color
-    _loRenderPass->set(0, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        vk::Format::eB8G8R8A8Unorm,
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::ePresentSrcKHR
-    });
+    _loRenderPass->set(
+        0,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            vk::Format::eB8G8R8A8Unorm,
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eClear,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::ePresentSrcKHR
+        }
+    );
 
     /**
      *
@@ -869,34 +911,53 @@ void UiMainStageNode::rebuildImageDescriptors(
 }
 
 #if TRUE
-#include <Engine.GFX/Loader/RevTextureLoader.hpp>
+#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.GFX.Loader/Texture/Traits.hpp>
+#include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #endif
 
 void UiMainStageNode::setupDefaultImage() {
-    engine::gfx::RevTextureLoader loader { engine::Engine::getEngine()->getGraphics()->cacheCtrl() };
-    _defaultImage = loader.__tmp__load({
-        ""sv,
-        R"(R:\\Development\C++\Vulkan API\Game\resources\imports\ktx\default_ui.ktx)"
-    });
+
+    ptr<assets::Texture> request {};
+    auto resource = Engine::getEngine()->getResources()->loader().load<assets::Texture, TextureResource>(
+        _STD move(request)
+    );
+
+    auto guard = resource->acquire(resource::ResourceUsageFlag::eRead);
+    auto* const defaultImage = guard->as<VirtualTextureView>();
+
+    // TODO:
+    // Warning: This will break -> Not possible to run
+
+    /*
+    _defaultImage = loader.__tmp__load(
+        {
+            ""sv,
+            R"(R:\\Development\C++\Vulkan API\Game\resources\imports\ktx\default_ui.ktx)"
+        }
+    );
+     */
 
     Vector<vk::ImageMemoryBarrier> imgBarriers {};
-    imgBarriers.push_back({
-        vk::AccessFlags {},
-        vk::AccessFlagBits::eShaderRead,
-        vk::ImageLayout::eTransferSrcOptimal,
-        vk::ImageLayout::eShaderReadOnlyOptimal,
-        VK_QUEUE_FAMILY_IGNORED,
-        VK_QUEUE_FAMILY_IGNORED,
-        _defaultImage.buffer().image(),
-        vk::ImageSubresourceRange {
-            vk::ImageAspectFlagBits::eColor,
-            0,
-            _defaultImage.mipLevels(),
-            0,
-            _defaultImage.layer()
+    imgBarriers.push_back(
+        {
+            vk::AccessFlags {},
+            vk::AccessFlagBits::eShaderRead,
+            vk::ImageLayout::eTransferSrcOptimal,
+            vk::ImageLayout::eShaderReadOnlyOptimal,
+            VK_QUEUE_FAMILY_IGNORED,
+            VK_QUEUE_FAMILY_IGNORED,
+            _defaultImage.buffer().image(),
+            vk::ImageSubresourceRange {
+                vk::ImageAspectFlagBits::eColor,
+                0,
+                _defaultImage.mipLevels(),
+                0,
+                _defaultImage.layer()
+            }
         }
-    });
+    );
 
     auto pool = _device->graphicsQueue()->pool();
     pool->lck().acquire();
@@ -906,11 +967,16 @@ void UiMainStageNode::setupDefaultImage() {
     /**
      * Transform
      */
-    iiCmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-        vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
-        0, nullptr,
-        0, nullptr,
-        static_cast<uint32_t>(imgBarriers.size()), imgBarriers.data()
+    iiCmd.vkCommandBuffer().pipelineBarrier(
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::DependencyFlags {},
+        0,
+        nullptr,
+        0,
+        nullptr,
+        static_cast<uint32_t>(imgBarriers.size()),
+        imgBarriers.data()
     );
 
     iiCmd.end();

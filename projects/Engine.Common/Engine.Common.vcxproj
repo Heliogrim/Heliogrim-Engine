@@ -51,6 +51,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Exception\__macro.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Flag.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Functional\Function.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\GLM.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Guid.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Hash\Fnv-1a.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Hash\Murmur3.hpp" />
@@ -85,6 +86,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Profiling\Stopwatch.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Result.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\RingBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\SDL2.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Singleton.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\stdafx.h" />
     <ClInclude Include="..\..\src\Engine.Common\Stream.hpp" />
@@ -96,7 +98,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\Concurrent\Collection\RingBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.Common\Concurrent\SharedMemoryReference.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Concurrent\SpinLock.cpp" />
+    <ClCompile Include="..\..\src\Engine.Common\Guid.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Hash\Murmur3.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Math\Bounding.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Math\Coordinates.cpp" />
@@ -105,6 +109,7 @@
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Profiler.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Stopwatch.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp" />
+    <ClCompile Include="..\..\src\Engine.Common\Url.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\UrlDataLayout.cpp" />
   </ItemGroup>
   <ItemGroup>

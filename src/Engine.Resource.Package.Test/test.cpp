@@ -12,7 +12,6 @@
 #include <random>
 
 using namespace ember::engine::resource;
-using namespace ember::engine::res;
 using namespace ember::engine::serialization;
 using namespace ember;
 
@@ -30,11 +29,13 @@ namespace PackageModule {
 
         return _STD make_pair<>(
             _STD move(helper),
-            make_uptr<BufferSource>(Buffer {
-                size_,
-                0,
-                ptr
-            })
+            make_uptr<BufferSource>(
+                Buffer {
+                    size_,
+                    0,
+                    ptr
+                }
+            )
         );
     }
 
@@ -186,11 +187,13 @@ namespace PackageModule {
 
         /**/
 
-        uptr<Source> dstSource = make_uptr<BufferSource>(Buffer {
-            4096ui64,
-            0ui64,
-            helper.data()
-        });
+        uptr<Source> dstSource = make_uptr<BufferSource>(
+            Buffer {
+                4096ui64,
+                0ui64,
+                helper.data()
+            }
+        );
 
         Package dst = PackageFactory::createFromSource(_STD move(dstSource));
 
@@ -286,11 +289,13 @@ namespace PackageModule {
 
         /**/
 
-        uptr<Source> dstSource = make_uptr<BufferSource>(Buffer {
-            4096ui64,
-            0ui64,
-            helper.data()
-        });
+        uptr<Source> dstSource = make_uptr<BufferSource>(
+            Buffer {
+                4096ui64,
+                0ui64,
+                helper.data()
+            }
+        );
 
         Package dst = PackageFactory::createFromSource(_STD move(dstSource));
         const auto* const dstLinker = package.getLinker();
@@ -399,11 +404,13 @@ namespace PackageModule {
 
         /**/
 
-        uptr<Source> dstSource = make_uptr<BufferSource>(Buffer {
-            buffer_size,
-            0ui64,
-            helper.data()
-        });
+        uptr<Source> dstSource = make_uptr<BufferSource>(
+            Buffer {
+                buffer_size,
+                0ui64,
+                helper.data()
+            }
+        );
 
         Package dst = PackageFactory::createFromSource(_STD move(dstSource));
         const auto* const dstLinker = package.getLinker();

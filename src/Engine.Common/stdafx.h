@@ -3,16 +3,10 @@
 #include "__macro.hpp"
 
 #include <cstdint>
-#include <functional>
-#include <iostream>
 #include <memory>
-#include <sstream>
 #include <stdexcept>
 #include <stddef.h>
-#include <string>
-#include <thread>
 #include <type_traits>
-#include <vector>
 
 #ifdef _DEBUG
 #include <assert.h>
@@ -56,18 +50,6 @@ using size64_t = uint64_t;
 #elif defined(_WIN32)
 #define VK_USE_PLATFORM_WIN32_KHR
 #endif
-
-#define SDL_MAIN_HANDLED
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
-#include <SDL2/SDL_vulkan.h>
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/trigonometric.hpp>
-
-#include "./Math/Matrix.hpp"
-#include "./Math/Vector.hpp"
 /**
  *
  */

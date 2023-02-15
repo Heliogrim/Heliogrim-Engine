@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Meta/NoThrow.hpp>
 
 #include "../Types/Asset.hpp"
 #include "../Types/AssetConcept.hpp"
@@ -13,7 +14,6 @@ namespace ember::engine::assets {
 };
 
 namespace ember::engine::assets {
-
     /**
      * An asset database query.
      *
@@ -26,6 +26,7 @@ namespace ember::engine::assets {
     public:
     public:
         friend class AssetDatabase;
+
     public:
         /**
          * Default constructor
@@ -125,7 +126,7 @@ namespace ember::engine::assets {
          *
          * @returns A pointer to an existing asset or nullptr
          */
-        [[nodiscard]] ptr<Asset> get(_STD nothrow_t) const noexcept;
+        [[nodiscard]] ptr<Asset> get(nothrow_t) const noexcept;
 
     public:
         /**

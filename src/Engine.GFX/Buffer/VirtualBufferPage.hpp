@@ -1,10 +1,11 @@
 #pragma once
 
+#include "../vkinc.hpp"
+
 #include "../Memory/Allocator.hpp"
 #include "../Memory/VirtualMemoryPage.hpp"
 
 namespace ember::engine::gfx {
-
     class VirtualBufferPage final {
     public:
         VirtualBufferPage(const ptr<VirtualMemoryPage> memory_, const u64 resourceSize_, const u64 resourceOffset_);
@@ -34,5 +35,4 @@ namespace ember::engine::gfx {
 
         [[nodiscard]] u64 resourceOffset() const noexcept;
     };
-
 }

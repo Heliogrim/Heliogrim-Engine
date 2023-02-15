@@ -160,7 +160,7 @@ namespace ember::math {
          * @param r2_ The 2.
          * @param r3_ The 3.
          */
-        matq4_t(const row_type& r0_, const row_type& r1_, const row_type& r2_, const row_type& r3_) :
+        constexpr matq4_t(const row_type& r0_, const row_type& r1_, const row_type& r2_, const row_type& r3_) :
             value { r0_, r1_, r2_, r3_ } { }
 
         /**

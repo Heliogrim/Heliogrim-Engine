@@ -6,7 +6,7 @@
 #ifdef ENV_MSVC
 #include <Engine.Common/__macro.hpp>
 #include <Windows.h>
-#include <fileapi.h>
+#include <Fileapi.h>
 #endif
 
 #include <functional>
@@ -15,7 +15,6 @@
 #include "../File.hpp"
 
 namespace ember::engine::res {
-
     class Watcher {
     public:
         using value_type = Watcher;
@@ -23,7 +22,7 @@ namespace ember::engine::res {
         using const_reference_type = cref<value_type>;
 
     public:
-        Watcher(cref<File> root_);
+        Watcher(cref<fs::File> root_);
 
         /**
          * Copy Constructor
@@ -73,34 +72,34 @@ namespace ember::engine::res {
         void notify(const bool publish_ = true);
 
     private:
-        File _root;
+        fs::File _root;
 
     public:
-        cref<File> root() const noexcept;
+        cref<fs::File> root() const noexcept;
 
-        File root() noexcept;
+        fs::File root() noexcept;
 
     public:
-        [[nodiscard]] operator const File() const noexcept;
+        [[nodiscard]] operator const fs::File() const noexcept;
 
-        [[nodiscard]] operator File() noexcept;
+        [[nodiscard]] operator fs::File() noexcept;
 
     private:
         HANDLE _handle;
         HANDLE _waitHandle;
 
     private:
-        _STD unordered_map<File, _STD filesystem::file_time_type> _state;
+        _STD unordered_map<fs::File, _STD filesystem::file_time_type> _state;
 
-        _STD function<void(File)> _createCallback;
-        _STD function<void(File)> _modifiedCallback;
-        _STD function<void(File)> _eraseCallback;
+        _STD function<void(fs::File)> _createCallback;
+        _STD function<void(fs::File)> _modifiedCallback;
+        _STD function<void(fs::File)> _eraseCallback;
 
     public:
-        void setCreateCallback(cref<std::function<void(File file_)>> callback_) noexcept;
+        void setCreateCallback(cref<std::function<void(fs::File file_)>> callback_) noexcept;
 
-        void setModifiedCallback(cref<std::function<void(File file_)>> callback_) noexcept;
+        void setModifiedCallback(cref<std::function<void(fs::File file_)>> callback_) noexcept;
 
-        void setEraseCallback(cref<std::function<void(File file_)>> callback_) noexcept;
+        void setEraseCallback(cref<std::function<void(fs::File file_)>> callback_) noexcept;
     };
 }

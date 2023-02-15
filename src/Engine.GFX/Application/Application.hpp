@@ -3,7 +3,6 @@
 #include "../vkinc.hpp"
 
 namespace ember::engine::gfx {
-
     class Application {
     public:
         using value_type = Application;
@@ -74,6 +73,5 @@ namespace ember::engine::gfx {
          * @date 09.11.2020
          */
         static Vector<const char*> getExtensions();
-
     };
 }

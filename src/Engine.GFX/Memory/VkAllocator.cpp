@@ -1,5 +1,6 @@
 #include "VkAllocator.hpp"
 
+#include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 #include "../vkinc.hpp"
 #include "../API/VkTranslate.hpp"
@@ -14,8 +15,11 @@ VkAllocator::VkAllocator(cref<sptr<Device>> device_) noexcept :
 
 VkAllocator::~VkAllocator() noexcept = default;
 
-AllocationResult VkAllocator::allocate(cref<MemoryLayout> layout_, const u64 size_,
-    ref<ptr<AllocatedMemory>> dst_) {
+AllocationResult VkAllocator::allocate(
+    cref<MemoryLayout> layout_,
+    const u64 size_,
+    ref<ptr<AllocatedMemory>> dst_
+) {
 
     const vk::MemoryAllocateInfo mai {
         size_,

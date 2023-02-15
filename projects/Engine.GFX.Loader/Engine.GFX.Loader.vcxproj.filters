@@ -31,6 +31,12 @@
     <Filter Include="Quelldateien\Texture\Transformer">
       <UniqueIdentifier>{2096342a-1543-48c9-bdab-aaa8b28b6f75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Material">
+      <UniqueIdentifier>{908b31d1-1f20-40e9-864d-278f4e35f8ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Font">
+      <UniqueIdentifier>{bb4d141c-242d-43e8-a80f-ea9e80c925c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.hpp">
@@ -84,6 +90,27 @@
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\Transformer\Ktx.hpp">
       <Filter>Headerdateien\Texture\Transformer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\Traits.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialLoadOptions.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\__fwd.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\__fwd.hpp">
+      <Filter>Headerdateien\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\Traits.hpp">
+      <Filter>Headerdateien\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontLoadOptions.hpp">
+      <Filter>Headerdateien\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontResource.hpp">
+      <Filter>Headerdateien\Font</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.cpp">
@@ -103,6 +130,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\Transformer\Ktx.cpp">
       <Filter>Quelldateien\Texture\Transformer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialResource.cpp">
+      <Filter>Quelldateien\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

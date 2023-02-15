@@ -2,7 +2,6 @@
 
 #ifdef _DEBUG
 #include <cassert>
-#include <Engine.Logging/Logger.hpp>
 #endif
 
 #include <atomic>
@@ -55,7 +54,7 @@ namespace ember {
             _ctrlBlock(nullptr),
             _packed(0) {}
 
-        SharedMemoryReference(
+        constexpr SharedMemoryReference(
             _In_ const non_owning_rptr<ctrl_block_type> ctrlBlock_,
             _In_ const packed_type packed_
         ) noexcept :
@@ -242,7 +241,8 @@ namespace ember {
                 return;
             }
 
-            IM_CORE_WARN("Destructing atomic ctrl block with active store resource.");
+            // TODO: Check whether we want to pay the compile time here, while this is nearly normal behaviour ?!?
+            // IM_CORE_WARN("Destructing atomic ctrl block with active store resource.");
 
             /**/
             this_type::destroy(_STD move(ctrlp));

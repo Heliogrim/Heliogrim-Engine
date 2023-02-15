@@ -1,5 +1,6 @@
 #include "GlobalCacheCtrl.hpp"
 
+#include <Engine.Logging/Logger.hpp>
 #include <Engine.Assets/Types/Texture/Texture.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Resource/ResourceManager.hpp>

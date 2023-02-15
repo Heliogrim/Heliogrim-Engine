@@ -159,25 +159,45 @@ namespace ember::engine::resource {
 
         template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>
         [[nodiscard]] typename loader::Loader<AssetType_, ResourceType_>::traits::response::type load(
-            typename loader::Loader<AssetType_, ResourceType_>::traits::request::type request_,
-            typename loader::Loader<AssetType_, ResourceType_>::traits::request::options options_ = {}
+            mref<typename loader::Loader<AssetType_, ResourceType_>::traits::request::type> request_,
+            mref<typename loader::Loader<AssetType_, ResourceType_>::traits::request::options> options_ = {}
         ) const {
+
+            using loader_type = loader::Loader<AssetType_, ResourceType_>;
+            using type_base = typename loader_type::type_base;
+
             const auto loader = selectLoader(AssetType_::typeId, nullptr);
-            return static_cast<const ptr<loader::Loader<AssetType_, ResourceType_>>>(loader.get())->operator()(
-                _STD move(request_),
-                _STD move(options_)
+
+            // Internal Cast
+            return static_cast<const ptr<type_base>>(
+                // External Loader Cast
+                static_cast<const ptr<loader_type>>(loader.get())
+            )->operator()(
+                // Use type base to dispatch correct operator() overload
+                _STD forward<typename loader_type::traits::request::type>(request_),
+                _STD forward<typename loader_type::traits::request::options>(options_)
             );
         }
 
         template <assets::IsAsset AssetType_, typename ResourceType_ = ResourceBase>
         [[nodiscard]] typename loader::Loader<AssetType_, ResourceType_>::traits::response::type loadImmediately(
-            typename loader::Loader<AssetType_, ResourceType_>::traits::request::type request_,
-            typename loader::Loader<AssetType_, ResourceType_>::traits::request::options options_ = {}
+            mref<typename loader::Loader<AssetType_, ResourceType_>::traits::request::type> request_,
+            mref<typename loader::Loader<AssetType_, ResourceType_>::traits::request::options> options_ = {}
         ) const {
+
+            using loader_type = loader::Loader<AssetType_, ResourceType_>;
+            using type_base = typename loader_type::type_base;
+
             const auto loader = selectLoader(AssetType_::typeId, nullptr);
-            return static_cast<const ptr<loader::Loader<AssetType_, ResourceType_>>>(loader.get())->operator()(
-                _STD move(request_),
-                _STD move(options_)
+
+            // Internal Cast
+            return static_cast<const ptr<type_base>>(
+                // External Loader Cast
+                static_cast<const ptr<loader_type>>(loader.get())
+            )->operator()(
+                // Use type base to dispatch correct operator() overload
+                _STD forward<typename loader_type::traits::request::type>(request_),
+                _STD forward<typename loader_type::traits::request::options>(options_)
             );
         }
 
@@ -188,12 +208,24 @@ namespace ember::engine::resource {
         template <assets::IsStreamableAsset AssetType_, typename ResourceType_ = ResourceBase>
         [[nodiscard]] typename loader::Loader<AssetType_, ResourceType_>::traits::stream_response::type
         streamImmediately(
-            typename loader::Loader<AssetType_, ResourceType_>::traits::stream_request::type request_,
-            typename loader::Loader<AssetType_, ResourceType_>::traits::stream_request::options options_
+            mref<typename loader::Loader<AssetType_, ResourceType_>::traits::stream_request::type> request_,
+            mref<typename loader::Loader<AssetType_, ResourceType_>::traits::stream_request::options> options_
         ) const {
+
+            using loader_type = loader::Loader<AssetType_, ResourceType_>;
+            using type_base = typename loader_type::type_base;
+
             const auto loader = selectLoader(AssetType_::typeId, nullptr);
-            return static_cast<const ptr<typename loader::Loader<AssetType_, ResourceType_>::type_base>>(loader.get())->
-                operator()(_STD move(request_), _STD move(options_));
+
+            // Internal Cast
+            return static_cast<const ptr<type_base>>(
+                // External Loader Cast
+                static_cast<const ptr<loader_type>>(loader.get())
+            )->operator()(
+                // Use type base to dispatch correct operator() overload
+                _STD forward<typename loader_type::traits::stream_request::type>(request_),
+                _STD forward<typename loader_type::traits::stream_request::options>(options_)
+            );
         }
     };
 }

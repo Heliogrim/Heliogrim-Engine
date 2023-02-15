@@ -306,6 +306,12 @@
     <ClInclude Include="..\..\src\Engine.Common\Meta\Async.hpp">
       <Filter>Headerdateien\Meta</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\SDL2.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\GLM.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">
@@ -340,6 +346,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Common\UrlDataLayout.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Guid.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Url.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Concurrent\SharedMemoryReference.cpp">
+      <Filter>Quelldateien\Concurrent</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -3,14 +3,13 @@
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.GFX/Texture/Texture.hpp>
+#include <Engine.GFX/Texture/__fwd.hpp>
 
 #include "FontGlyph.hpp"
 #include "GlyphCode.hpp"
 #include "Engine.Common/Collection/RobinMap.hpp"
 
 namespace ember::engine::reflow {
-
     class Font {
     public:
         using this_type = Font;

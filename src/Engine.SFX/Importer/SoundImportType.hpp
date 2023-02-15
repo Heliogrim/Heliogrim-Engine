@@ -4,9 +4,7 @@
 #include "../AudioFormat.hpp"
 
 namespace ember::engine::sfx {
-
     struct SoundImportType {
-
         /** Defines the amount of supplied channels */
         u8 channels = 0ui8;
 
@@ -21,6 +19,5 @@ namespace ember::engine::sfx {
 
         /** The buffer where the supplied data is stored */
         Buffer buffer;
-
     };
 }

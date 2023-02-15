@@ -1,5 +1,6 @@
 #include "Input.hpp"
 
+#include <Engine.Common/SDL2.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Input.Schedule/InputPipeline.hpp>

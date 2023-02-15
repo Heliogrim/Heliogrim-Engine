@@ -1,6 +1,7 @@
 #include "WinPlatform.hpp"
 
 #include <Engine.Common/stdafx.h>
+#include <Engine.Common/SDL2.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>

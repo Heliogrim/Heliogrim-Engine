@@ -1,5 +1,7 @@
 #include "SourceBaseArchive.hpp"
 
+#include <format>
+
 using namespace ember::engine::serialization;
 using namespace ember;
 

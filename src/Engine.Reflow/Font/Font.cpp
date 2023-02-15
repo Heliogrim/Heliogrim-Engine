@@ -1,5 +1,6 @@
 #include "Font.hpp"
 
+#include <Engine.GFX/Texture/Texture.hpp>
 #include "Engine.GFX/Command/CommandPool.hpp"
 #include "Engine.GFX/Command/CommandQueue.hpp"
 

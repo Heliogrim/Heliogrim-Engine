@@ -32,7 +32,7 @@ void Application::setup() {
     auto* layers = static_cast<VkLayerProperties*>(malloc(sizeof(VkLayerProperties) * count));
     vkEnumerateInstanceLayerProperties(&count, layers);
 
-    std::vector<VkLayerProperties> vl = std::vector<VkLayerProperties>(count);
+    auto vl = std::vector<VkLayerProperties>(count);
     for (uint32_t i = 0; i < count; i ++)
         vl[i] = layers[i];
 
@@ -82,7 +82,7 @@ void Application::setup() {
         IM_DEBUG_LOG("Created vk::Instance successfully.");
     } catch (const std::exception& e_) {
         IM_DEBUG_LOG("Failed to create vk::Instance.");
-        std::cout << "Could not create a Vulkan Instance: " << e_.what() << std::endl;
+        IM_CORE_ERROR(e_.what());
         exit(-1);
     }
 }

@@ -88,7 +88,7 @@ namespace ember::engine::res {
          *
          * @returns A ptr&lt;ImporterBase&gt;
          */
-        [[nodiscard]] sptr<ImporterBase> importer(cref<FileTypeId> fileType_, cref<File> file_) const;
+        [[nodiscard]] sptr<ImporterBase> importer(cref<FileTypeId> fileType_, cref<fs::File> file_) const;
 
     public:
         /**
@@ -101,8 +101,10 @@ namespace ember::engine::res {
          * @returns An Importer<ImportType_, void>::import_result_type.
          */
         template <class ImportType_>
-        [[nodiscard]] typename Importer<ImportType_, void>::import_result_type import(cref<FileTypeId> fileType_,
-            cref<File> file_) const {
+        [[nodiscard]] typename Importer<ImportType_, void>::import_result_type import(
+            cref<FileTypeId> fileType_,
+            cref<fs::File> file_
+        ) const {
 
             const sptr<ImporterBase> im = importer(fileType_, file_);
 

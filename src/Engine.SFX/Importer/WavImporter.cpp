@@ -15,7 +15,7 @@
 using namespace ember::engine::sfx;
 using namespace ember;
 
-bool WavImporter::canImport(cref<res::FileTypeId> typeId_, cref<File> file_) const noexcept {
+bool WavImporter::canImport(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const noexcept {
     return typeId_ == AudioFileType::Wav;
 }
 
@@ -23,12 +23,12 @@ WavImporter::descriptor_type WavImporter::descriptor() const noexcept {
     return {};
 }
 
-WavImporter::import_result_type WavImporter::import(cref<res::FileTypeId> typeId_, cref<File> file_) const {
+WavImporter::import_result_type WavImporter::import(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const {
 
     SCOPED_STOPWATCH
 
     drwav wav;
-    if (!drwav_init_file(&wav, file_.url().c_str())) {
+    if (!drwav_init_file(&wav, file_.path().string().c_str())) {
         // Error opening
         throw _STD runtime_error("Could not open file to parse wav data.");
     }

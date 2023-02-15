@@ -5,8 +5,8 @@
 
 #include "../Command/CommandBuffer.hpp"
 #include "../Geometry/Cube.hpp"
-#include "../Loader/TextureLoader.hpp"
 #include "../Texture/TextureFactory.hpp"
+#include "Engine.Common/Exception/NotImplementedException.hpp"
 
 using namespace ember::engine::gfx;
 using namespace ember;
@@ -79,7 +79,7 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
     pool->lck().release();
 
     const auto rootUrl = FileResource::getRootDir() + R"(\world\)";
-    const Url url { "file"sv, rootUrl + R"(skybox.ktx)" };
+    //const Url url { "file"sv, rootUrl + R"(skybox.ktx)" };
 
     throw NotImplementedException {};
     /*

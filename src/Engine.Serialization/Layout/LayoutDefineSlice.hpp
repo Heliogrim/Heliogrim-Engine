@@ -1,13 +1,13 @@
 #pragma once
 
 #include <cassert>
+#include <iterator>
 
 #include "LayoutDefine.hpp"
 #include "LayoutDefineValueType.hpp"
 #include "DataLayout.hpp"
 
 namespace ember::engine::serialization::layout {
-
     template <class Type_>
     concept HasDefIter = requires {
         typename Type_::iterator;
@@ -186,5 +186,4 @@ namespace ember::engine::serialization::layout {
             return archive_;
         }
     };
-
 }
