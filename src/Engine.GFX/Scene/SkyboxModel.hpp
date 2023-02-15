@@ -7,7 +7,6 @@
 #include "../Renderer/__fwd.hpp"
 
 namespace ember::engine::gfx {
-
     class SkyboxModel final :
         public GeometryModel {
     public:
@@ -39,13 +38,13 @@ namespace ember::engine::gfx {
 
     private:
         ptr<assets::StaticGeometry> _skyboxGeometryAsset = nullptr;
-        ptr<res::Resource> _skyboxGeometryResource = nullptr;
+        smr<resource::ResourceBase> _skyboxGeometryResource = {};
         bool _streamable = false;
 
     public:
         [[nodiscard]] const ptr<assets::StaticGeometry> geometryAsset() const noexcept;
 
-        [[nodiscard]] const ptr<res::Resource> geometryResource() const noexcept;
+        [[nodiscard]] cref<smr<resource::ResourceBase>> geometryResource() const noexcept;
 
         [[nodiscard]] bool streamable() const noexcept;
     };

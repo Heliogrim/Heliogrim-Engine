@@ -43,7 +43,7 @@ void SkyboxModel::create(const ptr<scene::Scene> scene_) {
     auto materialAsset = static_cast<ptr<assets::GfxMaterial>>(origin->getSkyboxMaterialAsset().internal());
     auto materialResource = Engine::getEngine()->getResources()->loader().load(materialAsset, nullptr);
 
-    _overrideMaterials.push_back(static_cast<ptr<gfx::MaterialResource>>(materialResource));
+    _overrideMaterials.push_back(materialResource.into<MaterialResource>());
 }
 
 void SkyboxModel::update(const ptr<scene::Scene> scene_) {}
@@ -96,8 +96,13 @@ ptr<cache::ModelBatch> SkyboxModel::batch(const ptr<render::RenderPassState> sta
         assert(buffer.buffer);
 
         const auto result {
-            memory::allocate(&state_->alloc, state_->device, buffer.buffer, MemoryProperty::eHostVisible,
-                buffer.memory)
+            memory::allocate(
+                &state_->alloc,
+                state_->device,
+                buffer.buffer,
+                MemoryProperty::eHostVisible,
+                buffer.memory
+            )
         };// TODO: Handle failed allocation
         buffer.bind();
     }
@@ -136,8 +141,13 @@ ptr<cache::ModelBatch> SkyboxModel::batch(const ptr<render::RenderPassState> sta
         assert(buffer.buffer);
 
         const auto result {
-            memory::allocate(&state_->alloc, state_->device, buffer.buffer, MemoryProperty::eHostVisible,
-                buffer.memory)
+            memory::allocate(
+                &state_->alloc,
+                state_->device,
+                buffer.buffer,
+                MemoryProperty::eHostVisible,
+                buffer.memory
+            )
         };// TODO: Handle failed allocation
         buffer.bind();
     }
@@ -156,7 +166,7 @@ ptr<cache::ModelBatch> SkyboxModel::batch(const ptr<render::RenderPassState> sta
         batch->mtt.map(dataSize);
 
         for (u32 i { 0ui32 }; i < _overrideMaterials.size(); ++i) {
-            const auto te { mtt.insert(_overrideMaterials[i]) };
+            const auto te { mtt.insert(_overrideMaterials[i].get()) };
             static_cast<ptr<u32>>(batch->mtt.memory->mapping)[i] = te;
         }
 
@@ -181,7 +191,7 @@ const ptr<engine::assets::StaticGeometry> SkyboxModel::geometryAsset() const noe
     return _skyboxGeometryAsset;
 }
 
-const ptr<engine::res::Resource> SkyboxModel::geometryResource() const noexcept {
+cref<smr<engine::resource::ResourceBase>> SkyboxModel::geometryResource() const noexcept {
     return _skyboxGeometryResource;
 }
 
