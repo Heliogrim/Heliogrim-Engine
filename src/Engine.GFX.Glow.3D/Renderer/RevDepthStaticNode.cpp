@@ -21,12 +21,12 @@
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
 #include <Engine.GFX/Renderer/RenderDataToken.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
+#include <Engine.GFX.Loader/Geometry/StaticGeometryResource.hpp>
 
 #include "__macro.hpp"
 #include "RevDepthSharedNode.hpp"
 #include "Ember/StaticGeometryComponent.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
-#include "Engine.GFX/Resource/StaticGeometryResource.hpp"
 #include "Engine.GFX/Scene/StaticGeometryModel.hpp"
 #include "Engine.Reflect/EmberReflect.hpp"
 #include <Engine.GFX/Scene/StaticGeometryBatch.hpp>
@@ -38,9 +38,11 @@ using namespace ember;
 
 RevDepthStaticNode::RevDepthStaticNode(const ptr<RevDepthSharedNode> sharedNode_) :
     RenderStageNode(),
-    _modelTypes({
-        EmberClass::stid<StaticGeometryModel>()
-    }),
+    _modelTypes(
+        {
+            EmberClass::stid<StaticGeometryModel>()
+        }
+    ),
     _sharedNode(sharedNode_) {}
 
 void RevDepthStaticNode::setup(cref<sptr<Device>> device_) {
@@ -71,17 +73,19 @@ void RevDepthStaticNode::setup(cref<sptr<Device>> device_) {
         1.F
     };
 
-    _pipeline->inputs().push_back(FixedPipelineInput {
-        0ui8,
-        InputRate::ePerVertex,
-        sizeof(vertex),
-        Vector<InputAttribute> {
-            { 0ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, position)) },
-            { 1ui32, TextureFormat::eR8G8B8Unorm, static_cast<u32>(offsetof(vertex, color)) },
-            { 2ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, uvm)) },
-            { 3ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, normal)) }
+    _pipeline->inputs().push_back(
+        FixedPipelineInput {
+            0ui8,
+            InputRate::ePerVertex,
+            sizeof(vertex),
+            Vector<InputAttribute> {
+                { 0ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, position)) },
+                { 1ui32, TextureFormat::eR8G8B8Unorm, static_cast<u32>(offsetof(vertex, color)) },
+                { 2ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, uvm)) },
+                { 3ui32, TextureFormat::eR32G32B32Sfloat, static_cast<u32>(offsetof(vertex, normal)) }
+            }
         }
-    });
+    );
 
     _pipeline->vertexStage().shaderSlot().name() = "staticDepthPass";
     _pipeline->fragmentStage().shaderSlot().name() = "staticDepthPass";
@@ -234,14 +238,22 @@ bool RevDepthStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Store State
      */
-    state->data.insert_or_assign("RevDepthStaticNode::CommandBuffer"sv,
-        _STD make_shared<decltype(cmd)>(_STD move(cmd)));
-    state->data.insert_or_assign("RevDepthStaticNode::UniformBuffer"sv,
-        _STD make_shared<decltype(uniform)>(_STD move(uniform)));
-    state->data.insert_or_assign("RevDepthStaticNode::DiscreteBindingGroups"sv,
-        _STD make_shared<decltype(dbgs)>(_STD move(dbgs)));
-    state->data.insert_or_assign("RevDepthStaticNode::DescriptorPools"sv,
-        _STD make_shared<decltype(pools)>(_STD move(pools)));
+    state->data.insert_or_assign(
+        "RevDepthStaticNode::CommandBuffer"sv,
+        _STD make_shared<decltype(cmd)>(_STD move(cmd))
+    );
+    state->data.insert_or_assign(
+        "RevDepthStaticNode::UniformBuffer"sv,
+        _STD make_shared<decltype(uniform)>(_STD move(uniform))
+    );
+    state->data.insert_or_assign(
+        "RevDepthStaticNode::DiscreteBindingGroups"sv,
+        _STD make_shared<decltype(dbgs)>(_STD move(dbgs))
+    );
+    state->data.insert_or_assign(
+        "RevDepthStaticNode::DescriptorPools"sv,
+        _STD make_shared<decltype(pools)>(_STD move(pools))
+    );
 
     return true;
 }
@@ -394,12 +406,15 @@ void RevDepthStaticNode::before(
     /**
      *
      */
-    cmd.bindPipeline(_pipeline.get(), {
-        framebuffer.width(),
-        framebuffer.height(),
-        0.F,
-        1.F
-    });
+    cmd.bindPipeline(
+        _pipeline.get(),
+        {
+            framebuffer.width(),
+            framebuffer.height(),
+            0.F,
+            1.F
+        }
+    );
 
     /**
      * Update Resources [BindingUpdateInterval::ePerFrame]
@@ -463,13 +478,14 @@ void RevDepthStaticNode::invoke(
         return;
     }
 
-    const auto* sgr { static_cast<const ptr<StaticGeometryResource>>(model->geometryResource()) };
+    auto sgrGuard = model->geometryResource()->acquire(resource::ResourceUsageFlag::eRead);
+    const auto* const sgr = sgrGuard.imm();
 
     /**
      *
      */
-    cmd.bindVertexBuffer(0, sgr->_vertexData.buffer, 0);
-    cmd.bindIndexBuffer(sgr->_indexData.buffer, 0);
+    cmd.bindVertexBuffer(0, sgr->vertices(), 0);
+    cmd.bindIndexBuffer(sgr->indices(), 0);
 
     u32 sbdIdx { 0ui32 };
     ptr<const shader::ShaderBindingGroup> sbg { nullptr };
@@ -538,8 +554,9 @@ void RevDepthStaticNode::invoke(
      */
     //cmd.drawIndexed(1, 0, ... / sizeof(u32), 0ui32, 0ui32);
     //cmd.drawIndexed(1, 0, 1140ui32, 0ui32, 0ui32);
-    const auto* res { static_cast<const ptr<StaticGeometryResource>>(model->geometryResource()) };
-    auto* asset { static_cast<const ptr<const assets::StaticGeometry>>(res->origin()) };
+    const auto* const asset = static_cast<const ptr<const assets::StaticGeometry>>(
+        model->geometryResource()->getAssociation()
+    );
     cmd.drawIndexed(1, 0, asset->getIndexCount(), 0, 0);
 }
 
@@ -637,10 +654,12 @@ void RevDepthStaticNode::setupShader(cref<sptr<Device>> device_) {
      * Build Shader and Bindings
      */
     auto factoryResult {
-        shaderFactory.build({
-            vertexPrototype,
-            fragmentPrototype
-        })
+        shaderFactory.build(
+            {
+                vertexPrototype,
+                fragmentPrototype
+            }
+        )
     };
 
     /**
@@ -659,9 +678,13 @@ void RevDepthStaticNode::setupShader(cref<sptr<Device>> device_) {
         for (const auto& binding : group.shaderBindings()) {
 
             auto it {
-                _STD find_if(sizes.begin(), sizes.end(), [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
-                    return entry_.type == api::vkTranslateBindingType(type);
-                })
+                _STD find_if(
+                    sizes.begin(),
+                    sizes.end(),
+                    [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
+                        return entry_.type == api::vkTranslateBindingType(type);
+                    }
+                )
             };
 
             if (it == sizes.end()) {

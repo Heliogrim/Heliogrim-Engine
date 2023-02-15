@@ -3,18 +3,17 @@
 #include <atomic>
 #include <Engine.Common/Collection/RobinMap.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.GFX/Resource/MaterialResource.hpp>
+#include <Engine.GFX.Loader/Material/MaterialResource.hpp>
 
 namespace ember::engine::gfx::glow::render {
-
     struct RevSfMtt {
         _STD atomic_uint_fast16_t mti;
 
-        RobinMap<ptr<gfx::MaterialResource>, u32> forward;
-        Vector<ptr<gfx::MaterialResource>> backward;
+        RobinMap<ptr<MaterialResource>, u32> forward;
+        Vector<ptr<MaterialResource>> backward;
 
     public:
-        [[nodiscard]] u32 insert(const ptr<gfx::MaterialResource> material_) {
+        [[nodiscard]] u32 insert(const ptr<MaterialResource> material_) {
 
             const auto exists { forward.find(material_) };
             if (exists != forward.end()) {
@@ -33,5 +32,4 @@ namespace ember::engine::gfx::glow::render {
             return next;
         }
     };
-
 }

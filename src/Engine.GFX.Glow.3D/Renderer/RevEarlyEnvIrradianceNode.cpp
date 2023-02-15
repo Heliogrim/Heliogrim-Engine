@@ -30,10 +30,10 @@
 
 #include <Engine.Core/Engine.hpp>
 #include "Engine.GFX/Graphics.hpp"
-#include "Engine.GFX/Loader/RevTextureLoader.hpp"
 #include "Engine.GFX/Scene/SkyboxModel.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.GFX/Texture/Texture.hpp"
+#include "Engine.GFX/Texture/VirtualTextureView.hpp"
 
 using namespace ember::engine::gfx::glow::render;
 using namespace ember::engine::gfx::render;
@@ -41,9 +41,11 @@ using namespace ember;
 
 RevEarlyEnvIrradiance::RevEarlyEnvIrradiance() :
     RenderStageNode(),
-    _modelTypes({
-        EmberClass::stid<SkyboxModel>()
-    }),
+    _modelTypes(
+        {
+            EmberClass::stid<SkyboxModel>()
+        }
+    ),
     _envIrradExtent(64ui32, 64ui32),
     _envIrradFormat(TextureFormat::eR32G32B32A32Sfloat) {}
 
@@ -110,16 +112,18 @@ bool RevEarlyEnvIrradiance::allocate(const ptr<HORenderPass> renderPass_) {
      */
     const auto* factory { TextureFactory::get() };
     auto irradiance {
-        factory->build({
-            math::uivec3 { _envIrradExtent, 1ui32 },
-            _envIrradFormat,
-            static_cast<u32>(_STD floorf(_STD log2f(_envIrradExtent.x))) + 1ui32,
-            TextureType::eCube,
-            vk::ImageAspectFlagBits::eColor,
-            vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
-            vk::MemoryPropertyFlagBits::eDeviceLocal,
-            vk::SharingMode::eExclusive
-        })
+        factory->build(
+            {
+                math::uivec3 { _envIrradExtent, 1ui32 },
+                _envIrradFormat,
+                static_cast<u32>(_STD floorf(_STD log2f(_envIrradExtent.x))) + 1ui32,
+                TextureType::eCube,
+                vk::ImageAspectFlagBits::eColor,
+                vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
+                vk::MemoryPropertyFlagBits::eDeviceLocal,
+                vk::SharingMode::eExclusive
+            }
+        )
     };
 
     factory->buildView(irradiance);
@@ -190,11 +194,11 @@ bool RevEarlyEnvIrradiance::allocate(const ptr<HORenderPass> renderPass_) {
     #endif
 
     // Warning: Actualy the vulkan clip matrix, but we suppress the inversion for further usage, so only compress z
-    const static math::mat4 clip_matrix = math::mat4(
-        1.0F, 0.0F, 0.0F, 0.0F,
-        0.0F, 1.0F, 0.0F, 0.0F,
-        0.0F, 0.0F, 0.5F, 0.F,
-        0.0F, 0.0F, 0.5F, 1.0F
+    constexpr static math::mat4 clip_matrix = math::mat4(
+        { 1.0F, 0.0F, 0.0F, 0.0F },
+        { 0.0F, 1.0F, 0.0F, 0.0F },
+        { 0.0F, 0.0F, 0.5F, 0.F },
+        { 0.0F, 0.0F, 0.5F, 1.0F }
     );
 
     for (auto& matrix : matrices) {
@@ -227,19 +231,31 @@ bool RevEarlyEnvIrradiance::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Store State
      */
-    renderPass_->state()->data.insert_or_assign("RevEarlyEnvIrradianceNode::CommandBuffer"sv,
-        make_sptr<decltype(cmd)>(_STD move(cmd)));
-    renderPass_->state()->data.insert_or_assign("RevEarlyEnvIrradianceNode::Framebuffer"sv,
-        make_sptr<decltype(framebuffer)>(_STD move(framebuffer)));
-    renderPass_->state()->data.insert_or_assign("RevEarlyEnvIrradianceNode::IrradianceCube"sv,
-        make_sptr<decltype(irradiance)>(_STD move(irradiance)));
-    renderPass_->state()->data.insert_or_assign("RevEarlyEnvIrradianceNode::UniformBuffer"sv,
-        make_sptr<decltype(uniform)>(_STD move(uniform)));
+    renderPass_->state()->data.insert_or_assign(
+        "RevEarlyEnvIrradianceNode::CommandBuffer"sv,
+        make_sptr<decltype(cmd)>(_STD move(cmd))
+    );
+    renderPass_->state()->data.insert_or_assign(
+        "RevEarlyEnvIrradianceNode::Framebuffer"sv,
+        make_sptr<decltype(framebuffer)>(_STD move(framebuffer))
+    );
+    renderPass_->state()->data.insert_or_assign(
+        "RevEarlyEnvIrradianceNode::IrradianceCube"sv,
+        make_sptr<decltype(irradiance)>(_STD move(irradiance))
+    );
+    renderPass_->state()->data.insert_or_assign(
+        "RevEarlyEnvIrradianceNode::UniformBuffer"sv,
+        make_sptr<decltype(uniform)>(_STD move(uniform))
+    );
 
-    renderPass_->state()->data.insert_or_assign("RevEarlyEnvIrradianceNode::DiscreteBindingGroups"sv,
-        make_sptr<decltype(dbgs)>(_STD move(dbgs)));
-    renderPass_->state()->data.insert_or_assign("RevEarlyEnvIrradianceNode::DescriptorPools"sv,
-        make_sptr<decltype(pools)>(_STD move(pools)));
+    renderPass_->state()->data.insert_or_assign(
+        "RevEarlyEnvIrradianceNode::DiscreteBindingGroups"sv,
+        make_sptr<decltype(dbgs)>(_STD move(dbgs))
+    );
+    renderPass_->state()->data.insert_or_assign(
+        "RevEarlyEnvIrradianceNode::DescriptorPools"sv,
+        make_sptr<decltype(pools)>(_STD move(pools))
+    );
 
     //
     postProcessAllocated(renderPass_);
@@ -421,18 +437,22 @@ void RevEarlyEnvIrradiance::invoke(
          * Bind Skybox Resources
          */
         if (model->hasOverrideMaterials()) {
-            const auto* first { model->overrideMaterials().front() };
 
-            ptr<const VirtualTextureView> skyboxView { nullptr };
-            if (first->_payload.diffuse) {
-                skyboxView = first->_payload.diffuse->_payload.view.get();
+            const auto& first = model->overrideMaterials().front();
+            auto guard = first->acquire(resource::ResourceUsageFlag::eRead);
+
+            if (not guard->diffuse().empty()) {
+
+                auto skyboxGuard = guard->diffuse()->acquire(resource::ResourceUsageFlag::eRead);
+                const auto& skyboxView = *skyboxGuard;
 
                 auto* const dbgs {
                     static_cast<const ptr<Vector<shader::DiscreteBindingGroup>>>(data.at(
-                        "RevEarlyEnvIrradianceNode::DiscreteBindingGroups"sv).get())
+                        "RevEarlyEnvIrradianceNode::DiscreteBindingGroups"sv
+                    ).get())
                 };
                 (*dbgs)[1].getById(shader::ShaderBinding::id_type { 2 }).storeAs(
-                    skyboxView->owner(),
+                    skyboxView.as<VirtualTextureView>()->owner(),
                     vk::ImageLayout::eShaderReadOnlyOptimal
                 );
 
@@ -730,10 +750,12 @@ void RevEarlyEnvIrradiance::setupShader(cref<sptr<Device>> device_) {
      * Build Shader and Bindings
      */
     auto factoryResult {
-        shaderFactory.build({
-            vertexPrototype,
-            fragmentPrototype
-        })
+        shaderFactory.build(
+            {
+                vertexPrototype,
+                fragmentPrototype
+            }
+        )
     };
 
     /**
@@ -750,9 +772,13 @@ void RevEarlyEnvIrradiance::setupShader(cref<sptr<Device>> device_) {
         Vector<vk::DescriptorPoolSize> sizes {};
         for (const auto& binding : group.shaderBindings()) {
             auto it {
-                _STD find_if(sizes.begin(), sizes.end(), [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
-                    return entry_.type == api::vkTranslateBindingType(type);
-                })
+                _STD find_if(
+                    sizes.begin(),
+                    sizes.end(),
+                    [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
+                        return entry_.type == api::vkTranslateBindingType(type);
+                    }
+                )
             };
 
             if (it == sizes.end()) {
@@ -788,17 +814,20 @@ void RevEarlyEnvIrradiance::setupLORenderPass() {
     _loRenderPass = make_sptr<pipeline::LORenderPass>(_device);
 
     // Cube Attachment
-    _loRenderPass->set(0, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        api::vkTranslateFormat(_envIrradFormat),
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eColorAttachmentOptimal
-    });
+    _loRenderPass->set(
+        0,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            api::vkTranslateFormat(_envIrradFormat),
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eClear,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eColorAttachmentOptimal
+        }
+    );
 
     _loRenderPass->_viewMasks.push_back(0b0000'0000'0011'1111ui32);
     _loRenderPass->_correlationMasks.push_back(0ui32);
@@ -875,17 +904,19 @@ void RevEarlyEnvIrradiance::setupPipeline() {
     /**
      * Create Framebuffer :: Attachments
      */
-    auto irradiance = factory->build({
-        buffer.extent(),
-        _envIrradFormat,
-        // Irradiance Sample Target
-        1ui32,
-        TextureType::eCube,
-        vk::ImageAspectFlagBits::eColor,
-        vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc,
-        vk::MemoryPropertyFlagBits::eDeviceLocal,
-        vk::SharingMode::eExclusive
-    });
+    auto irradiance = factory->build(
+        {
+            buffer.extent(),
+            _envIrradFormat,
+            // Irradiance Sample Target
+            1ui32,
+            TextureType::eCube,
+            vk::ImageAspectFlagBits::eColor,
+            vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            vk::SharingMode::eExclusive
+        }
+    );
 
     factory->buildView(irradiance);
 
@@ -927,43 +958,47 @@ void RevEarlyEnvIrradiance::postProcessAllocated(const ptr<HORenderPass> renderP
             continue;
         }
 
-        imgBarriers.push_back({
-            vk::AccessFlags {},
-            vk::AccessFlagBits::eColorAttachmentWrite,
-            vk::ImageLayout::eUndefined,
-            vk::ImageLayout::eColorAttachmentOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            attachment.buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                attachment.mipLevels(),
-                0,
-                attachment.layer()
+        imgBarriers.push_back(
+            {
+                vk::AccessFlags {},
+                vk::AccessFlagBits::eColorAttachmentWrite,
+                vk::ImageLayout::eUndefined,
+                vk::ImageLayout::eColorAttachmentOptimal,
+                VK_QUEUE_FAMILY_IGNORED,
+                VK_QUEUE_FAMILY_IGNORED,
+                attachment.buffer().image(),
+                vk::ImageSubresourceRange {
+                    vk::ImageAspectFlagBits::eColor,
+                    0,
+                    attachment.mipLevels(),
+                    0,
+                    attachment.layer()
+                }
             }
-        });
+        );
     }
 
     const auto irradianceEntry { data.at("RevEarlyEnvIrradianceNode::IrradianceCube"sv) };
     auto& irradiance { *_STD static_pointer_cast<Texture, void>(irradianceEntry) };
 
-    imgBarriers.push_back({
-        vk::AccessFlags {},
-        vk::AccessFlagBits::eShaderRead,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eShaderReadOnlyOptimal,
-        VK_QUEUE_FAMILY_IGNORED,
-        VK_QUEUE_FAMILY_IGNORED,
-        irradiance.buffer().image(),
-        vk::ImageSubresourceRange {
-            vk::ImageAspectFlagBits::eColor,
-            0,
-            irradiance.mipLevels(),
-            0,
-            irradiance.layer()
+    imgBarriers.push_back(
+        {
+            vk::AccessFlags {},
+            vk::AccessFlagBits::eShaderRead,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eShaderReadOnlyOptimal,
+            VK_QUEUE_FAMILY_IGNORED,
+            VK_QUEUE_FAMILY_IGNORED,
+            irradiance.buffer().image(),
+            vk::ImageSubresourceRange {
+                vk::ImageAspectFlagBits::eColor,
+                0,
+                irradiance.mipLevels(),
+                0,
+                irradiance.layer()
+            }
         }
-    });
+    );
 
     auto pool = _device->graphicsQueue()->pool();
     pool->lck().acquire();
@@ -973,11 +1008,16 @@ void RevEarlyEnvIrradiance::postProcessAllocated(const ptr<HORenderPass> renderP
     /**
      * Transform
      */
-    cmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-        vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
-        0, nullptr,
-        0, nullptr,
-        static_cast<u32>(imgBarriers.size()), imgBarriers.data()
+    cmd.vkCommandBuffer().pipelineBarrier(
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::DependencyFlags {},
+        0,
+        nullptr,
+        0,
+        nullptr,
+        static_cast<u32>(imgBarriers.size()),
+        imgBarriers.data()
     );
 
     cmd.end();

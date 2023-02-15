@@ -34,7 +34,9 @@
 #include <Engine.Reflect/EmberReflect.hpp>
 
 #include "RevMainSharedNode.hpp"
+#include "Engine.GFX/Texture/VirtualTextureView.hpp"
 #include "State/RevSfMtt.hpp"
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 using namespace ember::engine::gfx::glow::render;
 using namespace ember::engine::gfx::render;
@@ -480,59 +482,73 @@ void RevMainStaticNode::invoke(
     }
 
     if (model->hasOverrideMaterials()) {
-        auto* first { model->overrideMaterials().front() };
+        const auto& first = model->overrideMaterials().front();
 
         using material_map_type = ska::bytell_hash_map<ptr<void>, shader::DiscreteBindingGroup>;
 
         auto dataEntry { data.find("RevMainStaticNode::MaterialDescriptors"sv) };
         auto materialDescriptors { _STD static_pointer_cast<material_map_type, void>(dataEntry->second) };
 
-        auto materialIter { materialDescriptors->find(const_cast<ptr<assets::Asset>>(first->origin())) };
+        const auto* const asset = static_cast<const ptr<const assets::Asset>>(first->getAssociation());
+        auto materialIter { materialDescriptors->find(const_cast<ptr<assets::Asset>>(asset)) };
+
         if (materialIter == materialDescriptors->end()) {
+
+            auto guard = first->acquire(resource::ResourceUsageFlag::eRead);
+            const auto* const material = guard.imm();
+
             // TODO:
             auto dbg { createMaterialDescriptor(state) };
 
             //
-            dbg.getById(shader::ShaderBinding::id_type { 3 }).store(*first->_payload.view.get());
+            dbg.getById(shader::ShaderBinding::id_type { 3 }).store(*material->view());
 
             //
-            dbg.getById(shader::ShaderBinding::id_type { 4 }).store(first->_payload.diffuse->_payload.view->owner());
+            auto diffGuard = material->diffuse()->acquire(resource::ResourceUsageFlag::eRead);
+            dbg.getById(shader::ShaderBinding::id_type { 4 }).store(diffGuard->as<VirtualTextureView>()->owner());
 
             //
-            if (first->_payload.normal) {
+            if (not material->normal().empty()) {
+                auto normal = material->normal()->acquire(resource::ResourceUsageFlag::eRead);
                 dbg.getById(shader::ShaderBinding::id_type { 5 }).store(
-                    first->_payload.normal->_payload.view->owner()
+                    normal->as<VirtualTextureView>()->owner()
                 );
             }
-            if (first->_payload.roughness) {
+            if (not material->roughness().empty()) {
+                auto roughness = material->roughness()->acquire(resource::ResourceUsageFlag::eRead);
                 dbg.getById(shader::ShaderBinding::id_type { 6 }).store(
-                    first->_payload.roughness->_payload.view->owner()
+                    roughness->as<VirtualTextureView>()->owner()
                 );
             }
-            if (first->_payload.metalness) {
+            if (not material->metalness().empty()) {
+                auto metalness = material->metalness()->acquire(resource::ResourceUsageFlag::eRead);
                 dbg.getById(shader::ShaderBinding::id_type { 7 }).store(
-                    first->_payload.metalness->_payload.view->owner()
+                    metalness->as<VirtualTextureView>()->owner()
                 );
             }
-            if (first->_payload.ao) {
+            // TODO: Specular ?!?
+            if (not material->ao().empty()) {
+                auto ao = material->ao()->acquire(resource::ResourceUsageFlag::eRead);
                 dbg.getById(shader::ShaderBinding::id_type { 8 }).store(
-                    first->_payload.ao->_payload.view->owner()
+                    ao->as<VirtualTextureView>()->owner()
                 );
             }
-            if (first->_payload.alpha) {
+            if (not material->alpha().empty()) {
+                auto alpha = material->alpha()->acquire(resource::ResourceUsageFlag::eRead);
                 dbg.getById(shader::ShaderBinding::id_type { 9 }).store(
-                    first->_payload.alpha->_payload.view->owner()
+                    alpha->as<VirtualTextureView>()->owner()
                 );
             }
-            if (first->_payload.ao) {
+            if (not material->ao().empty()) {
+                auto ao = material->ao()->acquire(resource::ResourceUsageFlag::eRead);
                 dbg.getById(shader::ShaderBinding::id_type { 10 }).store(
-                    first->_payload.ao->_payload.view->owner()
+                    ao->as<VirtualTextureView>()->owner()
                 );
             }
 
             //
             auto result {
-                materialDescriptors->insert_or_assign(const_cast<ptr<assets::Asset>>(first->origin()), _STD move(dbg))
+                materialDescriptors->insert_or_assign(const_cast<ptr<assets::Asset>>(asset), _STD move(dbg))
             };
             materialIter = result.first;
         }
@@ -542,9 +558,11 @@ void RevMainStaticNode::invoke(
 
     if (model->hasOverrideMaterials()) {
 
-        auto* first { model->overrideMaterials().front() };
-        if (first->_payload.diffuse->isLoaded() &&
-            _STD ranges::find(__test_flag, static_cast<void*>(first)) == _STD ranges::end(__test_flag)
+        const auto& first = model->overrideMaterials().front();
+        auto material = first->acquire(resource::ResourceUsageFlag::eRead);
+
+        if (material->diffuse()->loaded() &&
+            _STD ranges::find(__test_flag, static_cast<void*>(first.get())) == _STD ranges::end(__test_flag)
         ) {
 
             #pragma region Test Stream-Feedback
@@ -617,12 +635,12 @@ void RevMainStaticNode::invoke(
                     #endif
 
                     /**/
-                    for (const auto& material : model->overrideMaterials()) {
+                    for (const auto& resource : model->overrideMaterials()) {
 
                         /**
                          * Get the csfm data offset by forward querying the material's dynamic index
                          */
-                        const auto dynIdx { mtt.forward.at(material) };
+                        const auto dynIdx { mtt.forward.at(resource.get()) };
                         const auto offset { dynIdx * (2ui32 + 171ui32) };
 
                         /**/
@@ -642,20 +660,22 @@ void RevMainStaticNode::invoke(
 
                         csfm->unmap();
 
-                        auto* diff { material->_payload.diffuse };
-                        auto& view { diff->_payload.view };
+                        auto material = resource->acquire(resource::ResourceUsageFlag::eRead);
 
-                        auto* norm { material->_payload.normal };
-                        auto& normView { norm->_payload.view };
+                        auto diff = material->diffuse()->acquire(resource::ResourceUsageFlag::eRead);
+                        auto& diffView = *diff->as<VirtualTextureView>();
 
-                        auto* rough { material->_payload.roughness };
-                        auto& roughView { rough->_payload.view };
+                        auto norm = material->normal()->acquire(resource::ResourceUsageFlag::eRead);
+                        auto& normView = *norm->as<VirtualTextureView>();
 
-                        auto* metal { material->_payload.metalness };
-                        auto& metalView { metal->_payload.view };
+                        auto rough = material->roughness()->acquire(resource::ResourceUsageFlag::eRead);
+                        auto& roughView = *rough->as<VirtualTextureView>();
 
-                        auto* ao { material->_payload.ao };
-                        auto& aoView { ao->_payload.view };
+                        auto metal = material->metalness()->acquire(resource::ResourceUsageFlag::eRead);
+                        auto& metalView = *metal->as<VirtualTextureView>();
+
+                        auto ao = material->ao()->acquire(resource::ResourceUsageFlag::eRead);
+                        auto& aoView = *ao->as<VirtualTextureView>();
 
                         for (auto&& sfi : indices) {
 
@@ -664,7 +684,7 @@ void RevMainStaticNode::invoke(
                             auto aksr {
                                 AssocKey<cache::TextureSubResource>::from(
                                     {
-                                        .layer = view->baseLayer(),
+                                        .layer = diffView.baseLayer(),
                                         .mip = static_cast<u32>(mip),
                                         .offset = offset,
                                         .extent = markerTexture->tileExtent(mip)
@@ -672,16 +692,16 @@ void RevMainStaticNode::invoke(
                                 )
                             };
 
-                            assert(normView->baseLayer() == aksr.value.layer);
-                            assert(roughView->baseLayer() == aksr.value.layer);
-                            assert(metalView->baseLayer() == aksr.value.layer);
-                            assert(aoView->baseLayer() == aksr.value.layer);
+                            assert(normView.baseLayer() == aksr.value.layer);
+                            assert(roughView.baseLayer() == aksr.value.layer);
+                            assert(metalView.baseLayer() == aksr.value.layer);
+                            assert(aoView.baseLayer() == aksr.value.layer);
 
-                            state->cacheCtrl.markAsUsed(diff, aksr);
-                            state->cacheCtrl.markAsUsed(norm, aksr);
-                            state->cacheCtrl.markAsUsed(rough, aksr);
-                            state->cacheCtrl.markAsUsed(metal, aksr);
-                            state->cacheCtrl.markAsUsed(ao, aksr);
+                            state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->diffuse() }, aksr);
+                            state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->normal() }, aksr);
+                            state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->roughness() }, aksr);
+                            state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->metalness() }, aksr);
+                            state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->ao() }, aksr);
                         }
                     }
                 }
@@ -689,7 +709,7 @@ void RevMainStaticNode::invoke(
             #endif
             #pragma endregion
 
-            const_cast<ptr<RevMainStaticNode>>(this)->__test_flag.push_back(first);
+            const_cast<ptr<RevMainStaticNode>>(this)->__test_flag.push_back(first.get());
         }
     }
 
@@ -699,8 +719,8 @@ void RevMainStaticNode::invoke(
     /**
      *
      */
-    cmd.bindVertexBuffer(0, staticGeomGuard->vertices().buffer, 0);
-    cmd.bindIndexBuffer(staticGeomGuard->indices().buffer, 0);
+    cmd.bindVertexBuffer(0, staticGeomGuard->vertices(), 0);
+    cmd.bindIndexBuffer(staticGeomGuard->indices(), 0);
 
     // TODO: Optimize finding binding group for model update [ePerInstance]
     u32 sbgIdx { 0ui32 };
@@ -749,7 +769,7 @@ void RevMainStaticNode::invoke(
      */
     //cmd.drawIndexed(1, 0, ... / sizeof(u32), 0ui32, 0ui32);
     //cmd.drawIndexed(1, 0, 1140ui32, 0ui32, 0ui32);
-    auto* asset { static_cast<const ptr<const assets::StaticGeometry>>(res->origin()) };
+    const auto* const asset = model->geometryAsset();
     cmd.drawIndexed(1, 0, asset->getIndexCount(), 0ui32, 0ui32);
 }
 
