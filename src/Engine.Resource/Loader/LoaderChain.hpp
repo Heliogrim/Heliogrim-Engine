@@ -7,8 +7,8 @@
 #include "Loader.hpp"
 #include "Cache.hpp"
 #include "Feedback.hpp"
-#include "SourceLoader.hpp"
 #include "Transformer.hpp"
+#include "SourceLoader/SourceLoader.hpp"
 
 namespace ember::engine::resource::loader {
     template <
@@ -139,7 +139,14 @@ namespace ember::engine::resource::loader {
         [[nodiscard]] typename traits::stream_response::type operator()(
             mref<typename traits::stream_request::type> request_,
             mref<typename traits::stream_request::options> options_
-        ) override;
+        ) override {
+            return invoke_stage<cache_stage_type, traits::stream_response::type>(
+                cache,
+                _STD move(request_),
+                _STD move(options_),
+                cacheLink
+            );
+        }
 
     private:
         /* Stage Invoker Helper */
