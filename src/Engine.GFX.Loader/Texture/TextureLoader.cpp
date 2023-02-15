@@ -1,6 +1,7 @@
 #include "TextureLoader.hpp"
 
 #include <Engine.GFX/Cache/GlobalCacheCtrl.hpp>
+#include <Engine.GFX/Pool/GlobalResourcePool.hpp>
 
 #include "TextureCache.hpp"
 #include "TextureFeedback.hpp"

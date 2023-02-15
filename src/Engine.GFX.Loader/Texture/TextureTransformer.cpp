@@ -11,7 +11,8 @@ using namespace ember::engine::gfx::loader;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-constexpr TextureTransformer::TextureTransformer(const non_owning_rptr<pool::GlobalResourcePool> pool_) :
+TextureTransformer::TextureTransformer(const non_owning_rptr<pool::GlobalResourcePool> pool_) :
+    Transformer(),
     _pool(pool_) {}
 
 smr<TextureResource> TextureTransformer::transpose(
@@ -25,7 +26,7 @@ smr<TextureResource> TextureTransformer::transpose(
 
     /**/
 
-    transformer::convertKtx(asset, from_, view.get());
+    transformer::convertKtx(asset, from_, view.get(), options_);
 
     /**/
 
@@ -56,4 +57,14 @@ TextureTransformer::response_type::type TextureTransformer::operator()(
 ) const {
     auto src = next_({}, next_type::next_request_type::options {});
     return transpose(_STD move(request_), _STD move(options_), _STD move(src));
+}
+
+engine::resource::loader::CacheStreamResponse<engine::assets::Texture>::type TextureTransformer::operator()(
+    mref<stream_request_type::type> request_,
+    mref<stream_request_type::options> options_,
+    cref<next_type> next_
+) const {
+    // TODO:
+    const auto source = next_({}, next_type::next_stream_request_type::options {});
+    // return (void);
 }
