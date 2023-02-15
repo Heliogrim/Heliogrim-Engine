@@ -3,13 +3,18 @@
 #include "__fwd.hpp"
 #include "../Source/Source.hpp"
 
+#include "SourceLoader/SourceLoadOptions.hpp"
+#include "SourceLoader/SourceStreamOptions.hpp"
+
 namespace ember::engine::resource::loader {
     class SourceLoader;
+
+    /**/
 
     template <>
     struct resource::loader::RequestOptions<SourceLoaderRequest<void>> {
         using this_type = RequestOptions<SourceLoaderRequest<void>>;
-        using type = this_type;
+        using type = SourceLoadOptions;
     };
 
     template <typename AssetType_>
@@ -20,7 +25,7 @@ namespace ember::engine::resource::loader {
     template <>
     struct resource::loader::StreamOptions<SourceLoaderStreamRequest<void>> {
         using this_type = StreamOptions<SourceLoaderStreamRequest<void>>;
-        using type = this_type;
+        using type = SourceStreamOptions;
     };
 
     template <typename AssetType_>
@@ -35,7 +40,7 @@ namespace ember::engine::resource::loader {
         using this_type = SourceLoaderRequest<void>;
 
         template <typename Type_>
-        using wrapper_type = smr<Type_>;
+        using wrapper_type = non_owning_rptr<Type_>;
         using value_type = assets::Asset;
 
         using type = wrapper_type<value_type>;
