@@ -18,7 +18,7 @@ namespace ember::engine::resource {
         using loaded_flag_type = u8;
 
     protected:
-        ResourceBase();
+        ResourceBase() noexcept;
 
     public:
         virtual ~ResourceBase() = default;

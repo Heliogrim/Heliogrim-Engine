@@ -76,7 +76,8 @@ namespace ember::engine::resource {
         [[nodiscard]] TypedManageGuard<Type_> acquire(
             const ResourceUsageFlags flags_ = ResourceUsageFlag::eDefault
         ) {
-            return static_cast<ptr<ResourceBase>>(this)->acquire(flags_);
+            auto guard = static_cast<ptr<ResourceBase>>(this)->acquire(flags_);
+            return static_cast<mref<TypedManageGuard<Type_>>>(guard);
         }
 
         /**
