@@ -8,7 +8,6 @@
 #include "Asset.hpp"
 
 namespace ember::engine::assets {
-
     class Font :
         public Asset {
     public:
@@ -29,18 +28,5 @@ namespace ember::engine::assets {
 
     public:
         [[nodiscard]] cref<Vector<Url>> sources() const noexcept;
-    };
-
-}
-
-namespace ember::engine::res {
-    template <>
-    struct LoaderOptions<::ember::engine::assets::Font> {
-        Vector<reflow::GlyphRange> ranges;
-        Vector<reflow::GlyphCode> glyphs;
-
-        /**/
-
-        Vector<u32> fontSizes;
     };
 }

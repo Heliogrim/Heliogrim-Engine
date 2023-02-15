@@ -45,23 +45,23 @@ std::string FileResource::getFileEnding(const DataType& type_) {
 }
 
 std::string FileResource::getRootDir() {
-    return getCurrentDir() + ember::File::seperator + "resources";
+    return getCurrentDir() + ember::fs::File::seperator + "resources";
 }
 
 std::string FileResource::getAssetDir() {
-    return getRootDir() + ember::File::seperator + "assets";
+    return getRootDir() + ember::fs::File::seperator + "assets";
 }
 
 std::string FileResource::getAudioDir() {
-    return getAssetDir() + ember::File::seperator + "audio";
+    return getAssetDir() + ember::fs::File::seperator + "audio";
 }
 
 std::string FileResource::getTextureDir() {
-    return getAssetDir() + ember::File::seperator + "texture";
+    return getAssetDir() + ember::fs::File::seperator + "texture";
 }
 
 std::string FileResource::getWorldDir() {
-    return getRootDir() + ember::File::seperator + "world";
+    return getRootDir() + ember::fs::File::seperator + "world";
 }
 
 std::string FileResource::getCurrentDir() {

@@ -1,10 +1,10 @@
 #include "Win32DragDropObject.hpp"
 
 #include <Engine.Logging/Logger.hpp>
+#include <sstream>
 #include <ShlObj_core.h>
 
 namespace ember::engine::input {
-
     // @see https://learn.microsoft.com/en-us/windows/win32/shell/clipboard#cf_hdrop
     struct DragDropObjectFilePayload {
         _STD wstring paths;
@@ -14,7 +14,6 @@ namespace ember::engine::input {
     struct DragDropObjectTextPayload {
         _STD wstring data;
     };
-
 }
 
 using namespace ember::engine::input;
@@ -57,17 +56,23 @@ bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
     for (const auto& path : paths_) {
 
         const auto wsize = MultiByteToWideChar(
-            CP_UTF8,NULL,
-            path.c_str(), path.size(),
-            NULL, 0
+            CP_UTF8,
+            NULL,
+            path.c_str(),
+            path.size(),
+            NULL,
+            0
         );
 
         _STD wstring wpath(wsize, NULL);
 
         MultiByteToWideChar(
-            CP_UTF8, NULL,
-            path.c_str(), path.size(),
-            wpath.data(), wpath.size()
+            CP_UTF8,
+            NULL,
+            path.c_str(),
+            path.size(),
+            wpath.data(),
+            wpath.size()
         );
 
         stream << wpath << wchar_t { '\0' };
@@ -138,17 +143,23 @@ bool Win32DragDropObject::storeText(cref<string> text_) {
     _type = DragDropObjectType::eTextType;
 
     const auto wsize = MultiByteToWideChar(
-        CP_UTF8,NULL,
-        text_.c_str(), text_.size(),
-        NULL, 0
+        CP_UTF8,
+        NULL,
+        text_.c_str(),
+        text_.size(),
+        NULL,
+        0
     );
 
     _STD wstring wtext(wsize, NULL);
 
     MultiByteToWideChar(
-        CP_UTF8, NULL,
-        text_.c_str(), text_.size(),
-        wtext.data(), wtext.size()
+        CP_UTF8,
+        NULL,
+        text_.c_str(),
+        text_.size(),
+        wtext.data(),
+        wtext.size()
     );
 
     wtext.append(1, '\0');

@@ -7,7 +7,6 @@
 #include "../FileTypeId.hpp"
 
 namespace ember::engine::res {
-
     class __declspec(novtable) ImporterBase {
     public:
         template <class ImportType_, class DescriptorType_>
@@ -48,7 +47,7 @@ namespace ember::engine::res {
          *
          * @returns True if we can import, false if not.
          */
-        [[nodiscard]] virtual bool canImport(cref<FileTypeId> typeId_, cref<File> file_) const noexcept = 0;
+        [[nodiscard]] virtual bool canImport(cref<FileTypeId> typeId_, cref<fs::File> file_) const noexcept = 0;
     };
 
     template <class ImportType_, class DescriptorType_>
@@ -108,6 +107,6 @@ namespace ember::engine::res {
          *
          * @returns An import_result_type.
          */
-        [[nodiscard]] virtual import_result_type import(cref<FileTypeId> typeId_, cref<File> file_) const = 0;
+        [[nodiscard]] virtual import_result_type import(cref<FileTypeId> typeId_, cref<fs::File> file_) const = 0;
     };
 }

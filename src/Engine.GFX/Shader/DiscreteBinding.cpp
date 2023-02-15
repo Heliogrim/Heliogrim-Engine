@@ -42,7 +42,7 @@ vk::DescriptorSet DiscreteBinding::vkSet() const noexcept {
     return _vkSet;
 }
 
-void DiscreteBinding::store(const ref<Buffer> buffer_) {
+void DiscreteBinding::store(cref<Buffer> buffer_) {
     /**
      * Translate BindingType to vk::DescriptorType
      */
@@ -97,7 +97,7 @@ void DiscreteBinding::store(const ref<Buffer> buffer_) {
     );
 }
 
-void DiscreteBinding::store(const ref<VirtualBuffer> buffer_) {
+void DiscreteBinding::store(cref<VirtualBuffer> buffer_) {
     /**
      * Translate BindingType to vk::DescriptorType
      */
@@ -152,7 +152,7 @@ void DiscreteBinding::store(const ref<VirtualBuffer> buffer_) {
     );
 }
 
-void DiscreteBinding::store(const ref<VirtualBufferView> view_) {
+void DiscreteBinding::store(cref<VirtualBufferView> view_) {
     /**
      * Translate BindingType to vk::DescriptorType
      */

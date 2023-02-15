@@ -7,7 +7,7 @@
 using namespace ember::engine::res;
 using namespace ember;
 
-Watcher::Watcher(cref<File> root_) :
+Watcher::Watcher(cref<fs::File> root_) :
     _root(root_) {
     setup();
 }
@@ -41,7 +41,7 @@ void Watcher::setup() {
     /**
      * Setup Notification Handle
      */
-    _handle = FindFirstChangeNotification(_root.url().c_str(), TRUE, mask);
+    _handle = FindFirstChangeNotification(_root.path().string().c_str(), TRUE, mask);
     assert(_handle != INVALID_HANDLE_VALUE);
 
     /**
@@ -49,23 +49,30 @@ void Watcher::setup() {
      */
     // WaitForSingleObject(_handle, 500000);
     // WaitForMultipleObjects(1, &_handle, FALSE, 500000);
-    RegisterWaitForSingleObject(&_waitHandle, _handle, [](IN PVOID self_, IN BOOLEAN timerOrWait_) {
+    RegisterWaitForSingleObject(
+        &_waitHandle,
+        _handle,
+        [](IN PVOID self_, IN BOOLEAN timerOrWait_) {
 
-        /**
-         * Guard from timeout
-         */
-        if (timerOrWait_ == TRUE) {
-            return;
-        }
+            /**
+             * Guard from timeout
+             */
+            if (timerOrWait_ == TRUE) {
+                return;
+            }
 
-        static_cast<ptr<Watcher>>(self_)->notify();
-        #ifdef _DEBUG
-        assert(FindNextChangeNotification(static_cast<ptr<Watcher>>(self_)->_handle));
-        #else
+            static_cast<ptr<Watcher>>(self_)->notify();
+            #ifdef _DEBUG
+            assert(FindNextChangeNotification(static_cast<ptr<Watcher>>(self_)->_handle));
+            #else
         FindNextChangeNotification(static_cast<ptr<Watcher>>(self_)->_handle);
-        #endif
+            #endif
 
-    }, this, INFINITE, WT_EXECUTEDEFAULT);
+        },
+        this,
+        INFINITE,
+        WT_EXECUTEDEFAULT
+    );
 
     /**
      * Preregister first state
@@ -89,9 +96,9 @@ void Watcher::notify(const bool publish_) {
         }
     }
 
-    for (const auto& entry : _STD filesystem::recursive_directory_iterator { _root.url() }) {
+    for (const auto& entry : _STD filesystem::recursive_directory_iterator { _root.path() }) {
 
-        const File file { entry.path().string() };
+        const fs::File file { entry.path().string() };
         const auto lastWrite = _STD filesystem::last_write_time(entry);
 
         /**
@@ -114,30 +121,36 @@ void Watcher::notify(const bool publish_) {
     }
 }
 
-cref<File> Watcher::root() const noexcept {
+cref<fs::File> Watcher::root() const noexcept {
     return _root;
 }
 
-File Watcher::root() noexcept {
+fs::File Watcher::root() noexcept {
     return _root;
 }
 
-Watcher::operator const File() const noexcept {
+Watcher::operator const fs::File() const noexcept {
     return _root;
 }
 
-Watcher::operator File() noexcept {
+Watcher::operator fs::File() noexcept {
     return _root;
 }
 
-void Watcher::setCreateCallback(cref<std::function<void(File file_)>> callback_) noexcept {
+void Watcher::setCreateCallback(
+    cref<std::function<void(fs::File file_)>> callback_
+) noexcept {
     _createCallback = callback_;
 }
 
-void Watcher::setModifiedCallback(cref<std::function<void(File file_)>> callback_) noexcept {
+void Watcher::setModifiedCallback(
+    cref<std::function<void(fs::File file_)>> callback_
+) noexcept {
     _modifiedCallback = callback_;
 }
 
-void Watcher::setEraseCallback(cref<std::function<void(File file_)>> callback_) noexcept {
+void Watcher::setEraseCallback(
+    cref<std::function<void(fs::File file_)>> callback_
+) noexcept {
     _eraseCallback = callback_;
 }

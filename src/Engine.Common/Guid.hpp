@@ -1,13 +1,20 @@
 #pragma once
 
-#include <combaseapi.h>
-
 #include "Types.hpp"
 #include "Wrapper.hpp"
 #include "__macro.hpp"
 #include "Integral128.hpp"
 
+#ifdef _WIN32
+struct _GUID;
+#endif
+
 namespace ember {
+    namespace {
+        // @see <cstddef>
+        enum class byte : unsigned char {};
+    };
+
     struct Guid {
         constexpr Guid() noexcept :
             data() {}
@@ -33,16 +40,16 @@ namespace ember {
             c1(c1_),
             post(post_) {}
 
-        Guid(const byte (&bytes_)[16]) :
+        Guid(
+            const byte (&bytes_)[16]
+        ) :
             Guid() {
             _STD memcpy(bytes, bytes_, 16);
         }
 
-        explicit Guid(const GUID& value_) :
-            pre(value_.Data1),
-            c0(value_.Data2),
-            c1(value_.Data3),
-            post(*reinterpret_cast<const u64* const>(value_.Data4)) {}
+        #ifdef _WIN32
+        explicit Guid(const _GUID& value_);
+        #endif
 
         constexpr ref<Guid> operator=(cref<Guid> other_) noexcept {
             data = other_.data;
@@ -104,12 +111,5 @@ namespace ember {
         };
     };
 
-    inline void GuidGenerate(ref<Guid> guid_) {
-        #ifdef _WIN32
-        static_assert(sizeof(Guid) == sizeof(GUID));
-        CoCreateGuid(reinterpret_cast<GUID*>(&guid_.bytes));
-        #else
-        #pragma error("Not implemented uuid generator.")
-        #endif
-    }
+    extern void GuidGenerate(ref<Guid> guid_);
 }

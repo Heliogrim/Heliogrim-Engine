@@ -8,7 +8,7 @@
 using namespace ember::engine::sfx;
 using namespace ember;
 
-bool VorbisImporter::canImport(cref<res::FileTypeId> typeId_, cref<File> file_) const noexcept {
+bool VorbisImporter::canImport(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const noexcept {
     return typeId_ == AudioFileType::Ogg;
 }
 
@@ -16,10 +16,10 @@ VorbisImporter::descriptor_type VorbisImporter::descriptor() const noexcept {
     return {};
 }
 
-VorbisImporter::import_result_type VorbisImporter::import(cref<res::FileTypeId> typeId_, cref<File> file_) const {
+VorbisImporter::import_result_type VorbisImporter::import(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const {
 
     OggVorbis_File vf;
-    if (ov_fopen(file_.url().c_str(), &vf) < 0) {
+    if (ov_fopen(file_.path().string().c_str(), &vf) < 0) {
         // Error opening
         throw _STD runtime_error("Could not open file to parse vorbis data.");
     }

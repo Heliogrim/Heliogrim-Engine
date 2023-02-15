@@ -5,6 +5,8 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
 #include <Engine.Reflow/Window/Window.hpp>
+#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
+#include <Engine.GFX.Loader/Font/FontResource.hpp>
 
 namespace ember {
     class Actor;
@@ -15,7 +17,8 @@ namespace ember::engine::gfx {
     class Device;
 }
 
-extern ember::sptr<ember::engine::gfx::Texture> testTexture;
+extern ember::smr<ember::engine::gfx::TextureResource> testTexture;
+extern ember::smr<ember::engine::gfx::FontResource> testFont;
 
 extern ember::wptr<ember::engine::reflow::Widget> testFrameDisplay;
 extern ember::wptr<ember::engine::reflow::Widget> testFrameTime;
@@ -37,4 +40,4 @@ void buildTestUI(
     const ember::non_owning_rptr<ember::engine::reflow::Window> window_
 );
 
-ember::ptr<ember::engine::reflow::Font> getDefaultFont();
+const ember::ptr<ember::engine::reflow::Font> getDefaultFont();

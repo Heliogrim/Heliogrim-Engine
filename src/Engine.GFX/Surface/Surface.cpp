@@ -1,6 +1,7 @@
 #include "Surface.hpp"
 
 #include <Engine.Common/stdafx.h>
+#include <Engine.Common/SDL2.hpp>
 
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>

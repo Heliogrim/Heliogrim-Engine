@@ -43,6 +43,12 @@
     <Filter Include="Quelldateien\Stream">
       <UniqueIdentifier>{39223e18-870c-4353-8921-e4e4fa88acf6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Loader\SourceLoader">
+      <UniqueIdentifier>{adc2c1b8-d8f3-4193-958a-3369fdd6831f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Loader\SourceLoader">
+      <UniqueIdentifier>{0a24f38d-32ab-4d00-906b-d1eb40e6fbe2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Resource\FileResource.hpp">
@@ -171,6 +177,15 @@
     <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoaderTraits.hpp">
       <Filter>Headerdateien\Loader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoader\SourceLoadOptions.hpp">
+      <Filter>Headerdateien\Loader\SourceLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoader\SourceStreamOptions.hpp">
+      <Filter>Headerdateien\Loader\SourceLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoader\SourceLoader.hpp">
+      <Filter>Headerdateien\Loader\SourceLoader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Resource\FileResource.cpp">
@@ -217,6 +232,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Resource\Manage\ResourceBase.cpp">
       <Filter>Quelldateien\Manage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\Loader\SourceLoader\SourceLoader.cpp">
+      <Filter>Quelldateien\Loader\SourceLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource\File.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

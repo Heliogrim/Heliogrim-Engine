@@ -82,11 +82,11 @@ namespace ember::engine::gfx::shader {
          *
          * @param  buffer_ The buffer to store.
          */
-        void store(const ref<Buffer>& buffer_);
+        void store(cref<Buffer> buffer_);
 
-        void store(const ref<VirtualBuffer> buffer_);
+        void store(cref<VirtualBuffer> buffer_);
 
-        void store(const ref<VirtualBufferView> view_);
+        void store(cref<VirtualBufferView> view_);
 
     private:
         /**

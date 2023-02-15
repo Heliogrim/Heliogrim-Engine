@@ -13,9 +13,12 @@ bool ImporterManager::registerImporter(cref<FileTypeId> fileTypeId_, cref<sptr<I
 
 bool ImporterManager::unregisterImporter(sptr<ImporterBase> importer_) noexcept {
 
-    const auto iter = _STD ranges::find_if(_mapping, [importer_](const auto& pair_) {
-        return pair_.second == importer_;
-    });
+    const auto iter = _STD ranges::find_if(
+        _mapping,
+        [importer_](const auto& pair_) {
+            return pair_.second == importer_;
+        }
+    );
 
     if (iter == _mapping.cend()) {
         return false;
@@ -38,7 +41,7 @@ bool ImporterManager::unregisterImporter(cref<FileTypeId> fileTypeId_) noexcept 
     return true;
 }
 
-sptr<ImporterBase> ImporterManager::importer(cref<FileTypeId> fileType_, cref<File> file_) const {
+sptr<ImporterBase> ImporterManager::importer(cref<FileTypeId> fileType_, cref<fs::File> file_) const {
 
     auto mapped = _mapping.find(fileType_);
     if (mapped == _mapping.cend()) {

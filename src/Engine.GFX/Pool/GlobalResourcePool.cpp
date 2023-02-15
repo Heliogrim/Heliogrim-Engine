@@ -1,5 +1,8 @@
 #include "GlobalResourcePool.hpp"
 
+#include "../Buffer/VirtualBufferView.hpp"
+#include "../Texture/VirtualTextureView.hpp"
+
 using namespace ember::engine::gfx::pool;
 using namespace ember;
 

@@ -2,7 +2,6 @@
 #include "SoundImporter.hpp"
 
 namespace ember::engine::sfx {
-
     class WavImporter :
         public SoundImporter {
     public:
@@ -33,10 +32,10 @@ namespace ember::engine::sfx {
         ~WavImporter() noexcept override = default;
 
     public:
-        [[nodiscard]] bool canImport(cref<res::FileTypeId> typeId_, cref<File> file_) const noexcept override;
+        [[nodiscard]] bool canImport(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const noexcept override;
 
         [[nodiscard]] descriptor_type descriptor() const noexcept override;
 
-        [[nodiscard]] import_result_type import(cref<res::FileTypeId> typeId_, cref<File> file_) const override;
+        [[nodiscard]] import_result_type import(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const override;
     };
 }

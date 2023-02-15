@@ -2,7 +2,9 @@
 
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/String.hpp>
+#include <Engine.Common/Make.hpp>
 
+#include <sstream>
 #include <locale>
 #include <format>
 #include <codecvt>
@@ -144,18 +146,26 @@ static Vector<string> handleFileDrop(ptr<IDataObject> data_, cref<FORMATETC> for
                     if (not ss.view().empty()) {
 
                         const auto dstSize = WideCharToMultiByte(
-                            CP_UTF8, NULL,
-                            ss.view().data(), ss.view().size(),
-                            NULL, 0,
-                            NULL, NULL
+                            CP_UTF8,
+                            NULL,
+                            ss.view().data(),
+                            ss.view().size(),
+                            NULL,
+                            0,
+                            NULL,
+                            NULL
                         );
 
                         _STD string fileName(dstSize, (NULL));
                         WideCharToMultiByte(
-                            CP_UTF8, NULL,
-                            ss.view().data(), ss.view().size(),
-                            fileName.data(), dstSize,
-                            NULL, NULL
+                            CP_UTF8,
+                            NULL,
+                            ss.view().data(),
+                            ss.view().size(),
+                            fileName.data(),
+                            dstSize,
+                            NULL,
+                            NULL
                         );
 
                         files.push_back(fileName);
@@ -194,20 +204,28 @@ static string handleTextDrop(ptr<IDataObject> data_, cref<FORMATETC> format_, re
             ptr<wchar_t> input { static_cast<ptr<wchar_t>>(dataPtr) };
 
             const auto dstSize = WideCharToMultiByte(
-                CP_UTF8, NULL,
-                input, -1,
-                NULL, 0,
-                NULL, NULL
+                CP_UTF8,
+                NULL,
+                input,
+                -1,
+                NULL,
+                0,
+                NULL,
+                NULL
             );
 
             text.clear();
             text.append(dstSize, (NULL));
 
             WideCharToMultiByte(
-                CP_UTF8, NULL,
-                medium_.lpszFileName, -1,
-                text.data(), dstSize,
-                NULL, NULL
+                CP_UTF8,
+                NULL,
+                medium_.lpszFileName,
+                -1,
+                text.data(),
+                dstSize,
+                NULL,
+                NULL
             );
 
             GlobalUnlock(medium_.hGlobal);

@@ -1,5 +1,6 @@
 ﻿#include "GlobalPooledAllocator.hpp"
 
+#include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 #include "Allocator.hpp"
 #include "MemoryPool.hpp"
@@ -28,8 +29,11 @@ bool GlobalPooledAllocator::shouldPool(cref<MemoryLayout> layout_, const u64 siz
     return false;
 }
 
-AllocationResult GlobalPooledAllocator::allocate(cref<MemoryLayout> layout_, const u64 size_,
-    ref<ptr<AllocatedMemory>> dst_) {
+AllocationResult GlobalPooledAllocator::allocate(
+    cref<MemoryLayout> layout_,
+    const u64 size_,
+    ref<ptr<AllocatedMemory>> dst_
+) {
 
     const auto cacheResult { _cache.allocate(layout_, size_, dst_) };
     if (cacheResult == AllocationResult::eSuccess) {
@@ -116,8 +120,12 @@ void GlobalPooledAllocator::free(mref<ptr<AllocatedMemory>> mem_) {
 #include "../Device/Device.hpp"
 #include "../API/VkTranslate.hpp"
 
-AllocationResult engine::gfx::memory::allocate(const ptr<GlobalPooledAllocator> alloc_, cref<sptr<Device>> device_,
-    cref<MemoryProperties> props_, ref<Buffer> buffer_) {
+AllocationResult engine::gfx::memory::allocate(
+    const ptr<GlobalPooledAllocator> alloc_,
+    cref<sptr<Device>> device_,
+    cref<MemoryProperties> props_,
+    ref<Buffer> buffer_
+) {
 
     const auto req { device_->vkDevice().getBufferMemoryRequirements(buffer_.buffer) };
     const MemoryLayout layout {

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <sstream>
-
 #include "Types.hpp"
 #include "String.hpp"
 #include "Wrapper.hpp"
@@ -169,15 +167,7 @@ namespace ember {
          *
          * @details `<scheme>://<user><:?><password><@?><host><:?><port><path><?:><query><#?><fragment>`
          */
-        [[nodiscard]] string encode() const noexcept {
-
-            _STD stringstream ss {};
-            ss << _scheme << "://"sv;
-            // TODO: user, password, host, port
-            ss << _path;
-
-            return ss.str();
-        }
+        [[nodiscard]] string encode() const noexcept;
 
         /**
          * Cast this to a string

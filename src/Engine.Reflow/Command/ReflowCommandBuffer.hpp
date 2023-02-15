@@ -7,13 +7,12 @@
 #include <Engine.GFX/Color/Color.hpp>
 #include <Engine.GFX/Geometry/UIVertex.hpp>
 #include <Engine.GFX/Texture/ProxyTexture.hpp>
+#include <Engine.GFX/vkinc.hpp>
 
 #include "../Font/Font.hpp"
 
 namespace ember::engine::reflow {
-
     class ReflowCommandBuffer {
-
     public:
         void begin();
 
@@ -56,45 +55,72 @@ namespace ember::engine::reflow {
 
         void drawTriangle(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, cref<color> color_);
 
-        void drawTriangleLine(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, cref<color> color_,
-            const float strength_);
+        void drawTriangleLine(
+            math::vec2 p0_,
+            math::vec2 p1_,
+            math::vec2 p2_,
+            cref<color> color_,
+            const float strength_
+        );
 
         void drawQuad(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, math::vec2 p3_, cref<color> color_);
 
-        void drawQuadLine(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, math::vec2 p3_, cref<color> color_,
-            const float strength_);
+        void drawQuadLine(
+            math::vec2 p0_,
+            math::vec2 p1_,
+            math::vec2 p2_,
+            math::vec2 p3_,
+            cref<color> color_,
+            const float strength_
+        );
 
         void drawRect(math::vec2 min_, math::vec2 max_, cref<color> color_);
 
         void drawRectLine(math::vec2 min_, math::vec2 max_, cref<color> color_, const float strength_);
 
-        void drawArc(math::vec2 pos_, const float radius_, const float fromTheta_, const float toTheta_,
-            cref<color> color_);
+        void drawArc(
+            math::vec2 pos_,
+            const float radius_,
+            const float fromTheta_,
+            const float toTheta_,
+            cref<color> color_
+        );
 
     public:
-        void drawText(math::vec2 pos_, cref<string_view> text_, _In_ ref<Font> font_, const float fontSize_,
-            cref<color> color_);
+        void drawText(
+            math::vec2 pos_,
+            cref<string_view> text_,
+            _In_ ref<Font> font_,
+            const float fontSize_,
+            cref<color> color_
+        );
 
         void drawImage(
-            math::vec2 p0_, math::vec2 uv0_,
-            math::vec2 p1_, math::vec2 uv1_,
-            math::vec2 p2_, math::vec2 uv2_,
-            math::vec2 p3_, math::vec2 uv3_,
+            math::vec2 p0_,
+            math::vec2 uv0_,
+            math::vec2 p1_,
+            math::vec2 uv1_,
+            math::vec2 p2_,
+            math::vec2 uv2_,
+            math::vec2 p3_,
+            math::vec2 uv3_,
             gfx::ProxyTexture<non_owning_rptr> image_,
             cref<color> color_
         );
 
         void drawImageAsync(
-            math::vec2 p0_, math::vec2 uv0_,
-            math::vec2 p1_, math::vec2 uv1_,
-            math::vec2 p2_, math::vec2 uv2_,
-            math::vec2 p3_, math::vec2 uv3_,
+            math::vec2 p0_,
+            math::vec2 uv0_,
+            math::vec2 p1_,
+            math::vec2 uv1_,
+            math::vec2 p2_,
+            math::vec2 uv2_,
+            math::vec2 p3_,
+            math::vec2 uv3_,
             gfx::ProxyTexture<non_owning_rptr> image_,
             vk::Semaphore wait_,
             vk::Semaphore signal_,
             cref<color> color_
         );
-
     };
-
 }

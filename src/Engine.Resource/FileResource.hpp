@@ -84,7 +84,6 @@ public:
     static std::string getWorldDir();
 
 private:
-
     /**
      * Gets current dir
      *

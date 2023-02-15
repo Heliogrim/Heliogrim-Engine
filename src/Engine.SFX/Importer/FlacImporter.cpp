@@ -11,7 +11,7 @@
 using namespace ember::engine::sfx;
 using namespace ember;
 
-bool FlacImporter::canImport(cref<res::FileTypeId> typeId_, cref<File> file_) const noexcept {
+bool FlacImporter::canImport(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const noexcept {
     return typeId_ == AudioFileType::Flac;
 }
 
@@ -19,9 +19,9 @@ FlacImporter::descriptor_type FlacImporter::descriptor() const noexcept {
     return {};
 }
 
-FlacImporter::import_result_type FlacImporter::import(cref<res::FileTypeId> typeId_, cref<File> file_) const {
+FlacImporter::import_result_type FlacImporter::import(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const {
 
-    const ptr<drflac> flac = drflac_open_file(file_.url().c_str(), {});
+    const ptr<drflac> flac = drflac_open_file(file_.path().string().c_str(), {});
     if (flac == nullptr) {
         // Error opening
         throw _STD runtime_error("Could not open file to parse flac data.");

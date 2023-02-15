@@ -33,6 +33,9 @@
     <ClInclude Include="..\..\src\Engine.Resource\Loader\LoaderTraits.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoaderTraits.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoader\SourceLoader.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoader\SourceLoadOptions.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource\Loader\SourceLoader\SourceStreamOptions.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Loader\Transformer.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Loader\TransformerTraits.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource\Loader\__fwd.hpp" />
@@ -59,12 +62,14 @@
     <ClInclude Include="..\..\src\Engine.Resource\tmp.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Resource\File.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\FileResource.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\FileTypeId.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\ImporterManager.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\Indexer\Indexer.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\Indexer\Watcher.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\LoaderManager.cpp" />
+    <ClCompile Include="..\..\src\Engine.Resource\Loader\SourceLoader\SourceLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\Locator.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\Manage\ManageGuard.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource\Manage\Resource.cpp" />

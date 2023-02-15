@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Engine.Common/stdafx.h>
+#include <ole2.h>
 
-#include <thread>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Task/SignaledQueue.hpp>
 
@@ -10,7 +10,6 @@
 #include "DragDropObject.hpp"
 
 namespace ember::engine::input {
-
     class Win32DragDropSender :
         public DragDropSender,
         public IDropSource {
@@ -57,5 +56,4 @@ namespace ember::engine::input {
 
         HRESULT GiveFeedback(DWORD dwEffect) override;
     };
-
 }
