@@ -90,18 +90,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontCache.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontFeedback.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontLoadOptions.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontResource.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontTransformer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\Traits.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\__fwd.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryCache.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryFeedback.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryLoadOptions.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryResource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryStreamOptions.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryTransformer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\Traits.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Manager.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialCache.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialFeedback.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialLoader.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialLoadOptions.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialResource.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialTransformer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\Traits.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureCache.hpp" />
@@ -116,8 +128,20 @@
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\FontCache.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\FontFeedback.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\FontLoader.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\FontTransformer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryCache.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryFeedback.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryLoader.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryTransformer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Manager.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialCache.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialFeedback.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialResource.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialTransformer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureCache.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureFeedback.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.cpp" />
