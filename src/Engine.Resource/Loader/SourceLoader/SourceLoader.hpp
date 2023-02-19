@@ -16,7 +16,7 @@ namespace ember::engine::resource::loader {
         using underlying_type::stream_response_type;
 
     public:
-        constexpr SourceLoader();
+        SourceLoader();
 
         ~SourceLoader() noexcept override;
 

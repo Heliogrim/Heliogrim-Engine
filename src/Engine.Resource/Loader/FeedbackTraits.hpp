@@ -73,7 +73,7 @@ namespace ember::engine::resource::loader {
 
     /**/
 
-    template <typename AssetType_, typename ResourceType_, bool Streamable_>
+    template <typename AssetType_, typename ResourceType_, bool Streamable_ = IsStreamRequestSubjectType<AssetType_>>
     struct __declspec(novtable) FeedbackNextLink {
         using this_type = FeedbackNextLink<AssetType_, ResourceType_, Streamable_>;
 
