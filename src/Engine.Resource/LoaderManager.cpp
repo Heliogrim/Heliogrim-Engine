@@ -1,11 +1,19 @@
 #include "LoaderManager.hpp"
 
+#include "Loader/SourceLoader/SourceLoader.hpp"
+
 using namespace ember::engine::resource;
 using namespace ember;
 
-LoaderManager::LoaderManager() noexcept = default;
+LoaderManager::LoaderManager() :
+    _sharedSourceLoader(make_sptr<loader::SourceLoader>()),
+    _loader() {}
 
-LoaderManager::~LoaderManager() noexcept = default;
+LoaderManager::~LoaderManager() = default;
+
+sptr<loader::SourceLoader> LoaderManager::sharedSourceLoader() const {
+    return _sharedSourceLoader;
+}
 
 sptr<loader::LoaderBase> LoaderManager::selectLoader(cref<asset_type_id> typeId_, ptr<void> options_) const noexcept {
 
