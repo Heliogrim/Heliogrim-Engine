@@ -20,9 +20,14 @@ namespace ember::engine::gfx::loader {
         using underlying_type::stream_response_type;
 
     public:
-        StaticGeometryTransformer();
+        StaticGeometryTransformer(
+            const non_owning_rptr<pool::GlobalResourcePool> pool_
+        );
 
         ~StaticGeometryTransformer() override = default;
+
+    private:
+        const non_owning_rptr<pool::GlobalResourcePool> _pool;
 
     public:
         [[nodiscard]] response_type::type operator()(
