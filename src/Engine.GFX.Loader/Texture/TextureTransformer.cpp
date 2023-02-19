@@ -22,7 +22,15 @@ smr<TextureResource> TextureTransformer::transpose(
 ) const {
 
     const non_owning_rptr<const assets::Texture> asset = request_;
-    auto view = _pool->allocateVirtualTexture({ asset });
+    auto view = _pool->allocateVirtualTexture(
+        pool::VirtualTextureAllocation {
+            .layers = 1ui32,
+            .extent = asset->getExtent(),
+            .format = asset->getTextureFormat(),
+            .mipLevels = { 0ui32, asset->getMipLevelCount() - 1ui32 },
+            .type = asset->getTextureType()
+        }
+    );
 
     /**/
 
