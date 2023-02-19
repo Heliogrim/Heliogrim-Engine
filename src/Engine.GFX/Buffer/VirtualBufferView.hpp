@@ -6,7 +6,6 @@
 #include "__fwd.hpp"
 
 namespace ember::engine::gfx {
-
     class VirtualBufferView final {
     public:
         friend class VirtualBuffer;
@@ -44,6 +43,10 @@ namespace ember::engine::gfx {
     private:
         Vector<non_owning_rptr<VirtualBufferPage>> _pages;
 
+    public:
+        // TODO: Should be protected / private ...
+        [[nodiscard]] cref<Vector<non_owning_rptr<VirtualBufferPage>>> pages() const noexcept;
+
     private:
         u64 _offset;
         u64 _size;
@@ -53,5 +56,4 @@ namespace ember::engine::gfx {
 
         [[nodiscard]] u64 size() const noexcept;
     };
-
 }

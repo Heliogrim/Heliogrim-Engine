@@ -20,6 +20,10 @@ const non_owning_rptr<const VirtualBuffer> VirtualBufferView::owner() const noex
     return _owner;
 }
 
+cref<Vector<non_owning_rptr<VirtualBufferPage>>> VirtualBufferView::pages() const noexcept {
+    return _pages;
+}
+
 u64 VirtualBufferView::offset() const noexcept {
     return _offset;
 }
