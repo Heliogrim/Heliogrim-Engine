@@ -10,10 +10,14 @@
 using namespace ember::engine::gfx::loader;
 using namespace ember;
 
-TextureLoader::TextureLoader(const non_owning_rptr<cache::GlobalCacheCtrl> cache_) :
+TextureLoader::TextureLoader(
+    const non_owning_rptr<cache::GlobalCacheCtrl> cache_,
+    const non_owning_rptr<pool::GlobalResourcePool> pool_,
+    mref<sptr<TextureSourceLoader>> sourceLoader_
+) :
     TextureLoaderType(
         TextureCache(cache_),
         TextureFeedback(),
-        TextureTransformer(nullptr),
-        nullptr
+        TextureTransformer(pool_),
+        _STD move(sourceLoader_)
     ) {}

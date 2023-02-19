@@ -46,15 +46,15 @@ namespace ember::engine::gfx::loader {
         ) const;
 
     public:
-        [[nodiscard]] typename response_type::type operator()(
-            _In_ mref<typename request_type::type> request_,
-            _In_ mref<typename request_type::options> options_,
+        [[nodiscard]] response_type::type operator()(
+            _In_ mref<request_type::type> request_,
+            _In_ mref<request_type::options> options_,
             _In_ cref<next_type> next_
         ) const override;
 
-        [[nodiscard]] typename stream_response_type::type operator()(
-            _In_ mref<typename stream_request_type::type> request_,
-            _In_ mref<typename stream_request_type::options> options_,
+        [[nodiscard]] stream_response_type::type operator()(
+            _In_ mref<stream_request_type::type> request_,
+            _In_ mref<stream_request_type::options> options_,
             _In_ cref<next_type> next_
         ) const override;
     };
