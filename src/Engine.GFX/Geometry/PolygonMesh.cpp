@@ -1,20 +1,28 @@
 #include "PolygonMesh.hpp"
 
+#include "../Buffer/VirtualBufferView.hpp"
+
 using namespace ember::engine::gfx;
 using namespace ember;
 
-cref<IndexBuffer> PolygonMesh::indices() const noexcept {
-    return _indices;
-}
+PolygonMesh::PolygonMesh(mref<vertex_buffer_type> vertices_, mref<index_buffer_type> indices_) noexcept :
+    _vertices(_STD move(vertices_)),
+    _indices(_STD move(indices_)) {}
 
-ref<IndexBuffer> PolygonMesh::indices() noexcept {
-    return _indices;
-}
+PolygonMesh::~PolygonMesh() = default;
 
-cref<VertexBuffer> PolygonMesh::vertices() const noexcept {
+cref<PolygonMesh::vertex_buffer_type> PolygonMesh::vertices() const noexcept {
     return _vertices;
 }
 
-ref<VertexBuffer> PolygonMesh::vertices() noexcept {
+ref<PolygonMesh::vertex_buffer_type> PolygonMesh::vertices() noexcept {
     return _vertices;
+}
+
+cref<PolygonMesh::index_buffer_type> PolygonMesh::indices() const noexcept {
+    return _indices;
+}
+
+ref<PolygonMesh::index_buffer_type> PolygonMesh::indices() noexcept {
+    return _indices;
 }
