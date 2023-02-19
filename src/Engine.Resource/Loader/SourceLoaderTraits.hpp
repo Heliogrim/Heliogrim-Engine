@@ -41,7 +41,7 @@ namespace ember::engine::resource::loader {
 
         template <typename Type_>
         using wrapper_type = non_owning_rptr<Type_>;
-        using value_type = assets::Asset;
+        using value_type = const assets::Asset;
 
         using type = wrapper_type<value_type>;
 

@@ -719,8 +719,8 @@ void RevMainStaticNode::invoke(
     /**
      *
      */
-    cmd.bindVertexBuffer(0, staticGeomGuard->vertices(), 0);
-    cmd.bindIndexBuffer(staticGeomGuard->indices(), 0);
+    cmd.bindVertexBuffer(0, staticGeomGuard->vertices()->owner(), 0);
+    cmd.bindIndexBuffer(staticGeomGuard->indices()->owner(), 0);
 
     // TODO: Optimize finding binding group for model update [ePerInstance]
     u32 sbgIdx { 0ui32 };

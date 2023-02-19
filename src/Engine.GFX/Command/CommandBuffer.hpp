@@ -10,7 +10,6 @@
 #include "../Texture/TextureBuffer.hpp"
 
 namespace ember::engine::gfx {
-
     class CommandBuffer {
     protected:
         friend ember::engine::gfx::CommandPool;
@@ -53,8 +52,11 @@ namespace ember::engine::gfx {
          * @param  framebuffer_ The framebuffer.
          * @param  inline_ (Optional) True to inline.
          */
-        void beginRenderPass(const pipeline::LORenderPass& renderPass_, const Framebuffer& framebuffer_,
-            bool inline_ = true);
+        void beginRenderPass(
+            const pipeline::LORenderPass& renderPass_,
+            const Framebuffer& framebuffer_,
+            bool inline_ = true
+        );
 
         void bindDescriptor(const Vector<vk::DescriptorSet>& descriptors_);
 
@@ -80,9 +82,9 @@ namespace ember::engine::gfx {
          * @param  buffer_ The buffer to bind.
          * @param  offset_ The offset into the buffer.
          */
-        void bindIndexBuffer(const ptr<VirtualBuffer> buffer_, u64 offset_);
+        void bindIndexBuffer(const ptr<const VirtualBuffer> buffer_, u64 offset_);
 
-    //private:
+        //private:
     public:
         /**
          * Pipeline
@@ -146,7 +148,7 @@ namespace ember::engine::gfx {
          * @param   buffer_ The buffer to bind.
          * @param   offset_ The offset into the buffer.
          */
-        void bindVertexBuffer(const u32 binding_, const ptr<VirtualBuffer> buffer_, u64 offset_);
+        void bindVertexBuffer(const u32 binding_, const ptr<const VirtualBuffer> buffer_, u64 offset_);
 
         /**
          * Blits
@@ -257,8 +259,11 @@ namespace ember::engine::gfx {
          * @param  count_ Number of.
          * @param  offset_ (Optional) The offset.
          */
-        void drawIndexedIndirect(const TypeBuffer<vk::DrawIndexedIndirectCommand>& buffer_, u32 count_,
-            u32 offset_ = 0);
+        void drawIndexedIndirect(
+            const TypeBuffer<vk::DrawIndexedIndirectCommand>& buffer_,
+            u32 count_,
+            u32 offset_ = 0
+        );
 
         /**
          * Ends recording
