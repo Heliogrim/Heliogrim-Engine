@@ -484,8 +484,8 @@ void RevDepthStaticNode::invoke(
     /**
      *
      */
-    cmd.bindVertexBuffer(0, sgr->vertices(), 0);
-    cmd.bindIndexBuffer(sgr->indices(), 0);
+    cmd.bindVertexBuffer(0, sgr->vertices()->owner(), 0);
+    cmd.bindIndexBuffer(sgr->indices()->owner(), 0);
 
     u32 sbdIdx { 0ui32 };
     ptr<const shader::ShaderBindingGroup> sbg { nullptr };

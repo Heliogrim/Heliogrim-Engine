@@ -12,7 +12,7 @@ using namespace ember;
     return _STD format(R"({:08x}-{:04x}-{:04x}-{:016x})", guid_.pre, guid_.c0, guid_.c1, guid_.post);
 }
 
-[[nodiscard]] static Url getLfsUrl(const non_owning_rptr<engine::assets::Asset> asset_);
+[[nodiscard]] static Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_);
 
 SourceLoader::SourceLoader() = default;
 
@@ -76,12 +76,12 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 #include <Engine.Assets/Database/AssetDatabase.hpp>
 #include <Engine.Reflect/Cast.hpp>
 
-Url getLfsUrl(const non_owning_rptr<engine::assets::Asset> asset_) {
+Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 
     switch (asset_->getTypeId().data) {
         case engine::assets::Texture::typeId.data: {
 
-            const auto* const texture = static_cast<const ptr<engine::assets::Texture>>(asset_);
+            const auto* const texture = static_cast<const ptr<const engine::assets::Texture>>(asset_);
             const auto baseImageGuid = texture->baseImage();
 
             const auto* const database = engine::Engine::getEngine()->getAssets()->getDatabase();
@@ -106,7 +106,7 @@ Url getLfsUrl(const non_owning_rptr<engine::assets::Asset> asset_) {
         }
         case engine::assets::StaticGeometry::typeId.data: {
 
-            const auto* const geom = static_cast<const ptr<engine::assets::StaticGeometry>>(asset_);
+            const auto* const geom = static_cast<const ptr<const engine::assets::StaticGeometry>>(asset_);
 
             Url lfsUrl {};
             for (const auto& sourceUrl : geom->sources()) {
