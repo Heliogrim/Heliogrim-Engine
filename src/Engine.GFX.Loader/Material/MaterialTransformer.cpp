@@ -231,6 +231,8 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
      */
 
     destroyStageBuffer(_STD move(stage));
+    dst->setAssociation(request_);
+
     return dst;
 }
 
