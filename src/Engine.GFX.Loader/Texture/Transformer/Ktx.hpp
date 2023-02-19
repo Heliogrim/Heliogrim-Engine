@@ -13,6 +13,7 @@ namespace ember::engine::gfx::loader::transformer {
         const non_owning_rptr<const assets::Texture> asset_,
         cref<smr<resource::Source>> src_,
         const non_owning_rptr<VirtualTextureView> dst_,
+        cref<sptr<Device>> device_,
         const TextureLoadOptions options_
     );
 
@@ -38,6 +39,7 @@ namespace ember::engine::gfx::loader::transformer {
         const non_owning_rptr<const assets::Texture> asset_,
         cref<smr<resource::Source>> src_,
         const non_owning_rptr<VirtualTextureView> dst_,
+        cref<sptr<Device>> device_,
         const TextureStreamOptions options_
     );
 

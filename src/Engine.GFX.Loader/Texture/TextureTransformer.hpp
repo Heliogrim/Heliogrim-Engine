@@ -38,7 +38,7 @@ namespace ember::engine::gfx::loader {
             _In_ mref<smr<resource::Source>> from_
         ) const;
 
-        [[nodiscard]] smr<TextureResource> partialTranspose(
+        void partialTranspose(
             _In_ mref<stream_request_type::type> request_,
             _In_ mref<stream_request_type::options> options_,
             _In_ mref<smr<resource::Source>> from_,

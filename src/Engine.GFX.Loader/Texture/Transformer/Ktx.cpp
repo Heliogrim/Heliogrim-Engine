@@ -68,6 +68,7 @@ void transformer::convertKtx(
     const non_owning_rptr<const assets::Texture> asset_,
     cref<smr<resource::Source>> src_,
     const non_owning_rptr<VirtualTextureView> dst_,
+    cref<sptr<Device>> device_,
     const TextureLoadOptions options_
 ) {
 
@@ -81,10 +82,6 @@ void transformer::convertKtx(
 
     /**/
 
-    sptr<Device> device {};
-
-    /**/
-
     bool isKtx20 = true;
     for (size_t idx = 0; idx < sizeof(ktx20Identifier); ++idx) {
         if (raw[idx] != ktx20Identifier[idx]) {
@@ -94,7 +91,7 @@ void transformer::convertKtx(
     }
 
     if (isKtx20) {
-        convertKtx20(asset_, src_, dst_, device, options_);
+        convertKtx20(asset_, src_, dst_, device_, options_);
         return;
     }
 
@@ -109,7 +106,7 @@ void transformer::convertKtx(
     }
 
     if (isKtx10) {
-        convertKtx10Gli(asset_, src_, dst_, device, options_);
+        convertKtx10Gli(asset_, src_, dst_, device_, options_);
         return;
     }
 
@@ -122,6 +119,31 @@ void transformer::convertKtx(
     );
     #endif
 }
+
+void transformer::convertKtxPartial(
+    const non_owning_rptr<const assets::Texture> asset_,
+    cref<smr<resource::Source>> src_,
+    const non_owning_rptr<VirtualTextureView> dst_,
+    cref<sptr<Device>> device_,
+    const TextureStreamOptions options_
+) {
+
+    if (options_.op == TextureStreamOp::eUnload) {
+
+        /**
+         * Unload targeted segment and return
+         */
+        unloadPartialTmp(asset_, src_, dst_, device_, options_);
+        return;
+    }
+
+    /**
+     * Load the targeted segment
+     */
+    convertKtx20Partial(asset_, src_, dst_, device_, options_);
+}
+
+/**/
 
 void deduceFromFormat(cref<gli::format> format_, ref<vk::Format> vkFormat_, ref<vk::ImageAspectFlags> aspect_) {
 
