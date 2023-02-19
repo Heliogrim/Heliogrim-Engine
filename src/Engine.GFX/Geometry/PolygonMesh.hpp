@@ -1,11 +1,15 @@
 #pragma once
 
 #include "Mesh.hpp"
-#include "../Buffer/Buffer.hpp"
+#include "../Buffer/VirtualBufferView.hpp"
 
 namespace ember::engine::gfx {
     class PolygonMesh :
         public Mesh {
+    public:
+        using vertex_buffer_type = uptr<VirtualBufferView>;
+        using index_buffer_type = uptr<VirtualBufferView>;
+
     public:
         /**
          * Default constructor
@@ -13,25 +17,28 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 19.02.2021
          */
-        PolygonMesh() = default;
+        constexpr PolygonMesh() noexcept = default;
+
+        PolygonMesh(mref<vertex_buffer_type> vertices_, mref<index_buffer_type> indices_) noexcept;
+
+        ~PolygonMesh();
 
     protected:
         /**
          * Vertex Buffer
          */
-        VertexBuffer _vertices;
+        vertex_buffer_type _vertices;
 
     public:
-
         /**
          * Gets the vertices
          *
          * @author Julius
          * @date 19.02.2021
          *
-         * @returns A cref&lt;VertexBuffer&gt;
+         * @returns A const reference to the vertex buffer
          */
-        [[nodiscard]] cref<VertexBuffer> vertices() const noexcept;
+        [[nodiscard]] cref<vertex_buffer_type> vertices() const noexcept;
 
         /**
          * Gets the vertices
@@ -41,25 +48,24 @@ namespace ember::engine::gfx {
          *
          * @returns A ref&lt;VertexBuffer&gt;
          */
-        [[nodiscard]] ref<VertexBuffer> vertices() noexcept;
+        [[nodiscard]] ref<vertex_buffer_type> vertices() noexcept;
 
     protected:
         /**
          * Index Buffer
          */
-        IndexBuffer _indices;
+        index_buffer_type _indices;
 
     public:
-
         /**
          * Gets the indices
          *
          * @author Julius
          * @date 19.02.2021
          *
-         * @returns A cref&lt;IndexBuffer&gt;
+         * @returns A const reference to the index buffer
          */
-        [[nodiscard]] cref<IndexBuffer> indices() const noexcept;
+        [[nodiscard]] cref<index_buffer_type> indices() const noexcept;
 
         /**
          * Gets the indices
@@ -69,6 +75,6 @@ namespace ember::engine::gfx {
          *
          * @returns A ref&lt;IndexBuffer&gt;
          */
-        [[nodiscard]] ref<IndexBuffer> indices() noexcept;
+        [[nodiscard]] ref<index_buffer_type> indices() noexcept;
     };
 }
