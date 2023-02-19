@@ -43,6 +43,7 @@ smr<TextureResource> TextureTransformer::transpose(
     auto dst = make_smr<TextureResource, derived_type>(
         new derived_type(_STD move(view.release()))
     );
+    dst->setAssociation(asset);
 
     /**/
 

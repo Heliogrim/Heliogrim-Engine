@@ -233,6 +233,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
     auto dst = make_smr<StaticGeometryResource, derived_type>(
         new derived_type(_STD move(indexBuffer), _STD move(vertexBuffer))
     );
+    dst->setAssociation(request_);
 
     return dst;
 }
