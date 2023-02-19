@@ -20,9 +20,12 @@ namespace ember::engine::gfx::loader {
         using underlying_type::stream_response_type;
 
     public:
-        MaterialTransformer();
+        MaterialTransformer(const non_owning_rptr<pool::GlobalResourcePool> pool_);
 
         ~MaterialTransformer() override = default;
+
+    private:
+        const non_owning_rptr<pool::GlobalResourcePool> _pool;
 
     public:
         [[nodiscard]] response_type::type operator()(
