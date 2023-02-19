@@ -7,6 +7,9 @@
 #include "../Buffer/VirtualBuffer.hpp"
 #include "../Texture/VirtualTexture.hpp"
 
+/**/
+#include "../Texture/TextureFactory.hpp"
+
 namespace ember::engine::gfx::pool {
     struct IndexBufferAllocation {
         Vector<u64> pageSizes;
@@ -20,9 +23,7 @@ namespace ember::engine::gfx::pool {
         non_owning_rptr<const void> material;
     };
 
-    struct VirtualTextureAllocation {
-        non_owning_rptr<const void> texture;
-    };
+    typedef VirtualTextureBuildPayload VirtualTextureAllocation;
 
     /**/
 
@@ -83,11 +84,11 @@ namespace ember::engine::gfx::pool {
         Vector<uptr<VirtualBuffer>> _materialBuffer;
 
     public:
-        [[nodiscard]] _Success_(return != nullptr) non_owning_rptr<VirtualBuffer> allocateIndexBuffer(
+        [[nodiscard]] _Success_(return != nullptr) uptr<VirtualBufferView> allocateIndexBuffer(
             _In_ mref<IndexBufferAllocation> allocation_
         );
 
-        [[nodiscard]] _Success_(return != nullptr) non_owning_rptr<VirtualBuffer> allocateVertexBuffer(
+        [[nodiscard]] _Success_(return != nullptr) uptr<VirtualBufferView> allocateVertexBuffer(
             _In_ mref<VertexBufferAllocation> allocation_
         );
 

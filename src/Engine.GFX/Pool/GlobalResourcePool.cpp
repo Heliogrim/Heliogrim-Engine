@@ -2,6 +2,8 @@
 
 #include "../Buffer/VirtualBufferView.hpp"
 #include "../Texture/VirtualTextureView.hpp"
+#include "../Material/MaterialMetaDto.hpp"
+#include "../Texture/TextureFactory.hpp"
 
 using namespace ember::engine::gfx::pool;
 using namespace ember;
@@ -45,7 +47,7 @@ cref<sptr<engine::gfx::Device>> GlobalResourcePool::device() const noexcept {
     return _device;
 }
 
-non_owning_rptr<engine::gfx::VirtualBuffer> GlobalResourcePool::allocateIndexBuffer(
+uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateIndexBuffer(
     mref<IndexBufferAllocation> allocation_
 ) {
 
@@ -150,10 +152,10 @@ non_owning_rptr<engine::gfx::VirtualBuffer> GlobalResourcePool::allocateIndexBuf
     auto* ptr { vb.get() };
     _indexBuffers.push_back(_STD move(vb));
 
-    return ptr;
+    return ptr->makeView(/*offset*/0ui64, /*size*/ptr->memory()->size());
 }
 
-non_owning_rptr<engine::gfx::VirtualBuffer> GlobalResourcePool::allocateVertexBuffer(
+uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateVertexBuffer(
     mref<VertexBufferAllocation> allocation_
 ) {
 
@@ -258,24 +260,13 @@ non_owning_rptr<engine::gfx::VirtualBuffer> GlobalResourcePool::allocateVertexBu
     auto* ptr { vb.get() };
     _vertexBuffers.push_back(_STD move(vb));
 
-    return ptr;
+    return ptr->makeView(/*offset*/0ui64, /*size*/ptr->memory()->size());
 }
 
 uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateVirtualBuffer(
     mref<MaterialBufferAllocation> allocation_
 ) {
-    #if FALSE
-    /**
-     * Check whether resource does already exists
-     */
-    auto iter { _mapped.find(asset_->get_guid()) };
-    if (iter != _mapped.end()) {
-        return cache_value_type { iter->second }.into<MaterialResource>();
-    }
 
-    /**
-     *
-     */
     ptr<VirtualBuffer> buffer { nullptr };
     if (buffer == nullptr) {
 
@@ -338,11 +329,11 @@ uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateVirtualBuffer(
         for (u64 page { 0ui64 }; page < required; ++page) {
             auto vp { buffer->addPage(req.alignment, req.alignment * page) };
 
-    #ifdef _DEBUG
+            #ifdef _DEBUG
             assert(vp->load());
-    #else
+            #else
         vp->load();
-    #endif
+            #endif
         }
 
         /**
@@ -369,50 +360,25 @@ uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateVirtualBuffer(
     const auto dataSize { sizeof(experimental::MaterialMetaDto) };
     auto& forward { _materialForward.front() };
 
-    auto view { buffer->makeView(/*(forward++) * dataSize*/0ui32, dataSize) };
-
-    auto* res { new MaterialResource() };
-    res->setOrigin(asset_);
-    res->_payload.view = _STD move(view);
-
-    /**
-     * Store requested resource
-     */
-    _mapped.insert_or_assign(asset_->get_guid(), res);
-    return res;
-    #endif
-
-    return nullptr;
+    return buffer->makeView(/*(forward++) * dataSize*/0ui32, dataSize);
 }
 
 uptr<engine::gfx::VirtualTextureView> GlobalResourcePool::allocateVirtualTexture(
     mref<VirtualTextureAllocation> allocation_
 ) {
-    #if FALSE
-    /**
-     * Check whether resource does already exists
-     */
-    auto iter { _mapped.find(asset_->get_guid()) };
-    if (iter != _mapped.end()) {
-        return cache_value_type { iter->second }.into<TextureResource>();
-    }
-
-    const auto& extent { asset_->getExtent() };
     u32 layers { 1ui32 };
-    const auto format { asset_->getTextureFormat() };
-    const auto type { asset_->getTextureType() };
 
     // Warning: Temporary Solution
-    if (type == TextureType::eCube && extent.z == 1ui32) {
+    if (allocation_.type == TextureType::eCube && allocation_.extent.z == 1ui32) {
         layers = 6ui32;
-    } else if (extent.z != 1ui32 || type != TextureType::e2d) {
+    } else if (allocation_.extent.z != 1ui32 || allocation_.type != TextureType::e2d) {
         // Warning: Currently only support single layer 2d images
         __debugbreak();
         return {};
     }
 
-    assert(extent.x <= _atlasMaxLayerExtent.x);
-    assert(extent.y <= _atlasMaxLayerExtent.y);
+    assert(allocation_.extent.x <= _atlasMaxLayerExtent.x);
+    assert(allocation_.extent.y <= _atlasMaxLayerExtent.y);
 
     /**
      * Try find a suitable texture atlas
@@ -422,11 +388,11 @@ uptr<engine::gfx::VirtualTextureView> GlobalResourcePool::allocateVirtualTexture
     for (const auto& candidate : _textureAtlas) {
 
         const auto hasMip { candidate->mipLevels() > 1ui32 };
-        const auto isFormat { candidate->format() == format };
+        const auto isFormat { candidate->format() == allocation_.format };
         const auto isExtent {
             hasMip ?
-                (extent.x <= candidate->width() && extent.y <= candidate->height()) :
-                (extent.x == candidate->width() && extent.y == candidate->height())
+                (allocation_.extent.x <= candidate->width() && allocation_.extent.y <= candidate->height()) :
+                (allocation_.extent.x == candidate->width() && allocation_.extent.y == candidate->height())
         };
 
         if (isFormat && isExtent) {
@@ -442,18 +408,18 @@ uptr<engine::gfx::VirtualTextureView> GlobalResourcePool::allocateVirtualTexture
     if (atlas == nullptr) {
 
         /**/
-        TextureType payloadType { type == TextureType::eCube ? TextureType::eCube : TextureType::e2dArray };
-        if (asset_->getTextureFormat() == TextureFormat::eR8G8B8A8Srgb) {
-            payloadType = type;
+        TextureType payloadType { allocation_.type == TextureType::eCube ? TextureType::eCube : TextureType::e2dArray };
+        if (allocation_.format == TextureFormat::eR8G8B8A8Srgb) {
+            payloadType = allocation_.type;
         }
         /**/
 
         atlas = TextureFactory::get()->buildVirtual(
             {
                 layers/* TODO: Layers */,
-                extent,
-                format,
-                math::uivec2 { 0ui32, asset_->getMipLevelCount() - 1ui32 },
+                allocation_.extent,
+                allocation_.format,
+                allocation_.mipLevels,
                 payloadType,
                 vk::ImageAspectFlagBits::eColor,
                 vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
@@ -469,18 +435,5 @@ uptr<engine::gfx::VirtualTextureView> GlobalResourcePool::allocateVirtualTexture
     /**
      *
      */
-    auto view { atlas->makeView({ 0ui32, layers - 1ui32 }, { 0ui32, asset_->getMipLevelCount() - 1ui32 }) };
-
-    auto* res { make_ptr<TextureResource>() };
-    res->setOrigin(asset_);
-    res->_payload.view = _STD move(view);
-
-    /**
-     * Store requested resource
-     */
-    _mapped.insert_or_assign(asset_->get_guid(), res);
-    return res;
-    #endif
-
-    return nullptr;
+    return atlas->makeView({ 0ui32, layers - 1ui32 }, allocation_.mipLevels);
 }
