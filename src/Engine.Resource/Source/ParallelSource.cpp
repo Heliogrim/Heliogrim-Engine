@@ -16,27 +16,57 @@ ParallelSource::reference_type ParallelSource::operator=(mref<value_type> other_
 }
 
 bool ParallelSource::isAsync() const noexcept {
-    return _STD ranges::any_of(_sources, [](const auto& entry) {
-        return entry->isAsync();
-    });
+    return _STD ranges::any_of(
+        _sources,
+        [](const auto& entry) {
+            return entry->isAsync();
+        }
+    );
 }
 
 bool ParallelSource::isReady() const noexcept {
-    return _STD ranges::any_of(_sources, [](const auto& entry) {
-        return entry->isReady();
-    });
+    return _STD ranges::any_of(
+        _sources,
+        [](const auto& entry) {
+            return entry->isReady();
+        }
+    );
 }
 
 bool ParallelSource::isReadable() const noexcept {
-    return _STD ranges::any_of(_sources, [](const auto& entry) {
-        return entry->isReadable();
-    });
+    return _STD ranges::any_of(
+        _sources,
+        [](const auto& entry) {
+            return entry->isReadable();
+        }
+    );
 }
 
 bool ParallelSource::isWritable() const noexcept {
-    return _STD ranges::any_of(_sources, [](const auto& entry) {
-        return entry->isWritable();
-    });
+    return _STD ranges::any_of(
+        _sources,
+        [](const auto& entry) {
+            return entry->isWritable();
+        }
+    );
+}
+
+streamsize ParallelSource::size() const {
+
+    if (_sources.empty()) {
+        return -1;
+    }
+
+    return _sources.front()->size();
+}
+
+streamsize ParallelSource::estimatedSize() const noexcept {
+
+    if (_sources.empty()) {
+        return -1;
+    }
+
+    return _sources.front()->estimatedSize();
 }
 
 bool ParallelSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<streamsize> actualSize_) {

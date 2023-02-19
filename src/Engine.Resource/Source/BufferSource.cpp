@@ -32,6 +32,14 @@ bool BufferSource::isWritable() const noexcept {
     return true;
 }
 
+streamsize BufferSource::size() const {
+    return _buffer.size;
+}
+
+streamsize BufferSource::estimatedSize() const noexcept {
+    return _buffer.size;
+}
+
 bool BufferSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<streamsize> actualSize_) {
 
     if (!isReady() || offset_ >= _buffer.size) {

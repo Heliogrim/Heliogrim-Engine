@@ -29,6 +29,14 @@ bool NetworkSource::isWritable() const noexcept {
     throw NotImplementedException {};
 }
 
+streamsize NetworkSource::size() const {
+    return -1;
+}
+
+streamsize NetworkSource::estimatedSize() const noexcept {
+    return -1;
+}
+
 bool NetworkSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<streamsize> actualSize_) {
     throw NotImplementedException {};
 }
