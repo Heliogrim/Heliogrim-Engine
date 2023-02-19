@@ -34,6 +34,7 @@
 #include "Engine.Scene/Scene.hpp"
 #include "Importer/ImageFileTypes.hpp"
 #include "Importer/ImageImporter.hpp"
+#include "Pool/GlobalResourcePool.hpp"
 #include "Renderer/HORenderPass.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Shader/ShaderStorage.hpp"
@@ -172,6 +173,9 @@ void Graphics::setup() {
      */
     auto globalCache = make_uptr<cache::GlobalResourceCache>(_device);
     _cacheCtrl = make_uptr<cache::GlobalCacheCtrl>(_STD move(globalCache));
+
+    _pool = make_uptr<pool::GlobalResourcePool>(_device);
+
     VkTextureFactory::make(_device);
 
     /**
@@ -209,7 +213,7 @@ void Graphics::setup() {
     hookEngineState();
 
     auto& loader = _engine->getResources()->loader();
-    loader::register_loader(loader, this, _cacheCtrl.get());
+    loader::register_loader(loader, this, _cacheCtrl.get(), _pool.get());
     registerImporter();
 
     /**
@@ -232,7 +236,7 @@ void Graphics::destroy() {
     unregisterImporter();
 
     auto& loader = _engine->getResources()->loader();
-    loader::unregister_loader(loader, this, _cacheCtrl.get());
+    loader::unregister_loader(loader, this, _cacheCtrl.get(), _pool.get());
     unhookEngineState();
 
     /**
@@ -270,6 +274,7 @@ void Graphics::destroy() {
      */
     TextureFactory::destroy();
     _cacheCtrl.reset();
+    _pool.reset();
 
     /**
      * Device

@@ -8,6 +8,7 @@
 
 #include "Application/Application.hpp"
 #include "Cache/__fwd.hpp"
+#include "Pool/__fwd.hpp"
 #include "Command/CommandQueue.hpp"
 #include "Device/Device.hpp"
 #include "Renderer/__fwd.hpp"
@@ -150,9 +151,12 @@ namespace ember::engine {
 
     private:
         uptr<gfx::cache::GlobalCacheCtrl> _cacheCtrl;
+        uptr<gfx::pool::GlobalResourcePool> _pool;
 
     public:
         [[nodiscard]] const non_owning_rptr<gfx::cache::GlobalCacheCtrl> cacheCtrl() const noexcept;
+
+        [[nodiscard]] const non_owning_rptr<gfx::pool::GlobalResourcePool> pool() const noexcept;
 
     private:
         /**
