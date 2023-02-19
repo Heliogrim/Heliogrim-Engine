@@ -16,6 +16,7 @@ namespace ember::engine::gfx::loader {
         ~Material();
 
     private:
+    public:
         smr<TextureResource> _diffuse;
         smr<TextureResource> _normal;
         smr<TextureResource> _roughness;
@@ -37,6 +38,7 @@ namespace ember::engine::gfx::loader {
         [[nodiscard]] cref<smr<TextureResource>> alpha() const noexcept;
 
     private:
+    public:
         uptr<VirtualBufferView> _view;
 
     public:
