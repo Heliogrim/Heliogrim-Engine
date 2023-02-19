@@ -15,6 +15,6 @@ StaticGeometryLoader::StaticGeometryLoader(
     LoaderChain(
         StaticGeometryCache(cache_),
         StaticGeometryFeedback(),
-        StaticGeometryTransformer(),
+        StaticGeometryTransformer(pool_),
         _STD move(sourceLoader_)
     ) {}
