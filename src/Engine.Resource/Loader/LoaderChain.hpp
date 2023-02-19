@@ -37,6 +37,8 @@ namespace ember::engine::resource::loader {
         }
     };
 
+    /**/
+
     template <
         IsRequestValueType RequestType_,
         IsResponseValueType ResponseType_ = ResourceBase,
@@ -50,10 +52,22 @@ namespace ember::engine::resource::loader {
         class FeedbackStageType_ = Feedback<RequestType_, ResponseType_>,
         class TransformerStageType_ = Transformer<RequestType_, ResponseType_>,
         class SourceLoaderType_ = SourceLoader>
-    class LoaderChain :
+    class LoaderChainBase :
         public Loader<RequestType_, ResponseType_> {
     public:
-        using this_type = LoaderChain<
+        template <
+            IsRequestValueType,
+            IsResponseValueType,
+            typename,
+            class,
+            class,
+            class,
+            class,
+            bool>
+        friend class LoaderChain;
+
+    public:
+        using this_type = LoaderChainBase<
             RequestType_,
             ResponseType_,
             StageRefTypes_,
@@ -109,7 +123,7 @@ namespace ember::engine::resource::loader {
             typename TransformerTx_,
             typename SourceLoaderTx_
         >
-        constexpr LoaderChain(
+        constexpr LoaderChainBase(
             CacheTx_&& cache_,
             FeedbackTx_&& feedback_,
             TransformerTx_&& transformer_,
@@ -122,31 +136,6 @@ namespace ember::engine::resource::loader {
             transformerLink(sourceLoader),
             feedbackLink(transformer, transformerLink),
             cacheLink(feedback, feedbackLink) {}
-
-    public:
-        [[nodiscard]] typename traits::response::type operator()(
-            mref<typename traits::request::type> request_,
-            mref<typename traits::request::options> options_
-        ) override {
-            return invoke_stage<cache_stage_type, traits::response::type>(
-                cache,
-                _STD move(request_),
-                _STD move(options_),
-                cacheLink
-            );
-        }
-
-        [[nodiscard]] typename traits::stream_response::type operator()(
-            mref<typename traits::stream_request::type> request_,
-            mref<typename traits::stream_request::options> options_
-        ) override {
-            return invoke_stage<cache_stage_type, traits::stream_response::type>(
-                cache,
-                _STD move(request_),
-                _STD move(options_),
-                cacheLink
-            );
-        }
 
     private:
         /* Stage Invoker Helper */
@@ -182,7 +171,7 @@ namespace ember::engine::resource::loader {
 
         /* Chain Link Implementations */
 
-        template <bool Streamable_>
+        template <typename FwdType_, bool Streamable_>
         struct TransformerChainLink :
             public TransformerNextLink<RequestType_, ResponseType_, Streamable_> {
             using base_type = TransformerNextLink<RequestType_, ResponseType_, Streamable_>;
@@ -215,8 +204,8 @@ namespace ember::engine::resource::loader {
             };
         };
 
-        template <>
-        struct TransformerChainLink<true> :
+        template <typename RequestType_>
+        struct TransformerChainLink<RequestType_, true> :
             public TransformerNextLink<RequestType_, ResponseType_, true> {
             using base_type = TransformerNextLink<RequestType_, ResponseType_, true>;
 
@@ -261,7 +250,7 @@ namespace ember::engine::resource::loader {
 
         /**/
 
-        template <bool Streamable_>
+        template <typename FwdType_, bool Streamable_>
         struct FeedbackChainLink :
             public FeedbackNextLink<RequestType_, ResponseType_, Streamable_> {
             using base_type = FeedbackNextLink<RequestType_, ResponseType_, Streamable_>;
@@ -275,7 +264,7 @@ namespace ember::engine::resource::loader {
         public:
             constexpr FeedbackChainLink(
                 cref<transformer_type> stage_,
-                cref<TransformerChainLink<Streamable_>> nextLink_
+                cref<TransformerChainLink<FwdType_, Streamable_>> nextLink_
             ) noexcept :
                 stage(stage_),
                 nextLink(nextLink_) {}
@@ -284,7 +273,7 @@ namespace ember::engine::resource::loader {
 
         public:
             cref<transformer_type> stage;
-            cref<TransformerChainLink<Streamable_>> nextLink;
+            cref<TransformerChainLink<FwdType_, Streamable_>> nextLink;
 
         public:
             [[nodiscard]] typename next_response_type::type operator()(
@@ -300,8 +289,8 @@ namespace ember::engine::resource::loader {
             };
         };
 
-        template <>
-        struct FeedbackChainLink<true> :
+        template <typename FwdType_>
+        struct FeedbackChainLink<FwdType_, true> :
             public FeedbackNextLink<RequestType_, ResponseType_, true> {
             using base_type = FeedbackNextLink<RequestType_, ResponseType_, true>;
 
@@ -314,7 +303,7 @@ namespace ember::engine::resource::loader {
         public:
             constexpr FeedbackChainLink(
                 cref<transformer_type> stage_,
-                cref<TransformerChainLink<true>> nextLink_
+                cref<TransformerChainLink<FwdType_, true>> nextLink_
             ) noexcept :
                 stage(stage_),
                 nextLink(nextLink_) {}
@@ -323,7 +312,7 @@ namespace ember::engine::resource::loader {
 
         public:
             cref<transformer_type> stage;
-            cref<TransformerChainLink<true>> nextLink;
+            cref<TransformerChainLink<FwdType_, true>> nextLink;
 
         public:
             [[nodiscard]] typename next_response_type::type operator()(
@@ -353,7 +342,7 @@ namespace ember::engine::resource::loader {
 
         /**/
 
-        template <bool Streamable_>
+        template <typename FwdType_, bool Streamable_>
         struct CacheChainLink :
             public CacheNextLink<RequestType_, ResponseType_, Streamable_> {
             using base_type = CacheNextLink<RequestType_, ResponseType_, Streamable_>;
@@ -367,7 +356,7 @@ namespace ember::engine::resource::loader {
         public:
             constexpr CacheChainLink(
                 cref<feedback_type> stage_,
-                cref<FeedbackChainLink<Streamable_>> nextLink_
+                cref<FeedbackChainLink<FwdType_, Streamable_>> nextLink_
             ) noexcept :
                 stage(stage_),
                 nextLink(nextLink_) {}
@@ -376,7 +365,7 @@ namespace ember::engine::resource::loader {
 
         public:
             cref<feedback_type> stage;
-            cref<FeedbackChainLink<Streamable_>> nextLink;
+            cref<FeedbackChainLink<FwdType_, Streamable_>> nextLink;
 
         public:
             [[nodiscard]] typename next_response_type::type operator()(
@@ -392,8 +381,8 @@ namespace ember::engine::resource::loader {
             }
         };
 
-        template <>
-        struct CacheChainLink<true> :
+        template <typename FwdType_>
+        struct CacheChainLink<FwdType_, true> :
             public CacheNextLink<RequestType_, ResponseType_, true> {
             using base_type = CacheNextLink<RequestType_, ResponseType_, true>;
 
@@ -404,7 +393,10 @@ namespace ember::engine::resource::loader {
             using next_stream_response_type = typename base_type::next_stream_response_type;
 
         public:
-            constexpr CacheChainLink(cref<feedback_type> stage_, cref<FeedbackChainLink<true>> nextLink_) noexcept :
+            constexpr CacheChainLink(
+                cref<feedback_type> stage_,
+                cref<FeedbackChainLink<FwdType_, true>> nextLink_
+            ) noexcept :
                 stage(stage_),
                 nextLink(nextLink_) {}
 
@@ -412,7 +404,7 @@ namespace ember::engine::resource::loader {
 
         public:
             cref<feedback_type> stage;
-            cref<FeedbackChainLink<true>> nextLink;
+            cref<FeedbackChainLink<FwdType_, true>> nextLink;
 
         public:
             [[nodiscard]] typename next_response_type::type operator()(
@@ -443,8 +435,187 @@ namespace ember::engine::resource::loader {
         /**/
 
     private:
-        TransformerChainLink<assets::IsStreamableAsset<RequestType_>> transformerLink;
-        FeedbackChainLink<assets::IsStreamableAsset<RequestType_>> feedbackLink;
-        CacheChainLink<assets::IsStreamableAsset<RequestType_>> cacheLink;
+        TransformerChainLink<RequestType_, assets::IsStreamableAsset<RequestType_>> transformerLink;
+        FeedbackChainLink<RequestType_, assets::IsStreamableAsset<RequestType_>> feedbackLink;
+        CacheChainLink<RequestType_, assets::IsStreamableAsset<RequestType_>> cacheLink;
+    };
+
+    /* Loader Chain Template Selector */
+
+    /**
+     * Non-Streamable template class
+     */
+    template <
+        IsRequestValueType RequestType_,
+        IsResponseValueType ResponseType_ = ResourceBase,
+        typename StageRefTypes_ = MetaTypeWrapperList<
+            _STD type_identity_t,
+            _STD type_identity_t,
+            _STD type_identity_t,
+            sptr
+        >,
+        class CacheStageType_ = Cache<RequestType_, ResponseType_>,
+        class FeedbackStageType_ = Feedback<RequestType_, ResponseType_>,
+        class TransformerStageType_ = Transformer<RequestType_, ResponseType_>,
+        class SourceLoaderType_ = SourceLoader,
+        bool Streamable_ = assets::IsStreamableAsset<RequestType_>>
+    class LoaderChain :
+        public LoaderChainBase<
+            RequestType_, ResponseType_, StageRefTypes_,
+            CacheStageType_, FeedbackStageType_, TransformerStageType_, SourceLoaderType_> {
+    public:
+        using this_type = LoaderChain<
+            RequestType_,
+            ResponseType_,
+            StageRefTypes_,
+            CacheStageType_,
+            FeedbackStageType_,
+            TransformerStageType_,
+            SourceLoaderType_,
+            Streamable_
+        >;
+
+        using base_type = LoaderChainBase<
+            RequestType_,
+            ResponseType_,
+            StageRefTypes_,
+            CacheStageType_,
+            FeedbackStageType_,
+            TransformerStageType_,
+            SourceLoaderType_
+        >;
+
+        using traits = typename base_type::traits;
+
+    public:
+        template <
+            typename CacheTx_,
+            typename FeedbackTx_,
+            typename TransformerTx_,
+            typename SourceLoaderTx_
+        >
+        constexpr LoaderChain(
+            CacheTx_&& cache_,
+            FeedbackTx_&& feedback_,
+            TransformerTx_&& transformer_,
+            SourceLoaderTx_&& sourceLoader_
+        ) :
+            base_type(
+                _STD forward<CacheTx_>(cache_),
+                _STD forward<FeedbackTx_>(feedback_),
+                _STD forward<TransformerTx_>(transformer_),
+                _STD forward<SourceLoaderTx_>(sourceLoader_)
+            ) {}
+
+        ~LoaderChain() override = default;
+
+    public:
+        [[nodiscard]] typename traits::response::type operator()(
+            mref<typename traits::request::type> request_,
+            mref<typename traits::request::options> options_
+        ) override {
+            return base_type::invoke_stage < base_type::cache_stage_type, traits::response::type > (
+                base_type::cache,
+                _STD move(request_),
+                _STD move(options_),
+                base_type::cacheLink
+            );
+        }
+    };
+
+    /**
+     * Streamable template class
+     */
+    template <
+        IsRequestValueType RequestType_,
+        IsResponseValueType ResponseType_,
+        typename StageRefTypes_,
+        class CacheStageType_,
+        class FeedbackStageType_,
+        class TransformerStageType_,
+        class SourceLoaderType_>
+    class LoaderChain<
+            RequestType_,
+            ResponseType_,
+            StageRefTypes_,
+            CacheStageType_,
+            FeedbackStageType_,
+            TransformerStageType_,
+            SourceLoaderType_,
+            true
+        > :
+        public LoaderChainBase<
+            RequestType_, ResponseType_, StageRefTypes_,
+            CacheStageType_, FeedbackStageType_, TransformerStageType_, SourceLoaderType_> {
+    public:
+        using this_type = LoaderChain<
+            RequestType_,
+            ResponseType_,
+            StageRefTypes_,
+            CacheStageType_,
+            FeedbackStageType_,
+            TransformerStageType_,
+            SourceLoaderType_,
+            true
+        >;
+
+        using base_type = LoaderChainBase<
+            RequestType_,
+            ResponseType_,
+            StageRefTypes_,
+            CacheStageType_,
+            FeedbackStageType_,
+            TransformerStageType_,
+            SourceLoaderType_
+        >;
+
+        using traits = typename base_type::traits;
+
+    public:
+        template <
+            typename CacheTx_,
+            typename FeedbackTx_,
+            typename TransformerTx_,
+            typename SourceLoaderTx_
+        >
+        constexpr LoaderChain(
+            CacheTx_&& cache_,
+            FeedbackTx_&& feedback_,
+            TransformerTx_&& transformer_,
+            SourceLoaderTx_&& sourceLoader_
+        ) :
+            base_type(
+                _STD forward<CacheTx_>(cache_),
+                _STD forward<FeedbackTx_>(feedback_),
+                _STD forward<TransformerTx_>(transformer_),
+                _STD forward<SourceLoaderTx_>(sourceLoader_)
+            ) {}
+
+        ~LoaderChain() override = default;
+
+    public:
+        [[nodiscard]] typename traits::response::type operator()(
+            mref<typename traits::request::type> request_,
+            mref<typename traits::request::options> options_
+        ) override {
+            return base_type::invoke_stage < base_type::cache_stage_type, traits::response::type > (
+                base_type::cache,
+                _STD move(request_),
+                _STD move(options_),
+                base_type::cacheLink
+            );
+        }
+
+        [[nodiscard]] typename traits::stream_response::type operator()(
+            mref<typename traits::stream_request::type> request_,
+            mref<typename traits::stream_request::options> options_
+        ) override {
+            return base_type::invoke_stage < base_type::cache_stage_type, traits::stream_response::type > (
+                base_type::cache,
+                _STD move(request_),
+                _STD move(options_),
+                base_type::cacheLink
+            );
+        }
     };
 }

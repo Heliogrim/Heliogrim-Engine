@@ -14,7 +14,7 @@ using namespace ember;
 
 [[nodiscard]] static Url getLfsUrl(const non_owning_rptr<engine::assets::Asset> asset_);
 
-constexpr SourceLoader::SourceLoader() = default;
+SourceLoader::SourceLoader() = default;
 
 SourceLoader::~SourceLoader() noexcept = default;
 

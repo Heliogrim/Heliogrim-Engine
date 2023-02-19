@@ -93,7 +93,7 @@ namespace ember::engine::resource::loader {
             class,
             class
         >
-        friend class LoaderChain;
+        friend class LoaderChainBase;
 
     public:
         using this_type = Loader<RequestType_, ResponseType_>;
