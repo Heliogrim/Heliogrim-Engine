@@ -37,6 +37,12 @@
     <Filter Include="Headerdateien\Font">
       <UniqueIdentifier>{bb4d141c-242d-43e8-a80f-ea9e80c925c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Font">
+      <UniqueIdentifier>{470a0ff7-4a86-4585-839c-e6a54b16fafe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Geometry">
+      <UniqueIdentifier>{844a2e44-422e-4819-ac5c-d348659559ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.hpp">
@@ -111,6 +117,42 @@
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontResource.hpp">
       <Filter>Headerdateien\Font</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialLoader.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryLoader.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontLoader.hpp">
+      <Filter>Headerdateien\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialCache.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialFeedback.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialTransformer.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryCache.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryFeedback.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryTransformer.hpp">
+      <Filter>Headerdateien\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontCache.hpp">
+      <Filter>Headerdateien\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontTransformer.hpp">
+      <Filter>Headerdateien\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontFeedback.hpp">
+      <Filter>Headerdateien\Font</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.cpp">
@@ -133,6 +175,42 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialResource.cpp">
       <Filter>Quelldateien\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialCache.cpp">
+      <Filter>Quelldateien\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialFeedback.cpp">
+      <Filter>Quelldateien\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialLoader.cpp">
+      <Filter>Quelldateien\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialTransformer.cpp">
+      <Filter>Quelldateien\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\FontLoader.cpp">
+      <Filter>Quelldateien\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\FontCache.cpp">
+      <Filter>Quelldateien\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\FontTransformer.cpp">
+      <Filter>Quelldateien\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\FontFeedback.cpp">
+      <Filter>Quelldateien\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryLoader.cpp">
+      <Filter>Quelldateien\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryCache.cpp">
+      <Filter>Quelldateien\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryFeedback.cpp">
+      <Filter>Quelldateien\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryTransformer.cpp">
+      <Filter>Quelldateien\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
