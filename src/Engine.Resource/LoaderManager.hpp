@@ -9,6 +9,10 @@
 #include "Loader/Loader.hpp"
 #include "Manage/Resource.hpp"
 
+namespace ember::engine::resource::loader {
+    class SourceLoader;
+}
+
 namespace ember::engine::resource {
     class LoaderManager {
     public:
@@ -25,7 +29,7 @@ namespace ember::engine::resource {
          * @author Julius
          * @date 30.08.2021
          */
-        LoaderManager() noexcept;
+        LoaderManager();
 
         /**
          * Destructor
@@ -33,7 +37,13 @@ namespace ember::engine::resource {
          * @author Julius
          * @date 30.08.2021
          */
-        ~LoaderManager() noexcept;
+        ~LoaderManager();
+
+    private:
+        sptr<loader::SourceLoader> _sharedSourceLoader;
+
+    public:
+        [[nodiscard]] sptr<loader::SourceLoader> sharedSourceLoader() const;
 
     private:
         StableUnorderedMap<asset_type_id, sptr<loader::LoaderBase>> _loader;
