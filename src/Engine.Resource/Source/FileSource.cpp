@@ -41,6 +41,14 @@ bool FileSource::isWritable() const noexcept {
     return _size <= 0ui64;
 }
 
+streamsize FileSource::size() const {
+    return _STD filesystem::file_size(_file.path());
+}
+
+streamsize FileSource::estimatedSize() const noexcept {
+    return _STD filesystem::file_size(_file.path());
+}
+
 bool FileSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<streamsize> actualSize_) {
 
     SCOPED_STOPWATCH

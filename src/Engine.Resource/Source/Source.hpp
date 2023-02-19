@@ -80,6 +80,11 @@ namespace ember::engine::resource {
         [[nodiscard]] virtual bool isWritable() const noexcept = 0;
 
     public:
+        [[nodiscard]] virtual streamsize size() const = 0;
+
+        [[nodiscard]] virtual streamsize estimatedSize() const noexcept = 0;
+
+    public:
         /**
          * Get some data from the underlying source by offset_ and size_
          *

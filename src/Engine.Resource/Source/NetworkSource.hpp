@@ -83,6 +83,11 @@ namespace ember::engine::resource {
         [[nodiscard]] bool isWritable() const noexcept override;
 
     public:
+        [[nodiscard]] streamsize size() const override;
+
+        [[nodiscard]] streamsize estimatedSize() const noexcept override;
+
+    public:
         [[nodiscard]] bool get(
             streamoff offset_,
             streamsize size_,
