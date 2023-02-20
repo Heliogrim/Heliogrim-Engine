@@ -6,7 +6,7 @@
 #include "Engine.GFX/Shader/ShaderBindingGroup.hpp"
 #include <Engine.GFX/Pipeline/LORenderPass.hpp>
 
-#include "Engine.GFX/Texture/Texture.hpp"
+#include "Engine.GFX.Loader/Texture/TextureResource.hpp"
 
 namespace ember::engine::gfx::glow::ui::render {
     class UiMainStageNode final :
@@ -41,15 +41,21 @@ namespace ember::engine::gfx::glow::ui::render {
         [[nodiscard]] const non_owning_rptr<const Vector<type_id>> modelTypes() const noexcept override;
 
     public:
-        void before(const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
-            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_) const override;
+        void before(
+            const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_
+        ) const override;
 
-        void invoke(const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
+        void invoke(
+            const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
             const non_owning_rptr<gfx::render::RenderStagePass> stagePass_,
-            const non_owning_rptr<SceneNodeModel> model_) const override;
+            const non_owning_rptr<SceneNodeModel> model_
+        ) const override;
 
-        void after(const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
-            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_) const override;
+        void after(
+            const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_
+        ) const override;
 
     private:
         sptr<Device> _device;
@@ -77,13 +83,16 @@ namespace ember::engine::gfx::glow::ui::render {
         void freeFramebuffer(mref<Framebuffer> framebuffer_);
 
     private:
-        Texture _defaultImage;
+        smr<TextureResource> _defaultImage;
 
         void setupDefaultImage();
 
         void destroyDefaultImage();
 
-        void rebuildImageDescriptors(ref<sptr<vk::DescriptorPool>> pool_,
-            ref<sptr<Vector<shader::DiscreteBindingGroup>>> groups_, u32 count_) const;
+        void rebuildImageDescriptors(
+            ref<sptr<vk::DescriptorPool>> pool_,
+            ref<sptr<Vector<shader::DiscreteBindingGroup>>> groups_,
+            u32 count_
+        ) const;
     };
 }

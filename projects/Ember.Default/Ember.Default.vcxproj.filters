@@ -474,6 +474,12 @@
     <ClInclude Include="..\..\src\Ember.Default\Assets\GfxMaterials\DefaultSkybox.hpp">
       <Filter>Headerdateien\Assets\GfxMaterials</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\UIDummy.hpp">
+      <Filter>Headerdateien\Assets\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\UIDummy.hpp">
+      <Filter>Headerdateien\Assets\Textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\DefaultAlpha.cpp">
@@ -682,6 +688,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Ember.Default\Assets\GfxMaterials\DefaultSkybox.cpp">
       <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\UIDummy.cpp">
+      <Filter>Quelldateien\Assets\Textures</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
