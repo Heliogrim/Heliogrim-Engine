@@ -60,8 +60,9 @@ GlobalResourceCache::store_result_type GlobalResourceCache::store(
         return { StoreResultType::eFail, cache_value_type { it->second } };
     }
 
-    auto managed { resource_->acquire(resource::ResourceUsageFlag::eAll) };
-    managed.release();
+    // TODO: Can be removed?
+    // auto managed { resource_->acquire(resource::ResourceUsageFlag::eAll) };
+    // managed.release();
 
     /**
      * Store hooked resource

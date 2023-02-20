@@ -185,6 +185,20 @@ void Graphics::setup() {
     build_shader(_device);
 
     /**
+     * Render Scenes
+     */
+    _sceneManager = ::gfx::scene::RenderSceneManager::make();
+
+    /**
+     * Register Hooks and consume EngineState
+     */
+    hookEngineState();
+
+    auto& loader = _engine->getResources()->loader();
+    loader::register_loader(loader, this, _cacheCtrl.get(), _pool.get());
+    registerImporter();
+
+    /**
      * Create Renderer
      */
     {
@@ -201,20 +215,6 @@ void Graphics::setup() {
 
         _cachedRenderer.insert_or_assign(AssocKey<string>::from("3DRenderer"), _STD move(renderer));
     }
-
-    /**
-     * Render Scenes
-     */
-    _sceneManager = ::gfx::scene::RenderSceneManager::make();
-
-    /**
-     * Register Hooks and consume EngineState
-     */
-    hookEngineState();
-
-    auto& loader = _engine->getResources()->loader();
-    loader::register_loader(loader, this, _cacheCtrl.get(), _pool.get());
-    registerImporter();
 
     /**
      * Scheduling Pipelines
