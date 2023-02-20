@@ -73,7 +73,8 @@ void transformer::convertKtx(
 ) {
 
     constexpr auto chunkSize = MAX(sizeof(gli::detail::FOURCC_KTX10), sizeof(ktx20Identifier));
-    Vector<unsigned char> raw { chunkSize };
+    Vector<unsigned char> raw {};
+    raw.resize(chunkSize);
 
     streamsize bytes {};
     src_->get(0, chunkSize, raw.data(), bytes);
@@ -142,6 +143,11 @@ void transformer::convertKtxPartial(
      */
     convertKtx20Partial(asset_, src_, dst_, device_, options_);
 }
+
+/**/
+
+#define IS_LAZY_LOADING (true)
+#define IS_LOCKED_SEGMENT (false)
 
 /**/
 
@@ -317,10 +323,22 @@ void transformer::convertKtx10Gli(
     cref<sptr<Device>> device_,
     const TextureLoadOptions options_
 ) {
-    throw NotImplementedException();
-    #if FALSE
-    string url{};
-    gli::texture glitex = gli::load(url.data());
+
+    const auto srcSize = src_->size();
+    assert(srcSize > 0);
+
+    Vector<char> tmp {};
+    tmp.resize(srcSize);
+
+    streamsize bytes {};
+    src_->get(0, srcSize, tmp.data(), bytes);
+
+    /**/
+
+    assert(bytes >= srcSize);
+    gli::texture glitex = gli::load_ktx(tmp.data(), bytes);
+
+    /**/
 
     const auto lvlZeroExt = glitex.extent(0);
     math::ivec3 extent = {
@@ -344,36 +362,32 @@ void transformer::convertKtx10Gli(
         create = vk::ImageCreateFlagBits::eCubeCompatible;
     }
 
-    /**
-     * Create Texture
-     */
-    auto tf = TextureFactory::get();
+    /* Validate Matching Descriptor */
+    #ifdef _DEBUG
 
-    const TextureBuildPayload payload{
-        math::uivec3 {
-            static_cast<u32>(extent.x),
-            static_cast<u32>(extent.y),
-            static_cast<u32>(extent.z)
-        },
-        TextureFormat { api::vkTranslateFormat(format) },
-        static_cast<u32>(glitex.levels()),
-        create & vk::ImageCreateFlagBits::eCubeCompatible ?
-            TextureType::eCube :
-            TextureType::e2d,
-        aspect,
-        usage,
-        vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
-        vk::SharingMode::eExclusive
-    };
+    if (dst_->format() != api::vkTranslateFormat(format)) {
+        __debugbreak();
+    }
 
-    Texture result = tf->build(payload);
+    if (dst_->mipLevels() < glitex.levels()) {
+        __debugbreak();
+    }
+
+    if (create & vk::ImageCreateFlagBits::eCubeCompatible && dst_->type() != TextureType::eCube) {
+        __debugbreak();
+    }
+
+    // Validate Aspect Flag Bits
+    // Validate Usage Flag Bits
+
+    #endif
 
     /**
      * Staging Buffer
      */
-    Buffer stage{};
+    Buffer stage {};
 
-    vk::BufferCreateInfo bci{
+    vk::BufferCreateInfo bci {
         vk::BufferCreateFlags(),
         glitex.size(),
         vk::BufferUsageFlagBits::eTransferSrc,
@@ -385,7 +399,7 @@ void transformer::convertKtx10Gli(
     stage.buffer = device_->vkDevice().createBuffer(bci);
     stage.device = device_->vkDevice();
 
-    const auto allocResult{
+    const auto allocResult {
         memory::allocate(
             device_->allocator(),
             device_,
@@ -420,21 +434,33 @@ void transformer::convertKtx10Gli(
     /**
      * Fetch Region per Layer
      */
-    Vector<vk::BufferImageCopy> regions{};
+
+    const auto minMipLevel = _STD max(dst_->minMipLevel(), static_cast<u32>(glitex.base_level()));
+    const auto maxMipLevel = _STD min(dst_->maxMipLevel(), static_cast<u32>(glitex.max_level()));
+
+    /**/
+
+    // Prevent signed to unsigned wrapping (-1 ~> ~0)
+    assert(maxMipLevel <= dst_->maxMipLevel());
+    assert(minMipLevel <= maxMipLevel);
+
+    /**/
+
+    Vector<vk::BufferImageCopy> regions {};
     uint32_t offset = 0;
 
     if (create & vk::ImageCreateFlagBits::eCubeCompatible) {
 
-        const gli::texture_cube ct{ glitex };
+        const gli::texture_cube ct { glitex };
 
-        assert(result.depth() == 1ui32);
+        assert(dst_->depth() == 1ui32);
 
         for (uint32_t face = 0; face < glitex.faces(); face++) {
-            for (uint32_t level = 0; level < result.mipLevels(); ++level) {
+            for (uint32_t level = minMipLevel; level <= maxMipLevel; ++level) {
 
                 const auto se = ct[face][level].extent();
 
-                vk::BufferImageCopy copy{
+                vk::BufferImageCopy copy {
                     offset,
                     0,
                     0,
@@ -457,13 +483,12 @@ void transformer::convertKtx10Gli(
             }
         }
 
-    }
-    else {
+    } else {
         /**
          * Copy Buffer Image (2D / 2D Array)
          */
-        for (uint32_t level = 0; level < result.mipLevels(); ++level) {
-            vk::BufferImageCopy copy{
+        for (uint32_t level = minMipLevel; level <= maxMipLevel; ++level) {
+            vk::BufferImageCopy copy {
                 offset,
                 0,
                 0,
@@ -471,13 +496,13 @@ void transformer::convertKtx10Gli(
                     aspect,
                     level,
                     0,
-                    result.type() == TextureType::e2dArray ? result.depth() : 1
+                    dst_->type() == TextureType::e2dArray ? dst_->depth() : 1
                 },
                 vk::Offset3D(),
                 vk::Extent3D {
-                    result.width() / (0x1 << level),
-                    result.height() / (0x1 << level),
-                    result.type() == TextureType::e2dArray ? 1 : result.depth()
+                    dst_->width() / (0x1 << level),
+                    dst_->height() / (0x1 << level),
+                    dst_->type() == TextureType::e2dArray ? 1 : dst_->depth()
                 }
             };
 
@@ -487,33 +512,52 @@ void transformer::convertKtx10Gli(
     }
 
     /**
-     * Copy Data to Image
+     * Ensure virtual memory is residential
+     */
+    for (auto& page : dst_->pages()) {
+
+        if (IS_LOCKED_SEGMENT) {
+            // TODO: Lock effected memory and texture pages!
+        }
+
+        if (page->memory()->state() != VirtualMemoryPageState::eLoaded) {
+            dst_->owner()->load(page);
+        }
+
+    }
+
+    /**
+     * Capture commands to copy data to image
      */
     auto pool = device_->transferQueue()->pool();
     pool->lck().acquire();
     CommandBuffer cmd = pool->make();
     cmd.begin();
 
-    vk::ImageMemoryBarrier simb{
+    /**
+     * Pre-Transform image layout
+     */
+
+    vk::ImageMemoryBarrier simb {
         vk::AccessFlags(),
         vk::AccessFlags(),
         vk::ImageLayout::eUndefined,
         vk::ImageLayout::eTransferDstOptimal,
         VK_QUEUE_FAMILY_IGNORED,
         VK_QUEUE_FAMILY_IGNORED,
-        result.buffer().image(),
+        dst_->owner()->vkImage(),
         {
             aspect,
             0,
-            result.mipLevels(),
-            0,
-            result.layer()
+            (maxMipLevel - minMipLevel) + 1,
+            dst_->baseLayer(),
+            dst_->layers()
         }
     };
 
     cmd.vkCommandBuffer().pipelineBarrier(
         vk::PipelineStageFlagBits::eAllCommands,
-        vk::PipelineStageFlagBits::eAllCommands,
+        vk::PipelineStageFlagBits::eTransfer,
         vk::DependencyFlags(),
         0,
         nullptr,
@@ -523,38 +567,40 @@ void transformer::convertKtx10Gli(
         &simb
     );
 
-    result.buffer()._vkLayout = vk::ImageLayout::eTransferDstOptimal;
+    /**
+     * Copy data from buffer to image
+     */
 
-    for (auto& entry : regions) {
-        cmd.copyBufferToImage(
-            stage,
-            result.buffer(),
-            entry
-        );
-    }
+    cmd.vkCommandBuffer().copyBufferToImage(
+        stage.buffer,
+        dst_->owner()->vkImage(),
+        vk::ImageLayout::eTransferDstOptimal,
+        static_cast<uint32_t>(regions.size()),
+        regions.data()
+    );
 
     /**
      * Restore Layout
      */
-    vk::ImageMemoryBarrier eimb{
+    vk::ImageMemoryBarrier eimb {
         vk::AccessFlags(),
         vk::AccessFlags(),
         vk::ImageLayout::eTransferDstOptimal,
-        vk::ImageLayout::eTransferSrcOptimal,
+        vk::ImageLayout::eShaderReadOnlyOptimal,
         VK_QUEUE_FAMILY_IGNORED,
         VK_QUEUE_FAMILY_IGNORED,
-        result.buffer().image(),
+        dst_->owner()->vkImage(),
         {
             aspect,
             0,
-            result.mipLevels(),
-            0,
-            result.layer()
+            (maxMipLevel - minMipLevel) + 1,
+            dst_->baseLayer(),
+            dst_->layers()
         }
     };
 
     cmd.vkCommandBuffer().pipelineBarrier(
-        vk::PipelineStageFlagBits::eAllCommands,
+        vk::PipelineStageFlagBits::eTransfer,
         vk::PipelineStageFlagBits::eAllCommands,
         vk::DependencyFlags(),
         0,
@@ -564,6 +610,10 @@ void transformer::convertKtx10Gli(
         1,
         &eimb
     );
+
+    /**
+     * Dispatch commands
+     */
 
     cmd.end();
     cmd.submitWait();
@@ -577,13 +627,8 @@ void transformer::convertKtx10Gli(
     stage.destroy();
     glitex.clear();
 
-    result.buffer()._vkLayout = vk::ImageLayout::eTransferSrcOptimal;
-    return result;
-    #endif
+    tmp.clear();
 }
-
-#define IS_LAZY_LOADING (true)
-#define IS_LOCKED_SEGMENT (false)
 
 void transformer::convertKtx20(
     const non_owning_rptr<const engine::assets::Texture> asset_,
@@ -602,6 +647,7 @@ void transformer::convertKtx20(
     );
     /**/
 
+    Vector<char> tmp {};
     gli::texture glitex {};
 
     /**/
@@ -666,8 +712,19 @@ void transformer::convertKtx20(
             *reinterpret_cast<ptr<const gli::detail::ktx_header10>>(cursor)
         };
 
-        // TODO:
-        //glitex = gli::load(url.data());
+        /**/
+
+        const auto srcSize = src_->size();
+        assert(srcSize > 0);
+
+        tmp.resize(srcSize);
+
+        src_->get(0, srcSize, tmp.data(), bytes);
+
+        /**/
+
+        assert(bytes >= srcSize);
+        glitex = gli::load_ktx(tmp.data(), bytes);
 
         // Extent
         const auto lvlZeroExt = glitex.extent(0);
