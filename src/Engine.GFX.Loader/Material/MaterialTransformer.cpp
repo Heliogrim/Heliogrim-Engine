@@ -51,7 +51,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
 
     using derived_type = ::ember::engine::resource::UniqueResource<MaterialResource::value_type>;
     auto dst = make_smr<MaterialResource, derived_type>(
-        new derived_type()
+        new derived_type(_STD in_place)
     );
 
     auto materialGuard = dst->acquire(resource::ResourceUsageFlag::eAll);
@@ -91,7 +91,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
 
     experimental::MaterialMetaDto meta {};
 
-    {
+    if (material.diffuse()) {
         auto guard = material.diffuse()->acquire(resource::ResourceUsageFlag::eRead);
         if (guard.empty() || not guard->is<VirtualTextureView>()) {
             meta.diffuse = ~0;
@@ -101,7 +101,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
         }
     }
 
-    {
+    if (material.normal()) {
         auto guard = material.normal()->acquire(resource::ResourceUsageFlag::eRead);
         if (guard.empty() || not guard->is<VirtualTextureView>()) {
             meta.normal = ~0;
@@ -111,7 +111,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
         }
     }
 
-    {
+    if (material.roughness()) {
         auto guard = material.roughness()->acquire(resource::ResourceUsageFlag::eRead);
         if (guard.empty() || not guard->is<VirtualTextureView>()) {
             meta.roughness = ~0;
@@ -121,7 +121,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
         }
     }
 
-    {
+    if (material.metalness()) {
         auto guard = material.metalness()->acquire(resource::ResourceUsageFlag::eRead);
         if (guard.empty() || not guard->is<VirtualTextureView>()) {
             meta.metalness = ~0;
@@ -131,7 +131,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
         }
     }
 
-    {
+    if (material.ao()) {
         auto guard = material.ao()->acquire(resource::ResourceUsageFlag::eRead);
         if (guard.empty() || not guard->is<VirtualTextureView>()) {
             meta.ao = ~0;
@@ -141,7 +141,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
         }
     }
 
-    {
+    if (material.alpha()) {
         auto guard = material.alpha()->acquire(resource::ResourceUsageFlag::eRead);
         if (guard.empty() || not guard->is<VirtualTextureView>()) {
             meta.alpha = ~0;

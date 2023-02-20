@@ -11,7 +11,7 @@ namespace ember::engine::gfx::loader {
         using this_type = Material;
 
     public:
-        constexpr Material() noexcept;
+        Material() noexcept;
 
         ~Material();
 

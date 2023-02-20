@@ -5,7 +5,7 @@
 using namespace ember::engine::gfx::loader;
 using namespace ember;
 
-constexpr Material::Material() noexcept = default;
+Material::Material() noexcept = default;
 
 Material::~Material() = default;
 
