@@ -14,6 +14,8 @@
 #include <Engine.GFX/Renderer/RenderDataToken.hpp>
 #include <Engine.Logging/Logger.hpp>
 
+#include "Engine.Assets/AssetFactory.hpp"
+#include "Engine.Assets/Assets.hpp"
 #include "Engine.GFX/VkFixedPipeline.hpp"
 #include "Engine.GFX/API/VkTranslate.hpp"
 #include "Engine.GFX/Buffer/Buffer.hpp"
@@ -446,7 +448,9 @@ void UiMainStageNode::invoke(
         rebuildImageDescriptors(imageDescriptorPool, imageDescriptors, imageCount);
 
         /**/
-        (*imageDescriptors)[0].getById(1).store(_defaultImage);
+
+        const auto guard = _defaultImage->acquire(resource::ResourceUsageFlag::eRead);
+        (*imageDescriptors)[0].getById(1).store(guard->as<VirtualTextureView>()->owner());
         /**/
 
         state->data.insert_or_assign("UiMainStageNode::ImageDescriptorPool"sv, imageDescriptorPool);
@@ -915,11 +919,38 @@ void UiMainStageNode::rebuildImageDescriptors(
 #include <Engine.GFX.Loader/Texture/Traits.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.GFX/Graphics.hpp>
+#include <Ember.Default/Assets/Textures/UIDummy.hpp>
+#include <Ember.Default/Assets/Images/UIDummy.hpp>
+#include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets/AssetFactory.hpp>
+#include <Engine.Assets/Database/AssetDatabase.hpp>
+#include <Engine.Assets/Types/Image.hpp>
 #endif
 
 void UiMainStageNode::setupDefaultImage() {
 
-    ptr<assets::Texture> request {};
+    const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
+    auto* const db = Engine::getEngine()->getAssets()->getDatabase();
+
+    {
+        db->insert(
+            factory->createImageAsset(
+                game::assets::image::UIDummy::unstable_auto_guid(),
+                R"(resources\imports\ktx\default_ui.ktx)"
+            )
+        );
+
+        delete(new(game::assets::texture::UIDummy));
+    }
+
+    /**/
+
+    const auto query = db->query(game::assets::texture::UIDummy::unstable_auto_guid());
+    assert(query.exists());
+
+    /**/
+
+    auto request = static_cast<ptr<assets::Texture>>(query.get());
     auto resource = Engine::getEngine()->getResources()->loader().load<assets::Texture, TextureResource>(
         _STD move(request)
     );
@@ -929,67 +960,15 @@ void UiMainStageNode::setupDefaultImage() {
 
     // TODO:
     // Warning: This will break -> Not possible to run
-
     /*
-    _defaultImage = loader.__tmp__load(
-        {
-            ""sv,
-            R"(R:\\Development\C++\Vulkan API\Game\resources\imports\ktx\default_ui.ktx)"
-        }
-    );
+    if (not defaultImage->owner()->vkImage()) {
+        engine::gfx::TextureFactory::get()->buildView(defaultImage->owner());
+    }
      */
 
-    Vector<vk::ImageMemoryBarrier> imgBarriers {};
-    imgBarriers.push_back(
-        {
-            vk::AccessFlags {},
-            vk::AccessFlagBits::eShaderRead,
-            vk::ImageLayout::eTransferSrcOptimal,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            _defaultImage.buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                _defaultImage.mipLevels(),
-                0,
-                _defaultImage.layer()
-            }
-        }
-    );
-
-    auto pool = _device->graphicsQueue()->pool();
-    pool->lck().acquire();
-    engine::gfx::CommandBuffer iiCmd = pool->make();
-    iiCmd.begin();
-
-    /**
-     * Transform
-     */
-    iiCmd.vkCommandBuffer().pipelineBarrier(
-        vk::PipelineStageFlagBits::eAllCommands,
-        vk::PipelineStageFlagBits::eAllCommands,
-        vk::DependencyFlags {},
-        0,
-        nullptr,
-        0,
-        nullptr,
-        static_cast<uint32_t>(imgBarriers.size()),
-        imgBarriers.data()
-    );
-
-    iiCmd.end();
-    iiCmd.submitWait();
-    iiCmd.release();
-
-    pool->lck().release();
-
-    _defaultImage.buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-
-    engine::gfx::TextureFactory::get()->buildView(_defaultImage);
+    _defaultImage = _STD move(resource);
 }
 
 void UiMainStageNode::destroyDefaultImage() {
-    _defaultImage.destroy();
+    _defaultImage.reset();
 }

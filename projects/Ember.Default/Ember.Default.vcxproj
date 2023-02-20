@@ -161,6 +161,7 @@
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\IconUrl.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\IconVideo.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Images\IconZip.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Images\UIDummy.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\Brand.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultAlpha.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\DefaultAO.hpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\IconUrl.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\IconVideo.hpp" />
     <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\IconZip.hpp" />
+    <ClInclude Include="..\..\src\Ember.Default\Assets\Textures\UIDummy.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Ember.Default\Assets\GfxMaterials\DefaultSkybox.cpp" />
@@ -300,6 +302,7 @@
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\IconUrl.cpp" />
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\IconVideo.cpp" />
     <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\IconZip.cpp" />
+    <ClCompile Include="..\..\src\Ember.Default\Assets\Textures\UIDummy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ember\Ember.vcxproj">
