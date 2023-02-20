@@ -18,7 +18,7 @@ using namespace ember;
 
 static smr<StaticGeometryResource> loadWithAssimp(
     const non_owning_rptr<const engine::assets::StaticGeometry> request_,
-    cref<smr<engine::resource::Source>> src_,
+    mref<smr<engine::resource::Source>> src_,
     const non_owning_rptr<pool::GlobalResourcePool> pool_,
     cref<StaticGeometryTransformer::request_type::options> options_
 );
@@ -33,8 +33,12 @@ StaticGeometryTransformer::response_type::type StaticGeometryTransformer::operat
     cref<next_type> next_
 ) const {
 
-    auto source = next_(next_type::next_request_type::type {}, next_type::next_request_type::options {});
-    return {};
+    auto asset = static_cast<non_owning_rptr<const assets::Asset>>(request_);
+    auto src = next_(_STD move(asset), next_type::next_request_type::options {});
+
+    /**/
+
+    return loadWithAssimp(_STD move(request_), _STD move(src), _pool, _STD move(options_));
 }
 
 /* Assimp Implementation */
@@ -45,7 +49,7 @@ StaticGeometryTransformer::response_type::type StaticGeometryTransformer::operat
 
 static smr<StaticGeometryResource> loadWithAssimp(
     const non_owning_rptr<const engine::assets::StaticGeometry> request_,
-    cref<smr<engine::resource::Source>> src_,
+    mref<smr<engine::resource::Source>> src_,
     const non_owning_rptr<pool::GlobalResourcePool> pool_,
     cref<StaticGeometryTransformer::request_type::options> options_
 ) {
@@ -66,12 +70,24 @@ static smr<StaticGeometryResource> loadWithAssimp(
         return {};
     }
 
-    const Vector<_::byte> buffer { static_cast<u64>(size) };
-    auto* const scene = importer.ReadFileFromMemory(buffer.data(), size, ppFlags);
+    Vector<_::byte> buffer {};
+    buffer.resize(static_cast<u64>(size));
+
+    streamsize bytes;
+    src_->get(0, size, buffer.data(), bytes);
+    assert(bytes >= size);
+
+    // Attention: Temporary workaround, cause assimp can not fetch splited files while using load from memory
+    const char* pHint = "";
+    if (request_->sources().front().path().ends_with(R"(.obj)")) {
+        pHint = "obj";
+    }
+
+    auto* const scene = importer.ReadFileFromMemory(buffer.data(), size, ppFlags, pHint);
 
     if (scene == nullptr) {
         IM_CORE_ERRORF(
-            R"(Could not load asset `{}` with assimp due to the following error:\n{})",
+            "Could not load asset `{}` with assimp due to the following error:\n{}",
             request_->getAssetName(),
             importer.GetErrorString()
         );
@@ -168,7 +184,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
         for (u32 page = 0ui32; page < required; ++page) {
 
-            const auto pageSize = _STD min(indexSize - (page + alignment), alignment);
+            const auto pageSize = _STD min(indexSize - (page * alignment), alignment);
 
             constexpr auto shift = 7ui64;
             constexpr auto mask = 0b0111'1111ui64;
@@ -205,7 +221,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
         for (u32 page = 0ui32; page < required; ++page) {
 
-            const auto pageSize = _STD min(vertexSize - (page + alignment), alignment);
+            const auto pageSize = _STD min(vertexSize - (page * alignment), alignment);
 
             constexpr auto shift = 7ui64;
             constexpr auto mask = 0b0111'1111ui64;
