@@ -54,6 +54,26 @@ namespace ember::engine::resource {
         /**
          * Constructor
          *
+         * @details `_STD adopt_lock_t` will assume that the resource and provided
+         *  behaviour flags are already acquired by the caller and stored exclusively
+         *  to this instance.
+         *
+         * @author Julius
+         * @date 20.02.2023
+         *
+         * @param resource_ The resource to guard.
+         * @param flags_ The acquired guarding flags_
+         */
+        TypedManageGuard(
+            const ptr<typed_resource_type> resource_,
+            const ResourceUsageFlags flags_,
+            const _STD adopt_lock_t
+        ) :
+            ManageGuard(resource_, flags_, _STD adopt_lock) {}
+
+        /**
+         * Constructor
+         *
          * @author Julius
          * @date 28.08.2021
          *

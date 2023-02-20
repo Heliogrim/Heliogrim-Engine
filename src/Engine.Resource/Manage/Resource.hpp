@@ -30,6 +30,11 @@ namespace ember::engine::resource {
             ResourceBase(),
             _value(nullptr) {}
 
+        template <typename Type_ = ManagedType_> requires _STD is_default_constructible_v<Type_>
+        constexpr Resource(_STD in_place_t) noexcept(_STD is_nothrow_default_constructible_v<Type_>) :
+            ResourceBase(),
+            _value(make_ptr<value_type>()) {}
+
         constexpr Resource(value_type* __restrict value_) noexcept :
             ResourceBase(),
             _value(value_) {}
