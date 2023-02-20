@@ -23,6 +23,8 @@ namespace ember::engine::resource {
 
         ManageGuard(const ptr<resource_type> resource_, const ResourceUsageFlags flags_);
 
+        ManageGuard(const ptr<resource_type> resource_, const ResourceUsageFlags flags_, const _STD adopt_lock_t);
+
         ManageGuard(
             const ptr<resource_type> resource_,
             const _STD defer_lock_t

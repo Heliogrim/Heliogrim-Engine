@@ -23,6 +23,14 @@ ManageGuard::ManageGuard(const ptr<resource_type> resource_, const ResourceUsage
 
 ManageGuard::ManageGuard(
     const ptr<resource_type> resource_,
+    const ResourceUsageFlags flags_,
+    const std::adopt_lock_t
+) :
+    _resource(resource_),
+    _ownedFlags(flags_) {}
+
+ManageGuard::ManageGuard(
+    const ptr<resource_type> resource_,
     const std::defer_lock_t
 ) :
     _resource(resource_),

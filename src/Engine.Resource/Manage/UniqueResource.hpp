@@ -17,6 +17,13 @@ namespace ember::engine::resource {
         constexpr UniqueResource() noexcept :
             underlying_type() {}
 
+        constexpr UniqueResource(nullptr_t) noexcept :
+            underlying_type() {}
+
+        template <typename Type_ = ManagedType_> requires _STD is_default_constructible_v<Type_>
+        constexpr UniqueResource(_STD in_place_t) noexcept(_STD is_nothrow_default_constructible_v<Type_>) :
+            underlying_type(_STD in_place) {}
+
         /**
          * TODO: Check whether we want to hide this constructor with a `Ty_ make_*(...)` function
          */
@@ -37,7 +44,7 @@ namespace ember::engine::resource {
             while (_lck.test_and_set(_STD memory_order::release)) {
                 scheduler::waitOnAtomic(_lck, true);
             }
-            return guard_type { this, flags_ };
+            return guard_type { this, flags_, _STD adopt_lock };
         }
 
         [[nodiscard]] bool try_acquire(
@@ -48,7 +55,7 @@ namespace ember::engine::resource {
                 return false;
             }
 
-            guard_ = guard_type { this, flags_ };
+            guard_ = guard_type { this, flags_, _STD adopt_lock };
             return true;
         }
 
