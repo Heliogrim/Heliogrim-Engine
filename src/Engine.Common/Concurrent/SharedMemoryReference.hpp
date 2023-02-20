@@ -162,7 +162,17 @@ namespace ember {
         }
 
     public:
-        [[nodiscard]] ref<value_type> operator*() const noexcept {
+        [[nodiscard]] bool operator!() const noexcept {
+            return empty();
+        }
+
+        [[nodiscard]] operator bool() const noexcept {
+            return _ctrlBlock != nullptr;
+        }
+
+    public:
+        template <typename Ty_ = value_type> requires (!_STD is_void_v<Ty_>) && (!_STD is_array_v<Ty_>)
+        [[nodiscard]] ref<Ty_> operator*() const noexcept {
             return *get();
         }
 
