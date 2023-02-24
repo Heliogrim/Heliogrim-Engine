@@ -12,6 +12,6 @@ namespace ember::engine::gfx::loader {
     using TextureLoadDataFlags = Flag<TextureLoadDataFlagBits>;
 
     struct TextureLoadOptions {
-        TextureLoadDataFlagBits dataFlag;
+        TextureLoadDataFlags dataFlag;
     };
 }

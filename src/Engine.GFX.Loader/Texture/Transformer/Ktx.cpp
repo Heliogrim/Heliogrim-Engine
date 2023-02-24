@@ -146,7 +146,6 @@ void transformer::convertKtxPartial(
 
 /**/
 
-#define IS_LAZY_LOADING (true)
 #define IS_LOCKED_SEGMENT (false)
 
 /**/
@@ -643,7 +642,7 @@ void transformer::convertKtx20(
     assert(
         dst->type() == TextureType::e2d ||
         dst->type() == TextureType::e2dArray ||
-        (dst->type() == TextureType::eCube && not IS_LAZY_LOADING)
+        (dst->type() == TextureType::eCube && not (options_.dataFlag & TextureLoadDataFlagBits::eLazyDataLoading))
     );
     /**/
 
@@ -958,7 +957,7 @@ void transformer::convertKtx20(
     postBarrier = {
         vk::AccessFlags(),
         vk::AccessFlags(),
-        IS_LAZY_LOADING ?
+        (options_.dataFlag & TextureLoadDataFlagBits::eLazyDataLoading) ?
             vk::ImageLayout::eUndefined :
             vk::ImageLayout::eTransferDstOptimal,
         vk::ImageLayout::eShaderReadOnlyOptimal,
