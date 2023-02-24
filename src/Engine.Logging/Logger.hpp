@@ -9,13 +9,12 @@
 #include "LogLevel.hpp"
 
 namespace ember {
-
     class Logger {
     public:
         using this_type = Logger;
 
         template <typename... Types_>
-        using format_type = const _STD _Fmt_string<Types_...>;
+        using format_type = const _STD format_string<Types_...>;
 
     private:
         Logger() noexcept;
@@ -39,7 +38,7 @@ namespace ember {
         static void info(mref<string> msg_);
 
         template <typename... Args_>
-        static FORCE_INLINE void info(format_type<Args_...>format_, Args_&&... args_) {
+        static FORCE_INLINE void info(format_type<Args_...> format_, Args_&&... args_) {
             Logger::info(_STD format(format_, _STD forward<Args_>(args_)...));
         }
 
@@ -57,5 +56,4 @@ namespace ember {
             Logger::error(_STD format(format_, _STD forward<Args_>(args_)...));
         }
     };
-
 }
