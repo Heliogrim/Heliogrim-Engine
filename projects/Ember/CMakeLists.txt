@@ -20,6 +20,7 @@ set(
 		${META_PROJECT_NAME}::Engine.GFX.Schedule
 		${META_PROJECT_NAME}::Engine.Input
 		${META_PROJECT_NAME}::Engine.Input.Schedule
+		${META_PROJECT_NAME}::Engine.IO.Dispatcher
 		${META_PROJECT_NAME}::Engine.Logging
 		${META_PROJECT_NAME}::Engine.Network
 		${META_PROJECT_NAME}::Engine.PFX

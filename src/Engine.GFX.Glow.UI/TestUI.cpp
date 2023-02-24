@@ -16,6 +16,7 @@
 #include "Ember/World.hpp"
 #include "Ember/Actors/CameraActor.hpp"
 #include "Ember.Default/Assets/Fonts/CascadiaCode.hpp"
+#include "Ember.Default/Assets/Textures/Brand.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Core/World.hpp"
 #include "Engine.Core/WorldContext.hpp"
@@ -23,6 +24,7 @@
 #include "Engine.GFX/RenderTarget.hpp"
 #include "Engine.GFX/Scene/CameraModel.hpp"
 #include "Engine.GFX/Swapchain/VkSwapchain.hpp"
+#include "Engine.GFX/Texture/VirtualTextureView.hpp"
 #include "Engine.GFX.Scene/RenderSceneManager.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Reflow/Widget/Button.hpp"
@@ -118,9 +120,16 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
     // TODO:
     if (testTexture.empty()) {
 
-        ptr<engine::assets::Texture> request {};
-        testTexture = engine::Engine::getEngine()->getResources()->loader().load<engine::assets::Texture,
-            engine::gfx::TextureResource>(_STD move(request));
+        const auto query = engine::Engine::getEngine()->getAssets()->getDatabase()->query(
+            game::assets::texture::Brand::unstable_auto_guid()
+        );
+
+        assert(query.exists());
+
+        auto request = static_cast<ptr<engine::assets::Texture>>(query.get());
+        testTexture = engine::Engine::getEngine()->getResources()->loader().load<
+            engine::assets::Texture, engine::gfx::TextureResource
+        >(_STD move(request), engine::gfx::loader::TextureLoadOptions {});
 
         /*
         testTexture = make_sptr<engine::gfx::Texture>(loader.__tmp__load({ ""sv, R"(R:\\test.ktx)" }));
@@ -657,7 +666,15 @@ const ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
         testFont = engine::Engine::getEngine()->getResources()->loader().load<
             engine::assets::Font,
             engine::gfx::FontResource
-        >(_STD move(font));
+        >(
+            _STD move(font),
+            engine::gfx::loader::FontLoadOptions {
+                .ranges = { engine::reflow::BasicLatin, engine::reflow::Latin1Supplement },
+                .glyphs = {},
+                //
+                .fontSizes = { 12ui32, 16ui32, 24ui32 }
+            }
+        );
     }
 
     return testFont->acquire(engine::resource::ResourceUsageFlag::eAll).mut();
