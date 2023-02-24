@@ -97,6 +97,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontResource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontTransformer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\Traits.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\Transformer\FreeType.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryCache.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryFeedback.hpp" />
@@ -132,6 +133,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\FontFeedback.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\FontLoader.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\FontTransformer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\Transformer\FreeType.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryCache.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryFeedback.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryLoader.cpp" />

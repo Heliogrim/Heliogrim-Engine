@@ -19,9 +19,18 @@ namespace ember::engine::gfx::loader {
         using underlying_type::stream_response_type;
 
     public:
-        FontTransformer();
+        FontTransformer(
+            const non_owning_rptr<pool::GlobalResourcePool> pool_
+        );
 
-        ~FontTransformer() override = default;
+        FontTransformer(mref<this_type> other_) noexcept;
+
+        FontTransformer(cref<this_type> other_) noexcept;
+
+        ~FontTransformer() override;
+
+    private:
+        const non_owning_rptr<pool::GlobalResourcePool> _pool;
 
     public:
         [[nodiscard]] response_type::type operator()(
