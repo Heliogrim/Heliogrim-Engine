@@ -43,6 +43,12 @@
     <Filter Include="Quelldateien\Geometry">
       <UniqueIdentifier>{844a2e44-422e-4819-ac5c-d348659559ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Font\Transformer">
+      <UniqueIdentifier>{96af895c-ec4b-4eac-88a9-4c777a0fe8ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Font\Transformer">
+      <UniqueIdentifier>{5b6f3edd-6d3a-4d68-9e2d-5e083b747c84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.hpp">
@@ -153,6 +159,9 @@
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\FontFeedback.hpp">
       <Filter>Headerdateien\Font</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\Transformer\FreeType.hpp">
+      <Filter>Headerdateien\Font\Transformer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.cpp">
@@ -211,6 +220,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Geometry\StaticGeometryTransformer.cpp">
       <Filter>Quelldateien\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\Transformer\FreeType.cpp">
+      <Filter>Quelldateien\Font\Transformer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
