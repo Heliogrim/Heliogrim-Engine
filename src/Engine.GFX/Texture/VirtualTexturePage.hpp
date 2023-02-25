@@ -10,7 +10,6 @@
 #include "../Memory/VirtualMemoryPage.hpp"
 
 namespace ember::engine::gfx {
-
     class VirtualTexturePage final {
     public:
         friend class VirtualTexture;
@@ -91,5 +90,4 @@ namespace ember::engine::gfx {
 
         [[nodiscard]] vk::SparseMemoryBind vkSparseMemoryBind() const noexcept;
     };
-
 }

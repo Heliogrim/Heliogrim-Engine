@@ -28,10 +28,12 @@ void EdRevRenderer::registerStages() {
     const auto pipe { getOrCreatePipeline() };
 
     const auto edPost { make_sptr<EdPostCompStage>() };
-    edPost->pushDependency({
-        pipe->stages().back().get(),
-        engine::gfx::render::RenderStageOrder::ePredecessor,
-        true
-    });
+    edPost->pushDependency(
+        {
+            pipe->stages().back().get(),
+            engine::gfx::render::RenderStageOrder::ePredecessor,
+            true
+        }
+    );
     pipe->push(edPost);
 }

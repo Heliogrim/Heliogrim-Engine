@@ -2,7 +2,6 @@
 #include "MemoryReadWriteArchive.hpp"
 
 namespace ember::engine::serialization {
-
     class BufferArchive :
         public MemoryReadWriteArchive,
         public AutoArray<u8> {
@@ -15,5 +14,4 @@ namespace ember::engine::serialization {
     public:
         [[nodiscard]] string_view getArchiveName() const noexcept override;
     };
-
 }

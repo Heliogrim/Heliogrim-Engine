@@ -2,7 +2,6 @@
 #include "Shader/ShaderSlot.hpp"
 
 namespace ember::engine::gfx {
-
     class ComputePipeline {
     protected:
         /**

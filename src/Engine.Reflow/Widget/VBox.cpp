@@ -83,8 +83,12 @@ static math::vec2 calcImplicitInnerSize(cref<StyleSheet> style_, cref<math::vec2
     return local = compMin<float>(local, maxSize);
 }
 
-void clampInnerSize(cref<StyleSheet> style_, cref<math::vec2> space_, cref<math::vec2> limit_,
-    ref<math::vec2> target_) {
+void clampInnerSize(
+    cref<StyleSheet> style_,
+    cref<math::vec2> space_,
+    cref<math::vec2> limit_,
+    ref<math::vec2> target_
+) {
 
     math::vec2 maxSize { limit_ };
 

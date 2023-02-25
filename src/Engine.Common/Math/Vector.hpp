@@ -1025,8 +1025,8 @@ namespace ember::math {
             return !(x == other_.x && y == other_.y && z == other_.z);
         }
 
-        template <typename NumericType_ = T, typename = _STD enable_if_t<!_STD is_floating_point_v<T>>>
-        type operator>>(const value_type& shift_) const {
+        template <typename NumericType_ = T, _STD enable_if_t<!_STD is_floating_point_v<NumericType_>, bool>  = true>
+        type operator>>(const NumericType_& shift_) const {
             return type {
                 x >> shift_,
                 y >> shift_,

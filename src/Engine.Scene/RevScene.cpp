@@ -43,36 +43,38 @@ void RevScene::update() {
      * Update each element in scene graph or fetch for destruction
      */
     Vector<ptr<gfx::SceneNodeModel>> markedForDestruction {};
-    graph.traversal([scene = this, &markedForDestruction](auto* node_) {
-
-        /**
-         * Check for elements -> leaf node
-         */
-        if (node_->isLeaf()) {
+    graph.traversal(
+        [scene = this, &markedForDestruction](auto* node_) {
 
             /**
-             * Iterate over elements
+             * Check for elements -> leaf node
              */
-            const auto* const elements { node_->elements() };
-            for (auto idx { node_->exclusiveSize() }; idx > 0; --idx) {
+            if (node_->isLeaf()) {
 
                 /**
-                 * Check for destruction marking, otherwise update element
+                 * Iterate over elements
                  */
-                auto* const element { elements[idx - 1u] };
-                if (element->markedAsDeleted()) {
-                    markedForDestruction.push_back(element);
+                const auto* const elements { node_->elements() };
+                for (auto idx { node_->exclusiveSize() }; idx > 0; --idx) {
 
-                } else {
-                    element->update(scene);
+                    /**
+                     * Check for destruction marking, otherwise update element
+                     */
+                    auto* const element { elements[idx - 1u] };
+                    if (element->markedAsDeleted()) {
+                        markedForDestruction.push_back(element);
+
+                    } else {
+                        element->update(scene);
+                    }
+
                 }
 
             }
 
+            return node_->inclusiveSize();
         }
-
-        return node_->inclusiveSize();
-    });
+    );
 
     /**
      * Destroy every fetched marked node

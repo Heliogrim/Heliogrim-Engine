@@ -24,9 +24,14 @@ void Image::addSource(cref<Url> sourceUrl_) {
 }
 
 void Image::removeSource(cref<Url> sourceUrl_) {
-    const auto where = _STD ranges::remove(_sources.begin(), _sources.end(), sourceUrl_.path(), [](cref<Url> url_) {
-        // TODO:
-        return url_.path();
-    });
+    const auto where = _STD ranges::remove(
+        _sources.begin(),
+        _sources.end(),
+        sourceUrl_.path(),
+        [](cref<Url> url_) {
+            // TODO:
+            return url_.path();
+        }
+    );
     _sources.erase(where.begin(), where.end());
 }

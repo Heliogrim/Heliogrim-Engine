@@ -59,7 +59,8 @@ void Actor::addComponent(const ptr<ActorComponent> component_) {
     if (component_->getParentComponent() != nullptr) {
         assert(
             _components.contains(component_->getParentComponent()) &&
-            "Failed to ensure acknowledged parent component.");
+            "Failed to ensure acknowledged parent component."
+        );
     }
     #endif
 
@@ -123,9 +124,12 @@ ptr<Actor> ember::CreateActor(cref<World> activeWorld_) {
     const auto* engine { engine::Engine::getEngine() };
     const auto ctxs { engine->getWorldContexts() };// TODO: Check whether really want to copy the set
 
-    const auto where = std::ranges::find_if(ctxs, [world](const auto& ctx_) {
-        return ctx_->getCurrentWorld().get() == world;
-    });
+    const auto where = std::ranges::find_if(
+        ctxs,
+        [world](const auto& ctx_) {
+            return ctx_->getCurrentWorld().get() == world;
+        }
+    );
 
     if (where == _STD ranges::end(ctxs)) [[unlikely]]
     {
@@ -167,9 +171,12 @@ Future<ptr<Actor>> ember::CreateActor(cref<World> activeWorld_, async_t) {
     const auto* engine { engine::Engine::getEngine() };
     const auto ctxs { engine->getWorldContexts() };// TODO: Check whether really want to copy the set
 
-    const auto where = std::ranges::find_if(ctxs, [world](const auto& ctx_) {
-        return ctx_->getCurrentWorld().get() == world;
-    });
+    const auto where = std::ranges::find_if(
+        ctxs,
+        [world](const auto& ctx_) {
+            return ctx_->getCurrentWorld().get() == world;
+        }
+    );
 
     auto* const session { where == _STD ranges::end(ctxs) ? nullptr : (*where)->getOwner() };
     concurrent::promise<ptr<Actor>> p {
@@ -209,13 +216,19 @@ ptr<Actor> ember::CreateActor(const ptr<const ActorClass> class_, cref<World> ac
     throw NotImplementedException();
 }
 
-Future<ptr<Actor>> ember::CreateActor(const ptr<const ActorClass> class_, const ptr<SerializedActor> serialized_,
-    cref<Session> session_) noexcept {
+Future<ptr<Actor>> ember::CreateActor(
+    const ptr<const ActorClass> class_,
+    const ptr<SerializedActor> serialized_,
+    cref<Session> session_
+) noexcept {
     throw NotImplementedException();
 }
 
-Future<ptr<Actor>> ember::CreateActor(const ptr<const ActorClass> class_, const ptr<SerializedActor> serialized_,
-    cref<World> activeWorld_) noexcept {
+Future<ptr<Actor>> ember::CreateActor(
+    const ptr<const ActorClass> class_,
+    const ptr<SerializedActor> serialized_,
+    cref<World> activeWorld_
+) noexcept {
     throw NotImplementedException();
 }
 
@@ -231,8 +244,11 @@ Future<ptr<Actor>> ember::SpawnActor(const ptr<const ActorClass> class_, cref<Wo
     throw NotImplementedException();
 }
 
-Future<ptr<Actor>> ember::SpawnActor(const ptr<const ActorClass> class_, const ptr<SerializedActor> serialized_,
-    cref<World> activeWorld_) noexcept {
+Future<ptr<Actor>> ember::SpawnActor(
+    const ptr<const ActorClass> class_,
+    const ptr<SerializedActor> serialized_,
+    cref<World> activeWorld_
+) noexcept {
     throw NotImplementedException();
 }
 
@@ -270,9 +286,12 @@ Future<bool> ember::Destroy(mref<ptr<Actor>> actor_, cref<World> activeWorld_) n
     const auto* engine { engine::Engine::getEngine() };
     const auto ctxs { engine->getWorldContexts() };// TODO: Check whether really want to copy the set
 
-    const auto where = std::ranges::find_if(ctxs, [world](const auto& ctx_) {
-        return ctx_->getCurrentWorld().get() == world;
-    });
+    const auto where = std::ranges::find_if(
+        ctxs,
+        [world](const auto& ctx_) {
+            return ctx_->getCurrentWorld().get() == world;
+        }
+    );
 
     auto* coreSession { where == _STD ranges::end(ctxs) ? nullptr : (*where)->getOwner() };
 

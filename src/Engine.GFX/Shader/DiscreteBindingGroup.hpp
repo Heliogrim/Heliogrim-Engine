@@ -10,14 +10,16 @@ namespace ember::engine::gfx {
 }
 
 namespace ember::engine::gfx::shader {
-
     class DiscreteBindingGroup {
     public:
         using this_type = DiscreteBindingGroup;
 
     public:
-        DiscreteBindingGroup(cref<ShaderBindingGroup> super_, const ptr<DiscreteBindingPool> pool_,
-            cref<vk::DescriptorSet> vkSet_);
+        DiscreteBindingGroup(
+            cref<ShaderBindingGroup> super_,
+            const ptr<DiscreteBindingPool> pool_,
+            cref<vk::DescriptorSet> vkSet_
+        );
 
         DiscreteBindingGroup(cref<this_type>) = delete;
 

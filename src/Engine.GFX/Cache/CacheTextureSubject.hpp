@@ -8,7 +8,6 @@
 #include <Engine.Common/Hash/Murmur3.hpp>
 
 namespace ember::engine::gfx::cache {
-
     struct CacheTextureSubject {
     public:
         using this_type = CacheTextureSubject;
@@ -156,11 +155,11 @@ namespace ember::engine::gfx::cache {
 }
 
 namespace std {
-
     template <>
     struct hash<ember::engine::gfx::cache::CacheTextureSubject> {
         [[nodiscard]] size_t operator()(
-            ::ember::cref<ember::engine::gfx::cache::CacheTextureSubject> obj_) const noexcept {
+            ::ember::cref<ember::engine::gfx::cache::CacheTextureSubject> obj_
+        ) const noexcept {
             const ::ember::u32 data[] = {
                 obj_.layer,
                 obj_.mip,

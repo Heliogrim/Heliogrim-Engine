@@ -6,9 +6,7 @@
 #include "../Make.hpp"
 
 namespace ember::concurrent {
-
     namespace {
-
         /**
          * The internal state of a promise.
          *
@@ -18,13 +16,13 @@ namespace ember::concurrent {
          * @tparam Ry Type of the return value alias expected result.
          * @tparam Args Packed Type of the arguments to invoke the function.
          */
-        template <typename Ry, typename ...Args>
+        template <typename Ry, typename... Args>
         class promise_state {
         public:
             using future_state_type = typename future<Ry>::state_type;
             using shared_type = _STD shared_ptr<promise_state<Ry, Args...>>;
 
-            using fnc_type = _STD function<Ry(Args ...)>;
+            using fnc_type = _STD function<Ry(Args...)>;
             using next_fnc_type = _STD function<void(Ry&&)>;
 
             /**
@@ -72,7 +70,8 @@ namespace ember::concurrent {
             future_state_type& future() {
                 if (_next != nullptr)
                     throw _STD logic_error(
-                        "You can not capture the returned value of promise intersecting the promise chain.");
+                        "You can not capture the returned value of promise intersecting the promise chain."
+                    );
                 if (!_future)
                     _future = make_sptr<typename future_state_type::element_type>();
                 return _future;
@@ -86,7 +85,7 @@ namespace ember::concurrent {
              *
              * @param args_ The invocation arguments for the stored function.
              */
-            void step(Args ...args_) {
+            void step(Args... args_) {
                 if (_future != nullptr) {
                     // Store result to internal future
                     _future->set(
@@ -142,13 +141,13 @@ namespace ember::concurrent {
             mutable future_state_type _future;
         };
 
-        template <typename ...Args>
+        template <typename... Args>
         class promise_state<void, Args...> {
         public:
             using future_state_type = typename future<void>::state_type;
             using shared_type = _STD shared_ptr<promise_state<void, Args...>>;
 
-            using fnc_type = _STD function<void(Args ...)>;
+            using fnc_type = _STD function<void(Args...)>;
             using next_fnc_type = _STD function<void()>;
 
             /**
@@ -207,7 +206,7 @@ namespace ember::concurrent {
              *
              * @param args_ The invocation arguments for the stored function.
              */
-            void step(Args ...args_) {
+            void step(Args... args_) {
                 if (_future != nullptr) {
                     // Store state to internal future
                     _future->set(
@@ -375,12 +374,12 @@ namespace ember::concurrent {
     template <typename Ret>
     class promise;
 
-    template <typename Ret, typename ...Args>
+    template <typename Ret, typename... Args>
     class nxpromise {
         template <typename Ty>
         friend class promise;
 
-        template <typename NxRet, typename ...NxArgs>
+        template <typename NxRet, typename... NxArgs>
         friend class nxpromise;
 
     public:
@@ -388,7 +387,7 @@ namespace ember::concurrent {
         using reference_type = nxpromise<Ret, Args...>&;
         using const_reference_type = const nxpromise<Ret, Args...>&;
 
-        using fnc_type = _STD function<Ret(Args ...)>;
+        using fnc_type = _STD function<Ret(Args...)>;
 
         /**
          * Destructor
@@ -411,9 +410,11 @@ namespace ember::concurrent {
             nxpromise<NxRet, Ret> next(_STD move(fnc_));
 
             // Anonymous Subscriber
-            _state->stack([nxs = next._state](Ret&& args_) {
-                nxs->step(_STD forward<Ret>(args_));
-            });
+            _state->stack(
+                [nxs = next._state](Ret&& args_) {
+                    nxs->step(_STD forward<Ret>(args_));
+                }
+            );
 
             return _STD forward<nxpromise<NxRet, Ret>>(next);
         }
@@ -431,9 +432,11 @@ namespace ember::concurrent {
             nxpromise<NxRet, Ret> next(_STD move(fnc_));
 
             // Anonymous Subscriber
-            _state->stack([nxs = next._state](Ret&& args_) {
-                nxs->step(_STD forward(args_));
-            });
+            _state->stack(
+                [nxs = next._state](Ret&& args_) {
+                    nxs->step(_STD forward(args_));
+                }
+            );
 
             return _STD forward(next);
         }
@@ -547,9 +550,11 @@ namespace ember::concurrent {
             nxpromise<NxRet, Ret> next(_STD move(fnc_));
 
             // Anonymous Subscriber
-            _state->stack([nxs = next._state](Ret&& args_) {
-                return nxs->step(_STD forward<Ret>(args_));
-            });
+            _state->stack(
+                [nxs = next._state](Ret&& args_) {
+                    return nxs->step(_STD forward<Ret>(args_));
+                }
+            );
 
             return _STD forward<nxpromise<NxRet, Ret>>(next);
         }
@@ -567,9 +572,11 @@ namespace ember::concurrent {
             nxpromise<NxRet, Ret> next(_STD move(fnc_));
 
             // Anonymous Subscriber
-            _state->stack([nxs = next._state](Ret&& args_) {
-                return nxs->step(_STD forward(args_));
-            });
+            _state->stack(
+                [nxs = next._state](Ret&& args_) {
+                    return nxs->step(_STD forward(args_));
+                }
+            );
 
             return _STD forward(next);
         }
@@ -667,9 +674,11 @@ namespace ember::concurrent {
             nxpromise<NxRet, void> next(_STD move(fnc_));
 
             // Anonymous Subscriber
-            _state->stack([nxs = next._state]() {
-                return nxs->step();
-            });
+            _state->stack(
+                [nxs = next._state]() {
+                    return nxs->step();
+                }
+            );
 
             return _STD forward<nxpromise<NxRet, void>>(next);
         }
@@ -687,9 +696,11 @@ namespace ember::concurrent {
             nxpromise<NxRet, void> next(_STD move(fnc_));
 
             // Anonymous Subscriber
-            _state->stack([nxs = next._state]() {
-                return nxs->step();
-            });
+            _state->stack(
+                [nxs = next._state]() {
+                    return nxs->step();
+                }
+            );
 
             return _STD forward(next);
         }

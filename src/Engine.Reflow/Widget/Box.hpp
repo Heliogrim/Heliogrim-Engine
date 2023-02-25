@@ -7,7 +7,6 @@
 #include "../Children.hpp"
 
 namespace ember::engine::reflow {
-
     class Box :
         public Widget {
     public:
@@ -63,6 +62,9 @@ namespace ember::engine::reflow {
         math::vec2 _prevSpace;
 
     public:
-        [[nodiscard]] bool willChangeLayout(cref<math::vec2> space_, cref<StyleKeyStack> styleStack_) const noexcept override;
+        [[nodiscard]] bool willChangeLayout(
+            cref<math::vec2> space_,
+            cref<StyleKeyStack> styleStack_
+        ) const noexcept override;
     };
 }

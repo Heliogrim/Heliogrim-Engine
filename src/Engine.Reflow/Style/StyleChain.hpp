@@ -5,7 +5,6 @@
 #include "StyleChainEntry.hpp"
 
 namespace ember::engine::reflow {
-
     class StyleChain {
     public:
         template <typename>
@@ -34,5 +33,4 @@ namespace ember::engine::reflow {
 
         void popStyle(cref<StyleChainEntry::key_type> style_);
     };
-
 }

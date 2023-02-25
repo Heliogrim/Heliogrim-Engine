@@ -105,8 +105,12 @@ void InputFloat::render(const ptr<ReflowCommandBuffer> cmd_) {
     _wrapper->render(cmd_);
 }
 
-void InputFloat::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_) {
+void InputFloat::flow(
+    cref<FlowContext> ctx_,
+    cref<math::vec2> space_,
+    cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_
+) {
     _wrapper->setParent(shared_from_this());
     _wrapper->flow(ctx_, space_, limit_, styleStack_);
 }

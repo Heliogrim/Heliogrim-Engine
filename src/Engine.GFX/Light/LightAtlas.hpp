@@ -1,9 +1,9 @@
 #pragma once
 
 namespace clockwork::__internal::gfx {
-	class LightAtlas {
-	public:
+    class LightAtlas {
+    public:
 
-	private:
-	};
+    private:
+    };
 }

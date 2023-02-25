@@ -3,7 +3,6 @@
 #include "../../Wrapper.hpp"
 
 namespace ember::hopscotch {
-
     using hash_truncate_type = _STD uint_least32_t;
 
     /**

@@ -3,7 +3,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::assets {
-
     class AssetOutputStream {
     public:
         using value_type = AssetOutputStream;

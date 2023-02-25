@@ -89,10 +89,12 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
             /**
              * Transform RequestType to DescriptorSize
              */
-            sizes.push_back({
-                vkTranslate(binding.type()),
-                1
-            });
+            sizes.push_back(
+                {
+                    vkTranslate(binding.type()),
+                    1
+                }
+            );
 
             /**
              * Unique push_back to track required amount of descriptor sets
@@ -116,9 +118,13 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
             /**
              * Check whether exists and match
              */
-            const auto entry = _STD find_if(bindings.begin(), bindings.end(), [&bp](const PrototypeBinding& entry_) {
-                return entry_.id() == bp.id() || entry_.name() == bp.name();
-            });
+            const auto entry = _STD find_if(
+                bindings.begin(),
+                bindings.end(),
+                [&bp](const PrototypeBinding& entry_) {
+                    return entry_.id() == bp.id() || entry_.name() == bp.name();
+                }
+            );
 
             /**
              * Concatenate matching shader bindings or push new ones
@@ -202,11 +208,13 @@ FactoryBuildResult Factory::build(_STD initializer_list<Prototype> list_) const 
         /**
          * Store Binding Group
          */
-        groups.push_back({
-            interval,
-            _STD move(layout),
-            vkLayout
-        });
+        groups.push_back(
+            {
+                interval,
+                _STD move(layout),
+                vkLayout
+            }
+        );
     }
 
     /**

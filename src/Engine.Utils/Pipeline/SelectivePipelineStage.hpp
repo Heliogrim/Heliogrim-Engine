@@ -5,7 +5,6 @@
 #include "AdaptivePipelineStage.hpp"
 
 namespace ember::engine::utils::pipeline::adaptive {
-
     template <typename SrcType_, typename DstType_>
     class SelectivePipelineStage :
         public AdaptivePipelineStage<SrcType_, DstType_> {

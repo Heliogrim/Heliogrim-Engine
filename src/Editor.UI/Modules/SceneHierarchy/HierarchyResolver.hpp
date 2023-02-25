@@ -4,7 +4,6 @@
 #include <Engine.Common/Collection/Vector.hpp>
 
 namespace ember::editor::ui {
-
     class HierarchyResolverBase {
     public:
         template <typename SourceType_, typename ResolveType_>
@@ -44,5 +43,4 @@ namespace ember::editor::ui {
         cref<sptr<void>> source_,
         ref<Vector<resolve_type>> resolved_
     ) const { }
-
 }

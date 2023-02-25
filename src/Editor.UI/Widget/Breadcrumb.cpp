@@ -14,11 +14,13 @@ using namespace ember;
 
     auto style { BoundStyleSheet::make() };
 
-    style->pushStyle({
-        Style::BreadcrumbKey,
-        nullptr,
-        Style::get()->getStyleSheet(Style::BreadcrumbKey)
-    });
+    style->pushStyle(
+        {
+            Style::BreadcrumbKey,
+            nullptr,
+            Style::get()->getStyleSheet(Style::BreadcrumbKey)
+        }
+    );
 
     return style;
 }
@@ -27,17 +29,21 @@ using namespace ember;
 
     auto style { BoundStyleSheet::make() };
 
-    style->pushStyle({
-        Style::TextButtonKey,
-        nullptr,
-        Style::get()->getStyleSheet(Style::TextButtonKey)
-    });
+    style->pushStyle(
+        {
+            Style::TextButtonKey,
+            nullptr,
+            Style::get()->getStyleSheet(Style::TextButtonKey)
+        }
+    );
 
-    style->pushStyle({
-        Style::ButtonRaisedKey,
-        style::isRaised,
-        Style::get()->getStyleSheet(Style::ButtonRaisedKey)
-    });
+    style->pushStyle(
+        {
+            Style::ButtonRaisedKey,
+            style::isRaised,
+            Style::get()->getStyleSheet(Style::ButtonRaisedKey)
+        }
+    );
 
     return style;
 }
@@ -46,17 +52,21 @@ using namespace ember;
 
     auto style { BoundStyleSheet::make() };
 
-    style->pushStyle({
-        Style::TitleSmallKey,
-        nullptr,
-        Style::get()->getStyleSheet(Style::TitleSmallKey)
-    });
+    style->pushStyle(
+        {
+            Style::TitleSmallKey,
+            nullptr,
+            Style::get()->getStyleSheet(Style::TitleSmallKey)
+        }
+    );
 
-    style->pushStyle({
-        Style::ButtonRaisedKey,
-        style::isNever,
-        Style::get()->getStyleSheet(Style::TitleRaisedKey)
-    });
+    style->pushStyle(
+        {
+            Style::ButtonRaisedKey,
+            style::isNever,
+            Style::get()->getStyleSheet(Style::TitleRaisedKey)
+        }
+    );
 
     return style;
 }
@@ -64,16 +74,20 @@ using namespace ember;
 [[nodiscard]] sptr<BoundStyleSheet> makeBreadSpaceStyle() {
 
     auto style {
-        BoundStyleSheet::make(StyleSheet {
-            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } }
-        })
+        BoundStyleSheet::make(
+            StyleSheet {
+                .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } }
+            }
+        )
     };
 
-    style->pushStyle({
-        Style::TitleSmallKey,
-        nullptr,
-        Style::get()->getStyleSheet(Style::TitleSmallKey)
-    });
+    style->pushStyle(
+        {
+            Style::TitleSmallKey,
+            nullptr,
+            Style::get()->getStyleSheet(Style::TitleSmallKey)
+        }
+    );
 
     return style;
 }
@@ -87,9 +101,14 @@ Breadcrumb::~Breadcrumb() {
 
 void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, cref<Url> value_) {
 
-    if (_STD ranges::find(_entries.begin(), _entries.end(), key_, [](cref<BreadcrumbEntry> entry_) {
-        return entry_.key;
-    }) != _entries.end()) {
+    if (_STD ranges::find(
+        _entries.begin(),
+        _entries.end(),
+        key_,
+        [](cref<BreadcrumbEntry> entry_) {
+            return entry_.key;
+        }
+    ) != _entries.end()) {
         return;
     }
 
@@ -113,14 +132,16 @@ void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, c
 
     /**/
 
-    [[maybe_unused]] auto _ = button->addOnClick([breadcrumb = weak_from_this(), url = value_](const auto&) {
+    [[maybe_unused]] auto _ = button->addOnClick(
+        [breadcrumb = weak_from_this(), url = value_](const auto&) {
 
-        if (breadcrumb.expired()) {
-            return;
+            if (breadcrumb.expired()) {
+                return;
+            }
+
+            _STD static_pointer_cast<Breadcrumb, Widget>(breadcrumb.lock())->handleAction(url);
         }
-
-        _STD static_pointer_cast<Breadcrumb, Widget>(breadcrumb.lock())->handleAction(url);
-    });
+    );
 
     /**/
 
@@ -134,9 +155,14 @@ void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, c
 void Breadcrumb::removeNavEntry(cref<AssocKey<string>> key_) {
 
     const auto where {
-        _STD ranges::find(_entries.begin(), _entries.end(), key_, [](const auto& entry_) {
-            return entry_.key;
-        })
+        _STD ranges::find(
+            _entries.begin(),
+            _entries.end(),
+            key_,
+            [](const auto& entry_) {
+                return entry_.key;
+            }
+        )
     };
 
     if (where == _entries.end()) {
@@ -180,9 +206,14 @@ u64 Breadcrumb::onAction(mref<action_fnc_type> fnc_) {
 
 void Breadcrumb::offAction(u64 action_) {
 
-    const auto where = _STD ranges::remove(_actions.begin(), _actions.end(), action_, [](const auto& pair_) {
-        return pair_.first;
-    });
+    const auto where = _STD ranges::remove(
+        _actions.begin(),
+        _actions.end(),
+        action_,
+        [](const auto& pair_) {
+            return pair_.first;
+        }
+    );
 
     _actions.erase(where.begin(), where.end());
 }

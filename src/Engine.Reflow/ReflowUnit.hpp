@@ -1,7 +1,6 @@
 #pragma once
 
 namespace ember::engine::reflow {
-
     enum class ReflowUnitType {
         eAuto,
         eAbsolute,
@@ -12,5 +11,4 @@ namespace ember::engine::reflow {
         ReflowUnitType type = ReflowUnitType::eAuto;
         float value = 0.F;
     };
-
 }

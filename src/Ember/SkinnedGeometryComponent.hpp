@@ -2,7 +2,6 @@
 #include "SkeletalGeometryComponent.hpp"
 
 namespace ember {
-
     class SkinnedGeometryComponent :
         public SkeletalGeometryComponent {
     public:

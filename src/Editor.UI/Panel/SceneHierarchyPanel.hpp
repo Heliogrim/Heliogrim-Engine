@@ -15,7 +15,6 @@
 #endif
 
 namespace ember::editor::ui {
-
     class SceneHierarchyPanel :
         public engine::reflow::Panel {
     protected:
@@ -119,5 +118,4 @@ namespace ember::editor::ui {
     public:
         static sptr<SceneHierarchyPanel> make(const non_owning_rptr<SceneHierarchy> module_);
     };
-
 }

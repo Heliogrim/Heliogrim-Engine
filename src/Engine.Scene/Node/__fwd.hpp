@@ -1,7 +1,6 @@
 #pragma once
 
 namespace ember::engine::scene {
-
     class SceneNodeHead;
 
     template <class ElementType_>
@@ -21,5 +20,4 @@ namespace ember::engine::scene {
 
     template <class NodeStorageType_, class ElementStorageType_, class Traits_>
     class SceneNodeFactory;
-
 }

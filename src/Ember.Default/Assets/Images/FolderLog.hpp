@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<FolderLog> {
     public:
         FolderLog():
-            ImageAsset(FolderLog::unstable_auto_guid(),
-                R"(resources\imports\ktx\folder-log.ktx)") {}
+            ImageAsset(
+                FolderLog::unstable_auto_guid(),
+                R"(resources\imports\ktx\folder-log.ktx)"
+            ) {}
     };
 }

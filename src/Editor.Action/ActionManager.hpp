@@ -5,7 +5,6 @@
 #include "Log/__fwd.hpp"
 
 namespace ember::editor {
-
     class ActionManager {
     public:
         using this_type = ActionManager;
@@ -42,5 +41,4 @@ namespace ember::editor {
 
         void reapply() const;
     };
-
 }

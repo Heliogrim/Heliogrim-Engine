@@ -6,7 +6,6 @@
 #include "StyleKeyStack.hpp"
 
 namespace ember::engine::reflow {
-
     class BoundStyleSheet :
         public StyleSheet,
         public SharedFromThis<BoundStyleSheet> {
@@ -54,5 +53,4 @@ namespace ember::engine::reflow {
     public:
         StyleSheet compute(cref<sptr<Widget>> widget_, _Inout_ ref<StyleKeyStack> styleStack_);
     };
-
 }

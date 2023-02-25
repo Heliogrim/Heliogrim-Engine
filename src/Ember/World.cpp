@@ -63,14 +63,16 @@ bool World::removeActor(const ptr<Actor> actor_) {
 
 Future<World> ember::CreateWorld() noexcept {
     auto prom {
-        ember::concurrent::promise<World>([]() {
-            auto scene { ::ember::engine::scene::SceneFactory::createDefaultScene() };
-            const auto world { make_sptr<engine::core::World>(_STD move(scene)) };
+        ember::concurrent::promise<World>(
+            []() {
+                auto scene { ::ember::engine::scene::SceneFactory::createDefaultScene() };
+                const auto world { make_sptr<engine::core::World>(_STD move(scene)) };
 
-            engine::Engine::getEngine()->addWorld(world);
+                engine::Engine::getEngine()->addWorld(world);
 
-            return World { world };
-        })
+                return World { world };
+            }
+        )
     };
 
     auto fut { prom.get() };
@@ -97,16 +99,18 @@ Future<World> ember::GetWorld(cref<asset_guid> guid_) noexcept {
 
 Future<bool> ember::Destroy(mref<World> world_) {
     auto prom {
-        ember::concurrent::promise<bool>([world_ = _STD move(world_)]() {
-            const auto world { _STD static_pointer_cast<engine::core::World, void>(world_.unwrap()) };
+        ember::concurrent::promise<bool>(
+            [world_ = _STD move(world_)]() {
+                const auto world { _STD static_pointer_cast<engine::core::World, void>(world_.unwrap()) };
 
-            // TODO: Remove world from every context / session where it might be used currently
-            // TODO: Check whether we want to auto handle session's world transition when engine propagated world erase happens
+                // TODO: Remove world from every context / session where it might be used currently
+                // TODO: Check whether we want to auto handle session's world transition when engine propagated world erase happens
 
-            engine::Engine::getEngine()->removeWorld(world);
+                engine::Engine::getEngine()->removeWorld(world);
 
-            return true;
-        })
+                return true;
+            }
+        )
     };
 
     auto fut { prom.get() };

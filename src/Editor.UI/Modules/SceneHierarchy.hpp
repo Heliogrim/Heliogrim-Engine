@@ -12,7 +12,6 @@ namespace ember::editor::ui {
 }
 
 namespace ember::editor::ui {
-
     class SceneHierarchy {
     public:
         using this_type = SceneHierarchy;
@@ -67,5 +66,4 @@ namespace ember::editor::ui {
             return getGenerator(_STD decay_t<SourceType_>::type_id);
         }
     };
-
 }

@@ -18,21 +18,33 @@ namespace ember::debug {
 
     class DbgMemoryStats {
     public:
-        static void updateAllocated(const std::string& key_, const size_t size_, const uint32_t& flags_,
-            void* ptr_ = nullptr) {
+        static void updateAllocated(
+            const std::string& key_,
+            const size_t size_,
+            const uint32_t& flags_,
+            void* ptr_ = nullptr
+        ) {
             const auto entry = _stats.find(key_);
 
             if (entry != _stats.end()) {
-                auto stats = std::find_if(entry->second.begin(), entry->second.end(), [flags_](const MemoryStats& s_) {
-                    return (s_.flags == flags_);
-                });
+                auto stats = std::find_if(
+                    entry->second.begin(),
+                    entry->second.end(),
+                    [flags_](const MemoryStats& s_) {
+                        return (s_.flags == flags_);
+                    }
+                );
 
                 if (stats == entry->second.end()) {
                     entry->second.push_back({ 0, flags_ });
 
-                    stats = std::find_if(entry->second.begin(), entry->second.end(), [flags_](const MemoryStats& s_) {
-                        return (s_.flags == flags_);
-                    });
+                    stats = std::find_if(
+                        entry->second.begin(),
+                        entry->second.end(),
+                        [flags_](const MemoryStats& s_) {
+                            return (s_.flags == flags_);
+                        }
+                    );
                 }
 
                 stats->allocated += size_;
@@ -54,16 +66,24 @@ namespace ember::debug {
             updateDisplay();
         }
 
-        static void updateFree(const std::string& key_, const size_t size_, const uint32_t& flags_,
-            void* ptr_ = nullptr) {
+        static void updateFree(
+            const std::string& key_,
+            const size_t size_,
+            const uint32_t& flags_,
+            void* ptr_ = nullptr
+        ) {
             const auto entry = _stats.find(key_);
 
             if (entry == _stats.end())
                 return;
 
-            auto stats = std::find_if(entry->second.begin(), entry->second.end(), [flags_](const MemoryStats& s_) {
-                return (s_.flags == flags_);
-            });
+            auto stats = std::find_if(
+                entry->second.begin(),
+                entry->second.end(),
+                [flags_](const MemoryStats& s_) {
+                    return (s_.flags == flags_);
+                }
+            );
 
             if (stats == entry->second.end())
                 return;
@@ -118,7 +138,14 @@ namespace ember::debug {
                         suffix = "GB";
                     }
 
-                    IM_DEBUG_LOGF(R"( {} -> [ Flags: {} Size: {}{} ({})])", key, stats.flags, size, suffix, stats.allocated);
+                    IM_DEBUG_LOGF(
+                        R"( {} -> [ Flags: {} Size: {}{} ({})])",
+                        key,
+                        stats.flags,
+                        size,
+                        suffix,
+                        stats.allocated
+                    );
                 }
             }
         }

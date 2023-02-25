@@ -5,7 +5,6 @@
 #include "DragDropObject.hpp"
 
 namespace ember::engine::input {
-
     class Win32DragDropObject :
         public DragDropObject,
         public IDataObject {
@@ -69,5 +68,4 @@ namespace ember::engine::input {
 
         HRESULT EnumDAdvise(IEnumSTATDATA** ppenumAdvise) override;
     };
-
 }

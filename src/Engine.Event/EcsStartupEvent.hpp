@@ -2,7 +2,6 @@
 #include "Event.hpp"
 
 namespace ember {
-
     class EcsStartupEvent final :
         public StatelessEvent {
     public:
@@ -91,5 +90,4 @@ namespace ember {
             return _module;
         }
     };
-
 }

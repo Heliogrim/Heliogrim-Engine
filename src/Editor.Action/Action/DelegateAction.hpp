@@ -5,7 +5,6 @@
 #include "SimpleAction.hpp"
 
 namespace ember::editor {
-
     class DelegateAction :
         public SimpleAction {
     public:
@@ -43,5 +42,4 @@ namespace ember::editor {
     public:
         [[nodiscard]] bool failed() const noexcept override;
     };
-
 }

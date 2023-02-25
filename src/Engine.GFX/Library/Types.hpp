@@ -47,9 +47,12 @@ namespace ember::engine::gfx::types {
     };
 
     // Skybox
-    ALIGNED(struct UniformBufferObjSky {
+    ALIGNED(
+        struct UniformBufferObjSky {
         ember::math::mat4 mvp;
-        }, 16);
+        },
+        16
+    );
 
     // Offscreen
     struct UniformBufferObjOff {

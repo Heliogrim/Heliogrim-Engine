@@ -13,7 +13,6 @@
 #include "__fwd.hpp"
 
 namespace ember::engine::scene {
-
     /**
      * A pull result type.
      *
@@ -21,7 +20,6 @@ namespace ember::engine::scene {
      * @date 16.08.2021
      */
     struct pull_result_type {
-
         using result_type = bool;
         using value_type = ptr<SceneNodeHead>;
 
@@ -79,7 +77,8 @@ namespace ember::engine::scene {
 
         template <typename PTy_>
         [[nodiscard]] static pull_result_type make(
-            mref<PTy_> value_) noexcept(_STD is_nothrow_move_constructible_v<PTy_>) {
+            mref<PTy_> value_
+        ) noexcept(_STD is_nothrow_move_constructible_v<PTy_>) {
             return pull_result_type {
                 new PTy_(_STD forward<PTy_>(value_))
             };
@@ -464,8 +463,12 @@ namespace ember::engine::scene {
 
     public:
         template <class FactoryType_>
-        bool push(const ptr<ElementType_> element_, cref<math::Bounding> boundary_,
-            const ptr<const FactoryType_> factory_, SceneNodePath forwardPath_) {
+        bool push(
+            const ptr<ElementType_> element_,
+            cref<math::Bounding> boundary_,
+            const ptr<const FactoryType_> factory_,
+            SceneNodePath forwardPath_
+        ) {
             advanced_proxy_macro(push, element_, boundary_, factory_, forwardPath_)
         }
 

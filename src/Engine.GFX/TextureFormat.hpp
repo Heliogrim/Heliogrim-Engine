@@ -3,7 +3,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::gfx {
-
     enum class TextureFormat {
         eUndefined = 0x0,
 

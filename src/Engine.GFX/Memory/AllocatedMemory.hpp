@@ -7,8 +7,21 @@
 #include "../vkinc.hpp"
 
 namespace ember::engine::gfx::memory {
-
     struct AllocatedMemory {
+        AllocatedMemory(
+            ptr<Allocator> allocator_,
+            ptr<AllocatedMemory> parent_,
+            cref<MemoryLayout> layout_,
+            cref<u64> size_,
+            cref<u64> offset_,
+            cref<vk::Device> vkDevice_,
+            cref<vk::DeviceMemory> vkMemory_,
+            MemoryMapping mapping_ = nullptr
+        ) noexcept;
+
+        AllocatedMemory(mref<AllocatedMemory> other_) noexcept;
+
+        AllocatedMemory(cref<AllocatedMemory> other_) = delete;
 
         ~AllocatedMemory();
 

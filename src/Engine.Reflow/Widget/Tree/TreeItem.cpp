@@ -14,24 +14,28 @@ using namespace ember;
 
 [[nodiscard]] sptr<BoundStyleSheet> makeStyleSheet() {
 
-    auto style = BoundStyleSheet::make(StyleSheet {
-        .minWidth { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-        .width { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-        .maxWidth { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-        .minHeight { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-        .height { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-        .maxHeight { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-        .wrap { true, ReflowWrap::eNoWrap },
-        .padding { true, Padding { 0.F } },
-        .margin { true, Margin { 0.F } },
-        .color { true, engine::color { 0.F, 0.F, 0.F, 0.F } }
-    });
+    auto style = BoundStyleSheet::make(
+        StyleSheet {
+            .minWidth { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+            .width { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+            .maxWidth { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+            .minHeight { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+            .height { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+            .maxHeight { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+            .wrap { true, ReflowWrap::eNoWrap },
+            .padding { true, Padding { 0.F } },
+            .margin { true, Margin { 0.F } },
+            .color { true, engine::color { 0.F, 0.F, 0.F, 0.F } }
+        }
+    );
 
-    style->pushStyle({
-        AssocKey<string>::from(R"(TreeItem::Selected)"),
-        styleIsSelected,
-        make_sptr<StyleSheet>()
-    });
+    style->pushStyle(
+        {
+            AssocKey<string>::from(R"(TreeItem::Selected)"),
+            styleIsSelected,
+            make_sptr<StyleSheet>()
+        }
+    );
 
     return style;
 }

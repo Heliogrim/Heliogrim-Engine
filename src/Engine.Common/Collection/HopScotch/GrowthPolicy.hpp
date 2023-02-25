@@ -7,22 +7,20 @@
 #include "../../Types.hpp"
 
 namespace ember::hopscotch {
-
     /**
      * Concept
      */
     template <typename PolicyType_>
     concept IsGrowthPolicy = requires(const PolicyType_ obj) {
-        { obj.next_bucket_count() } -> std::same_as<_STD size_t>;
-    } && requires(const PolicyType_ obj, const _STD size_t hash) {
-        { obj.bucket_idx(hash) } -> std::same_as<_STD size_t>;
-    } && requires(const _STD size_t minSize) {
-        { PolicyType_(minSize) } -> std::same_as<PolicyType_>;
-    };
+            { obj.next_bucket_count() } -> std::same_as<_STD size_t>;
+        } && requires(const PolicyType_ obj, const _STD size_t hash) {
+            { obj.bucket_idx(hash) } -> std::same_as<_STD size_t>;
+        } && requires(const _STD size_t minSize) {
+            { PolicyType_(minSize) } -> std::same_as<PolicyType_>;
+        };
 
     template <_STD size_t GrowthFactor = 2uLL>
     struct exp2_growth_policy {
-
         /**
              * Constructor
              *

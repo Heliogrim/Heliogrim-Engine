@@ -4,7 +4,6 @@
 #include "LayoutDefineValueType.hpp"
 
 namespace ember::engine::serialization::layout {
-
     class LayoutDefineObject final :
         public LayoutDefine {
     public:
@@ -27,5 +26,4 @@ namespace ember::engine::serialization::layout {
             cref<_STD span<u8, _STD dynamic_extent>> src_
         );
     };
-
 }

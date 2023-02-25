@@ -56,8 +56,12 @@ void Form::render(const ptr<ReflowCommandBuffer> cmd_) {
     _children.front()->render(cmd_);
 }
 
-void Form::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_) {
+void Form::flow(
+    cref<FlowContext> ctx_,
+    cref<math::vec2> space_,
+    cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_
+) {
 
     if (_children.empty()) {
         return;

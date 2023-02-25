@@ -3,7 +3,6 @@
 #include <Engine.Common/Types.hpp>
 
 namespace ember::engine::gfx {
-
     /**
      * Values that represent types of Textures
      *

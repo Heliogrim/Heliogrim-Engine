@@ -5,7 +5,6 @@
 #include <Engine.Common/Types.hpp>
 
 namespace ember::engine::gfx::cache {
-
     class GlobalCacheCtrl;
     class LocalCacheCtrl;
     class GlobalResourceCache;

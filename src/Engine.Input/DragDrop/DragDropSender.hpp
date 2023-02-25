@@ -4,7 +4,6 @@
 #include <Engine.Common/Collection/Vector.hpp>
 
 namespace ember::engine::input {
-
     class __declspec(novtable) DragDropSender {
     public:
         using this_type = DragDropSender;
@@ -25,5 +24,4 @@ namespace ember::engine::input {
 
         virtual void sendDragText(cref<string> text_) = 0;
     };
-
 }

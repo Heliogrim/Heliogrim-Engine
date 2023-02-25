@@ -2,7 +2,6 @@
 #include "TextureFactory.hpp"
 
 namespace ember::engine::gfx {
-
     class VkTextureFactory final :
         public TextureFactory {
     public:

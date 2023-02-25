@@ -90,18 +90,22 @@ namespace ember::engine::scheduler::fiber {
 
         template <IsAwaitableSignal AwaitableType_>
         FORCE_INLINE void await_signal(_In_ const ptr<AwaitableType_> awaitable_) {
-            await({
-                .mask = FiberAwaitableBits::eSignal,
-                .signal = awaitable_
-            });
+            await(
+                {
+                    .mask = FiberAwaitableBits::eSignal,
+                    .signal = awaitable_
+                }
+            );
         }
 
         template <IsAwaitableSignalCall AwaitableType_>
         FORCE_INLINE void await_signal_call(cref<AwaitableType_> awaitable_) {
-            await({
-                .mask = FiberAwaitableBits::eSignalCall,
-                .call = awaitable_
-            });
+            await(
+                {
+                    .mask = FiberAwaitableBits::eSignalCall,
+                    .call = awaitable_
+                }
+            );
         }
 
         template <IsAwaitable AwaitableType_>

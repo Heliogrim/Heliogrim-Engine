@@ -9,7 +9,6 @@ namespace ember::editor::ui {
 }
 
 namespace ember::editor::ui {
-
     class CollapseHeader :
         public engine::reflow::HBox {
     public:
@@ -80,13 +79,18 @@ namespace ember::editor::ui {
         [[nodiscard]] string getTag() const noexcept override;
 
     public:
-        [[nodiscard]] bool willChangeLayout(cref<math::vec2> space_,
-            cref<engine::reflow::StyleKeyStack> styleStack_) const noexcept override;
+        [[nodiscard]] bool willChangeLayout(
+            cref<math::vec2> space_,
+            cref<engine::reflow::StyleKeyStack> styleStack_
+        ) const noexcept override;
 
-        void flow(cref<engine::reflow::FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
-            ref<engine::reflow::StyleKeyStack> styleStack_) override;
+        void flow(
+            cref<engine::reflow::FlowContext> ctx_,
+            cref<math::vec2> space_,
+            cref<math::vec2> limit_,
+            ref<engine::reflow::StyleKeyStack> styleStack_
+        ) override;
 
         void shift(cref<engine::reflow::FlowContext> ctx_, cref<math::vec2> offset_) override;
     };
-
 }

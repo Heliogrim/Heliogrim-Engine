@@ -125,10 +125,26 @@ void MemoryPool::treeSplice(mref<ptr<AllocatedMemory>> memory_, const u64 target
         }
 
         const ptr<AllocatedMemory> sparse[] {
-            make_ptr<AllocatedMemory>(next->allocator, next, _layout, size,
-                baseOffset, next->vkDevice, next->vkMemory, nullptr),
-            make_ptr<AllocatedMemory>(next->allocator, next, _layout, size,
-                baseOffset + size, next->vkDevice, next->vkMemory, nullptr)
+            make_ptr<AllocatedMemory>(
+                next->allocator,
+                next,
+                _layout,
+                size,
+                baseOffset,
+                next->vkDevice,
+                next->vkMemory,
+                nullptr
+            ),
+            make_ptr<AllocatedMemory>(
+                next->allocator,
+                next,
+                _layout,
+                size,
+                baseOffset + size,
+                next->vkDevice,
+                next->vkMemory,
+                nullptr
+            )
         };
 
         _memory.push_back(sparse[0]);
@@ -138,14 +154,20 @@ void MemoryPool::treeSplice(mref<ptr<AllocatedMemory>> memory_, const u64 target
 
     _memory.push_back(next);
 
-    _STD ranges::sort(_memory, _STD less<u64>(), [](const ptr<AllocatedMemory> entry_) {
-        return entry_->size;
-    });
+    _STD ranges::sort(
+        _memory,
+        _STD less<u64>(),
+        [](const ptr<AllocatedMemory> entry_) {
+            return entry_->size;
+        }
+    );
 }
 
 AllocationResult MemoryPool::allocate(const u64 size_, const bool bestFit_, ref<ptr<AllocatedMemory>> dst_) {
 
-    auto lbe = std::ranges::lower_bound(_memory, size_,
+    auto lbe = std::ranges::lower_bound(
+        _memory,
+        size_,
         [](u64 left_, u64 right_) {
             return left_ < right_;
         },
@@ -200,9 +222,13 @@ bool MemoryPool::free(mref<ptr<AllocatedMemory>> mem_) {
      */
     _memory.push_back(mem_);
 
-    _STD ranges::sort(_memory, _STD less<u64>(), [](const ptr<AllocatedMemory> entry_) {
-        return entry_->size;
-    });
+    _STD ranges::sort(
+        _memory,
+        _STD less<u64>(),
+        [](const ptr<AllocatedMemory> entry_) {
+            return entry_->size;
+        }
+    );
 
     /**
      * Update metrics

@@ -2,7 +2,6 @@
 #include <Engine.GFX/Renderer/Renderer.hpp>
 
 namespace ember::engine::gfx::glow::ui::render {
-
     class UiRenderer :
         public gfx::render::Renderer {
     public:
@@ -19,5 +18,4 @@ namespace ember::engine::gfx::glow::ui::render {
 
         void destroy() override;
     };
-
 }

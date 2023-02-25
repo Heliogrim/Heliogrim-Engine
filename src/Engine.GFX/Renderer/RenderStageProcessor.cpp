@@ -47,9 +47,12 @@ RenderStageProcessor::dispatch_result_type RenderStageProcessor::dispatch() cons
         /**
          * Traverse
          */
-        graph->traversalBatched(0, [this](auto batch_, auto value_) -> bool {
-            return (*this)(value_);
-        });
+        graph->traversalBatched(
+            0,
+            [this](auto batch_, auto value_) -> bool {
+                return (*this)(value_);
+            }
+        );
 
         /**
          * Pulse after invocation

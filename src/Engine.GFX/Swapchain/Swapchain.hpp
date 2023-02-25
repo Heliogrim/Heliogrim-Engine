@@ -8,7 +8,6 @@
 #include "../Texture/Texture.hpp"
 
 namespace ember::engine::gfx {
-
     struct SwapchainImage {
         /**/
         sptr<Texture> image;
@@ -55,14 +54,22 @@ namespace ember::engine::gfx {
         [[nodiscard]] cref<sptr<Texture>> at(u64 idx_) const;
 
     public:
-        virtual bool acquireNext(_Out_ ref<s64> idx_, _Out_ ref<sptr<Texture>> image_, _Out_ ref<vk::Semaphore> signal_) = 0;
+        virtual bool acquireNext(
+            _Out_ ref<s64> idx_,
+            _Out_ ref<sptr<Texture>> image_,
+            _Out_ ref<vk::Semaphore> signal_
+        ) = 0;
 
         virtual vk::Result presentNext(_In_ u64 idx_) = 0;
 
         virtual vk::Result presentNext(_In_ u64 idx_, _In_ cref<Vector<vk::Semaphore>> waits_) = 0;
 
     public:
-        virtual bool consumeNext(_Out_ ref<sptr<Texture>> image_, _Out_ ref<vk::Semaphore> signal_, _Out_ ref<Vector<vk::Semaphore>> waits_) = 0;
+        virtual bool consumeNext(
+            _Out_ ref<sptr<Texture>> image_,
+            _Out_ ref<vk::Semaphore> signal_,
+            _Out_ ref<Vector<vk::Semaphore>> waits_
+        ) = 0;
     };
     #if FALSE
 

@@ -7,7 +7,6 @@
 #include "GfxMaterialAsset.hpp"
 
 namespace ember {
-
     class StaticGeometryComponent :
         public ModelComponent {
     public:

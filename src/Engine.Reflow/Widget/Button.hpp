@@ -5,7 +5,6 @@
 #include "HBox.hpp"
 
 namespace ember::engine::reflow {
-
     class Button :
         public HBox {
     public:
@@ -33,5 +32,4 @@ namespace ember::engine::reflow {
     public:
         EventResponse onMouseButtonDown(cref<MouseEvent> event_) override;
     };
-
 }

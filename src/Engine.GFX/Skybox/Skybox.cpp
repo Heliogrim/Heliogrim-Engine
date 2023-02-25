@@ -20,16 +20,18 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
 
     _geometry = cube.convert();
 
-    _cubemap = TextureFactory::get()->build({
-        { 1024, 1024, 1 },
-        TextureFormat::eR8G8B8A8Unorm,
-        1,
-        TextureType::eCube,
-        vk::ImageAspectFlagBits::eColor,
-        vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
-        vk::MemoryPropertyFlagBits::eDeviceLocal,
-        vk::SharingMode::eExclusive
-    });
+    _cubemap = TextureFactory::get()->build(
+        {
+            { 1024, 1024, 1 },
+            TextureFormat::eR8G8B8A8Unorm,
+            1,
+            TextureType::eCube,
+            vk::ImageAspectFlagBits::eColor,
+            vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            vk::SharingMode::eExclusive
+        }
+    );
 
     TextureFactory::get()->buildView(_cubemap);
 
@@ -62,9 +64,12 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
         vk::PipelineStageFlagBits::eAllCommands,
         vk::PipelineStageFlagBits::eAllCommands,
         vk::DependencyFlags(),
-        0, nullptr,
-        0, nullptr,
-        1, &imb
+        0,
+        nullptr,
+        0,
+        nullptr,
+        1,
+        &imb
     );
 
     /**

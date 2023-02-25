@@ -3,7 +3,6 @@
 #include "../Shader/ShaderSlot.hpp"
 
 namespace ember::engine::gfx::pipeline {
-
     class VertexStage final {
     public:
         /**

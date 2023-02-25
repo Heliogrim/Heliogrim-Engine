@@ -207,11 +207,16 @@ namespace ember::engine::acs {
             return actor;
         }
 
-        [[nodiscard]] ptr<Actor> createActor(const ptr<const ActorClass> actorClass_,
-            cref<ActorInitializer> initializer_);
+        [[nodiscard]] ptr<Actor> createActor(
+            const ptr<const ActorClass> actorClass_,
+            cref<ActorInitializer> initializer_
+        );
 
-        [[nodiscard]] ptr<Actor> createActor(const ptr<const ActorClass> actorClass_,
-            cref<ActorInitializer> initializer_, _STD nothrow_t) noexcept;
+        [[nodiscard]] ptr<Actor> createActor(
+            const ptr<const ActorClass> actorClass_,
+            cref<ActorInitializer> initializer_,
+            _STD nothrow_t
+        ) noexcept;
 
     public:
         [[nodiscard]] ptr<Actor> createActor(cref<ActorInitializer> initializer_) noexcept;

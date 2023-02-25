@@ -8,7 +8,6 @@
 #include "__fwd.hpp"
 
 namespace ember::engine::gfx::memory {
-
     class MemoryPool {
     public:
         using this_type = MemoryPool;
@@ -52,8 +51,11 @@ namespace ember::engine::gfx::memory {
     private:
         void treeSplice(mref<ptr<AllocatedMemory>> memory_, const u64 targetSize_);
 
-        [[nodiscard]] AllocationResult allocate(const u64 size_, const bool bestFit_,
-            _Out_ ref<ptr<AllocatedMemory>> dst_);
+        [[nodiscard]] AllocationResult allocate(
+            const u64 size_,
+            const bool bestFit_,
+            _Out_ ref<ptr<AllocatedMemory>> dst_
+        );
 
     public:
         [[nodiscard]] AllocationResult allocate(const u64 size_, _Out_ ref<ptr<AllocatedMemory>> dst_);

@@ -6,7 +6,6 @@
 #include "../__macro.hpp"
 
 namespace ember::concurrent {
-
     /**
      * \brief 
      */
@@ -22,7 +21,6 @@ namespace ember::concurrent {
      */
     class SpinLock {
     public:
-
         /**
          * \brief
          * \param mtx_ 

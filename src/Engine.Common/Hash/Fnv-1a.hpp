@@ -5,7 +5,6 @@
 #include "../Wrapper.hpp"
 
 namespace ember::hash {
-
     namespace {
         /**
          * Fnv-1a 86
@@ -40,5 +39,4 @@ namespace ember::hash {
     [[nodiscard]] inline u64 fnv1a(cref<string> src_) noexcept {
         return fnv1a_86(src_.data(), src_.length());
     }
-
 }

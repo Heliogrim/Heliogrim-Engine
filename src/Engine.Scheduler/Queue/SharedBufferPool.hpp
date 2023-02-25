@@ -6,7 +6,6 @@
 #include "../Task/Task.hpp"
 
 namespace ember::engine::scheduler {
-
     class SharedBufferPool {
     public:
         using aligned_buffer = ALIGNED(PooledBuffer, CACHE_LINE_SIZE);

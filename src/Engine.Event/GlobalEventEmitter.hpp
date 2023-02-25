@@ -9,7 +9,6 @@
 #include "EventEmitter.hpp"
 
 namespace ember {
-
     /*
     namespace {
 
@@ -164,10 +163,12 @@ namespace ember {
                 return;
             }
 
-            static_cast<ptr<stateful_emitter_type<EventType_>>>(it->second)->emit(EventType_ {
-                _STD forward<Arg0_>(arg0_),
-                _STD forward<Args_>(args_)...
-            });
+            static_cast<ptr<stateful_emitter_type<EventType_>>>(it->second)->emit(
+                EventType_ {
+                    _STD forward<Arg0_>(arg0_),
+                    _STD forward<Args_>(args_)...
+                }
+            );
         }
 
         template <IsStatelessEvent EventType_>
@@ -201,10 +202,12 @@ namespace ember {
                 return;
             }
 
-            static_cast<ptr<stateless_emitter_type<EventType_>>>(it->second)->emit(EventType_ {
-                _STD forward<Arg0_>(arg0_),
-                _STD forward<Args_>(args_)...
-            });
+            static_cast<ptr<stateless_emitter_type<EventType_>>>(it->second)->emit(
+                EventType_ {
+                    _STD forward<Arg0_>(arg0_),
+                    _STD forward<Args_>(args_)...
+                }
+            );
         }
 
         template <IsEvent EventType_>

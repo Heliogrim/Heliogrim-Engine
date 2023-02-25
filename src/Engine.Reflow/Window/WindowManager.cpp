@@ -51,50 +51,60 @@ void WindowManager::setup() {
 
     /**/
 
-    emitter.on<input::event::MouseButtonEvent>([this](const auto& event_) {
-        const auto wnd { resolveWindow(event_._pointer) };
-        if (wnd) {
-            dispatch(wnd, event_);
-        }
-    });
-    emitter.on<input::event::MouseMoveEvent>([this](const auto& event_) {
-        const auto prevWnd { resolveWindow(event_._pointer - event_._delta) };
-        const auto nextWnd { resolveWindow(event_._pointer) };
-
-        if (prevWnd && prevWnd != nextWnd) {
-            dispatch(prevWnd, event_);
-        }
-
-        if (nextWnd) {
-            dispatch(nextWnd, event_);
-        }
-    });
-    emitter.on<input::event::MouseWheelEvent>([this](const auto& event_) {
-        const auto wnd { resolveWindow(event_._pointer) };
-        if (wnd) {
-            dispatch(wnd, event_);
-        }
-    });
-    emitter.on<input::event::DragDropEvent>([this](const auto& event_) {
-        const auto wnd { resolveWindow(event_._pointer) };
-        if (wnd) {
-            dispatch(wnd, event_);
-        }
-    });
-    emitter.on<input::event::KeyboardEvent>([this](const auto& event_) {
-
-        sptr<Window> wnd { nullptr };
-        for (const auto& entry : _focusOrder) {
-            if (not entry.expired()) {
-                wnd = entry.lock();
-                break;
+    emitter.on<input::event::MouseButtonEvent>(
+        [this](const auto& event_) {
+            const auto wnd { resolveWindow(event_._pointer) };
+            if (wnd) {
+                dispatch(wnd, event_);
             }
         }
+    );
+    emitter.on<input::event::MouseMoveEvent>(
+        [this](const auto& event_) {
+            const auto prevWnd { resolveWindow(event_._pointer - event_._delta) };
+            const auto nextWnd { resolveWindow(event_._pointer) };
 
-        if (wnd != nullptr) {
-            dispatch(wnd, event_);
+            if (prevWnd && prevWnd != nextWnd) {
+                dispatch(prevWnd, event_);
+            }
+
+            if (nextWnd) {
+                dispatch(nextWnd, event_);
+            }
         }
-    });
+    );
+    emitter.on<input::event::MouseWheelEvent>(
+        [this](const auto& event_) {
+            const auto wnd { resolveWindow(event_._pointer) };
+            if (wnd) {
+                dispatch(wnd, event_);
+            }
+        }
+    );
+    emitter.on<input::event::DragDropEvent>(
+        [this](const auto& event_) {
+            const auto wnd { resolveWindow(event_._pointer) };
+            if (wnd) {
+                dispatch(wnd, event_);
+            }
+        }
+    );
+    emitter.on<input::event::KeyboardEvent>(
+        [this](const auto& event_) {
+
+            sptr<Window> wnd { nullptr };
+            for (const auto& entry : _focusOrder) {
+                if (not entry.expired()) {
+                    wnd = entry.lock();
+                    break;
+                }
+            }
+
+            if (wnd != nullptr) {
+                dispatch(wnd, event_);
+            }
+        }
+    );
 }
 
 void WindowManager::tidy() {
@@ -138,9 +148,13 @@ sptr<Window> WindowManager::resolveWindow(cref<math::ivec2> position_) const noe
 
 non_owning_rptr<engine::scene::IRenderScene> WindowManager::resolveScene(cref<sptr<Window>> window_) {
 
-    const auto iter = _STD find_if(_windows.begin(), _windows.end(), [window_](cref<uptr<BoundWindow>> entry_) {
-        return entry_.get()->window == window_;
-    });
+    const auto iter = _STD find_if(
+        _windows.begin(),
+        _windows.end(),
+        [window_](cref<uptr<BoundWindow>> entry_) {
+            return entry_.get()->window == window_;
+        }
+    );
 
     if (iter == _windows.end()) {
         return nullptr;
@@ -181,9 +195,13 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
     const auto wnd { _STD move(window_) };
 
     const auto iter {
-        _STD find_if(_windows.begin(), _windows.end(), [wnd](const auto& entry_) {
-            return entry_.get()->window == wnd;
-        })
+        _STD find_if(
+            _windows.begin(),
+            _windows.end(),
+            [wnd](const auto& entry_) {
+                return entry_.get()->window == wnd;
+            }
+        )
     };
 
     if (iter == _windows.end()) {
@@ -245,9 +263,11 @@ sptr<Window> WindowManager::requestWindow(
     auto* const platform = Engine::getEngine()->getPlatform();
     const auto* const gfx = Engine::getEngine()->getGraphics();
 
-    auto window = await(Future {
-        platform->makeNativeWindow(title_, math::iExtent2D { size_.x, size_.y })
-    });
+    auto window = await(
+        Future {
+            platform->makeNativeWindow(title_, math::iExtent2D { size_.x, size_.y })
+        }
+    );
 
     /**/
 
@@ -295,7 +315,8 @@ sptr<Window> WindowManager::requestWindow(
     bound->resizeListen = surface->getNativeWindow()->resizeEmitter().on(
         [this, wnd = bound.get()](cref<engine::platform::PlatformResizeEvent> event_) {
             handleWindowResize(wnd, event_.getNextSize());
-        });
+        }
+    );
 
     /**/
 
@@ -311,14 +332,17 @@ void WindowManager::interceptFocusEvent(cref<sptr<Window>> window_, cref<FocusEv
             return;
         }
 
-        auto where = _STD ranges::remove_if(_focusOrder, [window_](const auto& entry_) {
-            if (entry_.expired()) {
-                return true;
-            }
+        auto where = _STD ranges::remove_if(
+            _focusOrder,
+            [window_](const auto& entry_) {
+                if (entry_.expired()) {
+                    return true;
+                }
 
-            const auto wnd { entry_.lock() };
-            return wnd == window_;
-        });
+                const auto wnd { entry_.lock() };
+                return wnd == window_;
+            }
+        );
 
         _focusOrder.erase(where.begin(), where.end());
     }

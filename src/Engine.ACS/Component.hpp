@@ -2,11 +2,10 @@
 #include <Engine.Common/Meta/TypeId.hpp>
 
 namespace ember::engine::acs {
-
     template <typename Ty>
     concept IsComponent = ember::HasStaticType<Ty> &&
-    _STD is_object_v<Ty> &&
-    _STD is_nothrow_default_constructible_v<Ty>;
+        _STD is_object_v<Ty> &&
+        _STD is_nothrow_default_constructible_v<Ty>;
     /* This will require the default constructor for a object to be noexcept attributed *///&&
     //_STD is_trivially_move_assignable_v<Ty> &&
     //_STD is_trivially_move_constructible_v<Ty>;

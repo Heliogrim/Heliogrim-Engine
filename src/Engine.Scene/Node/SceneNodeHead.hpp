@@ -6,7 +6,6 @@
 #include "SceneNodeId.hpp"
 
 namespace ember::engine::scene {
-
     /**
      * Forward Declaration
      *

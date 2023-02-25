@@ -4,7 +4,6 @@
 #include "InputIntegral.hpp"
 
 namespace ember::engine::reflow {
-
     template <typename ValueType_>
     struct TypedInputNumber {
         using type = void;
@@ -44,5 +43,4 @@ namespace ember::engine::reflow {
 
     template <typename ValueType_>
     using InputType = typename TypedInputNumber<ValueType_>::type;
-
 }

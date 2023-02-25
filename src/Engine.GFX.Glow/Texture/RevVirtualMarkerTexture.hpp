@@ -3,7 +3,6 @@
 #include <Engine.GFX/Texture/Texture.hpp>
 
 namespace ember::engine::gfx::glow {
-
     class RevVirtualMarkerTexture final {
     public:
         RevVirtualMarkerTexture() = default;
@@ -59,5 +58,4 @@ namespace ember::engine::gfx::glow {
     public:
         [[nodiscard]] cref<Texture> texture() const noexcept;
     };
-
 }

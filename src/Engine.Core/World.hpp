@@ -7,7 +7,6 @@ namespace ember::engine::scene {
 }
 
 namespace ember::engine::core {
-
     class World {
     public:
         using this_type = World;
@@ -29,5 +28,4 @@ namespace ember::engine::core {
     public:
         [[nodiscard]] const non_owning_rptr<Scene> getScene() const noexcept;
     };
-
 }

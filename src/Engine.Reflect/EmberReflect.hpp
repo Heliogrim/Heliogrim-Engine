@@ -10,7 +10,6 @@
 #include "__fwd.hpp"
 
 namespace ember {
-
     template <class ClassType_>
     concept IsEmberObject = _STD is_base_of_v<EmberObject, ClassType_>;
 

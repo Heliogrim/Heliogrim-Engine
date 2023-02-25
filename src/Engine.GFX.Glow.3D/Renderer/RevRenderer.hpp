@@ -2,7 +2,6 @@
 #include <Engine.GFX/Renderer/Renderer.hpp>
 
 namespace ember::engine::gfx::glow::render {
-
     class RevRenderer :
         public gfx::render::Renderer {
     public:

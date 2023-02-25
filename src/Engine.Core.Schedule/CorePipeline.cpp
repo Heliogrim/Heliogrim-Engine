@@ -39,11 +39,13 @@ void CorePipeline::declareDependencies(
 
     /**/
 
-    collection_.insert(StageDependency {
-        { beginTick, inputTick },
-        this,
-        actorUpdate
-    });
+    collection_.insert(
+        StageDependency {
+            { beginTick, inputTick },
+            this,
+            actorUpdate
+        }
+    );
 }
 
 void CorePipeline::dismount(const non_owning_rptr<scheduler::StageRegister> register_) {

@@ -10,15 +10,17 @@ using namespace ember;
 
 [[nodiscard]] static sptr<BoundStyleSheet> makeStyleSheet() {
 
-    auto style = BoundStyleSheet::make(StyleSheet {
-        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
-        .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .wrap = { true, ReflowWrap::eNoWrap },
-        .padding = { true, Padding { 0.F, 2.F } },
-        .margin = { true, Margin { 0.F } },
-        .reflowSpacing = { true, ReflowSpacing::eStart },
-    });
+    auto style = BoundStyleSheet::make(
+        StyleSheet {
+            .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
+            .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .wrap = { true, ReflowWrap::eNoWrap },
+            .padding = { true, Padding { 0.F, 2.F } },
+            .margin = { true, Margin { 0.F } },
+            .reflowSpacing = { true, ReflowSpacing::eStart },
+        }
+    );
 
     return style;
 }

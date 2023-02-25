@@ -3,7 +3,6 @@
 #include "Vector.hpp"
 
 namespace ember {
-
     // TODO: Custom Implementation
 
     template <typename Type_, typename Allocator_ = _STD allocator<Type_>>

@@ -37,6 +37,5 @@ namespace ember::engine::gfx {
          * @returns A Mesh.
          */
         [[nodiscard]] virtual ptr<Mesh> convert() const = 0;
-
     };
 }

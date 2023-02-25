@@ -2,7 +2,6 @@
 #include <Engine.GFX/Renderer/RenderStage.hpp>
 
 namespace ember::editor::gfx {
-
     class EdPostCompStage :
         public engine::gfx::render::RenderStage {
     public:
@@ -18,5 +17,4 @@ namespace ember::editor::gfx {
 
         void destroy() override;
     };
-
 }

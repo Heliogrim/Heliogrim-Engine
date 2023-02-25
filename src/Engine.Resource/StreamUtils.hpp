@@ -12,7 +12,6 @@
 namespace ember::engine::res::types {
     class StreamUtils {
     public:
-
         /**
          * Writes
          *

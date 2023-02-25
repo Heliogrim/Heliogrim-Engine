@@ -3,7 +3,6 @@
 #include "../HBox.hpp"
 
 namespace ember::engine::reflow {
-
     class TreeItem :
         public HBox {
     public:

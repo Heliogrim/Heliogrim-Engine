@@ -4,7 +4,6 @@
 #include "Vector.hpp"
 
 namespace ember::math {
-
     inline constexpr static vec3 vec3_zero { 0, 0, 0 };
 
     inline constexpr static vec3 vec3_one { 1, 1, 1 };
@@ -40,7 +39,6 @@ namespace ember::math {
     inline constexpr static vec2 vec2_right { 1, 0 };
 
     namespace polar {
-
         inline constexpr static vec3 vec3_distance = { 1, 0, 0 };
 
         inline constexpr static vec3 vec3_azimuth = { 0, 1, 0 };
@@ -66,7 +64,5 @@ namespace ember::math {
         [[nodiscard]] vec2 to_cartesian(_In_ cref<vec2> polar_) noexcept;
 
         [[nodiscard]] vec2 to_cartesian(_In_ mref<vec2> polar_) noexcept;
-
     }
-
 }

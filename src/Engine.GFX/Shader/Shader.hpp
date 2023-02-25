@@ -14,7 +14,6 @@ namespace ember::engine::gfx::shader {
 }
 
 namespace ember::engine::gfx {
-
     class Shader {
     protected:
         friend ember::engine::gfx::shader::Factory;
@@ -30,9 +29,12 @@ namespace ember::engine::gfx {
          * @param  bindings_ The bindings.
          * @param  vkShader_ The shader.
          */
-        Shader(const shader::ShaderType type_, const string& name_,
+        Shader(
+            const shader::ShaderType type_,
+            const string& name_,
             const Vector<shader::ShaderBinding>& bindings_,
-            vk::ShaderModule vkShader_);
+            vk::ShaderModule vkShader_
+        );
 
     public:
         /**

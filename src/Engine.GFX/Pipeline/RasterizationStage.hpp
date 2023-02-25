@@ -9,7 +9,6 @@
 #include "../RasterSamples.hpp"
 
 namespace ember::engine::gfx::pipeline {
-
     class RasterizationStage {
     public:
         /**

@@ -37,24 +37,30 @@ void DiscreteBindingPool::setup() {
     Vector<vk::DescriptorPoolSize> sizes {};
 
     if (_layout.images > 0ui32) {
-        sizes.push_back(vk::DescriptorPoolSize {
-            vk::DescriptorType::eCombinedImageSampler,
-            _maxSets * _layout.images
-        });
+        sizes.push_back(
+            vk::DescriptorPoolSize {
+                vk::DescriptorType::eCombinedImageSampler,
+                _maxSets * _layout.images
+            }
+        );
     }
 
     if (_layout.uniforms > 0ui32) {
-        sizes.push_back(vk::DescriptorPoolSize {
-            vk::DescriptorType::eUniformBuffer,
-            _maxSets * _layout.uniforms
-        });
+        sizes.push_back(
+            vk::DescriptorPoolSize {
+                vk::DescriptorType::eUniformBuffer,
+                _maxSets * _layout.uniforms
+            }
+        );
     }
 
     if (_layout.storages > 0ui32) {
-        sizes.push_back(vk::DescriptorPoolSize {
-            vk::DescriptorType::eStorageBuffer,
-            _maxSets * _layout.storages
-        });
+        sizes.push_back(
+            vk::DescriptorPoolSize {
+                vk::DescriptorType::eStorageBuffer,
+                _maxSets * _layout.storages
+            }
+        );
     }
 
     const vk::DescriptorPoolCreateInfo pci {

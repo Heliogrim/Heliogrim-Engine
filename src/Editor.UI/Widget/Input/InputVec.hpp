@@ -1,5 +1,7 @@
 #pragma once
 
+#include <format>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Common/Collection/Array.hpp>
@@ -18,73 +20,10 @@
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
 
 namespace ember::editor::ui {
+    namespace __inputvec {
+        [[nodiscard]] sptr<engine::reflow::BoundStyleSheet> makeInputBoxStyle();
 
-    namespace {
-
-        using namespace ::ember::engine::reflow;
-
-        [[nodiscard]] static sptr<BoundStyleSheet> makeInputBoxStyle() {
-
-            auto style {
-                BoundStyleSheet::make(StyleSheet {
-                    .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                    .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                    .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                    .wrap { true, ReflowWrap::eNoWrap },
-                    .padding { true, Padding { 4.F, 2.F } },
-                    .margin { true, Margin { 0.F } },
-                    .reflowShrink { true, 1.F },
-                    .reflowGrow { true, 0.F },
-                    .borderRadius = { true, BorderRadius { 4.F } },
-                    .color { false, color::Dark::backgroundInnerField }
-                })
-
-            };
-
-            style->pushStyle({
-                Style::key_type::from("InputType::Focused"),
-                style::isFocused,
-                make_sptr<StyleSheet>(StyleSheet {
-                    .color { true, color::Dark::backgroundInnerFieldDarken }
-                })
-            });
-
-            return style;
-
-        }
-
-        [[nodiscard]] static sptr<BoundStyleSheet> makeInputTextStyle() {
-            auto* font { getDefaultFont() };
-
-            auto style {
-                BoundStyleSheet::make(StyleSheet {
-                    .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                    .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                    .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                    .color { false, color::Dark::grey },
-                    .font { true, font },
-                    .fontSize { true, 16.F },
-                    .textAlign { true, TextAlign::eLeftMiddle },
-                    .textEllipse { true, 1ui32 }
-                })
-            };
-
-            style->pushStyle({
-                Style::key_type::from("InputType::Focused"),
-                style::isNever,
-                make_sptr<StyleSheet>(StyleSheet {
-                    .color { true, color::Dark::white }
-                })
-            });
-
-            return style;
-        }
+        [[nodiscard]] sptr<engine::reflow::BoundStyleSheet> makeInputTextStyle();
     }
 
     template <typename VectorType_>
@@ -92,7 +31,7 @@ namespace ember::editor::ui {
         public engine::reflow::Input<VectorType_> {
     public:
         using this_type = InputVec<VectorType_>;
-        using Input<VectorType_>::input_type;
+        using input_type = typename engine::reflow::Input<VectorType_>::input_type;
 
         using vector_type = VectorType_;
         using vector_value_base_type = typename vector_type::value_type;
@@ -122,40 +61,59 @@ namespace ember::editor::ui {
     public:
         void prepare() {
 
-            using namespace ::ember::engine::reflow;
+            auto localStyle = engine::reflow::StyleSheet {
+                .width = {
+                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eRelative, 1.F }
+                },
+                .maxWidth = {
+                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eRelative, 1.F }
+                },
+                .minHeight = {
+                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eAbsolute, 20.F }
+                },
+                .height = {
+                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eAbsolute, 20.F }
+                },
+                .maxHeight = {
+                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eAbsolute, 20.F }
+                },
+                .wrap = { true, engine::reflow::ReflowWrap::eNoWrap },
+                .colGap = {
+                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eAbsolute, 4.F }
+                },
+                .rowGap = {
+                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eAbsolute, 8.F }
+                },
+                .reflowSpacing = { true, engine::reflow::ReflowSpacing::eSpaceBetween },
+                .reflowShrink = { true, 1.F },
+                .reflowGrow = { true, 0.F },
+                .color = { true, color::Dark::backgroundDefault }
+            };
 
-            _content = make_sptr<HBox>(BoundStyleSheet::make(
-                StyleSheet {
-                    .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                    .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                    .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                    .wrap = { true, ReflowWrap::eNoWrap },
-                    .colGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
-                    .rowGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 8.F } },
-                    .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
-                    .reflowShrink = { true, 1.F },
-                    .reflowGrow = { true, 0.F },
-                    .color = { true, color::Dark::backgroundDefault }
-                }));
+            _content = make_sptr<engine::reflow::HBox>(engine::reflow::BoundStyleSheet::make(_STD move(localStyle)));
 
             /**/
 
-            for (u64 i { 0ui64 }; i < vector_dim; ++i) {
+            for (u64 i = 0ui64; i < vector_dim; ++i) {
 
-                _labels[i] = make_sptr<Text>(
-                    BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))
+                _labels[i] = make_sptr<engine::reflow::Text>(
+                    engine::reflow::BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))
                 );
-                _labels[i]->style().minHeight = ReflowUnit { ReflowUnitType::eRelative, 1.F };
-                _labels[i]->style().height = ReflowUnit { ReflowUnitType::eRelative, 1.F };
-                _labels[i]->style().maxHeight = ReflowUnit { ReflowUnitType::eRelative, 1.F };
+                _labels[i]->style().minHeight = engine::reflow::ReflowUnit {
+                    engine::reflow::ReflowUnitType::eRelative, 1.F
+                };
+                _labels[i]->style().height = engine::reflow::ReflowUnit {
+                    engine::reflow::ReflowUnitType::eRelative, 1.F
+                };
+                _labels[i]->style().maxHeight = engine::reflow::ReflowUnit {
+                    engine::reflow::ReflowUnitType::eRelative, 1.F
+                };
                 _labels[i]->style().color = color::Dark::white;
                 _labels[i]->style().textEllipse = 1ui32;
 
                 _inputs[i] = make_sptr<input_widget_type>(
-                    makeInputBoxStyle(),
-                    makeInputTextStyle()
+                    __inputvec::makeInputBoxStyle(),
+                    __inputvec::makeInputTextStyle()
                 );
             }
 
@@ -245,15 +203,19 @@ namespace ember::editor::ui {
 
     public:
         template <size_t Index_>
-        FORCE_INLINE void unwindInputs(const ptr<const sptr<input_widget_type>> inputs_,
-            ptr<vector_value_base_type> dst_) const {
+        FORCE_INLINE void unwindInputs(
+            const ptr<const sptr<input_widget_type>> inputs_,
+            ptr<vector_value_base_type> dst_
+        ) const {
             dst_[Index_ - 1] = inputs_[Index_ - 1]->value();
             unwindInputs<Index_ - 1>(inputs_, dst_);
         }
 
         template <>
-        FORCE_INLINE void unwindInputs<0>(const ptr<const sptr<input_widget_type>> inputs_,
-            ptr<vector_value_base_type> dst_) const {}
+        FORCE_INLINE void unwindInputs<0>(
+            const ptr<const sptr<input_widget_type>> inputs_,
+            ptr<vector_value_base_type> dst_
+        ) const {}
 
         [[nodiscard]] VectorType_ value() const noexcept override {
             VectorType_ value {};
@@ -268,8 +230,10 @@ namespace ember::editor::ui {
         }
 
         template <>
-        FORCE_INLINE void unwindStore<0>(const ptr<sptr<input_widget_type>> inputs_,
-            ptr<vector_value_base_type> src_) {}
+        FORCE_INLINE void unwindStore<0>(
+            const ptr<sptr<input_widget_type>> inputs_,
+            ptr<vector_value_base_type> src_
+        ) {}
 
         void setValue(cref<VectorType_> value_) {
             auto tmp { value_ };
@@ -317,7 +281,7 @@ namespace ember::editor::ui {
                 _children.push_back(_content);
             }
 
-            const auto frac { 1.F / ((float)vector_dim) };
+            const auto frac = 1.F / ((float)vector_dim);
 
             for (u64 i { 0ui64 }; i < vector_dim; ++i) {
 
@@ -327,19 +291,23 @@ namespace ember::editor::ui {
                 /**/
 
                 auto wrapper {
-                    make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
-                        .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, frac } },
-                        .width { true, ReflowUnit { ReflowUnitType::eRelative, frac } },
-                        .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, frac } },
-                        .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                        .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                        .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                        .wrap { true, ReflowWrap::eNoWrap },
-                        .rowGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
-                        .reflowShrink { true, 1.F },
-                        .reflowGrow { true, 0.F },
-                        .color { false, color::Dark::backgroundDefault }
-                    }))
+                    make_sptr<HBox>(
+                        BoundStyleSheet::make(
+                            StyleSheet {
+                                .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, frac } },
+                                .width { true, ReflowUnit { ReflowUnitType::eRelative, frac } },
+                                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, frac } },
+                                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                                .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                                .wrap { true, ReflowWrap::eNoWrap },
+                                .rowGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
+                                .reflowShrink { true, 1.F },
+                                .reflowGrow { true, 0.F },
+                                .color { false, color::Dark::backgroundDefault }
+                            }
+                        )
+                    )
                 };
 
                 /**/
@@ -352,7 +320,7 @@ namespace ember::editor::ui {
         }
 
     protected:
-        Array<sptr<Text>, vector_dim> _labels;
+        Array<sptr<engine::reflow::Text>, vector_dim> _labels;
         Array<sptr<input_widget_type>, vector_dim> _inputs;
 
     public:
@@ -365,27 +333,27 @@ namespace ember::editor::ui {
         }
 
     public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override {
+        void render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) override {
             if (_content) {
                 _content->render(cmd_);
             }
         }
 
         void flow(
-            cref<FlowContext> ctx_,
+            cref<engine::reflow::FlowContext> ctx_,
             cref<math::vec2> space_,
             cref<math::vec2> limit_,
-            ref<StyleKeyStack> styleStack_
+            ref<engine::reflow::StyleKeyStack> styleStack_
         ) override {
             if (_content) {
-                _content->setParent(Widget::shared_from_this());
+                _content->setParent(engine::reflow::Widget::shared_from_this());
                 _content->flow(ctx_, space_, limit_, styleStack_);
             }
 
-            Widget::clearPending();
+            engine::reflow::Widget::clearPending();
         }
 
-        void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override {
+        void shift(cref<engine::reflow::FlowContext> ctx_, cref<math::vec2> offset_) override {
             if (_content) {
                 _content->shift(ctx_, offset_);
             }
@@ -402,5 +370,4 @@ namespace ember::editor::ui {
 
         ~InputVec3() override = default;
     };
-
 }

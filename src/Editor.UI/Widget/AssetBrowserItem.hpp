@@ -10,7 +10,6 @@ namespace ember::editor::ui {
 }
 
 namespace ember::editor::ui {
-
     class AssetBrowserItem :
         public engine::reflow::Button {
     protected:

@@ -128,11 +128,15 @@ void RenderTarget::buildPasses(const ptr<scene::SceneView> sceneView_) {
     _passes.reserve(req);
 
     for (u32 i { 0ui32 }; i < req; ++i) {
-        _passes.push_back(_renderer->allocate({
-            _swapchain->at(i),
-            sceneView_->getScene(),
-            sceneView_
-        }));
+        _passes.push_back(
+            _renderer->allocate(
+                {
+                    _swapchain->at(i),
+                    sceneView_->getScene(),
+                    sceneView_
+                }
+            )
+        );
     }
 
     /**
@@ -272,8 +276,9 @@ void RenderTarget::update() {
     assert(feedback);
 }
 
-RenderEnqueueResult
-RenderTarget::finish(cref<Vector<vk::Semaphore>> waits_/* , cref<Vector<vk::Semaphore>> signals_ */) {
+RenderEnqueueResult RenderTarget::finish(
+    cref<Vector<vk::Semaphore>> waits_/* , cref<Vector<vk::Semaphore>> signals_ */
+) {
 
     /**
      * Combine Semaphores

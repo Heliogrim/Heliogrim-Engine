@@ -4,7 +4,6 @@
 #include <Engine.Common/Types.hpp>
 
 namespace ember::engine::gfx::shader {
-
     enum class ShaderType: u8 {
         eNone = 0b0,
         //

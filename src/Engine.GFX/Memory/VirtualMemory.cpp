@@ -9,8 +9,11 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-VirtualMemory::VirtualMemory(const ptr<memory::GlobalPooledAllocator> allocator_, cref<memory::MemoryLayout> layout_,
-    const u64 size_) :
+VirtualMemory::VirtualMemory(
+    const ptr<memory::GlobalPooledAllocator> allocator_,
+    cref<memory::MemoryLayout> layout_,
+    const u64 size_
+) :
     _allocator(allocator_),
     _layout(layout_),
     _size(size_) {}

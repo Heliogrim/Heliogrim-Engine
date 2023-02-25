@@ -7,7 +7,6 @@ namespace ember::engine::core {
 }
 
 namespace ember::engine::core {
-
     class WorldRemoveEvent :
         public StatelessEvent {
     public:
@@ -31,5 +30,4 @@ namespace ember::engine::core {
     public:
         [[nodiscard]] const sptr<::ember::engine::core::World> getWorld() const noexcept;
     };
-
 }

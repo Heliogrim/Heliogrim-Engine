@@ -126,9 +126,13 @@ void CompositePipeline::removeStage(cref<string> identifier_) {
     auto* const stage = where->second.get();
     if (stage->decRef()) {
 
-        const auto pss = _STD ranges::remove(_pipelineStages, stage->getIdentifier(), [](const auto& entry_) {
-            return entry_->stageIdentifier().value;
-        });
+        const auto pss = _STD ranges::remove(
+            _pipelineStages,
+            stage->getIdentifier(),
+            [](const auto& entry_) {
+                return entry_->stageIdentifier().value;
+            }
+        );
         _pipelineStages.erase(pss.begin(), pss.end());
 
         _stages.erase(where);
@@ -152,9 +156,13 @@ void CompositePipeline::removeStage(mref<non_owning_rptr<Stage>> stage_) {
 
     if (where->second->decRef()) {
 
-        const auto pss = _STD ranges::remove(_pipelineStages, where->second->getIdentifier(), [](const auto& entry_) {
-            return entry_->stageIdentifier().value;
-        });
+        const auto pss = _STD ranges::remove(
+            _pipelineStages,
+            where->second->getIdentifier(),
+            [](const auto& entry_) {
+                return entry_->stageIdentifier().value;
+            }
+        );
         _pipelineStages.erase(pss.begin(), pss.end());
 
         _stages.erase(where);
@@ -168,9 +176,13 @@ const non_owning_rptr<const StagePipeline> CompositePipeline::addPipeline(mref<u
 }
 
 void CompositePipeline::removePipeline(const non_owning_rptr<StagePipeline> pipeline_) {
-    auto where = _STD ranges::remove(_pipelines, pipeline_, [](cref<uptr<StagePipeline>> entry_) {
-        return entry_.get();
-    });
+    auto where = _STD ranges::remove(
+        _pipelines,
+        pipeline_,
+        [](cref<uptr<StagePipeline>> entry_) {
+            return entry_.get();
+        }
+    );
 
     _pipelines.erase(where.begin(), where.end());
 }
@@ -201,9 +213,13 @@ void CompositePipeline::dispatch(const non_owning_rptr<CompositeSlot> slot_) {
 void CompositePipeline::complete(const non_owning_rptr<CompositeSlot> slot_) {
 
     auto* const stage = slot_->getCompositeStage();
-    auto compIter = _STD ranges::find(_compositeStages, stage, [](cref<uptr<CompositeStage>> entry_) {
-        return entry_.get();
-    });
+    auto compIter = _STD ranges::find(
+        _compositeStages,
+        stage,
+        [](cref<uptr<CompositeStage>> entry_) {
+            return entry_.get();
+        }
+    );
 
     /**/
 
@@ -258,17 +274,23 @@ void CompositePipeline::inverseDependencies(
 
         for (const auto* const requirement : dependency.required) {
 
-            auto invIter = _STD ranges::find(inverse_, requirement, [](cref<StageDependency> entry_) {
-                return entry_.stage;
-            });
+            auto invIter = _STD ranges::find(
+                inverse_,
+                requirement,
+                [](cref<StageDependency> entry_) {
+                    return entry_.stage;
+                }
+            );
 
             if (invIter == inverse_.end()) {
 
-                const auto result = inverse_.insert(StageDependency {
-                    {},
-                    nullptr,
-                    requirement
-                });
+                const auto result = inverse_.insert(
+                    StageDependency {
+                        {},
+                        nullptr,
+                        requirement
+                    }
+                );
 
                 invIter = result.first;
             }
@@ -329,12 +351,14 @@ bool CompositePipeline::defineCompositeStage(
         }
     }
 
-    auto cs = make_uptr<CompositeStage>(CompositeStage {
-        stage_,
-        _STD move(pipelineStages),
-        0ui64,
-        CompactSet<CompositeDependency> {}
-    });
+    auto cs = make_uptr<CompositeStage>(
+        CompositeStage {
+            stage_,
+            _STD move(pipelineStages),
+            0ui64,
+            CompactSet<CompositeDependency> {}
+        }
+    );
 
     /* Link composite stage to slot */
 
@@ -374,9 +398,13 @@ bool CompositePipeline::defineCompositeStage(
 
 non_owning_rptr<CompositeStage> CompositePipeline::getCompositeStage(const ptr<const Stage> stage_) const {
 
-    const auto compIter = _STD ranges::find(_compositeStages, stage_, [](cref<uptr<CompositeStage>> compStage_) {
-        return compStage_->stage;
-    });
+    const auto compIter = _STD ranges::find(
+        _compositeStages,
+        stage_,
+        [](cref<uptr<CompositeStage>> compStage_) {
+            return compStage_->stage;
+        }
+    );
 
     return compIter != _compositeStages.end() ? (compIter->get()) : nullptr;
 }
@@ -616,13 +644,21 @@ void CompositePipeline::resolve() {
                     continue;
                 }
 
-                auto beginIter = _STD ranges::find(_compositeStages, begin, [](const auto& entry_) {
-                    return entry_->stage;
-                });
+                auto beginIter = _STD ranges::find(
+                    _compositeStages,
+                    begin,
+                    [](const auto& entry_) {
+                        return entry_->stage;
+                    }
+                );
 
-                auto endIter = _STD ranges::find(_compositeStages, end, [](const auto& entry_) {
-                    return entry_->stage;
-                });
+                auto endIter = _STD ranges::find(
+                    _compositeStages,
+                    end,
+                    [](const auto& entry_) {
+                        return entry_->stage;
+                    }
+                );
 
                 u64 prevDist = 0;
                 for (auto tail = beginIter, head = beginIter + 1; head != endIter; ++tail, ++head) {

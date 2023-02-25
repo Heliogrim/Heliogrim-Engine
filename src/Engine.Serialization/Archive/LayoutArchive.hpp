@@ -5,7 +5,6 @@
 #include "../Layout/DataLayout.hpp"
 
 namespace ember::engine::serialization {
-
     class LayoutArchiveBase {
     public:
         using this_type = LayoutArchiveBase;
@@ -93,7 +92,6 @@ namespace ember::engine::serialization {
             deserialize(object_);
             return *this;
         }
-
     };
 
     template <typename LayoutType_> requires _STD derived_from<LayoutType_, DataLayoutBase>
@@ -152,5 +150,4 @@ namespace ember::engine::serialization {
             return *this;
         }
     };
-
 }

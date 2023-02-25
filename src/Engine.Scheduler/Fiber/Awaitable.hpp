@@ -9,7 +9,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::scheduler::fiber {
-
     /**
      * await_signal_type :: Defines type to use as awaitable signal by source
      * await_signal_sub_type :: Defines the subscription type the FiberAwaitable will use
@@ -26,10 +25,10 @@ namespace ember::engine::scheduler::fiber {
 
     template <typename AwaitableType_>
     concept IsAwaitableSignalRet = requires(const AwaitableType_ obj) {
-        { obj.await() } -> std::same_as<const ptr<await_signal_type>>;
-    } || requires(const AwaitableType_ obj) {
-        { obj.await() } -> std::same_as<const ptr<await_signal_sub_type>>;
-    };
+            { obj.await() } -> std::same_as<const ptr<await_signal_type>>;
+        } || requires(const AwaitableType_ obj) {
+            { obj.await() } -> std::same_as<const ptr<await_signal_sub_type>>;
+        };
 
     template <typename AwaitableType_>
     concept IsAwaitableSignalCall = requires(const AwaitableType_ obj) {
@@ -38,7 +37,7 @@ namespace ember::engine::scheduler::fiber {
 
     template <typename AwaitableType_>
     concept IsAwaitable = IsAwaitableSignal<AwaitableType_> || IsAwaitableSignalRet<AwaitableType_> ||
-    IsAwaitableSignalCall<AwaitableType_>;
+        IsAwaitableSignalCall<AwaitableType_>;
 
     enum class FiberAwaitableBits : u8 {
         eUndefined = 0b0000'0000,
@@ -47,7 +46,6 @@ namespace ember::engine::scheduler::fiber {
     };
 
     struct FiberAwaitable {
-
         /**
          *
          */
@@ -72,7 +70,6 @@ namespace ember::engine::scheduler::fiber {
 
                 bool (self_type::*call)();
             };
-
         };
 
     public:

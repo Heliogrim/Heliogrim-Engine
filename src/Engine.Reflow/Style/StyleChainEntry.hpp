@@ -8,7 +8,6 @@
 #include "../Widget/__fwd.hpp"
 
 namespace ember::engine::reflow {
-
     class StyleChainEntry {
     public:
         using this_type = StyleChainEntry;
@@ -45,5 +44,4 @@ namespace ember::engine::reflow {
 
         [[nodiscard]] cref<sptr<StyleSheet>> style() const noexcept;
     };
-
 }

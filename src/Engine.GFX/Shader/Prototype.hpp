@@ -5,10 +5,8 @@
 #include "PrototypeBinding.hpp"
 
 namespace ember::engine::gfx::shader {
-
     class Prototype {
     public:
-
         /**
          * Default constructor
          *

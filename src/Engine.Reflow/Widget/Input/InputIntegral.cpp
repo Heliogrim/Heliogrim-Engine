@@ -67,8 +67,12 @@ void InputIntegral::render(const ptr<ReflowCommandBuffer> cmd_) {
     _text->render(cmd_);
 }
 
-void InputIntegral::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_) {
+void InputIntegral::flow(
+    cref<FlowContext> ctx_,
+    cref<math::vec2> space_,
+    cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_
+) {
     _wrapper->setParent(shared_from_this());
     _wrapper->flow(ctx_, space_, limit_, styleStack_);
 }

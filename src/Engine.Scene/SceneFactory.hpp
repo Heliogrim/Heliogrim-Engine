@@ -4,7 +4,6 @@
 #include "Scene.hpp"
 
 namespace ember::engine::scene {
-
     class SceneFactory {
     public:
         using this_type = SceneFactory;

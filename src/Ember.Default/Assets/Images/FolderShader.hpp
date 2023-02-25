@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<FolderShader> {
     public:
         FolderShader():
-            ImageAsset(FolderShader::unstable_auto_guid(),
-                R"(resources\imports\ktx\folder-shader.ktx)") {}
+            ImageAsset(
+                FolderShader::unstable_auto_guid(),
+                R"(resources\imports\ktx\folder-shader.ktx)"
+            ) {}
     };
 }

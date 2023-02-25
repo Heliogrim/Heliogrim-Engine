@@ -5,7 +5,6 @@
 #include "HopScotch.hpp"
 
 namespace ember::hopscotch {
-
     template <
         typename KeyType_,
         typename ValueType_,
@@ -228,5 +227,4 @@ namespace ember::hopscotch {
             return _hsh.reserve(count_);
         }
     };
-
 }

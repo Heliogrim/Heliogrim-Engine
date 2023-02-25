@@ -10,7 +10,6 @@
 #include "Quaternion.hpp"
 
 namespace ember::math {
-
     template <class From_, class To_>
     inline static To_ as(cref<From_> from_) noexcept;
 
@@ -51,5 +50,4 @@ namespace ember::math {
     inline static mat4 as(cref<quaternion> from_) noexcept {
         return mat4 { as<quaternion, mat3>(from_) };
     }
-
 }

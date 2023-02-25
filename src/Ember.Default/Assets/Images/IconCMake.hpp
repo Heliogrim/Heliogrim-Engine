@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconCMake> {
     public:
         IconCMake():
-            ImageAsset(IconCMake::unstable_auto_guid(),
-                R"(resources\imports\ktx\cmake.ktx)") {}
+            ImageAsset(
+                IconCMake::unstable_auto_guid(),
+                R"(resources\imports\ktx\cmake.ktx)"
+            ) {}
     };
 }

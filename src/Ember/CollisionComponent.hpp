@@ -2,7 +2,6 @@
 #include "SceneComponent.hpp"
 
 namespace ember {
-
     class CollisionComponent :
         public SceneComponent {
     public:

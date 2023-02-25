@@ -1,7 +1,6 @@
 #pragma once
 
 namespace ember::engine::serialization {
-
     class Archive;
 
     class MemoryBaseArchive;
@@ -22,5 +21,4 @@ namespace ember::engine::serialization {
 
     class LayoutArchiveBase;
     class StructuredArchive;
-
 }

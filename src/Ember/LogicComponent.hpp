@@ -4,7 +4,6 @@
 #include <Engine.ACS/ComponentTypeId.hpp>
 
 namespace ember {
-
     class LogicComponent :
         public EmberObject {
     public:

@@ -7,7 +7,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::gfx::cache {
-
     template <std::totally_ordered SubjectType_>
     class CacheCtrlSubject {
     public:
@@ -71,5 +70,4 @@ namespace ember::engine::gfx::cache {
             return subject == subject_;
         }
     };
-
 }

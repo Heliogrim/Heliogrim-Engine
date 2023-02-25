@@ -4,7 +4,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember {
-
     /**
      * Forward Declaration
      */
@@ -30,5 +29,4 @@ namespace ember {
             return cached;
         }
     };
-
 }

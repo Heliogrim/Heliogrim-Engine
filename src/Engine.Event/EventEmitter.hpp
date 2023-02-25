@@ -8,7 +8,6 @@
 #include "Event.hpp"
 
 namespace ember {
-
     /** The event emitter */
     class __declspec(novtable) EventEmitter {
     public:
@@ -258,7 +257,8 @@ namespace ember {
 
             handle_type handle { ++_lhc };
             _listener.insert(
-                _STD make_pair<handle_type, function_type>(_STD move(handle), _STD forward<function_type>(fnc_)));
+                _STD make_pair<handle_type, function_type>(_STD move(handle), _STD forward<function_type>(fnc_))
+            );
 
             return handle;
         }

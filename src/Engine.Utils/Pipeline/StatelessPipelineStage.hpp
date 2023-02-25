@@ -4,7 +4,6 @@
 #include "AtomicPipelineStage.hpp"
 
 namespace ember::engine::utils::pipeline {
-
     class StatelessPipelineStage :
         protected AtomicPipelineStage {
     public:
@@ -31,5 +30,4 @@ namespace ember::engine::utils::pipeline {
          */
         ~StatelessPipelineStage() noexcept = default;
     };
-
 }

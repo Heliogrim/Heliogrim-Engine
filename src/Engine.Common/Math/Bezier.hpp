@@ -2,7 +2,6 @@
 
 /** . */
 namespace ember::math {
-
     /**
      * A bezier 3 degree
      *
@@ -13,7 +12,6 @@ namespace ember::math {
      */
     template <typename Ty>
     struct bezier3g {
-
         Ty p0, p1, p2, p3;
 
         /**

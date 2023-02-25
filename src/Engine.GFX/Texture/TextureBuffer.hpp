@@ -4,7 +4,6 @@
 #include "../vkinc.hpp"
 
 namespace ember::engine::gfx {
-
     class TextureBuffer final {
     public:
         /**

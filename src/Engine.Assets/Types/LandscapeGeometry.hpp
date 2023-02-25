@@ -6,7 +6,6 @@
 #include "Geometry.hpp"
 
 namespace ember::engine::assets {
-
     class LandscapeGeometry :
         public Geometry {
     public:

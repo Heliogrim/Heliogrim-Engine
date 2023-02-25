@@ -7,7 +7,6 @@
 #include "../Math/Helper.hpp"
 
 namespace ember {
-
     namespace proxyvector {
         /**
          * An exponent 2 growth policy.
@@ -20,7 +19,6 @@ namespace ember {
          */
         template <typename SizeType_ = _STD size_t, SizeType_ GrowthFactor = 2uLL>
         struct exp2_growth_policy {
-
             using size_type = SizeType_;
 
             explicit constexpr exp2_growth_policy(const size_type min_) :
@@ -44,9 +42,9 @@ namespace ember {
 
     template <typename Type_>
     concept IsProxyVectorType =
-    _STD is_nothrow_destructible_v<Type_> &&
-    (_STD is_nothrow_move_constructible_v<Type_>) &&
-    (_STD is_nothrow_move_assignable_v<Type_>);
+        _STD is_nothrow_destructible_v<Type_> &&
+        (_STD is_nothrow_move_constructible_v<Type_>) &&
+        (_STD is_nothrow_move_assignable_v<Type_>);
 
     /**
      * Forward Declaration
@@ -161,8 +159,8 @@ namespace ember {
             emplace_back(_STD forward<Type_>(first_));
         }
 
-        template <typename Type_, typename First_, typename ... Args_>
-        constexpr void apply_unfolded_make(mref<First_> first_, mref<Args_> ... args_) {
+        template <typename Type_, typename First_, typename... Args_>
+        constexpr void apply_unfolded_make(mref<First_> first_, mref<Args_>... args_) {
             emplace_back(_STD forward<Type_>(first_));
             apply_unfolded_make<Type_, Args_...>(_STD forward<Args_>(args_)...);
         }
@@ -180,7 +178,7 @@ namespace ember {
          * @returns The ProxyVector<...> instance.
          */
         template <typename Type_, typename... Args_>
-        [[nodiscard]] constexpr static value_type make(cref<proxy_holder_type> proxy_, Args_ ...args_) {
+        [[nodiscard]] constexpr static value_type make(cref<proxy_holder_type> proxy_, Args_... args_) {
             auto self { make(proxy_) };
             self.reserve(sizeof...(Args_));
             self.template apply_unfolded_make<Type_, Args_...>(_STD forward<Args_>(args_)...);
@@ -219,9 +217,12 @@ namespace ember {
                 using allocator_trait = _STD allocator_traits<allocator_type>;
 
                 allocator_type alloc {};
-                alloc.deallocate(_base, static_cast<size_t>(
-                    static_cast<ptr<Type_>>(_end) - static_cast<ptr<Type_>>(_base)
-                ));
+                alloc.deallocate(
+                    _base,
+                    static_cast<size_t>(
+                        static_cast<ptr<Type_>>(_end) - static_cast<ptr<Type_>>(_base)
+                    )
+                );
 
                 _base = nullptr;
                 _last = nullptr;
@@ -725,8 +726,12 @@ namespace ember {
             _end = static_cast<ptr<void>>(static_cast<ptr<char>>(newFst_) + (newCapacity_ * _proxy.align));
         }
 
-        void change_internal(ptr<void> newFst_, const count_type newSize_, const count_type newCapacity_,
-            [[maybe_unused]] _STD false_type) {
+        void change_internal(
+            ptr<void> newFst_,
+            const count_type newSize_,
+            const count_type newCapacity_,
+            [[maybe_unused]] _STD false_type
+        ) {
             _base = newFst_;
             _last = static_cast<ptr<void>>(static_cast<ptr<char>>(newFst_) + (newSize_ * _proxy.align));
             _end = static_cast<ptr<void>>(static_cast<ptr<char>>(newFst_) + (newCapacity_ * _proxy.align));
@@ -754,8 +759,12 @@ namespace ember {
         }
 
         template <typename Type_>
-        void change_internal(ptr<Type_> newFst_, const count_type newSize_, const count_type newCapacity_,
-            [[maybe_unused]] _STD false_type) {
+        void change_internal(
+            ptr<Type_> newFst_,
+            const count_type newSize_,
+            const count_type newCapacity_,
+            [[maybe_unused]] _STD false_type
+        ) {
             _base = newFst_;
             _last = newFst_ + newSize_;
             _end = newFst_ + newCapacity_;
@@ -792,9 +801,12 @@ namespace ember {
             return { result };
         }
 
-        FORCE_INLINE void realloc_base_eb(const count_type oldSize_, const count_type newSize_,
+        FORCE_INLINE void realloc_base_eb(
+            const count_type oldSize_,
+            const count_type newSize_,
             const count_type newCapacity_,
-            mref<ptr<void>> value_) noexcept {
+            mref<ptr<void>> value_
+        ) noexcept {
 
             using pointer_type = decltype(_base);
 
@@ -825,9 +837,12 @@ namespace ember {
             change_internal(newFst, newSize_, newCapacity_, _no_auto_dealloc_);
         }
 
-        FORCE_INLINE void alloc_base_eb(const count_type oldSize_, const count_type newSize_,
+        FORCE_INLINE void alloc_base_eb(
+            const count_type oldSize_,
+            const count_type newSize_,
             const count_type newCapacity_,
-            mref<ptr<void>> value_) noexcept {
+            mref<ptr<void>> value_
+        ) noexcept {
 
             using pointer_type = decltype(_base);
 
@@ -1360,9 +1375,12 @@ namespace ember {
         }
 
     private:
-        FORCE_INLINE void realloc_base_r(const count_type oldSize_, const count_type newSize_,
+        FORCE_INLINE void realloc_base_r(
+            const count_type oldSize_,
+            const count_type newSize_,
             const count_type newCapacity_,
-            cref<ptr<void>> value_) {
+            cref<ptr<void>> value_
+        ) {
 
             using pointer_type = decltype(_base);
 
@@ -1398,9 +1416,12 @@ namespace ember {
             change_internal(newFst, newSize_, newCapacity_, _no_auto_dealloc_);
         }
 
-        FORCE_INLINE void alloc_base_r(const count_type oldSize_, const count_type newSize_,
+        FORCE_INLINE void alloc_base_r(
+            const count_type oldSize_,
+            const count_type newSize_,
             const count_type newCapacity_,
-            cref<ptr<void>> value_) {
+            cref<ptr<void>> value_
+        ) {
 
             using pointer_type = decltype(_base);
 
@@ -1905,5 +1926,4 @@ namespace ember {
             return this->base_type::template at<Type_>(pos_);
         }
     };
-
 }

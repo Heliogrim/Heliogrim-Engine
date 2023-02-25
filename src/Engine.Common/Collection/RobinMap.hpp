@@ -3,7 +3,6 @@
 #include <robin/robin_map.h>
 
 namespace ember {
-
     template <
         class Key_,
         class Type_,

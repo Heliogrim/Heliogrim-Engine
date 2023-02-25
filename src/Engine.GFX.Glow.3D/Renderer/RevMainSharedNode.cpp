@@ -61,53 +61,61 @@ bool RevMainSharedNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Create Framebuffer :: Attachments
      */
-    auto albedo = factory->build({
-        buffer.extent(),
-        TextureFormat::eR8G8B8A8Unorm,
-        // Surface Albedo
-        1ui32,
-        TextureType::e2d,
-        vk::ImageAspectFlagBits::eColor,
-        vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
-        vk::MemoryPropertyFlagBits::eDeviceLocal,
-        vk::SharingMode::eExclusive
-    });
+    auto albedo = factory->build(
+        {
+            buffer.extent(),
+            TextureFormat::eR8G8B8A8Unorm,
+            // Surface Albedo
+            1ui32,
+            TextureType::e2d,
+            vk::ImageAspectFlagBits::eColor,
+            vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            vk::SharingMode::eExclusive
+        }
+    );
 
-    auto normal = factory->build({
-        buffer.extent(),
-        TextureFormat::eR32G32B32A32Sfloat,
-        // Surface Normal
-        1ui32,
-        TextureType::e2d,
-        vk::ImageAspectFlagBits::eColor,
-        vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
-        vk::MemoryPropertyFlagBits::eDeviceLocal,
-        vk::SharingMode::eExclusive
-    });
+    auto normal = factory->build(
+        {
+            buffer.extent(),
+            TextureFormat::eR32G32B32A32Sfloat,
+            // Surface Normal
+            1ui32,
+            TextureType::e2d,
+            vk::ImageAspectFlagBits::eColor,
+            vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            vk::SharingMode::eExclusive
+        }
+    );
 
-    auto position = factory->build({
-        buffer.extent(),
-        TextureFormat::eR32G32B32A32Sfloat,
-        // Surface Position
-        1ui32,
-        TextureType::e2d,
-        vk::ImageAspectFlagBits::eColor,
-        vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
-        vk::MemoryPropertyFlagBits::eDeviceLocal,
-        vk::SharingMode::eExclusive
-    });
+    auto position = factory->build(
+        {
+            buffer.extent(),
+            TextureFormat::eR32G32B32A32Sfloat,
+            // Surface Position
+            1ui32,
+            TextureType::e2d,
+            vk::ImageAspectFlagBits::eColor,
+            vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            vk::SharingMode::eExclusive
+        }
+    );
 
-    auto mrs = factory->build({
-        buffer.extent(),
-        TextureFormat::eR16G16B16A16Sfloat,
-        // Mrs data Sampling
-        1ui32,
-        TextureType::e2d,
-        vk::ImageAspectFlagBits::eColor,
-        vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
-        vk::MemoryPropertyFlagBits::eDeviceLocal,
-        vk::SharingMode::eExclusive
-    });
+    auto mrs = factory->build(
+        {
+            buffer.extent(),
+            TextureFormat::eR16G16B16A16Sfloat,
+            // Mrs data Sampling
+            1ui32,
+            TextureType::e2d,
+            vk::ImageAspectFlagBits::eColor,
+            vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            vk::SharingMode::eExclusive
+        }
+    );
 
     factory->buildView(albedo);
     factory->buildView(normal);
@@ -308,73 +316,88 @@ void RevMainSharedNode::setupLORenderPass() {
     _loRenderPass = make_sptr<pipeline::LORenderPass>(_device);
 
     // Albedo Attachment :: Used to store surface albedo color
-    _loRenderPass->set(0, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        vk::Format::eR8G8B8A8Unorm,
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        //vk::ImageLayout::eColorAttachmentOptimal
-        vk::ImageLayout::eShaderReadOnlyOptimal
-    });
+    _loRenderPass->set(
+        0,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            vk::Format::eR8G8B8A8Unorm,
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eClear,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            //vk::ImageLayout::eColorAttachmentOptimal
+            vk::ImageLayout::eShaderReadOnlyOptimal
+        }
+    );
 
     // Normal Attachment :: Used to store surface normals
-    _loRenderPass->set(1, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        vk::Format::eR32G32B32A32Sfloat,
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        //vk::ImageLayout::eColorAttachmentOptimal
-        vk::ImageLayout::eShaderReadOnlyOptimal
-    });
+    _loRenderPass->set(
+        1,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            vk::Format::eR32G32B32A32Sfloat,
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eClear,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            //vk::ImageLayout::eColorAttachmentOptimal
+            vk::ImageLayout::eShaderReadOnlyOptimal
+        }
+    );
 
     // Position Attachment :: Used to store surface position
-    _loRenderPass->set(2, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        vk::Format::eR32G32B32A32Sfloat,
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        //vk::ImageLayout::eColorAttachmentOptimal
-        vk::ImageLayout::eShaderReadOnlyOptimal
-    });
+    _loRenderPass->set(
+        2,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            vk::Format::eR32G32B32A32Sfloat,
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eClear,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            //vk::ImageLayout::eColorAttachmentOptimal
+            vk::ImageLayout::eShaderReadOnlyOptimal
+        }
+    );
 
     // Mrs Attachment :: Used to store mrs data (metalness, roughness, specular)
-    _loRenderPass->set(3, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        vk::Format::eR16G16B16A16Sfloat,
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        //vk::ImageLayout::eColorAttachmentOptimal
-        vk::ImageLayout::eShaderReadOnlyOptimal
-    });
+    _loRenderPass->set(
+        3,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            vk::Format::eR16G16B16A16Sfloat,
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eClear,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            //vk::ImageLayout::eColorAttachmentOptimal
+            vk::ImageLayout::eShaderReadOnlyOptimal
+        }
+    );
 
     // Depth Attachment :: Pre enriched depth buffer attachment
-    _loRenderPass->set(4, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        api::vkTranslateFormat(REV_DEPTH_FORMAT),
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eLoad,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eDepthStencilAttachmentOptimal,
-        vk::ImageLayout::eDepthStencilAttachmentOptimal
-    });
+    _loRenderPass->set(
+        4,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            api::vkTranslateFormat(REV_DEPTH_FORMAT),
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eLoad,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eDepthStencilAttachmentOptimal,
+            vk::ImageLayout::eDepthStencilAttachmentOptimal
+        }
+    );
 
     /**
      *
@@ -410,23 +433,25 @@ void RevMainSharedNode::postProcessAllocated(const ptr<HORenderPass> renderPass_
             continue;
         }
 
-        imgBarriers.push_back({
-            vk::AccessFlags {},
-            vk::AccessFlagBits::eShaderRead,
-            vk::ImageLayout::eUndefined,
-            vk::ImageLayout::eShaderReadOnlyOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            attachment.buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                attachment.mipLevels(),
-                0,
-                attachment.layer()
-            }
+        imgBarriers.push_back(
+            {
+                vk::AccessFlags {},
+                vk::AccessFlagBits::eShaderRead,
+                vk::ImageLayout::eUndefined,
+                vk::ImageLayout::eShaderReadOnlyOptimal,
+                VK_QUEUE_FAMILY_IGNORED,
+                VK_QUEUE_FAMILY_IGNORED,
+                attachment.buffer().image(),
+                vk::ImageSubresourceRange {
+                    vk::ImageAspectFlagBits::eColor,
+                    0,
+                    attachment.mipLevels(),
+                    0,
+                    attachment.layer()
+                }
 
-        });
+            }
+        );
     }
 
     auto pool = _device->graphicsQueue()->pool();
@@ -437,11 +462,16 @@ void RevMainSharedNode::postProcessAllocated(const ptr<HORenderPass> renderPass_
     /**
      * Transform
      */
-    cmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-        vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
-        0, nullptr,
-        0, nullptr,
-        static_cast<u32>(imgBarriers.size()), imgBarriers.data()
+    cmd.vkCommandBuffer().pipelineBarrier(
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::DependencyFlags {},
+        0,
+        nullptr,
+        0,
+        nullptr,
+        static_cast<u32>(imgBarriers.size()),
+        imgBarriers.data()
     );
 
     cmd.end();

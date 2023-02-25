@@ -4,7 +4,6 @@
 #include <Engine.Event/Event.hpp>
 
 namespace ember::engine::input::event {
-
     class MouseMoveEvent final :
         public StatelessEvent {
     public:
@@ -29,7 +28,7 @@ namespace ember::engine::input::event {
 
         ~MouseMoveEvent() noexcept = default;
 
-    //private:
+        //private:
     public:
         math::ivec2 _pointer;
         math::ivec2 _delta;
@@ -37,5 +36,4 @@ namespace ember::engine::input::event {
         u32 _button;
         u32 _modifier;
     };
-
 }

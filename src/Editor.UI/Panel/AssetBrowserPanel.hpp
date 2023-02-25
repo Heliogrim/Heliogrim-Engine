@@ -10,7 +10,6 @@ namespace ember::editor::ui {
 }
 
 namespace ember::editor::ui {
-
     class AssetBrowserPanel :
         public engine::reflow::Panel {
     protected:
@@ -62,5 +61,4 @@ namespace ember::editor::ui {
     public:
         static sptr<AssetBrowserPanel> make(const non_owning_rptr<AssetBrowser> browser_, cref<Url> root_);
     };
-
 }

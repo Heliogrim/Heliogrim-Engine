@@ -3,7 +3,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::core {
-
     class Session {
     public:
         using this_type = Session;
@@ -26,5 +25,4 @@ namespace ember::engine::core {
 
         [[nodiscard]] const non_owning_rptr<class WorldContext> getWorldContext() const noexcept;
     };
-
 }

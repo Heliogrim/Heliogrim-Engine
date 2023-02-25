@@ -11,7 +11,6 @@
 #include "../Shader/Type.hpp"
 
 namespace ember::engine::gfx::api {
-
     /**
      * Translate internal to vulkan
      *

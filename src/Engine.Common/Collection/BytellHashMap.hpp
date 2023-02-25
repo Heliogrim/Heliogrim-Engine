@@ -17,7 +17,6 @@
 #include <stdexcept>
 
 namespace ska {
-
     namespace detailv8 {
         using ska::detailv3::functor_storage;
         using ska::detailv3::KeyOrValueHasher;
@@ -259,8 +258,12 @@ namespace ska {
 
             sherwood_v8_table() { }
 
-            explicit sherwood_v8_table(size_type bucket_count, const ArgumentHash& hash = ArgumentHash(),
-                const ArgumentEqual& equal = ArgumentEqual(), const ArgumentAlloc& alloc = ArgumentAlloc()) :
+            explicit sherwood_v8_table(
+                size_type bucket_count,
+                const ArgumentHash& hash = ArgumentHash(),
+                const ArgumentEqual& equal = ArgumentEqual(),
+                const ArgumentAlloc& alloc = ArgumentAlloc()
+            ) :
                 ByteAlloc(alloc),
                 Hasher(hash),
                 Equal(equal) {
@@ -278,8 +281,14 @@ namespace ska {
                 ByteAlloc(alloc) { }
 
             template <typename It>
-            sherwood_v8_table(It first, It last, size_type bucket_count = 0, const ArgumentHash& hash = ArgumentHash(),
-                const ArgumentEqual& equal = ArgumentEqual(), const ArgumentAlloc& alloc = ArgumentAlloc()) :
+            sherwood_v8_table(
+                It first,
+                It last,
+                size_type bucket_count = 0,
+                const ArgumentHash& hash = ArgumentHash(),
+                const ArgumentEqual& equal = ArgumentEqual(),
+                const ArgumentAlloc& alloc = ArgumentAlloc()
+            ) :
                 sherwood_v8_table(bucket_count, hash, equal, alloc) {
                 insert(first, last);
             }
@@ -289,13 +298,22 @@ namespace ska {
                 sherwood_v8_table(first, last, bucket_count, ArgumentHash(), ArgumentEqual(), alloc) { }
 
             template <typename It>
-            sherwood_v8_table(It first, It last, size_type bucket_count, const ArgumentHash& hash,
-                const ArgumentAlloc& alloc) :
+            sherwood_v8_table(
+                It first,
+                It last,
+                size_type bucket_count,
+                const ArgumentHash& hash,
+                const ArgumentAlloc& alloc
+            ) :
                 sherwood_v8_table(first, last, bucket_count, hash, ArgumentEqual(), alloc) { }
 
-            sherwood_v8_table(std::initializer_list<T> il, size_type bucket_count = 0,
-                const ArgumentHash& hash = ArgumentHash(), const ArgumentEqual& equal = ArgumentEqual(),
-                const ArgumentAlloc& alloc = ArgumentAlloc()) :
+            sherwood_v8_table(
+                std::initializer_list<T> il,
+                size_type bucket_count = 0,
+                const ArgumentHash& hash = ArgumentHash(),
+                const ArgumentEqual& equal = ArgumentEqual(),
+                const ArgumentAlloc& alloc = ArgumentAlloc()
+            ) :
                 sherwood_v8_table(bucket_count, hash, equal, alloc) {
                 if (bucket_count == 0)
                     rehash(il.size());
@@ -305,13 +323,19 @@ namespace ska {
             sherwood_v8_table(std::initializer_list<T> il, size_type bucket_count, const ArgumentAlloc& alloc) :
                 sherwood_v8_table(il, bucket_count, ArgumentHash(), ArgumentEqual(), alloc) { }
 
-            sherwood_v8_table(std::initializer_list<T> il, size_type bucket_count, const ArgumentHash& hash,
-                const ArgumentAlloc& alloc) :
+            sherwood_v8_table(
+                std::initializer_list<T> il,
+                size_type bucket_count,
+                const ArgumentHash& hash,
+                const ArgumentAlloc& alloc
+            ) :
                 sherwood_v8_table(il, bucket_count, hash, ArgumentEqual(), alloc) { }
 
             sherwood_v8_table(const sherwood_v8_table& other) :
-                sherwood_v8_table(other,
-                    AllocatorTraits::select_on_container_copy_construction(other.get_allocator())) { }
+                sherwood_v8_table(
+                    other,
+                    AllocatorTraits::select_on_container_copy_construction(other.get_allocator())
+                ) { }
 
             sherwood_v8_table(const sherwood_v8_table& other, const ArgumentAlloc& alloc) :
                 ByteAlloc(alloc),
@@ -353,8 +377,10 @@ namespace ska {
                     if (static_cast<ByteAlloc&>(*this) != static_cast<const ByteAlloc&>(other)) {
                         reset_to_empty_state();
                     }
-                    AssignIfTrue<ByteAlloc, AllocatorTraits::propagate_on_container_copy_assignment::value>()(*this,
-                        other);
+                    AssignIfTrue<ByteAlloc, AllocatorTraits::propagate_on_container_copy_assignment::value>()(
+                        *this,
+                        other
+                    );
                 }
                 _max_load_factor = other._max_load_factor;
                 static_cast<Hasher&>(*this) = other;
@@ -370,8 +396,10 @@ namespace ska {
                 else if (AllocatorTraits::propagate_on_container_move_assignment::value) {
                     clear();
                     reset_to_empty_state();
-                    AssignIfTrue<ByteAlloc, AllocatorTraits::propagate_on_container_move_assignment::value>()(*this,
-                        std::move(other));
+                    AssignIfTrue<ByteAlloc, AllocatorTraits::propagate_on_container_move_assignment::value>()(
+                        *this,
+                        std::move(other)
+                    );
                     swap_pointers(other);
                 } else if (static_cast<ByteAlloc&>(*this) == static_cast<ByteAlloc&>(other)) {
                     swap_pointers(other);
@@ -555,8 +583,11 @@ namespace ska {
                     int8_t metadata = block->control_bytes[index_in_block];
                     if (first) {
                         if ((metadata & Constants::bits_for_direct_hit) != Constants::magic_for_direct_hit)
-                            return emplace_direct_hit({ index, block }, std::forward<Key>(key),
-                                std::forward<Args>(args)...);
+                            return emplace_direct_hit(
+                                { index, block },
+                                std::forward<Key>(key),
+                                std::forward<Args>(args)...
+                            );
                         first = false;
                     }
                     if (compares_equal(key, block->data[index_in_block]))
@@ -602,8 +633,10 @@ namespace ska {
             }
 
             void rehash(size_t num_items) {
-                num_items = (std::max)(num_items,
-                    static_cast<size_t>(std::ceil(num_elements / static_cast<double>(_max_load_factor))));
+                num_items = (std::max)(
+                    num_items,
+                    static_cast<size_t>(std::ceil(num_elements / static_cast<double>(_max_load_factor)))
+                );
                 if (num_items == 0) {
                     reset_to_empty_state();
                     return;
@@ -706,9 +739,13 @@ namespace ska {
                         depth_in_chain.emplace_back(distance, list_it);
                     }
                 }
-                std::sort(depth_in_chain.begin(), depth_in_chain.end(), [](const auto& a, const auto& b) {
-                    return a.first < b.first;
-                });
+                std::sort(
+                    depth_in_chain.begin(),
+                    depth_in_chain.end(),
+                    [](const auto& a, const auto& b) {
+                        return a.first < b.first;
+                    }
+                );
                 for (auto it = depth_in_chain.rbegin(), end = depth_in_chain.rend(); it != end; ++it) {
                     erase(it->second.it());
                 }
@@ -871,8 +908,10 @@ namespace ska {
 
                 LinkedListIt next(sherwood_v8_table& table) const {
                     int8_t distance = jump_index();
-                    size_t next_index = table.hash_policy.keep_in_range(index + Constants::jump_distances[distance],
-                        table.num_slots_minus_one);
+                    size_t next_index = table.hash_policy.keep_in_range(
+                        index + Constants::jump_distances[distance],
+                        table.num_slots_minus_one
+                    );
                     return { next_index, table.entries + next_index / BlockSize };
                 }
 
@@ -989,8 +1028,10 @@ namespace ska {
 
             std::pair<int8_t, LinkedListIt> find_free_index(LinkedListIt parent) const {
                 for (int8_t jump_index = 1; jump_index < Constants::num_jump_distances; ++jump_index) {
-                    size_t index = hash_policy.keep_in_range(parent.index + Constants::jump_distances[jump_index],
-                        num_slots_minus_one);
+                    size_t index = hash_policy.keep_in_range(
+                        parent.index + Constants::jump_distances[jump_index],
+                        num_slots_minus_one
+                    );
                     BlockPointer block = entries + index / BlockSize;
                     if (block->control_bytes[index % BlockSize] == Constants::magic_for_empty)
                         return { jump_index, { index, block } };
@@ -1116,6 +1157,7 @@ namespace ska {
             typename std::allocator_traits<A>::template rebind_alloc<unsigned char>,
             detailv8::CalculateBytellBlockSize<K, V>::value
         >;
+
     public:
         using key_type = K;
         using mapped_type = V;
@@ -1229,6 +1271,7 @@ namespace ska {
             typename std::allocator_traits<A>::template rebind_alloc<unsigned char>,
             detailv8::CalculateBytellBlockSize<T>::value
         >;
+
     public:
         using key_type = T;
 
@@ -1271,5 +1314,4 @@ namespace ska {
             return !(lhs == rhs);
         }
     };
-
 }// end namespace ska

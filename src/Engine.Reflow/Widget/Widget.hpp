@@ -22,7 +22,6 @@ namespace ember::engine::reflow {
 }
 
 namespace ember::engine::reflow {
-
     class Widget :
         public SharedFromThis<Widget> {
     public:
@@ -131,8 +130,12 @@ namespace ember::engine::reflow {
          * @param limit_ The forwarded maximum space this widget can occupy
          * @param styleStack_ The key stack to support cascaded styles
          */
-        virtual void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
-            _Inout_ ref<StyleKeyStack> styleStack_) = 0;
+        virtual void flow(
+            cref<FlowContext> ctx_,
+            cref<math::vec2> space_,
+            cref<math::vec2> limit_,
+            _Inout_ ref<StyleKeyStack> styleStack_
+        ) = 0;
 
         /**
          * Forward offset control ui elements
@@ -174,5 +177,4 @@ namespace ember::engine::reflow {
 
         void clearCaptureState();
     };
-
 }

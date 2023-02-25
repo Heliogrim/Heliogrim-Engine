@@ -179,8 +179,11 @@ vk::Result VkSwapchain::presentNext(u64 idx_, cref<Vector<vk::Semaphore>> waits_
     return vk::Result::eSuccess;
 }
 
-bool VkSwapchain::consumeNext(ref<sptr<Texture>> image_, ref<vk::Semaphore> signal_,
-    ref<Vector<vk::Semaphore>> waits_) {
+bool VkSwapchain::consumeNext(
+    ref<sptr<Texture>> image_,
+    ref<vk::Semaphore> signal_,
+    ref<Vector<vk::Semaphore>> waits_
+) {
 
     u64 pidx { ~0ui64 };
     if (!_pQueue.try_pop(pidx)) {

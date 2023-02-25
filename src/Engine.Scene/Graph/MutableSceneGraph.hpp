@@ -3,7 +3,6 @@
 #include "../Node/SceneNodeFactory.hpp"
 
 namespace ember::engine::scene {
-
     template <class PayloadType_>
     class MutableSceneGraph :
         public SceneGraph<PayloadType_> {
@@ -43,8 +42,10 @@ namespace ember::engine::scene {
             throw NotImplementedException();
         }
 
-        bool insert(ptr<typename underlying_type::node_type> node_,
-            const ptr<typename underlying_type::node_type> where_) {
+        bool insert(
+            ptr<typename underlying_type::node_type> node_,
+            const ptr<typename underlying_type::node_type> where_
+        ) {
             throw NotImplementedException();
         }
 
@@ -64,5 +65,4 @@ namespace ember::engine::scene {
             throw NotImplementedException();
         }
     };
-
 }

@@ -8,7 +8,6 @@
 #include "../Archive/__fwd.hpp"
 
 namespace ember::engine::serialization {
-
     class DataLayoutDispatch {
     public:
         using this_type = DataLayoutDispatch;

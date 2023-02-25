@@ -2,7 +2,6 @@
 #include <Engine.GFX/Renderer/RenderStage.hpp>
 
 namespace ember::engine::gfx::glow::render {
-
     class RevLightStage :
         public gfx::render::RenderStage {
     public:

@@ -3,7 +3,6 @@
 #include "VBox.hpp"
 
 namespace ember::engine::reflow {
-
     class Panel :
         public VBox {
     public:
@@ -14,5 +13,4 @@ namespace ember::engine::reflow {
 
         ~Panel() override;
     };
-
 }

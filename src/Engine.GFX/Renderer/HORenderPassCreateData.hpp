@@ -14,9 +14,7 @@ namespace ember::engine::scene {
 }
 
 namespace ember::engine::gfx::render {
-
     struct HORenderPassCreateData {
-
         sptr<Texture> target;
 
         ptr<::ember::engine::scene::IRenderScene> scene = nullptr;

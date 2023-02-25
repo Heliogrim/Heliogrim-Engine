@@ -112,9 +112,12 @@ void RevVirtualMarkerTexture::generateMarkers() {
         vk::PipelineStageFlagBits::eTransfer,
         vk::PipelineStageFlagBits::eTransfer,
         vk::DependencyFlags(),
-        0, nullptr,
-        0, nullptr,
-        1, &preBarrier
+        0,
+        nullptr,
+        0,
+        nullptr,
+        1,
+        &preBarrier
     );
 
     cmd.end();
@@ -220,9 +223,12 @@ void RevVirtualMarkerTexture::generateMarkers() {
         vk::PipelineStageFlagBits::eTransfer,
         vk::PipelineStageFlagBits::eTopOfPipe,
         vk::DependencyFlags(),
-        0, nullptr,
-        0, nullptr,
-        1, &postBarrier
+        0,
+        nullptr,
+        0,
+        nullptr,
+        1,
+        &postBarrier
     );
 
     cmd.end();
@@ -270,16 +276,18 @@ void RevVirtualMarkerTexture::setup() {
     //
     const auto* factory { TextureFactory::get() };
 
-    _texture = factory->build({
-        _extent,
-        TextureFormat::eR16Uint,
-        mipLimit,
-        TextureType::e2d,
-        vk::ImageAspectFlagBits::eColor,
-        vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
-        vk::MemoryPropertyFlagBits::eDeviceLocal,
-        vk::SharingMode::eExclusive
-    });
+    _texture = factory->build(
+        {
+            _extent,
+            TextureFormat::eR16Uint,
+            mipLimit,
+            TextureType::e2d,
+            vk::ImageAspectFlagBits::eColor,
+            vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            vk::SharingMode::eExclusive
+        }
+    );
 
     //
     generateMarkers();

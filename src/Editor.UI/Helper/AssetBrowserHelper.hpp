@@ -11,7 +11,6 @@
 #include <Engine.Assets/Database/AssetDatabase.hpp>
 
 namespace ember::editor::ui {
-
     class AssetBrowserHelper final {
     public:
         using this_type = AssetBrowserHelper;
@@ -57,5 +56,4 @@ namespace ember::editor::ui {
 
         [[nodiscard]] string getAssetTypeName(cref<asset_type_id> typeId_) const noexcept;
     };
-
 }

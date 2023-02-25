@@ -5,7 +5,6 @@
 #include "Fiber.hpp"
 
 namespace ember::engine::scheduler::fiber {
-
     class FiberPool {
     public:
         using value_type = FiberPool;
@@ -111,5 +110,4 @@ namespace ember::engine::scheduler::fiber {
     protected:
         [[nodiscard]] _Success_(return != false) bool restore(_Out_ ptr<Fiber> fiber_) noexcept;
     };
-
 }

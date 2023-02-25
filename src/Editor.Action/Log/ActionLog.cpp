@@ -51,8 +51,11 @@ void ActionLog::storeActionState(cref<sptr<Action>> action_) {
     ptr<ActionSaveState> state { make_ptr<ActionSaveState>() };
 
     uintptr_t expect { NULL };
-    while (not _saveState.compare_exchange_strong(expect, reinterpret_cast<uintptr_t>(state),
-        _STD memory_order::seq_cst)) {
+    while (not _saveState.compare_exchange_strong(
+        expect,
+        reinterpret_cast<uintptr_t>(state),
+        _STD memory_order::seq_cst
+    )) {
         expect = NULL;
         ::ember::yield();
     }

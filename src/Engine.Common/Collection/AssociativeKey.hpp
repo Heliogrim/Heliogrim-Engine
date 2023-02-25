@@ -6,7 +6,6 @@
 #include "../Wrapper.hpp"
 
 namespace ember {
-
     template <typename KeyType_, class Hasher = _STD hash<KeyType_>>
     struct AssocKey {
         using this_type = AssocKey<KeyType_>;
@@ -55,7 +54,6 @@ namespace ember {
             };
         }
     };
-
 }
 
 namespace std {
@@ -65,5 +63,4 @@ namespace std {
             return obj_.hash;
         }
     };
-
 }

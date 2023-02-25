@@ -15,18 +15,20 @@ using namespace ember;
 [[nodiscard]] static sptr<BoundStyleSheet> makeHeaderBoxStyle() {
 
     auto style {
-        BoundStyleSheet::make(StyleSheet {
-            .minWidth { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-            .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-            .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-            .wrap { true, ReflowWrap::eNoWrap },
-            .padding { true, Padding { 0.F, 4.F } },
-            .reflowSpacing { true, ReflowSpacing::eSpaceBetween },
-            .color { true, color::Dark::backgroundDefault }
-        })
+        BoundStyleSheet::make(
+            StyleSheet {
+                .minWidth { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                .wrap { true, ReflowWrap::eNoWrap },
+                .padding { true, Padding { 0.F, 4.F } },
+                .reflowSpacing { true, ReflowSpacing::eSpaceBetween },
+                .color { true, color::Dark::backgroundDefault }
+            }
+        )
     };
 
     return style;
@@ -77,18 +79,20 @@ string CollapseHeader::getTag() const noexcept {
 [[nodiscard]] static sptr<BoundStyleSheet> makeCollapseBoxStyle() {
 
     auto style {
-        BoundStyleSheet::make(StyleSheet {
-            .minWidth { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-            .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-            .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-            .wrap { true, ReflowWrap::eNoWrap },
-            .colGap { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .reflowSpacing { true, ReflowSpacing::eStart },
-            .color { true, color::Dark::backgroundDefault }
-        })
+        BoundStyleSheet::make(
+            StyleSheet {
+                .minWidth { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                .wrap { true, ReflowWrap::eNoWrap },
+                .colGap { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+                .reflowSpacing { true, ReflowSpacing::eStart },
+                .color { true, color::Dark::backgroundDefault }
+            }
+        )
     };
 
     return style;
@@ -156,13 +160,19 @@ string Collapse::getTag() const noexcept {
     return _STD format(R"(Collapse <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
-bool Collapse::willChangeLayout(cref<math::vec2> space_,
-    cref<engine::reflow::StyleKeyStack> styleStack_) const noexcept {
+bool Collapse::willChangeLayout(
+    cref<math::vec2> space_,
+    cref<engine::reflow::StyleKeyStack> styleStack_
+) const noexcept {
     return VBox::willChangeLayout(space_, styleStack_);
 }
 
-void Collapse::flow(cref<engine::reflow::FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
-    ref<engine::reflow::StyleKeyStack> styleStack_) {
+void Collapse::flow(
+    cref<engine::reflow::FlowContext> ctx_,
+    cref<math::vec2> space_,
+    cref<math::vec2> limit_,
+    ref<engine::reflow::StyleKeyStack> styleStack_
+) {
     VBox::flow(ctx_, space_, limit_, styleStack_);
 }
 

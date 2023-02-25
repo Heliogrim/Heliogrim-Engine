@@ -5,7 +5,6 @@
 #include "CommandQueue.hpp"
 
 namespace ember::engine::gfx {
-
     /**
      * Forward Declaration CommandBuffer.
      *

@@ -3,7 +3,6 @@
 #include "Geometry.hpp"
 
 namespace ember::engine::assets {
-
     class SkeletalGeometry :
         public Geometry {
     public:

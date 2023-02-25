@@ -82,8 +82,10 @@ void Multiplexer::free(const ptr<HORenderPass> renderPass_) {
     }
 }
 
-void Multiplexer::dispatchNull(const non_owning_rptr<HORenderPass> renderPass_,
-    const non_owning_rptr<RenderStagePass> stagePass_) const {
+void Multiplexer::dispatchNull(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    const non_owning_rptr<RenderStagePass> stagePass_
+) const {
 
     const auto it { _mesh.mapping.find(null_type_id) };
 
@@ -100,8 +102,11 @@ void Multiplexer::dispatchNull(const non_owning_rptr<HORenderPass> renderPass_,
     }
 }
 
-void Multiplexer::dispatchAny(const non_owning_rptr<HORenderPass> renderPass_,
-    const non_owning_rptr<RenderStagePass> stagePass_, const non_owning_rptr<SceneNodeModel> model_) const {
+void Multiplexer::dispatchAny(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    const non_owning_rptr<RenderStagePass> stagePass_,
+    const non_owning_rptr<SceneNodeModel> model_
+) const {
 
     // TODO: Get model type / for now just anything but null_type_id
     const type_id modelType { model_->getClass()->typeId() };
@@ -141,8 +146,10 @@ void Multiplexer::dispatchAny(const non_owning_rptr<HORenderPass> renderPass_,
     }
 }
 
-void Multiplexer::attach(const non_owning_rptr<HORenderPass> renderPass_,
-    const non_owning_rptr<RenderStagePass> stagePass_) const {
+void Multiplexer::attach(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    const non_owning_rptr<RenderStagePass> stagePass_
+) const {
     /**
      * Iterate forward every node with enforced order
      */
@@ -169,8 +176,10 @@ void Multiplexer::dispatch(
 
 }
 
-void Multiplexer::detach(const non_owning_rptr<HORenderPass> renderPass_,
-    const non_owning_rptr<RenderStagePass> stagePass_) const {
+void Multiplexer::detach(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    const non_owning_rptr<RenderStagePass> stagePass_
+) const {
     /**
      * Iterate reverse every node with enforced order
      */

@@ -33,7 +33,8 @@ namespace ember::engine {
         [[nodiscard]] ref<scheduler::task::SignaledQueue> platformQueue() const noexcept override;
 
         [[nodiscard]] ember::concurrent::future<uptr<platform::NativeWindow>> makeNativeWindow(
-            const string_view title_, cref<math::iExtent2D> extent_
+            const string_view title_,
+            cref<math::iExtent2D> extent_
         ) override;
 
         [[nodiscard]] ember::concurrent::future<bool> destroyNativeWindow(

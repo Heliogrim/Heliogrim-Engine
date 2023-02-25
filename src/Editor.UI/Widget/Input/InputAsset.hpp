@@ -8,7 +8,6 @@
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
 
 namespace ember::editor::ui {
-
     class InputAsset :
         public engine::reflow::Input<asset_guid> {
     public:
@@ -45,8 +44,12 @@ namespace ember::editor::ui {
     public:
         void render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) override;
 
-        void flow(cref<engine::reflow::FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
-            ref<engine::reflow::StyleKeyStack> styleStack_) override;
+        void flow(
+            cref<engine::reflow::FlowContext> ctx_,
+            cref<math::vec2> space_,
+            cref<math::vec2> limit_,
+            ref<engine::reflow::StyleKeyStack> styleStack_
+        ) override;
 
         void shift(cref<engine::reflow::FlowContext> ctx_, cref<math::vec2> offset_) override;
 
@@ -86,5 +89,4 @@ namespace ember::editor::ui {
 
         void setValue(cref<asset_guid> assetGuid_);
     };
-
 }

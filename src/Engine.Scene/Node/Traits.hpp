@@ -6,7 +6,6 @@
 #include <Engine.Common/Math/Transform.hpp>
 
 namespace ember::engine::scene {
-
     template <typename Type_>
     concept HasBoundaryGetter = requires(cref<Type_> obj_) {
         { obj_.getBoundaries() } -> std::same_as<cref<math::Bounding>>;
@@ -19,7 +18,6 @@ namespace ember::engine::scene {
 
     template <class NodeType_, class ElementType_>
     struct scene_traits {
-
         constexpr static u64 max_childs_per_node = 8ui64;// Octree like
         //constexpr static u64 max_elements_per_leaf = 1ui64;
         //constexpr static u64 max_elements_per_leaf = 16ui64;
@@ -36,7 +34,8 @@ namespace ember::engine::scene {
         constexpr static u64 max_flat_nodes_per_page = max_nodes_per_page / (max_childs_per_node + 1ui64);
         #if ENV_MSVC
         const inline static u64 splice_layer_per_page = _STD floor(
-            _STD log2(max_flat_nodes_per_page) / _STD log2(max_childs_per_node));
+            _STD log2(max_flat_nodes_per_page) / _STD log2(max_childs_per_node)
+        );
         #else
         constexpr static u64 splice_layer_per_page = _STD floor(_STD log2(max_flat_nodes_per_page) / _STD log2(max_childs_per_node));
         #endif

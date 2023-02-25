@@ -39,7 +39,8 @@ namespace ember::engine {
 
     public:
         [[nodiscard]] virtual ::ember::concurrent::future<uptr<platform::NativeWindow>> makeNativeWindow(
-            const string_view title_, cref<math::iExtent2D> extent_
+            const string_view title_,
+            cref<math::iExtent2D> extent_
         ) = 0;
 
         [[nodiscard]] virtual ::ember::concurrent::future<bool> destroyNativeWindow(

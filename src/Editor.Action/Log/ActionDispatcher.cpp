@@ -14,14 +14,18 @@ bool ActionDispatcher::operator()(cref<sptr<Action>> action_, const bool reverti
     }
 
     if (reverting_) {
-        execute([action = action_]() {
-            action->reverse();
-        });
+        execute(
+            [action = action_]() {
+                action->reverse();
+            }
+        );
 
     } else {
-        execute([action = action_]() {
-            action->apply();
-        });
+        execute(
+            [action = action_]() {
+                action->apply();
+            }
+        );
     }
 
     await(*action_);

@@ -9,7 +9,6 @@
 #include "SceneNodeHead.hpp"
 
 namespace ember::engine::scene {
-
     class SceneNodeHeadContainer {
     public:
         using type_traits = scene_node_shared_traits;
@@ -963,7 +962,7 @@ namespace ember::engine::scene {
          * @returns True if it succeeds, false if it fails.
          */
         template <class... Args_>
-        bool emplace(mref<Args_> ... args_) {
+        bool emplace(mref<Args_>... args_) {
             if (_last != &_base[type_traits::max_nodes_per_layer]) {
                 allocator_traits::construct(getAlloc(), _STD _Unfancy(_last), _STD forward<Args_>(args_)...);
                 ++_last;

@@ -3,7 +3,6 @@
 #include "SceneNodeSubBase.hpp"
 
 namespace ember::engine::scene {
-
     template <class PayloadType_>
     class SpartialSceneNode final :
         public SceneNodeSubBase<PayloadType_, SpartialSceneNode<PayloadType_>> {
@@ -29,8 +28,12 @@ namespace ember::engine::scene {
         }
 
         template <class FactoryType_>
-        bool push(const ptr<PayloadType_> element_, cref<math::Bounding> boundary_,
-            const ptr<const FactoryType_> factory_, SceneNodePath forwardPath_) {
+        bool push(
+            const ptr<PayloadType_> element_,
+            cref<math::Bounding> boundary_,
+            const ptr<const FactoryType_> factory_,
+            SceneNodePath forwardPath_
+        ) {
             throw NotImplementedException();
         }
 
@@ -73,5 +76,4 @@ namespace ember::engine::scene {
     ptr<typename SceneNode<PayloadType_>::spartial_type> SceneNode<PayloadType_>::asSpartial() noexcept {
         return SpartialSceneNode<PayloadType_>::castFrom(this);
     }
-
 }

@@ -24,17 +24,24 @@ sptr<Widget> HierarchyGenerator<sptr<SceneViewEntry>>::operator()(
 
         auto txt { make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))) };
         txt->style().color.unset();
-        txt->style().pushStyle({
-            AssocKey<string>::from(R"(TreeItem::Selected)"),
-            style::isNever,
-            Style::get()->getStyleSheet(Style::TitleRaisedKey)
-        });
+        txt->style().pushStyle(
+            {
+                AssocKey<string>::from(R"(TreeItem::Selected)"),
+                style::isNever,
+                Style::get()->getStyleSheet(Style::TitleRaisedKey)
+            }
+        );
 
         const auto actorGuid = actor->guid();
-        txt->setText(_STD format(
-            R"(Actor << {}-{}-{}-{} >>)",
-            actorGuid.pre, actorGuid.c0, actorGuid.c1, actorGuid.post
-        ));
+        txt->setText(
+            _STD format(
+                R"(Actor << {}-{}-{}-{} >>)",
+                actorGuid.pre,
+                actorGuid.c0,
+                actorGuid.c1,
+                actorGuid.post
+            )
+        );
 
         return txt;
     }
@@ -45,11 +52,13 @@ sptr<Widget> HierarchyGenerator<sptr<SceneViewEntry>>::operator()(
 
         auto txt { make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))) };
         txt->style().color.unset();
-        txt->style().pushStyle({
-            AssocKey<string>::from(R"(TreeItem::Selected)"),
-            style::isNever,
-            Style::get()->getStyleSheet(Style::TitleRaisedKey)
-        });
+        txt->style().pushStyle(
+            {
+                AssocKey<string>::from(R"(TreeItem::Selected)"),
+                style::isNever,
+                Style::get()->getStyleSheet(Style::TitleRaisedKey)
+            }
+        );
 
         u64 depth { 0ui64 };
         auto parent { comp };

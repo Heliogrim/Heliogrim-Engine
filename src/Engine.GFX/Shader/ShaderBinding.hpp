@@ -5,7 +5,6 @@
 #include "../Device/Device.hpp"
 
 namespace ember::engine::gfx::shader {
-
     /**
      * Forward Decalaration
      */
@@ -39,8 +38,13 @@ namespace ember::engine::gfx::shader {
          * @param  device_ The device.
          * @param  vkSetLayout_ The vk set layout.
          */
-        ShaderBinding(const BindingType type_, const id_type id_, const BindingUpdateInterval interval_,
-            cref<sptr<Device>> device_, const vk::DescriptorSetLayout& vkSetLayout_) noexcept;
+        ShaderBinding(
+            const BindingType type_,
+            const id_type id_,
+            const BindingUpdateInterval interval_,
+            cref<sptr<Device>> device_,
+            const vk::DescriptorSetLayout& vkSetLayout_
+        ) noexcept;
 
         /**
          * Destructor

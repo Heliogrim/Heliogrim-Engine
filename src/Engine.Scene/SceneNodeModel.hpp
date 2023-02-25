@@ -16,7 +16,6 @@ namespace ember::engine::scene {
 }
 
 namespace ember::engine::scene {
-
     class __declspec(novtable) SceneNodeModel :
         public EmberObject {
     public:

@@ -40,9 +40,13 @@ void StyleChain::pushStyle(mref<StyleChainEntry> style_, const s32 off_) {
 
 void StyleChain::popStyle(cref<StyleChainEntry::key_type> style_) {
 
-    const auto where = _STD remove_if(_list.begin(), _list.end(), [style = style_](const auto& entry_) {
-        return entry_.key() == style;
-    });
+    const auto where = _STD remove_if(
+        _list.begin(),
+        _list.end(),
+        [style = style_](const auto& entry_) {
+            return entry_.key() == style;
+        }
+    );
 
     _list.erase(where, _list.end());
 }

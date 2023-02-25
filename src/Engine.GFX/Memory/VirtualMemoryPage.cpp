@@ -7,8 +7,11 @@
 using namespace ember::engine::gfx;
 using namespace ember;
 
-VirtualMemoryPage::VirtualMemoryPage(const non_owning_rptr<VirtualMemory> owner_, const u64 offset_,
-    const u64 size_) :
+VirtualMemoryPage::VirtualMemoryPage(
+    const non_owning_rptr<VirtualMemory> owner_,
+    const u64 offset_,
+    const u64 size_
+) :
     _owner(owner_),
     _offset(offset_),
     _size(size_),

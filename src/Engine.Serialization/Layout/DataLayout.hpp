@@ -12,7 +12,6 @@
 #include "LayoutDefineValue.hpp"
 
 namespace ember::engine::serialization {
-
     template <typename SerializationType_>
     class DataLayout final :
         public DataLayoutBase {
@@ -55,5 +54,4 @@ namespace ember::engine::serialization {
     public:
         void describe() override;
     };
-
 }

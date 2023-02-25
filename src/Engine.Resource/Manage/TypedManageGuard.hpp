@@ -169,17 +169,17 @@ namespace ember::engine::resource {
         using this_type = MutTypedManageGuard<ManagedType_>;
         using underlying_type = TypedManageGuard<ManagedType_>;
 
-        using underlying_type::value_type;
+        using value_type = typename underlying_type::value_type;
 
     public:
         constexpr MutTypedManageGuard() = default;
 
     public:
-        [[nodiscard]] const ptr<typename value_type> operator->() const noexcept {
+        [[nodiscard]] const ptr<value_type> operator->() const noexcept {
             return underlying_type::mut();
         }
 
-        [[nodiscard]] ref<typename value_type> operator*() const noexcept {
+        [[nodiscard]] ref<value_type> operator*() const noexcept {
             return *underlying_type::mut();
         }
     };

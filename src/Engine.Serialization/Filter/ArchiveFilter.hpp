@@ -3,7 +3,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::serialization {
-
     class __declspec(novtable) ArchiveFilter {
     public:
         using this_type = ArchiveFilter;
@@ -22,5 +21,4 @@ namespace ember::engine::serialization {
 
         void setNext(const ptr<ArchiveFilter> next_) noexcept;
     };
-
 }

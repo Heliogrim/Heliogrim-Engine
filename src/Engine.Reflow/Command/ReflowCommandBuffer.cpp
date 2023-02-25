@@ -202,8 +202,13 @@ void ReflowCommandBuffer::drawLine(math::vec2 p0_, math::vec2 p1_, const float s
 
 void ReflowCommandBuffer::drawTriangle(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, cref<color> color_) {}
 
-void ReflowCommandBuffer::drawTriangleLine(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, cref<color> color_,
-    const float strength_) {}
+void ReflowCommandBuffer::drawTriangleLine(
+    math::vec2 p0_,
+    math::vec2 p1_,
+    math::vec2 p2_,
+    cref<color> color_,
+    const float strength_
+) {}
 
 void ReflowCommandBuffer::drawQuad(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, math::vec2 p3_, cref<color> color_) {
 
@@ -230,59 +235,74 @@ void ReflowCommandBuffer::drawQuad(math::vec2 p0_, math::vec2 p1_, math::vec2 p2
     _runningIndexes.push_back(baseIdx + cqi[4]);
     _runningIndexes.push_back(baseIdx + cqi[5]);
 
-    _runningVertices.push_back(uivertex {
-        math::vec2 { p0_ },
-        math::vec4_t<u8> {
-            static_cast<u8>(color_.r),
-            static_cast<u8>(color_.g),
-            static_cast<u8>(color_.b),
-            static_cast<u8>(color_.a)
-        },
-        math::vec3 {}
-    });
-    _runningVertices.push_back(uivertex {
-        math::vec2 { p1_ },
-        math::vec4_t<u8> {
-            static_cast<u8>(color_.r),
-            static_cast<u8>(color_.g),
-            static_cast<u8>(color_.b),
-            static_cast<u8>(color_.a)
-        },
-        math::vec3 {}
-    });
-    _runningVertices.push_back(uivertex {
-        math::vec2 { p2_ },
-        math::vec4_t<u8> {
-            static_cast<u8>(color_.r),
-            static_cast<u8>(color_.g),
-            static_cast<u8>(color_.b),
-            static_cast<u8>(color_.a)
-        },
-        math::vec3 {}
-    });
-    _runningVertices.push_back(uivertex {
-        math::vec2 { p3_ },
-        math::vec4_t<u8> {
-            static_cast<u8>(color_.r),
-            static_cast<u8>(color_.g),
-            static_cast<u8>(color_.b),
-            static_cast<u8>(color_.a)
-        },
-        math::vec3 {}
-    });
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { p0_ },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 {}
+        }
+    );
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { p1_ },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 {}
+        }
+    );
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { p2_ },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 {}
+        }
+    );
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { p3_ },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 {}
+        }
+    );
 }
 
-void ReflowCommandBuffer::drawQuadLine(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, math::vec2 p3_,
+void ReflowCommandBuffer::drawQuadLine(
+    math::vec2 p0_,
+    math::vec2 p1_,
+    math::vec2 p2_,
+    math::vec2 p3_,
     cref<color> color_,
-    const float strength_) {}
+    const float strength_
+) {}
 
 void ReflowCommandBuffer::drawRect(math::vec2 min_, math::vec2 max_, cref<color> color_) {}
 
 void ReflowCommandBuffer::drawRectLine(math::vec2 min_, math::vec2 max_, cref<color> color_, const float strength_) {}
 
 void ReflowCommandBuffer::drawArc(
-    math::vec2 pos_, const float radius_,
-    const float fromTheta_, const float toTheta_,
+    math::vec2 pos_,
+    const float radius_,
+    const float fromTheta_,
+    const float toTheta_,
     cref<color> color_
 ) {
 
@@ -318,16 +338,18 @@ void ReflowCommandBuffer::drawArc(
     _runningVertices.reserve(baseVtx + reqVtx);
 
     /**/
-    _runningVertices.push_back(uivertex {
-        math::vec2 { pos_ },
-        math::vec4_t<u8> {
-            static_cast<u8>(color_.r),
-            static_cast<u8>(color_.g),
-            static_cast<u8>(color_.b),
-            static_cast<u8>(color_.a)
-        },
-        math::vec3 {}
-    });
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { pos_ },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 {}
+        }
+    );
 
     /**/
     for (u32 seg { 0ui32 }; seg <= segments; ++seg) {
@@ -336,16 +358,18 @@ void ReflowCommandBuffer::drawArc(
 
         const math::vec2 nd { _STD cosf(theta), _STD sinf(theta) };
 
-        _runningVertices.push_back(uivertex {
-            math::vec2 { pos_ + nd * radius_ },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 {}
-        });
+        _runningVertices.push_back(
+            uivertex {
+                math::vec2 { pos_ + nd * radius_ },
+                math::vec4_t<u8> {
+                    static_cast<u8>(color_.r),
+                    static_cast<u8>(color_.g),
+                    static_cast<u8>(color_.b),
+                    static_cast<u8>(color_.a)
+                },
+                math::vec3 {}
+            }
+        );
     }
 
     /**/
@@ -356,8 +380,13 @@ void ReflowCommandBuffer::drawArc(
     }
 }
 
-void ReflowCommandBuffer::drawText(math::vec2 pos_, cref<string_view> text_, ref<Font> font_, const float fontSize_,
-    cref<color> color_) {
+void ReflowCommandBuffer::drawText(
+    math::vec2 pos_,
+    cref<string_view> text_,
+    ref<Font> font_,
+    const float fontSize_,
+    cref<color> color_
+) {
 
     if (color_.a <= 0.F || text_.empty()) {
         return;
@@ -435,58 +464,66 @@ void ReflowCommandBuffer::drawText(math::vec2 pos_, cref<string_view> text_, ref
         const float gw { static_cast<float>(glyph->_size.x) * charScale.x };
         const float gh { static_cast<float>(glyph->_size.y) * charScale.y };
 
-        _runningVertices.push_back(uivertex {
-            math::vec2 {
-                gx,
-                gy
-            },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 { glyph->_minSt, 0.F }
-        });
-        _runningVertices.push_back(uivertex {
-            math::vec2 {
-                gx + gw,
-                gy
-            },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 { glyph->_maxSt.s, glyph->_minSt.t, 0.F }
-        });
-        _runningVertices.push_back(uivertex {
-            math::vec2 {
-                gx + gw,
-                gy + gh
-            },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 { glyph->_maxSt, 0.F }
-        });
-        _runningVertices.push_back(uivertex {
-            math::vec2 {
-                gx,
-                gy + gh
-            },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 { glyph->_minSt.s, glyph->_maxSt.t, 0.F }
-        });
+        _runningVertices.push_back(
+            uivertex {
+                math::vec2 {
+                    gx,
+                    gy
+                },
+                math::vec4_t<u8> {
+                    static_cast<u8>(color_.r),
+                    static_cast<u8>(color_.g),
+                    static_cast<u8>(color_.b),
+                    static_cast<u8>(color_.a)
+                },
+                math::vec3 { glyph->_minSt, 0.F }
+            }
+        );
+        _runningVertices.push_back(
+            uivertex {
+                math::vec2 {
+                    gx + gw,
+                    gy
+                },
+                math::vec4_t<u8> {
+                    static_cast<u8>(color_.r),
+                    static_cast<u8>(color_.g),
+                    static_cast<u8>(color_.b),
+                    static_cast<u8>(color_.a)
+                },
+                math::vec3 { glyph->_maxSt.s, glyph->_minSt.t, 0.F }
+            }
+        );
+        _runningVertices.push_back(
+            uivertex {
+                math::vec2 {
+                    gx + gw,
+                    gy + gh
+                },
+                math::vec4_t<u8> {
+                    static_cast<u8>(color_.r),
+                    static_cast<u8>(color_.g),
+                    static_cast<u8>(color_.b),
+                    static_cast<u8>(color_.a)
+                },
+                math::vec3 { glyph->_maxSt, 0.F }
+            }
+        );
+        _runningVertices.push_back(
+            uivertex {
+                math::vec2 {
+                    gx,
+                    gy + gh
+                },
+                math::vec4_t<u8> {
+                    static_cast<u8>(color_.r),
+                    static_cast<u8>(color_.g),
+                    static_cast<u8>(color_.b),
+                    static_cast<u8>(color_.a)
+                },
+                math::vec3 { glyph->_minSt.s, glyph->_maxSt.t, 0.F }
+            }
+        );
 
         /**/
         fwd.x += glyph->_advance * charScale.x;
@@ -494,22 +531,42 @@ void ReflowCommandBuffer::drawText(math::vec2 pos_, cref<string_view> text_, ref
 }
 
 void ReflowCommandBuffer::drawImage(
-    math::vec2 p0_, math::vec2 uv0_,
-    math::vec2 p1_, math::vec2 uv1_,
-    math::vec2 p2_, math::vec2 uv2_,
-    math::vec2 p3_, math::vec2 uv3_,
+    math::vec2 p0_,
+    math::vec2 uv0_,
+    math::vec2 p1_,
+    math::vec2 uv1_,
+    math::vec2 p2_,
+    math::vec2 uv2_,
+    math::vec2 p3_,
+    math::vec2 uv3_,
     ProxyTexture<non_owning_rptr> image_,
     cref<color> color_
 ) {
-    drawImageAsync(p0_, uv0_, p1_, uv1_, p2_, uv2_, p3_, uv3_, _STD move(image_), VK_NULL_HANDLE, VK_NULL_HANDLE,
-        color_);
+    drawImageAsync(
+        p0_,
+        uv0_,
+        p1_,
+        uv1_,
+        p2_,
+        uv2_,
+        p3_,
+        uv3_,
+        _STD move(image_),
+        VK_NULL_HANDLE,
+        VK_NULL_HANDLE,
+        color_
+    );
 }
 
 void ReflowCommandBuffer::drawImageAsync(
-    math::vec2 p0_, math::vec2 uv0_,
-    math::vec2 p1_, math::vec2 uv1_,
-    math::vec2 p2_, math::vec2 uv2_,
-    math::vec2 p3_, math::vec2 uv3_,
+    math::vec2 p0_,
+    math::vec2 uv0_,
+    math::vec2 p1_,
+    math::vec2 uv1_,
+    math::vec2 p2_,
+    math::vec2 uv2_,
+    math::vec2 p3_,
+    math::vec2 uv3_,
     ProxyTexture<non_owning_rptr> image_,
     vk::Semaphore wait_,
     vk::Semaphore signal_,
@@ -536,46 +593,54 @@ void ReflowCommandBuffer::drawImageAsync(
     _runningIndexes.push_back(baseVtx + cqi[4]);
     _runningIndexes.push_back(baseVtx + cqi[5]);
 
-    _runningVertices.push_back(uivertex {
-        math::vec2 { p0_ },
-        math::vec4_t<u8> {
-            static_cast<u8>(color_.r),
-            static_cast<u8>(color_.g),
-            static_cast<u8>(color_.b),
-            static_cast<u8>(color_.a)
-        },
-        math::vec3 { uv0_, 0.F }
-    });
-    _runningVertices.push_back(uivertex {
-        math::vec2 { p1_ },
-        math::vec4_t<u8> {
-            static_cast<u8>(color_.r),
-            static_cast<u8>(color_.g),
-            static_cast<u8>(color_.b),
-            static_cast<u8>(color_.a)
-        },
-        math::vec3 { uv1_, 0.F }
-    });
-    _runningVertices.push_back(uivertex {
-        math::vec2 { p2_ },
-        math::vec4_t<u8> {
-            static_cast<u8>(color_.r),
-            static_cast<u8>(color_.g),
-            static_cast<u8>(color_.b),
-            static_cast<u8>(color_.a)
-        },
-        math::vec3 { uv2_, 0.F }
-    });
-    _runningVertices.push_back(uivertex {
-        math::vec2 { p3_ },
-        math::vec4_t<u8> {
-            static_cast<u8>(color_.r),
-            static_cast<u8>(color_.g),
-            static_cast<u8>(color_.b),
-            static_cast<u8>(color_.a)
-        },
-        math::vec3 { uv3_, 0.F }
-    });
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { p0_ },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 { uv0_, 0.F }
+        }
+    );
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { p1_ },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 { uv1_, 0.F }
+        }
+    );
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { p2_ },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 { uv2_, 0.F }
+        }
+    );
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { p3_ },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 { uv3_, 0.F }
+        }
+    );
 
     /**
      *

@@ -12,7 +12,6 @@ namespace ember::engine::gfx::glow::render {
 }
 
 namespace ember::engine::gfx::glow::render {
-
     class RevMainSkyNode :
         public gfx::render::RenderStageNode {
     public:

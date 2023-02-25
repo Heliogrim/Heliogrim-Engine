@@ -2,7 +2,6 @@
 #include <Engine.Common/Concurrent/Future.hpp>
 
 namespace ember::engine::utils::pipeline::adaptive {
-
     template <typename Type_>
     class AdaptivePipelineResult :
         protected concurrent::future<_STD remove_cvref_t<Type_>> {

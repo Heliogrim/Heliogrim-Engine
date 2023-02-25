@@ -7,7 +7,6 @@
 #include <Engine.Common/Collection/Vector.hpp>
 
 namespace ember::engine::reflow {
-
     class StyleKeyStack {
     public:
         using this_type = StyleKeyStack;
@@ -45,5 +44,4 @@ namespace ember::engine::reflow {
     public:
         void compress(_Inout_ ref<set_type> dst_) const noexcept;
     };
-
 }

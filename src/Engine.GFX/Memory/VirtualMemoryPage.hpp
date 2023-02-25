@@ -10,7 +10,6 @@ namespace ember::engine::gfx {
 }
 
 namespace ember::engine::gfx {
-
     class VirtualMemoryPage {
     public:
         using this_type = VirtualMemoryPage;
@@ -56,5 +55,4 @@ namespace ember::engine::gfx {
 
         void unload();
     };
-
 }

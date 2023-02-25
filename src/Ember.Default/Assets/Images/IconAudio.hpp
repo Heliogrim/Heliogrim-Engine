@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconAudio> {
     public:
         IconAudio():
-            ImageAsset(IconAudio::unstable_auto_guid(),
-                R"(resources\imports\ktx\audio.ktx)") {}
+            ImageAsset(
+                IconAudio::unstable_auto_guid(),
+                R"(resources\imports\ktx\audio.ktx)"
+            ) {}
     };
 }

@@ -2,7 +2,6 @@
 #include "Event.hpp"
 
 namespace ember {
-
     class TickEvent final :
         public StatelessEvent {
     public:
@@ -77,5 +76,4 @@ namespace ember {
     public:
         const u64 tick;
     };
-
 }

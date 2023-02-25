@@ -4,7 +4,6 @@
 #include "../Collection/List.hpp"
 
 namespace ember {
-
     /**
      * Ring Buffer
      *

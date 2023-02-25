@@ -4,7 +4,6 @@
 #include <Engine.Event/Event.hpp>
 
 namespace ember::engine::input::event {
-
     class MouseWheelEvent final :
         public StatelessEvent {
     public:
@@ -32,5 +31,4 @@ namespace ember::engine::input::event {
         math::ivec2 _pointer;
         math::vec2 _value;
     };
-
 }

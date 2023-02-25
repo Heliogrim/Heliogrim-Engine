@@ -13,8 +13,11 @@ AssetDatabaseEntry::AssetDatabaseEntry(mref<value_type> other_) noexcept :
     _type(_STD move(other_._type)),
     _asset(_STD exchange(other_._asset, nullptr)) {}
 
-AssetDatabaseEntry::AssetDatabaseEntry(cref<asset_guid> guid_, cref<asset_type_id> type_,
-    const ptr<Asset> asset_) noexcept :
+AssetDatabaseEntry::AssetDatabaseEntry(
+    cref<asset_guid> guid_,
+    cref<asset_type_id> type_,
+    const ptr<Asset> asset_
+) noexcept :
     _guid(guid_),
     _type(type_),
     _asset(asset_) {}

@@ -20,8 +20,11 @@ void LocalPooledAllocator::tidy() {
     _cache.tidy();
 }
 
-AllocationResult LocalPooledAllocator::allocate(cref<MemoryLayout> layout_, const u64 size_,
-    ref<ptr<AllocatedMemory>> dst_) {
+AllocationResult LocalPooledAllocator::allocate(
+    cref<MemoryLayout> layout_,
+    const u64 size_,
+    ref<ptr<AllocatedMemory>> dst_
+) {
 
     if (_cache.allocate(layout_, size_, dst_) == AllocationResult::eSuccess) {
         dst_->allocator = this;

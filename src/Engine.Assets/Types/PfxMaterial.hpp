@@ -2,7 +2,6 @@
 #include "Material.hpp"
 
 namespace ember::engine::assets {
-
     class PfxMaterial :
         public Material {
     public:

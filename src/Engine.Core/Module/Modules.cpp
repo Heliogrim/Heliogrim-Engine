@@ -9,18 +9,20 @@ using namespace ember;
 
 Modules::Modules() :
     _subModules(),
-    _coreModules({
-        PlatformDepKey,
-        ResourcesDepKey,
-        SchedulerDepKey,
-        /**/
-        AssetsDepKey,
-        AudioDepKey,
-        GraphicsDepKey,
-        InputDepKey,
-        NetworkDepKey,
-        PhysicsDepKey
-    }) {}
+    _coreModules(
+        {
+            PlatformDepKey,
+            ResourcesDepKey,
+            SchedulerDepKey,
+            /**/
+            AssetsDepKey,
+            AudioDepKey,
+            GraphicsDepKey,
+            InputDepKey,
+            NetworkDepKey,
+            PhysicsDepKey
+        }
+    ) {}
 
 Modules::~Modules() = default;
 
@@ -39,9 +41,13 @@ cref<Deque<uptr<SubModule>>> Modules::getSubModules() const noexcept {
 
 DependencyValidationResult Modules::addSubModule(mref<uptr<SubModule>> subModule_) {
 
-    const auto where = _STD ranges::find(_subModules, subModule_->moduleKey(), [](cref<uptr<SubModule>> module_) {
-        return module_->moduleKey();
-    });
+    const auto where = _STD ranges::find(
+        _subModules,
+        subModule_->moduleKey(),
+        [](cref<uptr<SubModule>> module_) {
+            return module_->moduleKey();
+        }
+    );
 
     if (where != _subModules.end()) {
         return DependencyValidationResult::eFailedUnique;
@@ -72,9 +78,13 @@ DependencyValidationResult Modules::addSubModule(mref<uptr<SubModule>> subModule
      */
     for (const auto& dependency : subModule_->dependencies()) {
 
-        const auto where = _STD ranges::find(_subModules, dependency.key, [](cref<uptr<SubModule>> module_) {
-            return module_->moduleKey();
-        });
+        const auto where = _STD ranges::find(
+            _subModules,
+            dependency.key,
+            [](cref<uptr<SubModule>> module_) {
+                return module_->moduleKey();
+            }
+        );
 
         /**
          * Don't prevent pushing with unsatified required dependencies
@@ -97,9 +107,13 @@ DependencyValidationResult Modules::addSubModule(mref<uptr<SubModule>> subModule
 
         const auto deps = stored->dependencies();
 
-        const auto where = _STD ranges::find(deps, subModule_->moduleKey(), [](cref<SubModuleDependency> entry_) {
-            return entry_.key;
-        });
+        const auto where = _STD ranges::find(
+            deps,
+            subModule_->moduleKey(),
+            [](cref<SubModuleDependency> entry_) {
+                return entry_.key;
+            }
+        );
 
         if (where == deps.end()) {
             continue;
@@ -144,9 +158,12 @@ DependencyValidationResult Modules::addSubModule(mref<uptr<SubModule>> subModule
 }
 
 const non_owning_rptr<SubModule> Modules::getSubModule(cref<DependencyKey> moduleKey_) const noexcept {
-    const auto iter = _STD ranges::find_if(_subModules, [moduleKey_](const uptr<SubModule>& module_) {
-        return module_->moduleKey() == moduleKey_;
-    });
+    const auto iter = _STD ranges::find_if(
+        _subModules,
+        [moduleKey_](const uptr<SubModule>& module_) {
+            return module_->moduleKey() == moduleKey_;
+        }
+    );
 
     if (iter != _subModules.end()) {
         return (*iter).get();
@@ -157,9 +174,13 @@ const non_owning_rptr<SubModule> Modules::getSubModule(cref<DependencyKey> modul
 
 bool Modules::removeSubModule(const non_owning_rptr<SubModule> subModule_) {
 
-    const auto rem = _STD ranges::remove(_subModules, subModule_, [](cref<uptr<SubModule>> module_) {
-        return module_.get();
-    });
+    const auto rem = _STD ranges::remove(
+        _subModules,
+        subModule_,
+        [](cref<uptr<SubModule>> module_) {
+            return module_.get();
+        }
+    );
 
     _subModules.erase(rem.begin(), rem.end());
 

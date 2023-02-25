@@ -4,7 +4,6 @@
 #include "StaticGeometryAsset.hpp"
 
 namespace ember {
-
     class SkyboxComponent :
         public SceneComponent {
     public:

@@ -35,16 +35,24 @@ void ShaderBindingGroup::add(const ShaderBinding& binding_) {
 }
 
 bool ShaderBindingGroup::exists(const ShaderBinding::id_type id_) const noexcept {
-    return _STD find_if(_shaderBindings.begin(), _shaderBindings.end(), [&id_](const ShaderBinding& entry_) {
-        return entry_.id() == id_;
-    }) != _shaderBindings.end();
+    return _STD find_if(
+        _shaderBindings.begin(),
+        _shaderBindings.end(),
+        [&id_](const ShaderBinding& entry_) {
+            return entry_.id() == id_;
+        }
+    ) != _shaderBindings.end();
 }
 
 ShaderBinding& ShaderBindingGroup::getById(const ShaderBinding::id_type id_) {
     return *(
-        _STD find_if(_shaderBindings.begin(), _shaderBindings.end(), [&id_](const ShaderBinding& entry_) {
-            return entry_.id() == id_;
-        })
+        _STD find_if(
+            _shaderBindings.begin(),
+            _shaderBindings.end(),
+            [&id_](const ShaderBinding& entry_) {
+                return entry_.id() == id_;
+            }
+        )
     );
 }
 
@@ -68,8 +76,10 @@ DiscreteBindingGroup ShaderBindingGroup::useDiscrete(cref<vk::DescriptorSet> vkS
     };
 }
 
-DiscreteBindingGroup ShaderBindingGroup::useDiscrete(cref<vk::DescriptorSet> vkSet_,
-    const ptr<DiscreteBindingPool> pool_) const noexcept {
+DiscreteBindingGroup ShaderBindingGroup::useDiscrete(
+    cref<vk::DescriptorSet> vkSet_,
+    const ptr<DiscreteBindingPool> pool_
+) const noexcept {
     return DiscreteBindingGroup {
         *this,
         pool_,

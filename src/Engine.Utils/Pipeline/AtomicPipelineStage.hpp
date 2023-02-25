@@ -2,7 +2,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::utils::pipeline {
-
     class AtomicPipelineStage {
     public:
         using value_type = AtomicPipelineStage;

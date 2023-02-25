@@ -8,7 +8,6 @@
 #include "SceneNode.hpp"
 
 namespace ember::engine::scene {
-
     template <class NodeStorageType_, class ElementStorageType_, class Traits_>
     class SceneNodeFactory {
     public:
@@ -29,8 +28,10 @@ namespace ember::engine::scene {
          */
         SceneNodeFactory() = delete;
 
-        SceneNodeFactory(const ptr<node_storage_type> nodeStorage_,
-            const ptr<element_storage_type> elementStorage_) noexcept :
+        SceneNodeFactory(
+            const ptr<node_storage_type> nodeStorage_,
+            const ptr<element_storage_type> elementStorage_
+        ) noexcept :
             _nodeStorage(nodeStorage_),
             _elementStorage(elementStorage_) {}
 

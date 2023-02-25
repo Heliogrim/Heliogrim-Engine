@@ -2,7 +2,6 @@
 #include <Engine.Common/Flag.hpp>
 
 namespace clockwork::__internal::gfx {
-
     enum class MaterialMapFlagBits : u16 {
         eAlbedo = 0b1 << 1,
         eAlpha = 0b1 << 2,

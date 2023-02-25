@@ -18,8 +18,11 @@ VirtualBuffer::VirtualBuffer() noexcept :
     _vkBufferUsageFlags(),
     _changed(false) {}
 
-VirtualBuffer::VirtualBuffer(mref<uptr<VirtualMemory>> memory_, cref<vk::Buffer> buffer_,
-    cref<vk::BufferUsageFlags> usageFlags_) noexcept :
+VirtualBuffer::VirtualBuffer(
+    mref<uptr<VirtualMemory>> memory_,
+    cref<vk::Buffer> buffer_,
+    cref<vk::BufferUsageFlags> usageFlags_
+) noexcept :
     _memory(_STD move(memory_)),
     _pages(),
     _vkBuffer(buffer_),
@@ -169,9 +172,12 @@ uptr<VirtualBufferView> VirtualBuffer::makeView(const u64 offset_, const u64 siz
     /**
      * Take the time to sort the pages by it's mip level (virtual backing)
      */
-    _STD ranges::sort(pages, [](non_owning_rptr<VirtualBufferPage> left_, non_owning_rptr<VirtualBufferPage> right_) {
-        return left_->resourceOffset() < right_->resourceOffset();
-    });
+    _STD ranges::sort(
+        pages,
+        [](non_owning_rptr<VirtualBufferPage> left_, non_owning_rptr<VirtualBufferPage> right_) {
+            return left_->resourceOffset() < right_->resourceOffset();
+        }
+    );
 
     /**
      *
@@ -227,8 +233,11 @@ void VirtualBuffer::enqueueBinding(const ptr<CommandQueue> queue_) {
     #endif
 }
 
-void VirtualBuffer::enqueueBinding(const ptr<CommandQueue> queue_, cref<Vector<vk::Semaphore>> waits_,
-    cref<Vector<vk::Semaphore>> signals_) {
+void VirtualBuffer::enqueueBinding(
+    const ptr<CommandQueue> queue_,
+    cref<Vector<vk::Semaphore>> waits_,
+    cref<Vector<vk::Semaphore>> signals_
+) {
     vk::BindSparseInfo bsi {
         static_cast<u32>(waits_.size()),
         waits_.data(),

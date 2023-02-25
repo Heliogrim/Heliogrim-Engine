@@ -7,7 +7,6 @@
 #include "MemoryLayout.hpp"
 
 namespace ember::engine::gfx::memory {
-
     class MemoryCache {
     public:
         using this_type = MemoryCache;
@@ -26,8 +25,11 @@ namespace ember::engine::gfx::memory {
     public:
         [[nodiscard]] non_owning_rptr<MemoryPool> getOrCreatePool(cref<MemoryLayout> layout_);
 
-        [[nodiscard]] AllocationResult allocate(cref<MemoryLayout> layout_, const u64 size_,
-            _Out_ ref<ptr<AllocatedMemory>> dst_);
+        [[nodiscard]] AllocationResult allocate(
+            cref<MemoryLayout> layout_,
+            const u64 size_,
+            _Out_ ref<ptr<AllocatedMemory>> dst_
+        );
 
         bool free(mref<ptr<AllocatedMemory>> mem_);
     };

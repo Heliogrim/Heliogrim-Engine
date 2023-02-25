@@ -13,7 +13,6 @@ namespace ember::engine::scene {
 }
 
 namespace ember::engine::gfx::scene {
-
     class SceneView :
         public SceneViewEye {
     public:
@@ -43,5 +42,4 @@ namespace ember::engine::gfx::scene {
 
         [[nodiscard]] operator cref<SceneViewEye>() const noexcept;
     };
-
 }

@@ -10,7 +10,6 @@
 #include "../List.hpp"
 
 namespace ember::hopscotch {
-
     inline constexpr static size_t init_bucket_count = 0;
 
     /**
@@ -156,8 +155,11 @@ namespace ember::hopscotch {
              * @param  end_ The end iterator.
              * @param   overflow_iterator_ The overflow iterator.
              */
-            hopscotch_iterator(bucket_iterator cur_, bucket_iterator end_,
-                overflow_iterator overflow_iterator_) noexcept :
+            hopscotch_iterator(
+                bucket_iterator cur_,
+                bucket_iterator end_,
+                overflow_iterator overflow_iterator_
+            ) noexcept :
                 _bucketIterator(cur_),
                 _bucketEnd(end_),
                 _overflowIterator(overflow_iterator_) {}
@@ -441,8 +443,13 @@ namespace ember::hopscotch {
          * @param  allocator_ The allocator.
          * @param  maxLoadFactor_ The maximum load factor.
          */
-        hopscotch_hash(size_type buckets_, cref<hasher_type> hasher_, cref<key_equal_type> keyEquals_,
-            cref<allocator_type> allocator_, float maxLoadFactor_) :
+        hopscotch_hash(
+            size_type buckets_,
+            cref<hasher_type> hasher_,
+            cref<key_equal_type> keyEquals_,
+            cref<allocator_type> allocator_,
+            float maxLoadFactor_
+        ) :
             HasherType_(hasher_),
             KeyEqualsType_(keyEquals_),
             GrowthPolicyType_(buckets_),
@@ -760,8 +767,10 @@ namespace ember::hopscotch {
          * @param  count_ Number of.
          */
         void rehash(size_type count_) {
-            count_ = _STD max<size_type>(count_,
-                static_cast<size_type>(_STD ceil(static_cast<float>(size()) / max_load_factor())));
+            count_ = _STD max<size_type>(
+                count_,
+                static_cast<size_type>(_STD ceil(static_cast<float>(size()) / max_load_factor()))
+            );
             rehash_impl(count_);
         }
 
@@ -967,8 +976,11 @@ namespace ember::hopscotch {
 
         ref<value_type> at(cref<key_type> key_, hash_type hash_) {
 
-            const ptr<value_type> pv = find_value_impl(key_, hash_,
-                _buckets_ptr + hash_to_bucket(hash_));
+            const ptr<value_type> pv = find_value_impl(
+                key_,
+                hash_,
+                _buckets_ptr + hash_to_bucket(hash_)
+            );
 
             if (pv == nullptr) {
                 throw _STD out_of_range("Couldn't find key.");
@@ -983,8 +995,11 @@ namespace ember::hopscotch {
 
         cref<value_type> at(cref<key_type> key_, hash_type hash_) const {
 
-            const ptr<value_type> pv = find_value_impl(key_, hash_,
-                _buckets_ptr + hash_to_bucket(hash_));
+            const ptr<value_type> pv = find_value_impl(
+                key_,
+                hash_,
+                _buckets_ptr + hash_to_bucket(hash_)
+            );
 
             if (pv == nullptr) {
                 throw _STD out_of_range("Couldn't find key.");
@@ -1006,8 +1021,13 @@ namespace ember::hopscotch {
 
             }
 
-            return insert_value(idx, hk, _STD piecewise_construct, _STD forward_as_tuple(key_),
-                _STD forward_as_tuple()).first.value();
+            return insert_value(
+                idx,
+                hk,
+                _STD piecewise_construct,
+                _STD forward_as_tuple(key_),
+                _STD forward_as_tuple()
+            ).first.value();
         }
 
     public:
@@ -1118,8 +1138,10 @@ namespace ember::hopscotch {
          */
         [[nodiscard]] index_type hash_to_bucket(cref<hash_type> hash_) const noexcept {
             const index_type idx = hash_to_bucket(hash_);
-            DEBUG_ASSERT(idx < _buckets.size() || (idx == 0 && _buckets.empty()),
-                "Value of 'idx' by hash should be a valid bucket.")
+            DEBUG_ASSERT(
+                idx < _buckets.size() || (idx == 0 && _buckets.empty()),
+                "Value of 'idx' by hash should be a valid bucket."
+            )
             return idx;
         }
 
@@ -1285,7 +1307,9 @@ namespace ember::hopscotch {
             }
 
             return insert_value(
-                idx, hk, _STD forward<value_type>(value_)
+                idx,
+                hk,
+                _STD forward<value_type>(value_)
             );
         }
 
@@ -1334,7 +1358,8 @@ namespace ember::hopscotch {
                     if (empty_idx - idx_ < NeighborhoodSize_) {
                         auto it = insert_in_bucket(empty_idx, idx_, hash_, _STD forward<value_type>(value_));
                         return _STD make_pair(
-                            iterator(it, _buckets.end(), _overflow.begin()), true
+                            iterator(it, _buckets.end(), _overflow.begin()),
+                            true
                         );
                     }
                 } while (move_empty_bucket_lower(empty_idx));
@@ -1349,7 +1374,8 @@ namespace ember::hopscotch {
 
                 auto it = insert_in_overflow(idx_, _STD forward<value_type>(value_));
                 return _STD make_pair(
-                    iterator { _buckets.end(), _buckets.end(), it }, true
+                    iterator { _buckets.end(), _buckets.end(), it },
+                    true
                 );
             }
 
@@ -1478,8 +1504,12 @@ namespace ember::hopscotch {
         }
 
     private:
-        bucket_iterator insert_in_bucket(index_type empty_, index_type idx_, hash_type hash_,
-            mref<value_type> value_) {
+        bucket_iterator insert_in_bucket(
+            index_type empty_,
+            index_type idx_,
+            hash_type hash_,
+            mref<value_type> value_
+        ) {
 
             _buckets_ptr[empty_].store(hash_, _STD forward<value_type>(value_));
             _buckets_ptr[idx_].store_neighbor_shift(empty_ - idx_);
@@ -1526,8 +1556,11 @@ namespace ember::hopscotch {
          *
          * @returns The found implementation.
          */
-        [[nodiscard]] const_iterator find_impl(cref<key_type> key_, hash_type hash_,
-            const ptr<bucket_type> bucket_) const noexcept {
+        [[nodiscard]] const_iterator find_impl(
+            cref<key_type> key_,
+            hash_type hash_,
+            const ptr<bucket_type> bucket_
+        ) const noexcept {
 
             ptr<bucket_type> found = find_in_buckets(key_, hash_, bucket_);
 
@@ -1562,8 +1595,11 @@ namespace ember::hopscotch {
          *
          * @returns The found implementation.
          */
-        [[nodiscard]] iterator find_impl(cref<key_type> key_, hash_type hash_,
-            const ptr<bucket_type> bucket_) noexcept {
+        [[nodiscard]] iterator find_impl(
+            cref<key_type> key_,
+            hash_type hash_,
+            const ptr<bucket_type> bucket_
+        ) noexcept {
 
             ptr<bucket_type> found = find_in_buckets(key_, hash_, bucket_);
 
@@ -1586,8 +1622,11 @@ namespace ember::hopscotch {
             };
         }
 
-        const ptr<bucket_type> find_value_impl(cref<key_type> key_, hash_type hash_,
-            const ptr<bucket_type> bucket_) const noexcept {
+        const ptr<bucket_type> find_value_impl(
+            cref<key_type> key_,
+            hash_type hash_,
+            const ptr<bucket_type> bucket_
+        ) const noexcept {
 
             const auto* found = find_in_buckets(key_, hash_, bucket_);
 
@@ -1608,8 +1647,11 @@ namespace ember::hopscotch {
         }
 
         ptr<bucket_type> find_value_impl(cref<key_type> key_, hash_type hash_, const ptr<bucket_type> bucket_) {
-            return const_cast<ptr<bucket_type>>(static_cast<const this_type*>(this)->find_value_impl(key_, hash_,
-                bucket_));
+            return const_cast<ptr<bucket_type>>(static_cast<const this_type*>(this)->find_value_impl(
+                key_,
+                hash_,
+                bucket_
+            ));
         }
 
         /**
@@ -1683,9 +1725,13 @@ namespace ember::hopscotch {
          */
         [[nodiscard]] overflow_const_iterator find_in_overflow(cref<key_type> key_) const noexcept {
 
-            return _STD find_if(_overflow.begin(), _overflow.end(), [&](cref<value_type> value_) {
-                return cmp(key_, select_key(value_));
-            });
+            return _STD find_if(
+                _overflow.begin(),
+                _overflow.end(),
+                [&](cref<value_type> value_) {
+                    return cmp(key_, select_key(value_));
+                }
+            );
         }
 
         /**
@@ -1700,9 +1746,13 @@ namespace ember::hopscotch {
          */
         [[nodiscard]] overflow_iterator find_in_overflow(cref<key_type> key_) noexcept {
 
-            return _STD find_if(_overflow.begin(), _overflow.end(), [&](cref<value_type> value_) {
-                return cmp(key_, select_key(value_));
-            });
+            return _STD find_if(
+                _overflow.begin(),
+                _overflow.end(),
+                [&](cref<value_type> value_) {
+                    return cmp(key_, select_key(value_));
+                }
+            );
         }
     };
 }

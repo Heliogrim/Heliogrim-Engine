@@ -6,7 +6,6 @@
 #include <Engine.Common/Concurrent/Collection/RingBuffer.hpp>
 
 namespace ember::engine::scheduler::task {
-
     class SignaledQueue final {
     public:
         using value_type = SignaledQueue;
@@ -43,5 +42,4 @@ namespace ember::engine::scheduler::task {
     private:
         concurrent::RingBuffer<std::function<void()>> _buffer;
     };
-
 }

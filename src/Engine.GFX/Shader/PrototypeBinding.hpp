@@ -5,7 +5,6 @@
 #include "Type.hpp"
 
 namespace ember::engine::gfx::shader {
-
     class PrototypeBinding {
     public:
         /**
@@ -19,8 +18,12 @@ namespace ember::engine::gfx::shader {
          * @param  interval_ The interval.
          * @param  name_ The name.
          */
-        PrototypeBinding(const BindingType& type_, const u32 id_, const BindingUpdateInterval interval_,
-            const string& name_) noexcept;
+        PrototypeBinding(
+            const BindingType& type_,
+            const u32 id_,
+            const BindingUpdateInterval interval_,
+            const string& name_
+        ) noexcept;
 
         /**
          * Destructor
@@ -54,7 +57,6 @@ namespace ember::engine::gfx::shader {
         u32 _id;
 
     public:
-
         /**
          * Gets the identifier
          *

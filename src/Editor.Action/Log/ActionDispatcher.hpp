@@ -5,7 +5,6 @@
 #include "../Action/Action.hpp"
 
 namespace ember::editor {
-
     class ActionDispatcher {
     public:
         using this_type = ActionDispatcher;
@@ -18,5 +17,4 @@ namespace ember::editor {
     public:
         bool operator()(cref<sptr<Action>> action_, const bool reverting_ = false) const;
     };
-
 }

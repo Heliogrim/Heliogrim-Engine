@@ -29,8 +29,10 @@ namespace ember::engine::gfx::schedule {
     public:
         void mount(const non_owning_rptr<scheduler::StageRegister> register_) override;
 
-        void declareDependencies(const non_owning_rptr<const scheduler::StageRegister> register_,
-            ref<CompactSet<scheduler::StageDependency>> collection_) override;
+        void declareDependencies(
+            const non_owning_rptr<const scheduler::StageRegister> register_,
+            ref<CompactSet<scheduler::StageDependency>> collection_
+        ) override;
 
         void dismount(const non_owning_rptr<scheduler::StageRegister> register_) override;
 

@@ -20,17 +20,20 @@ using namespace ember;
 RenderTickStage::RenderTickStage(
     cref<StageIdentifier> identifier_,
     pipeline_handle_type pipeline_
-    ) :
-    PipelineStage(identifier_type::from(identifier_), pipeline_) {
-}
+) :
+    PipelineStage(identifier_type::from(identifier_), pipeline_) {}
 
 RenderTickStage::~RenderTickStage() = default;
 
 void RenderTickStage::staticDispatch(const non_owning_rptr<const StageDispatcher> dispatcher_) {
-    dispatcher_->enqueue(task::make_repetitive_task([this]() {
-        tickTargets();
-        return true;
-    }));
+    dispatcher_->enqueue(
+        task::make_repetitive_task(
+            [this]() {
+                tickTargets();
+                return true;
+            }
+        )
+    );
 }
 
 void RenderTickStage::dynamicDispatch(const non_owning_rptr<const StageDispatcher> dispatcher_) {
@@ -93,7 +96,8 @@ void RenderTickStage::invokeRenderTarget(cref<sptr<RenderTarget>> target_) const
      */
     if (not target_->ready()) {
         IM_DEBUG_LOG(
-            "Tried to tick an unready RenderTarget. Please ensure the completness of RenderTargets before ticking/dispatching...");
+            "Tried to tick an unready RenderTarget. Please ensure the completness of RenderTargets before ticking/dispatching..."
+        );
         return;
     }
 

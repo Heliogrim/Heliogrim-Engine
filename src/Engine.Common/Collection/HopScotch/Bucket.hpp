@@ -9,7 +9,6 @@
 #include "../../__macro.hpp"
 
 namespace ember::hopscotch {
-
     template <typename ValueType_, u8 NeighborhoodSize_, bool StoreHash_>
     class hopscotch_bucket :
         public hopscotch_bucket_hash<StoreHash_> {
@@ -101,7 +100,8 @@ namespace ember::hopscotch {
          * @returns A shallow copy of this.
          */
         reference_this_type operator=(
-            const_reference_this_type other_) noexcept(_STD is_nothrow_copy_constructible_v<value_type>) {
+            const_reference_this_type other_
+        ) noexcept(_STD is_nothrow_copy_constructible_v<value_type>) {
 
             if (this != _STD addressof(other_)) {
                 remove();
@@ -275,7 +275,10 @@ namespace ember::hopscotch {
          * @param  hash_ The hash.
          * @param  value_ The value.
          */
-        void store(hash_truncate_type hash_, mref<value_type> value_) noexcept(
+        void store(
+            hash_truncate_type hash_,
+            mref<value_type> value_
+        ) noexcept(
             _STD is_nothrow_move_constructible_v<value_type>
         ) {
 

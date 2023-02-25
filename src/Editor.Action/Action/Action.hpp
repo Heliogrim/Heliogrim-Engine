@@ -6,7 +6,6 @@
 #include "ActionTypeId.hpp"
 
 namespace ember::editor {
-
     class __declspec(novtable) Action {
     public:
         using this_type = Action;
@@ -43,5 +42,4 @@ namespace ember::editor {
     public:
         [[nodiscard]] virtual bool failed() const noexcept = 0;
     };
-
 }

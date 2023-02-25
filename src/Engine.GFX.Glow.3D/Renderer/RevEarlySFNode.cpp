@@ -165,12 +165,18 @@ bool RevEarlySFNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Store State
      */
-    state->data.insert_or_assign("RevEarlySFNode::CommandBuffer"sv,
-        _STD make_shared<decltype(cmd)>(_STD move(cmd)));
-    state->data.insert_or_assign("RevEarlySFNode::DiscreteBindingGroups"sv,
-        _STD make_shared<decltype(dbgs)>(_STD move(dbgs)));
-    state->data.insert_or_assign("RevEarlySFNode::DescriptorPools"sv,
-        _STD make_shared<decltype(pools)>(_STD move(pools)));
+    state->data.insert_or_assign(
+        "RevEarlySFNode::CommandBuffer"sv,
+        _STD make_shared<decltype(cmd)>(_STD move(cmd))
+    );
+    state->data.insert_or_assign(
+        "RevEarlySFNode::DiscreteBindingGroups"sv,
+        _STD make_shared<decltype(dbgs)>(_STD move(dbgs))
+    );
+    state->data.insert_or_assign(
+        "RevEarlySFNode::DescriptorPools"sv,
+        _STD make_shared<decltype(pools)>(_STD move(pools))
+    );
 
     /**
      * Post Process
@@ -321,8 +327,10 @@ Vector<RenderDataToken> RevEarlySFNode::optionalToken() noexcept {
     return {};
 }
 
-void RevEarlySFNode::before(const non_owning_rptr<HORenderPass> renderPass_,
-    const non_owning_rptr<RenderStagePass> stagePass_) const {
+void RevEarlySFNode::before(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    const non_owning_rptr<RenderStagePass> stagePass_
+) const {
 
     SCOPED_STOPWATCH
 
@@ -433,8 +441,11 @@ void RevEarlySFNode::before(const non_owning_rptr<HORenderPass> renderPass_,
     #pragma endregion
 }
 
-void RevEarlySFNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
-    const non_owning_rptr<RenderStagePass> stagePass_, const non_owning_rptr<SceneNodeModel> model_) const {
+void RevEarlySFNode::invoke(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    const non_owning_rptr<RenderStagePass> stagePass_,
+    const non_owning_rptr<SceneNodeModel> model_
+) const {
 
     SCOPED_STOPWATCH
 
@@ -462,8 +473,10 @@ void RevEarlySFNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
     cmd.vkCommandBuffer().dispatch(grpX, grpY, grpZ);
 }
 
-void RevEarlySFNode::after(const non_owning_rptr<HORenderPass> renderPass_,
-    const non_owning_rptr<RenderStagePass> stagePass_) const {
+void RevEarlySFNode::after(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    const non_owning_rptr<RenderStagePass> stagePass_
+) const {
 
     SCOPED_STOPWATCH
 
@@ -539,9 +552,11 @@ void RevEarlySFNode::setupShader(cref<sptr<Device>> device_) {
      * Build Shader and Bindings
      */
     auto factoryResult {
-        shaderFactory.build({
-            prototype
-        })
+        shaderFactory.build(
+            {
+                prototype
+            }
+        )
     };
 
     /**
@@ -560,9 +575,13 @@ void RevEarlySFNode::setupShader(cref<sptr<Device>> device_) {
         for (const auto& binding : group.shaderBindings()) {
 
             auto it {
-                _STD find_if(sizes.begin(), sizes.end(), [type= binding.type()](cref<vk::DescriptorPoolSize> entry_) {
-                    return entry_.type == api::vkTranslateBindingType(type);
-                })
+                _STD find_if(
+                    sizes.begin(),
+                    sizes.end(),
+                    [type= binding.type()](cref<vk::DescriptorPoolSize> entry_) {
+                        return entry_.type == api::vkTranslateBindingType(type);
+                    }
+                )
             };
 
             if (it == sizes.end()) {
@@ -774,8 +793,13 @@ bool RevEarlySFNode::rebuildCsfmBuffer(cref<sptr<RevSfMtt>> sfMtt_, cref<sptr<Re
     assert(csfm.buffer);
 
     const auto result {
-        memory::allocate(&state_->alloc, _device, csfm.buffer,
-            MemoryProperty::eHostVisible | MemoryProperty::eHostCoherent, csfm.memory)
+        memory::allocate(
+            &state_->alloc,
+            _device,
+            csfm.buffer,
+            MemoryProperty::eHostVisible | MemoryProperty::eHostCoherent,
+            csfm.memory
+        )
     };// TODO: Handle failed allocation
     csfm.bind();
 

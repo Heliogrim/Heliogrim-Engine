@@ -71,19 +71,23 @@ static void configureNav(cref<sptr<HBox>> navBar_) {
 
     auto btnStyle { BoundStyleSheet::make() };
     btnStyle->pushStyle({ Style::ButtonKey, nullptr, Style::get()->getStyleSheet(Style::ButtonKey) });
-    btnStyle->pushStyle({
-        Style::ButtonRaisedKey,
-        style::isRaised,
-        Style::get()->getStyleSheet(Style::ButtonRaisedKey)
-    });
+    btnStyle->pushStyle(
+        {
+            Style::ButtonRaisedKey,
+            style::isRaised,
+            Style::get()->getStyleSheet(Style::ButtonRaisedKey)
+        }
+    );
 
     auto txtStyle { BoundStyleSheet::make() };
     txtStyle->pushStyle({ Style::TitleSmallKey, nullptr, Style::get()->getStyleSheet(Style::TitleSmallKey) });
-    txtStyle->pushStyle({
-        Style::ButtonRaisedKey,
-        style::isNever,
-        Style::get()->getStyleSheet(Style::TitleRaisedKey)
-    });
+    txtStyle->pushStyle(
+        {
+            Style::ButtonRaisedKey,
+            style::isNever,
+            Style::get()->getStyleSheet(Style::TitleRaisedKey)
+        }
+    );
 
     const auto closeButton { make_sptr<Button>(_STD move(btnStyle)) };
     const auto closeText { make_sptr<Text>(_STD move(txtStyle)) };

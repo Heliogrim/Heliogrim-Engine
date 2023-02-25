@@ -13,7 +13,6 @@ namespace ember::engine::gfx {
 }
 
 namespace ember::engine::gfx {
-
     class DiscreteBindingPool {
     public:
         using this_type = DiscreteBindingPool;

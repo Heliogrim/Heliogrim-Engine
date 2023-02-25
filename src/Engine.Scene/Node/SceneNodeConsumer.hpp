@@ -8,7 +8,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::scene {
-
     template <typename Consumable>
     struct SceneNodeConsumer {
         [[nodiscard]] bool operator()(const ptr<Consumable> entry_) noexcept {

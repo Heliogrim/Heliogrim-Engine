@@ -3,7 +3,6 @@
 #include <Engine.Common/Types.hpp>
 
 namespace ember::engine::serialization::layout {
-
     enum class LayoutDefineValueType {
         eNone,
         eInt8,
@@ -25,7 +24,6 @@ namespace ember::engine::serialization::layout {
 
     template <LayoutDefineValueType ValueType_>
     struct LayoutDefineValueTrait {
-
         using type = void;
 
         inline static constexpr u64 size = 0ui64;
@@ -39,7 +37,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eInt8> {
-
         using type = s8;
 
         inline static constexpr u64 size = sizeof(type);
@@ -53,7 +50,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eInt16> {
-
         using type = s16;
 
         inline static constexpr u64 size = sizeof(type);
@@ -67,7 +63,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eInt32> {
-
         using type = s32;
 
         inline static constexpr u64 size = sizeof(type);
@@ -81,7 +76,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eInt64> {
-
         using type = s64;
 
         inline static constexpr u64 size = sizeof(type);
@@ -95,7 +89,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eUInt8> {
-
         using type = u8;
 
         inline static constexpr u64 size = sizeof(type);
@@ -109,7 +102,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eUInt16> {
-
         using type = u16;
 
         inline static constexpr u64 size = sizeof(type);
@@ -123,7 +115,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eUInt32> {
-
         using type = u32;
 
         inline static constexpr u64 size = sizeof(type);
@@ -137,7 +128,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eUInt64> {
-
         using type = u64;
 
         inline static constexpr u64 size = sizeof(type);
@@ -151,7 +141,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eFloat> {
-
         using type = float;
 
         inline static constexpr u64 size = sizeof(type);
@@ -165,7 +154,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eDouble> {
-
         using type = double;
 
         inline static constexpr u64 size = sizeof(type);
@@ -179,7 +167,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eBool> {
-
         using type = bool;
 
         inline static constexpr u64 size = sizeof(bool);
@@ -193,7 +180,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eSpan> {
-
         using type = void;
 
         inline static constexpr bool is_inline = true;
@@ -204,7 +190,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eSlice> {
-
         using type = void;
 
         inline static constexpr u64 size = sizeof(_STD ptrdiff_t) * 2ui64;
@@ -217,7 +202,6 @@ namespace ember::engine::serialization::layout {
 
     template <>
     struct LayoutDefineValueTrait<LayoutDefineValueType::eObject> {
-
         using type = void;
 
         inline static constexpr bool is_inline = true;
@@ -225,5 +209,4 @@ namespace ember::engine::serialization::layout {
 
         inline static constexpr bool has_subtype = true;
     };
-
 }

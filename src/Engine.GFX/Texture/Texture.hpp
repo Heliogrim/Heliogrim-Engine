@@ -100,8 +100,11 @@ namespace ember::engine::gfx {
          * @param extent_ The offset-ed sub-dimensions of the view
          * @param mipLevels_ The set of mip levels `[min, max]` to include
          */
-        [[nodiscard]] uptr<TextureView> makeView(math::uivec2 layers_, math::uExtent3D extent_,
-            math::uivec2 mipLevels_);
+        [[nodiscard]] uptr<TextureView> makeView(
+            math::uivec2 layers_,
+            math::uExtent3D extent_,
+            math::uivec2 mipLevels_
+        );
 
     private:
         /**

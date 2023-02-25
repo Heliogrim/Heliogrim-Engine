@@ -11,7 +11,6 @@ namespace ember::engine::res {
      * TODO: replace magic number with identifier callback, cause can be splitted or multiple can occure for special types (e.g. mp3, wav/riff) 
      */
     struct FileTypeId {
-
         FileTypeId() noexcept {}
 
         explicit FileTypeId(cref<type_id> typeId_, cref<string> ext_, const bool register_ = true);
@@ -101,7 +100,6 @@ namespace ember::engine::res {
 }
 
 namespace std {
-
     template <>
     struct hash<ember::engine::res::FileTypeId> :
         public _STD hash<ember::type_id> {

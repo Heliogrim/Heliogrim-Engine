@@ -5,7 +5,6 @@
 #include "../ModelComponent.hpp"
 
 namespace ember {
-
     class CameraComponent :
         public ModelComponent {
     public:
@@ -72,5 +71,4 @@ namespace ember {
 
         void setViewMode(const CameraViewMode mode_);
     };
-
 }

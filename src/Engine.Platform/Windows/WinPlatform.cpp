@@ -100,7 +100,8 @@ ref<task::SignaledQueue> WinPlatform::platformQueue() const noexcept {
 }
 
 ember::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
-    const string_view title_, cref<math::iExtent2D> extent_
+    const string_view title_,
+    cref<math::iExtent2D> extent_
 ) {
 
     ::ember::concurrent::promise<uptr<NativeWindow>> promise {
@@ -110,8 +111,10 @@ ember::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
             auto wnd = make_uptr<Win32Window>(
                 SDL_CreateWindow(
                     title.data(),
-                    SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                    extent.width, extent.height,
+                    SDL_WINDOWPOS_CENTERED,
+                    SDL_WINDOWPOS_CENTERED,
+                    extent.width,
+                    extent.height,
                     SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE
                 ),
                 NativeWindowFlags { NativeWindowFlagBits::eMovable } |
@@ -181,9 +184,11 @@ void WinPlatform::processInternal() {
             case SDL_EventType::SDL_QUIT: {
                 // Warning: We need to call stop via scheduler, cause this thread will deadlock itself (recursive) due to window ownership and close behavior
                 // Warning: Undefined behavior if called multiple times
-                ::ember::engine::scheduler::exec([]() {
-                    Engine::getEngine()->getEmitter().emit(core::SignalShutdownEvent {});
-                });
+                ::ember::engine::scheduler::exec(
+                    []() {
+                        Engine::getEngine()->getEmitter().emit(core::SignalShutdownEvent {});
+                    }
+                );
                 break;
             }
             case SDL_EventType::SDL_WINDOWEVENT: {
@@ -193,9 +198,13 @@ void WinPlatform::processInternal() {
 
                     auto* targetWnd = SDL_GetWindowFromID(event.window.windowID);
                     const auto iter {
-                        _STD find_if(_windows.begin(), _windows.end(), [targetWnd](const auto& entry_) {
-                            return static_cast<ptr<Win32Window>>(entry_)->sdl() == targetWnd;
-                        })
+                        _STD find_if(
+                            _windows.begin(),
+                            _windows.end(),
+                            [targetWnd](const auto& entry_) {
+                                return static_cast<ptr<Win32Window>>(entry_)->sdl() == targetWnd;
+                            }
+                        )
                     };
 
                     if (iter == _windows.end()) {

@@ -43,8 +43,12 @@ void Menu::render(const ptr<ReflowCommandBuffer> cmd_) {
     _content->render(cmd_);
 }
 
-void Menu::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_) {
+void Menu::flow(
+    cref<FlowContext> ctx_,
+    cref<math::vec2> space_,
+    cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_
+) {
     _content->flow(ctx_, space_, limit_, styleStack_);
 }
 

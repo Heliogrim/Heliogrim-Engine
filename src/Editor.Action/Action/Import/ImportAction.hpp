@@ -3,7 +3,6 @@
 #include "../Action.hpp"
 
 namespace ember::editor {
-
     class ImportAction :
         public Action {
     public:
@@ -15,5 +14,4 @@ namespace ember::editor {
     public:
         ~ImportAction() noexcept override;
     };
-
 }

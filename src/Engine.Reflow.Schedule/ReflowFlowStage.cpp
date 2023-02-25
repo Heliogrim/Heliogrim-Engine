@@ -17,36 +17,40 @@ ReflowFlowStage::ReflowFlowStage(
 ReflowFlowStage::~ReflowFlowStage() = default;
 
 void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {
-    dispatcher_->enqueue(task::make_repetitive_task([]() {
+    dispatcher_->enqueue(
+        task::make_repetitive_task(
+            []() {
 
-        const auto* const engine = Engine::getEngine();
-        const auto& manager = ::ember::engine::reflow::WindowManager::get();
+                const auto* const engine = Engine::getEngine();
+                const auto& manager = ::ember::engine::reflow::WindowManager::get();
 
-        if (!manager) {
-            // TODO: return false;
-            return true;
-        }
+                if (!manager) {
+                    // TODO: return false;
+                    return true;
+                }
 
-        /**/
+                /**/
 
-        const auto& wnds = manager->_windows;
-        for (const auto& boundWnd : wnds) {
+                const auto& wnds = manager->_windows;
+                for (const auto& boundWnd : wnds) {
 
-            SCOPED_STOPWATCH_V(__reflow__singleFlow)
+                    SCOPED_STOPWATCH_V(__reflow__singleFlow)
 
-            const auto clientSize = boundWnd->window->outerSize();
+                    const auto clientSize = boundWnd->window->outerSize();
 
-            reflow::FlowContext ctx {
-                math::fExtent2D { clientSize.x, clientSize.y, 0.F, 0.F },
-                math::fExtent2D { clientSize.x, clientSize.y, 0.F, 0.F }
-            };
+                    reflow::FlowContext ctx {
+                        math::fExtent2D { clientSize.x, clientSize.y, 0.F, 0.F },
+                        math::fExtent2D { clientSize.x, clientSize.y, 0.F, 0.F }
+                    };
 
-            reflow::StyleKeyStack stack {};
-            boundWnd->window->flow(ctx, clientSize, clientSize, stack);
-        }
+                    reflow::StyleKeyStack stack {};
+                    boundWnd->window->flow(ctx, clientSize, clientSize, stack);
+                }
 
-        return true;
-    }));
+                return true;
+            }
+        )
+    );
 }
 
 void ReflowFlowStage::dynamicDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {

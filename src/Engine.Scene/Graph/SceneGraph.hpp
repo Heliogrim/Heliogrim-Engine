@@ -20,7 +20,6 @@
 #include "../Node/SpartialSceneNode.hpp"
 
 namespace ember::engine::scene {
-
     /**
      * Forward Declaration
      */
@@ -65,7 +64,8 @@ namespace ember::engine::scene {
         SceneGraph(
             mref<_STD remove_reference_t<root_type>> root_,
             mref<sptr<node_storage_type>> nodeStorage_,
-            mref<sptr<element_storage_type>> elementStorage_) noexcept :
+            mref<sptr<element_storage_type>> elementStorage_
+        ) noexcept :
             _root(_STD move(root_)),
             _nodeStorage(_STD move(nodeStorage_)),
             _elementStorage(_STD move(elementStorage_)) {
@@ -275,8 +275,11 @@ namespace ember::engine::scene {
         }
 
     private:
-        void traversalBatchedSingle(u32 batchIdx_, cref<batched_consumer_fnc_type> consumer_,
-            ptr<const SceneNodeHead> parent_) const {
+        void traversalBatchedSingle(
+            u32 batchIdx_,
+            cref<batched_consumer_fnc_type> consumer_,
+            ptr<const SceneNodeHead> parent_
+        ) const {
 
             /**
              *
@@ -322,8 +325,12 @@ namespace ember::engine::scene {
             }
         }
 
-        void traversalBatchedPartition(u32 firstBatchIdx_, u32 lastBatchIdx_,
-            cref<_STD function<bool(u32, const ptr<node_type>)>> consumer_, ptr<const SceneNodeHead> parent_) const {
+        void traversalBatchedPartition(
+            u32 firstBatchIdx_,
+            u32 lastBatchIdx_,
+            cref<_STD function<bool(u32, const ptr<node_type>)>> consumer_,
+            ptr<const SceneNodeHead> parent_
+        ) const {
 
             if (firstBatchIdx_ == lastBatchIdx_) {
                 traversalBatchedSingle(firstBatchIdx_, consumer_, parent_);
@@ -409,8 +416,10 @@ namespace ember::engine::scene {
     public:
         template <typename BatchConsumer> requires IsSceneNodeBatchConsumer<BatchConsumer, node_type>
         void traversalBatched(u32 maxBatches_, cref<BatchConsumer> consumer_) const {
-            return traversalBatched(maxBatches_,
-                static_cast<_STD function<bool(u32, const ptr<node_type>)>>(consumer_));
+            return traversalBatched(
+                maxBatches_,
+                static_cast<_STD function<bool(u32, const ptr<node_type>)>>(consumer_)
+            );
         }
 
         void traversalBatched(u32 maxBatches_, cref<_STD function<bool(u32, const ptr<node_type>)>> consumer_) const {
@@ -422,7 +431,5 @@ namespace ember::engine::scene {
 
             traversalBatchedPartition(0, maxBatches_ - 1, consumer_, &_root);
         }
-
     };
-
 }

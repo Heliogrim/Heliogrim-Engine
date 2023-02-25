@@ -6,7 +6,6 @@
 #include "../Wrapper.hpp"
 
 namespace ember::profiling {
-
     class Stopwatch {
     public:
         using value_type = Stopwatch;

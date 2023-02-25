@@ -3,7 +3,6 @@
 #include <Engine.Common/Types.hpp>
 
 namespace ember::engine::gfx {
-
     enum class MemoryProperty {
         eUndefined = 0x0,
         // 0b0000'0000

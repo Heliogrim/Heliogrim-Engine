@@ -15,7 +15,6 @@ namespace ember::engine::gfx::shader {
 }
 
 namespace ember::engine::gfx::shader {
-
     class ShaderBindingGroup {
     public:
         /**
@@ -138,7 +137,9 @@ namespace ember::engine::gfx::shader {
     public:
         [[nodiscard]] DiscreteBindingGroup useDiscrete(cref<vk::DescriptorSet> vkSet_) const noexcept;
 
-        [[nodiscard]] DiscreteBindingGroup useDiscrete(cref<vk::DescriptorSet> vkSet_,
-            const ptr<DiscreteBindingPool> pool_) const noexcept;
+        [[nodiscard]] DiscreteBindingGroup useDiscrete(
+            cref<vk::DescriptorSet> vkSet_,
+            const ptr<DiscreteBindingPool> pool_
+        ) const noexcept;
     };
 }

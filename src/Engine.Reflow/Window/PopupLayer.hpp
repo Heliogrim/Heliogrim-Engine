@@ -7,7 +7,6 @@
 #include "../Widget/__fwd.hpp"
 
 namespace ember::engine::reflow {
-
     class PopupLayer {
     public:
         using this_type = PopupLayer;
@@ -47,5 +46,4 @@ namespace ember::engine::reflow {
     public:
         [[nodiscard]] sptr<Popup> getContent() const noexcept;
     };
-
 }

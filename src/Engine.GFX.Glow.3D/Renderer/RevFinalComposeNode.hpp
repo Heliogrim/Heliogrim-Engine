@@ -6,7 +6,6 @@
 #include <Engine.GFX/Shader/ShaderBindingGroup.hpp>
 
 namespace ember::engine::gfx::glow::render {
-
     class RevFinalComposeNode :
         public gfx::render::RenderStageNode {
     public:
@@ -33,14 +32,21 @@ namespace ember::engine::gfx::glow::render {
         [[nodiscard]] Vector<gfx::render::RenderDataToken> optionalToken() noexcept override;
 
     public:
-        void before(const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
-            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_) const override;
+        void before(
+            const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_
+        ) const override;
 
-        void invoke(const non_owning_rptr<gfx::render::HORenderPass> renderPass_, const non_owning_rptr<gfx::render::RenderStagePass> stagePass_,
-            const non_owning_rptr<SceneNodeModel> model_) const override;
+        void invoke(
+            const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_,
+            const non_owning_rptr<SceneNodeModel> model_
+        ) const override;
 
-        void after(const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
-            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_) const override;
+        void after(
+            const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_
+        ) const override;
 
     private:
         sptr<Device> _device;

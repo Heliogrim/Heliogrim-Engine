@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconSearch> {
     public:
         IconSearch():
-            ImageAsset(IconSearch::unstable_auto_guid(),
-                R"(resources\imports\ktx\search.ktx)") {}
+            ImageAsset(
+                IconSearch::unstable_auto_guid(),
+                R"(resources\imports\ktx\search.ktx)"
+            ) {}
     };
 }

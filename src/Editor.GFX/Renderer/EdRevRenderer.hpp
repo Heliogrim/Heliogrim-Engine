@@ -3,7 +3,6 @@
 #include <Engine.GFX.Glow.3D/Renderer/RevRenderer.hpp>
 
 namespace ember::editor::gfx {
-
     class EdRevRenderer :
         public ::ember::engine::gfx::glow::render::RevRenderer {
     public:
@@ -24,5 +23,4 @@ namespace ember::editor::gfx {
     protected:
         void registerStages() override;
     };
-
 }

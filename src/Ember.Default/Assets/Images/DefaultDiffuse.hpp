@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<DefaultDiffuse> {
     public:
         DefaultDiffuse():
-            ImageAsset(DefaultDiffuse::unstable_auto_guid(),
-                R"(resources\imports\ktx\default_diffuse.ktx)") {}
+            ImageAsset(
+                DefaultDiffuse::unstable_auto_guid(),
+                R"(resources\imports\ktx\default_diffuse.ktx)"
+            ) {}
     };
 }

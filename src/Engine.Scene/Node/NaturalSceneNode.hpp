@@ -3,7 +3,6 @@
 #include "SceneNodeSubBase.hpp"
 
 namespace ember::engine::scene {
-
     template <class PayloadType_>
     class NaturalSceneNode final :
         public SceneNodeSubBase<PayloadType_, NaturalSceneNode<PayloadType_>> {
@@ -76,8 +75,12 @@ namespace ember::engine::scene {
         }
 
         template <class FactoryType_>
-        bool push(const ptr<PayloadType_> element_, cref<math::Bounding> boundary_,
-            const ptr<const FactoryType_> factory_, SceneNodePath forwardPath_) {
+        bool push(
+            const ptr<PayloadType_> element_,
+            cref<math::Bounding> boundary_,
+            const ptr<const FactoryType_> factory_,
+            SceneNodePath forwardPath_
+        ) {
 
             #if FALSE
             #ifdef _DEBUG
@@ -181,5 +184,4 @@ namespace ember::engine::scene {
     ptr<typename SceneNode<PayloadType_>::natural_type> SceneNode<PayloadType_>::asNatural() noexcept {
         return NaturalSceneNode<PayloadType_>::castFrom(this);
     }
-
 }

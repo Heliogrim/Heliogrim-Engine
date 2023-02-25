@@ -9,8 +9,15 @@ Texture::Texture() :
 Texture::Texture(cref<asset_guid> guid_) :
     Asset(guid_, typeId) {}
 
-Texture::Texture(cref<asset_guid> guid_, cref<asset_guid> baseImage_, mref<Vector<asset_guid>> images_,
-    cref<math::uivec3> extent_, cref<gfx::TextureFormat> format_, cref<u32> mipLevel_, cref<gfx::TextureType> type_) :
+Texture::Texture(
+    cref<asset_guid> guid_,
+    cref<asset_guid> baseImage_,
+    mref<Vector<asset_guid>> images_,
+    cref<math::uivec3> extent_,
+    cref<gfx::TextureFormat> format_,
+    cref<u32> mipLevel_,
+    cref<gfx::TextureType> type_
+) :
     Asset(guid_, typeId),
     _baseImage(baseImage_),
     _images(images_),

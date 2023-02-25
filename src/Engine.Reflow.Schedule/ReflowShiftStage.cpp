@@ -17,36 +17,40 @@ ReflowShiftStage::ReflowShiftStage(
 ReflowShiftStage::~ReflowShiftStage() = default;
 
 void ReflowShiftStage::staticDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {
-    dispatcher_->enqueue(task::make_repetitive_task([]() {
+    dispatcher_->enqueue(
+        task::make_repetitive_task(
+            []() {
 
-        const auto* const engine = Engine::getEngine();
-        const auto& manager = ::ember::engine::reflow::WindowManager::get();
+                const auto* const engine = Engine::getEngine();
+                const auto& manager = ::ember::engine::reflow::WindowManager::get();
 
-        if (!manager) {
-            // TODO: return false;
-            return true;
-        }
+                if (!manager) {
+                    // TODO: return false;
+                    return true;
+                }
 
-        /**/
+                /**/
 
-        const auto& wnds = manager->_windows;
-        for (const auto& boundWnd : wnds) {
+                const auto& wnds = manager->_windows;
+                for (const auto& boundWnd : wnds) {
 
-            SCOPED_STOPWATCH_V(__reflow__singleShift)
+                    SCOPED_STOPWATCH_V(__reflow__singleShift)
 
-            const auto clientSize = boundWnd->window->outerSize();
+                    const auto clientSize = boundWnd->window->outerSize();
 
-            reflow::FlowContext ctx {
-                math::fExtent2D { clientSize.x, clientSize.y, 0.F, 0.F },
-                math::fExtent2D { clientSize.x, clientSize.y, 0.F, 0.F }
-            };
-            math::vec2 offset {};
+                    reflow::FlowContext ctx {
+                        math::fExtent2D { clientSize.x, clientSize.y, 0.F, 0.F },
+                        math::fExtent2D { clientSize.x, clientSize.y, 0.F, 0.F }
+                    };
+                    math::vec2 offset {};
 
-            boundWnd->window->shift(ctx, offset);
-        }
+                    boundWnd->window->shift(ctx, offset);
+                }
 
-        return true;
-    }));
+                return true;
+            }
+        )
+    );
 }
 
 void ReflowShiftStage::dynamicDispatch(const non_owning_rptr<const scheduler::StageDispatcher> dispatcher_) {

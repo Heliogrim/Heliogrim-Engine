@@ -34,7 +34,7 @@ namespace ember::engine::resource::loader {
 
         template <typename Type_>
         using wrapper_type = typename LoaderStreamRequest<SubjectType_>::template wrapper_type<Type_>;
-        using value_type = typename LoaderStreamRequest<SubjectType_>::template value_type;
+        using value_type = typename LoaderStreamRequest<SubjectType_>::value_type;
 
         using type = wrapper_type<value_type>;
 
@@ -64,7 +64,7 @@ namespace ember::engine::resource::loader {
 
         template <typename Type_>
         using wrapper_type = typename LoaderStreamResponse<SubjectType_>::template wrapper_type<Type_>;
-        using value_type = typename LoaderStreamResponse<SubjectType_>::template value_type;
+        using value_type = typename LoaderStreamResponse<SubjectType_>::value_type;
 
         using type = wrapper_type<value_type>;
     };

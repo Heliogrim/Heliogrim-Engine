@@ -168,71 +168,83 @@ void Style::setup() {
 
     /* Title */
 
-    style = make_sptr<StyleSheet>(StyleSheet {
-        .color = { true, color::Dark::grey },
-        .font = { true, font },
-        .fontSize = { true, 16.F },
-        .textAlign = { true, TextAlign::eCenterMiddle },
-        .textEllipse = { true, 0ui32 }
-    });
+    style = make_sptr<StyleSheet>(
+        StyleSheet {
+            .color = { true, color::Dark::grey },
+            .font = { true, font },
+            .fontSize = { true, 16.F },
+            .textAlign = { true, TextAlign::eCenterMiddle },
+            .textEllipse = { true, 0ui32 }
+        }
+    );
 
     _styles.insert_or_assign(Style::TitleKey, _STD move(style));
 
     /* Title Small */
 
-    style = make_sptr<StyleSheet>(StyleSheet {
-        .color = { true, color::Dark::grey },
-        .font = { true, font },
-        .fontSize = { true, 12.F },
-        .textAlign = { true, TextAlign::eCenterMiddle },
-        .textEllipse = { true, 0ui32 }
-    });
+    style = make_sptr<StyleSheet>(
+        StyleSheet {
+            .color = { true, color::Dark::grey },
+            .font = { true, font },
+            .fontSize = { true, 12.F },
+            .textAlign = { true, TextAlign::eCenterMiddle },
+            .textEllipse = { true, 0ui32 }
+        }
+    );
 
     _styles.insert_or_assign(Style::TitleSmallKey, _STD move(style));
 
     /* Button::Raised */
 
-    style = make_sptr<StyleSheet>(StyleSheet {
-        .color = { true, color::Dark::raisedColor },
-    });
+    style = make_sptr<StyleSheet>(
+        StyleSheet {
+            .color = { true, color::Dark::raisedColor },
+        }
+    );
 
     _styles.insert_or_assign(Style::ButtonRaisedKey, _STD move(style));
 
     /* Title::Raised */
 
-    style = make_sptr<StyleSheet>(StyleSheet {
-        .color = { true, color::Dark::white },
-    });
+    style = make_sptr<StyleSheet>(
+        StyleSheet {
+            .color = { true, color::Dark::white },
+        }
+    );
 
     _styles.insert_or_assign(Style::TitleRaisedKey, _STD move(style));
 
     /* Breadcrumb */
 
-    style = make_sptr<StyleSheet>(StyleSheet {
-        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-        .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .wrap = { true, ReflowWrap::eNoWrap },
-        .rowGap = { true, ReflowUnit { ReflowUnitType::eAbsolute, 2.F } },
-        .padding = { true, Padding { 4.F, 2.F } },
-        .color = { true, color::Dark::backgroundDefault }
-    });
+    style = make_sptr<StyleSheet>(
+        StyleSheet {
+            .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+            .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .wrap = { true, ReflowWrap::eNoWrap },
+            .rowGap = { true, ReflowUnit { ReflowUnitType::eAbsolute, 2.F } },
+            .padding = { true, Padding { 4.F, 2.F } },
+            .color = { true, color::Dark::backgroundDefault }
+        }
+    );
 
     _styles.insert_or_assign(Style::BreadcrumbKey, _STD move(style));
 
     /* Nav Bar */
 
-    style = make_sptr<StyleSheet>(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-        .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .wrap = { true, ReflowWrap::eNoWrap },
-        .padding = { true, Padding { 4.F, 0.F } },
-        .reflowSpacing { true, ReflowSpacing::eSpaceBetween },
-        .reflowShrink { true, 0.F },
-        .color = { true, color::Dark::backgroundDefault }
-    });
+    style = make_sptr<StyleSheet>(
+        StyleSheet {
+            .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+            .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .wrap = { true, ReflowWrap::eNoWrap },
+            .padding = { true, Padding { 4.F, 0.F } },
+            .reflowSpacing { true, ReflowSpacing::eSpaceBetween },
+            .reflowShrink { true, 0.F },
+            .color = { true, color::Dark::backgroundDefault }
+        }
+    );
 
     _styles.insert_or_assign(Style::NavBarKey, _STD move(style));
 

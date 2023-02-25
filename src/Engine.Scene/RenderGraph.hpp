@@ -10,7 +10,6 @@ namespace ember::engine::gfx {
 }
 
 namespace ember::engine::scene {
-
     /**
      * Attention: This will fail the concept assert cause `gfx::SceneNodeModel` based on this file only is just a incomplete type
      */

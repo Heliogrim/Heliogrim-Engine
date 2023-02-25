@@ -4,9 +4,7 @@
 #include <Engine.Common/Meta/TypeId.hpp>
 
 namespace ember::engine::scene {
-
     struct SceneTag {
-
         constexpr SceneTag() = delete;
 
         constexpr SceneTag(cref<type_id> typeId_) :

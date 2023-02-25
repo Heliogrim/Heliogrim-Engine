@@ -121,11 +121,13 @@ namespace ember {
         template <typename Selector_>
         [[nodiscard]] CompactArray<ptr<ActorComponent>> selectComponents(mref<Selector_> selector_) const {
             CompactArray<ptr<ActorComponent>> result {};
-            eachComponent([&](const ptr<ActorComponent> component_) {
-                if (selector_(component_)) {
-                    result.push_back(component_);
+            eachComponent(
+                [&](const ptr<ActorComponent> component_) {
+                    if (selector_(component_)) {
+                        result.push_back(component_);
+                    }
                 }
-            });
+            );
 
             return result;
         }
@@ -331,7 +333,8 @@ namespace ember {
      * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
      */
     [[nodiscard]] extern Future<ptr<Actor>> CloneActorInto(
-        const ptr<Actor> actor_, cref<Session> session_
+        const ptr<Actor> actor_,
+        cref<Session> session_
     ) noexcept;
 
     /**
@@ -350,7 +353,8 @@ namespace ember {
      * @returns A future, containing the newly created actor if succeeded, otherwise nullptr
      */
     [[nodiscard]] extern Future<ptr<Actor>> CloneActorInto(
-        const ptr<Actor> actor_, cref<World> activeWorld_
+        const ptr<Actor> actor_,
+        cref<World> activeWorld_
     ) noexcept;
 
     /**
@@ -365,7 +369,8 @@ namespace ember {
      * @returns A future, containing the newly created and mounted actor if succeeded, otherwise nullptr
      */
     [[nodiscard]] extern Future<ptr<Actor>> SpawnActor(
-        const ptr<const ActorClass> class_, cref<World> activeWorld_
+        const ptr<const ActorClass> class_,
+        cref<World> activeWorld_
     ) noexcept;
 
     /**

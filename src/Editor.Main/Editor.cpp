@@ -18,18 +18,20 @@ using namespace ember;
 
 Editor::Editor(const non_owning_rptr<engine::Engine> engine_) :
     SubModule(engine_),
-    _dependencies({
-        SubModuleDependency {
-            AssetsDepKey,
-            SubModuleOrder::eSuccessor,
-            true
-        },
-        SubModuleDependency {
-            engine::ReflowDepKey,
-            SubModuleOrder::eSuccessor,
-            true
+    _dependencies(
+        {
+            SubModuleDependency {
+                AssetsDepKey,
+                SubModuleOrder::eSuccessor,
+                true
+            },
+            SubModuleDependency {
+                engine::ReflowDepKey,
+                SubModuleOrder::eSuccessor,
+                true
+            }
         }
-    }) {}
+    ) {}
 
 Editor::~Editor() = default;
 

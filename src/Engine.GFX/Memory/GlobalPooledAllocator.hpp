@@ -7,7 +7,6 @@
 #include "__fwd.hpp"
 
 namespace ember::engine::gfx::memory {
-
     class GlobalPooledAllocator final :
         public Allocator {
     public:
@@ -43,8 +42,11 @@ namespace ember::engine::gfx::memory {
         void augmentPool(_Inout_ const ptr<MemoryPool> pool_, const u64 size_);
 
     public:
-        [[nodiscard]] AllocationResult allocate(cref<MemoryLayout> layout_, const u64 size_,
-            _Out_ ref<ptr<AllocatedMemory>> dst_) override;
+        [[nodiscard]] AllocationResult allocate(
+            cref<MemoryLayout> layout_,
+            const u64 size_,
+            _Out_ ref<ptr<AllocatedMemory>> dst_
+        ) override;
 
         void free(mref<ptr<AllocatedMemory>> mem_) override;
     };
@@ -62,12 +64,26 @@ namespace ember::engine::gfx {
 }
 
 namespace ember::engine::gfx::memory {
-    [[nodiscard]] AllocationResult allocate(const ptr<GlobalPooledAllocator> alloc_, cref<sptr<Device>> device_,
-        cref<MemoryProperties> props_, _Inout_ ref<Buffer> buffer_);
+    [[nodiscard]] AllocationResult allocate(
+        const ptr<GlobalPooledAllocator> alloc_,
+        cref<sptr<Device>> device_,
+        cref<MemoryProperties> props_,
+        _Inout_ ref<Buffer> buffer_
+    );
 
-    [[nodiscard]] AllocationResult allocate(const ptr<GlobalPooledAllocator> alloc_, cref<sptr<Device>> device_,
-        cref<vk::Buffer> buffer_, cref<MemoryProperties> props_, ref<ptr<AllocatedMemory>> dst_);
+    [[nodiscard]] AllocationResult allocate(
+        const ptr<GlobalPooledAllocator> alloc_,
+        cref<sptr<Device>> device_,
+        cref<vk::Buffer> buffer_,
+        cref<MemoryProperties> props_,
+        ref<ptr<AllocatedMemory>> dst_
+    );
 
-    [[nodiscard]] AllocationResult allocate(const ptr<GlobalPooledAllocator> alloc_, cref<sptr<Device>> device_,
-        vk::Image image_, cref<MemoryProperties> props_, ref<ptr<AllocatedMemory>> dst_);
+    [[nodiscard]] AllocationResult allocate(
+        const ptr<GlobalPooledAllocator> alloc_,
+        cref<sptr<Device>> device_,
+        vk::Image image_,
+        cref<MemoryProperties> props_,
+        ref<ptr<AllocatedMemory>> dst_
+    );
 }

@@ -3,7 +3,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::gfx::shader {
-
     struct ShaderBindingGroupLayout {
         u32 images;
         u32 uniforms;

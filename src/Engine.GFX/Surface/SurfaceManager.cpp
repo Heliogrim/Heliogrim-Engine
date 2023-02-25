@@ -100,9 +100,12 @@ bool SurfaceManager::destroySurface(const non_owning_rptr<platform::NativeWindow
 bool SurfaceManager::destroySurface(mref<non_owning_rptr<Surface>> surface_) {
 
     const auto iter {
-        _STD ranges::find_if(_surfaces, [surface_](const auto& entry_) {
-            return entry_.second.get() == surface_;
-        })
+        _STD ranges::find_if(
+            _surfaces,
+            [surface_](const auto& entry_) {
+                return entry_.second.get() == surface_;
+            }
+        )
     };
 
     if (iter == _surfaces.end()) {

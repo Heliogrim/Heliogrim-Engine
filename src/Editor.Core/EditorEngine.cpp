@@ -106,55 +106,69 @@ bool EditorEngine::init() {
     /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
     _STD atomic_uint_fast8_t setupCounter { 0ui8 };
 
-    scheduler::exec([this, &setupCounter] {
-        _assets->setup();
-        ++setupCounter;
-        setupCounter.notify_one();
-    });
+    scheduler::exec(
+        [this, &setupCounter] {
+            _assets->setup();
+            ++setupCounter;
+            setupCounter.notify_one();
+        }
+    );
 
-    scheduler::exec([this, &setupCounter] {
-        _audio->setup();
-        ++setupCounter;
-        setupCounter.notify_one();
-    });
+    scheduler::exec(
+        [this, &setupCounter] {
+            _audio->setup();
+            ++setupCounter;
+            setupCounter.notify_one();
+        }
+    );
 
-    scheduler::exec([this, &setupCounter] {
-        _graphics->setup();
-        ++setupCounter;
-        setupCounter.notify_one();
-    });
+    scheduler::exec(
+        [this, &setupCounter] {
+            _graphics->setup();
+            ++setupCounter;
+            setupCounter.notify_one();
+        }
+    );
 
-    scheduler::exec([this, &setupCounter] {
-        _input->setup();
-        ++setupCounter;
-        setupCounter.notify_one();
-    });
+    scheduler::exec(
+        [this, &setupCounter] {
+            _input->setup();
+            ++setupCounter;
+            setupCounter.notify_one();
+        }
+    );
 
-    scheduler::exec([this, &setupCounter] {
-        _network->setup();
-        ++setupCounter;
-        setupCounter.notify_one();
-    });
+    scheduler::exec(
+        [this, &setupCounter] {
+            _network->setup();
+            ++setupCounter;
+            setupCounter.notify_one();
+        }
+    );
 
-    scheduler::exec([this, &setupCounter] {
-        _physics->setup();
-        ++setupCounter;
-        setupCounter.notify_one();
-    });
+    scheduler::exec(
+        [this, &setupCounter] {
+            _physics->setup();
+            ++setupCounter;
+            setupCounter.notify_one();
+        }
+    );
 
     /**/
     scheduler::waitUntilAtomic(setupCounter, 6ui8);
     setupCounter.store(0ui8, _STD memory_order_relaxed);
 
-    scheduler::exec([this, &setupCounter] {
+    scheduler::exec(
+        [this, &setupCounter] {
 
-        for (const auto& subModule : _modules.getSubModules()) {
-            subModule->setup();
+            for (const auto& subModule : _modules.getSubModules()) {
+                subModule->setup();
+            }
+
+            ++setupCounter;
+            setupCounter.notify_one();
         }
-
-        ++setupCounter;
-        setupCounter.notify_one();
-    });
+    );
 
     /**/
     scheduler::waitUntilAtomic(setupCounter, 1ui8);
@@ -182,51 +196,57 @@ bool EditorEngine::start() {
 
     /**/
     _STD atomic_flag next {};
-    scheduler::exec([this, &next] {
-        _scheduler->getCompositePipeline()->start();
+    scheduler::exec(
+        [this, &next] {
+            _scheduler->getCompositePipeline()->start();
 
-        next.test_and_set(_STD memory_order_relaxed);
-        next.notify_one();
-    });
-
-    /**/
-    scheduler::waitUntilAtomic(next, true);
-    next.clear(std::memory_order::release);
-
-    /**/
-    scheduler::exec([this, &next] {
-        _assets->start();
-        _audio->start();
-        _graphics->start();
-        _input->start();
-        _network->start();
-        _physics->start();
-
-        next.test_and_set(std::memory_order::relaxed);
-        next.notify_one();
-    });
-
-    /**/
-    scheduler::waitUntilAtomic(next, true);
-    next.clear(std::memory_order::release);
-
-    /**/
-    scheduler::exec([this, &next] {
-        _editorSession = make_uptr<core::Session>();
-        _worldContexts.push_back(_editorSession->getWorldContext());
-
-        _primaryGameSession = make_uptr<core::Session>();
-        _worldContexts.push_back(_primaryGameSession->getWorldContext());
-
-        /**/
-
-        for (const auto& subModule : _modules.getSubModules()) {
-            subModule->start();
+            next.test_and_set(_STD memory_order_relaxed);
+            next.notify_one();
         }
+    );
 
-        next.test_and_set(std::memory_order::relaxed);
-        next.notify_one();
-    });
+    /**/
+    scheduler::waitUntilAtomic(next, true);
+    next.clear(std::memory_order::release);
+
+    /**/
+    scheduler::exec(
+        [this, &next] {
+            _assets->start();
+            _audio->start();
+            _graphics->start();
+            _input->start();
+            _network->start();
+            _physics->start();
+
+            next.test_and_set(std::memory_order::relaxed);
+            next.notify_one();
+        }
+    );
+
+    /**/
+    scheduler::waitUntilAtomic(next, true);
+    next.clear(std::memory_order::release);
+
+    /**/
+    scheduler::exec(
+        [this, &next] {
+            _editorSession = make_uptr<core::Session>();
+            _worldContexts.push_back(_editorSession->getWorldContext());
+
+            _primaryGameSession = make_uptr<core::Session>();
+            _worldContexts.push_back(_primaryGameSession->getWorldContext());
+
+            /**/
+
+            for (const auto& subModule : _modules.getSubModules()) {
+                subModule->start();
+            }
+
+            next.test_and_set(std::memory_order::relaxed);
+            next.notify_one();
+        }
+    );
 
     /**/
     scheduler::waitUntilAtomic(next, true);
@@ -240,65 +260,71 @@ bool EditorEngine::stop() {
 
     /**/
     _STD atomic_flag next {};
-    scheduler::exec([this, &next] {
-        _physics->stop();
-        _network->stop();
-        _input->stop();
-        _graphics->stop();
-        _audio->stop();
-        _assets->stop();
+    scheduler::exec(
+        [this, &next] {
+            _physics->stop();
+            _network->stop();
+            _input->stop();
+            _graphics->stop();
+            _audio->stop();
+            _assets->stop();
 
-        next.test_and_set(std::memory_order::relaxed);
-        next.notify_one();
-    });
-
-    /**/
-    scheduler::waitUntilAtomic(next, true);
-    next.clear(std::memory_order::release);
-
-    /**/
-    scheduler::exec([this, &next] {
-
-        const auto& modules = _modules.getSubModules();
-        for (auto iter = modules.rbegin(); iter != modules.rend(); ++iter) {
-            (*iter)->stop();
+            next.test_and_set(std::memory_order::relaxed);
+            next.notify_one();
         }
-
-        /**/
-
-        auto prevWorld = _primaryGameSession->getWorldContext()->getCurrentWorld();
-        _primaryGameSession->getWorldContext()->setCurrentWorld(nullptr);
-        removeWorld(prevWorld);
-
-        auto where = std::ranges::remove(_worldContexts, _primaryGameSession->getWorldContext());
-        _worldContexts.erase(where.begin(), where.end());
-        _primaryGameSession.reset();
-
-        /**/
-
-        prevWorld = _editorSession->getWorldContext()->getCurrentWorld();
-        _editorSession->getWorldContext()->setCurrentWorld(nullptr);
-        removeWorld(prevWorld);
-
-        where = std::ranges::remove(_worldContexts, _editorSession->getWorldContext());
-        _worldContexts.erase(where.begin(), where.end());
-        _editorSession.reset();
-
-        next.test_and_set(std::memory_order::relaxed);
-        next.notify_one();
-    });
+    );
 
     /**/
     scheduler::waitUntilAtomic(next, true);
     next.clear(std::memory_order::release);
 
     /**/
-    scheduler::exec([this, &next] {
-        _scheduler->getCompositePipeline()->stop();
+    scheduler::exec(
+        [this, &next] {
 
-        next.test_and_set(_STD memory_order_relaxed);
-        next.notify_one();
-    });
+            const auto& modules = _modules.getSubModules();
+            for (auto iter = modules.rbegin(); iter != modules.rend(); ++iter) {
+                (*iter)->stop();
+            }
+
+            /**/
+
+            auto prevWorld = _primaryGameSession->getWorldContext()->getCurrentWorld();
+            _primaryGameSession->getWorldContext()->setCurrentWorld(nullptr);
+            removeWorld(prevWorld);
+
+            auto where = std::ranges::remove(_worldContexts, _primaryGameSession->getWorldContext());
+            _worldContexts.erase(where.begin(), where.end());
+            _primaryGameSession.reset();
+
+            /**/
+
+            prevWorld = _editorSession->getWorldContext()->getCurrentWorld();
+            _editorSession->getWorldContext()->setCurrentWorld(nullptr);
+            removeWorld(prevWorld);
+
+            where = std::ranges::remove(_worldContexts, _editorSession->getWorldContext());
+            _worldContexts.erase(where.begin(), where.end());
+            _editorSession.reset();
+
+            next.test_and_set(std::memory_order::relaxed);
+            next.notify_one();
+        }
+    );
+
+    /**/
+    scheduler::waitUntilAtomic(next, true);
+    next.clear(std::memory_order::release);
+
+    /**/
+    scheduler::exec(
+        [this, &next] {
+            _scheduler->getCompositePipeline()->stop();
+
+            next.test_and_set(_STD memory_order_relaxed);
+            next.notify_one();
+        }
+    );
 
     /**/
     scheduler::waitUntilAtomic(next, true);
@@ -311,57 +337,71 @@ bool EditorEngine::shutdown() {
     }
 
     _STD atomic_flag subModuleFlag {};
-    scheduler::exec([this, &subModuleFlag] {
+    scheduler::exec(
+        [this, &subModuleFlag] {
 
-        const auto& modules = _modules.getSubModules();
-        for (auto iter = modules.rbegin(); iter != modules.rend(); ++iter) {
-            (*iter)->destroy();
+            const auto& modules = _modules.getSubModules();
+            for (auto iter = modules.rbegin(); iter != modules.rend(); ++iter) {
+                (*iter)->destroy();
+            }
+
+            subModuleFlag.test_and_set(_STD memory_order_relaxed);
+            subModuleFlag.notify_one();
         }
-
-        subModuleFlag.test_and_set(_STD memory_order_relaxed);
-        subModuleFlag.notify_one();
-    });
+    );
 
     scheduler::waitOnAtomic(subModuleFlag, false);
 
     /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
     _STD atomic_uint_fast8_t moduleCount { 0ui8 };
 
-    scheduler::exec([this, &moduleCount] {
-        _physics->destroy();
-        ++moduleCount;
-        moduleCount.notify_one();
-    });
+    scheduler::exec(
+        [this, &moduleCount] {
+            _physics->destroy();
+            ++moduleCount;
+            moduleCount.notify_one();
+        }
+    );
 
-    scheduler::exec([this, &moduleCount] {
-        _network->destroy();
-        ++moduleCount;
-        moduleCount.notify_one();
-    });
+    scheduler::exec(
+        [this, &moduleCount] {
+            _network->destroy();
+            ++moduleCount;
+            moduleCount.notify_one();
+        }
+    );
 
-    scheduler::exec([this, &moduleCount] {
-        _input->destroy();
-        ++moduleCount;
-        moduleCount.notify_one();
-    });
+    scheduler::exec(
+        [this, &moduleCount] {
+            _input->destroy();
+            ++moduleCount;
+            moduleCount.notify_one();
+        }
+    );
 
-    scheduler::exec([this, &moduleCount] {
-        _graphics->destroy();
-        ++moduleCount;
-        moduleCount.notify_one();
-    });
+    scheduler::exec(
+        [this, &moduleCount] {
+            _graphics->destroy();
+            ++moduleCount;
+            moduleCount.notify_one();
+        }
+    );
 
-    scheduler::exec([this, &moduleCount] {
-        _audio->destroy();
-        ++moduleCount;
-        moduleCount.notify_one();
-    });
+    scheduler::exec(
+        [this, &moduleCount] {
+            _audio->destroy();
+            ++moduleCount;
+            moduleCount.notify_one();
+        }
+    );
 
-    scheduler::exec([this, &moduleCount] {
-        _assets->destroy();
-        ++moduleCount;
-        moduleCount.notify_one();
-    });
+    scheduler::exec(
+        [this, &moduleCount] {
+            _assets->destroy();
+            ++moduleCount;
+            moduleCount.notify_one();
+        }
+    );
 
     /**/
     scheduler::waitUntilAtomic(moduleCount, 6ui8);

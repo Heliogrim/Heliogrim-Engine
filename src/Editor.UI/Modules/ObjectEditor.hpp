@@ -11,7 +11,6 @@ namespace ember::editor::ui {
 }
 
 namespace ember::editor::ui {
-
     class ObjectEditor {
     public:
         using this_type = ObjectEditor;
@@ -46,5 +45,4 @@ namespace ember::editor::ui {
             return getObjectMapper(ObjectType_::type_id);
         }
     };
-
 }

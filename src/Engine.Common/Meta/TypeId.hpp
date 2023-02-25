@@ -6,7 +6,6 @@
 #include "../Hash/Murmur3.hpp"
 
 namespace ember {
-
     /**
      * A class type identifier.
      *
@@ -15,7 +14,6 @@ namespace ember {
      */
     //typedef size_t type_id;
     struct type_id {
-
         constexpr type_id() noexcept :
             data(0) {}
 
@@ -113,7 +111,6 @@ namespace ember {
 }
 
 namespace std {
-
     /**
      * Specific equality check for type_id
      *

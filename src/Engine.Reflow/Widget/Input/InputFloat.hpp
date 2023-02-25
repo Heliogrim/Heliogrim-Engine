@@ -5,7 +5,6 @@
 #include "../Text.hpp"
 
 namespace ember::engine::reflow {
-
     enum class InputFloatPrecision {
         eFloat,
         eDouble
@@ -42,8 +41,10 @@ namespace ember::engine::reflow {
     public:
         void setValue(const input_type value_);
 
-        void setLimits(const input_type lower_ = _STD numeric_limits<input_type>::min(),
-            const input_type upper_ = _STD numeric_limits<input_type>::max());
+        void setLimits(
+            const input_type lower_ = _STD numeric_limits<input_type>::min(),
+            const input_type upper_ = _STD numeric_limits<input_type>::max()
+        );
 
         void setStepSize(const input_type stepSize_);
 
@@ -61,7 +62,12 @@ namespace ember::engine::reflow {
     public:
         void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
-        void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_, ref<StyleKeyStack> styleStack_) override;
+        void flow(
+            cref<FlowContext> ctx_,
+            cref<math::vec2> space_,
+            cref<math::vec2> limit_,
+            ref<StyleKeyStack> styleStack_
+        ) override;
 
         void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
 
@@ -85,5 +91,4 @@ namespace ember::engine::reflow {
 
         EventResponse onKeyUp(cref<KeyboardEvent> event_) override;
     };
-
 }

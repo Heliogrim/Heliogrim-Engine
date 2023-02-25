@@ -2,7 +2,6 @@
 #include "SceneComponent.hpp"
 
 namespace ember {
-
     class LightComponent :
         public SceneComponent {
     public:

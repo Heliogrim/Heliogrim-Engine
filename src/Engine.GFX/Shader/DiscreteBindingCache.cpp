@@ -34,8 +34,10 @@ bool DiscreteBindingCache::prepare(cref<shader::ShaderBindingGroupLayout> layout
 
     const auto left { entry.front()->leftSets() };
     if (left < sets_) {
-        entry.insert(entry.begin(),
-            new DiscreteBindingPool { _device, layout_, entry.front()->maxSets() + (sets_ - left) });
+        entry.insert(
+            entry.begin(),
+            new DiscreteBindingPool { _device, layout_, entry.front()->maxSets() + (sets_ - left) }
+        );
         return true;
     }
 
