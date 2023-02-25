@@ -18,8 +18,11 @@ namespace ember {
         inline constexpr static component_type_id typeId { "ActorComponent"_typeId };
 
     public:
-        ActorComponent(mref<component_type_id> typeId_, mref<CachedActorPointer> owner_,
-            mref<ptr<ActorComponent>> parent_);
+        ActorComponent(
+            mref<component_type_id> typeId_,
+            mref<CachedActorPointer> owner_,
+            mref<ptr<ActorComponent>> parent_
+        );
 
         ActorComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_);
 

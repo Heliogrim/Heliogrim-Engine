@@ -42,9 +42,12 @@ bool SignaledQueue::pop(ref<_STD function<void()>> fnc_) {
 bool SignaledQueue::waitPop(OUT ref<_STD function<void()>> fnc_) {
 
     _STD unique_lock<decltype(_mtx)> lck { _mtx };
-    _sig.wait(lck, [&]() {
-        return _mode.test() || !_buffer.empty();
-    });
+    _sig.wait(
+        lck,
+        [&]() {
+            return _mode.test() || !_buffer.empty();
+        }
+    );
 
     const auto popped = pop(fnc_);
 

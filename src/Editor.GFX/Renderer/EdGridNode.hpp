@@ -5,7 +5,6 @@
 #include <Engine.GFX/Shader/ShaderBindingGroup.hpp>
 
 namespace ember::editor::gfx {
-
     class EdGridNode :
         public engine::gfx::render::RenderStageNode {
     public:
@@ -35,15 +34,21 @@ namespace ember::editor::gfx {
         [[nodiscard]] const non_owning_rptr<const Vector<type_id>> modelTypes() const noexcept override;
 
     public:
-        void before(const non_owning_rptr<engine::gfx::render::HORenderPass> renderPass_,
-            const non_owning_rptr<engine::gfx::render::RenderStagePass> stagePass_) const override;
+        void before(
+            const non_owning_rptr<engine::gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<engine::gfx::render::RenderStagePass> stagePass_
+        ) const override;
 
-        void invoke(const non_owning_rptr<engine::gfx::render::HORenderPass> renderPass_,
+        void invoke(
+            const non_owning_rptr<engine::gfx::render::HORenderPass> renderPass_,
             const non_owning_rptr<engine::gfx::render::RenderStagePass> stagePass_,
-            const non_owning_rptr<engine::gfx::SceneNodeModel> model_) const override;
+            const non_owning_rptr<engine::gfx::SceneNodeModel> model_
+        ) const override;
 
-        void after(const non_owning_rptr<engine::gfx::render::HORenderPass> renderPass_,
-            const non_owning_rptr<engine::gfx::render::RenderStagePass> stagePass_) const override;
+        void after(
+            const non_owning_rptr<engine::gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<engine::gfx::render::RenderStagePass> stagePass_
+        ) const override;
 
     private:
         sptr<engine::gfx::Device> _device;
@@ -67,5 +72,4 @@ namespace ember::editor::gfx {
     private:
         void setupPipeline();
     };
-
 }

@@ -9,11 +9,9 @@
 #include "Pipeline/VertexStage.hpp"
 
 namespace ember::engine::gfx {
-
     class FixedPipeline :
         public GraphicPipeline {
     protected:
-
         /**
          * Constructor
          *

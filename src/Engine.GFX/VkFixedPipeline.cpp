@@ -113,11 +113,13 @@ void VkFixedPipeline::setup() {
             /**
              * Collect Binding
              */
-            vibds.push_back(vk::VertexInputBindingDescription {
-                binding.binding,
-                binding.dataSize,
-                vkTranslateInputRate(binding.rate)
-            });
+            vibds.push_back(
+                vk::VertexInputBindingDescription {
+                    binding.binding,
+                    binding.dataSize,
+                    vkTranslateInputRate(binding.rate)
+                }
+            );
 
             /**
              * Collect Attribution for Binding
@@ -127,12 +129,14 @@ void VkFixedPipeline::setup() {
                 /**
                  * Collect Attribute
                  */
-                viads.push_back(vk::VertexInputAttributeDescription {
-                    attribute.location,
-                    binding.binding,
-                    vkTranslateFormat(attribute.format),
-                    attribute.dataOffset
-                });
+                viads.push_back(
+                    vk::VertexInputAttributeDescription {
+                        attribute.location,
+                        binding.binding,
+                        vkTranslateFormat(attribute.format),
+                        attribute.dataOffset
+                    }
+                );
             }
 
         }
@@ -235,11 +239,14 @@ void VkFixedPipeline::setup() {
          */
         const auto& attachments = _renderPass->attachments();
 
-        const auto& entry = _STD find_if(attachments.begin(), attachments.end(),
+        const auto& entry = _STD find_if(
+            attachments.begin(),
+            attachments.end(),
             [](const auto& entry_) {
                 const TextureFormat format = vkTranslateFormat(entry_.format);
                 return isDepthFormat(format) || isStencilFormat(format);
-            });
+            }
+        );
 
         const bool attachDepthStencil { entry != attachments.end() && _rasterizationStage.depthCheck() };
 

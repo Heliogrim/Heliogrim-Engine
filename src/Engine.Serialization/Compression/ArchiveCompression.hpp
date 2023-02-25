@@ -3,7 +3,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::serialization {
-
     class __declspec(novtable) ArchiveCompression {
     public:
         using this_type = ArchiveCompression;
@@ -22,5 +21,4 @@ namespace ember::engine::serialization {
 
         void setNext(const ptr<ArchiveCompression> next_) noexcept;
     };
-
 }

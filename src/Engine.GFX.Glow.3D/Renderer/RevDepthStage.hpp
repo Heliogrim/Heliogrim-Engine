@@ -2,7 +2,6 @@
 #include <Engine.GFX/Renderer/RenderStage.hpp>
 
 namespace ember::engine::gfx::glow::render {
-
     class RevDepthStage :
         public gfx::render::RenderStage {
     public:
@@ -18,5 +17,4 @@ namespace ember::engine::gfx::glow::render {
 
         void destroy() override;
     };
-
 }

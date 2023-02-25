@@ -15,7 +15,6 @@ namespace ember::engine::gfx {
 }
 
 namespace ember::engine::gfx::render {
-
     class __declspec(novtable) RenderStage {
     public:
         using this_type = RenderStage;

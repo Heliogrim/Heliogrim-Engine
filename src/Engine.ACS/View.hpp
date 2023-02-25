@@ -3,7 +3,6 @@
 #include "Pool.hpp"
 
 namespace ember::engine::acs {
-
     /**
      * A view.
      *
@@ -13,7 +12,7 @@ namespace ember::engine::acs {
     template <typename...>
     class view;
 
-    template <typename Entity, typename ...Components>
+    template <typename Entity, typename... Components>
     class view<Entity, Components...> { };
 
     template <typename Entity, typename Component>
@@ -200,5 +199,4 @@ namespace ember::engine::acs {
     private:
         pool_type* _pool;
     };
-
 }

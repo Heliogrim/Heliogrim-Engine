@@ -8,7 +8,6 @@ namespace ember::engine::gfx::glow::render {
 }
 
 namespace ember::engine::gfx::glow::render {
-
     class RevDepthStaticNode :
         public gfx::render::RenderStageNode {
     public:

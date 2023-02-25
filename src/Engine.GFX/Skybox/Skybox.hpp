@@ -4,10 +4,8 @@
 #include "Engine.GFX/Geometry/Mesh.hpp"
 
 namespace ember::engine::gfx {
-
     class Skybox {
     public:
-
         /**
          * Constructor
          *

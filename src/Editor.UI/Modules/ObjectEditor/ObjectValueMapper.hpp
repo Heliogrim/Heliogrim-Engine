@@ -4,7 +4,6 @@
 #include <Engine.Reflow/Widget/Box.hpp>
 
 namespace ember::editor::ui {
-
     class ObjectValueMapperBase {
     public:
         template <typename ObjectType_>
@@ -34,8 +33,7 @@ namespace ember::editor::ui {
         using this_type = ObjectValueMapper<ObjectType_>;
 
     public:
-        ObjectValueMapper() :
-            ObjectValueMapperBase() {}
+        ObjectValueMapper() = default;
 
         ~ObjectValueMapper() override = default;
 
@@ -55,5 +53,4 @@ namespace ember::editor::ui {
 
     template <>
     inline void ObjectValueMapper<void>::cleanup(cref<sptr<engine::reflow::Box>> parent_) {}
-
 }

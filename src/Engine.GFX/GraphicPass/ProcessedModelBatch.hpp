@@ -5,7 +5,6 @@
 #include "../Buffer/Buffer.hpp"
 
 namespace ember::engine::gfx {
-
     struct DistinctBind { };
 
     struct DistinctGeometry {

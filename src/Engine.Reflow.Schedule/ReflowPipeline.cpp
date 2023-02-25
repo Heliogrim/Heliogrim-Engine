@@ -46,11 +46,13 @@ void ReflowPipeline::declareDependencies(
 
     /**/
 
-    collection_.insert(StageDependency {
-        { beginTick, actorUpdate, inputTick },
-        this,
-        flowTick
-    });
+    collection_.insert(
+        StageDependency {
+            { beginTick, actorUpdate, inputTick },
+            this,
+            flowTick
+        }
+    );
 }
 
 void ReflowPipeline::dismount(const non_owning_rptr<scheduler::StageRegister> register_) {

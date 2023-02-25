@@ -4,7 +4,6 @@
 #include "../Window/__fwd.hpp"
 
 namespace ember::engine::reflow {
-
     class Popup :
         public Widget {
     public:
@@ -31,5 +30,4 @@ namespace ember::engine::reflow {
 
         [[nodiscard]] math::vec2 screenOffset() const noexcept override;
     };
-
 }

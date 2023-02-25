@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<DefaultNormal> {
     public:
         DefaultNormal():
-            ImageAsset(DefaultNormal::unstable_auto_guid(),
-                R"(resources\imports\ktx\default_normal.ktx)") {}
+            ImageAsset(
+                DefaultNormal::unstable_auto_guid(),
+                R"(resources\imports\ktx\default_normal.ktx)"
+            ) {}
     };
 }

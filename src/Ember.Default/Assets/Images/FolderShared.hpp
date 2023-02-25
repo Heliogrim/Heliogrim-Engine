@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<FolderShared> {
     public:
         FolderShared():
-            ImageAsset(FolderShared::unstable_auto_guid(),
-                R"(resources\imports\ktx\folder-shared.ktx)") {}
+            ImageAsset(
+                FolderShared::unstable_auto_guid(),
+                R"(resources\imports\ktx\folder-shared.ktx)"
+            ) {}
     };
 }

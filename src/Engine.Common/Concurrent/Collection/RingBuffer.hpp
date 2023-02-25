@@ -5,7 +5,6 @@
 #include "../../Collection/Vector.hpp"
 
 namespace ember::engine::concurrent {
-
     /**
      * A Single-Producer, Single-Consumer - Ring Buffer
      *

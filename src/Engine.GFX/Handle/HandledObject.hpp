@@ -2,45 +2,43 @@
 #include <stdexcept>
 
 namespace clockwork::__internal::gfx::handle {
+    template <class HandlerType_>
+    class HandledObject {
+    public:
+        using handler_type = HandlerType_*;
 
-	template <class HandlerType_>
-	class HandledObject {
-	public:
+        /**
+         * \brief 
+         */
+        virtual ~HandledObject() = default;
 
-		using handler_type = HandlerType_*;
+        /**
+         * \brief 
+         * \return 
+         */
+        virtual bool ready() = 0;
 
-		/**
-		 * \brief 
-		 */
-		virtual ~HandledObject() = default;
+        /**
+         * \brief 
+         * \return 
+         */
+        inline handler_type handler() {
+            return _handler;
+        }
 
-		/**
-		 * \brief 
-		 * \return 
-		 */
-		virtual bool ready() = 0;
+        /**
+         * \brief 
+         * \param handler_ 
+         */
+        inline void handler(handler_type handler_) {
+            if (_handler != nullptr) {
+                throw _STD runtime_error("Handler is already registered.");
+            }
 
-		/**
-		 * \brief 
-		 * \return 
-		 */
-		inline handler_type handler() {
-			return _handler;
-		}
+            _handler = handler_;
+        }
 
-		/**
-		 * \brief 
-		 * \param handler_ 
-		 */
-		inline void handler(handler_type handler_) {
-			if (_handler != nullptr) {
-				throw _STD runtime_error("Handler is already registered.");
-			}
-
-			_handler = handler_;
-		}
-
-	private:
-		handler_type _handler = nullptr;
-	};
+    private:
+        handler_type _handler = nullptr;
+    };
 }

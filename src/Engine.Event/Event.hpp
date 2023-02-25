@@ -5,7 +5,6 @@
 #include "EventTypeId.hpp"
 
 namespace ember {
-
     class __declspec(novtable) Event { };
 
     class __declspec(novtable) StatelessEvent : public Event {};
@@ -47,10 +46,10 @@ namespace ember {
 
     template <class EventType_>
     concept IsStatefulEvent = IsEvent<EventType_> && requires(const EventType_ obj) {
-        { obj.canceled() } -> std::same_as<bool>;
-    } && requires(EventType_ obj) {
-        { obj.cancel() } -> std::same_as<void>;
-    };
+            { obj.canceled() } -> std::same_as<bool>;
+        } && requires(EventType_ obj) {
+            { obj.cancel() } -> std::same_as<void>;
+        };
 
     template <class EventType_>
     concept IsStatelessEvent = IsEvent<EventType_> && !IsStatefulEvent<EventType_>;

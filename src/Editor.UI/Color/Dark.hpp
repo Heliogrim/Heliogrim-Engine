@@ -2,7 +2,6 @@
 #include <Engine.GFX/Color/Color.hpp>
 
 namespace ember::editor::ui::color {
-
     struct Dark {
         inline static const engine::color backgroundDefault { 46.F, 50.F, 58.F, 255.F };
         inline static const engine::color backgroundInnerField { 40.F, 44.F, 52.F, 255.F };
@@ -18,5 +17,4 @@ namespace ember::editor::ui::color {
         inline static const engine::color black { 0.F, 0.F, 0.F, 255.F };
         inline static const engine::color transparent { 0.F, 0.F, 0.F, 0.F };
     };
-
 }

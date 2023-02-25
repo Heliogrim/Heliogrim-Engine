@@ -289,9 +289,13 @@ namespace ember::engine::acs {
             /**
              * Find valid minimal sequence where index can merge
              */
-            auto fi = _STD find_if(_seq.rbegin(), _seq.rend(), [&idx_](const page_sequence& entry_) {
-                return entry_.mergable(idx_);
-            });
+            auto fi = _STD find_if(
+                _seq.rbegin(),
+                _seq.rend(),
+                [&idx_](const page_sequence& entry_) {
+                    return entry_.mergable(idx_);
+                }
+            );
 
             /**
              * If no mergable sequence, create a new one
@@ -305,9 +309,13 @@ namespace ember::engine::acs {
             /**
              * Find valid maximal sequence where index can merge
              */
-            auto ri = _STD find_if(_seq.begin(), _seq.end(), [&idx_](const page_sequence& entry_) {
-                return entry_.mergable(idx_);
-            });
+            auto ri = _STD find_if(
+                _seq.begin(),
+                _seq.end(),
+                [&idx_](const page_sequence& entry_) {
+                    return entry_.mergable(idx_);
+                }
+            );
 
             /**
              * If only one sequence can merge idx_
@@ -1090,9 +1098,13 @@ namespace ember::engine::acs {
             /**
              * Find sequence
              */
-            auto s = _STD find_if(_seq.rbegin(), _seq.rend(), [&idx_](const page_sequence& entry_) {
-                return entry_.contains(idx_);
-            });
+            auto s = _STD find_if(
+                _seq.rbegin(),
+                _seq.rend(),
+                [&idx_](const page_sequence& entry_) {
+                    return entry_.contains(idx_);
+                }
+            );
 
             /**
              * Check whether idx_ containing sequence was found
@@ -1297,8 +1309,10 @@ namespace ember::engine::acs {
              *
              * @returns The result of the operation.
              */
-            [[nodiscard]] bool operator()(const storage_kv_pair& left_,
-                const storage_kv_pair& right_) const {
+            [[nodiscard]] bool operator()(
+                const storage_kv_pair& left_,
+                const storage_kv_pair& right_
+            ) const {
                 return static_cast<const _STD equal_to<KeyType_>&>(*this)(left_.key, right_.key);
             }
         };
@@ -1322,8 +1336,10 @@ namespace ember::engine::acs {
              *
              * @returns The result of the operation.
              */
-            [[nodiscard]] bool operator()(const storage_kv_pair& left_,
-                const storage_kv_pair& right_) const {
+            [[nodiscard]] bool operator()(
+                const storage_kv_pair& left_,
+                const storage_kv_pair& right_
+            ) const {
                 return static_cast<const _STD less<KeyType_>&>(*this)(left_.key, right_.key);
             }
         };
@@ -1700,10 +1716,12 @@ namespace ember::engine::acs {
          */
         _STD pair<StoredType_*, bool> emplace(const KeyType_& key_) {
 
-            _STD pair<typename mapping_container::iterator, bool> er = _indirection.emplace(storage_kv_pair {
-                key_,
-                0
-            });
+            _STD pair<typename mapping_container::iterator, bool> er = _indirection.emplace(
+                storage_kv_pair {
+                    key_,
+                    0
+                }
+            );
             storage_kv_pair& inp = const_cast<storage_kv_pair&>(*er.first);
 
             /**
@@ -1751,10 +1769,12 @@ namespace ember::engine::acs {
         template <typename... Args_>
         _STD pair<StoredType_*, bool> emplace(const KeyType_& key_, Args_&&... args_) {
 
-            auto er = _indirection.emplace(storage_kv_pair {
-                key_,
-                0
-            });
+            auto er = _indirection.emplace(
+                storage_kv_pair {
+                    key_,
+                    0
+                }
+            );
 
             storage_kv_pair& inp { const_cast<storage_kv_pair&>(*er.first) };
 
@@ -1834,7 +1854,8 @@ namespace ember::engine::acs {
              *	-> This also guarantees, that component constructed by actor_guid is reference stable
              */
             typename mapping_container::insert_or_assign_result_type ioar = _indirection.emplace(
-                storage_kv_pair { key_, 0 });
+                storage_kv_pair { key_, 0 }
+            );
             storage_kv_pair& inp = ioar.first.value();
 
             /**
@@ -1894,7 +1915,8 @@ namespace ember::engine::acs {
 
             if (cit == _indirection.cend()) {
                 throw _STD out_of_range(
-                    "Can not get constant reference to component, while key_ does not link to one.");
+                    "Can not get constant reference to component, while key_ does not link to one."
+                );
             }
 
             return _pages[unmask_page_index(cit.value().idx)].get_value(unmask_value_index(cit.value().idx));
@@ -1915,12 +1937,15 @@ namespace ember::engine::acs {
          */
         const StoredType_& unsafe_get(const KeyType_& key_, const hash_type hash_) const {
 
-            typename mapping_container::const_iterator cit = _indirection.find(storage_kv_pair { key_, 0 },
-                hash_);
+            typename mapping_container::const_iterator cit = _indirection.find(
+                storage_kv_pair { key_, 0 },
+                hash_
+            );
 
             if (cit == _indirection.cend()) {
                 throw _STD out_of_range(
-                    "Can not get constant reference to component, while key_ does not link to one.");
+                    "Can not get constant reference to component, while key_ does not link to one."
+                );
             }
 
             return _pages[unmask_page_index(cit.value().idx)].get_value(unmask_value_index(cit.value().idx));
@@ -2008,8 +2033,10 @@ namespace ember::engine::acs {
          */
         const StoredType_* get(const KeyType_& key_, const hash_type hash_) const {
 
-            typename mapping_container::const_iterator cit = _indirection.find(storage_kv_pair { key_, 0 },
-                hash_);
+            typename mapping_container::const_iterator cit = _indirection.find(
+                storage_kv_pair { key_, 0 },
+                hash_
+            );
 
             if (cit == _indirection.cend()) {
                 return nullptr;
@@ -2272,9 +2299,13 @@ namespace ember::engine::acs {
 
             // TODO: optimize way to find storage page with empty sequence
             // TODO: optimize way reusage of pages / using reverse iterator will speed up linear insert, but slow down on reusage
-            auto s = _STD find_if(_pages.rbegin(), _pages.rend(), [](const storage_page_type& page_) {
-                return page_.can_store();
-            });
+            auto s = _STD find_if(
+                _pages.rbegin(),
+                _pages.rend(),
+                [](const storage_page_type& page_) {
+                    return page_.can_store();
+                }
+            );
 
             /**
              * Check whether there is a page with empty space to store data
@@ -2315,9 +2346,13 @@ namespace ember::engine::acs {
 
             // TODO: optimize way to find storage page with empty sequence
             // TODO: optimize way reusage of pages / using reverse iterator will speed up linear insert, but slow down on reusage
-            auto s = _STD find_if(_pages.rbegin(), _pages.rend(), [](const storage_page_type& page_) {
-                return page_.can_store();
-            });
+            auto s = _STD find_if(
+                _pages.rbegin(),
+                _pages.rend(),
+                [](const storage_page_type& page_) {
+                    return page_.can_store();
+                }
+            );
 
             /**
              * Check whether there is a page with empty space to store data
@@ -2359,9 +2394,13 @@ namespace ember::engine::acs {
 
             // TODO: optimize way to find storage page with empty sequence
             // TODO: optimize way reusage of pages / using reverse iterator will speed up linear insert, but slow down on reusage
-            auto s = _STD find_if(_pages.rbegin(), _pages.rend(), [](const storage_page_type& page_) {
-                return page_.can_store();
-            });
+            auto s = _STD find_if(
+                _pages.rbegin(),
+                _pages.rend(),
+                [](const storage_page_type& page_) {
+                    return page_.can_store();
+                }
+            );
 
             /**
              * Check whether there is a page with empty space to store data

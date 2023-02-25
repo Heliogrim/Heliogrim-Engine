@@ -6,7 +6,6 @@
 #include "TransientCache.hpp"
 
 namespace ember::engine::gfx::cache {
-
     class LocalResourceCache final {
     public:
         friend class LocalCacheCtrl;
@@ -50,6 +49,5 @@ namespace ember::engine::gfx::cache {
 
     private:
         void shift();
-
     };
 }

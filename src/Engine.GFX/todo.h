@@ -274,16 +274,18 @@ void build_shader(cref<sptr<Device>> device_) {
      * Build combined Mrt & Gui Prototypes
      */
     shader::Factory factory { device_ };
-    auto result = factory.build({
-        terrainVertex,
-        terraFrag,
-        objVert,
-        objFragProt,
-        skyVertProt,
-        skyFragProt,
-        guiVertProt,
-        guiFragProt
-    });
+    auto result = factory.build(
+        {
+            terrainVertex,
+            terraFrag,
+            objVert,
+            objFragProt,
+            skyVertProt,
+            skyFragProt,
+            guiVertProt,
+            guiFragProt
+        }
+    );
 
     ShaderStorage& storage = ShaderStorage::make();
     for (const auto& entry : result.shaders) {
@@ -293,10 +295,12 @@ void build_shader(cref<sptr<Device>> device_) {
     /**
      * Build Linking Prototypes
      */
-    result = factory.build({
-        swapVertProt,
-        swapFragProt
-    });
+    result = factory.build(
+        {
+            swapVertProt,
+            swapFragProt
+        }
+    );
 
     for (const auto& entry : result.shaders) {
         storage.store(entry);

@@ -6,7 +6,6 @@
 #include "PipelineStage.hpp"
 
 namespace ember::engine::utils {
-
     class Pipeline {
     public:
         /**

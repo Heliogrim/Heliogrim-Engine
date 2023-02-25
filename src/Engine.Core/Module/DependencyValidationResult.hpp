@@ -3,7 +3,6 @@
 #include <Engine.Common/Types.hpp>
 
 namespace ember::engine::core {
-
     enum class DependencyValidationResult : u8 {
         eSuccess = 0x0,
         //
@@ -11,5 +10,4 @@ namespace ember::engine::core {
         eFailedOrder = 0x2,
         eFailedUnique = 0x3
     };
-
 }

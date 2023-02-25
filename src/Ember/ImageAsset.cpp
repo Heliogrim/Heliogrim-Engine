@@ -16,7 +16,8 @@ ImageAsset::ImageAsset(cref<asset_guid> guid_) noexcept :
     ) {}
 
 ImageAsset::ImageAsset(cref<asset_guid> guid_, cref<string> url_) noexcept :
-    Asset(guid_,
+    Asset(
+        guid_,
         engine::assets::Image::typeId,
         engine::Engine::getEngine()->getAssets()->getFactory()->createImageAsset(guid_, url_)
     ) {}

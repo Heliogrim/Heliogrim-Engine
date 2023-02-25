@@ -3,7 +3,6 @@
 #include <Engine.Common/Types.hpp>
 
 namespace clockwork::__internal::gfx::material {
-
     struct MaterialMeta {
         u16 albedo;
         u16 normal;
@@ -12,5 +11,4 @@ namespace clockwork::__internal::gfx::material {
         u16 ao;
         u16 alpha;
     };
-
 }

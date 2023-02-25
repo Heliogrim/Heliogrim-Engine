@@ -174,9 +174,13 @@ RenderPipelineValidationResult RenderPipeline::push(cref<sptr<RenderStage>> stag
      */
     for (const auto& dependency : stage_->dependencies()) {
         const auto exists {
-            _STD find_if(_stages.begin(), _stages.end(), [&stage = dependency.stage](cref<sptr<RenderStage>> entry_) {
-                return entry_.get() == stage;
-            }) != _stages.end()
+            _STD find_if(
+                _stages.begin(),
+                _stages.end(),
+                [&stage = dependency.stage](cref<sptr<RenderStage>> entry_) {
+                    return entry_.get() == stage;
+                }
+            ) != _stages.end()
         };
 
         /**
@@ -200,10 +204,13 @@ RenderPipelineValidationResult RenderPipeline::push(cref<sptr<RenderStage>> stag
 
         const auto& dependencies { stored->dependencies() };
         auto depIt {
-            _STD find_if(dependencies.begin(), dependencies.end(),
+            _STD find_if(
+                dependencies.begin(),
+                dependencies.end(),
                 [stage = stage_.get()](cref<RenderStageDependency> entry_) {
                     return entry_.stage == stage;
-                })
+                }
+            )
         };
 
         if (depIt == dependencies.end()) {

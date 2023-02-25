@@ -7,7 +7,6 @@ namespace ember::editor::ui {
 }
 
 namespace ember::editor::ui {
-
     class AssetFileImportDialog :
         public engine::reflow::Dialog {
     protected:

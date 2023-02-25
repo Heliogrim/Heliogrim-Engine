@@ -5,7 +5,6 @@
 #include "Asset.hpp"
 
 namespace ember::engine::assets {
-
     /**
      * The Concept for assets
      */

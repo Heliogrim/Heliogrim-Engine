@@ -7,7 +7,6 @@ namespace ember::engine::reflow {
 }
 
 namespace ember::engine::reflow {
-
     class TouchEvent :
         public StatelessEvent {
     public:
@@ -26,5 +25,4 @@ namespace ember::engine::reflow {
     private:
     public:
     };
-
 }

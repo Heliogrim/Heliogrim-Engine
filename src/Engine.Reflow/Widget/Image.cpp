@@ -8,12 +8,14 @@ using namespace ember;
 Image::Image(mref<sptr<BoundStyleSheet>> style_) :
     Widget(),
     _style(_STD move(style_)),
-    _uvs({
-        math::vec2 { 0.F, 0.F },
-        math::vec2 { 1.F, 0.F },
-        math::vec2 { 1.F, 1.F },
-        math::vec2 { 0.F, 1.F }
-    }),
+    _uvs(
+        {
+            math::vec2 { 0.F, 0.F },
+            math::vec2 { 1.F, 0.F },
+            math::vec2 { 1.F, 1.F },
+            math::vec2 { 0.F, 1.F }
+        }
+    ),
     _imageResource(nullptr) {}
 
 Image::~Image() {
@@ -49,17 +51,25 @@ void Image::render(const ptr<ReflowCommandBuffer> cmd_) {
     gfx::ProxyTexture<non_owning_rptr> proxy { *_image };
 
     cmd_->drawImage(
-        math::vec2 { off.x, off.y }, _uvs[0],
-        math::vec2 { off.x + _innerSize.x, off.y }, _uvs[1],
-        math::vec2 { off.x + _innerSize.x, off.y + _innerSize.y }, _uvs[2],
-        math::vec2 { off.x, off.y + _innerSize.y }, _uvs[3],
+        math::vec2 { off.x, off.y },
+        _uvs[0],
+        math::vec2 { off.x + _innerSize.x, off.y },
+        _uvs[1],
+        math::vec2 { off.x + _innerSize.x, off.y + _innerSize.y },
+        _uvs[2],
+        math::vec2 { off.x, off.y + _innerSize.y },
+        _uvs[3],
         _STD move(proxy),
         _computedStyle.color
     );
 }
 
-void Image::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_) {
+void Image::flow(
+    cref<FlowContext> ctx_,
+    cref<math::vec2> space_,
+    cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_
+) {
 
     styleStack_.pushLayer();
     _computedStyle = _style->compute(shared_from_this(), styleStack_);
@@ -73,23 +83,31 @@ void Image::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec
 
     if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
         if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
-            maxSize.x = MIN(maxSize.x,
+            maxSize.x = MIN(
+                maxSize.x,
                 MAX(_computedStyle.maxWidth->value * space_.x - (_computedStyle.padding->x + _computedStyle.padding->z),
-                    0));
+                    0)
+            );
         } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
-            maxSize.x = MIN(maxSize.x,
-                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0));
+            maxSize.x = MIN(
+                maxSize.x,
+                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0)
+            );
         }
     }
 
     if (_computedStyle.maxHeight->type != ReflowUnitType::eAuto) {
         if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
-            maxSize.y = MIN(maxSize.y,
+            maxSize.y = MIN(
+                maxSize.y,
                 MAX(_computedStyle.maxHeight->value * space_.y - (_computedStyle.padding->y + _computedStyle.padding->w)
-                    , 0));
+                    , 0)
+            );
         } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
-            maxSize.y = MIN(maxSize.y,
-                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0));
+            maxSize.y = MIN(
+                maxSize.y,
+                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0)
+            );
         }
     }
 

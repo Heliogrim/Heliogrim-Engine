@@ -3,7 +3,6 @@
 #include <Engine.Common/Hash/Fnv-1a.hpp>
 
 namespace ember::engine::gfx::render {
-
     enum class RenderDataScope : u8 {
         eExternal,
         eRenderPass
@@ -22,8 +21,10 @@ namespace ember::engine::gfx::render {
 
     enum class RenderDataUsage : u8 {
         eWhole,
-        eSingle = eWhole,// e.g. camera transform
-        ePerRenderNode,// e.g. Performance Query struct per RenderNode
+        eSingle = eWhole,
+        // e.g. camera transform
+        ePerRenderNode,
+        // e.g. Performance Query struct per RenderNode
         eModelInstance// e.g. static model transforms
     };
 

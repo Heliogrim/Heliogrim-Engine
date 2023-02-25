@@ -5,7 +5,6 @@
 using namespace ember::engine::assets;
 
 namespace ember::engine::serialization {
-
     template <>
     void DataLayout<Texture>::describe() {
 
@@ -40,5 +39,4 @@ namespace ember::engine::serialization {
         defineValue<LayoutDefineValueType::eUInt32>(offsetof(Texture, _mipLevel));
         defineValue<LayoutDefineValueType::eUInt8>(offsetof(Texture, _textureType));
     }
-
 }

@@ -65,50 +65,58 @@ void LORenderPass::setup() {
          * Enforce Color Attachment Dependencies
          */
         if (hasColorRef) {
-            _dependencies.push_back(vk::SubpassDependency {
-                VK_SUBPASS_EXTERNAL,
-                0,
-                vk::PipelineStageFlagBits::eBottomOfPipe,
-                vk::PipelineStageFlagBits::eColorAttachmentOutput,
-                vk::AccessFlagBits::eMemoryRead,
-                vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
-                vk::DependencyFlagBits::eByRegion
-            });
+            _dependencies.push_back(
+                vk::SubpassDependency {
+                    VK_SUBPASS_EXTERNAL,
+                    0,
+                    vk::PipelineStageFlagBits::eBottomOfPipe,
+                    vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                    vk::AccessFlagBits::eMemoryRead,
+                    vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
+                    vk::DependencyFlagBits::eByRegion
+                }
+            );
 
-            _dependencies.push_back(vk::SubpassDependency {
-                0,
-                VK_SUBPASS_EXTERNAL,
-                vk::PipelineStageFlagBits::eColorAttachmentOutput,
-                vk::PipelineStageFlagBits::eTopOfPipe,
-                vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
-                vk::AccessFlagBits::eMemoryRead,
-                vk::DependencyFlagBits::eByRegion
-            });
+            _dependencies.push_back(
+                vk::SubpassDependency {
+                    0,
+                    VK_SUBPASS_EXTERNAL,
+                    vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                    vk::PipelineStageFlagBits::eTopOfPipe,
+                    vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
+                    vk::AccessFlagBits::eMemoryRead,
+                    vk::DependencyFlagBits::eByRegion
+                }
+            );
         }
 
         /**
          * Enforce Depth Attachment Dependencies
          */
         if (hasDepthRef) {
-            _dependencies.push_back(vk::SubpassDependency {
-                VK_SUBPASS_EXTERNAL,
-                0,
-                vk::PipelineStageFlagBits::eBottomOfPipe,
-                vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
-                vk::AccessFlagBits::eMemoryRead,
-                vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
-                vk::DependencyFlagBits::eByRegion
-            });
+            _dependencies.push_back(
+                vk::SubpassDependency {
+                    VK_SUBPASS_EXTERNAL,
+                    0,
+                    vk::PipelineStageFlagBits::eBottomOfPipe,
+                    vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
+                    vk::AccessFlagBits::eMemoryRead,
+                    vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                    vk::DependencyFlagBits::eByRegion
+                }
+            );
 
-            _dependencies.push_back(vk::SubpassDependency {
-                0,
-                VK_SUBPASS_EXTERNAL,
-                vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
-                vk::PipelineStageFlagBits::eTopOfPipe,
-                vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
-                vk::AccessFlagBits::eMemoryRead,
-                vk::DependencyFlagBits::eByRegion
-            });
+            _dependencies.push_back(
+                vk::SubpassDependency {
+                    0,
+                    VK_SUBPASS_EXTERNAL,
+                    vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
+                    vk::PipelineStageFlagBits::eTopOfPipe,
+                    vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                    vk::AccessFlagBits::eMemoryRead,
+                    vk::DependencyFlagBits::eByRegion
+                }
+            );
         }
     }
 
@@ -208,17 +216,20 @@ void LORenderPass::setup(const Framebuffer& framebuffer_) {
         // TODO: Check whether we can assume the dependencies based on the framebuffer attachments
         // TODO: I don't think so, cause dependencies are propergated by pipeline usage like G-Buffer and Shadow Pass, but we can actually try
 
-        set(idx, vk::AttachmentDescription {
-            vk::AttachmentDescriptionFlags(),
-            api::vkTranslateFormat(entry->format()),
-            vk::SampleCountFlagBits::e1,
-            vk::AttachmentLoadOp::eClear,
-            vk::AttachmentStoreOp::eStore,
-            hasStencil ? vk::AttachmentLoadOp::eClear : vk::AttachmentLoadOp::eDontCare,
-            hasStencil ? vk::AttachmentStoreOp::eStore : vk::AttachmentStoreOp::eDontCare,
-            initialLayout,
-            finalLayout
-        });
+        set(
+            idx,
+            vk::AttachmentDescription {
+                vk::AttachmentDescriptionFlags(),
+                api::vkTranslateFormat(entry->format()),
+                vk::SampleCountFlagBits::e1,
+                vk::AttachmentLoadOp::eClear,
+                vk::AttachmentStoreOp::eStore,
+                hasStencil ? vk::AttachmentLoadOp::eClear : vk::AttachmentLoadOp::eDontCare,
+                hasStencil ? vk::AttachmentStoreOp::eStore : vk::AttachmentStoreOp::eDontCare,
+                initialLayout,
+                finalLayout
+            }
+        );
     }
 
     setup();

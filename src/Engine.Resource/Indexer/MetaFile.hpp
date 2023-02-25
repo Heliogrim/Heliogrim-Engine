@@ -6,7 +6,6 @@
 #include "../File.hpp"
 
 namespace ember::engine::res {
-
     class MetaFile {
     public:
         using value_type = MetaFile;

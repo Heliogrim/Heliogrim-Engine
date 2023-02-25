@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<FolderLib> {
     public:
         FolderLib():
-            ImageAsset(FolderLib::unstable_auto_guid(),
-                R"(resources\imports\ktx\folder-lib.ktx)") {}
+            ImageAsset(
+                FolderLib::unstable_auto_guid(),
+                R"(resources\imports\ktx\folder-lib.ktx)"
+            ) {}
     };
 }

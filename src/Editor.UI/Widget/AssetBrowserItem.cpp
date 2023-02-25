@@ -246,24 +246,22 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 
     const auto infoWrapper {
         make_sptr<VBox>(
-            _STD move(
-                BoundStyleSheet::make(
-                    StyleSheet {
-                        .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-                        .width = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-                        .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-                        //
-                        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
-                        .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
-                        .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
-                        //
-                        .padding = { true, Padding { 6.F } },
-                        .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
-                        .borderRadius = { true, BorderRadius { 0.F, 0.F, 6.F, 6.F } },
-                        //
-                        .color = { true, color::Dark::backgroundDefault },
-                    }
-                )
+            BoundStyleSheet::make(
+                StyleSheet {
+                    .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+                    .width = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+                    .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
+                    //
+                    .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
+                    .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
+                    .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
+                    //
+                    .padding = { true, Padding { 6.F } },
+                    .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
+                    .borderRadius = { true, BorderRadius { 0.F, 0.F, 6.F, 6.F } },
+                    //
+                    .color = { true, color::Dark::backgroundDefault },
+                }
             )
         )
     };

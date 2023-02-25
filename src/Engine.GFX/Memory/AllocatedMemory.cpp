@@ -9,6 +9,35 @@
 using namespace ember::engine::gfx::memory;
 using namespace ember;
 
+AllocatedMemory::AllocatedMemory(
+    ptr<Allocator> allocator_,
+    ptr<AllocatedMemory> parent_,
+    cref<MemoryLayout> layout_,
+    cref<u64> size_,
+    cref<u64> offset_,
+    cref<vk::Device> vkDevice_,
+    cref<vk::DeviceMemory> vkMemory_,
+    MemoryMapping mapping_
+) noexcept :
+    allocator(allocator_),
+    parent(parent_),
+    layout(layout_),
+    size(size_),
+    offset(offset_),
+    vkDevice(vkDevice_),
+    vkMemory(vkMemory_),
+    mapping(mapping_) {}
+
+AllocatedMemory::AllocatedMemory(mref<AllocatedMemory> other_) noexcept :
+    allocator(_STD exchange(other_.allocator, nullptr)),
+    parent(_STD exchange(other_.parent, nullptr)),
+    layout(_STD exchange(other_.layout, {})),
+    size(_STD exchange(other_.size, 0)),
+    offset(_STD exchange(other_.offset, 0)),
+    vkDevice(_STD exchange(other_.vkDevice, nullptr)),
+    vkMemory(_STD exchange(other_.vkMemory, nullptr)),
+    mapping(_STD exchange(other_.mapping, nullptr)) {}
+
 AllocatedMemory::~AllocatedMemory() {
     if (mapping) {
         unmap();

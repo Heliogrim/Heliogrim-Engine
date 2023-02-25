@@ -39,11 +39,13 @@ void RenderScenePipeline::declareDependencies(
 
     const auto* const renderTick = _orderedStages.front();
 
-    collection_.insert(StageDependency {
-        { beginTick, actorUpdate, shiftTick, /* TODO: actorTick, physicsTick, animatorTick, ikTick */ },
-        this,
-        renderTick
-    });
+    collection_.insert(
+        StageDependency {
+            { beginTick, actorUpdate, shiftTick, /* TODO: actorTick, physicsTick, animatorTick, ikTick */ },
+            this,
+            renderTick
+        }
+    );
 }
 
 void RenderScenePipeline::dismount(const non_owning_rptr<StageRegister> register_) {

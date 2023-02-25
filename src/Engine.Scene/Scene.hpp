@@ -37,11 +37,17 @@ namespace ember::engine::scene {
         NodeTypeRegistry _nodeTypeRegistry;
 
     public:
-        void setNodeType(const SceneTag tag_, cref<component_type_id> typeId_,
-            cref<NodeTypeRegistryValue::model_type> callback_);
+        void setNodeType(
+            const SceneTag tag_,
+            cref<component_type_id> typeId_,
+            cref<NodeTypeRegistryValue::model_type> callback_
+        );
 
-        void setNodeType(const SceneTag tag_, cref<component_type_id> typeId_,
-            mref<NodeTypeRegistryValue::model_type> callback_);
+        void setNodeType(
+            const SceneTag tag_,
+            cref<component_type_id> typeId_,
+            mref<NodeTypeRegistryValue::model_type> callback_
+        );
 
     public:
         virtual bool addNode(const ptr<SceneComponent> node_) = 0;

@@ -4,7 +4,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::gfx::cache {
-
     struct CacheStaticGeometrySubject {
     public:
         using this_type = CacheStaticGeometrySubject;

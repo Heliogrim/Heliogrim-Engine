@@ -5,7 +5,6 @@
 #include "../Modules/ObjectEditor.hpp"
 
 namespace ember::editor::ui {
-
     class ObjectEditorPanel :
         public engine::reflow::Panel {
     public:
@@ -36,5 +35,4 @@ namespace ember::editor::ui {
     public:
         [[nodiscard]] static sptr<ObjectEditorPanel> make(const non_owning_rptr<ObjectEditor> editor_);
     };
-
 }

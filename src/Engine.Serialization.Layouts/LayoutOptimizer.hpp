@@ -1,7 +1,6 @@
 #pragma once
 
 namespace ember::engine::serialization {
-
     class LayoutOptimizer {
     public:
         using this_type = LayoutOptimizer;
@@ -11,5 +10,4 @@ namespace ember::engine::serialization {
 
         ~LayoutOptimizer() noexcept = default;
     };
-
 }

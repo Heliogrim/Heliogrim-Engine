@@ -3,7 +3,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::scene {
-
     template <class ElementType_, class Traits_>
     class SceneElementStorage {
     public:

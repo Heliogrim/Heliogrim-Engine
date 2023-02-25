@@ -32,8 +32,12 @@ void SharedSubQueue::acquire() {
 void SharedSubQueue::release() {
     #if _DEBUG
     auto expect { thread::self::getId() };
-    const auto result = owner.compare_exchange_strong(expect, thread::thread_id { 0 }, _STD memory_order::release,
-        _STD memory_order::acquire);
+    const auto result = owner.compare_exchange_strong(
+        expect,
+        thread::thread_id { 0 },
+        _STD memory_order::release,
+        _STD memory_order::acquire
+    );
     assert(result);
     #else
     owner.store(thread::thread_id { 0 }, _STD memory_order::relaxed);

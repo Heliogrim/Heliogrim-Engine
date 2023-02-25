@@ -7,7 +7,6 @@ namespace ember::engine::acs {
 }
 
 namespace ember::engine::core {
-
     class SessionState {
     public:
         friend class Session;
@@ -27,5 +26,4 @@ namespace ember::engine::core {
     public:
         [[nodiscard]] const non_owning_rptr<::ember::engine::acs::Registry> getRegistry() const noexcept;
     };
-
 }

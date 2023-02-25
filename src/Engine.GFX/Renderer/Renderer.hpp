@@ -15,7 +15,6 @@ namespace ember::engine::gfx {
 }
 
 namespace ember::engine::gfx::render {
-
     class __declspec(novtable) Renderer {
     public:
         using this_type = Renderer;
@@ -111,8 +110,10 @@ namespace ember::engine::gfx::render {
     public:
         virtual const non_owning_rptr<HORenderPass> invoke(const non_owning_rptr<HORenderPass> renderPass_);
 
-        virtual const non_owning_rptr<HORenderPass> invoke(const non_owning_rptr<HORenderPass> renderPass_,
-            cref<CommandBatch> batchLayout_);
+        virtual const non_owning_rptr<HORenderPass> invoke(
+            const non_owning_rptr<HORenderPass> renderPass_,
+            cref<CommandBatch> batchLayout_
+        );
 
     protected:
         /**

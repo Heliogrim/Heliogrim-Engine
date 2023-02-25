@@ -53,7 +53,6 @@ namespace ember::engine::scene {
     template <>
     struct scene_node_traits<SceneNodeState::eShadow> :
         scene_node_shared_traits {
-
         using type = SceneNodeState;
         static constexpr type value = SceneNodeState::eShadow;
 
@@ -63,7 +62,6 @@ namespace ember::engine::scene {
     template <>
     struct scene_node_traits<SceneNodeState::eLoosy> :
         scene_node_shared_traits {
-
         using type = SceneNodeState;
         static constexpr type value = SceneNodeState::eLoosy;
 
@@ -73,7 +71,6 @@ namespace ember::engine::scene {
     template <>
     struct scene_node_traits<SceneNodeState::eSpartial> :
         scene_node_shared_traits {
-
         using type = SceneNodeState;
         static constexpr type value = SceneNodeState::eSpartial;
 
@@ -83,7 +80,6 @@ namespace ember::engine::scene {
     template <>
     struct scene_node_traits<SceneNodeState::eNatural> :
         scene_node_shared_traits {
-
         using type = SceneNodeState;
         static constexpr type value = SceneNodeState::eNatural;
 

@@ -5,7 +5,6 @@
 #include "../vkinc.hpp"
 
 namespace ember::engine::gfx {
-
     class CommandBatch {
     public:
         using this_type = CommandBatch;

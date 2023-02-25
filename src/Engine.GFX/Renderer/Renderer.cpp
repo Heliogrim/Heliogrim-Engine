@@ -212,9 +212,11 @@ void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mr
     if (requiredSignals > renderPass_->lastSignals().size()) {
         for (u64 i = renderPass_->lastSignals().size(); i < requiredSignals; ++i) {
             renderPass_->lastSignals().push_back(
-                _device->vkDevice().createSemaphore({
-                    vk::SemaphoreCreateFlags {}
-                })
+                _device->vkDevice().createSemaphore(
+                    {
+                        vk::SemaphoreCreateFlags {}
+                    }
+                )
             );
         }
     }
@@ -326,8 +328,10 @@ const non_owning_rptr<HORenderPass> Renderer::invoke(const non_owning_rptr<HORen
     return renderPass_;
 }
 
-const non_owning_rptr<HORenderPass> Renderer::invoke(const non_owning_rptr<HORenderPass> renderPass_,
-    cref<CommandBatch> batchLayout_) {
+const non_owning_rptr<HORenderPass> Renderer::invoke(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    cref<CommandBatch> batchLayout_
+) {
 
     #ifdef _DEBUG
     // Ensure batch layout does not contain any command buffers

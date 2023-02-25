@@ -10,12 +10,10 @@
 #include "SceneNodePath.hpp"
 
 namespace ember::engine::scene {
-
     template <class Type_>
     concept IsSceneNodeElement = requires(const Type_ obj_) {
-        { obj_.sceneNodePath() } -> decayed_as<SceneNodePath>;
-    } && requires(Type_ obj_, const SceneNodePath path_) {
-        { obj_.setSceneNodePath(path_) } -> std::same_as<void>;
-    };
-
+            { obj_.sceneNodePath() } -> decayed_as<SceneNodePath>;
+        } && requires(Type_ obj_, const SceneNodePath path_) {
+            { obj_.setSceneNodePath(path_) } -> std::same_as<void>;
+        };
 }

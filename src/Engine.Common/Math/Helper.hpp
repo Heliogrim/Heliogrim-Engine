@@ -3,7 +3,6 @@
 #include <concepts>
 
 namespace ember::math {
-
     /**
      * A fast ceiling 2.
      *
@@ -14,7 +13,6 @@ namespace ember::math {
      */
     template <_STD integral Type_>
     struct fast_ceil2 {
-
         using value_type = Type_;
 
         constexpr fast_ceil2() noexcept = default;
@@ -38,5 +36,4 @@ namespace ember::math {
             return value_ + 1u;
         }
     };
-
 }

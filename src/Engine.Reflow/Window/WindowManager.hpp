@@ -72,6 +72,7 @@ namespace ember::engine::reflow {
             string_view title_,
             cref<math::ivec2> size_,
             const wptr<Window> parent_,
-            const non_owning_rptr<scene::IRenderScene> scene_ = nullptr);
+            const non_owning_rptr<scene::IRenderScene> scene_ = nullptr
+        );
     };
 }

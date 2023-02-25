@@ -33,19 +33,23 @@ static void configureNav(cref<sptr<HBox>> navBar_) {
 
     auto btnStyle { BoundStyleSheet::make() };
     btnStyle->pushStyle({ Style::ButtonKey, nullptr, Style::get()->getStyleSheet(Style::ButtonKey) });
-    btnStyle->pushStyle({
-        Style::ButtonRaisedKey,
-        style::isRaised,
-        Style::get()->getStyleSheet(Style::ButtonRaisedKey)
-    });
+    btnStyle->pushStyle(
+        {
+            Style::ButtonRaisedKey,
+            style::isRaised,
+            Style::get()->getStyleSheet(Style::ButtonRaisedKey)
+        }
+    );
 
     auto txtStyle { BoundStyleSheet::make() };
     txtStyle->pushStyle({ Style::TitleSmallKey, nullptr, Style::get()->getStyleSheet(Style::TitleSmallKey) });
-    txtStyle->pushStyle({
-        Style::ButtonRaisedKey,
-        style::isNever,
-        Style::get()->getStyleSheet(Style::TitleRaisedKey)
-    });
+    txtStyle->pushStyle(
+        {
+            Style::ButtonRaisedKey,
+            style::isNever,
+            Style::get()->getStyleSheet(Style::TitleRaisedKey)
+        }
+    );
 
     const auto closeButton { make_sptr<Button>(_STD move(btnStyle)) };
     const auto closeText { make_sptr<Text>(_STD move(txtStyle)) };
@@ -65,16 +69,21 @@ void configureHeader(cref<sptr<VBox>> header_) {
     /**/
 
     const auto search {
-        make_sptr<InputText>(BoundStyleSheet::make(StyleSheet {
-            .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-            .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-            .padding { true, Padding { 4.F, 2.F } },
-            .margin { true, Margin { 4.F, 2.F } },
-            .borderRadius { true, BorderRadius { 4.F } },
-            .color { true, color::Dark::backgroundInnerField }
-        }), BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey)))
+        make_sptr<InputText>(
+            BoundStyleSheet::make(
+                StyleSheet {
+                    .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                    .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                    .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
+                    .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
+                    .padding { true, Padding { 4.F, 2.F } },
+                    .margin { true, Margin { 4.F, 2.F } },
+                    .borderRadius { true, BorderRadius { 4.F } },
+                    .color { true, color::Dark::backgroundInnerField }
+                }
+            ),
+            BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))
+        )
     };
 
     search->setPlaceholder(R"(Search Hierarchy...)");
@@ -85,19 +94,23 @@ void configureHeader(cref<sptr<VBox>> header_) {
 
     auto btnStyle { BoundStyleSheet::make() };
     btnStyle->pushStyle({ Style::ButtonKey, nullptr, Style::get()->getStyleSheet(Style::ButtonKey) });
-    btnStyle->pushStyle({
-        Style::ButtonRaisedKey,
-        style::isRaised,
-        Style::get()->getStyleSheet(Style::ButtonRaisedKey)
-    });
+    btnStyle->pushStyle(
+        {
+            Style::ButtonRaisedKey,
+            style::isRaised,
+            Style::get()->getStyleSheet(Style::ButtonRaisedKey)
+        }
+    );
 
     auto txtStyle { BoundStyleSheet::make() };
     txtStyle->pushStyle({ Style::TitleSmallKey, nullptr, Style::get()->getStyleSheet(Style::TitleSmallKey) });
-    txtStyle->pushStyle({
-        Style::ButtonRaisedKey,
-        style::isNever,
-        Style::get()->getStyleSheet(Style::TitleRaisedKey)
-    });
+    txtStyle->pushStyle(
+        {
+            Style::ButtonRaisedKey,
+            style::isNever,
+            Style::get()->getStyleSheet(Style::TitleRaisedKey)
+        }
+    );
 
     const auto homeBtn { make_sptr<Button>(_STD move(btnStyle)) };
     const auto homeTxt { make_sptr<Text>(_STD move(txtStyle)) };

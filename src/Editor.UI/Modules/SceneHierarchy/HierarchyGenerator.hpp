@@ -8,7 +8,6 @@ namespace ember::engine::reflow {
 }
 
 namespace ember::editor::ui {
-
     class HierarchyGeneratorBase {
     public:
         template <typename SourceType_>

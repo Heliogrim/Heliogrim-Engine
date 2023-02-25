@@ -17,7 +17,6 @@ namespace ember::engine::reflow {
 }
 
 namespace ember::engine::reflow {
-
     enum class TreeViewSelectionMode {
         eSingle = 0x0,
         eMultiple = 0x1,
@@ -135,7 +134,12 @@ namespace ember::engine::reflow {
         }
 
     public:
-        void flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_, ref<StyleKeyStack> styleStack_) override {
+        void flow(
+            cref<FlowContext> ctx_,
+            cref<math::vec2> space_,
+            cref<math::vec2> limit_,
+            ref<StyleKeyStack> styleStack_
+        ) override {
 
             if (_requiresRefresh) {
                 refreshTreeView();
@@ -288,14 +292,17 @@ namespace ember::engine::reflow {
                 if (isViewExpanded || isSubViewExpanded) {
 
                     // We don't need to save states for not-expanded elements (default)
-                    mapPacking_.insert_or_assign(item, view_item_type {
-                        isViewExpanded,
-                        hasChildren,
-                        isSubViewExpanded,
-                        parentIdx_,
-                        depth_,
-                        {}
-                    });
+                    mapPacking_.insert_or_assign(
+                        item,
+                        view_item_type {
+                            isViewExpanded,
+                            hasChildren,
+                            isSubViewExpanded,
+                            parentIdx_,
+                            depth_,
+                            {}
+                        }
+                    );
                 }
 
                 /**/
@@ -357,14 +364,17 @@ namespace ember::engine::reflow {
 
             if (mapIt == _mapping.end()) {
 
-                _mapping.insert_or_assign(data, view_item_type {
-                    true,
-                    view.children,
-                    view.expandedChildren,
-                    view.parent,
-                    view.depth,
-                    view.widget
-                });
+                _mapping.insert_or_assign(
+                    data,
+                    view_item_type {
+                        true,
+                        view.children,
+                        view.expandedChildren,
+                        view.parent,
+                        view.depth,
+                        view.widget
+                    }
+                );
 
             } else {
                 mapIt->second.expanded = true;
@@ -562,10 +572,13 @@ namespace ember::engine::reflow {
 
         void handleExternalSelection(cref<sptr<Widget>> target_, const bool adv_) {
 
-            const auto viewIt = _STD find_if(_linearizedView.begin(), _linearizedView.end(),
+            const auto viewIt = _STD find_if(
+                _linearizedView.begin(),
+                _linearizedView.end(),
                 [target_](cref<view_item_type> view_) {
                     return target_ == view_.widget.lock()->parent();
-                });
+                }
+            );
 
             if (viewIt == _linearizedView.end()) {
                 return;
@@ -581,12 +594,16 @@ namespace ember::engine::reflow {
         void refreshCursor() {
 
             const auto dataIt {
-                _STD find_if(_linearizedData.begin(), _linearizedData.end(), [
+                _STD find_if(
+                    _linearizedData.begin(),
+                    _linearizedData.end(),
+                    [
                         target = cref<decltype(_cursor.second)> { _cursor.second },
                         equal = data_equal_type {}
                     ](cref<data_type> entry_) {
                         return equal(target, entry_);
-                    })
+                    }
+                )
             };
             if (dataIt == _linearizedData.end()) {
                 _cursor.first = -1;
@@ -748,7 +765,6 @@ namespace ember::engine::reflow {
     template <typename DataItemType_>
     struct TreeDataItemEqual<DataItemType_, sptr> :
         public _STD equal_to<DataItemType_> {
-
         using this_type = TreeDataItemEqual<DataItemType_, sptr>;
         using base_equal_type = _STD equal_to<DataItemType_>;
 
@@ -774,7 +790,6 @@ namespace ember::engine::reflow {
     template <typename DataItemType_>
     struct TreeDataItemHash<DataItemType_, sptr> :
         public _STD hash<DataItemType_> {
-
         using this_type = TreeDataItemHash<DataItemType_, sptr>;
         using base_hash_type = _STD hash<DataItemType_>;
 
@@ -791,6 +806,5 @@ namespace ember::engine::reflow {
 
             return static_cast<cref<base_hash_type>>(*this)(*value_);
         }
-
     };
 }

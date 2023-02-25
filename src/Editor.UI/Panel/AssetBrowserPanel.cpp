@@ -189,9 +189,13 @@ void AssetBrowserPanel::buildItems() {
         };
 
         Vector<Url> fqUrls { entry.second };
-        items->addChild(AssetBrowserItem::make(
+        items->addChild(
+            AssetBrowserItem::make(
                 _STD static_pointer_cast<AssetBrowserPanel, Widget>(shared_from_this()),
-                entry.first, virtUrl, _STD move(fqUrls))
+                entry.first,
+                virtUrl,
+                _STD move(fqUrls)
+            )
         );
     }
 }
@@ -363,15 +367,19 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
             _STD filesystem::path cwd { _browserCwd.path() };
             const auto action { make_sptr<SimpleImportAction>(Url { "file"sv, path }, Url { ""sv, cwd.string() }) };
 
-            execute([action]() {
-                ActionManager::get()->apply(action);
+            execute(
+                [action]() {
+                    ActionManager::get()->apply(action);
 
-                for (const auto& asset : action->importedAssets()) {
-                    engine::Engine::getEngine()->getAssets()->getDatabase()->insert(
-                        asset->get_guid(), asset->getTypeId(), asset
-                    );
+                    for (const auto& asset : action->importedAssets()) {
+                        engine::Engine::getEngine()->getAssets()->getDatabase()->insert(
+                            asset->get_guid(),
+                            asset->getTypeId(),
+                            asset
+                        );
+                    }
                 }
-            });
+            );
         }
     }
 
@@ -385,11 +393,13 @@ static void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<HBox>> p
     /**/
 
     auto breadcrumb = Breadcrumb::make();
-    breadcrumb->onAction([self = wptr<AssetBrowserPanel>(root_)](cref<Url> url_) {
-        if (self.expired())
-            return;
-        self.lock()->changeCwd(url_);
-    });
+    breadcrumb->onAction(
+        [self = wptr<AssetBrowserPanel>(root_)](cref<Url> url_) {
+            if (self.expired())
+                return;
+            self.lock()->changeCwd(url_);
+        }
+    );
 
     /*
     auto breadcrumb = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
@@ -407,42 +417,54 @@ static void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<HBox>> p
 
     /**/
 
-    auto searchBoxStyle = BoundStyleSheet::make(StyleSheet {
-        .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 212.F } },
-        .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 212.F } },
-        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-        .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .padding = { true, Padding { 4.F, 0.F } },
-        .margin = { true, Margin { 4.F, 2.F } },
-        .borderRadius = { true, BorderRadius { 4.F } },
-        .color = { false, color::Dark::backgroundInnerField },
-    });
+    auto searchBoxStyle = BoundStyleSheet::make(
+        StyleSheet {
+            .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 212.F } },
+            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 212.F } },
+            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
+            .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .padding = { true, Padding { 4.F, 0.F } },
+            .margin = { true, Margin { 4.F, 2.F } },
+            .borderRadius = { true, BorderRadius { 4.F } },
+            .color = { false, color::Dark::backgroundInnerField },
+        }
+    );
 
-    searchBoxStyle->pushStyle({
-        Style::key_type::from("SearchBar::Focused"),
-        style::isFocused,
-        make_sptr<StyleSheet>(StyleSheet {
-            .color = { true, color::Dark::backgroundInnerFieldDarken }
-        })
-    });
+    searchBoxStyle->pushStyle(
+        {
+            Style::key_type::from("SearchBar::Focused"),
+            style::isFocused,
+            make_sptr<StyleSheet>(
+                StyleSheet {
+                    .color = { true, color::Dark::backgroundInnerFieldDarken }
+                }
+            )
+        }
+    );
 
-    auto searchTextStyle = BoundStyleSheet::make(StyleSheet {
-        .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 204.F } },
-        .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 204.F } },
-        .margin = { true, Margin { 0.F, 2.F } },
-        .color = { false, color::Dark::grey },
-        .font = { true, font },
-        .fontSize = { true, 12.F },
-        .textAlign = { true, TextAlign::eLeftMiddle },
-        .textEllipse = { true, 1ui32 },
-    });
-    searchTextStyle->pushStyle({
-        Style::key_type::from("SearchBar::Focused"),
-        style::isNever,
-        make_sptr<StyleSheet>(StyleSheet {
-            .color = { true, color::Dark::white }
-        })
-    });
+    auto searchTextStyle = BoundStyleSheet::make(
+        StyleSheet {
+            .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 204.F } },
+            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 204.F } },
+            .margin = { true, Margin { 0.F, 2.F } },
+            .color = { false, color::Dark::grey },
+            .font = { true, font },
+            .fontSize = { true, 12.F },
+            .textAlign = { true, TextAlign::eLeftMiddle },
+            .textEllipse = { true, 1ui32 },
+        }
+    );
+    searchTextStyle->pushStyle(
+        {
+            Style::key_type::from("SearchBar::Focused"),
+            style::isNever,
+            make_sptr<StyleSheet>(
+                StyleSheet {
+                    .color = { true, color::Dark::white }
+                }
+            )
+        }
+    );
 
     auto searchbar = make_sptr<InputText>(_STD move(searchBoxStyle), _STD move(searchTextStyle));
     searchbar->setPlaceholder("Search...");
@@ -471,33 +493,45 @@ sptr<AssetBrowserPanel> AssetBrowserPanel::make(const non_owning_rptr<AssetBrows
 
     /**/
 
-    auto nav = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-        .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
-        .color = { true, color::Dark::backgroundDefault },
-    }));
-    auto scrollContent = make_sptr<VScrollBox>(BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .padding = { true, Padding { 4.F } },
-        .reflowSpacing = { true, ReflowSpacing::eStart },
-        .reflowShrink = { true, 1.F },
-        .reflowGrow = { true, 1.F },
-        .color = { true, color::Dark::backgroundInnerField },
-    }));
-    auto content = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        // .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-        .wrap = { true, ReflowWrap::eWrap },
-        .colGap = { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
-        .rowGap = { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
-        .reflowSpacing = { true, ReflowSpacing::eStart },
-        .color = { true, color::Dark::backgroundInnerField },
-    }));
+    auto nav = make_sptr<HBox>(
+        BoundStyleSheet::make(
+            StyleSheet {
+                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
+                .color = { true, color::Dark::backgroundDefault },
+            }
+        )
+    );
+    auto scrollContent = make_sptr<VScrollBox>(
+        BoundStyleSheet::make(
+            StyleSheet {
+                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .padding = { true, Padding { 4.F } },
+                .reflowSpacing = { true, ReflowSpacing::eStart },
+                .reflowShrink = { true, 1.F },
+                .reflowGrow = { true, 1.F },
+                .color = { true, color::Dark::backgroundInnerField },
+            }
+        )
+    );
+    auto content = make_sptr<HBox>(
+        BoundStyleSheet::make(
+            StyleSheet {
+                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                // .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+                .wrap = { true, ReflowWrap::eWrap },
+                .colGap = { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
+                .rowGap = { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
+                .reflowSpacing = { true, ReflowSpacing::eStart },
+                .color = { true, color::Dark::backgroundInnerField },
+            }
+        )
+    );
 
     configureNav(panel, nav);
 

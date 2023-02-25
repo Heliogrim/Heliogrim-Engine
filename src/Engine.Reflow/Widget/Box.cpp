@@ -153,26 +153,46 @@ void Box::render(const ptr<ReflowCommandBuffer> cmd_) {
         /**
          *
          */
-        cmd_->drawArc(math::vec2 {
+        cmd_->drawArc(
+            math::vec2 {
                 off.x + _computedStyle.borderRadius.attr.x,
                 off.y + _computedStyle.borderRadius.attr.x
             },
-            _computedStyle.borderRadius.attr.x, glm::radians(180.F), glm::radians(270.F), _computedStyle.color.attr);
-        cmd_->drawArc(math::vec2 {
+            _computedStyle.borderRadius.attr.x,
+            glm::radians(180.F),
+            glm::radians(270.F),
+            _computedStyle.color.attr
+        );
+        cmd_->drawArc(
+            math::vec2 {
                 off.x + size.x - _computedStyle.borderRadius.attr.y,
                 off.y + _computedStyle.borderRadius.attr.y
             },
-            _computedStyle.borderRadius.attr.y, glm::radians(270.F), glm::radians(360.F), _computedStyle.color.attr);
-        cmd_->drawArc(math::vec2 {
+            _computedStyle.borderRadius.attr.y,
+            glm::radians(270.F),
+            glm::radians(360.F),
+            _computedStyle.color.attr
+        );
+        cmd_->drawArc(
+            math::vec2 {
                 off.x + size.x - _computedStyle.borderRadius.attr.z,
                 off.y + size.y - _computedStyle.borderRadius.attr.z
             },
-            _computedStyle.borderRadius.attr.z, glm::radians(0.F), glm::radians(90.F), _computedStyle.color.attr);
-        cmd_->drawArc(math::vec2 {
+            _computedStyle.borderRadius.attr.z,
+            glm::radians(0.F),
+            glm::radians(90.F),
+            _computedStyle.color.attr
+        );
+        cmd_->drawArc(
+            math::vec2 {
                 off.x + _computedStyle.borderRadius.attr.w,
                 off.y + size.y - _computedStyle.borderRadius.attr.w
             },
-            _computedStyle.borderRadius.attr.w, glm::radians(90.F), glm::radians(180.F), _computedStyle.color.attr);
+            _computedStyle.borderRadius.attr.w,
+            glm::radians(90.F),
+            glm::radians(180.F),
+            _computedStyle.color.attr
+        );
 
     }
 

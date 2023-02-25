@@ -7,7 +7,6 @@
 namespace ember::engine::gfx {
     class CameraFrustum {
     public:
-
         enum FrustumSide {
             eLeft = 0x0,
             eRight = 0x1,

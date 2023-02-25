@@ -206,5 +206,8 @@
     <ClCompile Include="..\..\src\Editor.UI\Widget\Collapse.cpp">
       <Filter>Quelldateien\Widget</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Widget\Input\InputVec.cpp">
+      <Filter>Quelldateien\Widget\Input</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

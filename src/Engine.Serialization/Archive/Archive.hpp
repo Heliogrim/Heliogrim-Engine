@@ -265,32 +265,42 @@ namespace ember::engine::serialization {
         }
 
         FORCE_INLINE friend ref<this_type> operator<<(ref<this_type> self_, cref<s16> value_) {
-            self_.serializeByteOrdered(reinterpret_cast<ref<u16>>(const_cast<ref<s16>>(value_)),
-                ArchiveStreamMode::eIn);
+            self_.serializeByteOrdered(
+                reinterpret_cast<ref<u16>>(const_cast<ref<s16>>(value_)),
+                ArchiveStreamMode::eIn
+            );
             return self_;
         }
 
         FORCE_INLINE friend ref<this_type> operator<<(ref<this_type> self_, cref<s32> value_) {
-            self_.serializeByteOrdered(reinterpret_cast<ref<u32>>(const_cast<ref<s32>>(value_)),
-                ArchiveStreamMode::eIn);
+            self_.serializeByteOrdered(
+                reinterpret_cast<ref<u32>>(const_cast<ref<s32>>(value_)),
+                ArchiveStreamMode::eIn
+            );
             return self_;
         }
 
         FORCE_INLINE friend ref<this_type> operator<<(ref<this_type> self_, cref<s64> value_) {
-            self_.serializeByteOrdered(reinterpret_cast<ref<u64>>(const_cast<ref<s64>>(value_)),
-                ArchiveStreamMode::eIn);
+            self_.serializeByteOrdered(
+                reinterpret_cast<ref<u64>>(const_cast<ref<s64>>(value_)),
+                ArchiveStreamMode::eIn
+            );
             return self_;
         }
 
         FORCE_INLINE friend ref<this_type> operator<<(ref<this_type> self_, cref<float> value_) {
-            self_.serializeByteOrdered(reinterpret_cast<ref<u32>>(const_cast<ref<float>>(value_)),
-                ArchiveStreamMode::eIn);
+            self_.serializeByteOrdered(
+                reinterpret_cast<ref<u32>>(const_cast<ref<float>>(value_)),
+                ArchiveStreamMode::eIn
+            );
             return self_;
         }
 
         FORCE_INLINE friend ref<this_type> operator<<(ref<this_type> self_, cref<double> value_) {
-            self_.serializeByteOrdered(reinterpret_cast<ref<u64>>(const_cast<ref<double>>(value_)),
-                ArchiveStreamMode::eIn);
+            self_.serializeByteOrdered(
+                reinterpret_cast<ref<u64>>(const_cast<ref<double>>(value_)),
+                ArchiveStreamMode::eIn
+            );
             return self_;
         }
 

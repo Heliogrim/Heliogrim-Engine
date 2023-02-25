@@ -6,9 +6,7 @@
 #include "../Device/Device.hpp"
 
 namespace ember::engine::gfx {
-
     struct TextureBuildPayload {
-
         /**
          * Extent ( Width | Height | Depth )
          */
@@ -50,7 +48,6 @@ namespace ember::engine::gfx {
     };
 
     struct VirtualTextureBuildPayload {
-
         /**
          * Number of layers
          */

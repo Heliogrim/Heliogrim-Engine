@@ -42,10 +42,13 @@ ref<Vector<RenderStageDependency>> RenderStage::dependencies() noexcept {
 bool RenderStage::pushDependency(cref<RenderStageDependency> dependency_) {
 
     const auto it {
-        std::ranges::find_if(_dependencies.begin(), _dependencies.end(),
+        std::ranges::find_if(
+            _dependencies.begin(),
+            _dependencies.end(),
             [&dependency_](cref<RenderStageDependency> entry_) {
                 return entry_.stage == dependency_.stage;
-            })
+            }
+        )
     };
 
     if (it != _dependencies.end()) {

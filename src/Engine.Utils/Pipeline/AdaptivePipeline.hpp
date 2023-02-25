@@ -8,9 +8,8 @@
 #include "Engine.Common/Collection/List.hpp"
 
 namespace ember::engine::utils {
-
     namespace {
-        template <u64 Idx_, u64 ArgIdx_, typename Type_, typename ...Args_>
+        template <u64 Idx_, u64 ArgIdx_, typename Type_, typename... Args_>
         struct unpack_nth_indexed {
             using type = _STD conditional_t<
                 Idx_ == ArgIdx_,
@@ -20,7 +19,7 @@ namespace ember::engine::utils {
         };
 
         #if ENV_MSVC
-        template <u64 Idx_, typename ...Args_> requires (Idx_ < sizeof...(Args_))
+        template <u64 Idx_, typename... Args_> requires (Idx_ < sizeof...(Args_))
         #else
         template <u64 Idx_, typename ...Args_>
         #endif
@@ -28,7 +27,7 @@ namespace ember::engine::utils {
             using type = typename unpack_nth_indexed<Idx_, 0, Args_...>::type;
         };
 
-        template <u64 Idx_, typename ...Args_>
+        template <u64 Idx_, typename... Args_>
         using unpack_nth_t = typename unpack_nth<Idx_, Args_...>::type;
 
         template <u64 Idx_, typename... Args_> requires (sizeof...(Args_) >= 2)
@@ -38,7 +37,7 @@ namespace ember::engine::utils {
         >>;
     }
 
-    template <typename ...Args_>
+    template <typename... Args_>
     class AdaptivePipeline {
     public:
         using value_type = AdaptivePipeline<Args_...>;

@@ -8,9 +8,7 @@
 #include "../Memory/LocalPooledAllocator.hpp"
 
 namespace ember::engine::gfx::render {
-
     struct RenderPassState {
-
         ~RenderPassState();
 
         /**

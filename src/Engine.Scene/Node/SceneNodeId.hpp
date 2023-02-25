@@ -6,7 +6,6 @@
 #include <Engine.Common/Hash/Murmur3.hpp>
 
 namespace ember::engine::scene {
-
     /**
      * Forward Declaration
      */
@@ -134,7 +133,6 @@ namespace ember::engine::scene {
      * @date 15.08.2021
      */
     struct invalid_node_id {
-
         static constexpr decltype(SceneNodeId::data) bit_sequence = 0x0;
 
         constexpr invalid_node_id() noexcept = default;
@@ -262,7 +260,6 @@ namespace std {
      */
     template <>
     struct equal_to<ember::engine::scene::SceneNodeId> {
-
         using const_reference_type = ember::cref<ember::engine::scene::SceneNodeId>;
 
         [[nodiscard]] bool operator()(const_reference_type left_, const_reference_type right_) const noexcept {
@@ -278,7 +275,6 @@ namespace std {
      */
     template <>
     struct less<ember::engine::scene::SceneNodeId> {
-
         using const_reference_type = ember::cref<ember::engine::scene::SceneNodeId>;
 
         [[nodiscard]] bool operator()(const_reference_type left_, const_reference_type right_) const noexcept {
@@ -294,7 +290,6 @@ namespace std {
      */
     template <>
     struct hash<ember::engine::scene::SceneNodeId> {
-
         using const_reference_type = ember::cref<ember::engine::scene::SceneNodeId>;
 
         [[nodiscard]] _STD size_t operator()(const_reference_type value_) const noexcept {

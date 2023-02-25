@@ -3,7 +3,6 @@
 #include "Fiber.hpp"
 
 namespace ember::engine::scheduler::fiber {
-
     struct FiberLaunchPad {
     public:
         ptr<Fiber> self;

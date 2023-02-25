@@ -196,7 +196,7 @@ namespace ember::engine::resource::loader {
                 _In_ mref<typename next_request_type::type> request_,
                 _In_ mref<typename next_request_type::options> options_
             ) const noexcept override {
-                return invoke_stage<source_loader_stage_type, next_response_type::type>(
+                return invoke_stage<source_loader_stage_type, typename next_response_type::type>(
                     stage,
                     _STD move(request_),
                     _STD move(options_)
@@ -229,7 +229,7 @@ namespace ember::engine::resource::loader {
                 _In_ mref<typename next_request_type::type> request_,
                 _In_ mref<typename next_request_type::options> options_
             ) const noexcept override {
-                return invoke_stage<source_loader_stage_type, next_response_type::type>(
+                return invoke_stage<source_loader_stage_type, typename next_response_type::type>(
                     stage,
                     _STD move(request_),
                     _STD move(options_)
@@ -240,7 +240,7 @@ namespace ember::engine::resource::loader {
                 _In_ mref<typename next_stream_request_type::type> request_,
                 _In_ mref<typename next_stream_request_type::options> options_
             ) const noexcept override {
-                return invoke_stage<source_loader_stage_type, next_response_type::type>(
+                return invoke_stage<source_loader_stage_type, typename next_response_type::type>(
                     stage,
                     _STD move(request_),
                     _STD move(options_)
@@ -280,7 +280,7 @@ namespace ember::engine::resource::loader {
                 _In_ mref<typename next_request_type::type> request_,
                 _In_ mref<typename next_request_type::options> options_
             ) const noexcept override {
-                return invoke_stage<transformer_stage_type, next_response_type::type>(
+                return invoke_stage<transformer_stage_type, typename next_response_type::type>(
                     stage,
                     _STD move(request_),
                     _STD move(options_),
@@ -319,7 +319,7 @@ namespace ember::engine::resource::loader {
                 _In_ mref<typename next_request_type::type> request_,
                 _In_ mref<typename next_request_type::options> options_
             ) const noexcept override {
-                return invoke_stage<transformer_stage_type, next_response_type::type>(
+                return invoke_stage<transformer_stage_type, typename next_response_type::type>(
                     stage,
                     _STD move(request_),
                     _STD move(options_),
@@ -331,7 +331,7 @@ namespace ember::engine::resource::loader {
                 _In_ mref<typename next_stream_request_type::type> request_,
                 _In_ mref<typename next_stream_request_type::options> options_
             ) const noexcept override {
-                return invoke_stage<transformer_stage_type, next_stream_response_type::type>(
+                return invoke_stage<transformer_stage_type, typename next_stream_response_type::type>(
                     stage,
                     _STD move(request_),
                     _STD move(options_),
@@ -372,7 +372,7 @@ namespace ember::engine::resource::loader {
                 _In_ mref<typename next_request_type::type> request_,
                 _In_ mref<typename next_request_type::options> options_
             ) const noexcept override {
-                return invoke_stage<feedback_stage_type, next_response_type::type>(
+                return invoke_stage<feedback_stage_type, typename next_response_type::type>(
                     stage,
                     _STD move(request_),
                     _STD move(options_),
@@ -411,7 +411,7 @@ namespace ember::engine::resource::loader {
                 _In_ mref<typename next_request_type::type> request_,
                 _In_ mref<typename next_request_type::options> options_
             ) const noexcept override {
-                return invoke_stage<feedback_stage_type, next_response_type::type>(
+                return invoke_stage<feedback_stage_type, typename next_response_type::type>(
                     stage,
                     _STD move(request_),
                     _STD move(options_),
@@ -423,7 +423,7 @@ namespace ember::engine::resource::loader {
                 _In_ mref<typename next_stream_request_type::type> request_,
                 _In_ mref<typename next_stream_request_type::options> options_
             ) const noexcept override {
-                return invoke_stage<feedback_stage_type, next_stream_response_type::type>(
+                return invoke_stage<feedback_stage_type, typename next_stream_response_type::type>(
                     stage,
                     _STD move(request_),
                     _STD move(options_),
@@ -514,7 +514,8 @@ namespace ember::engine::resource::loader {
             mref<typename traits::request::type> request_,
             mref<typename traits::request::options> options_
         ) override {
-            return base_type::invoke_stage < base_type::cache_stage_type, traits::response::type > (
+            return base_type::template invoke_stage<typename base_type::cache_stage_type, typename
+                traits::response::type>(
                 base_type::cache,
                 _STD move(request_),
                 _STD move(options_),
@@ -598,7 +599,8 @@ namespace ember::engine::resource::loader {
             mref<typename traits::request::type> request_,
             mref<typename traits::request::options> options_
         ) override {
-            return base_type::invoke_stage < base_type::cache_stage_type, traits::response::type > (
+            return base_type::template invoke_stage<typename base_type::cache_stage_type, typename
+                traits::response::type>(
                 base_type::cache,
                 _STD move(request_),
                 _STD move(options_),
@@ -610,7 +612,8 @@ namespace ember::engine::resource::loader {
             mref<typename traits::stream_request::type> request_,
             mref<typename traits::stream_request::options> options_
         ) override {
-            return base_type::invoke_stage < base_type::cache_stage_type, traits::stream_response::type > (
+            return base_type::template invoke_stage<typename base_type::cache_stage_type, typename
+                traits::stream_response::type>(
                 base_type::cache,
                 _STD move(request_),
                 _STD move(options_),

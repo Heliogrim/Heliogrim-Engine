@@ -3,7 +3,6 @@
 #include "StyleSheetEntry.hpp"
 
 namespace ember::engine::reflow {
-
     template <bool AggregateSetFlag_ = true>
     class StyleCombinator {
     public:
@@ -29,5 +28,4 @@ namespace ember::engine::reflow {
             }
         }
     };
-
 }

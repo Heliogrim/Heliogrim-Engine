@@ -166,8 +166,14 @@ namespace ember::math {
          * @param offsetY_ The offset y coordinate.
          * @param offsetZ_ The offset z coordinate.
          */
-        Extent3D(const T& width_, const T& height_, const T& depth_, const T& offsetX_, const T& offsetY_,
-            const T& offsetZ_) :
+        Extent3D(
+            const T& width_,
+            const T& height_,
+            const T& depth_,
+            const T& offsetX_,
+            const T& offsetY_,
+            const T& offsetZ_
+        ) :
             width(width_),
             height(height_),
             depth(depth_),

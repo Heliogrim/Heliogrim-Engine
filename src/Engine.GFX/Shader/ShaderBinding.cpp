@@ -6,8 +6,13 @@ using namespace ember::engine::gfx::shader;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-ShaderBinding::ShaderBinding(const BindingType type_, const id_type id_, const BindingUpdateInterval interval_,
-    cref<sptr<Device>> device_, const vk::DescriptorSetLayout& vkSetLayout_) noexcept :
+ShaderBinding::ShaderBinding(
+    const BindingType type_,
+    const id_type id_,
+    const BindingUpdateInterval interval_,
+    cref<sptr<Device>> device_,
+    const vk::DescriptorSetLayout& vkSetLayout_
+) noexcept :
     _type(type_),
     _id(id_),
     _interval(interval_),

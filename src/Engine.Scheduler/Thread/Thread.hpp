@@ -11,7 +11,6 @@
 #include <Engine.Common/__macro.hpp>
 
 namespace ember::engine::scheduler::thread {
-
     using thread_id = _STD conditional_t<sizeof(_STD thread::id) == sizeof(u64), u64, u32>;
     typedef u64 affinity_mask;
 
@@ -124,7 +123,6 @@ namespace ember::engine::scheduler::thread {
     };
 
     namespace self {
-
         /**
          * Yields this 
          *
@@ -163,7 +161,6 @@ namespace ember::engine::scheduler::thread {
          * @returns The index of this thread.
          */
         [[nodiscard]] u64 getIdx() noexcept;
-
     }
 
     /**

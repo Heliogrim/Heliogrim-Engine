@@ -5,7 +5,7 @@
 #include <Engine.Common/Flag.hpp>
 
 namespace ember::engine::serialization {
-    class StructureSlotState;
+    struct StructureSlotState;
     class StructureSlotBase;
 }
 

@@ -8,7 +8,6 @@
 #include "../Wrapper.hpp"
 
 namespace ember::concurrent {
-
     namespace {
         /**
          * The internal state of the future

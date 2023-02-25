@@ -13,7 +13,6 @@ namespace ember::engine::gfx {
 }
 
 namespace ember::engine::gfx::render {
-
     enum class RenderPipelineValidationResult : u8 {
         eSuccess = 0x0,
         eFailedRequired,

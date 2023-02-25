@@ -18,13 +18,15 @@ using namespace ember;
 
 Reflow::Reflow(const non_owning_rptr<Engine> engine_) :
     SubModule(engine_),
-    _dependencies({
-        SubModuleDependency {
-            GraphicsDepKey,
-            SubModuleOrder::eSuccessor,
-            true
+    _dependencies(
+        {
+            SubModuleDependency {
+                GraphicsDepKey,
+                SubModuleOrder::eSuccessor,
+                true
+            }
         }
-    }) {}
+    ) {}
 
 Reflow::~Reflow() = default;
 

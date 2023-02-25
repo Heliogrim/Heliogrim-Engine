@@ -37,8 +37,10 @@ cref<NodeTypeRegistryValue> NodeTypeRegistry::get(cref<component_type_id> typeId
     return _empty;
 }
 
-void NodeTypeRegistry::setGfxModel(cref<component_type_id> typeId_,
-    cref<NodeTypeRegistryValue::model_type> callback_) {
+void NodeTypeRegistry::setGfxModel(
+    cref<component_type_id> typeId_,
+    cref<NodeTypeRegistryValue::model_type> callback_
+) {
 
     /**
      *
@@ -60,8 +62,10 @@ void NodeTypeRegistry::setGfxModel(cref<component_type_id> typeId_,
     mapped.gfx = callback_;
 }
 
-void NodeTypeRegistry::setGfxModel(cref<component_type_id> typeId_,
-    mref<NodeTypeRegistryValue::model_type> callback_) {
+void NodeTypeRegistry::setGfxModel(
+    cref<component_type_id> typeId_,
+    mref<NodeTypeRegistryValue::model_type> callback_
+) {
 
     /**
      *
@@ -83,8 +87,10 @@ void NodeTypeRegistry::setGfxModel(cref<component_type_id> typeId_,
     mapped.gfx = _STD move(callback_);
 }
 
-void NodeTypeRegistry::setPfxModel(cref<component_type_id> typeId_,
-    cref<NodeTypeRegistryValue::model_type> callback_) {
+void NodeTypeRegistry::setPfxModel(
+    cref<component_type_id> typeId_,
+    cref<NodeTypeRegistryValue::model_type> callback_
+) {
 
     /**
      *
@@ -106,8 +112,10 @@ void NodeTypeRegistry::setPfxModel(cref<component_type_id> typeId_,
     mapped.pfx = callback_;
 }
 
-void NodeTypeRegistry::setPfxModel(cref<component_type_id> typeId_,
-    mref<NodeTypeRegistryValue::model_type> callback_) {
+void NodeTypeRegistry::setPfxModel(
+    cref<component_type_id> typeId_,
+    mref<NodeTypeRegistryValue::model_type> callback_
+) {
 
     /**
      *
@@ -129,8 +137,10 @@ void NodeTypeRegistry::setPfxModel(cref<component_type_id> typeId_,
     mapped.pfx = _STD move(callback_);
 }
 
-void NodeTypeRegistry::setSfxModel(cref<component_type_id> typeId_,
-    cref<NodeTypeRegistryValue::model_type> callback_) {
+void NodeTypeRegistry::setSfxModel(
+    cref<component_type_id> typeId_,
+    cref<NodeTypeRegistryValue::model_type> callback_
+) {
 
     /**
      *
@@ -152,8 +162,10 @@ void NodeTypeRegistry::setSfxModel(cref<component_type_id> typeId_,
     mapped.sfx = callback_;
 }
 
-void NodeTypeRegistry::setSfxModel(cref<component_type_id> typeId_,
-    mref<NodeTypeRegistryValue::model_type> callback_) {
+void NodeTypeRegistry::setSfxModel(
+    cref<component_type_id> typeId_,
+    mref<NodeTypeRegistryValue::model_type> callback_
+) {
 
     /**
      *

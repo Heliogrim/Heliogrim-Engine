@@ -267,12 +267,15 @@ void EdGridNode::before(
 
     /**/
     cmd.beginRenderPass(*_loRenderPass, fb);
-    cmd.bindPipeline(_pipeline.get(), {
-        fb.width(),
-        fb.height(),
-        0.F,
-        1.F
-    });
+    cmd.bindPipeline(
+        _pipeline.get(),
+        {
+            fb.width(),
+            fb.height(),
+            0.F,
+            1.F
+        }
+    );
 
     /**/
     sptr<Vector<shader::DiscreteBindingGroup>> dbgs {
@@ -326,28 +329,34 @@ void EdGridNode::setupLORenderPass() {
 
     _loRenderPass = make_sptr<pipeline::LORenderPass>(_device);
 
-    _loRenderPass->set(0, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        vk::Format::eB8G8R8A8Unorm,
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eLoad,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eShaderReadOnlyOptimal,
-        vk::ImageLayout::eShaderReadOnlyOptimal
-    });
-    _loRenderPass->set(1, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        api::vkTranslateFormat(REV_DEPTH_FORMAT),
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eLoad,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eDepthStencilReadOnlyOptimal,
-        vk::ImageLayout::eDepthStencilReadOnlyOptimal
-    });
+    _loRenderPass->set(
+        0,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            vk::Format::eB8G8R8A8Unorm,
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eLoad,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eShaderReadOnlyOptimal,
+            vk::ImageLayout::eShaderReadOnlyOptimal
+        }
+    );
+    _loRenderPass->set(
+        1,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            api::vkTranslateFormat(REV_DEPTH_FORMAT),
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eLoad,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eDepthStencilReadOnlyOptimal,
+            vk::ImageLayout::eDepthStencilReadOnlyOptimal
+        }
+    );
 
     _loRenderPass->setup();
 }
@@ -400,9 +409,13 @@ void EdGridNode::setupShader() {
         for (const auto& binding : group.shaderBindings()) {
 
             auto it {
-                _STD find_if(sizes.begin(), sizes.end(), [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
-                    return entry_.type == api::vkTranslateBindingType(type);
-                })
+                _STD find_if(
+                    sizes.begin(),
+                    sizes.end(),
+                    [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
+                        return entry_.type == api::vkTranslateBindingType(type);
+                    }
+                )
             };
 
             if (it == sizes.end()) {
@@ -454,17 +467,19 @@ void EdGridNode::setupPipeline() {
     _pipeline->rasterizationStage().depthCheck() = true;
     _pipeline->rasterizationStage().depthCompare() = vk::CompareOp::eLess;
 
-    static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->blending().push_back(vk::PipelineColorBlendAttachmentState {
-        VK_TRUE,
-        vk::BlendFactor::eSrcAlpha,
-        vk::BlendFactor::eOneMinusSrcAlpha,
-        vk::BlendOp::eAdd,
-        vk::BlendFactor::eOne,
-        vk::BlendFactor::eZero,
-        vk::BlendOp::eAdd,
-        vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB |
-        vk::ColorComponentFlagBits::eA
-    });
+    static_cast<ptr<VkFixedPipeline>>(_pipeline.get())->blending().push_back(
+        vk::PipelineColorBlendAttachmentState {
+            VK_TRUE,
+            vk::BlendFactor::eSrcAlpha,
+            vk::BlendFactor::eOneMinusSrcAlpha,
+            vk::BlendOp::eAdd,
+            vk::BlendFactor::eOne,
+            vk::BlendFactor::eZero,
+            vk::BlendOp::eAdd,
+            vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB |
+            vk::ColorComponentFlagBits::eA
+        }
+    );
 
     /**
      *

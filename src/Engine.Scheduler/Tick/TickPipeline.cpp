@@ -46,11 +46,13 @@ void TickPipeline::declareDependencies(
 
     /**/
 
-    collection_.insert(StageDependency {
-        { renderScene },
-        this,
-        tickEnd
-    });
+    collection_.insert(
+        StageDependency {
+            { renderScene },
+            this,
+            tickEnd
+        }
+    );
 }
 
 void TickPipeline::dismount(const non_owning_rptr<StageRegister> register_) {

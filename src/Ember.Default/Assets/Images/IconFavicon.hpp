@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconFavicon> {
     public:
         IconFavicon():
-            ImageAsset(IconFavicon::unstable_auto_guid(),
-                R"(resources\imports\ktx\favicon.ktx)") {}
+            ImageAsset(
+                IconFavicon::unstable_auto_guid(),
+                R"(resources\imports\ktx\favicon.ktx)"
+            ) {}
     };
 }

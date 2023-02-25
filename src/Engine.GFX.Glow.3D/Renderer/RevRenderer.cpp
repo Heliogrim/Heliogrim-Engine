@@ -48,47 +48,61 @@ void RevRenderer::registerStages() {
     /**
      * Declare Dependencies
      */
-    earlyStage->pushDependency({
-        depthStage.get(),
-        RenderStageOrder::ePredecessor,
-        true
-    });
+    earlyStage->pushDependency(
+        {
+            depthStage.get(),
+            RenderStageOrder::ePredecessor,
+            true
+        }
+    );
 
-    lightStage->pushDependency({
-        depthStage.get(),
-        RenderStageOrder::ePredecessor,
-        true
-    });
+    lightStage->pushDependency(
+        {
+            depthStage.get(),
+            RenderStageOrder::ePredecessor,
+            true
+        }
+    );
 
-    probeStage->pushDependency({
-        depthStage.get(),
-        RenderStageOrder::ePredecessor,
-        true
-    });
+    probeStage->pushDependency(
+        {
+            depthStage.get(),
+            RenderStageOrder::ePredecessor,
+            true
+        }
+    );
 
-    mainStage->pushDependency({
-        depthStage.get(),
-        RenderStageOrder::ePredecessor,
-        true
-    });
+    mainStage->pushDependency(
+        {
+            depthStage.get(),
+            RenderStageOrder::ePredecessor,
+            true
+        }
+    );
 
-    mainStage->pushDependency({
-        lightStage.get(),
-        RenderStageOrder::ePredecessor,
-        true
-    });
+    mainStage->pushDependency(
+        {
+            lightStage.get(),
+            RenderStageOrder::ePredecessor,
+            true
+        }
+    );
 
-    mainStage->pushDependency({
-        probeStage.get(),
-        RenderStageOrder::ePredecessor,
-        true
-    });
+    mainStage->pushDependency(
+        {
+            probeStage.get(),
+            RenderStageOrder::ePredecessor,
+            true
+        }
+    );
 
-    finalStage->pushDependency({
-        mainStage.get(),
-        RenderStageOrder::ePredecessor,
-        true
-    });
+    finalStage->pushDependency(
+        {
+            mainStage.get(),
+            RenderStageOrder::ePredecessor,
+            true
+        }
+    );
 
     /**
      * Push Stages

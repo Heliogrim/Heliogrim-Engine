@@ -6,8 +6,6 @@
 #include "Widget/Widget.hpp"
 
 namespace ember::engine::reflow {
-
     class Children :
         public Vector<sptr<Widget>> {};
-
 }

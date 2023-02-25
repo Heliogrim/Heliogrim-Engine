@@ -6,7 +6,6 @@
 namespace ember {
     struct component_type_id :
         type_id {
-
         explicit constexpr component_type_id(const type_id& other_) :
             type_id(other_) {}
 
@@ -19,7 +18,6 @@ namespace ember {
 }
 
 namespace std {
-
     template <>
     struct hash<ember::component_type_id> :
         public _STD hash<ember::type_id> {
@@ -31,8 +29,10 @@ namespace std {
     template <>
     struct less<ember::component_type_id> :
         public _STD less<ember::type_id> {
-        [[nodiscard]] bool operator()(ember::cref<ember::component_type_id> left_,
-            ember::cref<ember::component_type_id> right_) const noexcept {
+        [[nodiscard]] bool operator()(
+            ember::cref<ember::component_type_id> left_,
+            ember::cref<ember::component_type_id> right_
+        ) const noexcept {
             auto& self { static_cast<const _STD less<ember::type_id>&>(*this) };
             return self(left_, right_);
         }
@@ -41,8 +41,10 @@ namespace std {
     template <>
     struct equal_to<ember::component_type_id> :
         public _STD equal_to<ember::type_id> {
-        [[nodiscard]] bool operator()(ember::cref<ember::component_type_id> left_,
-            ember::cref<ember::component_type_id> right_) const noexcept {
+        [[nodiscard]] bool operator()(
+            ember::cref<ember::component_type_id> left_,
+            ember::cref<ember::component_type_id> right_
+        ) const noexcept {
             auto& self { static_cast<const _STD equal_to<ember::type_id>&>(*this) };
             return self(left_, right_);
         }

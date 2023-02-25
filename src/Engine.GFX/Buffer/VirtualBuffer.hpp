@@ -7,7 +7,6 @@
 #include "__fwd.hpp"
 
 namespace ember::engine::gfx {
-
     /**
      * TODO: Add support for software sparse buffer using underlying memory pages
      *  TODO: Each page has a defined size which might be mappable to any left memory sequence
@@ -22,8 +21,11 @@ namespace ember::engine::gfx {
     public:
         VirtualBuffer() noexcept;
 
-        VirtualBuffer(mref<uptr<VirtualMemory>> memory_, cref<vk::Buffer> buffer_,
-            cref<vk::BufferUsageFlags> usageFlags_) noexcept;
+        VirtualBuffer(
+            mref<uptr<VirtualMemory>> memory_,
+            cref<vk::Buffer> buffer_,
+            cref<vk::BufferUsageFlags> usageFlags_
+        ) noexcept;
 
         VirtualBuffer(cref<this_type>) = delete;
 
@@ -123,8 +125,11 @@ namespace ember::engine::gfx {
     public:
         void enqueueBinding(const ptr<CommandQueue> queue_);
 
-        void enqueueBinding(const ptr<CommandQueue> queue_, cref<Vector<vk::Semaphore>> waits_,
-            cref<Vector<vk::Semaphore>> signals_);
+        void enqueueBinding(
+            const ptr<CommandQueue> queue_,
+            cref<Vector<vk::Semaphore>> waits_,
+            cref<Vector<vk::Semaphore>> signals_
+        );
 
         [[deprecated]] void enqueueBindingSync(const ptr<CommandQueue> queue_);
     };

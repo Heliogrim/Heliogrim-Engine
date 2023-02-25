@@ -8,7 +8,6 @@
 #include <cassert>
 
 namespace ember::engine::serialization {
-
     class DataLayoutReflect {
     public:
         using this_type = DataLayoutReflect;
@@ -76,5 +75,4 @@ namespace ember::engine::serialization {
 
         }
     };
-
 }

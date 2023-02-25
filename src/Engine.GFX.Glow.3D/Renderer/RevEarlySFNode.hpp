@@ -6,7 +6,6 @@
 #include "State/__fwd.hpp"
 
 namespace ember::engine::gfx::glow::render {
-
     class RevEarlySFNode final :
         public gfx::render::RenderStageNode {
     public:
@@ -33,14 +32,21 @@ namespace ember::engine::gfx::glow::render {
         [[nodiscard]] Vector<gfx::render::RenderDataToken> optionalToken() noexcept override;
 
     public:
-        void before(const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
-            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_) const override;
+        void before(
+            const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_
+        ) const override;
 
-        void invoke(const non_owning_rptr<gfx::render::HORenderPass> renderPass_, const non_owning_rptr<gfx::render::RenderStagePass> stagePass_,
-            const non_owning_rptr<SceneNodeModel> model_) const override;
+        void invoke(
+            const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_,
+            const non_owning_rptr<SceneNodeModel> model_
+        ) const override;
 
-        void after(const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
-            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_) const override;
+        void after(
+            const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_
+        ) const override;
 
     private:
         void setupShader(cref<sptr<Device>> device_);
@@ -58,9 +64,14 @@ namespace ember::engine::gfx::glow::render {
     private:
         void postProcessAllocated(const ptr<gfx::render::HORenderPass> renderPass_);
 
-        [[nodiscard]] bool rebuildMttBuffer(cref<sptr<RevSfMtt>> sfMtt_, cref<sptr<gfx::render::RenderPassState>> state_) const;
+        [[nodiscard]] bool rebuildMttBuffer(
+            cref<sptr<RevSfMtt>> sfMtt_,
+            cref<sptr<gfx::render::RenderPassState>> state_
+        ) const;
 
-        [[nodiscard]] bool rebuildCsfmBuffer(cref<sptr<RevSfMtt>> sfMtt_, cref<sptr<gfx::render::RenderPassState>> state_) const;
+        [[nodiscard]] bool rebuildCsfmBuffer(
+            cref<sptr<RevSfMtt>> sfMtt_,
+            cref<sptr<gfx::render::RenderPassState>> state_
+        ) const;
     };
-
 }

@@ -4,7 +4,6 @@
 #include <Engine.Common/Types.hpp>
 
 namespace ember::engine::scheduler::task {
-
     enum class TaskMask: ember::u8 {
         eUndefined = 0b0,
         //

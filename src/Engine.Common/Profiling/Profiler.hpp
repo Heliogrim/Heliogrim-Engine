@@ -9,7 +9,6 @@
 #include "../Concurrent/SpinLock.hpp"
 
 namespace ember::profiling {
-
     struct ProfileResult {
         _STD string name;
         u64 start;

@@ -3,7 +3,6 @@
 #include <unordered_map>
 
 namespace ember {
-
     template <
         class Key_,
         class Type_,

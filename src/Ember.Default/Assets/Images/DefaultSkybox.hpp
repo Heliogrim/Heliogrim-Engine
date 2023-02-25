@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<DefaultSkybox> {
     public:
         DefaultSkybox():
-            ImageAsset(DefaultSkybox::unstable_auto_guid(),
-                R"(resources\imports\ktx\default_skybox.ktx)") {}
+            ImageAsset(
+                DefaultSkybox::unstable_auto_guid(),
+                R"(resources\imports\ktx\default_skybox.ktx)"
+            ) {}
     };
 }

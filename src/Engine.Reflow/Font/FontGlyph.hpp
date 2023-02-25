@@ -4,7 +4,6 @@
 #include <Engine.Common/Math/Vector.hpp>
 
 namespace ember::engine::reflow {
-
     struct FontGlyph {
         /**/
         math::uivec2 _size;
@@ -15,5 +14,4 @@ namespace ember::engine::reflow {
         math::vec2 _minSt;
         math::vec2 _maxSt;
     };
-
 }

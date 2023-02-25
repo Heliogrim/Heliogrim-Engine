@@ -6,7 +6,6 @@
 #include "../Wrapper.hpp"
 
 namespace ember {
-
     template <class Type_, class Allocator_ = _STD allocator<Type_>>
     class UnsafeVector {
     public:

@@ -289,10 +289,12 @@ void RevEarlyBrdfLutNode::setupShader(cref<sptr<Device>> device_) {
      * Build Shader and Bindings
      */
     auto factoryResult {
-        shaderFactory.build({
-            vertexPrototype,
-            fragmentPrototype
-        })
+        shaderFactory.build(
+            {
+                vertexPrototype,
+                fragmentPrototype
+            }
+        )
     };
 
     /**
@@ -311,9 +313,13 @@ void RevEarlyBrdfLutNode::setupShader(cref<sptr<Device>> device_) {
         for (const auto& binding : group.shaderBindings()) {
 
             auto it {
-                _STD find_if(sizes.begin(), sizes.end(), [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
-                    return entry_.type == api::vkTranslateBindingType(type);
-                })
+                _STD find_if(
+                    sizes.begin(),
+                    sizes.end(),
+                    [type = binding.type()](cref<vk::DescriptorPoolSize> entry_) {
+                        return entry_.type == api::vkTranslateBindingType(type);
+                    }
+                )
             };
 
             if (it == sizes.end()) {
@@ -351,17 +357,20 @@ sptr<engine::gfx::pipeline::LORenderPass> RevEarlyBrdfLutNode::setupLORenderPass
     auto loRenderPass = make_sptr<pipeline::LORenderPass>(_device);
 
     // Brdf Lut Attachment
-    loRenderPass->set(0, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        api::vkTranslateFormat(TextureFormat::eR16G16Sfloat),
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eShaderReadOnlyOptimal
-    });
+    loRenderPass->set(
+        0,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            api::vkTranslateFormat(TextureFormat::eR16G16Sfloat),
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eClear,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eShaderReadOnlyOptimal
+        }
+    );
 
     /**
      *
@@ -373,7 +382,8 @@ sptr<engine::gfx::pipeline::LORenderPass> RevEarlyBrdfLutNode::setupLORenderPass
 void RevEarlyBrdfLutNode::destroyLORenderPass(mref<ptr<pipeline::LORenderPass>> renderPass_) {}
 
 [[nodiscard]] engine::gfx::Framebuffer RevEarlyBrdfLutNode::setupFramebuffer(
-    cref<sptr<pipeline::LORenderPass>> renderPass_) {
+    cref<sptr<pipeline::LORenderPass>> renderPass_
+) {
 
     /**
      * Allocate Command Buffer
@@ -392,17 +402,19 @@ void RevEarlyBrdfLutNode::destroyLORenderPass(mref<ptr<pipeline::LORenderPass>> 
     /**
      * Create Framebuffer :: Attachments
      */
-    auto brdfLut = factory->build({
-        buffer.extent(),
-        TextureFormat::eR16G16Sfloat,
-        // Brdf Lut
-        1ui32,
-        TextureType::e2d,
-        vk::ImageAspectFlagBits::eColor,
-        vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
-        vk::MemoryPropertyFlagBits::eDeviceLocal,
-        vk::SharingMode::eExclusive
-    });
+    auto brdfLut = factory->build(
+        {
+            buffer.extent(),
+            TextureFormat::eR16G16Sfloat,
+            // Brdf Lut
+            1ui32,
+            TextureType::e2d,
+            vk::ImageAspectFlagBits::eColor,
+            vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            vk::SharingMode::eExclusive
+        }
+    );
 
     factory->buildView(brdfLut);
 

@@ -62,7 +62,8 @@ namespace ember::engine::serialization {
             auto begin = _STD ranges::begin(value_);
             const auto end = _STD ranges::end(value_);
 
-            constexpr s64 off = sizeof(StructureSlotHeader::type) + sizeof(StructureSlotHeader::size);
+            constexpr s64 off = sizeof(/* StructureSlotHeader::type */StructureSlotType) + sizeof(
+                /* StructureSlotHeader::size */s64);
             constexpr s64 ioff = sizeof(count);
 
             s64 offset = this_type::_state.offset + off + ioff;
@@ -92,10 +93,10 @@ namespace ember::engine::serialization {
                 /**/
 
                 offset += slot.getSlotHeader().size;
-                offset += sizeof(StructureSlotHeader::type);
+                offset += sizeof(/* StructureSlotHeader::type */StructureSlotType);
 
                 if (not slot.getSlotHeader().sizeInferred) {
-                    offset += sizeof(StructureSlotHeader::size);
+                    offset += sizeof(/* StructureSlotHeader::size */s64);
                 }
             }
 
@@ -145,7 +146,8 @@ namespace ember::engine::serialization {
             auto begin = _STD ranges::begin(value_);
             const auto end = _STD ranges::end(value_);
 
-            constexpr s64 off = sizeof(StructureSlotHeader::type) + sizeof(StructureSlotHeader::size);
+            constexpr s64 off = sizeof(/* StructureSlotHeader::type */StructureSlotType) + sizeof(
+                /* StructureSlotHeader::size */s64);
             constexpr s64 ioff = sizeof(storedCount);
 
             s64 offset = this_type::_state.offset + off + ioff;
@@ -176,10 +178,10 @@ namespace ember::engine::serialization {
                 /**/
 
                 offset += slot.getSlotHeader().size;
-                offset += sizeof(StructureSlotHeader::type);
+                offset += sizeof(/* StructureSlotHeader::type */StructureSlotType);
 
                 if (not slot.getSlotHeader().sizeInferred) {
-                    offset += sizeof(StructureSlotHeader::size);
+                    offset += sizeof(/* StructureSlotHeader::size */s64);
                 }
 
                 /**/

@@ -6,7 +6,6 @@ namespace ember::engine::gfx {
     class Sphere :
         public Geometry {
     public:
-
         /**
          * Default constructor
          *
@@ -32,6 +31,5 @@ namespace ember::engine::gfx {
          * @returns A pointer to a Mesh.
          */
         [[nodiscard]] ptr<Mesh> convert() const override;
-
     };
 }

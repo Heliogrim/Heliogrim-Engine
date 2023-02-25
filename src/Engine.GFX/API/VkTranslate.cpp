@@ -290,7 +290,8 @@ vk::MemoryPropertyFlags ember::engine::gfx::api::vkTranslateMemoryProperties(con
 }
 
 ember::engine::gfx::MemoryProperties ember::engine::gfx::api::vkTranslateMemoryProperties(
-    const vk::MemoryPropertyFlags properties_) {
+    const vk::MemoryPropertyFlags properties_
+) {
 
     MemoryProperties props {};
 

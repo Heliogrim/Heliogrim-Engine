@@ -26,7 +26,6 @@ inline _STD vector<char> read_shader_file(const char* file_) {
 }
 
 namespace ember::engine::gfx::shader {
-
     struct FactoryBuildResult {
         Vector<ShaderBindingGroup> groups;
         Vector<ptr<Shader>> shaders;

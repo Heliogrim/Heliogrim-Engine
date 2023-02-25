@@ -3,7 +3,6 @@
 #include "Viewport.hpp"
 
 namespace ember::engine::gfx {
-
     class GraphicPipeline {
     protected:
         /**

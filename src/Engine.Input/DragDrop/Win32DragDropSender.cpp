@@ -23,9 +23,11 @@ void Win32DragDropSender::setup() {}
 void Win32DragDropSender::destroy() {}
 
 void Win32DragDropSender::dispatchDragDrop() {
-    Engine::getEngine()->getPlatform()->platformQueue().try_push([this]() {
-        startDragDrop();
-    });
+    Engine::getEngine()->getPlatform()->platformQueue().try_push(
+        [this]() {
+            startDragDrop();
+        }
+    );
 }
 
 void Win32DragDropSender::startDragDrop() {

@@ -1,81 +1,84 @@
 #include <Ember/Actor.hpp>
 #include <Ember/ActorComponent.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-#include <Engine.Reflow/Style/StyleCondition.hpp>
-#include <Engine.Reflow/Widget/Text.hpp>
-#include <Engine.Reflow/Widget/Input/InputFloat.hpp>
-#include <Engine.Reflow/Widget/Input/InputIntegral.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
 
 #include "ObjectValueMapper.hpp"
-#include "../../Color/Dark.hpp"
-#include "../../Style/Style.hpp"
-#include "Engine.GFX.Glow.UI/TestUI.hpp"
 #include "../../Widget/Input/InputVec.hpp"
 
-using namespace ember::editor::ui;
-using namespace ember::engine::reflow;
+using namespace ::ember::editor::ui;
+using namespace ::ember::engine::reflow;
 using namespace ember;
 
 [[nodiscard]] static sptr<BoundStyleSheet> makeInputBoxStyle() {
 
     auto style {
-        BoundStyleSheet::make(StyleSheet {
-            .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-            .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-            .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-            .wrap { true, ReflowWrap::eNoWrap },
-            .padding { true, Padding { 4.F, 2.F } },
-            .margin { true, Margin { 0.F } },
-            .reflowShrink { true, 0.F },
-            .reflowGrow { true, 0.F },
-            .borderRadius = { true, BorderRadius { 4.F } },
-            .color { false, color::Dark::backgroundInnerField }
-        })
+        BoundStyleSheet::make(
+            StyleSheet {
+                .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
+                .wrap { true, ReflowWrap::eNoWrap },
+                .padding { true, Padding { 4.F, 2.F } },
+                .margin { true, Margin { 0.F } },
+                .reflowShrink { true, 0.F },
+                .reflowGrow { true, 0.F },
+                .borderRadius = { true, BorderRadius { 4.F } },
+                .color { false, color::Dark::backgroundInnerField }
+            }
+        )
 
     };
 
-    style->pushStyle({
-        Style::key_type::from("InputType::Focused"),
-        style::isFocused,
-        make_sptr<StyleSheet>(StyleSheet {
-            .color { true, color::Dark::backgroundInnerFieldDarken }
-        })
-    });
+    style->pushStyle(
+        {
+            Style::key_type::from("InputType::Focused"),
+            style::isFocused,
+            make_sptr<StyleSheet>(
+                StyleSheet {
+                    .color { true, color::Dark::backgroundInnerFieldDarken }
+                }
+            )
+        }
+    );
 
     return style;
-
 }
 
 [[nodiscard]] static sptr<BoundStyleSheet> makeInputTextStyle() {
     auto* font { getDefaultFont() };
 
     auto style {
-        BoundStyleSheet::make(StyleSheet {
-            .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-            .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-            .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-            .color { false, color::Dark::grey },
-            .font { true, font },
-            .fontSize { true, 16.F },
-            .textAlign { true, TextAlign::eLeftMiddle },
-            .textEllipse { true, 1ui32 }
-        })
+        BoundStyleSheet::make(
+            StyleSheet {
+                .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
+                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
+                .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
+                .color { false, color::Dark::grey },
+                .font { true, font },
+                .fontSize { true, 16.F },
+                .textAlign { true, TextAlign::eLeftMiddle },
+                .textEllipse { true, 1ui32 }
+            }
+        )
     };
 
-    style->pushStyle({
-        Style::key_type::from("InputType::Focused"),
-        style::isNever,
-        make_sptr<StyleSheet>(StyleSheet {
-            .color { true, color::Dark::white }
-        })
-    });
+    style->pushStyle(
+        {
+            Style::key_type::from("InputType::Focused"),
+            style::isNever,
+            make_sptr<StyleSheet>(
+                StyleSheet {
+                    .color { true, color::Dark::white }
+                }
+            )
+        }
+    );
 
     return style;
 }
@@ -138,7 +141,8 @@ void ObjectValueMapper<Actor>::update(cref<sptr<engine::reflow::Box>> parent_, c
 
     _STD static_pointer_cast<InputVec3, Widget>(children[2])->_callback = [actor = &actor](math::vec3 value_) {
         const_cast<ref<Transform>>(actor->getRootComponent()->getWorldTransform()).setRotation(
-            math::quaternion::euler(value_));
+            math::quaternion::euler(value_)
+        );
     };
 
     _STD static_pointer_cast<InputVec3, Widget>(children[3])->_callback = [actor = &actor](math::vec3 value_) {

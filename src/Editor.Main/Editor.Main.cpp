@@ -42,7 +42,8 @@ int main() {
         [sleepFlag = ptr<_STD atomic_flag> { &sleepFlag }](cref<SignalShutdownEvent>) {
             sleepFlag->clear(_STD memory_order::relaxed);
             sleepFlag->notify_one();
-        });
+        }
+    );
 
     /**
      * Boot Engine

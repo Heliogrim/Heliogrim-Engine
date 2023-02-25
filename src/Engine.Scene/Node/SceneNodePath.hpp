@@ -6,7 +6,6 @@
 #include <Engine.Common/Hash/Murmur3.hpp>
 
 namespace ember::engine::scene {
-
     struct SceneNodePath {
     public:
         using this_type = SceneNodePath;
@@ -126,34 +125,32 @@ namespace ember::engine::scene {
 }
 
 namespace std {
-
     template <>
     struct equal_to<ember::engine::scene::SceneNodePath> {
-
         using value_type = ember::engine::scene::SceneNodePath;
 
-        [[nodiscard]] bool operator()(::ember::cref<value_type> left_,
-            ::ember::cref<value_type> right_) const noexcept {
+        [[nodiscard]] bool operator()(
+            ::ember::cref<value_type> left_,
+            ::ember::cref<value_type> right_
+        ) const noexcept {
             return left_.path == right_.path;
         }
-
     };
 
     template <>
     struct less<ember::engine::scene::SceneNodePath> {
-
         using value_type = ember::engine::scene::SceneNodePath;
 
-        [[nodiscard]] bool operator()(::ember::cref<value_type> left_,
-            ::ember::cref<value_type> right_) const noexcept {
+        [[nodiscard]] bool operator()(
+            ::ember::cref<value_type> left_,
+            ::ember::cref<value_type> right_
+        ) const noexcept {
             return left_.path < right_.path;
         }
-
     };
 
     template <>
     struct hash<ember::engine::scene::SceneNodePath> {
-
         using value_type = ember::engine::scene::SceneNodePath;
 
         [[nodiscard]] _STD size_t operator()(::ember::cref<value_type> value_) const noexcept {

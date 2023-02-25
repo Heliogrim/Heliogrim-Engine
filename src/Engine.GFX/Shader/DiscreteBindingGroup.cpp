@@ -3,8 +3,11 @@
 using namespace ember::engine::gfx::shader;
 using namespace ember;
 
-DiscreteBindingGroup::DiscreteBindingGroup(cref<ShaderBindingGroup> super_, const ptr<DiscreteBindingPool> pool_,
-    cref<vk::DescriptorSet> vkSet_) :
+DiscreteBindingGroup::DiscreteBindingGroup(
+    cref<ShaderBindingGroup> super_,
+    const ptr<DiscreteBindingPool> pool_,
+    cref<vk::DescriptorSet> vkSet_
+) :
     _super(super_),
     _pool(pool_),
     _discreteBindings(),
@@ -33,9 +36,13 @@ const ptr<engine::gfx::DiscreteBindingPool> DiscreteBindingGroup::pool() const n
 ref<DiscreteBinding> DiscreteBindingGroup::getById(const ShaderBinding::id_type id_) {
 
     const auto it {
-        _STD find_if(_discreteBindings.begin(), _discreteBindings.end(), [id_](cref<DiscreteBinding> entry_) {
-            return id_ == entry_.super().id();
-        })
+        _STD find_if(
+            _discreteBindings.begin(),
+            _discreteBindings.end(),
+            [id_](cref<DiscreteBinding> entry_) {
+                return id_ == entry_.super().id();
+            }
+        )
     };
 
     if (it != _discreteBindings.end()) {
@@ -45,10 +52,12 @@ ref<DiscreteBinding> DiscreteBindingGroup::getById(const ShaderBinding::id_type 
     /**
      *
      */
-    _discreteBindings.push_back(DiscreteBinding {
-        &_super.getById(id_),
-        _vkSet
-    });
+    _discreteBindings.push_back(
+        DiscreteBinding {
+            &_super.getById(id_),
+            _vkSet
+        }
+    );
 
     /**
      *

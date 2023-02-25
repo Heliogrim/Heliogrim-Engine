@@ -8,7 +8,6 @@ namespace ember::engine::gfx::glow::render {
 }
 
 namespace ember::engine::gfx::glow::render {
-
     class RevMainStaticNode :
         public gfx::render::RenderStageNode {
     public:
@@ -38,19 +37,28 @@ namespace ember::engine::gfx::glow::render {
         [[nodiscard]] const non_owning_rptr<const Vector<type_id>> modelTypes() const noexcept override;
 
     public:
-        void before(const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
-            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_) const override;
+        void before(
+            const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_
+        ) const override;
 
-        void invoke(const non_owning_rptr<gfx::render::HORenderPass> renderPass_, const non_owning_rptr<gfx::render::RenderStagePass> stagePass_,
-            const non_owning_rptr<SceneNodeModel> model_) const override;
+        void invoke(
+            const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_,
+            const non_owning_rptr<SceneNodeModel> model_
+        ) const override;
 
-        void after(const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
-            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_) const override;
+        void after(
+            const non_owning_rptr<gfx::render::HORenderPass> renderPass_,
+            const non_owning_rptr<gfx::render::RenderStagePass> stagePass_
+        ) const override;
 
     private:
         void setupShader();
 
-        [[nodiscard]] shader::DiscreteBindingGroup createMaterialDescriptor(const ptr<gfx::render::RenderPassState> state_) const;
+        [[nodiscard]] shader::DiscreteBindingGroup createMaterialDescriptor(
+            const ptr<gfx::render::RenderPassState> state_
+        ) const;
 
     private:
         Vector<type_id> _modelTypes;

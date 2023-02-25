@@ -3,7 +3,6 @@
 #include "../Renderer/RenderDataToken.hpp"
 
 namespace ember::engine::gfx::render {
-
     constexpr RenderDataToken CameraTransform {
         RenderDataToken::make(
             "CameraTransform"sv,
@@ -30,5 +29,4 @@ namespace ember::engine::gfx::render {
             RenderDataUsage::eModelInstance
         )
     };
-
 }

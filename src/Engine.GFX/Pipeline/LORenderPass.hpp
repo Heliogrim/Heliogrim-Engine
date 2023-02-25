@@ -15,7 +15,6 @@ namespace ember::engine::gfx {
 }
 
 namespace ember::engine::gfx::pipeline {
-
     class LORenderPass {
     public:
         /**
@@ -199,7 +198,7 @@ namespace ember::engine::gfx::pipeline {
          */
         [[nodiscard]] cref<vk::RenderPassBeginInfo> vkBeginInfo() const noexcept;
 
-    //private:
+        //private:
     public:
         /**
          * Vulkan API

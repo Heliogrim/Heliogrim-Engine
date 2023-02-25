@@ -15,7 +15,6 @@ namespace ember::engine::scene {
 }
 
 namespace ember::engine::scene {
-
     /**
      * TODO: Check whether we want a dynamic lookup container to enable more than fixed use modules
      */
@@ -55,5 +54,4 @@ namespace ember::engine::scene {
 
         void setSfxModel(cref<component_type_id> typeId_, mref<NodeTypeRegistryValue::model_type> callback_);
     };
-
 }

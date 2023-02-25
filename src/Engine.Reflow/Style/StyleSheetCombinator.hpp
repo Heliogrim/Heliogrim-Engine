@@ -4,7 +4,6 @@
 #include "StyleCombinator.hpp"
 
 namespace ember::engine::reflow {
-
     template <typename CombinatorType_ = StyleCombinator<false>>
     class StyleSheetCombinator :
         public CombinatorType_ {
@@ -55,5 +54,4 @@ namespace ember::engine::reflow {
             return self_;
         }
     };
-
 }

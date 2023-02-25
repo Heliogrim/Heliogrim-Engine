@@ -4,7 +4,6 @@
 #include <Engine.Event/Event.hpp>
 
 namespace ember::engine::input::event {
-
     class KeyboardEvent final :
         public StatelessEvent {
     public:
@@ -34,5 +33,4 @@ namespace ember::engine::input::event {
         bool _down;
         u32 _modifier;
     };
-
 }

@@ -4,7 +4,6 @@
 #include "../__macro.hpp"
 
 namespace ember::hash {
-
     /**
      * Murmur Hash 3 (x86/64 Platform) (32Bit Output)
      *
@@ -43,5 +42,4 @@ namespace ember::hash {
      * @param [in,out] dst_ If non-null, destination for the.
      */
     void murmur3_x64_128(IN const void* data_, IN const u32 length_, IN const u32 seed_, OUT void* dst_);
-
 }

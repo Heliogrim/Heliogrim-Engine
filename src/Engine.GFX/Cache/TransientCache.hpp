@@ -7,7 +7,6 @@
 #include "__fwd.hpp"
 
 namespace ember::engine::gfx::cache {
-
     class TransientCache {
     public:
         using this_type = TransientCache;

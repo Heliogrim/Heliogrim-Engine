@@ -4,7 +4,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::scene {
-
     /**
      * Forward Declaration
      */
@@ -29,7 +28,6 @@ namespace ember::engine::scene {
     };
 
     struct invalid_node_version {
-
         static constexpr decltype(SceneNodeVersion::data) bit_sequence = 0;
 
         constexpr invalid_node_version() = default;
@@ -66,5 +64,4 @@ namespace ember::engine::scene {
     [[nodiscard]] inline bool operator==(invalid_node_version, cref<SceneNodeVersion> right_) noexcept {
         return invalid_node_version::bit_sequence == right_.data;
     }
-
 }

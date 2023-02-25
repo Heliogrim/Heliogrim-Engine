@@ -3,7 +3,6 @@
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 
 namespace ember::engine::serialization {
-
     template <>
     void DataLayout<Url>::describe() {
 
@@ -23,5 +22,4 @@ namespace ember::engine::serialization {
         defineSlice<string>(offsetof(Url, _query), u8Layout);
         defineSlice<string>(offsetof(Url, _fragment), u8Layout);
     }
-
 }

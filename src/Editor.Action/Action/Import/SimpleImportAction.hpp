@@ -6,7 +6,6 @@
 #include <Engine.Assets/Types/Asset.hpp>
 
 namespace ember::editor {
-
     class SimpleImportAction :
         public ImportAction {
     public:
@@ -70,5 +69,4 @@ namespace ember::editor {
     public:
         [[nodiscard]] bool failed() const noexcept override;
     };
-
 }

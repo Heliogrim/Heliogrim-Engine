@@ -4,7 +4,6 @@
 #include <Engine.Reflect/EmberReflect.hpp>
 
 namespace ember::engine::gfx::cache {
-
     // Warning: Do NOT instantiate ModelBatch itself (it might fail anyway cause of `novtable` annotation)
     struct __declspec(novtable) ModelBatch :
         public EmberObject {

@@ -31,8 +31,11 @@ namespace ember::engine::gfx::render {
         using RenderScene = ::ember::engine::scene::IRenderScene;
 
     public:
-        HORenderPass(const non_owning_rptr<Renderer> renderer_, HORenderPassCreateData data_,
-            cref<sptr<RenderPassState>> state_);
+        HORenderPass(
+            const non_owning_rptr<Renderer> renderer_,
+            HORenderPassCreateData data_,
+            cref<sptr<RenderPassState>> state_
+        );
 
         HORenderPass(cref<this_type>) = delete;
 

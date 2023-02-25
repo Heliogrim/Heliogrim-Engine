@@ -15,7 +15,7 @@ namespace ember::engine::platform {
         eMovable = 0x10,
         eResizable = 0x20,
         eMinimized = 0x40,
-        eMaximized = 0x80,
+        eMaximized = 0x80
     };
 
     typedef Flag<NativeWindowFlagBits, u8> NativeWindowFlags;

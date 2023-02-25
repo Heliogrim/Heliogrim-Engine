@@ -2,7 +2,6 @@
 #include "Event.hpp"
 
 namespace ember {
-
     class ShutdownEvent final :
         public StatelessEvent {
     public:
@@ -75,5 +74,4 @@ namespace ember {
          */
         ref<ShutdownEvent> operator=(ShutdownEvent&& other_) noexcept = default;
     };
-
 }

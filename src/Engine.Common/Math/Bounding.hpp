@@ -4,7 +4,6 @@
 #include "../Wrapper.hpp"
 
 namespace ember::math {
-
     class Bounding {
     public:
         using value_type = Bounding;
@@ -248,6 +247,5 @@ namespace ember::math {
          * @param  scale_ The scale.
          */
         void applyExtentScale(cref<vec3::value_type> scale_);
-
     };
 }

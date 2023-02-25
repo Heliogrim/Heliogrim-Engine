@@ -23,8 +23,11 @@
 
 namespace ember::engine::gfx {
     // TODO: Refactor / Move to other location
-    inline uint32_t get_memory_type(const vk::PhysicalDevice& device_, const uint32_t types_,
-        const vk::MemoryPropertyFlags& flags_) {
+    inline uint32_t get_memory_type(
+        const vk::PhysicalDevice& device_,
+        const uint32_t types_,
+        const vk::MemoryPropertyFlags& flags_
+    ) {
         const vk::PhysicalDeviceMemoryProperties memProps = device_.getMemoryProperties();
 
         for (uint32_t i = 0; i < memProps.memoryTypeCount; ++i) {

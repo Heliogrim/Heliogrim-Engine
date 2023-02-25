@@ -10,8 +10,10 @@ using namespace ember::engine::gfx::shader;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-[[nodiscard]] FORCE_INLINE bool isSamplerCompatible(const TextureSampler& sampler_,
-    const Texture& texture_) {
+[[nodiscard]] FORCE_INLINE bool isSamplerCompatible(
+    const TextureSampler& sampler_,
+    const Texture& texture_
+) {
     return false;
 }
 
@@ -92,8 +94,10 @@ void DiscreteBinding::store(cref<Buffer> buffer_) {
      * Update DescriptorSet with build Writer
      */
     _super->device()->vkDevice().updateDescriptorSets(
-        1, &writer,
-        0, nullptr
+        1,
+        &writer,
+        0,
+        nullptr
     );
 }
 
@@ -147,8 +151,10 @@ void DiscreteBinding::store(cref<VirtualBuffer> buffer_) {
      * Update DescriptorSet with build Writer
      */
     _super->device()->vkDevice().updateDescriptorSets(
-        1, &writer,
-        0, nullptr
+        1,
+        &writer,
+        0,
+        nullptr
     );
 }
 
@@ -202,8 +208,10 @@ void DiscreteBinding::store(cref<VirtualBufferView> view_) {
      * Update DescriptorSet with build Writer
      */
     _super->device()->vkDevice().updateDescriptorSets(
-        1, &writer,
-        0, nullptr
+        1,
+        &writer,
+        0,
+        nullptr
     );
 }
 
@@ -293,8 +301,10 @@ void DiscreteBinding::storeAs(cref<Texture> texture_, cref<vk::ImageLayout> layo
      * Update DescriptorSet with build Writer
      */
     _super->device()->vkDevice().updateDescriptorSets(
-        1, &writer,
-        0, nullptr
+        1,
+        &writer,
+        0,
+        nullptr
     );
 }
 
@@ -388,8 +398,10 @@ void DiscreteBinding::storeAdv(
      * Update DescriptorSet with build Writer
      */
     _super->device()->vkDevice().updateDescriptorSets(
-        1, &writer,
-        0, nullptr
+        1,
+        &writer,
+        0,
+        nullptr
     );
 }
 
@@ -470,8 +482,10 @@ void DiscreteBinding::store(const ptr<const VirtualTexture> texture_) {
      * Update DescriptorSet with build Writer
      */
     _super->device()->vkDevice().updateDescriptorSets(
-        1, &writer,
-        0, nullptr
+        1,
+        &writer,
+        0,
+        nullptr
     );
 
 }
@@ -555,7 +569,9 @@ void DiscreteBinding::storeAs(const ptr<const VirtualTexture> texture_, cref<vk:
      * Update DescriptorSet with build Writer
      */
     _super->device()->vkDevice().updateDescriptorSets(
-        1, &writer,
-        0, nullptr
+        1,
+        &writer,
+        0,
+        nullptr
     );
 }

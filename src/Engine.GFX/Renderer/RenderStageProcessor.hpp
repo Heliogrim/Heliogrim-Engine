@@ -6,7 +6,6 @@
 #include "__fwd.hpp"
 
 namespace ember::engine::gfx::render {
-
     class RenderStageProcessor {
     public:
         using this_type = RenderStageProcessor;

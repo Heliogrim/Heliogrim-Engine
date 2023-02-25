@@ -68,6 +68,7 @@
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile />
@@ -78,6 +79,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile />
@@ -88,6 +90,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.UI\Color\Dark.hpp" />
@@ -134,6 +137,7 @@
     <ClCompile Include="..\..\src\Editor.UI\Widget\Breadcrumb.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Widget\Collapse.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Widget\Input\InputAsset.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Widget\Input\InputVec.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ember\Ember.vcxproj">

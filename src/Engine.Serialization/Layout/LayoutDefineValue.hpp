@@ -4,7 +4,6 @@
 #include "LayoutDefineValueType.hpp"
 
 namespace ember::engine::serialization::layout {
-
     template <LayoutDefineValueType ValueType_>
     class LayoutDefineValue final :
         public LayoutDefine {
@@ -47,5 +46,4 @@ namespace ember::engine::serialization::layout {
             return archive_ << (*reinterpret_cast<value_ptr_type>(&src_[define_._offset]));
         }
     };
-
 }

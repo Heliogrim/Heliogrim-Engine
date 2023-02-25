@@ -3,7 +3,6 @@
 #include "../Device/Device.hpp"
 
 namespace ember::engine::gfx::memory {
-
     class VkAllocator final :
         public Allocator {
     public:
@@ -21,8 +20,11 @@ namespace ember::engine::gfx::memory {
         [[nodiscard]] cref<sptr<Device>> device() const noexcept;
 
     public:
-        [[nodiscard]] AllocationResult allocate(cref<MemoryLayout> layout_, const u64 size_,
-            ref<ptr<AllocatedMemory>> dst_) override;
+        [[nodiscard]] AllocationResult allocate(
+            cref<MemoryLayout> layout_,
+            const u64 size_,
+            ref<ptr<AllocatedMemory>> dst_
+        ) override;
 
         void free(mref<ptr<AllocatedMemory>> mem_) override;
     };

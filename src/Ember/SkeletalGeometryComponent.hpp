@@ -2,7 +2,6 @@
 #include "ModelComponent.hpp"
 
 namespace ember {
-
     class SkeletalGeometryComponent :
         public ModelComponent {
     public:

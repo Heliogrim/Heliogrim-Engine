@@ -15,7 +15,6 @@ namespace ember::engine::gfx {
 }
 
 namespace ember::engine::gfx {
-
     // TODO: Think about, whether we want the DiscreteBindingCache as an global instance sharing every pool over multiple HORenderPasses, which would enable us to cache the descriptor set for any component resource, but would make the management a bit chunky
     class DiscreteBindingCache {
     public:

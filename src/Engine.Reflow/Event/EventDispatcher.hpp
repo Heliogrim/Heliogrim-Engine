@@ -20,8 +20,11 @@ namespace ember::engine::reflow {
         using this_type = EventDispatcher;
 
     protected:
-        [[nodiscard]] bool intersects(cref<math::vec2> off_, cref<math::vec2> size_,
-            cref<math::vec2> point_) const noexcept {
+        [[nodiscard]] bool intersects(
+            cref<math::vec2> off_,
+            cref<math::vec2> size_,
+            cref<math::vec2> point_
+        ) const noexcept {
 
             if (point_.x < off_.x || point_.x >= (off_.x + size_.x)) {
                 return false;

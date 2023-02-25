@@ -7,9 +7,7 @@
 #include "Source/Source.hpp"
 
 namespace ember::engine::resource {
-
     namespace {
-
         struct key_value_pair {
             asset_guid guid;
             ptr<Source> source;

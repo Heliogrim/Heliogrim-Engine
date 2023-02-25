@@ -9,7 +9,6 @@
 #include "../Action/Action.hpp"
 
 namespace ember::editor {
-
     class ActionLog {
     public:
         using this_type = ActionLog;
@@ -70,5 +69,4 @@ namespace ember::editor {
 
         void fail(cref<sptr<Action>> action_);
     };
-
 }

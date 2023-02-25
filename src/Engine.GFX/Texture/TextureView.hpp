@@ -7,7 +7,6 @@
 #include "__fwd.hpp"
 
 namespace ember::engine::gfx {
-
     class TextureView final {
     public:
         friend class Texture;
@@ -16,8 +15,12 @@ namespace ember::engine::gfx {
         using this_type = TextureView;
 
     protected:
-        TextureView(non_owning_rptr<Texture> owner_, math::uivec2 layers_, math::uExtent3D extent_,
-            math::uivec2 mipLevels_);
+        TextureView(
+            non_owning_rptr<Texture> owner_,
+            math::uivec2 layers_,
+            math::uExtent3D extent_,
+            math::uivec2 mipLevels_
+        );
 
     public:
         TextureView(cref<this_type>) = delete;
@@ -78,7 +81,5 @@ namespace ember::engine::gfx {
         [[nodiscard]] math::uivec2::value_type mipLevels() const noexcept;
 
         [[nodiscard]] math::uivec2::value_type maxMipLevel() const noexcept;
-
     };
-
 }

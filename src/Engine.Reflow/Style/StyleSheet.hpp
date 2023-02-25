@@ -18,9 +18,7 @@ namespace ember::engine::reflow {
 }
 
 namespace ember::engine::reflow {
-
     struct StyleSheet {
-
         StyleSheetEntry<ReflowUnit> minWidth { { ReflowUnitType::eAuto, 0.F } };
         StyleSheetEntry<ReflowUnit> width { { ReflowUnitType::eAuto, 0.F } };
         StyleSheetEntry<ReflowUnit> maxWidth { { ReflowUnitType::eAuto, 0.F } };
@@ -52,5 +50,4 @@ namespace ember::engine::reflow {
         StyleSheetEntry<TextAlign> textAlign { TextAlign::eLeftMiddle };
         StyleSheetEntry<u32> textEllipse { 0ui32 };
     };
-
 }

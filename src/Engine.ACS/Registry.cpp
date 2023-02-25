@@ -46,8 +46,11 @@ ptr<Actor> Registry::createActor(const ptr<const ActorClass> actorClass_, cref<A
     return actor;
 }
 
-ptr<Actor> Registry::createActor(const ptr<const ActorClass> actorClass_, cref<ActorInitializer> initializer_,
-    std::nothrow_t) noexcept {
+ptr<Actor> Registry::createActor(
+    const ptr<const ActorClass> actorClass_,
+    cref<ActorInitializer> initializer_,
+    std::nothrow_t
+) noexcept {
 
     const auto guid = generate_actor_guid();
     hackActorInit(initializer_, guid);

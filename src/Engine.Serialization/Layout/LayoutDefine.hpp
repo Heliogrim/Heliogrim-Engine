@@ -11,7 +11,6 @@
 #include "__fwd.hpp"
 
 namespace ember::engine::serialization::layout {
-
     class LayoutDefine {
     public:
         using this_type = LayoutDefine;
@@ -64,5 +63,4 @@ namespace ember::engine::serialization::layout {
             return _sub;
         }
     };
-
 }

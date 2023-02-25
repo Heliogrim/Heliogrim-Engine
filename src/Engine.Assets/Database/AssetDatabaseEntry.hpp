@@ -7,7 +7,6 @@
 #include "../Types/AssetConcept.hpp"
 
 namespace ember::engine::assets {
-
     class AssetDatabaseEntry {
     public:
         using value_type = AssetDatabaseEntry;
@@ -154,7 +153,8 @@ namespace std {
     struct hash<ember::engine::assets::AssetDatabaseEntry> :
         _STD hash<ember::asset_guid> {
         [[nodiscard]] _STD size_t operator()(
-            ember::cref<ember::engine::assets::AssetDatabaseEntry> value_) const noexcept {
+            ember::cref<ember::engine::assets::AssetDatabaseEntry> value_
+        ) const noexcept {
             const auto& hasher = static_cast<const _STD hash<ember::asset_guid>&>(*this);
             return hasher(value_._guid);
         }
@@ -163,8 +163,10 @@ namespace std {
     template <>
     struct equal_to<ember::engine::assets::AssetDatabaseEntry> :
         _STD equal_to<ember::asset_guid> {
-        [[nodiscard]] bool operator()(ember::cref<ember::engine::assets::AssetDatabaseEntry> left_,
-            ember::cref<ember::engine::assets::AssetDatabaseEntry> right_) const noexcept {
+        [[nodiscard]] bool operator()(
+            ember::cref<ember::engine::assets::AssetDatabaseEntry> left_,
+            ember::cref<ember::engine::assets::AssetDatabaseEntry> right_
+        ) const noexcept {
             const auto& equaler = static_cast<const _STD equal_to<ember::asset_guid>&>(*this);
             return equaler(left_._guid, right_._guid);
         }
@@ -173,8 +175,10 @@ namespace std {
     template <>
     struct less<ember::engine::assets::AssetDatabaseEntry> :
         _STD less<ember::asset_guid> {
-        [[nodiscard]] bool operator()(ember::cref<ember::engine::assets::AssetDatabaseEntry> left_,
-            ember::cref<ember::engine::assets::AssetDatabaseEntry> right_) const noexcept {
+        [[nodiscard]] bool operator()(
+            ember::cref<ember::engine::assets::AssetDatabaseEntry> left_,
+            ember::cref<ember::engine::assets::AssetDatabaseEntry> right_
+        ) const noexcept {
             const auto& lesser = static_cast<const _STD less<ember::asset_guid>&>(*this);
             return lesser(left_._guid, right_._guid);
         }

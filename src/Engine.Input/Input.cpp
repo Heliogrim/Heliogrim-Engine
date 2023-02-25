@@ -150,12 +150,14 @@ void Input::captureWindow(const non_owning_rptr<platform::NativeWindow> nativeWi
 
     /**/
 
-    _dragDropReceiver->setOnDrop([this](mref<uptr<event::DragDropEvent>> event_) {
-        // Attention: This function callback is actual external thread context
-        // Attention: Not allowed to use default/fiber control flow
-        bufferEvent(event::DragDropEvent::typeId, _STD move(event_));
-        return false;
-    });
+    _dragDropReceiver->setOnDrop(
+        [this](mref<uptr<event::DragDropEvent>> event_) {
+            // Attention: This function callback is actual external thread context
+            // Attention: Not allowed to use default/fiber control flow
+            bufferEvent(event::DragDropEvent::typeId, _STD move(event_));
+            return false;
+        }
+    );
     #else
     #endif
 }

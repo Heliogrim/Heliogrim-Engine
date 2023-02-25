@@ -2,7 +2,6 @@
 
 /** . */
 namespace ember::hash {
-
     /**
      * Hash combine
      *

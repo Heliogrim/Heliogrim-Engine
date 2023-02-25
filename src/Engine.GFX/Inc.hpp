@@ -54,8 +54,13 @@ const float NEAR_PLANE = 0.01F;
 
 // Temporary forward function declaration
 namespace clockwork::__internal::gfx::utils {
-    inline void _updateDescriptorBuffer(const vk::DescriptorSet& set_, vk::WriteDescriptorSet& write_,
-        const uint32_t bind_, const vk::DescriptorBufferInfo* desc_, const uint32_t count_ = 1) {
+    inline void _updateDescriptorBuffer(
+        const vk::DescriptorSet& set_,
+        vk::WriteDescriptorSet& write_,
+        const uint32_t bind_,
+        const vk::DescriptorBufferInfo* desc_,
+        const uint32_t count_ = 1
+    ) {
         write_.setPNext(nullptr);
         write_.setDstSet(set_);
         write_.setDstBinding(bind_);
@@ -64,8 +69,12 @@ namespace clockwork::__internal::gfx::utils {
         write_.setPBufferInfo(desc_);
     }
 
-    inline void _updateDescriptorSampler(const vk::DescriptorSet& set_, vk::WriteDescriptorSet& write_,
-        const uint32_t bind_, const vk::DescriptorImageInfo& desc_) {
+    inline void _updateDescriptorSampler(
+        const vk::DescriptorSet& set_,
+        vk::WriteDescriptorSet& write_,
+        const uint32_t bind_,
+        const vk::DescriptorImageInfo& desc_
+    ) {
         write_.setPNext(nullptr);
         write_.setDstSet(set_);
         write_.setDstBinding(bind_);
@@ -74,8 +83,13 @@ namespace clockwork::__internal::gfx::utils {
         write_.setPImageInfo(&desc_);
     }
 
-    inline void _updateDescriptorStorage(const vk::DescriptorSet& set_, vk::WriteDescriptorSet& write_,
-        const uint32_t bind_, const vk::DescriptorBufferInfo* desc_, const uint32_t count_ = 1) {
+    inline void _updateDescriptorStorage(
+        const vk::DescriptorSet& set_,
+        vk::WriteDescriptorSet& write_,
+        const uint32_t bind_,
+        const vk::DescriptorBufferInfo* desc_,
+        const uint32_t count_ = 1
+    ) {
         write_.setPNext(nullptr);
         write_.setDstSet(set_);
         write_.setDstBinding(bind_);

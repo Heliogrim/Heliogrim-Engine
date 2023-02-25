@@ -9,7 +9,6 @@
 #include "DataLayoutDispatch.hpp"
 
 namespace ember::engine::serialization {
-
     class __declspec(novtable) DataLayoutBase :
         public DataLayoutReflect,
         public DataLayoutDispatch {
@@ -65,5 +64,4 @@ namespace ember::engine::serialization {
     public:
         virtual void describe() = 0;
     };
-
 }

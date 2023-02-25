@@ -6,7 +6,6 @@
 #include <Engine.GFX/Texture/__fwd.hpp>
 
 namespace ember::engine::gfx::glow::render {
-
     class RevEarlyEnvIrradiance :
         public gfx::render::RenderStageNode {
     public:

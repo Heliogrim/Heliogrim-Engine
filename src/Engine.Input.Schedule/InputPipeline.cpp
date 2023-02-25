@@ -37,11 +37,13 @@ void InputPipeline::declareDependencies(
 
     /**/
 
-    collection_.insert(StageDependency {
-        { beginTick },
-        this,
-        inputTick
-    });
+    collection_.insert(
+        StageDependency {
+            { beginTick },
+            this,
+            inputTick
+        }
+    );
 }
 
 void InputPipeline::dismount(const non_owning_rptr<scheduler::StageRegister> register_) {

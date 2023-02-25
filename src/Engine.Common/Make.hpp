@@ -12,15 +12,46 @@ namespace ember {
         return new Ty(_STD forward<Args>(args_)...);
     }
 
+    /* Unique Pointer (STD) */
+
     template <class Ty, class... Args>
-    sptr<Ty> make_sptr(Args&&... args_) {
-        return _STD make_shared<Ty>(_STD forward<Args>(args_)...);
+    [[nodiscard]] inline uptr<Ty> make_uptr(Args&&... args_);
+
+    template <class Ty_, class... Args_> requires _STD is_constructible_v<Ty_, Args_...>
+    [[nodiscard]] inline uptr<Ty_> make_uptr(Args_&&... args_) {
+        return _STD make_unique<Ty_>(_STD forward<Args_>(args_)...);
     }
 
+    template <class Ty_, class... Args_> requires
+        (not _STD is_convertible_v<Ty_, Args_...>) &&
+        (_STD is_aggregate_v<Ty_>)
+    [[nodiscard]] inline uptr<Ty_> make_uptr(Args_&&... args_) {
+        return uptr<Ty_>(new Ty_ { _STD forward<Args_>(args_)... });
+    }
+
+    /*
     template <class Ty, class... Args>
     uptr<Ty> make_uptr(Args&&... args_) {
         return _STD make_unique<Ty>(_STD forward<Args>(args_)...);
     }
+     */
+
+    /* Shared Pointer (STD) */
+
+    template <class Ty, class... Args>
+    sptr<Ty> make_sptr(Args&&... args_);
+
+    template <class Ty_, class... Args_> requires _STD is_constructible_v<Ty_, Args_...>
+    sptr<Ty_> make_sptr(Args_&&... args_) {
+        return _STD make_shared<Ty_>(_STD forward<Args_>(args_)...);
+    }
+
+    /*
+    template <class Ty_, class... Args_> requires _STD is_constructible_v<sptr<Ty_>, Args_...>
+    sptr<Ty_> make_sptr(Args_&&... args_) {
+        return _STD make_shared<Ty_>(_STD forward<Args_>(args_)...);
+    }
+     */
 
     /* Shared Memory References */
 

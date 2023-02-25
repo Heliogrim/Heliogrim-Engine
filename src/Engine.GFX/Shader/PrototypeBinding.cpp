@@ -4,8 +4,12 @@ using namespace ember::engine::gfx::shader;
 using namespace ember::engine::gfx;
 using namespace ember;
 
-PrototypeBinding::PrototypeBinding(const BindingType& type_, const u32 id_, const BindingUpdateInterval interval_,
-    const string& name_) noexcept :
+PrototypeBinding::PrototypeBinding(
+    const BindingType& type_,
+    const u32 id_,
+    const BindingUpdateInterval interval_,
+    const string& name_
+) noexcept :
     _type(type_),
     _id(id_),
     _interval(interval_),

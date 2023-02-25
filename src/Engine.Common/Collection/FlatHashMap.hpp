@@ -45,15 +45,15 @@ namespace ska {
         };
 
         template <typename Result, typename... Args>
-        struct functor_storage<Result, Result (*)(Args ...)> {
-            typedef Result (*function_ptr)(Args ...);
+        struct functor_storage<Result, Result (*)(Args...)> {
+            typedef Result (*function_ptr)(Args...);
 
             function_ptr function;
 
             functor_storage(function_ptr function) :
                 function(function) { }
 
-            Result operator()(Args ... args) const {
+            Result operator()(Args... args) const {
                 return function(std::forward<Args>(args)...);
             }
 
@@ -344,8 +344,12 @@ namespace ska {
 
             sherwood_v3_table() { }
 
-            explicit sherwood_v3_table(size_type bucket_count, const ArgumentHash& hash = ArgumentHash(),
-                const ArgumentEqual& equal = ArgumentEqual(), const ArgumentAlloc& alloc = ArgumentAlloc()) :
+            explicit sherwood_v3_table(
+                size_type bucket_count,
+                const ArgumentHash& hash = ArgumentHash(),
+                const ArgumentEqual& equal = ArgumentEqual(),
+                const ArgumentAlloc& alloc = ArgumentAlloc()
+            ) :
                 EntryAlloc(alloc),
                 Hasher(hash),
                 Equal(equal) {
@@ -362,8 +366,14 @@ namespace ska {
                 EntryAlloc(alloc) { }
 
             template <typename It>
-            sherwood_v3_table(It first, It last, size_type bucket_count = 0, const ArgumentHash& hash = ArgumentHash(),
-                const ArgumentEqual& equal = ArgumentEqual(), const ArgumentAlloc& alloc = ArgumentAlloc()) :
+            sherwood_v3_table(
+                It first,
+                It last,
+                size_type bucket_count = 0,
+                const ArgumentHash& hash = ArgumentHash(),
+                const ArgumentEqual& equal = ArgumentEqual(),
+                const ArgumentAlloc& alloc = ArgumentAlloc()
+            ) :
                 sherwood_v3_table(bucket_count, hash, equal, alloc) {
                 insert(first, last);
             }
@@ -373,13 +383,22 @@ namespace ska {
                 sherwood_v3_table(first, last, bucket_count, ArgumentHash(), ArgumentEqual(), alloc) { }
 
             template <typename It>
-            sherwood_v3_table(It first, It last, size_type bucket_count, const ArgumentHash& hash,
-                const ArgumentAlloc& alloc) :
+            sherwood_v3_table(
+                It first,
+                It last,
+                size_type bucket_count,
+                const ArgumentHash& hash,
+                const ArgumentAlloc& alloc
+            ) :
                 sherwood_v3_table(first, last, bucket_count, hash, ArgumentEqual(), alloc) { }
 
-            sherwood_v3_table(std::initializer_list<T> il, size_type bucket_count = 0,
-                const ArgumentHash& hash = ArgumentHash(), const ArgumentEqual& equal = ArgumentEqual(),
-                const ArgumentAlloc& alloc = ArgumentAlloc()) :
+            sherwood_v3_table(
+                std::initializer_list<T> il,
+                size_type bucket_count = 0,
+                const ArgumentHash& hash = ArgumentHash(),
+                const ArgumentEqual& equal = ArgumentEqual(),
+                const ArgumentAlloc& alloc = ArgumentAlloc()
+            ) :
                 sherwood_v3_table(bucket_count, hash, equal, alloc) {
                 if (bucket_count == 0)
                     rehash(il.size());
@@ -389,13 +408,19 @@ namespace ska {
             sherwood_v3_table(std::initializer_list<T> il, size_type bucket_count, const ArgumentAlloc& alloc) :
                 sherwood_v3_table(il, bucket_count, ArgumentHash(), ArgumentEqual(), alloc) { }
 
-            sherwood_v3_table(std::initializer_list<T> il, size_type bucket_count, const ArgumentHash& hash,
-                const ArgumentAlloc& alloc) :
+            sherwood_v3_table(
+                std::initializer_list<T> il,
+                size_type bucket_count,
+                const ArgumentHash& hash,
+                const ArgumentAlloc& alloc
+            ) :
                 sherwood_v3_table(il, bucket_count, hash, ArgumentEqual(), alloc) { }
 
             sherwood_v3_table(const sherwood_v3_table& other) :
-                sherwood_v3_table(other,
-                    AllocatorTraits::select_on_container_copy_construction(other.get_allocator())) { }
+                sherwood_v3_table(
+                    other,
+                    AllocatorTraits::select_on_container_copy_construction(other.get_allocator())
+                ) { }
 
             sherwood_v3_table(const sherwood_v3_table& other, const ArgumentAlloc& alloc) :
                 EntryAlloc(alloc),
@@ -435,8 +460,10 @@ namespace ska {
                     if (static_cast<EntryAlloc&>(*this) != static_cast<const EntryAlloc&>(other)) {
                         reset_to_empty_state();
                     }
-                    AssignIfTrue<EntryAlloc, AllocatorTraits::propagate_on_container_copy_assignment::value>()(*this,
-                        other);
+                    AssignIfTrue<EntryAlloc, AllocatorTraits::propagate_on_container_copy_assignment::value>()(
+                        *this,
+                        other
+                    );
                 }
                 _max_load_factor = other._max_load_factor;
                 static_cast<Hasher&>(*this) = other;
@@ -452,8 +479,10 @@ namespace ska {
                 else if (AllocatorTraits::propagate_on_container_move_assignment::value) {
                     clear();
                     reset_to_empty_state();
-                    AssignIfTrue<EntryAlloc, AllocatorTraits::propagate_on_container_move_assignment::value>()(*this,
-                        std::move(other));
+                    AssignIfTrue<EntryAlloc, AllocatorTraits::propagate_on_container_move_assignment::value>()(
+                        *this,
+                        std::move(other)
+                    );
                     swap_pointers(other);
                 } else if (static_cast<EntryAlloc&>(*this) == static_cast<EntryAlloc&>(other)) {
                     swap_pointers(other);
@@ -613,8 +642,12 @@ namespace ska {
                     if (compares_equal(key, current_entry->value))
                         return { { current_entry }, false };
                 }
-                return emplace_new_key(distance_from_desired, current_entry, std::forward<Key>(key),
-                    std::forward<Args>(args)...);
+                return emplace_new_key(
+                    distance_from_desired,
+                    current_entry,
+                    std::forward<Key>(key),
+                    std::forward<Args>(args)...
+                );
             }
 
             std::pair<iterator, bool> insert(const value_type& value) {
@@ -650,8 +683,10 @@ namespace ska {
             }
 
             void rehash(size_t num_buckets) {
-                num_buckets = (std::max)(num_buckets,
-                    static_cast<size_t>(std::ceil(num_elements / static_cast<double>(_max_load_factor))));
+                num_buckets = (std::max)(
+                    num_buckets,
+                    static_cast<size_t>(std::ceil(num_elements / static_cast<double>(_max_load_factor)))
+                );
                 if (num_buckets == 0) {
                     reset_to_empty_state();
                     return;
@@ -714,8 +749,10 @@ namespace ska {
                 }
                 if (end_it == this->end())
                     return this->end();
-                ptrdiff_t num_to_move = (std::min)(static_cast<ptrdiff_t>(end_it.current->distance_from_desired),
-                    end_it.current - begin_it.current);
+                ptrdiff_t num_to_move = (std::min)(
+                    static_cast<ptrdiff_t>(end_it.current->distance_from_desired),
+                    end_it.current - begin_it.current
+                );
                 EntryPointer to_return = end_it.current - num_to_move;
                 for (EntryPointer it = end_it.current; !it->is_at_desired_position();) {
                     EntryPointer target = it - num_to_move;
@@ -814,7 +851,8 @@ namespace ska {
 
             size_t num_buckets_for_reserve(size_t num_elements) const {
                 return static_cast<size_t>(std::ceil(
-                    num_elements / (std::min)(0.5, static_cast<double>(_max_load_factor))));
+                    num_elements / (std::min)(0.5, static_cast<double>(_max_load_factor))
+                ));
             }
 
             void rehash_for_other_container(const sherwood_v3_table& other) {
@@ -832,8 +870,12 @@ namespace ska {
             }
 
             template <typename Key, typename... Args>
-            SKA_NOINLINE(std::pair<iterator, bool>) emplace_new_key(int8_t distance_from_desired,
-                EntryPointer current_entry, Key&& key, Args&&... args) {
+            SKA_NOINLINE(std::pair<iterator, bool>) emplace_new_key(
+                int8_t distance_from_desired,
+                EntryPointer current_entry,
+                Key&& key,
+                Args&&... args
+            ) {
                 using std::swap;
                 if (num_slots_minus_one == 0 || distance_from_desired == max_lookups || num_elements + 1 > (
                     num_slots_minus_one + 1) * static_cast<double>(_max_load_factor)) {
@@ -918,7 +960,6 @@ namespace ska {
                         return ++const_iterator { it };
                 }
             };
-
         };
     }
 
@@ -2102,7 +2143,6 @@ namespace ska {
         void commit(int8_t) { }
 
         void reset() { }
-
     };
 
     struct fibonacci_hash_policy {
@@ -2156,6 +2196,7 @@ namespace ska {
             A,
             typename std::allocator_traits<A>::template rebind_alloc<detailv3::sherwood_v3_entry<std::pair<K, V>>>
         >;
+
     public:
         using key_type = K;
         using mapped_type = V;
@@ -2267,6 +2308,7 @@ namespace ska {
             A,
             typename std::allocator_traits<A>::template rebind_alloc<detailv3::sherwood_v3_entry<T>>
         >;
+
     public:
         using key_type = T;
 
@@ -2314,5 +2356,4 @@ namespace ska {
     struct power_of_two_std_hash : std::hash<T> {
         typedef ska::power_of_two_hash_policy hash_policy;
     };
-
 }// end namespace ska

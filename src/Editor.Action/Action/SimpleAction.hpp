@@ -5,7 +5,6 @@
 #include <atomic>
 
 namespace ember::editor {
-
     class SimpleAction :
         public Action {
     public:
@@ -36,5 +35,4 @@ namespace ember::editor {
     public:
         [[nodiscard]] operator ptr<await_signal_sub_type>() const noexcept;
     };
-
 }

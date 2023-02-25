@@ -3,7 +3,6 @@
 #include <Engine.Common/Flag.hpp>
 
 namespace ember::engine::reflow {
-
     enum class WidgetStateFlagBits : u8 {
         eFocus = 0b0000'0001,
         eHover = 0b0000'0010,
@@ -20,7 +19,6 @@ namespace ember::engine::reflow {
 
     struct WidgetState :
         public WidgetStateFlag {
-
         [[nodiscard]] bool isFocus() const noexcept {
             return (*this) & WidgetStateFlagBits::eFocus;
         }

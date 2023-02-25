@@ -2,7 +2,6 @@
 #include "Event.hpp"
 
 namespace ember {
-
     class BootEvent final :
         public StatelessEvent {
     public:
@@ -87,5 +86,4 @@ namespace ember {
             return _session;
         }
     };
-
 }

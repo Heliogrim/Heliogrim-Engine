@@ -179,9 +179,14 @@ ptr<engine::assets::Texture> AssetBrowserHelper::getItemIconForDirectory(cref<st
     ptr<engine::assets::Texture> tex { _directoryIcon };
 
     string name { name_ };
-    _STD transform(name.begin(), name.end(), name.begin(), [](const u8 c) {
-        return _STD tolower(c);
-    });
+    _STD transform(
+        name.begin(),
+        name.end(),
+        name.begin(),
+        [](const u8 c) {
+            return _STD tolower(c);
+        }
+    );
 
     for (const auto& entry : _directoryIcons) {
         if (name.contains(entry.first) && entry.first.size() > length) {

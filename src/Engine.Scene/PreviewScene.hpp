@@ -2,7 +2,6 @@
 #include "Scene.hpp"
 
 namespace ember::engine::scene {
-
     class PreviewScene final :
         public Scene {
     public:

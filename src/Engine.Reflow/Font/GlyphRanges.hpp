@@ -5,7 +5,6 @@
 #include "GlyphCode.hpp"
 
 namespace ember::engine::reflow {
-
     struct GlyphRange {
         GlyphCode begin;
         GlyphCode end;
@@ -26,5 +25,4 @@ namespace ember::engine::reflow {
     constexpr GlyphRange Arrows { 0x2190, 0x21FF };
     constexpr GlyphRange MathOps { 0x2200, 0x22FF };
     constexpr GlyphRange MiscTech { 0x2300, 0x23FF };
-
 }

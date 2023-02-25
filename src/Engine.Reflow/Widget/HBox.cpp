@@ -75,23 +75,31 @@ void HBox::flow(
 
     if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
         if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
-            maxSize.x = MIN(maxSize.x,
+            maxSize.x = MIN(
+                maxSize.x,
                 MAX(_computedStyle.maxWidth->value * space_.x - (_computedStyle.padding->x + _computedStyle.padding->z),
-                    0));
+                    0)
+            );
         } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
-            maxSize.x = MIN(maxSize.x,
-                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0));
+            maxSize.x = MIN(
+                maxSize.x,
+                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0)
+            );
         }
     }
 
     if (_computedStyle.maxHeight->type != ReflowUnitType::eAuto) {
         if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
-            maxSize.y = MIN(maxSize.y,
+            maxSize.y = MIN(
+                maxSize.y,
                 MAX(_computedStyle.maxHeight->value * space_.y - (_computedStyle.padding->y + _computedStyle.padding->w)
-                    , 0));
+                    , 0)
+            );
         } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
-            maxSize.y = MIN(maxSize.y,
-                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0));
+            maxSize.y = MIN(
+                maxSize.y,
+                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0)
+            );
         }
     }
 

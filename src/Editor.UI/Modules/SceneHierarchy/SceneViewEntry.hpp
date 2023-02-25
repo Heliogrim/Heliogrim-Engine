@@ -9,7 +9,6 @@ namespace ember {
 }
 
 namespace ember::editor::ui {
-
     enum class SceneViewEntryType {
         eEmpty,
         eActor,

@@ -5,7 +5,6 @@
 #include "MemoryProperty.hpp"
 
 namespace ember::engine::gfx::memory {
-
     struct MemoryLayout final {
         u64 align;
         MemoryProperties props;

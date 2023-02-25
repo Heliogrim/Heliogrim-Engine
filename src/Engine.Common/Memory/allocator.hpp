@@ -6,7 +6,6 @@
 #include <memory>
 
 namespace ember::engine::memory {
-
     template <class Ty, size_t Align>
     class aligned_allocator {
     public:

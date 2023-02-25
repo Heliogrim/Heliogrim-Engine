@@ -22,18 +22,30 @@ void RenderSceneManager::injectSceneHooks(const ptr<RenderScene> renderScene_) {
 
     /**/
 
-    scene->setNodeType(tag, CameraComponent::typeId,
-        EmberObject::create<CameraModel, const ptr<SceneComponent>>);
+    scene->setNodeType(
+        tag,
+        CameraComponent::typeId,
+        EmberObject::create<CameraModel, const ptr<SceneComponent>>
+    );
 
     /**/
 
-    scene->setNodeType(tag, StaticGeometryComponent::typeId,
-        EmberObject::create<StaticGeometryModel, const ptr<SceneComponent>>);
-    scene->setNodeType(tag, SkyboxComponent::typeId,
-        EmberObject::create<SkyboxModel, const ptr<SceneComponent>>);
+    scene->setNodeType(
+        tag,
+        StaticGeometryComponent::typeId,
+        EmberObject::create<StaticGeometryModel, const ptr<SceneComponent>>
+    );
+    scene->setNodeType(
+        tag,
+        SkyboxComponent::typeId,
+        EmberObject::create<SkyboxModel, const ptr<SceneComponent>>
+    );
 
     /**/
 
-    scene->setNodeType(tag, UIComponent::typeId,
-        EmberObject::create<glow::ui::UISceneModel, const ptr<SceneComponent>>);
+    scene->setNodeType(
+        tag,
+        UIComponent::typeId,
+        EmberObject::create<glow::ui::UISceneModel, const ptr<SceneComponent>>
+    );
 }

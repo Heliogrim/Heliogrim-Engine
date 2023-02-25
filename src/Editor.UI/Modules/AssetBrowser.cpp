@@ -13,64 +13,67 @@ AssetBrowser::AssetBrowser() {
     const auto fsRoot { getVirtProtoRoot("file"sv, 0ui64) };
 
     const string rootPath { root.path() };
-    _virtualMountPoints.insert_or_assign(rootPath, Vector<_STD pair<string, Url>> {
-        _STD pair<string, Url> {
-            "Audio",
-            Url {
-                "file"sv,
-                _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\assets\audio)").string()
-            }
-        },
-        _STD pair<string, Url> {
-            "Font",
-            Url {
-                "file"sv,
-                _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\assets\font)").string()
-            }
-        },
-        _STD pair<string, Url> {
-            "Geometry",
-            Url {
-                "file"sv,
-                _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\assets\geometry)").string()
-            }
-        },
-        _STD pair<string, Url> {
-            "Material",
-            Url {
-                "file"sv,
-                _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\assets\material)").string()
-            }
-        },
-        _STD pair<string, Url> {
-            "Scene",
-            Url {
-                "file"sv,
-                _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\world)").string()
-            }
-        },
-        _STD pair<string, Url> {
-            "Shader",
-            Url {
-                "file"sv,
-                _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\shader)").string()
-            }
-        },
-        _STD pair<string, Url> {
-            "Texture",
-            Url {
-                "file"sv,
-                _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\assets\texture)").string()
-            }
-        },
-        _STD pair<string, Url> {
-            "Imports",
-            Url {
-                "file"sv,
-                _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\imports)").string()
-            }
-        },
-    });
+    _virtualMountPoints.insert_or_assign(
+        rootPath,
+        Vector<_STD pair<string, Url>> {
+            _STD pair<string, Url> {
+                "Audio",
+                Url {
+                    "file"sv,
+                    _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\assets\audio)").string()
+                }
+            },
+            _STD pair<string, Url> {
+                "Font",
+                Url {
+                    "file"sv,
+                    _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\assets\font)").string()
+                }
+            },
+            _STD pair<string, Url> {
+                "Geometry",
+                Url {
+                    "file"sv,
+                    _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\assets\geometry)").string()
+                }
+            },
+            _STD pair<string, Url> {
+                "Material",
+                Url {
+                    "file"sv,
+                    _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\assets\material)").string()
+                }
+            },
+            _STD pair<string, Url> {
+                "Scene",
+                Url {
+                    "file"sv,
+                    _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\world)").string()
+                }
+            },
+            _STD pair<string, Url> {
+                "Shader",
+                Url {
+                    "file"sv,
+                    _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\shader)").string()
+                }
+            },
+            _STD pair<string, Url> {
+                "Texture",
+                Url {
+                    "file"sv,
+                    _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\assets\texture)").string()
+                }
+            },
+            _STD pair<string, Url> {
+                "Imports",
+                Url {
+                    "file"sv,
+                    _STD filesystem::path { fsRoot.path() }.append(R"(..\..\resources\imports)").string()
+                }
+            },
+        }
+    );
     /**/
 }
 
@@ -126,10 +129,12 @@ bool AssetBrowser::retrieveEntriesFQUrl(cref<Url> fqurl_, ref<Vector<std::pair<s
             }
         };
         for (const auto& fsEntry : fsIter) {
-            entries_.push_back(_STD pair<string, Url> {
-                fsEntry.path().filename().string(),
-                Url { "file"sv, fsEntry.path().string() }
-            });
+            entries_.push_back(
+                _STD pair<string, Url> {
+                    fsEntry.path().filename().string(),
+                    Url { "file"sv, fsEntry.path().string() }
+                }
+            );
         }
 
     }

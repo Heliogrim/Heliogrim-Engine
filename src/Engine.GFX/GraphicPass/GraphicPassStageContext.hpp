@@ -6,7 +6,6 @@
 #include "../Renderer/RenderPassState.hpp"
 
 namespace ember::engine::gfx {
-
     struct GraphicPassStageContext {
         ref<CommandBatch> batch;
     };

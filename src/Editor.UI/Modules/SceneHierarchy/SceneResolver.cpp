@@ -43,9 +43,11 @@ void HierarchyResolver<sptr<SceneViewEntry>>::operator()(
         }
 
         const auto selection {
-            actor->selectComponents([comp](const ptr<ActorComponent> component_) {
-                return component_->getParentComponent() == comp;
-            })
+            actor->selectComponents(
+                [comp](const ptr<ActorComponent> component_) {
+                    return component_->getParentComponent() == comp;
+                }
+            )
         };
 
         for (const auto& entry : selection) {

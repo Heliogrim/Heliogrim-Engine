@@ -22,7 +22,6 @@ namespace ember::engine::gfx::scene {
 }
 
 namespace ember::engine::gfx {
-
     class RenderTarget {
     public:
         using this_type = RenderTarget;

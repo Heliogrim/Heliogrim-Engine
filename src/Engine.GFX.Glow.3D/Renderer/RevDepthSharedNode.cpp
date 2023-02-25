@@ -70,27 +70,31 @@ bool RevDepthSharedNode::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Create Framebuffer :: Attachments
      */
-    auto depth = factory->build({
-        buffer.extent(),
-        REV_DEPTH_FORMAT,
-        1ui32,
-        TextureType::e2d,
-        vk::ImageAspectFlagBits::eDepth,
-        vk::ImageUsageFlagBits::eDepthStencilAttachment | vk::ImageUsageFlagBits::eSampled,
-        vk::MemoryPropertyFlagBits::eDeviceLocal,
-        vk::SharingMode::eExclusive
-    });
+    auto depth = factory->build(
+        {
+            buffer.extent(),
+            REV_DEPTH_FORMAT,
+            1ui32,
+            TextureType::e2d,
+            vk::ImageAspectFlagBits::eDepth,
+            vk::ImageUsageFlagBits::eDepthStencilAttachment | vk::ImageUsageFlagBits::eSampled,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            vk::SharingMode::eExclusive
+        }
+    );
 
-    auto marker = factory->build({
-        buffer.extent(),
-        REV_EARLY_STREAM_MARKER_FORMAT,
-        1ui32,
-        TextureType::e2d,
-        vk::ImageAspectFlagBits::eColor,
-        vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
-        vk::MemoryPropertyFlagBits::eDeviceLocal,
-        vk::SharingMode::eExclusive
-    });
+    auto marker = factory->build(
+        {
+            buffer.extent(),
+            REV_EARLY_STREAM_MARKER_FORMAT,
+            1ui32,
+            TextureType::e2d,
+            vk::ImageAspectFlagBits::eColor,
+            vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            vk::SharingMode::eExclusive
+        }
+    );
 
     factory->buildView(depth);
     factory->buildView(marker);
@@ -299,29 +303,35 @@ void RevDepthSharedNode::setupLORenderPass() {
     _loRenderPass = make_sptr<pipeline::LORenderPass>(_device);
 
     // Depth Attachment
-    _loRenderPass->set(0, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        api::vkTranslateFormat(REV_DEPTH_FORMAT),
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eDepthStencilAttachmentOptimal
-    });
+    _loRenderPass->set(
+        0,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            api::vkTranslateFormat(REV_DEPTH_FORMAT),
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eClear,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eDepthStencilAttachmentOptimal
+        }
+    );
 
-    _loRenderPass->set(1, vk::AttachmentDescription {
-        vk::AttachmentDescriptionFlags(),
-        api::vkTranslateFormat(REV_EARLY_STREAM_MARKER_FORMAT),
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eShaderReadOnlyOptimal
-    });
+    _loRenderPass->set(
+        1,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags(),
+            api::vkTranslateFormat(REV_EARLY_STREAM_MARKER_FORMAT),
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eClear,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eShaderReadOnlyOptimal
+        }
+    );
 
     /**
      *
@@ -357,27 +367,29 @@ void RevDepthSharedNode::postProcessAllocated(const ptr<HORenderPass> renderPass
             continue;
         }
 
-        imgBarriers.push_back({
-            vk::AccessFlags {},
-            vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
-            vk::ImageLayout::eUndefined,
-            vk::ImageLayout::eDepthStencilAttachmentOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            attachment.buffer().image(),
-            vk::ImageSubresourceRange {
-                (isDepthFormat(attachment.format()) ?
-                     vk::ImageAspectFlagBits::eDepth :
-                     vk::ImageAspectFlagBits::eNoneKHR) |
-                (isStencilFormat(attachment.format()) ?
-                     vk::ImageAspectFlagBits::eStencil :
-                     vk::ImageAspectFlagBits::eNoneKHR),
-                0,
-                attachment.mipLevels(),
-                0,
-                attachment.layer()
+        imgBarriers.push_back(
+            {
+                vk::AccessFlags {},
+                vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                vk::ImageLayout::eUndefined,
+                vk::ImageLayout::eDepthStencilAttachmentOptimal,
+                VK_QUEUE_FAMILY_IGNORED,
+                VK_QUEUE_FAMILY_IGNORED,
+                attachment.buffer().image(),
+                vk::ImageSubresourceRange {
+                    (isDepthFormat(attachment.format()) ?
+                         vk::ImageAspectFlagBits::eDepth :
+                         vk::ImageAspectFlagBits::eNoneKHR) |
+                    (isStencilFormat(attachment.format()) ?
+                         vk::ImageAspectFlagBits::eStencil :
+                         vk::ImageAspectFlagBits::eNoneKHR),
+                    0,
+                    attachment.mipLevels(),
+                    0,
+                    attachment.layer()
+                }
             }
-        });
+        );
     }
 
     auto pool = _device->graphicsQueue()->pool();
@@ -388,12 +400,16 @@ void RevDepthSharedNode::postProcessAllocated(const ptr<HORenderPass> renderPass
     /**
      * Transform
      */
-    cmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
+    cmd.vkCommandBuffer().pipelineBarrier(
+        vk::PipelineStageFlagBits::eAllCommands,
         vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
         vk::DependencyFlags {},
-        0, nullptr,
-        0, nullptr,
-        static_cast<u32>(imgBarriers.size()), imgBarriers.data()
+        0,
+        nullptr,
+        0,
+        nullptr,
+        static_cast<u32>(imgBarriers.size()),
+        imgBarriers.data()
     );
 
     cmd.end();

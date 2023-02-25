@@ -3,10 +3,8 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::reflow {
-
     template <typename EntryType_>
     struct StyleSheetEntry {
-
         using this_type = StyleSheetEntry<EntryType_>;
 
         constexpr StyleSheetEntry(const bool set_, const EntryType_ attr_) :
@@ -93,5 +91,4 @@ namespace ember::engine::reflow {
             return *this;
         }
     };
-
 }

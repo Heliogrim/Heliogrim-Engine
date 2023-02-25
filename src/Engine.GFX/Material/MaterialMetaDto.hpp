@@ -3,7 +3,6 @@
 #include <Engine.Common/Types.hpp>
 
 namespace ember::engine::gfx::experimental {
-
     struct MaterialMetaDto final {
         u32 diffuse;
         u32 normal;

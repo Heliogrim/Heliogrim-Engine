@@ -3,7 +3,6 @@
 #include "Widget.hpp"
 
 namespace ember::engine::reflow {
-
     enum class InputControlStatus {
         eValid,
         eInvalid,
@@ -70,5 +69,4 @@ namespace ember::engine::reflow {
     public:
         [[nodiscard]] virtual input_type value() const noexcept = 0;
     };
-
 }

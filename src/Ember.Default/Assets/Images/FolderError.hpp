@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<FolderError> {
     public:
         FolderError():
-            ImageAsset(FolderError::unstable_auto_guid(),
-                R"(resources\imports\ktx\folder-error.ktx)") {}
+            ImageAsset(
+                FolderError::unstable_auto_guid(),
+                R"(resources\imports\ktx\folder-error.ktx)"
+            ) {}
     };
 }

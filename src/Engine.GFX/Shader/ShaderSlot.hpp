@@ -3,7 +3,6 @@
 #include "Shader.hpp"
 
 namespace ember::engine::gfx {
-
     class ShaderSlot {
     public:
         /**
@@ -32,7 +31,6 @@ namespace ember::engine::gfx {
         mutable ptr<const Shader> _cache;
 
     public:
-
         /**
          * Gets the shader
          *

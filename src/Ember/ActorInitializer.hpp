@@ -52,20 +52,20 @@ namespace ember {
             /**/
             auto* registry { getCoreSession().getState()->getRegistry() };
 
-            auto* component {
-                registry->acquireActorComponent<
-                    Component,
-                    CachedActorPointer,
-                    ptr<ActorComponent>
-                >(actor_->guid(), { actor_->guid(), actor_ }, nullptr)
-            };
+            auto* component = registry->acquireActorComponent<
+                Component,
+                CachedActorPointer,
+                ptr<ActorComponent>
+            >(actor_->guid(), { actor_->guid(), actor_ }, nullptr);
             assert(component != nullptr && "Failed to ensure successful created component.");
 
             /**
              *
              */
-            assert(actor_->getRootComponent() == nullptr &&
-                "Failed to ensure no existing root component at referenced actor.");
+            assert(
+                actor_->getRootComponent() == nullptr &&
+                "Failed to ensure no existing root component at referenced actor."
+            );
             actor_->addComponent(component);
 
             return component;
@@ -79,17 +79,15 @@ namespace ember {
 
             auto* actor { actor_ ? actor_ : parent_->getOwner() };
 
-            auto* component {
-                registry->acquireActorComponent<
-                    Component,
-                    CachedActorPointer,
-                    ptr<ActorComponent>
-                >(
-                    actor->guid(),
-                    CachedActorPointer { actor_->guid(), actor },
-                    ptr<ActorComponent> { parent_ }
-                )
-            };
+            auto* component = registry->acquireActorComponent<
+                Component,
+                CachedActorPointer,
+                ptr<ActorComponent>
+            >(
+                actor->guid(),
+                CachedActorPointer { actor_->guid(), actor },
+                ptr<ActorComponent> { parent_ }
+            );
             assert(component != nullptr && "Failed to ensure successful created component.");
 
             /**

@@ -6,7 +6,6 @@
 #include <Engine.Common/Meta/TypeId.hpp>
 
 namespace ember::engine::input {
-
     enum class DragDropObjectType : u64 {
         eNone = 0x0,
         eFileType = ("Drop::File"_typeId).data,
@@ -40,5 +39,4 @@ namespace ember::engine::input {
 
         virtual bool storeText(cref<string> text_) = 0;
     };
-
 }

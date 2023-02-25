@@ -51,8 +51,11 @@ ptr<Asset> AssetDatabase::operator[](cref<asset_guid> guid_) const {
     return (*pos).asset();
 }
 
-bool AssetDatabase::insert(cref<asset_guid> guid_, cref<asset_type_id> type_,
-    const ptr<Asset> asset_) noexcept {
+bool AssetDatabase::insert(
+    cref<asset_guid> guid_,
+    cref<asset_type_id> type_,
+    const ptr<Asset> asset_
+) noexcept {
 
     SCOPED_STOPWATCH
     _SCTRL_GATE(_mtx);

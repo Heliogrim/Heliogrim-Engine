@@ -3,7 +3,6 @@
 #include <Engine.GFX/Renderer/__fwd.hpp>
 
 namespace ember::engine::reflow {
-
     class UISceneModel final :
         public gfx::SceneNodeModel {
     public:
@@ -30,5 +29,4 @@ namespace ember::engine::reflow {
     public:
         ptr<gfx::cache::ModelBatch> batch(const ptr<gfx::render::RenderPassState> state_) override;
     };
-
 }

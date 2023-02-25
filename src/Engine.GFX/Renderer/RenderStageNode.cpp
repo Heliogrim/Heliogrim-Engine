@@ -25,11 +25,18 @@ const non_owning_rptr<const Vector<type_id>> RenderStageNode::modelTypes() const
     return nullptr;
 }
 
-void RenderStageNode::before(const non_owning_rptr<HORenderPass> renderPass_,
-    const non_owning_rptr<RenderStagePass> stagePass_) const {}
+void RenderStageNode::before(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    const non_owning_rptr<RenderStagePass> stagePass_
+) const {}
 
-void RenderStageNode::invoke(const non_owning_rptr<HORenderPass> renderPass_,
-    const non_owning_rptr<RenderStagePass> stagePass_, const non_owning_rptr<SceneNodeModel> model_) const {}
+void RenderStageNode::invoke(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    const non_owning_rptr<RenderStagePass> stagePass_,
+    const non_owning_rptr<SceneNodeModel> model_
+) const {}
 
-void RenderStageNode::after(const non_owning_rptr<HORenderPass> renderPass_,
-    const non_owning_rptr<RenderStagePass> stagePass_) const {}
+void RenderStageNode::after(
+    const non_owning_rptr<HORenderPass> renderPass_,
+    const non_owning_rptr<RenderStagePass> stagePass_
+) const {}

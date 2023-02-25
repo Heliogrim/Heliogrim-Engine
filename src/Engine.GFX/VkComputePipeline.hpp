@@ -3,7 +3,6 @@
 #include "Device/Device.hpp"
 
 namespace ember::engine::gfx {
-
     class VkComputePipeline final :
         public ComputePipeline {
     public:
@@ -33,5 +32,4 @@ namespace ember::engine::gfx {
     public:
         [[nodiscard]] cref<vk::Pipeline> vkPipeline() const noexcept;
     };
-
 }

@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<IconPipeline> {
     public:
         IconPipeline():
-            ImageAsset(IconPipeline::unstable_auto_guid(),
-                R"(resources\imports\ktx\pipeline.ktx)") {}
+            ImageAsset(
+                IconPipeline::unstable_auto_guid(),
+                R"(resources\imports\ktx\pipeline.ktx)"
+            ) {}
     };
 }

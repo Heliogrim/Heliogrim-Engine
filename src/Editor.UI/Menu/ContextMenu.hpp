@@ -3,7 +3,6 @@
 #include <Engine.Reflow/Widget/Menu.hpp>
 
 namespace ember::editor::ui {
-
     class ContextMenu :
         public engine::reflow::Menu {
     public:
@@ -22,5 +21,4 @@ namespace ember::editor::ui {
     public:
         [[nodiscard]] static sptr<ContextMenu> make(const ptr<Widget> target_, cref<math::ivec2> position_);
     };
-
 }

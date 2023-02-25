@@ -3,7 +3,6 @@
 #include "SceneNodeSubBase.hpp"
 
 namespace ember::engine::scene {
-
     template <class PayloadType_>
     class ShadowSceneNode final :
         public SceneNodeSubBase<PayloadType_, ShadowSceneNode<PayloadType_>> {
@@ -112,8 +111,11 @@ namespace ember::engine::scene {
         }
 
         template <class FactoryType_>
-        bool pushLeaf(const ptr<PayloadType_> element_, const ptr<const FactoryType_> factory_,
-            const SceneNodePath path_) {
+        bool pushLeaf(
+            const ptr<PayloadType_> element_,
+            const ptr<const FactoryType_> factory_,
+            const SceneNodePath path_
+        ) {
             /**
              * Ensure current leaf has element storage
              */
@@ -185,8 +187,12 @@ namespace ember::engine::scene {
         }
 
         template <class FactoryType_>
-        bool push(const ptr<PayloadType_> element_, cref<math::Bounding> boundary_,
-            const ptr<const FactoryType_> factory_, SceneNodePath forwardPath_) {
+        bool push(
+            const ptr<PayloadType_> element_,
+            cref<math::Bounding> boundary_,
+            const ptr<const FactoryType_> factory_,
+            SceneNodePath forwardPath_
+        ) {
 
             if (base_type::isLeaf()) {
                 /**
@@ -265,13 +271,21 @@ namespace ember::engine::scene {
             }
 
             if (exclusiveNode.second) {
-                return exclusiveNode.second->push(element_, boundary_, factory_,
-                        forwardPath_.push(exclusiveNode.first)),
+                return exclusiveNode.second->push(
+                        element_,
+                        boundary_,
+                        factory_,
+                        forwardPath_.push(exclusiveNode.first)
+                    ),
                     ++base_type::_inclusiveElementCount;
             }
 
-            return inclusiveNode.second->push(element_, boundary_, factory_,
-                    forwardPath_.push(inclusiveNode.first)),
+            return inclusiveNode.second->push(
+                    element_,
+                    boundary_,
+                    factory_,
+                    forwardPath_.push(inclusiveNode.first)
+                ),
                 ++base_type::_inclusiveElementCount;
 
             #if FALSE
@@ -552,5 +566,4 @@ namespace ember::engine::scene {
     ptr<typename SceneNode<PayloadType_>::shadow_type> SceneNode<PayloadType_>::asShadow() noexcept {
         return ShadowSceneNode<PayloadType_>::castFrom(this);
     }
-
 }

@@ -57,11 +57,15 @@ static void configureCtrls(cref<sptr<HBox>> parent_) {
 }
 
 static void configureViewport(cref<sptr<HBox>> parent_) {
-    auto viewport = make_sptr<Viewport>(BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .color = { true, color::Dark::white }
-    }));
+    auto viewport = make_sptr<Viewport>(
+        BoundStyleSheet::make(
+            StyleSheet {
+                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .color = { true, color::Dark::white }
+            }
+        )
+    );
     parent_->addChild(viewport);
 }
 
@@ -69,20 +73,28 @@ sptr<Panel> ProjectViewportPanel::make() {
 
     auto panel { _STD shared_ptr<ProjectViewportPanel>(new ProjectViewportPanel()) };
 
-    auto ctrls = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
-        .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-        .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
-        .color = { true, color::Dark::backgroundDefault },
-    }));
-    auto wrapper = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
-        .reflowShrink = { true, 1.F },
-        .color = { true, color::Dark::backgroundDefault },
-    }));
+    auto ctrls = make_sptr<HBox>(
+        BoundStyleSheet::make(
+            StyleSheet {
+                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
+                .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+                .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
+                .color = { true, color::Dark::backgroundDefault },
+            }
+        )
+    );
+    auto wrapper = make_sptr<HBox>(
+        BoundStyleSheet::make(
+            StyleSheet {
+                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
+                .reflowShrink = { true, 1.F },
+                .color = { true, color::Dark::backgroundDefault },
+            }
+        )
+    );
 
     configureCtrls(ctrls);
     configureViewport(wrapper);

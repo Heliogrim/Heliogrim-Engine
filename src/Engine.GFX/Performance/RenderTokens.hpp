@@ -3,7 +3,6 @@
 #include "../Renderer/RenderDataToken.hpp"
 
 namespace ember::engine::gfx::render {
-
     constexpr RenderDataToken PerformanceQuery {
         RenderDataToken::make(
             "PerformanceQuery"sv,
@@ -12,5 +11,4 @@ namespace ember::engine::gfx::render {
             RenderDataUsage::ePerRenderNode
         )
     };
-
 }

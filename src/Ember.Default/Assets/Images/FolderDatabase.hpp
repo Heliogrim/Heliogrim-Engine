@@ -7,7 +7,9 @@ namespace ember::game::assets::image {
         public AssetAutoGuid<FolderDatabase> {
     public:
         FolderDatabase():
-            ImageAsset(FolderDatabase::unstable_auto_guid(),
-                R"(resources\imports\ktx\folder-database.ktx)") {}
+            ImageAsset(
+                FolderDatabase::unstable_auto_guid(),
+                R"(resources\imports\ktx\folder-database.ktx)"
+            ) {}
     };
 }

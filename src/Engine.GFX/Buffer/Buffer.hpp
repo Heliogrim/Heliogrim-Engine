@@ -5,7 +5,6 @@
 #include "../Memory/AllocatedMemory.hpp"
 
 namespace ember::engine::gfx {
-
     class Buffer {
     public:
         using this_type = Buffer;

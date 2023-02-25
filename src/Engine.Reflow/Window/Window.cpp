@@ -114,9 +114,14 @@ void Window::dropPopLayer(const non_owning_rptr<PopupLayer> layer_) {
     }
 
     const auto where {
-        _STD ranges::remove(_popupLayers.begin(), _popupLayers.end(), layer_, [](cref<uptr<PopupLayer>> layer_) {
-            return layer_.get();
-        })
+        _STD ranges::remove(
+            _popupLayers.begin(),
+            _popupLayers.end(),
+            layer_,
+            [](cref<uptr<PopupLayer>> layer_) {
+                return layer_.get();
+            }
+        )
     };
 
     _popupLayers.erase(where.begin(), where.end());
@@ -142,7 +147,12 @@ void Window::render(const ptr<ReflowCommandBuffer> cmd_) {
     }
 }
 
-void Window::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_, ref<StyleKeyStack> styleStack_) {
+void Window::flow(
+    cref<FlowContext> ctx_,
+    cref<math::vec2> space_,
+    cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_
+) {
 
     /* Warning: Replace */
     _clientSize = space_;

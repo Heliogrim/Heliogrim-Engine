@@ -236,8 +236,11 @@ vk::Result VkSurfaceSwapchain::presentNext(u64 idx_, cref<Vector<vk::Semaphore>>
     return vkResult;
 }
 
-bool VkSurfaceSwapchain::consumeNext(ref<sptr<Texture>> image_, ref<vk::Semaphore> signal_,
-    ref<Vector<vk::Semaphore>> waits_) {
+bool VkSurfaceSwapchain::consumeNext(
+    ref<sptr<Texture>> image_,
+    ref<vk::Semaphore> signal_,
+    ref<Vector<vk::Semaphore>> waits_
+) {
     return false;
 }
 
@@ -321,22 +324,24 @@ void pretransform(cref<sptr<Device>> device_, cref<Vector<SwapchainImage>> textu
             continue;
         }
 
-        imgBarriers.push_back({
-            vk::AccessFlags {},
-            vk::AccessFlags {},
-            vk::ImageLayout::eUndefined,
-            vk::ImageLayout::ePresentSrcKHR,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            entry.image->buffer().image(),
-            vk::ImageSubresourceRange {
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                entry.image->mipLevels(),
-                0,
-                entry.image->layer()
+        imgBarriers.push_back(
+            {
+                vk::AccessFlags {},
+                vk::AccessFlags {},
+                vk::ImageLayout::eUndefined,
+                vk::ImageLayout::ePresentSrcKHR,
+                VK_QUEUE_FAMILY_IGNORED,
+                VK_QUEUE_FAMILY_IGNORED,
+                entry.image->buffer().image(),
+                vk::ImageSubresourceRange {
+                    vk::ImageAspectFlagBits::eColor,
+                    0,
+                    entry.image->mipLevels(),
+                    0,
+                    entry.image->layer()
+                }
             }
-        });
+        );
     }
 
     const auto pool = device_->graphicsQueue()->pool();
@@ -347,11 +352,16 @@ void pretransform(cref<sptr<Device>> device_, cref<Vector<SwapchainImage>> textu
     /**
      * Transform
      */
-    cmd.vkCommandBuffer().pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
-        vk::PipelineStageFlagBits::eAllCommands, vk::DependencyFlags {},
-        0, nullptr,
-        0, nullptr,
-        static_cast<u32>(imgBarriers.size()), imgBarriers.data()
+    cmd.vkCommandBuffer().pipelineBarrier(
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::DependencyFlags {},
+        0,
+        nullptr,
+        0,
+        nullptr,
+        static_cast<u32>(imgBarriers.size()),
+        imgBarriers.data()
     );
 
     cmd.end();

@@ -19,7 +19,6 @@ namespace ember::engine::gfx {
 template <>
 struct _STD hash<ember::engine::gfx::ShaderStorageKey> :
     public _STD hash<string> {
-
     size_t operator()(const ember::engine::gfx::ShaderStorageKey& key_) const noexcept {
         size_t s { static_cast<size_t>(key_.type) };
         size_t h = static_cast<const _STD hash<string>*>(this)->operator()(key_.name);
@@ -31,7 +30,6 @@ struct _STD hash<ember::engine::gfx::ShaderStorageKey> :
 };
 
 namespace ember::engine::gfx {
-
     class ShaderStorage {
     private:
         /**
@@ -140,5 +138,4 @@ namespace ember::engine::gfx {
     private:
         void tidy();
     };
-
 }

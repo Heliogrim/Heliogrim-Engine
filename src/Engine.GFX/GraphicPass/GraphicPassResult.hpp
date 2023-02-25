@@ -5,7 +5,6 @@
 #include "../Command/CommandBuffer.hpp"
 
 namespace ember::engine::gfx {
-
     struct GraphicPassResult {
         /**
          *

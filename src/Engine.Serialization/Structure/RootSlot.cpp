@@ -20,13 +20,15 @@ StructureSlotState RootSlot::makeRootState(const non_owning_rptr<Archive> archiv
         .offset = archive_->tell(),
         .header = StructureSlotHeader {},
         .parent = nullptr,
-        .root = make_sptr<RootStructureSlotState>(RootStructureSlotState {
-            StructureSlotStateFlag::eUndefined,
-            archive_->tell(),
-            StructureSlotHeader {},
-            nullptr,
-            nullptr,
-            archive_
-        })
+        .root = make_sptr<RootStructureSlotState>(
+            RootStructureSlotState {
+                StructureSlotStateFlag::eUndefined,
+                archive_->tell(),
+                StructureSlotHeader {},
+                nullptr,
+                nullptr,
+                archive_
+            }
+        )
     };
 }

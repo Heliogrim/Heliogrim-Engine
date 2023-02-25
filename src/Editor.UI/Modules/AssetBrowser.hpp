@@ -10,7 +10,6 @@ namespace ember::editor::ui {
 }
 
 namespace ember::editor::ui {
-
     class AssetBrowser final {
     public:
         friend class ::ember::editor::ui::AssetBrowserPanel;
@@ -44,5 +43,4 @@ namespace ember::editor::ui {
 
         bool retrieveEntries(cref<Url> cwd_, _Out_ ref<Vector<_STD pair<string, Url>>> entries_) const;
     };
-
 }

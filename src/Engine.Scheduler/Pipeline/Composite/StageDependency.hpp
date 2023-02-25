@@ -18,12 +18,17 @@ namespace std {
         public _STD hash<::ember::ptr<void>>,
         public _STD hash<::ember::ptr<const void>> {
         [[nodiscard]] size_t operator()(
-            ::ember::cref<::ember::engine::scheduler::StageDependency> value_) const noexcept {
+            ::ember::cref<::ember::engine::scheduler::StageDependency> value_
+        ) const noexcept {
             size_t seed = 0;
-            ::ember::hash::hash_combine(seed,
-                static_cast<::ember::cref<_STD hash<::ember::ptr<void>>>>(*this)(value_.pipeline));
-            ::ember::hash::hash_combine(seed,
-                static_cast<::ember::cref<_STD hash<::ember::ptr<const void>>>>(*this)(value_.stage));
+            ::ember::hash::hash_combine(
+                seed,
+                static_cast<::ember::cref<_STD hash<::ember::ptr<void>>>>(*this)(value_.pipeline)
+            );
+            ::ember::hash::hash_combine(
+                seed,
+                static_cast<::ember::cref<_STD hash<::ember::ptr<const void>>>>(*this)(value_.stage)
+            );
             return seed;
         }
     };

@@ -1,7 +1,6 @@
 #pragma once
 
 namespace ember::engine::gfx {
-
     enum class CameraProjectionMode {
         ePerspective = false,
         eOrthographic = true
@@ -11,5 +10,4 @@ namespace ember::engine::gfx {
         eFirstPerson = false,
         eLookAt = true
     };
-
 }

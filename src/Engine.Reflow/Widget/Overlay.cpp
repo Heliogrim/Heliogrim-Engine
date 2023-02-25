@@ -36,7 +36,12 @@ void Overlay::render(const ptr<ReflowCommandBuffer> cmd_) {
     _content->render(cmd_);
 }
 
-void Overlay::flow(cref<FlowContext> ctx_, cref<math::vec2> space_, cref<math::vec2> limit_, ref<StyleKeyStack> styleStack_) {
+void Overlay::flow(
+    cref<FlowContext> ctx_,
+    cref<math::vec2> space_,
+    cref<math::vec2> limit_,
+    ref<StyleKeyStack> styleStack_
+) {
 
     if (!_content) {
         return;

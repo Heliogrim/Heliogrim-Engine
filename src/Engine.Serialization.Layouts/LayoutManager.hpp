@@ -11,7 +11,6 @@
 #include "LayoutOptimizer.hpp"
 
 namespace ember::engine::serialization {
-
     class LayoutManager {
     public:
         using this_type = LayoutManager;
@@ -70,5 +69,4 @@ namespace ember::engine::serialization {
 
         [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(cref<type_id> typeId_) const noexcept;
     };
-
 }

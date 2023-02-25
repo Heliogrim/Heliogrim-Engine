@@ -141,10 +141,24 @@ namespace ember::math {
          * @param v32_ The 32.
          * @param v33_ The 33.
          */
-        constexpr matq4_t(const T& v00_, const T& v01_, const T& v02_, const T& v03_,
-            const T& v10_, const T& v11_, const T& v12_, const T& v13_,
-            const T& v20_, const T& v21_, const T& v22_, const T& v23_,
-            const T& v30_, const T& v31_, const T& v32_, const T& v33_) :
+        constexpr matq4_t(
+            const T& v00_,
+            const T& v01_,
+            const T& v02_,
+            const T& v03_,
+            const T& v10_,
+            const T& v11_,
+            const T& v12_,
+            const T& v13_,
+            const T& v20_,
+            const T& v21_,
+            const T& v22_,
+            const T& v23_,
+            const T& v30_,
+            const T& v31_,
+            const T& v32_,
+            const T& v33_
+        ) :
             value {
                 { v00_, v01_, v02_, v03_ },
                 { v10_, v11_, v12_, v13_ },
@@ -423,7 +437,8 @@ namespace ember::math {
                 value[0] * other_[0][0] + value[1] * other_[0][1] + value[2] * other_[0][2] + value[3] * other_[0][3],
                 value[0] * other_[1][0] + value[1] * other_[1][1] + value[2] * other_[1][2] + value[3] * other_[1][3],
                 value[0] * other_[2][0] + value[1] * other_[2][1] + value[2] * other_[2][2] + value[3] * other_[2][3],
-                value[0] * other_[3][0] + value[1] * other_[3][1] + value[2] * other_[3][2] + value[3] * other_[3][3]);
+                value[0] * other_[3][0] + value[1] * other_[3][1] + value[2] * other_[3][2] + value[3] * other_[3][3]
+            );
         }
 
         /**
@@ -511,7 +526,8 @@ namespace ember::math {
             mat_[0][0] * vec_[0] + mat_[0][1] * vec_[1] + mat_[0][2] * vec_[2] + mat_[0][3] * vec_[3],
             mat_[1][0] * vec_[0] + mat_[1][1] * vec_[1] + mat_[1][2] * vec_[2] + mat_[1][3] * vec_[3],
             mat_[2][0] * vec_[0] + mat_[2][1] * vec_[1] + mat_[2][2] * vec_[2] + mat_[2][3] * vec_[3],
-            mat_[3][0] * vec_[0] + mat_[3][1] * vec_[1] + mat_[3][2] * vec_[2] + mat_[3][3] * vec_[3]);
+            mat_[3][0] * vec_[0] + mat_[3][1] * vec_[1] + mat_[3][2] * vec_[2] + mat_[3][3] * vec_[3]
+        );
     }
 
     template <typename T>
@@ -531,7 +547,8 @@ namespace ember::math {
         return vec3_t<T>(
             mat_[0][0] * vec_[0] + mat_[0][1] * vec_[1] + mat_[0][2] * vec_[2],
             mat_[1][0] * vec_[0] + mat_[1][1] * vec_[1] + mat_[1][2] * vec_[2],
-            mat_[2][0] * vec_[0] + mat_[2][1] * vec_[1] + mat_[2][2] * vec_[2]);
+            mat_[2][0] * vec_[0] + mat_[2][1] * vec_[1] + mat_[2][2] * vec_[2]
+        );
     }
 
     template <typename T>
@@ -561,8 +578,14 @@ namespace ember::math {
     }
 
     template <typename T>
-    [[maybe_unused]] static matq4_t<T> ortho(const T& l_, const T& r_, const T& b_, const T& t_, const T& znear_,
-        const T& zfar_) {
+    [[maybe_unused]] static matq4_t<T> ortho(
+        const T& l_,
+        const T& r_,
+        const T& b_,
+        const T& t_,
+        const T& znear_,
+        const T& zfar_
+    ) {
         matq4_t<T> res = matq4_t<T>(1);
         res[0][0] = static_cast<T>(2) / (r_ - l_);
         res[1][1] = static_cast<T>(2) / (t_ - b_);
@@ -586,8 +609,12 @@ namespace ember::math {
         return res;
     }
 
-    [[maybe_unused]] static mat4 perspective(const mat4::value_type& fov_, const mat4::value_type& aspect_,
-        const mat4::value_type& znear_, const mat4::value_type& zfar_) {
+    [[maybe_unused]] static mat4 perspective(
+        const mat4::value_type& fov_,
+        const mat4::value_type& aspect_,
+        const mat4::value_type& znear_,
+        const mat4::value_type& zfar_
+    ) {
         const mat4::value_type ht = tan(fov_ / static_cast<mat4::value_type>(2));
 
         mat4 res = mat4(0);

@@ -8,8 +8,10 @@ using namespace ember;
 
 VirtualTexturePage::VirtualTexturePage(
     non_owning_rptr<VirtualMemoryPage> memory_,
-    u32 layer_, math::uivec3 offset_,
-    math::uivec3 extent_, u32 mipLevel_,
+    u32 layer_,
+    math::uivec3 offset_,
+    math::uivec3 extent_,
+    u32 mipLevel_,
     const VirtualTexturePageFlags flags_
 ) :
     _flags(flags_),

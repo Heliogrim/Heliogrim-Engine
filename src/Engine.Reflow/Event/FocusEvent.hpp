@@ -7,7 +7,6 @@ namespace ember::engine::reflow {
 }
 
 namespace ember::engine::reflow {
-
     class FocusEvent :
         public StatelessEvent {
     public:
@@ -27,5 +26,4 @@ namespace ember::engine::reflow {
     public:
         sptr<Widget> _target;
     };
-
 }

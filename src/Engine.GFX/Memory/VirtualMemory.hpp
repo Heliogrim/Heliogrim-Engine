@@ -5,7 +5,6 @@
 #include "VirtualMemoryPage.hpp"
 
 namespace ember::engine::gfx {
-
     class VirtualMemory {
     public:
         using this_type = VirtualMemory;

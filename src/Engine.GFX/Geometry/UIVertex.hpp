@@ -5,7 +5,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace ember::engine::gfx {
-
     /**
      * A ui-vertex with template attribute types
      *
@@ -21,7 +20,6 @@ namespace ember::engine::gfx {
         typename ct = u8,
         typename uvmt = float>
     struct uivertex_t {
-
         using position_type = math::vec2_t<pt>;
         using color_type = math::vec4_t<ct>;
         using uvm_type = math::vec3_t<uvmt>;

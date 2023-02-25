@@ -16,9 +16,9 @@ namespace ember::engine {
         ~Audio() noexcept override;
 
     public:
-        void setup();
+        void setup() override;
 
-        void start();
+        void start() override;
 
         void stop() override;
 

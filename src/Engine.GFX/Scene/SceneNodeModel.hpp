@@ -9,7 +9,6 @@
 #include "Engine.Scene/Node/SceneNodePath.hpp"
 
 namespace ember::engine::gfx {
-
     class __declspec(novtable) SceneNodeModel :
         public ::ember::engine::scene::SceneNodeModel {
     public:

@@ -3,7 +3,6 @@
 #include "../Texture/Texture.hpp"
 
 namespace ember::engine::gfx {
-
     class FramebufferAttachment final {
     public:
         /**

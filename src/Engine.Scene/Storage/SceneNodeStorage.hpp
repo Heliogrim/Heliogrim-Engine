@@ -8,7 +8,6 @@
 #include <Engine.Common/Collection/Vector.hpp>
 
 namespace ember::engine::scene {
-
     /**
      * Construct inplace
      *
@@ -103,7 +102,6 @@ namespace ember::engine::scene {
      */
     template <typename ValueType, typename KeyType, typename IndexType = u64>
     class scene_node_storage_page final {
-
         friend class scene_node_storage<ValueType, KeyType>;
 
     public:
@@ -662,10 +660,13 @@ namespace ember::engine::scene {
             /**
              * Find sequence containing idx_
              */
-            auto sit = _STD find_if(_seq.rbegin(), _seq.rend(),
+            auto sit = _STD find_if(
+                _seq.rbegin(),
+                _seq.rend(),
                 [&idx_](typename sequence::const_reference_type sequence_) {
                     return sequence_.contains(idx_);
-                });
+                }
+            );
 
             /**
              * Check whether sequence with idx_ was found
@@ -831,10 +832,13 @@ namespace ember::engine::scene {
             /**
              * Find upper bound sequence where index can be merged
              */
-            auto uit = _STD find_if(_seq.rbegin(), _seq.rend(),
+            auto uit = _STD find_if(
+                _seq.rbegin(),
+                _seq.rend(),
                 [&idx_](typename sequence::const_reference_type sequence_) {
                     return sequence_.mergable(idx_);
-                });
+                }
+            );
 
             /**
              * If no mergable sequence, create a new one
@@ -848,10 +852,13 @@ namespace ember::engine::scene {
             /**
              * Find lower bound sequence where index can be merged
              */
-            auto lit = _STD find_if(_seq.begin(), _seq.end(),
+            auto lit = _STD find_if(
+                _seq.begin(),
+                _seq.end(),
                 [&idx_](typename sequence::const_reference_type sequence_) {
                     return sequence_.mergable(idx_);
-                });
+                }
+            );
 
             /**
              * If only one sequence can merge idx_
@@ -1548,14 +1555,21 @@ namespace ember::engine::scene {
         }
 
     private:
-        [[nodiscard]] index_type pages_insert_pair(cref<KeyType> key_, mref<ValueType> value_) noexcept(
+        [[nodiscard]] index_type pages_insert_pair(
+            cref<KeyType> key_,
+            mref<ValueType> value_
+        ) noexcept(
             _STD is_nothrow_move_constructible_v<ValueType>
         ) {
             // TODO: Replace
             // Warning: Using reverse iterator will speed up linear insertion but slow down reusage or pages
-            auto possiblePage = _STD find_if(_pages.rbegin(), _pages.rend(), [](cref<storage_page_type> page_) {
-                return page_.can_store();
-            });
+            auto possiblePage = _STD find_if(
+                _pages.rbegin(),
+                _pages.rend(),
+                [](cref<storage_page_type> page_) {
+                    return page_.can_store();
+                }
+            );
 
             /**
              * Check whether there is a page with space left to store data
@@ -1764,7 +1778,8 @@ namespace ember::engine::scene {
              */
             if (it == _mapping.end()) {
                 throw _STD out_of_range(
-                    "Can not erase element from storage, while key_ does not exist in hybrid structure");
+                    "Can not erase element from storage, while key_ does not exist in hybrid structure"
+                );
             }
 
             /**

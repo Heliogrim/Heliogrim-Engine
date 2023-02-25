@@ -14,8 +14,11 @@ namespace ember {
         using SceneNodeModel = ::ember::engine::scene::SceneNodeModel;
 
     public:
-        SceneComponent(mref<component_type_id> typeId_, mref<CachedActorPointer> owner_,
-            mref<ptr<ActorComponent>> parent_);
+        SceneComponent(
+            mref<component_type_id> typeId_,
+            mref<CachedActorPointer> owner_,
+            mref<ptr<ActorComponent>> parent_
+        );
 
         // Warning: does not propagate currently
         ~SceneComponent();
@@ -40,11 +43,13 @@ namespace ember {
         template <typename Selector_>
         [[nodiscard]] Vector<non_owning_rptr<SceneNodeModel>> selectSceneNodeModels(mref<Selector_> selector_) const {
             Vector<non_owning_rptr<SceneNodeModel>> result {};
-            eachSceneNodeModel([&](const non_owning_rptr<SceneNodeModel> model_) {
-                if (selector_(model_)) {
-                    result.push_back(model_);
+            eachSceneNodeModel(
+                [&](const non_owning_rptr<SceneNodeModel> model_) {
+                    if (selector_(model_)) {
+                        result.push_back(model_);
+                    }
                 }
-            });
+            );
 
             return result;
         }
