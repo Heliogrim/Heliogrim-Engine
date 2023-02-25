@@ -152,7 +152,7 @@ void transformer::convertFreeType(
             font->atlas()->buffer().image(),
             vk::ImageSubresourceRange {
                 vk::ImageAspectFlagBits::eColor,
-                0, atlas.mipLevels(), 0, atlas.layer()
+                0, _STD max(atlas.mipLevels(), 1ui32), 0, atlas.layer()
             }
         }
     );
@@ -195,7 +195,7 @@ void transformer::convertFreeType(
             font->atlas()->buffer().image(),
             vk::ImageSubresourceRange {
                 vk::ImageAspectFlagBits::eColor,
-                0, atlas.mipLevels(), 0, atlas.layer()
+                0, _STD max(atlas.mipLevels(), 1ui32), 0, atlas.layer()
             }
         }
     );

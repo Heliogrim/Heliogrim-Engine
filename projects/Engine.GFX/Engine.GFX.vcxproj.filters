@@ -684,6 +684,9 @@
     <ClInclude Include="..\..\src\Engine.GFX\Pool\GlobalResourcePool.hpp">
       <Filter>Headerdateien\Pool</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\API\__vkFwd.hpp">
+      <Filter>Headerdateien\API</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp">

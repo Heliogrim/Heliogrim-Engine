@@ -195,6 +195,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX\API\VkTranslate.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\API\__vkFwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Application\Application.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\Buffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBuffer.hpp" />

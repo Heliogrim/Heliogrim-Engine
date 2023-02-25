@@ -5,6 +5,7 @@
 #include "../Buffer/VirtualBufferView.hpp"
 #include "../Texture/Texture.hpp"
 #include "../Texture/VirtualTexture.hpp"
+#include "../Texture/VirtualTextureView.hpp"
 
 using namespace ember::engine::gfx::shader;
 using namespace ember::engine::gfx;
@@ -549,6 +550,98 @@ void DiscreteBinding::storeAs(const ptr<const VirtualTexture> texture_, cref<vk:
         _sampler.vkSampler(),
         texture_->_vkImageView,
         layout_
+    };
+
+    /**
+     * Build Writer
+     */
+    vk::WriteDescriptorSet writer = {
+        _vkSet,
+        _super->id(),
+        0,
+        1,
+        dt,
+        &info,
+        nullptr,
+        nullptr
+    };
+
+    /**
+     * Update DescriptorSet with build Writer
+     */
+    _super->device()->vkDevice().updateDescriptorSets(
+        1,
+        &writer,
+        0,
+        nullptr
+    );
+}
+
+void DiscreteBinding::store(const ptr<const VirtualTextureView> texture_) {
+
+    const auto* const owner = texture_->owner();
+
+    /**
+     * Assure optimal sampler exists
+     */
+    if (!_sampler.vkSampler() || true) {
+        TextureSampler sampler {};
+        /**
+         * Warning: Temporary
+         */
+        if (isDepthFormat(owner->format())) {
+            sampler.addressModeU() = vk::SamplerAddressMode::eClampToEdge;
+            sampler.addressModeV() = vk::SamplerAddressMode::eClampToEdge;
+        } else {
+            sampler.addressModeU() = vk::SamplerAddressMode::eMirroredRepeat;
+            sampler.addressModeV() = vk::SamplerAddressMode::eMirroredRepeat;
+        }
+
+        /**
+         *
+         */
+        sampler.lods() = texture_->mipLevels();
+
+        sampler.setup(_super->device());
+
+        /**
+         * Exchange sampler
+         */
+        _sampler.destroy();
+        _sampler = _STD move(sampler);
+    }
+
+    /**
+     * Translate BindingType to vk::DescriptorType
+     */
+    vk::DescriptorType dt { vk::DescriptorType() };
+    switch (_super->type()) {
+        case BindingType::eImageSampler: {
+            dt = vk::DescriptorType::eCombinedImageSampler;
+            break;
+        }
+        default: {
+            #if _DEBUG
+            assert(false);
+            #else
+			return;
+            #endif
+        }
+    }
+
+    /**
+     * Build Descriptor for texture_
+     */
+    const vk::ImageView view {
+        (texture_->vkImageView() != nullptr) ?
+            reinterpret_cast<VkImageView>(texture_->vkImageView()) :
+            owner->_vkImageView.operator VkImageView()
+    };
+
+    vk::DescriptorImageInfo info {
+        _sampler.vkSampler(),
+        view,
+        vk::ImageLayout::eShaderReadOnlyOptimal
     };
 
     /**

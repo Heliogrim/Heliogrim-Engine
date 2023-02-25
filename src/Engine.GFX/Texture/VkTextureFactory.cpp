@@ -4,6 +4,7 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include "VirtualTextureView.hpp"
 #include "../API/VkTranslate.hpp"
 
 using namespace ember::engine::gfx;
@@ -174,7 +175,7 @@ Texture VkTextureFactory::build(const TextureBuildPayload& payload_) const {
     return texture;
 }
 
-Texture& VkTextureFactory::buildView(Texture& texture_) const {
+Texture& VkTextureFactory::buildView(Texture& texture_, TextureViewBuildOptions options_) const {
 
     SCOPED_STOPWATCH
 
@@ -214,6 +215,173 @@ Texture& VkTextureFactory::buildView(Texture& texture_) const {
     assert(view);
 
     texture_.vkView() = view;
+    return texture_;
+}
+
+ref<VirtualTexture> VkTextureFactory::buildView(
+    ref<VirtualTexture> texture_,
+    TextureViewBuildOptions options_
+) const {
+
+    SCOPED_STOPWATCH
+
+    /**
+     * Prepare
+     */
+    const bool spanRSw { texture_.format() == TextureFormat::eR8Unorm };
+
+    const vk::ComponentMapping cm {
+        vk::ComponentSwizzle::eR,
+        spanRSw ? vk::ComponentSwizzle::eR : vk::ComponentSwizzle::eG,
+        spanRSw ? vk::ComponentSwizzle::eR : vk::ComponentSwizzle::eB,
+        spanRSw ? vk::ComponentSwizzle::eR : vk::ComponentSwizzle::eA
+    };
+
+    const vk::ImageSubresourceRange isr {
+        /*texture_.buffer()._vkAspect,*/ vk::ImageAspectFlagBits::eColor,
+        0,
+        texture_.mipLevels(),
+        0,
+        texture_.layers()
+    };
+
+    const vk::ImageViewCreateInfo ivci {
+        vk::ImageViewCreateFlags(),
+        texture_.vkImage(),
+        vkTranslateView(texture_.type()),
+        api::vkTranslateFormat(texture_.format()),
+        cm,
+        isr
+    };
+
+    /**
+     * Create
+     */
+    const vk::ImageView view = _device->vkDevice().createImageView(ivci);
+    assert(view);
+
+    texture_._vkImageView = view;
+    return texture_;
+}
+
+ref<VirtualTextureView> VkTextureFactory::buildView(
+    ref<VirtualTextureView> texture_,
+    TextureViewBuildOptions options_
+) const {
+
+    SCOPED_STOPWATCH
+
+    const auto* const owner = texture_.owner();
+
+    /**
+     * Prepare
+     */
+    const bool spanRSw { owner->format() == TextureFormat::eR8Unorm };
+
+    const vk::ComponentMapping cm {
+        vk::ComponentSwizzle::eR,
+        spanRSw ? vk::ComponentSwizzle::eR : vk::ComponentSwizzle::eG,
+        spanRSw ? vk::ComponentSwizzle::eR : vk::ComponentSwizzle::eB,
+        spanRSw ? vk::ComponentSwizzle::eR : vk::ComponentSwizzle::eA
+    };
+
+    /**/
+
+    math::uivec2 mipLevels { texture_.minMipLevel(), texture_.maxMipLevel() };
+
+    if (options_.mipLevels.min >= 0) {
+        mipLevels.min = static_cast<u32>(options_.mipLevels.min);
+    }
+
+    if (options_.mipLevels.max >= 0) {
+        mipLevels.max = static_cast<u32>(options_.mipLevels.max);
+    }
+
+    /**/
+
+    math::uivec2 layers { texture_.baseLayer(), texture_.baseLayer() + texture_.layers() - 1 };
+
+    if (options_.layers.min >= 0) {
+        layers.min = static_cast<u32>(options_.layers.min);
+    }
+
+    if (options_.layers.max >= 0) {
+        layers.max = static_cast<u32>(options_.layers.max);
+    }
+
+    /**/
+
+    TextureType type = texture_.type();
+
+    if (options_.type != TextureType::eUndefined) {
+        type = options_.type;
+
+        #ifdef _DEBUG
+
+        switch (texture_.type()) {
+            case TextureType::eUndefined: {
+                assert(type == TextureType::eUndefined);
+                break;
+            }
+            case TextureType::e2d: {
+                assert(type == TextureType::e2d);
+                // Ensure single / planar image layer
+                assert(layers.min == layers.max);
+                break;
+            }
+            case TextureType::e2dArray: {
+                assert(type == TextureType::e2d || type == TextureType::e2dArray);
+                break;
+            }
+            case TextureType::e3d: {
+                assert(type == TextureType::e3d);
+                break;
+            }
+            case TextureType::eCube: {
+                assert(type == TextureType::eCube);
+                // Ensure 6 planar image layers
+                assert((layers.max - layers.max) == 5ui32);
+                break;
+            }
+        }
+
+        #endif
+    }
+
+    /**/
+
+    const vk::ImageSubresourceRange isr {
+        /*texture_.buffer()._vkAspect,*/ vk::ImageAspectFlagBits::eColor,
+        mipLevels.min,
+        (mipLevels.max - mipLevels.min) + 1ui32,
+        layers.min,
+        (layers.max - layers.min) + 1ui32
+    };
+
+    const vk::ImageViewCreateInfo ivci {
+        vk::ImageViewCreateFlags(),
+        owner->vkImage(),
+        vkTranslateView(type),
+        api::vkTranslateFormat(texture_.format()),
+        cm,
+        isr
+    };
+
+    /**
+     * Create
+     */
+    const vk::ImageView view = _device->vkDevice().createImageView(ivci);
+    assert(view);
+
+    const auto prevView = texture_.vkImageView(reinterpret_cast<_::VkImageView>(view.operator VkImageView()));
+
+    /**
+     * Cleanup
+     */
+    if (prevView) {
+        _device->vkDevice().destroyImageView(vk::ImageView { _STD move(reinterpret_cast<VkImageView>(prevView)) });
+    }
+
     return texture_;
 }
 

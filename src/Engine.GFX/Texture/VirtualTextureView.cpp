@@ -79,3 +79,11 @@ math::uivec2::value_type VirtualTextureView::maxMipLevel() const noexcept {
 TextureType VirtualTextureView::type() const noexcept {
     return _type;
 }
+
+_::VkImageView VirtualTextureView::vkImageView() const noexcept {
+    return _vkImageView;
+}
+
+_::VkImageView VirtualTextureView::vkImageView(mref<_::VkImageView> nextView_) noexcept {
+    return _STD exchange(_vkImageView, nextView_);
+}

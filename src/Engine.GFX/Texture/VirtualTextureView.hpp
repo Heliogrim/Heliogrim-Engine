@@ -8,6 +8,7 @@
 #include "__fwd.hpp"
 #include "../TextureFormat.hpp"
 #include "TextureType.hpp"
+#include "../API/__vkFwd.hpp"
 
 namespace ember::engine::gfx::loader {
     class TextureLoader;
@@ -102,5 +103,24 @@ namespace ember::engine::gfx {
 
     public:
         [[nodiscard]] TextureType type() const noexcept;
+
+    private:
+        /**
+         * Vulkan Virtual Texture (-View)
+         */
+        _::VkImageView _vkImageView;
+
+    public:
+        /**
+         * Query the stored internal vkImageView
+         */
+        [[nodiscard]] _::VkImageView vkImageView() const noexcept;
+
+        /**
+         * Replaces the stored internal vkImageView
+         *
+         * @returns The previous vkImageView
+         */
+        [[nodiscard]] _::VkImageView vkImageView(mref<_::VkImageView> nextView_) noexcept;
     };
 }

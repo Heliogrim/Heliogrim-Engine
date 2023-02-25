@@ -450,7 +450,7 @@ void UiMainStageNode::invoke(
         /**/
 
         const auto guard = _defaultImage->acquire(resource::ResourceUsageFlag::eRead);
-        (*imageDescriptors)[0].getById(1).store(guard->as<VirtualTextureView>()->owner());
+        (*imageDescriptors)[0].getById(1).store(guard->as<VirtualTextureView>());
         /**/
 
         state->data.insert_or_assign("UiMainStageNode::ImageDescriptorPool"sv, imageDescriptorPool);
@@ -587,7 +587,7 @@ void UiMainStageNode::invoke(
                 dbind.getById(1).store(view);
             } else if (uiCmd._images[imgIdx].is<VirtualTextureView>()) {
                 const auto* view { uiCmd._images[imgIdx].as<VirtualTextureView>() };
-                dbind.getById(1).store(view->owner());
+                dbind.getById(1).store(view);
             }
 
             cmd.bindDescriptor(0, dbind.vkSet());
@@ -955,16 +955,12 @@ void UiMainStageNode::setupDefaultImage() {
         _STD move(request)
     );
 
-    auto guard = resource->acquire(resource::ResourceUsageFlag::eRead);
+    auto guard = resource->acquire(resource::ResourceUsageFlag::eAll);
     auto* const defaultImage = guard->as<VirtualTextureView>();
 
-    // TODO:
-    // Warning: This will break -> Not possible to run
-    /*
-    if (not defaultImage->owner()->vkImage()) {
-        engine::gfx::TextureFactory::get()->buildView(defaultImage->owner());
+    if (not defaultImage->vkImageView()) {
+        engine::gfx::TextureFactory::get()->buildView(*defaultImage, { .type = TextureType::e2d });
     }
-     */
 
     _defaultImage = _STD move(resource);
 }

@@ -157,6 +157,8 @@ void InputAsset::setup() {
     auto previewGuard = iconRes->acquire(engine::resource::ResourceUsageFlag::eRead);
     auto* view = previewGuard->as<engine::gfx::VirtualTextureView>();
 
+    /**/
+
     _preview->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(view)), iconRes.get());
     previewBox->addChild(_preview);
 

@@ -432,8 +432,14 @@ uptr<engine::gfx::VirtualTextureView> GlobalResourcePool::allocateVirtualTexture
         _textureAtlas.push_back(_STD move(uatlas));
     }
 
-    /**
-     *
-     */
-    return atlas->makeView({ 0ui32, layers - 1ui32 }, allocation_.mipLevels);
+    /**/
+
+    auto view = atlas->makeView({ 0ui32, layers - 1ui32 }, allocation_.mipLevels);
+
+    // Attention: This is just a workaround to prevent unfitting view bindings. We need to checkout a better solution...
+    if (allocation_.type == TextureType::e2d && atlas->type() == TextureType::e2dArray) {
+        TextureFactory::get()->buildView(*view, { .type = TextureType::e2d });
+    }
+
+    return view;
 }
