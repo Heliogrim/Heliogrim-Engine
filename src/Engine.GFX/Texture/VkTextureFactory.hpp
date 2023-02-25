@@ -56,10 +56,21 @@ namespace ember::engine::gfx {
          * @date 14.12.2020
          *
          * @param [in,out] texture_ The texture.
+         * @param options_ The options to take into account ( default will use auto-deduction from texture )
          *
          * @returns A reference to a Texture.
          */
-        Texture& buildView(Texture& texture_) const override;
+        Texture& buildView(Texture& texture_, TextureViewBuildOptions options_ = {}) const override;
+
+        ref<VirtualTexture> buildView(
+            ref<VirtualTexture> texture_,
+            TextureViewBuildOptions options_
+        ) const override;
+
+        ref<VirtualTextureView> buildView(
+            ref<VirtualTextureView> texture_,
+            TextureViewBuildOptions options_
+        ) const override;
 
         /**
          * Builds a virtual

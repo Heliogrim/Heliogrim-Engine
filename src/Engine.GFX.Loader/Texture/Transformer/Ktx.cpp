@@ -526,6 +526,16 @@ void transformer::convertKtx10Gli(
     }
 
     /**
+    * Update virtual binding data
+    */
+    const auto* tex { dst_->owner() };
+    const_cast<VirtualTexture*>(tex)->updateBindingData();
+    #pragma warning(push)
+    #pragma warning(disable: 4996)
+    const_cast<VirtualTexture*>(tex)->enqueueBindingSync(device_->graphicsQueue());
+    #pragma warning(pop)
+
+    /**
      * Capture commands to copy data to image
      */
     auto pool = device_->transferQueue()->pool();

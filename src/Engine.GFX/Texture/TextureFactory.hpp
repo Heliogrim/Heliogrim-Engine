@@ -93,6 +93,44 @@ namespace ember::engine::gfx {
         operator bool() const;
     };
 
+    struct TextureViewBuildOptions {
+        /**
+         * Range of layers `[min, max)`
+         */
+        math::ivec2 layers = { -1i32, -1i32 };
+
+        /**
+         * Texture View Type
+         *
+         * @note TextureType used for the internal view has to be compatible with the underlying texture type
+         *
+         *  | Texture Type  | Compatible View Types
+         *  | ------------- | ---------------------
+         *  | eUndefined    | `-`
+         *  | e2d           | e2d
+         *  | e2dArray      | e2d, e2dArray
+         *  | e3d           | e3d
+         *  | eCube         | eCube
+         * 
+         */
+        TextureType type = TextureType::eUndefined;
+
+        /**
+         * Range of mip levels `[min, max)`
+         */
+        math::ivec2 mipLevels = { -1i32, -1i32 };
+
+        /*
+         * TODO: Check for support:
+         *  - sub-planar slices
+         *  - sub-resource range texture format
+         *  - multi-aspect textures
+         *
+         * TODO: Check for requirement:
+         *  - view dependent component swizzle
+         */
+    };
+
     class TextureFactory {
     public:
         /**
@@ -176,10 +214,21 @@ namespace ember::engine::gfx {
          * @date 14.12.2020
          *
          * @param [in,out] texture_ The texture.
+         * @param options_ The options to take into account ( default will use auto-deduction from texture )
          *
          * @returns A reference to a Texture.
          */
-        virtual Texture& buildView(Texture& texture_) const = 0;
+        virtual Texture& buildView(Texture& texture_, TextureViewBuildOptions options_ = {}) const = 0;
+
+        virtual ref<VirtualTexture> buildView(
+            ref<VirtualTexture> texture_,
+            TextureViewBuildOptions options_ = {}
+        ) const = 0;
+
+        virtual ref<VirtualTextureView> buildView(
+            ref<VirtualTextureView> texture_,
+            TextureViewBuildOptions options_ = {}
+        ) const = 0;
 
         /**
          * Builds a virtual Texture

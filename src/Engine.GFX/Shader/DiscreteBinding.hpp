@@ -139,5 +139,7 @@ namespace ember::engine::gfx::shader {
         void store(const ptr<const VirtualTexture> texture_);
 
         void storeAs(const ptr<const VirtualTexture> texture_, cref<vk::ImageLayout> layout_);
+
+        void store(const ptr<const VirtualTextureView> texture_);
     };
 }
