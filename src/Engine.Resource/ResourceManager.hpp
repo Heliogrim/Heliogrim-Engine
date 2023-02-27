@@ -11,6 +11,10 @@
 #include "Indexer/Indexer.hpp"
 #endif
 
+namespace hg::engine::resource {
+    class PackageManager;
+}
+
 namespace hg::engine {
     class ResourceManager {
     public:
@@ -98,5 +102,13 @@ namespace hg::engine {
         [[nodiscard]] ref<resource::Locator> locator();
 
         [[nodiscard]] ptr<resource::Locator> locator(nothrow_t) noexcept;
+
+    private:
+        uptr<resource::PackageManager> _packages;
+
+    public:
+        [[nodiscard]] const ptr<const resource::PackageManager> packages(nothrow_t) const noexcept;
+
+        [[nodiscard]] const ptr<resource::PackageManager> packages(nothrow_t) noexcept;
     };
 }

@@ -5,6 +5,7 @@
 #endif
 
 #include <Engine.Serialization.Layouts/LayoutManager.hpp>
+#include <Engine.Resource.Package/PackageManager.hpp>
 
 using namespace hg::engine::resource;
 using namespace hg::engine;
@@ -45,6 +46,10 @@ void ResourceManager::setup() {
     if (!_locator) {
         _locator = make_uptr<Locator>();
     }
+
+    if (!_packages) {
+        _packages = make_uptr<PackageManager>();
+    }
 }
 
 void ResourceManager::destroy() {
@@ -52,6 +57,7 @@ void ResourceManager::destroy() {
     _indexer.reset();
     _loader.reset();
     _locator.reset();
+    _packages.reset();
 }
 
 void ResourceManager::schedule() {}
@@ -90,4 +96,12 @@ ref<LoaderManager> ResourceManager::loader() {
 
 ptr<LoaderManager> ResourceManager::loader(nothrow_t) noexcept {
     return _loader.get();
+}
+
+const ptr<const resource::PackageManager> ResourceManager::packages(nothrow_t) const noexcept {
+    return _packages.get();
+}
+
+const ptr<resource::PackageManager> ResourceManager::packages(nothrow_t) noexcept {
+    return _packages.get();
 }

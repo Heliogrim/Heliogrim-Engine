@@ -1,11 +1,10 @@
 #include "Package.hpp"
 
-#include "../Linker/PackageLinker.hpp"
-
-#include "MagicBytes.hpp"
-
 #include <Engine.Common/Make.hpp>
 #include <Engine.Serialization/Archive/BufferArchive.hpp>
+
+#include "MagicBytes.hpp"
+#include "../Linker/PackageLinker.hpp"
 
 using namespace hg::engine::resource;
 using namespace hg;
@@ -24,8 +23,16 @@ Package::Package(
 
 Package::~Package() {}
 
+cref<PackageHeader> Package::header() const noexcept {
+    return _header;
+}
+
 ref<PackageHeader> Package::header() noexcept {
     return _header;
+}
+
+cref<PackageFooter> Package::footer() const noexcept {
+    return _footer;
 }
 
 ref<PackageFooter> Package::footer() noexcept {

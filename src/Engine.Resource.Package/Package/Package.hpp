@@ -25,6 +25,10 @@ namespace hg::engine::resource {
             mref<PackageFooter> footer_
         );
 
+        Package(mref<this_type>) noexcept = delete;
+
+        Package(cref<this_type>) = delete;
+
         ~Package();
 
     private:
@@ -33,7 +37,11 @@ namespace hg::engine::resource {
         PackageFooter _footer;
 
     public:
+        [[nodiscard]] cref<PackageHeader> header() const noexcept;
+
         [[nodiscard]] ref<PackageHeader> header() noexcept;
+
+        [[nodiscard]] cref<PackageFooter> footer() const noexcept;
 
         [[nodiscard]] ref<PackageFooter> footer() noexcept;
 

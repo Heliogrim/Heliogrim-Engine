@@ -2,6 +2,8 @@
 
 #include <cassert>
 
+#include <Engine.Common/Make.hpp>
+
 #include "Package/MagicBytes.hpp"
 #include "Package/PackageGuid.hpp"
 #include "Package/PackageHeader.hpp"
@@ -9,12 +11,12 @@
 using namespace hg::engine::resource;
 using namespace hg;
 
-Package PackageFactory::createEmptyPackage(mref<uptr<Source>> source_) {
+uptr<Package> PackageFactory::createEmptyPackage(mref<uptr<Source>> source_) {
 
     PackageGuid guid {};
     GuidGenerate(guid);
 
-    return Package {
+    return make_uptr<Package>(
         _STD move(source_),
         PackageHeader {
             .magicBytes = { 0x49, 0x4D, 0x50, 0x41, 0x43, 0x4B }/*PackageMagicBytes */,
@@ -30,10 +32,10 @@ Package PackageFactory::createEmptyPackage(mref<uptr<Source>> source_) {
             .magicVersion = PackageMagicVersion[0],
             .endianess = PackageEndianness::eBigEndian
         }
-    };
+    );
 }
 
-Package PackageFactory::createFromSource(mref<uptr<Source>> source_) {
+uptr<Package> PackageFactory::createFromSource(mref<uptr<Source>> source_) {
 
     PackageHeader storedHeader {};
     PackageFooter storedFooter {};
@@ -45,12 +47,7 @@ Package PackageFactory::createFromSource(mref<uptr<Source>> source_) {
         throw _STD runtime_error("");
     }
 
-    bool valid = true;
-    for (size_t i = 0; i < sizeof(PackageMagicBytes); ++i) {
-        valid = valid && storedHeader.magicBytes[i] == PackageMagicBytes[i];
-    }
-
-    if (not valid) {
+    if (memcmp(storedHeader.magicBytes, PackageMagicBytes, sizeof(PackageMagicBytes)) != 0) {
         throw _STD runtime_error("");
     }
 
@@ -66,12 +63,7 @@ Package PackageFactory::createFromSource(mref<uptr<Source>> source_) {
         throw _STD runtime_error("");
     }
 
-    valid = true;
-    for (size_t i = 0; i < sizeof(PackageMagicBytes); ++i) {
-        valid = valid && storedFooter.magicBytes[i] == PackageMagicBytes[i];
-    }
-
-    if (not valid) {
+    if (memcmp(storedFooter.magicBytes, PackageMagicBytes, sizeof(PackageMagicBytes)) != 0) {
         throw _STD runtime_error("");
     }
 
@@ -81,9 +73,9 @@ Package PackageFactory::createFromSource(mref<uptr<Source>> source_) {
 
     /**/
 
-    return Package {
+    return make_uptr<Package>(
         _STD move(source_),
         _STD move(storedHeader),
         _STD move(storedFooter)
-    };
+    );
 }
