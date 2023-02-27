@@ -55,7 +55,8 @@ namespace PackageModule {
 
         auto [helper, source] = makeTestSource();
 
-        Package package = PackageFactory::createEmptyPackage(_STD move(source));
+        auto upackage = PackageFactory::createEmptyPackage(_STD move(source));
+        ref<Package> package = *upackage;
 
         auto* const linker = package.getLinker();
 
@@ -151,7 +152,8 @@ namespace PackageModule {
 
         auto [helper, source] = makeTestSource();
 
-        Package package = PackageFactory::createEmptyPackage(_STD move(source));
+        auto upackage = PackageFactory::createEmptyPackage(_STD move(source));
+        ref<Package> package = *upackage;
 
         auto* const linker = package.getLinker();
 
@@ -195,7 +197,8 @@ namespace PackageModule {
             }
         );
 
-        Package dst = PackageFactory::createFromSource(_STD move(dstSource));
+        auto udst = PackageFactory::createFromSource(_STD move(dstSource));
+        auto& dst = *udst;
 
         const auto* const storedHeader = &dst.header();
 
@@ -254,7 +257,8 @@ namespace PackageModule {
 
         auto [helper, source] = makeTestSource();
 
-        Package package = PackageFactory::createEmptyPackage(_STD move(source));
+        auto upackage = PackageFactory::createEmptyPackage(_STD move(source));
+        ref<Package> package = *upackage;
 
         /**/
 
@@ -297,7 +301,9 @@ namespace PackageModule {
             }
         );
 
-        Package dst = PackageFactory::createFromSource(_STD move(dstSource));
+        auto udst = PackageFactory::createFromSource(_STD move(dstSource));
+        auto& dst = *udst;
+
         const auto* const dstLinker = package.getLinker();
 
         EXPECT_EQ(dstLinker->getArchiveCount(), 1);
@@ -352,7 +358,8 @@ namespace PackageModule {
 
         auto [helper, source] = makeTestSource(buffer_size);
 
-        Package package = PackageFactory::createEmptyPackage(_STD move(source));
+        auto upackage = PackageFactory::createEmptyPackage(_STD move(source));
+        auto& package = *upackage;
 
         /**/
 
@@ -412,7 +419,9 @@ namespace PackageModule {
             }
         );
 
-        Package dst = PackageFactory::createFromSource(_STD move(dstSource));
+        auto udst = PackageFactory::createFromSource(_STD move(dstSource));
+        auto& dst = *udst;
+
         const auto* const dstLinker = package.getLinker();
 
         EXPECT_EQ(dstLinker->getArchiveCount(), archive_count);
