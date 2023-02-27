@@ -98,6 +98,8 @@
     <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\PackageLinker.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\PackageFactory.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageManager.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageResource.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Package\MagicBytes.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Package\Package.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageCompression.hpp" />
@@ -114,6 +116,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Resource.Package\Linker\PackageLinker.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource.Package\PackageFactory.cpp" />
+    <ClCompile Include="..\..\src\Engine.Resource.Package\PackageManager.cpp" />
     <ClCompile Include="..\..\src\Engine.Resource.Package\Package\Package.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -90,6 +90,12 @@
     <ClInclude Include="..\..\src\Engine.Resource.Package\Package\PackageGuid.hpp">
       <Filter>Headerdateien\Package</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageManager.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\PackageResource.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Resource.Package\Package\Package.cpp">
@@ -100,6 +106,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Resource.Package\Linker\PackageLinker.cpp">
       <Filter>Quelldateien\Linker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Resource.Package\PackageManager.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
