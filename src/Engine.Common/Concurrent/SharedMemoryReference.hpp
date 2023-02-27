@@ -113,6 +113,17 @@ namespace ember {
         }
 
     public:
+        void swap(ref<this_type> other_) noexcept {
+
+            if (_STD addressof(other_) == this) {
+                return;
+            }
+
+            _STD swap(_ctrlBlock, other_._ctrlBlock);
+            _STD swap(_packed, other_._packed);
+        }
+
+    public:
         template <class Fty_, template <typename> typename Pty_> requires (
             IsSmrPointerCompatible<Fty_, PayloadType_> || IsSmrPointerCompatible<PayloadType_, Fty_>
         )
