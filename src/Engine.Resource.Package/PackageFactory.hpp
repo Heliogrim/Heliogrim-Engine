@@ -8,8 +8,8 @@ namespace hg::engine::resource {
         using this_type = PackageFactory;
 
     public:
-        [[nodiscard]] static Package createEmptyPackage(mref<uptr<Source>> source_);
+        [[nodiscard]] static uptr<Package> createEmptyPackage(mref<uptr<Source>> source_);
 
-        [[nodiscard]] static Package createFromSource(mref<uptr<Source>> source_);
+        [[nodiscard]] static uptr<Package> createFromSource(mref<uptr<Source>> source_);
     };
 }

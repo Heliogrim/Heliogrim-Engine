@@ -144,6 +144,10 @@
 #include "Engine.Assets/Types/Image.hpp"
 #include "Engine.Assets/Types/Font.hpp"
 #include "Engine.Assets/Types/Geometry/StaticGeometry.hpp"
+#include "Engine.Resource.Package/PackageManager.hpp"
+#include "Engine.Resource/ResourceManager.hpp"
+#include "Engine.Resource/Source/FileSource.hpp"
+#include "Engine.Resource.Package/PackageFactory.hpp"
 #include "Engine.Serialization/Layout/DataLayoutBase.hpp"
 #include "Engine.Serialization.Layouts/LayoutManager.hpp"
 #include "Game.Main/Assets/Images/DefaultAlpha.hpp"
@@ -260,11 +264,31 @@ void dispatchLoad(cref<path> path_) {
 
 void tryDispatchLoad(cref<path> path_) {
 
-    if (not path_.extension().string().ends_with(".imasset")) {
+    const auto extension = path_.extension().string();
+
+    if (extension.empty()) {
         return;
     }
 
-    dispatchLoad(path_);
+    auto* const pm = Engine::getEngine()->getResources()->packages(traits::nothrow);
+    fs::File file { path_ };
+
+    if (pm->isPackageFile(file)) {
+
+        // TODO: Load Package from file
+        auto source = make_uptr<resource::FileSource>(_STD move(file));
+        auto package = resource::PackageFactory::createFromSource(_STD move(source));
+
+        auto managed = make_smr<resource::UniqueResource<resource::PackageResource::value_type>>(package.release());
+
+        /**/
+
+        pm->addPackage(_STD move(managed));
+
+    } else if (extension.ends_with(".ima") || extension.ends_with(".imasset")) {
+
+        dispatchLoad(path_);
+    }
 }
 
 void indexLoadable(cref<path> path_, ref<Vector<path>> backlog_) {
