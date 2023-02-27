@@ -4,17 +4,13 @@
 #include "Wrapper.hpp"
 #include "__macro.hpp"
 #include "Integral128.hpp"
+#include "Math/Hash.hpp"
 
 #ifdef _WIN32
 struct _GUID;
 #endif
 
 namespace ember {
-    namespace {
-        // @see <cstddef>
-        enum class byte : unsigned char {};
-    };
-
     struct Guid {
         constexpr Guid() noexcept :
             data() {}
@@ -41,7 +37,7 @@ namespace ember {
             post(post_) {}
 
         Guid(
-            const byte (&bytes_)[16]
+            const u8 (&bytes_)[16]
         ) :
             Guid() {
             _STD memcpy(bytes, bytes_, 16);
@@ -112,4 +108,19 @@ namespace ember {
     };
 
     extern void GuidGenerate(ref<Guid> guid_);
+}
+
+namespace std {
+    template <>
+    struct hash<::ember::Guid> {
+        [[nodiscard]] _STD size_t operator()(::ember::cref<::ember::Guid> value_) const noexcept {
+
+            size_t seed = 31587166197;
+
+            ::ember::hash::hash_combine(seed, value_.data.high);
+            ::ember::hash::hash_combine(seed, value_.data.low);
+
+            return seed;
+        }
+    };
 }
