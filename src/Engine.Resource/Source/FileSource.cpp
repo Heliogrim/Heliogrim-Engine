@@ -2,6 +2,10 @@
 
 #include <Engine.Common/Exception/NotImplementedException.hpp>
 
+#if ENV_WIN
+#include <Windows.h>
+#endif
+
 #ifdef _PROFILING
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
@@ -11,17 +15,75 @@ using namespace hg;
 
 FileSource::FileSource(mref<fs::File> file_, const streamsize size_, const streamoff offset_) noexcept :
     _file(_STD move(file_)),
+    _fptr(nullptr),
     _size(size_),
     _offset(offset_) {}
+
+FileSource::~FileSource() noexcept {
+    if (isOpenHandle()) {
+        close();
+    }
+}
 
 FileSource::reference_type FileSource::operator=(mref<value_type> other_) noexcept {
     if (this != _STD addressof(other_)) {
         _file = _STD move(other_._file);
+        _fptr = _STD exchange(other_._fptr, nullptr);
         _size = other_._size;
         _offset = other_._offset;
     }
 
     return *this;
+}
+
+bool FileSource::open(int flags_) {
+    #if ENV_WIN
+
+    if (not (flags_ & GENERIC_WRITE) && not _file.exists()) {
+        return false;
+    }
+
+    _fptr = ::CreateFileW(
+        _file.path().c_str(),
+        flags_,
+        NULL,
+        NULL,
+        OPEN_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL
+    );
+
+    if (_fptr == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+
+    return true;
+
+    #else
+    #endif
+}
+
+bool FileSource::close() {
+
+    #if ENV_WIN
+
+    if (_fptr == nullptr || _fptr == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+
+    if (::CloseHandle(_fptr) != NULL) {
+        return false;
+    }
+
+    _fptr = nullptr;
+    return true;
+
+    #else
+    #endif
+}
+
+bool FileSource::isOpenHandle() const noexcept {
+    return _fptr != nullptr && _fptr != INVALID_HANDLE_VALUE;
 }
 
 bool FileSource::isAsync() const noexcept {
@@ -53,35 +115,31 @@ bool FileSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<st
 
     SCOPED_STOPWATCH
 
-    auto strPath = _file.path().string();
-    #pragma warning(push)
-    #pragma warning(disable : 4996)
-    FILE* fptr = _STD fopen(strPath.c_str(), "rb");
-    #pragma warning(pop)
+    if (not isOpenHandle() && not open(GENERIC_READ)) {
+        return false;
+    }
 
     streamsize cmpSize = _size;
     if (cmpSize <= 0) {
 
-        _STD fseek(fptr, 0, SEEK_END);
-        const streamsize fsize = _STD ftell(fptr);
-
+        const streamsize fsize = ::GetFileSize(_fptr, nullptr);
         cmpSize = fsize - _offset;
     }
 
     if (cmpSize <= 0 || _offset > cmpSize) {
-        _STD fclose(fptr);
         return false;
     }
 
     const streampos begin = _offset + offset_;
     const streamsize length = MIN(size_, cmpSize);
 
-    _STD fseek(fptr, begin, SEEK_SET);
-    actualSize_ = _STD fread(dst_, sizeof(_::byte), length, fptr);
+    auto succeeded = ::SetFilePointerEx(_fptr, LARGE_INTEGER { .QuadPart = begin }, nullptr, FILE_BEGIN);
 
-    _STD fclose(fptr);
+    unsigned long read {};
+    succeeded = ::ReadFile(_fptr, dst_, sizeof(_::byte) * length, &read, nullptr) != NULL;
 
-    return true;
+    actualSize_ = read;
+    return succeeded;
 }
 
 hg::concurrent::future<Source::async_result_value> FileSource::get(streamoff offset_, streamsize size_) {
@@ -92,34 +150,45 @@ bool FileSource::write(streamoff offset_, streamsize size_, const ptr<void> src_
 
     SCOPED_STOPWATCH
 
-    const string strPath = _file;
-    #pragma warning(push)
-    #pragma warning(disable : 4996)
-    auto* fptr = _STD fopen(strPath.c_str(), "a+b");
-    #pragma warning(pop)
+    if (not isOpenHandle() && not open(GENERIC_READ | GENERIC_WRITE)) {
+        return false;
+    }
 
     streamsize cmpSize = _size;
     if (cmpSize <= 0) {
 
-        _STD fseek(fptr, 0, SEEK_END);
-        const streamsize fsize = _STD ftell(fptr);
-
+        const streamsize fsize = ::GetFileSize(_fptr, nullptr);
         cmpSize = fsize - _offset;
     }
 
     if (cmpSize <= 0 || _offset > cmpSize) {
-        _STD fclose(fptr);
         return false;
     }
 
     const streampos begin = _offset + offset_;
     // TODO: Check whether we need to check for max-length attributes, which could cause trimmed sequences
 
-    _STD fseek(fptr, begin, SEEK_SET);
-    actualSize_ = _STD fwrite(src_, sizeof(_::byte), size_, fptr);
+    ::OVERLAPPED meta {
+        NULL,
+        NULL,
+        {
+            static_cast<DWORD>(begin),
+            static_cast<DWORD>(begin >> 32)
+        },
+        nullptr
+    };
 
-    _STD fclose(fptr);
-    return true;
+    unsigned long written {};
+    const auto succeeded = ::WriteFile(
+        _fptr,
+        src_,
+        sizeof(_::byte) * size_,
+        &written,
+        &meta
+    );
+
+    actualSize_ = written;
+    return succeeded;
 }
 
 hg::concurrent::future<Source::async_write_result> FileSource::write(

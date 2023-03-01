@@ -3,6 +3,6 @@
 #include <Engine.Resource/Manage/Resource.hpp>
 #include "Package/Package.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     typedef Resource<Package> PackageResource;
 }

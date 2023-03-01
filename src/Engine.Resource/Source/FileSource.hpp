@@ -59,7 +59,7 @@ namespace hg::engine::resource {
          * @author Julius
          * @date 09.09.2021
          */
-        ~FileSource() noexcept override = default;
+        ~FileSource() noexcept override;
 
     public:
         /**
@@ -87,10 +87,18 @@ namespace hg::engine::resource {
         reference_type operator=(cref<value_type> other_) noexcept = default;
 
     private:
+        bool open(int flags_);
+
+        bool close();
+
+        bool isOpenHandle() const noexcept;
+
+    private:
         /**
          * The underlying file to access
          */
         fs::File _file;
+        void* _fptr;
 
         /**
          * The length of the source data to read at maximum

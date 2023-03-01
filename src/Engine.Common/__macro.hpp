@@ -32,6 +32,7 @@
 #if defined(_MSC_VER) || _WIN32 || _WIN64
 
 #define ENV_MSVC TRUE
+#define ENV_WIN TRUE
 
 #if defined(_M_AMD64)
 #define ENVx64 TRUE

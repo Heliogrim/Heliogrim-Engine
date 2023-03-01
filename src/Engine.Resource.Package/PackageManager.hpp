@@ -5,11 +5,11 @@
 #include "PackageResource.hpp"
 #include "Package/PackageGuid.hpp"
 
-namespace ember::fs {
+namespace hg::fs {
     class File;
 }
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     class PackageManager {
     public:
         using this_type = PackageManager;

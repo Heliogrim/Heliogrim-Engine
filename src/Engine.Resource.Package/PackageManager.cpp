@@ -10,8 +10,8 @@
 #include <Engine.Resource/Source/FileSource.hpp>
 #include "Package/MagicBytes.hpp"
 
-using namespace ember::engine::resource;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg;
 
 [[nodiscard]] static string to_string(cref<PackageGuid> guid_) {
     return _STD format(R"({:08x}-{:04x}-{:04x}-{:016x})", guid_.pre, guid_.c0, guid_.c1, guid_.post);
