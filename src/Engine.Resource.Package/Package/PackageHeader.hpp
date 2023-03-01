@@ -17,8 +17,13 @@ namespace hg::engine::resource {
         PackageEndianness endianness;
         // 0x08
         PackageVersion version;
+
         // 0x10
-        u8 guid[16];// ~ ::hg::Guid is not trivial
+        union {
+            uint128_t guidData;
+            u8 guid[16];// ~ ::hg::Guid is not trivial
+        };
+
         // 0x20
         PackageCompression compression;
         u16 __reserved__;

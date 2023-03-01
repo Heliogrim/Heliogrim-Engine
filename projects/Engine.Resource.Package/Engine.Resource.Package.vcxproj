@@ -95,6 +95,7 @@
     <ClInclude Include="..\..\src\Engine.Resource.Package\Archive\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\LinkedArchive.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\LinkedArchiveIterator.hpp" />
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\LinkerStoreMode.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\PackageLinker.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.Resource.Package\PackageFactory.hpp" />

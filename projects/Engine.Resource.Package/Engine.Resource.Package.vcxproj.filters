@@ -96,6 +96,9 @@
     <ClInclude Include="..\..\src\Engine.Resource.Package\PackageResource.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Resource.Package\Linker\LinkerStoreMode.hpp">
+      <Filter>Headerdateien\Linker</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Resource.Package\Package\Package.cpp">

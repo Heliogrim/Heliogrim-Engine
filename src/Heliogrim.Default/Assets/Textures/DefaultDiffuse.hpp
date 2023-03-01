@@ -7,6 +7,9 @@ namespace hg::game::assets::texture {
         public TextureAsset,
         public AssetAutoGuid<DefaultDiffuse> {
     public:
+        inline static constexpr type_id typeId { "texture::DefaultDiffuse"_typeId };
+
+    public:
         DefaultDiffuse();
     };
 }

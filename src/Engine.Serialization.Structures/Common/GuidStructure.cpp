@@ -15,9 +15,9 @@ void access::Structure<Guid>::serialize(const Guid* const self_, mref<RecordScop
     auto slot = slot_.intoStruct();
 
     slot.insertSlot<decltype(Guid::pre)>("pre") << self_->pre;
-    slot.insertSlot<decltype(Guid::c0)>("pre") << self_->c0;
-    slot.insertSlot<decltype(Guid::c1)>("pre") << self_->c1;
-    slot.insertSlot<decltype(Guid::post)>("pre") << self_->post;
+    slot.insertSlot<decltype(Guid::c0)>("c0") << self_->c0;
+    slot.insertSlot<decltype(Guid::c1)>("c1") << self_->c1;
+    slot.insertSlot<decltype(Guid::post)>("post") << self_->post;
 }
 
 template <>
