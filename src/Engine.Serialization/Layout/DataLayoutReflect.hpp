@@ -3,11 +3,11 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Functional/Function.hpp>
-#include <Engine.Reflect/EmberReflect.hpp>
+#include <Engine.Reflect/HeliogrimReflect.hpp>
 
 #include <cassert>
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class DataLayoutReflect {
     public:
         using this_type = DataLayoutReflect;
@@ -30,21 +30,21 @@ namespace ember::engine::serialization {
         // unary_fnc<void, const ptr<void>> _post; // `self->shrink_to_fit()` | `self->clear()`
 
     public:
-        [[nodiscard]] ptr<EmberObject> instantiate() const;
+        [[nodiscard]] ptr<HeliogrimObject> instantiate() const;
 
-        [[deprecated]] void destroy(mref<ptr<EmberObject>> obj_) const;
+        [[deprecated]] void destroy(mref<ptr<HeliogrimObject>> obj_) const;
 
         void constructInPlace(const ptr<void> dst_) const;
 
         void destroyInPlace(const ptr<void> dst_) const;
 
     private:
-        ptr<EmberClass> _rclass;
+        ptr<HeliogrimClass> _rclass;
 
     public:
         [[nodiscard]] bool hasClass() const noexcept;
 
-        [[nodiscard]] non_owning_rptr<EmberClass> getClass() const noexcept;
+        [[nodiscard]] non_owning_rptr<HeliogrimClass> getClass() const noexcept;
 
     private:
         template <typename Type_>
@@ -61,8 +61,8 @@ namespace ember::engine::serialization {
         template <typename SubjectType_> requires _STD is_default_constructible_v<SubjectType_>
         void storeType() {
 
-            if constexpr (IsEmberObject<SubjectType_>) {
-                _rclass = EmberClass::of<SubjectType_>();
+            if constexpr (IsHeliogrimObject<SubjectType_>) {
+                _rclass = HeliogrimClass::of<SubjectType_>();
                 assert(_rclass);
 
             } else {

@@ -1,7 +1,7 @@
 #include "StaticGeometry.hpp"
 
-using namespace ember::engine::assets;
-using namespace ember;
+using namespace hg::engine::assets;
+using namespace hg;
 
 StaticGeometry::StaticGeometry(cref<asset_guid> guid_) :
     Asset(guid_, typeId) {}

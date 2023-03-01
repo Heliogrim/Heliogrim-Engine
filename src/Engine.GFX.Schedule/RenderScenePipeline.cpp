@@ -7,10 +7,10 @@
 
 #include "RenderTickStage.hpp"
 
-using namespace ember::engine::gfx::schedule;
-using namespace ember::engine::gfx;
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::gfx::schedule;
+using namespace hg::engine::gfx;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 RenderScenePipeline::RenderScenePipeline() :
     StagePipeline(identifier_type::from("::Gfx::RenderScenePipeline")) {}

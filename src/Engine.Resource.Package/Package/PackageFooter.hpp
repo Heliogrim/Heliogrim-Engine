@@ -5,7 +5,7 @@
 
 #include "PackageEndianness.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     #pragma pack(push)
     #pragma pack(1)
     struct PackageFooter {

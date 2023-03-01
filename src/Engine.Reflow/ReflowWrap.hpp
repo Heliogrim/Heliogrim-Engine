@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     enum class ReflowWrap: u8 {
         eNone = 0ui8,
         eNoWrap = 0ui8,

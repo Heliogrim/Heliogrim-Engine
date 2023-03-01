@@ -6,7 +6,7 @@
 #include "__fwd.hpp"
 #include "ArchiveHeaderType.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     struct ArchiveHeader {
         ArchiveHeaderType type;
         Guid guid;

@@ -9,8 +9,8 @@
 #include "../Textures/DefaultMetalness.hpp"
 #include "../Textures/WoodenPier01PolesRoughness.hpp"
 
-using namespace ember::game::assets::material;
-using namespace ember;
+using namespace hg::game::assets::material;
+using namespace hg;
 
 WoodenPier01Poles::WoodenPier01Poles() :
     GfxMaterialAsset(

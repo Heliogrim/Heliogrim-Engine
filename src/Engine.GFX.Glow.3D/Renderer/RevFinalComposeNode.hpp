@@ -5,7 +5,7 @@
 #include <Engine.GFX/Renderer/__fwd.hpp>
 #include <Engine.GFX/Shader/ShaderBindingGroup.hpp>
 
-namespace ember::engine::gfx::glow::render {
+namespace hg::engine::gfx::glow::render {
     class RevFinalComposeNode :
         public gfx::render::RenderStageNode {
     public:

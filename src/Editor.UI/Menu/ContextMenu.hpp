@@ -2,7 +2,7 @@
 
 #include <Engine.Reflow/Widget/Menu.hpp>
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class ContextMenu :
         public engine::reflow::Menu {
     public:

@@ -4,7 +4,7 @@
 #include "../Geometry/Vertex.hpp"
 #include "../Memory/AllocatedMemory.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Buffer {
     public:
         using this_type = Buffer;

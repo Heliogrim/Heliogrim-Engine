@@ -2,7 +2,7 @@
 #include "FixedPipeline.hpp"
 #include "Pipeline/LORenderPass.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class VkFixedPipeline final :
         public FixedPipeline {
     public:

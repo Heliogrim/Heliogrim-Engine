@@ -5,7 +5,7 @@
 #include "__fwd.hpp"
 #include "SourceLoaderTraits.hpp"
 
-namespace ember::engine::resource::loader {
+namespace hg::engine::resource::loader {
     class __declspec(novtable) SourceLoaderStage {
     public:
         using this_type = SourceLoaderStage;

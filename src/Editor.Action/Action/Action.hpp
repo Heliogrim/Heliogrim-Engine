@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Ember/Inbuilt.hpp>
+#include <Heliogrim/Inbuilt.hpp>
 
 #include "ActionTypeId.hpp"
 
-namespace ember::editor {
+namespace hg::editor {
     class __declspec(novtable) Action {
     public:
         using this_type = Action;

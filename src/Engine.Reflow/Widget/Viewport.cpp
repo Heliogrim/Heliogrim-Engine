@@ -10,12 +10,12 @@
 #include "Engine.GFX/Camera/Camera.hpp"
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.GFX/Texture/ProxyTexture.hpp>
-#include <Ember/Actors/CameraActor.hpp>
+#include <Heliogrim/Actors/CameraActor.hpp>
 #include <Engine.Core/Engine.hpp>
 #endif
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 Viewport::Viewport(mref<sptr<BoundStyleSheet>> style_) :
     Widget(),

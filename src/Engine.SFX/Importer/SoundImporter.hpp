@@ -4,7 +4,7 @@
 #include "SoundImporterDescriptor.hpp"
 #include "SoundImportType.hpp"
 
-namespace ember::engine::sfx {
+namespace hg::engine::sfx {
     class SoundImporter :
         public res::Importer<SoundImportType, SoundImporterDescriptor> {
     public:

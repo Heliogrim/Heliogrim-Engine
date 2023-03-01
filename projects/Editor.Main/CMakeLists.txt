@@ -36,8 +36,8 @@ target_link_libraries(
 		${META_PROJECT_NAME}::Editor.Core
 		${META_PROJECT_NAME}::Editor.GFX
 	    ${META_PROJECT_NAME}::Editor.UI
-        ${META_PROJECT_NAME}::Ember
-		${META_PROJECT_NAME}::Ember.Default
+        ${META_PROJECT_NAME}::Heliogrim
+		${META_PROJECT_NAME}::Heliogrim.Default
         ${META_PROJECT_NAME}::Engine.ACS
 		${META_PROJECT_NAME}::Engine.Assets
 		${META_PROJECT_NAME}::Engine.Common

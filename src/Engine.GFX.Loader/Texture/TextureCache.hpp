@@ -8,7 +8,7 @@
 
 #include "Traits.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class TextureCache final :
         public resource::loader::Cache<assets::Texture, TextureResource> {
     public:

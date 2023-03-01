@@ -3,16 +3,16 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-#include <Ember/Ember.hpp>
-#include <Ember/EmberStatic.hpp>
+#include <Heliogrim/Heliogrim.hpp>
+#include <Heliogrim/HeliogrimStatic.hpp>
 
 #include <Editor.Core/EditorEngine.hpp>
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
-using namespace ember;
+using namespace hg;
 
-using SignalShutdownEvent = ::ember::engine::core::SignalShutdownEvent;
+using SignalShutdownEvent = ::hg::engine::core::SignalShutdownEvent;
 
 int main() {
     #ifdef _PROFILING
@@ -23,14 +23,14 @@ int main() {
     /**
      * Pre-Configure Engine Startup
      */
-    EmberStatic::useEngine<editor::EditorEngine>();
-    EmberStatic::useSessionGetter<editor::EditorEngine>(&editor::EditorEngine::getPrimaryGameSession);
+    HeliogrimStatic::useEngine<editor::EditorEngine>();
+    HeliogrimStatic::useSessionGetter<editor::EditorEngine>(&editor::EditorEngine::getPrimaryGameSession);
 
     /**
      * Instantiate Engine
      */
-    Ember::instantiate();
-    auto* const engine { Ember::getEngine() };
+    Heliogrim::instantiate();
+    auto* const engine { Heliogrim::getEngine() };
 
     /**
      * Register Shutdown Sequence
@@ -70,7 +70,7 @@ int main() {
     /**
      * Destroy Engine
      */
-    Ember::destroy();
+    Heliogrim::destroy();
 
     #ifdef _PROFILING
     __main__stopwatch.stop();

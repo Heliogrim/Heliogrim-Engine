@@ -15,7 +15,7 @@
 #include "CacheTextureSubject.hpp"
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx::cache {
+namespace hg::engine::gfx::cache {
     struct TextureSubResourceRange {
         math::uivec2 layers;
         math::uivec2 mips;

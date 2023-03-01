@@ -4,7 +4,7 @@
 #include "../String.hpp"
 #include "../Wrapper.hpp"
 
-namespace ember::hash {
+namespace hg::hash {
     namespace {
         /**
          * Fnv-1a 86

@@ -3,8 +3,8 @@
 #include "../Memory/AllocatedMemory.hpp"
 #include "../Memory/AllocationResult.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 VirtualTexturePage::VirtualTexturePage(
     non_owning_rptr<VirtualMemoryPage> memory_,

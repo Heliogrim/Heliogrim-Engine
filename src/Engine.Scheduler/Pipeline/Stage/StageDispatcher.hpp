@@ -5,7 +5,7 @@
 
 #include "../../Task/Task.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     struct StageDispatcher {
     public:
         template <class SelfType_>

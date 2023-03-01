@@ -5,8 +5,8 @@
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Common/Math/Convertion.hpp>
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 /*
 const static math::mat4 clip_matrix = (

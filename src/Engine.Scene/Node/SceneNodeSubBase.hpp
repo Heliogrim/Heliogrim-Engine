@@ -2,7 +2,7 @@
 
 #include "SceneNode.hpp"
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     template <class PayloadType_, typename NodeSubType_>
     class SceneNodeSubBase :
         public SceneNode<PayloadType_> {

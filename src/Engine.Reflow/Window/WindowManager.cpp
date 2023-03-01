@@ -1,7 +1,7 @@
 #include "WindowManager.hpp"
 
-#include <Ember/Inbuilt.hpp>
-#include <Ember/Future.hpp>
+#include <Heliogrim/Inbuilt.hpp>
+#include <Heliogrim/Future.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/RenderTarget.hpp>
 #include <Engine.GFX/Surface/Surface.hpp>
@@ -17,8 +17,8 @@
 #include "Engine.GFX.Scene/RenderSceneManager.hpp"
 #include "Engine.Platform/Platform.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 sptr<WindowManager> WindowManager::_instance = nullptr;
 

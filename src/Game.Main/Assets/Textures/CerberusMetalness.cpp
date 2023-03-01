@@ -1,12 +1,12 @@
 #include "CerberusMetalness.hpp"
 #include "../Images/CerberusMetalness.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
 #include "Game.Main/Assets/Images/CerberusMetalness.hpp"
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::CerberusMetalness::CerberusMetalness() :
     TextureAsset(

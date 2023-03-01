@@ -1,14 +1,14 @@
 #pragma once
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
 
-namespace ember::engine::core::schedule {
+namespace hg::engine::core::schedule {
     class CorePipeline final :
         public scheduler::StagePipeline {
     public:
         using this_type = CorePipeline;
 
-        using StageIdentifier = ::ember::engine::scheduler::StageIdentifier;
-        using StageDependency = ::ember::engine::scheduler::StageDependency;
+        using StageIdentifier = ::hg::engine::scheduler::StageIdentifier;
+        using StageDependency = ::hg::engine::scheduler::StageDependency;
 
         /**/
 

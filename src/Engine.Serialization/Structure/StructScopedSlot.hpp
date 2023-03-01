@@ -4,7 +4,7 @@
 #include "RecordScopedSlot.hpp"
 #include "StringScopedSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class StructScopedSlot final :
         public ScopedSlot {
     public:

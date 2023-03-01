@@ -5,7 +5,7 @@
 
 #include "Traits.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class MaterialCache final : public resource::loader::Cache<assets::GfxMaterial, MaterialResource> {
     public:
         using this_type = MaterialCache;

@@ -2,7 +2,7 @@
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     enum class MemoryProperty {
         eUndefined = 0x0,
         // 0b0000'0000
@@ -20,7 +20,7 @@ namespace ember::engine::gfx {
         eProtected = 0x20// 0b0010'0000
     };
 
-    typedef Flag<MemoryProperty, ember::u8> MemoryProperties;
+    typedef Flag<MemoryProperty, hg::u8> MemoryProperties;
 
     constexpr MemoryProperties operator|(cref<MemoryProperty> left_, cref<MemoryProperty> right_) noexcept {
         return MemoryProperties { left_ } |= right_;

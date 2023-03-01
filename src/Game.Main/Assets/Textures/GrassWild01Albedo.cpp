@@ -1,10 +1,10 @@
 #include "GrassWild01Albedo.hpp"
 #include "../Images/GrassWild01Albedo.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
-using namespace ember::game::assets::texture;
-using namespace ember;
+using namespace hg::game::assets::texture;
+using namespace hg;
 
 GrassWild01Albedo::GrassWild01Albedo() :
     TextureAsset(

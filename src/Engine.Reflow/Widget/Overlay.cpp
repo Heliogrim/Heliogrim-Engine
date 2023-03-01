@@ -1,7 +1,7 @@
 #include "Overlay.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 Overlay::Overlay() :
     Widget() {}

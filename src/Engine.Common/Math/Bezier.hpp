@@ -1,7 +1,7 @@
 #pragma once
 
 /** . */
-namespace ember::math {
+namespace hg::math {
     /**
      * A bezier 3 degree
      *

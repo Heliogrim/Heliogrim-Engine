@@ -10,7 +10,7 @@
 #include "Database/AssetDatabase.hpp"
 #include "Types/Asset.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class Font;
     class GfxMaterial;
     class Image;
@@ -24,7 +24,7 @@ namespace ember::engine::assets {
     class Texture;
 }
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class AssetFactory {
     public:
         using value_type = AssetFactory;

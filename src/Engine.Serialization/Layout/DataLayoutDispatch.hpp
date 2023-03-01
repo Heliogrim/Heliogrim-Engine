@@ -7,7 +7,7 @@
 #include "__fwd.hpp"
 #include "../Archive/__fwd.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class DataLayoutDispatch {
     public:
         using this_type = DataLayoutDispatch;

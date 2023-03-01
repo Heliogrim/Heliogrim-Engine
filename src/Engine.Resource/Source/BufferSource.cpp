@@ -2,8 +2,8 @@
 
 #include <Engine.Common/Exception/NotImplementedException.hpp>
 
-using namespace ember::engine::resource;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg;
 
 BufferSource::BufferSource(mref<Buffer> buffer_) :
     _buffer(_STD move(buffer_)) {}
@@ -52,7 +52,7 @@ bool BufferSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<
     return true;
 }
 
-ember::concurrent::future<Source::async_result_value> BufferSource::get(streamoff offset_, streamsize size_) {
+hg::concurrent::future<Source::async_result_value> BufferSource::get(streamoff offset_, streamsize size_) {
     throw NotImplementedException {};
 }
 
@@ -68,7 +68,7 @@ bool BufferSource::write(streamoff offset_, streamsize size_, const ptr<void> sr
     return true;
 }
 
-ember::concurrent::future<Source::async_write_result> BufferSource::write(
+hg::concurrent::future<Source::async_write_result> BufferSource::write(
     streamoff offset_,
     streamsize size_,
     const ptr<void> src_

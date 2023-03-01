@@ -2,7 +2,7 @@
 
 #include "Package/Package.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     class PackageFactory final {
     public:
         using this_type = PackageFactory;

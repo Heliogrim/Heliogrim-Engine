@@ -7,8 +7,8 @@
 
 #include "DragDrop/DragDropObject.hpp"
 
-namespace ember::engine::input::event {
-    using DragDropEventType = ::ember::engine::input::DragDropObjectType;
+namespace hg::engine::input::event {
+    using DragDropEventType = ::hg::engine::input::DragDropObjectType;
 
     struct DragDropEventFilePayload final {
         Vector<string> paths;

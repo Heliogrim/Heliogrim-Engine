@@ -2,7 +2,7 @@
 
 #include <Engine.Event/Event.hpp>
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     /**
      * While the shutdown might be miss leading in regard of the engine lifecycle,
      *  this event is mostly used to signal system/engine wide shutdown process.

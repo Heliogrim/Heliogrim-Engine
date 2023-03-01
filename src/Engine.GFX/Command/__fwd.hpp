@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class CommandBatch;
     class CommandBuffer;
     class CommandPool;

@@ -1,7 +1,7 @@
 #include "Archive.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 Archive::Archive() noexcept :
     _error(),
@@ -89,7 +89,7 @@ void Archive::serializeBytesSwapped(const ptr<void> value_, u64 size_, const Arc
     throw NotImplementedException();
 }
 
-ref<Archive::this_type> Archive::operator<<(const ptr<EmberObject> object_) {
+ref<Archive::this_type> Archive::operator<<(const ptr<HeliogrimObject> object_) {
     throw NotImplementedException();
     return *this;
 }

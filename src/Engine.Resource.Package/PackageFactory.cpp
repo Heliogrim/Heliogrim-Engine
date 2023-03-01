@@ -6,8 +6,8 @@
 #include "Package/PackageGuid.hpp"
 #include "Package/PackageHeader.hpp"
 
-using namespace ember::engine::resource;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg;
 
 Package PackageFactory::createEmptyPackage(mref<uptr<Source>> source_) {
 

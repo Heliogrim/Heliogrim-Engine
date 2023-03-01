@@ -1,7 +1,7 @@
 #include "Cannon01.hpp"
 
-using namespace ember::game::assets::meshes;
-using namespace ember;
+using namespace hg::game::assets::meshes;
+using namespace hg;
 
 Cannon01::Cannon01() :
     StaticGeometryAsset(

@@ -2,7 +2,7 @@
 
 #include "StructureSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <_STD floating_point Type_>
     struct FloatSlotTraits;
 

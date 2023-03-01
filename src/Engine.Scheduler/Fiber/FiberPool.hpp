@@ -4,7 +4,7 @@
 
 #include "Fiber.hpp"
 
-namespace ember::engine::scheduler::fiber {
+namespace hg::engine::scheduler::fiber {
     class FiberPool {
     public:
         using value_type = FiberPool;

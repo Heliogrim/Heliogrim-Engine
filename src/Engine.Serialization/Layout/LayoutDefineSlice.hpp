@@ -7,7 +7,7 @@
 #include "LayoutDefineValueType.hpp"
 #include "DataLayout.hpp"
 
-namespace ember::engine::serialization::layout {
+namespace hg::engine::serialization::layout {
     template <class Type_>
     concept HasDefIter = requires {
         typename Type_::iterator;

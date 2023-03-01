@@ -5,7 +5,7 @@
 #include "../Types.hpp"
 #include "../Hash/Murmur3.hpp"
 
-namespace ember {
+namespace hg {
     /**
      * A class type identifier.
      *
@@ -118,8 +118,8 @@ namespace std {
      * @date 13.09.2021
      */
     template <>
-    struct equal_to<ember::type_id> {
-        [[nodiscard]] bool operator()(const ember::type_id& left_, const ember::type_id& right_) const noexcept {
+    struct equal_to<hg::type_id> {
+        [[nodiscard]] bool operator()(const hg::type_id& left_, const hg::type_id& right_) const noexcept {
             return left_.data == right_.data;
         }
     };
@@ -131,8 +131,8 @@ namespace std {
      * @date 13.09.2021
      */
     template <>
-    struct less<ember::type_id> {
-        [[nodiscard]] bool operator()(const ember::type_id& left_, const ember::type_id& right_) const noexcept {
+    struct less<hg::type_id> {
+        [[nodiscard]] bool operator()(const hg::type_id& left_, const hg::type_id& right_) const noexcept {
             return left_.data < right_.data;
         }
     };
@@ -144,14 +144,14 @@ namespace std {
      * @date 13.09.2021
      */
     template <>
-    struct hash<ember::type_id> {
-        [[nodiscard]] _STD size_t operator()(const ember::type_id& value_) const noexcept {
+    struct hash<hg::type_id> {
+        [[nodiscard]] _STD size_t operator()(const hg::type_id& value_) const noexcept {
             // We assume that type_id was created by literal, which will result in constexpr of FNV-1a, which is already a suitable hash
             /*
-            ember::u64 dst[2];
-            ember::hash::murmur3_x64_128(
+            hg::u64 dst[2];
+            hg::hash::murmur3_x64_128(
                 &value_,
-                sizeof(decltype(ember::type_id::data)),
+                sizeof(decltype(hg::type_id::data)),
                 0x9FB21C651E98DF25ui32,
                 &dst
             );

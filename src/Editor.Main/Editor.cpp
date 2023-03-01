@@ -12,9 +12,9 @@
 #include "Boot/GfxInit.hpp"
 #include "Boot/WorldInit.hpp"
 
-using namespace ember::editor;
-using namespace ember::engine::core;
-using namespace ember;
+using namespace hg::editor;
+using namespace hg::engine::core;
+using namespace hg;
 
 Editor::Editor(const non_owning_rptr<engine::Engine> engine_) :
     SubModule(engine_),

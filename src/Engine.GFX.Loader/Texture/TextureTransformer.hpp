@@ -7,7 +7,7 @@
 
 #include "Traits.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class TextureTransformer final :
         public resource::loader::Transformer<assets::Texture, TextureResource> {
     public:

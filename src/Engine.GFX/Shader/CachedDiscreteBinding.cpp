@@ -3,8 +3,8 @@
 #include "DiscreteBindingPool.hpp"
 #include <Engine.Logging/Logger.hpp>
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 CachedDiscreteBinding::CachedDiscreteBinding(mref<shader::DiscreteBindingGroup> binding_) :
     _binding(_STD move(binding_)) {}

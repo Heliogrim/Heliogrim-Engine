@@ -3,8 +3,8 @@
 #include <Engine.Common/stdafx.h>
 #include <Engine.Common/SDL2.hpp>
 
-using namespace ember::engine::platform;
-using namespace ember;
+using namespace hg::engine::platform;
+using namespace hg;
 
 Win32Window::Win32Window(
     const ptr<SDL_Window> sdlWnd_,

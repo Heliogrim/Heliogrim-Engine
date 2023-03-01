@@ -2,7 +2,7 @@
 
 #include "../Texture/Texture.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class FramebufferAttachment final {
     public:
         /**

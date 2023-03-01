@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Common/Flag.hpp>
 
-namespace ember::engine::scheduler::task {
+namespace hg::engine::scheduler::task {
     /**
      * Values that represent types of Task
      *
@@ -36,7 +36,7 @@ namespace ember::engine::scheduler::task {
      *	-> atomic block counter will be decremented
      * 
      */
-    enum class TaskType: ember::u8 {
+    enum class TaskType: hg::u8 {
         eNone = 0x0,
         // Primitive Task
         eTask = 0x1 << 0,
@@ -49,5 +49,5 @@ namespace ember::engine::scheduler::task {
         eTickTask = 0x1 << 3,
     };
 
-    typedef ember::Flag<TaskType> TaskTypes;
+    typedef hg::Flag<TaskType> TaskTypes;
 }

@@ -1,9 +1,9 @@
 #pragma once
-#include <Ember/AssetAutoGuid.hpp>
+#include <Heliogrim/AssetAutoGuid.hpp>
 
-#include <Ember/TextureAsset.hpp>
+#include <Heliogrim/TextureAsset.hpp>
 
-namespace ember::game::assets::texture {
+namespace hg::game::assets::texture {
     class GrassWild01Albedo :
         public TextureAsset,
         public AssetAutoGuid<GrassWild01Albedo> {

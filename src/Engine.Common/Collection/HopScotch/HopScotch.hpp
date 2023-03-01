@@ -9,7 +9,7 @@
 #include "../../Types.hpp"
 #include "../List.hpp"
 
-namespace ember::hopscotch {
+namespace hg::hopscotch {
     inline constexpr static size_t init_bucket_count = 0;
 
     /**

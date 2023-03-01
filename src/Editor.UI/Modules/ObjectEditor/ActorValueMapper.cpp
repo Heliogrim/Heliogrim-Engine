@@ -1,13 +1,13 @@
-#include <Ember/Actor.hpp>
-#include <Ember/ActorComponent.hpp>
+#include <Heliogrim/Actor.hpp>
+#include <Heliogrim/ActorComponent.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
 
 #include "ObjectValueMapper.hpp"
 #include "../../Widget/Input/InputVec.hpp"
 
-using namespace ::ember::editor::ui;
-using namespace ::ember::engine::reflow;
-using namespace ember;
+using namespace ::hg::editor::ui;
+using namespace ::hg::engine::reflow;
+using namespace hg;
 
 [[nodiscard]] static sptr<BoundStyleSheet> makeInputBoxStyle() {
 

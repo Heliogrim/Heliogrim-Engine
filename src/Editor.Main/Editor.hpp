@@ -2,7 +2,7 @@
 
 #include <Engine.Core/Module/SubModule.hpp>
 
-namespace ember::editor {
+namespace hg::editor {
     class Editor :
         public engine::core::SubModule {
     public:

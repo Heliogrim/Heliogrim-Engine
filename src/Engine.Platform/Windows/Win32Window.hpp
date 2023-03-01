@@ -4,7 +4,7 @@
 
 struct SDL_Window;
 
-namespace ember::engine::platform {
+namespace hg::engine::platform {
     class Win32Window final :
         public NativeWindow {
     public:

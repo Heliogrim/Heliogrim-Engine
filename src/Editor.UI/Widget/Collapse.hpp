@@ -4,11 +4,11 @@
 #include <Engine.Reflow/Widget/HBox.hpp>
 #include <Engine.Reflow/Widget/VBox.hpp>
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class Collapse;
 }
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class CollapseHeader :
         public engine::reflow::HBox {
     public:

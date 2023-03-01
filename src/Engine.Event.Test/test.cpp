@@ -3,7 +3,7 @@
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Event/TickEvent.hpp>
 
-using namespace ember;
+using namespace hg;
 
 TEST(__DummyTest__, Exists) {
     EXPECT_TRUE(true);

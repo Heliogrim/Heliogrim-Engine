@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.GFX/Color/Color.hpp>
 
-namespace ember::editor::ui::color {
+namespace hg::editor::ui::color {
     struct Dark {
         inline static const engine::color backgroundDefault { 46.F, 50.F, 58.F, 255.F };
         inline static const engine::color backgroundInnerField { 40.F, 44.F, 52.F, 255.F };

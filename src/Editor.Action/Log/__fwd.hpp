@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::editor {
+namespace hg::editor {
     class ActionLog;
     class ActionDispatcher;
     class ActionSaveState;

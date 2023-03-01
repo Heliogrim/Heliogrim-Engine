@@ -2,8 +2,8 @@
 
 #include "AssetDatabase.hpp"
 
-using namespace ember::engine::assets;
-using namespace ember;
+using namespace hg::engine::assets;
+using namespace hg;
 
 const ptr<AssetDatabase> AssetDatabaseQuery::database() const noexcept {
     return _database;

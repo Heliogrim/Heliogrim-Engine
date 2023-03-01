@@ -3,7 +3,7 @@
 #include "../Types.hpp"
 #include "../Collection/List.hpp"
 
-namespace ember {
+namespace hg {
     /**
      * Ring Buffer
      *
@@ -14,7 +14,7 @@ namespace ember {
      * @tparam Allocator Type of the allocator.
      * @tparam ContainerType Type of the container type.
      */
-    template <class Ty, class Allocator = std::allocator<Ty>, class ContainerType = ember::vector<Ty, Allocator>>
+    template <class Ty, class Allocator = std::allocator<Ty>, class ContainerType = hg::vector<Ty, Allocator>>
     class RingBuffer {
     public:
         using size_type = u32;

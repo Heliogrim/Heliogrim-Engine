@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Reflect/EmberReflect.hpp>
+#include <Engine.Reflect/HeliogrimReflect.hpp>
 
-namespace ember::engine::gfx::cache {
+namespace hg::engine::gfx::cache {
     // Warning: Do NOT instantiate ModelBatch itself (it might fail anyway cause of `novtable` annotation)
     struct __declspec(novtable) ModelBatch :
-        public EmberObject {
+        public HeliogrimObject {
     public:
         virtual ~ModelBatch() = default;
 

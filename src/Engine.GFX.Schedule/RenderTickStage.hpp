@@ -1,11 +1,11 @@
 #pragma once
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class RenderTarget;
 }
 
-namespace ember::engine::gfx::schedule {
+namespace hg::engine::gfx::schedule {
     class RenderTickStage final :
         public scheduler::PipelineStage {
     public:

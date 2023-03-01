@@ -10,8 +10,8 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx::loader {
-    using MaterialSourceLoader = ::ember::engine::resource::loader::SourceLoader;
+namespace hg::engine::gfx::loader {
+    using MaterialSourceLoader = ::hg::engine::resource::loader::SourceLoader;
 
     using MaterialLoaderType = resource::loader::LoaderChain<
         assets::GfxMaterial,

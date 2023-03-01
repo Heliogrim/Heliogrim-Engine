@@ -1,15 +1,15 @@
 #pragma once
 #include "Task/Task.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class CompositePipeline;
     class Stage;
 }
 
-namespace ember::engine {
+namespace hg::engine {
     class __declspec(novtable) Scheduler {
     public:
-        using task_type = ::ember::engine::scheduler::task::TaskDelegate;
+        using task_type = ::hg::engine::scheduler::task::TaskDelegate;
         using task_handle_type = non_owning_rptr<const task_type>;
 
         constexpr static inline u32 auto_worker_count { 0ui32 };

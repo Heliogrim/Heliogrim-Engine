@@ -6,8 +6,8 @@
 #include "../VkComputePipeline.hpp"
 #include "../VkFixedPipeline.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 CommandBuffer::CommandBuffer(ptr<CommandPool> pool_, const vk::CommandBuffer& vkCmd_) noexcept :
     _pool(pool_),
@@ -231,7 +231,7 @@ ptr<CommandPool> CommandBuffer::pool() noexcept {
     return _pool;
 }
 
-ember::concurrent::UnfairSpinLock& CommandBuffer::lck() const {
+hg::concurrent::UnfairSpinLock& CommandBuffer::lck() const {
     return _pool->lck();
 }
 

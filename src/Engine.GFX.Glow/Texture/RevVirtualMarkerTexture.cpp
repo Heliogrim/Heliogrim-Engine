@@ -5,9 +5,9 @@
 #include <Engine.GFX/Command/CommandQueue.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
 
-using namespace ember::engine::gfx::glow;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::glow;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 constexpr u16 internal_mip_mask { 0b1111'000000'000000ui16 };
 constexpr u16 internal_mip_shift { 12ui16 };

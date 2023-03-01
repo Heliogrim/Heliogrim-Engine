@@ -4,7 +4,7 @@
 
 #include "GlyphCode.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     struct GlyphRange {
         GlyphCode begin;
         GlyphCode end;

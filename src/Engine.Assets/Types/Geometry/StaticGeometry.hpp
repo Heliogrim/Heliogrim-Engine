@@ -6,7 +6,7 @@
 
 #include "../Geometry.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class StaticGeometry :
         public Geometry {
     public:

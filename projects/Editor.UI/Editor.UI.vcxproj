@@ -140,7 +140,7 @@
     <ClCompile Include="..\..\src\Editor.UI\Widget\Input\InputVec.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Ember\Ember.vcxproj">
+    <ProjectReference Include="..\Heliogrim\Heliogrim.vcxproj">
       <Project>{8d01b7e3-273a-4a0b-8099-ad227fbdaf9c}</Project>
     </ProjectReference>
   </ItemGroup>

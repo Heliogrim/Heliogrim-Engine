@@ -1,7 +1,7 @@
 #include "StructureSlotTypeTraits.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 #define RESOLVE(type_, iv_) case type_: iv_ StructureSlotTypeTraits<type_>
 #define RESOLVE_R(type_) RESOLVE(type_, return)

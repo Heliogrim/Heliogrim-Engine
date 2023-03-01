@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Flag.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     enum class WidgetStateFlagBits : u8 {
         eFocus = 0b0000'0001,
         eHover = 0b0000'0010,
@@ -15,7 +15,7 @@ namespace ember::engine::reflow {
         eCapture = 0b1000'0000
     };
 
-    typedef Flag<WidgetStateFlagBits, ember::u8> WidgetStateFlag;
+    typedef Flag<WidgetStateFlagBits, hg::u8> WidgetStateFlag;
 
     struct WidgetState :
         public WidgetStateFlag {

@@ -1,7 +1,7 @@
 #include "SceneNodeModel.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 SceneNodeModel::SceneNodeModel(const ptr<SceneComponent> owner_) :
     scene::SceneNodeModel(owner_),

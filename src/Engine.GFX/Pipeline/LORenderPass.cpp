@@ -3,9 +3,9 @@
 #include "../API/VkTranslate.hpp"
 #include "../Framebuffer/Framebuffer.hpp"
 
-using namespace ember::engine::gfx::pipeline;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::pipeline;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 LORenderPass::LORenderPass(sptr<Device> device_) noexcept :
     _device(device_) {}

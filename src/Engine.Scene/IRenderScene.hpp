@@ -1,7 +1,7 @@
 #pragma once
 #include "RenderGraph.hpp"
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class __declspec(novtable) IRenderScene {
     public:
         using this_type = IRenderScene;

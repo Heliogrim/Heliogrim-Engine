@@ -13,7 +13,7 @@
 #include "../Renderer/RenderPass.hpp"
 #include "../Renderer/RenderContext.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
 
     class GraphicPass {
     protected:

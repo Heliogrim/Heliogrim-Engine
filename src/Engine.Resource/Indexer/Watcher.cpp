@@ -4,8 +4,8 @@
 #include <filesystem>
 #include <thread>
 
-using namespace ember::engine::res;
-using namespace ember;
+using namespace hg::engine::res;
+using namespace hg;
 
 Watcher::Watcher(cref<fs::File> root_) :
     _root(root_) {

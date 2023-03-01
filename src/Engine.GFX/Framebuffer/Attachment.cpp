@@ -2,8 +2,8 @@
 
 #include <Engine.Common/Make.hpp>
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 FramebufferAttachment::FramebufferAttachment(Texture&& texture_) noexcept :
     _texture(make_sptr<Texture>(_STD move(texture_))) {}

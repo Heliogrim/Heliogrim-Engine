@@ -1,7 +1,7 @@
 #include "Buffer.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 void Buffer::bind(const u64 size_, const u64 offset_) {
     device.bindBufferMemory(

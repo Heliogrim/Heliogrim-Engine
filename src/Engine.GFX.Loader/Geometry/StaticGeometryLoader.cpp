@@ -4,8 +4,8 @@
 #include "StaticGeometryFeedback.hpp"
 #include "StaticGeometryTransformer.hpp"
 
-using namespace ember::engine::gfx::loader;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg;
 
 StaticGeometryLoader::StaticGeometryLoader(
     const non_owning_rptr<cache::GlobalCacheCtrl> cache_,

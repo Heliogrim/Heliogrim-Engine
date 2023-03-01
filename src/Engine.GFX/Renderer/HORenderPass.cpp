@@ -8,9 +8,9 @@
 #include "../Command/CommandBatch.hpp"
 #include "../Texture/Texture.hpp"
 
-using namespace ember::engine::gfx::render;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::render;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 HORenderPass::HORenderPass(
     const non_owning_rptr<Renderer> renderer_,

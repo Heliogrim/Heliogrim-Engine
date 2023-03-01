@@ -1,6 +1,6 @@
 #pragma once
 #include "Asset.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     using Geometry = Asset;
 }

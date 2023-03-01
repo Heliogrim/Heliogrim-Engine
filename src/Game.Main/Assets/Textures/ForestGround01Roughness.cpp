@@ -1,10 +1,10 @@
 #include "ForestGround01Roughness.hpp"
 #include "../Images/ForestGround01Roughness.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::ForestGround01Roughness::ForestGround01Roughness() :
     TextureAsset(

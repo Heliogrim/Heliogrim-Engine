@@ -6,7 +6,7 @@
 #include "MemoryMapping.hpp"
 #include "../vkinc.hpp"
 
-namespace ember::engine::gfx::memory {
+namespace hg::engine::gfx::memory {
     struct AllocatedMemory {
         AllocatedMemory(
             ptr<Allocator> allocator_,

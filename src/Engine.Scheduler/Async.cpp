@@ -4,9 +4,9 @@
 
 #include "Pipeline/CompositePipeline.hpp"
 
-using namespace ember::engine::scheduler;
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg::engine;
+using namespace hg;
 
 void scheduler::delay(mref<non_owning_rptr<const task::TaskDelegate>> task_, const u32 ticks_) {
     Engine::getEngine()->getScheduler()->delay(_STD move(task_), ticks_);

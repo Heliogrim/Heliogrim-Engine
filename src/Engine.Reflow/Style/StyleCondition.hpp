@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include "../Widget/__fwd.hpp"
 
-namespace ember::engine::reflow::style {
+namespace hg::engine::reflow::style {
     extern bool isHovered(cref<sptr<Widget>> widget_);
 
     extern bool isFocused(cref<sptr<Widget>> widget_);

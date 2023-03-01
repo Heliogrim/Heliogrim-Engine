@@ -1,4 +1,4 @@
 #include "WoodenBucket02Diffuse.hpp"
 
-using namespace ember::game::assets::image;
-using namespace ember;
+using namespace hg::game::assets::image;
+using namespace hg;

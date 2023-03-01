@@ -7,8 +7,8 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Serialization/Archive/BufferArchive.hpp>
 
-using namespace ember::engine::resource;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg;
 
 Package::Package(
     mref<uptr<Source>> source_,

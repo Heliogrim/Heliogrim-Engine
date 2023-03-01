@@ -4,7 +4,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include "../Device/Device.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     /**
      * Forward Declaration Framebuffer.
      *
@@ -14,7 +14,7 @@ namespace ember::engine::gfx {
     class Framebuffer;
 }
 
-namespace ember::engine::gfx::pipeline {
+namespace hg::engine::gfx::pipeline {
     class LORenderPass {
     public:
         /**

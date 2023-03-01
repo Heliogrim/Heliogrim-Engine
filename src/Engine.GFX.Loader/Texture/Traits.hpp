@@ -12,8 +12,8 @@
 #include "TextureResource.hpp"
 #include "TextureStreamOptions.hpp"
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct resource::loader::RequestOptions<LoaderRequest<assets::Texture>> {
@@ -26,8 +26,8 @@ namespace ember::engine::resource::loader {
     };
 }
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct resource::loader::RequestOptions<CacheRequest<assets::Texture>> {
@@ -40,8 +40,8 @@ namespace ember::engine::resource::loader {
     };
 }
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct resource::loader::RequestOptions<FeedbackRequest<assets::Texture>> {
@@ -54,8 +54,8 @@ namespace ember::engine::resource::loader {
     };
 }
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct RequestOptions<TransformerRequest<assets::Texture>> {
@@ -68,8 +68,8 @@ namespace ember::engine::resource::loader {
     };
 }
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct RequestOptions<SourceLoaderRequest<assets::Texture>> {

@@ -1,8 +1,8 @@
 #include "Constraints.hpp"
 
-using namespace ember::engine::reflow::layout;
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow::layout;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 bool layout::hasStyleChanged(cref<StyleKeyStack::set_type> prev_, cref<StyleKeyStack> next_) {
 

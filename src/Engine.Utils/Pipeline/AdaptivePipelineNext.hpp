@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Concurrent/Future.hpp>
 
-namespace ember::engine::utils::pipeline::adaptive {
+namespace hg::engine::utils::pipeline::adaptive {
     template <typename ValueType_, typename PushCtxType_, typename PullCtxType_>
     struct AdaptivePipelineNext {
         using value_type = ValueType_;

@@ -6,7 +6,7 @@
 #include "../Wrapper.hpp"
 #include "../Math/Helper.hpp"
 
-namespace ember {
+namespace hg {
     namespace proxyvector {
         /**
          * An exponent 2 growth policy.

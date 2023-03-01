@@ -10,7 +10,7 @@
 #include "PackageMeta.hpp"
 #include "PackageFooter.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     class Package {
     public:
         friend class PackageLinker;

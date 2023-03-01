@@ -6,11 +6,11 @@
 #include "DependencyKey.hpp"
 #include "SubModuleDependency.hpp"
 
-namespace ember::engine {
+namespace hg::engine {
     class Engine;
 }
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     class __declspec(novtable) SubModule {
     public:
         SubModule(const non_owning_rptr<Engine> engine_) :

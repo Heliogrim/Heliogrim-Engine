@@ -5,7 +5,7 @@
 #include "Geometry.hpp"
 #include "../Device/Device.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Plane :
         public Geometry {
     public:

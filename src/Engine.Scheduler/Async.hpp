@@ -4,7 +4,7 @@
 
 #include "Pipeline/Stage/StageIdentifier.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     /**
      * Delays
      *
@@ -14,7 +14,7 @@ namespace ember::engine::scheduler {
      * @param [in] task_ The task.
      * @param 	   ticks_ The ticks.
      */
-    void delay(_In_ mref<non_owning_rptr<const task::TaskDelegate>> task_, const ember::u32 ticks_);
+    void delay(_In_ mref<non_owning_rptr<const task::TaskDelegate>> task_, const hg::u32 ticks_);
 
     /**
      * Delays
@@ -25,7 +25,7 @@ namespace ember::engine::scheduler {
      * @param [in] fnc_ The function.
      * @param 	   ticks_ The ticks.
      */
-    void delay(_In_ mref<task::Task::function_type> fnc_, const ember::u32 ticks_);
+    void delay(_In_ mref<task::Task::function_type> fnc_, const hg::u32 ticks_);
 
     /**
      * Executes the given task
@@ -100,9 +100,9 @@ namespace ember::engine::scheduler {
      * @returns A concurrent::future&lt;Ty&gt;
      */
     template <typename Ty>
-    ember::concurrent::future<Ty> async(_In_ mref<_STD function<Ty()>> fnc_) {
-        ember::concurrent::promise<Ty> p { fnc_ };
-        ember::concurrent::future<Ty> f = p.get();
+    hg::concurrent::future<Ty> async(_In_ mref<_STD function<Ty()>> fnc_) {
+        hg::concurrent::promise<Ty> p { fnc_ };
+        hg::concurrent::future<Ty> f = p.get();
 
         exec({ p });
 
@@ -119,9 +119,9 @@ namespace ember::engine::scheduler {
      * @returns A concurrent::future&lt;Ty&gt;
      */
     template <typename Ty>
-    ember::concurrent::future<Ty> async(_In_ mref<_STD function<Ty()>> fnc_, ember::u32 ticks_) {
-        ember::concurrent::promise<Ty> p { fnc_ };
-        ember::concurrent::future<Ty> f = p.get();
+    hg::concurrent::future<Ty> async(_In_ mref<_STD function<Ty()>> fnc_, hg::u32 ticks_) {
+        hg::concurrent::promise<Ty> p { fnc_ };
+        hg::concurrent::future<Ty> f = p.get();
 
         delay({ p }, ticks_);
 

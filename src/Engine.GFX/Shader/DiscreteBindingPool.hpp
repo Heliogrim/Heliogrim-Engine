@@ -5,14 +5,14 @@
 #include "DiscreteBindingGroup.hpp"
 #include "ShaderBindingGroupLayout.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     /**
      * Forward Declaration
      */
     class Device;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class DiscreteBindingPool {
     public:
         using this_type = DiscreteBindingPool;

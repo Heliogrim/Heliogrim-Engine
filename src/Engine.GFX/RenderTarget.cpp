@@ -11,9 +11,9 @@
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
 
-using namespace ember::engine::gfx::render;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::render;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 RenderTarget::RenderTarget() :
     _device(nullptr),

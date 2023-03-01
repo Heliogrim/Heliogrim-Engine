@@ -2,7 +2,7 @@
 #include "Component.hpp"
 #include "Pool.hpp"
 
-namespace ember::engine::acs {
+namespace hg::engine::acs {
     /**
      * A view.
      *

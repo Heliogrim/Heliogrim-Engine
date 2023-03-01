@@ -4,7 +4,7 @@
 
 #include <queue>
 
-namespace ember {
+namespace hg {
     template <class Type_>
     using queue = _STD queue<Type_>;
 

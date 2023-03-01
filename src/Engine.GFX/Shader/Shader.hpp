@@ -6,17 +6,17 @@
 #include "ShaderBinding.hpp"
 #include "Type.hpp"
 
-namespace ember::engine::gfx::shader {
+namespace hg::engine::gfx::shader {
     /**
      * Forward Declaration
      */
     class Factory;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Shader {
     protected:
-        friend ember::engine::gfx::shader::Factory;
+        friend hg::engine::gfx::shader::Factory;
 
         /**
          * Constructor

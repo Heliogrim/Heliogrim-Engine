@@ -4,7 +4,7 @@
 #include "Type.hpp"
 #include "../Device/Device.hpp"
 
-namespace ember::engine::gfx::shader {
+namespace hg::engine::gfx::shader {
     /**
      * Forward Decalaration
      */

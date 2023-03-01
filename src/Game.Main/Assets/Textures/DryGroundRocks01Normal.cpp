@@ -1,10 +1,10 @@
 #include "DryGroundRocks01Normal.hpp"
 #include "../Images/DryGroundRocks01Normal.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::DryGroundRocks01Normal::DryGroundRocks01Normal() :
     TextureAsset(

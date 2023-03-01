@@ -1,5 +1,5 @@
 #pragma once
 
-namespace ember::engine::sfx {
+namespace hg::engine::sfx {
     struct SoundImporterDescriptor { };
 }

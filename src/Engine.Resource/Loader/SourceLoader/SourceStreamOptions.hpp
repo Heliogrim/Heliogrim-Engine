@@ -1,5 +1,5 @@
 #pragma once
 
-namespace ember::engine::resource::loader {
+namespace hg::engine::resource::loader {
     struct SourceStreamOptions { };
 }

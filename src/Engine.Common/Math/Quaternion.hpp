@@ -7,7 +7,7 @@
 #include "MathDefaultDefine.hpp"
 #include "Vector.hpp"
 
-namespace ember::math {
+namespace hg::math {
     /**
      * \brief 
      * \tparam Ly 

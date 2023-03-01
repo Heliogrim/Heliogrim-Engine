@@ -6,8 +6,8 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-using namespace ember::engine::resource;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg;
 
 FileSource::FileSource(mref<fs::File> file_, const streamsize size_, const streamoff offset_) noexcept :
     _file(_STD move(file_)),
@@ -84,7 +84,7 @@ bool FileSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref<st
     return true;
 }
 
-ember::concurrent::future<Source::async_result_value> FileSource::get(streamoff offset_, streamsize size_) {
+hg::concurrent::future<Source::async_result_value> FileSource::get(streamoff offset_, streamsize size_) {
     throw NotImplementedException {};
 }
 
@@ -122,7 +122,7 @@ bool FileSource::write(streamoff offset_, streamsize size_, const ptr<void> src_
     return true;
 }
 
-ember::concurrent::future<Source::async_write_result> FileSource::write(
+hg::concurrent::future<Source::async_write_result> FileSource::write(
     streamoff offset_,
     streamsize size_,
     const ptr<void> src_

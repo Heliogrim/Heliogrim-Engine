@@ -8,7 +8,7 @@
 
 #include "EventEmitter.hpp"
 
-namespace ember {
+namespace hg {
     /*
     namespace {
 
@@ -16,7 +16,7 @@ namespace ember {
         struct GlobalStatelessEventExecutor :
             public StatelessEventExecutor<EventType_> {
             FORCE_INLINE void operator()(cref<_STD function<void(cref<EventType_>)>> fnc_, cref<EventType_> event_) {
-                ember::engine::Scheduler::get().exec(ember::engine::scheduler::task::make_task([&]() {
+                hg::engine::Scheduler::get().exec(hg::engine::scheduler::task::make_task([&]() {
                     fnc_(event_);
                 }));
             }

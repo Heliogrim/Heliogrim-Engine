@@ -2,9 +2,9 @@
 
 #include <Engine.GFX/RenderTarget.hpp>
 
-using namespace ember::engine::gfx::scene;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::scene;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 uptr<RenderSceneManager> RenderSceneManager::_instance = nullptr;
 

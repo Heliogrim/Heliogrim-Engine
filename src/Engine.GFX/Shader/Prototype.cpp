@@ -1,7 +1,7 @@
 #include "Prototype.hpp"
 
-using namespace ember::engine::gfx::shader;
-using namespace ember;
+using namespace hg::engine::gfx::shader;
+using namespace hg;
 
 Prototype::Prototype() noexcept = default;
 

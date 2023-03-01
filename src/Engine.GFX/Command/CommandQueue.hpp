@@ -3,7 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include "../Device/Device.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     /**
      * Forward Declaration CommandPool.
      *

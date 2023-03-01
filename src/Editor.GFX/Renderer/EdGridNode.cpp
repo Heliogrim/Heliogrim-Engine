@@ -17,10 +17,10 @@
 #include "Engine.GFX/Renderer/RenderDataToken.hpp"
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 
-using namespace ember::editor::gfx;
-using namespace ember::engine::gfx::render;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::editor::gfx;
+using namespace hg::engine::gfx::render;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 EdGridNode::EdGridNode() :
     RenderStageNode() {}

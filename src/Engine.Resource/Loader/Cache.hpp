@@ -4,7 +4,7 @@
 #include "CacheTraits.hpp"
 #include "FeedbackTraits.hpp"
 
-namespace ember::engine::resource::loader {
+namespace hg::engine::resource::loader {
     template <typename AssetType_, typename ResourceType_>
     class Cache :
         public CacheStage<AssetType_, ResourceType_, assets::IsStreamableAsset<AssetType_>> {

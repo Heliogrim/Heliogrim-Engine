@@ -5,7 +5,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.GFX.Loader/Material/MaterialResource.hpp>
 
-namespace ember::engine::gfx::glow::render {
+namespace hg::engine::gfx::glow::render {
     struct RevSfMtt {
         _STD atomic_uint_fast16_t mti;
 

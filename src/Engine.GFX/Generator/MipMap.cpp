@@ -2,9 +2,9 @@
 
 #include "../Command/CommandBuffer.hpp"
 
-using namespace ember::engine::gfx::generator;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::generator;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 void MipMapGenerator::generate(Texture& texture_, cref<sptr<Device>> device_, CommandQueue& queue_) {
     /**

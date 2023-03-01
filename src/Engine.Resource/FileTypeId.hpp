@@ -4,7 +4,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 
-namespace ember::engine::res {
+namespace hg::engine::res {
     class FileTypeRegister;
 
     /**
@@ -101,10 +101,10 @@ namespace ember::engine::res {
 
 namespace std {
     template <>
-    struct hash<ember::engine::res::FileTypeId> :
-        public _STD hash<ember::type_id> {
-        [[nodiscard]] size_t operator()(const ember::engine::res::FileTypeId& value_) const noexcept {
-            return static_cast<const _STD hash<ember::type_id>*>(this)->operator()(value_.typeId);
+    struct hash<hg::engine::res::FileTypeId> :
+        public _STD hash<hg::type_id> {
+        [[nodiscard]] size_t operator()(const hg::engine::res::FileTypeId& value_) const noexcept {
+            return static_cast<const _STD hash<hg::type_id>*>(this)->operator()(value_.typeId);
         }
     };
 }

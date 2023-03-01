@@ -5,7 +5,7 @@
 
 #include "../Widget/Widget.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     template <typename CombinatorType_ = StyleSheetCombinator<StyleCombinator<false>>>
     class StyleResolver :
         public CombinatorType_ {

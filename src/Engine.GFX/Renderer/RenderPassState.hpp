@@ -7,7 +7,7 @@
 #include "../Cache/LocalCacheCtrl.hpp"
 #include "../Memory/LocalPooledAllocator.hpp"
 
-namespace ember::engine::gfx::render {
+namespace hg::engine::gfx::render {
     struct RenderPassState {
         ~RenderPassState();
 

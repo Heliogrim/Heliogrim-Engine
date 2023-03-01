@@ -5,7 +5,7 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Hash/Murmur3.hpp>
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     struct SceneNodePath {
     public:
         using this_type = SceneNodePath;
@@ -126,41 +126,41 @@ namespace ember::engine::scene {
 
 namespace std {
     template <>
-    struct equal_to<ember::engine::scene::SceneNodePath> {
-        using value_type = ember::engine::scene::SceneNodePath;
+    struct equal_to<hg::engine::scene::SceneNodePath> {
+        using value_type = hg::engine::scene::SceneNodePath;
 
         [[nodiscard]] bool operator()(
-            ::ember::cref<value_type> left_,
-            ::ember::cref<value_type> right_
+            ::hg::cref<value_type> left_,
+            ::hg::cref<value_type> right_
         ) const noexcept {
             return left_.path == right_.path;
         }
     };
 
     template <>
-    struct less<ember::engine::scene::SceneNodePath> {
-        using value_type = ember::engine::scene::SceneNodePath;
+    struct less<hg::engine::scene::SceneNodePath> {
+        using value_type = hg::engine::scene::SceneNodePath;
 
         [[nodiscard]] bool operator()(
-            ::ember::cref<value_type> left_,
-            ::ember::cref<value_type> right_
+            ::hg::cref<value_type> left_,
+            ::hg::cref<value_type> right_
         ) const noexcept {
             return left_.path < right_.path;
         }
     };
 
     template <>
-    struct hash<ember::engine::scene::SceneNodePath> {
-        using value_type = ember::engine::scene::SceneNodePath;
+    struct hash<hg::engine::scene::SceneNodePath> {
+        using value_type = hg::engine::scene::SceneNodePath;
 
-        [[nodiscard]] _STD size_t operator()(::ember::cref<value_type> value_) const noexcept {
+        [[nodiscard]] _STD size_t operator()(::hg::cref<value_type> value_) const noexcept {
             /**
              * !important! don's use identity
              */
-            ember::u64 dst[2];
-            ember::hash::murmur3_x64_128(
+            hg::u64 dst[2];
+            hg::hash::murmur3_x64_128(
                 &value_,
-                sizeof(ember::engine::scene::SceneNodePath),
+                sizeof(hg::engine::scene::SceneNodePath),
                 0x9FB21C651E98DF25ui32,
                 &dst
             );

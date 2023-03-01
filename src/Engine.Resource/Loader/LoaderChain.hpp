@@ -10,7 +10,7 @@
 #include "Transformer.hpp"
 #include "SourceLoader/SourceLoader.hpp"
 
-namespace ember::engine::resource::loader {
+namespace hg::engine::resource::loader {
     template <
         template <typename> typename Type_,
         template <typename> typename... Rest_

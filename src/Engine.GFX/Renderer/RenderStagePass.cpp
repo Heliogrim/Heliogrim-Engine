@@ -1,8 +1,8 @@
 #include "RenderStagePass.hpp"
 
-using namespace ember::engine::gfx::render;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::render;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 RenderStagePass::RenderStagePass(const non_owning_rptr<RenderStage> stage_) :
     _stage(stage_),

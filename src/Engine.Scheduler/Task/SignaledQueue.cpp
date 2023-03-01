@@ -1,7 +1,7 @@
 #include "SignaledQueue.hpp"
 
-using namespace ember::engine::scheduler::task;
-using namespace ember;
+using namespace hg::engine::scheduler::task;
+using namespace hg;
 
 void SignaledQueue::signal() {
     _sig.notify_all();

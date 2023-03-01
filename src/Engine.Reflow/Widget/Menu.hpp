@@ -2,7 +2,7 @@
 
 #include "Popup.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Menu :
         public Popup {
     public:

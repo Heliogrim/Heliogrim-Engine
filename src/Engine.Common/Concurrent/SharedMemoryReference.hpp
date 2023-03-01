@@ -12,7 +12,7 @@
 #include "../Wrapper.hpp"
 #include "../Cast.hpp"
 
-namespace ember {
+namespace hg {
     namespace {
         using packed_type = _STD uintptr_t;
         using atomic_packed_type = _STD atomic_uintptr_t;

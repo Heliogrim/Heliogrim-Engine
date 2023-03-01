@@ -3,9 +3,9 @@
 #include "Engine.GFX/Cache/GlobalCacheCtrl.hpp"
 #include "Engine.GFX/Cache/GlobalResourceCache.hpp"
 
-using namespace ember::engine::gfx::loader;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 TextureCache::TextureCache(const non_owning_rptr<cache::GlobalCacheCtrl> cacheCtrl_) :
     _cacheCtrl(cacheCtrl_) {}

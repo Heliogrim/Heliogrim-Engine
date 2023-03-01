@@ -7,7 +7,7 @@
 
 #include "Event.hpp"
 
-namespace ember {
+namespace hg {
     /** The event emitter */
     class __declspec(novtable) EventEmitter {
     public:

@@ -1,12 +1,12 @@
 #include "CerberusRoughness.hpp"
 #include "../Images/CerberusRoughness.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
 #include "Game.Main/Assets/Images/CerberusRoughness.hpp"
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::CerberusRoughness::CerberusRoughness() :
     TextureAsset(

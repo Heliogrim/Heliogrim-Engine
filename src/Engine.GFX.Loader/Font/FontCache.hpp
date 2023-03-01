@@ -5,7 +5,7 @@
 
 #include "Traits.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class FontCache final : public resource::loader::Cache<assets::Font, FontResource> {
     public:
         using this_type = FontCache;

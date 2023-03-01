@@ -3,13 +3,13 @@
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
-#include <Engine.Reflect/EmberReflect.hpp>
+#include <Engine.Reflect/HeliogrimReflect.hpp>
 #include <Engine.Serialization/Layout/__fwd.hpp>
 
 #include "../AssetGuid.hpp"
 #include "../AssetTypeId.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     /*
                                 Level   Entity	    Serialized<Component>	GfxMaterial	PfxMaterial	SfxMaterial	Texture     Image	    Sound	    Geometry
         Level	                -	    1 :: *      T 1 :: *	            T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *	T 1 :: *
@@ -25,7 +25,7 @@ namespace ember::engine::assets {
      */
 
     class Asset :
-        public EmberObject {
+        public HeliogrimObject {
     public:
         using value_type = Asset;
         using reference_type = Asset&;

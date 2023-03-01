@@ -16,8 +16,8 @@
 #include "Types/Geometry/StaticGeometry.hpp"
 #include "Types/Texture/Texture.hpp"
 
-using namespace ember::engine::assets;
-using namespace ember;
+using namespace hg::engine::assets;
+using namespace hg;
 
 AssetFactory::AssetFactory(ptr<AssetDatabase> database_) noexcept :
     _database(database_) {}
@@ -34,7 +34,7 @@ Url AssetFactory::resolveAsSource(cref<string> url_) const noexcept {
 
 void AssetFactory::prepare() {
 
-    using namespace ::ember::engine::serialization;
+    using namespace ::hg::engine::serialization;
 
     auto& layouts { LayoutManager::get() };
     sptr<DataLayoutBase> cur { nullptr };
@@ -52,7 +52,7 @@ void AssetFactory::prepare() {
 
     layouts.storeLayout("Assets::Texture"sv, cur);
     layouts.storeLayout(Texture::typeId, cur);
-    layouts.storeLayout(EmberClass::of<Texture>(), cur);
+    layouts.storeLayout(HeliogrimClass::of<Texture>(), cur);
 
     cur = make_sptr<DataLayout<Image>>();
     cur->reflect().storeType<Image>();
@@ -60,12 +60,12 @@ void AssetFactory::prepare() {
 
     layouts.storeLayout("Assets::Image"sv, cur);
     layouts.storeLayout(Image::typeId, cur);
-    layouts.storeLayout(EmberClass::of<Image>(), cur);
+    layouts.storeLayout(HeliogrimClass::of<Image>(), cur);
 }
 
 ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = EmberObject::create<Font>(guid_, Vector<Url> {});
+    auto* instance = HeliogrimObject::create<Font>(guid_, Vector<Url> {});
 
     _database->insert(guid_, Font::typeId, instance);
     return instance;
@@ -80,7 +80,7 @@ ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_, cref<string> url
         sources.push_back(src);
     }
 
-    auto* instance = EmberObject::create<Font>(guid_, _STD move(sources));
+    auto* instance = HeliogrimObject::create<Font>(guid_, _STD move(sources));
 
     _database->insert(guid_, Font::typeId, instance);
     return instance;
@@ -94,7 +94,7 @@ ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset() const {
 
 ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = EmberObject::create<GfxMaterial>(
+    auto* instance = HeliogrimObject::create<GfxMaterial>(
         guid_,
         invalid_asset_guid,
         invalid_asset_guid,
@@ -127,7 +127,7 @@ ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(
     cref<asset_guid> alpha_
 ) const {
 
-    auto* instance = EmberObject::create<GfxMaterial>(
+    auto* instance = HeliogrimObject::create<GfxMaterial>(
         guid_,
         albedo_,
         ao_,
@@ -153,7 +153,7 @@ ptr<Image> AssetFactory::createImageAsset() const {
 
 ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = EmberObject::create<Image>(guid_, Vector<Url> {});
+    auto* instance = HeliogrimObject::create<Image>(guid_, Vector<Url> {});
 
     _database->insert(guid_, Image::typeId, instance);
     return instance;
@@ -168,7 +168,7 @@ ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> u
         sources.push_back(src);
     }
 
-    auto* instance = EmberObject::create<Image>(guid_, _STD move(sources));
+    auto* instance = HeliogrimObject::create<Image>(guid_, _STD move(sources));
 
     _database->insert(guid_, Image::typeId, instance);
     return instance;
@@ -176,7 +176,7 @@ ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> u
 
 ptr<LandscapeGeometry> AssetFactory::createLandscapeGeometryAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = EmberObject::create<LandscapeGeometry>(guid_, Vector<Url> {});
+    auto* instance = HeliogrimObject::create<LandscapeGeometry>(guid_, Vector<Url> {});
 
     _database->insert(guid_, LandscapeGeometry::typeId, instance);
     return instance;
@@ -184,7 +184,7 @@ ptr<LandscapeGeometry> AssetFactory::createLandscapeGeometryAsset(cref<asset_gui
 
 ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = EmberObject::create<StaticGeometry>(
+    auto* instance = HeliogrimObject::create<StaticGeometry>(
         guid_,
         Vector<Url> {},
         0ui64,
@@ -209,7 +209,7 @@ ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(
         sources.push_back(src);
     }
 
-    auto* instance = EmberObject::create<StaticGeometry>(
+    auto* instance = HeliogrimObject::create<StaticGeometry>(
         guid_,
         _STD move(sources),
         vertexCount_,
@@ -228,7 +228,7 @@ ptr<Texture> AssetFactory::createTextureAsset() const {
 
 ptr<Texture> AssetFactory::createTextureAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = EmberObject::create<Texture>(
+    auto* instance = HeliogrimObject::create<Texture>(
         guid_,
         invalid_asset_guid,
         Vector<asset_guid> { invalid_asset_guid },
@@ -251,7 +251,7 @@ ptr<Texture> AssetFactory::createTextureAsset(
     cref<u32> mipLevel_,
     cref<gfx::TextureType> type_
 ) const {
-    auto* instance = EmberObject::create<Texture>(
+    auto* instance = HeliogrimObject::create<Texture>(
         guid_,
         baseImage_,
         _STD forward<Vector<asset_guid>>(images_),

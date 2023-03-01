@@ -3,7 +3,7 @@
 #include "StyleSheet.hpp"
 #include "StyleCombinator.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     template <typename CombinatorType_ = StyleCombinator<false>>
     class StyleSheetCombinator :
         public CombinatorType_ {

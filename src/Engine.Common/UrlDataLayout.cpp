@@ -2,11 +2,11 @@
 
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <>
     void DataLayout<Url>::describe() {
 
-        using namespace ::ember::engine::serialization::layout;
+        using namespace ::hg::engine::serialization::layout;
 
         const auto u8Layout = make_sptr<DataLayout<u8>>();
         u8Layout->reflect().storeType<u8>();

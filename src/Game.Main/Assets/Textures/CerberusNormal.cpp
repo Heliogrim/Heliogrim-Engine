@@ -1,12 +1,12 @@
 #include "CerberusNormal.hpp"
 #include "../Images/CerberusNormal.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
 #include "Game.Main/Assets/Images/CerberusNormal.hpp"
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::CerberusNormal::CerberusNormal() :
     TextureAsset(

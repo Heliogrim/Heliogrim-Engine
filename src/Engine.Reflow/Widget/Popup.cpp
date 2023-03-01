@@ -3,8 +3,8 @@
 #include "../Window/Window.hpp"
 #include "../Window/PopupLayer.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 Popup::Popup() :
     Widget(),

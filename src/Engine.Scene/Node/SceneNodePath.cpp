@@ -1,7 +1,7 @@
 #include "SceneNodePath.hpp"
 
-using namespace ember::engine::scene;
-using namespace ember;
+using namespace hg::engine::scene;
+using namespace hg;
 
 SceneNodePath::decision_type SceneNodePath::cur() const noexcept {
     return static_cast<decision_type>(path & decision_mask);

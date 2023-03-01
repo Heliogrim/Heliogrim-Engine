@@ -2,7 +2,7 @@
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::sfx {
+namespace hg::engine::sfx {
     enum class AudioFormat {
         eUndefined = 0x0,
         //
@@ -16,5 +16,5 @@ namespace ember::engine::sfx {
         eF32 = 0x202
     };
 
-    typedef Flag<AudioFormat, ember::u16> AudioFormats;
+    typedef Flag<AudioFormat, hg::u16> AudioFormats;
 }

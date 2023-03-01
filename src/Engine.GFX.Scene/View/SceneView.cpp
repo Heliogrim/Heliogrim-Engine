@@ -1,7 +1,7 @@
 #include "SceneView.hpp"
 
-using namespace ember::engine::gfx::scene;
-using namespace ember;
+using namespace hg::engine::gfx::scene;
+using namespace hg;
 
 SceneView::SceneView(const non_owning_rptr<Actor> actor_, const non_owning_rptr<RenderScene> scene_) :
     SceneViewEye(),

@@ -1,7 +1,7 @@
 #include "MouseMoveEvent.hpp"
 
-using namespace ember::engine::input::event;
-using namespace ember;
+using namespace hg::engine::input::event;
+using namespace hg;
 
 MouseMoveEvent::MouseMoveEvent(
     cref<math::ivec2> pointer_,

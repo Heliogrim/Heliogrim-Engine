@@ -6,7 +6,7 @@
 #include <Engine.Resource/ImporterManager.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     extern void register_loader(
         _In_ ref<resource::LoaderManager> manager_,
         _In_ const non_owning_rptr<Graphics> graphics_,

@@ -19,9 +19,9 @@
 #include "../Texture/TextureResource.hpp"
 #include "../Texture/Traits.hpp"
 
-using namespace ember::engine::gfx::loader;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 [[nodiscard]] static smr<engine::gfx::TextureResource> resolveTexture(
     mref<asset_guid> guid_,
@@ -49,7 +49,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
     const auto& loader = engine::Engine::getEngine()->getResources()->loader();
     const auto* const database = engine::Engine::getEngine()->getAssets()->getDatabase();
 
-    using derived_type = ::ember::engine::resource::UniqueResource<MaterialResource::value_type>;
+    using derived_type = ::hg::engine::resource::UniqueResource<MaterialResource::value_type>;
     auto dst = make_smr<MaterialResource, derived_type>(
         new derived_type(_STD in_place)
     );

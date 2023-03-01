@@ -1,7 +1,7 @@
 #include "TextureFormat.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 bool engine::gfx::isDepthFormat(cref<TextureFormat> format_) noexcept {
     switch (format_) {

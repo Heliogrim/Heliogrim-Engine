@@ -3,7 +3,7 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
-namespace ember::engine {
+namespace hg::engine {
     class GameEngine :
         public Engine {
     public:

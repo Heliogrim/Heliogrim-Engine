@@ -2,22 +2,22 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/Bounding.hpp>
-#include <Engine.Reflect/EmberReflect.hpp>
+#include <Engine.Reflect/HeliogrimReflect.hpp>
 
 /**
  * Forward Declaration
  */
-namespace ember {
+namespace hg {
     class SceneComponent;
 }
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class Scene;
 }
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class __declspec(novtable) SceneNodeModel :
-        public EmberObject {
+        public HeliogrimObject {
     public:
         SceneNodeModel() = delete;
 

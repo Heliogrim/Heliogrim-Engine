@@ -149,13 +149,13 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     <ProjectReference Include="..\Editor.UI\Editor.UI.vcxproj">
       <Project>{88b1a2bc-57f1-4969-918a-221f15decb23}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Ember.Default\Ember.Default.vcxproj">
+    <ProjectReference Include="..\Heliogrim.Default\Heliogrim.Default.vcxproj">
       <Project>{3700b064-da76-4d4e-b21b-a264d80e701a}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Ember.Main\Ember.Main.vcxproj">
+    <ProjectReference Include="..\Heliogrim.Main\Heliogrim.Main.vcxproj">
       <Project>{cdc04280-5f97-45d3-9c47-8b60219d8578}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Ember\Ember.vcxproj">
+    <ProjectReference Include="..\Heliogrim\Heliogrim.vcxproj">
       <Project>{8d01b7e3-273a-4a0b-8099-ad227fbdaf9c}</Project>
     </ProjectReference>
   </ItemGroup>

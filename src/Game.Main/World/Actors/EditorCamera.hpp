@@ -1,7 +1,7 @@
 #pragma once
-#include <Ember/Actor.hpp>
+#include <Heliogrim/Actor.hpp>
 
-namespace ember::game::actors {
+namespace hg::game::actors {
 
     class EditorCamera :
         public Actor {

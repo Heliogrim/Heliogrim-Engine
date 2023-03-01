@@ -3,7 +3,7 @@
 #include "../Pipeline/StagePipeline.hpp"
 #include "../Pipeline/Stage/StageIdentifier.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class TickPipeline final :
         public StagePipeline {
     public:

@@ -1,7 +1,7 @@
 #include "MaterialFeedback.hpp"
 
-using namespace ember::engine::gfx::loader;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg;
 
 MaterialFeedback::MaterialFeedback() :
     Feedback() {}

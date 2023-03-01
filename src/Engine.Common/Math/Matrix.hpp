@@ -6,7 +6,7 @@
 
 #include "Vector.hpp"
 
-namespace ember::math {
+namespace hg::math {
     template <typename T, std::size_t R, std::size_t C>
     class mat_t { };
 

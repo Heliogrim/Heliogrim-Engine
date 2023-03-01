@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Common/Flag.hpp>
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     /**
      * Values that represent scene node states
      *
@@ -31,14 +31,14 @@ namespace ember::engine::scene {
      *      -> children are unique referenced
      *      -> children have distinct and even bounding
      */
-    enum class SceneNodeState: ember::u8 {
+    enum class SceneNodeState: hg::u8 {
         eShadow = 0x00,
         eLoosy = 0x01,
         eSpartial = 0x02,
         eNatural = 0x03
     };
 
-    typedef ember::Flag<SceneNodeState> SceneNodeStates;
+    typedef hg::Flag<SceneNodeState> SceneNodeStates;
 
     struct scene_node_shared_traits {
         using container_size_type = u8;

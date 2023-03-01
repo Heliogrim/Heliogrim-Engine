@@ -6,8 +6,8 @@
 #include "Engine.hpp"
 #include "World.hpp"
 
-using namespace ember::engine::core;
-using namespace ember;
+using namespace hg::engine::core;
+using namespace hg;
 
 WorldContext::WorldContext(const non_owning_rptr<Session> owner_) :
     _owner(owner_),

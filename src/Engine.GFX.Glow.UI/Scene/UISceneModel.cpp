@@ -4,10 +4,10 @@
 #include <Engine.GFX/Renderer/RenderPassState.hpp>
 #include <Engine.GFX/Renderer/RenderDataToken.hpp>
 
-#include "Ember/UIComponent.hpp"
+#include "Heliogrim/UIComponent.hpp"
 
-using namespace ember::engine::gfx::glow::ui;
-using namespace ember;
+using namespace hg::engine::gfx::glow::ui;
+using namespace hg;
 
 UISceneModel::UISceneModel(const ptr<SceneComponent> owner_) :
     SceneNodeModel(owner_) {}

@@ -7,11 +7,11 @@
 #include "SceneHierarchy/HierarchyResolver.hpp"
 #include "SceneHierarchy/HierarchyGenerator.hpp"
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class SceneHierarchyPanel;
 }
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class SceneHierarchy {
     public:
         using this_type = SceneHierarchy;

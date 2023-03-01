@@ -6,8 +6,8 @@
 #include "AllocationResult.hpp"
 #include "MemoryPool.hpp"
 
-using namespace ember::engine::gfx::memory;
-using namespace ember;
+using namespace hg::engine::gfx::memory;
+using namespace hg;
 
 MemoryCache::MemoryCache() :
     _pools() {}

@@ -6,7 +6,7 @@
 #include "../Shader/CachedDiscreteBinding.hpp"
 #include "../Renderer/__fwd.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class SkyboxModel final :
         public GeometryModel {
     public:
@@ -24,11 +24,11 @@ namespace ember::engine::gfx {
         void tidy();
 
     public:
-        void create(const ptr<::ember::engine::scene::Scene> scene_) override final;
+        void create(const ptr<::hg::engine::scene::Scene> scene_) override final;
 
-        void update(const ptr<::ember::engine::scene::Scene> scene_) override final;
+        void update(const ptr<::hg::engine::scene::Scene> scene_) override final;
 
-        void destroy(const ptr<::ember::engine::scene::Scene> scene_) override final;
+        void destroy(const ptr<::hg::engine::scene::Scene> scene_) override final;
 
     public:
         [[nodiscard]] Vector<render::RenderDataToken> providedToken() const noexcept override;

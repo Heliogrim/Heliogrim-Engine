@@ -3,7 +3,7 @@
 #include <string>
 #include <string_view>
 
-namespace ember {
+namespace hg {
     using cstr = const char*;
     using string = _STD string;
     using string_view = _STD string_view;

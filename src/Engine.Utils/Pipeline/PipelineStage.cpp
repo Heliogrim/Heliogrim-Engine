@@ -1,7 +1,7 @@
 #include "PipelineStage.hpp"
 #include "./Pipeline.hpp"
 
-using namespace ember::engine::utils;
+using namespace hg::engine::utils;
 
 PipelineStage::PipelineStage(Pipeline& pipeline_, Dispatchable& dispatchable_) :
     _pipeline(&pipeline_),

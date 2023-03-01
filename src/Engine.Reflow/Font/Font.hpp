@@ -9,7 +9,7 @@
 #include "GlyphCode.hpp"
 #include "Engine.Common/Collection/RobinMap.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Font {
     public:
         using this_type = Font;
@@ -59,10 +59,10 @@ namespace ember::engine::reflow {
 
         //private:
     public:
-        sptr<::ember::engine::gfx::Texture> _atlas;
+        sptr<::hg::engine::gfx::Texture> _atlas;
 
     public:
-        [[nodiscard]] cref<sptr<::ember::engine::gfx::Texture>> atlas() const noexcept;
+        [[nodiscard]] cref<sptr<::hg::engine::gfx::Texture>> atlas() const noexcept;
 
         //private:
     public:

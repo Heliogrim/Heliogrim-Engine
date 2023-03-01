@@ -9,7 +9,7 @@
 #include "Matrix.hpp"
 #include "Quaternion.hpp"
 
-namespace ember::math {
+namespace hg::math {
     template <class From_, class To_>
     inline static To_ as(cref<From_> from_) noexcept;
 

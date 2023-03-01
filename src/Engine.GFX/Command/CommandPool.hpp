@@ -4,7 +4,7 @@
 #include <Engine.Common/Concurrent/SpinLock.hpp>
 #include "CommandQueue.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     /**
      * Forward Declaration CommandBuffer.
      *
@@ -92,7 +92,7 @@ namespace ember::engine::gfx {
         /**
          * Synchronization Lock
          */
-        mutable ember::concurrent::UnfairSpinLock _lck;
+        mutable hg::concurrent::UnfairSpinLock _lck;
 
     public:
         /**
@@ -101,7 +101,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 25.11.2020
          */
-        [[nodiscard]] ref<ember::concurrent::UnfairSpinLock> lck() const;
+        [[nodiscard]] ref<hg::concurrent::UnfairSpinLock> lck() const;
 
     private:
         /**

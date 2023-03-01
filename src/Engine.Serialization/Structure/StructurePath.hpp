@@ -2,7 +2,7 @@
 
 #include <Engine.Common/String.hpp>
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class StructurePath {
     public:
         using this_type = StructurePath;

@@ -6,9 +6,9 @@
 
 #include "API/VkTranslate.hpp"
 
-using namespace ember::engine::gfx::api;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::api;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 void collectLayoutsUnique(const Shader& shader_, Vector<vk::DescriptorSetLayout>& collection_) {
     for (const auto& entry : shader_.bindings()) {

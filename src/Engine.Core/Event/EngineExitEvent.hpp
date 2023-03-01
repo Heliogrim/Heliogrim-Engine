@@ -2,7 +2,7 @@
 
 #include <Engine.Event/Event.hpp>
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     /**
      * Warning: We might not be able to handle or dispatch this event due to the main engine lifecycle
      *  When shutdown is complete, scheduler is not guaranteed to dispatch any more jobs, beside the destruction of dependency chains.

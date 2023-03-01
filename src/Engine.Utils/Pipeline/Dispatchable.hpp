@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::utils {
+namespace hg::engine::utils {
     __interface Dispatchable {
         /**
          * Gets the batch count

@@ -2,7 +2,7 @@
 
 #include <Engine.Common/stdafx.h>
 
-using namespace ember::env;
+using namespace hg::env;
 
 #if _WIN32 || _WIN64
 
@@ -18,13 +18,13 @@ size_t get_memory_page_size() {
 
 #include <unistd.h>
 
-size_t ember::env::get_memory_page_size() {
+size_t hg::env::get_memory_page_size() {
 	return sysconf(_SC_PAGESIZE);
 }
 
 #else
 
-size_t ember::env::get_memory_page_size() {
+size_t hg::env::get_memory_page_size() {
 	size_t n;
 	char* ptr;
 	int u;

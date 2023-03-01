@@ -2,7 +2,7 @@
 
 #include "../Renderer/RenderDataToken.hpp"
 
-namespace ember::engine::gfx::render {
+namespace hg::engine::gfx::render {
     constexpr RenderDataToken CameraTransform {
         RenderDataToken::make(
             "CameraTransform"sv,

@@ -7,7 +7,7 @@
 #include "__fwd.hpp"
 #include "../Package/Package.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     class PackageLinker {
     public:
         friend class Package;

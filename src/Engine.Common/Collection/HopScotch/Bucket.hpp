@@ -8,7 +8,7 @@
 #include "../../Types.hpp"
 #include "../../__macro.hpp"
 
-namespace ember::hopscotch {
+namespace hg::hopscotch {
     template <typename ValueType_, u8 NeighborhoodSize_, bool StoreHash_>
     class hopscotch_bucket :
         public hopscotch_bucket_hash<StoreHash_> {

@@ -2,7 +2,7 @@
 
 #include <concepts>
 
-namespace ember::math {
+namespace hg::math {
     /**
      * A fast ceiling 2.
      *

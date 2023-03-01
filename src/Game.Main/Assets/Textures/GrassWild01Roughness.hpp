@@ -1,7 +1,7 @@
 #pragma once
-#include <Ember/TextureAsset.hpp>
+#include <Heliogrim/TextureAsset.hpp>
 
-namespace ember::game::assets::texture {
+namespace hg::game::assets::texture {
     class GrassWild01Roughness :
         public TextureAsset,
         public AssetAutoGuid<GrassWild01Roughness> {

@@ -6,7 +6,7 @@
 #include "../Task/TaskMask.hpp"
 #include "ScheduleWorkSet.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     namespace {
         inline constexpr static task::TaskMask priorities[] {
             task::TaskMask::eCritical,

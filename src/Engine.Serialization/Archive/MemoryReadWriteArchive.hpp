@@ -4,7 +4,7 @@
 
 #include "MemoryArchive.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class MemoryReadWriteArchive :
         public MemoryBaseArchive {
     public:

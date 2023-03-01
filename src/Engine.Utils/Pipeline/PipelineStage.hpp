@@ -1,7 +1,7 @@
 #pragma once
 #include "./Dispatchable.hpp"
 
-namespace ember::engine::utils {
+namespace hg::engine::utils {
     /**
      * Forward declaration
      */

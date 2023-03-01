@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember {
+namespace hg {
     enum class LogLevel {
         eInfo,
         eWarn,

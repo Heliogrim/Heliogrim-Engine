@@ -2,7 +2,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include "Viewport.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class GraphicPipeline {
     protected:
         /**

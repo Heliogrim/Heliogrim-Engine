@@ -4,7 +4,7 @@
 #include "../Device/Device.hpp"
 #include "../vkinc.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class TextureSampler {
     public:
         /**

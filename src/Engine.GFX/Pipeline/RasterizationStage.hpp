@@ -8,7 +8,7 @@
 #include "../RasterPolyMode.hpp"
 #include "../RasterSamples.hpp"
 
-namespace ember::engine::gfx::pipeline {
+namespace hg::engine::gfx::pipeline {
     class RasterizationStage {
     public:
         /**

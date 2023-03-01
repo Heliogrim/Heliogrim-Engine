@@ -3,7 +3,7 @@
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-namespace ember::engine::input {
+namespace hg::engine::input {
     class __declspec(novtable) DragDropSender {
     public:
         using this_type = DragDropSender;

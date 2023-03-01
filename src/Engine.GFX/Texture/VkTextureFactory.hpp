@@ -1,7 +1,7 @@
 #pragma once
 #include "TextureFactory.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class VkTextureFactory final :
         public TextureFactory {
     public:

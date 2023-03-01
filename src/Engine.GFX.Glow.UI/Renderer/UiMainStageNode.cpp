@@ -29,10 +29,10 @@
 #include "Engine.GFX.Glow.UI/Scene/UISceneModel.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 
-using namespace ember::engine::gfx::glow::ui::render;
-using namespace ember::engine::gfx::render;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::glow::ui::render;
+using namespace hg::engine::gfx::render;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 #define IMAGE_DESCRIPTOR_INDEX 0
 
@@ -54,7 +54,7 @@ UiMainStageNode::UiMainStageNode() :
     RenderStageNode(),
     _modelTypes(
         {
-            EmberClass::stid<UISceneModel>()
+            HeliogrimClass::stid<UISceneModel>()
         }
     ) {}
 
@@ -919,8 +919,8 @@ void UiMainStageNode::rebuildImageDescriptors(
 #include <Engine.GFX.Loader/Texture/Traits.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.GFX/Graphics.hpp>
-#include <Ember.Default/Assets/Textures/UIDummy.hpp>
-#include <Ember.Default/Assets/Images/UIDummy.hpp>
+#include <Heliogrim.Default/Assets/Textures/UIDummy.hpp>
+#include <Heliogrim.Default/Assets/Images/UIDummy.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Database/AssetDatabase.hpp>

@@ -1,13 +1,13 @@
 #pragma once
-#include <Ember/World/TypedEntity.hpp>
+#include <Heliogrim/World/TypedEntity.hpp>
 #include <Engine.ECS.Subsystem/Reflection/EntityReflector.hpp>
 
-using namespace ember;
+using namespace hg;
 
 namespace game::world::entity {
 
     class DebugCamera :
-        public ember::world::TypedEntity<DebugCamera> {
+        public ::hg::world::TypedEntity<DebugCamera> {
     public:
         static constexpr type_id typeId = "DebugCamera"_typeId;
 

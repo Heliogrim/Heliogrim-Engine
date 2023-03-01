@@ -5,7 +5,7 @@
 #include "../Box.hpp"
 #include "../Input.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     template <typename... InputTypes_>
     class InputVector :
         public Input<_STD tuple<_STD decay_t<InputTypes_>...>> {

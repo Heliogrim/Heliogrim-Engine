@@ -1,7 +1,7 @@
 #include "Murmur3.hpp"
 
-using namespace ember::hash;
-using namespace ember;
+using namespace hg::hash;
+using namespace hg;
 
 #ifdef _MSC_VER
 

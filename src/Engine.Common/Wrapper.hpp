@@ -3,7 +3,7 @@
 #include "__macro.hpp"
 #include <memory>
 
-namespace ember {
+namespace hg {
     template <class Ty>
     using ref = Ty&;
 

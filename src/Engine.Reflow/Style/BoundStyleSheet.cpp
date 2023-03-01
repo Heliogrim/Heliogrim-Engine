@@ -4,8 +4,8 @@
 
 #include "StyleResolver.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 static const AssocKey<string> unique { AssocKey<string>::from("unique") };
 

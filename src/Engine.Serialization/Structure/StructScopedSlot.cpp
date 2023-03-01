@@ -9,8 +9,8 @@
 #include <Engine.Logging/Logger.hpp>
 #endif
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 StructScopedSlot::StructScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
     ScopedSlot(_STD move(scopedState_), make_sptr<StructSlot>(_STD move(state_))) {

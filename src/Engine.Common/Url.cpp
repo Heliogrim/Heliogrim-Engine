@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-using namespace ember;
+using namespace hg;
 
 string Url::encode() const noexcept {
 

@@ -3,7 +3,7 @@
 #include "__fwd.hpp"
 #include "ManageGuard.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     template <typename ValueType_>
     class TypedManageGuard :
         public ManageGuard {

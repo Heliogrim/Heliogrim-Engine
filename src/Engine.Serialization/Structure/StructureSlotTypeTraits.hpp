@@ -4,7 +4,7 @@
 
 #include "StructureSlotType.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     struct StructureSlotTypeTrait {
         [[nodiscard]] static string_view canonical(StructureSlotType type_) noexcept;
 

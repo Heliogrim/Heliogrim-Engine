@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::engine::gfx::glow::render {
+namespace hg::engine::gfx::glow::render {
     /**
      * 
      */

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     enum class WorldType {
         eUndefined = 0x0,
         eGame = 0x1,

@@ -1,7 +1,7 @@
 #include "GfxMaterial.hpp"
 
-using namespace ember::engine::assets;
-using namespace ember;
+using namespace hg::engine::assets;
+using namespace hg;
 
 GfxMaterial::GfxMaterial(cref<asset_guid> guid_) :
     Asset(guid_, GfxMaterial::typeId) {}

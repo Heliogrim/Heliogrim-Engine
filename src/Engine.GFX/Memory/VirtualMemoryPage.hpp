@@ -5,11 +5,11 @@
 #include "../Memory/__fwd.hpp"
 #include "VirtualMemoryPageState.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class VirtualMemory;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class VirtualMemoryPage {
     public:
         using this_type = VirtualMemoryPage;

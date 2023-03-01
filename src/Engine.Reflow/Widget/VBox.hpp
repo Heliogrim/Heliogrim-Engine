@@ -1,7 +1,7 @@
 #pragma once
 #include "Box.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class VBox :
         public Box {
     public:

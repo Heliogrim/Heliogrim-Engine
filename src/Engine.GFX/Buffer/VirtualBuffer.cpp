@@ -8,8 +8,8 @@
 #include "Engine.GFX/Graphics.hpp"
 #include <Engine.Core/Engine.hpp>
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 VirtualBuffer::VirtualBuffer() noexcept :
     _memory(nullptr),

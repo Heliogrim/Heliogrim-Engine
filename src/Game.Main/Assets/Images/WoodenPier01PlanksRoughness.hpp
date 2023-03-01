@@ -1,9 +1,9 @@
 #pragma once
-#include <Ember/ImageAsset.hpp>
+#include <Heliogrim/ImageAsset.hpp>
 
 #include "WoodenPier01PolesRoughness.hpp"
 
-namespace ember::game::assets::image {
+namespace hg::game::assets::image {
     class WoodenPier01PlanksRoughness :
         public ImageAsset,
         public AssetAutoGuid<WoodenPier01PlanksRoughness> {

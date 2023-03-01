@@ -9,8 +9,8 @@
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
 #include <Engine.Scheduler/CompScheduler.hpp>
 
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 TEST(__DummyTest__, Exists) {
     EXPECT_TRUE(true);
@@ -738,7 +738,7 @@ namespace SchedulerModule {
     TEST(CompositePipeline, EmptyCreation) {
         structuredRuntimeTest([](auto* const scheduler_) {
 
-            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+            auto* const scheduler = static_cast<const ptr<hg::engine::TestCompScheduler>>(scheduler_);
 
             CompositePipeline composite { scheduler->testGetSchedule() };
             composite.setup();
@@ -749,7 +749,7 @@ namespace SchedulerModule {
     TEST(CompositePipeline, StandaloneStage) {
         structuredRuntimeTest([](auto* const scheduler_) {
 
-            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+            auto* const scheduler = static_cast<const ptr<hg::engine::TestCompScheduler>>(scheduler_);
 
             CompositePipeline composite { scheduler->testGetSchedule() };
 
@@ -763,7 +763,7 @@ namespace SchedulerModule {
     TEST(CompositePipeline, PipelineStage) {
         structuredRuntimeTest([](auto* const scheduler_) {
 
-            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+            auto* const scheduler = static_cast<const ptr<hg::engine::TestCompScheduler>>(scheduler_);
 
             CompositePipeline composite { scheduler->testGetSchedule() };
 
@@ -803,7 +803,7 @@ namespace SchedulerModule {
     TEST(CompositePipeline, PipelineStages) {
         structuredRuntimeTest([](auto* const scheduler_) {
 
-            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+            auto* const scheduler = static_cast<const ptr<hg::engine::TestCompScheduler>>(scheduler_);
 
             CompositePipeline composite { scheduler->testGetSchedule() };
 
@@ -845,7 +845,7 @@ namespace SchedulerModule {
     TEST(CompositePipeline, PipelineInternalDependendStages) {
         structuredRuntimeTest([](auto* const scheduler_) {
 
-            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+            auto* const scheduler = static_cast<const ptr<hg::engine::TestCompScheduler>>(scheduler_);
 
             CompositePipeline composite { scheduler->testGetSchedule() };
 
@@ -902,7 +902,7 @@ namespace SchedulerModule {
     TEST(CompositePipeline, MultiPipelineInternalStages) {
         structuredRuntimeTest([](auto* const scheduler_) {
 
-            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+            auto* const scheduler = static_cast<const ptr<hg::engine::TestCompScheduler>>(scheduler_);
 
             CompositePipeline composite { scheduler->testGetSchedule() };
 
@@ -971,7 +971,7 @@ namespace SchedulerModule {
     TEST(CompositePipeline, MultiPipelineInterDependentStages) {
         structuredRuntimeTest([](auto* const scheduler_) {
 
-            auto* const scheduler = static_cast<const ptr<ember::engine::TestCompScheduler>>(scheduler_);
+            auto* const scheduler = static_cast<const ptr<hg::engine::TestCompScheduler>>(scheduler_);
 
             CompositePipeline composite { scheduler->testGetSchedule() };
 

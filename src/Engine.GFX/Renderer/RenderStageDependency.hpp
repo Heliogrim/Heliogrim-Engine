@@ -5,7 +5,7 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx::render {
+namespace hg::engine::gfx::render {
     enum class RenderStageOrder : u8 {
         eIgnore,
         ePredecessor,

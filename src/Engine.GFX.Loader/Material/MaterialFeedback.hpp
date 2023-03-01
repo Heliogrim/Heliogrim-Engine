@@ -4,7 +4,7 @@
 
 #include "Traits.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class MaterialFeedback final : public resource::loader::Feedback<assets::GfxMaterial, MaterialResource> {
     public:
         using this_type = MaterialFeedback;

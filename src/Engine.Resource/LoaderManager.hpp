@@ -9,11 +9,11 @@
 #include "Loader/Loader.hpp"
 #include "Manage/Resource.hpp"
 
-namespace ember::engine::resource::loader {
+namespace hg::engine::resource::loader {
     class SourceLoader;
 }
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     class LoaderManager {
     public:
         using value_type = LoaderManager;

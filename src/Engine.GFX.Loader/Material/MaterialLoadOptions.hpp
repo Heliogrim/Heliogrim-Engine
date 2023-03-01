@@ -2,6 +2,6 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     struct MaterialLoadOptions { };
 }

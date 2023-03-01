@@ -3,8 +3,8 @@
 #include "../../Style/BoundStyleSheet.hpp"
 #include <Engine.Logging/Logger.hpp>
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 VScrollBox::VScrollBox(mref<sptr<BoundStyleSheet>> style_) :
     VBox(_STD move(style_)) {}

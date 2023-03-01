@@ -7,12 +7,12 @@
 #include "DependencyKey.hpp"
 #include "DependencyValidationResult.hpp"
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     class SubModule;
     struct SubModuleDependency;
 }
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     class Modules {
     public:
         using this_type = Modules;

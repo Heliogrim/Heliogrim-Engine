@@ -1,7 +1,7 @@
 #include "Locator.hpp"
 
-using namespace ember::engine::resource;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg;
 
 Locator::reference_type Locator::operator=(mref<value_type> other_) noexcept {
     if (this != _STD addressof(other_)) {

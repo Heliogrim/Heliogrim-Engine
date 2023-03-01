@@ -7,7 +7,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-namespace ember::fs {
+namespace hg::fs {
     /** Values that represent file types */
     enum FileType {
         eNone,
@@ -155,15 +155,15 @@ namespace ember::fs {
 
 namespace std {
     template <>
-    struct hash<ember::fs::File> {
-        [[nodiscard]] size_t operator()(const ember::fs::File& value_) const noexcept {
+    struct hash<hg::fs::File> {
+        [[nodiscard]] size_t operator()(const hg::fs::File& value_) const noexcept {
             return _STD hash<string> {}(value_.path().string());
         }
     };
 
     template <>
-    struct less<ember::fs::File> {
-        [[nodiscard]] bool operator()(const ember::fs::File& left_, const ember::fs::File& right_) const noexcept {
+    struct less<hg::fs::File> {
+        [[nodiscard]] bool operator()(const hg::fs::File& left_, const hg::fs::File& right_) const noexcept {
             return _STD less<_STD filesystem::path> {}(left_.path(), right_.path());
         }
     };

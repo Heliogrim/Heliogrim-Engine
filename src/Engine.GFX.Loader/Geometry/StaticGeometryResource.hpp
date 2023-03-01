@@ -3,6 +3,6 @@
 #include <Engine.GFX/Geometry/PolygonMesh.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     typedef resource::Resource<PolygonMesh> StaticGeometryResource;
 }

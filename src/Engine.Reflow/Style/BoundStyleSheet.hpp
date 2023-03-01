@@ -5,7 +5,7 @@
 #include "StyleChain.hpp"
 #include "StyleKeyStack.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class BoundStyleSheet :
         public StyleSheet,
         public SharedFromThis<BoundStyleSheet> {

@@ -8,36 +8,36 @@
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX.Loader/Font/FontResource.hpp>
 
-namespace ember {
+namespace hg {
     class Actor;
     class ActorComponent;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Device;
 }
 
-extern ember::smr<ember::engine::gfx::TextureResource> testTexture;
-extern ember::smr<ember::engine::gfx::FontResource> testFont;
+extern hg::smr<hg::engine::gfx::TextureResource> testTexture;
+extern hg::smr<hg::engine::gfx::FontResource> testFont;
 
-extern ember::wptr<ember::engine::reflow::Widget> testFrameDisplay;
-extern ember::wptr<ember::engine::reflow::Widget> testFrameTime;
+extern hg::wptr<hg::engine::reflow::Widget> testFrameDisplay;
+extern hg::wptr<hg::engine::reflow::Widget> testFrameTime;
 
-extern ember::ptr<void> editorSelectedTarget;
+extern hg::ptr<void> editorSelectedTarget;
 
-void storeEditorSelectedTarget(const ember::ptr<ember::Actor> target_);
+void storeEditorSelectedTarget(const hg::ptr<hg::Actor> target_);
 
-void storeEditorSelectedTarget(const ember::ptr<ember::ActorComponent> target_);
+void storeEditorSelectedTarget(const hg::ptr<hg::ActorComponent> target_);
 
-void storeHierarchyActor(ember::cref<ember::Vector<ember::ptr<ember::Actor>>> targets_);
+void storeHierarchyActor(hg::cref<hg::Vector<hg::ptr<hg::Actor>>> targets_);
 
-void testLoad(ember::cref<ember::sptr<ember::engine::gfx::Device>> device_);
+void testLoad(hg::cref<hg::sptr<hg::engine::gfx::Device>> device_);
 
 void destroyLoaded();
 
 void buildTestUI(
-    ember::cref<ember::sptr<ember::engine::gfx::Device>> device_,
-    const ember::non_owning_rptr<ember::engine::reflow::Window> window_
+    hg::cref<hg::sptr<hg::engine::gfx::Device>> device_,
+    const hg::non_owning_rptr<hg::engine::reflow::Window> window_
 );
 
-const ember::ptr<ember::engine::reflow::Font> getDefaultFont();
+const hg::ptr<hg::engine::reflow::Font> getDefaultFont();

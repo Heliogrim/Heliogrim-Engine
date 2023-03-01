@@ -2,7 +2,7 @@
 
 #include <Engine.Scheduler/CompScheduler.hpp>
 
-namespace ember::engine {
+namespace hg::engine {
     class TestCompScheduler final :
         public CompScheduler {
     public:

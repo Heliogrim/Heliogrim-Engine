@@ -6,7 +6,7 @@
 
 #include "Traits.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class TextureFeedback final :
         public resource::loader::Feedback<assets::Texture, TextureResource> {
     public:

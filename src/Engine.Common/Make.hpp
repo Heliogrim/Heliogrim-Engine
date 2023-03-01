@@ -6,7 +6,7 @@
 #include "Concurrent/SharedMemoryReference.hpp"
 #include "Meta/Concept.hpp"
 
-namespace ember {
+namespace hg {
     template <class Ty, class... Args>
     ptr<Ty> make_ptr(Args&&... args_) {
         return new Ty(_STD forward<Args>(args_)...);

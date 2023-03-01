@@ -5,14 +5,14 @@
 #include "StructureSlot.hpp"
 #include "SubstitutionSlot.hpp"
 
-namespace ember {
+namespace hg {
     template <class Type_>
     concept HasResizeFnc = requires(Type_ obj_, u64 count_) {
         { obj_.resize(count_) };
     };
 }
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <typename ValueType_, template <typename...> typename SliceType_>
     class SliceSlot final :
         public TypedStructureSlotBase<SliceType_<ValueType_>> {

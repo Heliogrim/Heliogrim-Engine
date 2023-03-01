@@ -2,8 +2,8 @@
 
 #include "ResourceBase.hpp"
 
-using namespace ember::engine::resource;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg;
 
 constexpr ManageGuard::ManageGuard() noexcept :
     _resource(nullptr),

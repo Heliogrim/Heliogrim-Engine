@@ -3,12 +3,12 @@
 #include <cassert>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember {
+namespace hg {
     class Actor;
     class ActorComponent;
 }
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     enum class SceneViewEntryType {
         eEmpty,
         eActor,
@@ -88,11 +88,11 @@ namespace ember::editor::ui {
 
 namespace std {
     template <>
-    struct hash<ember::editor::ui::SceneViewEntry> {
+    struct hash<hg::editor::ui::SceneViewEntry> {
         [[nodiscard]] size_t operator()(
-            ::ember::cref<ember::editor::ui::SceneViewEntry> entry_
+            ::hg::cref<hg::editor::ui::SceneViewEntry> entry_
         ) const noexcept {
-            return _STD hash<ember::u64> {}(reinterpret_cast<ember::u64>(entry_.target<void>()));
+            return _STD hash<hg::u64> {}(reinterpret_cast<hg::u64>(entry_.target<void>()));
         }
     };
 }

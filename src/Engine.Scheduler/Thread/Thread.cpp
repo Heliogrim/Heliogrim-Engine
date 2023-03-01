@@ -5,15 +5,15 @@
 #include <processthreadsapi.h>
 #include <stdexcept>
 
-using namespace ember::engine::scheduler::thread;
+using namespace hg::engine::scheduler::thread;
 
 FORCE_INLINE thread_id cast_ntid_tid(const std::thread::id& ntid_) {
-    if constexpr (sizeof(ntid_) == sizeof(ember::u64)) {
-        return *static_cast<const ember::u64*>(
+    if constexpr (sizeof(ntid_) == sizeof(hg::u64)) {
+        return *static_cast<const hg::u64*>(
             static_cast<const void*>(&ntid_)
         );
     } else {
-        return *static_cast<const ember::u32*>(
+        return *static_cast<const hg::u32*>(
             static_cast<const void*>(&ntid_)
         );
     }
@@ -122,11 +122,11 @@ thread_id self::getId() noexcept {
     return __threadId;
 }
 
-ember::u64 self::getIdx() noexcept {
+hg::u64 self::getIdx() noexcept {
     return __threadIdx;
 }
 
-ember::u32 ember::engine::scheduler::thread::getNativeThreadCount() {
+hg::u32 hg::engine::scheduler::thread::getNativeThreadCount() {
     return _STD thread::hardware_concurrency();
 }
 

@@ -4,9 +4,9 @@
 
 #include "DataLayout.hpp"
 
-using namespace ember::engine::serialization::layout;
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization::layout;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 LayoutDefineObject::LayoutDefineObject(const u64 offset_, cref<sptr<DataLayoutBase>> layout_) :
     LayoutDefine(offset_, layout_->size()) {

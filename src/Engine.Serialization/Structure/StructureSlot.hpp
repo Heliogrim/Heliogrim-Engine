@@ -9,7 +9,7 @@
 #include "StructureSlotState.hpp"
 #include "SlotOpResult.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class __declspec(novtable) StructureSlotBase :
         public _STD enable_shared_from_this<StructureSlotBase> {
     public:

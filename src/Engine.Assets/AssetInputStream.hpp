@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class AssetInputStream {
     public:
         using value_type = AssetInputStream;

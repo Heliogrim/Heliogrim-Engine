@@ -1,11 +1,11 @@
 #include "Registry.hpp"
 
-#include <Ember/Actor.hpp>
+#include <Heliogrim/Actor.hpp>
 
-#include "Ember/ActorInitializer.hpp"
+#include "Heliogrim/ActorInitializer.hpp"
 
-using namespace ember::engine::acs;
-using namespace ember;
+using namespace hg::engine::acs;
+using namespace hg;
 
 Registry::~Registry() = default;
 
@@ -34,10 +34,10 @@ ptr<Actor> Registry::createActor(const ptr<const ActorClass> actorClass_, cref<A
     // Warning: Error prone behaviour
     // Warning: Just a hotfix
     // We can expect the have the class pointer at the base address, due to the fact
-    //  that Actor is based on EmberObject
-    static_assert(sizeof(EmberObject) == sizeof(ptr<EmberClass>));
+    //  that Actor is based on HeliogrimObject
+    static_assert(sizeof(HeliogrimObject) == sizeof(ptr<HeliogrimClass>));
     const auto** classLocator = reinterpret_cast<ptr<ptr<const ActorClass>>>(
-        _STD addressof(*static_cast<ptr<EmberObject>>(actor))
+        _STD addressof(*static_cast<ptr<HeliogrimObject>>(actor))
     );
     *classLocator = actorClass_;
 
@@ -79,10 +79,10 @@ ptr<Actor> Registry::createActor(
     // Warning: Error prone behaviour
     // Warning: Just a hotfix
     // We can expect the have the class pointer at the base address, due to the fact
-    //  that Actor is based on EmberObject
-    static_assert(sizeof(EmberObject) == sizeof(ptr<EmberClass>));
+    //  that Actor is based on HeliogrimObject
+    static_assert(sizeof(HeliogrimObject) == sizeof(ptr<HeliogrimClass>));
     const auto** classLocator = reinterpret_cast<ptr<ptr<const ActorClass>>>(
-        _STD addressof(*static_cast<ptr<EmberObject>>(actor))
+        _STD addressof(*static_cast<ptr<HeliogrimObject>>(actor))
     );
     *classLocator = actorClass_;
 
@@ -115,12 +115,12 @@ ptr<Actor> Registry::createActor(cref<ActorInitializer> initializer_) noexcept {
     // Warning: Error prone behaviour
     // Warning: Just a hotfix
     // We can expect the have the class pointer at the base address, due to the fact
-    //  that Actor is based on EmberObject
-    static_assert(sizeof(EmberObject) == sizeof(ptr<EmberClass>));
+    //  that Actor is based on HeliogrimObject
+    static_assert(sizeof(HeliogrimObject) == sizeof(ptr<HeliogrimClass>));
     const auto** classLocator = reinterpret_cast<ptr<ptr<const ActorClass>>>(
-        _STD addressof(*static_cast<ptr<EmberObject>>(actor))
+        _STD addressof(*static_cast<ptr<HeliogrimObject>>(actor))
     );
-    *classLocator = EmberClass::of<Actor>();
+    *classLocator = HeliogrimClass::of<Actor>();
 
     /**/
 

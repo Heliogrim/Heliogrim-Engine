@@ -9,7 +9,7 @@
 #include "../Device/Device.hpp"
 #include "../Memory/VirtualMemoryPage.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class VirtualTexturePage final {
     public:
         friend class VirtualTexture;

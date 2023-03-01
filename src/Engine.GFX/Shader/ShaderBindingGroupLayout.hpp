@@ -2,7 +2,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::gfx::shader {
+namespace hg::engine::gfx::shader {
     struct ShaderBindingGroupLayout {
         u32 images;
         u32 uniforms;
@@ -16,15 +16,15 @@ namespace ember::engine::gfx::shader {
 
 namespace std {
     template <>
-    struct hash<ember::engine::gfx::shader::ShaderBindingGroupLayout> {
+    struct hash<hg::engine::gfx::shader::ShaderBindingGroupLayout> {
         [[nodiscard]] size_t operator()(
-            ember::cref<ember::engine::gfx::shader::ShaderBindingGroupLayout> obj_
+            hg::cref<hg::engine::gfx::shader::ShaderBindingGroupLayout> obj_
         ) const noexcept {
             size_t base { obj_.images };
             base += obj_.uniforms;
             base += obj_.storages;
 
-            using namespace ember;
+            using namespace hg;
             return base |
                 (static_cast<u64>(obj_.images) << 16ui64) |
                 (static_cast<u64>(obj_.uniforms) << 32ui64) |

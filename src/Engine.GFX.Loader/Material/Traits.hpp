@@ -11,8 +11,8 @@
 #include "MaterialLoadOptions.hpp"
 #include "MaterialResource.hpp"
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct resource::loader::RequestOptions<LoaderRequest<assets::GfxMaterial>> {
@@ -20,8 +20,8 @@ namespace ember::engine::resource::loader {
     };
 }
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct resource::loader::RequestOptions<CacheRequest<assets::GfxMaterial>> {
@@ -29,8 +29,8 @@ namespace ember::engine::resource::loader {
     };
 }
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct resource::loader::RequestOptions<FeedbackRequest<assets::GfxMaterial>> {
@@ -38,8 +38,8 @@ namespace ember::engine::resource::loader {
     };
 }
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct RequestOptions<SourceLoaderRequest<assets::GfxMaterial>> {
@@ -52,8 +52,8 @@ namespace ember::engine::resource::loader {
     };
 }
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct RequestOptions<TransformerRequest<assets::GfxMaterial>> {

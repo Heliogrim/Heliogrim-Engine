@@ -1,5 +1,5 @@
 #pragma once
-namespace ember::math {
+namespace hg::math {
     constexpr double pi_d = 3.1415926535897932384626433832795028841971;
     constexpr double pih_d = 1.5707963267948966192313216916397514420986;
     constexpr double ln2_d = 0.69314718055994530941723212145818;

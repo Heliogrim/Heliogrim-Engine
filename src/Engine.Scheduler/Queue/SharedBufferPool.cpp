@@ -4,8 +4,8 @@
 #include <cassert>
 #endif
 
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 SharedBufferPool::SharedBufferPool() :
     _pooled(nullptr),

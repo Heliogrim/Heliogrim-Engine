@@ -2,7 +2,7 @@
 
 #include <concepts>
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <typename>
     class StructureSlot;
     class StructureSlotBase;

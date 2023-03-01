@@ -57,7 +57,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Scheduler", "project
 		{3581447F-2D21-4A67-9C4F-60C33FCF1B6C} = {3581447F-2D21-4A67-9C4F-60C33FCF1B6C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ember", "projects\Ember\Ember.vcxproj", "{8D01B7E3-273A-4A0B-8099-AD227FBDAF9C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Heliogrim", "projects\Heliogrim\Heliogrim.vcxproj", "{8D01B7E3-273A-4A0B-8099-AD227FBDAF9C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{02A28EC5-5E8A-4CA4-AD1D-673DF3B995F5} = {02A28EC5-5E8A-4CA4-AD1D-673DF3B995F5}
 		{114192E3-04B1-4AE7-86F5-1D055F7526D4} = {114192E3-04B1-4AE7-86F5-1D055F7526D4}
@@ -95,13 +95,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.SFX.Test", "projects
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Assets.Test", "projects\Engine.Assets.Test\Engine.Assets.Test.vcxproj", "{B07A8602-853E-4B77-80A2-EB85BAAB486E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ember.Test", "projects\Ember.Test\Ember.Test.vcxproj", "{0781E8A3-DB02-4D14-AF56-89AE7FF40653}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Heliogrim.Test", "projects\Heliogrim.Test\Heliogrim.Test.vcxproj", "{0781E8A3-DB02-4D14-AF56-89AE7FF40653}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Event", "projects\Engine.Event\Engine.Event.vcxproj", "{4551B6E7-4A5E-4576-87A2-DC5FA7959A9C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Event.Test", "projects\Engine.Event.Test\Engine.Event.Test.vcxproj", "{CDDF6111-9884-4ABC-80C5-94A79C4CE343}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ember.Main", "projects\Ember.Main\Ember.Main.vcxproj", "{CDC04280-5F97-45D3-9C47-8B60219D8578}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Heliogrim.Main", "projects\Heliogrim.Main\Heliogrim.Main.vcxproj", "{CDC04280-5F97-45D3-9C47-8B60219D8578}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Reflect", "projects\Engine.Reflect\Engine.Reflect.vcxproj", "{9058623E-8475-4683-8131-0845FA5AA877}"
 EndProject
@@ -130,7 +130,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor.Main", "projects\Edi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor.UI", "projects\Editor.UI\Editor.UI.vcxproj", "{88B1A2BC-57F1-4969-918A-221F15DECB23}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ember.Default", "projects\Ember.Default\Ember.Default.vcxproj", "{3700B064-DA76-4D4E-B21B-A264D80E701A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Heliogrim.Default", "projects\Heliogrim.Default\Heliogrim.Default.vcxproj", "{3700B064-DA76-4D4E-B21B-A264D80E701A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Serialization", "projects\Engine.Serialization\Engine.Serialization.vcxproj", "{24B7F6AE-1EC1-4268-9B1A-584F44AAD1FE}"
 EndProject

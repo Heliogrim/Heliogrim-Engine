@@ -2,7 +2,7 @@
 #include "Resource.hpp"
 #include <Engine.Scheduler/Helper/Wait.hpp>
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     template <typename ManagedType_>
     class UniqueResource final :
         public Resource<ManagedType_> {

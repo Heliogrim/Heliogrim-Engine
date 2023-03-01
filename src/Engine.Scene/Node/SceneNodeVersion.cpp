@@ -1,7 +1,7 @@
 #include "SceneNodeVersion.hpp"
 
-using namespace ember::engine::scene;
-using namespace ember;
+using namespace hg::engine::scene;
+using namespace hg;
 
 SceneNodeVersion::SceneNodeVersion() noexcept :
     data(invalid_node_version::bit_sequence) {}

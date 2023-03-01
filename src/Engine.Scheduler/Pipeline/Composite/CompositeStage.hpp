@@ -5,7 +5,7 @@
 
 #include "CompositeDependency.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     struct CompositeStage {
         const non_owning_rptr<const class Stage> stage;
         CompactArray<non_owning_rptr<const class PipelineStage>> pipelineStages;

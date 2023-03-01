@@ -8,14 +8,14 @@
 #include "../Manage/ResourceConcept.hpp"
 #include "../Manage/UniqueResource.hpp"
 
-namespace ember::engine::resource::loader {
+namespace hg::engine::resource::loader {
     class LoaderBase;
 
     template <class Type_>
     concept IsLoader = _STD derived_from<Type_, LoaderBase>;
 
     class __declspec(novtable) LoaderBase :
-        public EmberObject {
+        public HeliogrimObject {
     public:
         template <IsRequestValueType, IsResponseValueType>
         friend class Loader;

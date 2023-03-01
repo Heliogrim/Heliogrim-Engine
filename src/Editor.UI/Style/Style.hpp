@@ -5,7 +5,7 @@
 #include <Engine.Common/Collection/StableUnorderedMap.hpp>
 #include <Engine.Reflow/Style/StyleSheet.hpp>
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class Style {
     public:
         using this_type = Style;

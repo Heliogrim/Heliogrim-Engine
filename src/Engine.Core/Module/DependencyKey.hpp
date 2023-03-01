@@ -2,6 +2,6 @@
 
 #include <Engine.Common/String.hpp>
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     using DependencyKey = string_view;
 }

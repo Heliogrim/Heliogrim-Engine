@@ -1,10 +1,10 @@
 #pragma once
-#include <Engine.Reflect/EmberReflect.hpp>
+#include <Engine.Reflect/HeliogrimReflect.hpp>
 
 #include "Archive.hpp"
 #include "../Layout/DataLayout.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class LayoutArchiveBase {
     public:
         using this_type = LayoutArchiveBase;

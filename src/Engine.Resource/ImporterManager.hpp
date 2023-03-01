@@ -6,7 +6,7 @@
 #include "FileTypeId.hpp"
 #include "Importer/Importer.hpp"
 
-namespace ember::engine::res {
+namespace hg::engine::res {
     class ImporterManager {
     public:
         using value_type = ImporterManager;

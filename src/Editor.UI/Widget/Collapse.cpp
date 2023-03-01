@@ -8,9 +8,9 @@
 #include "../Style/Style.hpp"
 #include "../Color/Dark.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember::editor::ui;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg::editor::ui;
+using namespace hg;
 
 [[nodiscard]] static sptr<BoundStyleSheet> makeHeaderBoxStyle() {
 

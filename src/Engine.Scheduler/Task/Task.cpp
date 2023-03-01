@@ -4,8 +4,8 @@
 
 #include "../Scheduler.hpp"
 
-using namespace ember::engine::scheduler::task;
-using namespace ember;
+using namespace hg::engine::scheduler::task;
+using namespace hg;
 
 TaskDelegate::TaskDelegate(
     const TaskType type_,

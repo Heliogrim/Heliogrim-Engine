@@ -1,5 +1,5 @@
 #pragma once
 
-namespace ember::editor::boot {
+namespace hg::editor::boot {
     void preInitSubModules();
 }

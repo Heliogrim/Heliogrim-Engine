@@ -2,8 +2,8 @@
 
 #include "../Archive/Archive.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 RootSlot::RootSlot(cref<StructureSlotState> state_) :
     RecordSlot(state_) {}

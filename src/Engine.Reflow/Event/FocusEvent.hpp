@@ -2,11 +2,11 @@
 
 #include <Engine.Event/Event.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Widget;
 }
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class FocusEvent :
         public StatelessEvent {
     public:

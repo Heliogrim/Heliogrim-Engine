@@ -2,8 +2,8 @@
 
 #include "../Fiber/Fiber.hpp"
 
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 void engine::scheduler::waitOnAtomic(ref<std::atomic_flag> atomic_, const bool prev_) {
     if (/* TODO: Check whether we are thread or fiber */false) {

@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Hash/Fnv-1a.hpp>
 
-namespace ember::engine::gfx::render {
+namespace hg::engine::gfx::render {
     enum class RenderDataScope : u8 {
         eExternal,
         eRenderPass

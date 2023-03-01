@@ -3,11 +3,11 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Widget;
 }
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class HierarchyGeneratorBase {
     public:
         template <typename SourceType_>

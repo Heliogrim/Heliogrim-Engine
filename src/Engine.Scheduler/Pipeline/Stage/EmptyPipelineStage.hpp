@@ -2,7 +2,7 @@
 
 #include "PipelineStage.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class EmptyPipelineStage final :
         public PipelineStage {
     public:

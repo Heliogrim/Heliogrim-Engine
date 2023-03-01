@@ -14,7 +14,7 @@
 #include "Engine.Common/Collection/Vector.hpp"
 #include "Engine.Reflow/Widget/Widget.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class EventDispatcher {
     public:
         using this_type = EventDispatcher;

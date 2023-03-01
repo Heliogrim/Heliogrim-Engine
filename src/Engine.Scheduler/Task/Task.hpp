@@ -9,11 +9,11 @@
 #include "TaskType.hpp"
 #include "TaskCtrl.hpp"
 
-namespace ember::engine::scheduler::fiber {
+namespace hg::engine::scheduler::fiber {
     struct Fiber;
 }
 
-namespace ember::engine::scheduler::task {
+namespace hg::engine::scheduler::task {
     /**
      * ! Important !
      *
@@ -250,7 +250,7 @@ namespace ember::engine::scheduler::task {
     class BatchTask :
         public TaskDelegate {
     public:
-        using function_type = _STD function<void(ember::u32)>;
+        using function_type = _STD function<void(hg::u32)>;
 
         /**
          * Destructor

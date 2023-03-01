@@ -2,7 +2,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include "../vkinc.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Application {
     public:
         using value_type = Application;

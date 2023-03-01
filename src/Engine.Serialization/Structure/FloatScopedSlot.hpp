@@ -8,7 +8,7 @@
 
 #include "FloatSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <_STD floating_point FloatType_>
     class FloatScopedSlot final :
         public TypeScopedSlot<FloatType_> {

@@ -4,8 +4,8 @@
 #include <Engine.GFX.Schedule/RenderScenePipeline.hpp>
 #include "../Pipeline/Stage/EmptyPipelineStage.hpp"
 
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 TickPipeline::TickPipeline() :
     StagePipeline(identifier_type::from("::Scheduler::TickPipeline")) {}

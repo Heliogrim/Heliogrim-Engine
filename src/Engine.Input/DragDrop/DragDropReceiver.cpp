@@ -1,7 +1,7 @@
 #include "DragDropReceiver.hpp"
 
-using namespace ember::engine::input;
-using namespace ember;
+using namespace hg::engine::input;
+using namespace hg;
 
 void DragDropReceiver::setOnDrag(mref<decltype(_onDrag)> onDrag_) {
     _onDrag = _STD move(onDrag_);

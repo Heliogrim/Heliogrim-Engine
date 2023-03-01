@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Math/Vector.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Viewport {
     public:
         /**

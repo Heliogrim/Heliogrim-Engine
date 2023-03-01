@@ -5,7 +5,7 @@
 #include <Engine.Common/Math/Bounding.hpp>
 #include <Engine.Common/Math/Transform.hpp>
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     template <typename Type_>
     concept HasBoundaryGetter = requires(cref<Type_> obj_) {
         { obj_.getBoundaries() } -> std::same_as<cref<math::Bounding>>;

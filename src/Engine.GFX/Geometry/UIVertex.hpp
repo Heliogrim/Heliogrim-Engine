@@ -4,7 +4,7 @@
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     /**
      * A ui-vertex with template attribute types
      *

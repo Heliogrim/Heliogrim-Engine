@@ -5,8 +5,8 @@
 #include "Profiler.hpp"
 #include "../Types.hpp"
 
-using namespace ember::profiling;
-using namespace ember;
+using namespace hg::profiling;
+using namespace hg;
 
 Stopwatch::Stopwatch() noexcept :
     _name(),

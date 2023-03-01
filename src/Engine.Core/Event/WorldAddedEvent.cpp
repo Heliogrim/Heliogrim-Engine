@@ -1,12 +1,12 @@
 #include "WorldAddedEvent.hpp"
 
-using namespace ember::engine::core;
-using namespace ember;
+using namespace hg::engine::core;
+using namespace hg;
 
-WorldAddedEvent::WorldAddedEvent(cref<sptr<::ember::engine::core::World>> world_) :
+WorldAddedEvent::WorldAddedEvent(cref<sptr<::hg::engine::core::World>> world_) :
     StatelessEvent(),
     _world(world_) {}
 
-cref<sptr<::ember::engine::core::World>> WorldAddedEvent::getWorld() const noexcept {
+cref<sptr<::hg::engine::core::World>> WorldAddedEvent::getWorld() const noexcept {
     return _world;
 }

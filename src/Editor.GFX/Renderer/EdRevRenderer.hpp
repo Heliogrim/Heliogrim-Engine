@@ -2,12 +2,12 @@
 
 #include <Engine.GFX.Glow.3D/Renderer/RevRenderer.hpp>
 
-namespace ember::editor::gfx {
+namespace hg::editor::gfx {
     class EdRevRenderer :
-        public ::ember::engine::gfx::glow::render::RevRenderer {
+        public ::hg::engine::gfx::glow::render::RevRenderer {
     public:
         using this_type = EdRevRenderer;
-        using underlying_type = ::ember::engine::gfx::glow::render::RevRenderer;
+        using underlying_type = ::hg::engine::gfx::glow::render::RevRenderer;
         using base_type = Renderer;
 
     public:

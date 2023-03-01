@@ -5,8 +5,8 @@
 #include "Log/ActionDispatcher.hpp"
 #include "Log/ActionLog.hpp"
 
-using namespace ember::editor;
-using namespace ember;
+using namespace hg::editor;
+using namespace hg;
 
 ptr<ActionManager> ActionManager::_instance = nullptr;
 

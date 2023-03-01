@@ -1,14 +1,14 @@
 #pragma once
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
 
-namespace ember::engine::reflow::schedule {
+namespace hg::engine::reflow::schedule {
     class ReflowPipeline final :
         public engine::scheduler::StagePipeline {
     public:
         using this_type = ReflowPipeline;
 
-        using StageIdentifier = ::ember::engine::scheduler::StageIdentifier;
-        using StageDependency = ::ember::engine::scheduler::StageDependency;
+        using StageIdentifier = ::hg::engine::scheduler::StageIdentifier;
+        using StageDependency = ::hg::engine::scheduler::StageDependency;
 
         /**/
 

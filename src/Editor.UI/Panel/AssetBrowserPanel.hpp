@@ -5,11 +5,11 @@
 #include <Engine.Reflow/Widget/Panel.hpp>
 #include <Engine.Reflow/Widget/HBox.hpp>
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class AssetBrowser;
 }
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class AssetBrowserPanel :
         public engine::reflow::Panel {
     protected:

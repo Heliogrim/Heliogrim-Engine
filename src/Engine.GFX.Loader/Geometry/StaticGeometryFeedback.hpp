@@ -4,7 +4,7 @@
 
 #include "Traits.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class StaticGeometryFeedback final :
         public resource::loader::Feedback<assets::StaticGeometry, StaticGeometryResource> {
     public:

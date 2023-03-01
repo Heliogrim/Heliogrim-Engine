@@ -3,7 +3,7 @@
 #include "../__macro.hpp"
 #include <complex>
 
-namespace ember::math {
+namespace hg::math {
     typedef _STD complex<double> complex_t;
     typedef _STD pair<complex_t, complex_t> complex_pair_t;
 

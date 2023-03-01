@@ -4,8 +4,8 @@
 
 #include "Transformer/FreeType.hpp"
 
-using namespace ember::engine::gfx::loader;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg;
 
 FontTransformer::FontTransformer(const non_owning_rptr<pool::GlobalResourcePool> pool_) :
     _pool(pool_) {

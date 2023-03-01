@@ -3,8 +3,8 @@
 #include "LocalResourceCache.hpp"
 #include "GlobalResourceCache.hpp"
 
-using namespace ember::engine::gfx::cache;
-using namespace ember;
+using namespace hg::engine::gfx::cache;
+using namespace hg;
 
 LocalCacheCtrl::LocalCacheCtrl(mref<uptr<LocalResourceCache>> cache_) :
     _cache(_STD move(cache_)) {}

@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <fstream>
 
-using namespace ember::profiling;
-using namespace ember;
+using namespace hg::profiling;
+using namespace hg;
 
 ptr<Profiler> Profiler::_instance = nullptr;
 

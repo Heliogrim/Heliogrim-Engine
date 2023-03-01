@@ -2,7 +2,7 @@
 
 #include "../Types.hpp"
 
-namespace ember::math {
+namespace hg::math {
     /**
      * An extent 2d.
      *

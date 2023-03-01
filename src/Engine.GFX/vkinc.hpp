@@ -21,7 +21,7 @@
 #define VULKAN_HPP_NO_SPACESHIP_OPERATOR
 #include <vulkan/vulkan.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     // TODO: Refactor / Move to other location
     inline uint32_t get_memory_type(
         const vk::PhysicalDevice& device_,

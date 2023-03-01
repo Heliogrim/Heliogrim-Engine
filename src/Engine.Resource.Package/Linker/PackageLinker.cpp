@@ -5,8 +5,8 @@
 
 #include "LinkedArchiveIterator.hpp"
 
-using namespace ember::engine::resource;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg;
 
 PackageLinker::PackageLinker(const non_owning_rptr<Package> package_) :
     _package(package_) {}

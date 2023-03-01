@@ -4,7 +4,7 @@
 #include "CommandBuffer.hpp"
 #include "../vkinc.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class CommandBatch {
     public:
         using this_type = CommandBatch;

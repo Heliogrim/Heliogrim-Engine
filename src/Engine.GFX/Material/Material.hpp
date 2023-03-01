@@ -4,7 +4,7 @@
 #include "../Color/Color.hpp"
 #include "../Texture/Texture.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Material {
     public:
         using value_type = Material;

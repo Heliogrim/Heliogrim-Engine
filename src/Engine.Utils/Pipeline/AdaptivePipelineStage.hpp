@@ -3,7 +3,7 @@
 
 #include "AtomicPipelineStage.hpp"
 
-namespace ember::engine::utils::pipeline::adaptive {
+namespace hg::engine::utils::pipeline::adaptive {
     template <typename ResultType_, typename PushType_, typename PushCtxType_, typename PullCtxType_>
     class AdaptivePipelineStage :
         protected AtomicPipelineStage {

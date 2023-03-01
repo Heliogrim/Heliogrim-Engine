@@ -7,9 +7,9 @@
 #include <Engine.Serialization/Structure/StructScopedSlot.hpp>
 #include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
 
-using namespace ember::engine::serialization;
-using namespace ember::engine::assets;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg::engine::assets;
+using namespace hg;
 
 template <>
 void access::Structure<math::uivec3>::serialize(const math::uivec3* const self_, mref<RecordScopedSlot> slot_) {

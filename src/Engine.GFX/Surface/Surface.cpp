@@ -14,11 +14,11 @@
 #include <Engine.Platform/Windows/Win32Window.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Platform/Platform.hpp>
-#include <Ember/Future.hpp>
+#include <Heliogrim/Future.hpp>
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 Surface::Surface() noexcept :
     _window(nullptr),

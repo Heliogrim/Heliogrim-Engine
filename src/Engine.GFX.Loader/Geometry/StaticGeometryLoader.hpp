@@ -10,8 +10,8 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx::loader {
-    using StaticGeometrySourceLoader = ::ember::engine::resource::loader::SourceLoader;
+namespace hg::engine::gfx::loader {
+    using StaticGeometrySourceLoader = ::hg::engine::resource::loader::SourceLoader;
 
     using StaticGeometryLoaderType = resource::loader::LoaderChain<
         assets::StaticGeometry,

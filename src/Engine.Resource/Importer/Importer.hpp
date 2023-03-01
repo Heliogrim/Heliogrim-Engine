@@ -6,7 +6,7 @@
 #include "../File.hpp"
 #include "../FileTypeId.hpp"
 
-namespace ember::engine::res {
+namespace hg::engine::res {
     class __declspec(novtable) ImporterBase {
     public:
         template <class ImportType_, class DescriptorType_>
@@ -64,7 +64,7 @@ namespace ember::engine::res {
         using import_type = ImportType_;
 
         template <typename Type_, typename = _STD enable_if_t<!_STD is_void_v<Type_>>>
-        using wrapper_type = ember::concurrent::future<Type_>;
+        using wrapper_type = hg::concurrent::future<Type_>;
         using import_result_type = wrapper_type<import_type>;
 
     protected:

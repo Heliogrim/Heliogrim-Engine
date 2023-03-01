@@ -6,7 +6,7 @@
 #include "../Types/Asset.hpp"
 #include "../Types/AssetConcept.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class AssetDatabaseEntry {
     public:
         using value_type = AssetDatabaseEntry;
@@ -150,36 +150,36 @@ namespace ember::engine::assets {
 
 namespace std {
     template <>
-    struct hash<ember::engine::assets::AssetDatabaseEntry> :
-        _STD hash<ember::asset_guid> {
+    struct hash<hg::engine::assets::AssetDatabaseEntry> :
+        _STD hash<hg::asset_guid> {
         [[nodiscard]] _STD size_t operator()(
-            ember::cref<ember::engine::assets::AssetDatabaseEntry> value_
+            hg::cref<hg::engine::assets::AssetDatabaseEntry> value_
         ) const noexcept {
-            const auto& hasher = static_cast<const _STD hash<ember::asset_guid>&>(*this);
+            const auto& hasher = static_cast<const _STD hash<hg::asset_guid>&>(*this);
             return hasher(value_._guid);
         }
     };
 
     template <>
-    struct equal_to<ember::engine::assets::AssetDatabaseEntry> :
-        _STD equal_to<ember::asset_guid> {
+    struct equal_to<hg::engine::assets::AssetDatabaseEntry> :
+        _STD equal_to<hg::asset_guid> {
         [[nodiscard]] bool operator()(
-            ember::cref<ember::engine::assets::AssetDatabaseEntry> left_,
-            ember::cref<ember::engine::assets::AssetDatabaseEntry> right_
+            hg::cref<hg::engine::assets::AssetDatabaseEntry> left_,
+            hg::cref<hg::engine::assets::AssetDatabaseEntry> right_
         ) const noexcept {
-            const auto& equaler = static_cast<const _STD equal_to<ember::asset_guid>&>(*this);
+            const auto& equaler = static_cast<const _STD equal_to<hg::asset_guid>&>(*this);
             return equaler(left_._guid, right_._guid);
         }
     };
 
     template <>
-    struct less<ember::engine::assets::AssetDatabaseEntry> :
-        _STD less<ember::asset_guid> {
+    struct less<hg::engine::assets::AssetDatabaseEntry> :
+        _STD less<hg::asset_guid> {
         [[nodiscard]] bool operator()(
-            ember::cref<ember::engine::assets::AssetDatabaseEntry> left_,
-            ember::cref<ember::engine::assets::AssetDatabaseEntry> right_
+            hg::cref<hg::engine::assets::AssetDatabaseEntry> left_,
+            hg::cref<hg::engine::assets::AssetDatabaseEntry> right_
         ) const noexcept {
-            const auto& lesser = static_cast<const _STD less<ember::asset_guid>&>(*this);
+            const auto& lesser = static_cast<const _STD less<hg::asset_guid>&>(*this);
             return lesser(left_._guid, right_._guid);
         }
     };

@@ -11,7 +11,7 @@
 #include "../Types/Asset.hpp"
 #include "../Types/AssetConcept.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     /**
      * An asset database.
      *

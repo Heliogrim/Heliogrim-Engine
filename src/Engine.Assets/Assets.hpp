@@ -3,19 +3,19 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Core/Module/CoreModule.hpp>
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class AssetDatabase;
     class AssetFactory;
 }
 
-namespace ember::engine {
+namespace hg::engine {
     class Assets final :
         public core::CoreModule {
     public:
         using this_type = Assets;
 
-        using AssetDatabase = ::ember::engine::assets::AssetDatabase;
-        using AssetFactory = ::ember::engine::assets::AssetFactory;
+        using AssetDatabase = ::hg::engine::assets::AssetDatabase;
+        using AssetFactory = ::hg::engine::assets::AssetFactory;
 
     public:
         Assets(const non_owning_rptr<Engine> engine_);

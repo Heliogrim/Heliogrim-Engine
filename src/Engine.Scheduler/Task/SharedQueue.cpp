@@ -1,7 +1,7 @@
 #include "SharedQueue.hpp"
 
-using namespace ember::engine::scheduler::task;
-using namespace ember;
+using namespace hg::engine::scheduler::task;
+using namespace hg;
 
 constexpr u8 retry_threshold = 16ui8;
 

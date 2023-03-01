@@ -12,9 +12,9 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 
-using namespace ember::engine::gfx::loader;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 static smr<StaticGeometryResource> loadWithAssimp(
     const non_owning_rptr<const engine::assets::StaticGeometry> request_,
@@ -245,7 +245,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
     /**/
 
-    using derived_type = ::ember::engine::resource::UniqueResource<StaticGeometryResource::value_type>;
+    using derived_type = ::hg::engine::resource::UniqueResource<StaticGeometryResource::value_type>;
     auto dst = make_smr<StaticGeometryResource, derived_type>(
         new derived_type(_STD move(indexBuffer), _STD move(vertexBuffer))
     );

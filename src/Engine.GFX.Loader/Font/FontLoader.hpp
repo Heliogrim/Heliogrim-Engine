@@ -10,8 +10,8 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx::loader {
-    using FontSourceLoader = ::ember::engine::resource::loader::SourceLoader;
+namespace hg::engine::gfx::loader {
+    using FontSourceLoader = ::hg::engine::resource::loader::SourceLoader;
 
     using FontLoaderType = resource::loader::LoaderChain<
         assets::Font,

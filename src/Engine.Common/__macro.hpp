@@ -167,7 +167,7 @@
 
 // Profiling
 #ifdef _PROFILING
-#define SCOPED_STOPWATCH_V(var_) ember::profiling::ScopedStopwatch var_ {__FUNCSIG__};
+#define SCOPED_STOPWATCH_V(var_) hg::profiling::ScopedStopwatch var_ {__FUNCSIG__};
 #define SCOPED_STOPWATCH SCOPED_STOPWATCH_V(DOUBLE(__stopwatch__, __LINE__))
 #else
 #define SCOPED_STOPWATCH_V(var_)
@@ -181,27 +181,27 @@
 #define _EDITOR
 
 #if defined (_DEBUG) || defined(_PROFILING)
-#define IM_CORE_LOG(msg_) ::ember::Logger::info(msg_)
-#define IM_CORE_INFO(msg_) ::ember::Logger::info(msg_)
-#define IM_CORE_WARN(msg_) ::ember::Logger::warn(msg_)
-#define IM_CORE_ERROR(msg_) ::ember::Logger::error(msg_)
-#define IM_DEBUG_LOG(msg_) ::ember::Logger::debug(msg_)
+#define IM_CORE_LOG(msg_) ::hg::Logger::info(msg_)
+#define IM_CORE_INFO(msg_) ::hg::Logger::info(msg_)
+#define IM_CORE_WARN(msg_) ::hg::Logger::warn(msg_)
+#define IM_CORE_ERROR(msg_) ::hg::Logger::error(msg_)
+#define IM_DEBUG_LOG(msg_) ::hg::Logger::debug(msg_)
 
-#define IM_CORE_LOGF(format_, ...) ::ember::Logger::info(format_, ##__VA_ARGS__)
-#define IM_CORE_INFOF(format_, ...) ::ember::Logger::info(format_, ##__VA_ARGS__)
-#define IM_CORE_WARNF(format_, ...) ::ember::Logger::warn(format_, ##__VA_ARGS__)
-#define IM_CORE_ERRORF(format_, ...) ::ember::Logger::error(format_, ##__VA_ARGS__)
-#define IM_DEBUG_LOGF(format_, ...) ::ember::Logger::debug(format_, ##__VA_ARGS__)
+#define IM_CORE_LOGF(format_, ...) ::hg::Logger::info(format_, ##__VA_ARGS__)
+#define IM_CORE_INFOF(format_, ...) ::hg::Logger::info(format_, ##__VA_ARGS__)
+#define IM_CORE_WARNF(format_, ...) ::hg::Logger::warn(format_, ##__VA_ARGS__)
+#define IM_CORE_ERRORF(format_, ...) ::hg::Logger::error(format_, ##__VA_ARGS__)
+#define IM_DEBUG_LOGF(format_, ...) ::hg::Logger::debug(format_, ##__VA_ARGS__)
 #else
-#define IM_CORE_LOG(msg_) ::ember::Logger::info(msg_)
-#define IM_CORE_INFO(msg_) ::ember::Logger::info(msg_)
-#define IM_CORE_WARN(msg_) ::ember::Logger::warn(msg_)
-#define IM_CORE_ERROR(msg_) ::ember::Logger::error(msg_)
+#define IM_CORE_LOG(msg_) ::hg::Logger::info(msg_)
+#define IM_CORE_INFO(msg_) ::hg::Logger::info(msg_)
+#define IM_CORE_WARN(msg_) ::hg::Logger::warn(msg_)
+#define IM_CORE_ERROR(msg_) ::hg::Logger::error(msg_)
 #define IM_DEBUG_LOG(msg_)
 
-#define IM_CORE_LOGF(format_, ...) ::ember::Logger::info(format_, ##__VA_ARGS__)
-#define IM_CORE_INFOF(format_, ...) ::ember::Logger::info(format_, ##__VA_ARGS__)
-#define IM_CORE_WARNF(format_, ...) ::ember::Logger::warn(format_, ##__VA_ARGS__)
-#define IM_CORE_ERRORF(format_, ...) ::ember::Logger::error(format_, ##__VA_ARGS__)
+#define IM_CORE_LOGF(format_, ...) ::hg::Logger::info(format_, ##__VA_ARGS__)
+#define IM_CORE_INFOF(format_, ...) ::hg::Logger::info(format_, ##__VA_ARGS__)
+#define IM_CORE_WARNF(format_, ...) ::hg::Logger::warn(format_, ##__VA_ARGS__)
+#define IM_CORE_ERRORF(format_, ...) ::hg::Logger::error(format_, ##__VA_ARGS__)
 #define IM_DEBUG_LOGF(format_, ...)
 #endif

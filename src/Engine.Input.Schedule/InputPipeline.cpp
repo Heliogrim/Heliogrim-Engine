@@ -5,9 +5,9 @@
 
 #include "InputTickStage.hpp"
 
-using namespace ember::engine::input::schedule;
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::input::schedule;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 InputPipeline::InputPipeline() :
     StagePipeline(identifier_type::from("::Input::InputPipeline")) {}

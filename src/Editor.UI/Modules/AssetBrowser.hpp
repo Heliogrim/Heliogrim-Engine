@@ -5,14 +5,14 @@
 #include <Engine.Common/Url.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class AssetBrowserPanel;
 }
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class AssetBrowser final {
     public:
-        friend class ::ember::editor::ui::AssetBrowserPanel;
+        friend class ::hg::editor::ui::AssetBrowserPanel;
 
     public:
         using this_type = AssetBrowser;

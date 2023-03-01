@@ -1,9 +1,9 @@
 #include "ActionDispatcher.hpp"
 
-#include <Ember/Inbuilt.hpp>
+#include <Heliogrim/Inbuilt.hpp>
 
-using namespace ember::editor;
-using namespace ember;
+using namespace hg::editor;
+using namespace hg;
 
 ActionDispatcher::ActionDispatcher() = default;
 

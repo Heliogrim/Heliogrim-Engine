@@ -10,7 +10,7 @@
 
 #include "LayoutOptimizer.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class LayoutManager {
     public:
         using this_type = LayoutManager;
@@ -49,7 +49,7 @@ namespace ember::engine::serialization {
         sptr<DataLayoutBase> _nullLayout;
 
         RobinMap<type_id, sptr<DataLayoutBase>> _typeMapping;
-        RobinMap<ptr<const EmberClass>, sptr<DataLayoutBase>> _classMapping;
+        RobinMap<ptr<const HeliogrimClass>, sptr<DataLayoutBase>> _classMapping;
         RobinMap<AssocKey<string>, sptr<DataLayoutBase>> _symbolMapping;
 
     public:
@@ -57,7 +57,7 @@ namespace ember::engine::serialization {
 
         bool storeLayout(string_view symbol_, cref<sptr<DataLayoutBase>> layout_);
 
-        bool storeLayout(const ptr<const EmberClass> class_, cref<sptr<DataLayoutBase>> layout_);
+        bool storeLayout(const ptr<const HeliogrimClass> class_, cref<sptr<DataLayoutBase>> layout_);
 
         bool storeLayout(cref<type_id> typeId_, cref<sptr<DataLayoutBase>> layout_);
 
@@ -65,7 +65,7 @@ namespace ember::engine::serialization {
 
         [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(string_view symbol_) const noexcept;
 
-        [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(const ptr<const EmberClass> class_) const noexcept;
+        [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(const ptr<const HeliogrimClass> class_) const noexcept;
 
         [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(cref<type_id> typeId_) const noexcept;
     };

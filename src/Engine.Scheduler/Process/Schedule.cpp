@@ -6,8 +6,8 @@
 
 #include "WorkSet/FifoWorkSet.hpp"
 
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 Schedule::Schedule() :
     _workSets() {}

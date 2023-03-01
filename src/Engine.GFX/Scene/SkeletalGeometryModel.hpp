@@ -4,7 +4,7 @@
 
 #include "SceneNodeModel.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class SkeletalGeometryModel :
         public SceneNodeModel {
     public:

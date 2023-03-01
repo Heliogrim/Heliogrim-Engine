@@ -2,7 +2,7 @@
 #include <Engine.Common/Types.hpp>
 #include "TextureFormat.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     struct InputAttribute {
         /**
          * Shader Location Binding

@@ -1,10 +1,10 @@
 #include "WoodenPier01PolesDiffuse.hpp"
 #include "../Images/WoodenPier01PolesDiffuse.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::WoodenPier01PolesDiffuse::WoodenPier01PolesDiffuse() :
     TextureAsset(

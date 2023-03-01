@@ -3,9 +3,9 @@
 #include "CacheResult.hpp"
 #include "ModelBatch.hpp"
 
-using namespace ember::engine::gfx::cache;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::cache;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 TransientCache::TransientCache() :
     _mapping() {}
@@ -28,7 +28,7 @@ ref<TransientCache::this_type> TransientCache::operator=(mref<this_type> other_)
 
 void TransientCache::tidy() {
     for (auto& entry : _mapping) {
-        // TODO: EmberObject::destroy(_STD move(entry.second));
+        // TODO: HeliogrimObject::destroy(_STD move(entry.second));
         // Warning: May be unsafe and possible memory leak
         delete entry.second;
     }

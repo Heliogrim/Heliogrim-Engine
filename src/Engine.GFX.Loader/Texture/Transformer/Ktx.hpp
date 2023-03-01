@@ -4,11 +4,11 @@
 
 #include "../TextureTransformer.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Device;
 }
 
-namespace ember::engine::gfx::loader::transformer {
+namespace hg::engine::gfx::loader::transformer {
     void convertKtx(
         const non_owning_rptr<const assets::Texture> asset_,
         cref<smr<resource::Source>> src_,

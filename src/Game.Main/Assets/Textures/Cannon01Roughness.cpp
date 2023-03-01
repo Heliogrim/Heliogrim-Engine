@@ -1,12 +1,12 @@
 #include "Cannon01Roughness.hpp"
 #include "../Images/Cannon01Roughness.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
 #include "Game.Main/Assets/Images/Cannon01Roughness.hpp"
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::Cannon01Roughness::Cannon01Roughness() :
     TextureAsset(

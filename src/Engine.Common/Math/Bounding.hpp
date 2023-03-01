@@ -3,7 +3,7 @@
 #include "Vector.hpp"
 #include "../Wrapper.hpp"
 
-namespace ember::math {
+namespace hg::math {
     class Bounding {
     public:
         using value_type = Bounding;

@@ -12,9 +12,9 @@
 #include "../Style/Style.hpp"
 #include "../Color/Dark.hpp"
 
-using namespace ember::editor::ui;
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 ObjectEditorPanel::ObjectEditorPanel() :
     Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))),

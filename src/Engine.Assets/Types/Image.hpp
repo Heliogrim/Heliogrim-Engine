@@ -6,7 +6,7 @@
 
 #include "Asset.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class Image final :
         public Asset {
     public:

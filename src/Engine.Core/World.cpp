@@ -2,8 +2,8 @@
 
 #include <Engine.Scene/Scene.hpp>
 
-using namespace ember::engine::core;
-using namespace ember;
+using namespace hg::engine::core;
+using namespace hg;
 
 World::World(mref<uptr<Scene>> scene_) :
     _scene(_STD move(scene_)) {}

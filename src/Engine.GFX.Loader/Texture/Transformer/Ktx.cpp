@@ -13,10 +13,10 @@
 
 #include "Engine.Common/Url.hpp"
 
-using namespace ember::engine::gfx::loader::transformer;
-using namespace ember::engine::gfx::loader;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::loader::transformer;
+using namespace hg::engine::gfx::loader;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 /**/
 #pragma region KTX Format Specification

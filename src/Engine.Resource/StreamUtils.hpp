@@ -9,7 +9,7 @@
 
 #include "tmp.hpp"
 
-namespace ember::engine::res::types {
+namespace hg::engine::res::types {
     class StreamUtils {
     public:
         /**
@@ -140,7 +140,7 @@ namespace ember::engine::res::types {
          * @param [in,out] dst_ Destination for the.
          */
         template <>
-        static void write(const ember::math::vec3& src_, std::ostream& dst_) {
+        static void write(const hg::math::vec3& src_, std::ostream& dst_) {
             write<float>(src_.x, dst_);
             write<float>(src_.y, dst_);
             write<float>(src_.z, dst_);
@@ -154,8 +154,8 @@ namespace ember::engine::res::types {
          * @return A vec3.
          */
         template <>
-        static ember::math::vec3 read(std::istream& src_) {
-            ember::math::vec3 dst {};
+        static hg::math::vec3 read(std::istream& src_) {
+            hg::math::vec3 dst {};
 
             dst.x = read<float>(src_);
             dst.y = read<float>(src_);

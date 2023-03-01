@@ -4,7 +4,7 @@
 
 #include "Traits.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class FontFeedback final : public resource::loader::Feedback<assets::Font, FontResource> {
     public:
         using this_type = FontFeedback;

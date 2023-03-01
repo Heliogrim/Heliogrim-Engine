@@ -1,7 +1,7 @@
 #include "Rock01.hpp"
 
-using namespace ember::game::assets::meshes;
-using namespace ember;
+using namespace hg::game::assets::meshes;
+using namespace hg;
 
 Rock01::Rock01() :
     StaticGeometryAsset(

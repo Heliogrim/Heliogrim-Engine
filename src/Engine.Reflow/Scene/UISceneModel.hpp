@@ -2,7 +2,7 @@
 #include <Engine.GFX/Scene/SceneNodeModel.hpp>
 #include <Engine.GFX/Renderer/__fwd.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class UISceneModel final :
         public gfx::SceneNodeModel {
     public:

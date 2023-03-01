@@ -10,7 +10,7 @@
 #include <Engine.Assets/Types/Texture/Texture.hpp>
 #include <Engine.Assets/Database/AssetDatabase.hpp>
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class AssetBrowserHelper final {
     public:
         using this_type = AssetBrowserHelper;

@@ -6,9 +6,9 @@
 
 #include <Engine.Serialization.Layouts/LayoutManager.hpp>
 
-using namespace ember::engine::resource;
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg::engine;
+using namespace hg;
 
 ResourceManager::ResourceManager() noexcept :
     _importer(nullptr),

@@ -6,7 +6,7 @@
 #include <Engine.Common/Collection/Stack.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class StyleKeyStack {
     public:
         using this_type = StyleKeyStack;

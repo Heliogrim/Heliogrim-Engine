@@ -13,7 +13,7 @@
 #include "WindowType.hpp"
 #include "PopupLayer.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Window :
         public Widget {
     public:

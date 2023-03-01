@@ -8,7 +8,7 @@
 #include <mutex>
 #endif
 
-namespace ember::debug {
+namespace hg::debug {
     struct MemoryStats {
         intptr_t allocated = 0;
         uint32_t flags = 0;

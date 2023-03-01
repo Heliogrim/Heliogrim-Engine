@@ -1,7 +1,7 @@
 #pragma once
 #include "Source.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     class NetworkSource :
         public Source {
     public:
@@ -95,7 +95,7 @@ namespace ember::engine::resource {
             ref<streamsize> actualSize_
         ) override;
 
-        [[nodiscard]] ember::concurrent::future<async_result_value> get(streamoff offset_, streamsize size_) override;
+        [[nodiscard]] hg::concurrent::future<async_result_value> get(streamoff offset_, streamsize size_) override;
 
         [[nodiscard]] bool write(
             streamoff offset_,
@@ -104,7 +104,7 @@ namespace ember::engine::resource {
             ref<streamsize> actualSize_
         ) override;
 
-        [[nodiscard]] ember::concurrent::future<async_write_result> write(
+        [[nodiscard]] hg::concurrent::future<async_write_result> write(
             streamoff offset_,
             streamsize size_,
             const ptr<void> src_

@@ -13,11 +13,11 @@
 #include "../ReflowWrap.hpp"
 #include "../TextAlign.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Font;
 }
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     struct StyleSheet {
         StyleSheetEntry<ReflowUnit> minWidth { { ReflowUnitType::eAuto, 0.F } };
         StyleSheetEntry<ReflowUnit> width { { ReflowUnitType::eAuto, 0.F } };

@@ -5,8 +5,8 @@
 
 #include "../Widget/Widget.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 StyleChain::StyleChain() :
     _list() {}

@@ -1,8 +1,8 @@
 #include "PrototypeBinding.hpp"
 
-using namespace ember::engine::gfx::shader;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::shader;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 PrototypeBinding::PrototypeBinding(
     const BindingType& type_,

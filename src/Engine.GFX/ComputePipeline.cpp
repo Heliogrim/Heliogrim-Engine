@@ -1,7 +1,7 @@
 #include "ComputePipeline.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 cref<ShaderSlot> ComputePipeline::shaderSlot() const noexcept {
     return _shaderSlot;

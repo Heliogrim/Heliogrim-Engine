@@ -4,7 +4,7 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     struct PackageIndexEntry {
         u64 offset;
         u64 size;

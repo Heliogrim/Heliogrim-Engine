@@ -1,7 +1,7 @@
 #include "Panel.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 Panel::Panel(mref<sptr<BoundStyleSheet>> style_) :
     VBox(_STD move(style_)) {}

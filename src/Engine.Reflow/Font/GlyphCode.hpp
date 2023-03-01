@@ -2,6 +2,6 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     typedef u32 GlyphCode;
 }

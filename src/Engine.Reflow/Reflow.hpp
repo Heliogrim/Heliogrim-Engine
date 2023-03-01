@@ -2,7 +2,7 @@
 
 #include <Engine.Core/Module/SubModule.hpp>
 
-namespace ember::engine {
+namespace hg::engine {
     class Reflow :
         public core::SubModule {
     public:

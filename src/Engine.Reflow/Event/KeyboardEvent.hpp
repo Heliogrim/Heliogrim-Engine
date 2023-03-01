@@ -2,6 +2,6 @@
 
 #include <Engine.Input/KeyboardEvent.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     using KeyboardEvent = input::event::KeyboardEvent;
 }

@@ -3,17 +3,17 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/StableUnorderedMap.hpp>
 
-namespace ember::engine::platform {
+namespace hg::engine::platform {
     class NativeWindow;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Application;
     class Surface;
     class Swapchain;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class SurfaceManager {
     public:
         using this_type = SurfaceManager;

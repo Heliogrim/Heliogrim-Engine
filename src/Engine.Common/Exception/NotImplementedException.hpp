@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-namespace ember {
+namespace hg {
     class NotImplementedException :
         public std::logic_error {
     public:

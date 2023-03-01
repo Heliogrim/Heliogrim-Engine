@@ -1,7 +1,7 @@
 #include "AudioFileTypes.hpp"
 
-using namespace ember::engine::sfx;
-using namespace ember;
+using namespace hg::engine::sfx;
+using namespace hg;
 
 const engine::res::FileTypeId AudioFileType::Aac { "aac"_typeId, ".aac" };
 const engine::res::FileTypeId AudioFileType::Flac { "flac"_typeId, ".flac" };

@@ -2,8 +2,8 @@
 
 #include <format>
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 MemoryReadonlyArchive::MemoryReadonlyArchive(ref<_STD span<u8, _STD dynamic_extent>> bytes_) :
     MemoryBaseArchive(),

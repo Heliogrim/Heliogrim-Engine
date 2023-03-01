@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Reflow/Widget/Button.hpp>
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class AssetImportTypeItem :
         public engine::reflow::Button {
     public:

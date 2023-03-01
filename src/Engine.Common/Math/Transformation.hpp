@@ -4,7 +4,7 @@
 #include "Quaternion.hpp"
 #include "Matrix.hpp"
 
-namespace ember::math {
+namespace hg::math {
     class Transformation {
     public:
         using type = Transformation;

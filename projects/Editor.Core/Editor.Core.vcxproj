@@ -16,11 +16,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.Core\EditorEngine.hpp" />
-    <ClInclude Include="..\..\src\Editor.Core\EmberEditor.hpp" />
+    <ClInclude Include="..\..\src\Editor.Core\HeliogrimEditor.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.Core\EditorEngine.cpp" />
-    <ClCompile Include="..\..\src\Editor.Core\EmberEditor.cpp" />
+    <ClCompile Include="..\..\src\Editor.Core\HeliogrimEditor.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

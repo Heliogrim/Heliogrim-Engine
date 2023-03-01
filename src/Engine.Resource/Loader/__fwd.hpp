@@ -5,7 +5,7 @@
 #include "../Manage/__fwd.hpp"
 #include "../Manage/ResourceConcept.hpp"
 
-namespace ember::engine::resource::loader {
+namespace hg::engine::resource::loader {
     template <typename Type_>
     concept IsRequestValueType = _STD is_void_v<Type_> || assets::IsAsset<Type_> || assets::IsStreamableAsset<Type_>;
 

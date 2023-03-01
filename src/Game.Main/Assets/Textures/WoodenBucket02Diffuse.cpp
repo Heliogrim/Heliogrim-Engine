@@ -1,12 +1,12 @@
 #include "WoodenBucket02Diffuse.hpp"
 #include "../Images/WoodenBucket02Diffuse.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
 #include "Game.Main/Assets/Images/WoodenBucket02Diffuse.hpp"
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::WoodenBucket02Diffuse::WoodenBucket02Diffuse() :
     TextureAsset(

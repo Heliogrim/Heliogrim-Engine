@@ -1,7 +1,7 @@
 #include "TextureSampler.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 TextureSampler::TextureSampler() noexcept :
     _device(nullptr),

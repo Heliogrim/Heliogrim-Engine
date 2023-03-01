@@ -45,7 +45,7 @@ build.windows.msvc:
         #- New-Item -ItemType Junction -Path ".\dist\Release\resources" -Target ".\resources"
     
     artifacts:
-        name: Ember-Win-MSVC-$CI_COMMIT_REF_NAME
+        name: Heliogrim-Win-MSVC-$CI_COMMIT_REF_NAME
         paths:
             - dist/Debug/
             #- dist/Release/
@@ -84,7 +84,7 @@ build.linux.gcc:
         # Linking Resources
     
     artifacts:
-        name: Ember-Unix-GCC-$CI_COMMIT_REF_NAME
+        name: Heliogrim-Unix-GCC-$CI_COMMIT_REF_NAME
         paths:
             - dist/Debug/
             #- dist/Release/
@@ -123,7 +123,7 @@ build.linux.clang:
         # Linking Resources
     
     artifacts:
-        name: Ember-Unix-Clang-$CI_COMMIT_REF_NAME
+        name: Heliogrim-Unix-Clang-$CI_COMMIT_REF_NAME
         paths:
             - dist/Debug/
             #- dist/Release/

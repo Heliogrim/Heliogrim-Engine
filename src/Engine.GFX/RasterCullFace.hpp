@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     enum class RasterCullFace : u8 {
         eNone = 0x0,
         eBack = 0x1,

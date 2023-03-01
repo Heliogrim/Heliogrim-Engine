@@ -31,9 +31,9 @@ target_link_libraries(
         ${target}
         PRIVATE
 		${DEFAULT_LIBRARIES}
-		${META_PROJECT_NAME}::Ember
-		${META_PROJECT_NAME}::Ember.Default
-		${META_PROJECT_NAME}::Ember.Main
+		${META_PROJECT_NAME}::Heliogrim
+		${META_PROJECT_NAME}::Heliogrim.Default
+		${META_PROJECT_NAME}::Heliogrim.Main
 		${META_PROJECT_NAME}::Engine.ACS
 		${META_PROJECT_NAME}::Engine.Assets
 		${META_PROJECT_NAME}::Engine.Common

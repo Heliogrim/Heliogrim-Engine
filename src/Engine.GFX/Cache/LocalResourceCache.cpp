@@ -3,9 +3,9 @@
 #include "CacheResult.hpp"
 #include "ModelBatch.hpp"
 
-using namespace ember::engine::gfx::cache;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::cache;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 LocalResourceCache::LocalResourceCache(const non_owning_rptr<GlobalCacheCtrl> global_) :
     _global(global_),

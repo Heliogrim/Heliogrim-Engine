@@ -2,8 +2,8 @@
 
 #include <Engine.GFX/Buffer/VirtualBufferView.hpp>
 
-using namespace ember::engine::gfx::loader;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg;
 
 Material::Material() noexcept = default;
 

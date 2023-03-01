@@ -5,7 +5,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     /**
      * Wait on a atomic variable
      *

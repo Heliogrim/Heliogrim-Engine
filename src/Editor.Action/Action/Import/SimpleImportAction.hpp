@@ -5,7 +5,7 @@
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Assets/Types/Asset.hpp>
 
-namespace ember::editor {
+namespace hg::editor {
     class SimpleImportAction :
         public ImportAction {
     public:
@@ -32,7 +32,7 @@ namespace ember::editor {
         [[nodiscard]] Url getTargetUrl() const noexcept;
 
     private:
-        CompactSet<ptr<::ember::engine::assets::Asset>> _assets;
+        CompactSet<ptr<::hg::engine::assets::Asset>> _assets;
 
     public:
         [[nodiscard]] cref<decltype(_assets)> importedAssets() const noexcept;

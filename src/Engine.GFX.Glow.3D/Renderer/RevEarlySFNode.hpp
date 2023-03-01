@@ -5,7 +5,7 @@
 
 #include "State/__fwd.hpp"
 
-namespace ember::engine::gfx::glow::render {
+namespace hg::engine::gfx::glow::render {
     class RevEarlySFNode final :
         public gfx::render::RenderStageNode {
     public:

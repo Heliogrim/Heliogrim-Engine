@@ -11,9 +11,9 @@
 #include <Engine.Serialization/Archive/SourceReadonlyArchive.hpp>
 #include <random>
 
-using namespace ember::engine::resource;
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 TEST(__DummyTest__, Exists) {
     EXPECT_TRUE(true);

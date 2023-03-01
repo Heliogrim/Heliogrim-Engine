@@ -2,8 +2,8 @@
 
 #include "VirtualTexture.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 VirtualTextureView::VirtualTextureView(
     const non_owning_rptr<VirtualTexture> owner_,

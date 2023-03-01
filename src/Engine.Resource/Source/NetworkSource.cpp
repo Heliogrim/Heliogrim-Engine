@@ -2,8 +2,8 @@
 
 #include <Engine.Common/Exception/NotImplementedException.hpp>
 
-using namespace ember::engine::resource;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg;
 
 NetworkSource::reference_type NetworkSource::operator=(mref<value_type> other_) noexcept {
     if (this != _STD addressof(other_)) {
@@ -41,7 +41,7 @@ bool NetworkSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, ref
     throw NotImplementedException {};
 }
 
-ember::concurrent::future<Source::async_result_value> NetworkSource::get(streamoff offset_, streamsize size_) {
+hg::concurrent::future<Source::async_result_value> NetworkSource::get(streamoff offset_, streamsize size_) {
     throw NotImplementedException {};
 }
 
@@ -49,7 +49,7 @@ bool NetworkSource::write(streamoff offset_, streamsize size_, const ptr<void> s
     throw NotImplementedException {};
 }
 
-ember::concurrent::future<Source::async_write_result> NetworkSource::write(
+hg::concurrent::future<Source::async_write_result> NetworkSource::write(
     streamoff offset_,
     streamsize size_,
     const ptr<void> src_

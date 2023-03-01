@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Engine.Reflect/EmberReflect.hpp>
+#include <Engine.Reflect/HeliogrimReflect.hpp>
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <typename>
     class DataLayout;
     class DataLayoutBase;
 }
 
-namespace ember::engine::serialization::layout {
+namespace hg::engine::serialization::layout {
     class LayoutDefine;
 }

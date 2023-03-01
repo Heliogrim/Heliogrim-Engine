@@ -9,7 +9,7 @@
 #include "DragDropSender.hpp"
 #include "DragDropObject.hpp"
 
-namespace ember::engine::input {
+namespace hg::engine::input {
     class Win32DragDropSender :
         public DragDropSender,
         public IDropSource {

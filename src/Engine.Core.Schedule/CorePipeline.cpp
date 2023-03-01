@@ -6,9 +6,9 @@
 
 #include "ActorUpdateStage.hpp"
 
-using namespace ember::engine::core::schedule;
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::core::schedule;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 CorePipeline::CorePipeline() :
     StagePipeline(identifier_type::from("::Core::CorePipeline")) {}

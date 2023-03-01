@@ -1,5 +1,5 @@
 #pragma once
 
-namespace ember::engine::gfx::pool {
+namespace hg::engine::gfx::pool {
     class GlobalResourcePool;
 }

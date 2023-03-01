@@ -7,7 +7,7 @@
 #include "__fwd.hpp"
 #include "../vkinc.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     /**
      * Forward Declaration
      */
@@ -15,20 +15,20 @@ namespace ember::engine::gfx {
     class Texture;
 }
 
-namespace ember::engine::gfx::scene {
+namespace hg::engine::gfx::scene {
     class SceneView;
 }
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class IRenderScene;
 }
 
-namespace ember::engine::gfx::render {
+namespace hg::engine::gfx::render {
     class HORenderPass {
     public:
         using this_type = HORenderPass;
 
-        using RenderScene = ::ember::engine::scene::IRenderScene;
+        using RenderScene = ::hg::engine::scene::IRenderScene;
 
     public:
         HORenderPass(
@@ -127,5 +127,5 @@ namespace ember::engine::gfx::render {
         [[nodiscard]] bool await() const noexcept;
     };
 
-    static_assert(::ember::engine::scheduler::fiber::IsAwaitable<HORenderPass>);
+    static_assert(::hg::engine::scheduler::fiber::IsAwaitable<HORenderPass>);
 }

@@ -4,7 +4,7 @@
 
 #include "Engine.Reflow/Window/__fwd.hpp"
 
-namespace ember::engine::gfx::glow::ui {
+namespace hg::engine::gfx::glow::ui {
     class UISceneModel final :
         public SceneNodeModel {
     public:

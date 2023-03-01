@@ -6,8 +6,8 @@
 #include <cassert>
 #endif
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 DiscreteBindingPool::DiscreteBindingPool(
     cref<sptr<Device>> device_,

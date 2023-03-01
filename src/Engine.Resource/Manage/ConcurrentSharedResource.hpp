@@ -2,7 +2,7 @@
 
 #include "SharedResource.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     template <typename ManagedType_>
     class ConcurrentSharedResource final :
         public SharedResource<ManagedType_> {

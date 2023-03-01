@@ -3,8 +3,8 @@
 #include "../Memory/AllocatedMemory.hpp"
 #include "Engine.GFX/Memory/AllocationResult.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 VirtualBufferPage::VirtualBufferPage(
     const ptr<VirtualMemoryPage> memory_,

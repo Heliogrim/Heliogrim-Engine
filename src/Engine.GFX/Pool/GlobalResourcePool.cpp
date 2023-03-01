@@ -5,8 +5,8 @@
 #include "../Material/MaterialMetaDto.hpp"
 #include "../Texture/TextureFactory.hpp"
 
-using namespace ember::engine::gfx::pool;
-using namespace ember;
+using namespace hg::engine::gfx::pool;
+using namespace hg;
 
 GlobalResourcePool::GlobalResourcePool(cref<sptr<Device>> device_) :
     _device(device_),

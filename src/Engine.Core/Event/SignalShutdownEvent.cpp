@@ -1,6 +1,6 @@
 #include "SignalShutdownEvent.hpp"
 
-using namespace ember::engine::core;
+using namespace hg::engine::core;
 
 SignalShutdownEvent::SignalShutdownEvent() = default;
 

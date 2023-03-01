@@ -1,7 +1,7 @@
 #include "Platform.hpp"
 
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::engine;
+using namespace hg;
 
 Platform::Platform() noexcept = default;
 

@@ -1,7 +1,7 @@
 #include "LayoutArchive.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 LayoutArchiveBase::LayoutArchiveBase(const ptr<Archive> archive_, cref<non_owning_rptr<DataLayoutBase>> layout_) :
     _archive(archive_),

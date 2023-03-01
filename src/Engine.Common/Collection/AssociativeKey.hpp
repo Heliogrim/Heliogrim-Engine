@@ -5,7 +5,7 @@
 #include "../__macro.hpp"
 #include "../Wrapper.hpp"
 
-namespace ember {
+namespace hg {
     template <typename KeyType_, class Hasher = _STD hash<KeyType_>>
     struct AssocKey {
         using this_type = AssocKey<KeyType_>;
@@ -58,8 +58,8 @@ namespace ember {
 
 namespace std {
     template <typename KeyType_>
-    struct hash<::ember::AssocKey<KeyType_>> {
-        [[nodiscard]] size_t operator()(::ember::cref<::ember::AssocKey<KeyType_>> obj_) const noexcept {
+    struct hash<::hg::AssocKey<KeyType_>> {
+        [[nodiscard]] size_t operator()(::hg::cref<::hg::AssocKey<KeyType_>> obj_) const noexcept {
             return obj_.hash;
         }
     };

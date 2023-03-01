@@ -9,7 +9,7 @@
 #include "ProcessedModelBatch.hpp"
 #include "../Renderer/RenderContext.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
 
     /**
      * Forward Declaration

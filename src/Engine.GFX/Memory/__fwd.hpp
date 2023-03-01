@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::gfx::memory {
+namespace hg::engine::gfx::memory {
     /**
      * Memory
      */

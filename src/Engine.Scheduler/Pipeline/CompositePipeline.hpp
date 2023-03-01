@@ -6,11 +6,11 @@
 #include "StagePipeline.hpp"
 #include "Composite/CompositeStage.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class CompositeSlot;
 }
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class CompositePipeline :
         public StageRegister,
         public CompositeDispatcher {

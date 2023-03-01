@@ -1,12 +1,12 @@
 #include "CerberusDiffuse.hpp"
 #include "../Images/CerberusDiffuse.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
 #include "Game.Main/Assets/Images/CerberusDiffuse.hpp"
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::CerberusDiffuse::CerberusDiffuse() :
     TextureAsset(

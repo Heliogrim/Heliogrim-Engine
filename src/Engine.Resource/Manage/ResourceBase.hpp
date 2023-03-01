@@ -7,7 +7,7 @@
 #include "__fwd.hpp"
 #include "../ResourceUsageFlag.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     class __declspec(novtable) ResourceBase {
     public:
         friend class ManageGuard;
@@ -92,7 +92,7 @@ namespace ember::engine::resource {
 
     protected:
         /**/
-        non_owning_rptr<const EmberObject> _association;
+        non_owning_rptr<const HeliogrimObject> _association;
 
     public:
         /**
@@ -102,7 +102,7 @@ namespace ember::engine::resource {
          *
          * @returns A pointer to the stored association, otherwise nullptr
          */
-        [[nodiscard]] non_owning_rptr<const EmberObject> getAssociation() const noexcept;
+        [[nodiscard]] non_owning_rptr<const HeliogrimObject> getAssociation() const noexcept;
 
         /**
          * Store a suitable association for this resource
@@ -114,6 +114,6 @@ namespace ember::engine::resource {
          *
          * @param association_ A pointer used as association for this resource.
          */
-        void setAssociation(const non_owning_rptr<const EmberObject> association_) noexcept;
+        void setAssociation(const non_owning_rptr<const HeliogrimObject> association_) noexcept;
     };
 }

@@ -5,7 +5,7 @@
 #include "AssetInputStream.hpp"
 #include "AssetOutputStream.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class AssetIOStream {
     public:
         using value_type = AssetIOStream;

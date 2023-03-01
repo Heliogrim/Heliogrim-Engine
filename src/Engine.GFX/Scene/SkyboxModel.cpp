@@ -1,6 +1,6 @@
 #include "SkyboxModel.hpp"
 
-#include <Ember/SkyboxComponent.hpp>
+#include <Heliogrim/SkyboxComponent.hpp>
 #include <Engine.Assets/Database/AssetDatabaseQuery.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
@@ -14,8 +14,8 @@
 #include "Engine.Assets/Types/GfxMaterial.hpp"
 #include "Engine.GFX.Glow.3D/Renderer/State/RevSfMtt.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 SkyboxModel::SkyboxModel(const ptr<SceneComponent> owner_) :
     GeometryModel(owner_) {}
@@ -51,7 +51,7 @@ void SkyboxModel::update(const ptr<scene::Scene> scene_) {}
 void SkyboxModel::destroy(const ptr<scene::Scene> scene_) {}
 
 Vector<render::RenderDataToken> SkyboxModel::providedToken() const noexcept {
-    using namespace ::ember::engine::gfx::render;
+    using namespace ::hg::engine::gfx::render;
     return { StaticModelGeometry, StaticModelTransform };
 }
 
@@ -66,7 +66,7 @@ ptr<cache::ModelBatch> SkyboxModel::batch(const ptr<render::RenderPassState> sta
         /**
          * On cache miss create new instance and store back for further usage
          */
-        result = EmberObject::create<StaticGeometryBatch>();
+        result = HeliogrimObject::create<StaticGeometryBatch>();
         state_->cacheCtrl.cache()->store(reinterpret_cast<ptrdiff_t>(owner()), ptr<cache::ModelBatch> { result });
         // TODO: Check whether we can improve storing a copy of the pointer, cause value copy currently requires a explicit copy
     }

@@ -7,8 +7,8 @@
 #include "AssetDatabaseQuery.hpp"
 #include "../AssetFactory.hpp"
 
-using namespace ember::engine::assets;
-using namespace ember;
+using namespace hg::engine::assets;
+using namespace hg;
 
 AssetDatabase::AssetDatabase() noexcept :
     _mapping() {}

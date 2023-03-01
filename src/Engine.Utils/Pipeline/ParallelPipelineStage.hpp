@@ -5,7 +5,7 @@
 
 #include "AdaptivePipelineStage.hpp"
 
-namespace ember::engine::utils::pipeline::adaptive {
+namespace hg::engine::utils::pipeline::adaptive {
     template <typename ResultType_, typename PushType_, typename PushCtxType_ = void, typename PullCtxType_ = void>
     class ParallelPipelineStage :
         public AdaptivePipelineStage<ResultType_, PushType_, PushCtxType_, PullCtxType_> {

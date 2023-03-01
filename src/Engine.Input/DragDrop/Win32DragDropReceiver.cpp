@@ -12,8 +12,8 @@
 
 #include "../DragDropEvent.hpp"
 
-using namespace ember::engine::input;
-using namespace ember;
+using namespace hg::engine::input;
+using namespace hg;
 
 Win32DragDropReceiver::Win32DragDropReceiver(const HWND hwnd_) :
     DragDropReceiver(),

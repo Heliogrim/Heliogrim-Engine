@@ -8,7 +8,7 @@
 #include "IntegralSlot.hpp"
 #include "StringSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <typename ValueType_>
     struct SubstitutionSlot;
 

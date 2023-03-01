@@ -3,7 +3,7 @@
 #include "../Task/TaskMask.hpp"
 #include "../Task/Task.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class __declspec(novtable) ScheduleWorkSet {
     public:
         using this_type = ScheduleWorkSet;

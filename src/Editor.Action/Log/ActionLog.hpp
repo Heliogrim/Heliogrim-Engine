@@ -8,7 +8,7 @@
 
 #include "../Action/Action.hpp"
 
-namespace ember::editor {
+namespace hg::editor {
     class ActionLog {
     public:
         using this_type = ActionLog;

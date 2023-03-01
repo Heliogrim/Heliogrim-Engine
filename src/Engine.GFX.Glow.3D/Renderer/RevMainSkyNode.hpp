@@ -3,15 +3,15 @@
 #include <Engine.GFX/Renderer/RenderStageNode.hpp>
 #include <Engine.GFX/Shader/ShaderBindingGroup.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class VirtualTextureView;
 }
 
-namespace ember::engine::gfx::glow::render {
+namespace hg::engine::gfx::glow::render {
     class RevMainSharedNode;
 }
 
-namespace ember::engine::gfx::glow::render {
+namespace hg::engine::gfx::glow::render {
     class RevMainSkyNode :
         public gfx::render::RenderStageNode {
     public:

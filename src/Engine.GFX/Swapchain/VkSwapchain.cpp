@@ -4,8 +4,8 @@
 
 #include "../Texture/TextureFactory.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 VkSwapchain::VkSwapchain() :
     Swapchain(),

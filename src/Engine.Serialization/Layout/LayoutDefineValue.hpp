@@ -3,7 +3,7 @@
 #include "LayoutDefine.hpp"
 #include "LayoutDefineValueType.hpp"
 
-namespace ember::engine::serialization::layout {
+namespace hg::engine::serialization::layout {
     template <LayoutDefineValueType ValueType_>
     class LayoutDefineValue final :
         public LayoutDefine {

@@ -4,8 +4,8 @@
 #include "AllocationResult.hpp"
 #include "GlobalPooledAllocator.hpp"
 
-using namespace ember::engine::gfx::memory;
-using namespace ember;
+using namespace hg::engine::gfx::memory;
+using namespace hg;
 
 LocalPooledAllocator::LocalPooledAllocator(const ptr<GlobalPooledAllocator> global_) :
     Allocator(),

@@ -1,7 +1,7 @@
 #include "WorldChangeEvent.hpp"
 
-using namespace ember::engine::core;
-using namespace ember;
+using namespace hg::engine::core;
+using namespace hg;
 
 WorldChangeEvent::WorldChangeEvent(
     const non_owning_rptr<Session> session_,

@@ -3,7 +3,7 @@
 #include <Engine.Common/stdafx.h>
 #include <Engine.Common/Math/Vector.hpp>
 
-namespace ember::engine::gfx::types {
+namespace hg::engine::gfx::types {
     struct BoundImage {
         BoundImage(const vk::Image& image_, const vk::DeviceMemory& memory_) {
             this->image = image_;
@@ -20,26 +20,26 @@ namespace ember::engine::gfx::types {
 
     // Scene
     struct UniformBuffer {
-        ember::math::mat4 proj;
-        ember::math::mat4 view;
-        ember::math::mat4 model;
-        ember::math::mat4 mvp;
+        hg::math::mat4 proj;
+        hg::math::mat4 view;
+        hg::math::mat4 model;
+        hg::math::mat4 mvp;
     };
 
     struct UniformBufferObjFrag {
-        ember::math::vec4 camPos;
-        ember::math::vec4 skyColor;
+        hg::math::vec4 camPos;
+        hg::math::vec4 skyColor;
         std::array<float, SHADOW_MAP_CASCADE_COUNT> splits = std::array<float, SHADOW_MAP_CASCADE_COUNT>();
-        std::array<ember::math::mat4, SHADOW_MAP_CASCADE_COUNT> casMvp = std::array<ember::math::mat4,
+        std::array<hg::math::mat4, SHADOW_MAP_CASCADE_COUNT> casMvp = std::array<hg::math::mat4,
             SHADOW_MAP_CASCADE_COUNT>();
     };
 
     // Compute
     struct UniformBufferObjComp {
-        ember::math::mat4 proj;
-        ember::math::mat4 view;
-        ember::math::vec4 camPos;
-        std::array<ember::math::vec4, 6> planes;
+        hg::math::mat4 proj;
+        hg::math::mat4 view;
+        hg::math::vec4 camPos;
+        std::array<hg::math::vec4, 6> planes;
     };
 
     struct UniformIndirectStat {
@@ -49,14 +49,14 @@ namespace ember::engine::gfx::types {
     // Skybox
     ALIGNED(
         struct UniformBufferObjSky {
-        ember::math::mat4 mvp;
+        hg::math::mat4 mvp;
         },
         16
     );
 
     // Offscreen
     struct UniformBufferObjOff {
-        std::array<ember::math::mat4, SHADOW_MAP_CASCADE_COUNT> mvp;
+        std::array<hg::math::mat4, SHADOW_MAP_CASCADE_COUNT> mvp;
     };
 
     struct Cascade {
@@ -65,7 +65,7 @@ namespace ember::engine::gfx::types {
         vk::ImageView view;
 
         float depth = 0.F;
-        ember::math::mat4 mvp;
+        hg::math::mat4 mvp;
     };
 
     struct ImageBuffer {
@@ -100,6 +100,6 @@ namespace ember::engine::gfx::types {
     };
 
     struct ThreadConstData {
-        ember::math::mat4 transformMatrix;
+        hg::math::mat4 transformMatrix;
     };
 }

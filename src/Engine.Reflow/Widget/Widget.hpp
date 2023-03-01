@@ -17,11 +17,11 @@
 #include "../Event/KeyboardEvent.hpp"
 #include "../Style/StyleKeyStack.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Children;
 }
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Widget :
         public SharedFromThis<Widget> {
     public:

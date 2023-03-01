@@ -1,7 +1,7 @@
 #include "ShaderStorage.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 bool ShaderStorageKey::operator==(const ShaderStorageKey& other_) const noexcept {
     return (&other_ == this) || (other_.type == type && other_.name == name);

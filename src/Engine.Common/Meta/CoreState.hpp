@@ -1,7 +1,7 @@
 #pragma once
 #include "../Flag.hpp"
 
-namespace ember {
+namespace hg {
     enum class CoreStateFlag : u8 {
         eUninitialized = 0x00,
         ePreInit = 0x01,

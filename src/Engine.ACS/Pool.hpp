@@ -5,7 +5,7 @@
 
 #include "Storage.hpp"
 
-namespace ember::engine::acs {
+namespace hg::engine::acs {
     template <typename KeyType, typename PooledType, KeyType InvalidKey>
     class Pool {
     public:

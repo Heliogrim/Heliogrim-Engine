@@ -4,8 +4,8 @@
 #include "AllocationResult.hpp"
 #include "VirtualMemory.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 VirtualMemoryPage::VirtualMemoryPage(
     const non_owning_rptr<VirtualMemory> owner_,

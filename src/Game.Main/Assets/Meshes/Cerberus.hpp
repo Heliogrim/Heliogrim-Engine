@@ -1,7 +1,7 @@
 #pragma once
-#include <Ember/StaticGeometryAsset.hpp>
+#include <Heliogrim/StaticGeometryAsset.hpp>
 
-namespace ember::game::assets::meshes {
+namespace hg::game::assets::meshes {
     class Cerberus :
         public StaticGeometryAsset,
         public AssetAutoGuid<Cerberus> {

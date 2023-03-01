@@ -1,6 +1,6 @@
 #include "Pipeline.hpp"
 
-using namespace ember::engine::utils;
+using namespace hg::engine::utils;
 
 Pipeline::Pipeline() = default;
 

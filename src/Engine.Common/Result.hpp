@@ -2,7 +2,7 @@
 
 #include "Inc.hpp"
 
-namespace ember::__internal::result {
+namespace hg::__internal::result {
     enum Result: uint8_t {
         eNone = 0x00000000,
         eUnknown = 0x00000001,

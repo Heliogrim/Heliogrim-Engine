@@ -2,8 +2,8 @@
 
 #include <algorithm>
 
-using namespace ember::engine::assets;
-using namespace ember;
+using namespace hg::engine::assets;
+using namespace hg;
 
 Image::Image() :
     Asset(invalid_asset_guid, Image::typeId) {}

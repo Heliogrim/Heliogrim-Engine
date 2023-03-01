@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Core/Module/CoreModule.hpp>
 
-namespace ember::engine {
+namespace hg::engine {
     class Network :
         public core::CoreModule {
     public:

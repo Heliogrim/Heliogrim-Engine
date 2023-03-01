@@ -8,7 +8,7 @@
 
 #include "Engine.GFX.Loader/Texture/TextureResource.hpp"
 
-namespace ember::engine::gfx::glow::ui::render {
+namespace hg::engine::gfx::glow::ui::render {
     class UiMainStageNode final :
         public gfx::render::RenderStageNode {
     public:

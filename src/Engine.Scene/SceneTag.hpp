@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     struct SceneTag {
         constexpr SceneTag() = delete;
 

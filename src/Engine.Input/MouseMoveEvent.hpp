@@ -3,7 +3,7 @@
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Event/Event.hpp>
 
-namespace ember::engine::input::event {
+namespace hg::engine::input::event {
     class MouseMoveEvent final :
         public StatelessEvent {
     public:

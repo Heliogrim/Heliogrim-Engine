@@ -4,7 +4,7 @@
 #include <Engine.Common/Math/Matrix.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class CameraFrustum {
     public:
         enum FrustumSide {

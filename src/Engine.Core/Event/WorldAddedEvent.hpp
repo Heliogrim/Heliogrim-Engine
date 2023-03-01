@@ -2,11 +2,11 @@
 
 #include <Engine.Event/Event.hpp>
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     class World;
 }
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     class WorldAddedEvent :
         public StatelessEvent {
     public:
@@ -16,7 +16,7 @@ namespace ember::engine::core {
         inline static constexpr event_type_id typeId { "WorldAddedEvent"_typeId };
 
     public:
-        WorldAddedEvent(cref<sptr<::ember::engine::core::World>> world_);
+        WorldAddedEvent(cref<sptr<::hg::engine::core::World>> world_);
 
         WorldAddedEvent(cref<this_type> other_) noexcept = default;
 
@@ -25,9 +25,9 @@ namespace ember::engine::core {
         ~WorldAddedEvent() = default;
 
     private:
-        sptr<::ember::engine::core::World> _world;
+        sptr<::hg::engine::core::World> _world;
 
     public:
-        [[nodiscard]] cref<sptr<::ember::engine::core::World>> getWorld() const noexcept;
+        [[nodiscard]] cref<sptr<::hg::engine::core::World>> getWorld() const noexcept;
     };
 }

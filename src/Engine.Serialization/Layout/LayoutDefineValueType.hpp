@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::serialization::layout {
+namespace hg::engine::serialization::layout {
     enum class LayoutDefineValueType {
         eNone,
         eInt8,

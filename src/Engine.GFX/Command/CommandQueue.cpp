@@ -4,8 +4,8 @@
 #include "CommandPool.hpp"
 #include "../Device/Device.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 CommandQueue::CommandQueue(cref<sptr<Device>> device_, const uint32_t idx_, const uint32_t familyIdx_) :
     _device(device_),

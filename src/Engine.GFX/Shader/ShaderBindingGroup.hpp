@@ -3,18 +3,18 @@
 #include "ShaderBinding.hpp"
 #include "ShaderBindingGroupLayout.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     /**
      * Forward Declaration
      */
     class DiscreteBindingPool;
 }
 
-namespace ember::engine::gfx::shader {
+namespace hg::engine::gfx::shader {
     class DiscreteBindingGroup;
 }
 
-namespace ember::engine::gfx::shader {
+namespace hg::engine::gfx::shader {
     class ShaderBindingGroup {
     public:
         /**

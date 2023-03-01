@@ -6,11 +6,11 @@
 #include "../Style/__fwd.hpp"
 #include "../Style/StyleSheet.hpp"
 
-namespace ember {
+namespace hg {
     class CameraActor;
 }
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Viewport :
         public Widget {
     public:

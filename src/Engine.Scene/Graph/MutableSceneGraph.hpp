@@ -2,7 +2,7 @@
 #include "SceneGraph.hpp"
 #include "../Node/SceneNodeFactory.hpp"
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     template <class PayloadType_>
     class MutableSceneGraph :
         public SceneGraph<PayloadType_> {

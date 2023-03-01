@@ -1,7 +1,7 @@
 #include "WoodenBucket02.hpp"
 
-using namespace ember::game::assets::meshes;
-using namespace ember;
+using namespace hg::game::assets::meshes;
+using namespace hg;
 
 WoodenBucket02::WoodenBucket02() :
     StaticGeometryAsset(

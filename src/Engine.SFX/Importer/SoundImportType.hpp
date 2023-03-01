@@ -3,7 +3,7 @@
 
 #include "../AudioFormat.hpp"
 
-namespace ember::engine::sfx {
+namespace hg::engine::sfx {
     struct SoundImportType {
         /** Defines the amount of supplied channels */
         u8 channels = 0ui8;

@@ -6,8 +6,8 @@
 #include <cassert>
 #include <Engine.Common/Exception/NotImplementedException.hpp>
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 VirtualMemory::VirtualMemory(
     const ptr<memory::GlobalPooledAllocator> allocator_,

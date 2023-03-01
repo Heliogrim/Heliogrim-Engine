@@ -2,7 +2,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     enum class TextureFormat {
         eUndefined = 0x0,
 

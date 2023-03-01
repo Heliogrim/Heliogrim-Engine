@@ -13,10 +13,10 @@
 #include FT_FREETYPE_H
 /**/
 
-using namespace ember::engine::gfx::loader::transformer;
-using namespace ember::engine::gfx::loader;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::loader::transformer;
+using namespace hg::engine::gfx::loader;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 _STD atomic_uint_fast8_t ftRefCount {};
 FT_Library freeTypeLibrary {};

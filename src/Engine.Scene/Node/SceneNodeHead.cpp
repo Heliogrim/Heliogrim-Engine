@@ -2,8 +2,8 @@
 
 #include "SceneNode.hpp"
 
-using namespace ember::engine::scene;
-using namespace ember;
+using namespace hg::engine::scene;
+using namespace hg;
 
 SceneNodeHead::SceneNodeHead() noexcept :
     _nodeId(invalid_node_id {}),

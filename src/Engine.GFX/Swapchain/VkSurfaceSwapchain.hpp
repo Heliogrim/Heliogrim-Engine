@@ -2,7 +2,7 @@
 
 #include "Swapchain.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class VkSurfaceSwapchain final :
         public Swapchain {
     public:

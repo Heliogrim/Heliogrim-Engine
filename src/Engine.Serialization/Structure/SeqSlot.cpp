@@ -6,8 +6,8 @@
 #include "RecordSlot.hpp"
 #include "../Archive/Archive.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 SeqSlot::SeqSlot(cref<StructureSlotState> state_) :
     StructureSlotBase(state_) {

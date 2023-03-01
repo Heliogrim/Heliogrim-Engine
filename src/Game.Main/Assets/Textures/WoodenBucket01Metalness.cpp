@@ -1,10 +1,10 @@
 #include "WoodenBucket01Metalness.hpp"
 #include "../Images/WoodenBucket01Metalness.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::WoodenBucket01Metalness::WoodenBucket01Metalness() :
     TextureAsset(

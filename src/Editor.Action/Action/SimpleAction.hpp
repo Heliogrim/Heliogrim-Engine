@@ -4,7 +4,7 @@
 
 #include <atomic>
 
-namespace ember::editor {
+namespace hg::editor {
     class SimpleAction :
         public Action {
     public:

@@ -4,8 +4,8 @@
 #include "Engine.GFX/Command/CommandPool.hpp"
 #include "Engine.GFX/Command/CommandQueue.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 Font::Font():
     _fontSize(16),
@@ -81,6 +81,6 @@ const ptr<const FontGlyph> Font::glyph(const GlyphCode code_, const u32 fontSize
     return nullptr;
 }
 
-cref<sptr<::ember::engine::gfx::Texture>> Font::atlas() const noexcept {
+cref<sptr<::hg::engine::gfx::Texture>> Font::atlas() const noexcept {
     return _atlas;
 }

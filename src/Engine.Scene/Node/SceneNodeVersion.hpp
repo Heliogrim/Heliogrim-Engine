@@ -3,7 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     /**
      * Forward Declaration
      */

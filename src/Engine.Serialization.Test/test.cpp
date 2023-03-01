@@ -20,8 +20,8 @@
 #include "Engine.Serialization/Structure/StructScopedSlot.hpp"
 #include "Engine.Serialization/Structure/FloatScopedSlot.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 TEST(__DummyTest__, Exists) {
     EXPECT_TRUE(true);
@@ -189,10 +189,10 @@ namespace SerializationModule {
     }
 
     class TestSerialAsset :
-        public ::ember::engine::assets::Asset {
+        public ::hg::engine::assets::Asset {
     public:
         template <typename>
-        friend class ::ember::engine::serialization::DataLayout;
+        friend class ::hg::engine::serialization::DataLayout;
 
     public:
         inline static constexpr asset_type_id typeId { "TestSerialAsset"_typeId };
@@ -217,12 +217,12 @@ namespace SerializationModule {
     };
 }
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <>
     void DataLayout<SerializationModule::TestSerialAsset>::describe() {
 
         using namespace ::SerializationModule;
-        using namespace ::ember::engine::serialization::layout;
+        using namespace ::hg::engine::serialization::layout;
 
         defineValue<LayoutDefineValueType::eUInt8>(offsetof(TestSerialAsset, t0));
         defineValue<LayoutDefineValueType::eUInt16>(offsetof(TestSerialAsset, t1));
@@ -248,7 +248,7 @@ namespace SerializationModule {
 
         TypedLayoutArchive<TestSerialAsset> arch { &archive, &layout };
 
-        auto writeAsset = EmberObject::create<TestSerialAsset>();
+        auto writeAsset = HeliogrimObject::create<TestSerialAsset>();
 
         writeAsset->t0 = 0x1;
         writeAsset->t1 = 0x2;
@@ -267,7 +267,7 @@ namespace SerializationModule {
 
         archive.seek(0);
 
-        auto readAsset = EmberObject::create<TestSerialAsset>();
+        auto readAsset = HeliogrimObject::create<TestSerialAsset>();
         arch >> readAsset;
 
         EXPECT_EQ(readAsset->t0, 0x1);
@@ -282,15 +282,15 @@ namespace SerializationModule {
         EXPECT_DOUBLE_EQ(readAsset->t9, -8.765432);
         EXPECT_EQ(readAsset->t10, EnumValueU8::eEntryTwo);
 
-        EmberObject::destroy(_STD move(writeAsset));
-        EmberObject::destroy(_STD move(readAsset));
+        HeliogrimObject::destroy(_STD move(writeAsset));
+        HeliogrimObject::destroy(_STD move(readAsset));
     }
 
     class TestSerialDataBaseAsset :
-        public ::ember::engine::assets::Asset {
+        public ::hg::engine::assets::Asset {
     public:
         template <typename>
-        friend class ::ember::engine::serialization::DataLayout;
+        friend class ::hg::engine::serialization::DataLayout;
 
     public:
         inline static constexpr asset_type_id typeId { "TestSerialDataBaseAsset"_typeId };
@@ -310,12 +310,12 @@ namespace SerializationModule {
     };
 }
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <>
     void DataLayout<SerializationModule::TestSerialDataBaseAsset>::describe() {
 
         using namespace ::SerializationModule;
-        using namespace ::ember::engine::serialization::layout;
+        using namespace ::hg::engine::serialization::layout;
 
         defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _guid));
         defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSerialDataBaseAsset, _type));
@@ -334,21 +334,21 @@ namespace SerializationModule {
         constexpr auto testGuid = asset_guid { 0x2356ui16, 0x12, 0x56, 0x68537136ui32 };
         constexpr auto testType = asset_type_id { "TestBaseAsset_Changed"_typeId };
 
-        auto writeAsset = EmberObject::create<TestSerialDataBaseAsset>();
+        auto writeAsset = HeliogrimObject::create<TestSerialDataBaseAsset>();
         writeAsset->setGuid(testGuid);
         writeAsset->setType(testType);
         arch << writeAsset;
 
         archive.seek(0);
 
-        auto readAsset = EmberObject::create<TestSerialDataBaseAsset>();
+        auto readAsset = HeliogrimObject::create<TestSerialDataBaseAsset>();
         arch >> readAsset;
 
         EXPECT_EQ(readAsset->get_guid().as_uint64(), testGuid.as_uint64());
         EXPECT_EQ(readAsset->getTypeId(), testType);
 
-        EmberObject::destroy(_STD move(writeAsset));
-        EmberObject::destroy(_STD move(readAsset));
+        HeliogrimObject::destroy(_STD move(writeAsset));
+        HeliogrimObject::destroy(_STD move(readAsset));
     }
 
     struct TestSubTypePayload {
@@ -359,10 +359,10 @@ namespace SerializationModule {
     };
 
     class TestSerialSubTypeAsset :
-        public ::ember::engine::assets::Asset {
+        public ::hg::engine::assets::Asset {
     public:
         template <typename>
-        friend class ::ember::engine::serialization::DataLayout;
+        friend class ::hg::engine::serialization::DataLayout;
 
     public:
         inline static constexpr asset_type_id typeId { "TestSerialSubTypeAsset"_typeId };
@@ -376,12 +376,12 @@ namespace SerializationModule {
     };
 }
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <>
     void DataLayout<SerializationModule::TestSubTypePayload>::describe() {
 
         using namespace ::SerializationModule;
-        using namespace ::ember::engine::serialization::layout;
+        using namespace ::hg::engine::serialization::layout;
 
         // TODO: make define for sub objects
         defineValue<LayoutDefineValueType::eUInt64>(offsetof(TestSubTypePayload, p0));
@@ -394,7 +394,7 @@ namespace ember::engine::serialization {
     void DataLayout<SerializationModule::TestSerialSubTypeAsset>::describe() {
 
         using namespace ::SerializationModule;
-        using namespace ::ember::engine::serialization::layout;
+        using namespace ::hg::engine::serialization::layout;
 
         const auto subLayout { make_sptr<DataLayout<TestSubTypePayload>>() };
         subLayout->reflect().storeType<TestSubTypePayload>();
@@ -414,8 +414,8 @@ namespace SerializationModule {
 
         TypedLayoutArchive<TestSerialSubTypeAsset> arch { &archive, &layout };
 
-        auto writeAsset = EmberObject::create<TestSerialSubTypeAsset>();
-        auto readAsset = EmberObject::create<TestSerialSubTypeAsset>();
+        auto writeAsset = HeliogrimObject::create<TestSerialSubTypeAsset>();
+        auto readAsset = HeliogrimObject::create<TestSerialSubTypeAsset>();
 
         /**/
 
@@ -435,15 +435,15 @@ namespace SerializationModule {
         EXPECT_EQ(readAsset->payload.f0, 7896316.135F);
         EXPECT_EQ(readAsset->payload.f1, 32896.236F);
 
-        EmberObject::destroy(_STD move(writeAsset));
-        EmberObject::destroy(_STD move(readAsset));
+        HeliogrimObject::destroy(_STD move(writeAsset));
+        HeliogrimObject::destroy(_STD move(readAsset));
     }
 
     class TestSerialSubTypeSpanAsset :
-        public ::ember::engine::assets::Asset {
+        public ::hg::engine::assets::Asset {
     public:
         template <typename>
-        friend class ::ember::engine::serialization::DataLayout;
+        friend class ::hg::engine::serialization::DataLayout;
 
     public:
         inline static constexpr asset_type_id typeId { "TestSerialSubTypeSpanAsset"_typeId };
@@ -457,12 +457,12 @@ namespace SerializationModule {
     };
 }
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <>
     void DataLayout<SerializationModule::TestSerialSubTypeSpanAsset>::describe() {
 
         using namespace ::SerializationModule;
-        using namespace ::ember::engine::serialization::layout;
+        using namespace ::hg::engine::serialization::layout;
 
         const auto subLayout { make_sptr<DataLayout<TestSubTypePayload>>() };
         subLayout->reflect().storeType<TestSubTypePayload>();
@@ -482,7 +482,7 @@ namespace SerializationModule {
 
         TypedLayoutArchive<TestSerialSubTypeSpanAsset> arch { &archive, &layout };
 
-        auto writeAsset = EmberObject::create<TestSerialSubTypeSpanAsset>();
+        auto writeAsset = HeliogrimObject::create<TestSerialSubTypeSpanAsset>();
         writeAsset->payload[0] = { 32ui64 };
         writeAsset->payload[1] = { 754ui64 };
         writeAsset->payload[2] = { 16ui64 };
@@ -492,7 +492,7 @@ namespace SerializationModule {
 
         archive.seek(0);
 
-        auto readAsset = EmberObject::create<TestSerialSubTypeSpanAsset>();
+        auto readAsset = HeliogrimObject::create<TestSerialSubTypeSpanAsset>();
         arch >> readAsset;
 
         EXPECT_EQ(writeAsset->payload.size(), readAsset->payload.size());
@@ -502,15 +502,15 @@ namespace SerializationModule {
         EXPECT_EQ(readAsset->payload[3].p0, 5267ui64);
         EXPECT_EQ(readAsset->payload.back().p0, 1ui64);
 
-        EmberObject::destroy(_STD move(writeAsset));
-        EmberObject::destroy(_STD move(readAsset));
+        HeliogrimObject::destroy(_STD move(writeAsset));
+        HeliogrimObject::destroy(_STD move(readAsset));
     }
 
     class TestSerialSubTypeSliceAsset :
-        public ::ember::engine::assets::Asset {
+        public ::hg::engine::assets::Asset {
     public:
         template <typename>
-        friend class ::ember::engine::serialization::DataLayout;
+        friend class ::hg::engine::serialization::DataLayout;
 
     public:
         inline static constexpr asset_type_id typeId { "TestSerialSubTypeSliceAsset"_typeId };
@@ -524,12 +524,12 @@ namespace SerializationModule {
     };
 }
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <>
     void DataLayout<SerializationModule::TestSerialSubTypeSliceAsset>::describe() {
 
         using namespace ::SerializationModule;
-        using namespace ::ember::engine::serialization::layout;
+        using namespace ::hg::engine::serialization::layout;
 
         const auto subLayout { make_sptr<DataLayout<TestSubTypePayload>>() };
         subLayout->reflect().storeType<TestSubTypePayload>();
@@ -549,7 +549,7 @@ namespace SerializationModule {
 
         TypedLayoutArchive<TestSerialSubTypeSliceAsset> arch { &archive, &layout };
 
-        auto writeAsset = EmberObject::create<TestSerialSubTypeSliceAsset>();
+        auto writeAsset = HeliogrimObject::create<TestSerialSubTypeSliceAsset>();
         writeAsset->payload.push_back({ 32ui64 });
         writeAsset->payload.push_back({ 754ui64 });
         writeAsset->payload.push_back({ 16ui64 });
@@ -559,7 +559,7 @@ namespace SerializationModule {
 
         archive.seek(0);
 
-        auto readAsset = EmberObject::create<TestSerialSubTypeSliceAsset>();
+        auto readAsset = HeliogrimObject::create<TestSerialSubTypeSliceAsset>();
         arch >> readAsset;
 
         EXPECT_EQ(writeAsset->payload.size(), readAsset->payload.size());
@@ -569,15 +569,15 @@ namespace SerializationModule {
         EXPECT_EQ((++(++(++readAsset->payload.begin())))->p0, 5267ui64);
         EXPECT_EQ(readAsset->payload.back().p0, 1ui64);
 
-        EmberObject::destroy(_STD move(writeAsset));
-        EmberObject::destroy(_STD move(readAsset));
+        HeliogrimObject::destroy(_STD move(writeAsset));
+        HeliogrimObject::destroy(_STD move(readAsset));
     }
 
     class TestSerialSubTypeVectorizedSliceAsset :
-        public ::ember::engine::assets::Asset {
+        public ::hg::engine::assets::Asset {
     public:
         template <typename>
-        friend class ::ember::engine::serialization::DataLayout;
+        friend class ::hg::engine::serialization::DataLayout;
 
     public:
         inline static constexpr asset_type_id typeId { "TestSerialSubTypeVectorizedSliceAsset"_typeId };
@@ -591,12 +591,12 @@ namespace SerializationModule {
     };
 }
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <>
     void DataLayout<SerializationModule::TestSerialSubTypeVectorizedSliceAsset>::describe() {
 
         using namespace ::SerializationModule;
-        using namespace ::ember::engine::serialization::layout;
+        using namespace ::hg::engine::serialization::layout;
 
         const auto subLayout { make_sptr<DataLayout<TestSubTypePayload>>() };
         subLayout->reflect().storeType<TestSubTypePayload>();
@@ -616,7 +616,7 @@ namespace SerializationModule {
 
         TypedLayoutArchive<TestSerialSubTypeVectorizedSliceAsset> arch { &archive, &layout };
 
-        auto writeAsset = EmberObject::create<TestSerialSubTypeVectorizedSliceAsset>();
+        auto writeAsset = HeliogrimObject::create<TestSerialSubTypeVectorizedSliceAsset>();
         //writeAsset->payload.resize(200'000'000, { 1231ui64, 738956ui64, 2.32906F, 9230.35F });
         writeAsset->payload.resize(2'000'000, { 1231ui64, 738956ui64, 2.32906F, 9230.35F });
 
@@ -626,7 +626,7 @@ namespace SerializationModule {
 
         archive.seek(0);
 
-        auto readAsset = EmberObject::create<TestSerialSubTypeVectorizedSliceAsset>();
+        auto readAsset = HeliogrimObject::create<TestSerialSubTypeVectorizedSliceAsset>();
 
         const auto readStart { _STD chrono::high_resolution_clock::now() };
         arch >> readAsset;
@@ -670,15 +670,15 @@ namespace SerializationModule {
             _STD chrono::duration_cast<_STD chrono::milliseconds>(cpyEnd - cpyStart) <<
             _STD endl;
 
-        EmberObject::destroy(_STD move(writeAsset));
-        EmberObject::destroy(_STD move(readAsset));
+        HeliogrimObject::destroy(_STD move(writeAsset));
+        HeliogrimObject::destroy(_STD move(readAsset));
     }
 
     class TestSerialSubTypeStringAsset :
-        public ::ember::engine::assets::Asset {
+        public ::hg::engine::assets::Asset {
     public:
         template <typename>
-        friend class ::ember::engine::serialization::DataLayout;
+        friend class ::hg::engine::serialization::DataLayout;
 
     public:
         inline static constexpr asset_type_id typeId { "TestSerialSubTypeStringAsset"_typeId };
@@ -692,12 +692,12 @@ namespace SerializationModule {
     };
 }
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <>
     void DataLayout<SerializationModule::TestSerialSubTypeStringAsset>::describe() {
 
         using namespace ::SerializationModule;
-        using namespace ::ember::engine::serialization::layout;
+        using namespace ::hg::engine::serialization::layout;
 
         const auto subLayout { make_sptr<DataLayout<u8>>() };
         subLayout->reflect().storeType<u8>();
@@ -717,20 +717,20 @@ namespace SerializationModule {
 
         TypedLayoutArchive<TestSerialSubTypeStringAsset> arch { &archive, &layout };
 
-        auto writeAsset = EmberObject::create<TestSerialSubTypeStringAsset>();
+        auto writeAsset = HeliogrimObject::create<TestSerialSubTypeStringAsset>();
         writeAsset->payload = "I'm just a string test.";
         arch << writeAsset;
 
         archive.seek(0);
 
-        auto readAsset = EmberObject::create<TestSerialSubTypeStringAsset>();
+        auto readAsset = HeliogrimObject::create<TestSerialSubTypeStringAsset>();
         arch >> readAsset;
 
         EXPECT_EQ(writeAsset->payload.size(), readAsset->payload.size());
         EXPECT_STREQ(writeAsset->payload.c_str(), readAsset->payload.c_str());
 
-        EmberObject::destroy(_STD move(writeAsset));
-        EmberObject::destroy(_STD move(readAsset));
+        HeliogrimObject::destroy(_STD move(writeAsset));
+        HeliogrimObject::destroy(_STD move(readAsset));
     }
 }
 

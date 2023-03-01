@@ -2,16 +2,16 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class Scene;
 }
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     class World {
     public:
         using this_type = World;
 
-        using Scene = ::ember::engine::scene::Scene;
+        using Scene = ::hg::engine::scene::Scene;
 
     public:
         World(mref<uptr<Scene>> scene_);

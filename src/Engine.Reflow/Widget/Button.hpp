@@ -4,7 +4,7 @@
 
 #include "HBox.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Button :
         public HBox {
     public:

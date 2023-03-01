@@ -17,10 +17,10 @@
 #include "Win32Window.hpp"
 #include "Engine.Input/Input.hpp"
 
-using namespace ember::engine::scheduler;
-using namespace ember::engine::platform;
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg::engine::platform;
+using namespace hg::engine;
+using namespace hg;
 
 WinPlatform::WinPlatform() = default;
 
@@ -99,12 +99,12 @@ ref<task::SignaledQueue> WinPlatform::platformQueue() const noexcept {
     return const_cast<ref<task::SignaledQueue>>(_platformQueue);
 }
 
-ember::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
+hg::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
     const string_view title_,
     cref<math::iExtent2D> extent_
 ) {
 
-    ::ember::concurrent::promise<uptr<NativeWindow>> promise {
+    ::hg::concurrent::promise<uptr<NativeWindow>> promise {
         [this, title = title_, extent = extent_] {
 
             /**/
@@ -144,13 +144,13 @@ ember::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
     return future;
 }
 
-ember::concurrent::future<bool> WinPlatform::destroyNativeWindow(
+hg::concurrent::future<bool> WinPlatform::destroyNativeWindow(
     mref<uptr<NativeWindow>> window_
 ) {
 
     _STD shared_ptr<NativeWindow> holder { _STD move(window_) };
 
-    ::ember::concurrent::promise<bool> promise {
+    ::hg::concurrent::promise<bool> promise {
         [this, window = holder] {
 
             /**/
@@ -184,7 +184,7 @@ void WinPlatform::processInternal() {
             case SDL_EventType::SDL_QUIT: {
                 // Warning: We need to call stop via scheduler, cause this thread will deadlock itself (recursive) due to window ownership and close behavior
                 // Warning: Undefined behavior if called multiple times
-                ::ember::engine::scheduler::exec(
+                ::hg::engine::scheduler::exec(
                     []() {
                         Engine::getEngine()->getEmitter().emit(core::SignalShutdownEvent {});
                     }

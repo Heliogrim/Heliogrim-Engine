@@ -4,7 +4,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include "PrototypeBinding.hpp"
 
-namespace ember::engine::gfx::shader {
+namespace hg::engine::gfx::shader {
     class Prototype {
     public:
         /**

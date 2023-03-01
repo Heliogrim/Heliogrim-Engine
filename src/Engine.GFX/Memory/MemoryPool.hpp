@@ -7,7 +7,7 @@
 #include "MemoryLayout.hpp"
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx::memory {
+namespace hg::engine::gfx::memory {
     class MemoryPool {
     public:
         using this_type = MemoryPool;

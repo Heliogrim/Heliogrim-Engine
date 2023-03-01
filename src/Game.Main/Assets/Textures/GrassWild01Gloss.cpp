@@ -1,10 +1,10 @@
 #include "GrassWild01Gloss.hpp"
 #include "../Images/GrassWild01Gloss.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
-using namespace ember::game::assets::texture;
-using namespace ember;
+using namespace hg::game::assets::texture;
+using namespace hg;
 
 GrassWild01Gloss::GrassWild01Gloss() :
     TextureAsset(

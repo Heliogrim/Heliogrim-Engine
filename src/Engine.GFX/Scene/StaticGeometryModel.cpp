@@ -1,6 +1,6 @@
 #include "StaticGeometryModel.hpp"
 
-#include <Ember/StaticGeometryComponent.hpp>
+#include <Heliogrim/StaticGeometryComponent.hpp>
 #include <Engine.Assets/Database/AssetDatabaseQuery.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
@@ -16,8 +16,8 @@
 #include "../Buffer/Buffer.hpp"
 #include "Engine.GFX.Glow.3D/Renderer/State/RevSfMtt.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 StaticGeometryModel::StaticGeometryModel(const ptr<SceneComponent> owner_) :
     GeometryModel(owner_) {}
@@ -28,7 +28,7 @@ StaticGeometryModel::~StaticGeometryModel() {
 
 void StaticGeometryModel::tidy() {}
 
-void StaticGeometryModel::create(const ptr<::ember::engine::scene::Scene> scene_) {
+void StaticGeometryModel::create(const ptr<::hg::engine::scene::Scene> scene_) {
 
     auto* origin { static_cast<ptr<StaticGeometryComponent>>(_owner) };
 
@@ -55,12 +55,12 @@ void StaticGeometryModel::create(const ptr<::ember::engine::scene::Scene> scene_
     }
 }
 
-void StaticGeometryModel::update(const ptr<::ember::engine::scene::Scene> scene_) {}
+void StaticGeometryModel::update(const ptr<::hg::engine::scene::Scene> scene_) {}
 
-void StaticGeometryModel::destroy(const ptr<::ember::engine::scene::Scene> scene_) {}
+void StaticGeometryModel::destroy(const ptr<::hg::engine::scene::Scene> scene_) {}
 
 Vector<render::RenderDataToken> StaticGeometryModel::providedToken() const noexcept {
-    using namespace ::ember::engine::gfx::render;
+    using namespace ::hg::engine::gfx::render;
     return { StaticModelGeometry, StaticModelTransform };
 }
 
@@ -89,7 +89,7 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
         /**
          * On cache miss create new instance and store back for further usage
          */
-        result = EmberObject::create<StaticGeometryBatch>();
+        result = HeliogrimObject::create<StaticGeometryBatch>();
         state_->cacheCtrl.cache()->store(reinterpret_cast<ptrdiff_t>(owner()), ptr<cache::ModelBatch> { result });
         // TODO: Check whether we can improve storing a copy of the pointer, cause value copy currently requires a explicit copy
     }

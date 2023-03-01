@@ -2,7 +2,7 @@
 
 #include "RecordSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class RootSlot final :
         public RecordSlot {
     public:

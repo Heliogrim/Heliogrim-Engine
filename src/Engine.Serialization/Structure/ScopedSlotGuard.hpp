@@ -4,7 +4,7 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     enum class ScopedSlotGuardMode : bool {
         eRead = false,
         eWrite = true

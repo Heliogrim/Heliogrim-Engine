@@ -4,7 +4,7 @@
 #include "Types.hpp"
 #include "Wrapper.hpp"
 
-namespace ember {
+namespace hg {
     template <typename Ty, class UTy = u8>
     struct Flag {
         static_assert(_STD is_enum<Ty>::value, "Enumeration required.");
@@ -260,6 +260,6 @@ namespace ember {
 }
 
 template <typename Ty, class UTy>
-ember::Flag<Ty, UTy> operator|(const Ty& left_, const Ty& right_) {
-    return ember::Flag<Ty, UTy> { left_ } |= right_;
+hg::Flag<Ty, UTy> operator|(const Ty& left_, const Ty& right_) {
+    return hg::Flag<Ty, UTy> { left_ } |= right_;
 }

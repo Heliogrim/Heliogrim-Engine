@@ -5,7 +5,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/Collection/RingBuffer.hpp>
 
-namespace ember::engine::scheduler::task {
+namespace hg::engine::scheduler::task {
     class SignaledQueue final {
     public:
         using value_type = SignaledQueue;

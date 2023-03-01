@@ -25,22 +25,22 @@
 
 #include "__macro.hpp"
 #include "RevDepthSharedNode.hpp"
-#include "Ember/StaticGeometryComponent.hpp"
+#include "Heliogrim/StaticGeometryComponent.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
 #include "Engine.GFX/Scene/StaticGeometryModel.hpp"
-#include "Engine.Reflect/EmberReflect.hpp"
+#include "Engine.Reflect/HeliogrimReflect.hpp"
 #include <Engine.GFX/Scene/StaticGeometryBatch.hpp>
 #include <Engine.GFX.Glow/Texture/RevVirtualMarkerTexture.hpp>
 
-using namespace ember::engine::gfx::glow::render;
-using namespace ember::engine::gfx::render;
-using namespace ember;
+using namespace hg::engine::gfx::glow::render;
+using namespace hg::engine::gfx::render;
+using namespace hg;
 
 RevDepthStaticNode::RevDepthStaticNode(const ptr<RevDepthSharedNode> sharedNode_) :
     RenderStageNode(),
     _modelTypes(
         {
-            EmberClass::stid<StaticGeometryModel>()
+            HeliogrimClass::stid<StaticGeometryModel>()
         }
     ),
     _sharedNode(sharedNode_) {}

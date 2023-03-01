@@ -1,7 +1,7 @@
 #include "ImageFileTypes.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 const engine::res::FileTypeId ImageFileType::Exr { "exr"_typeId, ".exr" };
 const engine::res::FileTypeId ImageFileType::Hdr { "hdr"_typeId, ".hdr" };

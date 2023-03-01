@@ -1,6 +1,6 @@
 #include "AssetInit.hpp"
 
-#include <Ember/Ember.hpp>
+#include <Heliogrim/Heliogrim.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -10,134 +10,134 @@
 #include <filesystem>
 #include <fstream>
 
-#include "Ember.Default/Assets/Fonts/CascadiaCode.hpp"
-#include "Ember.Default/Assets/GfxMaterials/DefaultSkybox.hpp"
-#include "Ember.Default/Assets/Images/Brand.hpp"
-#include "Ember.Default/Assets/Images/DefaultMetalness.hpp"
-#include "Ember.Default/Assets/Images/DefaultRoughness.hpp"
-#include "Ember.Default/Assets/Images/Directory.hpp"
-#include "Ember.Default/Assets/Images/FolderAnimation.hpp"
-#include "Ember.Default/Assets/Images/FolderAudio.hpp"
-#include "Ember.Default/Assets/Images/FolderConfig.hpp"
-#include "Ember.Default/Assets/Images/FolderContent.hpp"
-#include "Ember.Default/Assets/Images/FolderCore.hpp"
-#include "Ember.Default/Assets/Images/FolderDatabase.hpp"
-#include "Ember.Default/Assets/Images/FolderDebug.hpp"
-#include "Ember.Default/Assets/Images/FolderEnvironment.hpp"
-#include "Ember.Default/Assets/Images/FolderError.hpp"
-#include "Ember.Default/Assets/Images/FolderFont.hpp"
-#include "Ember.Default/Assets/Images/FolderGenerator.hpp"
-#include "Ember.Default/Assets/Images/FolderImages.hpp"
-#include "Ember.Default/Assets/Images/FolderImport.hpp"
-#include "Ember.Default/Assets/Images/FolderLib.hpp"
-#include "Ember.Default/Assets/Images/FolderLog.hpp"
-#include "Ember.Default/Assets/Images/FolderMeta.hpp"
-#include "Ember.Default/Assets/Images/FolderPackages.hpp"
-#include "Ember.Default/Assets/Images/FolderResource.hpp"
-#include "Ember.Default/Assets/Images/FolderScripts.hpp"
-#include "Ember.Default/Assets/Images/FolderShader.hpp"
-#include "Ember.Default/Assets/Images/FolderShared.hpp"
-#include "Ember.Default/Assets/Images/FolderTemplate.hpp"
-#include "Ember.Default/Assets/Images/FolderVideo.hpp"
-#include "Ember.Default/Assets/Images/Icon3d.hpp"
-#include "Ember.Default/Assets/Images/IconArchitecture.hpp"
-#include "Ember.Default/Assets/Images/IconAudio.hpp"
-#include "Ember.Default/Assets/Images/IconC.hpp"
-#include "Ember.Default/Assets/Images/IconCMake.hpp"
-#include "Ember.Default/Assets/Images/IconCommand.hpp"
-#include "Ember.Default/Assets/Images/IconConsole.hpp"
-#include "Ember.Default/Assets/Images/IconContributing.hpp"
-#include "Ember.Default/Assets/Images/IconCpp.hpp"
-#include "Ember.Default/Assets/Images/IconCSharp.hpp"
-#include "Ember.Default/Assets/Images/IconDatabase.hpp"
-#include "Ember.Default/Assets/Images/IconDiff.hpp"
-#include "Ember.Default/Assets/Images/IconDocument.hpp"
-#include "Ember.Default/Assets/Images/IconFavicon.hpp"
-#include "Ember.Default/Assets/Images/IconFont.hpp"
-#include "Ember.Default/Assets/Images/IconGit.hpp"
-#include "Ember.Default/Assets/Images/IconH.hpp"
-#include "Ember.Default/Assets/Images/IconHpp.hpp"
-#include "Ember.Default/Assets/Images/IconI18n.hpp"
-#include "Ember.Default/Assets/Images/IconImage.hpp"
-#include "Ember.Default/Assets/Images/IconJson.hpp"
-#include "Ember.Default/Assets/Images/IconLib.hpp"
-#include "Ember.Default/Assets/Images/IconLog.hpp"
-#include "Ember.Default/Assets/Images/IconLua.hpp"
-#include "Ember.Default/Assets/Images/IconPdf.hpp"
-#include "Ember.Default/Assets/Images/IconPipeline.hpp"
-#include "Ember.Default/Assets/Images/IconReadme.hpp"
-#include "Ember.Default/Assets/Images/IconSearch.hpp"
-#include "Ember.Default/Assets/Images/IconSettings.hpp"
-#include "Ember.Default/Assets/Images/IconShader.hpp"
-#include "Ember.Default/Assets/Images/IconTemplate.hpp"
-#include "Ember.Default/Assets/Images/IconTodo.hpp"
-#include "Ember.Default/Assets/Images/IconTree.hpp"
-#include "Ember.Default/Assets/Images/IconUrl.hpp"
-#include "Ember.Default/Assets/Images/IconVideo.hpp"
-#include "Ember.Default/Assets/Images/IconZip.hpp"
-#include "Ember.Default/Assets/Textures/DefaultDiffuse.hpp"
-#include "Ember.Default/Assets/Textures/DefaultNormal.hpp"
-#include "Ember.Default/Assets/Textures/DefaultRoughness.hpp"
-#include "Ember.Default/Assets/Textures/Directory.hpp"
-#include "Ember.Default/Assets/Textures/FolderAnimation.hpp"
-#include "Ember.Default/Assets/Textures/FolderAudio.hpp"
-#include "Ember.Default/Assets/Textures/FolderConfig.hpp"
-#include "Ember.Default/Assets/Textures/FolderContent.hpp"
-#include "Ember.Default/Assets/Textures/FolderCore.hpp"
-#include "Ember.Default/Assets/Textures/FolderDatabase.hpp"
-#include "Ember.Default/Assets/Textures/FolderDebug.hpp"
-#include "Ember.Default/Assets/Textures/FolderEnvironment.hpp"
-#include "Ember.Default/Assets/Textures/FolderError.hpp"
-#include "Ember.Default/Assets/Textures/FolderFont.hpp"
-#include "Ember.Default/Assets/Textures/FolderGenerator.hpp"
-#include "Ember.Default/Assets/Textures/FolderImages.hpp"
-#include "Ember.Default/Assets/Textures/FolderImport.hpp"
-#include "Ember.Default/Assets/Textures/FolderLib.hpp"
-#include "Ember.Default/Assets/Textures/FolderLog.hpp"
-#include "Ember.Default/Assets/Textures/FolderMeta.hpp"
-#include "Ember.Default/Assets/Textures/FolderPackages.hpp"
-#include "Ember.Default/Assets/Textures/FolderResource.hpp"
-#include "Ember.Default/Assets/Textures/FolderScripts.hpp"
-#include "Ember.Default/Assets/Textures/FolderShader.hpp"
-#include "Ember.Default/Assets/Textures/FolderShared.hpp"
-#include "Ember.Default/Assets/Textures/FolderTemplate.hpp"
-#include "Ember.Default/Assets/Textures/FolderVideo.hpp"
-#include "Ember.Default/Assets/Textures/Icon3d.hpp"
-#include "Ember.Default/Assets/Textures/IconArchitecture.hpp"
-#include "Ember.Default/Assets/Textures/IconAudio.hpp"
-#include "Ember.Default/Assets/Textures/IconC.hpp"
-#include "Ember.Default/Assets/Textures/IconCMake.hpp"
-#include "Ember.Default/Assets/Textures/IconCommand.hpp"
-#include "Ember.Default/Assets/Textures/IconConsole.hpp"
-#include "Ember.Default/Assets/Textures/IconContributing.hpp"
-#include "Ember.Default/Assets/Textures/IconCpp.hpp"
-#include "Ember.Default/Assets/Textures/IconCSharp.hpp"
-#include "Ember.Default/Assets/Textures/IconDatabase.hpp"
-#include "Ember.Default/Assets/Textures/IconDiff.hpp"
-#include "Ember.Default/Assets/Textures/IconDocument.hpp"
-#include "Ember.Default/Assets/Textures/IconFavicon.hpp"
-#include "Ember.Default/Assets/Textures/IconFont.hpp"
-#include "Ember.Default/Assets/Textures/IconGit.hpp"
-#include "Ember.Default/Assets/Textures/IconH.hpp"
-#include "Ember.Default/Assets/Textures/IconHpp.hpp"
-#include "Ember.Default/Assets/Textures/IconI18n.hpp"
-#include "Ember.Default/Assets/Textures/IconImage.hpp"
-#include "Ember.Default/Assets/Textures/IconJson.hpp"
-#include "Ember.Default/Assets/Textures/IconLib.hpp"
-#include "Ember.Default/Assets/Textures/IconLog.hpp"
-#include "Ember.Default/Assets/Textures/IconLua.hpp"
-#include "Ember.Default/Assets/Textures/IconPdf.hpp"
-#include "Ember.Default/Assets/Textures/IconPipeline.hpp"
-#include "Ember.Default/Assets/Textures/IconReadme.hpp"
-#include "Ember.Default/Assets/Textures/IconSearch.hpp"
-#include "Ember.Default/Assets/Textures/IconSettings.hpp"
-#include "Ember.Default/Assets/Textures/IconShader.hpp"
-#include "Ember.Default/Assets/Textures/IconTemplate.hpp"
-#include "Ember.Default/Assets/Textures/IconTodo.hpp"
-#include "Ember.Default/Assets/Textures/IconTree.hpp"
-#include "Ember.Default/Assets/Textures/IconUrl.hpp"
-#include "Ember.Default/Assets/Textures/IconVideo.hpp"
-#include "Ember.Default/Assets/Textures/IconZip.hpp"
+#include "Heliogrim.Default/Assets/Fonts/CascadiaCode.hpp"
+#include "Heliogrim.Default/Assets/GfxMaterials/DefaultSkybox.hpp"
+#include "Heliogrim.Default/Assets/Images/Brand.hpp"
+#include "Heliogrim.Default/Assets/Images/DefaultMetalness.hpp"
+#include "Heliogrim.Default/Assets/Images/DefaultRoughness.hpp"
+#include "Heliogrim.Default/Assets/Images/Directory.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderAnimation.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderAudio.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderConfig.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderContent.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderCore.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderDatabase.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderDebug.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderEnvironment.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderError.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderFont.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderGenerator.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderImages.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderImport.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderLib.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderLog.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderMeta.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderPackages.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderResource.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderScripts.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderShader.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderShared.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderTemplate.hpp"
+#include "Heliogrim.Default/Assets/Images/FolderVideo.hpp"
+#include "Heliogrim.Default/Assets/Images/Icon3d.hpp"
+#include "Heliogrim.Default/Assets/Images/IconArchitecture.hpp"
+#include "Heliogrim.Default/Assets/Images/IconAudio.hpp"
+#include "Heliogrim.Default/Assets/Images/IconC.hpp"
+#include "Heliogrim.Default/Assets/Images/IconCMake.hpp"
+#include "Heliogrim.Default/Assets/Images/IconCommand.hpp"
+#include "Heliogrim.Default/Assets/Images/IconConsole.hpp"
+#include "Heliogrim.Default/Assets/Images/IconContributing.hpp"
+#include "Heliogrim.Default/Assets/Images/IconCpp.hpp"
+#include "Heliogrim.Default/Assets/Images/IconCSharp.hpp"
+#include "Heliogrim.Default/Assets/Images/IconDatabase.hpp"
+#include "Heliogrim.Default/Assets/Images/IconDiff.hpp"
+#include "Heliogrim.Default/Assets/Images/IconDocument.hpp"
+#include "Heliogrim.Default/Assets/Images/IconFavicon.hpp"
+#include "Heliogrim.Default/Assets/Images/IconFont.hpp"
+#include "Heliogrim.Default/Assets/Images/IconGit.hpp"
+#include "Heliogrim.Default/Assets/Images/IconH.hpp"
+#include "Heliogrim.Default/Assets/Images/IconHpp.hpp"
+#include "Heliogrim.Default/Assets/Images/IconI18n.hpp"
+#include "Heliogrim.Default/Assets/Images/IconImage.hpp"
+#include "Heliogrim.Default/Assets/Images/IconJson.hpp"
+#include "Heliogrim.Default/Assets/Images/IconLib.hpp"
+#include "Heliogrim.Default/Assets/Images/IconLog.hpp"
+#include "Heliogrim.Default/Assets/Images/IconLua.hpp"
+#include "Heliogrim.Default/Assets/Images/IconPdf.hpp"
+#include "Heliogrim.Default/Assets/Images/IconPipeline.hpp"
+#include "Heliogrim.Default/Assets/Images/IconReadme.hpp"
+#include "Heliogrim.Default/Assets/Images/IconSearch.hpp"
+#include "Heliogrim.Default/Assets/Images/IconSettings.hpp"
+#include "Heliogrim.Default/Assets/Images/IconShader.hpp"
+#include "Heliogrim.Default/Assets/Images/IconTemplate.hpp"
+#include "Heliogrim.Default/Assets/Images/IconTodo.hpp"
+#include "Heliogrim.Default/Assets/Images/IconTree.hpp"
+#include "Heliogrim.Default/Assets/Images/IconUrl.hpp"
+#include "Heliogrim.Default/Assets/Images/IconVideo.hpp"
+#include "Heliogrim.Default/Assets/Images/IconZip.hpp"
+#include "Heliogrim.Default/Assets/Textures/DefaultDiffuse.hpp"
+#include "Heliogrim.Default/Assets/Textures/DefaultNormal.hpp"
+#include "Heliogrim.Default/Assets/Textures/DefaultRoughness.hpp"
+#include "Heliogrim.Default/Assets/Textures/Directory.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderAnimation.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderAudio.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderConfig.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderContent.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderCore.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderDatabase.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderDebug.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderEnvironment.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderError.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderFont.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderGenerator.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderImages.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderImport.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderLib.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderLog.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderMeta.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderPackages.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderResource.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderScripts.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderShader.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderShared.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderTemplate.hpp"
+#include "Heliogrim.Default/Assets/Textures/FolderVideo.hpp"
+#include "Heliogrim.Default/Assets/Textures/Icon3d.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconArchitecture.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconAudio.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconC.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconCMake.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconCommand.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconConsole.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconContributing.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconCpp.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconCSharp.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconDatabase.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconDiff.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconDocument.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconFavicon.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconFont.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconGit.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconH.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconHpp.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconI18n.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconImage.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconJson.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconLib.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconLog.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconLua.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconPdf.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconPipeline.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconReadme.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconSearch.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconSettings.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconShader.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconTemplate.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconTodo.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconTree.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconUrl.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconVideo.hpp"
+#include "Heliogrim.Default/Assets/Textures/IconZip.hpp"
 #include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Assets/Database/AssetDatabase.hpp"
@@ -157,9 +157,9 @@
 #include "Game.Main/Assets/Textures/DefaultMetalness.hpp"
 #include "Game.Main/Assets/Textures/DefaultSkybox.hpp"
 
-using namespace ember::editor::boot;
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::editor::boot;
+using namespace hg::engine;
+using namespace hg;
 
 using path = _STD filesystem::path;
 
@@ -293,7 +293,7 @@ void indexLoadable(cref<path> path_, ref<Vector<path>> backlog_) {
 
 static void initMaterialDefaults() {
 
-    using namespace ::ember::game::assets;
+    using namespace ::hg::game::assets;
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
     auto* const db = Engine::getEngine()->getAssets()->getDatabase();
 
@@ -346,7 +346,7 @@ static void initMaterialDefaults() {
 
 static void initSkyboxDefaults() {
 
-    using namespace ::ember::game::assets;
+    using namespace ::hg::game::assets;
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
     auto* const db = Engine::getEngine()->getAssets()->getDatabase();
 
@@ -368,7 +368,7 @@ static void initSkyboxDefaults() {
 
 static void initDirectoryIcons() {
 
-    using namespace ::ember::game::assets;
+    using namespace ::hg::game::assets;
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
     auto* const db = Engine::getEngine()->getAssets()->getDatabase();
 
@@ -548,7 +548,7 @@ static void initDirectoryIcons() {
 
 static void initFileIcons() {
 
-    using namespace ::ember::game::assets;
+    using namespace ::hg::game::assets;
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
     auto* const db = Engine::getEngine()->getAssets()->getDatabase();
 
@@ -818,7 +818,7 @@ static void initFileIcons() {
 
 static void initFontDefaults() {
 
-    using namespace ::ember::game::assets;
+    using namespace ::hg::game::assets;
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
     auto* const db = Engine::getEngine()->getAssets()->getDatabase();
 
@@ -832,7 +832,7 @@ static void initFontDefaults() {
 
 static void initStaticGeometryDefaults() {
 
-    using namespace ::ember::game::assets;
+    using namespace ::hg::game::assets;
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
     auto* const db = Engine::getEngine()->getAssets()->getDatabase();
 

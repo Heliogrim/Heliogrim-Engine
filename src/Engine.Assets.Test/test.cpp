@@ -3,8 +3,8 @@
 #include <Engine.Assets/Database/AssetDatabase.hpp>
 #include <Engine.Assets/Database/AssetDatabaseQuery.hpp>
 
-using namespace ember::engine::assets;
-using namespace ember;
+using namespace hg::engine::assets;
+using namespace hg;
 
 TEST(__DummyTest__, Exists) {
     EXPECT_TRUE(true);
@@ -44,7 +44,7 @@ namespace AssetModule {
 
             //
             auto guid = generate_asset_guid();
-            auto* payload { EmberObject::create<PayloadType>(guid) };
+            auto* payload { HeliogrimObject::create<PayloadType>(guid) };
 
             //
             EXPECT_FALSE(db.has(guid));
@@ -63,7 +63,7 @@ namespace AssetModule {
 
             //
             auto guid = generate_asset_guid();
-            auto* payload { EmberObject::create<PayloadType>(guid) };
+            auto* payload { HeliogrimObject::create<PayloadType>(guid) };
 
             //
             EXPECT_FALSE(db.has(guid));
@@ -83,7 +83,7 @@ namespace AssetModule {
 
             //
             auto guid = generate_asset_guid();
-            auto* payload { EmberObject::create<PayloadType>(guid) };
+            auto* payload { HeliogrimObject::create<PayloadType>(guid) };
 
             //
             EXPECT_FALSE(db.has(guid));
@@ -95,7 +95,7 @@ namespace AssetModule {
             EXPECT_FALSE(db.has(guid));
 
             //
-            EmberObject::destroy(_STD move(payload));
+            HeliogrimObject::destroy(_STD move(payload));
             db.tidy();
         }
 
@@ -119,7 +119,7 @@ namespace AssetModule {
 
             //
             auto guid = generate_asset_guid();
-            auto* payload { EmberObject::create<PayloadType>(guid) };
+            auto* payload { HeliogrimObject::create<PayloadType>(guid) };
 
             //
             engine::assets::AssetDatabaseQuery query = db.query(guid);
@@ -141,7 +141,7 @@ namespace AssetModule {
 
             //
             auto guid = generate_asset_guid();
-            auto* payload { EmberObject::create<PayloadType>(guid) };
+            auto* payload { HeliogrimObject::create<PayloadType>(guid) };
 
             //
             engine::assets::AssetDatabaseQuery query = db.query(guid);
@@ -164,7 +164,7 @@ namespace AssetModule {
 
             //
             auto guid = generate_asset_guid();
-            auto* payload { EmberObject::create<PayloadType>(guid) };
+            auto* payload { HeliogrimObject::create<PayloadType>(guid) };
 
             //
             engine::assets::AssetDatabaseQuery query = db.query(guid);
@@ -178,7 +178,7 @@ namespace AssetModule {
             EXPECT_EQ(query.remove(), payload);
 
             //
-            EmberObject::destroy(_STD move(payload));
+            HeliogrimObject::destroy(_STD move(payload));
             db.tidy();
         }
 

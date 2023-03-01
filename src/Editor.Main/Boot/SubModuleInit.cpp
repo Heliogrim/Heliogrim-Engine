@@ -5,8 +5,8 @@
 
 #include "../Editor.hpp"
 
-using namespace ember::editor::boot;
-using namespace ember;
+using namespace hg::editor::boot;
+using namespace hg;
 
 void editor::boot::preInitSubModules() {
 

@@ -6,11 +6,11 @@
 #include <Engine.Common/Math/Extent.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
 
-namespace ember::engine::platform {
+namespace hg::engine::platform {
     class NativeWindow;
 }
 
-namespace ember::engine {
+namespace hg::engine {
     class __declspec(novtable) Platform {
     public:
         using this_type = Platform;
@@ -38,12 +38,12 @@ namespace ember::engine {
         [[nodiscard]] virtual ref<scheduler::task::SignaledQueue> platformQueue() const noexcept = 0;
 
     public:
-        [[nodiscard]] virtual ::ember::concurrent::future<uptr<platform::NativeWindow>> makeNativeWindow(
+        [[nodiscard]] virtual ::hg::concurrent::future<uptr<platform::NativeWindow>> makeNativeWindow(
             const string_view title_,
             cref<math::iExtent2D> extent_
         ) = 0;
 
-        [[nodiscard]] virtual ::ember::concurrent::future<bool> destroyNativeWindow(
+        [[nodiscard]] virtual ::hg::concurrent::future<bool> destroyNativeWindow(
             mref<uptr<platform::NativeWindow>> window_
         ) = 0;
     };

@@ -7,7 +7,7 @@
 
 #include "../AssetConcept.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class Texture :
         public Asset {
     public:
@@ -87,10 +87,10 @@ namespace ember::engine::assets {
     };
 }
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     template <>
-    struct MetaStreamLoaderAsset<::ember::engine::assets::Texture> {
-        using type = ::ember::engine::assets::Texture;
+    struct MetaStreamLoaderAsset<::hg::engine::assets::Texture> {
+        using type = ::hg::engine::assets::Texture;
         inline static constexpr bool value = true;
     };
 }

@@ -1,7 +1,7 @@
 #include "EmptyPipelineStage.hpp"
 
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 EmptyPipelineStage::EmptyPipelineStage(cref<identifier_type> identifier_, pipeline_handle_type pipeline_) :
     PipelineStage(identifier_, pipeline_) {}

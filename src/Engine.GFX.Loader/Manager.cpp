@@ -7,8 +7,8 @@
 #include "Material/MaterialLoader.hpp"
 #include "Texture/TextureLoader.hpp"
 
-using namespace ember::engine::gfx::loader;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg;
 
 void engine::gfx::loader::register_loader(
     ref<resource::LoaderManager> manager_,

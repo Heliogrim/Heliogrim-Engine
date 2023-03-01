@@ -7,8 +7,8 @@
 #include <cassert>
 #endif
 
-using namespace ember::engine::scheduler::fiber;
-using namespace ember;
+using namespace hg::engine::scheduler::fiber;
+using namespace hg;
 
 void FiberLaunchPad::operator()() {
     DEBUG_ASSERT(self->handle != ::GetFiberData(), "Current fiber and next fiber must never be the same.")
