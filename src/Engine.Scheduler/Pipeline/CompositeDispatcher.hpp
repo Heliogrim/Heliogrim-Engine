@@ -2,7 +2,7 @@
 
 #include "../Task/Task.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class __declspec(novtable) CompositeDispatcher {
     public:
         using task_type = task::TaskDelegate;

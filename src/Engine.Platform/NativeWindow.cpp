@@ -1,7 +1,7 @@
 #include "NativeWindow.hpp"
 
-using namespace ember::engine::platform;
-using namespace ember;
+using namespace hg::engine::platform;
+using namespace hg;
 
 NativeWindow::NativeWindow() = default;
 

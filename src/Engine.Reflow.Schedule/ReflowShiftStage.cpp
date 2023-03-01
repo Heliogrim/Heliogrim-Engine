@@ -4,9 +4,9 @@
 #include <Engine.Reflow/Window/BoundWindow.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
 
-using namespace ember::engine::reflow::schedule;
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::reflow::schedule;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 ReflowShiftStage::ReflowShiftStage(
     cref<StageIdentifier> identifier_,
@@ -22,7 +22,7 @@ void ReflowShiftStage::staticDispatch(const non_owning_rptr<const scheduler::Sta
             []() {
 
                 const auto* const engine = Engine::getEngine();
-                const auto& manager = ::ember::engine::reflow::WindowManager::get();
+                const auto& manager = ::hg::engine::reflow::WindowManager::get();
 
                 if (!manager) {
                     // TODO: return false;

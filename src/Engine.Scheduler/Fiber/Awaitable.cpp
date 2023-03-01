@@ -1,7 +1,7 @@
 #include "Awaitable.hpp"
 
-using namespace ember::engine::scheduler::fiber;
-using namespace ember;
+using namespace hg::engine::scheduler::fiber;
+using namespace hg;
 
 void FiberAwaitable::reset() noexcept {
     mask = FiberAwaitableBits::eUndefined;

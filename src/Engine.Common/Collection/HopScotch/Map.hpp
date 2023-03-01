@@ -4,7 +4,7 @@
 
 #include "HopScotch.hpp"
 
-namespace ember::hopscotch {
+namespace hg::hopscotch {
     template <
         typename KeyType_,
         typename ValueType_,

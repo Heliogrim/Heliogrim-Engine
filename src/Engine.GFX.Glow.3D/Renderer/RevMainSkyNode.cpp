@@ -40,15 +40,15 @@
 #include "Engine.GFX/Texture/VirtualTextureView.hpp"
 #include "Engine.GFX.Loader/Texture/Traits.hpp"
 
-using namespace ember::engine::gfx::glow::render;
-using namespace ember::engine::gfx::render;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::glow::render;
+using namespace hg::engine::gfx::render;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 RevMainSkyNode::RevMainSkyNode(const ptr<RevMainSharedNode> sharedNode_) :
     _modelTypes(
         {
-            EmberClass::stid<SkyboxModel>()
+            HeliogrimClass::stid<SkyboxModel>()
         }
     ),
     _sharedNode(sharedNode_) {}

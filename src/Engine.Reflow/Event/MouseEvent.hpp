@@ -2,6 +2,6 @@
 
 #include <Engine.Input/MouseButtonEvent.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     using MouseEvent = input::event::MouseButtonEvent;
 }

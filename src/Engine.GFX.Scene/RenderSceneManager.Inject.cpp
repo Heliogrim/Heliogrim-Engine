@@ -1,7 +1,7 @@
-#include <Ember/SkyboxComponent.hpp>
-#include <Ember/StaticGeometryComponent.hpp>
-#include <Ember/UIComponent.hpp>
-#include <Ember/Components/CameraComponent.hpp>
+#include <Heliogrim/SkyboxComponent.hpp>
+#include <Heliogrim/StaticGeometryComponent.hpp>
+#include <Heliogrim/UIComponent.hpp>
+#include <Heliogrim/Components/CameraComponent.hpp>
 #include <Engine.GFX/Scene/SceneTag.hpp>
 #include <Engine.GFX/Scene/StaticGeometryModel.hpp>
 #include <Engine.GFX/Scene/SkyboxModel.hpp>
@@ -11,13 +11,13 @@
 
 #include "RenderSceneManager.hpp"
 
-using namespace ember::engine::gfx::scene;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::scene;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 void RenderSceneManager::injectSceneHooks(const ptr<RenderScene> renderScene_) {
 
-    auto* const scene { static_cast<const ptr<::ember::engine::scene::RevScene>>(renderScene_) };
+    auto* const scene { static_cast<const ptr<::hg::engine::scene::RevScene>>(renderScene_) };
     constexpr GfxSceneTag tag {};
 
     /**/
@@ -25,7 +25,7 @@ void RenderSceneManager::injectSceneHooks(const ptr<RenderScene> renderScene_) {
     scene->setNodeType(
         tag,
         CameraComponent::typeId,
-        EmberObject::create<CameraModel, const ptr<SceneComponent>>
+        HeliogrimObject::create<CameraModel, const ptr<SceneComponent>>
     );
 
     /**/
@@ -33,12 +33,12 @@ void RenderSceneManager::injectSceneHooks(const ptr<RenderScene> renderScene_) {
     scene->setNodeType(
         tag,
         StaticGeometryComponent::typeId,
-        EmberObject::create<StaticGeometryModel, const ptr<SceneComponent>>
+        HeliogrimObject::create<StaticGeometryModel, const ptr<SceneComponent>>
     );
     scene->setNodeType(
         tag,
         SkyboxComponent::typeId,
-        EmberObject::create<SkyboxModel, const ptr<SceneComponent>>
+        HeliogrimObject::create<SkyboxModel, const ptr<SceneComponent>>
     );
 
     /**/
@@ -46,6 +46,6 @@ void RenderSceneManager::injectSceneHooks(const ptr<RenderScene> renderScene_) {
     scene->setNodeType(
         tag,
         UIComponent::typeId,
-        EmberObject::create<glow::ui::UISceneModel, const ptr<SceneComponent>>
+        HeliogrimObject::create<glow::ui::UISceneModel, const ptr<SceneComponent>>
     );
 }

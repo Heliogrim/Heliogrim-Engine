@@ -6,7 +6,7 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     /**
      * Forward Declaration
      */
@@ -14,7 +14,7 @@ namespace ember::engine::gfx {
     class SceneNodeModel;
 }
 
-namespace ember::engine::gfx::render {
+namespace hg::engine::gfx::render {
     class __declspec(novtable) RenderStageNode {
     public:
         using this_type = RenderStageNode;

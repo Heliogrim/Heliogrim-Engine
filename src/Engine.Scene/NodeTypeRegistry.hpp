@@ -6,15 +6,15 @@
 /**
  * Forward Declaration
  */
-namespace ember {
+namespace hg {
     class SceneComponent;
 }
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class SceneNodeModel;
 }
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     /**
      * TODO: Check whether we want a dynamic lookup container to enable more than fixed use modules
      */

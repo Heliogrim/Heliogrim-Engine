@@ -2,9 +2,9 @@
 
 #include "../Panel/ObjectEditorPanel.hpp"
 
-using namespace ember::editor::ui;
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 ObjectEditor::ObjectEditor() :
     _panels(),

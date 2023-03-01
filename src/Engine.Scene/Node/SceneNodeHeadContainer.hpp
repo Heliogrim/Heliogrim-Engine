@@ -8,7 +8,7 @@
 
 #include "SceneNodeHead.hpp"
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class SceneNodeHeadContainer {
     public:
         using type_traits = scene_node_shared_traits;

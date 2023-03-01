@@ -1,7 +1,7 @@
 #pragma once
 
 /** . */
-namespace ember::hash {
+namespace hg::hash {
     /**
      * Hash combine
      *

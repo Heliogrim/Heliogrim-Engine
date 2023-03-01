@@ -5,7 +5,7 @@
 #include "__fwd.hpp"
 #include "Resource.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     template <class Type_>
     concept IsResource = _STD derived_from<Type_, ResourceBase>;
 

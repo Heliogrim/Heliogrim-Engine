@@ -1,11 +1,11 @@
-#include <Ember/Actor.hpp>
-#include <Ember/ActorComponent.hpp>
+#include <Heliogrim/Actor.hpp>
+#include <Heliogrim/ActorComponent.hpp>
 
 #include "HierarchyResolver.hpp"
 #include "SceneViewEntry.hpp"
 
-using namespace ember::editor::ui;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg;
 
 template <>
 void HierarchyResolver<sptr<SceneViewEntry>>::operator()(

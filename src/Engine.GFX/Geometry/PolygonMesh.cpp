@@ -2,8 +2,8 @@
 
 #include "../Buffer/VirtualBufferView.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 PolygonMesh::PolygonMesh(mref<vertex_buffer_type> vertices_, mref<index_buffer_type> indices_) noexcept :
     _vertices(_STD move(vertices_)),

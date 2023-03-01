@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
 
-namespace ember::engine::core::schedule {
+namespace hg::engine::core::schedule {
     class ActorUpdateStage final :
         public scheduler::PipelineStage {
     public:

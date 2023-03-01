@@ -2,7 +2,7 @@
 
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
 
-namespace ember::engine::gfx::schedule {
+namespace hg::engine::gfx::schedule {
     class RenderScenePipeline final :
         public scheduler::StagePipeline {
     public:

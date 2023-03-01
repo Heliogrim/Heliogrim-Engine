@@ -4,7 +4,7 @@
 
 #include "EventTypeId.hpp"
 
-namespace ember {
+namespace hg {
     class __declspec(novtable) Event { };
 
     class __declspec(novtable) StatelessEvent : public Event {};
@@ -42,7 +42,7 @@ namespace ember {
     };
 
     template <class EventType_>
-    concept IsEvent = ember::HasStaticType<EventType_, event_type_id>;
+    concept IsEvent = hg::HasStaticType<EventType_, event_type_id>;
 
     template <class EventType_>
     concept IsStatefulEvent = IsEvent<EventType_> && requires(const EventType_ obj) {

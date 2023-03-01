@@ -4,21 +4,21 @@
 
 #include "SceneViewEye.hpp"
 
-namespace ember {
+namespace hg {
     class Actor;
 }
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class IRenderScene;
 }
 
-namespace ember::engine::gfx::scene {
+namespace hg::engine::gfx::scene {
     class SceneView :
         public SceneViewEye {
     public:
         using this_type = SceneView;
 
-        using RenderScene = ::ember::engine::scene::IRenderScene;
+        using RenderScene = ::hg::engine::scene::IRenderScene;
 
     public:
         SceneView(const non_owning_rptr<Actor> actor_, const non_owning_rptr<RenderScene> scene_);

@@ -4,7 +4,7 @@
 #include <cmath>
 #include <type_traits>
 
-namespace ember {
+namespace hg {
     struct uint128_t {
         constexpr uint128_t() noexcept = default;
 
@@ -83,8 +83,8 @@ namespace ember {
 
 namespace std {
     template <>
-    struct is_integral<::ember::uint128_t> : _STD true_type {};
+    struct is_integral<::hg::uint128_t> : _STD true_type {};
 
     template <>
-    struct is_unsigned<::ember::uint128_t> : _STD true_type {};
+    struct is_unsigned<::hg::uint128_t> : _STD true_type {};
 }

@@ -19,7 +19,7 @@
 #include "../Node/ShadowSceneNode.hpp"
 #include "../Node/SpartialSceneNode.hpp"
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     /**
      * Forward Declaration
      */

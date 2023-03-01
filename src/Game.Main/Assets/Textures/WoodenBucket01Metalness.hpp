@@ -1,8 +1,8 @@
 #pragma once
-#include <Ember/AssetAutoGuid.hpp>
-#include <Ember/TextureAsset.hpp>
+#include <Heliogrim/AssetAutoGuid.hpp>
+#include <Heliogrim/TextureAsset.hpp>
 
-namespace ember::game::assets::texture {
+namespace hg::game::assets::texture {
     class WoodenBucket01Metalness :
         public TextureAsset,
         public AssetAutoGuid<WoodenBucket01Metalness> {

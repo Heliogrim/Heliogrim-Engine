@@ -1,7 +1,7 @@
 #include "DiscreteBindingGroup.hpp"
 
-using namespace ember::engine::gfx::shader;
-using namespace ember;
+using namespace hg::engine::gfx::shader;
+using namespace hg;
 
 DiscreteBindingGroup::DiscreteBindingGroup(
     cref<ShaderBindingGroup> super_,

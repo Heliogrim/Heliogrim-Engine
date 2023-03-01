@@ -3,8 +3,8 @@
 #include "Engine.Serialization/Layout/DataLayout.hpp"
 #include "Engine.Serialization/Layout/DataLayoutBase.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 uptr<LayoutManager> LayoutManager::_instance = nullptr;
 
@@ -147,7 +147,7 @@ bool LayoutManager::storeLayout(string_view symbol_, cref<sptr<DataLayoutBase>> 
     return LayoutManager::storeLayout(string { symbol_ }, layout_);
 }
 
-bool LayoutManager::storeLayout(const ptr<const EmberClass> class_, cref<sptr<DataLayoutBase>> layout_) {
+bool LayoutManager::storeLayout(const ptr<const HeliogrimClass> class_, cref<sptr<DataLayoutBase>> layout_) {
 
     if (_classMapping.contains(class_)) {
         return false;
@@ -181,7 +181,7 @@ cref<sptr<DataLayoutBase>> LayoutManager::getLayout(string_view symbol_) const n
     return LayoutManager::getLayout(string { symbol_ });
 }
 
-cref<sptr<DataLayoutBase>> LayoutManager::getLayout(const ptr<const EmberClass> class_) const noexcept {
+cref<sptr<DataLayoutBase>> LayoutManager::getLayout(const ptr<const HeliogrimClass> class_) const noexcept {
     const auto it { _classMapping.find(class_) };
     if (it != _classMapping.end()) [[likely]]
     {

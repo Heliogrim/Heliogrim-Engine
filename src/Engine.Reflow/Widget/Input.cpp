@@ -1,7 +1,7 @@
 #include "Input.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 bool InputBase::isEnabled() const noexcept {
     return _status != InputControlStatus::eDisabled;

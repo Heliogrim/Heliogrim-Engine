@@ -2,7 +2,7 @@
 #include "ComputePipeline.hpp"
 #include "Device/Device.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class VkComputePipeline final :
         public ComputePipeline {
     public:

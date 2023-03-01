@@ -2,7 +2,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 
-namespace ember {
+namespace hg {
     struct event_type_id :
         type_id {
         explicit constexpr event_type_id(const type_id& other_) :
@@ -15,10 +15,10 @@ namespace ember {
 
 namespace std {
     template <>
-    struct hash<ember::event_type_id> :
-        public hash<ember::type_id> {
-        [[nodiscard]] _STD size_t operator()(ember::cref<ember::event_type_id> value_) const noexcept {
-            return static_cast<ember::cref<_STD hash<ember::type_id>>>(*this)(value_);
+    struct hash<hg::event_type_id> :
+        public hash<hg::type_id> {
+        [[nodiscard]] _STD size_t operator()(hg::cref<hg::event_type_id> value_) const noexcept {
+            return static_cast<hg::cref<_STD hash<hg::type_id>>>(*this)(value_);
         }
     };
 }

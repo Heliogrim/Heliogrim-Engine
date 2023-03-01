@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember {
+namespace hg {
     struct nothrow_t {
         constexpr explicit nothrow_t() = default;
     };

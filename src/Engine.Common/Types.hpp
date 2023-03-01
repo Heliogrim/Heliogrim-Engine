@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember {
+namespace hg {
     typedef signed char s8;
     typedef short s16;
     typedef int s32;
@@ -96,7 +96,7 @@ namespace ember {
 /* Special Type Definitions (Conflict with _STD)    */
 /*                                                  */
 
-namespace ember::_ {
+namespace hg::_ {
     // @see <cstddef>
     enum class byte : u8 {};
 }

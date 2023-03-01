@@ -1,7 +1,7 @@
 #pragma once
 #include "Event.hpp"
 
-namespace ember {
+namespace hg {
     class EcsStartupEvent final :
         public StatelessEvent {
     public:

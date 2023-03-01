@@ -1,7 +1,7 @@
 #include "CommandBatch.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 CommandBatch::CommandBatch(const CommandBuffer& buffer_) :
     _buffers({ buffer_ }),

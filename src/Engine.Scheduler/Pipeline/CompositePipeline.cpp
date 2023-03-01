@@ -9,8 +9,8 @@
 #include "Composite/CompositeSlot.hpp"
 #include "Engine.Scheduler/Process/Schedule.hpp"
 
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 CompositePipeline::CompositePipeline(const non_owning_rptr<Schedule> schedule_) :
     _schedule(schedule_),

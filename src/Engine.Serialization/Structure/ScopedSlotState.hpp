@@ -4,12 +4,12 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Flag.hpp>
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     struct StructureSlotState;
     class StructureSlotBase;
 }
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     enum class ScopedSlotStateFlag : bool {
         eUndefined = false,
         /**/

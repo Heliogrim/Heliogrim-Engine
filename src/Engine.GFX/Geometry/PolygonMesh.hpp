@@ -3,7 +3,7 @@
 #include "Mesh.hpp"
 #include "../Buffer/VirtualBufferView.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class PolygonMesh :
         public Mesh {
     public:

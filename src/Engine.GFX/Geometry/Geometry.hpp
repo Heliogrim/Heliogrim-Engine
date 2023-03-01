@@ -3,7 +3,7 @@
 
 #include "Mesh.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Geometry {
     public:
         using value_type = Geometry;

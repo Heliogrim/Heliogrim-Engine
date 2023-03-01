@@ -2,7 +2,7 @@
 
 #include "Shader.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class ShaderSlot {
     public:
         /**

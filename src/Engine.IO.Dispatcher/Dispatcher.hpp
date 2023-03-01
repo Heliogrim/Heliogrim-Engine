@@ -6,11 +6,11 @@
 #include <Engine.Common/Meta/Async.hpp>
 #include <Engine.Scheduler/Fiber/Awaitable.hpp>
 
-namespace ember::engine::io {
+namespace hg::engine::io {
     class Dispatcher;
 }
 
-namespace ember::engine {
+namespace hg::engine {
     [[nodiscard]] extern __declspec(restrict) const ptr<io::Dispatcher> _io_ptr() noexcept;
 
     [[nodiscard]] FORCE_INLINE cref<io::Dispatcher> _io_() {
@@ -18,7 +18,7 @@ namespace ember::engine {
     }
 }
 
-namespace ember::engine::io {
+namespace hg::engine::io {
     class Dispatcher {
     public:
         using this_type = Dispatcher;

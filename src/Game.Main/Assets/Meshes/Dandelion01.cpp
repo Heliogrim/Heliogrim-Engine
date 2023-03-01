@@ -1,7 +1,7 @@
 #include "Dandelion01.hpp"
 
-using namespace ember::game::assets::meshes;
-using namespace ember;
+using namespace hg::game::assets::meshes;
+using namespace hg;
 
 Dandelion01::Dandelion01() :
     StaticGeometryAsset(

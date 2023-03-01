@@ -3,7 +3,7 @@
 #include "__fwd.hpp"
 #include "StructureSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class StructSlot final :
         public StructureSlotBase {
     public:

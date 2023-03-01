@@ -3,7 +3,7 @@
 
 #include "Material.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class GfxMaterial :
         public Material {
     public:

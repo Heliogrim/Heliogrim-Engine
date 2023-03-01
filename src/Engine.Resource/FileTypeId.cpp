@@ -1,7 +1,7 @@
 #include "FileTypeId.hpp"
 
-using namespace ember::engine::res;
-using namespace ember;
+using namespace hg::engine::res;
+using namespace hg;
 
 FileTypeId::FileTypeId(cref<type_id> typeId_, cref<string> ext_, const bool register_) :
     typeId(typeId_),

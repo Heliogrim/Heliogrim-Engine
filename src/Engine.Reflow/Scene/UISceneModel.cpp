@@ -4,9 +4,9 @@
 #include <Engine.GFX/Renderer/RenderPassState.hpp>
 #include <Engine.GFX/Renderer/RenderDataToken.hpp>
 
-using namespace ember::engine::reflow;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 UISceneModel::UISceneModel(const ptr<SceneComponent> owner_) :
     SceneNodeModel(owner_) {}

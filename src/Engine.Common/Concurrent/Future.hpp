@@ -7,7 +7,7 @@
 #include "../__macro.hpp"
 #include "../Wrapper.hpp"
 
-namespace ember::concurrent {
+namespace hg::concurrent {
     namespace {
         /**
          * The internal state of the future

@@ -6,7 +6,7 @@
 #include "__fwd.hpp"
 #include <Engine.Serialization/Archive/__fwd.hpp>
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     template <bool Const_>
     class LinkedArchiveIterator {
     public:

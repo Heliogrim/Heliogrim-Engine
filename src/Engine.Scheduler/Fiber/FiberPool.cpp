@@ -5,8 +5,8 @@
 #include "FiberLaunchPad.hpp"
 #include "../Thread/Thread.hpp"
 
-using namespace ember::engine::scheduler::fiber;
-using namespace ember;
+using namespace hg::engine::scheduler::fiber;
+using namespace hg;
 
 FiberPool::FiberPool(pool_container_type::size_type reserved_) :
     _acqMtx(),

@@ -2,8 +2,8 @@
 
 #include "../Widget/Widget.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 bool style::isHovered(cref<sptr<Widget>> widget_) {
     return widget_->state().isHover();

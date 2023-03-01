@@ -1,10 +1,10 @@
 #include "WoodenPier01PlanksNormal.hpp"
 #include "../Images/WoodenPier01PlanksNormal.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::WoodenPier01PlanksNormal::WoodenPier01PlanksNormal() :
     TextureAsset(

@@ -8,7 +8,7 @@
 #include <cassert>
 #endif
 
-#include <Ember/StaticGeometryComponent.hpp>
+#include <Heliogrim/StaticGeometryComponent.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX/VkFixedPipeline.hpp>
 #include <Engine.GFX.Glow/Texture/RevVirtualMarkerTexture.hpp>
@@ -31,17 +31,17 @@
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
-#include <Engine.Reflect/EmberReflect.hpp>
+#include <Engine.Reflect/HeliogrimReflect.hpp>
 
 #include "RevMainSharedNode.hpp"
 #include "Engine.GFX/Texture/VirtualTextureView.hpp"
 #include "State/RevSfMtt.hpp"
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
-using namespace ember::engine::gfx::glow::render;
-using namespace ember::engine::gfx::render;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::glow::render;
+using namespace hg::engine::gfx::render;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 #define MATERIAL_DESCRIPTOR_INDEX 2
 
@@ -49,7 +49,7 @@ RevMainStaticNode::RevMainStaticNode(const ptr<RevMainSharedNode> sharedNode_) :
     RenderStageNode(),
     _modelTypes(
         {
-            EmberClass::stid<StaticGeometryModel>()
+            HeliogrimClass::stid<StaticGeometryModel>()
         }
     ),
     _sharedNode(sharedNode_) {}

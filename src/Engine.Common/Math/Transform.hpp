@@ -4,7 +4,7 @@
 #include "Vector.hpp"
 #include "../Wrapper.hpp"
 
-namespace ember::math {
+namespace hg::math {
     class Transform {
     public:
         using this_type = Transform;

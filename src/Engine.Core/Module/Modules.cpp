@@ -4,8 +4,8 @@
 #include "SubModuleDependency.hpp"
 #include "CoreDependencies.hpp"
 
-using namespace ember::engine::core;
-using namespace ember;
+using namespace hg::engine::core;
+using namespace hg;
 
 Modules::Modules() :
     _subModules(),

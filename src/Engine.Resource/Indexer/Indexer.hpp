@@ -8,7 +8,7 @@
 #include "../File.hpp"
 #include "../FileTypeId.hpp"
 
-namespace ember::engine::res {
+namespace hg::engine::res {
     class Indexer {
     public:
         using value_type = Indexer;

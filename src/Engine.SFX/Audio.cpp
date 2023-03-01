@@ -12,8 +12,8 @@
 #include "Importer/VorbisImporter.hpp"
 #include "Importer/WavImporter.hpp"
 
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::engine;
+using namespace hg;
 
 Audio::Audio(const non_owning_rptr<Engine> engine_) noexcept :
     CoreModule(engine_) {}

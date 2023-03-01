@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     enum class EventResponse : u8 {
         eUnhandled = 0x0,
         eHandled = 0x1,

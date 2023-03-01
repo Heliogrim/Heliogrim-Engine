@@ -6,8 +6,8 @@
 #include "Game.Main/Assets/Textures/ForestGround01Normal.hpp"
 #include "Game.Main/Assets/Textures/ForestGround01Roughness.hpp"
 
-using namespace ember::game::assets::material;
-using namespace ember;
+using namespace hg::game::assets::material;
+using namespace hg;
 
 ForestGround01::ForestGround01() :
     GfxMaterialAsset(

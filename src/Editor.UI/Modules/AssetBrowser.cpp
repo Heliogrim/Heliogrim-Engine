@@ -3,8 +3,8 @@
 #include <Engine.Logging/Logger.hpp>
 #include "../Panel/AssetBrowserPanel.hpp"
 
-using namespace ember::editor::ui;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg;
 
 AssetBrowser::AssetBrowser() {
 

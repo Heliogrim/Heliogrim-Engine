@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
 
-namespace ember::engine::input::schedule {
+namespace hg::engine::input::schedule {
     class InputTickStage final :
         public scheduler::PipelineStage {
     public:

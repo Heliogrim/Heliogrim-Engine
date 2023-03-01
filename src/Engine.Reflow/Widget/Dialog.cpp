@@ -2,8 +2,8 @@
 
 #include "../Style/BoundStyleSheet.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 Dialog::Dialog(mref<sptr<BoundStyleSheet>> style_) :
     Popup(),

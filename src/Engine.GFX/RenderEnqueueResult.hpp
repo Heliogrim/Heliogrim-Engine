@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     enum class RenderEnqueueResult : u8 {
         eSuccess = 0x0,
         eFailed = 0x1,

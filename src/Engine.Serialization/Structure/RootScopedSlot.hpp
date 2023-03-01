@@ -3,7 +3,7 @@
 #include "../Archive/__fwd.hpp"
 #include "RecordScopedSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class RootScopedSlot final :
         public RecordScopedSlot {
     public:

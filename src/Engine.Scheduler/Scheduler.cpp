@@ -1,4 +1,4 @@
 #include "Scheduler.hpp"
 
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg;

@@ -4,7 +4,7 @@
 
 #include "DiscreteBindingGroup.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class CachedDiscreteBinding {
     public:
         using this_type = CachedDiscreteBinding;

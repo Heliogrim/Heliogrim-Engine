@@ -7,7 +7,7 @@
 #include "StructureSlotStateFlags.hpp"
 #include "StructureSlotHeader.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     struct StructureSlotState {
         StructureSlotStateFlags flags = StructureSlotStateFlag::eUndefined;
         s64 offset = -1;

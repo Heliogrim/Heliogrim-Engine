@@ -1,3 +1,3 @@
 #include "Event.hpp"
 
-using namespace ember;
+using namespace hg;

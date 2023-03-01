@@ -3,7 +3,7 @@
 #include "ScopedStructureSlot.hpp"
 #include "StructureSlotState.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class RecordScopedSlot :
         public ScopedSlot {
     public:

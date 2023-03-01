@@ -4,14 +4,14 @@
 #include <Engine.Common/Url.hpp>
 
 #include <Engine.Reflect/__fwd.hpp>
-#include <Engine.Reflect/EmberReflect.hpp>
+#include <Engine.Reflect/HeliogrimReflect.hpp>
 
 #include "../Compression/__fwd.hpp"
 #include "../Filter/__fwd.hpp"
 #include "ArchiveStreamMode.hpp"
 #include "ArchiveVersion.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class __declspec(novtable) Archive {
     public:
         using this_type = Archive;
@@ -137,10 +137,10 @@ namespace ember::engine::serialization {
         }
 
     public:
-        virtual ref<this_type> operator<<(const ptr<EmberObject> object_);
+        virtual ref<this_type> operator<<(const ptr<HeliogrimObject> object_);
 
     public:
-        template <IsEmberObject Type_>
+        template <IsHeliogrimObject Type_>
         FORCE_INLINE friend ref<this_type> operator<<(ref<this_type> self_, const ptr<const Type_> object_) {
             return self_ << object_;
         }

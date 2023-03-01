@@ -4,8 +4,8 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 VkComputePipeline::VkComputePipeline(sptr<Device> device_) :
     ComputePipeline(),

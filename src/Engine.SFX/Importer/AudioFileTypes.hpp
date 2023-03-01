@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Resource/FileTypeId.hpp>
 
-namespace ember::engine::sfx {
+namespace hg::engine::sfx {
     namespace AudioFileType {
         extern const res::FileTypeId Aac;
         extern const res::FileTypeId Flac;

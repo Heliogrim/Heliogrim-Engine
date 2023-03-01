@@ -7,12 +7,12 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Device;
     class SceneNodeModel;
 }
 
-namespace ember::engine::gfx::render {
+namespace hg::engine::gfx::render {
     struct MultiplexerNodeMesh {
         using node_container_type = Vector<ptr<RenderStageNode>>;
         using mapping_type = ska::bytell_hash_map<type_id, node_container_type>;

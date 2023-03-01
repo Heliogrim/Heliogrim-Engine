@@ -2,7 +2,7 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     enum class TextureStreamOp : bool {
         eLoad = true,
         eUnload = false

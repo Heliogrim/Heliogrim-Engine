@@ -4,7 +4,7 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx::memory {
+namespace hg::engine::gfx::memory {
     class __declspec(novtable) Allocator {
     public:
         using this_type = Allocator;

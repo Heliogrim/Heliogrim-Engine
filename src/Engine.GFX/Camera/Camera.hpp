@@ -6,7 +6,7 @@
 
 #include "CameraModes.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Camera {
     public:
         /**

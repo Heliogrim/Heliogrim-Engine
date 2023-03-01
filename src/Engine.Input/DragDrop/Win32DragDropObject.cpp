@@ -4,7 +4,7 @@
 #include <sstream>
 #include <ShlObj_core.h>
 
-namespace ember::engine::input {
+namespace hg::engine::input {
     // @see https://learn.microsoft.com/en-us/windows/win32/shell/clipboard#cf_hdrop
     struct DragDropObjectFilePayload {
         _STD wstring paths;
@@ -16,8 +16,8 @@ namespace ember::engine::input {
     };
 }
 
-using namespace ember::engine::input;
-using namespace ember;
+using namespace hg::engine::input;
+using namespace hg;
 
 Win32DragDropObject::Win32DragDropObject() :
     DragDropObject(),

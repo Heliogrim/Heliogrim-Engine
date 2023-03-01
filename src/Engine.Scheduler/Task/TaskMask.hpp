@@ -3,8 +3,8 @@
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::scheduler::task {
-    enum class TaskMask: ember::u8 {
+namespace hg::engine::scheduler::task {
+    enum class TaskMask: hg::u8 {
         eUndefined = 0b0,
         //
         eCritical = 0b1 << 0,

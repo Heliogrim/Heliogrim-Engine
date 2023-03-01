@@ -6,7 +6,7 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx::cache {
+namespace hg::engine::gfx::cache {
     class TransientCache {
     public:
         using this_type = TransientCache;

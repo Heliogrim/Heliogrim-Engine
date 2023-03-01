@@ -6,7 +6,7 @@
 #include "../Fiber/FiberPool.hpp"
 #include "../Process/Schedule.hpp"
 
-namespace ember::engine::scheduler::worker {
+namespace hg::engine::scheduler::worker {
     class Worker final {
     public:
         /**

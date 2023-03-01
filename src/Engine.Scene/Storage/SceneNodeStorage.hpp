@@ -7,7 +7,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     /**
      * Construct inplace
      *

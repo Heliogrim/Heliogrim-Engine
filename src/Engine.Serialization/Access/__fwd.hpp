@@ -1,9 +1,9 @@
 #pragma once
 
-#define ACCESS_LAYOUT template <typename> friend class ::ember::engine::serialization::access::Layout;
-#define ACCESS_STRUCTURE template <class> friend class ::ember::engine::serialization::access::Structure;
+#define ACCESS_LAYOUT template <typename> friend class ::hg::engine::serialization::access::Layout;
+#define ACCESS_STRUCTURE template <class> friend class ::hg::engine::serialization::access::Structure;
 
-namespace ember::engine::serialization::access {
+namespace hg::engine::serialization::access {
     template <class Type_>
     class Layout;
 

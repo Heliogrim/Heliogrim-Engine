@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember {
+namespace hg {
     template <typename From_, typename To_, typename VoidType = void>
     struct void_cast {
         [[nodiscard]] constexpr To_ operator()(From_ value_) const noexcept {

@@ -7,7 +7,7 @@
 
 #include "Shader.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     struct ShaderStorageKey {
         shader::ShaderType type;
         string name;
@@ -17,19 +17,19 @@ namespace ember::engine::gfx {
 }
 
 template <>
-struct _STD hash<ember::engine::gfx::ShaderStorageKey> :
+struct _STD hash<hg::engine::gfx::ShaderStorageKey> :
     public _STD hash<string> {
-    size_t operator()(const ember::engine::gfx::ShaderStorageKey& key_) const noexcept {
+    size_t operator()(const hg::engine::gfx::ShaderStorageKey& key_) const noexcept {
         size_t s { static_cast<size_t>(key_.type) };
         size_t h = static_cast<const _STD hash<string>*>(this)->operator()(key_.name);
 
-        ember::hash::hash_combine(s, h);
+        hg::hash::hash_combine(s, h);
 
         return s;
     }
 };
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class ShaderStorage {
     private:
         /**

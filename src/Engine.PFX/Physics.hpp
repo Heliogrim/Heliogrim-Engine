@@ -2,7 +2,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Core/Module/CoreModule.hpp>
 
-namespace ember::engine {
+namespace hg::engine {
     class Physics :
         public core::CoreModule {
     public:

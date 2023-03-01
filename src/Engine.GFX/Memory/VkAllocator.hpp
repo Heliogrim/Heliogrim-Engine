@@ -2,7 +2,7 @@
 #include "Allocator.hpp"
 #include "../Device/Device.hpp"
 
-namespace ember::engine::gfx::memory {
+namespace hg::engine::gfx::memory {
     class VkAllocator final :
         public Allocator {
     public:

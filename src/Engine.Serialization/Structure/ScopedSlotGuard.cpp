@@ -8,8 +8,8 @@
 
 #include "ScopedStructureSlot.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 ScopedSlotGuard::ScopedSlotGuard(
     const non_owning_rptr<const ScopedSlot> scopedSlot_,

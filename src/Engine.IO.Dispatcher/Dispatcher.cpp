@@ -3,10 +3,10 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
-using namespace ember::engine::io;
-using namespace ember;
+using namespace hg::engine::io;
+using namespace hg;
 
-using signal_type = ::ember::engine::scheduler::fiber::await_signal_type;
+using signal_type = ::hg::engine::scheduler::fiber::await_signal_type;
 
 static uptr<Dispatcher> staticDispatcher = nullptr;
 

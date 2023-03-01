@@ -5,9 +5,9 @@
 #include <Engine.Core/WorldContext.hpp>
 #include <Engine.Scene/Scene.hpp>
 
-using namespace ember::engine::core::schedule;
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::core::schedule;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 ActorUpdateStage::ActorUpdateStage(
     cref<StageIdentifier> identifier_,

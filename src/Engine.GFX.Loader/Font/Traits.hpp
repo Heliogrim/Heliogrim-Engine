@@ -11,8 +11,8 @@
 #include "FontLoadOptions.hpp"
 #include "FontResource.hpp"
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct resource::loader::RequestOptions<LoaderRequest<assets::Font>> {
@@ -20,8 +20,8 @@ namespace ember::engine::resource::loader {
     };
 }
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct resource::loader::RequestOptions<CacheRequest<assets::Font>> {
@@ -29,8 +29,8 @@ namespace ember::engine::resource::loader {
     };
 }
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct resource::loader::RequestOptions<FeedbackRequest<assets::Font>> {
@@ -38,8 +38,8 @@ namespace ember::engine::resource::loader {
     };
 }
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct RequestOptions<SourceLoaderRequest<assets::Font>> {
@@ -52,8 +52,8 @@ namespace ember::engine::resource::loader {
     };
 }
 
-namespace ember::engine::resource::loader {
-    using namespace ::ember::engine::gfx::loader;
+namespace hg::engine::resource::loader {
+    using namespace ::hg::engine::gfx::loader;
 
     template <>
     struct RequestOptions<TransformerRequest<assets::Font>> {

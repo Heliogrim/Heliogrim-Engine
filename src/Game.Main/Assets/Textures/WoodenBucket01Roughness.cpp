@@ -1,10 +1,10 @@
 #include "WoodenBucket01Roughness.hpp"
 #include "../Images/WoodenBucket01Roughness.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::WoodenBucket01Roughness::WoodenBucket01Roughness() :
     TextureAsset(

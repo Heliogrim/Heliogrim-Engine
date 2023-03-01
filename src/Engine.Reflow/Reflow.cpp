@@ -12,9 +12,9 @@
 #include "Engine.Core/Engine.hpp"
 #include "Window/WindowManager.hpp"
 
-using namespace ember::engine::core;
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::engine::core;
+using namespace hg::engine;
+using namespace hg;
 
 Reflow::Reflow(const non_owning_rptr<Engine> engine_) :
     SubModule(engine_),

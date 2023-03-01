@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember {
+namespace hg {
     struct async_t {
         constexpr explicit async_t() = default;
     };

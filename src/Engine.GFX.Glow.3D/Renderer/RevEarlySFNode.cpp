@@ -24,10 +24,10 @@
 #include <cassert>
 #endif
 
-using namespace ember::engine::gfx::glow::render;
-using namespace ember::engine::gfx::render;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::glow::render;
+using namespace hg::engine::gfx::render;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 RevEarlySFNode::RevEarlySFNode() {}
 
@@ -126,8 +126,8 @@ bool RevEarlySFNode::allocate(const ptr<HORenderPass> renderPass_) {
     auto depthMarkerEntry { state->data.find("RevDepthStage::Framebuffer"sv) };
     assert(depthMarkerEntry != state->data.end());
 
-    const sptr<::ember::engine::gfx::Framebuffer> markerTexture {
-        _STD static_pointer_cast<::ember::engine::gfx::Framebuffer, void>(depthMarkerEntry->second)
+    const sptr<::hg::engine::gfx::Framebuffer> markerTexture {
+        _STD static_pointer_cast<::hg::engine::gfx::Framebuffer, void>(depthMarkerEntry->second)
     };
 
     dbgs[0].getById(shader::ShaderBinding::id_type { 1 }).storeAdv(

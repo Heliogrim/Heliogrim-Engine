@@ -3,7 +3,7 @@
 #include "StructureSlot.hpp"
 #include "ScopedSlotState.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class __declspec(novtable) ScopedSlot {
     public:
         using this_type = ScopedSlot;

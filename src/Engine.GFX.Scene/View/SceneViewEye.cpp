@@ -3,8 +3,8 @@
 #include <Engine.Common/Math/Convertion.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 
-using namespace ember::engine::gfx::scene;
-using namespace ember;
+using namespace hg::engine::gfx::scene;
+using namespace hg;
 
 SceneViewEye::SceneViewEye() :
     _position(math::vec3 { 0.F }),

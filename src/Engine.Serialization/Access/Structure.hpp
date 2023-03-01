@@ -2,7 +2,7 @@
 
 #include "../Structure/RecordScopedSlot.hpp"
 
-namespace ember::engine::serialization::access {
+namespace hg::engine::serialization::access {
     template <class Type_>
     class Structure {
     public:

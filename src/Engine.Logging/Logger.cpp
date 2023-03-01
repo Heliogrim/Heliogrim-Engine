@@ -9,7 +9,7 @@
 #include <Windows.h>
 #endif
 
-using namespace ember;
+using namespace hg;
 
 Logger::Logger() noexcept = default;
 
@@ -19,11 +19,11 @@ Logger::~Logger() noexcept = default;
 
 #if TRUE
 
-namespace ember {
+namespace hg {
     extern _STD chrono::high_resolution_clock::time_point processStartTime = _STD chrono::high_resolution_clock::now();
 }
 
-namespace ember::debug {
+namespace hg::debug {
     extern _STD recursive_mutex outMtx {};
 }
 
@@ -31,7 +31,7 @@ namespace ember::debug {
 
 void Logger::log(LogLevel level_, mref<string> msg_) {
 
-    _STD unique_lock<_STD recursive_mutex> lck { ::ember::debug::outMtx };
+    _STD unique_lock<_STD recursive_mutex> lck { ::hg::debug::outMtx };
 
     auto& stream { _STD cout };
     switch (level_) {

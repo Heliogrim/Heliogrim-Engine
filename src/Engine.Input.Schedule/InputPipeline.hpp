@@ -1,14 +1,14 @@
 #pragma once
 #include <Engine.Scheduler/Pipeline/StagePipeline.hpp>
 
-namespace ember::engine::input::schedule {
+namespace hg::engine::input::schedule {
     class InputPipeline final :
         public engine::scheduler::StagePipeline {
     public:
         using this_type = InputPipeline;
 
-        using StageIdentifier = ::ember::engine::scheduler::StageIdentifier;
-        using StageDependency = ::ember::engine::scheduler::StageDependency;
+        using StageIdentifier = ::hg::engine::scheduler::StageIdentifier;
+        using StageDependency = ::hg::engine::scheduler::StageDependency;
 
         /**/
 

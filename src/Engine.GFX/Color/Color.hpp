@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Common/Math/Vector.hpp>
 
-namespace ember::engine {
+namespace hg::engine {
     class color :
         public math::fvec4 {
     public:

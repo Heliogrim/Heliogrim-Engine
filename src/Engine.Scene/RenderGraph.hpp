@@ -5,11 +5,11 @@
 /**
  * Forward Declaration
  */
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class SceneNodeModel;
 }
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     /**
      * Attention: This will fail the concept assert cause `gfx::SceneNodeModel` based on this file only is just a incomplete type
      */

@@ -4,7 +4,7 @@
 
 #include "../Wrapper.hpp"
 
-namespace ember {
+namespace hg {
     /**
      * Template build for Nular-Function-Pointer
      */

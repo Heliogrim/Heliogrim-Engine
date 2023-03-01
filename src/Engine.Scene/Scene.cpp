@@ -2,8 +2,8 @@
 
 #include <Engine.GFX/Scene/SceneTag.hpp>
 
-using namespace ember::engine::scene;
-using namespace ember;
+using namespace hg::engine::scene;
+using namespace hg;
 
 Scene::Scene() noexcept = default;
 

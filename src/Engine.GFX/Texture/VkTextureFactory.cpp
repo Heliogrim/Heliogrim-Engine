@@ -7,8 +7,8 @@
 #include "VirtualTextureView.hpp"
 #include "../API/VkTranslate.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 [[nodiscard]] vk::ImageType vkTranslate(const TextureType type_) noexcept {
     switch (type_) {

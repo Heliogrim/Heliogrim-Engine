@@ -6,7 +6,7 @@
 #include <Engine.Scheduler/CompScheduler.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
-namespace ember::test {
+namespace hg::test {
     class TestSchedulerEngine final :
         public engine::Engine {
     public:

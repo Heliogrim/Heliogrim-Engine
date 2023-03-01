@@ -6,7 +6,7 @@
 #include <Engine.Assets/Types/Image.hpp>
 #include <Engine.Resource/Importer/Importer.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class KtxImporter :
         public res::Importer<_STD pair<non_owning_rptr<assets::Texture>, non_owning_rptr<assets::Image>>, ptr<void>> {
     public:

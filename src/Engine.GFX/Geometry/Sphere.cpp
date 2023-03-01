@@ -1,7 +1,7 @@
 #include "Sphere.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 Sphere::~Sphere() {}
 

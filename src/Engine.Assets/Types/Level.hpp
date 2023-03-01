@@ -4,7 +4,7 @@
 
 #include "Asset.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class Level :
         public Asset {
     public:

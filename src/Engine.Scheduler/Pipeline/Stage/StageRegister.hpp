@@ -2,11 +2,11 @@
 
 #include "Stage.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class PipelineStage;
 }
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class __declspec(novtable) StageRegister {
     public:
         using this_type = StageRegister;

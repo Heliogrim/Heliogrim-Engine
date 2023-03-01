@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     enum class StructureSlotType : u8 {
         eUndefined = 0x0,
         /* Integral ( signed ~ 0x1 ) */

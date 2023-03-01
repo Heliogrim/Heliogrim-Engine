@@ -10,15 +10,15 @@
 #include "TextureType.hpp"
 #include "../API/__vkFwd.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class TextureLoader;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class VirtualTextureView final {
     public:
         friend class VirtualTexture;
-        friend class ::ember::engine::gfx::loader::TextureLoader;
+        friend class ::hg::engine::gfx::loader::TextureLoader;
 
     public:
         using this_type = VirtualTextureView;

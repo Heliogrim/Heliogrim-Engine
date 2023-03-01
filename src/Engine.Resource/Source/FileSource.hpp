@@ -2,7 +2,7 @@
 #include "Source.hpp"
 #include "../File.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     class FileSource :
         public Source {
     public:
@@ -127,7 +127,7 @@ namespace ember::engine::resource {
             ref<streamsize> actualSize_
         ) override;
 
-        [[nodiscard]] ember::concurrent::future<async_result_value> get(
+        [[nodiscard]] hg::concurrent::future<async_result_value> get(
             streamoff offset_,
             streamsize size_
         ) override;
@@ -140,7 +140,7 @@ namespace ember::engine::resource {
             ref<streamsize> actualSize_
         ) override;
 
-        [[nodiscard]] ember::concurrent::future<async_write_result> write(
+        [[nodiscard]] hg::concurrent::future<async_write_result> write(
             streamoff offset_,
             streamsize size_,
             const ptr<void> src_

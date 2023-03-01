@@ -10,7 +10,7 @@
 #include "__fwd.hpp"
 #include "IntegralSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <IsIntegralSlotType IntegralType_>
     class IntegralScopedSlot final :
         public TypeScopedSlot<

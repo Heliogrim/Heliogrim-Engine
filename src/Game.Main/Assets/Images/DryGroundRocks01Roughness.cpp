@@ -1,4 +1,4 @@
 #include "DryGroundRocks01Roughness.hpp"
 
-using namespace ember::game::assets::image;
-using namespace ember;
+using namespace hg::game::assets::image;
+using namespace hg;

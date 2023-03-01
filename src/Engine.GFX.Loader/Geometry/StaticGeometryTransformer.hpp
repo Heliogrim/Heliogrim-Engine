@@ -5,7 +5,7 @@
 
 #include "Traits.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class StaticGeometryTransformer final :
         public resource::loader::Transformer<assets::StaticGeometry, StaticGeometryResource> {
     public:

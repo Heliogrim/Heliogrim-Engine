@@ -11,7 +11,7 @@
 
 #include "../Font/Font.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class ReflowCommandBuffer {
     public:
         void begin();

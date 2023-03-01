@@ -1,4 +1,4 @@
-#include <Ember/StaticGeometryComponent.hpp>
+#include <Heliogrim/StaticGeometryComponent.hpp>
 #include <Engine.Reflow/Style/BoundStyleSheet.hpp>
 #include <Engine.Reflow/Style/StyleCondition.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
@@ -17,11 +17,11 @@
 #include "../../Widget/Input/InputVec.hpp"
 #include "../../Widget/Collapse.hpp"
 #include "Editor.UI/Widget/Input/InputAsset.hpp"
-#include "Ember/Ember.hpp"
+#include "Heliogrim/Heliogrim.hpp"
 
-using namespace ember::editor::ui;
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 [[nodiscard]] static sptr<BoundStyleSheet> makeInputBoxStyle() {
 

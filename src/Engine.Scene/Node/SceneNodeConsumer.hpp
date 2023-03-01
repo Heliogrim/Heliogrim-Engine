@@ -7,7 +7,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     template <typename Consumable>
     struct SceneNodeConsumer {
         [[nodiscard]] bool operator()(const ptr<Consumable> entry_) noexcept {

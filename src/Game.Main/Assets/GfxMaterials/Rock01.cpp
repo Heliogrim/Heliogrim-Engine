@@ -6,8 +6,8 @@
 #include "../Textures/DefaultAO.hpp"
 #include "../Textures/DefaultMetalness.hpp"
 
-using namespace ember::game::assets::material;
-using namespace ember;
+using namespace hg::game::assets::material;
+using namespace hg;
 
 Rock01::Rock01() :
     GfxMaterialAsset(

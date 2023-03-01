@@ -1,7 +1,7 @@
 #pragma once
 #include "MemoryReadWriteArchive.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class BufferArchive :
         public MemoryReadWriteArchive,
         public AutoArray<u8> {

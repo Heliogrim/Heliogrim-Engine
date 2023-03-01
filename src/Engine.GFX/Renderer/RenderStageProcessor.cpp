@@ -10,9 +10,9 @@
 #include "../Scene/SceneNodeModel.hpp"
 #include <Engine.Scene/IRenderScene.hpp>
 
-using namespace ember::engine::gfx::render;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::render;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 RenderStageProcessor::RenderStageProcessor(const non_owning_rptr<const Multiplexer> multiplexer_) :
     _renderPass(nullptr),
@@ -69,7 +69,7 @@ RenderStageProcessor::dispatch_result_type RenderStageProcessor::dispatch() cons
     return &_signal;
 }
 
-bool RenderStageProcessor::operator()(const ptr<::ember::engine::scene::RenderGraph::node_type> node_) const {
+bool RenderStageProcessor::operator()(const ptr<::hg::engine::scene::RenderGraph::node_type> node_) const {
 
     SCOPED_STOPWATCH
 

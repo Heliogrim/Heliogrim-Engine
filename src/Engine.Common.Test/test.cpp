@@ -5,7 +5,7 @@
 #include <Engine.Common/Math/Transformation.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 
-using namespace ember;
+using namespace hg;
 
 TEST(__DummyTest__, Exists) {
     EXPECT_TRUE(true);
@@ -429,7 +429,7 @@ namespace Common {
 }
 
 TEST(MathVectorTest, vectorInit2d) {
-    using namespace ember::math;
+    using namespace hg::math;
     const int x = 10;
     const int y = 35;
 
@@ -440,7 +440,7 @@ TEST(MathVectorTest, vectorInit2d) {
 }
 
 TEST(MathVectorTest, vectorDownCast) {
-    using namespace ember::math;
+    using namespace hg::math;
     const vec3_t<int> src = vec3_t<int>(30, 40, 50);
     const vec2_t<int> dst = vec2_t<int>(src);
 
@@ -449,7 +449,7 @@ TEST(MathVectorTest, vectorDownCast) {
 }
 
 TEST(MathVectorTest, vectorUpCast) {
-    using namespace ember::math;
+    using namespace hg::math;
     const vec3_t<int> src = vec3_t<int>(70, 90, 110);
     const vec4_t<int> dst = vec4_t<int>(src, 5);
 
@@ -459,7 +459,7 @@ TEST(MathVectorTest, vectorUpCast) {
 }
 
 TEST(MathVectorTest, vectorNormalize) {
-    using namespace ember::math;
+    using namespace hg::math;
     vec3_t<float> v = vec3_t<float>(5.F);
     v.normalize();
 
@@ -469,7 +469,7 @@ TEST(MathVectorTest, vectorNormalize) {
 }
 
 TEST(Transform, initZero) {
-    using namespace ember::math;
+    using namespace hg::math;
     Transformation t = ZeroTransformation();
 
     EXPECT_EQ(t.position(), vec3());
@@ -478,7 +478,7 @@ TEST(Transform, initZero) {
 }
 
 TEST(Quaternion, fromToEuler) {
-    using namespace ember::math;
+    using namespace hg::math;
     const float r45f = glm::radians(45.F);
     const float r0f = glm::radians(0.F);
 

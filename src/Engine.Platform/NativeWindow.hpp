@@ -8,7 +8,7 @@
 #include "NativeWindowFlags.hpp"
 #include "Event/PlatformResizeEvent.hpp"
 
-namespace ember::engine::platform {
+namespace hg::engine::platform {
     /**
      * TODO: Check whether we want to handle DPI and therefore new a certain granularity
      *  to determine where to apply the dpi and in which way.

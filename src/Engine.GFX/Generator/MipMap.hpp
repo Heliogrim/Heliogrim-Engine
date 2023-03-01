@@ -4,7 +4,7 @@
 #include "../Device/Device.hpp"
 #include "../Texture/Texture.hpp"
 
-namespace ember::engine::gfx::generator {
+namespace hg::engine::gfx::generator {
     class MipMapGenerator {
     public:
         /**

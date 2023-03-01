@@ -10,7 +10,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/__macro.hpp>
 
-namespace ember::engine::scheduler::thread {
+namespace hg::engine::scheduler::thread {
     using thread_id = _STD conditional_t<sizeof(_STD thread::id) == sizeof(u64), u64, u32>;
     typedef u64 affinity_mask;
 

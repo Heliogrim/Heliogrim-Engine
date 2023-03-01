@@ -4,7 +4,7 @@
 #include <unordered_set>
 #include <robin/robin_set.h>
 
-namespace ember {
+namespace hg {
     template <
         class Type_,
         class Hash_ = _STD hash<Type_>,

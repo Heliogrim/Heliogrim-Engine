@@ -10,7 +10,7 @@
 struct _GUID;
 #endif
 
-namespace ember {
+namespace hg {
     struct Guid {
         constexpr Guid() noexcept :
             data() {}
@@ -112,13 +112,13 @@ namespace ember {
 
 namespace std {
     template <>
-    struct hash<::ember::Guid> {
-        [[nodiscard]] _STD size_t operator()(::ember::cref<::ember::Guid> value_) const noexcept {
+    struct hash<::hg::Guid> {
+        [[nodiscard]] _STD size_t operator()(::hg::cref<::hg::Guid> value_) const noexcept {
 
             size_t seed = 31587166197;
 
-            ::ember::hash::hash_combine(seed, value_.data.high);
-            ::ember::hash::hash_combine(seed, value_.data.low);
+            ::hg::hash::hash_combine(seed, value_.data.high);
+            ::hg::hash::hash_combine(seed, value_.data.low);
 
             return seed;
         }

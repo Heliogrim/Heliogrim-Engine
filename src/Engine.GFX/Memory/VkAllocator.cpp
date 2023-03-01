@@ -6,9 +6,9 @@
 #include "../API/VkTranslate.hpp"
 #include "../Device/Device.hpp"
 
-using namespace ember::engine::gfx::memory;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::memory;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 VkAllocator::VkAllocator(cref<sptr<Device>> device_) noexcept :
     _device(device_) {}

@@ -2,8 +2,8 @@
 
 #include <cmath>
 
-using namespace ember::math;
-using namespace ember;
+using namespace hg::math;
+using namespace hg;
 
 vec3 polar::from_cartesian(cref<vec3> cartesian_) noexcept {
 

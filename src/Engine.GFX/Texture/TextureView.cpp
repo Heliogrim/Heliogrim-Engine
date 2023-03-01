@@ -2,8 +2,8 @@
 
 #include "Texture.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 TextureView::TextureView(
     non_owning_rptr<Texture> owner_,

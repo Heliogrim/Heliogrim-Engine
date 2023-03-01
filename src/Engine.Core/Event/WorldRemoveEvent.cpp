@@ -1,12 +1,12 @@
 #include "WorldRemoveEvent.hpp"
 
-using namespace ember::engine::core;
-using namespace ember;
+using namespace hg::engine::core;
+using namespace hg;
 
-WorldRemoveEvent::WorldRemoveEvent(cref<sptr<ember::engine::core::World>> world_) :
+WorldRemoveEvent::WorldRemoveEvent(cref<sptr<hg::engine::core::World>> world_) :
     StatelessEvent(),
     _world(world_) {}
 
-const sptr<ember::engine::core::World> WorldRemoveEvent::getWorld() const noexcept {
+const sptr<hg::engine::core::World> WorldRemoveEvent::getWorld() const noexcept {
     return _world;
 }

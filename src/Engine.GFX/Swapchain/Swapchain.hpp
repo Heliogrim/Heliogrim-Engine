@@ -7,7 +7,7 @@
 #include "../Surface/Surface.hpp"
 #include "../Texture/Texture.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     struct SwapchainImage {
         /**/
         sptr<Texture> image;

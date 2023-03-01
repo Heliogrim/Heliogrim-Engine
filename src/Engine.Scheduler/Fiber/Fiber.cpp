@@ -12,8 +12,8 @@
 #include <assert.h>
 #endif
 
-using namespace ember::engine::scheduler::fiber;
-using namespace ember;
+using namespace hg::engine::scheduler::fiber;
+using namespace hg;
 
 void Fiber::create(ptr<Fiber> self_, void (* proc_)(void*), void* param_) {
 

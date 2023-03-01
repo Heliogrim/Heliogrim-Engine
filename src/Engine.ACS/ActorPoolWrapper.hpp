@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Ember/Actor.hpp>
+#include <Heliogrim/Actor.hpp>
 #include "Pool.hpp"
 #include "Traits.hpp"
 
-namespace ember::engine::acs {
+namespace hg::engine::acs {
     class __declspec(novtable) ActorPoolWrapperBase {
     public:
         virtual void insert(cref<actor_guid> key_, cref<ActorInitializer> initializer_) = 0;

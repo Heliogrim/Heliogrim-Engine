@@ -2,7 +2,7 @@
 
 #include <Engine.Event/Event.hpp>
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     class EngineShutdownEvent final :
         public StatelessEvent {
     public:

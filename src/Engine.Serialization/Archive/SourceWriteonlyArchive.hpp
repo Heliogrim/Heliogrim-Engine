@@ -2,7 +2,7 @@
 
 #include "SourceBaseArchive.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class SourceWriteonlyArchive final :
         public SourceBaseArchive {
     public:

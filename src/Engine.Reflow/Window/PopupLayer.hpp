@@ -6,7 +6,7 @@
 #include "__fwd.hpp"
 #include "../Widget/__fwd.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class PopupLayer {
     public:
         using this_type = PopupLayer;

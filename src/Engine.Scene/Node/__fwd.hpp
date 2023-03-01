@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class SceneNodeHead;
 
     template <class ElementType_>

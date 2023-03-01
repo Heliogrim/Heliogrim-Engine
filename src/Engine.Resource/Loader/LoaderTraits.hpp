@@ -4,7 +4,7 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::resource::loader {
+namespace hg::engine::resource::loader {
     template <IsRequestValueType ValueType_>
     struct LoaderRequest {
         using this_type = LoaderRequest<ValueType_>;

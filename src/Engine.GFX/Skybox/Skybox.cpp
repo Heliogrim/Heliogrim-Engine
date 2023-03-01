@@ -8,8 +8,8 @@
 #include "../Texture/TextureFactory.hpp"
 #include "Engine.Common/Exception/NotImplementedException.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 Skybox::Skybox(cref<sptr<Device>> device_) :
     _device(device_) {

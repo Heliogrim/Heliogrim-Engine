@@ -7,7 +7,7 @@
 #include "../Device/Device.hpp"
 #include "../Pipeline/LORenderPass.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Framebuffer {
     public:
         /**

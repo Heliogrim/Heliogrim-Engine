@@ -3,7 +3,7 @@
 #include "Widget.hpp"
 #include "../Window/__fwd.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Popup :
         public Widget {
     public:

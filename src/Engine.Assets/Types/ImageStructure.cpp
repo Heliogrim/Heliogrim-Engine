@@ -5,9 +5,9 @@
 
 #include "Image.hpp"
 
-using namespace ember::engine::assets;
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::assets;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 template <>
 void access::Structure<Image>::serialize(const Image* const self_, mref<RecordScopedSlot> slot_) {

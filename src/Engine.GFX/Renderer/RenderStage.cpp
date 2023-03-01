@@ -3,9 +3,9 @@
 #include "RenderPipeline.hpp"
 #include "../Device/Device.hpp"
 
-using namespace ember::engine::gfx::render;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::render;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 void RenderStage::pipelineSetup(const non_owning_rptr<const RenderPipeline> pipeline_) {
 

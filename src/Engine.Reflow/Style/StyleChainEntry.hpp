@@ -7,7 +7,7 @@
 #include "StyleSheet.hpp"
 #include "../Widget/__fwd.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class StyleChainEntry {
     public:
         using this_type = StyleChainEntry;

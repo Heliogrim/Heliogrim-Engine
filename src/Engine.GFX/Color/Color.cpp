@@ -1,7 +1,7 @@
 #include "Color.hpp"
 
-using namespace ember::engine;
-using namespace ember::math;
+using namespace hg::engine;
+using namespace hg::math;
 
 color::color() :
     math::fvec4() {}

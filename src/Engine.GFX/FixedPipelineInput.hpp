@@ -6,7 +6,7 @@
 #include "InputRate.hpp"
 #include "Geometry/Vertex.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     struct FixedPipelineInput {
         /**
          * Binding Id

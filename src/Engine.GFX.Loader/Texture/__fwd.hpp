@@ -4,11 +4,11 @@
 
 #include <Engine.Resource/Loader/__fwd.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     //class TextureResource; -> Typedef
 }
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class TextureLoader;
     class TextureCache;
     class TextureFeedback;

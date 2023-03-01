@@ -4,14 +4,14 @@
 
 #include "Asset.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     /**
      * The Concept for assets
      */
     template <class Ty>
     concept IsAsset = requires(const Ty obj) {
         { obj.get_guid() } -> std::same_as<asset_guid>;
-    } && ember::HasType<Ty, asset_type_id>;
+    } && hg::HasType<Ty, asset_type_id>;
 
     template <class Type_ = void>
     constexpr bool _has_data_layout = true;

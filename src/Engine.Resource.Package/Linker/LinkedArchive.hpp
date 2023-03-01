@@ -6,7 +6,7 @@
 #include "../Archive/ArchiveHeader.hpp"
 #include "../Package/PackageIndexEntry.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     struct LinkedArchive {
         ArchiveHeader header;
         PackageIndexEntry index;

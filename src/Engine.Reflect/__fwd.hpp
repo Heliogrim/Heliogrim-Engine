@@ -1,9 +1,9 @@
 #pragma once
 
-namespace ember {
+namespace hg {
     /**
      * Forward Declaration
      */
-    class EmberClass;
-    class EmberObject;
+    class HeliogrimClass;
+    class HeliogrimObject;
 }

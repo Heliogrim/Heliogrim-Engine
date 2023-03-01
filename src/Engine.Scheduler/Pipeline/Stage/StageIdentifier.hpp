@@ -2,6 +2,6 @@
 
 #include <Engine.Common/String.hpp>
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     using StageIdentifier = string;
 }

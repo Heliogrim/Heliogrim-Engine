@@ -7,7 +7,7 @@
 #include "../Texture/__fwd.hpp"
 #include "../Texture/TextureSampler.hpp"
 
-namespace ember::engine::gfx::shader {
+namespace hg::engine::gfx::shader {
     class DiscreteBinding {
     public:
         using id_type = u32;

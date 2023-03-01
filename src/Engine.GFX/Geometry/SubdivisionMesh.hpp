@@ -1,5 +1,5 @@
 #pragma once
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class SubdivisionMesh { };
 }

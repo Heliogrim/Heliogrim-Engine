@@ -3,9 +3,9 @@
 #include <atomic>
 #include <chrono>
 
-using namespace ember;
+using namespace hg;
 
-asset_guid ember::generate_asset_guid() {
+asset_guid hg::generate_asset_guid() {
     static _STD atomic_uint_fast32_t ai { 1 };
 
     const auto pre = ai.fetch_add(1, _STD memory_order_acq_rel);

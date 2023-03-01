@@ -4,7 +4,7 @@
 
 #include "../Action/Action.hpp"
 
-namespace ember::editor {
+namespace hg::editor {
     class ActionDispatcher {
     public:
         using this_type = ActionDispatcher;

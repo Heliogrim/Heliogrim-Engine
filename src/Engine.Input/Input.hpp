@@ -7,15 +7,15 @@
 #include "DragDrop/DragDropReceiver.hpp"
 #include "DragDrop/DragDropSender.hpp"
 
-namespace ember::engine::input::schedule {
+namespace hg::engine::input::schedule {
     class InputTickStage;
 }
 
-namespace ember::engine {
+namespace hg::engine {
     class Input :
         public core::CoreModule {
     public:
-        friend class ::ember::engine::input::schedule::InputTickStage;
+        friend class ::hg::engine::input::schedule::InputTickStage;
 
     public:
         using this_type = Input;

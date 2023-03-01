@@ -29,10 +29,10 @@
 #include <Engine.Platform/Linux>
 #endif
 
-using namespace ember::editor;
-using namespace ember::engine::core;
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::editor;
+using namespace hg::engine::core;
+using namespace hg::engine;
+using namespace hg;
 
 EditorEngine::EditorEngine() = default;
 

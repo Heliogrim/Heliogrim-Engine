@@ -5,7 +5,7 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Hash/Murmur3.hpp>
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     /**
      * Forward Declaration
      */
@@ -259,8 +259,8 @@ namespace std {
      * @date 16.08.2021
      */
     template <>
-    struct equal_to<ember::engine::scene::SceneNodeId> {
-        using const_reference_type = ember::cref<ember::engine::scene::SceneNodeId>;
+    struct equal_to<hg::engine::scene::SceneNodeId> {
+        using const_reference_type = hg::cref<hg::engine::scene::SceneNodeId>;
 
         [[nodiscard]] bool operator()(const_reference_type left_, const_reference_type right_) const noexcept {
             return left_.data == right_.data;
@@ -274,8 +274,8 @@ namespace std {
      * @date 16.08.2021
      */
     template <>
-    struct less<ember::engine::scene::SceneNodeId> {
-        using const_reference_type = ember::cref<ember::engine::scene::SceneNodeId>;
+    struct less<hg::engine::scene::SceneNodeId> {
+        using const_reference_type = hg::cref<hg::engine::scene::SceneNodeId>;
 
         [[nodiscard]] bool operator()(const_reference_type left_, const_reference_type right_) const noexcept {
             return left_.data < right_.data;
@@ -289,17 +289,17 @@ namespace std {
      * @date 16.08.2021
      */
     template <>
-    struct hash<ember::engine::scene::SceneNodeId> {
-        using const_reference_type = ember::cref<ember::engine::scene::SceneNodeId>;
+    struct hash<hg::engine::scene::SceneNodeId> {
+        using const_reference_type = hg::cref<hg::engine::scene::SceneNodeId>;
 
         [[nodiscard]] _STD size_t operator()(const_reference_type value_) const noexcept {
             /**
              * !important! don't use identity
              */
-            ember::u64 dst[2];
-            ember::hash::murmur3_x64_128(
+            hg::u64 dst[2];
+            hg::hash::murmur3_x64_128(
                 &value_,
-                sizeof(ember::engine::scene::SceneNodeId),
+                sizeof(hg::engine::scene::SceneNodeId),
                 0x9FB21C651E98DF25ui32,
                 &dst
             );

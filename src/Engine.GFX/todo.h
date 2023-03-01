@@ -3,8 +3,8 @@
 #include "Shader/Factory.hpp"
 #include "Shader/ShaderStorage.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 void build_shader(cref<sptr<Device>> device_) {
 

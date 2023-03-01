@@ -6,8 +6,8 @@
 #include "Game.Main/Assets/Textures/DryGroundRocks01Normal.hpp"
 #include "Game.Main/Assets/Textures/DryGroundRocks01Roughness.hpp"
 
-using namespace ember::game::assets::material;
-using namespace ember;
+using namespace hg::game::assets::material;
+using namespace hg;
 
 DryGroundRocks01::DryGroundRocks01() :
     GfxMaterialAsset(

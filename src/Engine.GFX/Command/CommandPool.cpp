@@ -1,8 +1,8 @@
 #include "CommandPool.hpp"
 #include "CommandBuffer.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 CommandPool::CommandPool(const ptr<CommandQueue>& queue_) noexcept :
     _queue(queue_) { }
@@ -66,6 +66,6 @@ ptr<CommandQueue> CommandPool::queue() noexcept {
     return _queue;
 }
 
-ember::concurrent::UnfairSpinLock& CommandPool::lck() const {
+hg::concurrent::UnfairSpinLock& CommandPool::lck() const {
     return _lck;
 }

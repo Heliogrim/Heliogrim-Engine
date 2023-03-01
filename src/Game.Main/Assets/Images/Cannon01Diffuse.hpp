@@ -1,7 +1,7 @@
 #pragma once
-#include <Ember/ImageAsset.hpp>
+#include <Heliogrim/ImageAsset.hpp>
 
-namespace ember::game::assets::image {
+namespace hg::game::assets::image {
     class Cannon01Diffuse :
         public ImageAsset,
         public AssetAutoGuid<Cannon01Diffuse> {

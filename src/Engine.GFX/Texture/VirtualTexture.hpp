@@ -9,14 +9,14 @@
 #include "../Device/Device.hpp"
 #include "../Memory/VirtualMemory.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class TextureLoader;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class VirtualTexture final {
     public:
-        friend class ::ember::engine::gfx::loader::TextureLoader;
+        friend class ::hg::engine::gfx::loader::TextureLoader;
 
     public:
         using this_type = VirtualTexture;

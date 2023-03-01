@@ -1,7 +1,7 @@
 #include "RenderPassState.hpp"
 
-using namespace ember::engine::gfx::render;
-using namespace ember;
+using namespace hg::engine::gfx::render;
+using namespace hg;
 
 RenderPassState::~RenderPassState() {
     /**

@@ -2,8 +2,8 @@
 
 #include <Engine.Common/Collection/Queue.hpp>
 
-using namespace ember::engine::res;
-using namespace ember;
+using namespace hg::engine::res;
+using namespace hg;
 
 Indexer::Indexer() noexcept {}
 

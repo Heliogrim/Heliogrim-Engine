@@ -2,11 +2,11 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine {
+namespace hg::engine {
     class Engine;
 }
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     class __declspec(novtable) CoreModule {
     public:
         CoreModule(const non_owning_rptr<Engine> engine_) :

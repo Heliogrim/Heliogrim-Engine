@@ -1,7 +1,7 @@
 #pragma once
 #include "Material.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class PfxMaterial :
         public Material {
     public:

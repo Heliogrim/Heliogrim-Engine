@@ -4,7 +4,7 @@
 #include "SubstitutionSlot.hpp"
 #include "SliceSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <typename ValueType_, template <typename...> typename SliceType_>
     class SliceScopedSlot final :
         TypeScopedSlot<SliceType_<ValueType_>> {

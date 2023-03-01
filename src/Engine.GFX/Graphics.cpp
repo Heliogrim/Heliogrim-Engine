@@ -42,9 +42,9 @@
 #include "Swapchain/Swapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg::engine;
+using namespace hg;
 
 Graphics::Graphics(const non_owning_rptr<Engine> engine_) noexcept :
     CoreModule(engine_),

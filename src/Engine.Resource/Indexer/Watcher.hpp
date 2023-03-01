@@ -14,7 +14,7 @@
 
 #include "../File.hpp"
 
-namespace ember::engine::res {
+namespace hg::engine::res {
     class Watcher {
     public:
         using value_type = Watcher;

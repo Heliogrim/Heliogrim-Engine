@@ -3,7 +3,7 @@
 
 #include "AtomicPipelineStage.hpp"
 
-namespace ember::engine::utils::pipeline {
+namespace hg::engine::utils::pipeline {
     class StatelessPipelineStage :
         protected AtomicPipelineStage {
     public:

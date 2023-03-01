@@ -5,9 +5,9 @@
 #include "AssetFactory.hpp"
 #include "Database/AssetDatabase.hpp"
 
-using namespace ember::engine::assets;
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::engine::assets;
+using namespace hg::engine;
+using namespace hg;
 
 Assets::Assets(const non_owning_rptr<Engine> engine_) :
     CoreModule(engine_),

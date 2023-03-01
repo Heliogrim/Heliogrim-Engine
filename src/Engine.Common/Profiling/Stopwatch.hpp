@@ -5,7 +5,7 @@
 #include "../String.hpp"
 #include "../Wrapper.hpp"
 
-namespace ember::profiling {
+namespace hg::profiling {
     class Stopwatch {
     public:
         using value_type = Stopwatch;

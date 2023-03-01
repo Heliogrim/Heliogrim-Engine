@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     enum class ReflowType : u8 {
         eFlexRow = 0ui8,
         eFlexCol = 1ui8,

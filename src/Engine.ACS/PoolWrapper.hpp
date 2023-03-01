@@ -3,7 +3,7 @@
 #include "Pool.hpp"
 #include "Traits.hpp"
 
-namespace ember::engine::acs {
+namespace hg::engine::acs {
     class __declspec(novtable) PoolWrapperBase {
     public:
         virtual void insert(cref<actor_guid> key_) = 0;

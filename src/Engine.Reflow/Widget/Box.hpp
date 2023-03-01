@@ -6,7 +6,7 @@
 
 #include "../Children.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Box :
         public Widget {
     public:

@@ -5,7 +5,7 @@
 
 #include "../Texture/TextureResource.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class Material final {
     public:
         using this_type = Material;
@@ -46,6 +46,6 @@ namespace ember::engine::gfx::loader {
     };
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     typedef resource::Resource<loader::Material> MaterialResource;
 }

@@ -12,7 +12,7 @@
 #include "Traits.hpp"
 #include "__fwd.hpp"
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     /**
      * A pull result type.
      *

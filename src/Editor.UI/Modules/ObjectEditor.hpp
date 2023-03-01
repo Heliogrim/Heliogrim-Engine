@@ -6,11 +6,11 @@
 
 #include "ObjectEditor/ObjectValueMapper.hpp"
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class ObjectEditorPanel;
 }
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class ObjectEditor {
     public:
         using this_type = ObjectEditor;

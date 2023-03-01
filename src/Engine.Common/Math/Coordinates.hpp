@@ -3,7 +3,7 @@
 #include "../Wrapper.hpp"
 #include "Vector.hpp"
 
-namespace ember::math {
+namespace hg::math {
     inline constexpr static vec3 vec3_zero { 0, 0, 0 };
 
     inline constexpr static vec3 vec3_one { 1, 1, 1 };

@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
 
-namespace ember::engine::reflow::schedule {
+namespace hg::engine::reflow::schedule {
     class ReflowShiftStage final :
         public scheduler::PipelineStage {
     public:

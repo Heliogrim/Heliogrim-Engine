@@ -1,7 +1,7 @@
 #include "FixedPipeline.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 cref<Vector<FixedPipelineInput>> FixedPipeline::inputs() const noexcept {
     return _inputs;

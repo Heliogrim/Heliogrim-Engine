@@ -3,7 +3,7 @@
 #include "../Texture/Texture.hpp"
 #include "Engine.GFX/Geometry/Mesh.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Skybox {
     public:
         /**

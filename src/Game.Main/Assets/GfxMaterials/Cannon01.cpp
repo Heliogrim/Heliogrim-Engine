@@ -6,8 +6,8 @@
 #include "../Textures/Cannon01Roughness.hpp"
 #include "../Textures/Cannon01Metalness.hpp"
 
-using namespace ember::game::assets::material;
-using namespace ember;
+using namespace hg::game::assets::material;
+using namespace hg;
 
 Cannon01::Cannon01() :
     GfxMaterialAsset(

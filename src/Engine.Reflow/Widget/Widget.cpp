@@ -1,7 +1,7 @@
 #include "Widget.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 constexpr static WidgetState defaultWidgetState = WidgetState {
     static_cast<WidgetState::value_type>(WidgetStateFlagBits::eVisible) |

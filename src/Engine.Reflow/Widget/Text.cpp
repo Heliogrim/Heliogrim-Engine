@@ -3,8 +3,8 @@
 #include "../Style/BoundStyleSheet.hpp"
 #include "../Layout/Constraints.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 Text::Text(mref<sptr<BoundStyleSheet>> style_) :
     Widget(),

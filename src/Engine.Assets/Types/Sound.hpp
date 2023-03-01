@@ -5,7 +5,7 @@
 
 #include "Asset.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class Sound :
         public Asset {
     public:

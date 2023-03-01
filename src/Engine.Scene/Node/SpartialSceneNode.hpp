@@ -2,7 +2,7 @@
 
 #include "SceneNodeSubBase.hpp"
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     template <class PayloadType_>
     class SpartialSceneNode final :
         public SceneNodeSubBase<PayloadType_, SpartialSceneNode<PayloadType_>> {

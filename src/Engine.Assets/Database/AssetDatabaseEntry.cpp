@@ -1,7 +1,7 @@
 #include "AssetDatabaseEntry.hpp"
 
-using namespace ember::engine::assets;
-using namespace ember;
+using namespace hg::engine::assets;
+using namespace hg;
 
 AssetDatabaseEntry::AssetDatabaseEntry() noexcept :
     _guid(invalid_asset_guid),

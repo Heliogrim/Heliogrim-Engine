@@ -5,7 +5,7 @@
 
 #include "../DragDropEvent.hpp"
 
-namespace ember::engine::input {
+namespace hg::engine::input {
     class __declspec(novtable) DragDropReceiver {
     public:
         using this_type = DragDropReceiver;

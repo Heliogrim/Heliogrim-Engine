@@ -3,8 +3,8 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 InputText::InputText(mref<sptr<BoundStyleSheet>> style_, mref<sptr<BoundStyleSheet>> textStyle_) :
     Input(),

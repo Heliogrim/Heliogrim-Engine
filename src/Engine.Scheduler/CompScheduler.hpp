@@ -4,14 +4,14 @@
 #include "Pipeline/CompositePipeline.hpp"
 #include "Worker/Worker.hpp"
 
-namespace ember::engine {
+namespace hg::engine {
     class CompScheduler /* TODO: final */ :
         public Scheduler {
     public:
         using aligned_worker = ALIGNED(scheduler::worker::Worker, CACHE_LINE_SIZE);
         using fiber_pool_type = scheduler::fiber::FiberPool;
 
-        using task_type = ::ember::engine::scheduler::task::TaskDelegate;
+        using task_type = ::hg::engine::scheduler::task::TaskDelegate;
 
     public:
         /**

@@ -2,7 +2,7 @@
 #include <Windows.h>
 
 #define DEBUG_CPP
-#include <Ember.Main/Ember.Main.hpp>
+#include <Heliogrim.Main/Heliogrim.Main.hpp>
 #include <Engine.Common/stdafx.h>
 #include <Engine.Resource/File.hpp>
 #include <Engine.Scheduler/Task/Task.hpp>
@@ -16,10 +16,10 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-#include <Ember/Actor.hpp>
-#include <Ember/Inbuilt.hpp>
-#include <Ember/Level.hpp>
-#include <Ember/TextureAsset.hpp>
+#include <Heliogrim/Actor.hpp>
+#include <Heliogrim/Inbuilt.hpp>
+#include <Heliogrim/Level.hpp>
+#include <Heliogrim/TextureAsset.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #include <Engine.Event/TickEvent.hpp>
 #include <Editor.Main/Boot/AssetInit.hpp>
@@ -47,9 +47,9 @@
 #include "Assets/Meshes/WoodenPier01Poles.hpp"
 #include "Assets/Meshes/WoodenBucket01.hpp"
 #include "Assets/Meshes/WoodenBucket02.hpp"
-#include "Ember/Ember.hpp"
-#include "Ember/SkyboxComponent.hpp"
-#include "Ember/World.hpp"
+#include "Heliogrim/Heliogrim.hpp"
+#include "Heliogrim/SkyboxComponent.hpp"
+#include "Heliogrim/World.hpp"
 #include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Assets/Types/GfxMaterial.hpp"
 #include "Engine.Assets/Types/Texture/Texture.hpp"
@@ -67,7 +67,7 @@
 
 #include "Engine.Core/Engine.hpp"
 
-using namespace ember;
+using namespace hg;
 
 ptr<Actor> globalPlaneActor = nullptr;
 
@@ -83,34 +83,34 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_);
 
 #pragma endregion
 
-#pragma region Ember Injection Declarations
+#pragma region Heliogrim Injection Declarations
 
 void beforeRoutine() {}
 
-void onEngineCreate(const ember::non_owning_rptr<Engine> engine_) {}
+void onEngineCreate(const hg::non_owning_rptr<Engine> engine_) {}
 
-void onEnginePreInit(const ember::non_owning_rptr<Engine> engine_) {}
+void onEnginePreInit(const hg::non_owning_rptr<Engine> engine_) {}
 
-void onEngineInit(const ember::non_owning_rptr<Engine> engine_) {}
+void onEngineInit(const hg::non_owning_rptr<Engine> engine_) {}
 
-void onEnginePostInit(const ember::non_owning_rptr<Engine> engine_) {}
+void onEnginePostInit(const hg::non_owning_rptr<Engine> engine_) {}
 
-void onEngineStart(const ember::non_owning_rptr<Engine> engine_) {}
+void onEngineStart(const hg::non_owning_rptr<Engine> engine_) {}
 
-void onEngineRunning(const ember::non_owning_rptr<Engine> engine_) {}
+void onEngineRunning(const hg::non_owning_rptr<Engine> engine_) {}
 
-void onEngineStop(const ember::non_owning_rptr<Engine> engine_) {}
+void onEngineStop(const hg::non_owning_rptr<Engine> engine_) {}
 
-void onEngineShutdown(const ember::non_owning_rptr<Engine> engine_) {}
+void onEngineShutdown(const hg::non_owning_rptr<Engine> engine_) {}
 
-void onEngineExit(const ember::non_owning_rptr<Engine> engine_) {}
+void onEngineExit(const hg::non_owning_rptr<Engine> engine_) {}
 
 void afterRoutine() {}
 
 #pragma endregion
 
 /**
- * Ember main entry
+ * Heliogrim main entry
  *
  * @author Julius
  * @date 20.10.2021
@@ -120,7 +120,7 @@ void ember_main_entry() {
 
     /**/
     // Warning: Will cause error, cause Editor.Main is a Executable not a linkable lib
-    //execute(::ember::editor::boot::initAssets);
+    //execute(::hg::editor::boot::initAssets);
     /**/
 
     /**
@@ -184,7 +184,7 @@ void ember_main_entry() {
 #pragma region Actors Over Time
 
 void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const u64 cols_, _In_ const float scalar_,
-    _Inout_ ref<ember::math::vec3> position_) {
+    _Inout_ ref<hg::math::vec3> position_) {
     const float rdxf { static_cast<float>(rows_) };
     const float rdyf { static_cast<float>(cols_) };
 
@@ -205,9 +205,9 @@ void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const 
     position_ += math::vec3_forward * (ry * py - ry * 0.5F + oyf * scalar_);
 }
 
-#include "Ember/ActorInitializer.hpp"
-#include "Ember/StaticGeometryComponent.hpp"
-#include "Ember/SkeletalGeometryComponent.hpp"
+#include "Heliogrim/ActorInitializer.hpp"
+#include "Heliogrim/StaticGeometryComponent.hpp"
+#include "Heliogrim/SkeletalGeometryComponent.hpp"
 
 Vector<Actor*> testActors {};
 
@@ -230,12 +230,12 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
     /**
      *
      */
-    auto queryResult = Ember::assets()[game::assets::meshes::Cylinder::unstable_auto_guid()];
+    auto queryResult = Heliogrim::assets()[game::assets::meshes::Cylinder::unstable_auto_guid()];
     if (queryResult.flags == AssetDatabaseResultType::eSuccess) {
         comp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&queryResult.value));
     }
 
-    queryResult = Ember::assets()[game::assets::material::Cerberus::unstable_auto_guid()];
+    queryResult = Heliogrim::assets()[game::assets::material::Cerberus::unstable_auto_guid()];
     if (queryResult.flags == AssetDatabaseResultType::eSuccess) {
         const auto& list { comp->overrideMaterials() };
         auto& ovm { const_cast<ref<_STD decay_t<decltype(list)>>>(list) };
@@ -273,8 +273,8 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
 
     auto comp = entity.record<component::StaticGeometryComponent>();
 
-    comp.setMesh(ember::game::assets::meshes::PlaneD128::auto_guid());
-    comp.setMaterial(ember::game::assets::material::ForestGround01::auto_guid());
+    comp.setMesh(hg::game::assets::meshes::PlaneD128::auto_guid());
+    comp.setMaterial(hg::game::assets::material::ForestGround01::auto_guid());
      */
 }
 
@@ -321,10 +321,10 @@ ptr<Actor> buildSimpleAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
     auto initializer { GetSession().getActorInitializer() };
     auto* cmp { initializer.createComponent<StaticGeometryComponent>(actor) };
 
-    auto query { Ember::assets()[meshGuid_] };
+    auto query { Heliogrim::assets()[meshGuid_] };
     cmp->setStaticGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&query.value));
 
-    query = Ember::assets()[materialGuid_];
+    query = Heliogrim::assets()[materialGuid_];
     auto& materials { const_cast<ref<_STD decay_t<cref<Vector<GfxMaterialAsset>>>>>(cmp->overrideMaterials()) };
     materials.push_back(*static_cast<ptr<GfxMaterialAsset>>(&query.value));
 
@@ -448,10 +448,10 @@ ptr<Actor> buildSkyboxAsset(asset_guid meshGuid_, asset_guid materialGuid_) {
     auto initializer { GetSession().getActorInitializer() };
     auto* cmp { initializer.createComponent<SkyboxComponent>(actor) };
 
-    auto query { Ember::assets()[meshGuid_] };
+    auto query { Heliogrim::assets()[meshGuid_] };
     cmp->setSkyboxGeometryByAsset(*static_cast<ptr<StaticGeometryAsset>>(&query.value));
 
-    query = Ember::assets()[materialGuid_];
+    query = Heliogrim::assets()[materialGuid_];
     cmp->setSkyboxMaterialByAsset(*static_cast<ptr<GfxMaterialAsset>>(&query.value));
 
     GetWorld().addActor(actor);

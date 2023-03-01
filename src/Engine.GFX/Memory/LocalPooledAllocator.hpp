@@ -6,7 +6,7 @@
 #include "MemoryCache.hpp"
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx::memory {
+namespace hg::engine::gfx::memory {
     class LocalPooledAllocator final :
         public Allocator {
     public:
@@ -43,11 +43,11 @@ namespace vk {
     class Image;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Device;
 }
 
-namespace ember::engine::gfx::memory {
+namespace hg::engine::gfx::memory {
     [[nodiscard]] AllocationResult allocate(
         const ptr<LocalPooledAllocator> alloc_,
         cref<sptr<Device>> device_,

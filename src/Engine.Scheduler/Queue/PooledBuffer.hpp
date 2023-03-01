@@ -3,7 +3,7 @@
 
 #include "../Task/Task.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     /**
      * Forward Declaration
      */

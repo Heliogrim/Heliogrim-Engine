@@ -2,9 +2,9 @@
 
 #include "EdGridNode.hpp"
 
-using namespace ember::editor::gfx;
-using namespace ember::engine::gfx::render;
-using namespace ember;
+using namespace hg::editor::gfx;
+using namespace hg::engine::gfx::render;
+using namespace hg;
 
 void EdPostCompStage::setup(cref<sptr<engine::gfx::Device>> device_) {
     RenderStage::setup(device_);

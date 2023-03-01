@@ -1,15 +1,15 @@
 #include "RevScene.hpp"
 
-#include <Ember/SceneComponent.hpp>
+#include <Heliogrim/SceneComponent.hpp>
 #include <Engine.GFX/Scene/SceneTag.hpp>
 #include <Engine.GFX/Scene/SceneNodeModel.hpp>
 
-using namespace ember::engine::scene;
+using namespace hg::engine::scene;
 
 RenderGraph makeRenderGraph() {
 
-    auto nodeStorage { ember::make_sptr<RenderGraph::node_storage_type>() };
-    auto elementStorage { ember::make_sptr<RenderGraph::element_storage_type>() };
+    auto nodeStorage { hg::make_sptr<RenderGraph::node_storage_type>() };
+    auto elementStorage { hg::make_sptr<RenderGraph::element_storage_type>() };
 
     auto root {
         SceneNodeFactory<RenderGraph::node_storage_type, RenderGraph::element_storage_type, RenderGraph::traits> {
@@ -87,7 +87,7 @@ void RevScene::update() {
         assert(result);
         #endif
 
-        EmberObject::destroy(_STD move(marked));
+        HeliogrimObject::destroy(_STD move(marked));
     }
 
     /**
@@ -126,7 +126,7 @@ void RevScene::update() {
     }
 }
 
-const ember::ptr<RenderGraph> RevScene::renderGraph() noexcept {
+const hg::ptr<RenderGraph> RevScene::renderGraph() noexcept {
     return &_renderGraph;
 }
 
@@ -179,8 +179,8 @@ bool RevScene::removeNodeCached(const ptr<SceneComponent> node_) noexcept {
     return false;
 }
 
-ember::ptr<ember::IComponentRegisterContext> RevScene::registerContext() noexcept {
-    return static_cast<ember::ptr<ember::IComponentRegisterContext>>(this);
+hg::ptr<hg::IComponentRegisterContext> RevScene::registerContext() noexcept {
+    return static_cast<hg::ptr<hg::IComponentRegisterContext>>(this);
 }
 
 void RevScene::add(const ptr<ActorComponent> component_) {

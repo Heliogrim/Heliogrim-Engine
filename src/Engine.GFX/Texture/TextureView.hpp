@@ -6,7 +6,7 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class TextureView final {
     public:
         friend class Texture;

@@ -6,7 +6,7 @@
 #include "Engine.Common/Collection/BytellHashMap.hpp"
 #include "Engine.Common/Collection/Set.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class TreeItem;
 
     template <typename DataItemType_, template <typename> typename WrappingType_>
@@ -16,7 +16,7 @@ namespace ember::engine::reflow {
     struct TreeDataItemHash;
 }
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     enum class TreeViewSelectionMode {
         eSingle = 0x0,
         eMultiple = 0x1,

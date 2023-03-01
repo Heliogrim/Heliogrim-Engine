@@ -7,7 +7,7 @@
 #include "SceneNodeHead.hpp"
 #include "SceneNode.hpp"
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     template <class NodeStorageType_, class ElementStorageType_, class Traits_>
     class SceneNodeFactory {
     public:

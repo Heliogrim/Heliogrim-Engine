@@ -2,7 +2,7 @@
 
 #include "../Texture/Texture.hpp"
 
-namespace ember::engine::gfx::render {
+namespace hg::engine::gfx::render {
     struct HORenderPassChanges {
         sptr<Texture> target;
     };

@@ -1,8 +1,8 @@
 #pragma once
 
-namespace ember::engine::gfx { }
+namespace hg::engine::gfx { }
 
-namespace ember::engine::gfx::render {
+namespace hg::engine::gfx::render {
     class HORenderPass;
     class Multiplexer;
     class Renderer;

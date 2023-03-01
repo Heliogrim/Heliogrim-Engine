@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-namespace ember {
+namespace hg {
     template <
         class Key_,
         class Type_,

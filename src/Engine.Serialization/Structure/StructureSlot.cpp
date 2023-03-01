@@ -2,8 +2,8 @@
 
 #include "../Archive/Archive.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 StructureSlotBase::StructureSlotBase(cref<StructureSlotState> state_) :
     _state(state_) {}

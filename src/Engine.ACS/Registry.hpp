@@ -10,7 +10,7 @@
 #include "ActorPoolWrapper.hpp"
 #include "Registry.hpp"
 
-namespace ember {
+namespace hg {
     /**
      * Forward Declaration
      */
@@ -18,7 +18,7 @@ namespace ember {
     class ActorInitializer;
 }
 
-namespace ember::engine::acs {
+namespace hg::engine::acs {
     class Registry {
     public:
         using size_type = size_t;
@@ -56,7 +56,7 @@ namespace ember::engine::acs {
             auto ptr = &pool_type::getOrCreate();
 
             // Temporary
-            const auto typeId { EmberClass::stid<ValueType>() };
+            const auto typeId { HeliogrimClass::stid<ValueType>() };
             auto mapped = _pools[typeId];
 
             if (mapped == nullptr) {
@@ -162,7 +162,7 @@ namespace ember::engine::acs {
 
         void releaseActorComponent(cref<actor_guid> guid_, cref<type_id> typeId_);
 
-        template <IsEmberObject ValueType_>
+        template <IsHeliogrimObject ValueType_>
         void releaseActorComponent(cref<actor_guid> guid_, mref<ptr<ValueType_>> value_) {
             // TODO: releaseActorComponent(guid_, value_->getClass()->typeId());
             releaseActorComponent(guid_, value_->getTypeId());
@@ -172,7 +172,7 @@ namespace ember::engine::acs {
         ska::bytell_hash_map<type_id, ptr<ActorPoolWrapperBase>> _actorPools;
 
     public:
-        template <IsEmberObject ActorType_>
+        template <IsHeliogrimObject ActorType_>
         const ptr<pool_type<ActorType_>> getOrCreateActorPool() {
 
             using pool_type = pool_type<ActorType_>;
@@ -181,7 +181,7 @@ namespace ember::engine::acs {
             // TODO: Change static lifetime to scoped one
             auto* const pool { &pool_type::getOrCreate() };
 
-            const auto typeId { EmberClass::stid<ActorType_>() };
+            const auto typeId { HeliogrimClass::stid<ActorType_>() };
             const auto* const mapped { _actorPools[typeId] };
 
             if (mapped == nullptr) {
@@ -192,7 +192,7 @@ namespace ember::engine::acs {
         }
 
     public:
-        template <IsEmberObject ActorType_> requires _STD derived_from<ActorType_, Actor>
+        template <IsHeliogrimObject ActorType_> requires _STD derived_from<ActorType_, Actor>
         [[nodiscard]] ptr<ActorType_> createActor(cref<ActorInitializer> initializer_) noexcept {
 
             const auto guid = generate_actor_guid();

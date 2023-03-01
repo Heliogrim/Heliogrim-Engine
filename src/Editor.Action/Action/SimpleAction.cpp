@@ -1,7 +1,7 @@
 #include "SimpleAction.hpp"
 
-using namespace ember::editor;
-using namespace ember;
+using namespace hg::editor;
+using namespace hg;
 
 SimpleAction::SimpleAction(cref<action_type_id> typeId_) :
     Action(typeId_),

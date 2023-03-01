@@ -5,7 +5,7 @@
 
 #include "../__macro.hpp"
 
-namespace ember::concurrent {
+namespace hg::concurrent {
     /**
      * \brief 
      */
@@ -183,7 +183,7 @@ namespace ember::concurrent {
 
     private:
         /** The gate */
-        _STD atomic<ember::engine::scheduler::thread::thread_id> _gate;
+        _STD atomic<hg::engine::scheduler::thread::thread_id> _gate;
 
         /**
          * Spins this 

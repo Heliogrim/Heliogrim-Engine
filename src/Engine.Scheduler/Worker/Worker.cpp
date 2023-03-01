@@ -6,10 +6,10 @@
 #include "../Fiber/FiberLaunchPad.hpp"
 #include "../Fiber/FiberPool.hpp"
 
-using namespace ember::engine::scheduler::worker;
-using namespace ember::engine::scheduler::thread;
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler::worker;
+using namespace hg::engine::scheduler::thread;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 Worker::Worker(
     const non_owning_rptr<Schedule> schedule_,

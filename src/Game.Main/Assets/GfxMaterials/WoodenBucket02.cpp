@@ -6,8 +6,8 @@
 #include "../Textures/WoodenBucket02Roughness.hpp"
 #include "../Textures/WoodenBucket02Metalness.hpp"
 
-using namespace ember::game::assets::material;
-using namespace ember;
+using namespace hg::game::assets::material;
+using namespace hg;
 
 WoodenBucket02::WoodenBucket02() :
     GfxMaterialAsset(

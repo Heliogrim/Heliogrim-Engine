@@ -4,7 +4,7 @@
 #include <unordered_set>
 #include <Engine.Common/Collection/Vector.hpp>
 
-namespace ember::engine::acs {
+namespace hg::engine::acs {
     template <typename Ty>
     FORCE_INLINE Ty* construct_inplace(void* destination_) {
         return new(destination_) Ty;

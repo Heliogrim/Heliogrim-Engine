@@ -2,11 +2,11 @@
 #include <Engine.Common/Url.hpp>
 #include <Engine.Reflow/Widget/Dialog.hpp>
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class AssetBrowser;
 }
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class AssetFileImportDialog :
         public engine::reflow::Dialog {
     protected:

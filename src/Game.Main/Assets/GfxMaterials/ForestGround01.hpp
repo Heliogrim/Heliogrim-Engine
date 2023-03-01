@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Ember/AssetAutoGuid.hpp>
-#include <Ember/GfxMaterialAsset.hpp>
+#include <Heliogrim/AssetAutoGuid.hpp>
+#include <Heliogrim/GfxMaterialAsset.hpp>
 
-namespace ember::game::assets::material {
+namespace hg::game::assets::material {
     class ForestGround01 :
         public GfxMaterialAsset,
         public AssetAutoGuid<ForestGround01> {

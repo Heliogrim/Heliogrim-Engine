@@ -1,8 +1,8 @@
 #include "VkTranslate.hpp"
 
-using namespace ember::engine::gfx::api;
+using namespace hg::engine::gfx::api;
 
-vk::PolygonMode ember::engine::gfx::api::vkTranslateMode(RasterPolyMode mode_) {
+vk::PolygonMode hg::engine::gfx::api::vkTranslateMode(RasterPolyMode mode_) {
     switch (mode_) {
         case RasterPolyMode::eFace: {
             return vk::PolygonMode::eFill;
@@ -16,7 +16,7 @@ vk::PolygonMode ember::engine::gfx::api::vkTranslateMode(RasterPolyMode mode_) {
     }
 }
 
-vk::FrontFace ember::engine::gfx::api::vkTranslateFace(RasterPolyFront front_) {
+vk::FrontFace hg::engine::gfx::api::vkTranslateFace(RasterPolyFront front_) {
     switch (front_) {
         case RasterPolyFront::eClockwise: {
             return vk::FrontFace::eClockwise;
@@ -30,7 +30,7 @@ vk::FrontFace ember::engine::gfx::api::vkTranslateFace(RasterPolyFront front_) {
     }
 }
 
-vk::SampleCountFlagBits ember::engine::gfx::api::vkTranslateSamples(RasterSamples samples_) {
+vk::SampleCountFlagBits hg::engine::gfx::api::vkTranslateSamples(RasterSamples samples_) {
     switch (samples_) {
         case RasterSamples::e1: {
             return vk::SampleCountFlagBits::e1;
@@ -57,7 +57,7 @@ vk::SampleCountFlagBits ember::engine::gfx::api::vkTranslateSamples(RasterSample
     }
 }
 
-vk::VertexInputRate ember::engine::gfx::api::vkTranslateInputRate(InputRate rate_) {
+vk::VertexInputRate hg::engine::gfx::api::vkTranslateInputRate(InputRate rate_) {
     switch (rate_) {
         case InputRate::ePerInstance: {
             return vk::VertexInputRate::eInstance;
@@ -71,7 +71,7 @@ vk::VertexInputRate ember::engine::gfx::api::vkTranslateInputRate(InputRate rate
     }
 }
 
-vk::CullModeFlagBits ember::engine::gfx::api::vkTranslateCull(RasterCullFace face_) {
+vk::CullModeFlagBits hg::engine::gfx::api::vkTranslateCull(RasterCullFace face_) {
     switch (face_) {
         case RasterCullFace::eNone: {
             return vk::CullModeFlagBits::eNone;
@@ -91,7 +91,7 @@ vk::CullModeFlagBits ember::engine::gfx::api::vkTranslateCull(RasterCullFace fac
     }
 }
 
-vk::PrimitiveTopology ember::engine::gfx::api::vkTranslateTopology(PrimitiveTopology topology_) {
+vk::PrimitiveTopology hg::engine::gfx::api::vkTranslateTopology(PrimitiveTopology topology_) {
     switch (topology_) {
         case PrimitiveTopology::eTriangleList: {
             return vk::PrimitiveTopology::eTriangleList;
@@ -105,7 +105,7 @@ vk::PrimitiveTopology ember::engine::gfx::api::vkTranslateTopology(PrimitiveTopo
     }
 }
 
-vk::Format ember::engine::gfx::api::vkTranslateFormat(TextureFormat format_) {
+vk::Format hg::engine::gfx::api::vkTranslateFormat(TextureFormat format_) {
     switch (format_) {
         case TextureFormat::eR16Uint: {
             return vk::Format::eR16Uint;
@@ -173,7 +173,7 @@ vk::Format ember::engine::gfx::api::vkTranslateFormat(TextureFormat format_) {
     }
 }
 
-ember::engine::gfx::TextureFormat ember::engine::gfx::api::vkTranslateFormat(vk::Format format_) {
+hg::engine::gfx::TextureFormat hg::engine::gfx::api::vkTranslateFormat(vk::Format format_) {
     switch (format_) {
         case vk::Format::eR16Uint: {
             return TextureFormat::eR16Uint;
@@ -241,7 +241,7 @@ ember::engine::gfx::TextureFormat ember::engine::gfx::api::vkTranslateFormat(vk:
     }
 }
 
-vk::DescriptorType ember::engine::gfx::api::vkTranslateBindingType(const shader::BindingType type_) {
+vk::DescriptorType hg::engine::gfx::api::vkTranslateBindingType(const shader::BindingType type_) {
     switch (type_) {
         case shader::BindingType::eUniformBuffer: {
             return vk::DescriptorType::eUniformBuffer;
@@ -258,7 +258,7 @@ vk::DescriptorType ember::engine::gfx::api::vkTranslateBindingType(const shader:
     }
 }
 
-vk::MemoryPropertyFlags ember::engine::gfx::api::vkTranslateMemoryProperties(const MemoryProperties properties_) {
+vk::MemoryPropertyFlags hg::engine::gfx::api::vkTranslateMemoryProperties(const MemoryProperties properties_) {
 
     vk::MemoryPropertyFlags flags {};
 
@@ -289,7 +289,7 @@ vk::MemoryPropertyFlags ember::engine::gfx::api::vkTranslateMemoryProperties(con
     return flags;
 }
 
-ember::engine::gfx::MemoryProperties ember::engine::gfx::api::vkTranslateMemoryProperties(
+hg::engine::gfx::MemoryProperties hg::engine::gfx::api::vkTranslateMemoryProperties(
     const vk::MemoryPropertyFlags properties_
 ) {
 

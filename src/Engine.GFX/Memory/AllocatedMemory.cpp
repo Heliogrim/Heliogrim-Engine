@@ -6,8 +6,8 @@
 
 #include "Allocator.hpp"
 
-using namespace ember::engine::gfx::memory;
-using namespace ember;
+using namespace hg::engine::gfx::memory;
+using namespace hg;
 
 AllocatedMemory::AllocatedMemory(
     ptr<Allocator> allocator_,

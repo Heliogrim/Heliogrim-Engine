@@ -1,7 +1,7 @@
 #include "MouseButtonEvent.hpp"
 
-using namespace ember::engine::input::event;
-using namespace ember;
+using namespace hg::engine::input::event;
+using namespace hg;
 
 MouseButtonEvent::MouseButtonEvent(
     cref<math::ivec2> pointer_,

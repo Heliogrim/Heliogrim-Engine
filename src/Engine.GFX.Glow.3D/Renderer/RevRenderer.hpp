@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.GFX/Renderer/Renderer.hpp>
 
-namespace ember::engine::gfx::glow::render {
+namespace hg::engine::gfx::glow::render {
     class RevRenderer :
         public gfx::render::Renderer {
     public:

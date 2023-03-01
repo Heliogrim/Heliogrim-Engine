@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     enum class TextAlign : u8 {
         eLeftTop = 0b0001'0001,
         eLeftMiddle = 0b0010'0001,

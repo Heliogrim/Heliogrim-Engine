@@ -5,7 +5,7 @@
 #include <Engine.Common/Guid.hpp>
 #include <chrono>
 
-namespace ember {
+namespace hg {
     /**
      * An guid actor identifier.
      *
@@ -45,15 +45,15 @@ namespace std {
      * @date 29.10.2020
      */
     template <>
-    struct hash<ember::actor_guid> {
-        _STD size_t operator()(const ember::actor_guid& value_) const noexcept {
+    struct hash<hg::actor_guid> {
+        _STD size_t operator()(const hg::actor_guid& value_) const noexcept {
             /**
              * !important! don't use identity
              */
-            ember::u64 dst[2];
-            ember::hash::murmur3_x64_128(
+            hg::u64 dst[2];
+            hg::hash::murmur3_x64_128(
                 &value_,
-                sizeof(ember::actor_guid),
+                sizeof(hg::actor_guid),
                 0x9FB21C651E98DF25ui32,
                 &dst
             );

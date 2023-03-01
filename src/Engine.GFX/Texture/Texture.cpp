@@ -2,7 +2,7 @@
 
 #include "TextureView.hpp"
 
-using namespace ember::engine::gfx;
+using namespace hg::engine::gfx;
 
 Texture::Texture() noexcept :
     _buffer(),
@@ -57,7 +57,7 @@ void Texture::destroy() {
     _buffer.destroy();
 }
 
-ember::uptr<TextureView> Texture::makeView(math::uivec2 layers_, math::uExtent3D extent_, math::uivec2 mipLevels_) {
+hg::uptr<TextureView> Texture::makeView(math::uivec2 layers_, math::uExtent3D extent_, math::uivec2 mipLevels_) {
 
     const math::uivec2 mipLevels {
         MAX(_mipLevels, mipLevels_.min),
@@ -94,15 +94,15 @@ const TextureBuffer& Texture::buffer() const noexcept {
     return _buffer;
 }
 
-ember::math::uivec3& Texture::extent() noexcept {
+hg::math::uivec3& Texture::extent() noexcept {
     return _extent;
 }
 
-ember::math::uivec3 Texture::extent() const noexcept {
+hg::math::uivec3 Texture::extent() const noexcept {
     return _extent;
 }
 
-ember::math::uivec3::value_type Texture::depth() const noexcept {
+hg::math::uivec3::value_type Texture::depth() const noexcept {
     if (_type != TextureType::e2dArray) {
         return _extent.z;
     }
@@ -110,15 +110,15 @@ ember::math::uivec3::value_type Texture::depth() const noexcept {
     return 1ui32;
 }
 
-ember::math::uivec3::value_type Texture::height() const noexcept {
+hg::math::uivec3::value_type Texture::height() const noexcept {
     return _extent.y;
 }
 
-ember::math::uivec3::value_type Texture::width() const noexcept {
+hg::math::uivec3::value_type Texture::width() const noexcept {
     return _extent.x;
 }
 
-ember::math::vec3_t<unsigned>::value_type Texture::layer() const noexcept {
+hg::math::vec3_t<unsigned>::value_type Texture::layer() const noexcept {
     if (_type == TextureType::e2dArray) {
         return _extent.z;
     }
@@ -138,11 +138,11 @@ TextureFormat Texture::format() const noexcept {
     return _format;
 }
 
-ember::u32& Texture::mipLevels() noexcept {
+hg::u32& Texture::mipLevels() noexcept {
     return _mipLevels;
 }
 
-ember::u32 Texture::mipLevels() const noexcept {
+hg::u32 Texture::mipLevels() const noexcept {
     return _mipLevels;
 }
 

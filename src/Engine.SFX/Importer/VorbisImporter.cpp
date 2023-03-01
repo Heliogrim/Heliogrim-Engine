@@ -5,8 +5,8 @@
 
 #include "AudioFileTypes.hpp"
 
-using namespace ember::engine::sfx;
-using namespace ember;
+using namespace hg::engine::sfx;
+using namespace hg;
 
 bool VorbisImporter::canImport(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const noexcept {
     return typeId_ == AudioFileType::Ogg;

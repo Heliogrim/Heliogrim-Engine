@@ -4,8 +4,8 @@
 
 #include "LayoutDefine.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 DataLayoutBase::DataLayoutBase(const bool hasReflectedClass_) :
     DataLayoutReflect(),

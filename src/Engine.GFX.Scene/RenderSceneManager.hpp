@@ -5,20 +5,20 @@
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Utils/_CTRL.hpp>
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class IRenderScene;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class RenderTarget;
 }
 
-namespace ember::engine::gfx::scene {
+namespace hg::engine::gfx::scene {
     class RenderSceneManager final {
     public:
         using this_type = RenderSceneManager;
 
-        using RenderScene = ::ember::engine::scene::IRenderScene;
+        using RenderScene = ::hg::engine::scene::IRenderScene;
 
     private:
         /**

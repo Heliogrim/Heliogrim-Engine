@@ -7,8 +7,8 @@
 
 #include "Win32DragDropObject.hpp"
 
-using namespace ember::engine::input;
-using namespace ember;
+using namespace hg::engine::input;
+using namespace hg;
 
 Win32DragDropSender::Win32DragDropSender() :
     DragDropSender(),

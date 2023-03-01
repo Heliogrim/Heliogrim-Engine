@@ -1,19 +1,19 @@
 #pragma once
 
-#include <Ember/Actor.hpp>
-#include "EmberReflect.hpp"
+#include <Heliogrim/Actor.hpp>
+#include "HeliogrimReflect.hpp"
 
-namespace ember {
+namespace hg {
     class Reflect {
     public:
         template <typename ActorType_>
         struct SubstitudeActorClass {
-            FORCE_INLINE static ptr<EmberClass> Known() noexcept {
-                return EmberClass::of<ActorType_>();
+            FORCE_INLINE static ptr<HeliogrimClass> Known() noexcept {
+                return HeliogrimClass::of<ActorType_>();
             }
 
-            FORCE_INLINE static ptr<EmberClass> Unknown() noexcept {
-                return EmberClass::of<ActorType_>();
+            FORCE_INLINE static ptr<HeliogrimClass> Unknown() noexcept {
+                return HeliogrimClass::of<ActorType_>();
             }
         };
     };

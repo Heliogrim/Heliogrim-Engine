@@ -3,9 +3,9 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Input/Input.hpp>
 
-using namespace ember::engine::input::schedule;
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::input::schedule;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 InputTickStage::InputTickStage(
     cref<StageIdentifier> identifier_,

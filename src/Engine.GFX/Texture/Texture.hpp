@@ -7,7 +7,7 @@
 #include "TextureBuffer.hpp"
 #include "TextureType.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Texture {
     public:
         using value_type = Texture;

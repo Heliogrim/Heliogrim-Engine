@@ -5,9 +5,9 @@
 
 #include "EdPostCompStage.hpp"
 
-using namespace ember::editor::gfx;
-using namespace ember::engine::gfx::glow::render;
-using namespace ember;
+using namespace hg::editor::gfx;
+using namespace hg::engine::gfx::glow::render;
+using namespace hg;
 
 EdRevRenderer::EdRevRenderer() :
     RevRenderer() {}

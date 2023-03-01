@@ -6,7 +6,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::gfx::cache {
+namespace hg::engine::gfx::cache {
     template <std::totally_ordered SubjectType_>
     class CacheCtrlSubject {
     public:

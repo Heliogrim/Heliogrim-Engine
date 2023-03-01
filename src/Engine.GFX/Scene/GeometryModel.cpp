@@ -2,8 +2,8 @@
 
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 GeometryModel::GeometryModel(const ptr<SceneComponent> owner_) :
     SceneNodeModel(owner_) {}

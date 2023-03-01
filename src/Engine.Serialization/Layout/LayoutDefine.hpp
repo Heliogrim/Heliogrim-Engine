@@ -10,7 +10,7 @@
 #include "DataLayoutBase.hpp"
 #include "__fwd.hpp"
 
-namespace ember::engine::serialization::layout {
+namespace hg::engine::serialization::layout {
     class LayoutDefine {
     public:
         using this_type = LayoutDefine;

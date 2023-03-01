@@ -1,7 +1,7 @@
 #include "StagePipeline.hpp"
 
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 StagePipeline::StagePipeline(cref<identifier_type> identifier_) noexcept :
     _identifier(identifier_) {}

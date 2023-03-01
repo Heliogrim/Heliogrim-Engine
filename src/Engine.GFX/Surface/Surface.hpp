@@ -5,15 +5,15 @@
 #include "../Application/Application.hpp"
 #include "../Device/Device.hpp"
 
-namespace ember::engine::platform {
+namespace hg::engine::platform {
     class NativeWindow;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Swapchain;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Surface {
     public:
         using value_type = Surface;

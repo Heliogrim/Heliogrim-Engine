@@ -6,11 +6,11 @@
 
 #include <Engine.Serialization/Layout/__fwd.hpp>
 
-namespace ember {
+namespace hg {
     class Url {
     public:
         template <typename>
-        friend class ::ember::engine::serialization::DataLayout;
+        friend class ::hg::engine::serialization::DataLayout;
 
     public:
         using this_type = Url;

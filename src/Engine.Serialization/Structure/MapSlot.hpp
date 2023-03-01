@@ -5,7 +5,7 @@
 #include "StructureSlot.hpp"
 #include "MapEntrySlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <typename KeyType_, typename ValueType_, template <typename, typename...> typename MapType_>
     class MapSlot final :
         public TypedStructureSlotBase<MapType_<KeyType_, ValueType_>> {

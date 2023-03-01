@@ -19,7 +19,7 @@
 
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     namespace __inputvec {
         [[nodiscard]] sptr<engine::reflow::BoundStyleSheet> makeInputBoxStyle();
 
@@ -271,7 +271,7 @@ namespace ember::editor::ui {
 
         void storeContent() {
 
-            using namespace ::ember::engine::reflow;
+            using namespace ::hg::engine::reflow;
 
             if (not _content) {
                 return;

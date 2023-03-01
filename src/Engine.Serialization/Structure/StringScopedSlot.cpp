@@ -6,8 +6,8 @@
 #include "ScopedSlotGuard.hpp"
 #include "StringSlot.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 StringScopedSlot::StringScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
     TypeScopedSlot(_STD move(scopedState_), make_sptr<StringSlot>(_STD move(state_))) {}

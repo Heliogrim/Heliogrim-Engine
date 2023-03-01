@@ -2,8 +2,8 @@
 
 #include "ShaderStorage.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 ShaderSlot::ShaderSlot(const shader::ShaderType type_, const string& name_) noexcept :
     _cache(nullptr),

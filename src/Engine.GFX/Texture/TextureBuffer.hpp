@@ -3,7 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include "../vkinc.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class TextureBuffer final {
     public:
         /**

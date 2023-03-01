@@ -4,7 +4,7 @@
 #include "ScopedStructureSlot.hpp"
 #include "MapSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <typename KeyType_, typename ValueType_, template <typename, typename...> typename MapType_>
     class MapScopedSlot final :
         TypeScopedSlot<MapType_<KeyType_, ValueType_>> {

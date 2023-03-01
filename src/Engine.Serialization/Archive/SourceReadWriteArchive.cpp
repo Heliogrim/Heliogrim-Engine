@@ -1,7 +1,7 @@
 #include "SourceReadWriteArchive.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 SourceReadWriteArchive::SourceReadWriteArchive(
     mref<smr<resource::Source>> source_,

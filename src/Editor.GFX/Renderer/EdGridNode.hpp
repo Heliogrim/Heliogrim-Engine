@@ -4,7 +4,7 @@
 #include <Engine.GFX/Renderer/RenderStageNode.hpp>
 #include <Engine.GFX/Shader/ShaderBindingGroup.hpp>
 
-namespace ember::editor::gfx {
+namespace hg::editor::gfx {
     class EdGridNode :
         public engine::gfx::render::RenderStageNode {
     public:

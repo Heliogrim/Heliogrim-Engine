@@ -1,7 +1,7 @@
 #pragma once
 #include "../VBox.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class VScrollBox :
         public VBox {
     public:

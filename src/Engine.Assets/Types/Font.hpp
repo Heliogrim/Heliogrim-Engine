@@ -7,7 +7,7 @@
 
 #include "Asset.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class Font :
         public Asset {
     public:

@@ -4,7 +4,7 @@
 
 #include "../Modules/ObjectEditor.hpp"
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class ObjectEditorPanel :
         public engine::reflow::Panel {
     public:

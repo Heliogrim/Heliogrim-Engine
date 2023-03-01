@@ -3,19 +3,19 @@
 #include "Graph/SceneGraph.hpp"
 #include "SceneTag.hpp"
 #include "NodeTypeRegistry.hpp"
-#include <Engine.Reflect/EmberReflect.hpp>
+#include <Engine.Reflect/HeliogrimReflect.hpp>
 
 /**
  * Forward Declaration
  */
-namespace ember {
+namespace hg {
     class SceneComponent;
     class IComponentRegisterContext;
 }
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class __declspec(novtable) Scene :
-        public EmberObject {
+        public HeliogrimObject {
     public:
         using this_type = Scene;
 

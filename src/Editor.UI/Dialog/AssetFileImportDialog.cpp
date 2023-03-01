@@ -12,7 +12,7 @@
 #include "Editor.UI/Color/Dark.hpp"
 #include "Editor.UI/Style/Style.hpp"
 #include "Editor.UI/Widget/AssetImportTypeItem.hpp"
-#include "Ember/Ember.hpp"
+#include "Heliogrim/Heliogrim.hpp"
 #include "Engine.Common/Make.hpp"
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
 #include "Engine.Reflow/Style/BoundStyleSheet.hpp"
@@ -30,12 +30,12 @@
 #include "Engine.GFX.Loader/Texture/TextureResource.hpp"
 
 #if TRUE
-void testCreateAsset(ember::cref<ember::Url> target_);
+void testCreateAsset(hg::cref<hg::Url> target_);
 #endif
 
-using namespace ember::editor::ui;
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 [[nodiscard]] static sptr<BoundStyleSheet> makeStyleSheet() {
     return BoundStyleSheet::make(

@@ -2,8 +2,8 @@
 
 #include <Engine.Common/Types.hpp>
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 void CameraFrustum::update(math::mat4 src_) {
     _planes[eLeft].x = src_[0].w + src_[0].x;

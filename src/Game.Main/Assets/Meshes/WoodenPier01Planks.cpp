@@ -1,7 +1,7 @@
 #include "WoodenPier01Planks.hpp"
 
-using namespace ember::game::assets::meshes;
-using namespace ember;
+using namespace hg::game::assets::meshes;
+using namespace hg;
 
 WoodenPier01Planks::WoodenPier01Planks() :
     StaticGeometryAsset(

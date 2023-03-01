@@ -5,11 +5,11 @@
 
 #include "RevScene.hpp"
 
-using namespace ember::engine::scene;
-using namespace ember;
+using namespace hg::engine::scene;
+using namespace hg;
 
 uptr<Scene> SceneFactory::createDefaultScene() {
-    return uptr<Scene>(EmberObject::create<RevScene>());
+    return uptr<Scene>(HeliogrimObject::create<RevScene>());
 }
 
 uptr<Scene> SceneFactory::createPreviewScene() {

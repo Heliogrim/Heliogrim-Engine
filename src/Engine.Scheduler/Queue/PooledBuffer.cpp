@@ -2,8 +2,8 @@
 
 #include "SharedBufferPool.hpp"
 
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 PooledBuffer::PooledBuffer(const ptr<SharedBufferPool> pool_) noexcept :
     RingBuffer(),

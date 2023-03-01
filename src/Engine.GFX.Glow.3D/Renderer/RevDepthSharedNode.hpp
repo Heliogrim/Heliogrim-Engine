@@ -3,7 +3,7 @@
 #include <Engine.GFX/Renderer/RenderStageNode.hpp>
 #include <Engine.GFX/Renderer/__fwd.hpp>
 
-namespace ember::engine::gfx::glow::render {
+namespace hg::engine::gfx::glow::render {
     class RevDepthSharedNode :
         public gfx::render::RenderStageNode {
     public:

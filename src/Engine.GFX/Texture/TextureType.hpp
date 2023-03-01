@@ -2,7 +2,7 @@
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     /**
      * Values that represent types of Textures
      *

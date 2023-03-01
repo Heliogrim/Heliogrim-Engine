@@ -2,22 +2,22 @@
 
 #include <Engine.Core/Engine.hpp>
 
-#include <Ember.Default/Assets/Textures/Brand.hpp>
-#include <Ember.Default/Assets/Textures/Directory.hpp>
-#include <Ember.Default/Assets/Textures/FolderAudio.hpp>
-#include <Ember.Default/Assets/Textures/FolderEnvironment.hpp>
-#include <Ember.Default/Assets/Textures/FolderFont.hpp>
-#include <Ember.Default/Assets/Textures/FolderImages.hpp>
-#include <Ember.Default/Assets/Textures/FolderImport.hpp>
-#include <Ember.Default/Assets/Textures/FolderLog.hpp>
-#include <Ember.Default/Assets/Textures/FolderResource.hpp>
-#include <Ember.Default/Assets/Textures/FolderShader.hpp>
-#include <Ember.Default/Assets/Textures/FolderVideo.hpp>
+#include <Heliogrim.Default/Assets/Textures/Brand.hpp>
+#include <Heliogrim.Default/Assets/Textures/Directory.hpp>
+#include <Heliogrim.Default/Assets/Textures/FolderAudio.hpp>
+#include <Heliogrim.Default/Assets/Textures/FolderEnvironment.hpp>
+#include <Heliogrim.Default/Assets/Textures/FolderFont.hpp>
+#include <Heliogrim.Default/Assets/Textures/FolderImages.hpp>
+#include <Heliogrim.Default/Assets/Textures/FolderImport.hpp>
+#include <Heliogrim.Default/Assets/Textures/FolderLog.hpp>
+#include <Heliogrim.Default/Assets/Textures/FolderResource.hpp>
+#include <Heliogrim.Default/Assets/Textures/FolderShader.hpp>
+#include <Heliogrim.Default/Assets/Textures/FolderVideo.hpp>
 
 #include "Engine.Assets/Assets.hpp"
 
-using namespace ember::editor::ui;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg;
 
 uptr<AssetBrowserHelper> AssetBrowserHelper::_instance = nullptr;
 

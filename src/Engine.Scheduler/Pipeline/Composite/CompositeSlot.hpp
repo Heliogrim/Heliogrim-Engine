@@ -7,7 +7,7 @@
 #include "../Stage/StageDispatcher.hpp"
 #include "../../Task/TaskCtrl.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class CompositeSlot :
         public task::TaskCtrl {
     public:

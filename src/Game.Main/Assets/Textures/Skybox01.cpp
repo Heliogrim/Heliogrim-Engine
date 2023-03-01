@@ -1,10 +1,10 @@
 #include "Skybox01.hpp"
 #include "../Images/Skybox01.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::Skybox01Diffuse::Skybox01Diffuse() :
     TextureAsset(

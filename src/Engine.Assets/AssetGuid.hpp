@@ -4,7 +4,7 @@
 #include <Engine.Common/Hash/Murmur3.hpp>
 #include <Engine.Common/Guid.hpp>
 
-namespace ember {
+namespace hg {
     struct asset_guid : public Guid {
         using Guid::Guid;
     };
@@ -27,18 +27,18 @@ namespace ember {
 
 namespace std {
     template <>
-    struct hash<ember::asset_guid> {
-        _STD size_t operator()(const ember::asset_guid& value_) const noexcept {
+    struct hash<hg::asset_guid> {
+        _STD size_t operator()(const hg::asset_guid& value_) const noexcept {
 
-            constexpr ember::u64 size = sizeof(ember::asset_guid);
+            constexpr hg::u64 size = sizeof(hg::asset_guid);
 
             /**
              * Warning: Don't use identity
              */
-            ember::u64 dst[2];
-            ember::hash::murmur3_x64_128(
+            hg::u64 dst[2];
+            hg::hash::murmur3_x64_128(
                 &value_,
-                static_cast<ember::u32>(size),
+                static_cast<hg::u32>(size),
                 0x9FB21C651E98DF25ui32,
                 &dst
             );

@@ -7,14 +7,14 @@
 #include "RenderStageDependency.hpp"
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     /**
      * Forward Declaration
      */
     class Device;
 }
 
-namespace ember::engine::gfx::render {
+namespace hg::engine::gfx::render {
     class __declspec(novtable) RenderStage {
     public:
         using this_type = RenderStage;

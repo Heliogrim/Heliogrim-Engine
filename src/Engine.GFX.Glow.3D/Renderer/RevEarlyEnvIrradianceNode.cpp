@@ -23,9 +23,9 @@
 #include <Engine.Logging/Logger.hpp>
 
 #include "RevDepthSharedNode.hpp"
-#include "Ember/StaticGeometryComponent.hpp"
+#include "Heliogrim/StaticGeometryComponent.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
-#include "Engine.Reflect/EmberReflect.hpp"
+#include "Engine.Reflect/HeliogrimReflect.hpp"
 #include <Engine.GFX/Scene/StaticGeometryBatch.hpp>
 
 #include <Engine.Core/Engine.hpp>
@@ -35,15 +35,15 @@
 #include "Engine.GFX/Texture/Texture.hpp"
 #include "Engine.GFX/Texture/VirtualTextureView.hpp"
 
-using namespace ember::engine::gfx::glow::render;
-using namespace ember::engine::gfx::render;
-using namespace ember;
+using namespace hg::engine::gfx::glow::render;
+using namespace hg::engine::gfx::render;
+using namespace hg;
 
 RevEarlyEnvIrradiance::RevEarlyEnvIrradiance() :
     RenderStageNode(),
     _modelTypes(
         {
-            EmberClass::stid<SkyboxModel>()
+            HeliogrimClass::stid<SkyboxModel>()
         }
     ),
     _envIrradExtent(64ui32, 64ui32),

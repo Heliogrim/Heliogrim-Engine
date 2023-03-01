@@ -4,7 +4,7 @@
 #include "Engine.Common/__macro.hpp"
 #include <Engine.Common/Concurrent/Future.hpp>
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     class __declspec(novtable) Source {
     public:
         using value_type = Source;
@@ -118,7 +118,7 @@ namespace ember::engine::resource {
          *  
          *  TODO: could be defaulted with promise wrapping sync get call.
          */
-        [[nodiscard]] virtual ember::concurrent::future<async_result_value> get(
+        [[nodiscard]] virtual hg::concurrent::future<async_result_value> get(
             _In_ streamoff offset_,
             _In_ streamsize size_
         ) = 0;
@@ -131,7 +131,7 @@ namespace ember::engine::resource {
             _Out_ ref<streamsize> actualSize_
         ) = 0;
 
-        [[nodiscard]] virtual ember::concurrent::future<async_write_result> write(
+        [[nodiscard]] virtual hg::concurrent::future<async_write_result> write(
             _In_ streamoff offset_,
             _In_ streamsize size_,
             _In_reads_bytes_(size_) const ptr<void> src_

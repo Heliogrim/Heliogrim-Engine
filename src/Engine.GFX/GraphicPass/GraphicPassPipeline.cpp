@@ -5,8 +5,8 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 void GraphicPassPipeline::allocateWith(const ptr<const RenderPass> invocation_,
     const ptr<RenderPassState> state_) {

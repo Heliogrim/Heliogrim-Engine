@@ -2,7 +2,7 @@
 
 #include "ScopedStructureSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class StringScopedSlot final :
         public TypeScopedSlot<string> {
     public:

@@ -5,8 +5,8 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 
-using namespace ember::editor;
-using namespace ember;
+using namespace hg::editor;
+using namespace hg;
 
 ActionLog::ActionLog() :
     _log(),
@@ -57,7 +57,7 @@ void ActionLog::storeActionState(cref<sptr<Action>> action_) {
         _STD memory_order::seq_cst
     )) {
         expect = NULL;
-        ::ember::yield();
+        ::hg::yield();
     }
 
     // TODO: Store state / serialize effected data to restore on fail

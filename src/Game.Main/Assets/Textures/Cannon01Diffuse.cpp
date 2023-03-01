@@ -1,12 +1,12 @@
 #include "Cannon01Diffuse.hpp"
 #include "../Images/Cannon01Diffuse.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
 #include "Game.Main/Assets/Images/Cannon01Diffuse.hpp"
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::Cannon01Diffuse::Cannon01Diffuse() :
     TextureAsset(

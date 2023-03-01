@@ -10,7 +10,7 @@
 /**/
 #include "../Texture/TextureFactory.hpp"
 
-namespace ember::engine::gfx::pool {
+namespace hg::engine::gfx::pool {
     struct IndexBufferAllocation {
         Vector<u64> pageSizes;
     };

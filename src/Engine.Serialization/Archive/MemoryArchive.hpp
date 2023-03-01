@@ -1,7 +1,7 @@
 #pragma once
 #include "Archive.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class __declspec(novtable) MemoryBaseArchive :
         public Archive {
     public:

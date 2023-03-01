@@ -1,5 +1,5 @@
 #pragma once
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class ArchiveCompression;
 }

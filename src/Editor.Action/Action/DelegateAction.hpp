@@ -4,7 +4,7 @@
 
 #include "SimpleAction.hpp"
 
-namespace ember::editor {
+namespace hg::editor {
     class DelegateAction :
         public SimpleAction {
     public:

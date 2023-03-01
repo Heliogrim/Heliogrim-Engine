@@ -1,8 +1,8 @@
 #include "GfxInit.hpp"
 
-#include <Editor.Core/EmberEditor.hpp>
-#include <Ember/UIComponent.hpp>
-#include <Ember/World.hpp>
+#include <Editor.Core/HeliogrimEditor.hpp>
+#include <Heliogrim/UIComponent.hpp>
+#include <Heliogrim/World.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/World.hpp>
@@ -13,15 +13,15 @@
 
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
 
-using namespace ember::editor::boot;
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::editor::boot;
+using namespace hg::engine;
+using namespace hg;
 
 void editor::boot::initGfx() {
 
-    const auto* const engine = EmberEditor::getEngine();
-    const auto editor = EmberEditor::getEditorSession();
-    const auto game = EmberEditor::getSession();
+    const auto* const engine = HeliogrimEditor::getEngine();
+    const auto editor = HeliogrimEditor::getEditorSession();
+    const auto game = HeliogrimEditor::getSession();
 
     /**/
 
@@ -29,7 +29,7 @@ void editor::boot::initGfx() {
     const auto* const editorWorld = editorSession->getWorldContext()->getCurrentWorld().get();
 
     const auto window = engine::reflow::WindowManager::get()->requestWindow(
-        "Ember Editor"sv,
+        "Heliogrim Editor"sv,
         math::ivec2 { 1280, 720 },
         {},
         static_cast<ptr<scene::RevScene>>(editorWorld->getScene())

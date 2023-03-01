@@ -9,7 +9,7 @@
 #include "ResourceBase.hpp"
 #include "TypedManageGuard.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     template <typename ManagedType_>
     class __declspec(novtable) Resource :
         public ResourceBase {

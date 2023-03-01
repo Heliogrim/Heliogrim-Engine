@@ -1,8 +1,8 @@
 #include "FragmentStage.hpp"
 
-using namespace ember::engine::gfx::pipeline;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::pipeline;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 const ShaderSlot& FragmentStage::shaderSlot() const noexcept {
     return _shaderSlot;

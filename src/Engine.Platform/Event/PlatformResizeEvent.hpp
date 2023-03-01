@@ -3,11 +3,11 @@
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Event/Event.hpp>
 
-namespace ember::engine::platform {
+namespace hg::engine::platform {
     class NativeWindow;
 }
 
-namespace ember::engine::platform {
+namespace hg::engine::platform {
     class PlatformResizeEvent final :
         public StatelessEvent {
     public:

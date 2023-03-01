@@ -2,6 +2,6 @@
 
 #include <Engine.Common/Math/Vector.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     using Padding = math::vec4;
 }

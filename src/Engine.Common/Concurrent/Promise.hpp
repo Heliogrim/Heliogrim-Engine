@@ -5,7 +5,7 @@
 #include "Future.hpp"
 #include "../Make.hpp"
 
-namespace ember::concurrent {
+namespace hg::concurrent {
     namespace {
         /**
          * The internal state of a promise.

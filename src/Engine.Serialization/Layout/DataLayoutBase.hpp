@@ -8,7 +8,7 @@
 #include "DataLayoutReflect.hpp"
 #include "DataLayoutDispatch.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class __declspec(novtable) DataLayoutBase :
         public DataLayoutReflect,
         public DataLayoutDispatch {

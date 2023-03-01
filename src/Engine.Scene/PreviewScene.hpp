@@ -1,7 +1,7 @@
 #pragma once
 #include "Scene.hpp"
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class PreviewScene final :
         public Scene {
     public:

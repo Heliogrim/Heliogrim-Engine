@@ -11,10 +11,10 @@
 #if TRUE
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
 #include "../Modules/SceneHierarchy/SceneViewEntry.hpp"
-#include "Ember/Actor.hpp"
+#include "Heliogrim/Actor.hpp"
 #endif
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class SceneHierarchyPanel :
         public engine::reflow::Panel {
     protected:

@@ -2,7 +2,7 @@
 
 #include <combaseapi.h>
 
-using namespace ember;
+using namespace hg;
 
 #ifdef _WIN32
 Guid::Guid(const _GUID& value_) :
@@ -12,7 +12,7 @@ Guid::Guid(const _GUID& value_) :
     post(*reinterpret_cast<const u64* const>(value_.Data4)) {}
 #endif
 
-void ember::GuidGenerate(ref<Guid> guid_) {
+void hg::GuidGenerate(ref<Guid> guid_) {
     #ifdef _WIN32
     static_assert(sizeof(Guid) == sizeof(GUID));
     CoCreateGuid(reinterpret_cast<GUID*>(&guid_.bytes));

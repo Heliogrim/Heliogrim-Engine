@@ -4,7 +4,7 @@
 
 #include <stack>
 
-namespace ember {
+namespace hg {
     template <class Type_, class ContainerType_ = _STD deque<Type_>>
     using Stack = _STD stack<Type_, ContainerType_>;
 }

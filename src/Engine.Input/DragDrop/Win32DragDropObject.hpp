@@ -4,7 +4,7 @@
 
 #include "DragDropObject.hpp"
 
-namespace ember::engine::input {
+namespace hg::engine::input {
     class Win32DragDropObject :
         public DragDropObject,
         public IDataObject {

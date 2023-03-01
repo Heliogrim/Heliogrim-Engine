@@ -7,9 +7,9 @@
 
 #include "./Transformer/Ktx.hpp"
 
-using namespace ember::engine::gfx::loader;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 TextureTransformer::TextureTransformer(const non_owning_rptr<pool::GlobalResourcePool> pool_) :
     Transformer(),

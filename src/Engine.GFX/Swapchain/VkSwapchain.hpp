@@ -4,7 +4,7 @@
 
 #include <Engine.Common/Concurrent/Collection/RingBuffer.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class VkSwapchain final :
         public Swapchain {
     public:

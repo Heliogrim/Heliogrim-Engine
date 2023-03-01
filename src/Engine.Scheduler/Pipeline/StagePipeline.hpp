@@ -10,13 +10,13 @@
 #include "Stage/StageRegister.hpp"
 #include "Composite/StageDependency.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class __declspec(novtable) StagePipeline {
     public:
         using this_type = StagePipeline;
 
         using identifier_type = AssocKey<string>;
-        using task_type = ::ember::engine::scheduler::task::TaskDelegate;
+        using task_type = ::hg::engine::scheduler::task::TaskDelegate;
 
     protected:
         StagePipeline(cref<identifier_type> identifier_) noexcept;

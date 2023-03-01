@@ -2,8 +2,8 @@
 
 #include "Loader/SourceLoader/SourceLoader.hpp"
 
-using namespace ember::engine::resource;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg;
 
 LoaderManager::LoaderManager() :
     _sharedSourceLoader(make_sptr<loader::SourceLoader>()),

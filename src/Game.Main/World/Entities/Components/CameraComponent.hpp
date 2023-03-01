@@ -1,9 +1,9 @@
 #pragma once
-#include <Ember/Component/EntityComponent.hpp>
+#include <Heliogrim/Component/EntityComponent.hpp>
 
-using namespace ember;
+using namespace hg;
 
 namespace game::world::entity::component {
     class CameraComponent :
-        public ember::component::EntityComponent { };
+        public ::hg::component::EntityComponent { };
 }

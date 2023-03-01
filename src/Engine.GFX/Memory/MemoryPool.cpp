@@ -9,8 +9,8 @@
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
 
-using namespace ember::engine::gfx::memory;
-using namespace ember;
+using namespace hg::engine::gfx::memory;
+using namespace hg;
 
 MemoryPool::MemoryPool(cref<MemoryLayout> layout_) :
     _layout(layout_),

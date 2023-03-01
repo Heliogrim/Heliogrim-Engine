@@ -11,9 +11,9 @@
 #include "Editor.UI/Color/Dark.hpp"
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
 
-using namespace ember::editor::ui;
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 ProjectViewportPanel::ProjectViewportPanel() :
     Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::DefaultKey))) {}

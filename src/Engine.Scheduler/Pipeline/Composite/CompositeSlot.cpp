@@ -6,8 +6,8 @@
 #include "../CompositePipeline.hpp"
 #include "../../Process/Schedule.hpp"
 
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 CompositeSlot::CompositeSlot(
     const non_owning_rptr<CompositePipeline> pipeline_,

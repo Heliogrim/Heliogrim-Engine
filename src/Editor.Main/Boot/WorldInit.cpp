@@ -7,9 +7,9 @@
 
 #include "Engine.Core/WorldContext.hpp"
 
-using namespace ember::editor::boot;
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::editor::boot;
+using namespace hg::engine;
+using namespace hg;
 
 static void addDefaultSkybox();
 
@@ -45,14 +45,14 @@ void editor::boot::initPrimaryWorld() {
     addDefaultSkybox();
 }
 
-#include <Ember/Ember.hpp>
-#include <Ember/Actor.hpp>
-#include <Ember/ActorInitializer.hpp>
-#include <Ember/SkyboxComponent.hpp>
-#include <Ember/Session.hpp>
-#include <Ember/World.hpp>
+#include <Heliogrim/Heliogrim.hpp>
+#include <Heliogrim/Actor.hpp>
+#include <Heliogrim/ActorInitializer.hpp>
+#include <Heliogrim/SkyboxComponent.hpp>
+#include <Heliogrim/Session.hpp>
+#include <Heliogrim/World.hpp>
 
-#include <Ember.Default/Assets/GfxMaterials/DefaultSkybox.hpp>
+#include <Heliogrim.Default/Assets/GfxMaterials/DefaultSkybox.hpp>
 #include <Game.Main/Assets/Meshes/Sphere.hpp>
 
 static void addDefaultSkybox() {
@@ -66,10 +66,10 @@ static void addDefaultSkybox() {
 
     /**/
 
-    auto query = Ember::assets()[game::assets::material::DefaultSkybox::unstable_auto_guid()];
+    auto query = Heliogrim::assets()[game::assets::material::DefaultSkybox::unstable_auto_guid()];
     sc->setSkyboxMaterialByAsset(static_cast<ref<GfxMaterialAsset>>(query.value));
 
-    query = Ember::assets()[game::assets::meshes::Sphere::unstable_auto_guid()];
+    query = Heliogrim::assets()[game::assets::meshes::Sphere::unstable_auto_guid()];
     sc->setSkyboxGeometryByAsset(static_cast<ref<StaticGeometryAsset>>(query.value));
 
     /**/

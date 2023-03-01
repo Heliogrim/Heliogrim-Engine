@@ -6,8 +6,8 @@
 #include "SeqScopedSlot.hpp"
 #include "StructScopedSlot.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 RecordScopedSlot::RecordScopedSlot(mref<ScopedSlotState> scopedState_, mref<sptr<RecordSlot>> slot_) :
     ScopedSlot(_STD move(scopedState_), _STD move(slot_)) {}

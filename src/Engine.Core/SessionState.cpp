@@ -3,14 +3,14 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.ACS/Registry.hpp>
 
-using namespace ember::engine::core;
-using namespace ember;
+using namespace hg::engine::core;
+using namespace hg;
 
 SessionState::SessionState() :
-    _registry(make_uptr<::ember::engine::acs::Registry>()) {}
+    _registry(make_uptr<::hg::engine::acs::Registry>()) {}
 
 SessionState::~SessionState() = default;
 
-const non_owning_rptr<ember::engine::acs::Registry> SessionState::getRegistry() const noexcept {
+const non_owning_rptr<hg::engine::acs::Registry> SessionState::getRegistry() const noexcept {
     return _registry.get();
 }

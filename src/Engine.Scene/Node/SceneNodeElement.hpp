@@ -9,7 +9,7 @@
 
 #include "SceneNodePath.hpp"
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     template <class Type_>
     concept IsSceneNodeElement = requires(const Type_ obj_) {
             { obj_.sceneNodePath() } -> decayed_as<SceneNodePath>;

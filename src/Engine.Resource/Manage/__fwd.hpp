@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     template <typename>
     class Resource;
     class ResourceBase;

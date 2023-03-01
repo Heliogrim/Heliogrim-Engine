@@ -7,8 +7,8 @@
 #include "TextureFeedback.hpp"
 #include "TextureTransformer.hpp"
 
-using namespace ember::engine::gfx::loader;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg;
 
 TextureLoader::TextureLoader(
     const non_owning_rptr<cache::GlobalCacheCtrl> cache_,

@@ -1,10 +1,10 @@
 #include "Asset.hpp"
 
-using namespace ember::engine::assets;
-using namespace ember;
+using namespace hg::engine::assets;
+using namespace hg;
 
 Asset::Asset(cref<asset_guid> guid_, cref<asset_type_id> type_) :
-    EmberObject(),
+    HeliogrimObject(),
     _guid(guid_),
     _type(type_) {}
 

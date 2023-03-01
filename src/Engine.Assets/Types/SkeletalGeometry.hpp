@@ -2,7 +2,7 @@
 
 #include "Geometry.hpp"
 
-namespace ember::engine::assets {
+namespace hg::engine::assets {
     class SkeletalGeometry :
         public Geometry {
     public:

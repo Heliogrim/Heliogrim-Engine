@@ -1,5 +1,5 @@
-#include <Ember/Actor.hpp>
-#include <Ember/ActorComponent.hpp>
+#include <Heliogrim/Actor.hpp>
+#include <Heliogrim/ActorComponent.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Reflow/Style/BoundStyleSheet.hpp>
@@ -9,9 +9,9 @@
 #include "SceneViewEntry.hpp"
 #include "../../Style/Style.hpp"
 
-using namespace ember::editor::ui;
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 template <>
 sptr<Widget> HierarchyGenerator<sptr<SceneViewEntry>>::operator()(

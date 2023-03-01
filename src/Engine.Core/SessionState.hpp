@@ -2,11 +2,11 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::acs {
+namespace hg::engine::acs {
     class Registry;
 }
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     class SessionState {
     public:
         friend class Session;
@@ -21,9 +21,9 @@ namespace ember::engine::core {
         ~SessionState();
 
     private:
-        uptr<::ember::engine::acs::Registry> _registry;
+        uptr<::hg::engine::acs::Registry> _registry;
 
     public:
-        [[nodiscard]] const non_owning_rptr<::ember::engine::acs::Registry> getRegistry() const noexcept;
+        [[nodiscard]] const non_owning_rptr<::hg::engine::acs::Registry> getRegistry() const noexcept;
     };
 }

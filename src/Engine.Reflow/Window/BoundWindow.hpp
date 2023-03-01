@@ -2,20 +2,20 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class RenderTarget;
     class Surface;
 }
 
-namespace ember::engine::gfx::scene {
+namespace hg::engine::gfx::scene {
     class SceneView;
 }
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Window;
 }
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     struct BoundWindow {
         sptr<gfx::RenderTarget> renderTarget;
         uptr<gfx::scene::SceneView> sceneView;

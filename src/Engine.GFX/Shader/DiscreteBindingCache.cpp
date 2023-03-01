@@ -4,8 +4,8 @@
 #include "DiscreteBindingPool.hpp"
 #include "Engine.Common/Exception/NotImplementedException.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 DiscreteBindingCache::DiscreteBindingCache(cref<sptr<Device>> device_) noexcept :
     _device(device_) {}

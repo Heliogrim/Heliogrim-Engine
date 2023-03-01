@@ -1,7 +1,7 @@
 #include "StaticGeometryCache.hpp"
 
-using namespace ember::engine::gfx::loader;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg;
 
 StaticGeometryCache::StaticGeometryCache(const non_owning_rptr<cache::GlobalCacheCtrl> cacheCtrl_) :
     Cache(),

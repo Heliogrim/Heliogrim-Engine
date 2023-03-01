@@ -1,7 +1,7 @@
 #include "DelegateAction.hpp"
 
-using namespace ember::editor;
-using namespace ember;
+using namespace hg::editor;
+using namespace hg;
 
 DelegateAction::DelegateAction(cref<action_type_id> typeId_) :
     SimpleAction(typeId_),

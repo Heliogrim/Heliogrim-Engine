@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     enum class CameraProjectionMode {
         ePerspective = false,
         eOrthographic = true

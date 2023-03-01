@@ -4,7 +4,7 @@
 #include "Action/Action.hpp"
 #include "Log/__fwd.hpp"
 
-namespace ember::editor {
+namespace hg::editor {
     class ActionManager {
     public:
         using this_type = ActionManager;

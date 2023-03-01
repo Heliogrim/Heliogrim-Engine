@@ -6,7 +6,7 @@
 #include "../Application/Application.hpp"
 #include "../Memory/GlobalPooledAllocator.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     /**
      * Forward Declaration CommandQueue.
      *

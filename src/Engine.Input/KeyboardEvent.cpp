@@ -1,7 +1,7 @@
 #include "KeyboardEvent.hpp"
 
-using namespace ember::engine::input::event;
-using namespace ember;
+using namespace hg::engine::input::event;
+using namespace hg;
 
 KeyboardEvent::KeyboardEvent(const char key_, const bool down_, const u32 modifier_) noexcept :
     StatelessEvent(),

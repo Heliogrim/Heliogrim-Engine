@@ -1,7 +1,7 @@
 #include "Transform.hpp"
 
-using namespace ember::math;
-using namespace ember;
+using namespace hg::math;
+using namespace hg;
 
 ref<Transform> Transform::operator=(mref<Transform> other_) noexcept {
 

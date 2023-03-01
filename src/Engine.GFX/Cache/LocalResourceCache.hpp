@@ -5,7 +5,7 @@
 #include "__fwd.hpp"
 #include "TransientCache.hpp"
 
-namespace ember::engine::gfx::cache {
+namespace hg::engine::gfx::cache {
     class LocalResourceCache final {
     public:
         friend class LocalCacheCtrl;

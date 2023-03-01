@@ -5,7 +5,7 @@
 #include "StageIdentifier.hpp"
 #include "../StagePipeline.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class __declspec(novtable) PipelineStage {
     public:
         using this_type = PipelineStage;

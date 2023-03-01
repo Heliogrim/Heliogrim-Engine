@@ -5,9 +5,9 @@
 
 #include "Editor.UI/Color/Dark.hpp"
 
-using namespace ember::editor::ui;
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 AssetImportTypeItem::AssetImportTypeItem() :
     Button(

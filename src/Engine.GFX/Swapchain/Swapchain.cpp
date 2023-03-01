@@ -1,7 +1,7 @@
 #include "Swapchain.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 void Swapchain::setup(cref<sptr<Device>> device_) {
     _device = device_;

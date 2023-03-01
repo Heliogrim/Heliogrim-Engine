@@ -5,7 +5,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     namespace {
         enum class ProxyTextureType : u8 {
             eNone = 0x0,

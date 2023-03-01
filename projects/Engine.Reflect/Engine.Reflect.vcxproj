@@ -100,13 +100,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Reflect\Cast.hpp" />
-    <ClInclude Include="..\..\src\Engine.Reflect\EmberReflect.hpp" />
-    <ClInclude Include="..\..\src\Engine.Reflect\EmberStruct.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimReflect.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimStruct.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Reflect.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Reflect\EmberReflect.cpp" />
+    <ClCompile Include="..\..\src\Engine.Reflect\HeliogrimReflect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">

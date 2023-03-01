@@ -6,7 +6,7 @@
 #include "__fwd.hpp"
 #include "Archive.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class __declspec(novtable) SourceBaseArchive :
         public Archive {
     public:

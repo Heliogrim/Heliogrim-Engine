@@ -8,9 +8,9 @@
 #include "ReflowFlowStage.hpp"
 #include "ReflowShiftStage.hpp"
 
-using namespace ember::engine::reflow::schedule;
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::reflow::schedule;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 ReflowPipeline::ReflowPipeline() :
     StagePipeline(identifier_type::from("::Reflow::ReflowPipeline")) {}

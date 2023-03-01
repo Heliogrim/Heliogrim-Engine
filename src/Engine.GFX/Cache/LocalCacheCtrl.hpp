@@ -3,7 +3,7 @@
 #include "GlobalCacheCtrl.hpp"
 #include "LocalResourceCache.hpp"
 
-namespace ember::engine::gfx::cache {
+namespace hg::engine::gfx::cache {
     template <
         class SubjectType_,
         class SubResourceType_

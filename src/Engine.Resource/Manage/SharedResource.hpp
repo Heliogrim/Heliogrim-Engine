@@ -1,7 +1,7 @@
 #pragma once
 #include "Resource.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     template <typename ManagedType_>
     class __declspec(novtable) SharedResource :
         public Resource<ManagedType_> {

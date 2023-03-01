@@ -10,7 +10,7 @@
 #include "../Memory/MemoryProperty.hpp"
 #include "../Shader/Type.hpp"
 
-namespace ember::engine::gfx::api {
+namespace hg::engine::gfx::api {
     /**
      * Translate internal to vulkan
      *

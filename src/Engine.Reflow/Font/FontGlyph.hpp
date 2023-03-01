@@ -3,7 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     struct FontGlyph {
         /**/
         math::uivec2 _size;

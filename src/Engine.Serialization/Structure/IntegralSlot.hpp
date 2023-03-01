@@ -2,7 +2,7 @@
 
 #include "StructureSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <_STD integral Type_>
     struct IntegralSlotTraits;
 

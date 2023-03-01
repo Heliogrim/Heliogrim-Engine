@@ -1,7 +1,7 @@
 #include "Action.hpp"
 
-using namespace ember::editor;
-using namespace ember;
+using namespace hg::editor;
+using namespace hg;
 
 Action::Action(cref<action_type_id> typeId_) :
     _typeId(typeId_) {}

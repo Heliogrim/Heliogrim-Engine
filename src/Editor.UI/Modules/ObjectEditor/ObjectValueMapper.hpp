@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Reflow/Widget/Box.hpp>
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class ObjectValueMapperBase {
     public:
         template <typename ObjectType_>

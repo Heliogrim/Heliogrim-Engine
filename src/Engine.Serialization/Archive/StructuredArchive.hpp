@@ -4,7 +4,7 @@
 #include "../Structure/__fwd.hpp"
 #include "../Structure/RootScopedSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     class StructuredArchive {
     public:
         using this_type = StructuredArchive;

@@ -1,7 +1,7 @@
 #include "Bounding.hpp"
 
-using namespace ember::math;
-using namespace ember;
+using namespace hg::math;
+using namespace hg;
 
 Bounding::Bounding() :
     _center(vec3 { 0.F }),

@@ -1,7 +1,7 @@
 #include "File.hpp"
 
-using namespace ember::fs;
-using namespace ember;
+using namespace hg::fs;
+using namespace hg;
 
 constexpr File::File() = default;
 

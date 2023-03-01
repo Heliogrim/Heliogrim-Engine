@@ -7,16 +7,16 @@
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>
 
 #include "Editor.Core/EditorEngine.hpp"
-#include "Editor.Core/EmberEditor.hpp"
+#include "Editor.Core/HeliogrimEditor.hpp"
 #include "Editor.UI/Color/Dark.hpp"
 #include "Editor.UI/Panel/SceneHierarchyPanel.hpp"
 #include "Editor.UI/Panel/ObjectEditorPanel.hpp"
 #include "Editor.UI/Style/Style.hpp"
-#include "Ember/Ember.hpp"
-#include "Ember/World.hpp"
-#include "Ember/Actors/CameraActor.hpp"
-#include "Ember.Default/Assets/Fonts/CascadiaCode.hpp"
-#include "Ember.Default/Assets/Textures/Brand.hpp"
+#include "Heliogrim/Heliogrim.hpp"
+#include "Heliogrim/World.hpp"
+#include "Heliogrim/Actors/CameraActor.hpp"
+#include "Heliogrim.Default/Assets/Fonts/CascadiaCode.hpp"
+#include "Heliogrim.Default/Assets/Textures/Brand.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Core/World.hpp"
 #include "Engine.Core/WorldContext.hpp"
@@ -63,22 +63,22 @@
 #include "Editor.UI/Modules/SceneHierarchy/SceneViewEntry.hpp"
 #endif
 
-using namespace ember::editor::ui;
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 // Warning: Memory leak
-smr<ember::engine::gfx::TextureResource> testTexture {};
-smr<ember::engine::gfx::FontResource> testFont {};
+smr<hg::engine::gfx::TextureResource> testTexture {};
+smr<hg::engine::gfx::FontResource> testFont {};
 
-wptr<ember::engine::reflow::Widget> testFrameDisplay {};
-wptr<ember::engine::reflow::Widget> testFrameTime {};
+wptr<hg::engine::reflow::Widget> testFrameDisplay {};
+wptr<hg::engine::reflow::Widget> testFrameTime {};
 
 sptr<editor::ui::AssetBrowser> testAssetBrowser { nullptr };
 sptr<editor::ui::ObjectEditor> testObjectEditor { nullptr };
 sptr<editor::ui::SceneHierarchy> testHierarchy { nullptr };
 
-ember::ptr<void> editorSelectedTarget { nullptr };
+hg::ptr<void> editorSelectedTarget { nullptr };
 
 void storeActorMapping();
 
@@ -283,7 +283,7 @@ void buildTestUI(
         [](cref<engine::input::event::MouseButtonEvent> event_) {
             if (not event_._down)
                 return;
-            ::ember::engine::scheduler::exec(
+            ::hg::engine::scheduler::exec(
                 [] {
                     engine::Engine::getEngine()->getEmitter().emit(engine::core::SignalShutdownEvent {});
                 }
@@ -538,7 +538,7 @@ void buildTestUI(
     //RegisterActorClass<CameraActor>();
     coreSession->getState()->getRegistry()->getOrCreateActorPool<CameraActor>();
 
-    auto session = EmberEditor::getSession();
+    auto session = HeliogrimEditor::getSession();
     ptr<CameraActor> camera { CreateActor<CameraActor>(session) };
     auto world = GetWorld(session);
 
@@ -645,7 +645,7 @@ void buildTestUI(
     window_->setContent(root);
 }
 
-const ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
+const hg::ptr<hg::engine::reflow::Font> getDefaultFont() {
     using font_default_type = game::assets::font::CascadiaCode;
 
     if (testFont.empty()) {
@@ -682,13 +682,13 @@ const ember::ptr<ember::engine::reflow::Font> getDefaultFont() {
 
 /**/
 
-#include "Ember/StaticGeometryComponent.hpp"
+#include "Heliogrim/StaticGeometryComponent.hpp"
 
 void storeActorMapping() {
-    testObjectEditor->storeObjectMapper("ember::Actor"_typeId, make_uptr<ObjectValueMapper<::ember::Actor>>());
+    testObjectEditor->storeObjectMapper("hg::Actor"_typeId, make_uptr<ObjectValueMapper<::hg::Actor>>());
     testObjectEditor->storeObjectMapper(
-        ::ember::StaticGeometryComponent::typeId,
-        make_uptr<ObjectValueMapper<::ember::StaticGeometryComponent>>()
+        ::hg::StaticGeometryComponent::typeId,
+        make_uptr<ObjectValueMapper<::hg::StaticGeometryComponent>>()
     );
 }
 
@@ -701,7 +701,7 @@ void loadActorMappingExp(const type_id typeId_, cref<sptr<ObjectEditorPanel>> pa
     panel_->setEditorTarget(typeId_, editorSelectedTarget);
 }
 
-void storeEditorSelectedTarget(const ember::ptr<ember::Actor> target_) {
+void storeEditorSelectedTarget(const hg::ptr<hg::Actor> target_) {
     if (!testObjectEditor) {
         return;
     }
@@ -713,10 +713,10 @@ void storeEditorSelectedTarget(const ember::ptr<ember::Actor> target_) {
 
     const auto panel { panels.front().lock() };
     editorSelectedTarget = target_;
-    loadActorMappingExp("ember::Actor"_typeId, panel);
+    loadActorMappingExp("hg::Actor"_typeId, panel);
 }
 
-void storeEditorSelectedTarget(const ember::ptr<ember::ActorComponent> target_) {
+void storeEditorSelectedTarget(const hg::ptr<hg::ActorComponent> target_) {
     if (!testObjectEditor) {
         return;
     }

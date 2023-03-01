@@ -1,10 +1,10 @@
 #include "Stick01Normal.hpp"
 #include "../Images/Stick01Normal.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::Stick01Normal::Stick01Normal() :
     TextureAsset(

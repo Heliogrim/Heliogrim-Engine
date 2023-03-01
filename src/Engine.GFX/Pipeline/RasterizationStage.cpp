@@ -1,8 +1,8 @@
 #include "RasterizationStage.hpp"
 
-using namespace ember::engine::gfx::pipeline;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::pipeline;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 float RasterizationStage::lineWidth() const noexcept {
     return _lineWidth;

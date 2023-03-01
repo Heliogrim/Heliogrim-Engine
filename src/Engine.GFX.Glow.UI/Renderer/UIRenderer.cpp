@@ -5,10 +5,10 @@
 
 #include "UiMainStage.hpp"
 
-using namespace ember::engine::gfx::glow::ui::render;
-using namespace ember::engine::gfx::render;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::glow::ui::render;
+using namespace hg::engine::gfx::render;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 UiRenderer::UiRenderer() :
     Renderer() {}

@@ -4,8 +4,8 @@
 #include "FontFeedback.hpp"
 #include "FontTransformer.hpp"
 
-using namespace ember::engine::gfx::loader;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg;
 
 FontLoader::FontLoader(
     const non_owning_rptr<cache::GlobalCacheCtrl> cache_,

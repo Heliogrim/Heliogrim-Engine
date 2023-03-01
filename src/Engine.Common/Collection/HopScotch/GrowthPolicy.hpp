@@ -6,7 +6,7 @@
 #include "../../__macro.hpp"
 #include "../../Types.hpp"
 
-namespace ember::hopscotch {
+namespace hg::hopscotch {
     /**
      * Concept
      */

@@ -4,8 +4,8 @@
 #include "MaterialFeedback.hpp"
 #include "MaterialTransformer.hpp"
 
-using namespace ember::engine::gfx::loader;
-using namespace ember;
+using namespace hg::engine::gfx::loader;
+using namespace hg;
 
 MaterialLoader::MaterialLoader(
     const non_owning_rptr<cache::GlobalCacheCtrl> cache_,

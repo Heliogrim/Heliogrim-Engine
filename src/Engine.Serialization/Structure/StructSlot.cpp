@@ -4,8 +4,8 @@
 #include "StringSlot.hpp"
 #include "RecordSlot.hpp"
 
-using namespace ember::engine::serialization;
-using namespace ember;
+using namespace hg::engine::serialization;
+using namespace hg;
 
 StructSlot::StructSlot(cref<StructureSlotState> state_) :
     StructureSlotBase(state_) {

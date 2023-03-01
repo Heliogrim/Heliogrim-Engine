@@ -6,8 +6,8 @@
 #include "Game.Main/Assets/Textures/DefaultNormal.hpp"
 #include "Game.Main/Assets/Textures/DefaultRoughness.hpp"
 
-using namespace ember::game::assets::material;
-using namespace ember;
+using namespace hg::game::assets::material;
+using namespace hg;
 
 Skybox01::Skybox01() :
     GfxMaterialAsset(

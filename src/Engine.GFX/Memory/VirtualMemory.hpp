@@ -4,7 +4,7 @@
 #include "GlobalPooledAllocator.hpp"
 #include "VirtualMemoryPage.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class VirtualMemory {
     public:
         using this_type = VirtualMemory;

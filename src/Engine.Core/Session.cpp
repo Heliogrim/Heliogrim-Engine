@@ -5,8 +5,8 @@
 #include "SessionState.hpp"
 #include "WorldContext.hpp"
 
-using namespace ember::engine::core;
-using namespace ember;
+using namespace hg::engine::core;
+using namespace hg;
 
 Session::Session() :
     _state(uptr<SessionState>(new SessionState())),

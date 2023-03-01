@@ -16,8 +16,8 @@
 #include "Engine.Serialization/Access/Structure.hpp"
 #include "Engine.Serialization/Archive/StructuredArchive.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 /**/
 #pragma region KTX Format Specification
@@ -92,7 +92,7 @@ KtxImporter::descriptor_type KtxImporter::descriptor() const noexcept {
 
 static KtxImporter::import_result_type makeImportResult(mref<KtxImporter::import_type> value_) {
 
-    ::ember::concurrent::promise<KtxImporter::import_type> prom {
+    ::hg::concurrent::promise<KtxImporter::import_type> prom {
         [value = _STD move(value_)]() {
             return value;
         }
@@ -170,8 +170,8 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
 
-    using namespace ::ember::engine::serialization;
-    using namespace ::ember::engine::assets;
+    using namespace ::hg::engine::serialization;
+    using namespace ::hg::engine::assets;
 
     auto& factory { *Engine::getEngine()->getAssets()->getFactory() };
 

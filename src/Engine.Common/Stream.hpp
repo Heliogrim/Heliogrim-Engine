@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-namespace ember::__internal::types {
+namespace hg::__internal::types {
     template <typename Type, typename Traits>
     class basic_istream {
     public:

@@ -1,11 +1,11 @@
 #include "WoodenTable.hpp"
 
-#include <Ember/StaticGeometryComponent.hpp>
+#include <Heliogrim/StaticGeometryComponent.hpp>
 
-#include "Ember/ActorInitializer.hpp"
+#include "Heliogrim/ActorInitializer.hpp"
 
-using namespace ember::game::actors;
-using namespace ember;
+using namespace hg::game::actors;
+using namespace hg;
 
 WoodenTable::WoodenTable(cref<ActorInitializer> initializer_) :
     Actor(initializer_) {

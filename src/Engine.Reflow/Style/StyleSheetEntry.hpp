@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     template <typename EntryType_>
     struct StyleSheetEntry {
         using this_type = StyleSheetEntry<EntryType_>;

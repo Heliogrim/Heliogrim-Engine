@@ -1,7 +1,7 @@
 #include "Cerberus.hpp"
 
-using namespace ember::game::assets::meshes;
-using namespace ember;
+using namespace hg::game::assets::meshes;
+using namespace hg;
 
 Cerberus::Cerberus() :
     StaticGeometryAsset(

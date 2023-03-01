@@ -18,7 +18,7 @@
     <ClInclude Include="..\..\src\Editor.Core\EditorEngine.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Editor.Core\EmberEditor.hpp">
+    <ClInclude Include="..\..\src\Editor.Core\HeliogrimEditor.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -26,7 +26,7 @@
     <ClCompile Include="..\..\src\Editor.Core\EditorEngine.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Editor.Core\EmberEditor.cpp">
+    <ClCompile Include="..\..\src\Editor.Core\HeliogrimEditor.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

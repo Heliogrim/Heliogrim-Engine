@@ -4,11 +4,11 @@
 
 #include "../FontTransformer.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Device;
 }
 
-namespace ember::engine::gfx::loader::transformer {
+namespace hg::engine::gfx::loader::transformer {
     extern void convertFreeType(
         const non_owning_rptr<const assets::Font> assets_,
         cref<smr<resource::Source>> src_,

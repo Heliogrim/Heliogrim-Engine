@@ -8,7 +8,7 @@
 #include "Pipeline/TessellationStage.hpp"
 #include "Pipeline/VertexStage.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class FixedPipeline :
         public GraphicPipeline {
     protected:

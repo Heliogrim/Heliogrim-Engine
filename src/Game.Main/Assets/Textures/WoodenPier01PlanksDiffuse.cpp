@@ -1,10 +1,10 @@
 #include "WoodenPier01PlanksDiffuse.hpp"
 #include "../Images/WoodenPier01PlanksDiffuse.hpp"
 
-#include <Ember/TextureFormat.hpp>
+#include <Heliogrim/TextureFormat.hpp>
 
-using namespace ember::game::assets;
-using namespace ember;
+using namespace hg::game::assets;
+using namespace hg;
 
 texture::WoodenPier01PlanksDiffuse::WoodenPier01PlanksDiffuse() :
     TextureAsset(

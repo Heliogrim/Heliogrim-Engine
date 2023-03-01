@@ -1,8 +1,8 @@
 #include "GeometryStage.hpp"
 
-using namespace ember::engine::gfx::pipeline;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::pipeline;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 const ShaderSlot& GeometryStage::shaderSlot() const noexcept {
     return _shaderSlot;

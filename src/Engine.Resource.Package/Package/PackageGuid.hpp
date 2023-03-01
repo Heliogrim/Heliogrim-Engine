@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Guid.hpp>
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     class PackageGuid final :
         public Guid {
     public:
@@ -15,10 +15,10 @@ namespace ember::engine::resource {
 
 namespace std {
     template <>
-    struct hash<::ember::engine::resource::PackageGuid> :
-        _STD hash<::ember::Guid> {
-        [[nodiscard]] size_t operator()(::ember::cref<::ember::engine::resource::PackageGuid> value_) const noexcept {
-            return static_cast<::ember::cref<_STD hash<::ember::Guid>>>(*this)(value_);
+    struct hash<::hg::engine::resource::PackageGuid> :
+        _STD hash<::hg::Guid> {
+        [[nodiscard]] size_t operator()(::hg::cref<::hg::engine::resource::PackageGuid> value_) const noexcept {
+            return static_cast<::hg::cref<_STD hash<::hg::Guid>>>(*this)(value_);
         }
     };
 }

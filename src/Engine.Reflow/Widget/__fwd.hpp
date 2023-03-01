@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Box;
     class Button;
     class Dialog;

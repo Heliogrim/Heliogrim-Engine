@@ -27,12 +27,12 @@
 #include "../Menu/ContextMenu.hpp"
 #include "Editor.Action/ActionManager.hpp"
 #include "Editor.Action/Action/Import/SimpleImportAction.hpp"
-#include "Ember/Ember.hpp"
+#include "Heliogrim/Heliogrim.hpp"
 #endif
 
-using namespace ember::editor::ui;
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 AssetBrowserPanel::AssetBrowserPanel() :
     Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))),

@@ -5,7 +5,7 @@
 
 #include "Traits.hpp"
 
-namespace ember::engine::gfx::loader {
+namespace hg::engine::gfx::loader {
     class FontTransformer final : public resource::loader::Transformer<assets::Font, FontResource> {
     public:
         using this_type = FontTransformer;

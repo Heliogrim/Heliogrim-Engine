@@ -6,7 +6,7 @@
 #include "__fwd.hpp"
 #include "MemoryLayout.hpp"
 
-namespace ember::engine::gfx::memory {
+namespace hg::engine::gfx::memory {
     class MemoryCache {
     public:
         using this_type = MemoryCache;

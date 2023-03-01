@@ -2,13 +2,13 @@
 
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 
-using namespace ember::engine::assets;
+using namespace hg::engine::assets;
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <>
     void DataLayout<Texture>::describe() {
 
-        using namespace ::ember::engine::serialization::layout;
+        using namespace ::hg::engine::serialization::layout;
 
         const auto guidLayout = make_sptr<DataLayout<Guid>>();
         guidLayout->reflect().storeType<asset_guid>();

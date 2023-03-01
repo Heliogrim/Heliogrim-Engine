@@ -8,7 +8,7 @@
 #include "CacheResult.hpp"
 #include "../Device/Device.hpp"
 
-namespace ember::engine::gfx::cache {
+namespace hg::engine::gfx::cache {
     class GlobalResourceCache final {
     public:
         friend class GlobalCacheCtrl;

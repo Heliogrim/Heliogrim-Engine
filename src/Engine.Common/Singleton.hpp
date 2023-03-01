@@ -2,7 +2,7 @@
 
 #include "Inc.hpp"
 
-namespace ember {
+namespace hg {
     template <typename Class>
     class Singleton {
     public:

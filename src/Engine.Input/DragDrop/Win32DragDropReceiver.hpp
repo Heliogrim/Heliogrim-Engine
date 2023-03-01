@@ -4,7 +4,7 @@
 #include <ole2.h>
 #include "DragDropReceiver.hpp"
 
-namespace ember::engine::input {
+namespace hg::engine::input {
     class Win32DragDropReceiver :
         public DragDropReceiver,
         public IDropTarget {

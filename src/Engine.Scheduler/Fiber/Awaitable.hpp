@@ -8,7 +8,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::scheduler::fiber {
+namespace hg::engine::scheduler::fiber {
     /**
      * await_signal_type :: Defines type to use as awaitable signal by source
      * await_signal_sub_type :: Defines the subscription type the FiberAwaitable will use

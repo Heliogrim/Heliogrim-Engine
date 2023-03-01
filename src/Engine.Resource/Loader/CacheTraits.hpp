@@ -3,7 +3,7 @@
 #include "__fwd.hpp"
 #include "LoaderTraits.hpp"
 
-namespace ember::engine::resource::loader {
+namespace hg::engine::resource::loader {
     template <typename AssetType_, typename ResourceType_>
     class Cache;
 

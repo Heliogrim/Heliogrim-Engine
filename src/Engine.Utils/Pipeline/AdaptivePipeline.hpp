@@ -7,7 +7,7 @@
 #include "AdaptivePipelineStage.hpp"
 #include "Engine.Common/Collection/List.hpp"
 
-namespace ember::engine::utils {
+namespace hg::engine::utils {
     namespace {
         template <u64 Idx_, u64 ArgIdx_, typename Type_, typename... Args_>
         struct unpack_nth_indexed {

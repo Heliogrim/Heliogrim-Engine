@@ -3,8 +3,8 @@
 #include <Engine.Scene/RevScene.hpp>
 #include <Engine.Scene/Scene.hpp>
 
-using namespace ember::engine::scene;
-using namespace ember;
+using namespace hg::engine::scene;
+using namespace hg;
 
 TEST(__DummyTest__, Exists) {
     EXPECT_TRUE(true);

@@ -1,7 +1,7 @@
 #include "NodeTypeRegistry.hpp"
 
-using namespace ember::engine::scene;
-using namespace ember;
+using namespace hg::engine::scene;
+using namespace hg;
 
 NodeTypeRegistryValue NodeTypeRegistry::_empty = { nullptr, nullptr, nullptr };
 

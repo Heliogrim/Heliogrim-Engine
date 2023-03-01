@@ -9,9 +9,9 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-using namespace ember::engine::scheduler;
-using namespace ember::engine;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg::engine;
+using namespace hg;
 
 CompScheduler::CompScheduler() noexcept :
     _workerCount(0),

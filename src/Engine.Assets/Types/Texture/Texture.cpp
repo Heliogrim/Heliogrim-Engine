@@ -1,7 +1,7 @@
 #include "Texture.hpp"
 
-using namespace ember::engine::assets;
-using namespace ember;
+using namespace hg::engine::assets;
+using namespace hg;
 
 Texture::Texture() :
     Asset(invalid_asset_guid, typeId) {}

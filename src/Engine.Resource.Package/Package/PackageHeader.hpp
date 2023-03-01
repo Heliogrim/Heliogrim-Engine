@@ -7,7 +7,7 @@
 #include "PackageCompression.hpp"
 #include "PackageEndianness.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     #pragma pack(push)
     #pragma pack(1)
     struct PackageHeader {
@@ -18,7 +18,7 @@ namespace ember::engine::resource {
         // 0x08
         PackageVersion version;
         // 0x10
-        u8 guid[16];// ~ ::ember::Guid is not trivial
+        u8 guid[16];// ~ ::hg::Guid is not trivial
         // 0x20
         PackageCompression compression;
         u16 __reserved__;

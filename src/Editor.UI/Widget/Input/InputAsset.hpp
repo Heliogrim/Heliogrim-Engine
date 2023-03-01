@@ -7,7 +7,7 @@
 #include <Engine.Reflow/Widget/Button.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class InputAsset :
         public engine::reflow::Input<asset_guid> {
     public:

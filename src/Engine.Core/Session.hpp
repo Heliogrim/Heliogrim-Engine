@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     class Session {
     public:
         using this_type = Session;

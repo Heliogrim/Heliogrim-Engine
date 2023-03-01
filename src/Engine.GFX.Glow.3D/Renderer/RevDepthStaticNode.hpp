@@ -3,11 +3,11 @@
 #include <Engine.GFX/Renderer/RenderStageNode.hpp>
 #include <Engine.GFX/Shader/ShaderBindingGroup.hpp>
 
-namespace ember::engine::gfx::glow::render {
+namespace hg::engine::gfx::glow::render {
     class RevDepthSharedNode;
 }
 
-namespace ember::engine::gfx::glow::render {
+namespace hg::engine::gfx::glow::render {
     class RevDepthStaticNode :
         public gfx::render::RenderStageNode {
     public:

@@ -20,7 +20,7 @@
 #include <Engine.GFX/Renderer/RenderDataToken.hpp>
 
 #include "RevDepthSharedNode.hpp"
-#include "Ember/StaticGeometryComponent.hpp"
+#include "Heliogrim/StaticGeometryComponent.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
 #include <Engine.Logging/Logger.hpp>
 #include "Engine.GFX/Scene/StaticGeometryModel.hpp"
@@ -28,9 +28,9 @@
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.GFX/Texture/Texture.hpp"
 
-using namespace ember::engine::gfx::glow::render;
-using namespace ember::engine::gfx::render;
-using namespace ember;
+using namespace hg::engine::gfx::glow::render;
+using namespace hg::engine::gfx::render;
+using namespace hg;
 
 RevEarlyBrdfLutNode::RevEarlyBrdfLutNode() :
     RenderStageNode(),

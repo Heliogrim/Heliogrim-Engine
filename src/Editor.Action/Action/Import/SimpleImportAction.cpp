@@ -7,8 +7,8 @@
 #include "Engine.Assets/Types/Texture/Texture.hpp"
 #include "Engine.Assets/Types/Image.hpp"
 
-using namespace ember::editor;
-using namespace ember;
+using namespace hg::editor;
+using namespace hg;
 
 SimpleImportAction::SimpleImportAction() :
     ImportAction(typeId),
@@ -80,12 +80,12 @@ void SimpleImportAction::apply() {
     /**/
 
     const auto srcPath { _source.path() };
-    const ::ember::fs::File file { srcPath };
+    const ::hg::fs::File file { srcPath };
 
     if (srcPath.ends_with(".ktx2")) {
         const auto result = importer.import<
-            _STD pair<ptr<::ember::engine::assets::Texture>, ptr<::ember::engine::assets::Image>>
-        >(::ember::engine::gfx::ImageFileType::Ktx2, file);
+            _STD pair<ptr<::hg::engine::assets::Texture>, ptr<::hg::engine::assets::Image>>
+        >(::hg::engine::gfx::ImageFileType::Ktx2, file);
 
         const auto data { result.get() };
 

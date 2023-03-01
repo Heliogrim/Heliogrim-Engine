@@ -4,7 +4,7 @@
 
 #include "MemoryProperty.hpp"
 
-namespace ember::engine::gfx::memory {
+namespace hg::engine::gfx::memory {
     struct MemoryLayout final {
         u64 align;
         MemoryProperties props;
@@ -20,11 +20,11 @@ namespace ember::engine::gfx::memory {
 
 namespace std {
     template <>
-    struct hash<ember::engine::gfx::memory::MemoryLayout> {
-        [[nodiscard]] size_t operator()(ember::cref<ember::engine::gfx::memory::MemoryLayout> obj_) const noexcept {
-            return (ember::u64 { obj_.typeBits } << 32ui64) ^
+    struct hash<hg::engine::gfx::memory::MemoryLayout> {
+        [[nodiscard]] size_t operator()(hg::cref<hg::engine::gfx::memory::MemoryLayout> obj_) const noexcept {
+            return (hg::u64 { obj_.typeBits } << 32ui64) ^
                 (obj_.align << 6ui64) ^
-                static_cast<ember::u64>(obj_.props.unwrap);
+                static_cast<hg::u64>(obj_.props.unwrap);
         }
     };
 }

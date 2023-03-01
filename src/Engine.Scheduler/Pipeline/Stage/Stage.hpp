@@ -5,7 +5,7 @@
 
 #include "StageIdentifier.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class Stage final {
     public:
         using this_type = Stage;

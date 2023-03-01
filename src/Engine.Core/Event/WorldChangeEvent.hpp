@@ -2,12 +2,12 @@
 
 #include <Engine.Event/Event.hpp>
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     class Session;
     class World;
 }
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     class WorldChangeEvent :
         public StatelessEvent {
     public:
@@ -19,8 +19,8 @@ namespace ember::engine::core {
     public:
         WorldChangeEvent(
             const non_owning_rptr<Session> session_,
-            cref<sptr<::ember::engine::core::World>> prevWorld_,
-            cref<sptr<::ember::engine::core::World>> nextWorld_
+            cref<sptr<::hg::engine::core::World>> prevWorld_,
+            cref<sptr<::hg::engine::core::World>> nextWorld_
         );
 
         WorldChangeEvent(cref<this_type> other_) noexcept = default;

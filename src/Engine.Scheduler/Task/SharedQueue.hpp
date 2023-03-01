@@ -11,7 +11,7 @@
 #include "Task.hpp"
 #include "../Thread/Thread.hpp"
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     namespace worker {
         /**
          * Forward Declaration
@@ -81,7 +81,7 @@ namespace ember::engine::scheduler {
         };
 
         class SharedQueue {
-            friend class ::ember::engine::scheduler::worker::Worker;
+            friend class ::hg::engine::scheduler::worker::Worker;
 
             using aligned_subqueue = ALIGNED(SharedSubQueue, CACHE_LINE_SIZE);
 

@@ -4,7 +4,7 @@
 #include <Engine.Common/Types.hpp>
 #include "Type.hpp"
 
-namespace ember::engine::gfx::shader {
+namespace hg::engine::gfx::shader {
     class PrototypeBinding {
     public:
         /**

@@ -6,8 +6,8 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 GraphicPass::GraphicPass(cref<sptr<Device>> device_, cref<GraphicPassMask> mask_) :
     _device(device_),

@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     enum class ReflowSpacing : u8 {
         eSpaceAround = 0ui8,
         eSpaceBetween = 1ui8,

@@ -11,7 +11,7 @@
 #include "Indexer/Indexer.hpp"
 #endif
 
-namespace ember::engine {
+namespace hg::engine {
     class ResourceManager {
     public:
         using value_type = ResourceManager;

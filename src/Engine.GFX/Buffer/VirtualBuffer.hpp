@@ -6,7 +6,7 @@
 #include "VirtualBufferPage.hpp"
 #include "__fwd.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     /**
      * TODO: Add support for software sparse buffer using underlying memory pages
      *  TODO: Each page has a defined size which might be mappable to any left memory sequence

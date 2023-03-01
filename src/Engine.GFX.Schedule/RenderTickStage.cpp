@@ -13,9 +13,9 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-using namespace ember::engine::gfx::schedule;
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::gfx::schedule;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 RenderTickStage::RenderTickStage(
     cref<StageIdentifier> identifier_,

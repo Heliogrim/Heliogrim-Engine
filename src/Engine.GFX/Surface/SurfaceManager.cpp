@@ -12,9 +12,9 @@
 
 #include "Surface.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember::engine::platform;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg::engine::platform;
+using namespace hg;
 
 SurfaceManager::SurfaceManager(const non_owning_rptr<Application> application_) :
     _application(application_),

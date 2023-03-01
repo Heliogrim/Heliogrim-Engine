@@ -10,8 +10,8 @@
 
 #include "GlobalResourceCache.hpp"
 
-using namespace ember::engine::gfx::cache;
-using namespace ember;
+using namespace hg::engine::gfx::cache;
+using namespace hg;
 
 GlobalCacheCtrl::GlobalCacheCtrl(mref<uptr<GlobalResourceCache>> cache_) :
     _cache(_STD move(cache_)),

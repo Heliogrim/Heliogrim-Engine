@@ -5,7 +5,7 @@
 #include <Engine.GFX/Pipeline/LORenderPass.hpp>
 #include <Engine.GFX/Texture/__fwd.hpp>
 
-namespace ember::engine::gfx::glow::render {
+namespace hg::engine::gfx::glow::render {
     class RevEarlyBrdfLutNode :
         public gfx::render::RenderStageNode {
     public:

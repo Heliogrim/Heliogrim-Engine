@@ -4,11 +4,11 @@
 
 #include "../ResourceUsageFlag.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     class ResourceBase;
 }
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     class __declspec(novtable) ManageGuard {
     public:
         using this_type = ManageGuard;

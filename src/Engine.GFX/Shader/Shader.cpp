@@ -1,8 +1,8 @@
 #include "Shader.hpp"
 
-using namespace ember::engine::gfx::shader;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::shader;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 vk::ShaderStageFlagBits vkTranslate(const ShaderType type_) {
     switch (type_) {

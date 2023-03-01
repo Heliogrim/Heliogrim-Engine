@@ -1,7 +1,7 @@
 #include <Engine.Common/Guid.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <>
     void DataLayout<Guid>::describe() {
         defineValue<layout::LayoutDefineValueType::eUInt32>(offsetof(Guid, pre));

@@ -5,7 +5,7 @@
 #include "../Style/StyleSheet.hpp"
 #include "../Children.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Dialog :
         public Popup {
     public:

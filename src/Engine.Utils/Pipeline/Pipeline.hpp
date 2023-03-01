@@ -5,7 +5,7 @@
 #include "./Dispatchable.hpp"
 #include "PipelineStage.hpp"
 
-namespace ember::engine::utils {
+namespace hg::engine::utils {
     class Pipeline {
     public:
         /**

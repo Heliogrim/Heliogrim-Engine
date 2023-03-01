@@ -2,7 +2,7 @@
 
 #include "../Shader/ShaderSlot.hpp"
 
-namespace ember::engine::gfx::pipeline {
+namespace hg::engine::gfx::pipeline {
     class FragmentStage final {
     public:
         /**

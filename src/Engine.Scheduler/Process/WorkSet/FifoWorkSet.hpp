@@ -5,7 +5,7 @@
 #include <Engine.Common/Collection/Queue.hpp>
 #include <Engine.Common/Concurrent/SpinLock.hpp>
 
-namespace ember::engine::scheduler {
+namespace hg::engine::scheduler {
     class FifoWorkSet :
         public ScheduleWorkSet {
     public:

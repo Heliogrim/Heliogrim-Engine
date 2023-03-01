@@ -6,7 +6,7 @@
 #include "../Style/__fwd.hpp"
 #include "../Style/StyleSheet.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Image :
         public Widget {
     public:

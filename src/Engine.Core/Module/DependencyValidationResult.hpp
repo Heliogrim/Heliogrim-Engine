@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     enum class DependencyValidationResult : u8 {
         eSuccess = 0x0,
         //

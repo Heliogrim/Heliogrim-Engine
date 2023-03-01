@@ -3,7 +3,7 @@
 #include "../Types.hpp"
 #include "../__macro.hpp"
 
-namespace ember::hash {
+namespace hg::hash {
     /**
      * Murmur Hash 3 (x86/64 Platform) (32Bit Output)
      *

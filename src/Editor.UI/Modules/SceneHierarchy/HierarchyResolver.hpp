@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     class HierarchyResolverBase {
     public:
         template <typename SourceType_, typename ResolveType_>

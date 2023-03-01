@@ -6,7 +6,7 @@
 #include "Awaitable.hpp"
 #include "../Task/Task.hpp"
 
-namespace ember::engine::scheduler::fiber {
+namespace hg::engine::scheduler::fiber {
     struct Fiber {
     public:
         using handle_type = ptr<void>;

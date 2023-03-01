@@ -1,7 +1,7 @@
 #include "Stick01.hpp"
 
-using namespace ember::game::assets::meshes;
-using namespace ember;
+using namespace hg::game::assets::meshes;
+using namespace hg;
 
 Stick01::Stick01() :
     StaticGeometryAsset(

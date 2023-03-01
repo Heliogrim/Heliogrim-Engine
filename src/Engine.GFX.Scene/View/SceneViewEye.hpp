@@ -5,7 +5,7 @@
 #include <Engine.Common/Math/Matrix.hpp>
 #include <Engine.Common/Math/Quaternion.hpp>
 
-namespace ember::engine::gfx::scene {
+namespace hg::engine::gfx::scene {
     class SceneViewEye {
     public:
         using this_type = SceneViewEye;

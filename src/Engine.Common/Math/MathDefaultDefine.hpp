@@ -16,7 +16,7 @@ typedef float mathGenericType;
 typedef double mathGenericType;
 #endif
 
-namespace ember::math {
+namespace hg::math {
     template <typename T>
     constexpr T clamp(T val_, T min_, T max_) {
         return MIN(MAX(val_, min_), max_);

@@ -3,7 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Flag.hpp>
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     enum class StructureSlotStateFlag : u8 {
         eUndefined = 0x0,
         /**/

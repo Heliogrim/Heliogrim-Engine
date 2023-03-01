@@ -10,7 +10,7 @@
 #pragma warning (disable: 4201)
 
 /** . */
-namespace ember::math {
+namespace hg::math {
     /* Class Forward */
 
     /**
@@ -1818,7 +1818,7 @@ namespace std {
      * @tparam T Generic type parameter.
      */
     template <typename T>
-    struct hash<ember::math::vec2_t<T>> {
+    struct hash<hg::math::vec2_t<T>> {
         /**
          * Function call operator
          *
@@ -1829,12 +1829,12 @@ namespace std {
          *
          * @returns The result of the operation.
          */
-        size_t operator()(typename ember::math::vec2_t<T>::const_reference_type vec_) const {
+        size_t operator()(typename hg::math::vec2_t<T>::const_reference_type vec_) const {
             size_t seed = 0;
             hash<T> fnc;
 
-            ember::hash::hash_combine(seed, fnc(vec_.x));
-            ember::hash::hash_combine(seed, fnc(vec_.y));
+            hg::hash::hash_combine(seed, fnc(vec_.x));
+            hg::hash::hash_combine(seed, fnc(vec_.y));
 
             return seed;
         }
@@ -1849,7 +1849,7 @@ namespace std {
      * @tparam T Generic type parameter.
      */
     template <typename T>
-    struct hash<ember::math::vec3_t<T>> {
+    struct hash<hg::math::vec3_t<T>> {
         /**
          * Function call operator
          *
@@ -1860,13 +1860,13 @@ namespace std {
          *
          * @returns The result of the operation.
          */
-        size_t operator()(typename ember::math::vec3_t<T>::const_reference_type vec_) const {
+        size_t operator()(typename hg::math::vec3_t<T>::const_reference_type vec_) const {
             size_t seed = 0;
             hash<T> fnc;
 
-            ember::hash::hash_combine(seed, fnc(vec_.x));
-            ember::hash::hash_combine(seed, fnc(vec_.y));
-            ember::hash::hash_combine(seed, fnc(vec_.z));
+            hg::hash::hash_combine(seed, fnc(vec_.x));
+            hg::hash::hash_combine(seed, fnc(vec_.y));
+            hg::hash::hash_combine(seed, fnc(vec_.z));
 
             return seed;
         }
@@ -1881,7 +1881,7 @@ namespace std {
      * @tparam T Generic type parameter.
      */
     template <typename T>
-    struct hash<ember::math::vec4_t<T>> {
+    struct hash<hg::math::vec4_t<T>> {
         /**
          * Function call operator
          *
@@ -1892,14 +1892,14 @@ namespace std {
          *
          * @returns The result of the operation.
          */
-        size_t operator()(typename ember::math::vec4_t<T>::const_reference_type vec_) const {
+        size_t operator()(typename hg::math::vec4_t<T>::const_reference_type vec_) const {
             size_t seed = 0;
             hash<T> fnc;
 
-            ember::hash::hash_combine(seed, fnc(vec_.x));
-            ember::hash::hash_combine(seed, fnc(vec_.y));
-            ember::hash::hash_combine(seed, fnc(vec_.z));
-            ember::hash::hash_combine(seed, fnc(vec_.w));
+            hg::hash::hash_combine(seed, fnc(vec_.x));
+            hg::hash::hash_combine(seed, fnc(vec_.y));
+            hg::hash::hash_combine(seed, fnc(vec_.z));
+            hg::hash::hash_combine(seed, fnc(vec_.w));
 
             return seed;
         }

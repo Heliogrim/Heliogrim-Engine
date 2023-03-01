@@ -2,8 +2,8 @@
 
 #include <Engine.Common/Exception/NotImplementedException.hpp>
 
-using namespace ember::engine::res;
-using namespace ember;
+using namespace hg::engine::res;
+using namespace hg;
 
 ImporterManager::~ImporterManager() noexcept = default;
 

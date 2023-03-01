@@ -5,8 +5,8 @@
 
 #include "../../Source/FileSource.hpp"
 
-using namespace ember::engine::resource::loader;
-using namespace ember;
+using namespace hg::engine::resource::loader;
+using namespace hg;
 
 [[nodiscard]] static string to_string(cref<asset_guid> guid_) {
     return _STD format(R"({:08x}-{:04x}-{:04x}-{:016x})", guid_.pre, guid_.c0, guid_.c1, guid_.post);

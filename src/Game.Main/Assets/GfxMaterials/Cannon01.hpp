@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Ember/AssetAutoGuid.hpp>
-#include <Ember/GfxMaterialAsset.hpp>
+#include <Heliogrim/AssetAutoGuid.hpp>
+#include <Heliogrim/GfxMaterialAsset.hpp>
 #include <Engine.Assets/AssetGuid.hpp>
 
-namespace ember::game::assets::material {
+namespace hg::game::assets::material {
     class Cannon01 :
         public GfxMaterialAsset,
         public AssetAutoGuid<Cannon01> {

@@ -1,6 +1,6 @@
 #include "GlobalEventEmitter.hpp"
 
-using namespace ember;
+using namespace hg;
 
 GlobalEventEmitter::GlobalEventEmitter() noexcept :
     _emitterMtx(),

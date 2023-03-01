@@ -2,8 +2,8 @@
 
 #include <algorithm>
 
-using namespace ember::engine::scene;
-using namespace ember;
+using namespace hg::engine::scene;
+using namespace hg;
 
 SceneNodeHeadContainer::pointer_type SceneNodeHeadContainer::unsafe_base() const noexcept {
     return const_cast<pointer_type>(_base);

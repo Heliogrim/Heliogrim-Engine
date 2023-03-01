@@ -12,16 +12,16 @@
 #include "Engine.GFX.Loader/Texture/TextureResource.hpp"
 #include "Engine.Resource/LoaderManager.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
-#include <Ember/AssetDatabase.hpp>
-#include <Ember/AssetDatabaseResult.hpp>
+#include <Heliogrim/AssetDatabase.hpp>
+#include <Heliogrim/AssetDatabaseResult.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX.Loader/Texture/Traits.hpp>
 
-#include "Ember/Ember.hpp"
+#include "Heliogrim/Heliogrim.hpp"
 
-using namespace ember::editor::ui;
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::editor::ui;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 [[nodiscard]] static sptr<BoundStyleSheet> makeInputBoxStyle() {
 
@@ -324,7 +324,7 @@ void InputAsset::setValue(cref<asset_guid> assetGuid_) {
 
     /**/
 
-    const auto query = Ember::assets()[assetGuid_];
+    const auto query = Heliogrim::assets()[assetGuid_];
     if (query.flags & AssetDatabaseResultType::eSuccess) {
 
         const auto name { query.value.getAssetName() };

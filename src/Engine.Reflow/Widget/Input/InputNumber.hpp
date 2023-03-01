@@ -3,7 +3,7 @@
 #include "InputFloat.hpp"
 #include "InputIntegral.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     template <typename ValueType_>
     struct TypedInputNumber {
         using type = void;

@@ -8,7 +8,7 @@
 
 #include "LogLevel.hpp"
 
-namespace ember {
+namespace hg {
     class Logger {
     public:
         using this_type = Logger;

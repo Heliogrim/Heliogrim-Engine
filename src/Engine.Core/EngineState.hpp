@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     /**
      * @details Due to the engine scoped lifecycle, we can reboot the engine a multiple layers,
      *  therefore the forward stats are defined unique, while backward stats will inherit the underlying value

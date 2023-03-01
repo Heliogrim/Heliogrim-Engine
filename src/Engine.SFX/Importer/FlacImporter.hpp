@@ -1,7 +1,7 @@
 #pragma once
 #include "SoundImporter.hpp"
 
-namespace ember::engine::sfx {
+namespace hg::engine::sfx {
     class FlacImporter :
         public SoundImporter {
     public:

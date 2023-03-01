@@ -4,8 +4,8 @@
 #include <ranges>
 #include <Engine.Common/Exception/NotImplementedException.hpp>
 
-using namespace ember::engine::resource;
-using namespace ember;
+using namespace hg::engine::resource;
+using namespace hg;
 
 ParallelSource::reference_type ParallelSource::operator=(mref<value_type> other_) noexcept {
     if (this != _STD addressof(other_)) {
@@ -73,7 +73,7 @@ bool ParallelSource::get(streamoff offset_, streamsize size_, ptr<void> dst_, re
     throw NotImplementedException {};
 }
 
-ember::concurrent::future<Source::async_result_value> ParallelSource::get(streamoff offset_, streamsize size_) {
+hg::concurrent::future<Source::async_result_value> ParallelSource::get(streamoff offset_, streamsize size_) {
     throw NotImplementedException {};
 }
 
@@ -81,7 +81,7 @@ bool ParallelSource::write(streamoff offset_, streamsize size_, const ptr<void> 
     throw NotImplementedException {};
 }
 
-ember::concurrent::future<Source::async_write_result> ParallelSource::write(
+hg::concurrent::future<Source::async_write_result> ParallelSource::write(
     streamoff offset_,
     streamsize size_,
     const ptr<void> src_

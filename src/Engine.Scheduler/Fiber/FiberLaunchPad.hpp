@@ -2,7 +2,7 @@
 
 #include "Fiber.hpp"
 
-namespace ember::engine::scheduler::fiber {
+namespace hg::engine::scheduler::fiber {
     struct FiberLaunchPad {
     public:
         ptr<Fiber> self;

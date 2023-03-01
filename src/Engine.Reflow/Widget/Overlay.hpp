@@ -2,7 +2,7 @@
 
 #include "Widget.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class Overlay :
         public Widget {
     public:

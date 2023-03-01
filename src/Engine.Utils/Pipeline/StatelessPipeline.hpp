@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::utils::pipeline {
+namespace hg::engine::utils::pipeline {
     class StatelessPipeline {
     public:
         using value_type = StatelessPipeline;

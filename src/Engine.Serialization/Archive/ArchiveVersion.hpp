@@ -2,6 +2,6 @@
 
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     typedef u64 ArchiveVersion;
 }

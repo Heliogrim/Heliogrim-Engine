@@ -8,8 +8,8 @@
 #include "../../Style/StyleSheet.hpp"
 #include "../HBox.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 static constexpr float ident_per_level = 12.F;
 static constexpr float row_min_height = 20.F;

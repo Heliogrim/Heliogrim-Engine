@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     enum class GraphicPassMask: u8 {
         eDepthPass,
         eLightPass,

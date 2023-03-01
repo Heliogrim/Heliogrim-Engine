@@ -1,7 +1,7 @@
 #include "SpinLock.hpp"
 
-using namespace ember::concurrent;
-using namespace ember::engine::scheduler;
+using namespace hg::concurrent;
+using namespace hg::engine::scheduler;
 
 UnfairSpinLock::UnfairSpinLock() :
     _gate(0) {}

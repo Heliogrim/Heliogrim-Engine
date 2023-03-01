@@ -7,21 +7,21 @@
 #include "__fwd.hpp"
 #include "../Event/EventDispatcher.hpp"
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class IRenderScene;
 }
 
-namespace ember::engine::reflow::schedule {
+namespace hg::engine::reflow::schedule {
     class ReflowFlowStage;
     class ReflowShiftStage;
 }
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     class WindowManager :
         public EventDispatcher {
     public:
-        friend class ::ember::engine::reflow::schedule::ReflowFlowStage;
-        friend class ::ember::engine::reflow::schedule::ReflowShiftStage;
+        friend class ::hg::engine::reflow::schedule::ReflowFlowStage;
+        friend class ::hg::engine::reflow::schedule::ReflowShiftStage;
 
     public:
         using this_type = WindowManager;

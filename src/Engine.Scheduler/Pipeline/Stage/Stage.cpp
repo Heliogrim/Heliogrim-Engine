@@ -1,7 +1,7 @@
 #include "Stage.hpp"
 
-using namespace ember::engine::scheduler;
-using namespace ember;
+using namespace hg::engine::scheduler;
+using namespace hg;
 
 Stage::Stage(cref<string> identifier_, const s8 slot_) noexcept :
     _refCount(1ui16),

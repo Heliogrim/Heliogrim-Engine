@@ -2,9 +2,9 @@
 
 #include "DiscreteBindingGroup.hpp"
 
-using namespace ember::engine::gfx::shader;
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx::shader;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 ShaderBindingGroup::ShaderBindingGroup(
     const BindingUpdateInterval interval_,

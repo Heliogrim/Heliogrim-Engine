@@ -2,13 +2,13 @@
 
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 
-using namespace ember;
+using namespace hg;
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <>
     void DataLayout<asset_guid>::describe() {
 
-        using namespace ::ember::engine::serialization::layout;
+        using namespace ::hg::engine::serialization::layout;
 
         defineValue<LayoutDefineValueType::eUInt32>(offsetof(asset_guid, pre));
         defineValue<LayoutDefineValueType::eUInt16>(offsetof(asset_guid, c0));

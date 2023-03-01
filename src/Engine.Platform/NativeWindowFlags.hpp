@@ -3,7 +3,7 @@
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Types.hpp>
 
-namespace ember::engine::platform {
+namespace hg::engine::platform {
     enum class NativeWindowFlagBits : u8 {
         eNone = 0x0,
         //

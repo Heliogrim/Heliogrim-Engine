@@ -8,8 +8,8 @@
 
 #include "GraphicPass.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 GraphicPassModelProcessor::GraphicPassModelProcessor(ptr<const GraphicPass> graphicPass_) :
     _graphicPass(graphicPass_) {}

@@ -6,7 +6,7 @@
 #include "SourceLoader/SourceLoadOptions.hpp"
 #include "SourceLoader/SourceStreamOptions.hpp"
 
-namespace ember::engine::resource::loader {
+namespace hg::engine::resource::loader {
     class SourceLoader;
 
     /**/

@@ -1,15 +1,15 @@
 #include "CameraModel.hpp"
 
-#include <Ember/SceneComponent.hpp>
-#include <Ember/Components/CameraComponent.hpp>
+#include <Heliogrim/SceneComponent.hpp>
+#include <Heliogrim/Components/CameraComponent.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.Scene/Scene.hpp>
 #include <Engine.Scene/RevScene.hpp>
 
 #include "../Renderer/RenderDataToken.hpp"
 
-using namespace ember::engine::gfx;
-using namespace ember;
+using namespace hg::engine::gfx;
+using namespace hg;
 
 CameraModel::CameraModel(const non_owning_rptr<SceneComponent> owner_) :
     SceneNodeModel(owner_),

@@ -2,7 +2,7 @@
 
 #include "StyleSheetEntry.hpp"
 
-namespace ember::engine::reflow {
+namespace hg::engine::reflow {
     template <bool AggregateSetFlag_ = true>
     class StyleCombinator {
     public:

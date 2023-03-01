@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Common/Flag.hpp>
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     enum class ResourceUsageFlag {
         eNone = 0b0000,
         eDefault = 0b0001,

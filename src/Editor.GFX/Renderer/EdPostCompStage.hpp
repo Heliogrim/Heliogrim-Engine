@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.GFX/Renderer/RenderStage.hpp>
 
-namespace ember::editor::gfx {
+namespace hg::editor::gfx {
     class EdPostCompStage :
         public engine::gfx::render::RenderStage {
     public:

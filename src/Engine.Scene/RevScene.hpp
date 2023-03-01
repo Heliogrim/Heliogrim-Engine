@@ -2,9 +2,9 @@
 #include "IRenderScene.hpp"
 #include "RenderGraph.hpp"
 #include "Scene.hpp"
-#include "Ember/IComponentRegisterContext.hpp"
+#include "Heliogrim/IComponentRegisterContext.hpp"
 
-namespace ember::engine::scene {
+namespace hg::engine::scene {
     class RevScene final :
         public Scene,
         public IRenderScene,

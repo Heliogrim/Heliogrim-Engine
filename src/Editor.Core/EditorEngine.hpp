@@ -4,9 +4,9 @@
 #include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
-namespace ember::editor {
+namespace hg::editor {
     class EditorEngine :
-        public ::ember::engine::Engine {
+        public ::hg::engine::Engine {
     public:
         EditorEngine();
 

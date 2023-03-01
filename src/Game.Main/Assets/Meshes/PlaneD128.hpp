@@ -1,7 +1,7 @@
 #pragma once
-#include <Ember/StaticGeometryAsset.hpp>
+#include <Heliogrim/StaticGeometryAsset.hpp>
 
-namespace ember::game::assets::meshes {
+namespace hg::game::assets::meshes {
     class PlaneD128 :
         public StaticGeometryAsset,
         public AssetAutoGuid<PlaneD128> {

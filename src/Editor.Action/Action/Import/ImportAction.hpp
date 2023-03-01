@@ -2,7 +2,7 @@
 
 #include "../Action.hpp"
 
-namespace ember::editor {
+namespace hg::editor {
     class ImportAction :
         public Action {
     public:

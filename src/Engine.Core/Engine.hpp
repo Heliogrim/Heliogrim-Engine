@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Engine.Reflect/EmberReflect.hpp>
+#include <Engine.Reflect/HeliogrimReflect.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
-namespace ember {
+namespace hg {
     class GlobalEventEmitter;
 }
 
-namespace ember::engine {
+namespace hg::engine {
     class Assets;
     class Audio;
     class Graphics;
@@ -20,7 +20,7 @@ namespace ember::engine {
     class Platform;
 }
 
-namespace ember::engine::core {
+namespace hg::engine::core {
     enum class EngineState : u8;
 
     class Session;
@@ -30,9 +30,9 @@ namespace ember::engine::core {
     class WorldContext;
 }
 
-namespace ember::engine {
+namespace hg::engine {
     class __declspec(novtable) Engine :
-        public EmberObject {
+        public HeliogrimObject {
     public:
         using this_type = Engine;
 

@@ -3,7 +3,7 @@
 #include <Engine.Common/Url.hpp>
 #include <Engine.Reflow/Widget/HBox.hpp>
 
-namespace ember::editor::ui {
+namespace hg::editor::ui {
     struct BreadcrumbEntry {
         AssocKey<string> key;
         wptr<engine::reflow::Widget> widget;

@@ -4,7 +4,7 @@
 
 #include "__fwd.hpp"
 
-namespace ember::engine::resource {
+namespace hg::engine::resource {
     enum class ArchiveHeaderType : u8 {
         eUndefined = 0x0,
         //

@@ -3,7 +3,7 @@
 #include "StructureSlot.hpp"
 #include "SubstitutionSlot.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <typename KeyType_, typename ValueType_, template <typename, typename...> typename PackType_ = _STD pair>
     class MapEntrySlot final :
         public TypedStructureSlotBase<PackType_<KeyType_, ValueType_>> {

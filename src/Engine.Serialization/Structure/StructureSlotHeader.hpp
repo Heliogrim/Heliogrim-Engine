@@ -3,7 +3,7 @@
 #include "StructureSlotType.hpp"
 #include "StructureSlotTypeTraits.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     struct StructureSlotHeader {
     public:
         StructureSlotType type = StructureSlotType::eUndefined;

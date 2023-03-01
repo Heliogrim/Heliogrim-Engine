@@ -5,8 +5,8 @@
 
 #include "../../Style/BoundStyleSheet.hpp"
 
-using namespace ember::engine::reflow;
-using namespace ember;
+using namespace hg::engine::reflow;
+using namespace hg;
 
 [[nodiscard]] bool styleIsSelected(cref<sptr<Widget>> widget_) {
     return static_cast<ptr<TreeItem>>(widget_.get())->isSelected();

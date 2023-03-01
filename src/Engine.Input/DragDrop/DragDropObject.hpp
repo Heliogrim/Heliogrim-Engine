@@ -5,7 +5,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 
-namespace ember::engine::input {
+namespace hg::engine::input {
     enum class DragDropObjectType : u64 {
         eNone = 0x0,
         eFileType = ("Drop::File"_typeId).data,

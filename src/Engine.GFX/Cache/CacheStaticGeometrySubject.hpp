@@ -3,7 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-namespace ember::engine::gfx::cache {
+namespace hg::engine::gfx::cache {
     struct CacheStaticGeometrySubject {
     public:
         using this_type = CacheStaticGeometrySubject;

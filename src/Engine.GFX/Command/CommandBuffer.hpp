@@ -9,10 +9,10 @@
 #include "../Pipeline/LORenderPass.hpp"
 #include "../Texture/TextureBuffer.hpp"
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class CommandBuffer {
     protected:
-        friend ember::engine::gfx::CommandPool;
+        friend hg::engine::gfx::CommandPool;
 
         /**
          * Constructor
@@ -313,7 +313,7 @@ namespace ember::engine::gfx {
          * @author Julius
          * @date 25.11.2020
          */
-        [[nodiscard]] ember::concurrent::UnfairSpinLock& lck() const;
+        [[nodiscard]] hg::concurrent::UnfairSpinLock& lck() const;
 
         /**
          * Submits this to the CommandQueue and waits until it's finished

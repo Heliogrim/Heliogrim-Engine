@@ -2,7 +2,7 @@
 
 #include <robin/robin_map.h>
 
-namespace ember {
+namespace hg {
     template <
         class Key_,
         class Type_,

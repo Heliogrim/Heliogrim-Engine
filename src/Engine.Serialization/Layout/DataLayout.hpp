@@ -11,12 +11,12 @@
 #include "LayoutDefineObject.hpp"
 #include "LayoutDefineValue.hpp"
 
-namespace ember::engine::serialization {
+namespace hg::engine::serialization {
     template <typename SerializationType_>
     class DataLayout final :
         public DataLayoutBase {
     public:
-        friend class ::ember::engine::serialization::layout::LayoutDefine;
+        friend class ::hg::engine::serialization::layout::LayoutDefine;
 
     public:
         using this_type = DataLayout<SerializationType_>;
@@ -24,7 +24,7 @@ namespace ember::engine::serialization {
 
         using serialization_type = SerializationType_;
 
-        inline static constexpr bool has_reflected_class = IsEmberObject<serialization_type>;
+        inline static constexpr bool has_reflected_class = IsHeliogrimObject<serialization_type>;
 
     public:
         DataLayout() noexcept :

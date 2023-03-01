@@ -2,7 +2,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.GFX/Texture/Texture.hpp>
 
-namespace ember::engine::gfx::glow {
+namespace hg::engine::gfx::glow {
     class RevVirtualMarkerTexture final {
     public:
         RevVirtualMarkerTexture() = default;

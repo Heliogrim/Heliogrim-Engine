@@ -5,23 +5,23 @@
 #include "RenderEnqueueResult.hpp"
 #include "vkinc.hpp"
 
-namespace ember::engine::gfx::render {
+namespace hg::engine::gfx::render {
     class HORenderPass;
     class Renderer;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class Camera;
     class Device;
     class Surface;
     class Swapchain;
 }
 
-namespace ember::engine::gfx::scene {
+namespace hg::engine::gfx::scene {
     class SceneView;
 }
 
-namespace ember::engine::gfx {
+namespace hg::engine::gfx {
     class RenderTarget {
     public:
         using this_type = RenderTarget;
