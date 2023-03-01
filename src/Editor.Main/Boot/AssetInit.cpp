@@ -279,6 +279,8 @@ void tryDispatchLoad(cref<path> path_) {
         auto source = make_uptr<resource::FileSource>(_STD move(file));
         auto package = resource::PackageFactory::createFromSource(_STD move(source));
 
+        /**/
+
         auto managed = make_smr<resource::UniqueResource<resource::PackageResource::value_type>>(package.release());
 
         /**/
@@ -335,7 +337,7 @@ static void initMaterialDefaults() {
     );
     db->insert(
         factory->createImageAsset(
-            image::DefaultDiffuse::unstable_auto_guid(),
+            image::DefaultDiffuse::auto_guid(),
             R"(resources\imports\ktx\default_diffuse.ktx)"
         )
     );

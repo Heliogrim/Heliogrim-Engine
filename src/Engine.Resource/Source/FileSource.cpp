@@ -71,7 +71,8 @@ bool FileSource::close() {
         return false;
     }
 
-    if (::CloseHandle(_fptr) != NULL) {
+    if (::CloseHandle(_fptr) == NULL) {
+        const auto reason = ::GetLastError();
         return false;
     }
 
@@ -154,19 +155,44 @@ bool FileSource::write(streamoff offset_, streamsize size_, const ptr<void> src_
         return false;
     }
 
-    streamsize cmpSize = _size;
-    if (cmpSize <= 0) {
-
-        const streamsize fsize = ::GetFileSize(_fptr, nullptr);
-        cmpSize = fsize - _offset;
-    }
-
-    if (cmpSize <= 0 || _offset > cmpSize) {
+    if (_size > 0 && offset_ + size_ > _size) {
         return false;
     }
 
+    /**/
+
     const streampos begin = _offset + offset_;
-    // TODO: Check whether we need to check for max-length attributes, which could cause trimmed sequences
+    const streamsize fsize = ::GetFileSize(_fptr, nullptr);
+
+    if (fsize < begin) {
+
+        Vector<char> dummy = Vector<char>(begin - fsize);
+
+        ::OVERLAPPED meta {
+            NULL,
+            NULL,
+            {
+                static_cast<DWORD>(fsize),
+                static_cast<DWORD>(fsize >> 32)
+            },
+            nullptr
+        };
+
+        unsigned long written {};
+        const auto succeeded = ::WriteFile(
+            _fptr,
+            dummy.data(),
+            sizeof(_::byte) * dummy.size(),
+            &written,
+            &meta
+        );
+
+        if (written != dummy.size()) {
+            __debugbreak();
+        }
+    }
+
+    /**/
 
     ::OVERLAPPED meta {
         NULL,

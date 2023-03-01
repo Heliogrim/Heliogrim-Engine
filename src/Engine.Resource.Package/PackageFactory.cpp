@@ -23,7 +23,7 @@ uptr<Package> PackageFactory::createEmptyPackage(mref<uptr<Source>> source_) {
             .magicVersion = PackageMagicVersion[0],
             .endianness = PackageEndianness::eBigEndian,
             .version = 0x1,
-            .guid = _STD move(guid),
+            .guidData = _STD move(guid.data),
             .compression = PackageCompression::eNone
         },
         PackageFooter {

@@ -40,5 +40,6 @@ void SourceBaseArchive::seek(const s64 pos_) {
 }
 
 s64 SourceBaseArchive::tell() const noexcept {
-    return -1;
+    // TODO: Check why tell is not supported?!? return -1;
+    return _pos;
 }

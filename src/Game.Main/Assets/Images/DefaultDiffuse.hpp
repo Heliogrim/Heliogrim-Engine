@@ -6,8 +6,13 @@ namespace hg::game::assets::image {
         public ImageAsset,
         public AssetAutoGuid<DefaultDiffuse> {
     public:
+        inline static constexpr type_id typeId { "image::DefaultDiffuse"_typeId };
+
+    public:
         DefaultDiffuse():
-            ImageAsset(DefaultDiffuse::unstable_auto_guid(),
-                R"(resources\imports\ktx\default_diffuse.ktx)") {}
+            ImageAsset(
+                DefaultDiffuse::auto_guid(),
+                R"(resources\imports\ktx\default_diffuse.ktx)"
+            ) {}
     };
 }
