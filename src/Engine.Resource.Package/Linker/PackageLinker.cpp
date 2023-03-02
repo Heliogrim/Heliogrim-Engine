@@ -86,7 +86,29 @@ bool PackageLinker::store(mref<ArchiveHeader> header_, mref<uptr<serialization::
         nextOffset = lastIndex.offset + lastIndex.size;
     }
 
-    /**/
+    /* Write Archive Header to Package */
+
+    constexpr streamsize headerSize = sizeof(ArchiveHeader);
+
+    streamoff off = 0;
+    while (off >= 0 && off < headerSize) {
+
+        streamsize written {};
+        const auto succeeded = _package->_source->write(
+            nextOffset + off,
+            headerSize - off,
+            &reinterpret_cast<ptr<_::byte>>(&header_)[off],
+            written
+        );
+
+        if (not succeeded) {
+            off = -1;
+        }
+
+        off += written;
+    }
+
+    /* Write Archive to Package */
 
     const auto archive = _STD move(archive_);
     const auto archiveSize = archive->totalSize();
@@ -94,19 +116,21 @@ bool PackageLinker::store(mref<ArchiveHeader> header_, mref<uptr<serialization::
     archive->seek(0);
 
     u8 buffer[1024];
-    streampos done = 0;
+    streamsize done = 0;
     while (not archive->isEOA()) {
 
         const streamsize left = archiveSize - done;
         const streamsize chunkSize = left > 1024 ? 1024 : left;
 
         // Warning: This is not intended to be used this way
+        archive->seek(done);
         archive->serializeBytes(buffer, chunkSize, serialization::ArchiveStreamMode::eOut);
 
         [[maybe_unused]] streamsize wrote {};
-        _package->_source->write(nextOffset, chunkSize, buffer, wrote);
+        _package->_source->write(nextOffset + off, chunkSize, buffer, wrote);
 
-        done += chunkSize;
+        done += wrote;
+        off += wrote;
     }
 
     /**/
@@ -116,7 +140,7 @@ bool PackageLinker::store(mref<ArchiveHeader> header_, mref<uptr<serialization::
             _STD move(header_),
             PackageIndexEntry {
                 static_cast<u64>(nextOffset),
-                static_cast<u64>(archiveSize)
+                static_cast<u64>(archiveSize + headerSize)
             }
         }
     );
@@ -148,11 +172,13 @@ uptr<engine::serialization::SourceReadonlyArchive> PackageLinker::load(const Gui
         return nullptr;
     }
 
+    constexpr auto archiveHeaderSize = sizeof(ArchiveHeader);
+
     const auto index = where->index;
     return make_uptr<serialization::SourceReadonlyArchive>(
         smr<Source>(_package->_source),
-        static_cast<streamoff>(index.offset),
-        static_cast<streamsize>(index.size)
+        static_cast<streamoff>(index.offset + archiveHeaderSize),
+        static_cast<streamsize>(index.size - archiveHeaderSize)
     );
 }
 
@@ -208,21 +234,23 @@ PackageLinker::const_iterator_type PackageLinker::cend() const noexcept {
 uptr<PackageLinker::readonly_iter_archive> PackageLinker::operator[](const_iterator_type where_) const noexcept {
 
     const auto index = where_->index;
+    constexpr auto archiveHeaderSize = sizeof(ArchiveHeader);
 
     return make_uptr<readonly_iter_archive>(
         smr<Source>(_package->_source),
-        static_cast<streamoff>(index.offset),
-        static_cast<streamsize>(index.size)
+        static_cast<streamoff>(index.offset + archiveHeaderSize),
+        static_cast<streamsize>(index.size - archiveHeaderSize)
     );
 }
 
 uptr<PackageLinker::iter_archive> PackageLinker::operator[](iterator_type where_) const noexcept {
 
     const auto index = where_->index;
+    constexpr auto archiveHeaderSize = sizeof(ArchiveHeader);
 
     return make_uptr<serialization::SourceReadWriteArchive>(
         smr<Source>(_package->_source),
-        static_cast<streamoff>(index.offset),
-        static_cast<streamsize>(index.size)
+        static_cast<streamoff>(index.offset + archiveHeaderSize),
+        static_cast<streamsize>(index.size - archiveHeaderSize)
     );
 }
