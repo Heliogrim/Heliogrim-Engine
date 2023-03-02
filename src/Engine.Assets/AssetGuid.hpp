@@ -15,10 +15,20 @@ namespace hg {
     inline constexpr static asset_guid invalid_asset_guid {};
 
     /**
-     * Generates an asset unique identifier
+     * Generates an unstable asset unique identifier
      *
      * @author Julius
      * @date 23.10.2020
+     *
+     * @returns The asset unique identifier.
+     */
+    extern asset_guid generate_unstable_asset_guid();
+
+    /**
+     * Generates an asset unique identifier
+     *
+     * @author Julius
+     * @date 02.03.2020
      *
      * @returns The asset unique identifier.
      */
