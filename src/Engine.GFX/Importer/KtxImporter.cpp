@@ -5,6 +5,7 @@
 #include <Engine.Assets/Types/Image.hpp>
 #include <Engine.Assets/Types/Texture/Texture.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
+#include <Engine.Serialization/Archive/Archive.hpp>
 #include <Engine.Serialization/Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
@@ -13,6 +14,9 @@
 #include "ImageImporter.hpp"
 #include "../API/VkTranslate.hpp"
 #include "Engine.Assets/Assets.hpp"
+#include "Engine.Resource/Source/FileSource.hpp"
+#include "Engine.Resource.Package/PackageFactory.hpp"
+#include "Engine.Resource.Package/Linker/PackageLinker.hpp"
 #include "Engine.Serialization/Access/Structure.hpp"
 #include "Engine.Serialization/Archive/StructuredArchive.hpp"
 
@@ -238,87 +242,70 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     /**/
 
     #define EDITOR TRUE
+
     #ifdef EDITOR
 
-    BufferArchive imgBuffer {};
-    StructuredArchive imgArch { &imgBuffer };
+    /* Serialize Image */
+
+    auto imgBuffer = make_uptr<BufferArchive>();
+    StructuredArchive imgArch { imgBuffer.get() };
 
     {
         auto root = imgArch.insertRootSlot();
         access::Structure<Image>::serialize(img, _STD move(root));
     }
 
-    #else
+    Guid imgArchGuid {};
+    GuidGenerate(imgArchGuid);
 
-    auto imgLayout { make_sptr<DataLayout<Image>>() };
+    /* Serialize Texture */
 
-    imgLayout->reflect().storeType<Image>();
-    imgLayout->describe();
-
-    BufferArchive imgBuffer {};
-    LayoutArchive<DataLayout<Image>> imgArch { &imgBuffer, imgLayout.get() };
-
-    imgArch << img;
-
-    #endif
-
-    const auto imgPath {
-        _STD filesystem::path { rootCwd }.append(targetDirPath.string()).append(sourceName).concat(R"(.img.imasset)")
-    };
-
-    _STD filesystem::create_directories(imgPath.parent_path());
-    _STD ofstream ofs {
-        imgPath,
-        _STD ios::out | _STD ios::binary
-    };
-    ofs.seekp(0, _STD ios::beg);
-
-    ofs.write(reinterpret_cast<char*>(imgBuffer.data()), imgBuffer.totalSize());
-
-    ofs.flush();
-    ofs.close();
-
-    /**/
-
-    #ifdef EDITOR
-
-    BufferArchive texBuffer {};
-    StructuredArchive texArch { &texBuffer };
+    auto texBuffer = make_uptr<BufferArchive>();
+    StructuredArchive texArch { texBuffer.get() };
 
     {
         auto root = texArch.insertRootSlot();
         access::Structure<Texture>::serialize(tex, _STD move(root));
     }
 
-    #else
+    Guid texArchGuid {};
+    GuidGenerate(texArchGuid);
 
-    auto texLayout { make_sptr<DataLayout<Texture>>() };
+    /* Generate Target Path */
 
-    texLayout->reflect().storeType<Texture>();
-    texLayout->describe();
+    const auto packagePath {
+        _STD filesystem::path { rootCwd }.append(targetDirPath.string()).append(sourceName).concat(R"(.impackage)")
+    };
 
-    BufferArchive texBuffer {};
-    LayoutArchive<DataLayout<Texture>> texArch { &texBuffer, texLayout.get() };
+    if (not _STD filesystem::exists(packagePath.parent_path())) {
+        _STD filesystem::create_directories(packagePath.parent_path());
+    }
 
-    texArch << tex;
+    /* Generate Package */
+
+    hg::fs::File packageFile { packagePath };
+    auto source = make_uptr<resource::FileSource>(_STD move(packageFile));
+
+    auto package = resource::PackageFactory::createEmptyPackage(_STD move(source));
+    auto* const linker = package->getLinker();
+
+    /* Store Data to Package */
+
+    linker->store(
+        resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, _STD move(imgArchGuid) },
+        _STD move(imgBuffer)
+    );
+
+    linker->store(
+        resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, _STD move(texArchGuid) },
+        _STD move(texBuffer)
+    );
+
+    /* Flush/Write the package */
+
+    package->unsafeWrite();
 
     #endif
-
-    const auto texPath {
-        _STD filesystem::path { rootCwd }.append(targetDirPath.string()).append(sourceName).concat(R"(.imasset)")
-    };
-
-    _STD filesystem::create_directories(texPath.parent_path());
-    ofs = _STD ofstream {
-        texPath,
-        _STD ios::out | _STD ios::binary
-    };
-    ofs.seekp(0, _STD ios::beg);
-
-    ofs.write(reinterpret_cast<char*>(texBuffer.data()), texBuffer.totalSize());
-
-    ofs.flush();
-    ofs.close();
 
     /**/
     return makeImportResult({ tex, img });
