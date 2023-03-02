@@ -40,7 +40,7 @@ namespace hg {
          * @returns A const reference to the unstable asset_guid
          */
         [[nodiscard]] static cref<asset_guid> unstable_auto_guid() noexcept {
-            static asset_guid guid = generate_asset_guid();
+            static asset_guid guid = generate_unstable_asset_guid();
             return guid;
         }
     };
