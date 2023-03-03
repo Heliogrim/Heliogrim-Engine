@@ -124,7 +124,7 @@ namespace hg::engine::resource {
 
         // ReSharper disable once CppHidingFunction
         ref<this_type> release() {
-            return ManageGuard::release();
+            return static_cast<ref<this_type>>(ManageGuard::release());
         }
 
     public:

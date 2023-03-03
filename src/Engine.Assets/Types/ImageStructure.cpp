@@ -29,7 +29,7 @@ void access::Structure<Image>::serialize(const Image* const self_, mref<RecordSc
 }
 
 template <>
-void access::Structure<Image>::deserialize(Image* const self_, cref<RecordScopedSlot> slot_) {
+void access::Structure<Image>::deserialize(Image* const self_, mref<RecordScopedSlot> slot_) {
 
     const auto slot = slot_.intoStruct();
 

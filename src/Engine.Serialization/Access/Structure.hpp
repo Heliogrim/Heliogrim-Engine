@@ -11,6 +11,6 @@ namespace hg::engine::serialization::access {
     public:
         static void serialize(const Type_* const self_, mref<RecordScopedSlot> slot_);
 
-        static void deserialize(Type_* const self_, cref<RecordScopedSlot> slot_);
+        static void deserialize(Type_* const self_, mref<RecordScopedSlot> slot_);
     };
 }

@@ -18,35 +18,37 @@ namespace hg::engine::serialization {
         ~RecordScopedSlot() override;
 
     public:
-        [[nodiscard]] StructScopedSlot intoStruct() const;
+        [[nodiscard]] StructScopedSlot intoStruct();
 
-        [[nodiscard]] SeqScopedSlot intoSeq() const;
+        [[nodiscard]] StructScopedSlot asStruct() const;
+
+        [[nodiscard]] SeqScopedSlot intoSeq();
 
     public:
-        [[nodiscard]] StringScopedSlot intoString() const;
+        [[nodiscard]] StringScopedSlot intoString();
 
         template <typename IntegralType_>
-        [[nodiscard]] IntegralScopedSlot<IntegralType_> intoIntegral() const {
+        [[nodiscard]] IntegralScopedSlot<IntegralType_> intoIntegral() {
             return IntegralScopedSlot<IntegralType_>(_STD move(_state), _STD move(_slot->getState()));
         }
 
         template <typename FloatType_>
-        [[nodiscard]] FloatScopedSlot<FloatType_> intoFloat() const {
+        [[nodiscard]] FloatScopedSlot<FloatType_> intoFloat() {
             return FloatScopedSlot<FloatType_>(_STD move(_state), _STD move(_slot->getState()));
         }
 
         template <typename ValueType_, template <typename...> typename SliceType_>
-        [[nodiscard]] SliceScopedSlot<ValueType_, SliceType_> intoSlice() const {
+        [[nodiscard]] SliceScopedSlot<ValueType_, SliceType_> intoSlice() {
             return SliceScopedSlot<ValueType_, SliceType_> { _STD move(_state), _STD move(_slot->getState()) };
         }
 
         template <typename Key_, typename Value_, template <typename, typename...> typename MapType_>
-        [[nodiscard]] MapScopedSlot<Key_, Value_, MapType_> intoMap() const {
+        [[nodiscard]] MapScopedSlot<Key_, Value_, MapType_> intoMap() {
             return MapScopedSlot<Key_, Value_, MapType_> { _STD move(_state), _STD move(_slot->getState()) };
         }
 
         template <typename Key_, typename Value_, template <typename, typename...> typename PackType_ = _STD pair>
-        [[nodiscard]] MapEntryScopedSlot<Key_, Value_, PackType_> intoMapEntry() const {
+        [[nodiscard]] MapEntryScopedSlot<Key_, Value_, PackType_> intoMapEntry() {
             return MapEntryScopedSlot<Key_, Value_, PackType_> { _STD move(_state), _STD move(_slot->getState()) };
         }
     };

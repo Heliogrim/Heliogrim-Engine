@@ -144,10 +144,12 @@
 #include "Engine.Assets/Types/Image.hpp"
 #include "Engine.Assets/Types/Font.hpp"
 #include "Engine.Assets/Types/Geometry/StaticGeometry.hpp"
+#include "Engine.Assets/Types/Texture/Texture.hpp"
 #include "Engine.Resource.Package/PackageManager.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Resource/Source/FileSource.hpp"
 #include "Engine.Resource.Package/PackageFactory.hpp"
+#include "Engine.Resource.Package/Linker/PackageLinker.hpp"
 #include "Engine.Serialization/Layout/DataLayoutBase.hpp"
 #include "Engine.Serialization.Layouts/LayoutManager.hpp"
 #include "Game.Main/Assets/Images/DefaultAlpha.hpp"
@@ -166,6 +168,19 @@ using namespace hg::engine;
 using namespace hg;
 
 using path = _STD filesystem::path;
+
+namespace hg::engine::serialization {
+    class RecordScopedSlot;
+}
+
+/**/
+void packageDiscoverAssets();
+
+bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_);
+
+bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_);
+
+/**/
 
 #pragma region File System Loading
 
@@ -897,4 +912,199 @@ void editor::boot::initAssets() {
         indexLoadable(cur, backlog);
     }
 
+    /**/
+
+    packageDiscoverAssets();
+
+}
+
+/**/
+
+#include <Engine.Resource.Package/Linker/LinkedArchive.hpp>
+#include <Engine.Resource.Package/Linker/PackageLinker.hpp>
+#include <Engine.Resource.Package/Linker/LinkedArchiveIterator.hpp>
+#include <Engine.Serialization/Archive/SourceReadonlyArchive.hpp>
+#include <Engine.Serialization/Archive/StructuredArchive.hpp>
+#include <Engine.Serialization/Structure/StructScopedSlot.hpp>
+#include <Engine.Serialization/Structure/RootScopedSlot.hpp>
+#include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
+#include <Engine.Serialization/Structure/SeqScopedSlot.hpp>
+#include <Engine.Serialization/Access/Structure.hpp>
+#include <Engine.Reflect/Reflect.hpp>
+
+void packageDiscoverAssets() {
+
+    const auto* const pm = Engine::getEngine()->getResources()->packages(traits::nothrow);
+    const auto view = pm->packages();
+
+    for (const auto& resource : view) {
+
+        const auto guard = resource->acquire(resource::ResourceUsageFlag::eRead);
+        const auto* const package = guard.imm();
+        const auto* const linker = package->getLinker();
+
+        /* Check for stored archives */
+
+        if (linker->getArchiveCount() <= 0) {
+            continue;
+        }
+
+        /* Index / Load data from archives */
+
+        const auto end = linker->cend();
+        for (auto iter = linker->cbegin(); iter != end; ++iter) {
+
+            if (iter.header().type != resource::ArchiveHeaderType::eSerializedStructure) {
+                continue;
+            }
+
+            const auto linkedArchive = iter.archive();
+            const serialization::StructuredArchive archive { linkedArchive.get() };
+
+            /* Check for root stored assets */
+
+            if (isArchivedAsset(archive.getRootSlot())) {
+
+                linkedArchive->seek(0);
+                tryLoadArchivedAsset(archive.getRootSlot());
+
+                continue;
+            }
+
+            /* Check for a sequence of stored assets */
+
+            {
+                linkedArchive->seek(0);
+                auto root = archive.getRootSlot();
+
+                root.slot()->readHeader();
+                if (root.slot()->getSlotHeader().type != serialization::StructureSlotType::eSeq) {
+                    continue;
+                }
+
+                /* Check whether first element is asset, otherwise treat as unknown sequence */
+
+                const auto seq = root.intoSeq();
+                const auto count = seq.getRecordCount();
+
+                if (count <= 0) {
+                    continue;
+                }
+
+                if (not isArchivedAsset(seq.getRecordSlot(0))) {
+                    continue;
+                }
+
+                /* Iterate over archives and try to load */
+
+                for (s64 idx = 0; idx < count; ++idx) {
+                    tryLoadArchivedAsset(seq.getRecordSlot(idx));
+                }
+            }
+        }
+    }
+}
+
+bool isArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
+
+    const auto record = record_.intoStruct();
+    if (not record.slot()->validateType()) {
+        return false;
+    }
+
+    /**/
+
+    if (not record.hasRecordSlot("__type__")) {
+        return false;
+    }
+
+    if (not record.hasRecordSlot("__guid__")) {
+        return false;
+    }
+
+    /**/
+
+    asset_type_id typeId {};
+    asset_guid guid = invalid_asset_guid;
+
+    serialization::access::Structure<Guid>::deserialize(&guid, record.getRecordSlot("__guid__"));
+    record.getSlot<u64>("__type__") >> typeId.data;
+
+    /**/
+
+    if (guid == invalid_asset_guid || typeId.data == 0) {
+        return false;
+    }
+
+    // TODO: Lookup type id
+
+    return true;
+}
+
+bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
+
+    const auto record = record_.asStruct();
+
+    /**/
+
+    asset_type_id typeId {};
+    asset_guid guid = invalid_asset_guid;
+
+    serialization::access::Structure<Guid>::deserialize(&guid, record.getRecordSlot("__guid__"));
+    record.getSlot<u64>("__type__") >> typeId.data;
+
+    /**/
+
+    switch (typeId.data) {
+        case assets::Image::typeId.data: {
+
+            const auto* const db = Engine::getEngine()->getAssets()->getDatabase();
+            auto query = db->query(guid);
+
+            if (query.exists()) {
+                return false;
+            }
+
+            /**/
+
+            auto* image = HeliogrimObject::create<assets::Image>();
+            serialization::access::Structure<assets::Image>::deserialize(image, _STD move(record_));
+
+            const auto succeeded = query.insert<assets::Image>(image);
+
+            if (not succeeded) {
+                __debugbreak();
+                HeliogrimObject::destroy(_STD move(image));
+            }
+
+            /**/
+
+            break;
+        }
+        case assets::Texture::typeId.data: {
+
+            const auto* const db = Engine::getEngine()->getAssets()->getDatabase();
+            auto query = db->query(guid);
+
+            if (query.exists()) {
+                return false;
+            }
+
+            /**/
+
+            auto* texture = HeliogrimObject::create<assets::Texture>();
+            serialization::access::Structure<assets::Texture>::deserialize(texture, _STD move(record_));
+
+            const auto succeeded = query.insert<assets::Texture>(texture);
+
+            if (not succeeded) {
+                __debugbreak();
+                HeliogrimObject::destroy(_STD move(texture));
+            }
+
+            /**/
+
+            break;
+        }
+    }
 }

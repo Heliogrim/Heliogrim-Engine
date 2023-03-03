@@ -21,7 +21,7 @@ void access::Structure<Guid>::serialize(const Guid* const self_, mref<RecordScop
 }
 
 template <>
-void access::Structure<Guid>::deserialize(Guid* const self_, cref<RecordScopedSlot> slot_) {
+void access::Structure<Guid>::deserialize(Guid* const self_, mref<RecordScopedSlot> slot_) {
 
     const auto slot = slot_.intoStruct();
 

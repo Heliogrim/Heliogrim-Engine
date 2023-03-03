@@ -750,7 +750,7 @@ namespace SerializationModule {
         /**/
 
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
 
             u64 dst { 0 };
             read.intoIntegral<u64>() >> dst;
@@ -770,7 +770,7 @@ namespace SerializationModule {
         /**/
 
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
 
             u32 dst { 0 };
             read.intoIntegral<u32>() >> dst;
@@ -790,7 +790,7 @@ namespace SerializationModule {
         /**/
 
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
 
             u16 dst { 0 };
             read.intoIntegral<u16>() >> dst;
@@ -819,7 +819,7 @@ namespace SerializationModule {
         /**/
 
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
 
             string dst {};
             read.intoString() >> dst;
@@ -849,7 +849,7 @@ namespace SerializationModule {
         /**/
 
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
 
             string dst {};
             read.intoString() >> dst;
@@ -892,7 +892,7 @@ namespace SerializationModule {
         archive.seek(0);
 
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
             read.intoStruct().getSlot<void>("test");
         }
     }
@@ -916,7 +916,7 @@ namespace SerializationModule {
 
         u64 dst = 0ui64;
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
             read.intoStruct().getSlot<u64>("test") >> dst;
         }
 
@@ -944,7 +944,7 @@ namespace SerializationModule {
 
         string dst {};
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
             read.intoStruct().getSlot<string>("test") >> dst;
         }
 
@@ -976,7 +976,7 @@ namespace SerializationModule {
         u64 dst0 = 0ui64;
         string dst1 {};
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
             auto slot = read.intoStruct();
             slot.getSlot<u64>("test0") >> dst0;
             slot.getSlot<string>("test1") >> dst1;
@@ -1042,7 +1042,7 @@ namespace SerializationModule {
 
         u64 dst = 0ui64;
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
             read.intoStruct().getSlot<void>("test0").intoStruct().getSlot<u64>("test1") >> dst;
         }
 
@@ -1080,7 +1080,7 @@ namespace SerializationModule {
         u64 dst1 = 0ui64;
         u64 dst2 = 0ui64;
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
             auto struct0 = read.intoStruct();
 
             auto struct1 = struct0.getSlot<void>("obj1").intoStruct();
@@ -1115,7 +1115,7 @@ namespace SerializationModule {
         /**/
 
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
 
             Vector<u64> dst {};
             read.intoSlice<u64, Vector>() >> dst;
@@ -1149,7 +1149,7 @@ namespace SerializationModule {
         /**/
 
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
 
             Vector<string> dst {};
             read.intoSlice<string, Vector>() >> dst;
@@ -1187,7 +1187,7 @@ namespace SerializationModule {
         /**/
 
         {
-            const auto read = arch.getRootSlot();
+            auto read = arch.getRootSlot();
 
             _STD map<string, u64> dst {};
             read.intoMap<string, u64, _STD map>() >> dst;
