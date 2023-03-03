@@ -55,13 +55,13 @@ namespace hg::engine::serialization {
     public:
         [[nodiscard]] bool hasRecordSlot(cref<record_key_type> key_) const;
 
-        [[nodiscard]] const RecordScopedSlot getRecordSlot(cref<record_key_type> key_) const;
+        [[nodiscard]] RecordScopedSlot getRecordSlot(cref<record_key_type> key_) const;
 
-        [[nodiscard]] const RecordScopedSlot getRecordSlot(const size_t index_) const;
+        [[nodiscard]] RecordScopedSlot getRecordSlot(const size_t index_) const;
 
     public:
         template <typename VoidType_> requires _STD is_void_v<VoidType_>
-        [[nodiscard]] const RecordScopedSlot getSlot(cref<record_key_type> key_) const {
+        [[nodiscard]] RecordScopedSlot getSlot(cref<record_key_type> key_) const {
             return getRecordSlot(key_);
         }
 

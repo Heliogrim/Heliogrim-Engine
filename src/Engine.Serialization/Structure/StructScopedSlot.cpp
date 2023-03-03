@@ -53,7 +53,7 @@ bool StructScopedSlot::hasRecordSlot(cref<record_key_type> key_) const {
     return static_cast<ptr<StructSlot>>(slot())->hasRecord(key_);
 }
 
-const RecordScopedSlot StructScopedSlot::getRecordSlot(cref<record_key_type> key_) const {
+RecordScopedSlot StructScopedSlot::getRecordSlot(cref<record_key_type> key_) const {
 
     auto record = static_cast<ptr<StructSlot>>(slot())->getRecord(key_);
     ScopedSlotState scopedState { ScopedSlotStateFlag::eClean };
@@ -61,6 +61,6 @@ const RecordScopedSlot StructScopedSlot::getRecordSlot(cref<record_key_type> key
     return RecordScopedSlot { _STD move(scopedState), _STD move(record) };
 }
 
-const RecordScopedSlot StructScopedSlot::getRecordSlot(const size_t index_) const {
+RecordScopedSlot StructScopedSlot::getRecordSlot(const size_t index_) const {
     throw NotImplementedException();
 }

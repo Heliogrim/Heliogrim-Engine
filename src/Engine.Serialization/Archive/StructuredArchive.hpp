@@ -25,7 +25,7 @@ namespace hg::engine::serialization {
         [[nodiscard]] const ptr<Archive> getArchive() const noexcept;
 
     public:
-        [[nodiscard]] const RootScopedSlot getRootSlot() const;
+        [[nodiscard]] RootScopedSlot getRootSlot() const;
 
         [[nodiscard]] RootScopedSlot insertRootSlot();
     };

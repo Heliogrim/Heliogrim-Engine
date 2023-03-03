@@ -12,7 +12,7 @@ const ptr<Archive> StructuredArchive::getArchive() const noexcept {
     return _archive;
 }
 
-const RootScopedSlot StructuredArchive::getRootSlot() const {
+RootScopedSlot StructuredArchive::getRootSlot() const {
     return RootScopedSlot { _archive, ScopedSlotStateFlag::eClean };
 }
 

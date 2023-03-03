@@ -657,9 +657,10 @@ void transformer::convertKtx20(
     /**/
 
     Vector<char> tmp {};
-    gli::texture glitex {};
+    Vector<InternalKtxLevel> ktxLevels {};
 
     /**/
+
     math::ivec3 extent {};
 
     vk::Format format;
@@ -667,89 +668,39 @@ void transformer::convertKtx20(
 
     u32 effectedMipLevels { 0ui32 };
     const u32 layerCount { dst->type() == TextureType::eCube ? 6ui32 : 1ui32 };
+
     /**/
 
-    if (options_.dataFlag == TextureLoadDataFlagBits::eLazyDataLoading) {
-        /**
-         * Just load header and meta data
-         *
-         * @see gli::load(...) load.inl#L9
-         */
-        constexpr auto header_min_size { sizeof(InternalKtxHeader) };
+    /**
+     * Just load header and meta data
+     *
+     * @see gli::load(...) load.inl#L9
+     */
+    constexpr auto header_min_size { sizeof(InternalKtxHeader) };
 
-        constexpr auto chunkSize { sizeof(ktx20Identifier) + header_min_size };
-        _STD vector<char> raw(static_cast<size_t>(chunkSize));
+    constexpr auto chunkSize { sizeof(ktx20Identifier) + header_min_size };
+    _STD vector<char> raw(static_cast<size_t>(chunkSize));
 
-        streamsize bytes {};
-        src_->get(0, chunkSize, raw.data(), bytes);
+    streamsize bytes {};
+    src_->get(0, chunkSize, raw.data(), bytes);
 
-        assert(bytes >= chunkSize);
+    assert(bytes >= chunkSize);
 
-        auto* cursor { raw.data() + sizeof(ktx20Identifier) };
-        cref<InternalKtxHeader> header { *reinterpret_cast<ptr<const InternalKtxHeader>>(cursor) };
+    auto* cursor { raw.data() + sizeof(ktx20Identifier) };
+    cref<InternalKtxHeader> header { *reinterpret_cast<ptr<const InternalKtxHeader>>(cursor) };
 
-        // Extent
-        extent = {
-            static_cast<s32>(header.pixelWidth),
-            _STD max(static_cast<s32>(header.pixelHeight), 1i32),
-            _STD max(static_cast<s32>(header.pixelDepth), 1i32)
-        };
+    // Extent
+    extent = {
+        static_cast<s32>(header.pixelWidth),
+        _STD max(static_cast<s32>(header.pixelHeight), 1i32),
+        _STD max(static_cast<s32>(header.pixelDepth), 1i32)
+    };
 
-        // Format
-        deduceFromFormat(*reinterpret_cast<const vk::Format*>(&header.vkFormat), format, aspect);
+    // Format
+    deduceFromFormat(*reinterpret_cast<const vk::Format*>(&header.vkFormat), format, aspect);
 
-        // Mip Levels
-        effectedMipLevels = _STD min(header.levelCount, dst->mipLevels());
-
-    } else {
-
-        /**
-         * Fully load source file
-         */
-        constexpr auto header_min_size { sizeof(gli::detail::ktx_header10) };
-
-        const auto chunkSize { sizeof(gli::detail::FOURCC_KTX10) + header_min_size };
-        _STD vector<char> raw(static_cast<size_t>(chunkSize));
-
-        streamsize bytes {};
-        src_->get(0, chunkSize, raw.data(), bytes);
-
-        assert(bytes >= chunkSize);
-
-        auto* cursor { raw.data() + sizeof(gli::detail::FOURCC_KTX10) };
-        cref<gli::detail::ktx_header10> header {
-            *reinterpret_cast<ptr<const gli::detail::ktx_header10>>(cursor)
-        };
-
-        /**/
-
-        const auto srcSize = src_->size();
-        assert(srcSize > 0);
-
-        tmp.resize(srcSize);
-
-        src_->get(0, srcSize, tmp.data(), bytes);
-
-        /**/
-
-        assert(bytes >= srcSize);
-        glitex = gli::load_ktx(tmp.data(), bytes);
-
-        // Extent
-        const auto lvlZeroExt = glitex.extent(0);
-        extent = {
-            lvlZeroExt.x,
-            lvlZeroExt.y,
-            lvlZeroExt.z
-        };
-
-        // Format
-        const auto lvlZeroForm = glitex.format();
-        deduceFromFormat(lvlZeroForm, format, aspect);
-
-        // Mip Levels
-        const_cast<ref<u32>>(effectedMipLevels) = _STD min(static_cast<u32>(glitex.levels()), dst->mipLevels());
-    }
+    // Mip Levels
+    effectedMipLevels = _STD min(header.levelCount, dst->mipLevels());
 
     /**/
     assert(dst->width() == extent.x);
@@ -770,12 +721,22 @@ void transformer::convertKtx20(
 
     if (options_.dataFlag != TextureLoadDataFlagBits::eLazyDataLoading) {
 
+        u64 totalSize = 0;
+        ktxLevels.resize(MAX(header.levelCount, 1));
+
+        streamsize readBytes {};
+        src_->get(chunkSize, ktxLevels.size() * sizeof(InternalKtxLevel), ktxLevels.data(), readBytes);
+
+        for (const auto& level : ktxLevels) {
+            totalSize += MAX(level.byteSize, level.ucByteSize);
+        }
+
         /**
          * Setup vulkan stage buffer to eager load texture
          */
         vk::BufferCreateInfo bci {
             vk::BufferCreateFlags(),
-            MAX(glitex.size(), 128ui64),
+            MAX(totalSize, 128ui64),
             vk::BufferUsageFlagBits::eTransferSrc,
             vk::SharingMode::eExclusive,
             0,
@@ -810,8 +771,11 @@ void transformer::convertKtx20(
         /**
          * Copy Data
          */
-        stage.write(glitex.data(), glitex.size());
-        stage.flushAligned(glitex.size());
+        readBytes = 0;
+        src_->get(ktxLevels.front().byteOff, totalSize, stage.memory->mapping, readBytes);
+
+        //stage.write(glitex.data(), glitex.size());
+        stage.flushAligned(totalSize);
 
         /**
          *
@@ -821,16 +785,23 @@ void transformer::convertKtx20(
         /**
          * Fetch Region per Layer
          */
-        uint32_t offset = 0;
-
         if (dst->type() == TextureType::eCube) {
 
-            const gli::texture_cube ct { glitex };
-
-            for (uint32_t face = 0; face < glitex.faces(); face++) {
+            u64 offset = 0;
+            for (uint32_t face = 0; face < header.faceCount; face++) {
                 for (uint32_t level = 0; level < dst->mipLevels(); ++level) {
 
-                    const auto se = ct[face][level].extent();
+                    math::uivec3 mipExtent { header.pixelWidth, header.pixelHeight, header.pixelDepth };
+                    mipExtent = mipExtent >> level;
+                    mipExtent.z = MAX(mipExtent.z, 1);
+
+                    //const auto layerOffset { /*layer*/1 * header.faceCount * mipExtent.z * mipExtent.y * mipExtent.x };
+                    const auto faceOffset = face * mipExtent.z * mipExtent.y * mipExtent.x;
+                    //const auto levelOffset = ktxLevels[level].byteOff;
+
+                    if (ktxLevels[level].byteSize <= 0) {
+                        continue;
+                    }
 
                     vk::BufferImageCopy copy {
                         offset,
@@ -844,21 +815,24 @@ void transformer::convertKtx20(
                         },
                         vk::Offset3D(),
                         vk::Extent3D {
-                            static_cast<uint32_t>(se.x),
-                            static_cast<uint32_t>(se.y),
+                            mipExtent.x,
+                            mipExtent.y,
                             1ui32
                         }
                     };
 
                     regions.push_back(copy);
-                    offset += static_cast<uint32_t>(ct[face][level].size());
+                    offset += faceOffset;
                 }
             }
 
         } else {
+
             /**
              * Copy Buffer Image (2D / 2D Array)
              */
+
+            u64 offset = 0;
             for (uint32_t level = 0; level < dst->mipLevels(); ++level) {
                 vk::BufferImageCopy copy {
                     offset,
@@ -879,7 +853,7 @@ void transformer::convertKtx20(
                 };
 
                 regions.push_back(copy);
-                offset += static_cast<uint32_t>(glitex.size(level));
+                offset += ktxLevels[level].ucByteSize;
             }
         }
 
@@ -1006,7 +980,6 @@ void transformer::convertKtx20(
     */
     if (options_.dataFlag != TextureLoadDataFlagBits::eLazyDataLoading) {
         stage.destroy();
-        glitex.clear();
     }
 }
 
@@ -1104,6 +1077,7 @@ void transformer::convertKtx20Partial(
         const auto out { (off.x + ext.x) + (off.y + ext.y) * acc.x };
 
         while (oi < out) {
+
             for (u32 ix { 0ui32 }; ix < ext.x; ++ix) {
 
                 u32 idx { mipOff + oi + ix };
@@ -1130,7 +1104,6 @@ void transformer::convertKtx20Partial(
                 if (effected && page->memory()->state() != VirtualMemoryPageState::eLoaded) {
                     dst_->owner()->load(page);
                     changedMemory = true;
-
                 }
 
             }

@@ -20,7 +20,7 @@ void access::Structure<math::uivec3>::serialize(const math::uivec3* const self_,
 }
 
 template <>
-void access::Structure<math::uivec3>::deserialize(math::uivec3* const self_, cref<RecordScopedSlot> slot_) {
+void access::Structure<math::uivec3>::deserialize(math::uivec3* const self_, mref<RecordScopedSlot> slot_) {
     const auto slot = slot_.intoStruct();
     slot.getSlot<u32>("x") >> self_->x;
     slot.getSlot<u32>("y") >> self_->y;
@@ -53,7 +53,7 @@ void access::Structure<Texture>::serialize(const Texture* const self_, mref<Reco
 }
 
 template <>
-void access::Structure<Texture>::deserialize(Texture* const self_, cref<RecordScopedSlot> slot_) {
+void access::Structure<Texture>::deserialize(Texture* const self_, mref<RecordScopedSlot> slot_) {
 
     const auto slot = slot_.intoStruct();
 

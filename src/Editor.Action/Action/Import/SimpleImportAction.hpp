@@ -32,7 +32,7 @@ namespace hg::editor {
         [[nodiscard]] Url getTargetUrl() const noexcept;
 
     private:
-        CompactSet<ptr<::hg::engine::assets::Asset>> _assets;
+        CompactSet<non_owning_rptr<::hg::engine::assets::Asset>> _assets;
 
     public:
         [[nodiscard]] cref<decltype(_assets)> importedAssets() const noexcept;

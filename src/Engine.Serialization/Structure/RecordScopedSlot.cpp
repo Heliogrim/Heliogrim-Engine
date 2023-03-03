@@ -17,14 +17,22 @@ RecordScopedSlot::RecordScopedSlot(mref<ScopedSlotState> scopedState_, mref<Stru
 
 RecordScopedSlot::~RecordScopedSlot() = default;
 
-StructScopedSlot RecordScopedSlot::intoStruct() const {
+StructScopedSlot RecordScopedSlot::intoStruct() {
     return StructScopedSlot { _STD move(_state), _STD move(_slot->getState()) };
 }
 
-SeqScopedSlot RecordScopedSlot::intoSeq() const {
+StructScopedSlot RecordScopedSlot::asStruct() const {
+
+    StructureSlotState aliasState { _slot->getState() };
+    aliasState.flags = StructureSlotStateFlag::eImmutable;
+
+    return StructScopedSlot(ScopedSlotState { _state }, _STD move(aliasState));
+}
+
+SeqScopedSlot RecordScopedSlot::intoSeq() {
     return SeqScopedSlot { _STD move(_state), _STD move(_slot->getState()) };
 }
 
-StringScopedSlot RecordScopedSlot::intoString() const {
+StringScopedSlot RecordScopedSlot::intoString() {
     return StringScopedSlot { _STD move(_state), _STD move(_slot->getState()) };
 }

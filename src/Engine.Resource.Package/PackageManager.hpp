@@ -2,6 +2,8 @@
 #include <Engine.Common/Collection/RobinMap.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
+#include <ranges>
+
 #include "PackageResource.hpp"
 #include "Package/PackageGuid.hpp"
 
@@ -29,6 +31,14 @@ namespace hg::engine::resource {
 
     private:
         RobinMap<PackageGuid, smr<PackageResource>> _packages;
+
+        /* Temporary Solution */
+    public:
+        [[nodiscard]] inline auto packages() const noexcept {
+            return _STD ranges::views::values(_packages);
+        }
+
+        /* Temporary Solution */
 
     public:
         /**

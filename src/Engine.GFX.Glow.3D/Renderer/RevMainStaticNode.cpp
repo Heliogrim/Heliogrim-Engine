@@ -560,8 +560,10 @@ void RevMainStaticNode::invoke(
 
         const auto& first = model->overrideMaterials().front();
         auto material = first->acquire(resource::ResourceUsageFlag::eRead);
+        const auto loaded = material->diffuse()->loaded();
+        material.release();
 
-        if (material->diffuse()->loaded() &&
+        if (loaded &&
             _STD ranges::find(__test_flag, static_cast<void*>(first.get())) == _STD ranges::end(__test_flag)
         ) {
 
@@ -664,18 +666,23 @@ void RevMainStaticNode::invoke(
 
                         auto diff = material->diffuse()->acquire(resource::ResourceUsageFlag::eRead);
                         auto& diffView = *diff->as<VirtualTextureView>();
+                        diff.release();
 
                         auto norm = material->normal()->acquire(resource::ResourceUsageFlag::eRead);
                         auto& normView = *norm->as<VirtualTextureView>();
+                        norm.release();
 
                         auto rough = material->roughness()->acquire(resource::ResourceUsageFlag::eRead);
                         auto& roughView = *rough->as<VirtualTextureView>();
+                        rough.release();
 
                         auto metal = material->metalness()->acquire(resource::ResourceUsageFlag::eRead);
                         auto& metalView = *metal->as<VirtualTextureView>();
+                        metal.release();
 
                         auto ao = material->ao()->acquire(resource::ResourceUsageFlag::eRead);
                         auto& aoView = *ao->as<VirtualTextureView>();
+                        ao.release();
 
                         for (auto&& sfi : indices) {
 

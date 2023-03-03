@@ -247,7 +247,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
     using derived_type = ::hg::engine::resource::UniqueResource<StaticGeometryResource::value_type>;
     auto dst = make_smr<StaticGeometryResource, derived_type>(
-        new derived_type(_STD move(indexBuffer), _STD move(vertexBuffer))
+        new derived_type(_STD move(vertexBuffer), _STD move(indexBuffer))
     );
     dst->setAssociation(request_);
 
