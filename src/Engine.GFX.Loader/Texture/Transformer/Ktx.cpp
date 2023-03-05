@@ -21,6 +21,9 @@ using namespace hg;
 /**/
 #pragma region KTX Format Specification
 struct InternalKtxHeader {
+    // Identifier
+    u8 identifier[12];
+
     // Meta
     u32 vkFormat;
     u32 typeSize;
@@ -37,8 +40,8 @@ struct InternalKtxHeader {
     u32 dfdSize;
     u32 kvdOff;
     u32 kvdSize;
-    u32 sgdOff;
-    u32 sgdSize;
+    u64 sgdOff;
+    u64 sgdSize;
 };
 
 struct InternalKtxLevel {
@@ -64,6 +67,93 @@ static constexpr unsigned char ktx20Identifier[] = {
 #pragma endregion
 /**/
 
+namespace hg::external::ktx {
+    using extent_type = ::hg::math::uivec3;
+    using offset_type = ::hg::math::ivec3;
+
+    using layer_type = ::hg::u32;
+    using level_type = ::hg::u32;
+
+    using header_type = InternalKtxHeader;
+    using level_header_type = InternalKtxLevel;
+
+    using format_type = vk::Format;
+
+    /**/
+
+    enum class SuperCompressionScheme : u32 {
+        eNone = 0,
+        eBasisLZ = 1,
+        eZStd = 2,
+        eZLib = 3
+    };
+
+    struct InternalKtxKvPair {
+        u32 size;
+    };
+
+    struct InternalContext {
+        smr<::hg::engine::resource::Source> source;
+
+        /**/
+
+        header_type header;
+        Vector<level_header_type> levels;
+    };
+
+    /**/
+
+    [[nodiscard]] extent_type::value_type getWidth(cref<header_type> header_);
+
+    [[nodiscard]] extent_type::value_type getHeight(cref<header_type> header_);
+
+    [[nodiscard]] extent_type::value_type getDepth(cref<header_type> header_);
+
+    [[nodiscard]] layer_type getLayerCount(cref<header_type> header_);
+
+    [[nodiscard]] layer_type getFaceCount(cref<header_type> header_);
+
+    [[nodiscard]] level_type getLevelCount(cref<header_type> header_);
+
+    /**/
+
+    [[nodiscard]] format_type getFormat(cref<header_type> header_);
+
+    [[nodiscard]] bool is1d(cref<header_type> header_);
+
+    [[nodiscard]] bool is2d(cref<header_type> header_);
+
+    [[nodisacrd]] bool is3d(cref<header_type> header_);
+
+    [[nodiscard]] bool isCube(cref<header_type> header_);
+
+    [[nodiscard]] bool isArray(cref<header_type> header_);
+
+    /**/
+
+    [[nodiscard]] u64 getDataSize(cref<InternalContext> ctx_, level_type level_);
+
+    [[nodiscard]] extent_type calcLevelExtent(
+        extent_type extent_,
+        level_type levels_,
+        extent_type effected_ = extent_type { 1 }
+    );
+
+    [[nodiscard]] extent_type calcLevelExtent(
+        extent_type extent_,
+        level_type levels_,
+        TextureType textureType_
+    );
+
+    /**/
+
+    [[nodiscard]] bool readHeader(_Inout_ ref<InternalContext> ctx_);
+
+    [[nodiscard]] bool readData(cref<InternalContext> ctx_, level_type level_, _Inout_ _STD span<_::byte> dst_);
+}
+
+/**/
+
 void transformer::convertKtx(
     const non_owning_rptr<const assets::Texture> asset_,
     cref<smr<resource::Source>> src_,
@@ -83,13 +173,7 @@ void transformer::convertKtx(
 
     /**/
 
-    bool isKtx20 = true;
-    for (size_t idx = 0; idx < sizeof(ktx20Identifier); ++idx) {
-        if (raw[idx] != ktx20Identifier[idx]) {
-            isKtx20 = false;
-            break;
-        }
-    }
+    bool isKtx20 = memcmp(raw.data(), ktx20Identifier, sizeof(ktx20Identifier)) == 0;
 
     if (isKtx20) {
         convertKtx20(asset_, src_, dst_, device_, options_);
@@ -313,6 +397,77 @@ void deduceFromFormat(cref<vk::Format> format_, ref<vk::Format> vkFormat_, ref<v
     }
 
     vkFormat_ = format_;
+}
+
+static Buffer createStageBuffer(cref<hg::external::ktx::InternalContext> ctx_, cref<sptr<Device>> device_) {
+
+    using namespace ::hg::external;
+
+    Buffer stage {};
+
+    u64 totalSize = 0;
+    for (u32 level = 0; level < ktx::getLevelCount(ctx_.header); ++level) {
+        totalSize += ktx::getDataSize(ctx_, level);
+    }
+
+    /**
+     * Setup vulkan stage buffer to eager load texture
+     */
+    vk::BufferCreateInfo bci {
+        vk::BufferCreateFlags(),
+        MAX(totalSize, 128ui64),
+        vk::BufferUsageFlagBits::eTransferSrc,
+        vk::SharingMode::eExclusive,
+        0,
+        nullptr
+    };
+
+    stage.buffer = device_->vkDevice().createBuffer(bci);
+    stage.device = device_->vkDevice();
+
+    const auto allocResult {
+        memory::allocate(
+            device_->allocator(),
+            device_,
+            stage.buffer,
+            MemoryProperties { MemoryProperty::eHostVisible },
+            stage.memory
+        )
+    };
+    assert(stage.buffer);
+    assert(stage.memory);
+
+    stage.size = stage.memory->size;
+    stage.usageFlags = vk::BufferUsageFlagBits::eTransferSrc;
+
+    /**
+     *
+     */
+    stage.bind();
+    stage.mapAligned();
+    assert(stage.memory->mapping);
+
+    /**
+     * Copy Data
+     */
+    ptrdiff_t offset = 0;
+    const ptr<_::byte> cursor = reinterpret_cast<ptr<_::byte>>(stage.memory->mapping);
+
+    for (u32 level = 0; level < ktx::getLevelCount(ctx_.header); ++level) {
+
+        const auto levelSize = ktx::getDataSize(ctx_, level);
+        if (ktx::readData(ctx_, level, _STD span { cursor + offset, levelSize })) {
+            offset += levelSize;
+        }
+    }
+
+    /**
+     *
+     */
+    stage.flushAligned(totalSize);
+    stage.unmap();
+
+    return stage;
 }
 
 void transformer::convertKtx10Gli(
@@ -647,233 +802,105 @@ void transformer::convertKtx20(
     const TextureLoadOptions options_
 ) {
 
-    /**/
-    auto dst { _STD move(dst_) };
-    assert(
-        dst->type() == TextureType::e2d ||
-        dst->type() == TextureType::e2dArray ||
-        (dst->type() == TextureType::eCube && not (options_.dataFlag & TextureLoadDataFlagBits::eLazyDataLoading))
-    );
-    /**/
-
-    Vector<char> tmp {};
-    Vector<InternalKtxLevel> ktxLevels {};
+    if (options_.dataFlag & TextureLoadDataFlagBits::eLazyDataLoading) {
+        return;
+    }
 
     /**/
 
-    math::ivec3 extent {};
+    using namespace ::hg::external;
 
-    vk::Format format;
-    vk::ImageAspectFlags aspect;
-
-    u32 effectedMipLevels { 0ui32 };
-    const u32 layerCount { dst->type() == TextureType::eCube ? 6ui32 : 1ui32 };
-
-    /**/
-
-    /**
-     * Just load header and meta data
-     *
-     * @see gli::load(...) load.inl#L9
-     */
-    constexpr auto header_min_size { sizeof(InternalKtxHeader) };
-
-    constexpr auto chunkSize { sizeof(ktx20Identifier) + header_min_size };
-    _STD vector<char> raw(static_cast<size_t>(chunkSize));
-
-    streamsize bytes {};
-    src_->get(0, chunkSize, raw.data(), bytes);
-
-    assert(bytes >= chunkSize);
-
-    auto* cursor { raw.data() + sizeof(ktx20Identifier) };
-    cref<InternalKtxHeader> header { *reinterpret_cast<ptr<const InternalKtxHeader>>(cursor) };
-
-    // Extent
-    extent = {
-        static_cast<s32>(header.pixelWidth),
-        _STD max(static_cast<s32>(header.pixelHeight), 1i32),
-        _STD max(static_cast<s32>(header.pixelDepth), 1i32)
+    ktx::InternalContext ctx {
+        src_
     };
 
-    // Format
-    deduceFromFormat(*reinterpret_cast<const vk::Format*>(&header.vkFormat), format, aspect);
+    if (not ktx::readHeader(ctx)) {
+        return;
+    }
 
-    // Mip Levels
-    effectedMipLevels = _STD min(header.levelCount, dst->mipLevels());
-
-    /**/
-    assert(dst->width() == extent.x);
-    assert(dst->height() == extent.y);
-    assert(dst->depth() == extent.z);
-    /**/
+    Buffer stage = createStageBuffer(ctx, device_);
 
     /**/
-    assert(dst->format() == api::vkTranslateFormat(format));
+
+    bool validType = false;
+    switch (dst_->type()) {
+        case TextureType::e2d: {
+            validType = ktx::is2d(ctx.header) && not ktx::isArray(ctx.header);
+            break;
+        }
+        case TextureType::e2dArray: {
+            validType = ktx::is2d(ctx.header) && ktx::isArray(ctx.header);
+            break;
+        }
+        case TextureType::e3d: {
+            validType = ktx::is3d(ctx.header) && not ktx::isArray(ctx.header);
+            break;
+        }
+        case TextureType::eCube: {
+            validType = ktx::isCube(ctx.header) && not ktx::isArray(ctx.header);
+            break;
+        }
+    }
+
+    if (not validType) {
+        stage.destroy();
+    }
+
     /**/
 
-    /**
-    * Staging Buffer
-    */
-    Buffer stage {};
+    vk::Format format {};
+    vk::ImageAspectFlags aspect {};
+    deduceFromFormat(ktx::getFormat(ctx.header), format, aspect);
 
+    const auto effectedLayers = MAX(ktx::getLayerCount(ctx.header), ktx::getFaceCount(ctx.header));
+    const auto effectedLevels = MIN(ktx::getLevelCount(ctx.header), dst_->mipLevels());
+
+    /**/
+
+    u64 offset = 0;
     Vector<vk::BufferImageCopy> regions {};
 
-    if (options_.dataFlag != TextureLoadDataFlagBits::eLazyDataLoading) {
+    for (u32 level = 0; level < effectedLevels; ++level) {
 
-        u64 totalSize = 0;
-        ktxLevels.resize(MAX(header.levelCount, 1));
+        const math::uivec3 extent { ktx::getWidth(ctx.header), ktx::getHeight(ctx.header), ktx::getDepth(ctx.header) };
+        const auto levelExtent = ktx::calcLevelExtent(extent, level);
 
-        streamsize readBytes {};
-        src_->get(chunkSize, ktxLevels.size() * sizeof(InternalKtxLevel), ktxLevels.data(), readBytes);
-
-        for (const auto& level : ktxLevels) {
-            totalSize += MAX(level.byteSize, level.ucByteSize);
-        }
-
-        /**
-         * Setup vulkan stage buffer to eager load texture
-         */
-        vk::BufferCreateInfo bci {
-            vk::BufferCreateFlags(),
-            MAX(totalSize, 128ui64),
-            vk::BufferUsageFlagBits::eTransferSrc,
-            vk::SharingMode::eExclusive,
+        vk::BufferImageCopy copy {
+            offset,
             0,
-            nullptr
+            0,
+            {
+                aspect,
+                level,
+                0,
+                effectedLayers
+            },
+            vk::Offset3D(),
+            vk::Extent3D { levelExtent.x, levelExtent.y, levelExtent.z }
         };
 
-        stage.buffer = device_->vkDevice().createBuffer(bci);
-        stage.device = device_->vkDevice();
+        regions.push_back(_STD move(copy));
+        offset += ktx::getDataSize(ctx, level);
+    }
 
-        const auto allocResult {
-            memory::allocate(
-                device_->allocator(),
-                device_,
-                stage.buffer,
-                MemoryProperties { MemoryProperty::eHostVisible },
-                stage.memory
-            )
-        };
-        assert(stage.buffer);
-        assert(stage.memory);
+    /**/
 
-        stage.size = stage.memory->size;
-        stage.usageFlags = vk::BufferUsageFlagBits::eTransferSrc;
+    // Warning: Temporary
+    for (auto* page : dst_->pages()) {
 
-        /**
-         *
-         */
-        stage.bind();
-        stage.mapAligned();
-        assert(stage.memory->mapping);
-
-        /**
-         * Copy Data
-         */
-        readBytes = 0;
-        src_->get(ktxLevels.front().byteOff, totalSize, stage.memory->mapping, readBytes);
-
-        //stage.write(glitex.data(), glitex.size());
-        stage.flushAligned(totalSize);
-
-        /**
-         *
-         */
-        stage.unmap();
-
-        /**
-         * Fetch Region per Layer
-         */
-        if (dst->type() == TextureType::eCube) {
-
-            u64 offset = 0;
-            for (uint32_t face = 0; face < header.faceCount; face++) {
-                for (uint32_t level = 0; level < dst->mipLevels(); ++level) {
-
-                    math::uivec3 mipExtent { header.pixelWidth, header.pixelHeight, header.pixelDepth };
-                    mipExtent = mipExtent >> level;
-                    mipExtent.z = MAX(mipExtent.z, 1);
-
-                    //const auto layerOffset { /*layer*/1 * header.faceCount * mipExtent.z * mipExtent.y * mipExtent.x };
-                    const auto faceOffset = face * mipExtent.z * mipExtent.y * mipExtent.x;
-                    //const auto levelOffset = ktxLevels[level].byteOff;
-
-                    if (ktxLevels[level].byteSize <= 0) {
-                        continue;
-                    }
-
-                    vk::BufferImageCopy copy {
-                        offset,
-                        0,
-                        0,
-                        {
-                            aspect,
-                            level,
-                            face,
-                            1ui32
-                        },
-                        vk::Offset3D(),
-                        vk::Extent3D {
-                            mipExtent.x,
-                            mipExtent.y,
-                            1ui32
-                        }
-                    };
-
-                    regions.push_back(copy);
-                    offset += faceOffset;
-                }
-            }
-
-        } else {
-
-            /**
-             * Copy Buffer Image (2D / 2D Array)
-             */
-
-            u64 offset = 0;
-            for (uint32_t level = 0; level < dst->mipLevels(); ++level) {
-                vk::BufferImageCopy copy {
-                    offset,
-                    0,
-                    0,
-                    {
-                        aspect,
-                        level,
-                        0,
-                        dst->type() == TextureType::e2dArray ? dst->depth() : 1
-                    },
-                    vk::Offset3D(),
-                    vk::Extent3D {
-                        dst->width() / (0x1 << level),
-                        dst->height() / (0x1 << level),
-                        dst->type() == TextureType::e2dArray ? 1 : dst->depth()
-                    }
-                };
-
-                regions.push_back(copy);
-                offset += ktxLevels[level].ucByteSize;
-            }
+        if (IS_LOCKED_SEGMENT) {
+            // TODO: Lock effected memory and texture pages!!!
         }
 
-        // Warning: Temporary
-        for (auto* page : dst->pages()) {
-
-            if (IS_LOCKED_SEGMENT) {
-                // TODO: Lock effected memory and texture pages!!!
-            }
-
-            if (page->memory()->state() != VirtualMemoryPageState::eLoaded) {
-                dst->owner()->load(page);
-            }
+        if (page->memory()->state() != VirtualMemoryPageState::eLoaded) {
+            dst_->owner()->load(page);
         }
     }
 
     /**
     * Update virtual binding data
     */
-    const auto* tex { dst->owner() };
+    const auto* tex { dst_->owner() };
     const_cast<VirtualTexture*>(tex)->updateBindingData();
     #pragma warning(push)
     #pragma warning(disable: 4996)
@@ -893,47 +920,45 @@ void transformer::convertKtx20(
     vk::ImageMemoryBarrier postBarrier {};
     /**/
 
-    if (options_.dataFlag != TextureLoadDataFlagBits::eLazyDataLoading) {
-        /**
-         * Copy Data to Image
-         */
-        preBarrier = {
-            vk::AccessFlags(),
-            vk::AccessFlags(),
-            vk::ImageLayout::eUndefined,
-            vk::ImageLayout::eTransferDstOptimal,
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            dst->owner()->vkImage(),
-            {
-                aspect,
-                0,
-                effectedMipLevels,
-                dst->baseLayer(),
-                layerCount
-            }
-        };
-
-        cmd.vkCommandBuffer().pipelineBarrier(
-            vk::PipelineStageFlagBits::eTransfer,
-            vk::PipelineStageFlagBits::eTransfer,
-            vk::DependencyFlags(),
+    /**
+     * Copy Data to Image
+     */
+    preBarrier = {
+        vk::AccessFlags(),
+        vk::AccessFlags(),
+        vk::ImageLayout::eUndefined,
+        vk::ImageLayout::eTransferDstOptimal,
+        VK_QUEUE_FAMILY_IGNORED,
+        VK_QUEUE_FAMILY_IGNORED,
+        dst_->owner()->vkImage(),
+        {
+            aspect,
             0,
-            nullptr,
-            0,
-            nullptr,
-            1,
-            &preBarrier
-        );
+            effectedLevels,
+            dst_->baseLayer(),
+            effectedLayers
+        }
+    };
 
-        cmd.vkCommandBuffer().copyBufferToImage(
-            stage.buffer,
-            dst->owner()->vkImage(),
-            vk::ImageLayout::eTransferDstOptimal,
-            static_cast<u32>(regions.size()),
-            regions.data()
-        );
-    }
+    cmd.vkCommandBuffer().pipelineBarrier(
+        vk::PipelineStageFlagBits::eTransfer,
+        vk::PipelineStageFlagBits::eTransfer,
+        vk::DependencyFlags(),
+        0,
+        nullptr,
+        0,
+        nullptr,
+        1,
+        &preBarrier
+    );
+
+    cmd.vkCommandBuffer().copyBufferToImage(
+        stage.buffer,
+        dst_->owner()->vkImage(),
+        vk::ImageLayout::eTransferDstOptimal,
+        static_cast<u32>(regions.size()),
+        regions.data()
+    );
 
     /**
     * Restore Layout
@@ -941,19 +966,17 @@ void transformer::convertKtx20(
     postBarrier = {
         vk::AccessFlags(),
         vk::AccessFlags(),
-        (options_.dataFlag & TextureLoadDataFlagBits::eLazyDataLoading) ?
-            vk::ImageLayout::eUndefined :
-            vk::ImageLayout::eTransferDstOptimal,
+        vk::ImageLayout::eTransferDstOptimal,
         vk::ImageLayout::eShaderReadOnlyOptimal,
         VK_QUEUE_FAMILY_IGNORED,
         VK_QUEUE_FAMILY_IGNORED,
-        dst->owner()->vkImage(),
+        dst_->owner()->vkImage(),
         {
             aspect,
             0,
-            effectedMipLevels,
-            dst->baseLayer(),
-            layerCount
+            effectedLevels,
+            dst_->baseLayer(),
+            effectedLayers
         }
     };
 
@@ -978,9 +1001,7 @@ void transformer::convertKtx20(
     /**
     * Cleanup
     */
-    if (options_.dataFlag != TextureLoadDataFlagBits::eLazyDataLoading) {
-        stage.destroy();
-    }
+    stage.destroy();
 }
 
 void transformer::convertKtx20Partial(
@@ -1227,7 +1248,7 @@ void transformer::convertKtx20Partial(
     constexpr auto header_min_size { sizeof(InternalKtxHeader) };
 
     constexpr auto chunkSize {
-        sizeof(ktx20Identifier) + header_min_size + 14 /* 14 Mips ~> 16k x 16k */ * sizeof(InternalKtxLevel)
+        header_min_size + 14 /* 14 Mips ~> 16k x 16k */ * sizeof(InternalKtxLevel)
     };
     _STD vector<char> raw(static_cast<size_t>(chunkSize));
 
@@ -1237,14 +1258,12 @@ void transformer::convertKtx20Partial(
     assert(bytes >= chunkSize);
     assert(memcmp(raw.data(), ktx20Identifier, sizeof(ktx20Identifier)) == 0);
 
-    auto* cursor { raw.data() + sizeof(ktx20Identifier) };
-    cref<InternalKtxHeader> header { *reinterpret_cast<ptr<const InternalKtxHeader>>(cursor) };
+    cref<InternalKtxHeader> header { *reinterpret_cast<ptr<const InternalKtxHeader>>(raw.data()) };
 
     Vector<InternalKtxLevel> indexedLevels {};
     indexedLevels.resize(header.levelCount);
 
-    constexpr u64 offset { 68ui64 };
-    memcpy(indexedLevels.data(), cursor + offset, sizeof(InternalKtxLevel) * header.levelCount);
+    memcpy(indexedLevels.data(), raw.data() + sizeof(InternalKtxHeader), sizeof(InternalKtxLevel) * header.levelCount);
 
     // Extent
     const math::uivec3 srcExtent = {
@@ -1646,4 +1665,238 @@ void transformer::unloadPartialTmp(
         const_cast<VirtualTexture*>(tex)->enqueueBindingSync(device_->transferQueue());
         #pragma warning(pop)
     }
+}
+
+/**/
+math::uivec3::value_type external::ktx::getWidth(cref<header_type> header_) {
+    return header_.pixelWidth;
+}
+
+math::uivec3::value_type external::ktx::getHeight(cref<header_type> header_) {
+    return header_.pixelHeight;
+}
+
+math::uivec3::value_type external::ktx::getDepth(cref<header_type> header_) {
+    return header_.pixelDepth;
+}
+
+external::ktx::layer_type external::ktx::getLayerCount(cref<header_type> header_) {
+    return header_.layerCount;
+}
+
+external::ktx::layer_type external::ktx::getFaceCount(cref<header_type> header_) {
+    return header_.faceCount;
+}
+
+external::ktx::level_type external::ktx::getLevelCount(cref<header_type> header_) {
+    return header_.levelCount ? header_.levelCount : 1;
+}
+
+external::ktx::format_type external::ktx::getFormat(cref<header_type> header_) {
+    return *reinterpret_cast<const vk::Format*>(&header_.vkFormat);
+}
+
+bool external::ktx::is1d(cref<header_type> header_) {
+
+    // Required 
+    if (header_.pixelWidth <= 0 || header_.faceCount != 1) {
+        return false;
+    }
+
+    // Denied
+    if (header_.pixelHeight > 0 || header_.pixelDepth > 0) {
+        return false;
+    }
+
+    return true;
+}
+
+bool external::ktx::is2d(cref<header_type> header_) {
+
+    // Required
+    if (header_.pixelWidth <= 0 || header_.pixelHeight <= 0 || header_.faceCount != 1) {
+        return false;
+    }
+
+    // Denied
+    if (header_.pixelDepth > 0) {
+        return false;
+    }
+
+    return true;
+}
+
+bool external::ktx::is3d(cref<header_type> header_) {
+
+    // Required
+    if (header_.pixelWidth <= 0 || header_.pixelHeight <= 0 || header_.pixelDepth <= 0 || header_.faceCount != 1) {
+        return false;
+    }
+
+    return true;
+}
+
+bool external::ktx::isCube(cref<header_type> header_) {
+
+    // Required
+    if (header_.pixelWidth <= 0 || header_.pixelHeight <= 0 || header_.faceCount != 6) {
+        return false;
+    }
+
+    // Denied
+    if (header_.pixelDepth > 0) {
+        return false;
+    }
+
+    return true;
+}
+
+bool external::ktx::isArray(cref<header_type> header_) {
+    return header_.layerCount > 0;
+}
+
+u64 external::ktx::getDataSize(cref<InternalContext> ctx_, level_type level_) {
+
+    if (level_ >= ctx_.header.levelCount) {
+        return 0;
+    }
+
+    return ctx_.levels[level_].ucByteSize;
+}
+
+external::ktx::extent_type external::ktx::calcLevelExtent(
+    extent_type extent_,
+    level_type levels_,
+    extent_type effected_
+) {
+
+    auto result = extent_;
+    for (; levels_ > 0; --levels_) {
+        result = result >> 1;
+    }
+
+    if (effected_.x <= 0) {
+        result.x = extent_.x;
+    }
+
+    if (effected_.y <= 0) {
+        result.y = extent_.y;
+    }
+
+    if (effected_.z <= 0) {
+        result.z = extent_.z;
+    }
+
+    result = math::compMax<extent_type::value_type>(result, extent_type { 1 });
+    return result;
+}
+
+external::ktx::extent_type external::ktx::calcLevelExtent(
+    extent_type extent_,
+    level_type levels_,
+    TextureType textureType_
+) {
+    return calcLevelExtent(_STD move(extent_), _STD move(levels_));
+}
+
+bool external::ktx::readHeader(ref<InternalContext> ctx_) {
+
+    constexpr auto level_size = sizeof(InternalKtxLevel);
+    constexpr auto header_size = sizeof(InternalKtxHeader);
+
+    /**/
+
+    streamsize bytes = -1;
+    ctx_.source->get(0, header_size, &ctx_.header, bytes);
+
+    if (bytes < header_size) {
+        return false;
+    }
+
+    /**/
+
+    if (memcmp(ctx_.header.identifier, ktx20Identifier, sizeof(ktx20Identifier)) != 0) {
+        return false;
+    }
+
+    if (ctx_.header.faceCount != 1 && ctx_.header.faceCount != 6) {
+        IM_CORE_ERROR("Tried to load ktx file with invalid face count. ( Spec.: 1 or 6 )");
+        return false;
+    }
+
+    /**/
+
+    if (ctx_.header.sgdSize > 0) {
+        IM_CORE_WARN("Tried to load ktx file with supercompression, which is currently not supported.");
+        return false;
+    }
+
+    /**/
+
+    ctx_.levels.resize(getLevelCount(ctx_.header));
+
+    const streamsize levels_size = level_size * getLevelCount(ctx_.header);
+    ctx_.source->get(header_size, levels_size, ctx_.levels.data(), bytes);
+
+    if (bytes < levels_size) {
+        return false;
+    }
+
+    /**/
+
+    return true;
+}
+
+bool external::ktx::readData(cref<InternalContext> ctx_, level_type level_, std::span<_::byte> dst_) {
+
+    if (level_ >= getLevelCount(ctx_.header)) {
+        IM_CORE_WARN("Tried to load data from ktx file while mip level index is out of bound.");
+        return false;
+    }
+
+    const auto& level = ctx_.levels[level_];
+    if (level.byteSize == 0 || level.ucByteSize == 0) {
+        return false;
+    }
+
+    if (*reinterpret_cast<ptr<const SuperCompressionScheme>>(&ctx_.header.ss) != SuperCompressionScheme::eNone) {
+        IM_CORE_WARN("Tried to load data from ktx with supercompression, which is currently not supported.");
+        return false;
+    }
+
+    /**/
+
+    if (level.ucByteSize > dst_.size()) {
+        IM_CORE_ERROR("Failed to load data from ktx, cause destination buffer is too small.");
+        return false;
+    }
+
+    if (level.ucByteSize != level.byteSize) {
+        IM_CORE_ERROR(
+            "Failed to load data from ktx, cause compressed and uncompressed size are different while no super compression was provided."
+        );
+        return false;
+    }
+
+    /**/
+
+    streamsize bytes = -1;
+    streamoff offset = level.byteOff;
+
+    while (
+        (offset - level.byteOff) < level.byteSize &&
+        ctx_.source->get(offset, level.byteSize - (offset - level.byteOff), dst_.data(), bytes)
+    ) {
+        offset += bytes;
+        bytes = -1;
+    }
+
+    /**/
+
+    if (offset != level.byteOff + level.byteSize) {
+        IM_CORE_ERROR("Failed to load data from ktx completely.");
+        return false;
+    }
+
+    return true;
 }
