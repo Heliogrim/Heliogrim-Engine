@@ -39,15 +39,15 @@ namespace hg::math {
     inline constexpr static vec2 vec2_right { 1, 0 };
 
     namespace polar {
-        inline constexpr static vec3 vec3_distance = { 1, 0, 0 };
+        inline constexpr static vec3 vec3_distance = { 1.F, 0.F, 0.F };
 
-        inline constexpr static vec3 vec3_azimuth = { 0, 1, 0 };
+        inline constexpr static vec3 vec3_azimuth = { 0.F, 1.F, 0.F };
 
-        inline constexpr static vec3 vec3_polar = { 0, 0, 1 };
+        inline constexpr static vec3 vec3_polar = { 0.F, 0.F, 1.F };
 
-        inline constexpr static vec2 vec2_distance = { 1, 0 };
+        inline constexpr static vec2 vec2_distance = { 1.F, 0.F };
 
-        inline constexpr static vec2 vec2_polar = { 0, 1 };
+        inline constexpr static vec2 vec2_polar = { 0.F, 1.F };
 
         [[nodiscard]] vec3 from_cartesian(_In_ cref<vec3> cartesian_) noexcept;
 
