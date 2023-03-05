@@ -1,6 +1,7 @@
 #pragma once
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Math/Vector.hpp>
 
 namespace hg::engine::gfx {
     enum class TextureFormat {
@@ -105,4 +106,17 @@ namespace hg::engine::gfx {
      * @returns The amount of bytes used by a data block, otherwise -1
      */
     [[nodiscard]] s64 formatDataSize(const TextureFormat format_) noexcept;
+
+    /**
+     * Query the block dimensions for a certain format
+     *
+     * @details A `block` is a single pixel for uncompressed formats.
+     *  Compressed formats will have a size of `block b :: x(b) * y(b) * z(b)`
+     *
+     * @author Julius
+     * @date 05.03.2023
+     *
+     * @returns A vector representing the size of a block.
+     */
+    [[nodiscard]] math::uivec3 formatBlockSize(const TextureFormat format_) noexcept;
 }
