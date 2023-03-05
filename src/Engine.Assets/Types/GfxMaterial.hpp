@@ -1,5 +1,6 @@
 #pragma once
 #include <Engine.Common/Collection/CompactArray.hpp>
+#include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "Material.hpp"
 
@@ -9,6 +10,9 @@ namespace hg::engine::assets {
     public:
         template <typename>
         friend class serialization::DataLayout;
+
+        ACCESS_LAYOUT
+        ACCESS_STRUCTURE
 
     public:
         inline static constexpr asset_type_id typeId { "GfxMaterial"_typeId };

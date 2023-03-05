@@ -57,11 +57,13 @@
     <ClCompile Include="..\..\src\Engine.Assets\Types\Asset.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Font.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometry.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometryStructure.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\GfxMaterial.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Image.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\ImageDataLayout.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\ImageStructure.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\LandscapeGeometry.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Material\GfxMaterialStructure.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\Texture.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\TextureDataLayout.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\TextureStructure.cpp" />

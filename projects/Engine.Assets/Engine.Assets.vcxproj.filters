@@ -43,6 +43,12 @@
     <Filter Include="Quelldateien\Types\Texture">
       <UniqueIdentifier>{ba434ff1-757e-48e9-82a3-25fb82ac13d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Types\Geometry">
+      <UniqueIdentifier>{412143cd-896b-4a5d-a5dd-4c1d80f396c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Types\Material">
+      <UniqueIdentifier>{cc35f250-b09f-4f38-9553-8626543a8494}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Assets\Types\Image.hpp">
@@ -152,9 +158,6 @@
     <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\Texture.cpp">
       <Filter>Quelldateien\Types\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometry.cpp">
-      <Filter>Quelldateien\Types</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Font.cpp">
       <Filter>Quelldateien\Types</Filter>
     </ClCompile>
@@ -175,6 +178,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\TextureStructure.cpp">
       <Filter>Quelldateien\Types\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometry.cpp">
+      <Filter>Quelldateien\Types\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometryStructure.cpp">
+      <Filter>Quelldateien\Types\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Material\GfxMaterialStructure.cpp">
+      <Filter>Quelldateien\Types\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
