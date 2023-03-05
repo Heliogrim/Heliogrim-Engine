@@ -119,6 +119,10 @@ namespace hg::external::ktx {
 
     [[nodiscard]] format_type getFormat(cref<header_type> header_);
 
+    [[nodiscard]] SuperCompressionScheme getSCS(cref<header_type> header_);
+
+    /**/
+
     [[nodiscard]] bool is1d(cref<header_type> header_);
 
     [[nodiscard]] bool is2d(cref<header_type> header_);
@@ -135,13 +139,13 @@ namespace hg::external::ktx {
 
     [[nodiscard]] extent_type calcLevelExtent(
         extent_type extent_,
-        level_type levels_,
+        level_type level_,
         extent_type effected_ = extent_type { 1 }
     );
 
     [[nodiscard]] extent_type calcLevelExtent(
         extent_type extent_,
-        level_type levels_,
+        level_type level_,
         TextureType textureType_
     );
 
@@ -218,7 +222,7 @@ void transformer::convertKtxPartial(
         /**
          * Unload targeted segment and return
          */
-        unloadPartialTmp(asset_, src_, dst_, device_, options_);
+        //unloadPartialTmp(asset_, src_, dst_, device_, options_);
         return;
     }
 
@@ -399,6 +403,8 @@ void deduceFromFormat(cref<vk::Format> format_, ref<vk::Format> vkFormat_, ref<v
     vkFormat_ = format_;
 }
 
+static [[nodiscard]] s32 calcMipDiff(cref<math::uivec3> left_, cref<math::uivec3> right_);
+
 static Buffer createStageBuffer(cref<hg::external::ktx::InternalContext> ctx_, cref<sptr<Device>> device_) {
 
     using namespace ::hg::external;
@@ -469,6 +475,52 @@ static Buffer createStageBuffer(cref<hg::external::ktx::InternalContext> ctx_, c
 
     return stage;
 }
+
+static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_) {
+
+    using namespace ::hg::external;
+
+    Buffer stage {};
+
+    /**
+     * Setup vulkan stage buffer to eager load texture
+     */
+    vk::BufferCreateInfo bci {
+        vk::BufferCreateFlags(),
+        MAX(byteSize_, 128ui64),
+        vk::BufferUsageFlagBits::eTransferSrc,
+        vk::SharingMode::eExclusive,
+        0,
+        nullptr
+    };
+
+    stage.buffer = device_->vkDevice().createBuffer(bci);
+    stage.device = device_->vkDevice();
+
+    const auto allocResult {
+        memory::allocate(
+            device_->allocator(),
+            device_,
+            stage.buffer,
+            MemoryProperties { MemoryProperty::eHostVisible },
+            stage.memory
+        )
+    };
+    assert(stage.buffer);
+    assert(stage.memory);
+
+    stage.size = stage.memory->size;
+    stage.usageFlags = vk::BufferUsageFlagBits::eTransferSrc;
+
+    /**
+     *
+     */
+    stage.bind();
+
+    return stage;
+}
+
+/**/
 
 void transformer::convertKtx10Gli(
     const non_owning_rptr<const engine::assets::Texture> asset_,
@@ -830,6 +882,7 @@ void transformer::convertKtx20(
         }
         case TextureType::e2dArray: {
             validType = ktx::is2d(ctx.header) && ktx::isArray(ctx.header);
+            validType = ktx::is2d(ctx.header);
             break;
         }
         case TextureType::e3d: {
@@ -1012,11 +1065,32 @@ void transformer::convertKtx20Partial(
     const TextureStreamOptions options_
 ) {
 
-    /**
-    *
-    */
-    math::uivec3 reqExtent { options_.extent };
+    using namespace ::hg::external;
+
+    /**/
+
+    math::uivec3 reqExtent { math::compMax<u32>(options_.extent, math::uivec3 { 1 }) };
     math::uivec3 reqOffset { options_.offset };
+
+    /**/
+
+    const auto dstMipExtent = math::compMax<u32>(dst_->extent() >> options_.mip, math::uivec3 { 1 });
+
+    if (reqOffset.x >= dstMipExtent.x || reqOffset.y >= dstMipExtent.y || reqOffset.z >= dstMipExtent.z) {
+        return;
+    }
+
+    const math::uivec3 dstLeftExt = {
+        dstMipExtent.x - reqOffset.x,
+        dstMipExtent.y - reqOffset.y,
+        dstMipExtent.y - reqOffset.z
+    };
+    const math::uivec3 corrected = math::compMax<u32>(
+        dstLeftExt,
+        math::uivec3 { 1 }
+    );
+
+    reqExtent = math::compMin<u32>(reqExtent, corrected);
 
     /**
     * Check for memory changes to prevent excessive file loading
@@ -1079,9 +1153,9 @@ void transformer::convertKtx20Partial(
                 math::uivec3 { 1ui32 }
             )
         };
-        const math::uivec3 off { options_.offset / pageExt };
+        const math::uivec3 off { reqOffset / pageExt };
         const math::uivec3 ext {
-            math::compMax<math::uivec3::value_type>(options_.extent / pageExt, math::uivec3 { 1ui32 })
+            math::compMax<math::uivec3::value_type>(reqExtent / pageExt, math::uivec3 { 1ui32 })
         };
 
         /**
@@ -1090,12 +1164,12 @@ void transformer::convertKtx20Partial(
         reqExtent = ext * pageExt;
 
         /**
-         * Reexpand tthe off to tthe requested offset to apply page granularity for data loading
+         * Reexpand the off to the requested offset to apply page granularity for data loading
          */
         reqOffset = off * pageExt;
 
         u32 oi { off.x + off.y * acc.x };
-        const auto out { (off.x + ext.x) + (off.y + ext.y) * acc.x };
+        const auto out { (off.x + ext.x) + (off.y + ext.y - 1) * acc.x };
 
         while (oi < out) {
 
@@ -1107,7 +1181,6 @@ void transformer::convertKtx20Partial(
                 bool effected { false };
                 if (page->mipLevel() != options_.mip) {
                     continue;
-
                 }
 
                 const auto minPage { page->offset() };
@@ -1233,131 +1306,137 @@ void transformer::convertKtx20Partial(
     #pragma endregion
 
     /**
-    *
-    */
+     *
+     */
     if (!changedMemory && not (options_.mip >= dst_->owner()->mipTailFirstLod())) {
         return;
     }
-
     /**
-    *
-    */
+     *
+     */
 
-    #pragma region GLI Header
+    #pragma region KTX Header
 
-    constexpr auto header_min_size { sizeof(InternalKtxHeader) };
-
-    constexpr auto chunkSize {
-        header_min_size + 14 /* 14 Mips ~> 16k x 16k */ * sizeof(InternalKtxLevel)
+    ktx::InternalContext ctx {
+        src_
     };
-    _STD vector<char> raw(static_cast<size_t>(chunkSize));
 
-    streamsize bytes {};
-    src_->get(0, chunkSize, raw.data(), bytes);
-
-    assert(bytes >= chunkSize);
-    assert(memcmp(raw.data(), ktx20Identifier, sizeof(ktx20Identifier)) == 0);
-
-    cref<InternalKtxHeader> header { *reinterpret_cast<ptr<const InternalKtxHeader>>(raw.data()) };
-
-    Vector<InternalKtxLevel> indexedLevels {};
-    indexedLevels.resize(header.levelCount);
-
-    memcpy(indexedLevels.data(), raw.data() + sizeof(InternalKtxHeader), sizeof(InternalKtxLevel) * header.levelCount);
-
-    // Extent
-    const math::uivec3 srcExtent = {
-        header.pixelWidth,
-        _STD max(header.pixelHeight, 1ui32),
-        _STD max(header.pixelDepth, 1ui32)
-    };
+    if (not ktx::readHeader(ctx)) {
+        return;
+    }
 
     // Format
     vk::Format format {};
     vk::ImageAspectFlags aspect {};
-    deduceFromFormat(*reinterpret_cast<const vk::Format*>(&header.vkFormat), format, aspect);
+    deduceFromFormat(ktx::getFormat(ctx.header), format, aspect);
 
     // Meta
-    const u32 srcLevels { header.levelCount };
-    const u32 srcLayers { header.layerCount };
-    const u32 srcFaces { header.faceCount };
+    const ktx::extent_type ktxExtent {
+        ktx::getWidth(ctx.header), ktx::getHeight(ctx.header), ktx::getDepth(ctx.header)
+    };
 
     #pragma endregion
 
-    auto mipDiff { 0i32 };
+    /* Check Mip Diff */
 
-    const auto* const dstOrigin { dst_->owner() };
-    math::uivec3 mipTestExtent {
-        dstOrigin->width(),
-        dstOrigin->height(),
-        dstOrigin->depth()
+    const math::uivec3 ownerExtent {
+        dst_->owner()->width(),
+        dst_->owner()->height(),
+        dst_->owner()->depth()
     };
-
-    if (srcExtent.x >= mipTestExtent.x || srcExtent.y >= mipTestExtent.y) {
-        while (srcExtent.x > mipTestExtent.x || srcExtent.y > mipTestExtent.y) {
-            mipTestExtent.x >>= 1ui32;
-            mipTestExtent.y >>= 1ui32;
-            ++mipDiff;
-        }
-
-    } else {
-        while (srcExtent.x < mipTestExtent.x || srcExtent.y < mipTestExtent.y) {
-            mipTestExtent.x <<= 1ui32;
-            mipTestExtent.y <<= 1ui32;
-            --mipDiff;
-        }
-    }
+    auto mipDiff = calcMipDiff(ktxExtent, ownerExtent);
 
     assert(static_cast<s32>(options_.mip) + mipDiff >= 0);
 
-    /**
-    *
-    */
-    const auto srcLayer { dst_->baseLayer() - options_.layer };
-    const auto srcMip { options_.mip + mipDiff };
+    /**/
 
-    if (srcMip > header.levelCount || header.ss) {
+    // TODO: Check why `base - option` instead of `base + layer` ?!?
+    const u32 srcLayer { dst_->baseLayer() - options_.layer };
+    const u32 srcMip { options_.mip + mipDiff };
+
+    if (srcMip > ktx::getLevelCount(ctx.header)) {
         #ifdef _DEBUG
+        // We can't load data into a mip level which is not present within the source data
         __debugbreak();
         #endif
         return;
     }
 
-    #pragma region GLI Source Data
+    /**/
 
-    //_STD fseek(file, 0, SEEK_SET);
+    #pragma region KTX Source Data
 
-    auto internalLevel { indexedLevels[srcMip] };
-    auto blockSize { formatDataSize(api::vkTranslateFormat(format)) };
+    const ktx::extent_type levelExtent = ktx::calcLevelExtent(ktxExtent, srcMip);
+    const auto& ktxLevel = ctx.levels[srcMip];
 
-    _STD vector<char> data {};
+    const auto formatSize = formatDataSize(api::vkTranslateFormat(format));
+    const auto blockSize = formatBlockSize(api::vkTranslateFormat(format));
 
-    /**
-    *
-    */
+    if (blockSize.x != 1 || blockSize.y != 1 || blockSize.z != 1) {
+        #ifdef _DEBUG
+        // We currently don't support (compressed) block encoding.
+        __debugbreak();
+        #endif
+        return;
+    }
 
-    math::uivec3 mipExtent {
-        header.pixelWidth >> srcMip, header.pixelHeight >> srcMip, header.pixelDepth >> srcMip
-    };
-    mipExtent = math::compMax<u32>(mipExtent, math::uivec3 { 1ui32 });
+    /* Create stage buffer */
 
-    /**
-    *
-    */
-    const bool useFastCopy { options_.extent.zero() || options_.extent == mipExtent };
+    u64 stageSize = ~0;
+    if (options_.extent.zero()) {
+        stageSize = levelExtent.x * levelExtent.y * levelExtent.z * formatSize;
+    } else {
+        stageSize = reqExtent.x * reqExtent.y * reqExtent.z * formatSize;
+    }
+
+    #ifdef _DEBUG
+    if (stageSize <= 0 || stageSize >= ~0ui64) {
+        __debugbreak();
+        return;
+    }
+    #endif
+
+    Buffer stage = createStageBuffer(device_, stageSize);
+
+    /* Load data to stage */
+
+    const bool useFastCopy { options_.extent.zero() || options_.extent == levelExtent };
     if (useFastCopy) {
 
-        data.resize(internalLevel.byteSize);
+        if (not stage.memory->mapping) {
+            stage.mapAligned();
+        }
 
-        /*
-        _STD fseek(file, internalLevel.byteOff, SEEK_SET);
-        _STD fread(data.data(), 1, internalLevel.byteSize, file);
-         */
+        // TODO: ?!?
+        _STD span<_::byte> bufferMemory { reinterpret_cast<ptr<_::byte>>(stage.memory->mapping), stage.memory->size };
+        const auto succeeded = ktx::readData(ctx, srcMip, bufferMemory);
 
-        streamsize bytes {};
-        src_->get(internalLevel.byteOff, internalLevel.byteSize, data.data(), bytes);
+        if (not succeeded) {
+            stage.destroy();
+            return;
+        }
+
+        stage.flushAligned();
+        stage.unmap();
 
     } else {
+
+        if (ktx::getSCS(ctx.header) != ktx::SuperCompressionScheme::eNone) {
+            #ifdef _DEBUG
+            // We can't use block loading with super compression
+            __debugbreak();
+            #endif
+            return;
+        }
+
+        if (formatSize <= 0) {
+            #ifdef _DEBUG
+            // Missing block size is indicator for unsupported sparse loading
+            // TODO: Check whether we can break up at least ASTC formats
+            __debugbreak();
+            #endif
+            return;
+        }
 
         // :: level
         // :: level :: layer
@@ -1366,107 +1445,67 @@ void transformer::convertKtx20Partial(
         // :: level :: layer :: face :: z :: y
         // :: level :: layer :: face :: z :: y :: x
 
-        const auto levelOffset { internalLevel.byteOff };
+        const auto globalLevelOffset = ktxLevel.byteOff;
 
-        const auto layerCount { header.layerCount ? header.layerCount : 1ui32 };
-        const auto faceCount { header.faceCount ? header.faceCount : 1ui32 };
+        const auto layerCount = ktx::getLayerCount(ctx.header);
+        const auto faceCount = ktx::getFaceCount(ctx.header);
 
-        //
-        data.resize(reqExtent.x * reqExtent.y * reqExtent.z * blockSize);
+        const auto rowSize = levelExtent.x * formatSize;
+        const auto planeSize = levelExtent.y * rowSize;
+        const auto sliceSize = levelExtent.z * planeSize;
+        const auto faceSize = sliceSize;
+        const auto layerSize = faceSize * faceCount;
 
-        //
-        const auto layerOffset { options_.layer * faceCount * mipExtent.z * mipExtent.y * mipExtent.x };
+        const auto layerOffset = options_.layer * layerSize;
+
+        /**/
+
+        const auto globalOffset = globalLevelOffset + layerOffset;
+
+        /**/
 
         const auto minExt { reqOffset };
         const auto maxExt { reqOffset + reqExtent };
 
-        const auto outerOffset { levelOffset + layerOffset };
-        auto bfd { 0ui64 };
+        // the file is linearized at the x-dimension, so we can read the whole contiguous sequence
+        const streamsize seqRowSize = (maxExt.x - minExt.x) * formatSize;
+        const streamoff seqRowOff = minExt.x * formatSize;
+
+        /**/
+
+        if (not stage.memory->mapping) {
+            stage.mapAligned();
+        }
+
+        const ptr<_::byte> memory = reinterpret_cast<ptr<_::byte>>(stage.memory->mapping);
+        streampos memPos = 0;
 
         // for (u32 face { 0ui32 }; face < faceCount; ++face) {
         for (u32 z { minExt.z }; z < maxExt.z; ++z) {
+
+            const streamoff sliceOff = z * sliceSize;
             for (u32 y { minExt.y }; y < maxExt.y; ++y) {
 
-                // the file is linearized at the x-dimension, so we can read the whole contiguous sequence
-                const auto count { maxExt.x - minExt.x };
+                const streamoff planeOff = y * planeSize;
+                streamsize bytes = -1;
 
-                u64 fwo { 0ui64 };
-                fwo += minExt.x;
-                fwo += y * mipExtent.x;
-                fwo += z * mipExtent.y * mipExtent.x;
+                src_->get(
+                    globalOffset + sliceOff + planeOff + seqRowOff,
+                    seqRowSize,
+                    memory + memPos,
+                    bytes
+                );
 
-                fwo *= blockSize;
-
-                /*
-                _STD fseek(file, outerOffset + fwo, SEEK_SET);
-                _STD fread(data.data() + bfd, 1, count * blockSize, file);
-                 */
-
-                streamsize bytes {};
-                src_->get(outerOffset + fwo, count * blockSize, data.data(), bytes);
-
-                bfd += (count * blockSize);
+                memPos += seqRowSize;
             }
         }
         // }
 
+        stage.flushAligned();
+        stage.unmap();
     }
 
-    //const auto mipLevelDataSize { glitex.size(srcMip) };
-    //auto* const dataBasePtr { glitex.data(srcLayer, 0ui32, srcMip) };
-
-    const auto mipLevelDataSize { data.size() };
-    auto* const dataBasePtr { data.data() };
-
     #pragma endregion
-
-    /**
-    * Staging Buffer
-    */
-    Buffer stage {};
-    stage.size = mipLevelDataSize;
-    stage.usageFlags = vk::BufferUsageFlagBits::eTransferSrc;
-
-    vk::BufferCreateInfo bci {
-        vk::BufferCreateFlags(),
-        mipLevelDataSize,
-        vk::BufferUsageFlagBits::eTransferSrc,
-        vk::SharingMode::eExclusive,
-        0,
-        nullptr
-    };
-
-    stage.buffer = device_->vkDevice().createBuffer(bci);
-    stage.device = device_->vkDevice();
-
-    const auto allocResult {
-        memory::allocate(
-            device_->allocator(),
-            device_,
-            MemoryProperty::eHostVisible,
-            stage
-        )
-    };
-    assert(stage.buffer);
-    assert(stage.memory);
-
-    /**
-    *
-    */
-    stage.bind();
-    stage.mapAligned();
-    assert(stage.memory->mapping);
-
-    /**
-    * Copy Data
-    */
-    stage.write(dataBasePtr, mipLevelDataSize);
-    stage.flushAligned();
-
-    /**
-    *
-    */
-    stage.unmap();
 
     /**
     * Fetch Region per Layer
@@ -1488,9 +1527,9 @@ void transformer::convertKtx20Partial(
                 1ui32
             },
             vk::Offset3D(
-                reqOffset.x,
-                reqOffset.y,
-                reqOffset.z
+                static_cast<s32>(reqOffset.x),
+                static_cast<s32>(reqOffset.y),
+                static_cast<s32>(reqOffset.z)
             ),
             vk::Extent3D(
                 reqExtent.x,
@@ -1587,7 +1626,6 @@ void transformer::convertKtx20Partial(
     * Cleanup
     */
     stage.destroy();
-    //glitex.clear();
 }
 
 void transformer::unloadPartialTmp(
@@ -1668,6 +1706,9 @@ void transformer::unloadPartialTmp(
 }
 
 /**/
+
+#pragma region KTX Specification Implementation
+
 math::uivec3::value_type external::ktx::getWidth(cref<header_type> header_) {
     return header_.pixelWidth;
 }
@@ -1694,6 +1735,10 @@ external::ktx::level_type external::ktx::getLevelCount(cref<header_type> header_
 
 external::ktx::format_type external::ktx::getFormat(cref<header_type> header_) {
     return *reinterpret_cast<const vk::Format*>(&header_.vkFormat);
+}
+
+external::ktx::SuperCompressionScheme external::ktx::getSCS(cref<header_type> header_) {
+    return *reinterpret_cast<const ptr<const SuperCompressionScheme>>(&header_.ss);
 }
 
 bool external::ktx::is1d(cref<header_type> header_) {
@@ -1766,12 +1811,12 @@ u64 external::ktx::getDataSize(cref<InternalContext> ctx_, level_type level_) {
 
 external::ktx::extent_type external::ktx::calcLevelExtent(
     extent_type extent_,
-    level_type levels_,
+    level_type level_,
     extent_type effected_
 ) {
 
     auto result = extent_;
-    for (; levels_ > 0; --levels_) {
+    for (; level_ > 0; --level_) {
         result = result >> 1;
     }
 
@@ -1793,10 +1838,10 @@ external::ktx::extent_type external::ktx::calcLevelExtent(
 
 external::ktx::extent_type external::ktx::calcLevelExtent(
     extent_type extent_,
-    level_type levels_,
+    level_type level_,
     TextureType textureType_
 ) {
-    return calcLevelExtent(_STD move(extent_), _STD move(levels_));
+    return calcLevelExtent(_STD move(extent_), _STD move(level_));
 }
 
 bool external::ktx::readHeader(ref<InternalContext> ctx_) {
@@ -1900,3 +1945,34 @@ bool external::ktx::readData(cref<InternalContext> ctx_, level_type level_, std:
 
     return true;
 }
+
+#pragma endregion
+
+/**/
+
+#pragma region Helper Functions
+
+s32 calcMipDiff(cref<math::uivec3> left_, cref<math::uivec3> right_) {
+
+    s32 mipDiff = 0i32;
+    math::uivec3 mipTestExtent = right_;
+
+    if (left_.x >= mipTestExtent.x || left_.y >= mipTestExtent.y) {
+        while (left_.x > mipTestExtent.x || left_.y > mipTestExtent.y) {
+            mipTestExtent.x >>= 1ui32;
+            mipTestExtent.y >>= 1ui32;
+            ++mipDiff;
+        }
+
+    } else {
+        while (left_.x < mipTestExtent.x || left_.y < mipTestExtent.y) {
+            mipTestExtent.x <<= 1ui32;
+            mipTestExtent.y <<= 1ui32;
+            --mipDiff;
+        }
+    }
+
+    return mipDiff;
+}
+
+#pragma endregion
