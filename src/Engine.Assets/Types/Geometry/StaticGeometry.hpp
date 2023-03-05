@@ -3,6 +3,7 @@
 #include <Engine.Common/Url.hpp>
 #include <Engine.Common/Math/Bounding.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Serialization/Access/__fwd.hpp>
 
 #include "../Geometry.hpp"
 
@@ -12,6 +13,9 @@ namespace hg::engine::assets {
     public:
         template <typename>
         friend class serialization::DataLayout;
+
+        ACCESS_LAYOUT
+        ACCESS_STRUCTURE
 
     public:
         inline static constexpr asset_type_id typeId { "StaticGeometry"_typeId };
