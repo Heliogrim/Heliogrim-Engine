@@ -653,6 +653,22 @@ namespace hg::math {
             z((value_type)(other_.z)) {}
 
         /**
+         * Cast Constructor
+         *
+         * @author Julius
+         * @date 02.02.2023
+         *
+         * @tparam Ty_ The typename to cast the values from
+         *
+         * @param other_ The foreign vector to cast the values from.
+         */
+        template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
+        explicit constexpr vec3_t(vec3_t<Ty_>&& other_) :
+            x((value_type)(other_.x)),
+            y((value_type)(other_.y)),
+            z((value_type)(other_.z)) {}
+
+        /**
          * Sets an x coordinate
          *
          * @author Julius
@@ -1025,7 +1041,7 @@ namespace hg::math {
          *
          * @returns True if the parameters are considered equivalent.
          */
-        bool operator==(const_reference_type other_) const {
+        constexpr bool operator==(const_reference_type other_) const {
             return (x == other_.x && y == other_.y && z == other_.z);
         }
 
@@ -1039,7 +1055,7 @@ namespace hg::math {
          *
          * @returns True if the parameters are not considered equivalent.
          */
-        bool operator!=(const_reference_type other_) const {
+        constexpr bool operator!=(const_reference_type other_) const {
             return !(x == other_.x && y == other_.y && z == other_.z);
         }
 

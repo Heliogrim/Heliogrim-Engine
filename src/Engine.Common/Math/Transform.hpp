@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Quaternion.hpp"
-#include "Vector.hpp"
-#include "../Wrapper.hpp"
+#include "Location.hpp"
+#include "Rotator.hpp"
 
 namespace hg::math {
     class Transform {
@@ -16,25 +15,9 @@ namespace hg::math {
          * @author Julius
          * @date 26.11.2021
          */
-        constexpr Transform() noexcept :
-            _position(0.F),
-            _rotation(quaternion::make_identity()),
-            _scale(1.F) {}
+        Transform() noexcept;
 
-        /**
-         * Constructor
-         *
-         * @author Julius
-         * @date 26.11.2021
-         *
-         * @param position_ The position as vec3.
-         * @param rotation_ The rotation as quaternion.
-         * @param scale_ The scale as vec3.
-         */
-        Transform(cref<vec3> position_, cref<quaternion> rotation_, cref<vec3> scale_) noexcept :
-            _position(position_),
-            _rotation(rotation_),
-            _scale(scale_) {}
+        Transform(mref<Location> location_, mref<Rotator> rotator_, mref<fvec3> scale_) noexcept;
 
         /**
          * Move Constructor
@@ -87,54 +70,30 @@ namespace hg::math {
          *
          * @returns A shallow copy of this.
          */
-        ref<Transform> operator=(cref<Transform> other_) = default;
+        ref<Transform> operator=(cref<Transform> other_) noexcept;
 
     private:
-        vec3 _position;
+        Location _location;
+        Rotator _rotator;
+        fvec3 _scale;
 
     public:
-        [[nodiscard]] cref<vec3> position() const noexcept {
-            return _position;
-        }
+        [[nodiscard]] cref<Location> location() const noexcept;
 
-        void setPosition(cref<vec3> position_) noexcept {
-            _position = position_;
-        }
+        [[nodiscard]] ref<Location> location() noexcept;
 
-        void setPosition(mref<vec3> position_) noexcept {
-            _position = position_;
-        }
+        ref<this_type> setLocation(mref<Location> location_) noexcept;
 
-    private:
-        quaternion _rotation;
+        [[nodiscard]] cref<Rotator> rotator() const noexcept;
 
-    public:
-        [[nodiscard]] cref<quaternion> rotation() const noexcept {
-            return _rotation;
-        }
+        [[nodiscard]] ref<Rotator> rotator() noexcept;
 
-        void setRotation(cref<quaternion> rotation_) noexcept {
-            _rotation = rotation_;
-        }
+        ref<this_type> setRotator(mref<Rotator> rotator_) noexcept;
 
-        void setRotation(mref<quaternion> rotation_) noexcept {
-            _rotation = rotation_;
-        }
+        [[nodiscard]] cref<fvec3> scale() const noexcept;
 
-    private:
-        vec3 _scale;
+        [[nodiscard]] ref<fvec3> scale() noexcept;
 
-    public:
-        [[nodiscard]] cref<vec3> scale() const noexcept {
-            return _scale;
-        }
-
-        void setScale(cref<vec3> scale_) noexcept {
-            _scale = scale_;
-        }
-
-        void setScale(mref<vec3> scale_) noexcept {
-            _scale = scale_;
-        }
+        ref<this_type> setScale(mref<fvec3> scale_) noexcept;
     };
 }
