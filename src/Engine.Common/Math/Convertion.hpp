@@ -8,6 +8,7 @@
 #include "Vector.hpp"
 #include "Matrix.hpp"
 #include "Quaternion.hpp"
+#include "Rotator.hpp"
 
 namespace hg::math {
     template <class From_, class To_>
@@ -49,5 +50,66 @@ namespace hg::math {
     template <>
     inline static mat4 as(cref<quaternion> from_) noexcept {
         return mat4 { as<quaternion, mat3>(from_) };
+    }
+
+    template <>
+    inline static Rotator as(cref<quaternion> from_) noexcept {
+
+        const auto& data = from_._quat;
+
+        // @see http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
+        constexpr static float singularity = 0.4999999F;
+
+        /*
+        const auto x2 = data.x * data.x;
+        const auto y2 = data.y * data.y;
+        const auto z2 = data.z * data.z;
+        const auto w2 = data.w * data.w;
+         */
+
+        const auto test = data.x * data.y + data.z * data.w;
+        /*
+        const auto unit = x2 + y2 + z2 + w2;
+         */
+
+        float heading;
+        float attitude;
+        float bank;
+
+        if (test > singularity/* * unit */) {
+
+            heading = 2.F * _STD atan2(data.x, data.w);
+            attitude = math::pih_f /* North Pole :: Pitch == 90Deg */;
+            bank = 0.F;
+
+        } else if (test < -singularity/* * unit */) {
+
+            heading = -2.F * _STD atan2(data.x, data.w);
+            attitude = -math::pih_f /* South Pole :: Pitch == -90Deg */;
+            bank = 0.F;
+
+        } else {
+
+            const auto zp2 = data.z * data.z;
+
+            heading = _STD atan2(
+                2.F * data.y * data.w - 2.F * data.x * data.z,
+                1.F - 2.F * data.y * data.y - 2 * zp2
+            );
+
+            attitude = _STD asin(2.F * test);
+
+            bank = _STD atan2(
+                2.F * data.x * data.w - 2.F * data.y * data.z,
+                1 - 2.F * data.x * data.x - 2.F * zp2
+            );
+
+        }
+
+        return Rotator {
+            bank,
+            heading,
+            attitude
+        };
     }
 }

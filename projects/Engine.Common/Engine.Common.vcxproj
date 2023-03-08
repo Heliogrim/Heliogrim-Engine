@@ -67,9 +67,11 @@
     <ClInclude Include="..\..\src\Engine.Common\Math\Extent.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Hash.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Helper.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Math\Location.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\MathDefaultDefine.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Matrix.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Quaternion.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Math\Rotator.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Transform.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Transformation.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Vector.hpp" />
@@ -104,6 +106,8 @@
     <ClCompile Include="..\..\src\Engine.Common\Hash\Murmur3.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Math\Bounding.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Math\Coordinates.cpp" />
+    <ClCompile Include="..\..\src\Engine.Common\Math\Location.cpp" />
+    <ClCompile Include="..\..\src\Engine.Common\Math\Rotator.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Math\Transform.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Memory\DbgMemoryStats.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Profiler.cpp" />
