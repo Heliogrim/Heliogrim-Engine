@@ -312,6 +312,12 @@
     <ClInclude Include="..\..\src\Engine.Common\GLM.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Rotator.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Math\Location.hpp">
+      <Filter>Headerdateien\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">
@@ -355,6 +361,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Common\Concurrent\SharedMemoryReference.cpp">
       <Filter>Quelldateien\Concurrent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Math\Rotator.cpp">
+      <Filter>Quelldateien\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Math\Location.cpp">
+      <Filter>Quelldateien\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
