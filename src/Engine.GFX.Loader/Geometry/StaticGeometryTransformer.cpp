@@ -2,6 +2,7 @@
 
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
+#include <Engine.Common/Collection/Array.hpp>
 #include <Engine.GFX/Buffer/VirtualBufferPage.hpp>
 #include <Engine.GFX/Buffer/VirtualBufferView.hpp>
 #include <Engine.GFX/Geometry/Vertex.hpp>
@@ -11,6 +12,9 @@
 #include <Engine.GFX/Pool/GlobalResourcePool.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
+#include <Engine.GFX/Buffer/Buffer.hpp>
+
+#include "Engine.GFX/Command/CommandBuffer.hpp"
 
 using namespace hg::engine::gfx::loader;
 using namespace hg::engine::gfx;
@@ -22,6 +26,8 @@ static smr<StaticGeometryResource> loadWithAssimp(
     const non_owning_rptr<pool::GlobalResourcePool> pool_,
     cref<StaticGeometryTransformer::request_type::options> options_
 );
+
+static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_);
 
 StaticGeometryTransformer::StaticGeometryTransformer(const non_owning_rptr<pool::GlobalResourcePool> pool_) :
     Transformer(),
@@ -169,12 +175,56 @@ static smr<StaticGeometryResource> loadWithAssimp(
     uptr<VirtualBufferView> indexBuffer {};
     uptr<VirtualBufferView> vertexBuffer {};
 
+    Buffer indexStage {};
+    Buffer vertexStage {};
+
     /**/
 
     {
         const auto indexSize = sizeof(u32) * indices.size();
         indexBuffer = pool_->allocateIndexBuffer({ { indexSize } });
 
+        const auto vertexSize = sizeof(vertex) * vertices.size();
+        vertexBuffer = pool_->allocateVertexBuffer({ { vertexSize } });
+    }
+
+    /**/
+
+    auto* const cmdQueue = pool_->device()->transferQueue();
+    auto* const cmdPool = cmdQueue->pool();
+    cmdPool->lck().acquire();
+
+    CommandBuffer cmd = cmdPool->make();
+    cmd.begin();
+
+    Array<vk::BufferMemoryBarrier, 2> prevBarriers {
+        vk::BufferMemoryBarrier {
+            vk::AccessFlags {}, vk::AccessFlagBits::eTransferWrite,
+            VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED,
+            indexBuffer->owner()->vkBuffer(), indexBuffer->offset(), indexBuffer->size()
+        },
+        vk::BufferMemoryBarrier {
+            vk::AccessFlags {}, vk::AccessFlagBits::eTransferWrite,
+            VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED,
+            vertexBuffer->owner()->vkBuffer(), vertexBuffer->offset(), vertexBuffer->size()
+        }
+    };
+    cmd.vkCommandBuffer().pipelineBarrier(
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::PipelineStageFlagBits::eTransfer,
+        vk::DependencyFlags {},
+        0ui32,
+        nullptr,
+        static_cast<u32>(prevBarriers.size()),
+        prevBarriers.data(),
+        0ui32,
+        nullptr
+    );
+
+    /**/
+
+    {
+        const auto indexSize = sizeof(u32) * indices.size();
         const auto* const firstPage = indexBuffer->pages().front();
         const auto alignment = firstPage->memory()->allocated()->layout.align;
 
@@ -182,7 +232,12 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
         /**/
 
-        for (u32 page = 0ui32; page < required; ++page) {
+        indexStage = createStageBuffer(pool_->device(), required * alignment);
+        indexStage.write<u32>(indices.data(), indices.size());
+
+        /**/
+
+        for (u32 page = 0; page < required; ++page) {
 
             const auto pageSize = _STD min(indexSize - (page * alignment), alignment);
 
@@ -196,13 +251,10 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
             /**/
 
-            memory->map(patchSize);
-            memory->write(
-                static_cast<const ptr<const _::byte>>(static_cast<ptr<void>>(indices.data())) + (page * alignment),
-                patchSize
-            );
-            memory->flush(patchSize);
-            memory->unmap();
+            auto patchOff = (page * alignment);
+
+            vk::BufferCopy cpyData { patchOff, indexBuffer->offset() + patchOff, patchSize };
+            cmd.vkCommandBuffer().copyBuffer(indexStage.buffer, indexBuffer->owner()->vkBuffer(), 1ui32, &cpyData);
         }
     }
 
@@ -210,8 +262,6 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
     {
         const auto vertexSize = sizeof(vertex) * vertices.size();
-        vertexBuffer = pool_->allocateVertexBuffer({ { vertexSize } });
-
         const auto* const firstPage = vertexBuffer->pages().front();
         const auto alignment = firstPage->memory()->allocated()->layout.align;
 
@@ -219,7 +269,12 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
         /**/
 
-        for (u32 page = 0ui32; page < required; ++page) {
+        vertexStage = createStageBuffer(pool_->device(), required * alignment);
+        vertexStage.write<vertex>(vertices.data(), vertices.size());
+
+        /**/
+
+        for (u32 page = 0; page < required; ++page) {
 
             const auto pageSize = _STD min(vertexSize - (page * alignment), alignment);
 
@@ -233,15 +288,51 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
             /**/
 
-            memory->map(patchSize);
-            memory->write(
-                static_cast<const ptr<const _::byte>>(static_cast<ptr<void>>(vertices.data())) + (page * alignment),
-                patchSize
-            );
-            memory->flush(patchSize);
-            memory->unmap();
+            auto patchOff = (page * alignment);
+
+            vk::BufferCopy cpyData { patchOff, vertexBuffer->offset() + patchOff, patchSize };
+            cmd.vkCommandBuffer().copyBuffer(vertexStage.buffer, vertexBuffer->owner()->vkBuffer(), 1ui32, &cpyData);
         }
     }
+
+    /**/
+
+    Array<vk::BufferMemoryBarrier, 2> nextBarriers = {
+        vk::BufferMemoryBarrier {
+            vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead,
+            VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED,
+            indexBuffer->owner()->vkBuffer(), indexBuffer->offset(), indexBuffer->size()
+        },
+        vk::BufferMemoryBarrier {
+            vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead,
+            VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED,
+            vertexBuffer->owner()->vkBuffer(), vertexBuffer->offset(), vertexBuffer->size()
+        }
+    };
+    cmd.vkCommandBuffer().pipelineBarrier(
+        vk::PipelineStageFlagBits::eTransfer,
+        vk::PipelineStageFlagBits::eAllCommands,
+        vk::DependencyFlags {},
+        0ui32,
+        nullptr,
+        static_cast<u32>(nextBarriers.size()),
+        nextBarriers.data(),
+        0ui32,
+        nullptr
+    );
+
+    /**/
+
+    cmd.end();
+    cmd.submitWait();
+    cmd.release();
+
+    cmdPool->lck().release();
+
+    /**/
+
+    indexStage.destroy();
+    vertexStage.destroy();
 
     /**/
 
@@ -255,3 +346,45 @@ static smr<StaticGeometryResource> loadWithAssimp(
 }
 
 /**/
+
+static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_) {
+
+    Buffer stage {};
+
+    /**
+     * Setup vulkan stage buffer to eager load texture
+     */
+    vk::BufferCreateInfo bci {
+        vk::BufferCreateFlags(),
+        MAX(byteSize_, 128ui64),
+        vk::BufferUsageFlagBits::eTransferSrc,
+        vk::SharingMode::eExclusive,
+        0,
+        nullptr
+    };
+
+    stage.buffer = device_->vkDevice().createBuffer(bci);
+    stage.device = device_->vkDevice();
+
+    const auto allocResult {
+        memory::allocate(
+            device_->allocator(),
+            device_,
+            stage.buffer,
+            MemoryProperties { MemoryProperty::eHostVisible | MemoryProperty::eHostCoherent },
+            stage.memory
+        )
+    };
+    assert(stage.buffer);
+    assert(stage.memory);
+
+    stage.size = stage.memory->size;
+    stage.usageFlags = vk::BufferUsageFlagBits::eTransferSrc;
+
+    /**
+     *
+     */
+    stage.bind();
+
+    return stage;
+}

@@ -177,9 +177,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\Buffer.hpp">
       <Filter>Headerdateien\Buffer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Camera\Camera.hpp">
-      <Filter>Headerdateien\Camera</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Color\Color.hpp">
       <Filter>Headerdateien\Color</Filter>
     </ClInclude>
@@ -712,9 +709,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Texture\Texture.cpp">
       <Filter>Quelldateien\Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Camera\Camera.cpp">
-      <Filter>Quelldateien\Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Command\CommandQueue.cpp">
       <Filter>Quelldateien\Command</Filter>

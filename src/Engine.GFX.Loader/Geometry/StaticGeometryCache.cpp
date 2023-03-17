@@ -1,5 +1,8 @@
 #include "StaticGeometryCache.hpp"
 
+#include <Engine.GFX/Cache/GlobalResourceCache.hpp>
+#include <Engine.GFX/Cache/GlobalCacheCtrl.hpp>
+
 using namespace hg::engine::gfx::loader;
 using namespace hg;
 
@@ -12,5 +15,19 @@ StaticGeometryCache::response_type::type StaticGeometryCache::operator()(
     mref<request_type::options> options_,
     cref<next_type> next_
 ) const {
-    return next_(_STD move(request_), _STD move(options_));
+
+    const asset_guid guid = request_->get_guid();
+    const auto query = _cacheCtrl->cache()->query(guid);
+    if (query == cache::QueryResultType::eHit) {
+        return (smr<resource::ResourceBase> { query.value() }).into<StaticGeometryResource>();
+    }
+
+    auto prevResponse = next_(_STD move(request_), _STD move(options_));
+
+    if (not prevResponse.empty()) {
+        const asset_guid guid = request_->get_guid();
+        _cacheCtrl->cache()->store(guid, smr<StaticGeometryResource> { prevResponse }.into<resource::ResourceBase>());
+    }
+
+    return prevResponse;
 }

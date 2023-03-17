@@ -222,7 +222,7 @@ void transformer::convertKtxPartial(
         /**
          * Unload targeted segment and return
          */
-        //unloadPartialTmp(asset_, src_, dst_, device_, options_);
+        unloadPartialTmp(asset_, src_, dst_, device_, options_);
         return;
     }
 
@@ -855,6 +855,59 @@ void transformer::convertKtx20(
 ) {
 
     if (options_.dataFlag & TextureLoadDataFlagBits::eLazyDataLoading) {
+
+        #if TRUE
+        /**
+        * Transform and data transfer
+        */
+        auto pool = device_->transferQueue()->pool();
+        pool->lck().acquire();
+        CommandBuffer cmd = pool->make();
+        cmd.begin();
+
+        /**/
+        vk::ImageMemoryBarrier barrier {};
+        /**/
+
+        /**
+         * Copy Data to Image
+         */
+        barrier = {
+            vk::AccessFlags(),
+            vk::AccessFlags(),
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eShaderReadOnlyOptimal,
+            VK_QUEUE_FAMILY_IGNORED,
+            VK_QUEUE_FAMILY_IGNORED,
+            dst_->owner()->vkImage(),
+            {
+                vk::ImageAspectFlagBits::eColor,
+                0,
+                dst_->mipLevels(),
+                dst_->baseLayer(),
+                dst_->layers()
+            }
+        };
+
+        cmd.vkCommandBuffer().pipelineBarrier(
+            vk::PipelineStageFlagBits::eTransfer,
+            vk::PipelineStageFlagBits::eAllCommands,
+            vk::DependencyFlags(),
+            0,
+            nullptr,
+            0,
+            nullptr,
+            1,
+            &barrier
+        );
+
+        cmd.end();
+        cmd.submitWait();
+        cmd.release();
+
+        pool->lck().release();
+        #endif
+
         return;
     }
 
@@ -1407,7 +1460,6 @@ void transformer::convertKtx20Partial(
             stage.mapAligned();
         }
 
-        // TODO: ?!?
         _STD span<_::byte> bufferMemory { reinterpret_cast<ptr<_::byte>>(stage.memory->mapping), stage.memory->size };
         const auto succeeded = ktx::readData(ctx, srcMip, bufferMemory);
 
@@ -1481,12 +1533,12 @@ void transformer::convertKtx20Partial(
         streampos memPos = 0;
 
         // for (u32 face { 0ui32 }; face < faceCount; ++face) {
-        for (u32 z { minExt.z }; z < maxExt.z; ++z) {
+        for (u32 slice { minExt.z }; slice < maxExt.z; ++slice) {
 
-            const streamoff sliceOff = z * sliceSize;
-            for (u32 y { minExt.y }; y < maxExt.y; ++y) {
+            const streamoff sliceOff = slice * planeSize;
+            for (u32 row { minExt.y }; row < maxExt.y; ++row) {
 
-                const streamoff planeOff = y * planeSize;
+                const streamoff planeOff = row * rowSize;
                 streamsize bytes = -1;
 
                 src_->get(
@@ -1538,6 +1590,12 @@ void transformer::convertKtx20Partial(
             )
         }
     );
+
+    #if TRUE
+    if (dst_->extent().x == 8192 && dst_->format() == TextureFormat::eR8G8B8A8Unorm) {
+        IM_CORE_LOGF("Loading Texture [{}, {}] at mip level `{}`.", reqOffset.x, reqOffset.y, options_.mip);
+    }
+    #endif
 
     /**
     * Copy Data to Image

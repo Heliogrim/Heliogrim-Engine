@@ -81,7 +81,7 @@ uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateIndexBuffer(
     const auto req { _device->vkDevice().getBufferMemoryRequirements(buffer) };
     const memory::MemoryLayout layout {
         req.alignment,
-        MemoryProperty::eDeviceLocal | MemoryProperty::eHostVisible,
+        MemoryProperty::eDeviceLocal,
         req.memoryTypeBits
     };
 
@@ -152,7 +152,8 @@ uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateIndexBuffer(
     auto* ptr { vb.get() };
     _indexBuffers.push_back(_STD move(vb));
 
-    return ptr->makeView(/*offset*/0ui64, /*size*/ptr->memory()->size());
+    //return ptr->makeView(/*offset*/0ui64, /*size*/ptr->memory()->size());
+    return ptr->makeView(/*offset*/0ui64, /*size*/wholeSize);
 }
 
 uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateVertexBuffer(
@@ -189,7 +190,7 @@ uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateVertexBuffer(
     const auto req { _device->vkDevice().getBufferMemoryRequirements(buffer) };
     const memory::MemoryLayout layout {
         req.alignment,
-        MemoryProperty::eDeviceLocal | MemoryProperty::eHostVisible,
+        MemoryProperty::eDeviceLocal,
         req.memoryTypeBits
     };
 
@@ -260,7 +261,8 @@ uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateVertexBuffer(
     auto* ptr { vb.get() };
     _vertexBuffers.push_back(_STD move(vb));
 
-    return ptr->makeView(/*offset*/0ui64, /*size*/ptr->memory()->size());
+    //return ptr->makeView(/*offset*/0ui64, /*size*/ptr->memory()->size());
+    return ptr->makeView(/*offset*/0ui64, /*size*/wholeSize);
 }
 
 uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateVirtualBuffer(
