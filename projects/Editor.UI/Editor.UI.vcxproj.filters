@@ -76,6 +76,12 @@
     <Filter Include="Quelldateien\Widget\Input">
       <UniqueIdentifier>{9825410c-6437-435a-be95-f5c053ae33b9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Modules\AssetBrowser">
+      <UniqueIdentifier>{c4a17fc8-0ff4-4591-8635-3df57724cb24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Modules\AssetBrowser">
+      <UniqueIdentifier>{2d681ead-8963-4166-b111-9a452aa37bfd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.UI\Panel\SceneHierarchyPanel.hpp">
@@ -144,6 +150,15 @@
     <ClInclude Include="..\..\src\Editor.UI\Widget\Collapse.hpp">
       <Filter>Headerdateien\Widget</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Modules\AssetBrowser\AssetBrowserProvider.hpp">
+      <Filter>Headerdateien\Modules\AssetBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Modules\AssetBrowser\AssetBrowserEntry.hpp">
+      <Filter>Headerdateien\Modules\AssetBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Modules\AssetBrowser\AssetDatabaseBrowserProvider.hpp">
+      <Filter>Headerdateien\Modules\AssetBrowser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.cpp">
@@ -208,6 +223,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.UI\Widget\Input\InputVec.cpp">
       <Filter>Quelldateien\Widget\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Modules\AssetBrowser\AssetDatabaseBrowserProvider.cpp">
+      <Filter>Quelldateien\Modules\AssetBrowser</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
