@@ -140,6 +140,11 @@ namespace hg::math {
             x(xyzw_.x),
             y(xyzw_.y) { }
 
+        template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
+        constexpr vec2_t(const vec3_t<Ty_> xy_) noexcept :
+            x((value_type)xy_.x),
+            y((value_type)xy_.y) {}
+
         /**
          * Sets an x coordinate
          *

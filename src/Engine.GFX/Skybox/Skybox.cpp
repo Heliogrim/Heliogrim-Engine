@@ -22,7 +22,7 @@ Skybox::Skybox(cref<sptr<Device>> device_) :
 
     _cubemap = TextureFactory::get()->build(
         {
-            { 1024, 1024, 1 },
+            { 1024ui32, 1024ui32, 1ui32 },
             TextureFormat::eR8G8B8A8Unorm,
             1,
             TextureType::eCube,

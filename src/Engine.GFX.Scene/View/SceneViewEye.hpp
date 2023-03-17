@@ -1,7 +1,8 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/Math/Location.hpp>
+#include <Engine.Common/Math/Rotator.hpp>
 #include <Engine.Common/Math/Matrix.hpp>
 #include <Engine.Common/Math/Quaternion.hpp>
 
@@ -14,20 +15,24 @@ namespace hg::engine::gfx::scene {
         SceneViewEye();
 
     protected:
-        math::vec3 _position;
+        math::Location _location;
 
         math::mat4 _projection;
         math::mat4 _view;
 
+    protected:
+        math::Location _vkLocation;
+        bool _vkFlipY;
+
     public:
         void updateProjection(cref<math::mat4> projection_);
 
-        void updateView(cref<math::vec3> origin_, cref<math::vec3> eulerRotation_);
+        void updateView(cref<math::Location> origin_, cref<math::Rotator> rotation_);
 
-        void updateView(cref<math::vec3> origin_, cref<math::quaternion> rotation_);
+        void updateView(cref<math::Location> origin_, cref<math::quaternion> rotation_);
 
     public:
-        [[nodiscard]] cref<math::vec3> getOrigin() const noexcept;
+        [[nodiscard]] cref<math::Location> getOrigin() const noexcept;
 
         [[nodiscard]] cref<math::mat4> getProjectionMatrix() const noexcept;
 
@@ -70,5 +75,10 @@ namespace hg::engine::gfx::scene {
             _Out_ ref<math::vec3> worldOrigin_,
             _Out_ ref<math::vec3> worldDirection_
         );
+
+    public:
+        [[deprecated]] void vkSetFlipY(bool flip_);
+
+        [[nodiscard]] cref<math::Location> getVkLocation() const noexcept;
     };
 }

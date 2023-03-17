@@ -15,6 +15,7 @@
 #include "Engine.GFX.Loader/Material/Traits.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "Engine.GFX.Glow.3D/Renderer/State/RevSfMtt.hpp"
+#include "Engine.Common/Math/Convertion.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -134,14 +135,13 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
         /**
          * Push Model Data
          */
-        const auto trans { math::mat4::make_identity().translate(_owner->getWorldTransform().position()) };
+        const auto trans {
+            math::mat4::make_identity().translate(_owner->getWorldTransform().location().operator math::fvec3())
+        };
+        const auto rotation = math::as<math::quaternion, math::mat4>(
+            _owner->getWorldTransform().rotator().quaternion()
+        );
         const auto scale { math::mat4::make_identity().unchecked_scale(_owner->getWorldTransform().scale()) };
-
-        const auto euler { _owner->getWorldTransform().rotation().euler() };
-        auto rotation { math::mat4::make_identity() };
-        rotation.rotate(euler.x, math::vec3_pitch);
-        rotation.rotate(euler.y, math::vec3_yaw);
-        rotation.rotate(euler.z, math::vec3_roll);
 
         const auto mm { trans * rotation * scale };
         batch->instance.write<math::mat4>(&mm, 1ui32);

@@ -101,6 +101,39 @@ bool RevEarlySFNode::allocate(const ptr<HORenderPass> renderPass_) {
     auto cmd { _device->computeQueue()->pool()->make() };
 
     /**
+     * Allocate Uniform Buffer
+     */
+    Buffer uniform {
+        nullptr,
+        nullptr,
+        _device->vkDevice(),
+        sizeof(math::ivec3),
+        vk::BufferUsageFlagBits::eUniformBuffer
+    };
+
+    const vk::BufferCreateInfo bci {
+        vk::BufferCreateFlags {},
+        uniform.size,
+        uniform.usageFlags,
+        vk::SharingMode::eExclusive,
+        0, nullptr
+    };
+
+    uniform.buffer = _device->vkDevice().createBuffer(bci);
+    assert(uniform.buffer);
+
+    auto result = {
+        memory::allocate(&state->alloc, _device, uniform.buffer, MemoryProperty::eHostVisible, uniform.memory)
+    };
+    uniform.bind();
+
+    /**
+     * Default insert data
+     */
+    const math::ivec2 dimensions { renderPass_->target()->extent() };
+    uniform.write<math::ivec2>(&dimensions, 1ui32);
+
+    /**
      * Allocate Descriptors
      */
     Vector<shader::DiscreteBindingGroup> dbgs {};
@@ -138,6 +171,8 @@ bool RevEarlySFNode::allocate(const ptr<HORenderPass> renderPass_) {
         vk::Filter::eNearest
     );
 
+    dbgs[0].getById(shader::ShaderBinding::id_type { 4 }).store(uniform);
+
     // Warning: Temporary Solution to test
     {
         /**
@@ -168,6 +203,10 @@ bool RevEarlySFNode::allocate(const ptr<HORenderPass> renderPass_) {
     state->data.insert_or_assign(
         "RevEarlySFNode::CommandBuffer"sv,
         _STD make_shared<decltype(cmd)>(_STD move(cmd))
+    );
+    state->data.insert_or_assign(
+        "RevEarlySFNode::UniformBuffer"sv,
+        _STD make_shared<decltype(uniform)>(_STD move(uniform))
     );
     state->data.insert_or_assign(
         "RevEarlySFNode::DiscreteBindingGroups"sv,
@@ -291,6 +330,27 @@ bool RevEarlySFNode::free(const ptr<HORenderPass> renderPass_) {
     }
 
     /**
+     * Free Buffers
+     */
+    it = state->data.find("RevEarlySFNode::UniformBuffer"sv);
+    if (it != state->data.end()) {
+
+        sptr<Buffer> uniform {
+            _STD static_pointer_cast<Buffer, void>(it->second)
+        };
+
+        /**
+         *
+         */
+        uniform->destroy();
+
+        /**
+         *
+         */
+        state->data.erase(it);
+    }
+
+    /**
      * Free Command Buffers
      */
     it = renderPass_->state()->data.find("RevEarlySFNode::CommandBuffer"sv);
@@ -348,6 +408,15 @@ void RevEarlySFNode::before(
      *
      */
     cmd.bindPipeline(_pipeline.get());
+
+    /**
+     * Update Resources [BindingUpdateInterval::ePerFrame]
+     */
+    const auto uniformEntry { data.at("RevEarlySFNode::UniformBuffer"sv) };
+    auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
+
+    const math::ivec2 dimensions { renderPass_->target()->extent() };
+    uniform.write<math::ivec2>(&dimensions, 1ui32);
 
     /**
      * Bind Shared Resources for the whole Frame
@@ -435,7 +504,7 @@ void RevEarlySFNode::before(
              */
 
             // TODO: Clear previous render data
-            //cmd.vkCommandBuffer().fillBuffer(csfm->buffer, 0ui32, csfm->size, 0ui32);
+            cmd.vkCommandBuffer().fillBuffer(csfm->buffer, 0ui32, csfm->size, 0ui32);
         }
     }
     #pragma endregion
@@ -534,6 +603,14 @@ void RevEarlySFNode::setupShader(cref<sptr<Device>> device_) {
         "earlySFPassCfsm"
     };
 
+    shader::PrototypeBinding uni {
+        // Uniform Buffer (Dimensions)
+        shader::BindingType::eUniformBuffer,
+        4ui32,
+        shader::BindingUpdateInterval::ePerFrame,
+        "earlySFPassUbo"
+    };
+
     /**
      * Prepare Prototype Shader
      */
@@ -547,6 +624,7 @@ void RevEarlySFNode::setupShader(cref<sptr<Device>> device_) {
     prototype.add(cmt);
     prototype.add(mtt);
     prototype.add(csfm);
+    prototype.add(uni);
 
     /**
      * Build Shader and Bindings

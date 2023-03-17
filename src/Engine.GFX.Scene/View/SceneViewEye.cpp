@@ -7,51 +7,73 @@ using namespace hg::engine::gfx::scene;
 using namespace hg;
 
 SceneViewEye::SceneViewEye() :
-    _position(math::vec3 { 0.F }),
+    _location(),
     _projection(math::mat4::make_identity()),
-    _view(math::mat4::make_identity()) {}
+    _view(math::mat4::make_identity()),
+    _vkLocation(),
+    _vkFlipY(true) {}
 
 void SceneViewEye::updateProjection(cref<math::mat4> projection_) {
+
     _projection = projection_;
+
+    #if TRUE
+    if (_vkFlipY) {
+        _projection[1][1] *= -1.F;
+    }
+    #endif
 }
 
-void SceneViewEye::updateView(cref<math::vec3> origin_, cref<math::vec3> eulerRotation_) {
+void SceneViewEye::updateView(cref<math::Location> origin_, cref<math::Rotator> rotation_) {
 
-    _position = origin_;
+    /* Handle (vk) Rotation */
 
     math::mat4 rotationMatrix { math::mat4::make_identity() };
-    rotationMatrix.rotate(eulerRotation_.x, math::vec3_right);
-    rotationMatrix.rotate(eulerRotation_.y, math::vec3_up);
-    rotationMatrix.rotate(eulerRotation_.z, math::vec3_forward);
 
-    const auto translateMatrix { math::mat4::make_identity().translate(origin_) };
+    #if FALSE
+    rotationMatrix.rotate(rotation_.pitch() * (_vkFlipY ? -1.F : 1.F), math::vec3_right);
+    #else
+    rotationMatrix.rotate(rotation_.pitch(), math::vec3_right);
+    #endif
+
+    rotationMatrix.rotate(rotation_.yaw(), math::vec3_up);
+    rotationMatrix.rotate(rotation_.roll(), math::vec3_forward);
+
+    /* Handle (vk) Translation */
+
+    _location = origin_;
+
+    auto translation = origin_.operator math::fvec3();
+
+    #if FALSE
+    if (_vkFlipY) {
+        translation.y *= -1.F;
+    }
+    #endif
+
+    const auto translationMatrix = math::mat4::make_identity().translate(translation);
+
+    /* Update View */
 
     constexpr bool fpc = true;// Using first person as default
     if constexpr (fpc) {
-        _view = rotationMatrix * translateMatrix;
+        _view = rotationMatrix * translationMatrix;
     } else {
-        _view = translateMatrix * rotationMatrix;
+        _view = translationMatrix * rotationMatrix;
     }
 
+    /* Handle (vk) View Position */
+
+    _vkLocation = math::Location(_view.inverse()[3]);
+    //_vkLocation = math::Location { _location.operator math::fvec3() * math::fvec3 { -1.F, 1.F, -1.F } };
 }
 
-void SceneViewEye::updateView(cref<math::vec3> origin_, cref<math::quaternion> rotation_) {
-
-    _position = origin_;
-
-    const auto rotationMatrix { math::as<math::quaternion, math::mat4>(rotation_) };
-    const auto translateMatrix { math::mat4::make_identity().translate(origin_) };
-
-    constexpr bool fpc = true;// Using first person as default
-    if constexpr (fpc) {
-        _view = rotationMatrix * translateMatrix;
-    } else {
-        _view = translateMatrix * rotationMatrix;
-    }
+void SceneViewEye::updateView(cref<math::Location> origin_, cref<math::quaternion> rotation_) {
+    updateView(origin_, math::as<math::quaternion, math::Rotator>(rotation_));
 }
 
-cref<math::vec3> SceneViewEye::getOrigin() const noexcept {
-    return _position;
+cref<math::Location> SceneViewEye::getOrigin() const noexcept {
+    return _location;
 }
 
 cref<math::mat4> SceneViewEye::getProjectionMatrix() const noexcept {
@@ -156,4 +178,13 @@ void SceneViewEye::screenToWorld(
 
     worldOrigin_ = origin;
     worldDirection_ = direction;
+}
+
+void SceneViewEye::vkSetFlipY(bool flip_) {
+    _vkFlipY = flip_;
+    // TODO: Update View and Projection
+}
+
+cref<math::Location> SceneViewEye::getVkLocation() const noexcept {
+    return _vkLocation;
 }

@@ -44,13 +44,16 @@ void CameraModel::update(const ptr<engine::scene::Scene> scene_) {
     const auto ct { _owner->getLocalTransform() };
     const auto rt { _owner->getRootComponent()->getLocalTransform() };
 
-    view.updateView(rt.position(), (rt.rotation() * ct.rotation()).euler());
+    const auto& outer = rt.rotator();
+    const auto& inner = ct.rotator();
+
+    view.updateView(rt.location(), math::Rotator::combine(outer, inner));
 
     /**/
 
     math::mat4 projection;
     if (owner.getProjectMode() == CameraProjectionMode::ePerspective) {
-        projection = math::perspective(owner.getFov(), owner.getAspectRatio(), ZNEAR, ZFAR);
+        projection = math::perspective(glm::radians(owner.getFov()), owner.getAspectRatio(), ZNEAR, ZFAR);
     } else {
         projection = math::ortho(0.F, ORTHO_WIDTH, ORTHO_HEIGHT, 0.F, ZNEAR, ZFAR);
     }
