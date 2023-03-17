@@ -434,7 +434,7 @@ void RevMainStaticNode::before(
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
     cref<scene::SceneViewEye> eye { *renderPass_->sceneView() };
-    math::mat4 mvpc { vk_norm_mat_m * eye.getProjectionMatrix() * eye.getViewMatrix() };
+    math::mat4 mvpc { eye.getProjectionMatrix() * eye.getViewMatrix() };
     uniform.write<math::mat4>(&mvpc, 1ui32);
 
     /**

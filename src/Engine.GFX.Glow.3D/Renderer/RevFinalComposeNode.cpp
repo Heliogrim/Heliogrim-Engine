@@ -210,7 +210,8 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
         vk::ImageLayout::eShaderReadOnlyOptimal,
         vk::SamplerAddressMode::eClampToBorder,
         vk::SamplerMipmapMode::eNearest,
-        vk::Filter::eNearest
+        vk::Filter::eNearest,
+        vk::BorderColor::eFloatOpaqueWhite
     );
     dbgs[0].getById(shader::ShaderBinding::id_type { 4 }).
             storeAs(*pbrPosition, vk::ImageLayout::eShaderReadOnlyOptimal);
@@ -222,7 +223,7 @@ bool RevFinalComposeNode::allocate(const ptr<HORenderPass> renderPass_) {
                 *brdfLut,
                 vk::ImageLayout::eShaderReadOnlyOptimal,
                 vk::SamplerAddressMode::eClampToEdge,
-                vk::SamplerMipmapMode::eLinear,
+                vk::SamplerMipmapMode::eNearest,
                 vk::Filter::eLinear,
                 vk::BorderColor::eFloatOpaqueWhite
             );
@@ -451,8 +452,13 @@ void RevFinalComposeNode::before(
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
     cref<scene::SceneViewEye> eye { *renderPass_->sceneView() };
-    auto pos { eye.getOrigin() };
-    uniform.write<math::vec3>(&pos, 1ui32);
+    #if TRUE
+    auto eyePos = eye.getVkLocation().operator math::fvec3();
+    uniform.write<math::vec3>(&eyePos, 1ui32);
+    #else
+    auto eyePos { eye.getOrigin().operator math::fvec3() };
+    uniform.write<math::vec3>(&eyePos, 1ui32);
+    #endif
 
     /**
      *

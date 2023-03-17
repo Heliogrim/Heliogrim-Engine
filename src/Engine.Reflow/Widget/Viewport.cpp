@@ -1,5 +1,6 @@
 #include "Viewport.hpp"
 
+#include "Engine.Common/Math/Convertion.hpp"
 #include "Engine.GFX/Swapchain/VkSwapchain.hpp"
 #include "Engine.Reflow/Style/BoundStyleSheet.hpp"
 
@@ -7,7 +8,6 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include "Engine.GFX/RenderTarget.hpp"
-#include "Engine.GFX/Camera/Camera.hpp"
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.GFX/Texture/ProxyTexture.hpp>
 #include <Heliogrim/Actors/CameraActor.hpp>
@@ -340,55 +340,74 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
         case 'a': {
             response = EventResponse::eConsumed;
 
-            math::mat4 rotation { 1.F };
-            ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
+            ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
 
-            tf.setPosition(
-                tf.position() + (rotation * math::vec4 { math::vec3_left, 0.F }).xyz().normalize() * factor
+            auto rlwd = rtf.rotator().quaternion()._left();
+
+            rtf.setLocation(
+                math::Location(
+                    rtf.location().operator math::fvec3() + rlwd.normalize() * factor
+                )
             );
             break;
         }
         case 'd': {
             response = EventResponse::eConsumed;
 
-            math::mat4 rotation { 1.F };
-            ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
+            ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
 
-            tf.setPosition(
-                tf.position() + (rotation * math::vec4 { math::vec3_right, 0.F }).xyz().normalize() * factor
+            auto rrwd = -rtf.rotator().quaternion()._left();
+
+            rtf.setLocation(
+                math::Location(
+                    rtf.location().operator math::fvec3() + rrwd.normalize() * factor
+                )
             );
             break;
         }
         case 's': {
             response = EventResponse::eConsumed;
 
-            math::mat4 rotation { 1.F };
-            ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
+            ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
+            cref<Transform> ctf = _cameraActor->getCameraComponent()->getLocalTransform();
 
-            tf.setPosition(
-                tf.position() + (rotation * math::vec4 { math::vec3_backward, 0.F }).xyz().normalize() * factor
+            const auto rotator = math::Rotator::combine(rtf.rotator(), ctf.rotator());
+            auto rbwd = -rotator.quaternion().__forward();
+            rbwd.x *= -1.F;
+
+            rtf.setLocation(
+                math::Location(
+                    rtf.location().operator math::fvec3() + rbwd.normalize() * factor
+                )
             );
             break;
         }
         case 'w': {
             response = EventResponse::eConsumed;
 
-            math::mat4 rotation { 1.F };
-            ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
+            ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
+            cref<Transform> ctf = _cameraActor->getCameraComponent()->getLocalTransform();
 
-            tf.setPosition(
-                tf.position() + (rotation * math::vec4 { math::vec3_forward, 0.F }).xyz().normalize() * factor
+            const auto rotator = math::Rotator::combine(rtf.rotator(), ctf.rotator());
+            auto rfwd = rotator.quaternion().__forward();
+            rfwd.x *= -1.F;
+
+            rtf.setLocation(
+                math::Location(
+                    rtf.location().operator math::fvec3() + rfwd.normalize() * factor
+                )
             );
             break;
         }
         case 'q': {
             response = EventResponse::eConsumed;
 
-            math::mat4 rotation { 1.F };
             ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
 
-            tf.setPosition(
-                tf.position() + (rotation * math::vec4 { math::vec3_up, 0.F }).xyz().normalize() * factor
+            tf.setLocation(
+                math::Location(
+                    tf.location().operator math::fvec3() + math::vec3_down * factor
+                )
             );
             break;
         }
@@ -396,11 +415,12 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
         case 'c': {
             response = EventResponse::eConsumed;
 
-            math::mat4 rotation { 1.F };
             ref<Transform> tf { _cameraActor->getRootComponent()->getLocalTransform() };
 
-            tf.setPosition(
-                tf.position() + (rotation * math::vec4 { math::vec3_down, 0.F }).xyz().normalize() * factor
+            tf.setLocation(
+                math::Location(
+                    tf.location().operator math::fvec3() + math::vec3_up * factor
+                )
             );
             break;
         }
@@ -441,14 +461,11 @@ EventResponse Viewport::onMouseMove(cref<MouseMoveEvent> event_) {
     dxdy.x = glm::radians(dxdy.x);
     dxdy.y = glm::radians(dxdy.y);
 
-    const auto pitch { math::quaternion::euler({ -dxdy.y, 0.F, 0.F }) };
-    const auto yaw { math::quaternion::euler({ 0.F, -dxdy.x, 0.F }) };
-
     ref<Transform> rtf { _cameraActor->getRootComponent()->getLocalTransform() };
     ref<Transform> ctf { _cameraActor->getCameraComponent()->getLocalTransform() };
 
-    rtf.setRotation(rtf.rotation() * yaw);
-    ctf.setRotation(ctf.rotation() * pitch);
+    rtf.rotator() += math::Rotator { 0.F, dxdy.x, 0.F };
+    ctf.rotator() += math::Rotator { dxdy.y, 0.F, 0.F };
 
     return EventResponse::eConsumed;
 }

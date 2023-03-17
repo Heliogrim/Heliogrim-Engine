@@ -188,15 +188,6 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makePage(
 
 non_owning_rptr<VirtualTexturePage> VirtualTexture::makeOpaquePage(u32 layer_) {
 
-    assert(
-        _format == TextureFormat::eR8Unorm ||
-        _format == TextureFormat::eR8G8B8A8Unorm ||
-        _format == TextureFormat::eR16G16B16A16Sfloat ||
-        _format == TextureFormat::eR32G32B32A32Sfloat ||
-        _format == TextureFormat::eR16Sfloat
-    );
-    assert(_type == TextureType::e2dArray || _type == TextureType::eCube);
-
     #ifdef _DEBUG
     assert(_layers >= layer_);
     #endif

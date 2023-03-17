@@ -196,19 +196,22 @@ void ObjectValueMapper<StaticGeometryComponent>::update(cref<sptr<engine::reflow
     {
         const auto wrap { transform->getContent() };
 
-        _STD static_pointer_cast<InputVec3, Widget>((*wrap->children())[0])->setValue(mat.position());
-        _STD static_pointer_cast<InputVec3, Widget>((*wrap->children())[1])->setValue(mat.rotation().euler());
+        _STD static_pointer_cast<InputVec3, Widget>((*wrap->children())[0])->setValue(
+            mat.location().operator math::fvec3()
+        );
+        _STD static_pointer_cast<InputVec3, Widget>((*wrap->children())[1])->setValue(mat.rotator().euler());
         _STD static_pointer_cast<InputVec3, Widget>((*wrap->children())[2])->setValue(mat.scale());
 
         _STD static_pointer_cast<InputVec3, Widget>((*wrap->children())[0])->_callback = [sgc = &sgc
             ](math::vec3 value_) {
-                const_cast<ref<Transform>>(sgc->getWorldTransform()).setPosition(_STD move(value_));
+                const_cast<ref<Transform>>(sgc->getWorldTransform()).setLocation(math::Location(_STD move(value_)));
             };
 
-        _STD static_pointer_cast<InputVec3, Widget>((*wrap->children())[1])->_callback = [sgc = &sgc
-            ](math::vec3 value_) {
-                const_cast<ref<Transform>>(sgc->getWorldTransform()).setRotation(
-                    math::quaternion::euler(value_)
+        _STD static_pointer_cast<InputVec3, Widget>((*wrap->children())[1])->_callback = [sgc = &sgc](
+            math::vec3 value_
+        ) {
+                const_cast<ref<Transform>>(sgc->getWorldTransform()).setRotator(
+                    math::Rotator::fromEuler(_STD move(value_))
                 );
             };
 

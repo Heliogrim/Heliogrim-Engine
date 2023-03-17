@@ -111,10 +111,12 @@ ptr<cache::ModelBatch> SkyboxModel::batch(const ptr<render::RenderPassState> sta
         /**
          * Push Model Data
          */
-        const auto trans { math::mat4::make_identity().translate(_owner->getWorldTransform().position()) };
+        const auto trans {
+            math::mat4::make_identity().translate(_owner->getWorldTransform().location().operator math::fvec3())
+        };
         const auto scale { math::mat4::make_identity().unchecked_scale(_owner->getWorldTransform().scale()) };
 
-        const auto euler { _owner->getWorldTransform().rotation().euler() };
+        const auto euler { _owner->getWorldTransform().rotator().euler() };
         auto rotation { math::mat4::make_identity() };
         rotation.rotate(euler.x, math::vec3_pitch);
         rotation.rotate(euler.y, math::vec3_yaw);

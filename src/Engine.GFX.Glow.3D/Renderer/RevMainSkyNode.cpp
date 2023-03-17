@@ -372,7 +372,7 @@ void RevMainSkyNode::before(
     view[0][3] = 0.0;
     view[3] = math::vec4(0.0);
 
-    math::mat4 mvp { vk_norm_mat_m * eye.getProjectionMatrix() * view };
+    math::mat4 mvp { eye.getProjectionMatrix() * view };
     uniform.write<math::mat4>(&mvp, 1ui32);
 }
 

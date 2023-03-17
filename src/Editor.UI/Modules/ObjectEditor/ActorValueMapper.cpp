@@ -129,19 +129,21 @@ void ObjectValueMapper<Actor>::update(cref<sptr<engine::reflow::Box>> parent_, c
         _STD format(R"({}-{}-{}-{})", actorGuid.pre, actorGuid.c0, actorGuid.c1, actorGuid.post)
     );
 
-    _STD static_pointer_cast<InputVec3, Widget>(children[1])->setValue(mat.position());
-    _STD static_pointer_cast<InputVec3, Widget>(children[2])->setValue(mat.rotation().euler());
+    _STD static_pointer_cast<InputVec3, Widget>(children[1])->setValue(mat.location().operator math::fvec3());
+    _STD static_pointer_cast<InputVec3, Widget>(children[2])->setValue(mat.rotator().euler());
     _STD static_pointer_cast<InputVec3, Widget>(children[3])->setValue(mat.scale());
 
     /**/
 
     _STD static_pointer_cast<InputVec3, Widget>(children[1])->_callback = [actor = &actor](math::vec3 value_) {
-        const_cast<ref<Transform>>(actor->getRootComponent()->getWorldTransform()).setPosition(_STD move(value_));
+        const_cast<ref<Transform>>(actor->getRootComponent()->getWorldTransform()).setLocation(
+            math::Location(_STD move(value_))
+        );
     };
 
     _STD static_pointer_cast<InputVec3, Widget>(children[2])->_callback = [actor = &actor](math::vec3 value_) {
-        const_cast<ref<Transform>>(actor->getRootComponent()->getWorldTransform()).setRotation(
-            math::quaternion::euler(value_)
+        const_cast<ref<Transform>>(actor->getRootComponent()->getWorldTransform()).setRotator(
+            math::Rotator::fromEuler(_STD move(value_))
         );
     };
 

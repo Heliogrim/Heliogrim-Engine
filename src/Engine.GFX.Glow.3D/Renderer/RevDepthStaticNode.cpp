@@ -230,7 +230,7 @@ bool RevDepthStaticNode::allocate(const ptr<HORenderPass> renderPass_) {
     dbgs[2].getById(shader::ShaderBinding::id_type { 3 }).storeAdv(
         markerTexture->texture(),
         vk::ImageLayout::eShaderReadOnlyOptimal,
-        vk::SamplerAddressMode::eClampToBorder,
+        vk::SamplerAddressMode::/* eClampToBorder */eMirroredRepeat,
         vk::SamplerMipmapMode::eNearest,
         vk::Filter::eNearest
     );
@@ -423,7 +423,7 @@ void RevDepthStaticNode::before(
     auto& uniform { *_STD static_pointer_cast<Buffer, void>(uniformEntry) };
 
     cref<scene::SceneViewEye> eye { *renderPass_->sceneView() };
-    math::mat4 mvpc { vk_norm_mat_m * eye.getProjectionMatrix() * eye.getViewMatrix() };
+    math::mat4 mvpc { eye.getProjectionMatrix() * eye.getViewMatrix() };
     uniform.write<math::mat4>(&mvpc, 1ui32);
 
     /**
