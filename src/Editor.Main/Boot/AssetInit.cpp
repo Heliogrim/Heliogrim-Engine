@@ -11,6 +11,7 @@
 #include <fstream>
 
 #include "Heliogrim.Default/Assets/Fonts/CascadiaCode.hpp"
+#include "Heliogrim.Default/Assets/GfxMaterials/DefaultMaterial.hpp"
 #include "Heliogrim.Default/Assets/GfxMaterials/DefaultSkybox.hpp"
 #include "Heliogrim.Default/Assets/Images/Brand.hpp"
 #include "Heliogrim.Default/Assets/Images/DefaultMetalness.hpp"
@@ -158,6 +159,7 @@
 #include "Game.Main/Assets/Images/DefaultNormal.hpp"
 #include "Game.Main/Assets/Images/DefaultSkybox.hpp"
 #include "Game.Main/Assets/Meshes/Sphere.hpp"
+#include "Game.Main/Assets/Meshes/PlaneD128.hpp"
 #include "Game.Main/Assets/Textures/DefaultAlpha.hpp"
 #include "Game.Main/Assets/Textures/DefaultAO.hpp"
 #include "Game.Main/Assets/Textures/DefaultMetalness.hpp"
@@ -383,6 +385,10 @@ static void initMaterialDefaults() {
     delete(new(texture::DefaultMetalness));
     delete(new(texture::DefaultNormal));
     delete(new(texture::DefaultRoughness));
+
+    /**/
+
+    delete(new(material::DefaultMaterial));
 }
 
 static void initSkyboxDefaults() {

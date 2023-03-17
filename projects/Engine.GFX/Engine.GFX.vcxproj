@@ -101,7 +101,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Cache\LocalCacheCtrl.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\LocalResourceCache.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\TransientCache.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Camera\Camera.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Camera\CameraFrustum.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Color\Color.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Command\CommandBatch.cpp" />
@@ -213,7 +212,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Cache\ModelBatch.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\TransientCache.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\__fwd.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Camera\Camera.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Camera\CameraFrustum.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Camera\CameraModes.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Color\Color.hpp" />

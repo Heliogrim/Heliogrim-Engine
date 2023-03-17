@@ -480,6 +480,9 @@
     <ClInclude Include="..\..\src\Heliogrim.Default\Assets\Textures\UIDummy.hpp">
       <Filter>Headerdateien\Assets\Textures</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultMaterial.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Heliogrim.Default\Assets\Textures\DefaultAlpha.cpp">
@@ -691,6 +694,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Heliogrim.Default\Assets\Textures\UIDummy.cpp">
       <Filter>Quelldateien\Assets\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultMaterial.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
