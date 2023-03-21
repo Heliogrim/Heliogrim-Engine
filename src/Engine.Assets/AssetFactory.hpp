@@ -6,8 +6,8 @@
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.GFX/TextureFormat.hpp>
 #include <Engine.GFX/Texture/TextureType.hpp>
+#include <Engine.Assets.System/__fwd.hpp>
 
-#include "Database/AssetDatabase.hpp"
 #include "Types/Asset.hpp"
 
 namespace hg::engine::assets {
@@ -25,6 +25,11 @@ namespace hg::engine::assets {
 }
 
 namespace hg::engine::assets {
+    /**/
+    extern void storeDefaultNameAndUrl(non_owning_rptr<Asset> asset_, string source_);
+
+    /**/
+
     class AssetFactory {
     public:
         using value_type = AssetFactory;
@@ -37,10 +42,11 @@ namespace hg::engine::assets {
          *
          * @author Julius
          * @date 06.10.2021
-         *
-         * @param  database_ The database.
          */
-        AssetFactory(ptr<AssetDatabase> database_) noexcept;
+        AssetFactory(
+            const non_owning_rptr<IAssetRegistry> registry_,
+            const non_owning_rptr<system::InMemAssetRepository> repository_
+        ) noexcept;
 
         /**
          * Destructor
@@ -51,10 +57,8 @@ namespace hg::engine::assets {
         ~AssetFactory() noexcept;
 
     private:
-        /**
-         * Asset Database
-         */
-        ptr<AssetDatabase> _database;
+        non_owning_rptr<IAssetRegistry> _registry;
+        non_owning_rptr<system::InMemAssetRepository> _repository;
 
     private:
         [[nodiscard]] Url resolveAsSource(cref<string> url_) const noexcept;

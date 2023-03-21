@@ -22,7 +22,6 @@
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.Assets/Database/AssetDatabase.hpp>
 #include <Engine.Reflect/Cast.hpp>
 
 #include "RevMainSharedNode.hpp"
@@ -37,6 +36,7 @@
 
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Assets/Types/Texture/Texture.hpp"
+#include "Engine.Assets.System/IAssetRegistry.hpp"
 #include "Engine.GFX/Texture/VirtualTextureView.hpp"
 #include "Engine.GFX.Loader/Texture/Traits.hpp"
 
@@ -629,22 +629,20 @@ void RevMainSkyNode::setupShader(cref<sptr<Device>> device_) {
 const ptr<const VirtualTextureView> RevMainSkyNode::getDefaultSkybox() const {
     const auto defaultSkyboxGuid { game::assets::texture::DefaultSkybox::unstable_auto_guid() };
 
-    const auto* const db { Engine::getEngine()->getAssets()->getDatabase() };
+    const auto* const registry { Engine::getEngine()->getAssets()->getRegistry() };
     auto& loader { Engine::getEngine()->getResources()->loader() };
 
     /**
      * Load texture assets -> Get resource handler
      */
-    auto query { db->query(defaultSkyboxGuid) };
+    auto* defaultAsset = registry->findAssetByGuid(defaultSkyboxGuid);
 
-    if (not query.exists()) {
+    if (defaultAsset == nullptr) {
         delete (new game::assets::texture::DefaultSkybox());
-        query = db->query(defaultSkyboxGuid);
+        defaultAsset = registry->findAssetByGuid(defaultSkyboxGuid);
     }
 
-    assert(query.exists());
-
-    auto* const defaultAsset { query.get() };
+    assert(defaultAsset != nullptr);
 
     #ifdef _DEBUG
     if (!defaultAsset->getClass()->isExactType<assets::Texture>()) {

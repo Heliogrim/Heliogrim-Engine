@@ -4,7 +4,7 @@
 #include <Engine.Core/Module/CoreModule.hpp>
 
 namespace hg::engine::assets {
-    class AssetDatabase;
+    class IAssetRegistry;
     class AssetFactory;
 }
 
@@ -14,7 +14,7 @@ namespace hg::engine {
     public:
         using this_type = Assets;
 
-        using AssetDatabase = ::hg::engine::assets::AssetDatabase;
+        using IAssetRegistry = ::hg::engine::assets::IAssetRegistry;
         using AssetFactory = ::hg::engine::assets::AssetFactory;
 
     public:
@@ -36,11 +36,11 @@ namespace hg::engine {
         void destroy() override;
 
     private:
-        uptr<AssetDatabase> _database;
+        uptr<IAssetRegistry> _registry;
         uptr<AssetFactory> _factory;
 
     public:
-        [[nodiscard]] const non_owning_rptr<AssetDatabase> getDatabase() const noexcept;
+        [[nodiscard]] const non_owning_rptr<IAssetRegistry> getRegistry() const noexcept;
 
         [[nodiscard]] const non_owning_rptr<AssetFactory> getFactory() const noexcept;
     };

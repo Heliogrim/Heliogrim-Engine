@@ -25,3 +25,11 @@ string_view Asset::getAssetName() const noexcept {
 void Asset::setAssetName(string_view assetName_) {
     _assetName = assetName_;
 }
+
+string_view Asset::getVirtualUrl() const noexcept {
+    return _virtualUrl;
+}
+
+void Asset::setVirtualUrl(string_view virtualUrl_) {
+    _virtualUrl = virtualUrl_;
+}

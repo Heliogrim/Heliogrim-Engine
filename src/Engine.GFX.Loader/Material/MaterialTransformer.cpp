@@ -1,7 +1,6 @@
 #include "MaterialTransformer.hpp"
 
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Database/AssetDatabase.hpp>
 #include <Engine.Assets/Types/Texture/Texture.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Buffer/Buffer.hpp>
@@ -18,6 +17,8 @@
 
 #include "../Texture/TextureResource.hpp"
 #include "../Texture/Traits.hpp"
+#include "Engine.Assets.System/IAssetRegistry.hpp"
+#include "Engine.Reflect/Cast.hpp"
 
 using namespace hg::engine::gfx::loader;
 using namespace hg::engine::gfx;
@@ -25,7 +26,7 @@ using namespace hg;
 
 [[nodiscard]] static smr<engine::gfx::TextureResource> resolveTexture(
     mref<asset_guid> guid_,
-    const non_owning_rptr<const engine::assets::AssetDatabase> database_,
+    const non_owning_rptr<const engine::assets::IAssetRegistry> registry_,
     const non_owning_rptr<const engine::resource::LoaderManager> loader_
 );
 
@@ -47,7 +48,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
     // auto source = next_(next_type::next_request_type::type {}, next_type::next_request_type::options {});
 
     const auto& loader = engine::Engine::getEngine()->getResources()->loader();
-    const auto* const database = engine::Engine::getEngine()->getAssets()->getDatabase();
+    const auto* const registry = engine::Engine::getEngine()->getAssets()->getRegistry();
 
     using derived_type = ::hg::engine::resource::UniqueResource<MaterialResource::value_type>;
     auto dst = make_smr<MaterialResource, derived_type>(
@@ -60,27 +61,27 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
     /**/
 
     if (request_->diffuse()) {
-        material._diffuse = resolveTexture(request_->diffuse(), database, &loader);
+        material._diffuse = resolveTexture(request_->diffuse(), registry, &loader);
     }
 
     if (request_->normal()) {
-        material._normal = resolveTexture(request_->normal(), database, &loader);
+        material._normal = resolveTexture(request_->normal(), registry, &loader);
     }
 
     if (request_->metalness()) {
-        material._metalness = resolveTexture(request_->metalness(), database, &loader);
+        material._metalness = resolveTexture(request_->metalness(), registry, &loader);
     }
 
     if (request_->roughness()) {
-        material._roughness = resolveTexture(request_->roughness(), database, &loader);
+        material._roughness = resolveTexture(request_->roughness(), registry, &loader);
     }
 
     if (request_->ao()) {
-        material._ao = resolveTexture(request_->ao(), database, &loader);
+        material._ao = resolveTexture(request_->ao(), registry, &loader);
     }
 
     if (request_->alpha()) {
-        material._alpha = resolveTexture(request_->alpha(), database, &loader);
+        material._alpha = resolveTexture(request_->alpha(), registry, &loader);
     }
 
     /**/
@@ -238,19 +239,18 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
 
 smr<engine::gfx::TextureResource> resolveTexture(
     mref<asset_guid> guid_,
-    const non_owning_rptr<const engine::assets::AssetDatabase> database_,
+    const non_owning_rptr<const engine::assets::IAssetRegistry> registry_,
     const non_owning_rptr<const engine::resource::LoaderManager> loader_
 ) {
 
     /**
      * Resolve texture asset from database
      */
-    const auto query = database_->query(guid_);
-    assert(query.exists());
-
-    auto* asset = static_cast<ptr<engine::assets::Texture>>(query.get());
+    auto* const asset = registry_->findAssetByGuid(guid_);
 
     #ifdef _DEBUG
+    assert(asset != nullptr);
+
     if (!asset->getClass()->isExactType<engine::assets::Texture>()) {
         __debugbreak();
     }
@@ -260,9 +260,14 @@ smr<engine::gfx::TextureResource> resolveTexture(
      * Load texture asset to get the internal resource handle
      *  // TODO: This should be a non-residential load operation, cause we only need the handle
      */
+    auto* textureAsset = Cast<engine::assets::Texture, engine::assets::Asset, false>(asset);
     auto texture = loader_->loadImmediately<engine::assets::Texture, TextureResource>(
-        _STD move(asset),
-        TextureLoadOptions {}
+        _STD move(textureAsset),
+        TextureLoadOptions {
+            textureAsset->getExtent().x >= 8192 ?
+                TextureLoadDataFlagBits::eLazyDataLoading :
+                TextureLoadDataFlagBits::eNone
+        }
     );
 
     /**/

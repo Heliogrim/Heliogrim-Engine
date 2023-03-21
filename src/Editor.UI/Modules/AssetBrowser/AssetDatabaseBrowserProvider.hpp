@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Assets/Database/AssetDatabase.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 
 #include "AssetBrowserProvider.hpp"
@@ -15,13 +15,13 @@ namespace hg::editor::ui {
 
     public:
         AssetDatabaseBrowserProvider(
-            const non_owning_rptr<engine::assets::AssetDatabase> database_
+            const non_owning_rptr<engine::assets::IAssetRegistry> database_
         ) noexcept;
 
         ~AssetDatabaseBrowserProvider() override;
 
     private:
-        non_owning_rptr<engine::assets::AssetDatabase> _database;
+        non_owning_rptr<engine::assets::IAssetRegistry> _registry;
 
     public:
         non_owning_rptr<this_type> createProvider(cref<Url> url_) override;

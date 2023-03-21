@@ -14,6 +14,7 @@
 #include <Engine.GFX/Renderer/RenderDataToken.hpp>
 #include <Engine.Logging/Logger.hpp>
 
+#include "Engine.Assets.System/IAssetRegistry.hpp"
 #include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.GFX/VkFixedPipeline.hpp"
@@ -923,34 +924,30 @@ void UiMainStageNode::rebuildImageDescriptors(
 #include <Heliogrim.Default/Assets/Images/UIDummy.hpp>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets/AssetFactory.hpp>
-#include <Engine.Assets/Database/AssetDatabase.hpp>
 #include <Engine.Assets/Types/Image.hpp>
 #endif
 
 void UiMainStageNode::setupDefaultImage() {
 
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
-    auto* const db = Engine::getEngine()->getAssets()->getDatabase();
+    auto* const registry = Engine::getEngine()->getAssets()->getRegistry();
 
     {
-        db->insert(
-            factory->createImageAsset(
-                game::assets::image::UIDummy::unstable_auto_guid(),
-                R"(resources\imports\ktx\default_ui.ktx)"
-            )
+        factory->createImageAsset(
+            game::assets::image::UIDummy::unstable_auto_guid(),
+            R"(resources\imports\ktx\default_ui.ktx)"
         );
-
         delete(new(game::assets::texture::UIDummy));
     }
 
     /**/
 
-    const auto query = db->query(game::assets::texture::UIDummy::unstable_auto_guid());
-    assert(query.exists());
+    auto* const asset = registry->findAssetByGuid(game::assets::texture::UIDummy::unstable_auto_guid());
+    assert(asset != nullptr);
 
     /**/
 
-    auto request = static_cast<ptr<assets::Texture>>(query.get());
+    auto request = static_cast<ptr<assets::Texture>>(asset);
     auto resource = Engine::getEngine()->getResources()->loader().load<assets::Texture, TextureResource>(
         _STD move(request)
     );

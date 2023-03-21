@@ -8,7 +8,7 @@
 #include <Engine.Common/Collection/RobinMap.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Assets/Types/Texture/Texture.hpp>
-#include <Engine.Assets/Database/AssetDatabase.hpp>
+#include <Engine.Assets.System/__fwd.hpp>
 
 namespace hg::editor::ui {
     class AssetBrowserHelper final {
@@ -37,7 +37,7 @@ namespace hg::editor::ui {
         void setup();
 
     private:
-        ptr<engine::assets::AssetDatabase> _assetDb;
+        ptr<engine::assets::IAssetRegistry> _assetRegistry;
 
     private:
         ptr<engine::assets::Texture> _defaultTypeIcon;

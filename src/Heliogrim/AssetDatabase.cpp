@@ -1,8 +1,10 @@
 #include "AssetDatabase.hpp"
 
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Database/AssetDatabase.hpp>
-#include <Engine.Assets/Database/AssetDatabaseQuery.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets.System/AssetDescriptor.hpp>
+#include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Core/Engine.hpp>
 
 using namespace hg;
@@ -14,31 +16,28 @@ AssetDatabase::~AssetDatabase() = default;
 
 bool AssetDatabase::contains(cref<asset_guid> guid_) const noexcept {
 
-    const auto& idb { *static_cast<const non_owning_rptr<engine::assets::AssetDatabase>>(_internal) };
-    const auto query { idb.query(guid_) };
-
-    return query.exists();
+    const auto& idb { *static_cast<const non_owning_rptr<engine::assets::IAssetRegistry>>(_internal) };
+    return idb.hasAsset(guid_);
 }
 
 AssetDatabaseResult<Asset> AssetDatabase::operator[](cref<asset_guid> guid_) const {
 
-    const auto& idb { *static_cast<const non_owning_rptr<engine::assets::AssetDatabase>>(_internal) };
-    const auto query { idb.query(guid_) };
+    const auto& idb { *static_cast<const non_owning_rptr<engine::assets::IAssetRegistry>>(_internal) };
+    auto* const asset = idb.findAssetByGuid(guid_);
 
-    if (!query.exists()) {
+    if (asset == nullptr) {
         return AssetDatabaseResult<Asset> {
             { AssetDatabaseResultType::eFailed },
             hg::Asset { invalid_asset_guid, asset_type_id { 0 }, nullptr }
         };
     }
 
-    auto value = query.get();
     return AssetDatabaseResult<Asset> {
         { AssetDatabaseResultType::eSuccess },
         {
-            value->get_guid(),
-            value->getTypeId(),
-            value
+            asset->get_guid(),
+            asset->getTypeId(),
+            asset
         }
     };
 }
@@ -47,16 +46,12 @@ bool AssetDatabase::insert(ptr<Asset> asset_) noexcept {
 
     DEBUG_ASSERT(asset_->_internal != nullptr, "Asset should have internal state representation.")
 
-    const auto& idb { *static_cast<const non_owning_rptr<engine::assets::AssetDatabase>>(_internal) };
-    auto query { idb.query(asset_->guid()) };
-
-    return query.insert(asset_->typeId(), static_cast<ptr<engine::assets::Asset>>(asset_->_internal));
+    auto& idb { *static_cast<const non_owning_rptr<engine::assets::IAssetRegistry>>(_internal) };
+    engine::assets::storeDefaultNameAndUrl(static_cast<ptr<engine::assets::Asset>>(asset_->_internal), {});
+    return idb.insert({ static_cast<ptr<engine::assets::Asset>>(asset_->_internal) });
 }
 
 bool AssetDatabase::erase(ptr<Asset> asset_) noexcept {
-
-    const auto& idb { *static_cast<const non_owning_rptr<engine::assets::AssetDatabase>>(_internal) };
-    auto query { idb.query(asset_->guid()) };
-
-    return query.remove();
+    auto& idb { *static_cast<const non_owning_rptr<engine::assets::IAssetRegistry>>(_internal) };
+    return idb.removeAssetByGuid(asset_->guid());
 }

@@ -4,6 +4,7 @@
 #include <Engine.Logging/Logger.hpp>
 
 #include "../../Source/FileSource.hpp"
+#include "Engine.Assets.System/IAssetRegistry.hpp"
 
 using namespace hg::engine::resource::loader;
 using namespace hg;
@@ -73,7 +74,6 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Database/AssetDatabase.hpp>
 #include <Engine.Reflect/Cast.hpp>
 
 Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
@@ -84,17 +84,16 @@ Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
             const auto* const texture = static_cast<const ptr<const engine::assets::Texture>>(asset_);
             const auto baseImageGuid = texture->baseImage();
 
-            const auto* const database = engine::Engine::getEngine()->getAssets()->getDatabase();
-            const auto query = database->query(baseImageGuid);
+            const auto* const registry = engine::Engine::getEngine()->getAssets()->getRegistry();
+            const auto* const asset = registry->findAssetByGuid(baseImageGuid);
 
-            if (not query.exists()) {
+            if (asset == nullptr) {
                 return Url {};
             }
 
-            // TODO: const auto* const image = Cast<engine::assets::Image>(query.get(_STD nothrow));
-            const auto* const image = static_cast<const ptr<const engine::assets::Image>>(query.get(traits::nothrow));
-
             Url lfsUrl {};
+            const auto* const image = Cast<engine::assets::Image, engine::assets::Asset, false>(asset);
+
             for (const auto& sourceUrl : image->sources()) {
                 if (sourceUrl.scheme() == "file") {
                     lfsUrl = sourceUrl;
