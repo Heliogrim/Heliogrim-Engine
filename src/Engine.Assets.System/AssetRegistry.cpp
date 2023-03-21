@@ -76,11 +76,24 @@ static _STD strong_ordering comparatorAssetUrl(
     #endif
 }
 
+struct IndexAssetUrlRelation {
+    [[nodiscard]] bool operator()(cref<string> left_, cref<string> right_) const noexcept {
+
+        /* left_ < right_ => ? */
+
+        const _STD filesystem::path base = left_;
+        const _STD filesystem::path test = right_;
+
+        return base < test;
+    }
+};
+
 /**/
 
 using GuidIndex = Index<true, false, void, false, asset_guid, projectAssetGuid, comparatorAssetGuid>;
 using TypeIndex = Index<false, true, void, false, asset_type_id, projectAssetType, comparatorAssetType>;
-using UrlIndex = Index<true, true, FindPathOptions, false, string, projectAssetUrl, comparatorAssetUrl>;
+using UrlIndex = Index<true, true, FindPathOptions, false, string, projectAssetUrl, comparatorAssetUrl,
+    IndexAssetUrlRelation>;
 
 /**/
 
@@ -431,4 +444,17 @@ bool AssetRegistry::dropIndex(cref<string> uniqueName_) {
     }
 
     return false;
+}
+
+void AssetRegistry::getIndexedPaths(ref<CompactSet<string>> paths_) const {
+
+    _SCTRL_SGATE(_mtx);
+
+    const auto* const table = static_cast<const ptr<const AutoIndexTable<UrlIndex>>>(_indexUrl);
+    const auto keys = table->tableKeys();
+
+    for (const auto& key : keys) {
+        _STD filesystem::path path { key };
+        paths_.insert(path.parent_path().string());
+    }
 }

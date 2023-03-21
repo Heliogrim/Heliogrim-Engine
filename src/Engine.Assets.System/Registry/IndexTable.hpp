@@ -98,7 +98,8 @@ namespace hg::engine::assets::system {
         struct AutoMappingSelector<true, true> {
             using table_type = _STD map<
                 typename trait_type::data_type,
-                non_owning_rptr<Asset>
+                non_owning_rptr<Asset>,
+                typename trait_type::relation_type
             >;
         };
 
@@ -106,7 +107,8 @@ namespace hg::engine::assets::system {
         struct AutoMappingSelector<false, true> {
             using table_type = _STD map<
                 typename trait_type::data_type,
-                Vector<non_owning_rptr<Asset>>
+                Vector<non_owning_rptr<Asset>>,
+                typename trait_type::relation_type
             >;
         };
 
@@ -131,6 +133,15 @@ namespace hg::engine::assets::system {
 
     private:
         auto_table_type _table;
+
+    public:
+        [[nodiscard]] auto tableKeys() const {
+            return _STD ranges::views::keys(_table);
+        }
+
+        [[nodiscard]] auto tableValues() const {
+            return _STD ranges::views::values(_table);
+        }
 
     public:
         void clear() override {

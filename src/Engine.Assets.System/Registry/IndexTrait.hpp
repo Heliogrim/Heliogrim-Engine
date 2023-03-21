@@ -31,8 +31,10 @@ namespace hg::engine::assets::system {
 
         using data_type = typename index_type::data_type;
         using hash_type = _STD hash<data_type>;
-        using projection_type = decltype(index_type::proj);
-        using comparator_type = decltype(index_type::comp);
+
+        using projection_type = typename index_type::proj_type;
+        using look_comp_type = typename index_type::look_type;
+        using relation_type = typename index_type::relation_type;
 
         /**/
 
@@ -63,7 +65,7 @@ namespace hg::engine::assets::system {
             const Type_ left_,
             const Type_ right_
         ) noexcept {
-            return (index_type::comp)(left_, right_);
+            return (index_type::look)(left_, right_);
         }
 
         template <typename Type_ = data_type, typename Options_ = multiple_options_type> requires
@@ -73,7 +75,7 @@ namespace hg::engine::assets::system {
             cref<Type_> left_,
             cref<Type_> right_
         ) noexcept {
-            return (index_type::comp)(left_, right_);
+            return (index_type::look)(left_, right_);
         }
 
         template <typename Type_ = data_type, typename Options_ = multiple_options_type> requires
@@ -84,7 +86,7 @@ namespace hg::engine::assets::system {
             const Type_ right_,
             cref<Options_> options_
         ) noexcept {
-            return (index_type::comp)(left_, right_, options_);
+            return (index_type::look)(left_, right_, options_);
         }
 
         template <typename Type_ = data_type, typename Options_ = multiple_options_type> requires
@@ -95,7 +97,7 @@ namespace hg::engine::assets::system {
             cref<Type_> right_,
             cref<Options_> options_
         ) noexcept {
-            return (index_type::comp)(left_, right_, options_);
+            return (index_type::look)(left_, right_, options_);
         }
     };
 }
