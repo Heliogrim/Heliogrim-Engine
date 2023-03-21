@@ -19,12 +19,6 @@
     <Filter Include="Quelldateien\Types">
       <UniqueIdentifier>{d39617aa-0662-4a7b-aca4-26d414bda2de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Database">
-      <UniqueIdentifier>{254349d3-154a-44fa-8807-324725f64d4f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Database">
-      <UniqueIdentifier>{790f722f-1f39-4305-8d5c-6d65c29f4fe3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Types\World">
       <UniqueIdentifier>{44a2c7af-a550-4f5c-86e8-84f87c76fa38}</UniqueIdentifier>
     </Filter>
@@ -84,15 +78,6 @@
     <ClInclude Include="..\..\src\Engine.Assets\AssetTypeId.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Database\AssetDatabase.hpp">
-      <Filter>Headerdateien\Database</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Database\AssetDatabaseEntry.hpp">
-      <Filter>Headerdateien\Database</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Database\AssetDatabaseQuery.hpp">
-      <Filter>Headerdateien\Database</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\AssetInputStream.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -131,12 +116,6 @@
     <ClCompile Include="..\..\src\Engine.Assets\Types\Asset.cpp">
       <Filter>Quelldateien\Types</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabase.cpp">
-      <Filter>Quelldateien\Database</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabaseEntry.cpp">
-      <Filter>Quelldateien\Database</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\GfxMaterial.cpp">
       <Filter>Quelldateien\Types</Filter>
     </ClCompile>
@@ -151,9 +130,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\LandscapeGeometry.cpp">
       <Filter>Quelldateien\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Assets\Database\AssetDatabaseQuery.cpp">
-      <Filter>Quelldateien\Database</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\Texture.cpp">
       <Filter>Quelldateien\Types\Texture</Filter>

@@ -119,6 +119,9 @@
     <ProjectReference Include="..\Engine.ACS\Engine.ACS.vcxproj">
       <Project>{bdd7b57f-5aee-4ddb-95fd-e0f89bb25ec7}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.Assets.System\Engine.Assets.System.vcxproj">
+      <Project>{960fb197-0d2c-4f6b-b9a5-79de454ffcf7}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Assets\Engine.Assets.vcxproj">
       <Project>{02a28ec5-5e8a-4ca4-ad1d-673df3b995f5}</Project>
     </ProjectReference>
