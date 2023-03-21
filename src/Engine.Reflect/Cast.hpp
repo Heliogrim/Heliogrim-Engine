@@ -33,4 +33,16 @@ namespace hg {
         }
         return static_cast<ptr<TargetType_>>(src_);
     }
+
+    template <typename TargetType_, typename SrcType_, bool Secure_ = true> requires
+        IsHeliogrimObject<TargetType_> && IsHeliogrimObject<SrcType_> && (not _STD derived_from<SrcType_, TargetType_>)
+    const ptr<const TargetType_> Cast(const ptr<const SrcType_> src_) noexcept {
+        // We need to do some runtime checks to ensure cast hierarchy
+        if constexpr (Secure_) {
+            return src_->getClass()->template isType<TargetType_>() ?
+                       static_cast<const ptr<const TargetType_>>(src_) :
+                       nullptr;
+        }
+        return static_cast<const ptr<const TargetType_>>(src_);
+    }
 }
