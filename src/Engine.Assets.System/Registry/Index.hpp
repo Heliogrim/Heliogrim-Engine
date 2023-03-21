@@ -13,21 +13,23 @@ namespace hg::engine::assets::system {
         template <typename IndexDataType_> requires _STD _Is_nothrow_hashable<IndexDataType_>::value
         using projection = unary_fnc<IndexDataType_, const non_owning_rptr<const Asset>>;
 
+        /**/
+
         template <typename IndexDataType_, typename MultipleOptionsType_>
-        struct __comparator_selector;
+        struct __lookup_comparator_selector;
 
         template <typename IndexDataType_>
-        struct __comparator_selector<IndexDataType_, void> {
+        struct __lookup_comparator_selector<IndexDataType_, void> {
             using type = binary_fnc<_STD strong_ordering, IndexDataType_, IndexDataType_>;
         };
 
         template <typename IndexDataType_, typename MultipleOptionsType_>
-        struct __comparator_selector {
+        struct __lookup_comparator_selector {
             using type = tuple_fnc<_STD strong_ordering, IndexDataType_, IndexDataType_, MultipleOptionsType_>;
         };
 
         template <typename IndexDataType_, typename MultipleOptionsType_>
-        using comparator = typename __comparator_selector<IndexDataType_, MultipleOptionsType_>::type;
+        using lookup_comparator = typename __lookup_comparator_selector<IndexDataType_, MultipleOptionsType_>::type;
     };
 
     template <
@@ -37,8 +39,8 @@ namespace hg::engine::assets::system {
         bool Dynamic_,
         typename IndexDataType_,
         detail::projection<IndexDataType_> Projection_,
-        detail::comparator<IndexDataType_, MultipleOptionsType_> Comparator_
-    >
+        detail::lookup_comparator<IndexDataType_, MultipleOptionsType_> LookupComparator_,
+        class Relation_ = _STD less<IndexDataType_>>
     struct Index {
         using this_type = Index<
             Unique_,
@@ -47,7 +49,8 @@ namespace hg::engine::assets::system {
             Dynamic_,
             IndexDataType_,
             Projection_,
-            Comparator_
+            LookupComparator_,
+            Relation_
         >;
 
         using unique = _STD bool_constant<Unique_>;
@@ -65,7 +68,12 @@ namespace hg::engine::assets::system {
 
         using data_type = IndexDataType_;
 
+        using proj_type = decltype(Projection_);
         static constexpr detail::projection<data_type> proj = Projection_;
-        static constexpr detail::comparator<data_type, multiple_options_type> comp = Comparator_;
+
+        using look_type = decltype(LookupComparator_);
+        static constexpr detail::lookup_comparator<data_type, multiple_options_type> look = LookupComparator_;
+
+        using relation_type = Relation_;
     };
 }

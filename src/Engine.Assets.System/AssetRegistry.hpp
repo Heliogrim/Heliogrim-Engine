@@ -5,6 +5,7 @@
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Common/Url.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Utils/_CTRL.hpp>
@@ -144,6 +145,12 @@ namespace hg::engine::assets {
         bool createIndex(cref<string> uniqueName_);
 
         bool dropIndex(cref<string> uniqueName_);
+
+        /**
+         * Special Functions
+         */
+    public:
+        void getIndexedPaths(_Out_ ref<CompactSet<string>> paths_) const;
     };
 
     /**/
