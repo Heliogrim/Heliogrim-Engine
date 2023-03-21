@@ -3,6 +3,9 @@
 #include <filesystem>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 #include <Engine.Serialization.Layouts/LayoutManager.hpp>
+#include <Engine.Assets.System/AssetDescriptor.hpp>
+#include <Engine.Assets.System/AssetRegistry.hpp>
+#include <Engine.Assets.System/Repository/InMemAssetRepository.hpp>
 
 #include "Types/Font.hpp"
 #include "Types/GfxMaterial.hpp"
@@ -16,11 +19,42 @@
 #include "Types/Geometry/StaticGeometry.hpp"
 #include "Types/Texture/Texture.hpp"
 
+#include <sstream>
+
 using namespace hg::engine::assets;
 using namespace hg;
 
-AssetFactory::AssetFactory(ptr<AssetDatabase> database_) noexcept :
-    _database(database_) {}
+/**/
+
+void engine::assets::storeDefaultNameAndUrl(non_owning_rptr<Asset> asset_, string source_) {
+
+    #ifdef _DEBUG
+    if (not source_.empty() && asset_->getAssetName().empty()) {
+        asset_->setAssetName(_STD filesystem::path(source_).filename().string());
+    }
+    #endif
+
+    if (asset_->getVirtualUrl().empty()) {
+
+        _STD stringstream ss {};
+        //ss << "//";
+        ss << asset_->get_guid().data.high;
+        ss << asset_->get_guid().data.low;
+        const string pseudoUrl = ss.str();
+
+        asset_->setVirtualUrl(pseudoUrl);
+    }
+
+}
+
+/**/
+
+AssetFactory::AssetFactory(
+    const non_owning_rptr<IAssetRegistry> registry_,
+    const non_owning_rptr<system::InMemAssetRepository> repository_
+) noexcept :
+    _registry(registry_),
+    _repository(repository_) {}
 
 AssetFactory::~AssetFactory() noexcept = default;
 
@@ -67,7 +101,8 @@ ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_) const {
 
     auto* instance = HeliogrimObject::create<Font>(guid_, Vector<Url> {});
 
-    _database->insert(guid_, Font::typeId, instance);
+    storeDefaultNameAndUrl(instance, {});
+    _registry->insert({ instance });
     return instance;
 }
 
@@ -82,7 +117,8 @@ ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_, cref<string> url
 
     auto* instance = HeliogrimObject::create<Font>(guid_, _STD move(sources));
 
-    _database->insert(guid_, Font::typeId, instance);
+    storeDefaultNameAndUrl(instance, url_);
+    _registry->insert({ instance });
     return instance;
 }
 
@@ -108,8 +144,8 @@ ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) co
         invalid_asset_guid
     );
 
-    _database->insert(guid_, GfxMaterial::typeId, instance);
-
+    storeDefaultNameAndUrl(instance, {});
+    _registry->insert({ instance });
     return instance;
 }
 
@@ -141,7 +177,8 @@ ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(
         alpha_
     );
 
-    _database->insert(guid_, GfxMaterial::typeId, instance);
+    storeDefaultNameAndUrl(instance, {});
+    _registry->insert({ instance });
     return instance;
 }
 
@@ -155,7 +192,8 @@ ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_) const {
 
     auto* instance = HeliogrimObject::create<Image>(guid_, Vector<Url> {});
 
-    _database->insert(guid_, Image::typeId, instance);
+    storeDefaultNameAndUrl(instance, {});
+    _registry->insert({ instance });
     return instance;
 }
 
@@ -170,7 +208,8 @@ ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> u
 
     auto* instance = HeliogrimObject::create<Image>(guid_, _STD move(sources));
 
-    _database->insert(guid_, Image::typeId, instance);
+    storeDefaultNameAndUrl(instance, string { src.path() });
+    _registry->insert({ instance });
     return instance;
 }
 
@@ -178,7 +217,8 @@ ptr<LandscapeGeometry> AssetFactory::createLandscapeGeometryAsset(cref<asset_gui
 
     auto* instance = HeliogrimObject::create<LandscapeGeometry>(guid_, Vector<Url> {});
 
-    _database->insert(guid_, LandscapeGeometry::typeId, instance);
+    storeDefaultNameAndUrl(instance, {});
+    _registry->insert({ instance });
     return instance;
 }
 
@@ -191,7 +231,8 @@ ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(cref<asset_guid> gui
         0ui64
     );
 
-    _database->insert(guid_, StaticGeometry::typeId, instance);
+    storeDefaultNameAndUrl(instance, {});
+    _registry->insert({ instance });
     return instance;
 }
 
@@ -216,7 +257,8 @@ ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(
         indexCount_
     );
 
-    _database->insert(guid_, StaticGeometry::typeId, instance);
+    storeDefaultNameAndUrl(instance, {});
+    _registry->insert({ instance });
     return instance;
 }
 
@@ -238,7 +280,8 @@ ptr<Texture> AssetFactory::createTextureAsset(cref<asset_guid> guid_) const {
         gfx::TextureType::eUndefined
     );
 
-    _database->insert(guid_, Texture::typeId, instance);
+    storeDefaultNameAndUrl(instance, {});
+    _registry->insert({ instance });
     return instance;
 }
 
@@ -261,9 +304,8 @@ ptr<Texture> AssetFactory::createTextureAsset(
         type_
     );
 
-    const auto result {
-        _database->insert(guid_, Texture::typeId, instance)
-    };
+    storeDefaultNameAndUrl(instance, {});
+    const auto result = _registry->insert({ instance });
 
     if (!result) {
         #ifdef _DEBUG

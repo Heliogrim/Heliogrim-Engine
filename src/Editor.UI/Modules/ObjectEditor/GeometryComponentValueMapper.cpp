@@ -5,8 +5,6 @@
 #include <Engine.Reflow/Widget/Input/InputFloat.hpp>
 #include <Engine.Reflow/Widget/Input/InputIntegral.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
-#include <Engine.Assets/Database/AssetDatabase.hpp>
-#include <Engine.Assets/Database/AssetDatabaseQuery.hpp>
 #include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
 
 #include "Engine.GFX.Glow.UI/TestUI.hpp"

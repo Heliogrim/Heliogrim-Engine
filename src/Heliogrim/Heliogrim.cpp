@@ -2,7 +2,6 @@
 
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Database/AssetDatabase.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
@@ -72,6 +71,6 @@ Session Heliogrim::getSession(std::nothrow_t) noexcept {
 
 AssetDatabase Heliogrim::assets() noexcept {
     return AssetDatabase {
-        _engine.get()->getAssets()->getDatabase()
+        _engine.get()->getAssets()->getRegistry()
     };
 }

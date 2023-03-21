@@ -1,12 +1,14 @@
 #include "AssetDatabaseBrowserProvider.hpp"
 
+#include <Engine.Assets/Types/Asset.hpp>
+
 using namespace hg::editor::ui;
 using namespace hg;
 
 AssetDatabaseBrowserProvider::AssetDatabaseBrowserProvider(
-    const non_owning_rptr<engine::assets::AssetDatabase> database_
+    const non_owning_rptr<engine::assets::IAssetRegistry> database_
 ) noexcept :
-    _database(database_) {}
+    _registry(database_) {}
 
 AssetDatabaseBrowserProvider::~AssetDatabaseBrowserProvider() = default;
 
@@ -60,6 +62,7 @@ void AssetDatabaseBrowserProvider::mapAssetsToEntries(
 
     assert(begin_ <= end_);
 
+    #if FALSE
     for (auto iter = begin_; iter != end_; ++iter) {
 
         AssetBrowserEntry entry {
@@ -74,6 +77,7 @@ void AssetDatabaseBrowserProvider::mapAssetsToEntries(
         // Warning: We might not copy nor move AssetBrowserEntry, cause union types are non-trivial
         entries_.push_back(_STD move(entry));
     }
+    #endif
 }
 
 bool AssetDatabaseBrowserProvider::retrieve(cref<Url> url_, ref<Vector<AssetBrowserEntry>> entries_) {
@@ -86,7 +90,7 @@ bool AssetDatabaseBrowserProvider::retrieve(cref<Url> url_, ref<Vector<AssetBrow
 
     // Warning: Currently we don't have a possibility to iterator the database, nor filter or index them by url
     // TODO: We need a editor helper to capture/index loaded assets and there related paths
-    _database;
+    _registry;
     data_list_type assetList {};
 
     const auto first = assetList.begin();

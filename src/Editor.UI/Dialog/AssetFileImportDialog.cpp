@@ -2,7 +2,8 @@
 
 #include <filesystem>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Database/AssetDatabase.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets.System/AssetDescriptor.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
 
@@ -28,6 +29,7 @@
 #include "Engine.Common/Wrapper.hpp"
 #include "Engine.GFX/Texture/ProxyTexture.hpp"
 #include "Engine.GFX.Loader/Texture/TextureResource.hpp"
+#include "Engine.Assets/AssetFactory.hpp"
 
 #if TRUE
 void testCreateAsset(hg::cref<hg::Url> target_);
@@ -570,10 +572,9 @@ sptr<Dialog> AssetFileImportDialog::make(const ptr<AssetBrowser> browser_, cref<
                     ActionManager::get()->apply(action);
 
                     for (const auto& asset : action->importedAssets()) {
-                        engine::Engine::getEngine()->getAssets()->getDatabase()->insert(
-                            asset->get_guid(),
-                            asset->getTypeId(),
-                            asset
+                        engine::assets::storeDefaultNameAndUrl(asset, {});
+                        engine::Engine::getEngine()->getAssets()->getRegistry()->insert(
+                            { asset }
                         );
                     }
                 }

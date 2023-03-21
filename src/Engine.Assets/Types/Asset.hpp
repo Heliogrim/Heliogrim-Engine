@@ -96,5 +96,16 @@ namespace hg::engine::assets {
         [[nodiscard]] string_view getAssetName() const noexcept;
 
         void setAssetName(string_view assetName_);
+
+    protected:
+        /**
+         * Asset Virtual Url
+         */
+        string _virtualUrl;
+
+    public:
+        [[nodiscard]] string_view getVirtualUrl() const noexcept;
+
+        void setVirtualUrl(string_view virtualUrl_);
     };
 }

@@ -19,7 +19,9 @@
 #include "Engine.Reflow/Window/Window.hpp"
 #include "../Widget/Breadcrumb.hpp"
 #include "Engine.Assets/Assets.hpp"
-#include "Engine.Assets/Database/AssetDatabase.hpp"
+#include "Engine.Assets.System/IAssetRegistry.hpp"
+#include "Engine.Assets.System/AssetDescriptor.hpp"
+#include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Core/Engine.hpp"
 
 #if TRUE
@@ -372,10 +374,9 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
                     ActionManager::get()->apply(action);
 
                     for (const auto& asset : action->importedAssets()) {
-                        engine::Engine::getEngine()->getAssets()->getDatabase()->insert(
-                            asset->get_guid(),
-                            asset->getTypeId(),
-                            asset
+                        engine::assets::storeDefaultNameAndUrl(asset, {});
+                        engine::Engine::getEngine()->getAssets()->getRegistry()->insert(
+                            { asset }
                         );
                     }
                 }

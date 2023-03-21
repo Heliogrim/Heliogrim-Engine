@@ -2,6 +2,9 @@
 
 #include <Heliogrim/Heliogrim.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets.System/AssetDescriptor.hpp>
+#include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Async.hpp>
@@ -141,7 +144,6 @@
 #include "Heliogrim.Default/Assets/Textures/IconZip.hpp"
 #include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Assets/Assets.hpp"
-#include "Engine.Assets/Database/AssetDatabase.hpp"
 #include "Engine.Assets/Types/Image.hpp"
 #include "Engine.Assets/Types/Font.hpp"
 #include "Engine.Assets/Types/Geometry/StaticGeometry.hpp"
@@ -274,7 +276,7 @@ void dispatchLoad(cref<path> path_) {
             /**/
 
             auto* asset { static_cast<ptr<engine::assets::Asset>>(obj) };
-            Engine::getEngine()->getAssets()->getDatabase()->insert(asset->get_guid(), asset->getTypeId(), asset);
+            Engine::getEngine()->getAssets()->getRegistry()->insert({ asset });
         }
     );
 }
@@ -338,43 +340,35 @@ static void initMaterialDefaults() {
 
     using namespace ::hg::game::assets;
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
-    auto* const db = Engine::getEngine()->getAssets()->getDatabase();
 
-    db->insert(
-        factory->createImageAsset(
-            image::DefaultAlpha::unstable_auto_guid(),
-            R"(resources\imports\ktx\default_alpha.ktx)"
-        )
+    factory->createImageAsset(
+        image::DefaultAlpha::unstable_auto_guid(),
+        R"(resources\imports\ktx\default_alpha.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::DefaultAO::unstable_auto_guid(),
-            R"(resources\imports\ktx\default_ao.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::DefaultAO::unstable_auto_guid(),
+        R"(resources\imports\ktx\default_ao.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::DefaultDiffuse::auto_guid(),
-            R"(resources\imports\ktx\default_diffuse.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::DefaultDiffuse::auto_guid(),
+        R"(resources\imports\ktx\default_diffuse.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::DefaultMetalness::unstable_auto_guid(),
-            R"(resources\imports\ktx\default_metalness.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::DefaultMetalness::unstable_auto_guid(),
+        R"(resources\imports\ktx\default_metalness.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::DefaultNormal::unstable_auto_guid(),
-            R"(resources\imports\ktx\default_normal.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::DefaultNormal::unstable_auto_guid(),
+        R"(resources\imports\ktx\default_normal.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::DefaultRoughness::unstable_auto_guid(),
-            R"(resources\imports\ktx\default_roughness.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::DefaultRoughness::unstable_auto_guid(),
+        R"(resources\imports\ktx\default_roughness.ktx)"
     );
 
     /**/
@@ -395,13 +389,10 @@ static void initSkyboxDefaults() {
 
     using namespace ::hg::game::assets;
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
-    auto* const db = Engine::getEngine()->getAssets()->getDatabase();
 
-    db->insert(
-        factory->createImageAsset(
-            image::DefaultSkybox::unstable_auto_guid(),
-            R"(resources\imports\ktx\default_skybox.ktx)"
-        )
+    factory->createImageAsset(
+        image::DefaultSkybox::unstable_auto_guid(),
+        R"(resources\imports\ktx\default_skybox.ktx)"
     );
 
     /**/
@@ -417,152 +408,125 @@ static void initDirectoryIcons() {
 
     using namespace ::hg::game::assets;
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
-    auto* const db = Engine::getEngine()->getAssets()->getDatabase();
 
-    db->insert(
-        factory->createImageAsset(
-            image::Directory::unstable_auto_guid(),
-            R"(resources\imports\ktx\icons8-folder-144.ktx)"
-        )
+    factory->createImageAsset(
+        image::Directory::unstable_auto_guid(),
+        R"(resources\imports\ktx\icons8-folder-144.ktx)"
     );
 
-    db->insert(
-        factory->createImageAsset(
-            image::FolderAnimation::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-animation.ktx)"
-        )
+    factory->createImageAsset(
+        image::FolderAnimation::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-animation.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderAudio::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-audio.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderAudio::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-audio.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderConfig::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-config.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderConfig::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-config.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderContent::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-content.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderContent::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-content.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderCore::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-core.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderCore::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-core.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderDatabase::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-database.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderDatabase::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-database.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderDebug::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-debug.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderDebug::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-debug.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderEnvironment::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-environment.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderEnvironment::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-environment.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderError::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-error.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderError::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-error.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderFont::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-font.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderFont::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-font.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderGenerator::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-generator.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderGenerator::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-generator.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderImages::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-images.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderImages::unstable_auto_guid(),
+        R"(resources\imports\ktx2\folder-images.ktx2)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderImport::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-import.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderImport::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-import.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderLib::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-lib.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderLib::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-lib.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderLog::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-log.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderLog::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-log.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderMeta::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-meta.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderMeta::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-meta.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderPackages::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-packages.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderPackages::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-packages.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderResource::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-resource.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderResource::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-resource.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderScripts::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-scripts.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderScripts::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-scripts.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderShader::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-shader.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderShader::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-shader.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderShared::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-shared.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderShared::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-shared.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderTemplate::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-template.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderTemplate::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-template.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::FolderVideo::unstable_auto_guid(),
-            R"(resources\imports\ktx\folder-video.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::FolderVideo::unstable_auto_guid(),
+        R"(resources\imports\ktx\folder-video.ktx)"
     );
 
     /**/
@@ -597,230 +561,208 @@ static void initFileIcons() {
 
     using namespace ::hg::game::assets;
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
-    auto* const db = Engine::getEngine()->getAssets()->getDatabase();
 
-    db->insert(
-        factory->createImageAsset(
-            image::Brand::unstable_auto_guid(),
-            R"(resources\imports\ktx\brand.ktx)"
-        )
+    factory->createImageAsset(
+        image::Brand::unstable_auto_guid(),
+        R"(resources\imports\ktx\brand.ktx)"
     );
 
-    db->insert(
-        factory->createImageAsset(
-            image::Icon3d::unstable_auto_guid(),
-            R"(resources\imports\ktx\3d.ktx)"
-        )
+    factory->createImageAsset(
+        image::Icon3d::unstable_auto_guid(),
+        R"(resources\imports\ktx\3d.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconArchitecture::unstable_auto_guid(),
-            R"(resources\imports\ktx\architecture.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconArchitecture::unstable_auto_guid(),
+        R"(resources\imports\ktx\architecture.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconAudio::unstable_auto_guid(),
-            R"(resources\imports\ktx\audio.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconAudio::unstable_auto_guid(),
+        R"(resources\imports\ktx\audio.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconC::unstable_auto_guid(),
-            R"(resources\imports\ktx\c.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconC::unstable_auto_guid(),
+        R"(resources\imports\ktx\c.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconCMake::unstable_auto_guid(),
-            R"(resources\imports\ktx\cmake.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconCMake::unstable_auto_guid(),
+        R"(resources\imports\ktx\cmake.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconCommand::unstable_auto_guid(),
-            R"(resources\imports\ktx\command.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconCommand::unstable_auto_guid(),
+        R"(resources\imports\ktx\command.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconConsole::unstable_auto_guid(),
-            R"(resources\imports\ktx\console.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconConsole::unstable_auto_guid(),
+        R"(resources\imports\ktx\console.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconContributing::unstable_auto_guid(),
-            R"(resources\imports\ktx\contributing.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconContributing::unstable_auto_guid(),
+        R"(resources\imports\ktx\contributing.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconCpp::unstable_auto_guid(),
-            R"(resources\imports\ktx\cpp.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconCpp::unstable_auto_guid(),
+        R"(resources\imports\ktx\cpp.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconCSharp::unstable_auto_guid(),
-            R"(resources\imports\ktx\csharp.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconCSharp::unstable_auto_guid(),
+        R"(resources\imports\ktx\csharp.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconDatabase::unstable_auto_guid(),
-            R"(resources\imports\ktx\database.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconDatabase::unstable_auto_guid(),
+        R"(resources\imports\ktx\database.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconDiff::unstable_auto_guid(),
-            R"(resources\imports\ktx\diff.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconDiff::unstable_auto_guid(),
+        R"(resources\imports\ktx\diff.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconDocument::unstable_auto_guid(),
-            R"(resources\imports\ktx\document.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconDocument::unstable_auto_guid(),
+        R"(resources\imports\ktx\document.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconFavicon::unstable_auto_guid(),
-            R"(resources\imports\ktx\favicon.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconFavicon::unstable_auto_guid(),
+        R"(resources\imports\ktx\favicon.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconFont::unstable_auto_guid(),
-            R"(resources\imports\ktx\font.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconFont::unstable_auto_guid(),
+        R"(resources\imports\ktx\font.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconGit::unstable_auto_guid(),
-            R"(resources\imports\ktx\git.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconGit::unstable_auto_guid(),
+        R"(resources\imports\ktx\git.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconH::unstable_auto_guid(),
-            R"(resources\imports\ktx\h.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconH::unstable_auto_guid(),
+        R"(resources\imports\ktx\h.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconHpp::unstable_auto_guid(),
-            R"(resources\imports\ktx\hpp.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconHpp::unstable_auto_guid(),
+        R"(resources\imports\ktx\hpp.ktx)"
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconI18n::unstable_auto_guid(),
-            R"(resources\imports\ktx\i18n.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconI18n::unstable_auto_guid(),
+        R"(resources\imports\ktx\i18n.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconImage::unstable_auto_guid(),
-            R"(resources\imports\ktx\image.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconImage::unstable_auto_guid(),
+        R"(resources\imports\ktx\image.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconJson::unstable_auto_guid(),
-            R"(resources\imports\ktx\json.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconJson::unstable_auto_guid(),
+        R"(resources\imports\ktx\json.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconLib::unstable_auto_guid(),
-            R"(resources\imports\ktx\lib.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconLib::unstable_auto_guid(),
+        R"(resources\imports\ktx\lib.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconLog::unstable_auto_guid(),
-            R"(resources\imports\ktx\log.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconLog::unstable_auto_guid(),
+        R"(resources\imports\ktx\log.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconLua::unstable_auto_guid(),
-            R"(resources\imports\ktx\lua.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconLua::unstable_auto_guid(),
+        R"(resources\imports\ktx\lua.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconPdf::unstable_auto_guid(),
-            R"(resources\imports\ktx\pdf.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconPdf::unstable_auto_guid(),
+        R"(resources\imports\ktx\pdf.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconPipeline::unstable_auto_guid(),
-            R"(resources\imports\ktx\pipeline.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconPipeline::unstable_auto_guid(),
+        R"(resources\imports\ktx\pipeline.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconReadme::unstable_auto_guid(),
-            R"(resources\imports\ktx\readme.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconReadme::unstable_auto_guid(),
+        R"(resources\imports\ktx\readme.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconSearch::unstable_auto_guid(),
-            R"(resources\imports\ktx\search.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconSearch::unstable_auto_guid(),
+        R"(resources\imports\ktx\search.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconSettings::unstable_auto_guid(),
-            R"(resources\imports\ktx\settings.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconSettings::unstable_auto_guid(),
+        R"(resources\imports\ktx\settings.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconShader::unstable_auto_guid(),
-            R"(resources\imports\ktx\shader.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconShader::unstable_auto_guid(),
+        R"(resources\imports\ktx\shader.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconTemplate::unstable_auto_guid(),
-            R"(resources\imports\ktx\template.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconTemplate::unstable_auto_guid(),
+        R"(resources\imports\ktx\template.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconTodo::unstable_auto_guid(),
-            R"(resources\imports\ktx\todo.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconTodo::unstable_auto_guid(),
+        R"(resources\imports\ktx\todo.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconTree::unstable_auto_guid(),
-            R"(resources\imports\ktx\tree.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconTree::unstable_auto_guid(),
+        R"(resources\imports\ktx\tree.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconUrl::unstable_auto_guid(),
-            R"(resources\imports\ktx\url.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconUrl::unstable_auto_guid(),
+        R"(resources\imports\ktx\url.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconVideo::unstable_auto_guid(),
-            R"(resources\imports\ktx\video.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconVideo::unstable_auto_guid(),
+        R"(resources\imports\ktx\video.ktx)"
+
     );
-    db->insert(
-        factory->createImageAsset(
-            image::IconZip::unstable_auto_guid(),
-            R"(resources\imports\ktx\zip.ktx)"
-        )
+
+    factory->createImageAsset(
+        image::IconZip::unstable_auto_guid(),
+        R"(resources\imports\ktx\zip.ktx)"
+
     );
 
     /**/
@@ -867,13 +809,11 @@ static void initFontDefaults() {
 
     using namespace ::hg::game::assets;
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
-    auto* const db = Engine::getEngine()->getAssets()->getDatabase();
 
-    db->insert(
-        factory->createFontAsset(
-            font::CascadiaCode::unstable_auto_guid(),
-            R"(resources\imports\ttf\CascadiaCode.ttf)"
-        )
+    factory->createFontAsset(
+        font::CascadiaCode::unstable_auto_guid(),
+        R"(resources\imports\ttf\CascadiaCode.ttf)"
+
     );
 }
 
@@ -881,15 +821,21 @@ static void initStaticGeometryDefaults() {
 
     using namespace ::hg::game::assets;
     const auto* const factory = Engine::getEngine()->getAssets()->getFactory();
-    auto* const db = Engine::getEngine()->getAssets()->getDatabase();
 
-    db->insert(
-        factory->createStaticGeometryAsset(
-            meshes::Sphere::unstable_auto_guid(),
-            R"(resources\imports\obj\sphere.obj)",
-            11520ui64,
-            11520ui64
-        )
+    factory->createStaticGeometryAsset(
+        meshes::Sphere::unstable_auto_guid(),
+        R"(resources\imports\obj\sphere.obj)",
+        11520ui64,
+        11520ui64
+
+    );
+
+    factory->createStaticGeometryAsset(
+        meshes::PlaneD128::unstable_auto_guid(),
+        R"(resources\imports\obj\plane_d128.obj)",
+        98304ui64,
+        98304ui64
+
     );
 }
 
@@ -1064,10 +1010,10 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
     switch (typeId.data) {
         case assets::Image::typeId.data: {
 
-            const auto* const db = Engine::getEngine()->getAssets()->getDatabase();
-            auto query = db->query(guid);
+            auto* const registry = Engine::getEngine()->getAssets()->getRegistry();
+            const auto* const asset = registry->findAssetByGuid(guid);
 
-            if (query.exists()) {
+            if (asset != nullptr) {
                 return false;
             }
 
@@ -1076,7 +1022,8 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
             auto* image = HeliogrimObject::create<assets::Image>();
             serialization::access::Structure<assets::Image>::deserialize(image, _STD move(record_));
 
-            const auto succeeded = query.insert<assets::Image>(image);
+            engine::assets::storeDefaultNameAndUrl(image, {});
+            const auto succeeded = registry->insert({ image });
 
             if (not succeeded) {
                 __debugbreak();
@@ -1089,10 +1036,10 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
         }
         case assets::Texture::typeId.data: {
 
-            const auto* const db = Engine::getEngine()->getAssets()->getDatabase();
-            auto query = db->query(guid);
+            auto* const registry = Engine::getEngine()->getAssets()->getRegistry();
+            const auto* const asset = registry->findAssetByGuid(guid);
 
-            if (query.exists()) {
+            if (asset != nullptr) {
                 return false;
             }
 
@@ -1101,7 +1048,8 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
             auto* texture = HeliogrimObject::create<assets::Texture>();
             serialization::access::Structure<assets::Texture>::deserialize(texture, _STD move(record_));
 
-            const auto succeeded = query.insert<assets::Texture>(texture);
+            engine::assets::storeDefaultNameAndUrl(texture, {});
+            const auto succeeded = registry->insert({ texture });
 
             if (not succeeded) {
                 __debugbreak();
