@@ -43,12 +43,14 @@ namespace hg::editor::ui {
         [[nodiscard]] fs::Url getImportRoot() const noexcept;
 
     protected:
-        void retrieveFromProviders(cref<fs::Url> url_, _Inout_ ref<Vector<AssetBrowserEntry>> entries_) const;
+        bool retrieveItems(cref<fs::Url> cwd_, _Inout_ ref<Vector<AssetBrowserEntry>> entries_) const;
 
-        void retrieveProviderDirectories(cref<fs::Url> url_, _Inout_ ref<Vector<AssetBrowserEntry>> directories_) const;
+        void retrieveFromProviders(cref<fs::Url> url_, _Inout_ ref<Vector<AssetBrowserEntry>> entries_) const;
 
         bool retrieveDirectories(cref<fs::Url> cwd_, _Inout_ ref<Vector<AssetBrowserEntry>> directories_) const;
 
-        bool retrieveEntries(cref<fs::Url> cwd_, _Inout_ ref<Vector<AssetBrowserEntry>> entries_) const;
+        void retrieveProviderDirectories(cref<fs::Url> url_, _Inout_ ref<Vector<AssetBrowserEntry>> directories_) const;
+
+        void retrieve(cref<fs::Url> cwd_, _Inout_ ref<Vector<AssetBrowserEntry>> entries_);
     };
 }

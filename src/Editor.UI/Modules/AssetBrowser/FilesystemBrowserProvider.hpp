@@ -23,7 +23,7 @@ namespace hg::editor::ui {
 
         bool retrieveFs(
             cref<fs::Url> url_,
-            const bool onlyDirectories_,
+            const bool directories_,
             _Inout_ ref<Vector<AssetBrowserEntry>> entries_
         );
 

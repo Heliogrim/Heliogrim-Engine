@@ -48,7 +48,7 @@ string FilesystemBrowserProvider::expandPath(mref<string> normalized_) {
 
 bool FilesystemBrowserProvider::retrieveFs(
     cref<fs::Url> url_,
-    const bool onlyDirectories_,
+    const bool directories_,
     ref<Vector<AssetBrowserEntry>> entries_
 ) {
     const _STD filesystem::path fsPath = expandPath(string { url_.path() });
@@ -63,7 +63,11 @@ bool FilesystemBrowserProvider::retrieveFs(
 
     for (const auto& fsEntry : fsIt) {
 
-        if (onlyDirectories_ && not fsEntry.is_directory()) {
+        if (directories_ && not fsEntry.is_directory()) {
+            continue;
+        }
+
+        if (not directories_ && fsEntry.is_directory()) {
             continue;
         }
 

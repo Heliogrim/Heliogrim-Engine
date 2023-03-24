@@ -94,21 +94,24 @@ bool AssetRegistryBrowserProvider::retrieveDirectories(
     CompactSet<string> indexedPaths {};
     static_cast<ptr<engine::assets::AssetRegistry>>(_registry)->getIndexedPaths(indexedPaths);
 
-    const _STD filesystem::path base { url_.path() };
-    for (auto&& entry : indexedPaths) {
+    const auto base = url_.path();
+    for (cref<string> entry : indexedPaths) {
 
-        const _STD filesystem::path check { _STD move(entry) };
-        const auto rel = _STD filesystem::relative(check, base);
-
-        if (rel.has_parent_path()) {
+        auto check = fs::Path(string_view { entry });
+        if (not base.contains(check)) {
             continue;
         }
 
+        if (base != check.pop()) {
+            continue;
+        }
+
+        check = fs::Path(string_view { entry });
         directories_.push_back(
             AssetBrowserEntry {
                 .type = AssetBrowserEntryType::eDirectory,
-                .title = check.filename().string(),
-                .path = fs::Url { ""sv, check.string() }
+                .title = check.name(),
+                .path = fs::Url { _STD move(check) }
             }
         );
     }

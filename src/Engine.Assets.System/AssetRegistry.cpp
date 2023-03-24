@@ -47,16 +47,22 @@ static _STD strong_ordering comparatorAssetUrl(
     FindPathOptions options_
 ) noexcept {
 
-    const _STD filesystem::path index = left_;
-    const _STD filesystem::path check = right_;
+    const auto index = fs::Path(_STD move(left_));
+    auto check = fs::Path(_STD move(right_));
 
-    // Warning: This could easily break when index is rooted or relative rooted
-    const auto rel = _STD filesystem::relative(check, index);
-    if (rel.empty()) {
+    if (not index.contains(check)) {
+        return index <=> check;
+    }
+
+    if (options_.recursive) {
         return _STD strong_ordering::equivalent;
     }
 
-    return index <=> check;
+    if (index == check.pop()) {
+        return _STD strong_ordering::equivalent;
+    }
+
+    return _STD strong_ordering::greater;
 }
 
 struct IndexAssetUrlRelation {
@@ -437,7 +443,7 @@ void AssetRegistry::getIndexedPaths(ref<CompactSet<string>> paths_) const {
     const auto keys = table->tableKeys();
 
     for (const auto& key : keys) {
-        _STD filesystem::path path { key };
-        paths_.insert(path.parent_path().string());
+        const auto path = fs::Path(string_view { key });
+        paths_.insert(path.parentPath().string());
     }
 }

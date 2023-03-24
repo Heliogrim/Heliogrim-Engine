@@ -186,9 +186,7 @@ void AssetBrowserPanel::buildItems() {
     const auto items { getItemContainer() };
     Vector<AssetBrowserEntry> nextEntries {};
 
-    const auto success { _browser->retrieveEntries(_browserCwd, nextEntries) };
-    assert(success);
-
+    _browser->retrieve(_browserCwd, nextEntries);
     for (auto&& entry : nextEntries) {
 
         items->addChild(
@@ -230,7 +228,7 @@ void AssetBrowserPanel::openImportDialog(cref<fs::Url> fqUrlSource_) {
     _STD filesystem::path cwd { _browserCwd.path() };
     const auto importRoot { _browser->getImportRoot() };
     const fs::Url targetRoot {
-        importRoot.scheme(), fs::Path { string { importRoot.path() }.append(fs::Path::separator).append(ext) }
+        importRoot.scheme(), fs::Path(string { importRoot.path() }.append(fs::Path::separator).append(ext))
     };
 
     bool isImportSubPath { false };
@@ -355,7 +353,7 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
     }
 
     if (event_._data.files->paths.size() == 1ui64) {
-        const fs::Url source { "file"sv, fs::Path { event_._data.files->paths.front() } };
+        const fs::Url source { "file"sv, fs::Path(event_._data.files->paths.front()) };
         openImportDialog(source);
 
     } else {
