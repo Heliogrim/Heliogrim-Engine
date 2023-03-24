@@ -36,13 +36,65 @@ void engine::assets::storeDefaultNameAndUrl(non_owning_rptr<Asset> asset_, strin
 
     if (asset_->getVirtualUrl().empty()) {
 
-        _STD stringstream ss {};
-        //ss << "//";
-        ss << asset_->get_guid().data.high;
-        ss << asset_->get_guid().data.low;
-        const string pseudoUrl = ss.str();
+        _STD filesystem::path pseudo {};
 
-        asset_->setVirtualUrl(pseudoUrl);
+        switch (asset_->getTypeId().data) {
+            case assets::Image::typeId.data: {
+                pseudo = "texture";
+                break;
+            }
+            case assets::Texture::typeId.data: {
+                pseudo = "texture";
+                break;
+            }
+            case assets::GfxMaterial::typeId.data: {
+                pseudo = "material";
+                break;
+            }
+            case assets::StaticGeometry::typeId.data: {
+                pseudo = "geometry";
+                break;
+            }
+            case assets::Font::typeId.data: {
+                pseudo = "font";
+                break;
+            }
+            default: {
+                pseudo = "content";
+                break;
+            }
+        }
+
+        if (not asset_->getAssetName().empty()) {
+
+            _STD stringstream ss {};
+            ss << asset_->getAssetName();
+            ss << " :: ";
+            ss << asset_->get_guid().pre;
+            ss << "-";
+            ss << asset_->get_guid().c0;
+            ss << "-";
+            ss << asset_->get_guid().c1;
+            ss << "-";
+            ss << asset_->get_guid().post;
+
+            pseudo /= ss.str();
+
+        } else {
+
+            _STD stringstream ss {};
+            ss << asset_->get_guid().pre;
+            ss << "-";
+            ss << asset_->get_guid().c0;
+            ss << "-";
+            ss << asset_->get_guid().c1;
+            ss << "-";
+            ss << asset_->get_guid().post;
+
+            pseudo /= ss.str();
+        }
+
+        asset_->setVirtualUrl(pseudo.string());
     }
 
 }
@@ -58,12 +110,12 @@ AssetFactory::AssetFactory(
 
 AssetFactory::~AssetFactory() noexcept = default;
 
-Url AssetFactory::resolveAsSource(cref<string> url_) const noexcept {
+fs::Url AssetFactory::resolveAsSource(cref<string> url_) const noexcept {
 
     auto cwd { _STD filesystem::current_path() };
     cwd.append(url_);
 
-    return Url { "file"sv, cwd.generic_string() };
+    return fs::Url { "file"sv, cwd.generic_string() };
 }
 
 void AssetFactory::prepare() {
@@ -99,7 +151,7 @@ void AssetFactory::prepare() {
 
 ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = HeliogrimObject::create<Font>(guid_, Vector<Url> {});
+    auto* instance = HeliogrimObject::create<Font>(guid_, Vector<fs::Url> {});
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
@@ -109,7 +161,7 @@ ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_) const {
 ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_, cref<string> url_) const {
 
     auto src { resolveAsSource(url_) };
-    Vector<Url> sources {};
+    Vector<fs::Url> sources {};
 
     if (src.hasScheme()/* Fast empty check */) {
         sources.push_back(src);
@@ -190,7 +242,7 @@ ptr<Image> AssetFactory::createImageAsset() const {
 
 ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = HeliogrimObject::create<Image>(guid_, Vector<Url> {});
+    auto* instance = HeliogrimObject::create<Image>(guid_, Vector<fs::Url> {});
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
@@ -200,7 +252,7 @@ ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_) const {
 ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> url_) const {
 
     auto src { resolveAsSource(url_) };
-    Vector<Url> sources {};
+    Vector<fs::Url> sources {};
 
     if (src.hasScheme()/* Fast empty check */) {
         sources.push_back(src);
@@ -215,7 +267,7 @@ ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> u
 
 ptr<LandscapeGeometry> AssetFactory::createLandscapeGeometryAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = HeliogrimObject::create<LandscapeGeometry>(guid_, Vector<Url> {});
+    auto* instance = HeliogrimObject::create<LandscapeGeometry>(guid_, Vector<fs::Url> {});
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
@@ -226,7 +278,7 @@ ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(cref<asset_guid> gui
 
     auto* instance = HeliogrimObject::create<StaticGeometry>(
         guid_,
-        Vector<Url> {},
+        Vector<fs::Url> {},
         0ui64,
         0ui64
     );
@@ -244,7 +296,7 @@ ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(
 ) const {
 
     auto src { resolveAsSource(url_) };
-    Vector<Url> sources {};
+    Vector<fs::Url> sources {};
 
     if (src.hasScheme()/* Fast empty check */) {
         sources.push_back(src);

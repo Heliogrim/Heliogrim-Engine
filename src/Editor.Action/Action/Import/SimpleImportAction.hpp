@@ -1,7 +1,7 @@
 #pragma once
 #include "ImportAction.hpp"
 
-#include <Engine.Common/Url.hpp>
+#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Assets/Types/Asset.hpp>
 
@@ -16,20 +16,20 @@ namespace hg::editor {
     public:
         SimpleImportAction();
 
-        SimpleImportAction(cref<Url> source_, cref<Url> target_);
+        SimpleImportAction(cref<fs::Url> source_, cref<fs::Url> target_);
 
         ~SimpleImportAction();
 
     private:
-        Url _source;
-        Url _target;
+        fs::Url _source;
+        fs::Url _target;
 
         // TODO: ptr<void> _options;
 
     public:
-        [[nodiscard]] Url getSourceUrl() const noexcept;
+        [[nodiscard]] fs::Url getSourceUrl() const noexcept;
 
-        [[nodiscard]] Url getTargetUrl() const noexcept;
+        [[nodiscard]] fs::Url getTargetUrl() const noexcept;
 
     private:
         CompactSet<non_owning_rptr<::hg::engine::assets::Asset>> _assets;

@@ -22,7 +22,7 @@ namespace hg::engine::res {
         using const_reference_type = cref<value_type>;
 
     public:
-        Watcher(cref<fs::File> root_);
+        Watcher(cref<hg::fs::File> root_);
 
         /**
          * Copy Constructor
@@ -72,34 +72,34 @@ namespace hg::engine::res {
         void notify(const bool publish_ = true);
 
     private:
-        fs::File _root;
+        hg::fs::File _root;
 
     public:
-        cref<fs::File> root() const noexcept;
+        cref<hg::fs::File> root() const noexcept;
 
-        fs::File root() noexcept;
+        hg::fs::File root() noexcept;
 
     public:
-        [[nodiscard]] operator const fs::File() const noexcept;
+        [[nodiscard]] operator const hg::fs::File() const noexcept;
 
-        [[nodiscard]] operator fs::File() noexcept;
+        [[nodiscard]] operator hg::fs::File() noexcept;
 
     private:
         HANDLE _handle;
         HANDLE _waitHandle;
 
     private:
-        _STD unordered_map<fs::File, _STD filesystem::file_time_type> _state;
+        _STD unordered_map<hg::fs::File, _STD filesystem::file_time_type> _state;
 
-        _STD function<void(fs::File)> _createCallback;
-        _STD function<void(fs::File)> _modifiedCallback;
-        _STD function<void(fs::File)> _eraseCallback;
+        _STD function<void(hg::fs::File)> _createCallback;
+        _STD function<void(hg::fs::File)> _modifiedCallback;
+        _STD function<void(hg::fs::File)> _eraseCallback;
 
     public:
-        void setCreateCallback(cref<std::function<void(fs::File file_)>> callback_) noexcept;
+        void setCreateCallback(cref<std::function<void(hg::fs::File file_)>> callback_) noexcept;
 
-        void setModifiedCallback(cref<std::function<void(fs::File file_)>> callback_) noexcept;
+        void setModifiedCallback(cref<std::function<void(hg::fs::File file_)>> callback_) noexcept;
 
-        void setEraseCallback(cref<std::function<void(fs::File file_)>> callback_) noexcept;
+        void setEraseCallback(cref<std::function<void(hg::fs::File file_)>> callback_) noexcept;
     };
 }

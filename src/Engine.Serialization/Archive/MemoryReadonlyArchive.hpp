@@ -17,7 +17,7 @@ namespace hg::engine::serialization {
         MemoryReadonlyArchive(_In_ ref<_STD span<u8, _STD dynamic_extent>> bytes_, const s64 limit_);
 
     public:
-        [[nodiscard]] Url getArchiveUrl() const noexcept override;
+        [[nodiscard]] fs::Url getArchiveUrl() const noexcept override;
 
     protected:
         ref<_STD span<u8, _STD dynamic_extent>> _bytes;

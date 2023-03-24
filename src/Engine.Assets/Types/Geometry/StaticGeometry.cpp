@@ -8,7 +8,7 @@ StaticGeometry::StaticGeometry(cref<asset_guid> guid_) :
 
 StaticGeometry::StaticGeometry(
     cref<asset_guid> guid_,
-    mref<Vector<Url>> sources_,
+    mref<Vector<fs::Url>> sources_,
     cref<u64> vertexCount_,
     cref<u64> indexCount_
 ) :
@@ -17,7 +17,7 @@ StaticGeometry::StaticGeometry(
     _vertexCount(vertexCount_),
     _indexCount(indexCount_) {}
 
-cref<Vector<Url>> StaticGeometry::sources() const noexcept {
+cref<Vector<fs::Url>> StaticGeometry::sources() const noexcept {
     return _sources;
 }
 

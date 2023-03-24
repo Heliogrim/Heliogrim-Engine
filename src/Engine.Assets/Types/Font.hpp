@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Common/Url.hpp>
+#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Reflow/Font/GlyphRanges.hpp>
 #include <Engine.Resource/Loader/Loader.hpp>
@@ -21,12 +21,12 @@ namespace hg::engine::assets {
         Font(cref<asset_guid> guid_);
 
     public:
-        Font(cref<asset_guid> guid_, mref<Vector<Url>> sources_);
+        Font(cref<asset_guid> guid_, mref<Vector<fs::Url>> sources_);
 
     private:
-        Vector<Url> _sources;
+        Vector<fs::Url> _sources;
 
     public:
-        [[nodiscard]] cref<Vector<Url>> sources() const noexcept;
+        [[nodiscard]] cref<Vector<fs::Url>> sources() const noexcept;
     };
 }

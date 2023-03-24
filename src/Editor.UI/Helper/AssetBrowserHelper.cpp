@@ -215,10 +215,37 @@ ptr<engine::assets::Texture> AssetBrowserHelper::getItemIconForDirectory(cref<st
     return tex;
 }
 
-asset_type_id AssetBrowserHelper::getAssetTypeByFile(cref<Url> fqUrl_) const noexcept {
-    return {};
-}
+#include <Engine.Assets/Types/Image.hpp>
+#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
+#include <Engine.Assets/Types/GfxMaterial.hpp>
+#include <Engine.Assets/Types/Font.hpp>
 
 string AssetBrowserHelper::getAssetTypeName(cref<asset_type_id> typeId_) const noexcept {
-    return _STD to_string(typeId_.data);
+
+    static constexpr asset_type_id invalid {};
+
+    switch (typeId_.data) {
+        case engine::assets::Image::typeId.data: {
+            return "Image";
+        }
+        case engine::assets::Texture::typeId.data: {
+            return "Texture";
+        }
+        case engine::assets::StaticGeometry::typeId.data: {
+            return "Static Geometry";
+        }
+        case engine::assets::GfxMaterial::typeId.data: {
+            return "Gfx Material";
+        }
+        case engine::assets::Font::typeId.data: {
+            return "Font";
+        }
+        case invalid.data: {
+            return "Undefined";
+        }
+        default: {
+            return _STD to_string(typeId_.data);
+        }
+    }
 }

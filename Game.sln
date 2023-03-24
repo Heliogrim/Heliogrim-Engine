@@ -170,6 +170,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.GFX.Loader", "projec
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.IO.Dispatcher", "projects\Engine.IO.Dispatcher\Engine.IO.Dispatcher.vcxproj", "{49BFE50F-4788-47A1-A3C4-33C23ECBF2B6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Assets.System", "projects\Engine.Assets.System\Engine.Assets.System.vcxproj", "{960FB197-0D2C-4F6B-B9A5-79DE454FFCF7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Filesystem", "projects\Engine.Filesystem\Engine.Filesystem.vcxproj", "{8D00049B-6F13-4EAC-B541-78F98F2C3B81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -479,6 +483,18 @@ Global
 		{49BFE50F-4788-47A1-A3C4-33C23ECBF2B6}.Profile|x64.Build.0 = Profile|x64
 		{49BFE50F-4788-47A1-A3C4-33C23ECBF2B6}.Release|x64.ActiveCfg = Release|x64
 		{49BFE50F-4788-47A1-A3C4-33C23ECBF2B6}.Release|x64.Build.0 = Release|x64
+		{960FB197-0D2C-4F6B-B9A5-79DE454FFCF7}.Debug|x64.ActiveCfg = Debug|x64
+		{960FB197-0D2C-4F6B-B9A5-79DE454FFCF7}.Debug|x64.Build.0 = Debug|x64
+		{960FB197-0D2C-4F6B-B9A5-79DE454FFCF7}.Profile|x64.ActiveCfg = Profile|x64
+		{960FB197-0D2C-4F6B-B9A5-79DE454FFCF7}.Profile|x64.Build.0 = Profile|x64
+		{960FB197-0D2C-4F6B-B9A5-79DE454FFCF7}.Release|x64.ActiveCfg = Release|x64
+		{960FB197-0D2C-4F6B-B9A5-79DE454FFCF7}.Release|x64.Build.0 = Release|x64
+		{8D00049B-6F13-4EAC-B541-78F98F2C3B81}.Debug|x64.ActiveCfg = Debug|x64
+		{8D00049B-6F13-4EAC-B541-78F98F2C3B81}.Debug|x64.Build.0 = Debug|x64
+		{8D00049B-6F13-4EAC-B541-78F98F2C3B81}.Profile|x64.ActiveCfg = Profile|x64
+		{8D00049B-6F13-4EAC-B541-78F98F2C3B81}.Profile|x64.Build.0 = Profile|x64
+		{8D00049B-6F13-4EAC-B541-78F98F2C3B81}.Release|x64.ActiveCfg = Release|x64
+		{8D00049B-6F13-4EAC-B541-78F98F2C3B81}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

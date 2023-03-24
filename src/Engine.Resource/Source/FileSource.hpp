@@ -51,7 +51,7 @@ namespace hg::engine::resource {
          * @param  size_ (Optional) The size.
          * @param  offset_ (Optional) The offset.
          */
-        FileSource(mref<fs::File> file_, streamsize size_ = 0i64, streamoff offset_ = 0i64) noexcept;
+        FileSource(mref<hg::fs::File> file_, streamsize size_ = 0i64, streamoff offset_ = 0i64) noexcept;
 
         /**
          * Destructor
@@ -97,7 +97,7 @@ namespace hg::engine::resource {
         /**
          * The underlying file to access
          */
-        fs::File _file;
+        ::hg::fs::File _file;
         void* _fptr;
 
         /**

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Common/Url.hpp>
+#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
 
@@ -27,16 +27,16 @@ namespace hg::engine::assets {
         Image(cref<asset_guid> guid_);
 
     public:
-        Image(cref<asset_guid> guid_, mref<Vector<Url>> sources_);
+        Image(cref<asset_guid> guid_, mref<Vector<fs::Url>> sources_);
 
     private:
-        Vector<Url> _sources;
+        Vector<fs::Url> _sources;
 
     public:
-        [[nodiscard]] cref<Vector<Url>> sources() const noexcept;
+        [[nodiscard]] cref<Vector<fs::Url>> sources() const noexcept;
 
-        void addSource(cref<Url> sourceUrl_);
+        void addSource(cref<fs::Url> sourceUrl_);
 
-        void removeSource(cref<Url> sourceUrl_);
+        void removeSource(cref<fs::Url> sourceUrl_);
     };
 }

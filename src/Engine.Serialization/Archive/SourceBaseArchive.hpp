@@ -23,7 +23,7 @@ namespace hg::engine::serialization {
         ~SourceBaseArchive() noexcept override;
 
     public:
-        [[nodiscard]] Url getArchiveUrl() const noexcept override;
+        [[nodiscard]] fs::Url getArchiveUrl() const noexcept override;
 
         [[nodiscard]] string_view getArchiveName() const noexcept override;
 

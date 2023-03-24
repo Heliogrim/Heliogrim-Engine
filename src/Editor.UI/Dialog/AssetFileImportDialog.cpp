@@ -32,7 +32,7 @@
 #include "Engine.Assets/AssetFactory.hpp"
 
 #if TRUE
-void testCreateAsset(hg::cref<hg::Url> target_);
+void testCreateAsset(hg::cref<hg::fs::Url> target_);
 #endif
 
 using namespace hg::editor::ui;
@@ -51,7 +51,7 @@ using namespace hg;
     );
 }
 
-AssetFileImportDialog::AssetFileImportDialog(cref<Url> source_, cref<Url> target_) :
+AssetFileImportDialog::AssetFileImportDialog(cref<fs::Url> source_, cref<fs::Url> target_) :
     Dialog(makeStyleSheet()),
     _source(source_),
     _target(target_) {}
@@ -165,7 +165,7 @@ void configureImportTypeEntry(cref<sptr<AssetImportTypeItem>> parent_, cref<stri
     parent_->addChild(title);
 }
 
-void configureImportAs(cref<sptr<VBox>> parent_, cref<Url> source_) {
+void configureImportAs(cref<sptr<VBox>> parent_, cref<fs::Url> source_) {
 
     auto* font { getDefaultFont() };
 
@@ -212,7 +212,7 @@ void configureImportAs(cref<sptr<VBox>> parent_, cref<Url> source_) {
     }
 }
 
-void configureSourceDomain(cref<sptr<VBox>> parent_, cref<Url> source_) {
+void configureSourceDomain(cref<sptr<VBox>> parent_, cref<fs::Url> source_) {
 
     auto* font { getDefaultFont() };
 
@@ -306,7 +306,7 @@ void configureSourceDomain(cref<sptr<VBox>> parent_, cref<Url> source_) {
     container->addChild(sourceButton);
 }
 
-void configureTargetDomain(cref<sptr<VBox>> parent_, cref<Url> source_, cref<Url> path_) {
+void configureTargetDomain(cref<sptr<VBox>> parent_, cref<fs::Url> source_, cref<fs::Url> path_) {
 
     auto* font { getDefaultFont() };
 
@@ -376,7 +376,7 @@ void configureTargetDomain(cref<sptr<VBox>> parent_, cref<Url> source_, cref<Url
     const auto& dst { path_.path() };
 
     _STD string edst { dst };
-    edst.append(Url::Separator);
+    edst.append(fs::Path::separator);
     edst.append(filename);
 
     targetInput->setPlaceholder(edst);
@@ -493,8 +493,8 @@ void configureContent(
     cref<sptr<Dialog>> dialog_,
     cref<sptr<Form>> form_,
     cref<sptr<VScrollBox>> parent_,
-    cref<Url> source_,
-    cref<Url> target_
+    cref<fs::Url> source_,
+    cref<fs::Url> target_
 ) {
 
     auto* font { getDefaultFont() };
@@ -528,7 +528,11 @@ void configureContent(
     parent_->addChild(targetDomain);
 }
 
-sptr<Dialog> AssetFileImportDialog::make(const ptr<AssetBrowser> browser_, cref<Url> source_, cref<Url> target_) {
+sptr<Dialog> AssetFileImportDialog::make(
+    const ptr<AssetBrowser> browser_,
+    cref<fs::Url> source_,
+    cref<fs::Url> target_
+) {
 
     /**/
     auto dialog { sptr<AssetFileImportDialog>(new AssetFileImportDialog(source_, target_)) };
@@ -557,7 +561,11 @@ sptr<Dialog> AssetFileImportDialog::make(const ptr<AssetBrowser> browser_, cref<
             // TODO: dialog->markAsDeleted();
             diag->getPopupLayer()->getWindow()->dropPopLayer(diag->getPopupLayer());
 
-            IM_CORE_LOGF("Importing new asset from `{}` to `{}`.", diag->_source.path(), diag->_target.path());
+            IM_CORE_LOGF(
+                "Importing new asset from `{}` to `{}`.",
+                diag->_source.path().string(),
+                diag->_target.path().string()
+            );
 
             /**/
             //testCreateAsset(diag->_source);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Url.hpp>
+#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
 #include "AssetBrowserEntry.hpp"
@@ -15,11 +15,10 @@ namespace hg::editor::ui {
         virtual ~AssetBrowserProvider() = default;
 
     public:
-        _Success_(return != nullptr) virtual non_owning_rptr<this_type> createProvider(cref<Url> url_) = 0;
+        virtual bool effects(cref<fs::Url> url_) = 0;
 
-        virtual non_owning_rptr<this_type> destroyProvider(cref<Url> url_) = 0;
+        virtual bool retrieve(cref<fs::Url> url_, _Inout_ ref<Vector<AssetBrowserEntry>> entries_) = 0;
 
-    public:
-        virtual bool retrieve(cref<Url> url_, _Out_ ref<Vector<AssetBrowserEntry>> entries_);
+        virtual bool retrieveDirectories(cref<fs::Url> url_, _Inout_ ref<Vector<AssetBrowserEntry>> directories_) = 0;
     };
 }

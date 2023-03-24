@@ -10,8 +10,7 @@
 #include <Engine.GFX/Device/Device.hpp>
 #include <Engine.GFX/Texture/VirtualTextureView.hpp>
 #include <Engine.GFX/Texture/VirtualTexturePage.hpp>
-
-#include "Engine.Common/Url.hpp"
+#include "Engine.Filesystem/Url.hpp"
 
 using namespace hg::engine::gfx::loader::transformer;
 using namespace hg::engine::gfx::loader;
@@ -856,7 +855,6 @@ void transformer::convertKtx20(
 
     if (options_.dataFlag & TextureLoadDataFlagBits::eLazyDataLoading) {
 
-        #if TRUE
         /**
         * Transform and data transfer
         */
@@ -906,7 +904,6 @@ void transformer::convertKtx20(
         cmd.release();
 
         pool->lck().release();
-        #endif
 
         return;
     }

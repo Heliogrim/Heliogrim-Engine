@@ -2,11 +2,14 @@
 
 #include <Engine.Common/Collection/StableUnorderedMap.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Url.hpp>
+#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Common/Wrapper.hpp>
+
+#include "AssetBrowser/AssetBrowserEntry.hpp"
 
 namespace hg::editor::ui {
     class AssetBrowserPanel;
+    class AssetBrowserProvider;
 }
 
 namespace hg::editor::ui {
@@ -29,18 +32,23 @@ namespace hg::editor::ui {
         [[nodiscard]] sptr<AssetBrowserPanel> makePanel();
 
     private:
-        StableUnorderedMap<string, Vector<_STD pair<string, Url>>> _virtualMountPoints;
+        Vector<uptr<AssetBrowserProvider>> _providers;
+
+    public:
+        void addProvider(mref<uptr<AssetBrowserProvider>> provider_);
 
     protected:
-        [[nodiscard]] Url getBrowserRoot() const noexcept;
+        [[nodiscard]] fs::Url getBrowserRoot() const noexcept;
 
-        [[nodiscard]] Url getVirtProtoRoot(cref<string_view> schema_, const u64 virtRootId_);
-
-        [[nodiscard]] Url getImportRoot() const noexcept;
+        [[nodiscard]] fs::Url getImportRoot() const noexcept;
 
     protected:
-        bool retrieveEntriesFQUrl(cref<Url> fqurl_, _Out_ ref<Vector<_STD pair<string, Url>>> entries_) const;
+        void retrieveFromProviders(cref<fs::Url> url_, _Inout_ ref<Vector<AssetBrowserEntry>> entries_) const;
 
-        bool retrieveEntries(cref<Url> cwd_, _Out_ ref<Vector<_STD pair<string, Url>>> entries_) const;
+        void retrieveProviderDirectories(cref<fs::Url> url_, _Inout_ ref<Vector<AssetBrowserEntry>> directories_) const;
+
+        bool retrieveDirectories(cref<fs::Url> cwd_, _Inout_ ref<Vector<AssetBrowserEntry>> directories_) const;
+
+        bool retrieveEntries(cref<fs::Url> cwd_, _Inout_ ref<Vector<AssetBrowserEntry>> entries_) const;
     };
 }

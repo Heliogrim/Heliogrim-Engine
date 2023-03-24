@@ -1,6 +1,6 @@
 #pragma once
 #include <filesystem>
-#include <Engine.Common/Url.hpp>
+#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Reflow/Widget/__fwd.hpp>
 #include <Engine.Reflow/Widget/Panel.hpp>
 #include <Engine.Reflow/Widget/HBox.hpp>
@@ -22,11 +22,11 @@ namespace hg::editor::ui {
     public:
         non_owning_rptr<AssetBrowser> _browser;
 
-        Url _browserRoot;
-        Url _browserCwd;
+        fs::Url _browserRoot;
+        fs::Url _browserCwd;
 
     public:
-        void changeCwd(cref<Url> nextCwd_);
+        void changeCwd(cref<fs::Url> nextCwd_);
 
     private:
         sptr<Widget> _nav;
@@ -51,7 +51,7 @@ namespace hg::editor::ui {
     private:
         void closeImportDialog();
 
-        void openImportDialog(cref<Url> fqUrlSource_);
+        void openImportDialog(cref<fs::Url> fqUrlSource_);
 
     public:
         engine::reflow::EventResponse onMouseButtonDown(cref<engine::reflow::MouseEvent> event_) override;
@@ -59,6 +59,6 @@ namespace hg::editor::ui {
         engine::reflow::EventResponse onDrop(cref<engine::reflow::DragDropEvent> event_) override;
 
     public:
-        static sptr<AssetBrowserPanel> make(const non_owning_rptr<AssetBrowser> browser_, cref<Url> root_);
+        static sptr<AssetBrowserPanel> make(const non_owning_rptr<AssetBrowser> browser_, cref<fs::Url> root_);
     };
 }

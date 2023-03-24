@@ -143,6 +143,9 @@
     <ProjectReference Include="..\Engine.Event\Engine.Event.vcxproj">
       <Project>{4551b6e7-4a5e-4576-87a2-dc5fa7959a9c}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.Filesystem\Engine.Filesystem.vcxproj">
+      <Project>{8d00049b-6f13-4eac-b541-78f98f2c3b81}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.Glow.3D\Engine.GFX.Glow.3D.vcxproj">
       <Project>{4f8e6e80-a58c-463c-b24a-391bfea54f9b}</Project>
     </ProjectReference>

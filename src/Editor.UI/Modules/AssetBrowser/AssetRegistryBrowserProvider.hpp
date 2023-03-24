@@ -6,27 +6,22 @@
 #include "AssetBrowserProvider.hpp"
 
 namespace hg::editor::ui {
-    class AssetDatabaseBrowserProvider :
+    class AssetRegistryBrowserProvider :
         public AssetBrowserProvider {
     public:
-        using this_type = AssetDatabaseBrowserProvider;
+        using this_type = AssetRegistryBrowserProvider;
 
         using data_list_type = Vector<ptr<engine::assets::Asset>>;
 
     public:
-        AssetDatabaseBrowserProvider(
-            const non_owning_rptr<engine::assets::IAssetRegistry> database_
+        AssetRegistryBrowserProvider(
+            const non_owning_rptr<engine::assets::IAssetRegistry> registry_
         ) noexcept;
 
-        ~AssetDatabaseBrowserProvider() override;
+        ~AssetRegistryBrowserProvider() override;
 
     private:
         non_owning_rptr<engine::assets::IAssetRegistry> _registry;
-
-    public:
-        non_owning_rptr<this_type> createProvider(cref<Url> url_) override;
-
-        non_owning_rptr<this_type> destroyProvider(cref<Url> url_) override;
 
     private:
         [[nodiscard]] data_list_type::iterator filterByType(
@@ -48,6 +43,10 @@ namespace hg::editor::ui {
         ) const;
 
     public:
-        bool retrieve(cref<Url> url_, ref<Vector<AssetBrowserEntry>> entries_) override;
+        bool effects(cref<fs::Url> url_) override;
+
+        bool retrieve(cref<fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) override;
+
+        bool retrieveDirectories(cref<fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) override;
     };
 }

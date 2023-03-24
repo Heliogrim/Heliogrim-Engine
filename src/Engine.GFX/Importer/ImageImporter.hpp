@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Engine.Common/Url.hpp>
 #include <Engine.Common/Concurrent/Future.hpp>
 #include <Engine.Assets/Types/Texture/Texture.hpp>
 #include <Engine.Assets/Types/Image.hpp>
 #include <Engine.Resource/Importer/Importer.hpp>
+#include <Engine.Resource/File.hpp>
 
 namespace hg::engine::gfx {
     class KtxImporter :
@@ -22,11 +22,14 @@ namespace hg::engine::gfx {
         ~KtxImporter() override;
 
     public:
-        [[nodiscard]] bool canImport(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const noexcept override;
+        [[nodiscard]] bool canImport(cref<res::FileTypeId> typeId_, cref<::hg::fs::File> file_) const noexcept override;
 
     public:
         [[nodiscard]] descriptor_type descriptor() const noexcept override;
 
-        [[nodiscard]] import_result_type import(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const override;
+        [[nodiscard]] import_result_type import(
+            cref<res::FileTypeId> typeId_,
+            cref<::hg::fs::File> file_
+        ) const override;
     };
 }

@@ -1,12 +1,13 @@
 #pragma once
 
 #include <Engine.Common/String.hpp>
-#include <Engine.Common/Url.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.GFX/TextureFormat.hpp>
 #include <Engine.GFX/Texture/TextureType.hpp>
 #include <Engine.Assets.System/__fwd.hpp>
+#include <Engine.Filesystem/__fwd.hpp>
+#include <Engine.Filesystem/Url.hpp>
 
 #include "Types/Asset.hpp"
 
@@ -61,7 +62,7 @@ namespace hg::engine::assets {
         non_owning_rptr<system::InMemAssetRepository> _repository;
 
     private:
-        [[nodiscard]] Url resolveAsSource(cref<string> url_) const noexcept;
+        [[nodiscard]] fs::Url resolveAsSource(cref<string> url_) const noexcept;
 
     public:
         /**

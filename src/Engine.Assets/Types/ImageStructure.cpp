@@ -47,7 +47,7 @@ void access::Structure<Image>::deserialize(Image* const self_, mref<RecordScoped
             continue;
         }
 
-        self_->_sources.push_back(Url { "file"sv, entry.substr(7ui64) });
+        self_->_sources.push_back(fs::Url { "file"sv, entry.substr(7ui64) });
     }
 
 }

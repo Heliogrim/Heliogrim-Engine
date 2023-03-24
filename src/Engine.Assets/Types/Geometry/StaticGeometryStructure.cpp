@@ -59,7 +59,7 @@ void access::Structure<StaticGeometry>::deserialize(StaticGeometry* const self_,
             continue;
         }
 
-        self_->_sources.push_back(Url { "file"sv, entry.substr(7ui64) });
+        self_->_sources.push_back(fs::Url { "file"sv, entry.substr(7ui64) });
     }
 
     root.getSlot<u64>("vertexCount") >> self_->_vertexCount;
