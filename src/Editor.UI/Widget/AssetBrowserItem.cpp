@@ -147,6 +147,11 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
     ptr<engine::assets::Texture> iconAsset {};
     string typeTitle {};
 
+    if (self->_value.type == AssetBrowserEntryType::eUndefined) {
+        iconAsset = helper->getItemIconForDirectory("Undefined"sv);
+        typeTitle = "Undefined";
+    }
+
     if (self->_value.type == AssetBrowserEntryType::eDirectory) {
         iconAsset = helper->getItemIconForDirectory(self->_value.title);
         typeTitle = "Directory";
@@ -169,7 +174,12 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
             }
         );
 
-    } else {
+    } else if (self->_value.type == AssetBrowserEntryType::eFile) {
+
+        iconAsset = helper->getItemIconForDirectory(self->_value.title);
+        typeTitle = "File";
+
+    } else if (self->_value.type == AssetBrowserEntryType::eAsset) {
 
         [[maybe_unused]] const auto _ = self->addOnClick(
             [self, panel = wptr<AssetBrowserPanel> { panel_ }](cref<engine::input::event::MouseButtonEvent> event_) {

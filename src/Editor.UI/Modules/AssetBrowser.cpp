@@ -44,12 +44,22 @@ fs::Url AssetBrowser::getImportRoot() const noexcept {
     return fs::Url { fs::Path { "/Imports"sv } };
 }
 
+bool AssetBrowser::retrieveItems(cref<fs::Url> cwd_, ref<Vector<AssetBrowserEntry>> entries_) const {
+    retrieveFromProviders(cwd_, entries_);
+    return true;
+}
+
 void AssetBrowser::retrieveFromProviders(cref<fs::Url> url_, ref<Vector<AssetBrowserEntry>> entries_) const {
     for (const auto& provider : _providers) {
         if (provider->effects(url_)) {
             provider->retrieve(url_, entries_);
         }
     }
+}
+
+bool AssetBrowser::retrieveDirectories(cref<fs::Url> cwd_, ref<Vector<AssetBrowserEntry>> directories_) const {
+    retrieveProviderDirectories(cwd_, directories_);
+    return true;
 }
 
 void AssetBrowser::retrieveProviderDirectories(cref<fs::Url> url_, ref<Vector<AssetBrowserEntry>> directories_) const {
@@ -60,49 +70,7 @@ void AssetBrowser::retrieveProviderDirectories(cref<fs::Url> url_, ref<Vector<As
     }
 }
 
-bool AssetBrowser::retrieveDirectories(cref<fs::Url> cwd_, ref<Vector<AssetBrowserEntry>> directories_) const {
-    retrieveProviderDirectories(cwd_, directories_);
-    return true;
-}
-
-bool AssetBrowser::retrieveEntries(cref<fs::Url> cwd_, ref<Vector<AssetBrowserEntry>> entries_) const {
-
-    const auto root { getBrowserRoot() };
-
-    // Warning: Just a small sanitize to prevent root mismatch
-    const bool isRoot {
-        cwd_.empty() || cwd_.path() == root.path()
-    };
-
-    if (isRoot) {
-        retrieveFromProviders(root, entries_);
-        return true;
-    }
-
-    /**/
-
-    Vector<AssetBrowserEntry> virtResolve {};
-    virtResolve.push_back(
-        AssetBrowserEntry {
-            .type = AssetBrowserEntryType::eDirectory,
-            .title = "",
-            .path = cwd_
-        }
-    );
-
-    /**/
-
-    for (const auto& resolved : virtResolve) {
-
-        if (resolved.type != AssetBrowserEntryType::eDirectory) {
-            IM_CORE_ERROR("Found non-directory while virtually resolving paths for assets from asset browser.");
-            continue;
-        }
-
-        /**/
-
-        retrieveFromProviders(resolved.path, entries_);
-    }
-
-    return true;
+void AssetBrowser::retrieve(cref<fs::Url> cwd_, ref<Vector<AssetBrowserEntry>> entries_) {
+    retrieveDirectories(cwd_, entries_);
+    retrieveItems(cwd_, entries_);
 }
