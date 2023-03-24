@@ -9,15 +9,16 @@ MemoryWriteonlyArchive::MemoryWriteonlyArchive(ref<AutoArray<u8>> bytes_) :
     MemoryBaseArchive(),
     _bytes(bytes_) {}
 
-Url MemoryWriteonlyArchive::getArchiveUrl() const noexcept {
-    const string path {
-        _STD format(
-            "{:#016x}:{:#016x}",
-            reinterpret_cast<u64>(_bytes.data()),
-            reinterpret_cast<u64>(_bytes.data() + totalSize())
-        )
+fs::Url MemoryWriteonlyArchive::getArchiveUrl() const noexcept {
+    return fs::Url {
+        "mem"sv, fs::Path {
+            _STD format(
+                "{:#016x}:{:#016x}",
+                reinterpret_cast<u64>(_bytes.data()),
+                reinterpret_cast<u64>(_bytes.data() + totalSize())
+            )
+        }
     };
-    return Url { "mem"sv, path };
 }
 
 s64 MemoryWriteonlyArchive::totalSize() const noexcept {

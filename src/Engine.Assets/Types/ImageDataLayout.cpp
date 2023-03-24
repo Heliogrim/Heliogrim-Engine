@@ -18,8 +18,8 @@ namespace hg::engine::serialization {
         assetNameLayout->reflect().storeType<u8>();
         assetNameLayout->describe();
 
-        const auto urlLayout = make_sptr<DataLayout<Url>>();
-        urlLayout->reflect().storeType<Url>();
+        const auto urlLayout = make_sptr<DataLayout<fs::Url>>();
+        urlLayout->reflect().storeType<fs::Url>();
         urlLayout->describe();
 
         /**/
@@ -28,6 +28,6 @@ namespace hg::engine::serialization {
         defineSlice<string>(offsetof(Image, _assetName), assetNameLayout);
 
         /**/
-        defineSlice<Vector<Url>>(offsetof(Image, _sources), urlLayout);
+        defineSlice<Vector<fs::Url>>(offsetof(Image, _sources), urlLayout);
     }
 }

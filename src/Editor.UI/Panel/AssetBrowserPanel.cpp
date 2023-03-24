@@ -20,9 +20,11 @@
 #include "../Widget/Breadcrumb.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Assets.System/IAssetRegistry.hpp"
+#include "Engine.Assets.System/AssetRegistry.hpp"
 #include "Engine.Assets.System/AssetDescriptor.hpp"
 #include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Core/Engine.hpp"
+#include "../Modules/AssetBrowser/AssetBrowserEntry.hpp"
 
 #if TRUE
 #include <Engine.GFX.Glow.UI/TestUI.hpp>
@@ -47,7 +49,7 @@ AssetBrowserPanel::~AssetBrowserPanel() {
     closeImportDialog();
 }
 
-void AssetBrowserPanel::changeCwd(cref<Url> nextCwd_) {
+void AssetBrowserPanel::changeCwd(cref<fs::Url> nextCwd_) {
     dropNav();
     dropItems();
 
@@ -88,8 +90,10 @@ void AssetBrowserPanel::buildNav() {
         proxyUrl = proxyUrl.parent_path();
     }
 
-    if (proxyUrl.has_root_name() && proxyUrl.root_name().native().size() != _browserRoot.path().size()) {
-        proxyParts.push_back(proxyUrl.root_name().string().substr(_browserRoot.path().size() + Url::Separator.size()));
+    if (proxyUrl.has_root_name() && proxyUrl.root_name().native().size() != _browserRoot.path().name().size()) {
+        proxyParts.push_back(
+            proxyUrl.root_name().string().substr(_browserRoot.path().string().size() + 1/* Separator Size */)
+        );
     }
 
     proxyParts.push_back(string { _browserRoot.path() });
@@ -97,17 +101,19 @@ void AssetBrowserPanel::buildNav() {
     /**/
 
     auto* font { getDefaultFont() };
-    Url fwd { _browserRoot.scheme(), ""sv };
+    fs::Url fwd { _browserRoot.scheme(), ""sv };
     for (auto it { proxyParts.rbegin() }; it != proxyParts.rend(); ++it) {
 
         const auto& part { *it };
-        if (part == _browserRoot.path()) {
+        if (part == _browserRoot.path().string()) {
             fwd = _browserRoot;
+        } else if (fwd.path() == _browserRoot.path()) {
+            fwd = fs::Url { fwd.scheme(), _STD filesystem::path { part }.string() };
         } else {
-            fwd = Url { fwd.scheme(), string { fwd.path() }.append(Url::Separator).append(part) };
+            fwd = fs::Url { fwd.scheme(), _STD filesystem::path { fwd.path() }.append(part).string() };
         }
 
-        const string title { (part == _browserRoot.path()) ? "Root" : part };
+        const string title { (part == _browserRoot.path().string()) ? "Root" : part };
         const string key { title + _STD to_string(_STD distance(it, proxyParts.rend())) };
 
         bread->addNavEntry(AssocKey<string>::from(key), title, fwd);
@@ -178,25 +184,17 @@ void AssetBrowserPanel::dropItems() {
 void AssetBrowserPanel::buildItems() {
 
     const auto items { getItemContainer() };
-    Vector<_STD pair<string, Url>> nextEntries {};
+    Vector<AssetBrowserEntry> nextEntries {};
 
     const auto success { _browser->retrieveEntries(_browserCwd, nextEntries) };
     assert(success);
 
-    for (const auto& entry : nextEntries) {
+    for (auto&& entry : nextEntries) {
 
-        const Url virtUrl {
-            _browserCwd.scheme(),
-            string { _browserCwd.path() }.append(Url::Separator).append(entry.first)
-        };
-
-        Vector<Url> fqUrls { entry.second };
         items->addChild(
             AssetBrowserItem::make(
                 _STD static_pointer_cast<AssetBrowserPanel, Widget>(shared_from_this()),
-                entry.first,
-                virtUrl,
-                _STD move(fqUrls)
+                _STD move(entry)
             )
         );
     }
@@ -218,7 +216,7 @@ void AssetBrowserPanel::closeImportDialog() {
     _dialog.reset();
 }
 
-void AssetBrowserPanel::openImportDialog(cref<Url> fqUrlSource_) {
+void AssetBrowserPanel::openImportDialog(cref<fs::Url> fqUrlSource_) {
 
     if (not _dialog.expired()) {
         closeImportDialog();
@@ -231,11 +229,13 @@ void AssetBrowserPanel::openImportDialog(cref<Url> fqUrlSource_) {
 
     _STD filesystem::path cwd { _browserCwd.path() };
     const auto importRoot { _browser->getImportRoot() };
-    const Url targetRoot { importRoot.scheme(), string { importRoot.path() }.append(Url::Separator).append(ext) };
+    const fs::Url targetRoot {
+        importRoot.scheme(), fs::Path { string { importRoot.path() }.append(fs::Path::separator).append(ext) }
+    };
 
     bool isImportSubPath { false };
     while (not cwd.empty() && cwd.parent_path() != cwd) {
-        if (cwd.string() == targetRoot.path()) {
+        if (cwd.string() == targetRoot.path().string()) {
             isImportSubPath = true;
             break;
         }
@@ -355,7 +355,7 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
     }
 
     if (event_._data.files->paths.size() == 1ui64) {
-        const Url source { "file"sv, event_._data.files->paths.front() };
+        const fs::Url source { "file"sv, fs::Path { event_._data.files->paths.front() } };
         openImportDialog(source);
 
     } else {
@@ -367,7 +367,12 @@ engine::reflow::EventResponse AssetBrowserPanel::onDrop(cref<engine::reflow::Dra
         for (const auto& path : event_._data.files->paths) {
 
             _STD filesystem::path cwd { _browserCwd.path() };
-            const auto action { make_sptr<SimpleImportAction>(Url { "file"sv, path }, Url { ""sv, cwd.string() }) };
+            const auto action {
+                make_sptr<SimpleImportAction>(
+                    fs::Url { "file"sv, fs::Path { path } },
+                    fs::Url { ""sv, fs::Path { cwd.string() } }
+                )
+            };
 
             execute(
                 [action]() {
@@ -395,7 +400,7 @@ static void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<HBox>> p
 
     auto breadcrumb = Breadcrumb::make();
     breadcrumb->onAction(
-        [self = wptr<AssetBrowserPanel>(root_)](cref<Url> url_) {
+        [self = wptr<AssetBrowserPanel>(root_)](cref<fs::Url> url_) {
             if (self.expired())
                 return;
             self.lock()->changeCwd(url_);
@@ -482,7 +487,7 @@ static void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<HBox>> p
     parent_->addChild(searchbar);
 }
 
-sptr<AssetBrowserPanel> AssetBrowserPanel::make(const non_owning_rptr<AssetBrowser> browser_, cref<Url> root_) {
+sptr<AssetBrowserPanel> AssetBrowserPanel::make(const non_owning_rptr<AssetBrowser> browser_, cref<fs::Url> root_) {
 
     auto panel { _STD shared_ptr<AssetBrowserPanel>(new AssetBrowserPanel()) };
 

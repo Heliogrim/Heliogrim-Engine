@@ -1,7 +1,6 @@
 #include "SkyboxModel.hpp"
 
 #include <Heliogrim/SkyboxComponent.hpp>
-#include <Engine.Assets/Database/AssetDatabaseQuery.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene/RevScene.hpp>

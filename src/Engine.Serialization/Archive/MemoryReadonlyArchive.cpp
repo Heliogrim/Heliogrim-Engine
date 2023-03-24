@@ -15,15 +15,16 @@ MemoryReadonlyArchive::MemoryReadonlyArchive(ref<_STD span<u8, _STD dynamic_exte
     _bytes(bytes_),
     _limit(limit_) {}
 
-Url MemoryReadonlyArchive::getArchiveUrl() const noexcept {
-    const string path {
-        _STD format(
-            "{:#016x}:{:#016x}",
-            reinterpret_cast<u64>(_bytes.data()),
-            reinterpret_cast<u64>(_bytes.data() + totalSize())
-        )
+fs::Url MemoryReadonlyArchive::getArchiveUrl() const noexcept {
+    return fs::Url {
+        "mem"sv, fs::Path {
+            _STD format(
+                "{:#016x}:{:#016x}",
+                reinterpret_cast<u64>(_bytes.data()),
+                reinterpret_cast<u64>(_bytes.data() + totalSize())
+            )
+        }
     };
-    return Url { "mem"sv, path };
 }
 
 s64 MemoryReadonlyArchive::totalSize() const noexcept {

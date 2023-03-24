@@ -1,10 +1,11 @@
 #include "SourceLoader.hpp"
 
-#include <Engine.Common/Url.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #include "../../Source/FileSource.hpp"
 #include "Engine.Assets.System/IAssetRegistry.hpp"
+#include "Engine.Filesystem/Url.hpp"
+#include "Engine.Resource/File.hpp"
 
 using namespace hg::engine::resource::loader;
 using namespace hg;
@@ -13,7 +14,7 @@ using namespace hg;
     return _STD format(R"({:08x}-{:04x}-{:04x}-{:016x})", guid_.pre, guid_.c0, guid_.c1, guid_.post);
 }
 
-[[nodiscard]] static Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_);
+[[nodiscard]] static fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_);
 
 SourceLoader::SourceLoader() = default;
 
@@ -40,7 +41,7 @@ SourceLoaderResponse<void>::type SourceLoader::operator()(
 
     /**/
 
-    fs::File file { lfsUrl.path() };
+    hg::fs::File file { lfsUrl.path() };
     if (not file.exists() || file.isDirectory()) {
         IM_CORE_ERRORF(
             R"(Lfs source data for asset `{} -> {}` does not exist.)",
@@ -76,7 +77,7 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Reflect/Cast.hpp>
 
-Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
+fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 
     switch (asset_->getTypeId().data) {
         case engine::assets::Texture::typeId.data: {
@@ -88,10 +89,10 @@ Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
             const auto* const asset = registry->findAssetByGuid(baseImageGuid);
 
             if (asset == nullptr) {
-                return Url {};
+                return fs::Url {};
             }
 
-            Url lfsUrl {};
+            fs::Url lfsUrl {};
             const auto* const image = Cast<engine::assets::Image, engine::assets::Asset, false>(asset);
 
             for (const auto& sourceUrl : image->sources()) {
@@ -107,7 +108,7 @@ Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 
             const auto* const geom = static_cast<const ptr<const engine::assets::StaticGeometry>>(asset_);
 
-            Url lfsUrl {};
+            fs::Url lfsUrl {};
             for (const auto& sourceUrl : geom->sources()) {
                 if (sourceUrl.scheme() == "file") {
                     lfsUrl = sourceUrl;
@@ -121,7 +122,7 @@ Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 
             const auto* const font = static_cast<const ptr<const engine::assets::Font>>(asset_);
 
-            Url lfsUrl {};
+            fs::Url lfsUrl {};
             for (const auto& sourceUrl : font->sources()) {
                 if (sourceUrl.scheme() == "file") {
                     lfsUrl = sourceUrl;
@@ -132,7 +133,7 @@ Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
             return lfsUrl;
         }
         default: {
-            return Url {};
+            return fs::Url {};
         }
     }
 

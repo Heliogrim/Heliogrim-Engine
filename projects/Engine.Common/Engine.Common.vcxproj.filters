@@ -252,9 +252,6 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\Deque.hpp">
       <Filter>Headerdateien\Collection</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Common\Url.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\Collection\StableUnorderedMap.hpp">
       <Filter>Headerdateien\Collection</Filter>
     </ClInclude>
@@ -353,13 +350,7 @@
     <ClCompile Include="..\..\src\Engine.Common\Math\Transform.cpp">
       <Filter>Quelldateien\Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Common\UrlDataLayout.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Common\Guid.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Common\Url.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Common\Concurrent\SharedMemoryReference.cpp">

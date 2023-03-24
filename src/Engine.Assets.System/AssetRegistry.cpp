@@ -50,30 +50,13 @@ static _STD strong_ordering comparatorAssetUrl(
     const _STD filesystem::path index = left_;
     const _STD filesystem::path check = right_;
 
-    // ( "/a/b/c", "/a/b" ) -> "c"
-    // ( "/a/b/c", "/a/b/d" ) -> "../c"
+    // Warning: This could easily break when index is rooted or relative rooted
     const auto rel = _STD filesystem::relative(check, index);
-
     if (rel.empty()) {
         return _STD strong_ordering::equivalent;
     }
 
-    #if ENV_WIN
-
-    const auto str = rel.wstring();
-    if (str.starts_with(L"..")) {
-        return _STD strong_ordering::less;
-    }
-
-    if (rel.has_parent_path()) {
-        return _STD strong_ordering::greater;
-    }
-
-    return _STD strong_ordering::equivalent;
-
-    #else
-    return _STD strong_ordering::greater;
-    #endif
+    return index <=> check;
 }
 
 struct IndexAssetUrlRelation {
@@ -213,28 +196,28 @@ non_owning_rptr<Asset> AssetRegistry::findAssetByGuid(cref<asset_guid> guid_) co
     return table->find(guid_);
 }
 
-non_owning_rptr<Asset> AssetRegistry::getAssetByUrl(cref<Url> url_) const {
+non_owning_rptr<Asset> AssetRegistry::getAssetByPath(cref<fs::Path> path_) const {
 
     _SCTRL_SGATE(_mtx);
 
     const auto* const table = static_cast<const ptr<const AutoIndexTable<UrlIndex>>>(_indexUrl);
-    return table->get(url_);
+    return table->get(path_);
 }
 
-non_owning_rptr<Asset> AssetRegistry::findAssetByUrl(cref<Url> url_) const noexcept {
+non_owning_rptr<Asset> AssetRegistry::findAssetByPath(cref<fs::Path> path_) const noexcept {
 
     _SCTRL_SGATE(_mtx);
 
     const auto* const table = static_cast<const ptr<const AutoIndexTable<UrlIndex>>>(_indexUrl);
-    return table->get(url_);
+    return table->get(path_);
 }
 
-void AssetRegistry::findAssetsByPath(cref<Url> path_, ref<Vector<non_owning_rptr<Asset>>> assets_) {
+void AssetRegistry::findAssetsByPath(cref<fs::Path> path_, ref<Vector<non_owning_rptr<Asset>>> assets_) {
     findAssetsByPath(path_, FindPathOptions { false }, assets_);
 }
 
 void AssetRegistry::findAssetsByPath(
-    cref<Url> path_,
+    cref<fs::Path> path_,
     system::FindPathOptions options_,
     ref<Vector<non_owning_rptr<Asset>>> assets_
 ) {
@@ -242,16 +225,16 @@ void AssetRegistry::findAssetsByPath(
     _SCTRL_SGATE(_mtx);
 
     //const auto encoded = path_.encode();
-    const string encoded { path_.path() };
+    const string encoded { path_.string() };
 
     const auto* const table = static_cast<const ptr<const AutoIndexTable<UrlIndex>>>(_indexUrl);
     table->get(encoded, options_, assets_);
 }
 
-void AssetRegistry::findAssetsByPaths(cref<std::span<Url>> paths_, ref<Vector<non_owning_rptr<Asset>>> asset_) {}
+void AssetRegistry::findAssetsByPaths(cref<std::span<fs::Path>> paths_, ref<Vector<non_owning_rptr<Asset>>> asset_) {}
 
 void AssetRegistry::findAssetsByPaths(
-    cref<std::span<Url>> paths_,
+    cref<std::span<fs::Path>> paths_,
     system::FindPathsOptions options_,
     ref<Vector<non_owning_rptr<Asset>>> asset_
 ) {}
@@ -338,15 +321,15 @@ bool AssetRegistry::removeAssetsByGuids(cref<std::span<asset_guid>> guids_) {
     return succeeded;
 }
 
-bool AssetRegistry::removeAssetByUrl(cref<Url> url_) {
+bool AssetRegistry::removeAssetByPath(cref<fs::Path> url_) {
     return false;
 }
 
-bool AssetRegistry::removeAssetsByPath(cref<Url> path_, system::RemovePathOptions options_) {
+bool AssetRegistry::removeAssetsByPath(cref<fs::Path> path_, system::RemovePathOptions options_) {
     return false;
 }
 
-bool AssetRegistry::removeAssetsByPaths(cref<std::span<Url>> paths_, system::RemovePathsOptions options_) {
+bool AssetRegistry::removeAssetsByPaths(cref<std::span<fs::Path>> paths_, system::RemovePathsOptions options_) {
     return false;
 }
 

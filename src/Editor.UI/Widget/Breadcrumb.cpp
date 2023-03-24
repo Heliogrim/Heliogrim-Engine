@@ -5,6 +5,7 @@
 #include <Engine.Reflow/Style/StyleCondition.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Reflow/Widget/Button.hpp>
+#include <Engine.Common/Make.hpp>
 
 using namespace hg::engine::reflow;
 using namespace hg::editor::ui;
@@ -99,7 +100,7 @@ Breadcrumb::~Breadcrumb() {
     clearNavEntries();
 }
 
-void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, cref<Url> value_) {
+void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, cref<fs::Url> value_) {
 
     if (_STD ranges::find(
         _entries.begin(),
@@ -192,7 +193,7 @@ void Breadcrumb::clearNavEntries() {
     _entries.clear();
 }
 
-void Breadcrumb::handleAction(cref<Url> url_) {
+void Breadcrumb::handleAction(cref<fs::Url> url_) {
     for (const auto& pair : _actions) {
         pair.second(url_);
     }

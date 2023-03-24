@@ -3,6 +3,7 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Resource/ImporterManager.hpp>
+#include <Engine.Resource/File.hpp>
 
 #include "Engine.Assets/Types/Texture/Texture.hpp"
 #include "Engine.Assets/Types/Image.hpp"
@@ -19,7 +20,7 @@ SimpleImportAction::SimpleImportAction() :
     _finished(),
     _failed() {}
 
-SimpleImportAction::SimpleImportAction(cref<Url> source_, cref<Url> target_) :
+SimpleImportAction::SimpleImportAction(cref<fs::Url> source_, cref<fs::Url> target_) :
     ImportAction(typeId),
     _source(source_),
     _target(target_),
@@ -30,11 +31,11 @@ SimpleImportAction::SimpleImportAction(cref<Url> source_, cref<Url> target_) :
 
 SimpleImportAction::~SimpleImportAction() {}
 
-Url SimpleImportAction::getSourceUrl() const noexcept {
+fs::Url SimpleImportAction::getSourceUrl() const noexcept {
     return _source;
 }
 
-Url SimpleImportAction::getTargetUrl() const noexcept {
+fs::Url SimpleImportAction::getTargetUrl() const noexcept {
     return _target;
 }
 
@@ -79,7 +80,7 @@ void SimpleImportAction::apply() {
 
     /**/
 
-    const auto srcPath { _source.path() };
+    const auto srcPath { _source.path().string() };
     const ::hg::fs::File file { srcPath };
 
     if (srcPath.ends_with(".ktx2")) {

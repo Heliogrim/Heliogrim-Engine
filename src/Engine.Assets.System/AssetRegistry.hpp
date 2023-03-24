@@ -3,7 +3,8 @@
 #include <span>
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
-#include <Engine.Common/Url.hpp>
+#include <Engine.Filesystem/__fwd.hpp>
+#include <Engine.Filesystem/Path.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
@@ -61,32 +62,32 @@ namespace hg::engine::assets {
 
         [[nodiscard]] non_owning_rptr<Asset> findAssetByGuid(cref<asset_guid> guid_) const noexcept override;
 
-        [[nodiscard]] non_owning_rptr<Asset> getAssetByUrl(cref<Url> url_) const override;
+        [[nodiscard]] non_owning_rptr<Asset> getAssetByPath(cref<fs::Path> path_) const override;
 
-        [[nodiscard]] non_owning_rptr<Asset> findAssetByUrl(cref<Url> url_) const noexcept override;
+        [[nodiscard]] non_owning_rptr<Asset> findAssetByPath(cref<fs::Path> path_) const noexcept override;
 
         /**
          * Multi-Asset Operations
          */
     public:
         void findAssetsByPath(
-            cref<Url> path_,
+            cref<fs::Path> path_,
             _Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
         ) override;
 
         void findAssetsByPath(
-            cref<Url> path_,
+            cref<fs::Path> path_,
             system::FindPathOptions options_,
             _Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
         ) override;
 
         void findAssetsByPaths(
-            cref<std::span<Url>> paths_,
+            cref<std::span<fs::Path>> paths_,
             _Out_ ref<Vector<non_owning_rptr<Asset>>> asset_
         ) override;
 
         void findAssetsByPaths(
-            cref<std::span<Url>> paths_,
+            cref<std::span<fs::Path>> paths_,
             system::FindPathsOptions options_,
             _Out_ ref<Vector<non_owning_rptr<Asset>>> asset_
         ) override;
@@ -112,11 +113,11 @@ namespace hg::engine::assets {
 
         bool removeAssetsByGuids(cref<std::span<asset_guid>> guids_) override;
 
-        bool removeAssetByUrl(cref<Url> url_) override;
+        bool removeAssetByPath(cref<fs::Path> path_) override;
 
-        bool removeAssetsByPath(cref<Url> path_, system::RemovePathOptions options_ = {}) override;
+        bool removeAssetsByPath(cref<fs::Path> path_, system::RemovePathOptions options_ = {}) override;
 
-        bool removeAssetsByPaths(cref<std::span<Url>> paths_, system::RemovePathsOptions options_ = {}) override;
+        bool removeAssetsByPaths(cref<std::span<fs::Path>> paths_, system::RemovePathsOptions options_ = {}) override;
 
         /**
          * Index Tables

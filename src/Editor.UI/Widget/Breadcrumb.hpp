@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Common/Url.hpp>
+#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Reflow/Widget/HBox.hpp>
 
 namespace hg::editor::ui {
@@ -14,7 +14,7 @@ namespace hg::editor::ui {
     public:
         using this_type = Breadcrumb;
 
-        using action_fnc_type = _STD function<void(cref<Url>)>;
+        using action_fnc_type = _STD function<void(cref<fs::Url>)>;
 
     protected:
         Breadcrumb();
@@ -26,7 +26,7 @@ namespace hg::editor::ui {
         Vector<BreadcrumbEntry> _entries;
 
     public:
-        void addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, cref<Url> value_);
+        void addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, cref<fs::Url> value_);
 
         void removeNavEntry(cref<AssocKey<string>> key_);
 
@@ -37,7 +37,7 @@ namespace hg::editor::ui {
         Vector<_STD pair<u64, action_fnc_type>> _actions;
 
     private:
-        void handleAction(cref<Url> url_);
+        void handleAction(cref<fs::Url> url_);
 
     public:
         u64 onAction(mref<action_fnc_type> fnc_);

@@ -25,7 +25,7 @@ namespace hg::engine::resource {
         void tidy();
 
     public:
-        [[nodiscard]] bool isPackageFile(cref<fs::File> file_) const noexcept;
+        [[nodiscard]] bool isPackageFile(cref<hg::fs::File> file_) const noexcept;
 
         [[nodiscard]] bool isPackageSource(const non_owning_rptr<Source> source_) const noexcept;
 

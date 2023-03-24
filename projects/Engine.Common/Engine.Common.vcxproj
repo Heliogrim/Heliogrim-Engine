@@ -95,7 +95,6 @@
     <ClInclude Include="..\..\src\Engine.Common\Stream.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\String.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Types.hpp" />
-    <ClInclude Include="..\..\src\Engine.Common\Url.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Wrapper.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\__macro.hpp" />
   </ItemGroup>
@@ -114,8 +113,6 @@
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Profiler.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Stopwatch.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp" />
-    <ClCompile Include="..\..\src\Engine.Common\Url.cpp" />
-    <ClCompile Include="..\..\src\Engine.Common\UrlDataLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Engine.Common\Math\__default.inl" />

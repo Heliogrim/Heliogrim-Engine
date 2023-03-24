@@ -18,6 +18,8 @@
 #include "../Helper/AssetBrowserHelper.hpp"
 #include "../Panel/AssetBrowserPanel.hpp"
 #include "../Style/Style.hpp"
+#include "Engine.Assets.System/IAssetRegistry.hpp"
+#include "Engine.Assets/Assets.hpp"
 #include "Engine.Input/Input.hpp"
 
 using namespace hg::engine::reflow;
@@ -125,21 +127,15 @@ using namespace hg;
 
 AssetBrowserItem::AssetBrowserItem() :
     Button(makeStyleSheet()),
-    _name(),
-    _virtUrl(Url { ""sv, ""sv }),
-    _fqUrls() {}
+    _value() {}
 
 sptr<AssetBrowserItem> AssetBrowserItem::make(
     cref<sptr<AssetBrowserPanel>> panel_,
-    cref<string> name_,
-    cref<Url> virtUrl_,
-    mref<Vector<Url>> fqUrls_
+    mref<AssetBrowserEntry> value_
 ) {
 
     sptr<AssetBrowserItem> self { sptr<AssetBrowserItem>(new AssetBrowserItem()) };
-    self->_name = name_;
-    self->_virtUrl = virtUrl_;
-    self->_fqUrls = _STD move(fqUrls_);
+    self->_value = _STD move(value_);
 
     /**/
 
@@ -148,16 +144,12 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 
     /**/
 
-    asset_type_id assetType {};
     ptr<engine::assets::Texture> iconAsset {};
+    string typeTitle {};
 
-    auto isDirectory { not self->_fqUrls.empty() };
-    if (not self->_fqUrls.empty() && self->_fqUrls.front().scheme() == "file"sv) {
-        isDirectory = _STD filesystem::is_directory(_STD filesystem::path { self->_fqUrls.front().path() });
-    }
-
-    if (isDirectory) {
-        iconAsset = helper->getItemIconForDirectory(self->_name);
+    if (self->_value.type == AssetBrowserEntryType::eDirectory) {
+        iconAsset = helper->getItemIconForDirectory(self->_value.title);
+        typeTitle = "Directory";
 
         /**/
 
@@ -173,13 +165,11 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
                     return;
                 }
 
-                panel.lock()->changeCwd(self->_virtUrl);
+                panel.lock()->changeCwd(fs::Url { fs::Path { self->_value.path.path() } });
             }
         );
 
     } else {
-
-        assert(not self->_fqUrls.empty());
 
         [[maybe_unused]] const auto _ = self->addOnClick(
             [self, panel = wptr<AssetBrowserPanel> { panel_ }](cref<engine::input::event::MouseButtonEvent> event_) {
@@ -192,6 +182,7 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
                 }
 
                 /**/
+                #if FALSE
                 if (self->_virtUrl.path().contains("rock_08_diff_8k.imasset")) {
                     const ptr<engine::input::DragDropSender> sender = engine::Engine::getEngine()->getInput()->
                         dragDropSender();
@@ -201,12 +192,20 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 
                     sender->sendDragFiles(paths);
                 }
+                #endif
                 /**/
             }
         );
 
-        assetType = helper->getAssetTypeByFile(self->_fqUrls.front());
-        iconAsset = helper->getItemIconByAssetType(assetType);
+        /**/
+
+        const auto* const asset = engine::Engine::getEngine()->getAssets()->getRegistry()->findAssetByGuid(
+            self->_value.guid
+        );
+        assert(asset != nullptr);
+
+        iconAsset = helper->getItemIconByAssetType(asset->getTypeId());
+        typeTitle = helper->getAssetTypeName(asset->getTypeId());
     }
 
     auto iconRes = engine::Engine::getEngine()->getResources()->loader().loadImmediately<engine::assets::Texture,
@@ -268,11 +267,11 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
     item->addChild(infoWrapper);
 
     const auto assetTitle { make_sptr<Text>(makeAssetTitleStyle()) };
-    assetTitle->setText(self->_name);
+    assetTitle->setText(self->_value.title);
     infoWrapper->addChild(assetTitle);
 
     const auto assetTypeTitle { make_sptr<Text>(makeTypeTitleStyle()) };
-    assetTypeTitle->setText(helper->getAssetTypeName(assetType));
+    assetTypeTitle->setText(typeTitle);
     infoWrapper->addChild(assetTypeTitle);
 
     /**/

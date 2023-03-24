@@ -1,5 +1,7 @@
 #include "Modules.hpp"
 
+#include <algorithm>
+
 #include "SubModule.hpp"
 #include "SubModuleDependency.hpp"
 #include "CoreDependencies.hpp"

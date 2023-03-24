@@ -16,7 +16,7 @@ namespace hg::engine::serialization {
         MemoryReadWriteArchive(_Inout_ ref<AutoArray<u8>> bytes_, const s64 limit_);
 
     public:
-        [[nodiscard]] Url getArchiveUrl() const noexcept override;
+        [[nodiscard]] fs::Url getArchiveUrl() const noexcept override;
 
     protected:
         ref<AutoArray<u8>> _bytes;

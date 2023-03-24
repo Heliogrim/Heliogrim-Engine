@@ -3,7 +3,6 @@
 #include <filesystem>
 
 #include <Engine.Common/String.hpp>
-#include <Engine.Common/Url.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/RobinMap.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
@@ -51,8 +50,6 @@ namespace hg::editor::ui {
         [[nodiscard]] ptr<engine::assets::Texture> getItemIconByAssetType(cref<asset_type_id> typeId_) const noexcept;
 
         [[nodiscard]] ptr<engine::assets::Texture> getItemIconForDirectory(cref<string_view> name_) const noexcept;
-
-        [[nodiscard]] asset_type_id getAssetTypeByFile(cref<Url> fqUrl_) const noexcept;
 
         [[nodiscard]] string getAssetTypeName(cref<asset_type_id> typeId_) const noexcept;
     };

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Common/Url.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Filesystem/Url.hpp>
 
 #include "Geometry.hpp"
 
@@ -19,9 +19,9 @@ namespace hg::engine::assets {
         LandscapeGeometry(cref<asset_guid> guid_);
 
     public:
-        LandscapeGeometry(cref<asset_guid> guid_, mref<Vector<Url>> sources_);
+        LandscapeGeometry(cref<asset_guid> guid_, mref<Vector<fs::Url>> sources_);
 
     private:
-        Vector<Url> _sources;
+        Vector<fs::Url> _sources;
     };
 }

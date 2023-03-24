@@ -2,7 +2,7 @@
 
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
-#include <Engine.Common/Url.hpp>
+#include <Engine.Filesystem/Url.hpp>
 #include <Engine.Common/Functional/Function.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Wrapper.hpp>
@@ -50,32 +50,32 @@ namespace hg::engine::assets {
 
         [[nodiscard]] virtual non_owning_rptr<Asset> findAssetByGuid(cref<asset_guid> guid_) const noexcept = 0;
 
-        [[nodiscard]] virtual non_owning_rptr<Asset> getAssetByUrl(cref<Url> url_) const = 0;
+        [[nodiscard]] virtual non_owning_rptr<Asset> getAssetByPath(cref<fs::Path> path_) const = 0;
 
-        [[nodiscard]] virtual non_owning_rptr<Asset> findAssetByUrl(cref<Url> url_) const noexcept = 0;
+        [[nodiscard]] virtual non_owning_rptr<Asset> findAssetByPath(cref<fs::Path> path_) const noexcept = 0;
 
         /**
          * Multi-Asset Operations
          */
     public:
         virtual void findAssetsByPath(
-            cref<Url> path_,
+            cref<fs::Path> path_,
             _Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
         ) = 0;
 
         virtual void findAssetsByPath(
-            cref<Url> path_,
+            cref<fs::Path> path_,
             system::FindPathOptions options_,
             _Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
         ) = 0;
 
         virtual void findAssetsByPaths(
-            cref<std::span<Url>> paths_,
+            cref<std::span<fs::Path>> paths_,
             _Out_ ref<Vector<non_owning_rptr<Asset>>> asset_
         ) = 0;
 
         virtual void findAssetsByPaths(
-            cref<std::span<Url>> paths_,
+            cref<std::span<fs::Path>> paths_,
             system::FindPathsOptions options_,
             _Out_ ref<Vector<non_owning_rptr<Asset>>> asset_
         ) = 0;
@@ -91,10 +91,13 @@ namespace hg::engine::assets {
 
         virtual bool removeAssetsByGuids(cref<std::span<asset_guid>> guids_) = 0;
 
-        virtual bool removeAssetByUrl(cref<Url> url_) = 0;
+        virtual bool removeAssetByPath(cref<fs::Path> path_) = 0;
 
-        virtual bool removeAssetsByPath(cref<Url> path_, system::RemovePathOptions options_ = {}) = 0;
+        virtual bool removeAssetsByPath(cref<fs::Path> path_, system::RemovePathOptions options_ = {}) = 0;
 
-        virtual bool removeAssetsByPaths(cref<std::span<Url>> paths_, system::RemovePathsOptions options_ = {}) = 0;
+        virtual bool removeAssetsByPaths(
+            cref<std::span<fs::Path>> paths_,
+            system::RemovePathsOptions options_ = {}
+        ) = 0;
     };
 }

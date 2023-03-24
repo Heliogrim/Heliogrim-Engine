@@ -17,14 +17,15 @@ SourceBaseArchive::SourceBaseArchive(
 
 SourceBaseArchive::~SourceBaseArchive() noexcept = default;
 
-Url SourceBaseArchive::getArchiveUrl() const noexcept {
-    const string path {
-        _STD format(
-            "SourceArchive<<{:#016x}>>",
-            reinterpret_cast<ptrdiff_t>(_source.get())
-        )
+fs::Url SourceBaseArchive::getArchiveUrl() const noexcept {
+    return fs::Url {
+        fs::Path {
+            _STD format(
+                "SourceArchive<<{:#016x}>>",
+                reinterpret_cast<ptrdiff_t>(_source.get())
+            )
+        }
     };
-    return Url { ""sv, path };
 }
 
 string_view SourceBaseArchive::getArchiveName() const noexcept {

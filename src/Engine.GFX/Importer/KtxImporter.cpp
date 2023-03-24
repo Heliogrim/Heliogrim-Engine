@@ -73,7 +73,7 @@ KtxImporter::KtxImporter() {}
 
 KtxImporter::~KtxImporter() {}
 
-bool KtxImporter::canImport(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const noexcept {
+bool KtxImporter::canImport(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const noexcept {
     if (typeId_.ext != ".ktx" && typeId_.ext != ".ktx2") {
         return false;
     }
@@ -129,7 +129,7 @@ static string normalizeDirName(cref<string> value_) {
     return tmp0;
 }
 
-KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId_, cref<fs::File> file_) const {
+KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const {
 
     const auto rootCwd { _STD filesystem::current_path().append(R"(..\..)") };
     const auto rootAssetPath { _STD filesystem::path(R"(resources\assets\texture)") };
@@ -137,7 +137,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
 
-    Url targetUrl { "", rootAssetPath.string() };
+    fs::Url targetUrl { fs::Path { rootAssetPath } };
 
     // TODO:
     const auto sourcePath { file_.path() };
@@ -189,7 +189,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     const auto imgSrcPath { _STD filesystem::relative(storePath, rootCwd) };
     img->setAssetName(sourceName);
-    img->addSource(Url { "file"sv, imgSrcPath.string() });
+    img->addSource(fs::Url { "file"sv, imgSrcPath.string() });
 
     /**/
 

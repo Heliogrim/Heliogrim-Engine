@@ -1,7 +1,8 @@
 #pragma once
 
 #include <Engine.Common/__macro.hpp>
-#include <Engine.Common/Url.hpp>
+#include <Engine.Filesystem/__fwd.hpp>
+#include <Engine.Filesystem/Url.hpp>
 
 #include <Engine.Reflect/__fwd.hpp>
 #include <Engine.Reflect/HeliogrimReflect.hpp>
@@ -50,7 +51,7 @@ namespace hg::engine::serialization {
         #pragma region Naming / Locating
 
     public:
-        [[nodiscard]] virtual Url getArchiveUrl() const noexcept = 0;
+        [[nodiscard]] virtual fs::Url getArchiveUrl() const noexcept = 0;
 
         [[nodiscard]] virtual string_view getArchiveName() const noexcept = 0;
 

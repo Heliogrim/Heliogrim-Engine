@@ -290,7 +290,7 @@ void tryDispatchLoad(cref<path> path_) {
     }
 
     auto* const pm = Engine::getEngine()->getResources()->packages(traits::nothrow);
-    fs::File file { path_ };
+    hg::fs::File file { path_ };
 
     if (pm->isPackageFile(file)) {
 

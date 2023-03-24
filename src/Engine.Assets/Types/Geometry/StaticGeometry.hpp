@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Engine.Common/Url.hpp>
 #include <Engine.Common/Math/Bounding.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Serialization/Access/__fwd.hpp>
+#include <Engine.Filesystem/Url.hpp>
 
 #include "../Geometry.hpp"
 
@@ -26,16 +26,16 @@ namespace hg::engine::assets {
     public:
         StaticGeometry(
             cref<asset_guid> guid_,
-            mref<Vector<Url>> sources_,
+            mref<Vector<fs::Url>> sources_,
             cref<u64> vertexCount_,
             cref<u64> indexCount_
         );
 
     private:
-        Vector<Url> _sources;
+        Vector<fs::Url> _sources;
 
     public:
-        [[nodiscard]] cref<Vector<Url>> sources() const noexcept;
+        [[nodiscard]] cref<Vector<fs::Url>> sources() const noexcept;
 
         //private:
     public:
