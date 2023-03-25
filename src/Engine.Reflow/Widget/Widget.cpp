@@ -165,8 +165,7 @@ math::vec2 Widget::screenOffset() const noexcept {
 }
 
 bool Widget::willChangeLayout(cref<math::vec2> space_, cref<StyleKeyStack> styleStack_) const noexcept {
-    return _state.isProxyPending() || true;
-    //return true;
+    return _state.isProxyPending();
 }
 
 void Widget::markAsPending(const bool inherited_, const bool suppress_) {

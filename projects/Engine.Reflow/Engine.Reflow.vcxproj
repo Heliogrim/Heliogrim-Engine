@@ -94,6 +94,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Reflow\Algorithm\Flex.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Algorithm\FlexBox.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Algorithm\FlexLine.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Algorithm\FlexState.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\BorderRadius.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Children.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Command\ReflowCommandBuffer.hpp" />
@@ -169,6 +173,7 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Window\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Reflow\Algorithm\Flex.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Command\ReflowCommandBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Event\FocusEvent.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Font\Font.cpp" />
