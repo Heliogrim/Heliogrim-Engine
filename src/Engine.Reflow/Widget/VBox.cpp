@@ -133,15 +133,26 @@ void VBox::flow(
     applyPaddingToOuter(_computedStyle, local);
 
     /**/
+
+    // Warning: Temporary fix to preserve unwanted single item flex-flow
+    bool isAnySubFlow = false;
+    for (const auto& widget : *children()) {
+        if (widget->willChangeLayout(local, styleStack_)) {
+            isAnySubFlow = true;
+            break;
+        }
+    }
+
     math::vec2 innerChildAgg { 0.F };
     math::vec2 innerChildMax { 0.F };
     for (const auto& widget : *children()) {
 
         constexpr math::vec2 limit { _STD numeric_limits<float>::infinity() };
 
-        if (widget->willChangeLayout(local, styleStack_)) {
+        if (isAnySubFlow) {
             widget->flow(ctx_, local, limit, styleStack_);
         }
+
         const auto bounding = widget->outerSize();
 
         if (widget->position() == ReflowPosition::eAbsolute) {

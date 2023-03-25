@@ -82,6 +82,12 @@
     <Filter Include="Headerdateien\Module">
       <UniqueIdentifier>{980da2e7-3b14-49f4-9eca-3e30016383f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Algorithm">
+      <UniqueIdentifier>{8153183d-b172-49d5-b5f7-22e5b756118d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Algorithm">
+      <UniqueIdentifier>{50bd64a5-b74e-4ea1-b071-7257c7914cd0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Reflow\Window\WindowManager.hpp">
@@ -303,6 +309,18 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Module\Reflow.hpp">
       <Filter>Headerdateien\Module</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Algorithm\FlexLine.hpp">
+      <Filter>Headerdateien\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Algorithm\Flex.hpp">
+      <Filter>Headerdateien\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Algorithm\FlexBox.hpp">
+      <Filter>Headerdateien\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Algorithm\FlexState.hpp">
+      <Filter>Headerdateien\Algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflow\Window\WindowManager.cpp">
@@ -412,6 +430,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Reflow\Reflow.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\Algorithm\Flex.cpp">
+      <Filter>Quelldateien\Algorithm</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
