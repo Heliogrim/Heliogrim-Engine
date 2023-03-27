@@ -9,6 +9,7 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Async.hpp>
 #include <Engine.Serialization/Archive/BufferArchive.hpp>
+#include <Engine.Common/GuidFormat.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -1037,8 +1038,22 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
             const auto succeeded = registry->insert({ image });
 
             if (not succeeded) {
+
+                IM_CORE_WARNF(
+                    "Tried to load Image (`{}` -> `{}`) from package, but it is already present.",
+                    image->getAssetName(),
+                    encodeGuid4228(guid)
+                );
+
                 __debugbreak();
                 HeliogrimObject::destroy(_STD move(image));
+
+            } else {
+                IM_CORE_LOGF(
+                    "Successfully loaded Image (`{}` -> `{}`) from package.",
+                    image->getAssetName(),
+                    encodeGuid4228(guid)
+                );
             }
 
             /**/
@@ -1063,8 +1078,62 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
             const auto succeeded = registry->insert({ texture });
 
             if (not succeeded) {
+
+                IM_CORE_WARNF(
+                    "Tried to load Texture (`{}` -> `{}`) from package, but it is already present.",
+                    texture->getAssetName(),
+                    encodeGuid4228(guid)
+                );
+
                 __debugbreak();
                 HeliogrimObject::destroy(_STD move(texture));
+
+            } else {
+                IM_CORE_LOGF(
+                    "Successfully loaded Texture (`{}` -> `{}`) from package.",
+                    texture->getAssetName(),
+                    encodeGuid4228(guid)
+                );
+            }
+
+            /**/
+
+            break;
+        }
+        case assets::StaticGeometry::typeId.data: {
+
+            auto* const registry = Engine::getEngine()->getAssets()->getRegistry();
+            const auto* const asset = registry->findAssetByGuid(guid);
+
+            if (asset != nullptr) {
+                return false;
+            }
+
+            /**/
+
+            auto* geom = HeliogrimObject::create<assets::StaticGeometry>();
+            serialization::access::Structure<assets::StaticGeometry>::deserialize(geom, _STD move(record_));
+
+            engine::assets::storeDefaultNameAndUrl(geom, {});
+            const auto succeeded = registry->insert({ geom });
+
+            if (not succeeded) {
+
+                IM_CORE_WARNF(
+                    "Tried to load Static Geometry (`{}` -> `{}`) from package, but it is already present.",
+                    geom->getAssetName(),
+                    encodeGuid4228(guid)
+                );
+
+                __debugbreak();
+                HeliogrimObject::destroy(_STD move(geom));
+
+            } else {
+                IM_CORE_LOGF(
+                    "Successfully loaded Static Geometry (`{}` -> `{}`) from package.",
+                    geom->getAssetName(),
+                    encodeGuid4228(guid)
+                );
             }
 
             /**/

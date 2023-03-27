@@ -34,6 +34,8 @@
 #include "Engine.Scene/Scene.hpp"
 #include "Importer/ImageFileTypes.hpp"
 #include "Importer/ImageImporter.hpp"
+#include "Importer/ModelFileTypes.hpp"
+#include "Importer/ModelImporter.hpp"
 #include "Pool/GlobalResourcePool.hpp"
 #include "Renderer/HORenderPass.hpp"
 #include "Renderer/Renderer.hpp"
@@ -41,6 +43,8 @@
 #include "Surface/SurfaceManager.hpp"
 #include "Swapchain/Swapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
+
+#include "Editor.GFX/Renderer/EdRevRenderer.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg::engine;
@@ -210,7 +214,7 @@ void Graphics::setup() {
 
     {
         auto renderer = make_sptr<glow::render::RevRenderer>();
-        //auto renderer = make_sptr<editor::gfx::EdRevRenderer>();
+        //auto renderer = make_sptr<hg::editor::gfx::EdRevRenderer>();
         renderer->setup(_device);
 
         _cachedRenderer.insert_or_assign(AssocKey<string>::from("3DRenderer"), _STD move(renderer));
@@ -373,6 +377,7 @@ void Graphics::registerImporter() {
     auto& importer { manager->importer() };
 
     importer.registerImporter(gfx::ImageFileType::Ktx2, make_sptr<KtxImporter>());
+    importer.registerImporter(gfx::ModelFileType::Fbx, make_sptr<FbxImporter>());
 }
 
 void Graphics::unregisterImporter() {
@@ -381,4 +386,5 @@ void Graphics::unregisterImporter() {
     auto& importer { manager->importer() };
 
     importer.unregisterImporter(gfx::ImageFileType::Ktx2);
+    importer.unregisterImporter(gfx::ModelFileType::Fbx);
 }

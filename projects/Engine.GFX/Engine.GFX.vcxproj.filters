@@ -684,6 +684,9 @@
     <ClInclude Include="..\..\src\Engine.GFX\API\__vkFwd.hpp">
       <Filter>Headerdateien\API</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Importer\ModelFileTypes.hpp">
+      <Filter>Headerdateien\Importer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp">
@@ -988,6 +991,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Pool\GlobalResourcePool.cpp">
       <Filter>Quelldateien\Pool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Importer\FbxImporter.cpp">
+      <Filter>Quelldateien\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Importer\ModelFileTypes.cpp">
+      <Filter>Quelldateien\Importer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

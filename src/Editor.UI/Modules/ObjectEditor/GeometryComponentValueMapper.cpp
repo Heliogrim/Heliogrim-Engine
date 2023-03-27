@@ -228,7 +228,21 @@ void ObjectValueMapper<StaticGeometryComponent>::update(cref<sptr<engine::reflow
     const auto staticMeshWrap { static_cast<ptr<Collapse>>(children[2].get())->getContent() };
     const auto staticMesh { static_cast<ptr<InputAsset>>(staticMeshWrap->children()->front().get()) };
 
+    staticMesh->addAcceptedType(engine::assets::StaticGeometry::typeId);
     staticMesh->setValue(sgc.getStaticGeometryGuid());
+
+    staticMesh->_callback = [sgc = &sgc](asset_guid value_) {
+
+        auto next = Heliogrim::assets()[value_];
+
+        // TODO: Remove assert and handle invalid case ~ reset input field
+        assert(next.flags & AssetDatabaseResultType::eSuccess);
+
+        if (next.flags & AssetDatabaseResultType::eSuccess) {
+            // Warning: Absolute Garbage
+            sgc->setStaticGeometryByAsset(*reinterpret_cast<ptr<StaticGeometryAsset>>(&next.value));
+        }
+    };
 
     /**/
 

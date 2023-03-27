@@ -20,6 +20,10 @@ namespace hg::engine::assets {
     public:
         inline static constexpr asset_type_id typeId { "StaticGeometry"_typeId };
 
+    private:
+    public:
+        StaticGeometry();
+
     protected:
         StaticGeometry(cref<asset_guid> guid_);
 
