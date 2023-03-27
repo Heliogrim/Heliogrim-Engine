@@ -21,7 +21,7 @@ namespace hg {
         constexpr Guid(Guid&& other_) noexcept :
             data(_STD move(other_.data)) {}
 
-        constexpr Guid(const uint128_t& data_) noexcept:
+        constexpr Guid(const uint128_t& data_) noexcept :
             data(data_) {}
 
         template <

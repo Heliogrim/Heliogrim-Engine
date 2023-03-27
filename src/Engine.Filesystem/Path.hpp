@@ -27,11 +27,9 @@ namespace hg::engine::fs {
 
         Path(mref<string> str_);
 
+        Path(cref<string> str_);
+
         Path(string_view view_);
-
-        Path(_STD initializer_list<string> segments_);
-
-        Path(_STD initializer_list<string_view> segments_);
 
         ~Path() = default;
 

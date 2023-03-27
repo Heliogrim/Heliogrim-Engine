@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Assets/AssetGuid.hpp>
+#include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Reflow/Widget/Input.hpp>
 #include <Engine.Reflow/Widget/Box.hpp>
 #include <Engine.Reflow/Widget/Image.hpp>
@@ -88,5 +89,21 @@ namespace hg::editor::ui {
         [[nodiscard]] input_type value() const noexcept override;
 
         void setValue(cref<asset_guid> assetGuid_);
+
+        /**/
+
+    protected:
+        Vector<asset_type_id> _acceptedTypes;
+
+    public:
+        [[nodiscard]] cref<Vector<asset_type_id>> acceptedTypes() const noexcept;
+
+        void addAcceptedType(asset_type_id typeId_);
+
+        void dropAcceptedType(asset_type_id typeId_);
+
+    private:
+    public:
+        _STD function<void(input_type)> _callback = nullptr;
     };
 }

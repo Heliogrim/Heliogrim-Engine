@@ -18,6 +18,13 @@
 #include <Engine.GFX.Loader/Texture/Traits.hpp>
 
 #include "Heliogrim/Heliogrim.hpp"
+#include <Engine.Filesystem/__fwd.hpp>
+#include <Engine.Filesystem/Url.hpp>
+#include <Engine.Logging/Logger.hpp>
+#include <Engine.Common/GuidFormat.hpp>
+
+#include <Engine.Assets.System/IAssetRegistry.hpp>
+#include <Engine.Assets/Assets.hpp>
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -226,7 +233,62 @@ string InputAsset::getTag() const noexcept {
 }
 
 engine::reflow::EventResponse InputAsset::onDrop(cref<engine::reflow::DragDropEvent> event_) {
-    return Input<asset_guid>::onDrop(event_);
+
+    if (event_._type != engine::input::DragDropObjectType::eTextType) {
+        return Input<asset_guid>::onDrop(event_);
+    }
+
+    assert(event_._data._ != nullptr);
+    const auto& text = event_._data.text->data;
+
+    if (not text.starts_with("asset://")) {
+        return Input<asset_guid>::onDrop(event_);
+    }
+
+    static constexpr auto pathIdx = sizeof("asset://") - 1;
+
+    fs::Url parsed {
+        "asset"sv,
+        fs::Path { text.substr(pathIdx) }
+    };
+
+    if (parsed.path().empty() || parsed.path().hasParent()) {
+        IM_CORE_WARN("Invalid encoded asset url.");
+        return EventResponse::eConsumed;
+    }
+
+    const asset_guid guid = decodeGuid4228(parsed.path().string()).data;
+    if (guid == invalid_asset_guid) {
+        IM_CORE_WARN("Invalid asset guid.");
+        return EventResponse::eConsumed;
+    }
+
+    /**/
+
+    const auto* const asset = engine::Engine::getEngine()->getAssets()->getRegistry()->findAssetByGuid(guid);
+
+    if (asset == nullptr) {
+        IM_CORE_WARNF("Unknown asset guid `{}`.", parsed.path().string());
+        return EventResponse::eConsumed;
+    }
+
+    if (not _STD ranges::contains(_acceptedTypes, asset->getTypeId())) {
+        IM_CORE_WARN("Invalid asset type.");
+        return EventResponse::eConsumed;
+    }
+
+    /**/
+
+    setValue(guid);
+    markAsDirty();
+
+    /* Warning: Temporary */
+    if (_callback) {
+        _callback(guid);
+    }
+    /* !Warning: Temporary */
+
+    return EventResponse::eConsumed;
 }
 
 engine::reflow::EventResponse InputAsset::onDragOver(cref<engine::reflow::DragDropEvent> event_) {
@@ -334,4 +396,21 @@ void InputAsset::setValue(cref<asset_guid> assetGuid_) {
 
         _input->setPlaceholder(string { name });
     }
+}
+
+cref<Vector<asset_type_id>> InputAsset::acceptedTypes() const noexcept {
+    return _acceptedTypes;
+}
+
+void InputAsset::addAcceptedType(asset_type_id typeId_) {
+    if (_STD ranges::contains(_acceptedTypes, typeId_)) {
+        return;
+    }
+
+    _acceptedTypes.push_back(typeId_);
+}
+
+void InputAsset::dropAcceptedType(asset_type_id typeId_) {
+    const auto sub = _STD ranges::remove(_acceptedTypes, typeId_);
+    _acceptedTypes.erase(sub.end(), _acceptedTypes.end());
 }

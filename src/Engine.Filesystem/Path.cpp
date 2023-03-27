@@ -1,5 +1,7 @@
 #include "Path.hpp"
 
+#include <Engine.Common/Types.hpp>
+
 using namespace hg::engine::fs;
 using namespace hg;
 
@@ -18,16 +20,11 @@ Path::Path(mref<std_fs_path> path_) :
 Path::Path(mref<hg::string> str_) :
     _value(_STD move(str_)) {}
 
+Path::Path(cref<hg::string> str_) :
+    _value(str_) {}
+
 Path::Path(string_view view_) :
     _value(view_) {}
-
-Path::Path(std::initializer_list<hg::string> segments_) {
-    // TODO:
-}
-
-Path::Path(std::initializer_list<string_view> segments_) {
-    // TODO:
-}
 
 ref<Path::this_type> Path::operator=(mref<this_type> other_) {
     if (_STD addressof(other_) != this) {
@@ -51,16 +48,21 @@ bool Path::hasName() const noexcept {
 string Path::name() const {
     // TODO:
     const auto& val = _value.native();
-    const auto ls = val.find_last_of(std_fs_path::preferred_separator);
+    auto ls = val.find_last_of(std_fs_path::preferred_separator);
 
     if (ls == std_fs_path::string_type::npos) {
-        return {};
+
+        if (empty()) {
+            return {};
+        }
+
+        ls = 0ui64;
     }
 
     /**/
 
     const _STD basic_string_view<std_fs_path::value_type> subView { &(val.c_str()[ls]), val.size() - ls };
-    ::hg::string tmp {};
+    ::hg::string tmp(val.size() - ls, 0);
 
     _STD transform(
         subView.begin(),
@@ -128,7 +130,7 @@ bool Path::contains(cref<this_type> path_) const {
         return false;
     }
 
-    if (path_._value.native().at(relSize) != std_fs_path::preferred_separator) {
+    if (not _value.empty() && path_._value.native().at(relSize) != std_fs_path::preferred_separator) {
         return false;
     }
 

@@ -13,6 +13,7 @@
 #include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Common/GuidFormat.hpp>
 
 #include "../Color/Dark.hpp"
 #include "../Helper/AssetBrowserHelper.hpp"
@@ -192,17 +193,11 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
                 }
 
                 /**/
-                #if FALSE
-                if (self->_virtUrl.path().contains("rock_08_diff_8k.imasset")) {
-                    const ptr<engine::input::DragDropSender> sender = engine::Engine::getEngine()->getInput()->
-                        dragDropSender();
 
-                    Vector<string> paths {};
-                    paths.push_back(string { self->_virtUrl.path() });
-
-                    sender->sendDragFiles(paths);
-                }
-                #endif
+                auto* const dragDropSender = engine::Engine::getEngine()->getInput()->dragDropSender();
+                dragDropSender->sendDragText(
+                    fs::Url { "asset"sv, fs::Path { encodeGuid4228(self->_value.guid) } }.encode()
+                );
                 /**/
             }
         );

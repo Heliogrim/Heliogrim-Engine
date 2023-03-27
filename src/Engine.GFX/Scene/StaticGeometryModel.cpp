@@ -55,7 +55,34 @@ void StaticGeometryModel::create(const ptr<::hg::engine::scene::Scene> scene_) {
     }
 }
 
-void StaticGeometryModel::update(const ptr<::hg::engine::scene::Scene> scene_) {}
+void StaticGeometryModel::update(const ptr<::hg::engine::scene::Scene> scene_) {
+
+    auto* origin = static_cast<ptr<StaticGeometryComponent>>(_owner);
+
+    const auto count = origin->overrideMaterials().size();
+    for (u32 matIdx = 0; matIdx < count; ++matIdx) {
+
+        auto* outer = static_cast<ptr<assets::GfxMaterial>>(origin->overrideMaterials()[matIdx].internal());
+        const auto& inner = _overrideMaterials[matIdx];
+
+        if (inner->getAssociation() == nullptr) {
+            continue;
+        }
+
+        // TODO: Check whether pointer comparison is actually safe, or whether should use guid compare
+        if (inner->getAssociation() != outer) {
+
+            _overrideMaterials[matIdx] = Engine::getEngine()->getResources()->loader().load<
+                assets::GfxMaterial, MaterialResource
+            >(
+                _STD move(outer),
+                {}
+            );
+
+        }
+    }
+
+}
 
 void StaticGeometryModel::destroy(const ptr<::hg::engine::scene::Scene> scene_) {}
 
