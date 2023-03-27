@@ -3,6 +3,9 @@
 using namespace hg::engine::assets;
 using namespace hg;
 
+StaticGeometry::StaticGeometry() :
+    Asset(invalid_asset_guid, typeId) {}
+
 StaticGeometry::StaticGeometry(cref<asset_guid> guid_) :
     Asset(guid_, typeId) {}
 

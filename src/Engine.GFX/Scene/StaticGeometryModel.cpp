@@ -59,6 +59,27 @@ void StaticGeometryModel::update(const ptr<::hg::engine::scene::Scene> scene_) {
 
     auto* origin = static_cast<ptr<StaticGeometryComponent>>(_owner);
 
+    /* Geometry Changes */
+
+    {
+        const auto outer = origin->getStaticGeometryGuid();
+        const auto inner = _staticGeometryAsset->get_guid();
+
+        if (outer != inner) {
+
+            _staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(
+                origin->getStaticGeometryAsset().internal()
+            );
+            _staticGeometryResource = Engine::getEngine()->getResources()->loader().load(
+                _staticGeometryAsset,
+                nullptr
+            ).into<StaticGeometryResource>();
+
+        }
+    }
+
+    /* Material Changes */
+
     const auto count = origin->overrideMaterials().size();
     for (u32 matIdx = 0; matIdx < count; ++matIdx) {
 

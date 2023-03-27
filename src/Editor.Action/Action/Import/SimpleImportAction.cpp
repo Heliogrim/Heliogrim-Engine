@@ -7,6 +7,7 @@
 
 #include "Engine.Assets/Types/Texture/Texture.hpp"
 #include "Engine.Assets/Types/Image.hpp"
+#include "Engine.Assets/Types/Geometry/StaticGeometry.hpp"
 
 using namespace hg::editor;
 using namespace hg;
@@ -70,6 +71,7 @@ bool SimpleImportAction::isFinished() const noexcept {
 }
 
 #include "Engine.GFX/Importer/ImageFileTypes.hpp"
+#include "Engine.GFX/Importer/ModelFileTypes.hpp"
 
 void SimpleImportAction::apply() {
     setRunning();
@@ -100,6 +102,21 @@ void SimpleImportAction::apply() {
 
         if (data.second) {
             _assets.insert(data.second);
+        }
+
+    } else if (srcPath.ends_with(".fbx")) {
+
+        const auto result = importer.import<
+            non_owning_rptr<engine::assets::StaticGeometry>
+        >(::hg::engine::gfx::ModelFileType::Fbx, file);
+
+        const auto data { result.get() };
+
+        if (data == nullptr) {
+            _failed = true;
+
+        } else {
+            _assets.insert(data);
         }
     }
 

@@ -272,6 +272,9 @@ void AssetBrowserPanel::openImportDialog(cref<fs::Url> fqUrlSource_) {
     /**/
 
     _dialog = dialog;
+
+    // Warning: Temporary Fix for cleaned pending update
+    dialog->markAsPending();
 }
 
 engine::reflow::EventResponse AssetBrowserPanel::onMouseButtonDown(cref<engine::reflow::MouseEvent> event_) {
