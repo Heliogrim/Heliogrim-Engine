@@ -15,7 +15,12 @@
 #include "../../Widget/Input/InputVec.hpp"
 #include "../../Widget/Collapse.hpp"
 #include "Editor.UI/Widget/Input/InputAsset.hpp"
+#include "Engine.Assets/Assets.hpp"
 #include "Heliogrim/Heliogrim.hpp"
+#include "Engine.Assets/Types/GfxMaterial.hpp"
+#include "Engine.Assets.System/IAssetRegistry.hpp"
+#include "Engine.Core/Engine.hpp"
+#include "Engine.Reflect/Cast.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -246,17 +251,38 @@ void ObjectValueMapper<StaticGeometryComponent>::update(cref<sptr<engine::reflow
 
         for (auto i { materialSlotCount }; i < sga.getMaterialCount(); ++i) {
             auto slot { make_sptr<InputAsset>() };
+            slot->addAcceptedType(engine::assets::GfxMaterial::typeId);
             materials->addChild(slot);
         }
     }
 
     for (u32 matIdx { 0ui32 }; matIdx < sga.getMaterialCount(); ++matIdx) {
 
+        auto* const input = static_cast<const ptr<InputAsset>>((*materials->children())[matIdx].get());
+
+        input->_callback = [sgc = &sgc, matIdx](asset_guid value_) {
+
+            //AssetDatabaseResult<GfxMaterialAsset> next = Heliogrim::assets()[value_]; // Will break due to conversion
+            auto next = Heliogrim::assets()[value_];
+            ref<GfxMaterialAsset> slot = const_cast<ref<Vector<GfxMaterialAsset>>>(sgc->overrideMaterials())[matIdx];
+
+            // TODO: Remove assert and handle invalid case ~ reset input field ?!?
+            assert(next.flags & AssetDatabaseResultType::eSuccess);
+
+            if (next.flags & AssetDatabaseResultType::eSuccess) {
+                // Error: Seams broken; Internal resolving shows that texture guids are not set and therefore crashes while trying to lock preserved resources
+                // Warning: Absolute Garbage
+                slot = *reinterpret_cast<ptr<GfxMaterialAsset>>(&next.value);
+            }
+        };
+
+        /**/
+
         if (matIdx < overrides.size()) {
-            static_cast<ptr<InputAsset>>((*materials->children())[matIdx].get())->setValue(overrides[matIdx].guid());
+            input->setValue(overrides[matIdx].guid());
 
         } else {
-            static_cast<ptr<InputAsset>>((*materials->children())[matIdx].get())->reset();
+            input->reset();
         }
     }
 }

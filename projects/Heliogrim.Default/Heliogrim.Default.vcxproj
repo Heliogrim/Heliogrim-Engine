@@ -93,6 +93,7 @@
     <ClInclude Include="..\..\src\Heliogrim.Default\Assets\Fonts\CascadiaCode.hpp" />
     <ClInclude Include="..\..\src\Heliogrim.Default\Assets\Fonts\Consolas24Latin1.hpp" />
     <ClInclude Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultMaterial.hpp" />
+    <ClInclude Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultMaterial2.hpp" />
     <ClInclude Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultSkybox.hpp" />
     <ClInclude Include="..\..\src\Heliogrim.Default\Assets\Images\Brand.hpp" />
     <ClInclude Include="..\..\src\Heliogrim.Default\Assets\Images\DefaultAlpha.hpp" />
@@ -235,6 +236,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultMaterial.cpp" />
+    <ClCompile Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultMaterial2.cpp" />
     <ClCompile Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultSkybox.cpp" />
     <ClCompile Include="..\..\src\Heliogrim.Default\Assets\Textures\Brand.cpp" />
     <ClCompile Include="..\..\src\Heliogrim.Default\Assets\Textures\DefaultAlpha.cpp" />

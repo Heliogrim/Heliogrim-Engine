@@ -11,6 +11,8 @@ namespace hg {
         friend class AssetDatabase;
 
     public:
+        using this_type = Asset;
+
         using value_type = Asset;
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
@@ -29,6 +31,10 @@ namespace hg {
         Asset(cref<asset_guid> guid_, cref<asset_type_id> typeId_, ptr<void> internal_) noexcept;
 
     public:
+        Asset(mref<this_type> other_) noexcept;
+
+        Asset(cref<this_type> other_);
+
         /**
          * Destructor
          *
@@ -36,6 +42,11 @@ namespace hg {
          * @date 06.10.2021
          */
         ~Asset() noexcept;
+
+    public:
+        ref<this_type> operator=(mref<this_type> other_) noexcept;
+
+        ref<this_type> operator=(cref<this_type> other_);
 
     protected:
         /**

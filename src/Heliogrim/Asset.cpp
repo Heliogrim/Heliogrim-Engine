@@ -9,7 +9,35 @@ Asset::Asset(cref<asset_guid> guid_, cref<asset_type_id> typeId_, ptr<void> inte
     _typeId(typeId_),
     _internal(internal_) {}
 
+Asset::Asset(mref<this_type> other_) noexcept :
+    _guid(_STD move(other_._guid)),
+    _typeId(other_._typeId),
+    _internal(other_._internal) {}
+
+Asset::Asset(cref<this_type> other_) :
+    _guid(other_._guid),
+    _typeId(other_._typeId),
+    _internal(other_._internal) {}
+
 Asset::~Asset() noexcept = default;
+
+ref<Asset::this_type> Asset::operator=(mref<this_type> other_) noexcept {
+    if (_STD addressof(other_) != this) {
+        _guid = _STD move(other_._guid);
+        _typeId = _STD move(other_._typeId);
+        _internal = _STD move(other_._internal);
+    }
+    return *this;
+}
+
+ref<Asset::this_type> Asset::operator=(cref<this_type> other_) {
+    if (_STD addressof(other_) != this) {
+        _guid = other_._guid;
+        _typeId = other_._typeId;
+        _internal = other_._internal;
+    }
+    return *this;
+}
 
 cref<asset_guid> Asset::guid() const noexcept {
     return _guid;

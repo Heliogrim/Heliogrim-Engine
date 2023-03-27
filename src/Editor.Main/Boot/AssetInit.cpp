@@ -15,6 +15,7 @@
 
 #include "Heliogrim.Default/Assets/Fonts/CascadiaCode.hpp"
 #include "Heliogrim.Default/Assets/GfxMaterials/DefaultMaterial.hpp"
+#include "Heliogrim.Default/Assets/GfxMaterials/DefaultMaterial2.hpp"
 #include "Heliogrim.Default/Assets/GfxMaterials/DefaultSkybox.hpp"
 #include "Heliogrim.Default/Assets/Images/Brand.hpp"
 #include "Heliogrim.Default/Assets/Images/DefaultMetalness.hpp"
@@ -382,7 +383,17 @@ static void initMaterialDefaults() {
 
     /**/
 
-    delete(new(material::DefaultMaterial));
+    {
+        auto* tmp = new(material::DefaultMaterial);
+        tmp->setAssetName("Default Material"sv);
+        delete tmp;
+    }
+
+    {
+        auto* tmp = new(material::DefaultMaterial2);
+        tmp->setAssetName("Default Material 2"sv);
+        delete tmp;
+    }
 }
 
 static void initSkyboxDefaults() {

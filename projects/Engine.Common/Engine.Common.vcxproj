@@ -54,6 +54,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Functional\Function.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\GLM.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Guid.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\GuidFormat.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Hash\Fnv-1a.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Hash\Murmur3.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Inc.hpp" />
@@ -103,6 +104,7 @@
     <ClCompile Include="..\..\src\Engine.Common\Concurrent\SharedMemoryReference.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Concurrent\SpinLock.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Guid.cpp" />
+    <ClCompile Include="..\..\src\Engine.Common\GuidFormat.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Hash\Murmur3.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Math\Bounding.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Math\Coordinates.cpp" />

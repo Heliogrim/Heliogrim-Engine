@@ -220,13 +220,15 @@ static string handleTextDrop(ptr<IDataObject> data_, cref<FORMATETC> format_, re
             WideCharToMultiByte(
                 CP_UTF8,
                 NULL,
-                medium_.lpszFileName,
+                input,
                 -1,
                 text.data(),
                 dstSize,
                 NULL,
                 NULL
             );
+
+            text.pop_back();
 
             GlobalUnlock(medium_.hGlobal);
             ReleaseStgMedium(&medium_);
