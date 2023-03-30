@@ -116,6 +116,9 @@
     <ProjectReference Include="..\Editor.Core\Editor.Core.vcxproj">
       <Project>{fba11ae8-1072-48a0-8508-910405a46795}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Editor.GFX.Graphs\Editor.GFX.Graphs.vcxproj">
+      <Project>{245a4b15-84d6-4504-a766-c1eaa11f4829}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Editor.GFX\Editor.GFX.vcxproj">
       <Project>{312443aa-53a2-43d9-b8a2-33f44808c432}</Project>
     </ProjectReference>

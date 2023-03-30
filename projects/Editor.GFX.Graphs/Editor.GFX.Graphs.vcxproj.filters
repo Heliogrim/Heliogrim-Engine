@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\Node">
+      <UniqueIdentifier>{36beec54-86cf-4be9-a49a-6b989fad8e3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Node">
+      <UniqueIdentifier>{6a180cc8-cc07-4e1c-b90c-7c4eb059c55a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Node\Input">
+      <UniqueIdentifier>{3bedeb2e-09c3-432f-9086-d3c3b0bdab23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Node\Math">
+      <UniqueIdentifier>{980753fc-301d-410c-aef4-bd14100f2dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Node\Conversion">
+      <UniqueIdentifier>{90a340f1-6f08-4ce4-b025-87f1da780bf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Node\Output">
+      <UniqueIdentifier>{be2adc88-c17c-4922-9d21-ac47666e58f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Node\Runtime">
+      <UniqueIdentifier>{842bb601-f3a2-46ff-9017-f9d09fa76fc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Node\Runtime\Input">
+      <UniqueIdentifier>{feaab267-07ef-4fa6-b1a7-5e02684d481a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Node\Functional">
+      <UniqueIdentifier>{fb707488-8b97-4282-8cde-4e091adb62fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Graph">
+      <UniqueIdentifier>{9d3c1e3c-cb05-4790-a566-12fe91dbd0ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Node\Parameter">
+      <UniqueIdentifier>{81c6aff8-31d9-4a23-a605-30bba4d37a39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Graph">
+      <UniqueIdentifier>{0b2e68f3-4261-4467-96d4-20ed8e4da944}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Node.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\NodeInputSpec.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\NodeLinkValueType.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\NodeLink.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\__fwd.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\NodeLinkTransportMode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\NodeInput.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\NodeOutput.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\NodeOutputSpec.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\NodeInputValueAttributes.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\NodeOutputValueAttributes.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\__fwd.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\NodeGraphPipelineSpec.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Input\TextureInputNode.hpp">
+      <Filter>Headerdateien\Node\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Input\BufferInputNode.hpp">
+      <Filter>Headerdateien\Node\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Input\UniformInputNode.hpp">
+      <Filter>Headerdateien\Node\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Runtime\Input\WorldPositionRuntimeInputNode.hpp">
+      <Filter>Headerdateien\Node\Runtime\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Runtime\Input\WorldNormalRuntimeInputNode.hpp">
+      <Filter>Headerdateien\Node\Runtime\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Runtime\Input\TangentRuntimeInputNode.hpp">
+      <Filter>Headerdateien\Node\Runtime\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Runtime\Input\VertexColorRuntimeInputNode.hpp">
+      <Filter>Headerdateien\Node\Runtime\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Runtime\Input\InstanceIdRuntimeInputNode.hpp">
+      <Filter>Headerdateien\Node\Runtime\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Runtime\Input\ScreenDepthRuntimeInputNode.hpp">
+      <Filter>Headerdateien\Node\Runtime\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Runtime\Input\UvRuntimeInputNode.hpp">
+      <Filter>Headerdateien\Node\Runtime\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\ScalarAddMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\ScalarSubMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\AcosMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\AsinMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\AtanMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\BitAndMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\BitNotMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\BitOrMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\BitShiftLeftMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\BitShiftRightMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\BitXorMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\CosMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\MatrixIdentityMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\MatrixInverseMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\MatrixMulMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\MatrixTransposeMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\MaxMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\MinMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\ScalarDivMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\ScalarInterpolateMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\ScalarLnMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\ScalarMulMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\ScalarPowMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\ScalarSaturateMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\ScalarSqrtMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\SinMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\TanMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\VectorAddMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\VectorCrossMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\VectorDotMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\VectorInterpolateMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\VectorLengthMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\VectorNormalizeMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\VectorSaturateMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\VectorScaleMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\VectorSubMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Input\ConstantInputNode.hpp">
+      <Filter>Headerdateien\Node\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Conversion\SrgbNonLinearToLinearConversionNode.hpp">
+      <Filter>Headerdateien\Node\Conversion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Conversion\GammaConversionNode.hpp">
+      <Filter>Headerdateien\Node\Conversion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Output\GeneralBrdfOutputNode.hpp">
+      <Filter>Headerdateien\Node\Output</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Output\ClearCoatBrdfOutputNode.hpp">
+      <Filter>Headerdateien\Node\Output</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Output\ClothBrdfOutputNode.hpp">
+      <Filter>Headerdateien\Node\Output</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Output\BssrdfOutputNode.hpp">
+      <Filter>Headerdateien\Node\Output</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\__TestGraphs.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Output\SubGraphOutputNode.hpp">
+      <Filter>Headerdateien\Node\Output</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Input\SubGraphInputNode.hpp">
+      <Filter>Headerdateien\Node\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Math\VectorAddScalarMathNode.hpp">
+      <Filter>Headerdateien\Node\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Functional\SubGraphNode.hpp">
+      <Filter>Headerdateien\Node\Functional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Graph\NodeGraph.hpp">
+      <Filter>Headerdateien\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Graph\NodeContainer.hpp">
+      <Filter>Headerdateien\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Graph\NodeLinkContainer.hpp">
+      <Filter>Headerdateien\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\NodeParameter.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Parameter\ConstantNodeParameter.hpp">
+      <Filter>Headerdateien\Node\Parameter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Parameter\ValueTypeNodeParameter.hpp">
+      <Filter>Headerdateien\Node\Parameter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Parameter\ConstantNodeParameterStorage.hpp">
+      <Filter>Headerdateien\Node\Parameter</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Editor.GFX.Graphs\Node\Node.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.GFX.Graphs\Graph\NodeGraph.cpp">
+      <Filter>Quelldateien\Graph</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
