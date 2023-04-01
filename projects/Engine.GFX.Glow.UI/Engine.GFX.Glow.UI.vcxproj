@@ -122,6 +122,9 @@
     <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\TestUI.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Editor.GFX.Graphs\Editor.GFX.Graphs.vcxproj">
+      <Project>{245a4b15-84d6-4504-a766-c1eaa11f4829}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
       <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
     </ProjectReference>

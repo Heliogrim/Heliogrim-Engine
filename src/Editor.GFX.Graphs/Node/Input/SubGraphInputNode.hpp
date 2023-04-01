@@ -3,7 +3,10 @@
 #include "../Node.hpp"
 #include "../NodeLinkValueType.hpp"
 #include "../Parameter/ValueTypeNodeParameter.hpp"
-#include "Editor.GFX.Graphs/Node/NodeOutputSpec.hpp"
+#include "../NodeInput.hpp"
+#include "../NodeInputSpec.hpp"
+#include "../NodeOutput.hpp"
+#include "../NodeOutputSpec.hpp"
 
 namespace hg::editor::gfx::graph::nodes {
     class SubGraphInputNode :

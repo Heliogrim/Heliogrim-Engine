@@ -49,6 +49,9 @@
     <Filter Include="Quelldateien\Graph">
       <UniqueIdentifier>{0b2e68f3-4261-4467-96d4-20ed8e4da944}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Node\Parameter">
+      <UniqueIdentifier>{a74e9454-39f9-4cfd-b445-1c3333c754b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\Node.hpp">
@@ -292,6 +295,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.GFX.Graphs\Graph\NodeGraph.cpp">
       <Filter>Quelldateien\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.GFX.Graphs\Node\Parameter\ValueTypeNodeParameter.cpp">
+      <Filter>Quelldateien\Node\Parameter</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

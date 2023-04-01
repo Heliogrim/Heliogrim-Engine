@@ -82,6 +82,12 @@
     <Filter Include="Quelldateien\Modules\AssetBrowser">
       <UniqueIdentifier>{2d681ead-8963-4166-b111-9a452aa37bfd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Widget\Board">
+      <UniqueIdentifier>{7fb6baee-68d4-471a-9c9f-27ec02875bae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Widget\Board">
+      <UniqueIdentifier>{01752f51-aac8-4fd9-abd3-eca8e592d477}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.UI\Panel\SceneHierarchyPanel.hpp">
@@ -162,6 +168,18 @@
     <ClInclude Include="..\..\src\Editor.UI\Modules\AssetBrowser\FilesystemBrowserProvider.hpp">
       <Filter>Headerdateien\Modules\AssetBrowser</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Widget\Board\Whiteboard.hpp">
+      <Filter>Headerdateien\Widget\Board</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Widget\Board\Board.hpp">
+      <Filter>Headerdateien\Widget\Board</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Widget\Board\BoardNode.hpp">
+      <Filter>Headerdateien\Widget\Board</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Widget\Board\BoardNodeSlot.hpp">
+      <Filter>Headerdateien\Widget\Board</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.cpp">
@@ -232,6 +250,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.UI\Modules\AssetBrowser\FilesystemBrowserProvider.cpp">
       <Filter>Quelldateien\Modules\AssetBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Widget\Board\Whiteboard.cpp">
+      <Filter>Quelldateien\Widget\Board</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Widget\Board\Board.cpp">
+      <Filter>Quelldateien\Widget\Board</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Widget\Board\BoardNode.cpp">
+      <Filter>Quelldateien\Widget\Board</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Widget\Board\BoardNodeSlot.cpp">
+      <Filter>Quelldateien\Widget\Board</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,7 +1,9 @@
 #include "HBox.hpp"
 
-#include "../Style/BoundStyleSheet.hpp"
 #include <Engine.Logging/Logger.hpp>
+
+#include "../Algorithm/Fragments.hpp"
+#include "../Style/BoundStyleSheet.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -13,13 +15,6 @@ HBox::~HBox() = default;
 
 string HBox::getTag() const noexcept {
     return _STD format(R"(HBox <{:#x}>)", reinterpret_cast<u64>(this));
-}
-
-static void applyPaddingToOuter(cref<StyleSheet> style_, ref<math::vec2> target_) {
-    target_.x -= style_.padding->x;
-    target_.y -= style_.padding->y;
-    target_.x -= style_.padding->z;
-    target_.y -= style_.padding->w;
 }
 
 void HBox::flow(
@@ -71,7 +66,7 @@ void HBox::flow(
     /**/
 
     math::vec2 maxSize { limit_ };
-    applyPaddingToOuter(_computedStyle, maxSize);
+    algorithm::applyPaddingToOuter(_computedStyle, maxSize);
 
     if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
         if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {

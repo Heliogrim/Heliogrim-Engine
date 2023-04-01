@@ -12,6 +12,9 @@ namespace hg::editor::ui::color {
         inline static const engine::color backgroundText { 77.F, 81.F, 89.F, 255.F };
         inline static const engine::color backgroundRaisedText { 77.F, 127.F, 127.F, 255.F };
 
+        inline static const engine::color darkGreen { 0.F, 100.F, 0.F, 255.F };
+        inline static const engine::color darkRed { 139.F, 0.F, 0.F, 255.F };
+
         inline static const engine::color white { 255.F, 255.F, 255.F, 255.F };
         inline static const engine::color grey { 127.F, 127.F, 127.F, 255.F };
         inline static const engine::color black { 0.F, 0.F, 0.F, 255.F };
