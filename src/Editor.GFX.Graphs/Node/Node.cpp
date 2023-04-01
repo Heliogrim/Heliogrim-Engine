@@ -35,6 +35,10 @@ bool Node::isCommutative() const noexcept {
     return false;
 }
 
+u64 Node::countInputSlots() const noexcept {
+    return _inputs.size();
+}
+
 sptr<NodeInput> Node::getInputSlot(const u8 inputIndex_) const noexcept {
     if (_inputs.size() > inputIndex_) {
         return _inputs[inputIndex_];
@@ -51,6 +55,10 @@ sptr<NodeInput> Node::getInputSlot(string_view uniqueName_) const noexcept {
     return {};
 }
 
+u64 Node::countOutputSlots() const noexcept {
+    return _outputs.size();
+}
+
 sptr<NodeOutput> Node::getOutputSlot(const u8 outputIndex_) const noexcept {
     if (_outputs.size() > outputIndex_) {
         return _outputs[outputIndex_];
@@ -65,6 +73,10 @@ sptr<NodeOutput> Node::getOutputSlot(string_view uniqueName_) const noexcept {
         }
     }
     return {};
+}
+
+u64 Node::countParameters() const noexcept {
+    return _parameter.size();
 }
 
 const non_owning_rptr<NodeParameter> Node::getParameter(const u8 parameterIdx_) const noexcept {

@@ -38,14 +38,16 @@
 #include "Engine.Reflow/Style/BoundStyleSheet.hpp"
 #include "Engine.Reflow/Window/WindowManager.hpp"
 #include "Engine.Scene/Scene.hpp"
+#include "Engine.ACS/Registry.hpp"
+#include "Engine.ACS/Pool.hpp"
+#include "Engine.ACS/Storage.hpp"
+#include "Engine.Assets.System/IAssetRegistry.hpp"
 
 #if TRUE
 #include "Engine.GFX/Command/CommandBuffer.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.GFX/Graphics.hpp"
 #include "Engine.Scheduler/Async.hpp"
-#include "Engine.Assets/Database/AssetDatabase.hpp"
-#include "Engine.Assets/Database/AssetDatabaseQuery.hpp"
 #include "Engine.Assets/Types/Font.hpp"
 #include "Engine.Resource/LoaderManager.hpp"
 #include "Engine.GFX.Loader/Texture/Traits.hpp"
@@ -120,13 +122,13 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
     // TODO:
     if (testTexture.empty()) {
 
-        const auto query = engine::Engine::getEngine()->getAssets()->getDatabase()->query(
+        auto* const asset = engine::Engine::getEngine()->getAssets()->getRegistry()->findAssetByGuid(
             game::assets::texture::Brand::unstable_auto_guid()
         );
 
-        assert(query.exists());
+        assert(asset != nullptr);
 
-        auto request = static_cast<ptr<engine::assets::Texture>>(query.get());
+        auto request = static_cast<ptr<engine::assets::Texture>>(asset);
         testTexture = engine::Engine::getEngine()->getResources()->loader().load<
             engine::assets::Texture, engine::gfx::TextureResource
         >(_STD move(request), engine::gfx::loader::TextureLoadOptions {});
@@ -184,6 +186,21 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
         */
     }
 }
+
+/**/
+
+static void configureMainViewport(
+    sptr<Panel> parent_,
+    ref<StyleKeyStack> stack_,
+    cref<FlowContext> ctx_,
+    cref<math::vec2> available_
+);
+
+static void configureMainGraph(
+    sptr<Panel> parent_
+);
+
+/**/
 
 void buildTestUI(
     cref<sptr<engine::gfx::Device>> device_,
@@ -452,185 +469,11 @@ void buildTestUI(
     mainSection->addChild(mainTopSection);
     mainSection->addChild(assetBrowsePanel);
 
-    /**
-     *
-     */
-    auto vctrlStyle = BoundStyleSheet::make(
-        StyleSheet {
-            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
-            .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
-            .reflowShrink = { true, 0.F },
-        }
-    );
-    vctrlStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
-
-    auto vwrapStyle = BoundStyleSheet::make(
-        StyleSheet {
-            .reflowSpacing = { true, ReflowSpacing::eSpaceAround }
-        }
-    );
-    vwrapStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
-
-    auto viewportCtrls = make_sptr<HBox>(_STD move(vctrlStyle));
-    auto viewportWrapper = make_sptr<HBox>(_STD move(vwrapStyle));
-
-    mainTopSection->addChild(viewportCtrls);
-    mainTopSection->addChild(viewportWrapper);
-
-    /**
-     *
-     */
-    const StyleSheet cttxtStyle {
-        .color = { true, color::Dark::white },
-        .font = { true, defaultFont },
-        .textAlign = { true, TextAlign::eCenterMiddle }
-    };
-
-    const StyleSheet ctbtnStyle {
-        .padding = { true, Padding { 8.F, 4.F } },
-        .margin = { true, Margin { 4.F } },
-        .color = { true, color::Dark::backgroundInnerField },
-    };
-
-    auto playButton = make_sptr<Button>(BoundStyleSheet::make(ctbtnStyle));
-    auto pauseButton = make_sptr<Button>(BoundStyleSheet::make(ctbtnStyle));
-    auto stopButton = make_sptr<Button>(BoundStyleSheet::make(ctbtnStyle));
-
-    auto playText = make_sptr<Text>(BoundStyleSheet::make(cttxtStyle));
-    playText->setText("Play");
-
-    auto pauseText = make_sptr<Text>(BoundStyleSheet::make(cttxtStyle));
-    pauseText->setText("Pause");
-
-    auto stopText = make_sptr<Text>(BoundStyleSheet::make(cttxtStyle));
-    stopText->setText("Stop");
-
-    viewportCtrls->addChild(playButton);
-    viewportCtrls->addChild(pauseButton);
-    viewportCtrls->addChild(stopButton);
-
-    playButton->addChild(playText);
-    pauseButton->addChild(pauseText);
-    stopButton->addChild(stopText);
-
-    /**
-     *
-     */
-    auto viewport = make_sptr<Viewport>(
-        BoundStyleSheet::make(
-            StyleSheet {
-                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .color = { true, color::Dark::white }
-            }
-        )
-    );
-    viewportWrapper->addChild(viewport);
-
-    /**/
-
-    const auto* const gfx { editor::EditorEngine::getEngine()->getGraphics() };
-    const auto* const coreSession = editor::EditorEngine::getEngine()->getPrimaryGameSession();
-    const auto coreWorld { coreSession->getWorldContext()->getCurrentWorld() };
-    const auto scene { coreWorld->getScene() };
-
-    //RegisterActorClass<CameraActor>();
-    coreSession->getState()->getRegistry()->getOrCreateActorPool<CameraActor>();
-
-    auto session = HeliogrimEditor::getSession();
-    ptr<CameraActor> camera { CreateActor<CameraActor>(session) };
-    auto world = GetWorld(session);
-
-    world.addActor(camera);
-    scene->update();
-
-    viewport->setCameraActor(camera);
-    viewport->flow(ctx, available, available, stack);
-    viewport->rebuildView();
-
-    const auto target { make_sptr<engine::gfx::RenderTarget>() };
-    target->use(gfx->getCurrentDevice());
-    target->use(gfx->getRenderer(AssocKey<string>::from("3DRenderer")).get());
-    target->use(viewport->getSwapchain());
-
-    const auto* const cc { camera->getCameraComponent() };
-    const auto* const cm { *cc->getSceneNodeModels().begin() };
-    target->buildPasses(static_cast<const ptr<const engine::gfx::CameraModel>>(cm)->getSceneView());
-
-    // TODO: Should be Secondary Target
-    gfx->getSceneManager()->addPrimaryTarget(target);
-
-    viewport->addResizeListener(
-        [target = wptr<engine::gfx::RenderTarget>(target)](const non_owning_rptr<engine::gfx::VkSwapchain> next_) {
-            if (target.expired()) {
-                return;
-            }
-
-            target.lock()->rebuildPasses(next_);
-        }
-    );
-
-    /**/
-
-    #if FALSE
-    auto viewportOverlay = make_sptr<Overlay>();
-    auto viewOverBox = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .wrap = { true, ReflowWrap::eNoWrap },
-        .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
-        .color = { true, color::Dark::transparent },
-    }));
-
-    viewportWrapper->addChild(viewportOverlay);
-    viewportOverlay->setContent(viewOverBox);
-
-    {
-        auto alignHelper = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
-            .reflowShrink = { true, 1.F },
-            .color = { true, color::Dark::transparent },
-        }));
-        viewOverBox->addChild(alignHelper);
-
-        /**/
-
-        auto statsWrapper = make_sptr<VBox>(BoundStyleSheet::make(StyleSheet {
-            .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .padding = { true, Padding { 8.F, 16.F } },
-            .color = { true, engine::color { 0.F, 0.F, 0.F, 0.2F } },
-        }));
-        viewOverBox->addChild(statsWrapper);
-
-        /**/
-
-        const StyleSheet stxtStyle {
-            .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
-            .color = { true, color::Dark::white },
-            .font = { true, defaultFont },
-            .fontSize = { true, 16.F },
-            .textAlign = { true, TextAlign::eRightTop }
-        };
-
-        auto sceneName = make_sptr<Text>(BoundStyleSheet::make(stxtStyle));
-        sceneName->setText("Test Scene");
-
-        statsWrapper->addChild(sceneName);
-
-        auto sceneCalcTime = make_sptr<Text>(BoundStyleSheet::make(stxtStyle));
-        sceneCalcTime->setText("15.42 ms");
-
-        testFrameTime = sceneCalcTime;
-        statsWrapper->addChild(sceneCalcTime);
-
-        auto sceneFrames = make_sptr<Text>(BoundStyleSheet::make(stxtStyle));
-        sceneFrames->setText("63 FPS");
-
-        testFrameDisplay = sceneFrames;
-        statsWrapper->addChild(sceneFrames);
+    if (false) {
+        configureMainViewport(mainTopSection, stack, ctx, available);
+    } else {
+        configureMainGraph(mainTopSection);
     }
-    #endif
 
     #pragma endregion
 
@@ -643,6 +486,32 @@ void buildTestUI(
     /**/
 
     window_->setContent(root);
+
+    /**/
+
+    {
+        auto session = static_cast<ptr<engine::core::Session>>(GetSession().unwrap().get());
+        auto registry = session->getState()->getRegistry();
+
+        Vector<ptr<Actor>> actors {};
+
+        const auto pool = registry->getOrCreateActorPool<Actor>();
+        const auto& storage = pool->__get_storage();
+
+        const auto end = storage.cend();
+
+        for (auto iter = storage.cbegin(); iter != end; ++iter) {
+            if (iter.get_key() != invalid_actor_guid) {
+                const auto& actor = iter.get_value();
+                actors.push_back(_STD addressof(const_cast<ref<Actor>>(actor)));
+            }
+        }
+
+        if (not actors.empty()) {
+            ::storeEditorSelectedTarget(actors.front());
+            storeHierarchyActor(actors);
+        }
+    }
 }
 
 const hg::ptr<hg::engine::reflow::Font> getDefaultFont() {
@@ -650,19 +519,17 @@ const hg::ptr<hg::engine::reflow::Font> getDefaultFont() {
 
     if (testFont.empty()) {
 
-        auto* db { engine::Engine::getEngine()->getAssets()->getDatabase() };
-        auto query { db->query(font_default_type::unstable_auto_guid()) };
+        auto* registry { engine::Engine::getEngine()->getAssets()->getRegistry() };
+        auto* asset = registry->findAssetByGuid(font_default_type::unstable_auto_guid());
 
-        if (!query.exists()) {
+        if (asset == nullptr) {
             delete (new font_default_type);
+            asset = registry->findAssetByGuid(font_default_type::unstable_auto_guid());
         }
-
-        assert(query.exists());
-
-        auto* font { static_cast<ptr<engine::assets::Font>>(query.get()) };
 
         /**/
 
+        auto* font = Cast<engine::assets::Font, engine::assets::Asset, false>(asset);
         testFont = engine::Engine::getEngine()->getResources()->loader().load<
             engine::assets::Font,
             engine::gfx::FontResource
@@ -759,4 +626,251 @@ void storeHierarchyActor(cref<Vector<ptr<Actor>>> targets_) {
     }
 
     panel->setHierarchyTarget<SceneViewEntry>("sptr<SceneViewEntry>"_typeId, sources);
+}
+
+void configureMainViewport(
+    sptr<Panel> parent_,
+    ref<StyleKeyStack> stack_,
+    cref<FlowContext> ctx_,
+    cref<math::vec2> available_
+) {
+
+    const ptr<engine::reflow::Font> defaultFont = getDefaultFont();
+
+    /**
+     *
+     */
+    auto vctrlStyle = BoundStyleSheet::make(
+        StyleSheet {
+            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
+            .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
+            .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
+            .reflowShrink = { true, 0.F },
+        }
+    );
+    vctrlStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
+
+    auto vwrapStyle = BoundStyleSheet::make(
+        StyleSheet {
+            .reflowSpacing = { true, ReflowSpacing::eSpaceAround }
+        }
+    );
+    vwrapStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
+
+    auto viewportCtrls = make_sptr<HBox>(_STD move(vctrlStyle));
+    auto viewportWrapper = make_sptr<HBox>(_STD move(vwrapStyle));
+
+    parent_->addChild(viewportCtrls);
+    parent_->addChild(viewportWrapper);
+
+    /**
+     *
+     */
+    const StyleSheet cttxtStyle {
+        .color = { true, color::Dark::white },
+        .font = { true, defaultFont },
+        .textAlign = { true, TextAlign::eCenterMiddle }
+    };
+
+    const StyleSheet ctbtnStyle {
+        .padding = { true, Padding { 8.F, 4.F } },
+        .margin = { true, Margin { 4.F } },
+        .color = { true, color::Dark::backgroundInnerField },
+    };
+
+    auto playButton = make_sptr<Button>(BoundStyleSheet::make(ctbtnStyle));
+    auto pauseButton = make_sptr<Button>(BoundStyleSheet::make(ctbtnStyle));
+    auto stopButton = make_sptr<Button>(BoundStyleSheet::make(ctbtnStyle));
+
+    auto playText = make_sptr<Text>(BoundStyleSheet::make(cttxtStyle));
+    playText->setText("Play");
+
+    auto pauseText = make_sptr<Text>(BoundStyleSheet::make(cttxtStyle));
+    pauseText->setText("Pause");
+
+    auto stopText = make_sptr<Text>(BoundStyleSheet::make(cttxtStyle));
+    stopText->setText("Stop");
+
+    viewportCtrls->addChild(playButton);
+    viewportCtrls->addChild(pauseButton);
+    viewportCtrls->addChild(stopButton);
+
+    playButton->addChild(playText);
+    pauseButton->addChild(pauseText);
+    stopButton->addChild(stopText);
+
+    /**
+     *
+     */
+    auto viewport = make_sptr<Viewport>(
+        BoundStyleSheet::make(
+            StyleSheet {
+                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+                .color = { true, color::Dark::white }
+            }
+        )
+    );
+    viewportWrapper->addChild(viewport);
+
+    /**/
+
+    const auto* const gfx { editor::EditorEngine::getEngine()->getGraphics() };
+    const auto* const coreSession = editor::EditorEngine::getEngine()->getPrimaryGameSession();
+    const auto coreWorld { coreSession->getWorldContext()->getCurrentWorld() };
+    const auto scene { coreWorld->getScene() };
+
+    //RegisterActorClass<CameraActor>();
+    coreSession->getState()->getRegistry()->getOrCreateActorPool<CameraActor>();
+
+    auto session = HeliogrimEditor::getSession();
+    ptr<CameraActor> camera { CreateActor<CameraActor>(session) };
+    auto world = GetWorld(session);
+
+    {
+        cref<math::Transform> tf = camera->getRootComponent()->getWorldTransform();
+        const_cast<ref<math::Transform>>(tf).setLocation(math::Location { 0.F, 1.8F, 0.F });
+    }
+
+    world.addActor(camera);
+    scene->update();
+
+    viewport->setCameraActor(camera);
+    viewport->flow(ctx_, available_, available_, stack_);
+    viewport->rebuildView();
+
+    const auto target { make_sptr<engine::gfx::RenderTarget>() };
+    target->use(gfx->getCurrentDevice());
+    target->use(gfx->getRenderer(AssocKey<string>::from("3DRenderer")).get());
+    target->use(viewport->getSwapchain());
+
+    const auto* const cc { camera->getCameraComponent() };
+    const auto* const cm { *cc->getSceneNodeModels().begin() };
+    target->buildPasses(static_cast<const ptr<const engine::gfx::CameraModel>>(cm)->getSceneView());
+
+    // TODO: Should be Secondary Target
+    gfx->getSceneManager()->addPrimaryTarget(target);
+
+    viewport->addResizeListener(
+        [target = wptr<engine::gfx::RenderTarget>(target)](const non_owning_rptr<engine::gfx::VkSwapchain> next_) {
+            if (target.expired()) {
+                return;
+            }
+
+            target.lock()->rebuildPasses(next_);
+        }
+    );
+
+    /**/
+
+    #if FALSE
+    auto viewportOverlay = make_sptr<Overlay>();
+    auto viewOverBox = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+        .wrap = { true, ReflowWrap::eNoWrap },
+        .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
+        .color = { true, color::Dark::transparent },
+    }));
+
+    viewportWrapper->addChild(viewportOverlay);
+    viewportOverlay->setContent(viewOverBox);
+
+    {
+        auto alignHelper = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+            .reflowShrink = { true, 1.F },
+            .color = { true, color::Dark::transparent },
+        }));
+        viewOverBox->addChild(alignHelper);
+
+        /**/
+
+        auto statsWrapper = make_sptr<VBox>(BoundStyleSheet::make(StyleSheet {
+            .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            .padding = { true, Padding { 8.F, 16.F } },
+            .color = { true, engine::color { 0.F, 0.F, 0.F, 0.2F } },
+        }));
+        viewOverBox->addChild(statsWrapper);
+
+        /**/
+
+        const StyleSheet stxtStyle {
+            .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
+            .color = { true, color::Dark::white },
+            .font = { true, defaultFont },
+            .fontSize = { true, 16.F },
+            .textAlign = { true, TextAlign::eRightTop }
+        };
+
+        auto sceneName = make_sptr<Text>(BoundStyleSheet::make(stxtStyle));
+        sceneName->setText("Test Scene");
+
+        statsWrapper->addChild(sceneName);
+
+        auto sceneCalcTime = make_sptr<Text>(BoundStyleSheet::make(stxtStyle));
+        sceneCalcTime->setText("15.42 ms");
+
+        testFrameTime = sceneCalcTime;
+        statsWrapper->addChild(sceneCalcTime);
+
+        auto sceneFrames = make_sptr<Text>(BoundStyleSheet::make(stxtStyle));
+        sceneFrames->setText("63 FPS");
+
+        testFrameDisplay = sceneFrames;
+        statsWrapper->addChild(sceneFrames);
+    }
+    #endif
+
+}
+
+#include <Editor.UI/Widget/Board/Whiteboard.hpp>
+#include <Editor.UI/Widget/Board/Board.hpp>
+#include <Editor.UI/Widget/Board/BoardNode.hpp>
+#include <Editor.GFX.Graphs/Node/Input/SubGraphInputNode.hpp>
+#include <Editor.GFX.Graphs/Node/Math/ScalarSubMathNode.hpp>
+#include <Editor.GFX.Graphs/Node/Math/ScalarPowMathNode.hpp>
+#include <Editor.GFX.Graphs/Node/Output/SubGraphOutputNode.hpp>
+
+void configureMainGraph(
+    sptr<Panel> parent_
+) {
+
+    auto whiteboard = make_sptr<Whiteboard>();
+    auto board = make_sptr<Board>();
+
+    whiteboard->setBoard(board);
+    parent_->addChild(whiteboard);
+
+    /**/
+
+    auto node0 = make_sptr<editor::gfx::graph::nodes::SubGraphInputNode>();
+    node0->setName("Out Input Node");
+    node0->regenerate();
+    auto test0 = BoardNode::make(node0);
+
+    auto node1 = make_sptr<editor::gfx::graph::nodes::ScalarSubMathNode>();
+    node1->setName("Useless Operation #1");
+    node1->regenerate();
+    auto test1 = BoardNode::make(node1);
+
+    auto node2 = make_sptr<editor::gfx::graph::nodes::ScalarPowMathNode>();
+    node2->setName("Useless Operation #2");
+    node2->regenerate();
+    auto test2 = BoardNode::make(node2);
+
+    auto node3 = make_sptr<editor::gfx::graph::nodes::SubGraphOutputNode>();
+    node3->setName("Out Output Node");
+    node3->regenerate();
+    auto test3 = BoardNode::make(node3);
+
+    test0->style()->margin.attr.x = -240.F;
+    test1->style()->margin.attr.y = -50.F;
+    test2->style()->margin.attr.y = 50.F;
+    test3->style()->margin.attr.x = 240.F;
+
+    board->addChild(test0);
+    board->addChild(test1);
+    board->addChild(test2);
+    board->addChild(test3);
 }
