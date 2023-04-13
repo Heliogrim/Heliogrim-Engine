@@ -6,8 +6,6 @@
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX.Loader/Texture/Traits.hpp>
 #include <Engine.GFX.Glow.UI/TestUI.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-#include <Engine.Reflow/Style/StyleCondition.hpp>
 #include <Engine.Reflow/Widget/Image.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
@@ -18,7 +16,7 @@
 #include "../Color/Dark.hpp"
 #include "../Helper/AssetBrowserHelper.hpp"
 #include "../Panel/AssetBrowserPanel.hpp"
-#include "../Style/Style.hpp"
+#include "Editor.UI/Theme/Theme.hpp"
 #include "Engine.Assets.System/IAssetRegistry.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Input/Input.hpp"
@@ -27,108 +25,11 @@ using namespace hg::engine::reflow;
 using namespace hg::editor::ui;
 using namespace hg;
 
-[[nodiscard]] static sptr<BoundStyleSheet> makeStyleSheet() {
-
-    sptr<BoundStyleSheet> style { BoundStyleSheet::make() };
-
-    const auto* lib { Style::get() };
-
-    style->pushStyle(
-        {
-            Style::key_type::from("AssetBrowserItem::Hovered"),
-            style::isRaised,
-            lib->getStyleSheet(Style::DefaultKey)
-        }
-    );
-
-    style->pushStyle(
-        {
-            Style::NeutralKey,
-            nullptr,
-            lib->getStyleSheet(Style::NeutralKey)
-        }
-    );
-
-    return style;
-}
-
-[[nodiscard]] static sptr<BoundStyleSheet> makeTypeTitleStyle() {
-
-    auto* font { getDefaultFont() };
-
-    auto style = BoundStyleSheet::make(
-        StyleSheet {
-            .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 84.F } },
-            //
-            .margin = { true, Margin { 0.F, 4.F, 0.F, 0.F } },
-            //
-            .color = { false, color::Dark::backgroundText },
-            //
-            .font = { true, font },
-            .fontSize = { true, 12.F },
-            .textAlign = { true, TextAlign::eLeftMiddle }
-        }
-    );
-
-    /**/
-
-    style->pushStyle(
-        {
-            Style::key_type::from("AssetBrowserItem::Hovered"),
-            style::isNever,
-            make_sptr<StyleSheet>(
-                StyleSheet {
-                    .color = { true, color::Dark::backgroundRaisedText }
-                }
-            )
-        }
-    );
-
-    /**/
-
-    return style;
-}
-
-[[nodiscard]] static sptr<BoundStyleSheet> makeAssetTitleStyle() {
-
-    auto* font { getDefaultFont() };
-
-    auto style = BoundStyleSheet::make(
-        StyleSheet {
-            .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 84.F } },
-            //
-            .color = { false, color::Dark::grey },
-            //
-            .font = { true, font },
-            .fontSize = { true, 12.F },
-            .textEllipse = { true, 2ui32 }
-        }
-    );
-
-    /**/
-
-    style->pushStyle(
-        {
-            Style::key_type::from("AssetBrowserItem::Hovered"),
-            style::isNever,
-            make_sptr<StyleSheet>(
-                StyleSheet {
-                    .color = { true, color::Dark::white }
-                }
-            )
-        }
-    );
-
-    /**/
-
-    return style;
-}
-
 AssetBrowserItem::AssetBrowserItem() :
-    Button(makeStyleSheet()),
-    _value() {}
+    Button(),
+    _value() {
+    /**/
+}
 
 sptr<AssetBrowserItem> AssetBrowserItem::make(
     cref<sptr<AssetBrowserPanel>> panel_,
@@ -140,6 +41,7 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 
     /**/
 
+    const auto* const theme = Theme::get();
     auto* font { getDefaultFont() };
     const auto* helper { AssetBrowserHelper::get() };
 
@@ -217,65 +119,52 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
         engine::gfx::TextureResource>(_STD move(iconAsset));
 
     /**/
-    auto item {
-        make_sptr<VBox>(
-            BoundStyleSheet::make(
-                StyleSheet {
-                    .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-                    .width = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-                    .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-                    //
-                    .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
-                    .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
-                    .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
-                    //
-                    //.margin = { true, Margin { 4.F } },
-                    .borderRadius = { true, BorderRadius { 6.F } },
-                    //
-                    .color = { true, color::Dark::backgroundInnerFieldDarken },
-                }
-            )
-        )
-    };
-    self->addChild(item);
+    auto item = make_sptr<VerticalPanel>();
+    item->attr.minWidth.setValue({ ReflowUnitType::eAbsolute, 96.F });
+    item->attr.width.setValue({ ReflowUnitType::eAbsolute, 96.F });
+    item->attr.maxWidth.setValue({ ReflowUnitType::eAbsolute, 96.F });
+
+    item->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 156.F });
+    item->attr.height.setValue({ ReflowUnitType::eAbsolute, 156.F });
+    item->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 156.F });
+
+    self->setChild(item);
 
     /**/
 
-    const auto icon { make_sptr<Image>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::Icon96Key))) };
+    const auto icon { make_sptr<Image>() };
+    theme->applyIcon96(icon);
     item->addChild(icon);
 
     auto iconGuard = iconRes->acquire(engine::resource::ResourceUsageFlag::eRead);
     auto* view = iconGuard->as<engine::gfx::VirtualTextureView>();
     icon->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(view)), iconRes.get());
 
-    const auto infoWrapper {
-        make_sptr<VBox>(
-            BoundStyleSheet::make(
-                StyleSheet {
-                    .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-                    .width = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-                    .maxWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 96.F } },
-                    //
-                    .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
-                    .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
-                    .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F - 96.F } },
-                    //
-                    .padding = { true, Padding { 6.F } },
-                    .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
-                    .borderRadius = { true, BorderRadius { 0.F, 0.F, 6.F, 6.F } },
-                    //
-                    .color = { true, color::Dark::backgroundDefault },
-                }
-            )
-        )
-    };
+    const auto infoWrapper = make_sptr<VerticalPanel>();
+    infoWrapper->attr.minWidth.setValue({ ReflowUnitType::eAbsolute, 96.F });
+    infoWrapper->attr.width.setValue({ ReflowUnitType::eAbsolute, 96.F });
+    infoWrapper->attr.maxWidth.setValue({ ReflowUnitType::eAbsolute, 96.F });
+
+    infoWrapper->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 156.F - 96.F });
+    infoWrapper->attr.height.setValue({ ReflowUnitType::eAbsolute, 156.F - 96.F });
+    infoWrapper->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 156.F - 96.F });
+
+    infoWrapper->attr.padding.setValue(Padding { 6.F });
+    infoWrapper->attr.justify.setValue(ReflowSpacing::eSpaceBetween);
+
     item->addChild(infoWrapper);
 
-    const auto assetTitle { make_sptr<Text>(makeAssetTitleStyle()) };
+    const auto assetTitle { make_sptr<Text>() };
+    theme->applyLabel(assetTitle);
+    assetTitle->attr.textEllipse.setValue(2ui32);
+
     assetTitle->setText(self->_value.title);
     infoWrapper->addChild(assetTitle);
 
-    const auto assetTypeTitle { make_sptr<Text>(makeTypeTitleStyle()) };
+    const auto assetTypeTitle { make_sptr<Text>() };
+    theme->applyLabel(assetTypeTitle);
+    assetTypeTitle->attr.textEllipse.setValue(1ui32);
+
     assetTypeTitle->setText(typeTitle);
     infoWrapper->addChild(assetTypeTitle);
 

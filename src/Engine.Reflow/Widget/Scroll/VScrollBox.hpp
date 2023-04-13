@@ -1,14 +1,14 @@
 #pragma once
-#include "../VBox.hpp"
+#include "../VerticalPanel.hpp"
 
 namespace hg::engine::reflow {
     class VScrollBox :
-        public VBox {
+        public VerticalPanel {
     public:
         using this_type = VScrollBox;
 
     public:
-        VScrollBox(mref<sptr<BoundStyleSheet>> style_);
+        VScrollBox();
 
         ~VScrollBox() override;
 
@@ -34,19 +34,14 @@ namespace hg::engine::reflow {
         void scrollTo(cref<math::vec2> point_, cref<math::vec2> size_);
 
     public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override;
+        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
 
-        void flow(
-            cref<FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<StyleKeyStack> styleStack_
-        ) override;
+    public:
+        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
 
-        void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
+        math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
 
-    private:
-        [[nodiscard]] math::vec2 contentSize() const noexcept;
+        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
 
     public:
         EventResponse onWheel(cref<WheelEvent> event_) override;

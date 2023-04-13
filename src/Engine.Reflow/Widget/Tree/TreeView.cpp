@@ -4,9 +4,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "TreeItem.hpp"
-#include "../../Style/BoundStyleSheet.hpp"
-#include "../../Style/StyleSheet.hpp"
-#include "../HBox.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -22,8 +19,9 @@ sptr<Widget> TreeViewBase::generateRow(cref<TreeViewItem> view_, cref<sptr<Widge
 
     auto wrapper = make_sptr<TreeItem>();
 
-    wrapper->style()->minHeight = ReflowUnit { ReflowUnitType::eAbsolute, row_min_height };
-    wrapper->style()->margin = Margin { static_cast<float>(view_.depth) * ident_per_level, 0.F, 0.F, 0.F };
+    // TODO: Warning: This will break the tree view
+    //wrapper->style()->minHeight = ReflowUnit { ReflowUnitType::eAbsolute, row_min_height };
+    //wrapper->style()->margin = Margin { static_cast<float>(view_.depth) * ident_per_level, 0.F, 0.F, 0.F };
 
     wrapper->addChild(content_);
     return wrapper;

@@ -3,7 +3,6 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "../Widget/__fwd.hpp"
-#include "../Window/__fwd.hpp"
 #include "../Window/Window.hpp"
 #include "EventResponse.hpp"
 
@@ -100,7 +99,11 @@ namespace hg::engine::reflow {
 
                     const auto& child { *it };
 
-                    if (child->state().isVisible() && intersects(child->screenOffset(), child->outerSize(), point)) {
+                    if (child->state().isVisible() && intersects(
+                        child->state().layoutOffset,
+                        child->state().layoutSize,
+                        point
+                    )) {
                         backlog.push(child);
                         break;
                     }
@@ -144,7 +147,7 @@ namespace hg::engine::reflow {
 
                 const auto next { backlog.back() };
 
-                const auto contained { intersects(next->screenOffset(), next->outerSize(), point) };
+                const auto contained { intersects(next->state().layoutOffset, next->state().layoutSize, point) };
                 const auto hovered { next->state().isHover() };
 
                 if (not contained && hovered) {
@@ -172,7 +175,7 @@ namespace hg::engine::reflow {
                     if (child->state().isHover()) {
                         backlog.push_back(child);
 
-                    } else if (intersects(child->screenOffset(), child->outerSize(), point)) {
+                    } else if (intersects(child->state().layoutOffset, child->state().layoutSize, point)) {
                         backlog.push_back(child);
                     }
                 }
@@ -209,7 +212,7 @@ namespace hg::engine::reflow {
 
                     const auto& child { *it };
 
-                    if (intersects(child->screenOffset(), child->outerSize(), point)) {
+                    if (intersects(child->state().layoutOffset, child->state().layoutSize, point)) {
                         backlog.push(child);
                         break;
                     }
@@ -259,7 +262,7 @@ namespace hg::engine::reflow {
 
                     const auto& child { *it };
 
-                    if (intersects(child->screenOffset(), child->outerSize(), point)) {
+                    if (intersects(child->state().layoutOffset, child->state().layoutSize, point)) {
                         backlog.push(child);
                         break;
                     }

@@ -6,7 +6,6 @@
 #include <Engine.Scheduler/Tick/TickPipeline.hpp>
 
 #include "ReflowFlowStage.hpp"
-#include "ReflowShiftStage.hpp"
 
 using namespace hg::engine::reflow::schedule;
 using namespace hg::engine::scheduler;
@@ -19,17 +18,13 @@ ReflowPipeline::~ReflowPipeline() = default;
 
 void ReflowPipeline::mount(const non_owning_rptr<scheduler::StageRegister> register_) {
 
-    const auto* const flowTick = register_->registerStage(
-        make_uptr<ReflowFlowStage>(FlowTick, this)
-    );
-    const auto* const shiftTick = register_->registerStage(
-        make_uptr<ReflowShiftStage>(ShiftTick, this)
+    const auto* const tick = register_->registerStage(
+        make_uptr<ReflowFlowStage>(Tick, this)
     );
 
     /**/
 
-    _orderedStages.push_back(flowTick);
-    _orderedStages.push_back(shiftTick);
+    _orderedStages.push_back(tick);
 }
 
 void ReflowPipeline::declareDependencies(
@@ -42,7 +37,7 @@ void ReflowPipeline::declareDependencies(
 
     /**/
 
-    const auto* const flowTick = _orderedStages.front();
+    const auto* const tick = _orderedStages.front();
 
     /**/
 
@@ -50,15 +45,14 @@ void ReflowPipeline::declareDependencies(
         StageDependency {
             { beginTick, actorUpdate, inputTick },
             this,
-            flowTick
+            tick
         }
     );
 }
 
 void ReflowPipeline::dismount(const non_owning_rptr<scheduler::StageRegister> register_) {
 
-    register_->removeStage(FlowTick);
-    register_->removeStage(ShiftTick);
+    register_->removeStage(Tick);
 
     /**/
 

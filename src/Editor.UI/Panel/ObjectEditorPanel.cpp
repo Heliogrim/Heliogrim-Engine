@@ -1,28 +1,34 @@
 #include "ObjectEditorPanel.hpp"
 
 #include <Engine.Common/Make.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-#include <Engine.Reflow/Widget/HBox.hpp>
+#include <Engine.Reflow/Widget/HorizontalPanel.hpp>
 #include <Engine.Reflow/Widget/Scroll/VScrollBox.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Reflow/Widget/Button.hpp>
-#include <Engine.Reflow/Style/StyleCondition.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
 
-#include "../Style/Style.hpp"
 #include "../Color/Dark.hpp"
+#include "Editor.UI/Theme/Theme.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
 using namespace hg;
 
 ObjectEditorPanel::ObjectEditorPanel() :
-    Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))),
+    VerticalPanel(),
     _nav(nullptr),
     _content(nullptr),
     _editor(nullptr),
     _mapper(nullptr),
-    _mappedTarget(nullptr) {}
+    _mappedTarget(nullptr) {
+    /**/
+    attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.flexGrow.setValue(1.F);
+    attr.flexShrink.setValue(1.F);
+}
 
 ObjectEditorPanel::~ObjectEditorPanel() {
     clearEditor();
@@ -60,40 +66,25 @@ void ObjectEditorPanel::clearEditor() {
     _mappedTarget = nullptr;
 }
 
-static void configureNav(cref<sptr<HBox>> navBar_) {
+static void configureNav(cref<sptr<HorizontalPanel>> navBar_) {
 
-    const auto title { make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))) };
-    title->style().margin = Margin { 0.F, 4.F };
+    const auto* const theme = Theme::get();
+
+    const auto title = make_sptr<Text>();
+    theme->applyLabel(title);
     title->setText("Object Editor");
     navBar_->addChild(title);
 
     /**/
 
-    auto btnStyle { BoundStyleSheet::make() };
-    btnStyle->pushStyle({ Style::ButtonKey, nullptr, Style::get()->getStyleSheet(Style::ButtonKey) });
-    btnStyle->pushStyle(
-        {
-            Style::ButtonRaisedKey,
-            style::isRaised,
-            Style::get()->getStyleSheet(Style::ButtonRaisedKey)
-        }
-    );
+    const auto closeButton { make_sptr<Button>() };
+    theme->applyTextButton(closeButton);
 
-    auto txtStyle { BoundStyleSheet::make() };
-    txtStyle->pushStyle({ Style::TitleSmallKey, nullptr, Style::get()->getStyleSheet(Style::TitleSmallKey) });
-    txtStyle->pushStyle(
-        {
-            Style::ButtonRaisedKey,
-            style::isNever,
-            Style::get()->getStyleSheet(Style::TitleRaisedKey)
-        }
-    );
-
-    const auto closeButton { make_sptr<Button>(_STD move(btnStyle)) };
-    const auto closeText { make_sptr<Text>(_STD move(txtStyle)) };
+    const auto closeText { make_sptr<Text>() };
+    theme->applyLabel(closeText);
 
     closeText->setText(R"(X)");
-    closeButton->addChild(closeText);
+    closeButton->setChild(closeText);
 
     navBar_->addChild(closeButton);
 }
@@ -101,7 +92,7 @@ static void configureNav(cref<sptr<HBox>> navBar_) {
 sptr<ObjectEditorPanel> ObjectEditorPanel::make(const non_owning_rptr<ObjectEditor> editor_) {
 
     auto panel { sptr<ObjectEditorPanel>(new ObjectEditorPanel()) };
-    panel->_style->minHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
+    panel->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
 
     /**/
 
@@ -109,7 +100,14 @@ sptr<ObjectEditorPanel> ObjectEditorPanel::make(const non_owning_rptr<ObjectEdit
 
     /**/
 
-    auto nav { make_sptr<HBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::NavBarKey))) };
+    auto nav { make_sptr<HorizontalPanel>() };
+    nav->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    nav->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    nav->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    nav->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    nav->attr.padding.setValue(Padding { 4.F, 0.F });
+    nav->attr.justify.setValue(ReflowSpacing::eSpaceBetween);
+
     panel->_nav = nav;
     panel->addChild(nav);
 
@@ -117,9 +115,16 @@ sptr<ObjectEditorPanel> ObjectEditorPanel::make(const non_owning_rptr<ObjectEdit
 
     /**/
 
-    auto scroll { make_sptr<VScrollBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::ScrollBoxKey))) };
-    scroll->style()->rowGap = ReflowUnit { ReflowUnitType::eAbsolute, 4.F };
-    scroll->style()->colGap = ReflowUnit { ReflowUnitType::eAbsolute, 4.F };
+    auto scroll { make_sptr<VScrollBox>() };
+    scroll->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    scroll->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    scroll->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
+    scroll->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    scroll->attr.padding.setValue(Padding { 6.F });
+    scroll->attr.colGap.setValue(4.F);
+    scroll->attr.rowGap.setValue(4.F);
+    scroll->attr.flexGrow.setValue(1.F);
+    scroll->attr.flexShrink.setValue(1.F);
 
     panel->_content = scroll;
     panel->addChild(scroll);

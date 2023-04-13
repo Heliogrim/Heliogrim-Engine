@@ -8,24 +8,16 @@
 #include <Engine.Reflow/Widget/Input.hpp>
 #include <Engine.Reflow/Widget/Input/InputIntegral.hpp>
 #include <Engine.Reflow/Widget/Input/InputFloat.hpp>
-#include <Engine.Reflow/Widget/Box.hpp>
-#include <Engine.Reflow/Widget/HBox.hpp>
+#include <Engine.Reflow/Widget/BoxPanel.hpp>
+#include <Engine.Reflow/Widget/HorizontalPanel.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-#include <Engine.Reflow/Style/StyleCondition.hpp>
 
-#include "../../Style/Style.hpp"
 #include "../../Color/Dark.hpp"
+#include "Editor.UI/Theme/Theme.hpp"
 
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
 
 namespace hg::editor::ui {
-    namespace __inputvec {
-        [[nodiscard]] sptr<engine::reflow::BoundStyleSheet> makeInputBoxStyle();
-
-        [[nodiscard]] sptr<engine::reflow::BoundStyleSheet> makeInputTextStyle();
-    }
-
     template <typename VectorType_>
     class InputVec :
         public engine::reflow::Input<VectorType_> {
@@ -61,60 +53,45 @@ namespace hg::editor::ui {
     public:
         void prepare() {
 
-            auto localStyle = engine::reflow::StyleSheet {
-                .width = {
-                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eRelative, 1.F }
-                },
-                .maxWidth = {
-                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eRelative, 1.F }
-                },
-                .minHeight = {
-                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eAbsolute, 20.F }
-                },
-                .height = {
-                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eAbsolute, 20.F }
-                },
-                .maxHeight = {
-                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eAbsolute, 20.F }
-                },
-                .wrap = { true, engine::reflow::ReflowWrap::eNoWrap },
-                .colGap = {
-                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eAbsolute, 4.F }
-                },
-                .rowGap = {
-                    true, engine::reflow::ReflowUnit { engine::reflow::ReflowUnitType::eAbsolute, 8.F }
-                },
-                .reflowSpacing = { true, engine::reflow::ReflowSpacing::eSpaceBetween },
-                .reflowShrink = { true, 1.F },
-                .reflowGrow = { true, 0.F },
-                .color = { true, color::Dark::backgroundDefault }
-            };
+            const auto* const theme = Theme::get();
 
-            _content = make_sptr<engine::reflow::HBox>(engine::reflow::BoundStyleSheet::make(_STD move(localStyle)));
+            _content = make_sptr<engine::reflow::HorizontalPanel>();
+            _content->attr.width.setValue({ engine::reflow::ReflowUnitType::eRelative, 1.F });
+            _content->attr.maxWidth.setValue({ engine::reflow::ReflowUnitType::eRelative, 1.F });
+            _content->attr.minHeight.setValue({ engine::reflow::ReflowUnitType::eAbsolute, 20.F });
+            _content->attr.height.setValue({ engine::reflow::ReflowUnitType::eAbsolute, 20.F });
+            _content->attr.maxHeight.setValue({ engine::reflow::ReflowUnitType::eAbsolute, 20.F });
+            _content->attr.colGap.setValue(4.F);
+            _content->attr.rowGap.setValue(8.F);
+            _content->attr.justify.setValue(engine::reflow::ReflowSpacing::eSpaceBetween);
+            _content->attr.flexShrink.setValue(1.F);
 
             /**/
 
             for (u64 i = 0ui64; i < vector_dim; ++i) {
 
-                _labels[i] = make_sptr<engine::reflow::Text>(
-                    engine::reflow::BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))
-                );
-                _labels[i]->style().minHeight = engine::reflow::ReflowUnit {
-                    engine::reflow::ReflowUnitType::eRelative, 1.F
-                };
-                _labels[i]->style().height = engine::reflow::ReflowUnit {
-                    engine::reflow::ReflowUnitType::eRelative, 1.F
-                };
-                _labels[i]->style().maxHeight = engine::reflow::ReflowUnit {
-                    engine::reflow::ReflowUnitType::eRelative, 1.F
-                };
-                _labels[i]->style().color = color::Dark::white;
-                _labels[i]->style().textEllipse = 1ui32;
+                _labels[i] = make_sptr<engine::reflow::Text>();
+                _labels[i]->attr.textEllipse.setValue(1ui32);
+                theme->applyLabel(_labels[i]);
 
-                _inputs[i] = make_sptr<input_widget_type>(
-                    __inputvec::makeInputBoxStyle(),
-                    __inputvec::makeInputTextStyle()
-                );
+                _inputs[i] = make_sptr<input_widget_type>();
+
+                {
+                    auto& style = _inputs[i]->_wrapper->attr;
+
+                    style.minWidth.setValue({ engine::reflow::ReflowUnitType::eRelative, 1.F });
+                    style.width.setValue({ engine::reflow::ReflowUnitType::eRelative, 1.F });
+                    style.maxWidth.setValue({ engine::reflow::ReflowUnitType::eRelative, 1.F });
+
+                    style.minHeight.setValue({ engine::reflow::ReflowUnitType::eAbsolute, 20.F });
+                    style.height.setValue({ engine::reflow::ReflowUnitType::eAbsolute, 20.F });
+                    style.maxHeight.setValue({ engine::reflow::ReflowUnitType::eAbsolute, 20.F });
+
+                    style.padding.setValue(engine::reflow::Padding { 4.F, 2.F });
+                    style.flexShrink.setValue(1.F);
+                }
+
+                theme->applyText(_inputs[i]->_text);
             }
 
             /**/
@@ -131,25 +108,12 @@ namespace hg::editor::ui {
         }
 
     protected:
-        sptr<engine::reflow::Box> _content;
+        sptr<engine::reflow::HorizontalPanel> _content;
         engine::reflow::Children _children;
 
     public:
         [[nodiscard]] const ptr<const engine::reflow::Children> children() const override {
             return &_children;
-        }
-
-    public:
-        [[nodiscard]] math::vec2 outerSize() const noexcept override {
-            return _content->outerSize();
-        }
-
-        [[nodiscard]] math::vec2 innerSize() const noexcept override {
-            return _content->innerSize();
-        }
-
-        [[nodiscard]] math::vec2 screenOffset() const noexcept override {
-            return _content->screenOffset();
         }
 
     public:
@@ -290,25 +254,16 @@ namespace hg::editor::ui {
 
                 /**/
 
-                auto wrapper {
-                    make_sptr<HBox>(
-                        BoundStyleSheet::make(
-                            StyleSheet {
-                                .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, frac } },
-                                .width { true, ReflowUnit { ReflowUnitType::eRelative, frac } },
-                                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, frac } },
-                                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                                .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                                .wrap { true, ReflowWrap::eNoWrap },
-                                .rowGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
-                                .reflowShrink { true, 1.F },
-                                .reflowGrow { true, 0.F },
-                                .color { false, color::Dark::backgroundDefault }
-                            }
-                        )
-                    )
-                };
+                auto wrapper = make_sptr<HorizontalPanel>();
+                wrapper->attr.minWidth.setValue({ ReflowUnitType::eRelative, frac });
+                wrapper->attr.width.setValue({ ReflowUnitType::eRelative, frac });
+                wrapper->attr.maxWidth.setValue({ ReflowUnitType::eRelative, frac });
+                wrapper->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+                wrapper->attr.height.setValue({ ReflowUnitType::eAbsolute, 20.F });
+                wrapper->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+                wrapper->attr.rowGap.setValue(4.F);
+                wrapper->attr.flexShrink.setValue(1.F);
+                wrapper->attr.flexGrow.setValue(0.F);
 
                 /**/
 
@@ -333,29 +288,44 @@ namespace hg::editor::ui {
         }
 
     public:
-        void render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) override {
-            if (_content) {
-                _content->render(cmd_);
-            }
-        }
-
-        void flow(
-            cref<engine::reflow::FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<engine::reflow::StyleKeyStack> styleStack_
+        void render(
+            cref<engine::reflow::ReflowState> state_,
+            const ptr<engine::reflow::ReflowCommandBuffer> cmd_
         ) override {
             if (_content) {
-                _content->setParent(engine::reflow::Widget::shared_from_this());
-                _content->flow(ctx_, space_, limit_, styleStack_);
+                _content->render(state_, cmd_);
             }
-
-            engine::reflow::Widget::clearPending();
         }
 
-        void shift(cref<engine::reflow::FlowContext> ctx_, cref<math::vec2> offset_) override {
-            if (_content) {
-                _content->shift(ctx_, offset_);
+    public:
+        math::vec2 prefetchDesiredSize(cref<engine::reflow::ReflowState> state_, float scale_) const override {
+
+            // TODO: Implement
+            // We currently use a wrapper for childs, so just forward
+            if (not _content) {
+                return math::vec2 {};
+            }
+
+            const auto state = state_.getStateOf(_content);
+            return _content->getDesiredSize();
+        }
+
+        math::vec2 computeDesiredSize(cref<engine::reflow::ReflowPassState> passState_) const override {
+            if (not _content) {
+                return math::vec2 {};
+            }
+
+            return _content->getDesiredSize();
+        }
+
+        void applyLayout(ref<engine::reflow::ReflowState> state_, mref<engine::reflow::LayoutContext> ctx_) override {
+
+            // TODO: Implement
+            // We currently use a wrapper for childs, so just forward
+            for (const auto& child : *children()) {
+                const auto state = state_.getStateOf(child);
+                state->layoutOffset = ctx_.localOffset;
+                state->layoutSize = ctx_.localSize;
             }
         }
     };

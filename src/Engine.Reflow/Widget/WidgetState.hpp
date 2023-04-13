@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Flag.hpp>
+#include <Engine.Common/Math/Vector.hpp>
 
 namespace hg::engine::reflow {
     enum class WidgetStateFlagBits : u8 {
@@ -69,5 +70,14 @@ namespace hg::engine::reflow {
         void unset(const WidgetStateFlagBits flag_) {
             this->unwrap &= (~static_cast<WidgetState::value_type>(flag_));
         }
+
+        /**
+         * Layout State
+         */
+    public:
+        math::vec2 preservedSize;
+
+        math::vec2 layoutOffset;
+        math::vec2 layoutSize;
     };
 }

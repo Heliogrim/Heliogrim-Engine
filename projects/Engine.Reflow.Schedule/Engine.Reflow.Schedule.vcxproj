@@ -92,12 +92,10 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Reflow.Schedule\ReflowFlowStage.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow.Schedule\ReflowPipeline.hpp" />
-    <ClInclude Include="..\..\src\Engine.Reflow.Schedule\ReflowShiftStage.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflow.Schedule\ReflowFlowStage.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow.Schedule\ReflowPipeline.cpp" />
-    <ClCompile Include="..\..\src\Engine.Reflow.Schedule\ReflowShiftStage.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

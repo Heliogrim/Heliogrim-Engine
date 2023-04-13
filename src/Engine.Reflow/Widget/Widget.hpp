@@ -15,7 +15,10 @@
 #include "../Event/FocusEvent.hpp"
 #include "../Event/TouchEvent.hpp"
 #include "../Event/KeyboardEvent.hpp"
-#include "../Style/StyleKeyStack.hpp"
+#include "../Layout/LayoutContext.hpp"
+#include "../ReflowState.hpp"
+#include "../Attribute/Attribute.hpp"
+#include "../Attribute/DynamicAttribute.hpp"
 
 namespace hg::engine::reflow {
     class Children;
@@ -106,7 +109,7 @@ namespace hg::engine::reflow {
         wptr<Widget> _parent;
 
     public:
-        [[nodiscard]] virtual const ptr<const Children> children() const;
+        [[nodiscard]] virtual const ptr<const Children> children() const = 0;
 
         void setParent(cref<sptr<Widget>> parent_);
 
@@ -120,34 +123,21 @@ namespace hg::engine::reflow {
          * Layout & Graphics
          */
     public:
-        virtual void render(const ptr<ReflowCommandBuffer> cmd_) = 0;
+        virtual void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) = 0;
 
-        /**
-         * Forward flow control ui elements
-         *
-         * @param ctx_ The context the flow is related to
-         * @param space_ The forwarded available space
-         * @param limit_ The forwarded maximum space this widget can occupy
-         * @param styleStack_ The key stack to support cascaded styles
-         */
-        virtual void flow(
-            cref<FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            _Inout_ ref<StyleKeyStack> styleStack_
-        ) = 0;
+    public:
+        virtual math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const = 0;
 
-        /**
-         * Forward offset control ui elements
-         *
-         * @param ctx_ The context the flow is related to
-         * @param offset_ The offset applied to this
-         */
-        virtual void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) = 0;
+        virtual math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const;
+
+        virtual void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) = 0;
 
         /**
          * Layout Related
          */
+    public:
+        [[nodiscard]] math::vec2 getDesiredSize() const;
+
     public:
         [[nodiscard]] virtual float shrinkFactor() const noexcept;
 
@@ -155,16 +145,9 @@ namespace hg::engine::reflow {
 
         [[nodiscard]] virtual ReflowPosition position() const noexcept;
 
-        [[nodiscard]] virtual math::vec2 outerSize() const noexcept;
-
-        [[nodiscard]] virtual math::vec2 innerSize() const noexcept;
-
-        [[nodiscard]] virtual math::vec2 screenOffset() const noexcept;
-
     public:
         [[nodiscard]] virtual bool willChangeLayout(
-            cref<math::vec2> space_,
-            cref<StyleKeyStack> styleStack_
+            cref<math::vec2> space_
         ) const noexcept;
 
         void markAsPending(const bool inherited_ = false, const bool suppress_ = false);

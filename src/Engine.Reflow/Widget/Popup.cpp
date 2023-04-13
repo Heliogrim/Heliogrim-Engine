@@ -32,11 +32,23 @@ ReflowPosition Popup::position() const noexcept {
     return ReflowPosition::eAbsolute;
 }
 
-math::vec2 Popup::screenOffset() const noexcept {
+math::vec2 Popup::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
 
-    if (_layer) {
-        return _layer->getScreenPos();
+    // TODO: Implement
+    // Maybe overridden screen size?
+    if (not _layer) {
+        return math::vec2 {};
+    }
+    return _layer->getOverrideSize();
+}
+
+void Popup::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+
+    // TODO: Implement
+    if (not _layer) {
+        return;
     }
 
-    return Widget::screenOffset();
+    _layer->setScreenPos(ctx_.localOffset);
+    _layer->overrideScreenSize(ctx_.localSize);// Not intended
 }

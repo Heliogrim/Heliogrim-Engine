@@ -11,7 +11,6 @@
 #include "Editor.UI/Color/Dark.hpp"
 #include "Editor.UI/Panel/SceneHierarchyPanel.hpp"
 #include "Editor.UI/Panel/ObjectEditorPanel.hpp"
-#include "Editor.UI/Style/Style.hpp"
 #include "Heliogrim/Heliogrim.hpp"
 #include "Heliogrim/World.hpp"
 #include "Heliogrim/Actors/CameraActor.hpp"
@@ -32,10 +31,9 @@
 #include "Engine.Reflow/Widget/Menu.hpp"
 #include "Engine.Reflow/Widget/Text.hpp"
 #include "Engine.Reflow/Widget/Viewport.hpp"
-#include "Engine.Reflow/Widget/HBox.hpp"
-#include "Engine.Reflow/Widget/VBox.hpp"
+#include "Engine.Reflow/Widget/HorizontalPanel.hpp"
+#include "Engine.Reflow/Widget/VerticalPanel.hpp"
 
-#include "Engine.Reflow/Style/BoundStyleSheet.hpp"
 #include "Engine.Reflow/Window/WindowManager.hpp"
 #include "Engine.Scene/Scene.hpp"
 #include "Engine.ACS/Registry.hpp"
@@ -113,10 +111,6 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
 
         storeActorMapping();
         storeHierarchyMeta();
-
-        if (!Style::get()) {
-            Style::make();
-        }
     }
 
     // TODO:
@@ -190,14 +184,13 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
 /**/
 
 static void configureMainViewport(
-    sptr<Panel> parent_,
-    ref<StyleKeyStack> stack_,
+    sptr<VerticalPanel> parent_,
     cref<FlowContext> ctx_,
     cref<math::vec2> available_
 );
 
 static void configureMainGraph(
-    sptr<Panel> parent_
+    sptr<VerticalPanel> parent_
 );
 
 /**/
@@ -206,9 +199,6 @@ void buildTestUI(
     cref<sptr<engine::gfx::Device>> device_,
     const non_owning_rptr<engine::reflow::Window> window_
 ) {
-    if (!Style::get()) {
-        Style::make();
-    }
 
     /**/
     constexpr math::vec2 available { 1280.F, 720.F };
@@ -219,37 +209,41 @@ void buildTestUI(
         math::fExtent2D { 1280.F, 720.F, 0.F, 0.F },
     };
 
-    StyleKeyStack stack {};
-
     /**/
-    auto root = make_sptr<Panel>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey)));
+    auto root = make_sptr<VerticalPanel>();
+    root->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    root->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    root->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
+    root->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    root->attr.flexGrow.setValue(1.F);
+    root->attr.flexShrink.setValue(1.F);
+
     const ptr<engine::reflow::Font> defaultFont = getDefaultFont();
-
-    /**/
-
-    auto navStyle = BoundStyleSheet::make(
-        StyleSheet {
-            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
-            .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .reflowShrink = { true, 0.F },
-        }
-    );
-    navStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
-
-    auto contentStyle = BoundStyleSheet::make(
-        StyleSheet {
-            .reflowSpacing = { true, ReflowSpacing::eSpaceEvenly }
-        }
-    );
-    contentStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
     /**/
 
     /**
      *
      */
-    auto navSection = make_sptr<HBox>(_STD move(navStyle));
-    auto contentSection = make_sptr<HBox>(_STD move(contentStyle));
+    auto navSection = make_sptr<HorizontalPanel>();
+    navSection->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    navSection->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    navSection->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 24.F });
+    navSection->attr.height.setValue({ ReflowUnitType::eAuto });
+    navSection->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    navSection->attr.colGap.setValue(4.F);
+    navSection->attr.padding.setValue(Padding { 2.F, 6.F });
+    navSection->attr.flexGrow.setValue(1.F);
+
+    auto contentSection = make_sptr<HorizontalPanel>();
+    navSection->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    navSection->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    navSection->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 24.F });
+    navSection->attr.height.setValue({ ReflowUnitType::eAuto });
+    navSection->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    navSection->attr.justify.setValue(ReflowSpacing::eSpaceEvenly);
+    navSection->attr.flexGrow.setValue(1.F);
+    navSection->attr.flexShrink.setValue(1.F);
 
     root->addChild(navSection);
     root->addChild(contentSection);
@@ -257,43 +251,55 @@ void buildTestUI(
     /**
      *
      */
-    StyleSheet navBtnStyle {
-        .padding = { true, Padding { 4.F, 2.F } },
-        .margin = { true, Margin { 2.F, 6.F } },
-        .color = { true, color::Dark::backgroundDefault }
-    };
 
-    StyleSheet navTxtStyle {
-        .color = { true, color::Dark::grey },
-        .font = { true, defaultFont },
-        .fontSize = { true, 16.F }
-    };
-
-    auto navBrandIcon = make_sptr<Image>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::Icon32Key)));
+    auto navBrandIcon = make_sptr<Image>();
+    ReflowUnit abs32 { ReflowUnitType::eAbsolute, 32.F };
+    navBrandIcon->attr.minWidth.setValue(abs32);
+    navBrandIcon->attr.width.setValue(abs32);
+    navBrandIcon->attr.maxWidth.setValue(abs32);
+    navBrandIcon->attr.minHeight.setValue(abs32);
+    navBrandIcon->attr.height.setValue(abs32);
+    navBrandIcon->attr.maxHeight.setValue(abs32);
 
     // TODO: This will break
     auto testGuard = testTexture->acquire(engine::resource::ResourceUsageFlag::eAll);
     auto testImage = *testGuard.mut();
     navBrandIcon->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(testImage)), nullptr);
 
-    StyleSheet menuBtnStyle {
-        .padding = { true, Padding { 4.F, 2.F } },
-        .color = { true, color::Dark::backgroundDefault }
-    };
+    auto navFileButton = make_sptr<Button>();
+    navFileButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    //navFileButton->attr.color.setValue(color::Dark::darkRed);
 
-    auto navFileButton = make_sptr<Button>(BoundStyleSheet::make(navBtnStyle));
-    auto navFileText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
-    navFileButton->addChild(navFileText);
+    auto navFileText = make_sptr<Text>();
+    navFileText->attr.font.setValue(defaultFont);
+    navFileText->attr.fontSize.setValue(16.F);
+    navFileText->attr.color.setValue(color::Dark::grey);
+
+    navFileButton->setChild(navFileText);
     navFileText->setText("File");
 
-    auto navSaveAllButton = make_sptr<Button>(BoundStyleSheet::make(menuBtnStyle));
-    auto navSaveAllText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
-    navSaveAllButton->addChild(navSaveAllText);
+    auto navSaveAllButton = make_sptr<Button>();
+    navSaveAllButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    //navFileButton->attr.color.setValue(color::Dark::backgroundDefault);
+
+    auto navSaveAllText = make_sptr<Text>();
+    navSaveAllText->attr.font.setValue(defaultFont);
+    navSaveAllText->attr.fontSize.setValue(16.F);
+    navSaveAllText->attr.color.setValue(color::Dark::grey);
+
+    navSaveAllButton->setChild(navSaveAllText);
     navSaveAllText->setText("Save All");
 
-    auto navQuitButton = make_sptr<Button>(BoundStyleSheet::make(menuBtnStyle));
-    auto navQuitText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
-    navQuitButton->addChild(navQuitText);
+    auto navQuitButton = make_sptr<Button>();
+    navQuitButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    //navQuitButton->attr.color.setValue(color::Dark::backgroundDefault);
+
+    auto navQuitText = make_sptr<Text>();
+    navQuitText->attr.font.setValue(defaultFont);
+    navQuitText->attr.fontSize.setValue(16.F);
+    navQuitText->attr.color.setValue(color::Dark::grey);
+
+    navQuitButton->setChild(navQuitText);
     navQuitText->setText("Quit");
 
     [[maybe_unused]] auto qblid = navQuitButton->addOnClick(
@@ -309,13 +315,7 @@ void buildTestUI(
     );
 
     auto navFileMenu = make_sptr<Menu>();
-    auto nfmw = make_sptr<VBox>(
-        BoundStyleSheet::make(
-            StyleSheet {
-                .color = { true, color::Dark::backgroundDefault }
-            }
-        )
-    );
+    auto nfmw = make_sptr<VerticalPanel>();
 
     navFileMenu->setContent(nfmw);
     navFileMenu->closeMenu();
@@ -343,45 +343,63 @@ void buildTestUI(
     nfmw->addChild(navSaveAllButton);
     nfmw->addChild(navQuitButton);
 
-    auto testStyle = BoundStyleSheet::make(navBtnStyle);
-    testStyle->color.unset();
-    testStyle->pushStyle(
-        {
-            Style::key_type::from("Button::Hover"),
-            [](cref<sptr<Widget>> self_) {
-                return self_->state().isHover();
-            },
-            make_sptr<StyleSheet>(
-                StyleSheet {
-                    .color = { true, color::Dark::raisedColor }
-                }
-            )
-        }
-    );
+    auto navEditButton = make_sptr<Button>();
+    navEditButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    //navEditButton->attr.color.setValue(color::Dark::darkRed);
 
-    auto navEditButton = make_sptr<Button>(_STD move(testStyle));
-    auto navEditText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
-    navEditButton->addChild(navEditText);
+    auto navEditText = make_sptr<Text>();
+    navFileText->attr.font.setValue(defaultFont);
+    navFileText->attr.fontSize.setValue(16.F);
+    navFileText->attr.color.setValue(color::Dark::grey);
+    navEditButton->setChild(navEditText);
     navEditText->setText("Edit");
 
-    auto navWindowButton = make_sptr<Button>(BoundStyleSheet::make(navBtnStyle));
-    auto navWindowText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
-    navWindowButton->addChild(navWindowText);
+    auto navWindowButton = make_sptr<Button>();
+    navWindowButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    //navWindowButton->attr.color.setValue(color::Dark::darkRed);
+
+    auto navWindowText = make_sptr<Text>();
+    navWindowText->attr.font.setValue(defaultFont);
+    navWindowText->attr.fontSize.setValue(16.F);
+    navWindowText->attr.color.setValue(color::Dark::grey);
+
+    navWindowButton->setChild(navWindowText);
     navWindowText->setText("Window");
 
-    auto navProjectButton = make_sptr<Button>(BoundStyleSheet::make(navBtnStyle));
-    auto navProjectText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
-    navProjectButton->addChild(navProjectText);
+    auto navProjectButton = make_sptr<Button>();
+    navProjectButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    //navProjectButton->attr.color.setValue(color::Dark::darkRed);
+
+    auto navProjectText = make_sptr<Text>();
+    navProjectText->attr.font.setValue(defaultFont);
+    navProjectText->attr.fontSize.setValue(16.F);
+    navProjectText->attr.color.setValue(color::Dark::grey);
+
+    navProjectButton->setChild(navProjectText);
     navProjectText->setText("Project");
 
-    auto navMoreButton = make_sptr<Button>(BoundStyleSheet::make(navBtnStyle));
-    auto navMoreText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
-    navMoreButton->addChild(navMoreText);
+    auto navMoreButton = make_sptr<Button>();
+    navMoreButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    //navMoreButton->attr.color.setValue(color::Dark::darkRed);
+
+    auto navMoreText = make_sptr<Text>();
+    navMoreText->attr.font.setValue(defaultFont);
+    navMoreText->attr.fontSize.setValue(16.F);
+    navMoreText->attr.color.setValue(color::Dark::grey);
+
+    navMoreButton->setChild(navMoreText);
     navMoreText->setText("More");
 
-    auto navHelpButton = make_sptr<Button>(BoundStyleSheet::make(navBtnStyle));
-    auto navHelpText = make_sptr<Text>(BoundStyleSheet::make(navTxtStyle));
-    navHelpButton->addChild(navHelpText);
+    auto navHelpButton = make_sptr<Button>();
+    navHelpButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    //navHelpButton->attr.color.setValue(color::Dark::darkRed);
+
+    auto navHelpText = make_sptr<Text>();
+    navHelpText->attr.font.setValue(defaultFont);
+    navHelpText->attr.fontSize.setValue(16.F);
+    navHelpText->attr.color.setValue(color::Dark::grey);
+
+    navHelpButton->setChild(navHelpText);
     navHelpText->setText("Help");
 
     //
@@ -393,30 +411,30 @@ void buildTestUI(
     navSection->addChild(navMoreButton);
     navSection->addChild(navHelpButton);
 
-    /**
-     *
-     */
-    auto lsbStyle = BoundStyleSheet::make(
-        StyleSheet {
-            .width = { true, ReflowUnit { ReflowUnitType::eRelative, .2F } },
-            .reflowSpacing = { true, ReflowSpacing::eSpaceBetween }
-        }
-    );
-    lsbStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
+    /**/
 
-    auto leftSection = make_sptr<VBox>(_STD move(lsbStyle));
+    auto leftSection = make_sptr<VerticalPanel>();
+    leftSection->attr.width.setValue({ ReflowUnitType::eRelative, .2F });
+    leftSection->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    leftSection->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
+    leftSection->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    leftSection->attr.justify.setValue(ReflowSpacing::eSpaceBetween);
+    leftSection->attr.flexGrow.setValue(1.F);
+    leftSection->attr.flexShrink.setValue(1.F);
+
+    auto mainSection = make_sptr<VerticalPanel>();
+    mainSection->attr.width.setValue({ ReflowUnitType::eRelative, .8F });
+    mainSection->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    mainSection->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
+    mainSection->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    mainSection->attr.justify.setValue(ReflowSpacing::eStart);
+    mainSection->attr.flexGrow.setValue(1.F);
+    mainSection->attr.flexShrink.setValue(1.F);
+
     contentSection->addChild(leftSection);
-
-    auto msbStyle = BoundStyleSheet::make(
-        StyleSheet {
-            .width = { true, ReflowUnit { ReflowUnitType::eRelative, .8F } },
-            .reflowSpacing = { true, ReflowSpacing::eStart }
-        }
-    );
-    msbStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
-
-    auto mainSection = make_sptr<VBox>(_STD move(msbStyle));
     contentSection->addChild(mainSection);
+
+    /**/
 
     #if false
     auto rightSection = make_sptr<ReflowContainer>();
@@ -431,18 +449,18 @@ void buildTestUI(
     const auto shp { testHierarchy->makePanel() };
     leftSection->addChild(shp);
 
-    shp->style()->minHeight = ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F };
-    shp->style()->height = ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F };
-    shp->style()->maxHeight = ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F };
+    shp->attr.minHeight.setValue({ ReflowUnitType::eRelative, 1.F / 3.F });
+    shp->attr.height.setValue({ ReflowUnitType::eRelative, 1.F / 3.F });
+    shp->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F / 3.F });
 
     /**/
 
     const auto oep { testObjectEditor->makePanel() };
     leftSection->addChild(oep);
 
-    oep->style()->minHeight = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
-    oep->style()->height = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
-    oep->style()->maxHeight = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
+    oep->attr.minHeight.setValue({ ReflowUnitType::eRelative, 2.F / 3.F });
+    oep->attr.height.setValue({ ReflowUnitType::eRelative, 2.F / 3.F });
+    oep->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 2.F / 3.F });
 
     #pragma endregion
     #pragma region Main Section
@@ -450,42 +468,34 @@ void buildTestUI(
     /**
      * Section (Main)
      */
-    auto mtsStyle = BoundStyleSheet::make(
-        StyleSheet {
-            .height = { true, ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F } },
-            .reflowSpacing = { true, ReflowSpacing::eStart }
-        }
-    );
-    mtsStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
 
-    auto mainTopSection = make_sptr<Panel>(_STD move(mtsStyle));
-    mainTopSection->style()->height = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
-    mainTopSection->style()->maxHeight = ReflowUnit { ReflowUnitType::eRelative, 2.F / 3.F };
+    auto mainTopSection = make_sptr<VerticalPanel>();
+    mainTopSection->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    mainTopSection->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    mainTopSection->attr.height.setValue({ ReflowUnitType::eRelative, 2.F / 3.F });
+    mainTopSection->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 2.F / 3.F });
+    mainTopSection->attr.flexGrow.setValue(1.F);
+    mainTopSection->attr.flexShrink.setValue(1.F);
 
     auto assetBrowsePanel = testAssetBrowser->makePanel();
-    assetBrowsePanel->style()->height = ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F };
-    assetBrowsePanel->style()->maxHeight = ReflowUnit { ReflowUnitType::eRelative, 1.F / 3.F };
+    assetBrowsePanel->attr.height.setValue({ ReflowUnitType::eRelative, 1.F / 3.F });
+    assetBrowsePanel->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F / 3.F });
 
     mainSection->addChild(mainTopSection);
     mainSection->addChild(assetBrowsePanel);
 
     if (false) {
-        configureMainViewport(mainTopSection, stack, ctx, available);
+        configureMainViewport(mainTopSection, ctx, available);
     } else {
         configureMainGraph(mainTopSection);
     }
 
     #pragma endregion
 
-    /**
-     *
-     */
-    root->flow(ctx, available, available, stack);
-    root->shift(ctx, shift);
-
     /**/
 
     window_->setContent(root);
+    return;
 
     /**/
 
@@ -629,88 +639,82 @@ void storeHierarchyActor(cref<Vector<ptr<Actor>>> targets_) {
 }
 
 void configureMainViewport(
-    sptr<Panel> parent_,
-    ref<StyleKeyStack> stack_,
+    sptr<VerticalPanel> parent_,
     cref<FlowContext> ctx_,
     cref<math::vec2> available_
 ) {
 
     const ptr<engine::reflow::Font> defaultFont = getDefaultFont();
 
-    /**
-     *
-     */
-    auto vctrlStyle = BoundStyleSheet::make(
-        StyleSheet {
-            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
-            .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
-            .reflowShrink = { true, 0.F },
-        }
-    );
-    vctrlStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
+    /**/
 
-    auto vwrapStyle = BoundStyleSheet::make(
-        StyleSheet {
-            .reflowSpacing = { true, ReflowSpacing::eSpaceAround }
-        }
-    );
-    vwrapStyle->pushStyle({ Style::AdoptFlexBoxKey, nullptr, Style::get()->getStyleSheet(Style::AdoptFlexBoxKey) });
+    auto viewportCtrls = make_sptr<HorizontalPanel>();
+    viewportCtrls->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewportCtrls->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewportCtrls->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 24.F });
+    viewportCtrls->attr.height.setValue({ ReflowUnitType::eAuto });
+    viewportCtrls->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewportCtrls->attr.padding.setValue(Padding { 4.F, 4.F });
+    viewportCtrls->attr.justify.setValue(ReflowSpacing::eSpaceAround);
+    viewportCtrls->attr.colGap.setValue(8.F);
+    viewportCtrls->attr.flexGrow.setValue(1.F);
 
-    auto viewportCtrls = make_sptr<HBox>(_STD move(vctrlStyle));
-    auto viewportWrapper = make_sptr<HBox>(_STD move(vwrapStyle));
+    auto viewportWrapper = make_sptr<HorizontalPanel>();
+    viewportCtrls->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewportCtrls->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewportCtrls->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewportCtrls->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewportCtrls->attr.justify.setValue(ReflowSpacing::eSpaceAround);
+    viewportCtrls->attr.flexGrow.setValue(1.F);
+    viewportCtrls->attr.flexShrink.setValue(1.F);
 
     parent_->addChild(viewportCtrls);
     parent_->addChild(viewportWrapper);
 
-    /**
-     *
-     */
-    const StyleSheet cttxtStyle {
-        .color = { true, color::Dark::white },
-        .font = { true, defaultFont },
-        .textAlign = { true, TextAlign::eCenterMiddle }
-    };
+    /**/
 
-    const StyleSheet ctbtnStyle {
-        .padding = { true, Padding { 8.F, 4.F } },
-        .margin = { true, Margin { 4.F } },
-        .color = { true, color::Dark::backgroundInnerField },
-    };
+    auto playButton = make_sptr<Button>();
+    playButton->attr.padding.setValue(Padding { 8.F, 4.F });
 
-    auto playButton = make_sptr<Button>(BoundStyleSheet::make(ctbtnStyle));
-    auto pauseButton = make_sptr<Button>(BoundStyleSheet::make(ctbtnStyle));
-    auto stopButton = make_sptr<Button>(BoundStyleSheet::make(ctbtnStyle));
+    auto pauseButton = make_sptr<Button>();
+    pauseButton->attr.padding.setValue(Padding { 8.F, 4.F });
 
-    auto playText = make_sptr<Text>(BoundStyleSheet::make(cttxtStyle));
+    auto stopButton = make_sptr<Button>();
+    stopButton->attr.padding.setValue(Padding { 8.F, 4.F });
+
+    auto playText = make_sptr<Text>();
+    playText->attr.font.setValue(defaultFont);
+    playText->attr.textAlign.setValue(TextAlign::eCenterMiddle);
+    playText->attr.color.setValue(color::Dark::white);
     playText->setText("Play");
 
-    auto pauseText = make_sptr<Text>(BoundStyleSheet::make(cttxtStyle));
+    auto pauseText = make_sptr<Text>();
+    pauseText->attr.font.setValue(defaultFont);
+    pauseText->attr.textAlign.setValue(TextAlign::eCenterMiddle);
+    pauseText->attr.color.setValue(color::Dark::white);
     pauseText->setText("Pause");
 
-    auto stopText = make_sptr<Text>(BoundStyleSheet::make(cttxtStyle));
+    auto stopText = make_sptr<Text>();
+    stopText->attr.font.setValue(defaultFont);
+    stopText->attr.textAlign.setValue(TextAlign::eCenterMiddle);
+    stopText->attr.color.setValue(color::Dark::white);
     stopText->setText("Stop");
 
     viewportCtrls->addChild(playButton);
     viewportCtrls->addChild(pauseButton);
     viewportCtrls->addChild(stopButton);
 
-    playButton->addChild(playText);
-    pauseButton->addChild(pauseText);
-    stopButton->addChild(stopText);
+    playButton->setChild(playText);
+    pauseButton->setChild(pauseText);
+    stopButton->setChild(stopText);
 
     /**
      *
      */
-    auto viewport = make_sptr<Viewport>(
-        BoundStyleSheet::make(
-            StyleSheet {
-                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .color = { true, color::Dark::white }
-            }
-        )
-    );
+    auto viewport = make_sptr<Viewport>();
+    viewport->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewport->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
+
     viewportWrapper->addChild(viewport);
 
     /**/
@@ -736,7 +740,6 @@ void configureMainViewport(
     scene->update();
 
     viewport->setCameraActor(camera);
-    viewport->flow(ctx_, available_, available_, stack_);
     viewport->rebuildView();
 
     const auto target { make_sptr<engine::gfx::RenderTarget>() };
@@ -765,7 +768,7 @@ void configureMainViewport(
 
     #if FALSE
     auto viewportOverlay = make_sptr<Overlay>();
-    auto viewOverBox = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+    auto viewOverBox = make_sptr<HorizontalPanel>(BoundStyleSheet::make(StyleSheet {
         .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
         .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
         .wrap = { true, ReflowWrap::eNoWrap },
@@ -777,7 +780,7 @@ void configureMainViewport(
     viewportOverlay->setContent(viewOverBox);
 
     {
-        auto alignHelper = make_sptr<HBox>(BoundStyleSheet::make(StyleSheet {
+        auto alignHelper = make_sptr<HorizontalPanel>(BoundStyleSheet::make(StyleSheet {
             .reflowShrink = { true, 1.F },
             .color = { true, color::Dark::transparent },
         }));
@@ -785,7 +788,7 @@ void configureMainViewport(
 
         /**/
 
-        auto statsWrapper = make_sptr<VBox>(BoundStyleSheet::make(StyleSheet {
+        auto statsWrapper = make_sptr<VerticalPanel>(BoundStyleSheet::make(StyleSheet {
             .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
             .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
             .padding = { true, Padding { 8.F, 16.F } },
@@ -833,7 +836,7 @@ void configureMainViewport(
 #include <Editor.GFX.Graphs/Node/Output/SubGraphOutputNode.hpp>
 
 void configureMainGraph(
-    sptr<Panel> parent_
+    sptr<VerticalPanel> parent_
 ) {
 
     auto whiteboard = make_sptr<Whiteboard>();
@@ -864,10 +867,14 @@ void configureMainGraph(
     node3->regenerate();
     auto test3 = BoardNode::make(node3);
 
-    test0->style()->margin.attr.x = -240.F;
-    test1->style()->margin.attr.y = -50.F;
-    test2->style()->margin.attr.y = 50.F;
-    test3->style()->margin.attr.x = 240.F;
+    test0->setBoardPosition(math::vec2 { -240.F, 0.F });
+    //test0->style()->margin.attr.x = -240.F;
+    test1->setBoardPosition(math::vec2 { 0.F, -50.F });
+    //test1->style()->margin.attr.y = -50.F;
+    test2->setBoardPosition(math::vec2 { 0.F, 50.F });
+    //test2->style()->margin.attr.y = 50.F;
+    test3->setBoardPosition(math::vec2 { 240.F, 0.F });
+    //test3->style()->margin.attr.x = 240.F;
 
     board->addChild(test0);
     board->addChild(test1);

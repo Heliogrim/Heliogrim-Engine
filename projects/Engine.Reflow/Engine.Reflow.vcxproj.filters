@@ -28,9 +28,6 @@
     <Filter Include="Headerdateien\Event">
       <UniqueIdentifier>{f496c168-605b-4800-83a3-cbe058c69d54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Style">
-      <UniqueIdentifier>{94fa5ecc-4d66-4308-81e3-1446103c7add}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Command">
       <UniqueIdentifier>{3289c904-a65c-4dc3-9217-c12fe80bdab1}</UniqueIdentifier>
     </Filter>
@@ -61,9 +58,6 @@
     <Filter Include="Quelldateien\Widget\Scroll">
       <UniqueIdentifier>{57e3fb4c-a2dc-43c0-ab6a-8e984e3b0542}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Quelldateien\Style">
-      <UniqueIdentifier>{7f08751f-9b91-4ce1-9450-389e5d205c12}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\Event">
       <UniqueIdentifier>{d6cafc43-67a2-449b-9606-df004008da69}</UniqueIdentifier>
     </Filter>
@@ -87,6 +81,9 @@
     </Filter>
     <Filter Include="Quelldateien\Algorithm">
       <UniqueIdentifier>{50bd64a5-b74e-4ea1-b071-7257c7914cd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Attribute">
+      <UniqueIdentifier>{fb424b50-dac4-4203-b5f5-fbb9745e9e0f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -138,26 +135,14 @@
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowType.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Widget\Box.hpp">
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\BoxPanel.hpp">
       <Filter>Headerdateien\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Widget\VBox.hpp">
-      <Filter>Headerdateien\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Widget\HBox.hpp">
-      <Filter>Headerdateien\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Margin.hpp">
-      <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflow\Padding.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflow\BorderRadius.hpp">
       <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Style\__fwd.hpp">
-      <Filter>Headerdateien\Style</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowUnit.hpp">
       <Filter>Headerdateien</Filter>
@@ -240,47 +225,14 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Event\MouseMoveEvent.hpp">
       <Filter>Headerdateien\Event</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Style\BoundStyleSheet.hpp">
-      <Filter>Headerdateien\Style</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Style\StyleSheet.hpp">
-      <Filter>Headerdateien\Style</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Style\StyleSheetEntry.hpp">
-      <Filter>Headerdateien\Style</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Style\StyleChain.hpp">
-      <Filter>Headerdateien\Style</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Style\StyleChainEntry.hpp">
-      <Filter>Headerdateien\Style</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Style\StyleCombinator.hpp">
-      <Filter>Headerdateien\Style</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Style\StyleResolver.hpp">
-      <Filter>Headerdateien\Style</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Style\StyleSheetCombinator.hpp">
-      <Filter>Headerdateien\Style</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflow\Event\EventDispatcher.hpp">
       <Filter>Headerdateien\Event</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflow\Children.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Style\StyleCondition.hpp">
-      <Filter>Headerdateien\Style</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Style\StyleKeyStack.hpp">
-      <Filter>Headerdateien\Style</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflow\FocusPath.hpp">
       <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Layout\Constraints.hpp">
-      <Filter>Headerdateien\Layout</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Tree\TreeView.hpp">
       <Filter>Headerdateien\Widget\Tree</Filter>
@@ -321,8 +273,44 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Algorithm\FlexState.hpp">
       <Filter>Headerdateien\Algorithm</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow\Algorithm\Fragments.hpp">
-      <Filter>Headerdateien\Algorithm</Filter>
+    <ClInclude Include="..\..\src\Engine.Reflow\ReflowEngine.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\ReflowState.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Layout\LayoutContext.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\NullWidget.hpp">
+      <Filter>Headerdateien\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Layout\Style.hpp">
+      <Filter>Headerdateien\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\ReflowAlignment.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\GridPanel.hpp">
+      <Filter>Headerdateien\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\UniformGridPanel.hpp">
+      <Filter>Headerdateien\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\ReflowPassState.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\HorizontalPanel.hpp">
+      <Filter>Headerdateien\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\VerticalPanel.hpp">
+      <Filter>Headerdateien\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Attribute\Attribute.hpp">
+      <Filter>Headerdateien\Attribute</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Attribute\DynamicAttribute.hpp">
+      <Filter>Headerdateien\Attribute</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -332,13 +320,7 @@
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Widget.cpp">
       <Filter>Quelldateien\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Reflow\Widget\Box.cpp">
-      <Filter>Quelldateien\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Reflow\Widget\VBox.cpp">
-      <Filter>Quelldateien\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Reflow\Widget\HBox.cpp">
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\BoxPanel.cpp">
       <Filter>Quelldateien\Widget</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Reflow\Command\ReflowCommandBuffer.cpp">
@@ -395,26 +377,8 @@
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Input\Form.cpp">
       <Filter>Quelldateien\Widget\Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Reflow\Style\BoundStyleSheet.cpp">
-      <Filter>Quelldateien\Style</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Reflow\Style\StyleChain.cpp">
-      <Filter>Quelldateien\Style</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Reflow\Style\StyleChainEntry.cpp">
-      <Filter>Quelldateien\Style</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Reflow\Style\StyleCondition.cpp">
-      <Filter>Quelldateien\Style</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Reflow\Style\StyleKeyStack.cpp">
-      <Filter>Quelldateien\Style</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Reflow\Event\FocusEvent.cpp">
       <Filter>Quelldateien\Event</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Reflow\Layout\Constraints.cpp">
-      <Filter>Quelldateien\Layout</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Input.cpp">
       <Filter>Quelldateien\Widget</Filter>
@@ -437,8 +401,29 @@
     <ClCompile Include="..\..\src\Engine.Reflow\Algorithm\Flex.cpp">
       <Filter>Quelldateien\Algorithm</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Reflow\Algorithm\Fragments.cpp">
-      <Filter>Quelldateien\Algorithm</Filter>
+    <ClCompile Include="..\..\src\Engine.Reflow\ReflowEngine.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\ReflowState.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\Children.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\NullWidget.cpp">
+      <Filter>Quelldateien\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\UniformGridPanel.cpp">
+      <Filter>Quelldateien\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\GridPanel.cpp">
+      <Filter>Quelldateien\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\VerticalPanel.cpp">
+      <Filter>Quelldateien\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\HorizontalPanel.cpp">
+      <Filter>Quelldateien\Widget</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

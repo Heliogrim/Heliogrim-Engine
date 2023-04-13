@@ -2,7 +2,6 @@
 
 #include "Engine.Common/Math/Convertion.hpp"
 #include "Engine.GFX/Swapchain/VkSwapchain.hpp"
-#include "Engine.Reflow/Style/BoundStyleSheet.hpp"
 
 #if TRUE
 #include <Engine.Logging/Logger.hpp>
@@ -14,12 +13,23 @@
 #include <Engine.Core/Engine.hpp>
 #endif
 
+#include "../Layout/Style.hpp"
+
 using namespace hg::engine::reflow;
 using namespace hg;
 
-Viewport::Viewport(mref<sptr<BoundStyleSheet>> style_) :
+Viewport::Viewport() :
     Widget(),
-    _style(style_),
+    attr(
+        Attributes {
+            .minWidth = { this, { ReflowUnitType::eAuto, 0.F } },
+            .width = { this, { ReflowUnitType::eAuto, 0.F } },
+            .maxWidth = { this, { ReflowUnitType::eAuto, 0.F } },
+            .minHeight = { this, { ReflowUnitType::eAuto, 0.F } },
+            .height = { this, { ReflowUnitType::eAuto, 0.F } },
+            .maxHeight = { this, { ReflowUnitType::eAuto, 0.F } }
+        }
+    ),
     _swapchain(nullptr),
     _cameraActor(nullptr),
     _uvs(
@@ -68,8 +78,8 @@ void Viewport::setCameraActor(const ptr<CameraActor> actor_) {
 math::uivec2 Viewport::actualViewExtent() const noexcept {
     if (_viewSize.zero()) {
         return math::uivec2 {
-            static_cast<u32>(_innerSize.x),
-            static_cast<u32>(_innerSize.y)
+            static_cast<u32>(_state.layoutSize.x),
+            static_cast<u32>(_state.layoutSize.y)
         };
     }
 
@@ -136,8 +146,13 @@ void Viewport::removeResizeListener() {
     __debugbreak();
 }
 
-void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
-    if (_innerSize.zero()) {
+const ptr<const NullChildren> Viewport::children() const {
+    return get_null_children();
+}
+
+void Viewport::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+
+    if (_state.layoutSize.zero()) {
         return;
     }
 
@@ -156,16 +171,8 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     /**/
 
-    if (not _computedStyle.borderRadius.attr.zero()) {
-        return;
-    }
-
-    const auto off {
-        _screenOff + math::vec2 {
-            _computedStyle.margin.attr.x,
-            _computedStyle.margin.attr.y
-        }
-    };
+    const auto offset = _state.layoutOffset;
+    const auto size = _state.layoutSize;
 
     sptr<gfx::Texture> image {};
     vk::Semaphore imageSignal {};
@@ -180,133 +187,58 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
         gfx::ProxyTexture<non_owning_rptr> proxy { _STD move(image.get()) };
 
         cmd_->drawImageAsync(
-            math::vec2 { off.x, off.y },
+            math::vec2 { offset.x, offset.y },
             _uvs[0],
-            math::vec2 { off.x + _innerSize.x, off.y },
+            math::vec2 { offset.x + size.x, offset.y },
             _uvs[1],
-            math::vec2 { off.x + _innerSize.x, off.y + _innerSize.y },
+            math::vec2 { offset.x + size.x, offset.y + size.y },
             _uvs[2],
-            math::vec2 { off.x, off.y + _innerSize.y },
+            math::vec2 { offset.x, offset.y + size.y },
             _uvs[3],
             _STD move(proxy),
             imageWaits.empty() ? VK_NULL_HANDLE : imageWaits.back(),
             imageSignal,
-            _computedStyle.color.attr
+            engine::color { 255.F, 255.F, 255.F, 1.F }
         );
     }
 }
 
-void Viewport::flow(
-    cref<FlowContext> ctx_,
-    cref<math::vec2> space_,
-    cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_
-) {
-    styleStack_.pushLayer();
-    _computedStyle = _style->compute(shared_from_this(), styleStack_);
-    const auto& style { _computedStyle };
+math::vec2 Viewport::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
 
-    const bool autoWidth { style.width.attr.type == ReflowUnitType::eAuto };
-    const bool autoHeight { style.height.attr.type == ReflowUnitType::eAuto };
+    math::vec2 size = math::vec2 { 0.F };
 
     /**/
 
-    math::vec2 maxSize { limit_ };
-
-    if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
-        if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
-            maxSize.x = MIN(
-                maxSize.x,
-                MAX(_computedStyle.maxWidth->value * space_.x - (_computedStyle.padding->x + _computedStyle.padding->z),
-                    0)
-            );
-        } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
-            maxSize.x = MIN(
-                maxSize.x,
-                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0)
-            );
-        }
+    if (attr.width->type == ReflowUnitType::eAbsolute) {
+        size.x = attr.width->value;
     }
-
-    if (_computedStyle.maxHeight->type != ReflowUnitType::eAuto) {
-        if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
-            maxSize.y = MIN(
-                maxSize.y,
-                MAX(_computedStyle.maxHeight->value * space_.y - (_computedStyle.padding->y + _computedStyle.padding->w)
-                    , 0)
-            );
-        } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
-            maxSize.y = MIN(
-                maxSize.y,
-                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0)
-            );
-        }
+    if (attr.height->type == ReflowUnitType::eAbsolute) {
+        size.y = attr.height->value;
     }
 
     /**/
 
-    math::vec2 local { 0.F };
-
-    if (style.width.attr.type == ReflowUnitType::eRelative) {
-        local.x = style.width.attr.value * space_.x;
-    } else if (style.width.attr.type == ReflowUnitType::eAbsolute) {
-        local.x = style.width.attr.value;
-    }
-
-    if (style.height.attr.type == ReflowUnitType::eRelative) {
-        local.y = style.height.attr.value * space_.y;
-    } else if (style.height.attr.type == ReflowUnitType::eAbsolute) {
-        local.y = style.height.attr.value;
-    }
-
-    /**/
-
-    if (style.minWidth.attr.type == ReflowUnitType::eRelative) {
-        local.x = MAX(local.x, style.minWidth.attr.value * space_.x);
-    } else if (style.minWidth.attr.type == ReflowUnitType::eAbsolute) {
-        local.x = MAX(local.x, style.minWidth.attr.value);
-    }
-
-    if (style.minHeight.attr.type == ReflowUnitType::eRelative) {
-        local.y = MAX(local.y, style.minHeight.attr.value * space_.y);
-    } else if (style.minHeight.attr.type == ReflowUnitType::eAbsolute) {
-        local.y = MAX(local.y, style.minHeight.attr.value);
-    }
-
-    /**/
-
-    local = math::compMin<float>(local, maxSize);
-
-    /**/
-
-    _innerSize = local;
-    styleStack_.popLayer();
+    return layout::clampSizeAbs(attr, size);
 }
 
-void Viewport::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
-    _screenOff = offset_;
-}
+math::vec2 Viewport::computeDesiredSize(cref<ReflowPassState> passState_) const {
 
-math::vec2 Viewport::outerSize() const noexcept {
-    auto size { innerSize() };
-
-    if (not _computedStyle.margin.attr.zero()) {
-        size.x += _computedStyle.margin.attr.x;
-        size.x += _computedStyle.margin.attr.z;
-        size.y += _computedStyle.margin.attr.y;
-        size.y += _computedStyle.margin.attr.w;
+    math::vec2 desired { getDesiredSize() };
+    if (attr.width->type == ReflowUnitType::eRelative) {
+        desired.x = passState_.referenceSize.x * attr.width->value;
+    }
+    if (attr.height->type == ReflowUnitType::eRelative) {
+        desired.y = passState_.referenceSize.y * attr.height->value;
     }
 
-    return size;
+    return layout::clampSize(
+        attr,
+        passState_.layoutSize,
+        desired
+    );
 }
 
-math::vec2 Viewport::innerSize() const noexcept {
-    return _innerSize;
-}
-
-math::vec2 Viewport::screenOffset() const noexcept {
-    return _screenOff;
-}
+void Viewport::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {}
 
 EventResponse Viewport::onFocus(cref<FocusEvent> event_) {
     _state.set(WidgetStateFlagBits::eFocus);

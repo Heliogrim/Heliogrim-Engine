@@ -5,7 +5,6 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Platform/NativeWindow.hpp>
 
-#include "../Style/__fwd.hpp"
 #include "../Widget/__fwd.hpp"
 #include "../Widget/Widget.hpp"
 #include "../Children.hpp"
@@ -45,15 +44,7 @@ namespace hg::engine::reflow {
         string _title;
 
     private:
-        sptr<Widget> _titleBar;
-        sptr<Widget> _content;
-
-        Children _children;
-
-        sptr<BoundStyleSheet> _style;
-
-    private:
-        void repackChildren();
+        FixedChildren<2> _children;
 
     public:
         void setTitleBar(sptr<Widget> titleBar_);
@@ -85,20 +76,13 @@ namespace hg::engine::reflow {
         [[nodiscard]] sptr<Widget> getFocusTarget() const noexcept;
 
     public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override;
-
-        void flow(
-            cref<FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<StyleKeyStack> styleStack_
-        ) override;
-
-        void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
+        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
 
     public:
-        [[nodiscard]] math::vec2 outerSize() const noexcept override;
+        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
 
-        [[nodiscard]] math::vec2 innerSize() const noexcept override;
+        math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
+
+        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
     };
 }

@@ -9,7 +9,11 @@ constexpr static WidgetState defaultWidgetState = WidgetState {
     static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit) |
     static_cast<WidgetState::value_type>(WidgetStateFlagBits::eShift) |
     static_cast<WidgetState::value_type>(WidgetStateFlagBits::eShiftInherit) |
-    static_cast<WidgetState::value_type>(WidgetStateFlagBits::eCapture)
+    static_cast<WidgetState::value_type>(WidgetStateFlagBits::eCapture),
+    /**/
+    math::vec2 { 0.F },
+    math::vec2 { 0.F },
+    math::vec2 { 0.F }
 };
 
 Widget::Widget() :
@@ -115,10 +119,6 @@ EventResponse Widget::onKeyUp(cref<KeyboardEvent> event_) {
     return EventResponse::eUnhandled;
 }
 
-const ptr<const Children> Widget::children() const {
-    return nullptr;
-}
-
 void Widget::setParent(cref<sptr<Widget>> parent_) {
     _parent = parent_;
 }
@@ -140,6 +140,14 @@ sptr<Widget> Widget::root() const {
     return parent()->root();
 }
 
+math::vec2 Widget::computeDesiredSize(cref<ReflowPassState> passState_) const {
+    return getDesiredSize();
+}
+
+math::vec2 Widget::getDesiredSize() const {
+    return _state.preservedSize;
+}
+
 float Widget::shrinkFactor() const noexcept {
     return 0.F;
 }
@@ -152,19 +160,7 @@ ReflowPosition Widget::position() const noexcept {
     return ReflowPosition::eStatic;
 }
 
-math::vec2 Widget::outerSize() const noexcept {
-    return math::vec2 { 0.F };
-}
-
-math::vec2 Widget::innerSize() const noexcept {
-    return math::vec2 { 0.F };
-}
-
-math::vec2 Widget::screenOffset() const noexcept {
-    return math::vec2 { 0.F };
-}
-
-bool Widget::willChangeLayout(cref<math::vec2> space_, cref<StyleKeyStack> styleStack_) const noexcept {
+bool Widget::willChangeLayout(cref<math::vec2> space_) const noexcept {
     return _state.isProxyPending();
 }
 

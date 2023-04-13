@@ -1,52 +1,40 @@
 #include "Collapse.hpp"
 
 #include <Engine.Common/Make.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-#include <Engine.Reflow/Style/StyleSheet.hpp>
-#include <Engine.Reflow/Style/StyleCondition.hpp>
 
-#include "../Style/Style.hpp"
 #include "../Color/Dark.hpp"
+#include "Editor.UI/Theme/Theme.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg::editor::ui;
 using namespace hg;
 
-[[nodiscard]] static sptr<BoundStyleSheet> makeHeaderBoxStyle() {
-
-    auto style {
-        BoundStyleSheet::make(
-            StyleSheet {
-                .minWidth { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .wrap { true, ReflowWrap::eNoWrap },
-                .padding { true, Padding { 0.F, 4.F } },
-                .reflowSpacing { true, ReflowSpacing::eSpaceBetween },
-                .color { true, color::Dark::backgroundDefault }
-            }
-        )
-    };
-
-    return style;
-}
-
 CollapseHeader::CollapseHeader(ptr<Collapse> parent_) :
-    HBox(makeHeaderBoxStyle()),
-    _parent(parent_) {}
+    HorizontalPanel(),
+    _parent(parent_) {
+    /**/
+    attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    attr.height.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    attr.padding.setValue(Padding { 0.F, 4.F });
+    attr.justify.setValue(ReflowSpacing::eSpaceBetween);
+}
 
 CollapseHeader::~CollapseHeader() = default;
 
 void CollapseHeader::setup() {
 
-    _indicator = make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey)));
+    const auto* const theme = Theme::get();
+
+    _indicator = make_sptr<Text>();
+    theme->applyLabel(_indicator);
     _indicator->setText(R"(>)");
     this->addChild(_indicator);
 
-    _content = make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey)));
+    _content = make_sptr<Text>();
+    theme->applyLabel(_STD static_pointer_cast<Text, Widget>(_content));
     static_cast<ptr<Text>>(_content.get())->setText(R"(Collapse)");
     this->addChild(_content);
 }
@@ -55,7 +43,7 @@ void CollapseHeader::setTitle(cref<string> title_) {
     static_cast<ptr<Text>>(_content.get())->setText(title_);
 }
 
-engine::reflow::EventResponse CollapseHeader::onMouseButtonDown(cref<engine::reflow::MouseEvent> event_) {
+EventResponse CollapseHeader::onMouseButtonDown(cref<MouseEvent> event_) {
 
     if (event_._button != 0x1) {
         return EventResponse::eHandled;
@@ -76,31 +64,16 @@ string CollapseHeader::getTag() const noexcept {
     return _STD format(R"(CollapseHeader <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
-[[nodiscard]] static sptr<BoundStyleSheet> makeCollapseBoxStyle() {
-
-    auto style {
-        BoundStyleSheet::make(
-            StyleSheet {
-                .minWidth { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .maxHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .wrap { true, ReflowWrap::eNoWrap },
-                .colGap { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-                .reflowSpacing { true, ReflowSpacing::eStart },
-                .color { true, color::Dark::backgroundDefault }
-            }
-        )
-    };
-
-    return style;
-}
-
 Collapse::Collapse() :
-    VBox(makeCollapseBoxStyle()),
-    _collapsed(true) {}
+    VerticalPanel(),
+    _collapsed(true) {
+    /**/
+    attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    attr.height.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+}
 
 Collapse::~Collapse() = default;
 
@@ -110,13 +83,12 @@ void Collapse::setup() {
     _header->setup();
     this->addChild(_header);
 
-    _content = make_sptr<VBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey)));
-    _content->style()->minHeight = ReflowUnit { ReflowUnitType::eAuto, 0.F };
-    _content->style()->height = ReflowUnit { ReflowUnitType::eAuto, 0.F };
-    _content->style()->maxHeight = ReflowUnit { ReflowUnitType::eAuto, 0.F };
-    _content->style()->wrap = ReflowWrap::eNoWrap;
-    _content->style()->colGap = ReflowUnit { ReflowUnitType::eAbsolute, 4.F };
-    _content->style()->color = color::Dark::backgroundDefault;
+    _content = make_sptr<VerticalPanel>();
+    _content->attr.minHeight.setValue({ ReflowUnitType::eAuto, 0.F });
+    _content->attr.height.setValue({ ReflowUnitType::eAuto, 0.F });
+    _content->attr.maxHeight.setValue({ ReflowUnitType::eAuto, 0.F });
+    _content->attr.colGap.setValue(4.F);
+
     this->addChild(_content);
 
     collapse();
@@ -126,8 +98,8 @@ void Collapse::collapse() {
     _collapsed = true;
     markAsPending();
 
-    _style->height = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
-    _style->maxHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
+    attr.height.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
 
     if (_content) {
         _content->state().unwrap &= ~(static_cast<u8>(WidgetStateFlagBits::eVisible));
@@ -139,8 +111,8 @@ void Collapse::expand() {
     _collapsed = false;
     markAsPending();
 
-    _style->height = ReflowUnit { ReflowUnitType::eAuto, 0.F };
-    _style->maxHeight = ReflowUnit { ReflowUnitType::eAuto, 0.F };
+    attr.height.setValue({ ReflowUnitType::eAuto, 0.F });
+    attr.maxHeight.setValue({ ReflowUnitType::eAuto, 0.F });
 
     if (_content) {
         _content->state() |= WidgetStateFlagBits::eVisible;
@@ -152,7 +124,7 @@ cref<sptr<CollapseHeader>> Collapse::getHeader() noexcept {
     return _header;
 }
 
-cref<sptr<Box>> Collapse::getContent() noexcept {
+cref<sptr<VerticalPanel>> Collapse::getContent() noexcept {
     return _content;
 }
 
@@ -160,22 +132,20 @@ string Collapse::getTag() const noexcept {
     return _STD format(R"(Collapse <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
+math::vec2 Collapse::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
+    return VerticalPanel::prefetchDesiredSize(state_, scale_);
+}
+
+math::vec2 Collapse::computeDesiredSize(cref<ReflowPassState> passState_) const {
+    return VerticalPanel::computeDesiredSize(passState_);
+}
+
+void Collapse::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+    VerticalPanel::applyLayout(state_, _STD move(ctx_));
+}
+
 bool Collapse::willChangeLayout(
-    cref<math::vec2> space_,
-    cref<engine::reflow::StyleKeyStack> styleStack_
+    cref<math::vec2> space_
 ) const noexcept {
-    return VBox::willChangeLayout(space_, styleStack_);
-}
-
-void Collapse::flow(
-    cref<engine::reflow::FlowContext> ctx_,
-    cref<math::vec2> space_,
-    cref<math::vec2> limit_,
-    ref<engine::reflow::StyleKeyStack> styleStack_
-) {
-    VBox::flow(ctx_, space_, limit_, styleStack_);
-}
-
-void Collapse::shift(cref<engine::reflow::FlowContext> ctx_, cref<math::vec2> offset_) {
-    VBox::shift(ctx_, offset_);
+    return VerticalPanel::willChangeLayout(space_);
 }

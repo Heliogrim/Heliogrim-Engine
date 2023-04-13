@@ -3,8 +3,10 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "../Scroll/VScrollBox.hpp"
+#include "../Widget.hpp"
 #include "Engine.Common/Collection/BytellHashMap.hpp"
 #include "Engine.Common/Collection/Set.hpp"
+#include "Engine.Common/Types.hpp"
 
 namespace hg::engine::reflow {
     class TreeItem;
@@ -44,8 +46,8 @@ namespace hg::engine::reflow {
         using this_type = TreeViewBase;
 
     protected:
-        TreeViewBase(mref<sptr<BoundStyleSheet>> style_) :
-            VScrollBox(_STD move(style_)) {}
+        TreeViewBase() :
+            VScrollBox() {}
 
     public:
         ~TreeViewBase() override = default;
@@ -108,8 +110,8 @@ namespace hg::engine::reflow {
         using resolve_fnc_type = _STD function<void(cref<data_type> item_, _Out_ ref<Vector<data_type>> children_)>;
 
     public:
-        TreeView(mref<sptr<BoundStyleSheet>> style_) :
-            TreeViewBase(_STD move(style_)),
+        TreeView() :
+            TreeViewBase(),
             _requiresRefresh(),
             _linearizedData(),
             _linearizedView(),
@@ -125,7 +127,7 @@ namespace hg::engine::reflow {
         ~TreeView() override = default;
 
     private:
-        bool _requiresRefresh;
+        mutable bool _requiresRefresh;
 
     private:
         void requestRefresh() {
@@ -134,19 +136,21 @@ namespace hg::engine::reflow {
         }
 
     public:
-        void flow(
-            cref<FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<StyleKeyStack> styleStack_
-        ) override {
-
+        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override {
             if (_requiresRefresh) {
-                refreshTreeView();
+                const_cast<ptr<this_type>>(this)->refreshTreeView();
                 _requiresRefresh = false;
             }
 
-            TreeViewBase::flow(ctx_, space_, limit_, styleStack_);
+            return TreeViewBase::prefetchDesiredSize(state_, scale_);
+        }
+
+        math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override {
+            return TreeViewBase::computeDesiredSize(passState_);
+        }
+
+        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override {
+            return TreeViewBase::applyLayout(state_, _STD move(ctx_));
         }
 
     private:
@@ -444,12 +448,14 @@ namespace hg::engine::reflow {
                 return nullptr;
             }
 
-            const auto contentSize { this->innerSize() };
+            // TODO: This will break cause `innerSize()` was ment to return content size with overflow
+            const auto contentSize { /*this->innerSize()*/_state.layoutSize };
             const auto off { contentSize.y - point_.y };
 
             float approxRowSize { 20.F };
             if (not this->children()->empty()) {
-                const auto childOuter = this->children()->front()->outerSize();
+                //const auto childOuter = this->children()->front()->outerSize();
+                const auto childOuter = this->children()->front()->state().layoutSize;
                 approxRowSize = MAX(approxRowSize, childOuter.y);
             }
 
@@ -460,8 +466,8 @@ namespace hg::engine::reflow {
 
             const auto& children { *this->children() };
 
-            math::vec2 size { children[start]->outerSize() };
-            math::vec2 offset { children[start]->screenOffset() };
+            math::vec2 size { /*children[start]->outerSize()*/children[start]->state().layoutSize };
+            math::vec2 offset { /*children[start]->screenOffset()*/children[start]->state().layoutOffset };
             if (intersects(offset, size, point_)) {
                 return children[start];
             }
@@ -470,8 +476,8 @@ namespace hg::engine::reflow {
 
                 const auto crend { children.rend() };
                 for (auto it { children.rbegin() + (children.size() - start) }; it != crend; ++it) {
-                    size = (*it)->outerSize();
-                    offset = (*it)->screenOffset();
+                    size = (*it)->state().layoutSize;
+                    offset = (*it)->state().layoutOffset;
 
                     if (intersects(offset, size, point_)) {
                         return *it;
@@ -481,8 +487,8 @@ namespace hg::engine::reflow {
             } else {
 
                 for (auto it { children.begin() + start }; it != cend; ++it) {
-                    size = (*it)->outerSize();
-                    offset = (*it)->screenOffset();
+                    size = (*it)->state().layoutSize;
+                    offset = (*it)->state().layoutOffset;
 
                     if (intersects(offset, size, point_)) {
                         return *it;
@@ -674,7 +680,8 @@ namespace hg::engine::reflow {
             if (!view.widget.expired()) {
 
                 const auto widget { view.widget.lock() };
-                this->scrollTo(widget->screenOffset(), widget->outerSize());
+                //this->scrollTo(widget->screenOffset(), widget->outerSize());
+                this->scrollTo(widget->state().layoutOffset, widget->state().layoutSize);
             }
         }
 

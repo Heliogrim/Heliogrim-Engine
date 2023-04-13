@@ -31,7 +31,7 @@ void RenderScenePipeline::declareDependencies(
 ) {
     const auto* const beginTick = register_->getStage(TickPipeline::TickBegin);
     const auto* const actorUpdate = register_->getStage(core::schedule::CorePipeline::ActorUpdate);
-    const auto* const shiftTick = register_->getStage(reflow::schedule::ReflowPipeline::ShiftTick);
+    const auto* const reflowTick = register_->getStage(reflow::schedule::ReflowPipeline::Tick);
     // TODO:
     const auto* const physicsTick = register_->getStage("__PhysicsTick__");
     const auto* const animatorTick = register_->getStage("__AnimatorTick__");
@@ -41,7 +41,7 @@ void RenderScenePipeline::declareDependencies(
 
     collection_.insert(
         StageDependency {
-            { beginTick, actorUpdate, shiftTick, /* TODO: actorTick, physicsTick, animatorTick, ikTick */ },
+            { beginTick, actorUpdate, reflowTick, /* TODO: actorTick, physicsTick, animatorTick, ikTick */ },
             this,
             renderTick
         }

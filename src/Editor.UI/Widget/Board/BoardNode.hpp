@@ -1,8 +1,7 @@
 #pragma once
-#include <Engine.Reflow/Widget/VBox.hpp>
+#include <Engine.Reflow/Widget/VerticalPanel.hpp>
 
 #include <Engine.Reflow/Children.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
 
 #include <Editor.GFX.Graphs/Node/__fwd.hpp>
 
@@ -12,7 +11,7 @@ namespace hg::editor::ui {
 
 namespace hg::editor::ui {
     class BoardNode :
-        public engine::reflow::VBox {
+        public engine::reflow::VerticalPanel {
     public:
         using this_type = BoardNode;
 
@@ -38,14 +37,22 @@ namespace hg::editor::ui {
         engine::reflow::EventResponse onMouseMove(cref<engine::reflow::MouseMoveEvent> event_) override;
 
     protected:
-        wptr<Box> _inputBox;
-        wptr<Box> _paramBox;
-        wptr<Box> _outputBox;
+        wptr<VerticalPanel> _inputBox;
+        wptr<VerticalPanel> _paramBox;
+        wptr<VerticalPanel> _outputBox;
 
     public:
         void addInputSlot(mref<sptr<BoardNodeSlot>> slot_);
 
         void addOutputSlot(mref<sptr<BoardNodeSlot>> slot_);
+
+    private:
+        math::vec2 _position;
+
+    public:
+        [[nodiscard]] cref<math::vec2> getBoardPosition() const noexcept;
+
+        void setBoardPosition(cref<math::vec2> position_);
 
     public:
         static sptr<BoardNode> make(sptr<::hg::editor::gfx::graph::Node> node_);

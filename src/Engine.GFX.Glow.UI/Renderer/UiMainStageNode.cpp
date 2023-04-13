@@ -28,6 +28,7 @@
 #include "Engine.GFX/Texture/TextureFactory.hpp"
 #include "Engine.GFX/Texture/VirtualTextureView.hpp"
 #include "Engine.GFX.Glow.UI/Scene/UISceneModel.hpp"
+#include "Engine.Reflow/ReflowEngine.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 
 using namespace hg::engine::gfx::glow::ui::render;
@@ -41,7 +42,6 @@ using namespace hg;
 #include "Engine.Reflow/Window/Window.hpp"
 #include <Engine.Reflow/Command/ReflowCommandBuffer.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
-#include <Engine.Reflow/Style/StyleKeyStack.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 #endif
@@ -320,31 +320,35 @@ void UiMainStageNode::invoke(
         static_cast<float>(renderPass_->target()->width()),
         static_cast<float>(renderPass_->target()->height())
     };
-    math::vec2 one { 1.F };
-    math::vec2 zero { 0.F };
     reflow::FlowContext context {
         math::fExtent2D { ava.x, ava.y, 0.F, 0.F },
         math::fExtent2D { ava.x, ava.y, 0.F, 0.F },
     };
 
-    reflow::StyleKeyStack stack {};
-
     auto start = _STD chrono::high_resolution_clock::now();
-    wnd->flow(context, ava, ava, stack);
     auto end = _STD chrono::high_resolution_clock::now();
 
-    //IM_DEBUG_LOGF("Flow took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
+    reflow::ReflowState reflowState {};
+    {
+        start = _STD chrono::high_resolution_clock::now();
+        auto layoutContext = reflow::LayoutContext {
+            math::vec2 { 0.F },
+            math::vec2 { ava.x, ava.y },
+            1.F
+        };
+        reflow::ReflowEngine::tick(reflowState, wnd, _STD move(layoutContext));
+        end = _STD chrono::high_resolution_clock::now();
+    }
 
-    start = _STD chrono::high_resolution_clock::now();
-    wnd->shift(context, zero);
-    end = _STD chrono::high_resolution_clock::now();
-
-    //IM_DEBUG_LOGF("Shift took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
+    IM_DEBUG_LOGF(
+        "Next Flex-Flow took: {}",
+        _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count()
+    );
 
     start = _STD chrono::high_resolution_clock::now();
     math::fExtent2D rootScissor { context.scissor };
     uiCmd.pushScissor(rootScissor);
-    wnd->render(&uiCmd);
+    wnd->render(reflowState, &uiCmd);
     assert(rootScissor == uiCmd.popScissor());
     end = _STD chrono::high_resolution_clock::now();
 

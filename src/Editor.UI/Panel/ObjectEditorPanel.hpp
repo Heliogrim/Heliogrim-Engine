@@ -1,12 +1,13 @@
 #pragma once
 
 #include <Engine.Reflow/Widget/Panel.hpp>
+#include <Engine.Reflow/Widget/Scroll/VScrollBox.hpp>
 
 #include "../Modules/ObjectEditor.hpp"
 
 namespace hg::editor::ui {
     class ObjectEditorPanel :
-        public engine::reflow::Panel {
+        public engine::reflow::VerticalPanel {
     public:
         using this_type = ObjectEditorPanel;
 
@@ -18,7 +19,7 @@ namespace hg::editor::ui {
 
     private:
         sptr<Widget> _nav;
-        sptr<Box> _content;
+        sptr<engine::reflow::VScrollBox> _content;
 
     private:
     public:

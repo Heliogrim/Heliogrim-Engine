@@ -3,10 +3,11 @@
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
 #include <Engine.Reflow/Widget/Input.hpp>
-#include <Engine.Reflow/Widget/Box.hpp>
+#include <Engine.Reflow/Widget/BoxPanel.hpp>
 #include <Engine.Reflow/Widget/Image.hpp>
 #include <Engine.Reflow/Widget/Button.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
+#include <Engine.Reflow/Widget/VerticalPanel.hpp>
 
 namespace hg::editor::ui {
     class InputAsset :
@@ -35,7 +36,7 @@ namespace hg::editor::ui {
         sptr<engine::reflow::InputText> _input;
         sptr<engine::reflow::Button> _search;
         sptr<engine::reflow::Button> _reset;
-        sptr<engine::reflow::Box> _content;
+        sptr<engine::reflow::VerticalPanel> _content;
 
         engine::reflow::Children _children;
 
@@ -43,27 +44,22 @@ namespace hg::editor::ui {
         [[nodiscard]] const ptr<const engine::reflow::Children> children() const override;
 
     public:
-        void render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) override;
-
-        void flow(
-            cref<engine::reflow::FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<engine::reflow::StyleKeyStack> styleStack_
+        void render(
+            cref<engine::reflow::ReflowState> state_,
+            const ptr<engine::reflow::ReflowCommandBuffer> cmd_
         ) override;
 
-        void shift(cref<engine::reflow::FlowContext> ctx_, cref<math::vec2> offset_) override;
+    public:
+        math::vec2 prefetchDesiredSize(cref<engine::reflow::ReflowState> state_, float scale_) const override;
+
+        math::vec2 computeDesiredSize(cref<engine::reflow::ReflowPassState> passState_) const override;
+
+        void applyLayout(ref<engine::reflow::ReflowState> state_, mref<engine::reflow::LayoutContext> ctx_) override;
 
     public:
         [[nodiscard]] float shrinkFactor() const noexcept override;
 
         [[nodiscard]] float growFactor() const noexcept override;
-
-        [[nodiscard]] math::vec2 outerSize() const noexcept override;
-
-        [[nodiscard]] math::vec2 innerSize() const noexcept override;
-
-        [[nodiscard]] math::vec2 screenOffset() const noexcept override;
 
     public:
         void enable() override;

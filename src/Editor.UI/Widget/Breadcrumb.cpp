@@ -1,106 +1,32 @@
 #include "Breadcrumb.hpp"
 
-#include "../Style/Style.hpp"
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-#include <Engine.Reflow/Style/StyleCondition.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Reflow/Widget/Button.hpp>
 #include <Engine.Common/Make.hpp>
+
+#include "Editor.UI/Theme/Theme.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg::editor::ui;
 using namespace hg;
 
-[[nodiscard]] sptr<BoundStyleSheet> makeBreadStyle() {
-
-    auto style { BoundStyleSheet::make() };
-
-    style->pushStyle(
-        {
-            Style::BreadcrumbKey,
-            nullptr,
-            Style::get()->getStyleSheet(Style::BreadcrumbKey)
-        }
-    );
-
-    return style;
-}
-
-[[nodiscard]] sptr<BoundStyleSheet> makeBreadEntryStyle() {
-
-    auto style { BoundStyleSheet::make() };
-
-    style->pushStyle(
-        {
-            Style::TextButtonKey,
-            nullptr,
-            Style::get()->getStyleSheet(Style::TextButtonKey)
-        }
-    );
-
-    style->pushStyle(
-        {
-            Style::ButtonRaisedKey,
-            style::isRaised,
-            Style::get()->getStyleSheet(Style::ButtonRaisedKey)
-        }
-    );
-
-    return style;
-}
-
-[[nodiscard]] sptr<BoundStyleSheet> makeBreadTitleStyle() {
-
-    auto style { BoundStyleSheet::make() };
-
-    style->pushStyle(
-        {
-            Style::TitleSmallKey,
-            nullptr,
-            Style::get()->getStyleSheet(Style::TitleSmallKey)
-        }
-    );
-
-    style->pushStyle(
-        {
-            Style::ButtonRaisedKey,
-            style::isNever,
-            Style::get()->getStyleSheet(Style::TitleRaisedKey)
-        }
-    );
-
-    return style;
-}
-
-[[nodiscard]] sptr<BoundStyleSheet> makeBreadSpaceStyle() {
-
-    auto style {
-        BoundStyleSheet::make(
-            StyleSheet {
-                .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } }
-            }
-        )
-    };
-
-    style->pushStyle(
-        {
-            Style::TitleSmallKey,
-            nullptr,
-            Style::get()->getStyleSheet(Style::TitleSmallKey)
-        }
-    );
-
-    return style;
-}
-
 Breadcrumb::Breadcrumb() :
-    HBox(makeBreadStyle()) {}
+    HorizontalPanel() {
+    /**/
+    attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.rowGap.setValue(2.F);
+    attr.padding.setValue(Padding { 4.F, 2.F });
+}
 
 Breadcrumb::~Breadcrumb() {
     clearNavEntries();
 }
 
 void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, cref<fs::Url> value_) {
+
+    const auto* const theme = Theme::get();
 
     if (_STD ranges::find(
         _entries.begin(),
@@ -117,7 +43,8 @@ void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, c
 
     if (not _entries.empty()) {
 
-        auto spacer { make_sptr<Text>(makeBreadSpaceStyle()) };
+        auto spacer { make_sptr<Text>() };
+        theme->applyLabel(spacer);
         spacer->setText(R"(>)");
 
         this->addChild(spacer);
@@ -125,11 +52,13 @@ void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, c
 
     /**/
 
-    auto button { make_sptr<Button>(makeBreadEntryStyle()) };
-    auto title { make_sptr<Text>(makeBreadTitleStyle()) };
+    auto button { make_sptr<Button>() };
+    theme->applyTextButton(button);
+    auto title { make_sptr<Text>() };
+    theme->applyLabel(title);
 
     title->setText(title_);
-    button->addChild(title);
+    button->setChild(title);
 
     /**/
 

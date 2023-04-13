@@ -2,7 +2,7 @@
 
 #include <tuple>
 
-#include "../Box.hpp"
+#include "../BoxPanel.hpp"
 #include "../Input.hpp"
 
 namespace hg::engine::reflow {

@@ -6,16 +6,18 @@
 using namespace hg::engine::reflow;
 using namespace hg;
 
-InputFloat::InputFloat(mref<sptr<BoundStyleSheet>> style_, mref<sptr<BoundStyleSheet>> textStyle_) :
+InputFloat::InputFloat() :
     Input(),
-    _wrapper(make_sptr<HBox>(_STD move(style_))),
-    _text(make_sptr<Text>(_STD move(textStyle_))),
+    _wrapper(make_sptr<HorizontalPanel>()),
+    _text(make_sptr<Text>()),
     _value(R"(0)"),
     _limits(_STD numeric_limits<input_type>::min(), _STD numeric_limits<input_type>::max()),
     _stepSize(0),
-    _precision(InputFloatPrecision::eFloat) {
+    _precision(InputFloatPrecision::eFloat),
+    _children() {
     /**/
     _wrapper->addChild(_text);
+    _children.setChild(_wrapper);
 }
 
 InputFloat::~InputFloat() = default;
@@ -101,34 +103,26 @@ InputFloat::input_type InputFloat::value() const noexcept {
     return _STD stold(_value);
 }
 
-void InputFloat::render(const ptr<ReflowCommandBuffer> cmd_) {
-    _wrapper->render(cmd_);
+const ptr<const SingleChildren> InputFloat::children() const {
+    return &_children;
 }
 
-void InputFloat::flow(
-    cref<FlowContext> ctx_,
-    cref<math::vec2> space_,
-    cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_
-) {
-    _wrapper->setParent(shared_from_this());
-    _wrapper->flow(ctx_, space_, limit_, styleStack_);
+void InputFloat::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+    _wrapper->render(state_, cmd_);
 }
 
-void InputFloat::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
-    _wrapper->shift(ctx_, offset_);
+math::vec2 InputFloat::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
+    return _children.getChild()->getDesiredSize();
 }
 
-math::vec2 InputFloat::outerSize() const noexcept {
-    return _wrapper->outerSize();
+math::vec2 InputFloat::computeDesiredSize(cref<ReflowPassState> passState_) const {
+    return _children.getChild()->getDesiredSize();
 }
 
-math::vec2 InputFloat::innerSize() const noexcept {
-    return _wrapper->innerSize();
-}
-
-math::vec2 InputFloat::screenOffset() const noexcept {
-    return _wrapper->screenOffset();
+void InputFloat::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+    const auto childState = state_.getStateOf(_children.getChild());
+    childState->layoutOffset = ctx_.localOffset;
+    childState->layoutSize = ctx_.localSize;
 }
 
 float InputFloat::shrinkFactor() const noexcept {

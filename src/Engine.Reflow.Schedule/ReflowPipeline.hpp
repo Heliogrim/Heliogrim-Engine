@@ -12,8 +12,7 @@ namespace hg::engine::reflow::schedule {
 
         /**/
 
-        static const inline StageIdentifier FlowTick = "::Reflow::FlowTick";
-        static const inline StageIdentifier ShiftTick = "::Reflow::ShiftTick";
+        static const inline StageIdentifier Tick = "::Reflow::Tick";
 
     public:
         ReflowPipeline();

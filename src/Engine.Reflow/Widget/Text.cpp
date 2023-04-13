@@ -1,17 +1,26 @@
 #include "Text.hpp"
 
-#include "../Style/BoundStyleSheet.hpp"
-#include "../Layout/Constraints.hpp"
+#include "../Layout/Style.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
 
-Text::Text(mref<sptr<BoundStyleSheet>> style_) :
+Text::Text() :
     Widget(),
-    _style(_STD move(style_)),
-    _text(),
-    _contentSize(),
-    _screenOff() {}
+    attr(
+        Attributes {
+            .width = { this, { ReflowUnitType::eAuto, 0.F } },
+            .height = { this, { ReflowUnitType::eAuto, 0.F } },
+            .font = { this, nullptr },
+            .fontSize = { this, 16.F },
+            .lineHeight = { this, 1.F },
+            .textAlign = { this, TextAlign::eLeftTop },
+            .textEllipse = { this, 0ui32 },
+            .textWrap = { this, ReflowWrap::eNone },
+            .color = { this, engine::color { 255.F, 255.F, 255.F, 1.F } },
+            .text = { this, "" }
+        }
+    ) {}
 
 Text::~Text() = default;
 
@@ -19,38 +28,29 @@ string Text::getTag() const noexcept {
     return _STD format(R"(Text <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
-ref<BoundStyleSheet> Text::style() noexcept {
-    return *_style;
-}
-
-cref<string> Text::getText() const noexcept {
-    return _text;
+string Text::getText() const noexcept {
+    return attr.text.getValue();
 }
 
 void Text::setText(cref<string> text_) {
-    _text = text_;
+    attr.text.setValue(text_);
     markAsPending();
 }
 
 math::vec2 Text::contentSize(cref<math::vec2> space_) const {
 
-    const auto fss { (_computedStyle.font.attr)->nextFontSize(static_cast<u32>(_computedStyle.fontSize.attr)) };
-    const auto fontScale { _computedStyle.fontSize.attr / static_cast<float>(fss) };
+    const auto fss { (attr.font.getValue())->nextFontSize(static_cast<u32>(attr.fontSize.getValue())) };
+    const auto fontScale { attr.fontSize.getValue() / static_cast<float>(fss) };
 
-    float lineBound { 0.F };
-    if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
-        lineBound = _computedStyle.maxWidth->value * space_.x;
-    } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
-        lineBound = _computedStyle.maxWidth->value;
-    }
+    float lineBound = space_.x;
 
     float fwd { 0.F };
     u32 lines { 0ui32 };
     math::vec2 size { 0.F };
 
-    for (const auto& letter : _text) {
+    for (const auto& letter : attr.text.getValue()) {
 
-        const auto* glyph { (_computedStyle.font.attr)->glyph(static_cast<u32>(letter), fss) };
+        const auto* glyph { (attr.font.getValue())->glyph(static_cast<u32>(letter), fss) };
 
         if (glyph == nullptr) {
             continue;
@@ -58,7 +58,7 @@ math::vec2 Text::contentSize(cref<math::vec2> space_) const {
 
         fwd += glyph->_advance * fontScale;
 
-        if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto && fwd > lineBound) {
+        if (attr.textWrap.getValue() == ReflowWrap::eWrap && fwd > lineBound) {
             fwd = glyph->_advance * fontScale;
             ++lines;
         }
@@ -68,30 +68,35 @@ math::vec2 Text::contentSize(cref<math::vec2> space_) const {
 
     /**/
 
-    if (_computedStyle.wrap.attr == ReflowWrap::eNoWrap) {
+    if (attr.textWrap.getValue() == ReflowWrap::eNoWrap) {
         lines = 1ui32;
-    } else if (_computedStyle.textEllipse.attr) {
-        lines = MIN(lines, _computedStyle.textEllipse.attr);
+    } else if (attr.textEllipse.getValue()) {
+        lines = MIN(lines, attr.textEllipse.getValue());
     }
 
-    size.y = static_cast<float>(lines) * _computedStyle.fontSize.attr * _computedStyle.lineHeight.attr;
+    size.y = static_cast<float>(lines) * attr.fontSize.getValue() * attr.lineHeight.getValue();
     return size;
 }
 
-void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
+const ptr<const NullChildren> Text::children() const {
+    return &_children;
+}
 
-    math::vec2 off { _screenOff };
-    off.x += _computedStyle.margin->x;
-    off.y += _computedStyle.margin->y;
+void Text::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+
+    math::vec2 innerOffset = _state.layoutOffset;
+    const math::vec2 innerSize = _state.layoutSize;
+
+    const math::vec2 occupied = contentSize(innerSize);
 
     /**/
 
-    const math::fExtent2D scissor { _innerSize.x, _innerSize.y, off.x, off.y };
+    const math::fExtent2D scissor { innerSize.x, innerSize.y, innerOffset.x, innerOffset.y };
     cmd_->pushIntersectScissor(scissor);
 
     /**/
 
-    const u8 align { static_cast<u8>(_computedStyle.textAlign.attr) };
+    const u8 align { static_cast<u8>(attr.textAlign.getValue()) };
     if ((align & 0b0000'1110ui8) == 0x0ui8) {
 
         /* Align Left */
@@ -100,14 +105,14 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
     } else if ((align & 0b0000'1111ui8) == 0x2ui8) {
 
         /* Align Center */
-        const math::vec2 diff { _innerSize.x - _contentSize.x, _innerSize.y - _contentSize.y };
-        off.x += diff.x * 0.5F;
+        const math::vec2 diff { innerSize.x - occupied.x, innerSize.y - occupied.y };
+        innerOffset.x += diff.x * 0.5F;
 
     } else if ((align & 0b0000'1111ui8) == 0x4ui8) {
 
         /* Align Right */
-        const math::vec2 diff { _innerSize.x - _contentSize.x, _innerSize.y - _contentSize.y };
-        off.x += diff.x;
+        const math::vec2 diff { innerSize.x - occupied.x, innerSize.y - occupied.y };
+        innerOffset.x += diff.x;
     }
 
     if ((align & 0b1110'0000ui8) == 0x0ui8) {
@@ -118,35 +123,41 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
     } else if ((align & 0b1111'0000ui8) == 0x20ui8) {
 
         /* Vertical Align Middle */
-        const math::vec2 diff { _innerSize.x - _contentSize.x, _innerSize.y - _contentSize.y };
-        off.y += diff.y * 0.5F;
+        const math::vec2 diff { innerSize.x - occupied.x, innerSize.y - occupied.y };
+        innerOffset.y += diff.y * 0.5F;
 
     } else if ((align & 0b1111'0000ui8) == 0x40ui8) {
 
         /* Vertical Align Bottom */
-        const math::vec2 diff { _innerSize.x - _contentSize.x, _innerSize.y - _contentSize.y };
-        off.y += diff.y;
+        const math::vec2 diff { innerSize.x - occupied.x, innerSize.y - occupied.y };
+        innerOffset.y += diff.y;
     }
 
     /**/
 
-    if (not _computedStyle.textEllipse.attr) {
-        cmd_->drawText(off, _text, *_computedStyle.font.attr, _computedStyle.fontSize.attr, _computedStyle.color.attr);
+    if (not attr.textEllipse.getValue()) {
+        cmd_->drawText(
+            innerOffset,
+            attr.text.getValue(),
+            *attr.font.getValue(),
+            attr.fontSize.getValue(),
+            attr.color.getValue()
+        );
 
     } else {
 
-        const auto fss { (_computedStyle.font.attr)->nextFontSize(static_cast<u32>(_computedStyle.fontSize.attr)) };
-        const auto fontScale { _computedStyle.fontSize.attr / static_cast<float>(fss) };
-        const auto lineBound { _contentSize.x };
+        const auto fss { (attr.font.getValue())->nextFontSize(static_cast<u32>(attr.fontSize.getValue())) };
+        const auto fontScale { attr.fontSize.getValue() / static_cast<float>(fss) };
+        const auto lineBound { occupied.x };
 
         float fccw { 0.F };
         u32 wraps { 0ui32 };
         u32 j { 0ui32 };
 
-        for (u32 i { 0ui32 }; i < _text.length(); ++i) {
+        for (u32 i { 0ui32 }; i < attr.text->length(); ++i) {
 
-            const auto& letter { _text[i] };
-            const auto* glyph { (_computedStyle.font.attr)->glyph(static_cast<u32>(letter), fss) };
+            const auto& letter { attr.text.getValue()[i] };
+            const auto* glyph { (attr.font.getValue())->glyph(static_cast<u32>(letter), fss) };
 
             if (glyph == nullptr) {
                 continue;
@@ -154,18 +165,20 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 
             fccw += glyph->_advance * fontScale;
 
-            if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto && fccw > lineBound && wraps < _computedStyle.
-                textEllipse.attr) {
+            if (attr.textWrap.getValue() == ReflowWrap::eWrap &&
+                fccw > lineBound &&
+                wraps < attr.textEllipse.getValue()
+            ) {
 
                 cmd_->drawText(
-                    off,
-                    string_view { _text.begin() + j, _text.begin() + i },
-                    *_computedStyle.font.attr,
-                    _computedStyle.fontSize.attr,
-                    _computedStyle.color.attr
+                    innerOffset,
+                    string_view { attr.text->begin() + j, attr.text->begin() + i },
+                    *attr.font.getValue(),
+                    attr.fontSize.getValue(),
+                    attr.color.getValue()
                 );
 
-                off.y += _computedStyle.fontSize.attr * _computedStyle.lineHeight.attr;
+                innerOffset.y += attr.fontSize.getValue() * attr.lineHeight.getValue();
 
                 fccw = glyph->_advance * fontScale;
                 j = i;
@@ -174,13 +187,13 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 
         }
 
-        if (fccw <= lineBound && wraps < _computedStyle.textEllipse.attr) {
+        if (fccw <= lineBound && wraps < attr.textEllipse.getValue()) {
             cmd_->drawText(
-                off,
-                string_view { _text.begin() + j, _text.end() },
-                *_computedStyle.font.attr,
-                _computedStyle.fontSize.attr,
-                _computedStyle.color.attr
+                innerOffset,
+                string_view { attr.text->begin() + j, attr.text->end() },
+                *attr.font.getValue(),
+                attr.fontSize.getValue(),
+                attr.color.getValue()
             );
         }
 
@@ -191,138 +204,97 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
     cmd_->popScissor();
 }
 
-void Text::flow(
-    cref<FlowContext> ctx_,
-    cref<math::vec2> space_,
-    cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_
-) {
+math::vec2 Text::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
 
-    styleStack_.pushLayer();
-    _computedStyle = _style->compute(shared_from_this(), styleStack_);
-
-    const bool autoWidth { _computedStyle.width->type == ReflowUnitType::eAuto };
-    const bool autoHeight { _computedStyle.height->type == ReflowUnitType::eAuto };
-
-    /**/
-
-    math::vec2 maxSize { limit_ };
-
-    if (_computedStyle.maxWidth->type != ReflowUnitType::eAuto) {
-        if (_computedStyle.maxWidth->type == ReflowUnitType::eRelative) {
-            maxSize.x = MIN(
-                maxSize.x,
-                MAX(_computedStyle.maxWidth->value * space_.x - (_computedStyle.padding->x + _computedStyle.padding->z),
-                    0)
-            );
-        } else if (_computedStyle.maxWidth->type == ReflowUnitType::eAbsolute) {
-            maxSize.x = MIN(
-                maxSize.x,
-                MAX(_computedStyle.maxWidth->value - (_computedStyle.padding->x + _computedStyle.padding->z), 0)
-            );
-        }
+    math::vec2 size { _STD numeric_limits<float>::infinity() };
+    if (attr.width->type == ReflowUnitType::eAbsolute) {
+        size.x = attr.width->value;
     }
-
-    if (_computedStyle.maxHeight->type != ReflowUnitType::eAuto) {
-        if (_computedStyle.maxHeight->type == ReflowUnitType::eRelative) {
-            maxSize.y = MIN(
-                maxSize.y,
-                MAX(_computedStyle.maxHeight->value * space_.y - (_computedStyle.padding->y + _computedStyle.padding->w)
-                    , 0)
-            );
-        } else if (_computedStyle.maxHeight->type == ReflowUnitType::eAbsolute) {
-            maxSize.y = MIN(
-                maxSize.y,
-                MAX(_computedStyle.maxHeight->value - (_computedStyle.padding->y + _computedStyle.padding->w), 0)
-            );
-        }
+    if (attr.height->type == ReflowUnitType::eAbsolute) {
+        size.y = attr.height->value;
     }
 
     /**/
 
-    math::vec2 local { 0.F };
-
-    if (_computedStyle.width->type == ReflowUnitType::eRelative) {
-        local.x = _computedStyle.width->value * space_.x;
-    } else if (_computedStyle.width->type == ReflowUnitType::eAbsolute) {
-        local.x = _computedStyle.width->value;
-    }
-
-    if (_computedStyle.height->type == ReflowUnitType::eRelative) {
-        local.y = _computedStyle.height->value * space_.y;
-    } else if (_computedStyle.height->type == ReflowUnitType::eAbsolute) {
-        local.y = _computedStyle.height->value;
-    }
+    auto baseSize = contentSize(size);
+    baseSize *= scale_;
 
     /**/
 
-    if (_computedStyle.minWidth->type == ReflowUnitType::eRelative) {
-        local.x = MAX(local.x, _computedStyle.minWidth->value * space_.x);
-    } else if (_computedStyle.minWidth->type == ReflowUnitType::eAbsolute) {
-        local.x = MAX(local.x, _computedStyle.minWidth->value);
+    if (attr.width->type == ReflowUnitType::eAbsolute) {
+        size.x = attr.width->value;
+    } else {
+        size.x = baseSize.x;
     }
 
-    if (_computedStyle.minHeight->type == ReflowUnitType::eRelative) {
-        local.y = MAX(local.y, _computedStyle.minHeight->value * space_.y);
-    } else if (_computedStyle.minHeight->type == ReflowUnitType::eAbsolute) {
-        local.y = MAX(local.y, _computedStyle.minHeight->value);
+    if (attr.height->type == ReflowUnitType::eAbsolute) {
+        size.y = attr.height->value;
+    } else {
+        size.y = baseSize.y;
     }
 
     /**/
-
-    const auto baseSize { contentSize(space_) };
-    _contentSize = baseSize;
-
-    _innerSize = math::compMax<float>(baseSize, local);
-    _innerSize = math::compMin<float>(_innerSize, maxSize);
-
-    styleStack_.popLayer();
-    clearPending();
-
-    _prevSpace = space_;
-    _prevStyle.clear();
-    styleStack_.compress(_prevStyle);
-}
-
-void Text::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
-    _screenOff = offset_;
-}
-
-math::vec2 Text::outerSize() const noexcept {
-
-    auto size { innerSize() };
-
-    if (not _computedStyle.margin->zero()) {
-        size.x += _computedStyle.margin->x;
-        size.x += _computedStyle.margin->z;
-        size.y += _computedStyle.margin->y;
-        size.y += _computedStyle.margin->w;
-    }
 
     return size;
 }
 
-math::vec2 Text::innerSize() const noexcept {
-    return _innerSize;
+math::vec2 Text::computeDesiredSize(cref<ReflowPassState> passState_) const {
+
+    math::vec2 desired { getDesiredSize() };
+    if (attr.width->type == ReflowUnitType::eRelative) {
+        desired.x = passState_.referenceSize.x * attr.width->value;
+    }
+    if (attr.height->type == ReflowUnitType::eRelative) {
+        desired.y = passState_.referenceSize.y * attr.height->value;
+    }
+
+    /**/
+
+    auto baseSize = contentSize(desired);
+    baseSize *= 1.F;
+
+    /**/
+
+    if (attr.width->type == ReflowUnitType::eAbsolute) {
+        desired.x = attr.width->value;
+    } else if (attr.width->type == ReflowUnitType::eRelative) {
+        desired.x = passState_.referenceSize.x * attr.width->value;
+    } else {
+        desired.x = baseSize.x;
+    }
+
+    if (attr.height->type == ReflowUnitType::eAbsolute) {
+        desired.y = attr.height->value;
+    } else if (attr.height->type == ReflowUnitType::eRelative) {
+        desired.y = passState_.referenceSize.y * attr.height->value;
+    } else {
+        desired.y = baseSize.y;
+    }
+
+    /**/
+
+    return desired;
 }
 
-math::vec2 Text::screenOffset() const noexcept {
-    return _screenOff;
+void Text::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+    // TODO: Implement
 }
 
-bool Text::willChangeLayout(cref<math::vec2> space_, cref<StyleKeyStack> styleStack_) const noexcept {
+bool Text::willChangeLayout(cref<math::vec2> space_) const noexcept {
 
     if (_state.isProxyPending()) {
         return true;
     }
 
+    /*
     if (layout::hasStyleChanged(_prevStyle, styleStack_)) {
         return true;
     }
 
     if (_prevSpace != space_) {
-        return not layout::hasConstSize(_computedStyle);
+        return not layout::hasConstSize(attr);
     }
+     */
 
-    return Widget::willChangeLayout(space_, styleStack_);
+    return Widget::willChangeLayout(space_);
 }

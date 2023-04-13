@@ -1,10 +1,6 @@
 #include "InputAsset.hpp"
 
 #include <Engine.Common/Make.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-#include <Engine.Reflow/Style/StyleSheet.hpp>
-#include <Engine.Reflow/Style/StyleCondition.hpp>
-#include "../../Style/Style.hpp"
 #include "../../Color/Dark.hpp"
 #include "../../Helper/AssetBrowserHelper.hpp"
 
@@ -26,6 +22,9 @@
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
 
+#include "Editor.UI/Theme/Theme.hpp"
+#include "Engine.Reflow/Widget/VerticalPanel.hpp"
+
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -43,7 +42,6 @@ using namespace hg;
                 .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
                 .wrap { true, ReflowWrap::eNoWrap },
                 .padding { true, Padding { 4.F, 2.F } },
-                .margin { true, Margin { 0.F } },
                 .reflowShrink { true, 1.F },
                 .reflowGrow { true, 0.F },
                 .borderRadius = { true, BorderRadius { 4.F } },
@@ -113,49 +111,45 @@ InputAsset::InputAsset() :
 
 void InputAsset::setup() {
 
-    _content = make_sptr<VBox>(
-        BoundStyleSheet::make(
-            StyleSheet {
-                .minWidth { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F } },
-                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F + 4.F + 20.F } },
-                .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F + 4.F + 20.F } },
-                .wrap { true, ReflowWrap::eNoWrap },
-                .colGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
-                .color { true, color::Dark::backgroundDefault },
-            }
-        )
-    );
+    const auto* const theme = Theme::get();
+
+    _content = make_sptr<VerticalPanel>();
+    _content->attr.minWidth.setValue({ ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F });
+    _content->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    _content->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 72.F + 4.F + 20.F });
+    _content->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 72.F + 4.F + 20.F });
+    _content->attr.colGap.setValue(4.F);
 
     _children.push_back(_content);
 
     /**/
 
-    auto upper {
-        make_sptr<HBox>(
-            BoundStyleSheet::make(
-                StyleSheet {
-                    .minWidth { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F } },
-                    .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    //.maxWidth { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F } },
-                    .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F } },
-                    .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F } },
-                    .wrap { true, ReflowWrap::eNoWrap },
-                    .rowGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
-                    .reflowSpacing { true, ReflowSpacing::eSpaceAround },
-                    .color { true, color::Dark::backgroundDefault },
-                }
-            )
-        )
-    };
+    auto upper { make_sptr<HorizontalPanel>() };
+    upper->style() = BoundStyleSheet::make(
+        StyleSheet {
+            .minWidth { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F } },
+            .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
+            //.maxWidth { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F } },
+            .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F } },
+            .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F } },
+            .wrap { true, ReflowWrap::eNoWrap },
+            .rowGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
+            .reflowSpacing { true, ReflowSpacing::eSpaceAround },
+            .color { true, color::Dark::backgroundDefault },
+        }
+    );
     _content->addChild(upper);
 
-    auto previewBox { make_sptr<VBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::Icon72Key))) };
-    previewBox->style()->color = color::Dark::backgroundInnerField;
-    previewBox->style()->borderRadius = BorderRadius { 4.F };
+    auto previewBox { make_sptr<BoxPanel>() };
+    previewBox->attr.width.setValue({ ReflowUnitType::eAbsolute, 72.F });
+    previewBox->attr.maxWidth.setValue({ ReflowUnitType::eAbsolute, 72.F });
+    previewBox->attr.height.setValue({ ReflowUnitType::eAbsolute, 72.F });
+    previewBox->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 72.F });
     upper->addChild(previewBox);
 
-    _preview = make_sptr<Image>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::Icon72Key)));
+    _preview = make_sptr<Image>();
+    theme->applyIcon72(_preview);
+
     auto* previewAsset = AssetBrowserHelper::get()->getItemIconByAssetType(asset_type_id {});
 
     auto iconRes = engine::Engine::getEngine()->getResources()->loader().loadImmediately<engine::assets::Texture,
@@ -167,64 +161,50 @@ void InputAsset::setup() {
     /**/
 
     _preview->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(view)), iconRes.get());
-    previewBox->addChild(_preview);
+    previewBox->setChild(_preview);
 
-    auto actions {
-        make_sptr<VBox>(
-            BoundStyleSheet::make(
-                StyleSheet {
-                    .minWidth { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                    .maxWidth { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                    .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F } },
-                    .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F } },
-                    .wrap { true, ReflowWrap::eNoWrap },
-                    .colGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
-                    .reflowSpacing { true, ReflowSpacing::eStart },
-                    .color { true, color::Dark::backgroundDefault },
-                }
-            )
-        )
-    };
+    auto actions { make_sptr<VerticalPanel>() };
+    actions->attr.minWidth.setValue({ ReflowUnitType::eAbsolute, 16.F });
+    actions->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 16.F });
+    actions->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 72.F });
+    actions->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 72.F });
+    actions->attr.colGap.setValue(4.F);
     upper->addChild(actions);
 
     /**/
 
-    _search = make_sptr<Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::ButtonKey)));
-    _search->style()->color = color::Dark::backgroundInnerField;
+    _search = make_sptr<Button>();
+    theme->applyTextButton(_search);
     actions->addChild(_search);
 
-    auto txt { make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))) };
+    auto txt { make_sptr<Text>() };
+    theme->applyLabel(txt);
     txt->setText("S");
-    _search->addChild(txt);
+    _search->setChild(txt);
 
-    _reset = make_sptr<Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::ButtonKey)));
-    _reset->style()->color = color::Dark::backgroundInnerField;
+    _reset = make_sptr<Button>();
+    theme->applyTextButton(_reset);
     actions->addChild(_reset);
 
-    txt = make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey)));
+    txt = make_sptr<Text>();
+    theme->applyLabel(txt);
     txt->setText("R");
-    _reset->addChild(txt);
+    _reset->setChild(txt);
 
     /**/
 
-    auto lower {
-        make_sptr<HBox>(
-            BoundStyleSheet::make(
-                StyleSheet {
-                    .minWidth { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F } },
-                    .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                    .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                    .wrap { true, ReflowWrap::eNoWrap },
-                    .color { true, color::Dark::backgroundDefault },
-                }
-            )
-        )
-    };
+    auto lower { make_sptr<HorizontalPanel>() };
+    lower->attr.minWidth.setValue({ ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F });
+    lower->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    lower->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    lower->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    lower->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+
     _content->addChild(lower);
 
-    _input = make_sptr<InputText>(makeInputBoxStyle(), makeInputTextStyle());
+    _input = make_sptr<InputText>();
+    _input->_wrapper->style() = makeInputBoxStyle();
+    _input->_text->style() = makeInputTextStyle();
     lower->addChild(_input);
 }
 
@@ -232,7 +212,7 @@ string InputAsset::getTag() const noexcept {
     return _STD format(R"(InputAsset <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
-engine::reflow::EventResponse InputAsset::onDrop(cref<engine::reflow::DragDropEvent> event_) {
+EventResponse InputAsset::onDrop(cref<DragDropEvent> event_) {
 
     if (event_._type != engine::input::DragDropObjectType::eTextType) {
         return Input<asset_guid>::onDrop(event_);
@@ -291,29 +271,30 @@ engine::reflow::EventResponse InputAsset::onDrop(cref<engine::reflow::DragDropEv
     return EventResponse::eConsumed;
 }
 
-engine::reflow::EventResponse InputAsset::onDragOver(cref<engine::reflow::DragDropEvent> event_) {
+EventResponse InputAsset::onDragOver(cref<DragDropEvent> event_) {
     return Input<asset_guid>::onDragOver(event_);
 }
 
-const ptr<const engine::reflow::Children> InputAsset::children() const {
+const ptr<const Children> InputAsset::children() const {
     return &_children;
 }
 
-void InputAsset::render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) {
-    _content->render(cmd_);
+void InputAsset::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+    _content->render(state_, cmd_);
 }
 
-void InputAsset::flow(
-    cref<engine::reflow::FlowContext> ctx_,
-    cref<math::vec2> space_,
-    cref<math::vec2> limit_,
-    ref<engine::reflow::StyleKeyStack> styleStack_
-) {
-    _content->flow(ctx_, space_, limit_, styleStack_);
+math::vec2 InputAsset::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
+    return _content->getDesiredSize();
 }
 
-void InputAsset::shift(cref<engine::reflow::FlowContext> ctx_, cref<math::vec2> offset_) {
-    _content->shift(ctx_, offset_);
+math::vec2 InputAsset::computeDesiredSize(cref<engine::reflow::ReflowPassState> passState_) const {
+    return _content->getDesiredSize();
+}
+
+void InputAsset::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+    auto* const childState = state_.getStateOf(_content);
+    childState->layoutOffset = ctx_.localOffset;
+    childState->layoutSize = ctx_.localSize;
 }
 
 float InputAsset::shrinkFactor() const noexcept {
@@ -322,18 +303,6 @@ float InputAsset::shrinkFactor() const noexcept {
 
 float InputAsset::growFactor() const noexcept {
     return _content->growFactor();
-}
-
-math::vec2 InputAsset::outerSize() const noexcept {
-    return _content->outerSize();
-}
-
-math::vec2 InputAsset::innerSize() const noexcept {
-    return _content->innerSize();
-}
-
-math::vec2 InputAsset::screenOffset() const noexcept {
-    return _content->screenOffset();
 }
 
 void InputAsset::enable() {

@@ -1,29 +1,11 @@
 #include "ContextMenu.hpp"
 
 #include <Engine.Common/Make.hpp>
-#include <Engine.Reflow/Widget/VBox.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
+#include <Engine.Reflow/Widget/VerticalPanel.hpp>
 
 using namespace hg::engine::reflow;
 using namespace hg::editor::ui;
 using namespace hg;
-
-[[nodiscard]] static sptr<BoundStyleSheet> makeStyleSheet() {
-
-    auto style = BoundStyleSheet::make(
-        StyleSheet {
-            .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
-            .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .wrap = { true, ReflowWrap::eNoWrap },
-            .padding = { true, Padding { 0.F, 2.F } },
-            .margin = { true, Margin { 0.F } },
-            .reflowSpacing = { true, ReflowSpacing::eStart },
-        }
-    );
-
-    return style;
-}
 
 ContextMenu::ContextMenu() :
     Menu() {}
@@ -31,11 +13,11 @@ ContextMenu::ContextMenu() :
 ContextMenu::~ContextMenu() = default;
 
 void ContextMenu::addMenuAction(mref<sptr<Widget>> menuAction_) {
-    _STD static_pointer_cast<VBox, Widget>(getContent())->addChild(_STD move(menuAction_));
+    _STD static_pointer_cast<VerticalPanel, Widget>(getContent())->addChild(_STD move(menuAction_));
 }
 
 void ContextMenu::removeMenuAction(cref<sptr<Widget>> menuAction_) {
-    _STD static_pointer_cast<VBox, Widget>(getContent())->removeChild(menuAction_);
+    _STD static_pointer_cast<VerticalPanel, Widget>(getContent())->removeChild(menuAction_);
 }
 
 sptr<ContextMenu> ContextMenu::make(const ptr<Widget> target_, cref<math::ivec2> position_) {
@@ -57,7 +39,12 @@ sptr<ContextMenu> ContextMenu::make(const ptr<Widget> target_, cref<math::ivec2>
 
     /**/
 
-    const auto content { make_sptr<VBox>(makeStyleSheet()) };
+    const auto content = make_sptr<VerticalPanel>();
+    content->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    content->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 4.F });
+    content->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    content->attr.padding.setValue(Padding { 0.F, 2.F });
+    content->attr.justify.setValue(ReflowSpacing::eStart);
     self->setContent(content);
 
     /**/

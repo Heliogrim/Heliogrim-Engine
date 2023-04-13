@@ -3,8 +3,6 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-#include "../../Style/BoundStyleSheet.hpp"
-
 using namespace hg::engine::reflow;
 using namespace hg;
 
@@ -12,36 +10,8 @@ using namespace hg;
     return static_cast<ptr<TreeItem>>(widget_.get())->isSelected();
 }
 
-[[nodiscard]] sptr<BoundStyleSheet> makeStyleSheet() {
-
-    auto style = BoundStyleSheet::make(
-        StyleSheet {
-            .minWidth { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .width { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .maxWidth { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .minHeight { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .height { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .maxHeight { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .wrap { true, ReflowWrap::eNoWrap },
-            .padding { true, Padding { 0.F } },
-            .margin { true, Margin { 0.F } },
-            .color { true, engine::color { 0.F, 0.F, 0.F, 0.F } }
-        }
-    );
-
-    style->pushStyle(
-        {
-            AssocKey<string>::from(R"(TreeItem::Selected)"),
-            styleIsSelected,
-            make_sptr<StyleSheet>()
-        }
-    );
-
-    return style;
-}
-
 TreeItem::TreeItem() :
-    HBox(makeStyleSheet()),
+    HorizontalPanel(),
     _selected(false) {}
 
 TreeItem::~TreeItem() = default;

@@ -2,12 +2,10 @@
 #include <Heliogrim/ActorComponent.hpp>
 #include <Engine.Reflow/Widget/Widget.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-#include <Engine.Reflow/Style/StyleCondition.hpp>
 
 #include "HierarchyGenerator.hpp"
 #include "SceneViewEntry.hpp"
-#include "../../Style/Style.hpp"
+#include "Editor.UI/Theme/Theme.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
@@ -18,19 +16,16 @@ sptr<Widget> HierarchyGenerator<sptr<SceneViewEntry>>::operator()(
     cref<sptr<SceneViewEntry>> source_
 ) const {
 
+    const auto* const theme = Theme::get();
+
+    /**/
+
     if (source_->type() == SceneViewEntryType::eActor) {
 
         const ptr<Actor> actor { source_->target<Actor>() };
 
-        auto txt { make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))) };
-        txt->style().color.unset();
-        txt->style().pushStyle(
-            {
-                AssocKey<string>::from(R"(TreeItem::Selected)"),
-                style::isNever,
-                Style::get()->getStyleSheet(Style::TitleRaisedKey)
-            }
-        );
+        auto txt = make_sptr<Text>();
+        theme->applyLabel(txt);
 
         const auto actorGuid = actor->guid();
         txt->setText(
@@ -50,15 +45,8 @@ sptr<Widget> HierarchyGenerator<sptr<SceneViewEntry>>::operator()(
 
         const ptr<ActorComponent> comp { source_->target<ActorComponent>() };
 
-        auto txt { make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))) };
-        txt->style().color.unset();
-        txt->style().pushStyle(
-            {
-                AssocKey<string>::from(R"(TreeItem::Selected)"),
-                style::isNever,
-                Style::get()->getStyleSheet(Style::TitleRaisedKey)
-            }
-        );
+        auto txt = make_sptr<Text>();
+        theme->applyLabel(txt);
 
         u64 depth { 0ui64 };
         auto parent { comp };

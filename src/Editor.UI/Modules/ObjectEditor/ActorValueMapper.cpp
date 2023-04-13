@@ -4,92 +4,19 @@
 
 #include "ObjectValueMapper.hpp"
 #include "../../Widget/Input/InputVec.hpp"
+#include "Editor.UI/Theme/Theme.hpp"
 
-using namespace ::hg::editor::ui;
-using namespace ::hg::engine::reflow;
+using namespace hg::editor::ui;
+using namespace hg::engine::reflow;
 using namespace hg;
 
-[[nodiscard]] static sptr<BoundStyleSheet> makeInputBoxStyle() {
-
-    auto style {
-        BoundStyleSheet::make(
-            StyleSheet {
-                .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .wrap { true, ReflowWrap::eNoWrap },
-                .padding { true, Padding { 4.F, 2.F } },
-                .margin { true, Margin { 0.F } },
-                .reflowShrink { true, 0.F },
-                .reflowGrow { true, 0.F },
-                .borderRadius = { true, BorderRadius { 4.F } },
-                .color { false, color::Dark::backgroundInnerField }
-            }
-        )
-
-    };
-
-    style->pushStyle(
-        {
-            Style::key_type::from("InputType::Focused"),
-            style::isFocused,
-            make_sptr<StyleSheet>(
-                StyleSheet {
-                    .color { true, color::Dark::backgroundInnerFieldDarken }
-                }
-            )
-        }
-    );
-
-    return style;
-}
-
-[[nodiscard]] static sptr<BoundStyleSheet> makeInputTextStyle() {
-    auto* font { getDefaultFont() };
-
-    auto style {
-        BoundStyleSheet::make(
-            StyleSheet {
-                .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                .color { false, color::Dark::grey },
-                .font { true, font },
-                .fontSize { true, 16.F },
-                .textAlign { true, TextAlign::eLeftMiddle },
-                .textEllipse { true, 1ui32 }
-            }
-        )
-    };
-
-    style->pushStyle(
-        {
-            Style::key_type::from("InputType::Focused"),
-            style::isNever,
-            make_sptr<StyleSheet>(
-                StyleSheet {
-                    .color { true, color::Dark::white }
-                }
-            )
-        }
-    );
-
-    return style;
-}
-
 template <>
-void ObjectValueMapper<Actor>::build(cref<sptr<engine::reflow::Box>> parent_) {
+void ObjectValueMapper<Actor>::build(cref<sptr<VerticalPanel>> parent_) {
 
-    auto actorGuid = make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleKey)));
-    actorGuid->style().minWidth = ReflowUnit { ReflowUnitType::eRelative, 1.F };
-    actorGuid->style().width = ReflowUnit { ReflowUnitType::eRelative, 1.F };
-    actorGuid->style().maxWidth = ReflowUnit { ReflowUnitType::eRelative, 1.F };
+    const auto* const theme = Theme::get();
+
+    auto actorGuid = make_sptr<Text>();
+    theme->applyText(actorGuid);
     actorGuid->setText(R"(<<Actor Guid>>)");
 
     auto pos = make_sptr<InputVec3>();
@@ -118,7 +45,7 @@ void ObjectValueMapper<Actor>::build(cref<sptr<engine::reflow::Box>> parent_) {
 }
 
 template <>
-void ObjectValueMapper<Actor>::update(cref<sptr<engine::reflow::Box>> parent_, const ptr<void> obj_) {
+void ObjectValueMapper<Actor>::update(cref<sptr<VerticalPanel>> parent_, const ptr<void> obj_) {
 
     const auto& actor { *static_cast<ptr<Actor>>(obj_) };
     const auto& mat { actor.getWorldTransform() };
@@ -153,6 +80,6 @@ void ObjectValueMapper<Actor>::update(cref<sptr<engine::reflow::Box>> parent_, c
 }
 
 template <>
-void ObjectValueMapper<Actor>::cleanup(cref<sptr<engine::reflow::Box>> parent_) {
+void ObjectValueMapper<Actor>::cleanup(cref<sptr<VerticalPanel>> parent_) {
     parent_->clearChildren();
 }

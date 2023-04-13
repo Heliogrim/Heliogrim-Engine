@@ -1,8 +1,9 @@
 #pragma once
 
 #include "../Input.hpp"
-#include "../HBox.hpp"
+#include "../HorizontalPanel.hpp"
 #include "../Text.hpp"
+#include "../../Children.hpp"
 
 namespace hg::engine::reflow {
     class InputText :
@@ -11,7 +12,7 @@ namespace hg::engine::reflow {
         using this_type = InputText;
 
     public:
-        InputText(mref<sptr<BoundStyleSheet>> style_, mref<sptr<BoundStyleSheet>> textStyle_);
+        InputText();
 
         ~InputText() override;
 
@@ -19,7 +20,8 @@ namespace hg::engine::reflow {
         [[nodiscard]] string getTag() const noexcept override;
 
     private:
-        sptr<HBox> _wrapper;
+    public:
+        sptr<HorizontalPanel> _wrapper;
         sptr<Text> _text;
 
     private:
@@ -32,24 +34,21 @@ namespace hg::engine::reflow {
     public:
         [[nodiscard]] input_type value() const noexcept override;
 
-    public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override;
-
-        void flow(
-            cref<FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<StyleKeyStack> styleStack_
-        ) override;
-
-        void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
+    private:
+        SingleChildren _children;
 
     public:
-        [[nodiscard]] math::vec2 outerSize() const noexcept override;
+        [[nodiscard]] const ptr<const SingleChildren> children() const override;
 
-        [[nodiscard]] math::vec2 innerSize() const noexcept override;
+    public:
+        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
 
-        [[nodiscard]] math::vec2 screenOffset() const noexcept override;
+    public:
+        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
+
+        math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
+
+        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
 
     public:
         EventResponse onFocus(cref<FocusEvent> event_) override;

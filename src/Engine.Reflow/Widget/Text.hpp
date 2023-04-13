@@ -1,7 +1,9 @@
 #pragma once
 #include "Widget.hpp"
-#include "../Style/__fwd.hpp"
-#include "../Style/StyleSheet.hpp"
+#include "../Children.hpp"
+#include "../ReflowUnit.hpp"
+#include "../TextAlign.hpp"
+#include "../ReflowWrap.hpp"
 
 namespace hg::engine::reflow {
     class Text :
@@ -10,61 +12,60 @@ namespace hg::engine::reflow {
         using this_type = Text;
 
     public:
-        Text(mref<sptr<BoundStyleSheet>> style_);
+        Text();
 
         ~Text() override;
 
     public:
         [[nodiscard]] string getTag() const noexcept override;
 
-    private:
-        sptr<BoundStyleSheet> _style;
-        StyleSheet _computedStyle;
-        string _text;
+    public:
+        struct Attributes {
+            Attribute<ReflowUnit> width;
+            Attribute<ReflowUnit> height;
+
+            Attribute<ptr<Font>> font;
+            Attribute<float> fontSize;
+            Attribute<float> lineHeight;
+
+            Attribute<TextAlign> textAlign;
+            Attribute<u32> textEllipse;
+            Attribute<ReflowWrap> textWrap;
+
+            Attribute<engine::color> color;
+
+            /**/
+
+            Attribute<string> text;
+        } attr;
 
     public:
-        [[nodiscard]] ref<BoundStyleSheet> style() noexcept;
-
-    public:
-        [[nodiscard]] cref<string> getText() const noexcept;
+        [[nodiscard]] string getText() const noexcept;
 
         void setText(cref<string> text_);
 
     private:
         math::vec2 contentSize(cref<math::vec2> space_) const;
 
-    public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override;
-
-        void flow(
-            cref<FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<StyleKeyStack> styleStack_
-        ) override;
-
-        void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
-
     private:
-        math::vec2 _contentSize;
-        math::vec2 _innerSize;
-        math::vec2 _screenOff;
+        NullChildren _children;
 
     public:
-        [[nodiscard]] math::vec2 outerSize() const noexcept override;
+        const ptr<const NullChildren> children() const override;
 
-        [[nodiscard]] math::vec2 innerSize() const noexcept override;
+    public:
+        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
 
-        [[nodiscard]] math::vec2 screenOffset() const noexcept override;
+    public:
+        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
 
-    private:
-        StyleKeyStack::set_type _prevStyle;
-        math::vec2 _prevSpace;
+        math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
+
+        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
 
     public:
         [[nodiscard]] bool willChangeLayout(
-            cref<math::vec2> space_,
-            cref<StyleKeyStack> styleStack_
+            cref<math::vec2> space_
         ) const noexcept override;
     };
 }

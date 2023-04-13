@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Reflow/Widget/Box.hpp>
+#include <Engine.Reflow/Widget/VerticalPanel.hpp>
 
 namespace hg::editor::ui {
     class ObjectValueMapperBase {
@@ -19,11 +19,11 @@ namespace hg::editor::ui {
         virtual ~ObjectValueMapperBase() = default;
 
     public:
-        virtual void update(cref<sptr<engine::reflow::Box>> parent_, const ptr<void> obj_) = 0;
+        virtual void update(cref<sptr<engine::reflow::VerticalPanel>> parent_, const ptr<void> obj_) = 0;
 
-        virtual void build(cref<sptr<engine::reflow::Box>> parent_) = 0;
+        virtual void build(cref<sptr<engine::reflow::VerticalPanel>> parent_) = 0;
 
-        virtual void cleanup(cref<sptr<engine::reflow::Box>> parent_) = 0;
+        virtual void cleanup(cref<sptr<engine::reflow::VerticalPanel>> parent_) = 0;
     };
 
     template <typename ObjectType_>
@@ -38,19 +38,22 @@ namespace hg::editor::ui {
         ~ObjectValueMapper() override = default;
 
     public:
-        void update(cref<sptr<engine::reflow::Box>> parent_, const ptr<void> obj_) override;
+        void update(cref<sptr<engine::reflow::VerticalPanel>> parent_, const ptr<void> obj_) override;
 
-        void build(cref<sptr<engine::reflow::Box>> parent_) override;
+        void build(cref<sptr<engine::reflow::VerticalPanel>> parent_) override;
 
-        void cleanup(cref<sptr<engine::reflow::Box>> parent_) override;
+        void cleanup(cref<sptr<engine::reflow::VerticalPanel>> parent_) override;
     };
 
     template <>
-    inline void ObjectValueMapper<void>::update(cref<sptr<engine::reflow::Box>> parent_, const ptr<void> obj_) {}
+    inline void ObjectValueMapper<void>::update(
+        cref<sptr<engine::reflow::VerticalPanel>> parent_,
+        const ptr<void> obj_
+    ) {}
 
     template <>
-    inline void ObjectValueMapper<void>::build(cref<sptr<engine::reflow::Box>> parent_) {}
+    inline void ObjectValueMapper<void>::build(cref<sptr<engine::reflow::VerticalPanel>> parent_) {}
 
     template <>
-    inline void ObjectValueMapper<void>::cleanup(cref<sptr<engine::reflow::Box>> parent_) {}
+    inline void ObjectValueMapper<void>::cleanup(cref<sptr<engine::reflow::VerticalPanel>> parent_) {}
 }
