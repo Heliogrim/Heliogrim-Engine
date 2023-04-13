@@ -3,8 +3,8 @@
 #include <Engine.GFX/Swapchain/__fwd.hpp>
 
 #include "Widget.hpp"
-#include "../Style/__fwd.hpp"
-#include "../Style/StyleSheet.hpp"
+#include "../Children.hpp"
+#include "../ReflowUnit.hpp"
 
 namespace hg {
     class CameraActor;
@@ -17,19 +17,26 @@ namespace hg::engine::reflow {
         using this_type = Viewport;
 
     public:
-        Viewport(mref<sptr<BoundStyleSheet>> style_);
+        Viewport();
 
         ~Viewport() override;
 
     public:
         [[nodiscard]] string getTag() const noexcept override;
 
-    private:
-        void tidy();
+    public:
+        struct Attributes {
+            Attribute<ReflowUnit> minWidth;
+            Attribute<ReflowUnit> width;
+            Attribute<ReflowUnit> maxWidth;
+
+            Attribute<ReflowUnit> minHeight;
+            Attribute<ReflowUnit> height;
+            Attribute<ReflowUnit> maxHeight;
+        } attr;
 
     private:
-        sptr<BoundStyleSheet> _style;
-        StyleSheet _computedStyle;
+        void tidy();
 
     private:
         uptr<gfx::VkSwapchain> _swapchain;
@@ -65,27 +72,17 @@ namespace hg::engine::reflow {
         void removeResizeListener();
 
     public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override;
-
-        void flow(
-            cref<FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<StyleKeyStack> styleStack_
-        ) override;
-
-        void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
-
-    private:
-        math::vec2 _innerSize;
-        math::vec2 _screenOff;
+        const ptr<const NullChildren> children() const override;
 
     public:
-        [[nodiscard]] math::vec2 outerSize() const noexcept override;
+        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
 
-        [[nodiscard]] math::vec2 innerSize() const noexcept override;
+    public:
+        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
 
-        [[nodiscard]] math::vec2 screenOffset() const noexcept override;
+        math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
+
+        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
 
     public:
         EventResponse onFocus(cref<FocusEvent> event_) override;

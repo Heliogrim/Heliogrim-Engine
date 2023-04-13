@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Popup.hpp"
+#include "../Children.hpp"
 
 namespace hg::engine::reflow {
     class Menu :
@@ -22,7 +23,10 @@ namespace hg::engine::reflow {
         void closeMenu();
 
     private:
-        sptr<Widget> _content;
+        SingleChildren _children;
+
+    public:
+        [[nodiscard]] const ptr<const SingleChildren> children() const override;
 
     public:
         [[nodiscard]] sptr<Widget> getContent() const noexcept;
@@ -30,24 +34,14 @@ namespace hg::engine::reflow {
         void setContent(cref<sptr<Widget>> content_);
 
     public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override;
-
-        void flow(
-            cref<FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<StyleKeyStack> styleStack_
-        ) override;
-
-        void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
+        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
 
     public:
-        [[nodiscard]] const ptr<const Children> children() const override;
+        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
 
-    public:
-        [[nodiscard]] math::vec2 outerSize() const noexcept override;
+        math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
 
-        [[nodiscard]] math::vec2 innerSize() const noexcept override;
+        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
 
     public:
         EventResponse onFocus(cref<FocusEvent> event_) override;

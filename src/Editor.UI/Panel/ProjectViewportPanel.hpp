@@ -1,13 +1,13 @@
 #pragma once
-#include <Engine.Reflow/Widget/Panel.hpp>
+#include <Engine.Reflow/Widget/VerticalPanel.hpp>
 
 namespace hg::editor::ui {
     class ProjectViewportPanel :
-        public engine::reflow::Panel {
+        public engine::reflow::VerticalPanel {
     protected:
         ProjectViewportPanel();
 
     public:
-        static sptr<Panel> make();
+        static sptr<ProjectViewportPanel> make();
     };
 }

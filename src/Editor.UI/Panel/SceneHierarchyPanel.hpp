@@ -1,12 +1,12 @@
 #pragma once
 #include <Engine.Common/Make.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-#include <Engine.Reflow/Widget/Panel.hpp>
+#include <Engine.Reflow/Widget/VerticalPanel.hpp>
 #include <Engine.Reflow/Widget/Tree/TreeView.hpp>
+#include <Engine.Reflow/Widget/Scroll/VScrollBox.hpp>
 
 #include "../Color/Dark.hpp"
 #include "../Modules/SceneHierarchy.hpp"
-#include "../Style/Style.hpp"
+#include "Engine.Reflow/ReflowUnit.hpp"
 
 #if TRUE
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
@@ -16,12 +16,12 @@
 
 namespace hg::editor::ui {
     class SceneHierarchyPanel :
-        public engine::reflow::Panel {
+        public engine::reflow::VerticalPanel {
     protected:
         SceneHierarchyPanel();
 
     private:
-        sptr<Box> _content;
+        sptr<engine::reflow::VScrollBox> _content;
 
     private:
     public:
@@ -60,16 +60,12 @@ namespace hg::editor::ui {
                 _content->clearChildren();
 
                 // Store new tree
-                auto style {
-                    engine::reflow::BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))
-                };
-                style->maxHeight->type = engine::reflow::ReflowUnitType::eAuto;
-                style->maxHeight->value = 0.F;
-                style->reflowShrink = 0.F;
-                style->reflowGrow = 0.F;
-                style->color = color::Dark::backgroundInnerField;
+                tree = make_sptr<tree_view_type>();
+                tree->attr.width.setValue({ engine::reflow::ReflowUnitType::eRelative, 1.F });
+                tree->attr.maxWidth.setValue({ engine::reflow::ReflowUnitType::eRelative, 1.F });
+                tree->attr.height.setValue({ engine::reflow::ReflowUnitType::eRelative, 1.F });
+                tree->attr.maxHeight.setValue({ engine::reflow::ReflowUnitType::eAuto, 0.F });
 
-                tree = make_sptr<tree_view_type>(_STD move(style));
                 _content->addChild(tree);
 
                 /**/

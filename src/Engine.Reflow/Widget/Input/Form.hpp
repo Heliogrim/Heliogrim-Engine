@@ -21,7 +21,10 @@ namespace hg::engine::reflow {
         [[nodiscard]] string getTag() const noexcept override;
 
     private:
-        Children _children;
+        SingleChildren _children;
+
+    public:
+        [[nodiscard]] const ptr<const SingleChildren> children() const override;
 
     public:
         void setContent(cref<sptr<Widget>> content_);
@@ -42,25 +45,13 @@ namespace hg::engine::reflow {
         );
 
     public:
-        [[nodiscard]] const ptr<const Children> children() const override;
+        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
 
     public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override;
+        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
 
-        void flow(
-            cref<FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<StyleKeyStack> styleStack_
-        ) override;
+        math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
 
-        void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
-
-    public:
-        [[nodiscard]] math::vec2 outerSize() const noexcept override;
-
-        [[nodiscard]] math::vec2 innerSize() const noexcept override;
-
-        [[nodiscard]] math::vec2 screenOffset() const noexcept override;
+        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
     };
 }

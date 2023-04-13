@@ -1,130 +1,108 @@
 #include "SceneHierarchyPanel.hpp"
 
 #include <Engine.Common/Make.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-#include <Engine.Reflow/Widget/HBox.hpp>
+#include <Engine.Reflow/Widget/HorizontalPanel.hpp>
 #include <Engine.Reflow/Widget/Scroll/VScrollBox.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Reflow/Widget/Button.hpp>
-#include <Engine.Reflow/Style/StyleCondition.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
 
-#include "../Style/Style.hpp"
 #include "../Color/Dark.hpp"
+#include "Editor.UI/Theme/Theme.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
 using namespace hg;
 
 SceneHierarchyPanel::SceneHierarchyPanel() :
-    Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))),
+    VerticalPanel(),
     _content(nullptr),
     _module(nullptr),
-    _resolver(nullptr) {}
+    _resolver(nullptr),
+    _generator(nullptr) {
+    /**/
+    attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    attr.flexShrink.setValue(1.F);
+    attr.flexGrow.setValue(1.F);
+}
 
-static void configureNav(cref<sptr<HBox>> navBar_) {
+static void configureNav(cref<sptr<HorizontalPanel>> navBar_) {
 
-    const auto title { make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))) };
-    title->style().margin = Margin { 0.F, 4.F };
+    const auto* const theme = Theme::get();
+
+    const auto title = make_sptr<Text>();
+    theme->applyLabel(title);
     title->setText("Scene Hierarchy");
     navBar_->addChild(title);
 
     /**/
 
-    auto btnStyle { BoundStyleSheet::make() };
-    btnStyle->pushStyle({ Style::ButtonKey, nullptr, Style::get()->getStyleSheet(Style::ButtonKey) });
-    btnStyle->pushStyle(
-        {
-            Style::ButtonRaisedKey,
-            style::isRaised,
-            Style::get()->getStyleSheet(Style::ButtonRaisedKey)
-        }
-    );
+    const auto closeButton { make_sptr<Button>() };
+    theme->applyTextButton(closeButton);
 
-    auto txtStyle { BoundStyleSheet::make() };
-    txtStyle->pushStyle({ Style::TitleSmallKey, nullptr, Style::get()->getStyleSheet(Style::TitleSmallKey) });
-    txtStyle->pushStyle(
-        {
-            Style::ButtonRaisedKey,
-            style::isNever,
-            Style::get()->getStyleSheet(Style::TitleRaisedKey)
-        }
-    );
-
-    const auto closeButton { make_sptr<Button>(_STD move(btnStyle)) };
-    const auto closeText { make_sptr<Text>(_STD move(txtStyle)) };
+    const auto closeText { make_sptr<Text>() };
+    theme->applyLabel(closeText);
 
     closeText->setText(R"(X)");
-    closeButton->addChild(closeText);
+    closeButton->setChild(closeText);
 
     navBar_->addChild(closeButton);
 }
 
-void configureHeader(cref<sptr<VBox>> header_) {
+void configureHeader(cref<sptr<VerticalPanel>> header_) {
 
-    const auto row { make_sptr<HBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::AdoptFlexBoxKey))) };
-    row->style()->height = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
-    row->style()->maxHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
+    const auto* const theme = Theme::get();
+
+    const auto row {
+        make_sptr<HorizontalPanel>()
+    };
+    row->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    row->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    row->attr.height.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    row->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    row->attr.flexShrink.setValue(1.F);
+    row->attr.flexGrow.setValue(1.F);
 
     /**/
 
-    const auto search {
-        make_sptr<InputText>(
-            BoundStyleSheet::make(
-                StyleSheet {
-                    .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                    .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                    .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                    .padding { true, Padding { 4.F, 2.F } },
-                    .margin { true, Margin { 4.F, 2.F } },
-                    .borderRadius { true, BorderRadius { 4.F } },
-                    .color { true, color::Dark::backgroundInnerField }
-                }
-            ),
-            BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleSmallKey))
-        )
-    };
+    const auto search = make_sptr<InputText>();
 
+    search->_wrapper->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    search->_wrapper->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    search->_wrapper->attr.height.setValue({ ReflowUnitType::eAbsolute, 16.F });
+    search->_wrapper->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 16.F });
+    search->_wrapper->attr.padding.setValue(Padding { 4.F, 2.F });
+    search->_wrapper->attr.flexShrink.setValue(1.F);
+    search->_wrapper->attr.flexGrow.setValue(1.F);
+
+    theme->applyLabel(search->_text);
     search->setPlaceholder(R"(Search Hierarchy...)");
 
     row->addChild(search);
 
     /**/
 
-    auto btnStyle { BoundStyleSheet::make() };
-    btnStyle->pushStyle({ Style::ButtonKey, nullptr, Style::get()->getStyleSheet(Style::ButtonKey) });
-    btnStyle->pushStyle(
-        {
-            Style::ButtonRaisedKey,
-            style::isRaised,
-            Style::get()->getStyleSheet(Style::ButtonRaisedKey)
-        }
-    );
+    const auto homeBtn { make_sptr<Button>() };
+    theme->applyTextButton(homeBtn);
 
-    auto txtStyle { BoundStyleSheet::make() };
-    txtStyle->pushStyle({ Style::TitleSmallKey, nullptr, Style::get()->getStyleSheet(Style::TitleSmallKey) });
-    txtStyle->pushStyle(
-        {
-            Style::ButtonRaisedKey,
-            style::isNever,
-            Style::get()->getStyleSheet(Style::TitleRaisedKey)
-        }
-    );
-
-    const auto homeBtn { make_sptr<Button>(_STD move(btnStyle)) };
-    const auto homeTxt { make_sptr<Text>(_STD move(txtStyle)) };
+    const auto homeTxt { make_sptr<Text>() };
+    theme->applyLabel(homeTxt);
 
     homeTxt->setText(R"(H)");
-    homeBtn->addChild(homeTxt);
+    homeBtn->setChild(homeTxt);
 
     row->addChild(homeBtn);
 }
 
 sptr<SceneHierarchyPanel> SceneHierarchyPanel::make(const non_owning_rptr<SceneHierarchy> module_) {
 
+    const auto* const theme = Theme::get();
+
     auto panel { _STD shared_ptr<SceneHierarchyPanel>(new SceneHierarchyPanel()) };
-    panel->_style->minHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F + 20.F };
+    panel->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F + 20.F });
 
     /**/
 
@@ -132,23 +110,33 @@ sptr<SceneHierarchyPanel> SceneHierarchyPanel::make(const non_owning_rptr<SceneH
 
     /**/
 
-    auto nav { make_sptr<HBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::NavBarKey))) };
-    panel->addChild(nav);
+    auto nav { make_sptr<HorizontalPanel>() };
+    nav->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    nav->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    nav->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    nav->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    nav->attr.padding.setValue(Padding { 4.F, 0.F });
+    nav->attr.justify.setValue(ReflowSpacing::eSpaceBetween);
 
+    panel->addChild(nav);
     configureNav(nav);
 
     /**/
 
-    auto header { make_sptr<VBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::NavBarKey))) };
-    header->style()->minHeight = ReflowUnit { ReflowUnitType::eAbsolute, 20.F };
-    panel->addChild(header);
+    auto header { make_sptr<VerticalPanel>() };
+    header->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    header->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    header->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    header->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    header->attr.padding.setValue(Padding { 4.F, 0.F });
+    header->attr.justify.setValue(ReflowSpacing::eSpaceBetween);
 
+    panel->addChild(header);
     configureHeader(header);
 
     /**/
 
-    auto content { make_sptr<VScrollBox>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::ScrollBoxKey))) };
-    content->style()->color = color::Dark::backgroundInnerField;
+    auto content { make_sptr<VScrollBox>() };
 
     panel->_content = content;
     panel->addChild(content);

@@ -21,15 +21,9 @@
     <ClInclude Include="..\..\src\Engine.Reflow.Schedule\ReflowFlowStage.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflow.Schedule\ReflowShiftStage.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflow.Schedule\ReflowPipeline.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Reflow.Schedule\ReflowShiftStage.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Reflow.Schedule\ReflowFlowStage.cpp">

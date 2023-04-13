@@ -5,96 +5,82 @@
 #include <Engine.Reflow/Widget/Text.hpp>
 #include "Engine.Reflow/Widget/Viewport.hpp"
 
-#include "../Style/Style.hpp"
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-
 #include "Editor.UI/Color/Dark.hpp"
+#include "Editor.UI/Theme/Theme.hpp"
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
+#include "Engine.Reflow/Widget/HorizontalPanel.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
 using namespace hg;
 
 ProjectViewportPanel::ProjectViewportPanel() :
-    Panel(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::DefaultKey))) {}
+    VerticalPanel() {}
 
-static void configureCtrls(cref<sptr<HBox>> parent_) {
+static void configureCtrls(cref<sptr<HorizontalPanel>> parent_) {
 
-    auto playButton = make_sptr<Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TextButtonKey)));
-    auto pauseButton = make_sptr<Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TextButtonKey)));
-    auto stopButton = make_sptr<Button>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TextButtonKey)));
+    const auto* const theme = Theme::get();
+
+    auto playButton = make_sptr<Button>();
+    theme->applyTextButton(playButton);
+
+    auto pauseButton = make_sptr<Button>();
+    theme->applyTextButton(pauseButton);
+
+    auto stopButton = make_sptr<Button>();
+    theme->applyTextButton(stopButton);
 
     /**/
 
-    auto* font { getDefaultFont() };
-    const StyleSheet titleStyle {
-        .color = { true, color::Dark::white },
-        .font = { true, font },
-        .fontSize = { true, 16.F },
-    };
+    auto playText = make_sptr<Text>();
+    theme->applyText(playText);
 
-    auto playText = make_sptr<Text>(BoundStyleSheet::make(titleStyle));
-    auto pauseText = make_sptr<Text>(BoundStyleSheet::make(titleStyle));
-    auto stopText = make_sptr<Text>(BoundStyleSheet::make(titleStyle));
+    auto pauseText = make_sptr<Text>();
+    theme->applyText(pauseText);
+
+    auto stopText = make_sptr<Text>();
+    theme->applyText(stopText);
 
     /**/
 
     playText->setText("Play");
-    playButton->addChild(playText);
+    playButton->setChild(playText);
     parent_->addChild(playButton);
 
     /**/
 
     pauseText->setText("Pause");
-    pauseButton->addChild(pauseText);
+    pauseButton->setChild(pauseText);
     parent_->addChild(pauseButton);
 
     /**/
 
     stopText->setText("Play");
-    stopButton->addChild(stopText);
+    stopButton->setChild(stopText);
     parent_->addChild(stopButton);
 }
 
-static void configureViewport(cref<sptr<HBox>> parent_) {
-    auto viewport = make_sptr<Viewport>(
-        BoundStyleSheet::make(
-            StyleSheet {
-                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .color = { true, color::Dark::white }
-            }
-        )
-    );
+static void configureViewport(cref<sptr<HorizontalPanel>> parent_) {
+    auto viewport = make_sptr<Viewport>();
+    viewport->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewport->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
     parent_->addChild(viewport);
 }
 
-sptr<Panel> ProjectViewportPanel::make() {
+sptr<ProjectViewportPanel> ProjectViewportPanel::make() {
 
     auto panel { _STD shared_ptr<ProjectViewportPanel>(new ProjectViewportPanel()) };
 
-    auto ctrls = make_sptr<HBox>(
-        BoundStyleSheet::make(
-            StyleSheet {
-                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .minHeight = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
-                .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-                .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
-                .color = { true, color::Dark::backgroundDefault },
-            }
-        )
-    );
-    auto wrapper = make_sptr<HBox>(
-        BoundStyleSheet::make(
-            StyleSheet {
-                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
-                .reflowShrink = { true, 1.F },
-                .color = { true, color::Dark::backgroundDefault },
-            }
-        )
-    );
+    auto ctrls = make_sptr<HorizontalPanel>();
+    ctrls->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    ctrls->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 24.F });
+    ctrls->attr.justify.setValue(ReflowSpacing::eSpaceAround);
+
+    auto wrapper = make_sptr<HorizontalPanel>();
+    wrapper->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    wrapper->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
+    wrapper->attr.justify.setValue(ReflowSpacing::eSpaceAround);
+    wrapper->attr.flexShrink.setValue(1.F);
 
     configureCtrls(ctrls);
     configureViewport(wrapper);

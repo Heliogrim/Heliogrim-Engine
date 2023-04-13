@@ -2,8 +2,8 @@
 #include <filesystem>
 #include <Engine.Filesystem/Url.hpp>
 #include <Engine.Reflow/Widget/__fwd.hpp>
-#include <Engine.Reflow/Widget/Panel.hpp>
-#include <Engine.Reflow/Widget/HBox.hpp>
+#include <Engine.Reflow/Widget/VerticalPanel.hpp>
+#include <Engine.Reflow/Widget/HorizontalPanel.hpp>
 
 namespace hg::editor::ui {
     class AssetBrowser;
@@ -11,7 +11,7 @@ namespace hg::editor::ui {
 
 namespace hg::editor::ui {
     class AssetBrowserPanel :
-        public engine::reflow::Panel {
+        public engine::reflow::VerticalPanel {
     protected:
         AssetBrowserPanel();
 
@@ -33,9 +33,9 @@ namespace hg::editor::ui {
         sptr<Widget> _items;
 
     private:
-        [[nodiscard]] sptr<engine::reflow::HBox> getNavContainer() const;
+        [[nodiscard]] sptr<engine::reflow::HorizontalPanel> getNavContainer() const;
 
-        [[nodiscard]] sptr<engine::reflow::HBox> getItemContainer() const;
+        [[nodiscard]] sptr<engine::reflow::HorizontalPanel> getItemContainer() const;
 
         void dropNav();
 

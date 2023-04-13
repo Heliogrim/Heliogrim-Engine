@@ -1,14 +1,11 @@
 #pragma once
-#include <Engine.Reflow/Widget/HBox.hpp>
-
-#include <Engine.Reflow/Children.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-
 #include <Editor.GFX.Graphs/Node/__fwd.hpp>
+#include <Engine.Reflow/Children.hpp>
+#include <Engine.Reflow/Widget/HorizontalPanel.hpp>
 
 namespace hg::editor::ui {
     class BoardNodeSlot :
-        public engine::reflow::HBox {
+        public engine::reflow::HorizontalPanel {
     public:
         using this_type = BoardNodeSlot;
 

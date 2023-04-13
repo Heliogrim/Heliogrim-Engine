@@ -52,12 +52,6 @@
     <Filter Include="Quelldateien\Menu">
       <UniqueIdentifier>{f60b0592-ee1e-46b4-9d6f-75bd958ae63c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Style">
-      <UniqueIdentifier>{c9ae16bc-abd2-43b1-a6d7-2ff38d98944a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Style">
-      <UniqueIdentifier>{46e2f6d0-666a-4acf-bae8-4f9265038837}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Modules\ObjectEditor">
       <UniqueIdentifier>{d0e0e63e-b965-4753-a308-f74f28324308}</UniqueIdentifier>
     </Filter>
@@ -87,6 +81,12 @@
     </Filter>
     <Filter Include="Quelldateien\Widget\Board">
       <UniqueIdentifier>{01752f51-aac8-4fd9-abd3-eca8e592d477}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Theme">
+      <UniqueIdentifier>{1ce9b41d-49be-49d0-bd02-2ec752636753}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Theme">
+      <UniqueIdentifier>{919fd311-a43e-4274-a17e-23ef73e6b3be}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -119,9 +119,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Editor.UI\Menu\ContextMenu.hpp">
       <Filter>Headerdateien\Menu</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Editor.UI\Style\Style.hpp">
-      <Filter>Headerdateien\Style</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Editor.UI\Widget\Breadcrumb.hpp">
       <Filter>Headerdateien\Widget</Filter>
@@ -180,6 +177,12 @@
     <ClInclude Include="..\..\src\Editor.UI\Widget\Board\BoardNodeSlot.hpp">
       <Filter>Headerdateien\Widget\Board</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Theme\Theme.hpp">
+      <Filter>Headerdateien\Theme</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Editor.UI\Theme\DarkTheme.hpp">
+      <Filter>Headerdateien\Theme</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.UI\Panel\AssetBrowserPanel.cpp">
@@ -208,9 +211,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.UI\Widget\AssetImportTypeItem.cpp">
       <Filter>Quelldateien\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Editor.UI\Style\Style.cpp">
-      <Filter>Quelldateien\Style</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.UI\Widget\Breadcrumb.cpp">
       <Filter>Quelldateien\Widget</Filter>
@@ -242,9 +242,6 @@
     <ClCompile Include="..\..\src\Editor.UI\Widget\Collapse.cpp">
       <Filter>Quelldateien\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Editor.UI\Widget\Input\InputVec.cpp">
-      <Filter>Quelldateien\Widget\Input</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Editor.UI\Modules\AssetBrowser\AssetRegistryBrowserProvider.cpp">
       <Filter>Quelldateien\Modules\AssetBrowser</Filter>
     </ClCompile>
@@ -262,6 +259,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.UI\Widget\Board\BoardNodeSlot.cpp">
       <Filter>Quelldateien\Widget\Board</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Theme\Theme.cpp">
+      <Filter>Quelldateien\Theme</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Theme\DarkTheme.cpp">
+      <Filter>Quelldateien\Theme</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

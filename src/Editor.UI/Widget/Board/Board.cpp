@@ -1,7 +1,6 @@
 #include "Board.hpp"
 
-#include <Engine.Reflow/Algorithm/Fragments.hpp>
-#include <Engine.Reflow/Layout/Constraints.hpp>
+#include <Engine.Reflow/Layout/Style.hpp>
 
 #include "Editor.UI/Color/Dark.hpp"
 
@@ -11,18 +10,17 @@ using namespace hg;
 
 Board::Board() :
     Widget(),
-    _style(
-        BoundStyleSheet::make(
-            StyleSheet {
-                .minWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .minHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .color = { true, color::Dark::backgroundInnerFieldDarken }
-            }
-        )
-    ) {}
+    attr(
+        Attributes {
+            .minWidth = { this, { ReflowUnitType::eRelative, 1.F } },
+            .width = { this, { ReflowUnitType::eRelative, 1.F } },
+            .maxWidth = { this, { ReflowUnitType::eRelative, 1.F } },
+            .minHeight = { this, { ReflowUnitType::eRelative, 1.F } },
+            .height = { this, { ReflowUnitType::eRelative, 1.F } },
+            .maxHeight = { this, { ReflowUnitType::eRelative, 1.F } }
+        }
+    ),
+    _expMouseHold(false) {}
 
 Board::~Board() = default;
 
@@ -141,45 +139,45 @@ const ptr<const Children> Board::children() const {
 }
 
 void Board::addChild(cref<sptr<Widget>> child_) {
+    child_->setParent(shared_from_this());
     return _children.push_back(child_);
 }
 
-void Board::render(const ptr<ReflowCommandBuffer> cmd_) {
+void Board::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
 
     /**
      * TODO: Generate background image like "Graph Format" of Windows Whiteboard -> Adaptive Grid-Lines
      * TODO: We might need support for shader code to maintain performant display of certain features
      */
 
-    const auto inner = innerSize();
-    const math::vec2 off = screenOffset() + math::vec2 { _computedStyle.margin.attr.x, _computedStyle.margin.attr.y };
+    const auto offset = _state.layoutOffset;
+    const auto size = _state.layoutSize;
 
     const auto scissor = math::fExtent2D {
-        inner.x, inner.y,
-        off.x, off.y
+        size.x, size.y,
+        offset.x, offset.y
     };
     cmd_->pushIntersectScissor(scissor);
 
     /**/
 
-    const auto drawRectSize = inner + math::vec2 {
-        _computedStyle.padding.attr.x + _computedStyle.padding.attr.z,
-        _computedStyle.padding.attr.y + _computedStyle.padding.attr.w
-    };
+    const math::vec2 c0 { offset.x, offset.y };
+    const math::vec2 c1 { offset.x + size.x, offset.y };
+    const math::vec2 c2 { offset.x + size.x, offset.y + size.y };
+    const math::vec2 c3 { offset.x, offset.y + size.y };
 
-    const math::vec2 c0 { off.x, off.y };
-    const math::vec2 c1 { off.x + drawRectSize.x, off.y };
-    const math::vec2 c2 { off.x + drawRectSize.x, off.y + drawRectSize.y };
-    const math::vec2 c3 { off.x, off.y + drawRectSize.y };
-
-    cmd_->drawQuad(c0, c1, c2, c3, _computedStyle.color.attr);
+    // TODO:
+    cmd_->drawQuad(c0, c1, c2, c3, color::Dark::backgroundInnerFieldDarken);
 
     /**/
 
     /* TODO: Relocate */
     for (const auto& child : *children()) {
-        if (child->state().isVisible() && not cmd_->scissorCull(child->screenOffset(), child->outerSize())) {
-            child->render(cmd_);
+        if (child->state().isVisible() && not cmd_->scissorCull(
+            child->state().layoutOffset,
+            child->state().layoutSize
+        )) {
+            child->render(state_, cmd_);
         }
     }
 
@@ -188,119 +186,57 @@ void Board::render(const ptr<ReflowCommandBuffer> cmd_) {
     cmd_->popScissor();
 }
 
-void Board::flow(
-    cref<FlowContext> ctx_,
-    cref<math::vec2> space_,
-    cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_
-) {
+math::vec2 Board::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
 
-    styleStack_.pushLayer();
-    _computedStyle = _style->compute(shared_from_this(), styleStack_);
-
-    /**/
-
-    math::vec2 local = algorithm::calcImplicitInnerSize(_computedStyle, space_, limit_);
-    // algorithm::applyPaddingToOuter(_computedStyle, local); // Board should ignore padding
-
-    /**/
-
-    for (const auto& widget : *children()) {
-
-        constexpr math::vec2 limit { _STD numeric_limits<float>::infinity() };
-
-        if (widget->willChangeLayout(local, styleStack_)) {
-            widget->flow(ctx_, local, limit, styleStack_);
-        }
+    math::vec2 desired { 0.F };
+    if (attr.width->type == ReflowUnitType::eAbsolute) {
+        desired.x = attr.width->value;
+    }
+    if (attr.height->type == ReflowUnitType::eAbsolute) {
+        desired.y = attr.height->value;
     }
 
-    /**/
-
-    // We don't accommodate for overflow sizes, cause board is meant be have infinite space
-
-    /**
-     * Content State
-     */
-    _innerSize = local;
-    styleStack_.popLayer();
-
-    /**
-     * State Changes
-     */
-    clearPending();
-    markCaptureState();
-
-    _prevSpace = space_;
-    _prevStyleStack.clear();
-    styleStack_.compress(_prevStyleStack);
+    return layout::clampSizeAbs(attr, desired);
 }
 
-void Board::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
+math::vec2 Board::computeDesiredSize(
+    cref<ReflowPassState> passState_
+) const {
 
-    if (_screenOff != offset_ || _prevOffCenter != _offCenter) {
-        markCaptureState();
+    math::vec2 desired = getDesiredSize();
+    if (attr.width->type == ReflowUnitType::eRelative) {
+        desired.x = passState_.referenceSize.x * attr.width->value;
+    }
+    if (attr.height->type == ReflowUnitType::eRelative) {
+        desired.y = passState_.referenceSize.y * attr.height->value;
     }
 
-    _screenOff = offset_;
-    _prevOffCenter = _offCenter;
-
-    /**/
-
-    const auto halfSize = _innerSize / 2.F;
-    const math::vec2 offset = offset_ + _offCenter + halfSize;
-
-    for (const auto& widget : *children()) {
-
-        /**
-         * We assume that all direct children of board should be handles with absolute positioning
-         *  Note: Children should use there margin style parameter to define the offset to the board center.
-         */
-
-        widget->shift(ctx_, offset);
-    }
-
-    /**/
-
-    clearShiftState();
+    return layout::clampSize(
+        attr,
+        passState_.layoutSize,
+        desired
+    );
 }
 
-math::vec2 Board::outerSize() const noexcept {
+#include "BoardNode.hpp"
 
-    auto size { innerSize() };
+void Board::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
 
-    if (not _computedStyle.padding.attr.zero()) {
-        size.x += _computedStyle.padding.attr.x;
-        size.x += _computedStyle.padding.attr.z;
+    const auto halfSize = ctx_.localSize / 2.F;
+    const math::vec2 offset = ctx_.localOffset + halfSize + _offCenter;
 
-        size.y += _computedStyle.padding.attr.y;
-        size.y += _computedStyle.padding.attr.w;
+    for (const auto& child : *children()) {
+
+        // Warning: Unsafe
+        const auto node = _STD static_pointer_cast<BoardNode>(child);
+
+        // TODO: We need to recalc the offset per child to apply the transformation offset
+        // TODO: Check whether we should care about the external layout size, cause graph should work absolute
+        const auto state = state_.getStateOf(child);
+        state->layoutOffset = offset + node->getBoardPosition();
+        state->layoutSize = child->getDesiredSize();
     }
 
-    if (not _computedStyle.border.attr.zero()) {
-        size.x += _computedStyle.border.attr.x;
-        size.x += _computedStyle.border.attr.z;
-
-        size.y += _computedStyle.border.attr.y;
-        size.y += _computedStyle.border.attr.w;
-    }
-
-    if (not _computedStyle.margin.attr.zero()) {
-        size.x += _computedStyle.margin.attr.x;
-        size.x += _computedStyle.margin.attr.z;
-
-        size.y += _computedStyle.margin.attr.y;
-        size.y += _computedStyle.margin.attr.w;
-    }
-
-    return size;
-}
-
-math::vec2 Board::innerSize() const noexcept {
-    return _innerSize;
-}
-
-math::vec2 Board::screenOffset() const noexcept {
-    return _screenOff;
 }
 
 math::vec2 Board::offCenter() const noexcept {
@@ -311,13 +247,9 @@ float Board::zoomFactor() const noexcept {
     return _offCenter.z;
 }
 
-bool Board::willChangeLayout(cref<math::vec2> space_, cref<StyleKeyStack> styleStack_) const noexcept {
+bool Board::willChangeLayout(cref<math::vec2> space_) const noexcept {
 
     if (_state.isProxyPending()) {
-        return true;
-    }
-
-    if (layout::hasStyleChanged(_prevStyleStack, styleStack_)) {
         return true;
     }
 
@@ -325,9 +257,5 @@ bool Board::willChangeLayout(cref<math::vec2> space_, cref<StyleKeyStack> styleS
         return true;
     }
 
-    if (_prevSpace != space_) {
-        return not layout::hasConstSize(_computedStyle);
-    }
-
-    return Widget::willChangeLayout(space_, styleStack_);
+    return Widget::willChangeLayout(space_);
 }

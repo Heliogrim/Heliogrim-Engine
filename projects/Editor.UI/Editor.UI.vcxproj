@@ -112,7 +112,8 @@
     <ClInclude Include="..\..\src\Editor.UI\Panel\ObjectEditorPanel.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Panel\ProjectViewportPanel.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Panel\SceneHierarchyPanel.hpp" />
-    <ClInclude Include="..\..\src\Editor.UI\Style\Style.hpp" />
+    <ClInclude Include="..\..\src\Editor.UI\Theme\DarkTheme.hpp" />
+    <ClInclude Include="..\..\src\Editor.UI\Theme\Theme.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Widget\AssetBrowserItem.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Widget\AssetImportTypeItem.hpp" />
     <ClInclude Include="..\..\src\Editor.UI\Widget\Board\Board.hpp" />
@@ -141,7 +142,8 @@
     <ClCompile Include="..\..\src\Editor.UI\Panel\ObjectEditorPanel.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Panel\ProjectViewportPanel.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Panel\SceneHierarchyPanel.cpp" />
-    <ClCompile Include="..\..\src\Editor.UI\Style\Style.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Theme\DarkTheme.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Theme\Theme.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Widget\AssetBrowserItem.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Widget\AssetImportTypeItem.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Widget\Board\Board.cpp" />
@@ -151,7 +153,6 @@
     <ClCompile Include="..\..\src\Editor.UI\Widget\Breadcrumb.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Widget\Collapse.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Widget\Input\InputAsset.cpp" />
-    <ClCompile Include="..\..\src\Editor.UI\Widget\Input\InputVec.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Heliogrim\Heliogrim.vcxproj">

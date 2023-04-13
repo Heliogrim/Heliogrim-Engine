@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Popup.hpp"
-#include "../Style/__fwd.hpp"
-#include "../Style/StyleSheet.hpp"
 #include "../Children.hpp"
+#include "../ReflowUnit.hpp"
+#include "../Padding.hpp"
 
 namespace hg::engine::reflow {
     class Dialog :
@@ -12,12 +12,27 @@ namespace hg::engine::reflow {
         using this_type = Dialog;
 
     public:
-        Dialog(mref<sptr<BoundStyleSheet>> style_);
+        Dialog();
 
         ~Dialog() override;
 
     public:
         [[nodiscard]] string getTag() const noexcept override;
+
+    public:
+        struct Attributes {
+            Attribute<ReflowUnit> minWidth;
+            Attribute<ReflowUnit> width;
+            Attribute<ReflowUnit> maxWidth;
+
+            Attribute<ReflowUnit> minHeight;
+            Attribute<ReflowUnit> height;
+            Attribute<ReflowUnit> maxHeight;
+
+            Attribute<Padding> padding;
+
+            Attribute<engine::color> color;
+        } attr;
 
     private:
         bool _resizable;
@@ -26,45 +41,28 @@ namespace hg::engine::reflow {
         string _title;
 
     private:
-        sptr<Widget> _titleBar;
-        sptr<Widget> _content;
+        FixedChildren<2> _children;
 
-        Children _children;
-
-        sptr<BoundStyleSheet> _style;
-        StyleSheet _computedStyle;
-
-    private:
-        void repackChildren();
+    public:
+        [[nodiscard]] const ptr<const Children> children() const override;
 
     public:
         [[nodiscard]] sptr<Widget> getTitleBar() const noexcept;
+
+        void setTitleBar(cref<sptr<Widget>> titleBar_);
 
         [[nodiscard]] sptr<Widget> getContent() const noexcept;
 
         void setContent(cref<sptr<Widget>> content_);
 
     public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override;
-
-        void flow(
-            cref<FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<StyleKeyStack> styleStack_
-        ) override;
-
-        void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
+        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
 
     public:
-        [[nodiscard]] const ptr<const Children> children() const override;
+        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
 
-    private:
-        math::vec2 _compositeSize;
+        math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
 
-    public:
-        [[nodiscard]] math::vec2 outerSize() const noexcept override;
-
-        [[nodiscard]] math::vec2 innerSize() const noexcept override;
+        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
     };
 }

@@ -138,7 +138,7 @@ sptr<Window> WindowManager::resolveWindow(cref<math::ivec2> position_) const noe
     for (const auto& entry : _windows) {
 
         const auto* const wnd { entry->window.get() };
-        if (intersects(wnd->screenOffset(), wnd->outerSize(), pos)) {
+        if (intersects(wnd->state().layoutOffset, wnd->state().layoutSize, pos)) {
             return entry->window;
         }
     }

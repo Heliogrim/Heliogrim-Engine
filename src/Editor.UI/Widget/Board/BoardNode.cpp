@@ -1,70 +1,50 @@
 #include "BoardNode.hpp"
 
 #include "../../Color/Dark.hpp"
-#include "Editor.UI/Style/Style.hpp"
 #include <Engine.Common/Make.hpp>
-#include <Engine.Reflow/Widget/HBox.hpp>
+#include <Engine.Reflow/Widget/HorizontalPanel.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 
 #include <Editor.GFX.Graphs/Node/Node.hpp>
 #include "BoardNodeSlot.hpp"
+#include "Editor.UI/Theme/Theme.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg::editor::ui;
 using namespace hg::editor;
 using namespace hg;
 
-/**/
-
-static sptr<BoundStyleSheet> makeBoardNodeStyle();
-
-/**/
-
-static sptr<BoundStyleSheet> makeHeaderStyle();
-
-static sptr<BoundStyleSheet> makeHeaderSymbolStyle();
-
-static sptr<BoundStyleSheet> makeHeaderBoxStyle();
-
-static sptr<BoundStyleSheet> makeHeaderTitleStyle();
-
-static sptr<BoundStyleSheet> makeHeaderSubtitleStyle();
-
-/**/
-
-static sptr<BoundStyleSheet> makeBodyStyle();
-
-static sptr<BoundStyleSheet> makeBodyTripletStyle();
-
-/**/
-
 BoardNode::BoardNode() :
-    VBox(makeBoardNodeStyle()) {}
+    VerticalPanel() {
+    /**/
+    attr.padding.setValue(Padding { 6.F });
+    attr.justify.setValue(ReflowSpacing::eSpaceAround);
+}
 
 BoardNode::~BoardNode() = default;
 
 string BoardNode::getTag() const noexcept {
-    return VBox::getTag();
+    return VerticalPanel::getTag();
 }
 
 engine::reflow::EventResponse BoardNode::onFocus(cref<engine::reflow::FocusEvent> event_) {
-    return VBox::onFocus(event_);
+    return VerticalPanel::onFocus(event_);
 }
 
 engine::reflow::EventResponse BoardNode::onBlur(cref<engine::reflow::FocusEvent> event_) {
-    return VBox::onBlur(event_);
+    return VerticalPanel::onBlur(event_);
 }
 
 engine::reflow::EventResponse BoardNode::onMouseButtonDown(cref<engine::reflow::MouseEvent> event_) {
-    return VBox::onMouseButtonDown(event_);
+    return VerticalPanel::onMouseButtonDown(event_);
 }
 
 engine::reflow::EventResponse BoardNode::onMouseButtonUp(cref<engine::reflow::MouseEvent> event_) {
-    return VBox::onMouseButtonUp(event_);
+    return VerticalPanel::onMouseButtonUp(event_);
 }
 
 engine::reflow::EventResponse BoardNode::onMouseMove(cref<engine::reflow::MouseMoveEvent> event_) {
-    return VBox::onMouseMove(event_);
+    return VerticalPanel::onMouseMove(event_);
 }
 
 void BoardNode::addInputSlot(mref<sptr<BoardNodeSlot>> slot_) {
@@ -79,24 +59,48 @@ void BoardNode::addOutputSlot(mref<sptr<BoardNodeSlot>> slot_) {
     outputs->addChild(_STD move(slot_));
 }
 
+cref<math::vec2> BoardNode::getBoardPosition() const noexcept {
+    return _position;
+}
+
+void BoardNode::setBoardPosition(cref<math::vec2> position_) {
+    _position = position_;
+}
+
 sptr<BoardNode> BoardNode::make(sptr<hg::editor::gfx::graph::Node> node_) {
+
+    const auto* const theme = Theme::get();
 
     auto widget = sptr<BoardNode>(new BoardNode());
 
     /**/
 
-    auto header = make_sptr<HBox>(makeHeaderStyle());
+    auto header = make_sptr<HorizontalPanel>();
+    header->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 24.F });
+    header->attr.justify.setValue(ReflowSpacing::eEnd);
+    header->attr.flexShrink.setValue(1.F);
+    header->attr.flexGrow.setValue(1.F);
+
     widget->addChild(header);
 
-    auto symbol = make_sptr<Text>(makeHeaderSymbolStyle());
+    auto symbol = make_sptr<Text>();
     symbol->setText("F");
+
+    theme->applyText(symbol);
+    symbol->attr.fontSize.setValue(24.F);
 
     header->addChild(symbol);
 
-    auto titleBox = make_sptr<VBox>(makeHeaderBoxStyle());
+    auto titleBox = make_sptr<VerticalPanel>();
+    titleBox->attr.colGap.setValue(2.F);
+    titleBox->attr.padding.setValue(Padding { 4.F });
+    titleBox->attr.justify.setValue(ReflowSpacing::eSpaceAround);
+
     header->addChild(titleBox);
 
-    auto title = make_sptr<Text>(makeHeaderTitleStyle());
+    auto title = make_sptr<Text>();
+    theme->applyText(title);
+    title->attr.fontSize.setValue(14.F);
 
     if (node_->getName().empty()) {
         title->setText(string { node_->getNodeTypeName() });
@@ -106,7 +110,10 @@ sptr<BoardNode> BoardNode::make(sptr<hg::editor::gfx::graph::Node> node_) {
 
     titleBox->addChild(title);
 
-    auto typeName = make_sptr<Text>(makeHeaderSubtitleStyle());
+    auto typeName = make_sptr<Text>();
+    theme->applyLabel(typeName);
+    typeName->attr.fontSize.setValue(11.F);
+
     if (not node_->getName().empty()) {
         typeName->setText(string { node_->getNodeTypeName() });
     }
@@ -115,15 +122,33 @@ sptr<BoardNode> BoardNode::make(sptr<hg::editor::gfx::graph::Node> node_) {
 
     /**/
 
-    auto body = make_sptr<HBox>(makeBodyStyle());
+    auto body = make_sptr<HorizontalPanel>();
+    body->attr.minWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    body->attr.justify.setValue(ReflowSpacing::eSpaceBetween);
+    body->attr.flexGrow.setValue(1.F);
+
     widget->addChild(body);
 
-    auto inputBox = make_sptr<VBox>(makeBodyTripletStyle());
-    auto paramBox = make_sptr<VBox>(makeBodyTripletStyle());
-    auto outputBox = make_sptr<VBox>(makeBodyTripletStyle());
+    auto inputBox = make_sptr<VerticalPanel>();
+    inputBox->attr.minHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    inputBox->attr.colGap.setValue(4.F);
+    inputBox->attr.justify.setValue(ReflowSpacing::eSpaceAround);
+    inputBox->attr.flexGrow.setValue(1.F);
 
-    paramBox->style()->width = ReflowUnit { ReflowUnitType::eRelative, 1.F };
-    paramBox->style()->reflowShrink = 1.F;
+    auto paramBox = make_sptr<VerticalPanel>();
+    paramBox->attr.minHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    paramBox->attr.colGap.setValue(4.F);
+    paramBox->attr.justify.setValue(ReflowSpacing::eSpaceAround);
+    paramBox->attr.flexGrow.setValue(1.F);
+
+    auto outputBox = make_sptr<VerticalPanel>();
+    outputBox->attr.minHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    outputBox->attr.colGap.setValue(4.F);
+    outputBox->attr.justify.setValue(ReflowSpacing::eSpaceAround);
+    outputBox->attr.flexGrow.setValue(1.F);
+
+    //paramBox->style()->width = ReflowUnit { ReflowUnitType::eRelative, 1.F };
+    //paramBox->style()->reflowShrink = 1.F;
 
     body->addChild(inputBox);
     body->addChild(paramBox);
@@ -156,156 +181,4 @@ sptr<BoardNode> BoardNode::make(sptr<hg::editor::gfx::graph::Node> node_) {
     /**/
 
     return widget;
-}
-
-/**/
-
-static sptr<BoundStyleSheet> makeBoardNodeStyle() {
-    return BoundStyleSheet::make(
-        StyleSheet {
-            .width = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .padding = { true, Padding { 6.F } },
-            .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
-            .borderRadius = { true, Padding { 16.F } },
-            .color = { true, color::Dark::backgroundDefault }
-        }
-    );
-}
-
-/**/
-
-sptr<BoundStyleSheet> makeHeaderStyle() {
-    return BoundStyleSheet::make(
-        StyleSheet {
-            .width = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .height = { true, ReflowUnit { ReflowUnitType::eAbsolute, 24.F } },
-            .wrap = { true, ReflowWrap::eNoWrap },
-            .reflowSpacing = { true, ReflowSpacing::eEnd },
-            .reflowShrink = { true, 1.F },
-            .reflowGrow = { true, 1.F },
-            .color = { true, color::Dark::backgroundDefault },
-        }
-    );
-}
-
-sptr<BoundStyleSheet> makeHeaderSymbolStyle() {
-    auto style = BoundStyleSheet::make(
-        StyleSheet {
-            .minHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .margin = { true, Margin { 4.F } },
-            .color = { true, color::Dark::grey },
-            .fontSize = { true, 24.F }
-        }
-    );
-
-    /**/
-
-    style->pushStyle(
-        StyleChainEntry {
-            Style::TitleKey,
-            nullptr,
-            Style::get()->getStyleSheet(Style::TitleKey)
-        }
-    );
-
-    /**/
-
-    return style;
-}
-
-sptr<BoundStyleSheet> makeHeaderBoxStyle() {
-    return BoundStyleSheet::make(
-        StyleSheet {
-            .width = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .maxHeight = { true, ReflowUnit { ReflowUnitType::eAuto, 01.F } },
-            .wrap = { true, ReflowWrap::eNoWrap },
-            .colGap = { true, ReflowUnit { ReflowUnitType::eAbsolute, 2.F } },
-            .padding = { true, Padding { 4.F } },
-            .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
-            .color = { true, color::Dark::backgroundDefault },
-        }
-    );
-}
-
-sptr<BoundStyleSheet> makeHeaderTitleStyle() {
-    auto style = BoundStyleSheet::make(
-        StyleSheet {
-            .color = { true, color::Dark::white },
-            .fontSize = { true, 14.F },
-            .textAlign = { true, TextAlign::eLeftMiddle },
-        }
-    );
-
-    /**/
-
-    style->pushStyle(
-        StyleChainEntry {
-            Style::TitleKey,
-            nullptr,
-            Style::get()->getStyleSheet(Style::TitleKey)
-        }
-    );
-
-    /**/
-
-    return style;
-}
-
-sptr<BoundStyleSheet> makeHeaderSubtitleStyle() {
-    auto style = BoundStyleSheet::make(
-        StyleSheet {
-            .color = { true, color::Dark::grey },
-            .fontSize = { true, 11.F },
-            .textAlign = { true, TextAlign::eLeftMiddle },
-        }
-    );
-
-    /**/
-
-    style->pushStyle(
-        StyleChainEntry {
-            Style::TitleSmallKey,
-            nullptr,
-            Style::get()->getStyleSheet(Style::TitleSmallKey)
-        }
-    );
-
-    /**/
-
-    return style;
-}
-
-/**/
-
-sptr<BoundStyleSheet> makeBodyStyle() {
-    return BoundStyleSheet::make(
-        StyleSheet {
-            .width = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .maxHeight = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
-            .reflowGrow = { true, 1.F },
-            .color = { true, color::Dark::backgroundDefault },
-        }
-    );
-}
-
-sptr<BoundStyleSheet> makeBodyTripletStyle() {
-    return BoundStyleSheet::make(
-        StyleSheet {
-            .width = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .maxWidth = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .minHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .height = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .maxHeight = { true, ReflowUnit { ReflowUnitType::eAuto, 0.F } },
-            .colGap = { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
-            .reflowSpacing = { true, ReflowSpacing::eSpaceAround },
-            .reflowGrow = { true, 1.F },
-            .color = { true, color::Dark::backgroundDefault },
-        }
-    );
 }

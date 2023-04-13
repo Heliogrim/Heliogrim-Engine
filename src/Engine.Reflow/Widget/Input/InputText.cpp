@@ -6,12 +6,14 @@
 using namespace hg::engine::reflow;
 using namespace hg;
 
-InputText::InputText(mref<sptr<BoundStyleSheet>> style_, mref<sptr<BoundStyleSheet>> textStyle_) :
+InputText::InputText() :
     Input(),
-    _wrapper(make_sptr<HBox>(_STD move(style_))),
-    _text(make_sptr<Text>(_STD move(textStyle_))) {
+    _wrapper(make_sptr<HorizontalPanel>()),
+    _text(make_sptr<Text>()),
+    _children() {
     /**/
     _wrapper->addChild(_text);
+    _children.setChild(_wrapper);
 }
 
 InputText::~InputText() = default;
@@ -32,35 +34,27 @@ InputText::input_type InputText::value() const noexcept {
     return _value;
 }
 
-void InputText::render(const ptr<ReflowCommandBuffer> cmd_) {
-    _wrapper->render(cmd_);
-    _text->render(cmd_);
+const ptr<const SingleChildren> InputText::children() const {
+    return &_children;
 }
 
-void InputText::flow(
-    cref<FlowContext> ctx_,
-    cref<math::vec2> space_,
-    cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_
-) {
-    _wrapper->setParent(shared_from_this());
-    _wrapper->flow(ctx_, space_, limit_, styleStack_);
+void InputText::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+    _wrapper->render(state_, cmd_);
+    _text->render(state_, cmd_);
 }
 
-void InputText::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
-    _wrapper->shift(ctx_, offset_);
+math::vec2 InputText::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
+    return _children.getChild()->getDesiredSize();
 }
 
-math::vec2 InputText::outerSize() const noexcept {
-    return _wrapper->outerSize();
+math::vec2 InputText::computeDesiredSize(cref<ReflowPassState> passState_) const {
+    return _children.getChild()->getDesiredSize();
 }
 
-math::vec2 InputText::innerSize() const noexcept {
-    return _wrapper->innerSize();
-}
-
-math::vec2 InputText::screenOffset() const noexcept {
-    return _wrapper->screenOffset();
+void InputText::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+    const auto childState = state_.getStateOf(_children.getChild());
+    childState->layoutOffset = ctx_.localOffset;
+    childState->layoutSize = ctx_.localSize;
 }
 
 EventResponse InputText::onFocus(cref<FocusEvent> event_) {

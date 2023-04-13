@@ -2,24 +2,21 @@
 
 #include <Engine.Event/EventEmitter.hpp>
 
-#include "HBox.hpp"
+#include "BoxPanel.hpp"
 
 namespace hg::engine::reflow {
     class Button :
-        public HBox {
+        public BoxPanel {
     public:
         using this_type = Button;
 
     public:
-        Button(mref<sptr<BoundStyleSheet>> style_);
+        Button();
 
         ~Button() override;
 
     public:
         [[nodiscard]] string getTag() const noexcept override;
-
-    public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
     private:
         StatelessEventEmitter<MouseEvent> _emitter;

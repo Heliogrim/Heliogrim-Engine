@@ -28,6 +28,9 @@ namespace hg::engine::reflow {
 
         [[nodiscard]] ReflowPosition position() const noexcept override;
 
-        [[nodiscard]] math::vec2 screenOffset() const noexcept override;
+    public:
+        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
+
+        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
     };
 }

@@ -6,15 +6,17 @@
 using namespace hg::engine::reflow;
 using namespace hg;
 
-InputIntegral::InputIntegral(mref<sptr<BoundStyleSheet>> style_, mref<sptr<BoundStyleSheet>> textStyle_) :
+InputIntegral::InputIntegral() :
     Input(),
-    _wrapper(make_sptr<HBox>(_STD move(style_))),
-    _text(make_sptr<Text>(_STD move(textStyle_))),
+    _wrapper(make_sptr<HorizontalPanel>()),
+    _text(make_sptr<Text>()),
     _value(R"(0)"),
     _limits(_STD numeric_limits<s64>::min(), _STD numeric_limits<s64>::max()),
-    _stepSize(1i64) {
+    _stepSize(1i64),
+    _children() {
     /**/
     _wrapper->addChild(_text);
+    _children.setChild(_wrapper);
 }
 
 InputIntegral::~InputIntegral() = default;
@@ -62,35 +64,27 @@ Input<s64>::input_type InputIntegral::value() const noexcept {
     return _STD stoll(_value);
 }
 
-void InputIntegral::render(const ptr<ReflowCommandBuffer> cmd_) {
-    _wrapper->render(cmd_);
-    _text->render(cmd_);
+const ptr<const SingleChildren> InputIntegral::children() const {
+    return &_children;
 }
 
-void InputIntegral::flow(
-    cref<FlowContext> ctx_,
-    cref<math::vec2> space_,
-    cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_
-) {
-    _wrapper->setParent(shared_from_this());
-    _wrapper->flow(ctx_, space_, limit_, styleStack_);
+void InputIntegral::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+    _wrapper->render(state_, cmd_);
+    _text->render(state_, cmd_);
 }
 
-void InputIntegral::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
-    _wrapper->shift(ctx_, offset_);
+math::vec2 InputIntegral::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
+    return _children.getChild()->getDesiredSize();
 }
 
-math::vec2 InputIntegral::outerSize() const noexcept {
-    return _wrapper->outerSize();
+math::vec2 InputIntegral::computeDesiredSize(cref<ReflowPassState> passState_) const {
+    return _children.getChild()->getDesiredSize();
 }
 
-math::vec2 InputIntegral::innerSize() const noexcept {
-    return _wrapper->innerSize();
-}
-
-math::vec2 InputIntegral::screenOffset() const noexcept {
-    return _wrapper->screenOffset();
+void InputIntegral::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+    const auto childState = state_.getStateOf(_children.getChild());
+    childState->layoutOffset = ctx_.localOffset;
+    childState->layoutSize = ctx_.localSize;
 }
 
 float InputIntegral::shrinkFactor() const noexcept {

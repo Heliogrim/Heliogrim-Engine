@@ -1,13 +1,24 @@
 #include "Dialog.hpp"
 
-#include "../Style/BoundStyleSheet.hpp"
+#include "../Layout/Style.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
 
-Dialog::Dialog(mref<sptr<BoundStyleSheet>> style_) :
+Dialog::Dialog() :
     Popup(),
-    _style(style_) {}
+    attr(
+        Attributes {
+            .minWidth = { this, { ReflowUnitType::eAuto, 0.F } },
+            .width = { this, { ReflowUnitType::eAuto, 0.F } },
+            .maxWidth = { this, { ReflowUnitType::eAuto, 0.F } },
+            .minHeight = { this, { ReflowUnitType::eAuto, 0.F } },
+            .height = { this, { ReflowUnitType::eAuto, 0.F } },
+            .maxHeight = { this, { ReflowUnitType::eAuto, 0.F } },
+            .padding = { this, Padding { 0.F } },
+            .color = { this, engine::color { 255.F, 255.F, 255.F, 1.F } }
+        }
+    ) {}
 
 Dialog::~Dialog() = default;
 
@@ -15,188 +26,122 @@ string Dialog::getTag() const noexcept {
     return _STD format(R"(Dialog <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
-void Dialog::repackChildren() {
-
-    _children.clear();
-
-    if (_titleBar) {
-        _children.push_back(_titleBar);
-    }
-
-    if (_content) {
-        _children.push_back(_content);
-    }
+const ptr<const Children> Dialog::children() const {
+    return &_children;
 }
 
 sptr<Widget> Dialog::getTitleBar() const noexcept {
-    return _titleBar;
+    return _children.getChild<0>();
+}
+
+void Dialog::setTitleBar(cref<sptr<Widget>> titleBar_) {
+    titleBar_->setParent(shared_from_this());
+    _children.getChild<0>()->setParent(nullptr);
+    _children.setChild<0>(titleBar_);
 }
 
 sptr<Widget> Dialog::getContent() const noexcept {
-    return _content;
+    return _children.getChild<1>();
 }
 
 void Dialog::setContent(cref<sptr<Widget>> content_) {
-
     content_->setParent(shared_from_this());
-
-    if (_content && _content->parent().get() == this) {
-        _content->setParent(nullptr);
-    }
-
-    _content = content_;
-    repackChildren();
-    markAsPending();
+    _children.getChild<1>()->setParent(nullptr);
+    _children.setChild<1>(content_);
 }
 
-void Dialog::render(const ptr<ReflowCommandBuffer> cmd_) {
+void Dialog::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
 
-    const math::vec2 off { screenOffset() };
-    const math::vec2 size { innerSize() };
+    const math::vec2 off = _state.layoutOffset;
+    const math::vec2 size = _state.layoutSize;
 
     const math::vec2 c0 { off.x, off.y };
     const math::vec2 c1 { off.x + size.x, off.y };
     const math::vec2 c2 { off.x + size.x, off.y + size.y };
     const math::vec2 c3 { off.x, off.y + size.y };
 
-    cmd_->drawQuad(c0, c1, c2, c3, _computedStyle.color.attr);
+    cmd_->drawQuad(c0, c1, c2, c3, attr.color.getValue());
 
-    /* TODO: Relocate */
-    if (_content) {
-        _content->render(cmd_);
+    /**/
+
+    for (const auto& child : _children) {
+        child->render(state_, cmd_);
     }
 }
 
-void Dialog::flow(
-    cref<FlowContext> ctx_,
-    cref<math::vec2> space_,
-    cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_
-) {
+math::vec2 Dialog::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
 
-    styleStack_.pushLayer();
-    _computedStyle = _style->compute(shared_from_this(), styleStack_);
+    const auto titleBarSize = getTitleBar()->getDesiredSize();
+    const auto contentSize = getContent()->getDesiredSize();
 
-    const bool autoWidth { _computedStyle.width.attr.type == ReflowUnitType::eAuto };
-    const bool autoHeight { _computedStyle.height.attr.type == ReflowUnitType::eAuto };
+    const math::vec2 innerSize { MAX(titleBarSize.x, contentSize.x), titleBarSize.y + contentSize.y };
+    math::vec2 size = layout::innerToOuterSize(attr, innerSize);
 
-    math::vec2 local { 0.F };
+    /**/
 
-    if (_computedStyle.width.attr.type == ReflowUnitType::eRelative) {
-        local.x = _computedStyle.width.attr.value * space_.x;
-    } else if (_computedStyle.width.attr.type == ReflowUnitType::eAbsolute) {
-        local.x = _computedStyle.width.attr.value;
+    if (attr.width->type == ReflowUnitType::eAbsolute) {
+        size.x = attr.width->value;
     }
-
-    if (_computedStyle.height.attr.type == ReflowUnitType::eRelative) {
-        local.y = _computedStyle.height.attr.value * space_.y;
-    } else if (_computedStyle.height.attr.type == ReflowUnitType::eAbsolute) {
-        local.y = _computedStyle.height.attr.value;
+    if (attr.height->type == ReflowUnitType::eAbsolute) {
+        size.y = attr.height->value;
     }
 
     /**/
 
-    if (_computedStyle.minWidth.attr.type == ReflowUnitType::eRelative) {
-        local.x = MAX(local.x, _computedStyle.minWidth.attr.value * space_.x);
-    } else if (_computedStyle.minWidth.attr.type == ReflowUnitType::eAbsolute) {
-        local.x = MAX(local.x, _computedStyle.minWidth.attr.value);
-    }
-
-    if (_computedStyle.minHeight.attr.type == ReflowUnitType::eRelative) {
-        local.y = MAX(local.y, _computedStyle.minHeight.attr.value * space_.y);
-    } else if (_computedStyle.minHeight.attr.type == ReflowUnitType::eAbsolute) {
-        local.y = MAX(local.y, _computedStyle.minHeight.attr.value);
-    }
-
-    /**/
-
-    math::vec2 titleBound { 0.F };
-    math::vec2 contentBound { 0.F };
-
-    if (_titleBar) {
-        _titleBar->flow(ctx_, local, limit_, styleStack_);
-        titleBound = _titleBar->outerSize();
-    }
-
-    if (_content) {
-        _content->flow(ctx_, local, limit_, styleStack_);
-        contentBound = _content->outerSize();
-    }
-
-    /**/
-
-    local.x = _STD max({ local.x, titleBound.x, contentBound.x });
-    local.y = _STD max({ local.y, titleBound.y + contentBound.y });
-
-    /**/
-
-    if (_computedStyle.maxWidth.attr.type == ReflowUnitType::eRelative) {
-        local.x = MIN(local.x, _computedStyle.maxWidth.attr.value * space_.x);
-    } else if (_computedStyle.maxWidth.attr.type == ReflowUnitType::eAbsolute) {
-        local.x = MIN(local.x, _computedStyle.maxWidth.attr.value);
-    }
-
-    if (_computedStyle.maxHeight.attr.type == ReflowUnitType::eRelative) {
-        local.y = MIN(local.y, _computedStyle.maxHeight.attr.value * space_.y);
-    } else if (_computedStyle.maxHeight.attr.type == ReflowUnitType::eAbsolute) {
-        local.y = MIN(local.y, _computedStyle.maxHeight.attr.value);
-    }
-
-    /**/
-
-    auto diff { math::vec2 { MAX(titleBound.x, contentBound.x), titleBound.y + contentBound.y } - local };
-
-    /**
-     * TODO: Overflow Behaviour - Flex Shrink
-     */
-
-    /**
-     * TODO: Underflow Behaviour - Flex Grow
-     */
-    if (diff.x < 0.F || diff.y < 0.F) {
-
-        if (_titleBar) {
-            _titleBar->flow(ctx_, local, math::vec2 { local.x, local.y - contentBound.y }, styleStack_);
-        }
-
-        if (_content) {
-            _content->flow(ctx_, local, math::vec2 { local.x, local.y - titleBound.y }, styleStack_);
-        }
-    }
-
-    /**/
-
-    _compositeSize = local;
-    styleStack_.popLayer();
+    return layout::clampSizeAbs(attr, size);
 }
 
-void Dialog::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
+math::vec2 Dialog::computeDesiredSize(cref<ReflowPassState> passState_) const {
 
-    math::vec2 titleSize { 0.F };
-    if (_titleBar) {
-        titleSize = _titleBar->outerSize();
+    const auto titleBarSize = getTitleBar()->getDesiredSize();
+    const auto contentSize = getContent()->getDesiredSize();
+
+    const math::vec2 innerSize { MAX(titleBarSize.x, contentSize.x), titleBarSize.y + contentSize.y };
+    math::vec2 size = layout::innerToOuterSize(attr, innerSize);
+
+    /**/
+
+    if (attr.width->type == ReflowUnitType::eAbsolute) {
+        size.x = attr.width->value;
+    } else if (attr.width->type == ReflowUnitType::eRelative) {
+        size.x = passState_.referenceSize.x * attr.width->value;
+    }
+
+    if (attr.height->type == ReflowUnitType::eAbsolute) {
+        size.y = attr.height->value;
+    } else if (attr.height->type == ReflowUnitType::eRelative) {
+        size.y = passState_.referenceSize.y * attr.height->value;
     }
 
     /**/
 
-    if (_titleBar) {
-        _titleBar->shift(ctx_, offset_);
-    }
-
-    if (_content) {
-        _content->shift(ctx_, math::vec2 { offset_.x, offset_.y + titleSize.y });
-    }
+    return layout::clampSize(attr, passState_.layoutSize, size);
 
 }
 
-const ptr<const Children> Dialog::children() const {
-    return &_children;
-}
+void Dialog::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
 
-math::vec2 Dialog::outerSize() const noexcept {
-    return _compositeSize;
-}
+    const auto innerOffset = layout::outerToInnerOffset(attr, ctx_.localOffset);
+    const auto innerSize = layout::outerToInnerSize(attr, ctx_.localSize);
 
-math::vec2 Dialog::innerSize() const noexcept {
-    return _compositeSize;
+    /**/
+
+    const auto titleBar = getTitleBar();
+    auto* const titleState = state_.getStateOf(titleBar);
+
+    const auto titleSize = math::compMin<float>(titleBar->getDesiredSize(), innerSize);
+
+    titleState->layoutOffset = innerOffset;
+    titleState->layoutSize = titleSize;
+
+    /**/
+
+    const auto content = getContent();
+    auto* const contentState = state_.getStateOf(getContent());
+
+    const auto leftSpace = math::vec2 { innerSize.x, innerSize.y - titleSize.y };
+    const auto contentSize = math::compMin<float>(content->getDesiredSize(), leftSpace);
+
+    contentState->layoutOffset = innerOffset + math::vec2 { 0.F, titleSize.y };
+    contentState->layoutSize = contentSize;
 }

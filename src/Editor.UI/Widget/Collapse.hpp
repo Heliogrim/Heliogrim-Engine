@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Engine.Reflow/Widget/Text.hpp>
-#include <Engine.Reflow/Widget/HBox.hpp>
-#include <Engine.Reflow/Widget/VBox.hpp>
+#include <Engine.Reflow/Widget/HorizontalPanel.hpp>
+#include <Engine.Reflow/Widget/VerticalPanel.hpp>
 
 namespace hg::editor::ui {
     class Collapse;
@@ -10,7 +10,7 @@ namespace hg::editor::ui {
 
 namespace hg::editor::ui {
     class CollapseHeader :
-        public engine::reflow::HBox {
+        public engine::reflow::HorizontalPanel {
     public:
         friend class Collapse;
 
@@ -43,7 +43,7 @@ namespace hg::editor::ui {
     };
 
     class Collapse :
-        public engine::reflow::VBox {
+        public engine::reflow::VerticalPanel {
     public:
         friend class CollapseHeader;
 
@@ -68,29 +68,26 @@ namespace hg::editor::ui {
 
     private:
         sptr<CollapseHeader> _header;
-        sptr<Box> _content;
+        sptr<VerticalPanel> _content;
 
     public:
         [[nodiscard]] cref<sptr<CollapseHeader>> getHeader() noexcept;
 
-        [[nodiscard]] cref<sptr<Box>> getContent() noexcept;
+        [[nodiscard]] cref<sptr<VerticalPanel>> getContent() noexcept;
 
     public:
         [[nodiscard]] string getTag() const noexcept override;
 
     public:
+        math::vec2 prefetchDesiredSize(cref<engine::reflow::ReflowState> state_, float scale_) const override;
+
+        math::vec2 computeDesiredSize(cref<engine::reflow::ReflowPassState> passState_) const override;
+
+        void applyLayout(ref<engine::reflow::ReflowState> state_, mref<engine::reflow::LayoutContext> ctx_) override;
+
+    public:
         [[nodiscard]] bool willChangeLayout(
-            cref<math::vec2> space_,
-            cref<engine::reflow::StyleKeyStack> styleStack_
+            cref<math::vec2> space_
         ) const noexcept override;
-
-        void flow(
-            cref<engine::reflow::FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<engine::reflow::StyleKeyStack> styleStack_
-        ) override;
-
-        void shift(cref<engine::reflow::FlowContext> ctx_, cref<math::vec2> offset_) override;
     };
 }

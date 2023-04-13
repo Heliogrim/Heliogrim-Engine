@@ -20,63 +20,42 @@ void Menu::closeMenu() {
     Widget::_state.unwrap &= (~static_cast<WidgetState::value_type>(WidgetStateFlagBits::eVisible));
 }
 
+const ptr<const SingleChildren> Menu::children() const {
+    return &_children;
+}
+
 sptr<Widget> Menu::getContent() const noexcept {
-    return _content;
+    return _children.getChild();
 }
 
 void Menu::setContent(cref<sptr<Widget>> content_) {
 
     content_->setParent(shared_from_this());
 
-    if (_content && _content->parent().get() == this) {
-        _content->setParent(nullptr);
+    if (_children.getChild() && _children.getChild()->parent().get() == this) {
+        _children.getChild()->setParent(nullptr);
     }
 
-    _content = content_;
+    _children.setChild(content_);
 }
 
-void Menu::render(const ptr<ReflowCommandBuffer> cmd_) {
+void Menu::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
     /* Warning: Temporary solution; Menu should be on PopupLayer */
-    if (!_content) {
-        return;
-    }
-    _content->render(cmd_);
+    _children.getChild()->render(state_, cmd_);
 }
 
-void Menu::flow(
-    cref<FlowContext> ctx_,
-    cref<math::vec2> space_,
-    cref<math::vec2> limit_,
-    ref<StyleKeyStack> styleStack_
-) {
-    _content->flow(ctx_, space_, limit_, styleStack_);
+math::vec2 Menu::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
+    return _children.getChild()->getDesiredSize();
 }
 
-void Menu::shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) {
-
-    if (!_content) {
-        return;
-    }
-
-    _content->shift(ctx_, screenOffset());
+math::vec2 Menu::computeDesiredSize(cref<ReflowPassState> passState_) const {
+    return _children.getChild()->getDesiredSize();
 }
 
-const ptr<const Children> Menu::children() const {
-    return nullptr;
-}
-
-math::vec2 Menu::outerSize() const noexcept {
-    if (_content) {
-        return _content->outerSize();
-    }
-    return math::vec2 { 0.F };
-}
-
-math::vec2 Menu::innerSize() const noexcept {
-    if (_content) {
-        return _content->innerSize();
-    }
-    return math::vec2 { 0.F };
+void Menu::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+    auto* const childState = state_.getStateOf(_children.getChild());
+    childState->layoutOffset = ctx_.localOffset;
+    childState->layoutSize = ctx_.localSize;
 }
 
 EventResponse Menu::onFocus(cref<FocusEvent> event_) {

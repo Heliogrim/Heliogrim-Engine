@@ -1,7 +1,8 @@
 #pragma once
 
+#include <Engine.Common/Collection/AssociativeKey.hpp>
 #include <Engine.Filesystem/Url.hpp>
-#include <Engine.Reflow/Widget/HBox.hpp>
+#include <Engine.Reflow/Widget/HorizontalPanel.hpp>
 
 namespace hg::editor::ui {
     struct BreadcrumbEntry {
@@ -10,7 +11,7 @@ namespace hg::editor::ui {
     };
 
     class Breadcrumb final :
-        public engine::reflow::HBox {
+        public engine::reflow::HorizontalPanel {
     public:
         using this_type = Breadcrumb;
 

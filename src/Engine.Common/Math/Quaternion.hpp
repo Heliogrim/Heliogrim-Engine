@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <cmath>
 //#include <complex>
+
+#include "../GLM.hpp"
 #include <glm/gtc/quaternion.hpp>
 
 #include "MathDefaultDefine.hpp"
@@ -100,6 +102,30 @@ namespace hg::math {
          * @date 16.01.2020
          */
         ~quaternion_t() = default;
+
+        [[nodiscard]] vec3_t<value_type> __forward() const {
+            return vec3_t<value_type> {
+                2 * (_quat.x * _quat.y + _quat.w * _quat.y),
+                2 * (_quat.y * _quat.z + _quat.w * _quat.x),
+                1 - 2 * (_quat.x * _quat.x + _quat.y * _quat.y),
+            };
+        }
+
+        [[nodiscard]] vec3_t<value_type> __up() const {
+            return vec3_t<value_type> {
+                2 * (_quat.x * _quat.y + _quat.w * _quat.z),
+                1 - 2 * (_quat.x * _quat.x + _quat.z * _quat.z),
+                2 * (_quat.y * _quat.z + _quat.w * _quat.x),
+            };
+        }
+
+        [[nodiscard]] vec3_t<value_type> _left() const {
+            return vec3_t<value_type> {
+                1 - 2 * (_quat.y * _quat.y + _quat.z * _quat.z),
+                2 * (_quat.x * _quat.y + _quat.w * _quat.z),
+                2 * (_quat.x * _quat.z + _quat.w * _quat.y),
+            };
+        }
 
         /**
          * Gets the pitch

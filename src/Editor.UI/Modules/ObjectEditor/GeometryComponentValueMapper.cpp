@@ -1,6 +1,4 @@
 #include <Heliogrim/StaticGeometryComponent.hpp>
-#include <Engine.Reflow/Style/BoundStyleSheet.hpp>
-#include <Engine.Reflow/Style/StyleCondition.hpp>
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Reflow/Widget/Input/InputFloat.hpp>
 #include <Engine.Reflow/Widget/Input/InputIntegral.hpp>
@@ -11,9 +9,9 @@
 
 #include "ObjectValueMapper.hpp"
 #include "../../Color/Dark.hpp"
-#include "../../Style/Style.hpp"
 #include "../../Widget/Input/InputVec.hpp"
 #include "../../Widget/Collapse.hpp"
+#include "Editor.UI/Theme/Theme.hpp"
 #include "Editor.UI/Widget/Input/InputAsset.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Heliogrim/Heliogrim.hpp"
@@ -26,90 +24,15 @@ using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
 using namespace hg;
 
-[[nodiscard]] static sptr<BoundStyleSheet> makeInputBoxStyle() {
-
-    auto style {
-        BoundStyleSheet::make(
-            StyleSheet {
-                .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .wrap { true, ReflowWrap::eNoWrap },
-                .padding { true, Padding { 4.F, 2.F } },
-                .margin { true, Margin { 0.F } },
-                .reflowShrink { true, 0.F },
-                .reflowGrow { true, 0.F },
-                .borderRadius = { true, BorderRadius { 4.F } },
-                .color { false, color::Dark::backgroundInnerField }
-            }
-        )
-
-    };
-
-    style->pushStyle(
-        {
-            Style::key_type::from("InputType::Focused"),
-            style::isFocused,
-            make_sptr<StyleSheet>(
-                StyleSheet {
-                    .color { true, color::Dark::backgroundInnerFieldDarken }
-                }
-            )
-        }
-    );
-
-    return style;
-
-}
-
-[[nodiscard]] static sptr<BoundStyleSheet> makeInputTextStyle() {
-    auto* font { getDefaultFont() };
-
-    auto style {
-        BoundStyleSheet::make(
-            StyleSheet {
-                .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                .color { false, color::Dark::grey },
-                .font { true, font },
-                .fontSize { true, 16.F },
-                .textAlign { true, TextAlign::eLeftMiddle },
-                .textEllipse { true, 1ui32 }
-            }
-        )
-    };
-
-    style->pushStyle(
-        {
-            Style::key_type::from("InputType::Focused"),
-            style::isNever,
-            make_sptr<StyleSheet>(
-                StyleSheet {
-                    .color { true, color::Dark::white }
-                }
-            )
-        }
-    );
-
-    return style;
-}
-
 #pragma region Static Geometry
 
 template <>
-void ObjectValueMapper<StaticGeometryComponent>::build(cref<sptr<engine::reflow::Box>> parent_) {
+void ObjectValueMapper<StaticGeometryComponent>::build(cref<sptr<engine::reflow::VerticalPanel>> parent_) {
 
-    auto title = make_sptr<Text>(BoundStyleSheet::make(Style::get()->getStyleSheet(Style::TitleKey)));
-    title->style().minWidth = ReflowUnit { ReflowUnitType::eRelative, 1.F };
-    title->style().width = ReflowUnit { ReflowUnitType::eRelative, 1.F };
-    title->style().maxWidth = ReflowUnit { ReflowUnitType::eRelative, 1.F };
+    const auto* const theme = Theme::get();
+
+    auto title = make_sptr<Text>();
+    theme->applyText(title);
     title->setText(R"(<<Static Geometry Component>>)");
 
     parent_->addChild(title);
@@ -123,11 +46,9 @@ void ObjectValueMapper<StaticGeometryComponent>::build(cref<sptr<engine::reflow:
 
     {
         const auto wrap { transform->getContent() };
-        wrap->style()->minHeight = ReflowUnit { ReflowUnitType::eAuto, 0.F };
-        wrap->style()->height = ReflowUnit { ReflowUnitType::eAuto, 0.F };
-        wrap->style()->wrap = ReflowWrap::eNoWrap;
-        wrap->style()->colGap = ReflowUnit { ReflowUnitType::eAbsolute, 4.F };
-        wrap->style()->color = color::Dark::backgroundDefault;
+        wrap->attr.minHeight.setValue({ ReflowUnitType::eAuto, 0.F });
+        wrap->attr.height.setValue({ ReflowUnitType::eAuto, 0.F });
+        wrap->attr.colGap.setValue(4.F);
 
         auto pos = make_sptr<InputVec3>();
         auto rot = make_sptr<InputVec3>();
@@ -160,11 +81,9 @@ void ObjectValueMapper<StaticGeometryComponent>::build(cref<sptr<engine::reflow:
 
     {
         const auto wrap { staticMesh->getContent() };
-        wrap->style()->minHeight = ReflowUnit { ReflowUnitType::eAuto, 0.F };
-        wrap->style()->height = ReflowUnit { ReflowUnitType::eAuto, 0.F };
-        wrap->style()->wrap = ReflowWrap::eNoWrap;
-        wrap->style()->colGap = ReflowUnit { ReflowUnitType::eAbsolute, 4.F };
-        wrap->style()->color = color::Dark::backgroundDefault;
+        wrap->attr.minHeight.setValue({ ReflowUnitType::eAuto, 0.F });
+        wrap->attr.height.setValue({ ReflowUnitType::eAuto, 0.F });
+        wrap->attr.colGap.setValue(4.F);
 
         auto assetInput { make_sptr<InputAsset>() };
         wrap->addChild(assetInput);
@@ -179,16 +98,17 @@ void ObjectValueMapper<StaticGeometryComponent>::build(cref<sptr<engine::reflow:
 
     {
         const auto wrap { materials->getContent() };
-        wrap->style()->minHeight = ReflowUnit { ReflowUnitType::eAuto, 0.F };
-        wrap->style()->height = ReflowUnit { ReflowUnitType::eAuto, 0.F };
-        wrap->style()->wrap = ReflowWrap::eNoWrap;
-        wrap->style()->colGap = ReflowUnit { ReflowUnitType::eAbsolute, 4.F };
-        wrap->style()->color = color::Dark::backgroundDefault;
+        wrap->attr.minHeight.setValue({ ReflowUnitType::eAuto, 0.F });
+        wrap->attr.height.setValue({ ReflowUnitType::eAuto, 0.F });
+        wrap->attr.colGap.setValue(4.F);
     }
 }
 
 template <>
-void ObjectValueMapper<StaticGeometryComponent>::update(cref<sptr<engine::reflow::Box>> parent_, const ptr<void> obj_) {
+void ObjectValueMapper<StaticGeometryComponent>::update(
+    cref<sptr<engine::reflow::VerticalPanel>> parent_,
+    const ptr<void> obj_
+) {
 
     const ref<StaticGeometryComponent> sgc { *static_cast<ptr<StaticGeometryComponent>>(obj_) };
     const auto& mat { sgc.getWorldTransform() };
@@ -302,7 +222,7 @@ void ObjectValueMapper<StaticGeometryComponent>::update(cref<sptr<engine::reflow
 }
 
 template <>
-void ObjectValueMapper<StaticGeometryComponent>::cleanup(cref<sptr<engine::reflow::Box>> parent_) {
+void ObjectValueMapper<StaticGeometryComponent>::cleanup(cref<sptr<engine::reflow::VerticalPanel>> parent_) {
     parent_->clearChildren();
 }
 

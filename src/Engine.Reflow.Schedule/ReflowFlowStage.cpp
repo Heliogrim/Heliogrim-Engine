@@ -4,6 +4,11 @@
 #include <Engine.Reflow/Window/BoundWindow.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
 
+#include <Engine.Reflow/ReflowEngine.hpp>
+#include <Engine.Reflow/ReflowState.hpp>
+
+#include "Engine.GFX/Surface/Surface.hpp"
+
 using namespace hg::engine::reflow::schedule;
 using namespace hg::engine::scheduler;
 using namespace hg;
@@ -36,15 +41,20 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
 
                     SCOPED_STOPWATCH_V(__reflow__singleFlow)
 
-                    const auto clientSize = boundWnd->window->outerSize();
-
-                    reflow::FlowContext ctx {
-                        math::fExtent2D { clientSize.x, clientSize.y, 0.F, 0.F },
-                        math::fExtent2D { clientSize.x, clientSize.y, 0.F, 0.F }
-                    };
-
+                    /*
                     reflow::StyleKeyStack stack {};
                     boundWnd->window->flow(ctx, clientSize, clientSize, stack);
+                     */
+
+                    const math::vec2 clientSize = boundWnd->surface->getNativeWindow()->size();
+
+                    ReflowState state {};
+                    auto layoutContext = reflow::LayoutContext {
+                        math::vec2 { 0.F },
+                        math::vec2 { clientSize.x, clientSize.y },
+                        1.F
+                    };
+                    ReflowEngine::tick(state, boundWnd->window, _STD move(layoutContext));
                 }
 
                 return true;

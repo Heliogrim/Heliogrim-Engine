@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../HBox.hpp"
+#include "../HorizontalPanel.hpp"
 
 namespace hg::engine::reflow {
     class TreeItem :
-        public HBox {
+        public HorizontalPanel {
     public:
         using this_type = TreeItem;
 

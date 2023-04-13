@@ -3,8 +3,8 @@
 #include <Engine.GFX/Texture/ProxyTexture.hpp>
 
 #include "Widget.hpp"
-#include "../Style/__fwd.hpp"
-#include "../Style/StyleSheet.hpp"
+#include "../Children.hpp"
+#include "../ReflowUnit.hpp"
 
 namespace hg::engine::reflow {
     class Image :
@@ -13,47 +13,49 @@ namespace hg::engine::reflow {
         using this_type = Image;
 
     public:
-        Image(mref<sptr<BoundStyleSheet>> style_);
+        Image();
 
         ~Image() override;
 
     public:
         [[nodiscard]] string getTag() const noexcept override;
 
-    private:
-        sptr<BoundStyleSheet> _style;
-        StyleSheet _computedStyle;
+    public:
+        struct Attributes {
+            Attribute<ReflowUnit> minWidth;
+            Attribute<ReflowUnit> width;
+            Attribute<ReflowUnit> maxWidth;
+
+            Attribute<ReflowUnit> minHeight;
+            Attribute<ReflowUnit> height;
+            Attribute<ReflowUnit> maxHeight;
+
+            Attribute<engine::color> tint;
+
+            Attribute<sptr<gfx::ProxyTexture<non_owning_rptr>>> image;
+        } attr;
 
     private:
-        sptr<gfx::ProxyTexture<non_owning_rptr>> _image;
         _STD array<math::vec2, 4> _uvs;
-
         ptr<void> _imageResource;
 
     public:
-        void setImage(cref<decltype(_image)> image_, ptr<void> resource_ = nullptr);
-
-    public:
-        void render(const ptr<ReflowCommandBuffer> cmd_) override;
-
-        void flow(
-            cref<FlowContext> ctx_,
-            cref<math::vec2> space_,
-            cref<math::vec2> limit_,
-            ref<StyleKeyStack> styleStack_
-        ) override;
-
-        void shift(cref<FlowContext> ctx_, cref<math::vec2> offset_) override;
+        void setImage(cref<sptr<gfx::ProxyTexture<non_owning_rptr>>> image_, ptr<void> resource_ = nullptr);
 
     private:
-        math::vec2 _innerSize;
-        math::vec2 _screenOff;
+        NullChildren _children;
 
     public:
-        [[nodiscard]] math::vec2 outerSize() const noexcept override;
+        const ptr<const NullChildren> children() const override;
 
-        [[nodiscard]] math::vec2 innerSize() const noexcept override;
+    public:
+        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
 
-        [[nodiscard]] math::vec2 screenOffset() const noexcept override;
+    public:
+        math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
+
+        math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
+
+        void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
     };
 }
