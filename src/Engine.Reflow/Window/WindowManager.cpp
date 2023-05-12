@@ -138,7 +138,7 @@ sptr<Window> WindowManager::resolveWindow(cref<math::ivec2> position_) const noe
     for (const auto& entry : _windows) {
 
         const auto* const wnd { entry->window.get() };
-        if (intersects(wnd->state().layoutOffset, wnd->state().layoutSize, pos)) {
+        if (intersects(wnd->layoutState().layoutOffset, wnd->layoutState().layoutSize, pos)) {
             return entry->window;
         }
     }
@@ -178,6 +178,7 @@ void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::i
     /**/
 
     wnd_->renderTarget->rebuildPasses(nextSwapchain.get());
+    wnd_->window->setClientSize(math::vec2 { nextSwapchain->extent() });
 
     /**/
 
@@ -317,6 +318,8 @@ sptr<Window> WindowManager::requestWindow(
             handleWindowResize(wnd, event_.getNextSize());
         }
     );
+
+    wnd->setClientSize(math::vec2 { swapchain->extent() });
 
     /**/
 

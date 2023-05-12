@@ -10,10 +10,10 @@ using namespace hg;
 
 Window::Window() :
     Widget(),
+    _nativeWindow(nullptr),
     _type(WindowType::eNormal),
     _resizable(true),
-    _closeable(true),
-    _nativeWindow(nullptr) {}
+    _closeable(true) {}
 
 Window::~Window() {
     tidy();
@@ -29,6 +29,10 @@ void Window::tidy() {
     _STD swap(tmp, _popupLayers);
 
     tmp.clear();
+}
+
+void Window::setClientSize(cref<math::vec2> nextClientSize_) {
+    _clientSize = nextClientSize_;
 }
 
 void Window::setTitleBar(sptr<Widget> titleBar_) {

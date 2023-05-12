@@ -38,11 +38,17 @@ namespace hg::engine::reflow {
 
     protected:
         WidgetState _state;
+        ReflowPassState _layoutState;
 
     public:
         [[nodiscard]] cref<WidgetState> state() const noexcept;
 
         [[nodiscard]] ref<WidgetState> state() noexcept;
+
+    public:
+        [[nodiscard]] cref<ReflowPassState> layoutState() const noexcept;
+
+        [[nodiscard]] ref<ReflowPassState> layoutState() noexcept;
 
     public:
         [[nodiscard]] virtual string getTag() const noexcept = 0;

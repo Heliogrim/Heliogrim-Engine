@@ -15,7 +15,7 @@ Image::Image() :
             .minHeight = { this, { ReflowUnitType::eAuto, 0.F } },
             .height = { this, { ReflowUnitType::eAuto, 0.F } },
             .maxHeight = { this, { ReflowUnitType::eAuto, 0.F } },
-            .tint = { this, engine::color { 255.F, 255.F, 255.F, 1.F } },
+            .tint = { this, engine::color { 255.F, 255.F, 255.F, 255.F } },
             .image = { this, nullptr }
         }
     ),
@@ -52,8 +52,8 @@ const ptr<const NullChildren> Image::children() const {
 
 void Image::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
 
-    const auto innerOffset = _state.layoutOffset;
-    const auto innerSize = _state.layoutSize;
+    const auto innerOffset = _layoutState.layoutOffset;
+    const auto innerSize = _layoutState.layoutSize;
 
     gfx::ProxyTexture<non_owning_rptr> proxy { *attr.image->get() };
 

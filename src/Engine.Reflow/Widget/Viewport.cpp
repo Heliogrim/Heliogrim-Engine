@@ -78,8 +78,8 @@ void Viewport::setCameraActor(const ptr<CameraActor> actor_) {
 math::uivec2 Viewport::actualViewExtent() const noexcept {
     if (_viewSize.zero()) {
         return math::uivec2 {
-            static_cast<u32>(_state.layoutSize.x),
-            static_cast<u32>(_state.layoutSize.y)
+            static_cast<u32>(_layoutState.layoutSize.x),
+            static_cast<u32>(_layoutState.layoutSize.y)
         };
     }
 
@@ -152,7 +152,7 @@ const ptr<const NullChildren> Viewport::children() const {
 
 void Viewport::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
 
-    if (_state.layoutSize.zero()) {
+    if (_layoutState.layoutSize.zero()) {
         return;
     }
 
@@ -171,8 +171,8 @@ void Viewport::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> c
 
     /**/
 
-    const auto offset = _state.layoutOffset;
-    const auto size = _state.layoutSize;
+    const auto offset = _layoutState.layoutOffset;
+    const auto size = _layoutState.layoutSize;
 
     sptr<gfx::Texture> image {};
     vk::Semaphore imageSignal {};
@@ -198,7 +198,7 @@ void Viewport::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> c
             _STD move(proxy),
             imageWaits.empty() ? VK_NULL_HANDLE : imageWaits.back(),
             imageSignal,
-            engine::color { 255.F, 255.F, 255.F, 1.F }
+            engine::color { 255.F, 255.F, 255.F, 255.F }
         );
     }
 }

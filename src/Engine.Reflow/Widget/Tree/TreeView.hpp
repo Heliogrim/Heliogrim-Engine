@@ -449,13 +449,13 @@ namespace hg::engine::reflow {
             }
 
             // TODO: This will break cause `innerSize()` was ment to return content size with overflow
-            const auto contentSize { /*this->innerSize()*/_state.layoutSize };
+            const auto contentSize { /*this->innerSize()*/_layoutState.layoutSize };
             const auto off { contentSize.y - point_.y };
 
             float approxRowSize { 20.F };
             if (not this->children()->empty()) {
                 //const auto childOuter = this->children()->front()->outerSize();
-                const auto childOuter = this->children()->front()->state().layoutSize;
+                const auto childOuter = this->children()->front()->layoutState().layoutSize;
                 approxRowSize = MAX(approxRowSize, childOuter.y);
             }
 
@@ -466,8 +466,8 @@ namespace hg::engine::reflow {
 
             const auto& children { *this->children() };
 
-            math::vec2 size { /*children[start]->outerSize()*/children[start]->state().layoutSize };
-            math::vec2 offset { /*children[start]->screenOffset()*/children[start]->state().layoutOffset };
+            math::vec2 size { /*children[start]->outerSize()*/children[start]->layoutState().layoutSize };
+            math::vec2 offset { /*children[start]->screenOffset()*/children[start]->layoutState().layoutOffset };
             if (intersects(offset, size, point_)) {
                 return children[start];
             }
@@ -476,8 +476,8 @@ namespace hg::engine::reflow {
 
                 const auto crend { children.rend() };
                 for (auto it { children.rbegin() + (children.size() - start) }; it != crend; ++it) {
-                    size = (*it)->state().layoutSize;
-                    offset = (*it)->state().layoutOffset;
+                    size = (*it)->layoutState().layoutSize;
+                    offset = (*it)->layoutState().layoutOffset;
 
                     if (intersects(offset, size, point_)) {
                         return *it;
@@ -487,8 +487,8 @@ namespace hg::engine::reflow {
             } else {
 
                 for (auto it { children.begin() + start }; it != cend; ++it) {
-                    size = (*it)->state().layoutSize;
-                    offset = (*it)->state().layoutOffset;
+                    size = (*it)->layoutState().layoutSize;
+                    offset = (*it)->layoutState().layoutOffset;
 
                     if (intersects(offset, size, point_)) {
                         return *it;
@@ -681,7 +681,7 @@ namespace hg::engine::reflow {
 
                 const auto widget { view.widget.lock() };
                 //this->scrollTo(widget->screenOffset(), widget->outerSize());
-                this->scrollTo(widget->state().layoutOffset, widget->state().layoutSize);
+                this->scrollTo(widget->layoutState().layoutOffset, widget->layoutState().layoutSize);
             }
         }
 

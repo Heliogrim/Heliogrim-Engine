@@ -215,8 +215,6 @@ void buildTestUI(
     root->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
     root->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
     root->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
-    root->attr.flexGrow.setValue(1.F);
-    root->attr.flexShrink.setValue(1.F);
 
     const ptr<engine::reflow::Font> defaultFont = getDefaultFont();
 
@@ -236,14 +234,14 @@ void buildTestUI(
     navSection->attr.flexGrow.setValue(1.F);
 
     auto contentSection = make_sptr<HorizontalPanel>();
-    navSection->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
-    navSection->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
-    navSection->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 24.F });
-    navSection->attr.height.setValue({ ReflowUnitType::eAuto });
-    navSection->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
-    navSection->attr.justify.setValue(ReflowSpacing::eSpaceEvenly);
-    navSection->attr.flexGrow.setValue(1.F);
-    navSection->attr.flexShrink.setValue(1.F);
+    contentSection->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    contentSection->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    contentSection->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 24.F });
+    contentSection->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
+    contentSection->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    contentSection->attr.justify.setValue(ReflowSpacing::eSpaceEvenly);
+    contentSection->attr.flexGrow.setValue(1.F);
+    contentSection->attr.flexShrink.setValue(1.F);
 
     root->addChild(navSection);
     root->addChild(contentSection);
@@ -320,7 +318,7 @@ void buildTestUI(
     navFileMenu->setContent(nfmw);
     navFileMenu->closeMenu();
 
-    root->addChild(navFileMenu);
+    //root->addChild(navFileMenu);
 
     [[maybe_unused]] auto handle = navFileButton->addOnClick(
         [self = wptr<Widget> { navFileButton }, nfm = wptr<Menu> { navFileMenu }](auto event_) {
@@ -348,9 +346,9 @@ void buildTestUI(
     //navEditButton->attr.color.setValue(color::Dark::darkRed);
 
     auto navEditText = make_sptr<Text>();
-    navFileText->attr.font.setValue(defaultFont);
-    navFileText->attr.fontSize.setValue(16.F);
-    navFileText->attr.color.setValue(color::Dark::grey);
+    navEditText->attr.font.setValue(defaultFont);
+    navEditText->attr.fontSize.setValue(16.F);
+    navEditText->attr.color.setValue(color::Dark::grey);
     navEditButton->setChild(navEditText);
     navEditText->setText("Edit");
 

@@ -14,8 +14,8 @@ void Panel::renderPanel(cref<ReflowState> state_, const ptr<ReflowCommandBuffer>
 
     const auto passState = state_.getStateOf(this);
 
-    const math::vec2 offset = _state.layoutOffset;
-    const math::vec2 size = _state.layoutSize;
+    const math::vec2 offset = _layoutState.layoutOffset;
+    const math::vec2 size = _layoutState.layoutSize;
 
     const bool hasBorderRadius = false;
 
@@ -38,8 +38,8 @@ void Panel::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_
     for (const auto& child : *children()) {
 
         if (child->state().isVisible() && not cmd_->scissorCull(
-            child->state().layoutOffset,
-            child->state().layoutSize
+            child->layoutState().layoutOffset,
+            child->layoutState().layoutSize
         )) {
             child->render(state_, cmd_);
         }

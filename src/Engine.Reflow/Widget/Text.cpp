@@ -17,7 +17,7 @@ Text::Text() :
             .textAlign = { this, TextAlign::eLeftTop },
             .textEllipse = { this, 0ui32 },
             .textWrap = { this, ReflowWrap::eNone },
-            .color = { this, engine::color { 255.F, 255.F, 255.F, 1.F } },
+            .color = { this, engine::color { 255.F, 255.F, 255.F, 255.F } },
             .text = { this, "" }
         }
     ) {}
@@ -84,8 +84,8 @@ const ptr<const NullChildren> Text::children() const {
 
 void Text::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
 
-    math::vec2 innerOffset = _state.layoutOffset;
-    const math::vec2 innerSize = _state.layoutSize;
+    math::vec2 innerOffset = _layoutState.layoutOffset;
+    const math::vec2 innerSize = _layoutState.layoutSize;
 
     const math::vec2 occupied = contentSize(innerSize);
 

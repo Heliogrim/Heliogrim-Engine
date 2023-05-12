@@ -4,7 +4,8 @@ using namespace hg::engine::reflow;
 using namespace hg;
 
 GridPanel::GridPanel() :
-    Panel() {}
+    Panel(),
+    _children() {}
 
 GridPanel::~GridPanel() = default;
 

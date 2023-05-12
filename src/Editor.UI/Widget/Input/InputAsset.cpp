@@ -1,107 +1,30 @@
 #include "InputAsset.hpp"
 
-#include <Engine.Common/Make.hpp>
-#include "../../Color/Dark.hpp"
-#include "../../Helper/AssetBrowserHelper.hpp"
-
-#include "Engine.GFX.Glow.UI/TestUI.hpp"
-#include "Engine.GFX.Loader/Texture/TextureResource.hpp"
-#include "Engine.Resource/LoaderManager.hpp"
-#include "Engine.Resource/ResourceManager.hpp"
-#include <Heliogrim/AssetDatabase.hpp>
-#include <Heliogrim/AssetDatabaseResult.hpp>
-#include <Engine.Core/Engine.hpp>
-#include <Engine.GFX.Loader/Texture/Traits.hpp>
-
-#include "Heliogrim/Heliogrim.hpp"
-#include <Engine.Filesystem/__fwd.hpp>
-#include <Engine.Filesystem/Url.hpp>
-#include <Engine.Logging/Logger.hpp>
-#include <Engine.Common/GuidFormat.hpp>
-
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/Make.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.Filesystem/Url.hpp>
+#include <Engine.Filesystem/__fwd.hpp>
+#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
+#include <Engine.GFX.Loader/Texture/Traits.hpp>
+#include <Engine.Logging/Logger.hpp>
+#include <Engine.Reflow/Widget/VerticalPanel.hpp>
+#include <Engine.Resource/LoaderManager.hpp>
+#include <Engine.Resource/ResourceManager.hpp>
+#include <Heliogrim/AssetDatabase.hpp>
+#include <Heliogrim/AssetDatabaseResult.hpp>
+#include <Heliogrim/Heliogrim.hpp>
 
-#include "Editor.UI/Theme/Theme.hpp"
-#include "Engine.Reflow/Widget/VerticalPanel.hpp"
+#include "../../Color/Dark.hpp"
+#include "../../Helper/AssetBrowserHelper.hpp"
+#include "../../Theme/Theme.hpp"
+#include "Engine.GFX.Glow.UI/TestUI.hpp"
 
 using namespace hg::editor::ui;
 using namespace hg::engine::reflow;
 using namespace hg;
-
-[[nodiscard]] static sptr<BoundStyleSheet> makeInputBoxStyle() {
-
-    auto style {
-        BoundStyleSheet::make(
-            StyleSheet {
-                .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 20.F } },
-                .wrap { true, ReflowWrap::eNoWrap },
-                .padding { true, Padding { 4.F, 2.F } },
-                .reflowShrink { true, 1.F },
-                .reflowGrow { true, 0.F },
-                .borderRadius = { true, BorderRadius { 4.F } },
-                .color { false, color::Dark::backgroundInnerField }
-            }
-        )
-
-    };
-
-    style->pushStyle(
-        {
-            Style::key_type::from("InputType::Focused"),
-            style::isFocused,
-            make_sptr<StyleSheet>(
-                StyleSheet {
-                    .color { true, color::Dark::backgroundInnerFieldDarken }
-                }
-            )
-        }
-    );
-
-    return style;
-
-}
-
-[[nodiscard]] static sptr<BoundStyleSheet> makeInputTextStyle() {
-    auto* font { getDefaultFont() };
-
-    auto style {
-        BoundStyleSheet::make(
-            StyleSheet {
-                .minWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .maxWidth { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-                .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                .height { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 16.F } },
-                .color { false, color::Dark::grey },
-                .font { true, font },
-                .fontSize { true, 16.F },
-                .textAlign { true, TextAlign::eLeftMiddle },
-                .textEllipse { true, 1ui32 }
-            }
-        )
-    };
-
-    style->pushStyle(
-        {
-            Style::key_type::from("InputType::Focused"),
-            style::isNever,
-            make_sptr<StyleSheet>(
-                StyleSheet {
-                    .color { true, color::Dark::white }
-                }
-            )
-        }
-    );
-
-    return style;
-}
 
 InputAsset::InputAsset() :
     Input(),
@@ -125,19 +48,18 @@ void InputAsset::setup() {
     /**/
 
     auto upper { make_sptr<HorizontalPanel>() };
-    upper->style() = BoundStyleSheet::make(
-        StyleSheet {
-            .minWidth { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F } },
-            .width { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            //.maxWidth { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F } },
-            .minHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F } },
-            .maxHeight { true, ReflowUnit { ReflowUnitType::eAbsolute, 72.F } },
-            .wrap { true, ReflowWrap::eNoWrap },
-            .rowGap { true, ReflowUnit { ReflowUnitType::eAbsolute, 4.F } },
-            .reflowSpacing { true, ReflowSpacing::eSpaceAround },
-            .color { true, color::Dark::backgroundDefault },
-        }
-    );
+    {
+        auto& attr = upper->attr;
+        attr.minWidth.setValue({ ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F });
+        attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+        //attr.maxWidth.setValue({ ReflowUnitType::eAbsolute, 72.F + 4.F + 16.F });
+        attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 72.F });
+        attr.height.setValue({ ReflowUnitType::eAbsolute, 72.F });
+        attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 72.F });
+        attr.rowGap.setValue(4.F);
+        attr.justify.setValue(ReflowSpacing::eSpaceAround);
+        attr.align.setValue(ReflowAlignment::eCenter);
+    }
     _content->addChild(upper);
 
     auto previewBox { make_sptr<BoxPanel>() };
@@ -203,8 +125,22 @@ void InputAsset::setup() {
     _content->addChild(lower);
 
     _input = make_sptr<InputText>();
-    _input->_wrapper->style() = makeInputBoxStyle();
-    _input->_text->style() = makeInputTextStyle();
+    {
+        auto& attr = _input->_wrapper->attr;
+        attr.minWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+        attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+        attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+        attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+        attr.height.setValue({ ReflowUnitType::eAbsolute, 20.F });
+        attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+        attr.padding.setValue(Padding { 4.F, 2.F });
+        attr.flexShrink.setValue(1.F);
+    }
+
+    theme->applyText(_input->_text);
+    _input->_text->attr.textAlign.setValue(TextAlign::eLeftMiddle);
+    _input->_text->attr.textEllipse.setValue(1ui32);
+
     lower->addChild(_input);
 }
 

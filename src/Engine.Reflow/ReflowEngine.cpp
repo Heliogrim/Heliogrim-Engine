@@ -121,6 +121,12 @@ void reapplyLayout(ref<ReflowState> state_, cref<sptr<Widget>> root_, mref<Layou
         if (not cur->hasParent()) {
             ctx = globalCtx_;
 
+            auto* const rootState = state_.getStateOf(cur);
+            rootState->referenceSize = ctx.localSize;
+            rootState->cachedPreservedSize = rootState->prefetchedSize;
+            rootState->layoutSize = rootState->prefetchedSize;
+            rootState->layoutOffset = ctx.localOffset;
+
         } else {
             const auto* const widgetState = state_.getStateOf(cur);
             ctx = LayoutContext {

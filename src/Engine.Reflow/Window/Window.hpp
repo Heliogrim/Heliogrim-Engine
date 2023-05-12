@@ -33,6 +33,9 @@ namespace hg::engine::reflow {
         void tidy();
 
     private:
+        ptr<platform::NativeWindow> _nativeWindow;
+
+    private:
         WindowType _type;
 
         math::vec2 _screenPos;
@@ -43,6 +46,9 @@ namespace hg::engine::reflow {
 
         string _title;
 
+    public:
+        void setClientSize(cref<math::vec2> nextClientSize_);
+
     private:
         FixedChildren<2> _children;
 
@@ -50,9 +56,6 @@ namespace hg::engine::reflow {
         void setTitleBar(sptr<Widget> titleBar_);
 
         void setContent(sptr<Widget> content_);
-
-    private:
-        ptr<platform::NativeWindow> _nativeWindow;
 
     public:
         [[nodiscard]] sptr<Widget> root() const override;
