@@ -20,7 +20,8 @@ BoxPanel::BoxPanel() :
             .justify = { this, ReflowSpacing::eStart },
             .align = { this, ReflowAlignment::eStart }
         }
-    ) {}
+    ),
+    _children() {}
 
 BoxPanel::~BoxPanel() = default;
 
@@ -35,6 +36,8 @@ const ptr<const Children> BoxPanel::children() const {
 void BoxPanel::setChild(cref<sptr<Widget>> nextChild_) {
 
     _children.getChild()->setParent(nullptr);
+
+    nextChild_->setParent(shared_from_this());
     _children.setChild(nextChild_);
 
     markAsPending();

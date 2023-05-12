@@ -150,8 +150,8 @@ void Board::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_
      * TODO: We might need support for shader code to maintain performant display of certain features
      */
 
-    const auto offset = _state.layoutOffset;
-    const auto size = _state.layoutSize;
+    const auto offset = _layoutState.layoutOffset;
+    const auto size = _layoutState.layoutSize;
 
     const auto scissor = math::fExtent2D {
         size.x, size.y,
@@ -174,8 +174,8 @@ void Board::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_
     /* TODO: Relocate */
     for (const auto& child : *children()) {
         if (child->state().isVisible() && not cmd_->scissorCull(
-            child->state().layoutOffset,
-            child->state().layoutSize
+            child->layoutState().layoutOffset,
+            child->layoutState().layoutSize
         )) {
             child->render(state_, cmd_);
         }

@@ -29,13 +29,13 @@ namespace hg::editor::ui {
         void changeCwd(cref<fs::Url> nextCwd_);
 
     private:
-        sptr<Widget> _nav;
-        sptr<Widget> _items;
+        sptr<engine::reflow::HorizontalPanel> _nav;
+        sptr<engine::reflow::UniformGridPanel> _items;
 
     private:
         [[nodiscard]] sptr<engine::reflow::HorizontalPanel> getNavContainer() const;
 
-        [[nodiscard]] sptr<engine::reflow::HorizontalPanel> getItemContainer() const;
+        [[nodiscard]] sptr<engine::reflow::UniformGridPanel> getItemContainer() const;
 
         void dropNav();
 

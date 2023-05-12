@@ -27,7 +27,8 @@ VerticalPanel::VerticalPanel():
             .flexGrow = { this, 0.F },
             .flexShrink = { this, 0.F }
         }
-    ) {}
+    ),
+    _children() {}
 
 VerticalPanel::~VerticalPanel() = default;
 

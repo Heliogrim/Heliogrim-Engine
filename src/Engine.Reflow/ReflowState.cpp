@@ -2,6 +2,8 @@
 
 #include <Engine.Common/Make.hpp>
 
+#include "Widget/Widget.hpp"
+
 using namespace hg::engine::reflow;
 using namespace hg;
 
@@ -17,26 +19,26 @@ non_owning_rptr<ReflowPassState> ReflowState::record(cref<sptr<Widget>> widget_)
 
     const auto iter = _recorded.find(widget_.get());
     if (iter != _recorded.end()) {
-        return iter->second.get();
+        return iter->second;
     }
 
     const auto result = _recorded.insert(
         _STD make_pair(
             widget_.get(),
-            make_uptr<ReflowPassState>()
+            _STD addressof(widget_->layoutState())
         )
     );
 
     /**/
 
     ref<ReflowPassState> state = *result.first->second;
-    return result.first->second.get();
+    return result.first->second;
 }
 
 const non_owning_rptr<const ReflowPassState> ReflowState::getStateOf(cref<sptr<Widget>> widget_) const {
     const auto iter = _recorded.find(widget_.get());
     if (iter != _recorded.end()) {
-        return iter->second.get();
+        return iter->second;
     }
     return nullptr;
 }
@@ -46,7 +48,7 @@ const non_owning_rptr<const ReflowPassState> ReflowState::getStateOf(
 ) const {
     const auto iter = _recorded.find(const_cast<const ptr<Widget>>(widget_));
     if (iter != _recorded.end()) {
-        return iter->second.get();
+        return iter->second;
     }
     return nullptr;
 }
@@ -54,7 +56,7 @@ const non_owning_rptr<const ReflowPassState> ReflowState::getStateOf(
 const non_owning_rptr<ReflowPassState> ReflowState::getStateOf(cref<sptr<Widget>> widget_) {
     const auto iter = _recorded.find(widget_.get());
     if (iter != _recorded.end()) {
-        return iter->second.get();
+        return iter->second;
     }
     return nullptr;
 }

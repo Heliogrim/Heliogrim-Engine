@@ -2,6 +2,9 @@
 
 #include <Engine.Logging/Logger.hpp>
 #include "../../Layout/Style.hpp"
+#include "../../Algorithm/Flex.hpp"
+#include "../../Algorithm/FlexState.hpp"
+#include "../../Children.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -81,8 +84,8 @@ void VScrollBox::scrollTo(cref<math::vec2> point_, cref<math::vec2> size_) {
 
 void VScrollBox::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
 
-    const auto off = _state.layoutOffset;
-    const auto size = _state.layoutSize;
+    const auto off = _layoutState.layoutOffset;
+    const auto size = _layoutState.layoutSize;
 
     const math::fExtent2D scissor { size.x, size.y, off.x, off.y };
     cmd_->pushIntersectScissor(scissor);
@@ -115,7 +118,72 @@ math::vec2 VScrollBox::computeDesiredSize(cref<ReflowPassState> passState_) cons
 }
 
 void VScrollBox::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
-    VerticalPanel::applyLayout(state_, _STD move(ctx_));
+
+    const auto innerSize = layout::outerToInnerSize(attr, ctx_.localSize);
+
+    algorithm::FlexState flexState {};
+    flexState.box.preservedSize = innerSize;
+    flexState.box.maxSize = innerSize;
+    flexState.box.orientation = algorithm::FlexLineOrientation::eVertical;
+    flexState.box.justify = attr.justify.getValue();
+    flexState.box.align = attr.align.getValue();
+    flexState.box.gap = math::vec2 { attr.colGap.getValue(), attr.rowGap.getValue() };
+    flexState.box.wrap = false;
+
+    /**/
+
+    algorithm::solve(flexState, state_, children());
+
+    /**/
+
+    const auto minFlexBound = /*ctx_.localOffset*/math::vec2 { 0.F };
+    const auto maxFlexBound = /*ctx_.localOffset + ctx_.localSize*/innerSize;
+
+    const auto offset = layout::outerToInnerOffset(attr, ctx_.localOffset);
+
+    /**/
+
+    const auto& lfl = flexState.lines.back();
+    const auto fbmax = lfl.offset + lfl.size;
+    _overflow = math::compMax<float>(math::vec2 { 0.F }, fbmax - flexState.box.maxSize);
+
+    /**/
+
+    for (const auto& flexLine : flexState.lines) {
+        for (const auto& flexItem : flexLine.items) {
+
+            const auto dummy = flexItem.widget.lock();
+            const auto widgetState = state_.getStateOf(_STD static_pointer_cast<Widget, void>(dummy));
+
+            widgetState->layoutOffset = flexItem.offset + offset;
+            widgetState->layoutSize = flexItem.flexSize;
+
+            // TODO: Check how we should work with co-axis
+            // Currently Flex-Solving will guarantee main-axis constraint (as long as possible), but co-axis will break
+            // We might try to hard-limit contextual constraints
+
+            math::vec2 minDiff;
+            math::vec2 maxDiff;
+
+            const auto minCorner = flexItem.offset;
+            const auto maxCorner = flexItem.offset + flexItem.flexSize;
+
+            if (maxCorner.x > maxFlexBound.x || maxCorner.y > maxFlexBound.y) {
+                maxDiff = maxCorner - maxFlexBound;
+                maxDiff = math::compMax<float>(maxDiff, math::vec2 { 0.F });
+            }
+
+            if (minCorner.x > minFlexBound.x || minCorner.y > minFlexBound.y) {
+                minDiff = minFlexBound - minCorner;
+                minDiff = math::compMax<float>(minDiff, math::vec2 { 0.F });
+            }
+
+            widgetState->layoutOffset += minDiff;
+            //widgetState->layoutSize -= maxDiff;
+
+            widgetState->layoutOffset -= (_scrollValue * _overflow);
+        }
+    }
 }
 
 EventResponse VScrollBox::onWheel(cref<WheelEvent> event_) {

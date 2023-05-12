@@ -20,7 +20,7 @@ namespace hg::engine::reflow {
         void reset();
 
     private:
-        DenseMap<ptr<void>, uptr<ReflowPassState>> _recorded;
+        DenseMap<ptr<void>, non_owning_rptr<ReflowPassState>> _recorded;
 
     public:
         [[nodiscard]] non_owning_rptr<ReflowPassState> record(cref<sptr<Widget>> widget_);

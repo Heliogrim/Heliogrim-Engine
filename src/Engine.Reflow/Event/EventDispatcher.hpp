@@ -100,8 +100,8 @@ namespace hg::engine::reflow {
                     const auto& child { *it };
 
                     if (child->state().isVisible() && intersects(
-                        child->state().layoutOffset,
-                        child->state().layoutSize,
+                        child->layoutState().layoutOffset,
+                        child->layoutState().layoutSize,
                         point
                     )) {
                         backlog.push(child);
@@ -147,7 +147,9 @@ namespace hg::engine::reflow {
 
                 const auto next { backlog.back() };
 
-                const auto contained { intersects(next->state().layoutOffset, next->state().layoutSize, point) };
+                const auto contained {
+                    intersects(next->layoutState().layoutOffset, next->layoutState().layoutSize, point)
+                };
                 const auto hovered { next->state().isHover() };
 
                 if (not contained && hovered) {
@@ -175,7 +177,7 @@ namespace hg::engine::reflow {
                     if (child->state().isHover()) {
                         backlog.push_back(child);
 
-                    } else if (intersects(child->state().layoutOffset, child->state().layoutSize, point)) {
+                    } else if (intersects(child->layoutState().layoutOffset, child->layoutState().layoutSize, point)) {
                         backlog.push_back(child);
                     }
                 }
@@ -212,7 +214,7 @@ namespace hg::engine::reflow {
 
                     const auto& child { *it };
 
-                    if (intersects(child->state().layoutOffset, child->state().layoutSize, point)) {
+                    if (intersects(child->layoutState().layoutOffset, child->layoutState().layoutSize, point)) {
                         backlog.push(child);
                         break;
                     }
@@ -262,7 +264,7 @@ namespace hg::engine::reflow {
 
                     const auto& child { *it };
 
-                    if (intersects(child->state().layoutOffset, child->state().layoutSize, point)) {
+                    if (intersects(child->layoutState().layoutOffset, child->layoutState().layoutSize, point)) {
                         backlog.push(child);
                         break;
                     }

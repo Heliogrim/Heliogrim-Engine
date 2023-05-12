@@ -68,11 +68,11 @@ void AssetBrowserPanel::changeCwd(cref<fs::Url> nextCwd_) {
 }
 
 sptr<HorizontalPanel> AssetBrowserPanel::getNavContainer() const {
-    return _STD static_pointer_cast<HorizontalPanel, Widget>(_nav);
+    return _nav;
 }
 
-sptr<HorizontalPanel> AssetBrowserPanel::getItemContainer() const {
-    return _STD static_pointer_cast<HorizontalPanel, Widget>(_items);
+sptr<UniformGridPanel> AssetBrowserPanel::getItemContainer() const {
+    return _items;
 }
 
 void AssetBrowserPanel::dropNav() {
@@ -263,8 +263,8 @@ void AssetBrowserPanel::openImportDialog(cref<fs::Url> fqUrlSource_) {
     const auto window { _STD static_pointer_cast<Window, Widget>(panelRoot) };
     auto layer = window->pushPopLayer(dialog);
 
-    const auto off { window->state().layoutOffset };
-    const auto size { window->state().layoutSize };
+    const auto off { window->layoutState().layoutOffset };
+    const auto size { window->layoutState().layoutSize };
     const math::vec2 center { size * 0.5F + off };
 
     /**/

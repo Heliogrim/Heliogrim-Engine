@@ -27,7 +27,8 @@ HorizontalPanel::HorizontalPanel() :
             .flexGrow = { this, 0.F },
             .flexShrink = { this, 0.F }
         }
-    ) {}
+    ),
+    _children() {}
 
 HorizontalPanel::~HorizontalPanel() = default;
 

@@ -16,7 +16,7 @@ Dialog::Dialog() :
             .height = { this, { ReflowUnitType::eAuto, 0.F } },
             .maxHeight = { this, { ReflowUnitType::eAuto, 0.F } },
             .padding = { this, Padding { 0.F } },
-            .color = { this, engine::color { 255.F, 255.F, 255.F, 1.F } }
+            .color = { this, engine::color { 255.F, 255.F, 255.F, 255.F } }
         }
     ) {}
 
@@ -52,8 +52,8 @@ void Dialog::setContent(cref<sptr<Widget>> content_) {
 
 void Dialog::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
 
-    const math::vec2 off = _state.layoutOffset;
-    const math::vec2 size = _state.layoutSize;
+    const math::vec2 off = _layoutState.layoutOffset;
+    const math::vec2 size = _layoutState.layoutSize;
 
     const math::vec2 c0 { off.x, off.y };
     const math::vec2 c1 { off.x + size.x, off.y };

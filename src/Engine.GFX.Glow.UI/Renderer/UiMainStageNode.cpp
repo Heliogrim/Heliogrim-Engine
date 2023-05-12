@@ -342,7 +342,7 @@ void UiMainStageNode::invoke(
 
     IM_DEBUG_LOGF(
         "Next Flex-Flow took: {}",
-        _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count()
+        _STD chrono::duration_cast<_STD chrono::microseconds>(end - start)
     );
 
     start = _STD chrono::high_resolution_clock::now();

@@ -9,15 +9,12 @@ constexpr static WidgetState defaultWidgetState = WidgetState {
     static_cast<WidgetState::value_type>(WidgetStateFlagBits::ePendingInherit) |
     static_cast<WidgetState::value_type>(WidgetStateFlagBits::eShift) |
     static_cast<WidgetState::value_type>(WidgetStateFlagBits::eShiftInherit) |
-    static_cast<WidgetState::value_type>(WidgetStateFlagBits::eCapture),
-    /**/
-    math::vec2 { 0.F },
-    math::vec2 { 0.F },
-    math::vec2 { 0.F }
+    static_cast<WidgetState::value_type>(WidgetStateFlagBits::eCapture)
 };
 
 Widget::Widget() :
-    _state(defaultWidgetState) {}
+    _state(defaultWidgetState),
+    _layoutState() {}
 
 Widget::~Widget() = default;
 
@@ -27,6 +24,14 @@ cref<WidgetState> Widget::state() const noexcept {
 
 ref<WidgetState> Widget::state() noexcept {
     return _state;
+}
+
+cref<ReflowPassState> Widget::layoutState() const noexcept {
+    return _layoutState;
+}
+
+ref<ReflowPassState> Widget::layoutState() noexcept {
+    return _layoutState;
 }
 
 bool Widget::shouldTick() const noexcept {
@@ -145,7 +150,7 @@ math::vec2 Widget::computeDesiredSize(cref<ReflowPassState> passState_) const {
 }
 
 math::vec2 Widget::getDesiredSize() const {
-    return _state.preservedSize;
+    return _layoutState.prefetchedSize;
 }
 
 float Widget::shrinkFactor() const noexcept {

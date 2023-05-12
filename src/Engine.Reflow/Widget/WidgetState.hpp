@@ -70,14 +70,5 @@ namespace hg::engine::reflow {
         void unset(const WidgetStateFlagBits flag_) {
             this->unwrap &= (~static_cast<WidgetState::value_type>(flag_));
         }
-
-        /**
-         * Layout State
-         */
-    public:
-        math::vec2 preservedSize;
-
-        math::vec2 layoutOffset;
-        math::vec2 layoutSize;
     };
 }
