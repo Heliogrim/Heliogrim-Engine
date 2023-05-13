@@ -5,6 +5,7 @@
 #include "../Algorithm/FlexState.hpp"
 #include "../Layout/Style.hpp"
 #include "../Children.hpp"
+#include "../Style/PanelStyle.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -25,7 +26,8 @@ VerticalPanel::VerticalPanel():
             .colGap = { this, 0.F },
             .rowGap = { this, 0.F },
             .flexGrow = { this, 0.F },
-            .flexShrink = { this, 0.F }
+            .flexShrink = { this, 0.F },
+            .style = { this, PanelStyle {} }
         }
     ),
     _children() {}
@@ -97,6 +99,11 @@ void VerticalPanel::clearChildren() {
     _children.clear();
 
     markAsPending();
+}
+
+void VerticalPanel::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+    Panel::renderPanel(state_, cmd_, attr.style.getValue());
+    Panel::render(state_, cmd_);
 }
 
 math::vec2 VerticalPanel::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {

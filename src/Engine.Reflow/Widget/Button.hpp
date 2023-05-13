@@ -3,6 +3,8 @@
 #include <Engine.Event/EventEmitter.hpp>
 
 #include "BoxPanel.hpp"
+#include "../Attribute/StyleAttribute.hpp"
+#include "../Style/ButtonStyle.hpp"
 
 namespace hg::engine::reflow {
     class Button :
@@ -17,6 +19,17 @@ namespace hg::engine::reflow {
 
     public:
         [[nodiscard]] string getTag() const noexcept override;
+
+    protected:
+        struct Attributes : public BoxPanel::Attributes {
+            StyleAttribute<ButtonStyle> style;
+        } _attr;
+
+    public:
+        [[nodiscard]] ref<Attributes> attributes() noexcept override;
+
+    public:
+        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
 
     private:
         StatelessEventEmitter<MouseEvent> _emitter;

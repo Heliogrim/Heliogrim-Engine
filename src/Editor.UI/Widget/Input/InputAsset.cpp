@@ -63,10 +63,10 @@ void InputAsset::setup() {
     _content->addChild(upper);
 
     auto previewBox { make_sptr<BoxPanel>() };
-    previewBox->attr.width.setValue({ ReflowUnitType::eAbsolute, 72.F });
-    previewBox->attr.maxWidth.setValue({ ReflowUnitType::eAbsolute, 72.F });
-    previewBox->attr.height.setValue({ ReflowUnitType::eAbsolute, 72.F });
-    previewBox->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 72.F });
+    previewBox->attributes().width.setValue({ ReflowUnitType::eAbsolute, 72.F });
+    previewBox->attributes().maxWidth.setValue({ ReflowUnitType::eAbsolute, 72.F });
+    previewBox->attributes().height.setValue({ ReflowUnitType::eAbsolute, 72.F });
+    previewBox->attributes().maxHeight.setValue({ ReflowUnitType::eAbsolute, 72.F });
     upper->addChild(previewBox);
 
     _preview = make_sptr<Image>();

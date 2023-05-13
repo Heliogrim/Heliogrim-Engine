@@ -3,6 +3,10 @@
 #include "Widget.hpp"
 
 namespace hg::engine::reflow {
+    struct PanelStyle;
+}
+
+namespace hg::engine::reflow {
     class Panel :
         public Widget {
     public:
@@ -14,7 +18,7 @@ namespace hg::engine::reflow {
         ~Panel() override;
 
     protected:
-        void renderPanel(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_, engine::color color_) const;
+        void renderPanel(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_, cref<PanelStyle> style_) const;
 
     public:
         void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;

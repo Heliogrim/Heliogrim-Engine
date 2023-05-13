@@ -10,6 +10,13 @@ using namespace hg;
 
 Window::Window() :
     Widget(),
+    attr(
+        Attributes {
+            .style = {
+                this, WindowStyle {}
+            }
+        }
+    ),
     _nativeWindow(nullptr),
     _type(WindowType::eNormal),
     _resizable(true),
@@ -113,6 +120,22 @@ sptr<Widget> Window::getFocusTarget() const noexcept {
 }
 
 void Window::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+
+    if (attr.style->backgroundColor.a > 0.F) {
+
+        const math::vec2& offset = _layoutState.layoutOffset;
+        const math::vec2& size = _layoutState.layoutSize;
+
+        const math::vec2 c0 { offset.x, offset.y };
+        const math::vec2 c1 { offset.x + size.x, offset.y };
+        const math::vec2 c2 { offset.x + size.x, offset.y + size.y };
+        const math::vec2 c3 { offset.x, offset.y + size.y };
+
+        cmd_->drawQuad(c0, c1, c2, c3, attr.style->backgroundColor);
+    }
+
+    /**/
+
     for (const auto& child : _children) {
         child->render(state_, cmd_);
     }

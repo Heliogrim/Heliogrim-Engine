@@ -85,6 +85,9 @@
     <Filter Include="Headerdateien\Attribute">
       <UniqueIdentifier>{fb424b50-dac4-4203-b5f5-fbb9745e9e0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Style">
+      <UniqueIdentifier>{7ba926c3-6fb4-4170-975e-1b5961a795c6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Reflow\Window\WindowManager.hpp">
@@ -312,6 +315,30 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Attribute\DynamicAttribute.hpp">
       <Filter>Headerdateien\Attribute</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Attribute\StyleAttribute.hpp">
+      <Filter>Headerdateien\Attribute</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Style\Style.hpp">
+      <Filter>Headerdateien\Style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Style\WindowStyle.hpp">
+      <Filter>Headerdateien\Style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Style\ButtonStyle.hpp">
+      <Filter>Headerdateien\Style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\SplitPanel.hpp">
+      <Filter>Headerdateien\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\ReflowOrientation.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Style\SplitStyle.hpp">
+      <Filter>Headerdateien\Style</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflow\Style\PanelStyle.hpp">
+      <Filter>Headerdateien\Style</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflow\Window\WindowManager.cpp">
@@ -423,6 +450,9 @@
       <Filter>Quelldateien\Widget</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\HorizontalPanel.cpp">
+      <Filter>Quelldateien\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\SplitPanel.cpp">
       <Filter>Quelldateien\Widget</Filter>
     </ClCompile>
   </ItemGroup>

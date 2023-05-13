@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Reflow/Style/PanelStyle.hpp>
 #include <Engine.Reflow/Widget/Button.hpp>
 #include <Engine.Reflow/Widget/Image.hpp>
 #include <Engine.Reflow/Widget/Input/InputText.hpp>
@@ -436,9 +437,11 @@ static void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<Horizont
         auto& style = searchbar->_wrapper->attr;
 
         style.minWidth.setValue({ ReflowUnitType::eAbsolute, 212.F });
+        style.width.setValue({ ReflowUnitType::eAbsolute, 212.F });
         style.maxWidth.setValue({ ReflowUnitType::eAbsolute, 212.F });
         style.minHeight.setValue({ ReflowUnitType::eAbsolute, 16.F });
-        style.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+        style.height.setValue({ ReflowUnitType::eAbsolute, 16.F });
+        style.maxHeight.setValue({ ReflowUnitType::eRelative, 16.F });
 
         style.padding.setValue(Padding { 4.F, 0.F });
     }
@@ -448,6 +451,7 @@ static void configureNav(cref<sptr<AssetBrowserPanel>> root_, cref<sptr<Horizont
 
         theme->applyLabel(searchbar->_text);
         style.textEllipse.setValue(1ui32);
+        style.textAlign.setValue(TextAlign::eLeftMiddle);
     }
 
     /*
@@ -475,8 +479,12 @@ sptr<AssetBrowserPanel> AssetBrowserPanel::make(const non_owning_rptr<AssetBrows
     /**/
 
     auto nav = make_sptr<HorizontalPanel>();
+    nav->attr.minWidth.setValue({ ReflowUnitType::eRelative, 1.F });
     nav->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    nav->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
     nav->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    nav->attr.height.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    nav->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
     nav->attr.justify.setValue(ReflowSpacing::eSpaceBetween);
 
     auto scrollContent = make_sptr<VScrollBox>();
@@ -488,6 +496,12 @@ sptr<AssetBrowserPanel> AssetBrowserPanel::make(const non_owning_rptr<AssetBrows
     scrollContent->attr.justify.setValue(ReflowSpacing::eStart);
     scrollContent->attr.flexShrink.setValue(1.F);
     scrollContent->attr.flexGrow.setValue(1.F);
+
+    scrollContent->attr.style.setValue(
+        PanelStyle {
+            .backgroundColor = color::Dark::backgroundInnerField
+        }
+    );
 
     auto content = make_sptr<UniformGridPanel>();
     content->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });

@@ -128,6 +128,12 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
     item->attr.height.setValue({ ReflowUnitType::eAbsolute, 156.F });
     item->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 156.F });
 
+    item->attr.style.setValue(
+        PanelStyle {
+            .backgroundColor = color::Dark::backgroundInnerFieldDarken
+        }
+    );
+
     self->setChild(item);
 
     /**/

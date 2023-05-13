@@ -1,16 +1,18 @@
 #pragma once
 
-#include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Platform/NativeWindow.hpp>
 
-#include "../Widget/__fwd.hpp"
-#include "../Widget/Widget.hpp"
+#include "PopupLayer.hpp"
+#include "WindowType.hpp"
 #include "../Children.hpp"
 #include "../FocusPath.hpp"
-#include "WindowType.hpp"
-#include "PopupLayer.hpp"
+#include "../Attribute/StyleAttribute.hpp"
+#include "../Style/WindowStyle.hpp"
+#include "../Widget/Widget.hpp"
+#include "../Widget/__fwd.hpp"
 
 namespace hg::engine::reflow {
     class Window :
@@ -28,6 +30,11 @@ namespace hg::engine::reflow {
 
     public:
         [[nodiscard]] string getTag() const noexcept override;
+
+    public:
+        struct Attributes {
+            StyleAttribute<WindowStyle> style;
+        } attr;
 
     private:
         void tidy();

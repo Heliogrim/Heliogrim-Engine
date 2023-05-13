@@ -5,6 +5,8 @@
 #include "../Padding.hpp"
 #include "../ReflowSpacing.hpp"
 #include "../ReflowAlignment.hpp"
+#include "../Attribute/StyleAttribute.hpp"
+#include "../Style/PanelStyle.hpp"
 
 namespace hg::engine::reflow {
     class VerticalPanel :
@@ -40,6 +42,8 @@ namespace hg::engine::reflow {
 
             Attribute<float> flexGrow;
             Attribute<float> flexShrink;
+
+            StyleAttribute<PanelStyle> style;
         } attr;
 
     protected:
@@ -55,6 +59,9 @@ namespace hg::engine::reflow {
         void removeChild(cref<sptr<Widget>> child_);
 
         void clearChildren();
+
+    public:
+        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
 
     public:
         math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;

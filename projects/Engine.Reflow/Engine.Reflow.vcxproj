@@ -100,6 +100,7 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Algorithm\FlexState.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Attribute\Attribute.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Attribute\DynamicAttribute.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Attribute\StyleAttribute.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\BorderRadius.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Children.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Command\ReflowCommandBuffer.hpp" />
@@ -126,6 +127,7 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Reflow.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowAlignment.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowEngine.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\ReflowOrientation.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowPassState.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowPosition.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowSpacing.hpp" />
@@ -134,6 +136,11 @@
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowUnit.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\ReflowWrap.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Scene\UISceneModel.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Style\ButtonStyle.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Style\PanelStyle.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Style\SplitStyle.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Style\Style.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Style\WindowStyle.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\TextAlign.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\BoxPanel.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Button.hpp" />
@@ -154,6 +161,7 @@
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Panel.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Popup.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Scroll\VScrollBox.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflow\Widget\SplitPanel.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Text.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Tree\TreeItem.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflow\Widget\Tree\TreeView.hpp" />
@@ -198,6 +206,7 @@
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Panel.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Popup.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Scroll\VScrollBox.cpp" />
+    <ClCompile Include="..\..\src\Engine.Reflow\Widget\SplitPanel.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Text.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Tree\TreeItem.cpp" />
     <ClCompile Include="..\..\src\Engine.Reflow\Widget\Tree\TreeView.cpp" />

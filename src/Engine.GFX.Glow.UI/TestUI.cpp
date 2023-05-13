@@ -265,7 +265,7 @@ void buildTestUI(
     navBrandIcon->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(testImage)), nullptr);
 
     auto navFileButton = make_sptr<Button>();
-    navFileButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    navFileButton->attributes().padding.setValue(Padding { 4.F, 2.F });
     //navFileButton->attr.color.setValue(color::Dark::darkRed);
 
     auto navFileText = make_sptr<Text>();
@@ -277,7 +277,7 @@ void buildTestUI(
     navFileText->setText("File");
 
     auto navSaveAllButton = make_sptr<Button>();
-    navSaveAllButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    navSaveAllButton->attributes().padding.setValue(Padding { 4.F, 2.F });
     //navFileButton->attr.color.setValue(color::Dark::backgroundDefault);
 
     auto navSaveAllText = make_sptr<Text>();
@@ -289,7 +289,7 @@ void buildTestUI(
     navSaveAllText->setText("Save All");
 
     auto navQuitButton = make_sptr<Button>();
-    navQuitButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    navQuitButton->attributes().padding.setValue(Padding { 4.F, 2.F });
     //navQuitButton->attr.color.setValue(color::Dark::backgroundDefault);
 
     auto navQuitText = make_sptr<Text>();
@@ -342,7 +342,7 @@ void buildTestUI(
     nfmw->addChild(navQuitButton);
 
     auto navEditButton = make_sptr<Button>();
-    navEditButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    navEditButton->attributes().padding.setValue(Padding { 4.F, 2.F });
     //navEditButton->attr.color.setValue(color::Dark::darkRed);
 
     auto navEditText = make_sptr<Text>();
@@ -353,7 +353,7 @@ void buildTestUI(
     navEditText->setText("Edit");
 
     auto navWindowButton = make_sptr<Button>();
-    navWindowButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    navWindowButton->attributes().padding.setValue(Padding { 4.F, 2.F });
     //navWindowButton->attr.color.setValue(color::Dark::darkRed);
 
     auto navWindowText = make_sptr<Text>();
@@ -365,7 +365,7 @@ void buildTestUI(
     navWindowText->setText("Window");
 
     auto navProjectButton = make_sptr<Button>();
-    navProjectButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    navProjectButton->attributes().padding.setValue(Padding { 4.F, 2.F });
     //navProjectButton->attr.color.setValue(color::Dark::darkRed);
 
     auto navProjectText = make_sptr<Text>();
@@ -377,7 +377,7 @@ void buildTestUI(
     navProjectText->setText("Project");
 
     auto navMoreButton = make_sptr<Button>();
-    navMoreButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    navMoreButton->attributes().padding.setValue(Padding { 4.F, 2.F });
     //navMoreButton->attr.color.setValue(color::Dark::darkRed);
 
     auto navMoreText = make_sptr<Text>();
@@ -389,7 +389,7 @@ void buildTestUI(
     navMoreText->setText("More");
 
     auto navHelpButton = make_sptr<Button>();
-    navHelpButton->attr.padding.setValue(Padding { 4.F, 2.F });
+    navHelpButton->attributes().padding.setValue(Padding { 4.F, 2.F });
     //navHelpButton->attr.color.setValue(color::Dark::darkRed);
 
     auto navHelpText = make_sptr<Text>();
@@ -672,13 +672,13 @@ void configureMainViewport(
     /**/
 
     auto playButton = make_sptr<Button>();
-    playButton->attr.padding.setValue(Padding { 8.F, 4.F });
+    playButton->attributes().padding.setValue(Padding { 8.F, 4.F });
 
     auto pauseButton = make_sptr<Button>();
-    pauseButton->attr.padding.setValue(Padding { 8.F, 4.F });
+    pauseButton->attributes().padding.setValue(Padding { 8.F, 4.F });
 
     auto stopButton = make_sptr<Button>();
-    stopButton->attr.padding.setValue(Padding { 8.F, 4.F });
+    stopButton->attributes().padding.setValue(Padding { 8.F, 4.F });
 
     auto playText = make_sptr<Text>();
     playText->attr.font.setValue(defaultFont);

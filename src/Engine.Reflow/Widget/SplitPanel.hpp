@@ -1,23 +1,28 @@
 #pragma once
 #include "Panel.hpp"
 #include "../Children.hpp"
-#include "../ReflowUnit.hpp"
 #include "../Padding.hpp"
-#include "../ReflowSpacing.hpp"
 #include "../ReflowAlignment.hpp"
+#include "../ReflowOrientation.hpp"
+#include "../ReflowSpacing.hpp"
+#include "../ReflowUnit.hpp"
 #include "../Attribute/StyleAttribute.hpp"
-#include "../Style/PanelStyle.hpp"
+#include "../Style/SplitStyle.hpp"
 
 namespace hg::engine::reflow {
-    class HorizontalPanel :
+    struct SplitSlot {
+        float proportion;
+    };
+
+    class SplitPanel :
         public Panel {
     public:
-        using this_type = HorizontalPanel;
+        using this_type = SplitPanel;
 
     public:
-        HorizontalPanel();
+        SplitPanel();
 
-        ~HorizontalPanel() override;
+        ~SplitPanel() override;
 
     public:
         [[nodiscard]] string getTag() const noexcept override;
@@ -34,20 +39,24 @@ namespace hg::engine::reflow {
 
             Attribute<Padding> padding;
 
-            Attribute<ReflowSpacing> justify;
-            Attribute<ReflowAlignment> align;
-
-            Attribute<float> colGap;
-            Attribute<float> rowGap;
+            Attribute<ReflowOrientation> orientation;
 
             Attribute<float> flexGrow;
             Attribute<float> flexShrink;
 
-            StyleAttribute<PanelStyle> style;
+            struct SlotAttributes {
+                Attribute<ReflowSpacing> justify;
+                Attribute<ReflowAlignment> align;
+
+                Attribute<Padding> padding;
+            } slot;
+
+            StyleAttribute<SplitStyle> style;
         } attr;
 
     protected:
         Children _children;
+        Vector<SplitSlot> _slots;
 
     public:
         const ptr<const Children> children() const override;
@@ -61,13 +70,13 @@ namespace hg::engine::reflow {
         void clearChildren();
 
     public:
-        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
-
-    public:
         math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;
 
         math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
 
         void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
+
+    private:
+        void recomputeSlotPortions(float unnormalized = 0.F);
     };
 }
