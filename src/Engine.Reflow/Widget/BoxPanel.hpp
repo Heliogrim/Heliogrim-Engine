@@ -21,7 +21,7 @@ namespace hg::engine::reflow {
     public:
         string getTag() const noexcept override;
 
-    public:
+    protected:
         struct Attributes {
             Attribute<ReflowUnit> minWidth;
             Attribute<ReflowUnit> width;
@@ -35,7 +35,10 @@ namespace hg::engine::reflow {
 
             Attribute<ReflowSpacing> justify;
             Attribute<ReflowAlignment> align;
-        } attr;
+        } _attr;
+
+    public:
+        [[nodiscard]] virtual ref<Attributes> attributes() noexcept;
 
     protected:
         SingleChildren _children;

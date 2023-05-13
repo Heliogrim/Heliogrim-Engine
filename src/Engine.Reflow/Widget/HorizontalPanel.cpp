@@ -25,7 +25,8 @@ HorizontalPanel::HorizontalPanel() :
             .colGap = { this, 0.F },
             .rowGap = { this, 0.F },
             .flexGrow = { this, 0.F },
-            .flexShrink = { this, 0.F }
+            .flexShrink = { this, 0.F },
+            .style = { this, PanelStyle {} }
         }
     ),
     _children() {}
@@ -96,6 +97,11 @@ void HorizontalPanel::clearChildren() {
     _children.clear();
 
     markAsPending();
+}
+
+void HorizontalPanel::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+    Panel::renderPanel(state_, cmd_, attr.style.getValue());
+    Panel::render(state_, cmd_);
 }
 
 math::vec2 HorizontalPanel::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {

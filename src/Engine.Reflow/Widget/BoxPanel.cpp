@@ -8,7 +8,7 @@ using namespace hg;
 
 BoxPanel::BoxPanel() :
     Panel(),
-    attr(
+    _attr(
         Attributes {
             .minWidth = { this, { ReflowUnitType::eAuto, 0.F } },
             .width = { this, { ReflowUnitType::eAuto, 0.F } },
@@ -29,6 +29,10 @@ string BoxPanel::getTag() const noexcept {
     return _STD format(R"(BoxPanel <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
+ref<BoxPanel::Attributes> BoxPanel::attributes() noexcept {
+    return _attr;
+}
+
 const ptr<const Children> BoxPanel::children() const {
     return &_children;
 }
@@ -46,6 +50,7 @@ void BoxPanel::setChild(cref<sptr<Widget>> nextChild_) {
 math::vec2 BoxPanel::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
 
     const auto inner = _children.getChild()->getDesiredSize();
+    const auto& attr = const_cast<this_type*>(this)->attributes();
     auto size = layout::innerToOuterSize(attr, inner);
 
     /**/
@@ -65,6 +70,8 @@ math::vec2 BoxPanel::prefetchDesiredSize(cref<ReflowState> state_, float scale_)
 
 math::vec2 BoxPanel::computeDesiredSize(cref<ReflowPassState> passState_) const {
 
+    const auto& attr = const_cast<this_type*>(this)->attributes();
+
     math::vec2 desired = getDesiredSize();
     if (attr.width->type == ReflowUnitType::eRelative) {
         desired.x = passState_.referenceSize.x * attr.width->value;
@@ -80,6 +87,8 @@ math::vec2 BoxPanel::computeDesiredSize(cref<ReflowPassState> passState_) const 
 }
 
 void BoxPanel::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
+
+    const auto& attr = attributes();
 
     const auto innerOffset = layout::outerToInnerOffset(attr, ctx_.localOffset);
     const auto innerSize = layout::outerToInnerSize(attr, ctx_.localSize);

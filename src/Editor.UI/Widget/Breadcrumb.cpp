@@ -18,6 +18,7 @@ Breadcrumb::Breadcrumb() :
     attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
     attr.rowGap.setValue(2.F);
     attr.padding.setValue(Padding { 4.F, 2.F });
+    attr.align.setValue(ReflowAlignment::eCenter);
 }
 
 Breadcrumb::~Breadcrumb() {
@@ -45,6 +46,7 @@ void Breadcrumb::addNavEntry(cref<AssocKey<string>> key_, cref<string> title_, c
 
         auto spacer { make_sptr<Text>() };
         theme->applyLabel(spacer);
+        spacer->attr.textAlign.setValue(TextAlign::eCenterMiddle);
         spacer->setText(R"(>)");
 
         this->addChild(spacer);

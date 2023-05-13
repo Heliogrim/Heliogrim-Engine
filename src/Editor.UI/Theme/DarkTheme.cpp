@@ -18,9 +18,9 @@ void DarkTheme::applyButton(cref<sptr<engine::reflow::Button>> button_) const {}
 
 void DarkTheme::applyTextButton(cref<sptr<engine::reflow::Button>> button_) const {
 
-    button_->attr.padding.setValue(Padding { 4.F, 2.F });
-    button_->attr.justify.setValue(ReflowSpacing::eSpaceAround);
-    button_->attr.align.setValue(ReflowAlignment::eCenter);
+    button_->attributes().padding.setValue(Padding { 4.F, 2.F });
+    button_->attributes().justify.setValue(ReflowSpacing::eSpaceAround);
+    button_->attributes().align.setValue(ReflowAlignment::eCenter);
 }
 
 void DarkTheme::applyText(cref<sptr<engine::reflow::Text>> text_) const {

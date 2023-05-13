@@ -112,6 +112,7 @@ void InputFloat::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer>
 }
 
 math::vec2 InputFloat::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
+    _wrapper->setParent(const_cast<this_type*>(this)->shared_from_this());
     return _children.getChild()->getDesiredSize();
 }
 

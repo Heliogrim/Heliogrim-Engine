@@ -1,17 +1,51 @@
 #include "Button.hpp"
 
 #include "../Layout/Style.hpp"
+#include "../Style/PanelStyle.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
 
 Button::Button() :
-    BoxPanel() {}
+    BoxPanel(),
+    _attr(
+        Attributes {
+            {
+                .minWidth = { this, { ReflowUnitType::eAuto, 0.F } },
+                .width = { this, { ReflowUnitType::eAuto, 0.F } },
+                .maxWidth = { this, { ReflowUnitType::eAuto, 0.F } },
+                .minHeight = { this, { ReflowUnitType::eAuto, 0.F } },
+                .height = { this, { ReflowUnitType::eAuto, 0.F } },
+                .maxHeight = { this, { ReflowUnitType::eAuto, 0.F } },
+                .padding = { this, Padding { 0.F } },
+                .justify = { this, ReflowSpacing::eStart },
+                .align = { this, ReflowAlignment::eStart },
+            },
+            { this, ButtonStyle {} }
+        }
+    ) {}
 
 Button::~Button() = default;
 
 string Button::getTag() const noexcept {
     return _STD format(R"(Button <{:#x}>)", reinterpret_cast<u64>(this));
+}
+
+ref<Button::Attributes> Button::attributes() noexcept {
+    return _attr;
+}
+
+void Button::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+
+    PanelStyle tmp {};
+    if (_state.isHover()) {
+        tmp.backgroundColor = attributes().style.getValue().hoverColor;
+    } else {
+        tmp.backgroundColor = attributes().style.getValue().defaultColor;
+    }
+
+    Panel::renderPanel(state_, cmd_, tmp);
+    Panel::render(state_, cmd_);
 }
 
 decltype(Button::_emitter)::handle_type Button::addOnClick(mref<decltype(_emitter)::function_type> fnc_) {
