@@ -38,9 +38,9 @@ const ptr<const SingleChildren> InputText::children() const {
     return &_children;
 }
 
-void InputText::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
-    _wrapper->render(state_, cmd_);
-    _text->render(state_, cmd_);
+void InputText::render(const ptr<ReflowCommandBuffer> cmd_) {
+    _wrapper->render(cmd_);
+    _text->render(cmd_);
 }
 
 math::vec2 InputText::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {

@@ -22,6 +22,15 @@ sptr<Widget> TreeViewBase::generateRow(cref<TreeViewItem> view_, cref<sptr<Widge
     // TODO: Warning: This will break the tree view
     //wrapper->style()->minHeight = ReflowUnit { ReflowUnitType::eAbsolute, row_min_height };
     //wrapper->style()->margin = Margin { static_cast<float>(view_.depth) * ident_per_level, 0.F, 0.F, 0.F };
+    static_cast<ptr<HorizontalPanel>>(wrapper.get())->attr.style.setValue(
+        PanelStyle {
+            .backgroundColor = engine::color { 255.F, 255.F, 255.F, 0.F }
+        }
+    );
+    static_cast<ptr<HorizontalPanel>>(wrapper.get())->attr.minHeight.setValue(
+        { ReflowUnitType::eAbsolute, row_min_height }
+    );
+    wrapper->attr.level.setValue(view_.depth);
 
     wrapper->addChild(content_);
     return wrapper;

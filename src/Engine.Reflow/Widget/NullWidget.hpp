@@ -24,7 +24,7 @@ namespace hg::engine::reflow {
         [[nodiscard]] const ptr<const Children> children() const override;
 
     public:
-        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
+        void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
     public:
         math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override;

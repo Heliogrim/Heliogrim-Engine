@@ -143,7 +143,7 @@ void Board::addChild(cref<sptr<Widget>> child_) {
     return _children.push_back(child_);
 }
 
-void Board::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+void Board::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     /**
      * TODO: Generate background image like "Graph Format" of Windows Whiteboard -> Adaptive Grid-Lines
@@ -177,7 +177,7 @@ void Board::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_
             child->layoutState().layoutOffset,
             child->layoutState().layoutSize
         )) {
-            child->render(state_, cmd_);
+            child->render(cmd_);
         }
     }
 

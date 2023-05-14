@@ -38,13 +38,13 @@ decltype(Form::_submitEmitter)::handle_type Form::onSubmit(mref<decltype(_submit
     return _submitEmitter.on(_STD move(fnc_));
 }
 
-void Form::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+void Form::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     if (_children.empty()) {
         return;
     }
 
-    _children.front()->render(state_, cmd_);
+    _children.front()->render(cmd_);
 }
 
 math::vec2 Form::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {

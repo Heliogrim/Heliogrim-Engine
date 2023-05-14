@@ -26,7 +26,7 @@ const ptr<const Children> NullWidget::children() const {
     return get_null_children();
 }
 
-void NullWidget::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {}
+void NullWidget::render(const ptr<ReflowCommandBuffer> cmd_) {}
 
 math::vec2 NullWidget::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
     return math::vec2 {};

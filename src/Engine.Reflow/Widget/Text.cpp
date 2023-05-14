@@ -82,7 +82,7 @@ const ptr<const NullChildren> Text::children() const {
     return &_children;
 }
 
-void Text::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     math::vec2 innerOffset = _layoutState.layoutOffset;
     const math::vec2 innerSize = _layoutState.layoutSize;

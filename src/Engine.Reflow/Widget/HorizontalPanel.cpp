@@ -99,9 +99,9 @@ void HorizontalPanel::clearChildren() {
     markAsPending();
 }
 
-void HorizontalPanel::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
-    Panel::renderPanel(state_, cmd_, attr.style.getValue());
-    Panel::render(state_, cmd_);
+void HorizontalPanel::render(const ptr<ReflowCommandBuffer> cmd_) {
+    Panel::renderPanel(cmd_, attr.style.getValue());
+    Panel::render(cmd_);
 }
 
 math::vec2 HorizontalPanel::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {

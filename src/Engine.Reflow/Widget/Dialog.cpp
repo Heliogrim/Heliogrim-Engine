@@ -50,7 +50,7 @@ void Dialog::setContent(cref<sptr<Widget>> content_) {
     _children.setChild<1>(content_);
 }
 
-void Dialog::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+void Dialog::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     const math::vec2 off = _layoutState.layoutOffset;
     const math::vec2 size = _layoutState.layoutSize;
@@ -65,7 +65,7 @@ void Dialog::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd
     /**/
 
     for (const auto& child : _children) {
-        child->render(state_, cmd_);
+        child->render(cmd_);
     }
 }
 

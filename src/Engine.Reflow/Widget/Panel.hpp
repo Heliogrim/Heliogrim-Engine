@@ -18,9 +18,9 @@ namespace hg::engine::reflow {
         ~Panel() override;
 
     protected:
-        void renderPanel(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_, cref<PanelStyle> style_) const;
+        void renderPanel(const ptr<ReflowCommandBuffer> cmd_, cref<PanelStyle> style_) const;
 
     public:
-        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
+        void render(const ptr<ReflowCommandBuffer> cmd_) override;
     };
 }

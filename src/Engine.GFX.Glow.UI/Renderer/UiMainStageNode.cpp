@@ -326,31 +326,11 @@ void UiMainStageNode::invoke(
     };
 
     auto start = _STD chrono::high_resolution_clock::now();
-    auto end = _STD chrono::high_resolution_clock::now();
-
-    reflow::ReflowState reflowState {};
-    {
-        start = _STD chrono::high_resolution_clock::now();
-        auto layoutContext = reflow::LayoutContext {
-            math::vec2 { 0.F },
-            math::vec2 { ava.x, ava.y },
-            1.F
-        };
-        reflow::ReflowEngine::tick(reflowState, wnd, _STD move(layoutContext));
-        end = _STD chrono::high_resolution_clock::now();
-    }
-
-    IM_DEBUG_LOGF(
-        "Next Flex-Flow took: {}",
-        _STD chrono::duration_cast<_STD chrono::microseconds>(end - start)
-    );
-
-    start = _STD chrono::high_resolution_clock::now();
     math::fExtent2D rootScissor { context.scissor };
     uiCmd.pushScissor(rootScissor);
-    wnd->render(reflowState, &uiCmd);
+    wnd->render(&uiCmd);
     assert(rootScissor == uiCmd.popScissor());
-    end = _STD chrono::high_resolution_clock::now();
+    auto end = _STD chrono::high_resolution_clock::now();
 
     //IM_DEBUG_LOGF("Render took: {}", _STD chrono::duration_cast<_STD chrono::microseconds>(end - start).count());
 

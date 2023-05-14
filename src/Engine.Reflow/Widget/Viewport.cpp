@@ -150,7 +150,7 @@ const ptr<const NullChildren> Viewport::children() const {
     return get_null_children();
 }
 
-void Viewport::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     if (_layoutState.layoutSize.zero()) {
         return;

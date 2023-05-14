@@ -63,7 +63,6 @@ namespace hg::editor::ui {
 
     public:
         void render(
-            cref<engine::reflow::ReflowState> state_,
             const ptr<engine::reflow::ReflowCommandBuffer> cmd_
         ) override;
 

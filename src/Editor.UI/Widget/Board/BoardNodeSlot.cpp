@@ -20,6 +20,7 @@ BoardNodeSlot::BoardNodeSlot() :
     /**/
     attr.minWidth.setValue({ ReflowUnitType::eAbsolute, 24.F });
     attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F });
+    attr.colGap.setValue(2.F);
     attr.rowGap.setValue(4.F);
     attr.padding.setValue(Padding { 2.F });
 }
@@ -72,6 +73,12 @@ sptr<BoardNodeSlot> BoardNodeSlot::makeInput(sptr<hg::editor::gfx::graph::NodeIn
 
     outerAnchor->attr.padding.setValue(Padding { 1.F });
 
+    outerAnchor->attr.style.setValue(
+        PanelStyle {
+            .backgroundColor = engine::color { 139.F, 0.F, 0.F, 255.F }
+        }
+    );
+
     /**/
 
     auto innerAnchor = make_sptr<VerticalPanel>();
@@ -85,6 +92,12 @@ sptr<BoardNodeSlot> BoardNodeSlot::makeInput(sptr<hg::editor::gfx::graph::NodeIn
 
     innerAnchor->attr.padding.setValue(Padding { 8.F });
 
+    innerAnchor->attr.style.setValue(
+        PanelStyle {
+            .backgroundColor = engine::color { 32.F, 36.F, 44.F, 255.F }
+        }
+    );
+
     /**/
 
     outerAnchor->addChild(innerAnchor);
@@ -94,6 +107,7 @@ sptr<BoardNodeSlot> BoardNodeSlot::makeInput(sptr<hg::editor::gfx::graph::NodeIn
 
     auto label = make_sptr<Text>();
     theme->applyLabel(label);
+    label->attr.textAlign.setValue(TextAlign::eLeftMiddle);
 
     label->setText(nodeInput_->_uniqueName);
 
@@ -117,6 +131,7 @@ sptr<BoardNodeSlot> BoardNodeSlot::makeOutput(sptr<hg::editor::gfx::graph::NodeO
 
     auto label = make_sptr<Text>();
     theme->applyLabel(label);
+    label->attr.textAlign.setValue(TextAlign::eRightMiddle);
 
     label->setText(nodeOutput_->_uniqueName);
 
@@ -135,6 +150,12 @@ sptr<BoardNodeSlot> BoardNodeSlot::makeOutput(sptr<hg::editor::gfx::graph::NodeO
 
     outerAnchor->attr.padding.setValue(Padding { 1.F });
 
+    outerAnchor->attr.style.setValue(
+        PanelStyle {
+            .backgroundColor = engine::color { 0.F, 100.F, 0.F, 255.F }
+        }
+    );
+
     /**/
 
     auto innerAnchor = make_sptr<VerticalPanel>();
@@ -147,6 +168,12 @@ sptr<BoardNodeSlot> BoardNodeSlot::makeOutput(sptr<hg::editor::gfx::graph::NodeO
     innerAnchor->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 14.F });
 
     innerAnchor->attr.padding.setValue(Padding { 8.F });
+
+    innerAnchor->attr.style.setValue(
+        PanelStyle {
+            .backgroundColor = engine::color { 32.F, 36.F, 44.F, 255.F }
+        }
+    );
 
     /**/
 

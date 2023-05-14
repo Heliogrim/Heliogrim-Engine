@@ -39,9 +39,9 @@ void Menu::setContent(cref<sptr<Widget>> content_) {
     _children.setChild(content_);
 }
 
-void Menu::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+void Menu::render(const ptr<ReflowCommandBuffer> cmd_) {
     /* Warning: Temporary solution; Menu should be on PopupLayer */
-    _children.getChild()->render(state_, cmd_);
+    _children.getChild()->render(cmd_);
 }
 
 math::vec2 Menu::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {

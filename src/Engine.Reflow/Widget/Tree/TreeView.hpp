@@ -1,21 +1,22 @@
 #pragma once
 
+#include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/BytellHashMap.hpp>
+#include <Engine.Common/Collection/Set.hpp>
 
-#include "../Scroll/VScrollBox.hpp"
+#include "TreeItem.hpp"
 #include "../Widget.hpp"
-#include "Engine.Common/Collection/BytellHashMap.hpp"
-#include "Engine.Common/Collection/Set.hpp"
-#include "Engine.Common/Types.hpp"
+#include "../Scroll/VScrollBox.hpp"
 
 namespace hg::engine::reflow {
-    class TreeItem;
-
     template <typename DataItemType_, template <typename> typename WrappingType_>
     struct TreeDataItemEqual;
 
     template <typename DataItemType_, template <typename> typename WrapperType_>
     struct TreeDataItemHash;
+
+    static constexpr float ident_per_level = 12.F;
 }
 
 namespace hg::engine::reflow {
@@ -127,21 +128,29 @@ namespace hg::engine::reflow {
         ~TreeView() override = default;
 
     private:
-        mutable bool _requiresRefresh;
+        bool _requiresRefresh;
 
     private:
         void requestRefresh() {
             _requiresRefresh = true;
-            markAsPending();
+        }
+
+    public:
+        [[nodiscard]] bool shouldTick() const noexcept override {
+            return true;
+        }
+
+        void tick() override {
+            if (_requiresRefresh) {
+                const_cast<ptr<this_type>>(this)->refreshTreeView();
+
+                _requiresRefresh = false;
+                markAsPending();
+            }
         }
 
     public:
         math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const override {
-            if (_requiresRefresh) {
-                const_cast<ptr<this_type>>(this)->refreshTreeView();
-                _requiresRefresh = false;
-            }
-
             return TreeViewBase::prefetchDesiredSize(state_, scale_);
         }
 
@@ -150,7 +159,18 @@ namespace hg::engine::reflow {
         }
 
         void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override {
-            return TreeViewBase::applyLayout(state_, _STD move(ctx_));
+            TreeViewBase::applyLayout(state_, _STD move(ctx_));
+
+            /**/
+
+            for (const auto& child : _children) {
+
+                const auto* const item = static_cast<ptr<TreeItem>>(child.get());
+                const auto level = item->attr.level.getValue();
+
+                const auto ident = ident_per_level * level;
+                child->layoutState().layoutOffset.x += ident;
+            }
         }
 
     private:
