@@ -31,8 +31,8 @@ void Overlay::setContent(cref<sptr<Widget>> content_) {
     _children.setChild(content_);
 }
 
-void Overlay::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
-    _children.getChild()->render(state_, cmd_);
+void Overlay::render(const ptr<ReflowCommandBuffer> cmd_) {
+    _children.getChild()->render(cmd_);
 }
 
 ReflowPosition Overlay::position() const noexcept {

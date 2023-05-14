@@ -66,6 +66,13 @@ namespace hg::editor::ui {
                 tree->attr.height.setValue({ engine::reflow::ReflowUnitType::eRelative, 1.F });
                 tree->attr.maxHeight.setValue({ engine::reflow::ReflowUnitType::eAuto, 0.F });
 
+                tree->attr.padding.setValue(engine::reflow::Padding { 4.F, 2.F });
+                tree->attr.style.setValue(
+                    engine::reflow::PanelStyle {
+                        .backgroundColor = engine::color { 40.F, 44.F, 52.F, 255.F }
+                    }
+                );
+
                 _content->addChild(tree);
 
                 /**/

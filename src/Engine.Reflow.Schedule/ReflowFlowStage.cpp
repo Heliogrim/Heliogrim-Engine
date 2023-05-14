@@ -1,6 +1,9 @@
 #include "ReflowFlowStage.hpp"
 
+#include <chrono>
+
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflow/Window/BoundWindow.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
 
@@ -47,6 +50,7 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
                      */
 
                     const math::vec2 clientSize = boundWnd->surface->getNativeWindow()->size();
+                    auto start = _STD chrono::high_resolution_clock::now();
 
                     ReflowState state {};
                     auto layoutContext = reflow::LayoutContext {
@@ -55,6 +59,12 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
                         1.F
                     };
                     ReflowEngine::tick(state, boundWnd->window, _STD move(layoutContext));
+
+                    auto end = _STD chrono::high_resolution_clock::now();
+                    IM_DEBUG_LOGF(
+                        "Next Flex-Flow took: {}",
+                        _STD chrono::duration_cast<_STD chrono::microseconds>(end - start)
+                    );
                 }
 
                 return true;

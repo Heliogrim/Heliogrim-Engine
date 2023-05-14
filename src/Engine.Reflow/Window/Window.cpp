@@ -119,7 +119,7 @@ sptr<Widget> Window::getFocusTarget() const noexcept {
     return _focus.back().lock();
 }
 
-void Window::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+void Window::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     if (attr.style->backgroundColor.a > 0.F) {
 
@@ -137,7 +137,7 @@ void Window::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd
     /**/
 
     for (const auto& child : _children) {
-        child->render(state_, cmd_);
+        child->render(cmd_);
     }
 }
 

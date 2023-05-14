@@ -215,8 +215,8 @@ const ptr<const Children> InputAsset::children() const {
     return &_children;
 }
 
-void InputAsset::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
-    _content->render(state_, cmd_);
+void InputAsset::render(const ptr<ReflowCommandBuffer> cmd_) {
+    _content->render(cmd_);
 }
 
 math::vec2 InputAsset::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {

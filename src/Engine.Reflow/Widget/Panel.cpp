@@ -11,9 +11,7 @@ Panel::Panel() :
 
 Panel::~Panel() = default;
 
-void Panel::renderPanel(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_, cref<PanelStyle> style_) const {
-
-    const auto passState = state_.getStateOf(this);
+void Panel::renderPanel(const ptr<ReflowCommandBuffer> cmd_, cref<PanelStyle> style_) const {
 
     const math::vec2 offset = _layoutState.layoutOffset;
     const math::vec2 size = _layoutState.layoutSize;
@@ -34,7 +32,15 @@ void Panel::renderPanel(cref<ReflowState> state_, const ptr<ReflowCommandBuffer>
 
 }
 
-void Panel::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+void Panel::render(const ptr<ReflowCommandBuffer> cmd_) {
+
+    const math::fExtent2D scissor {
+        _layoutState.layoutSize.x, _layoutState.layoutSize.y,
+        _layoutState.layoutOffset.x, _layoutState.layoutOffset.y
+    };
+    cmd_->pushIntersectScissor(scissor);
+
+    /**/
 
     for (const auto& child : *children()) {
 
@@ -42,8 +48,12 @@ void Panel::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_
             child->layoutState().layoutOffset,
             child->layoutState().layoutSize
         )) {
-            child->render(state_, cmd_);
+            child->render(cmd_);
         }
 
     }
+
+    /**/
+
+    cmd_->popScissor();
 }

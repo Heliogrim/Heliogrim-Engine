@@ -48,8 +48,8 @@ math::vec2 VScrollBox::getScrollValue() const noexcept {
 
 void VScrollBox::scrollTo(cref<math::vec2> point_, cref<math::vec2> size_) {
 
-    const math::vec2 off { /*screenOffset()*/ };
-    const math::vec2 size { /*contentSize()*/ };
+    const math::vec2 off { _layoutState.layoutOffset };
+    const math::vec2 size { _layoutState.layoutSize };
 
     if (point_.y < off.y) {
 
@@ -82,7 +82,7 @@ void VScrollBox::scrollTo(cref<math::vec2> point_, cref<math::vec2> size_) {
     }
 }
 
-void VScrollBox::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+void VScrollBox::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     const auto off = _layoutState.layoutOffset;
     const auto size = _layoutState.layoutSize;
@@ -92,16 +92,16 @@ void VScrollBox::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer>
 
     /**/
 
-    VerticalPanel::render(state_, cmd_);
+    VerticalPanel::render(cmd_);
 
     /**/
 
     if (_scrollTrack) {
-        _scrollTrack->render(state_, cmd_);
+        _scrollTrack->render(cmd_);
     }
 
     if (_scrollThumb) {
-        _scrollThumb->render(state_, cmd_);
+        _scrollThumb->render(cmd_);
     }
 
     /**/
@@ -179,7 +179,12 @@ void VScrollBox::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) 
             }
 
             widgetState->layoutOffset += minDiff;
-            //widgetState->layoutSize -= maxDiff;
+
+            if (algorithm::FlexLineOrientation::eVertical == algorithm::FlexLineOrientation::eVertical) {
+                widgetState->layoutSize.x -= maxDiff.x;
+            } else {
+                widgetState->layoutSize.y -= maxDiff.y;
+            }
 
             widgetState->layoutOffset -= (_scrollValue * _overflow);
         }

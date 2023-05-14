@@ -107,8 +107,8 @@ const ptr<const SingleChildren> InputFloat::children() const {
     return &_children;
 }
 
-void InputFloat::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
-    _wrapper->render(state_, cmd_);
+void InputFloat::render(const ptr<ReflowCommandBuffer> cmd_) {
+    _wrapper->render(cmd_);
 }
 
 math::vec2 InputFloat::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {

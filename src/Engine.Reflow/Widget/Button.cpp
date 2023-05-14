@@ -35,7 +35,7 @@ ref<Button::Attributes> Button::attributes() noexcept {
     return _attr;
 }
 
-void Button::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+void Button::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     PanelStyle tmp {};
     if (_state.isHover()) {
@@ -44,8 +44,8 @@ void Button::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd
         tmp.backgroundColor = attributes().style.getValue().defaultColor;
     }
 
-    Panel::renderPanel(state_, cmd_, tmp);
-    Panel::render(state_, cmd_);
+    Panel::renderPanel(cmd_, tmp);
+    Panel::render(cmd_);
 }
 
 decltype(Button::_emitter)::handle_type Button::addOnClick(mref<decltype(_emitter)::function_type> fnc_) {

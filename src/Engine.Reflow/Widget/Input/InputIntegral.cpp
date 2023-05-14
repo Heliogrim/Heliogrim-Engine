@@ -68,9 +68,9 @@ const ptr<const SingleChildren> InputIntegral::children() const {
     return &_children;
 }
 
-void InputIntegral::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
-    _wrapper->render(state_, cmd_);
-    _text->render(state_, cmd_);
+void InputIntegral::render(const ptr<ReflowCommandBuffer> cmd_) {
+    _wrapper->render(cmd_);
+    _text->render(cmd_);
 }
 
 math::vec2 InputIntegral::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {

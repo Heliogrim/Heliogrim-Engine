@@ -29,7 +29,7 @@ namespace hg::engine::reflow {
         [[nodiscard]] ref<Attributes> attributes() noexcept override;
 
     public:
-        void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) override;
+        void render(const ptr<ReflowCommandBuffer> cmd_) override;
 
     private:
         StatelessEventEmitter<MouseEvent> _emitter;

@@ -129,7 +129,7 @@ namespace hg::engine::reflow {
          * Layout & Graphics
          */
     public:
-        virtual void render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) = 0;
+        virtual void render(const ptr<ReflowCommandBuffer> cmd_) = 0;
 
     public:
         virtual math::vec2 prefetchDesiredSize(cref<ReflowState> state_, float scale_) const = 0;

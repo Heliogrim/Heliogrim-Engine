@@ -64,6 +64,11 @@ void recomputeStates(ref<ReflowState> state_, cref<sptr<Widget>> root_) {
 
             dependencies = true;
             pending.push(child);
+
+            /* Warning: Temporary solution */
+            if (child->shouldTick()) {
+                child->tick();
+            }
         }
 
         /**

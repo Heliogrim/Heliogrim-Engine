@@ -50,7 +50,7 @@ const ptr<const NullChildren> Image::children() const {
     return &_children;
 }
 
-void Image::render(cref<ReflowState> state_, const ptr<ReflowCommandBuffer> cmd_) {
+void Image::render(const ptr<ReflowCommandBuffer> cmd_) {
 
     const auto innerOffset = _layoutState.layoutOffset;
     const auto innerSize = _layoutState.layoutSize;

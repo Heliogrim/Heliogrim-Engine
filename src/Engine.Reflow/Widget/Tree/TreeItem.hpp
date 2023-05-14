@@ -13,6 +13,11 @@ namespace hg::engine::reflow {
 
         ~TreeItem() override;
 
+    public:
+        struct Attributes {
+            DynamicAttribute<u32> level;
+        } attr;
+
     private:
         bool _selected;
 
