@@ -14,7 +14,8 @@ constexpr static WidgetState defaultWidgetState = WidgetState {
 
 Widget::Widget() :
     _state(defaultWidgetState),
-    _layoutState() {}
+    _layoutState(),
+    _parent() {}
 
 Widget::~Widget() = default;
 
@@ -122,6 +123,10 @@ EventResponse Widget::onKeyDown(cref<KeyboardEvent> event_) {
 
 EventResponse Widget::onKeyUp(cref<KeyboardEvent> event_) {
     return EventResponse::eUnhandled;
+}
+
+void Widget::setParent(mref<sptr<Widget>> parent_) {
+    _parent = _STD move(parent_);
 }
 
 void Widget::setParent(cref<sptr<Widget>> parent_) {

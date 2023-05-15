@@ -117,6 +117,8 @@ namespace hg::engine::reflow {
     public:
         [[nodiscard]] virtual const ptr<const Children> children() const = 0;
 
+        void setParent(mref<sptr<Widget>> parent_);
+
         void setParent(cref<sptr<Widget>> parent_);
 
         [[nodiscard]] bool hasParent() const;

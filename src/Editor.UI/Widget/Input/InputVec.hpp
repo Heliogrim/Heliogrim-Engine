@@ -292,6 +292,7 @@ namespace hg::editor::ui {
             const ptr<engine::reflow::ReflowCommandBuffer> cmd_
         ) override {
             if (_content) {
+                _content->setParent(this->shared_from_this());
                 _content->render(cmd_);
             }
         }
@@ -306,7 +307,7 @@ namespace hg::editor::ui {
             }
 
             const auto state = state_.getStateOf(_content);
-            return _content->getDesiredSize();
+            return _content->prefetchDesiredSize(state_, scale_);
         }
 
         math::vec2 computeDesiredSize(cref<engine::reflow::ReflowPassState> passState_) const override {
@@ -314,7 +315,7 @@ namespace hg::editor::ui {
                 return math::vec2 {};
             }
 
-            return _content->getDesiredSize();
+            return _content->computeDesiredSize(passState_);
         }
 
         void applyLayout(ref<engine::reflow::ReflowState> state_, mref<engine::reflow::LayoutContext> ctx_) override {

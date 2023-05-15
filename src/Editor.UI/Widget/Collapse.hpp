@@ -3,6 +3,10 @@
 #include <Engine.Reflow/Widget/Text.hpp>
 #include <Engine.Reflow/Widget/HorizontalPanel.hpp>
 #include <Engine.Reflow/Widget/VerticalPanel.hpp>
+#include <Engine.Reflow/Widget/BoxPanel.hpp>
+#include <Engine.Reflow/Children.hpp>
+#include <Engine.Reflow/Attribute/Attribute.hpp>
+#include <Engine.Reflow/Attribute/DynamicAttribute.hpp>
 
 namespace hg::editor::ui {
     class Collapse;
@@ -43,7 +47,7 @@ namespace hg::editor::ui {
     };
 
     class Collapse :
-        public engine::reflow::VerticalPanel {
+        public engine::reflow::Widget {
     public:
         friend class CollapseHeader;
 
@@ -59,7 +63,16 @@ namespace hg::editor::ui {
         void setup();
 
     private:
-        bool _collapsed;
+    public:
+        struct Attributes {
+            engine::reflow::Attribute<engine::reflow::ReflowUnit> minWidth;
+            engine::reflow::Attribute<engine::reflow::ReflowUnit> maxWidth;
+
+            engine::reflow::Attribute<engine::reflow::ReflowUnit> minHeight;
+            engine::reflow::Attribute<engine::reflow::ReflowUnit> maxHeight;
+
+            engine::reflow::DynamicAttribute<bool> collapsed;
+        } attr;
 
     public:
         void collapse();
@@ -67,16 +80,22 @@ namespace hg::editor::ui {
         void expand();
 
     private:
-        sptr<CollapseHeader> _header;
-        sptr<VerticalPanel> _content;
+        engine::reflow::FixedChildren<2> _children;
 
     public:
+        [[nodiscard]] const ptr<const engine::reflow::Children> children() const override;
+
         [[nodiscard]] cref<sptr<CollapseHeader>> getHeader() noexcept;
 
-        [[nodiscard]] cref<sptr<VerticalPanel>> getContent() noexcept;
+        [[nodiscard]] cref<sptr<Widget>> getContent() const noexcept;
+
+        void setContent(cref<sptr<Widget>> widget_);
 
     public:
         [[nodiscard]] string getTag() const noexcept override;
+
+    public:
+        void render(const ptr<engine::reflow::ReflowCommandBuffer> cmd_) override;
 
     public:
         math::vec2 prefetchDesiredSize(cref<engine::reflow::ReflowState> state_, float scale_) const override;
