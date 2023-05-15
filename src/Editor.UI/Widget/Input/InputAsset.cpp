@@ -28,9 +28,9 @@ using namespace hg;
 
 InputAsset::InputAsset() :
     Input(),
-    _value(invalid_asset_guid) {
-    setup();
-}
+    _value(invalid_asset_guid) {}
+
+InputAsset::~InputAsset() = default;
 
 void InputAsset::setup() {
 
@@ -43,7 +43,8 @@ void InputAsset::setup() {
     _content->attr.maxHeight.setValue({ ReflowUnitType::eAbsolute, 72.F + 4.F + 20.F });
     _content->attr.colGap.setValue(4.F);
 
-    _children.push_back(_content);
+    _content->setParent(shared_from_this());
+    _children.setChild(_content);
 
     /**/
 
@@ -220,11 +221,11 @@ void InputAsset::render(const ptr<ReflowCommandBuffer> cmd_) {
 }
 
 math::vec2 InputAsset::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
-    return _content->getDesiredSize();
+    return _content->prefetchDesiredSize(state_, scale_);
 }
 
 math::vec2 InputAsset::computeDesiredSize(cref<engine::reflow::ReflowPassState> passState_) const {
-    return _content->getDesiredSize();
+    return _content->computeDesiredSize(passState_);
 }
 
 void InputAsset::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {

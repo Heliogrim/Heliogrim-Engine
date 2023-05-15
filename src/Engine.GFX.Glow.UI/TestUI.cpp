@@ -493,7 +493,6 @@ void buildTestUI(
     /**/
 
     window_->setContent(root);
-    return;
 
     /**/
 

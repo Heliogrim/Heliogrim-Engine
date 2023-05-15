@@ -18,9 +18,9 @@ namespace hg::editor::ui {
     public:
         InputAsset();
 
-        ~InputAsset() override = default;
+        ~InputAsset() override;
 
-    private:
+    public:
         void setup();
 
     public:
@@ -38,7 +38,7 @@ namespace hg::editor::ui {
         sptr<engine::reflow::Button> _reset;
         sptr<engine::reflow::VerticalPanel> _content;
 
-        engine::reflow::Children _children;
+        engine::reflow::SingleChildren _children;
 
     public:
         [[nodiscard]] const ptr<const engine::reflow::Children> children() const override;
