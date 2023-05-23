@@ -478,7 +478,7 @@ namespace hg::engine::acs {
         class hybrid_key_value_iterator final {
         public:
             using iterator_key_type = const key_type;
-            using iterator_value_type = typename _STD conditional<Const, const value_type, value_type>::type;
+            using iterator_value_type = _STD conditional_t<Const, const value_type, value_type>;
 
             /**
              * Default constructor
@@ -1367,8 +1367,7 @@ namespace hg::engine::acs {
             using key_type = KeyType_;
             using value_type = StoredType_;
 
-            using storage_page_type = _STD conditional_t<Const, const storage_page_type, storage_page_type>;
-            using storage_page_iterator_type = typename storage_page_type::hybrid_key_value_iterator;
+            using storage_page_iterator_type = typename storage_page_type::template hybrid_key_value_iterator<Const>;
 
             using page_collection_type = Vector<storage_page_type>;
             using page_iterator_type = _STD conditional_t<Const, typename page_collection_type::const_iterator,
@@ -1384,6 +1383,14 @@ namespace hg::engine::acs {
              * @date 30.10.2020
              */
             storage_key_value_iterator() noexcept = default;
+
+            storage_key_value_iterator(page_iterator_type pageIter_) :
+                _pageIterator(pageIter_),
+                _pairIterator(pageIter_->begin()) {}
+
+            storage_key_value_iterator(page_iterator_type pageIter_, storage_page_iterator_type pairIter_) :
+                _pageIterator(pageIter_),
+                _pairIterator(pairIter_) {}
 
             /**
              * Destructor
@@ -1461,7 +1468,7 @@ namespace hg::engine::acs {
              *
              * @returns The value.
              */
-            [[nodiscard]] value_type& get_value() {
+            [[nodiscard]] const value_type& get_value() {
                 return (*_pairIterator).second;
             }
 
@@ -2217,7 +2224,7 @@ namespace hg::engine::acs {
 
             return const_iterator {
                 pe,
-                pe->end()
+                (--pe)->end()
             };
         }
 

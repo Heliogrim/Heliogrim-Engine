@@ -332,6 +332,13 @@ namespace hg::engine::acs {
         void erase(cref<assign_key_type> key_) {
             _storage.erase(key_);
         }
+
+        /**/
+        [[nodiscard]] const auto& __get_storage() const noexcept {
+            return _storage;
+        }
+
+        /**/
     };
 
     template <typename KeyType_, typename PooledType_, KeyType_ InvalidKey_>
