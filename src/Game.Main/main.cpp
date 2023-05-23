@@ -129,7 +129,8 @@ void ember_main_entry() {
     engine::Engine::getEngine()->getEmitter().on<engine::core::SignalShutdownEvent>(
         [](cref<engine::core::SignalShutdownEvent> event_) {
             suspended.test_and_set(_STD memory_order::release);
-        });
+        }
+    );
 
     #if FALSE
     /**
@@ -183,8 +184,13 @@ void ember_main_entry() {
 
 #pragma region Actors Over Time
 
-void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const u64 cols_, _In_ const float scalar_,
-    _Inout_ ref<hg::math::vec3> position_) {
+void randomPaddedPosition(
+    _In_ const u64 idx_,
+    _In_ const u64 rows_,
+    _In_ const u64 cols_,
+    _In_ const float scalar_,
+    _Inout_ ref<hg::math::Location> location_
+) {
     const float rdxf { static_cast<float>(rows_) };
     const float rdyf { static_cast<float>(cols_) };
 
@@ -201,8 +207,13 @@ void randomPaddedPosition(_In_ const u64 idx_, _In_ const u64 rows_, _In_ const 
     const auto oxf { _STD sinf(px * math::pi_f) };
     const auto oyf { _STD cosf(py * math::pi_f) };
 
-    position_ += math::vec3_right * (rx * px - rx * 0.5F + oxf * scalar_);
-    position_ += math::vec3_forward * (ry * py - ry * 0.5F + oyf * scalar_);
+    math::fvec3 next = location_.operator math::fvec3();
+    next += math::vec3_right * (rx * px - rx * 0.5F + oxf * scalar_);
+    next += math::vec3_forward * (ry * py - ry * 0.5F + oyf * scalar_);
+
+    location_.setX(next.x);
+    location_.setY(next.y);
+    location_.setZ(next.z);
 }
 
 #include "Heliogrim/ActorInitializer.hpp"
@@ -262,10 +273,10 @@ void buildActor(const u64 idx_, const u64 rows_, const u64 cols_) {
     World world { GetWorld() };
     world.addActor(actor);
 
-    auto previous { transform.position() };
+    auto previous { transform.location() };
 
     randomPaddedPosition(idx_, rows_, cols_, 3.F, previous);
-    const_cast<math::Transform&>(transform).setPosition(previous);
+    const_cast<math::Transform&>(transform).setLocation(_STD move(previous));
     const_cast<math::Transform&>(transform).setScale(math::vec3 { 0.75F, 0.3F, 0.75F });
     /*
     transform.resolveMatrix();
@@ -285,7 +296,8 @@ void waveActors() {
 
     const auto timestamp {
         _STD chrono::duration_cast<_STD chrono::milliseconds>(
-            _STD chrono::high_resolution_clock::now().time_since_epoch()).count()
+            _STD chrono::high_resolution_clock::now().time_since_epoch()
+        ).count()
     };
 
     const float sqrLength { _STD sqrtf(static_cast<float>(testActors.size())) };
@@ -300,13 +312,14 @@ void waveActors() {
             Actor* cur { testActors[idx] };
 
             const auto& transform { cur->getWorldTransform() };
-            auto prev { transform.position() };
+            auto prev { transform.location() };
 
             const auto xfrac2 { static_cast<float>(x * x) * fracP2 };
             const auto zfrac2 { static_cast<float>(z * z) * fracP2 };
             const auto frac { _STD sqrtf(xfrac2 + zfrac2) };
 
-            const_cast<math::Transform&>(transform).setPosition(prev.setY(_STD sinf(progress + frac) * waveScale));
+            prev.setY(_STD sinf(progress + frac) * waveScale);
+            const_cast<math::Transform&>(transform).setLocation(_STD move(prev));
         }
     }
 }
@@ -338,7 +351,7 @@ ptr<Actor> buildStick01() {
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
-    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 1.F, 0.F });
+    const_cast<ref<math::Transform>>(transform).setLocation(math::Location { 0.F, 1.F, 0.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 10.F });
 
     GetWorld().addActor(actor);
@@ -353,7 +366,7 @@ ptr<Actor> buildWoodenPier01Poles() {
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
-    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, .5F, -1.F });
+    const_cast<ref<math::Transform>>(transform).setLocation(math::Location { 0.F, .5F, -1.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
     GetWorld().addActor(actor);
@@ -368,7 +381,7 @@ ptr<Actor> buildWoodenPier01Planks() {
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
-    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { -1.F, 0.F, -1.F });
+    const_cast<ref<math::Transform>>(transform).setLocation(math::Location { -1.F, 0.F, -1.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
     GetWorld().addActor(actor);
@@ -383,7 +396,7 @@ ptr<Actor> buildWoodenBucket01() {
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
-    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, .5F });
+    const_cast<ref<math::Transform>>(transform).setLocation(math::Location { 0.F, 0.F, .5F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
     GetWorld().addActor(actor);
@@ -398,7 +411,7 @@ ptr<Actor> buildWoodenBucket02() {
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
-    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, -.5F });
+    const_cast<ref<math::Transform>>(transform).setLocation(math::Location { 0.F, 0.F, -.5F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
     GetWorld().addActor(actor);
@@ -413,7 +426,7 @@ ptr<Actor> buildDandelion01() {
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
-    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, .5F, 5.F });
+    const_cast<ref<math::Transform>>(transform).setLocation(math::Location { 0.F, .5F, 5.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 5.F });
 
     GetWorld().addActor(actor);
@@ -428,7 +441,7 @@ ptr<Actor> buildCannon01() {
     );
 
     cref<math::Transform> transform { actor->getWorldTransform() };
-    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, 0.F });
+    const_cast<ref<math::Transform>>(transform).setLocation(math::Location { 0.F, 0.F, 0.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
     GetWorld().addActor(actor);
@@ -478,12 +491,12 @@ void buildTestScene() {
         auto* cmp { initializer.createSubComponent<SkeletalGeometryComponent>(actor, actor->getRootComponent()) };
 
         cref<math::Transform> transform { cmp->getWorldTransform() };
-        const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, -1.F, 0.F });
+        const_cast<ref<math::Transform>>(transform).setLocation(math::Location { 0.F, -1.F, 0.F });
         const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { .2F });
     }
 
     cref<math::Transform> transform { actor->getWorldTransform() };
-    const_cast<ref<math::Transform>>(transform).setPosition(math::vec3 { 0.F, 0.F, 0.F });
+    const_cast<ref<math::Transform>>(transform).setLocation(math::Location { 0.F, 0.F, 0.F });
     const_cast<ref<math::Transform>>(transform).setScale(math::vec3 { 1.F });
 
     GetWorld().addActor(actor);
@@ -500,13 +513,15 @@ void buildTestScene() {
             game::assets::material::Cerberus::unstable_auto_guid()
         );
 
-        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setPosition(math::vec3 { .8F, -1.F, 0.F });
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setLocation(math::Location { .8F, -1.F, 0.F });
         const_cast<ref<math::Transform>>(actor->getWorldTransform()).setScale(math::vec3 { .6F });
-        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({
-            0.F,
-            glm::radians(-90.F),
-            0.F
-        }));
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotator(
+            math::Rotator(
+                0.F,
+                glm::radians(-90.F),
+                0.F
+            )
+        );
 
         GetWorld().addActor(actor);
         sceneActors.push_back(actor);
@@ -518,13 +533,15 @@ void buildTestScene() {
             game::assets::material::Cerberus::unstable_auto_guid()
         );
 
-        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setPosition(math::vec3 { -.8F, -1.F, 0.F });
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setLocation(math::Location { -.8F, -1.F, 0.F });
         const_cast<ref<math::Transform>>(actor->getWorldTransform()).setScale(math::vec3 { .6F });
-        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({
-            0.F,
-            glm::radians(90.F),
-            0.F
-        }));
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotator(
+            math::Rotator {
+                0.F,
+                glm::radians(90.F),
+                0.F
+            }
+        );
 
         GetWorld().addActor(actor);
         sceneActors.push_back(actor);
@@ -536,13 +553,16 @@ void buildTestScene() {
             game::assets::material::Cerberus::unstable_auto_guid()
         );
 
-        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setPosition(math::vec3 { 0.F, -1.F, .8F });
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setLocation(math::Location { 0.F, -1.F, .8F });
         const_cast<ref<math::Transform>>(actor->getWorldTransform()).setScale(math::vec3 { .6F });
-        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({
-            0.F,
-            glm::radians(180.F),
-            0.F
-        }));
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotator(
+            math::Rotator {
+                0.F,
+                glm::radians(180.F),
+                0.F
+            }
+
+        );
 
         GetWorld().addActor(actor);
         sceneActors.push_back(actor);
@@ -554,13 +574,15 @@ void buildTestScene() {
             game::assets::material::Cerberus::unstable_auto_guid()
         );
 
-        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setPosition(math::vec3 { 0.F, -1.F, -.8F });
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setLocation(math::Location { 0.F, -1.F, -.8F });
         const_cast<ref<math::Transform>>(actor->getWorldTransform()).setScale(math::vec3 { .6F });
-        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotation(math::quaternion::euler({
-            0.F,
-            glm::radians(0.F),
-            0.F
-        }));
+        const_cast<ref<math::Transform>>(actor->getWorldTransform()).setRotator(
+            math::Rotator(
+                0.F,
+                glm::radians(0.F),
+                0.F
+            )
+        );
 
         GetWorld().addActor(actor);
         sceneActors.push_back(actor);
