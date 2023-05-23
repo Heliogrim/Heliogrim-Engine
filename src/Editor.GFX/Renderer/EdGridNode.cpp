@@ -262,7 +262,7 @@ void EdGridNode::before(
     auto& cam { *_STD static_pointer_cast<Buffer, void>(data.at("EdGridNode::CamBuffer"sv)) };
 
     cref<scene::SceneViewEye> eye { *renderPass_->sceneView() };
-    math::mat4 viewData[] { eye.getViewMatrix(), vk_norm_mat_m * eye.getProjectionMatrix() };
+    math::mat4 viewData[] { eye.getViewMatrix(), eye.getProjectionMatrix() };
     cam.write<math::mat4>(&viewData, 2ui32);
 
     /**/
