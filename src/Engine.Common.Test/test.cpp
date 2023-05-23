@@ -4,6 +4,7 @@
 #include <Engine.Common/Collection/ProxyVector.hpp>
 #include <Engine.Common/Math/Transformation.hpp>
 #include <Engine.Common/Math/Vector.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 using namespace hg;
 
@@ -12,6 +13,29 @@ TEST(__DummyTest__, Exists) {
 }
 
 namespace Common {
+    namespace Memory {
+        TEST(MemoryPointer, IntegralTyped) {
+
+            using type = u64;
+            using mpt = MemoryPointer<type>;
+
+            mpt mp0 {};
+            ASSERT_FALSE(mp0);
+
+            mp0.create();
+
+            ASSERT_TRUE(mp0);
+            ASSERT_EQ(*mp0, 0ui64);
+
+            u64 test = 4379689246ui64;
+            mp0.store(test);
+
+            ASSERT_EQ(*mp0, test);
+
+            mp0.destroy();
+            ASSERT_FALSE(mp0);
+        }
+    }
 
     namespace Collection {
         TEST(ProxyVector, IntegralTyped) {
@@ -482,11 +506,13 @@ TEST(Quaternion, fromToEuler) {
     const float r45f = glm::radians(45.F);
     const float r0f = glm::radians(0.F);
 
-    quaternion q = quaternion::euler({
-        r45f,
-        r0f,
-        r0f
-    });
+    quaternion q = quaternion::euler(
+        {
+            r45f,
+            r0f,
+            r0f
+        }
+    );
 
     const vec3 ve = q.euler();
     EXPECT_FLOAT_EQ(ve.x, r45f);
