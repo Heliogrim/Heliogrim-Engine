@@ -1,7 +1,6 @@
 #include "Editor.hpp"
 #include "Module/Editor.hpp"
 
-#include <Editor.UI/Style/Style.hpp>
 #include <Engine.Core/Module/CoreDependencies.hpp>
 #include <Engine.Core/Module/DependencyKey.hpp>
 #include <Engine.Core/Module/SubModuleDependency.hpp>
@@ -53,10 +52,7 @@ void Editor::start() {
 }
 
 void Editor::stop() {
-
     destroyLoaded();
-    ui::Style::destroy();
-
 }
 
 void Editor::destroy() {}
