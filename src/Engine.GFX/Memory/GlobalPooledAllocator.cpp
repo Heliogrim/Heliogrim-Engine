@@ -26,6 +26,10 @@ bool GlobalPooledAllocator::shouldPool(cref<MemoryLayout> layout_, const u64 siz
         return true;
     }
 
+    if ((size_ == 64ui64 || size_ == 4ui64) && layout_.props & MemoryProperty::eHostVisible) {
+        return true;
+    }
+
     return false;
 }
 

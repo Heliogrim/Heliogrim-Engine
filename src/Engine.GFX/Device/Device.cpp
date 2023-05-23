@@ -72,7 +72,7 @@ static bool supportsExtensions(cref<vk::PhysicalDevice> device_) {
     Set<string> requiredExtensions { deviceExtensions.begin(), deviceExtensions.end() };
 
     for (const auto& extension : properties) {
-        requiredExtensions.erase(string { extension.extensionName });
+        requiredExtensions.erase(extension.extensionName.operator std::string());
     }
 
     return requiredExtensions.empty();
