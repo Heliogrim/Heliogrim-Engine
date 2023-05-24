@@ -321,6 +321,12 @@
     <ClInclude Include="..\..\src\Engine.Common\GuidFormat.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Memory\MemoryPointer.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Memory\__fwd.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">

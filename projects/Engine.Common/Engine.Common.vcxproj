@@ -81,6 +81,8 @@
     <ClInclude Include="..\..\src\Engine.Common\Math\__macro.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Memory\allocator.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Memory\DbgMemoryStats.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Memory\MemoryPointer.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Memory\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Meta\Async.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Meta\Concept.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Meta\CoreState.hpp" />
