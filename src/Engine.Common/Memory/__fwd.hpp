@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../__macro.hpp"
+
 namespace hg {
     template <typename Ty_, typename AllocType_ = _STD allocator<Ty_>, bool Atomic_ = false>
     struct MemoryPointerStorage;

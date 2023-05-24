@@ -1,6 +1,7 @@
 #include "Window.hpp"
 
 #include <algorithm>
+#include <format>
 #include <Engine.Common/Make.hpp>
 
 #include "../Widget/Popup.hpp"

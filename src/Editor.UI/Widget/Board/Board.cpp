@@ -1,5 +1,6 @@
 #include "Board.hpp"
 
+#include <format>
 #include <Engine.Reflow/Layout/Style.hpp>
 
 #include "Editor.UI/Color/Dark.hpp"

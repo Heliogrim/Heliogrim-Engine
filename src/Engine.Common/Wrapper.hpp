@@ -3,6 +3,8 @@
 #include "__macro.hpp"
 #include <memory>
 
+#include "Memory/__fwd.hpp"
+
 namespace hg {
     template <class Ty>
     using ref = Ty&;
@@ -33,6 +35,14 @@ namespace hg {
 
     template <class Ty>
     using managed = _STD shared_ptr<Ty>;
+
+    /**/
+
+    template <typename Ty>
+    using mpt = MemoryPointer<Ty>;
+
+    template <typename Ty>
+    using nmpt = typename mpt<Ty>::non_owning_type;
 
     /**/
 

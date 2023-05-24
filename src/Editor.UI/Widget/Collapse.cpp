@@ -1,5 +1,6 @@
 #include "Collapse.hpp"
 
+#include <format>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Reflow/Algorithm/Flex.hpp>
 #include <Engine.Reflow/Algorithm/FlexState.hpp>
