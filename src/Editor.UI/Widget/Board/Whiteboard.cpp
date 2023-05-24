@@ -1,5 +1,6 @@
 #include "Whiteboard.hpp"
 
+#include <format>
 #include <Engine.Common/Make.hpp>
 #include "../../Color/Dark.hpp"
 #include "Engine.Reflow/Layout/Style.hpp"

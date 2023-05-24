@@ -1,5 +1,6 @@
 #include "Button.hpp"
 
+#include <format>
 #include "../Layout/Style.hpp"
 #include "../Style/PanelStyle.hpp"
 

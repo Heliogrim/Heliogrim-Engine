@@ -1,5 +1,6 @@
 #include "Overlay.hpp"
 
+#include <format>
 #include "NullWidget.hpp"
 
 using namespace hg::engine::reflow;

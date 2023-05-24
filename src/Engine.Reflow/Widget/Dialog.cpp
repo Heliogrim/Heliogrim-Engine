@@ -1,5 +1,6 @@
 #include "Dialog.hpp"
 
+#include <format>
 #include "../Layout/Style.hpp"
 
 using namespace hg::engine::reflow;

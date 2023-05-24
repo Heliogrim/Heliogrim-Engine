@@ -196,8 +196,8 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
             math::vec2 { offset.x, offset.y + size.y },
             _uvs[3],
             _STD move(proxy),
-            imageWaits.empty() ? VK_NULL_HANDLE : imageWaits.back(),
-            imageSignal,
+            reinterpret_cast<_::VkSemaphore>(imageWaits.empty() ? nullptr : imageWaits.back().operator VkSemaphore()),
+            reinterpret_cast<_::VkSemaphore>(imageSignal.operator VkSemaphore()),
             engine::color { 255.F, 255.F, 255.F, 255.F }
         );
     }

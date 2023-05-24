@@ -1,5 +1,6 @@
 #include "BoxPanel.hpp"
 
+#include <format>
 #include "../Layout/Style.hpp"
 #include "../Algorithm/Flex.hpp"
 

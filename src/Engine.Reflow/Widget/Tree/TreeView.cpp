@@ -1,5 +1,6 @@
 #include "TreeView.hpp"
 
+#include <format>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
 

@@ -552,8 +552,8 @@ void ReflowCommandBuffer::drawImage(
         p3_,
         uv3_,
         _STD move(image_),
-        VK_NULL_HANDLE,
-        VK_NULL_HANDLE,
+        nullptr,
+        nullptr,
         color_
     );
 }
@@ -568,8 +568,8 @@ void ReflowCommandBuffer::drawImageAsync(
     math::vec2 p3_,
     math::vec2 uv3_,
     ProxyTexture<non_owning_rptr> image_,
-    vk::Semaphore wait_,
-    vk::Semaphore signal_,
+    _::VkSemaphore wait_,
+    _::VkSemaphore signal_,
     cref<color> color_
 ) {
 

@@ -606,10 +606,13 @@ void UiMainStageNode::invoke(
 
     // Warning: Temporary Solution
     for (const auto& wait : uiCmd._imageWait) {
-        stagePass_->batch().pushBarrier(wait, vk::PipelineStageFlagBits::eColorAttachmentOutput);
+        stagePass_->batch().pushBarrier(
+            reinterpret_cast<VkSemaphore>(wait),
+            vk::PipelineStageFlagBits::eColorAttachmentOutput
+        );
     }
     for (const auto& signal : uiCmd._imageSignal) {
-        stagePass_->batch().pushSignal(signal);
+        stagePass_->batch().pushSignal(reinterpret_cast<VkSemaphore>(signal));
     }
 
     /**
