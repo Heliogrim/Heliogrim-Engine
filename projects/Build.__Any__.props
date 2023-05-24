@@ -9,6 +9,7 @@
       <ModuleOutputFile>$(IntDir)%(RelativeDir)\</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)%(RelativeDir)\</AssemblerListingLocation>
       <XMLDocumentationFileName>$(IntDir)%(RelativeDir)\</XMLDocumentationFileName>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)library\bin\assimp\$(Configuration)\;$(SolutionDir)library\bin\ryml\$(Configuration)\;$(SolutionDir)library\bin\vorbis\$(Configuration)\;$(SolutionDir)library\bin\freetype2\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
