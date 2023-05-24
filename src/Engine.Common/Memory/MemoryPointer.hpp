@@ -4,332 +4,307 @@
 #include <concepts>
 #include <type_traits>
 
+#include "__fwd.hpp"
+
 #include "../Make.hpp"
 #include "../Types.hpp"
 #include "../Concurrent/SharedMemoryReference.hpp"
 #include "../Wrapper.hpp"
 
 namespace hg {
-    namespace {
-        enum class MemoryPointerStorageFlags : bool {
-            eUninitialized = false,
-            eInitialized = true
-        };
+    template <typename Ty_, typename AllocType_, bool Atomic_>
+    struct MemoryPointerStorage;
 
-        template <typename Ty_, bool Atomic_>
-        struct MemoryPointerStorage;
+    template <typename Ty_, typename AllocType_>
+    struct MemoryPointerStorage<Ty_, AllocType_, true> {
+        using this_type = MemoryPointerStorage<Ty_, AllocType_, true>;
 
-        template <typename Ty_>
-        struct MemoryPointerStorage<Ty_, true> {
-            using this_type = MemoryPointerStorage<Ty_, true>;
+        using allocator_type = AllocType_;
+        using allocator_traits = _STD allocator_traits<allocator_type>;
 
-            using mem_type = _STD atomic<Ty_*>;
+        using mem_type = _STD atomic<Ty_*>;
 
-        public:
-            constexpr MemoryPointerStorage() noexcept :
-                flags(MemoryPointerStorageFlags::eUninitialized),
-                mem(nullptr) {}
+    public:
+        constexpr MemoryPointerStorage() noexcept :
+            mem(nullptr) {}
 
-        public:
-            template <typename AllocType_ = _STD allocator<Ty_>, typename... Args_>
-            void allocateWith(AllocType_&& allocator_, Args_&&... args_) {
+        MemoryPointerStorage(cref<this_type> other_) :
+            mem(other_.mem.load(_STD memory_order::seq_cst)) {}
 
-                using allocator_traits = _STD allocator_traits<AllocType_>;
+        MemoryPointerStorage(mref<this_type> other_) :
+            mem(other_.mem.exchange(nullptr, _STD memory_order::seq_cst)) {}
 
-                auto* nextSnapshot = allocator_.allocate(1);
-                _STD construct_at<Ty_, Args_...>(nextSnapshot, _STD forward<Args_>(args_...));
+        ~MemoryPointerStorage() = default;
 
-                mem.store(nextSnapshot, _STD memory_order_release);
-                flags = MemoryPointerStorageFlags::eInitialized;
+    public:
+        ref<this_type> operator=(cref<this_type> other_) noexcept {
+            if (_STD addressof(other_) != this) {
+                mem.store(other_.mem.load(_STD memory_order::acquire), _STD memory_order::release);
             }
+            return *this;
+        }
 
-            template <typename... Args_> requires _STD is_constructible_v<Ty_, Args_...>
-            void allocate(Args_&&... args_) {
-                using allocator_type = _STD allocator<Ty_>;
-                allocateWith<allocator_type, Args_...>(allocator_type {}, _STD forward<Args_>(args_...));
+        ref<this_type> operator=(mref<this_type> other_) noexcept {
+            if (_STD addressof(other_) != this) {
+                mem.store(other_.mem.exchange(nullptr, _STD memory_order::seq_cst), _STD memory_order::release);
             }
+            return *this;
+        }
 
-            template <typename AllocType_ = _STD allocator<Ty_>>
-            void allocateUninitialized(AllocType_&& allocator_ = AllocType_ {}) {
-                auto* nextSnapshot = allocator_.allocate(1);
-                mem.store(nextSnapshot, _STD memory_order::release);
+    public:
+        [[nodiscard]] constexpr static bool isAtomic() noexcept {
+            return _STD bool_constant<true>::value;
+        }
+
+    public:
+        template <typename... Args_>
+        void allocateWith(allocator_type&& allocator_, Args_&&... args_) {
+
+            /* Prepare next subject within local scope to prevent unattended updates */
+            auto* nextSnapshot = allocator_.allocate(1);
+            _STD construct_at<Ty_, Args_...>(nextSnapshot, _STD forward<Args_>(args_)...);
+
+            Ty_* expected = nullptr;
+            if (not mem.compare_exchange_strong(expected, nextSnapshot, _STD memory_order_seq_cst)) {
+                /* Rollback on operation failure */
+                allocator_traits::destroy(allocator_, nextSnapshot);
+                allocator_.deallocate(nextSnapshot, 1);
             }
+        }
 
-            template <typename AllocType_ = _STD allocator<Ty_>>
-            void deallocate(AllocType_&& allocator_ = AllocType_ {}) {
+        template <typename... Args_> requires _STD is_constructible_v<Ty_, Args_...>
+        void allocate(Args_&&... args_) {
+            allocateWith<Args_...>(allocator_type {}, _STD forward<Args_>(args_)...);
+        }
 
-                using allocator_traits = _STD allocator_traits<AllocType_>;
+        void deallocate(AllocType_&& allocator_ = AllocType_ {}) {
 
-                Ty_* expectation = nullptr;
-                auto* snapshot = mem.exchange(expectation, _STD memory_order::acq_rel);
+            using allocator_traits = _STD allocator_traits<AllocType_>;
 
-                if (flags == MemoryPointerStorageFlags::eInitialized) {
-                    allocator_traits::destroy(allocator_, snapshot);
-                }
+            Ty_* expectation = nullptr;
+            auto* snapshot = mem.exchange(expectation, _STD memory_order::seq_cst);
 
+            if (snapshot != nullptr) {
+                allocator_traits::destroy(allocator_, snapshot);
                 allocator_.deallocate(snapshot, 1);
+            }
+        }
 
-                if (mem.compare_exchange_strong(expectation, nullptr, _STD memory_order_acq_rel)) {
-                    flags = MemoryPointerStorageFlags::eUninitialized;
-                }
+    public:
+        template <typename Tx_ = Ty_> requires _STD is_move_assignable_v<Ty_> && _STD is_convertible_v<Tx_, Ty_>
+        void store(Tx_&& value_) noexcept {
+            (*mem.load(_STD memory_order::consume)) = _STD forward<Tx_>(value_);
+        }
+
+        template <typename Tx_ = Ty_> requires _STD is_move_assignable_v<Ty_> && _STD is_convertible_v<Tx_, Ty_>
+        bool safeStore(Tx_&& value_) noexcept {
+
+            auto* const snapshot = mem.load(_STD memory_order::consume);
+            if (snapshot == nullptr) {
+                return false;
             }
 
-        public:
-            template <typename... Args_> requires _STD is_constructible_v<Ty_, Args_...>
-            void construct(Args_&&... args_) noexcept(_STD is_nothrow_constructible_v<Ty_, Args_...>) {
-                new(mem.load(_STD memory_order::seq_cst)) Ty_(_STD forward<Args_>(args_)...);
-                flags = MemoryPointerStorageFlags::eInitialized;
+            (*snapshot) = _STD forward<Tx_>(value_);
+            return true;
+        }
+
+        template <typename Tx_ = Ty_>
+        const Tx_* const load() const noexcept {
+            return mem.load(_STD memory_order::consume);
+        }
+
+        template <typename Tx_ = Ty_>
+        Tx_* const load() noexcept {
+            return mem.load(_STD memory_order::consume);
+        }
+
+    public:
+        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_> && _STD is_default_constructible_v<Tx_>
+        Tx_* const loadOrAllocate() {
+
+            if (mem.load(_STD memory_order_consume) == nullptr) {
+                allocate<>();
             }
 
-            template <typename... Args_> requires _STD is_constructible_v<Ty_, Args_...>
-            bool safeConstruct(Args_&&... args_) noexcept(_STD is_nothrow_constructible_v<Ty_, Args_...>) {
+            return load();
+        }
 
-                if (flags == MemoryPointerStorageFlags::eInitialized) {
-                    return false;
-                }
+        template <typename Ptx_ = Ty_*> requires _STD is_convertible_v<Ptx_, Ty_*>
+        [[nodiscard]] Ty_* exchange(Ptx_&& next_) {
 
-                auto* const snapshot = mem.load(_STD memory_order::consume);
-                if (snapshot == nullptr) {
-                    return false;
-                }
-
-                new(snapshot) Ty_(_STD forward<Args_>(args_)...);
-                flags = MemoryPointerStorageFlags::eInitialized;
-                return true;
+            Ty_* expected = nullptr;
+            while (mem.compare_exchange_strong(expected, next_, _STD memory_order::seq_cst)) {
+                // No-op
             }
 
-            template <typename Tx_ = Ty_> requires _STD is_move_assignable_v<Ty_> && _STD is_convertible_v<Tx_, Ty_>
-            void store(Tx_&& value_) noexcept {
-                (*mem.load(_STD memory_order::seq_cst)) = _STD forward<Tx_>(value_);
+            return expected;
+        }
+
+    public:
+        mem_type mem;
+    };
+
+    template <typename Ty_, typename AllocType_>
+    struct MemoryPointerStorage<Ty_, AllocType_, false> {
+        using this_type = MemoryPointerStorage<Ty_, AllocType_, false>;
+
+        using allocator_type = AllocType_;
+        using allocator_traits = _STD allocator_traits<allocator_type>;
+
+        using mem_type = Ty_*;
+
+    public:
+        constexpr MemoryPointerStorage() noexcept :
+            mem(nullptr) {}
+
+        constexpr MemoryPointerStorage(cref<this_type> other_) noexcept :
+            mem(other_.mem) {}
+
+        constexpr MemoryPointerStorage(mref<this_type> other_) noexcept :
+            mem(_STD exchange(other_.mem, nullptr)) {}
+
+        ~MemoryPointerStorage() = default;
+
+    public:
+        ref<this_type> operator=(cref<this_type> other_) noexcept {
+            if (_STD addressof(other_) != this) {
+                mem = other_.mem;
             }
+            return *this;
+        }
 
-            template <typename Tx_ = Ty_> requires _STD is_move_assignable_v<Ty_> && _STD is_convertible_v<Tx_, Ty_>
-            bool safeStore(Tx_&& value_) noexcept {
-
-                if (flags == MemoryPointerStorageFlags::eUninitialized) {
-                    return false;
-                }
-
-                auto* const snapshot = mem.load(_STD memory_order::consume);
-                if (snapshot == nullptr) {
-                    return false;
-                }
-
-                (*snapshot) = _STD forward<Tx_>(value_);
-                return true;
+        ref<this_type> operator=(mref<this_type> other_) noexcept {
+            if (_STD addressof(other_) != this) {
+                mem = _STD exchange(other_.mem, nullptr);
             }
+            return *this;
+        }
 
-            template <typename Tx_ = Ty_>
-            const Tx_* const load() const noexcept {
-                return mem.load(_STD memory_order::consume);
-            }
+    public:
+        [[nodiscard]] constexpr static bool isAtomic() noexcept {
+            return _STD bool_constant<false>::value;
+        }
 
-            template <typename Tx_ = Ty_>
-            Tx_* const load() noexcept {
-                return mem.load(_STD memory_order::consume);
-            }
+    public:
+        template <typename... Args_> requires _STD is_constructible_v<Ty_, Args_...>
+        void allocateWith(allocator_type&& allocator_, Args_&&... args_) {
 
-            template <typename Tx_ = Ty_> requires _STD is_destructible_v<Tx_> && _STD is_same_v<Tx_, Ty_>
-            void destruct() noexcept(_STD is_nothrow_destructible_v<Tx_>) {
-                (*mem.load(_STD memory_order::relaxed)).~Tx_();
-                flags = MemoryPointerStorageFlags::eUninitialized;
-            }
+            auto* nextSnapshot = allocator_.allocate(1);
+            _STD construct_at<Ty_, Args_...>(nextSnapshot, _STD forward<Args_>(args_)...);
 
-            template <typename Tx_ = Ty_> requires _STD is_destructible_v<Tx_> && _STD is_same_v<Tx_, Ty_>
-            bool safeDestruct() noexcept(_STD is_nothrow_destructible_v<Tx_>) {
+            mem = _STD move(nextSnapshot);
+        }
 
-                if (flags == MemoryPointerStorageFlags::eUninitialized) {
-                    return false;
-                }
+        template <typename... Args_> requires _STD is_constructible_v<Ty_, Args_...>
+        void allocate(Args_&&... args_) {
+            allocateWith<Args_...>(allocator_type {}, _STD forward<Args_>(args_)...);
+        }
 
-                auto* const snapshot = mem.load(_STD memory_order::relaxed);
-                if (snapshot == nullptr) {
-                    return false;
-                }
+        void deallocate(allocator_type&& allocator_ = AllocType_ {}) {
 
-                (*snapshot).~Tx_();
-                flags = MemoryPointerStorageFlags::eUninitialized;
-                return true;
-            }
+            auto* snapshot = _STD exchange(mem, nullptr);
 
-        public:
-            template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_> && _STD is_default_constructible_v<Tx_>
-            Tx_* const loadOrAllocate() {
-
-                if (mem == nullptr) {
-                    allocate();
-                } else if (flags == MemoryPointerStorageFlags::eUninitialized) {
-                    safeConstruct();
-                }
-
-                return load();
-            }
-
-        public:
-            MemoryPointerStorageFlags flags : 1;
-            mem_type mem;
-        };
-
-        template <typename Ty_>
-        struct MemoryPointerStorage<Ty_, false> {
-            using this_type = MemoryPointerStorage<Ty_, false>;
-
-            using mem_type = Ty_*;
-
-        public:
-            constexpr MemoryPointerStorage() noexcept :
-                flags(MemoryPointerStorageFlags::eUninitialized),
-                mem(nullptr) {}
-
-        public:
-            template <typename AllocType_ = _STD allocator<Ty_>, typename... Args_>
-            void allocateWith(AllocType_&& allocator_, Args_&&... args_) {
-
-                using allocator_traits = _STD allocator_traits<AllocType_>;
-
-                auto* nextSnapshot = allocator_.allocate(1);
-                _STD construct_at<Ty_, Args_...>(nextSnapshot, _STD forward<Args_>(args_)...);
-
-                mem = _STD move(nextSnapshot);
-                flags = MemoryPointerStorageFlags::eInitialized;
-            }
-
-            template <typename... Args_> requires _STD is_constructible_v<Ty_, Args_...>
-            void allocate(Args_&&... args_) {
-                using allocator_type = _STD allocator<Ty_>;
-                allocateWith<allocator_type, Args_...>(allocator_type {}, _STD forward<Args_>(args_)...);
-            }
-
-            template <typename AllocType_ = _STD allocator<Ty_>>
-            void allocateUninitialized(AllocType_&& allocator_ = AllocType_ {}) {
-                auto* nextSnapshot = allocator_.allocate(1);
-                mem = _STD move(nextSnapshot);
-            }
-
-            template <typename AllocType_ = _STD allocator<Ty_>>
-            void deallocate(AllocType_&& allocator_ = AllocType_ {}) {
-
-                using allocator_traits = _STD allocator_traits<AllocType_>;
-
-                auto* snapshot = _STD exchange(mem, nullptr);
-
-                if (flags == MemoryPointerStorageFlags::eInitialized) {
-                    allocator_traits::destroy(allocator_, snapshot);
-                }
-
+            if (snapshot != nullptr) {
+                allocator_traits::destroy(allocator_, snapshot);
                 allocator_.deallocate(snapshot, 1);
-                flags = MemoryPointerStorageFlags::eUninitialized;
             }
+        }
 
-        public:
-            template <typename... Args_> requires _STD is_constructible_v<Ty_, Args_...>
-            void construct(Args_&&... args_) noexcept(_STD is_nothrow_constructible_v<Ty_, Args_...>) {
-                new(mem) Ty_(_STD forward<Args_>(args_)...);
-                flags = MemoryPointerStorageFlags::eInitialized;
-            }
+    public:
+        template <typename Tx_ = Ty_> requires _STD is_move_assignable_v<Ty_> && _STD is_convertible_v<Tx_, Ty_>
+        void store(Tx_&& value_) noexcept {
+            (*mem) = _STD forward<Tx_>(value_);
+        }
 
-            template <typename... Args_> requires _STD is_constructible_v<Ty_, Args_...>
-            bool safeConstruct(Args_&&... args_) noexcept(_STD is_nothrow_constructible_v<Ty_, Args_...>) {
-
-                if (mem == nullptr || flags == MemoryPointerStorageFlags::eInitialized) {
-                    return false;
-                }
-
-                construct<Args_...>(_STD forward<Args_>(args_)...);
-                return true;
-            }
-
-            template <typename Tx_ = Ty_> requires _STD is_move_assignable_v<Ty_> && _STD is_convertible_v<Tx_, Ty_>
-            void store(Tx_&& value_) noexcept {
-                (*mem) = _STD forward<Tx_>(value_);
-            }
-
-            template <typename Tx_ = Ty_> requires _STD is_move_assignable_v<Ty_> && _STD is_convertible_v<Tx_, Ty_>
-            bool safeStore(Tx_&& value_) noexcept {
-
-                if (mem == nullptr || flags == MemoryPointerStorageFlags::eUninitialized) {
-                    return false;
-                }
-
+        template <typename Tx_ = Ty_> requires _STD is_move_assignable_v<Ty_> && _STD is_convertible_v<Tx_, Ty_>
+        bool safeStore(Tx_&& value_) noexcept {
+            if (mem != nullptr) {
                 (*mem) = _STD forward<Tx_>(value_);
                 return true;
             }
+            return false;
+        }
 
-            template <typename Tx_ = Ty_>
-            const Tx_* const load() const noexcept {
-                return mem;
+        template <typename Tx_ = Ty_>
+        const Tx_* const load() const noexcept {
+            return mem;
+        }
+
+        template <typename Tx_ = Ty_>
+        Tx_* const load() noexcept {
+            return mem;
+        }
+
+    public:
+        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_> && _STD is_default_constructible_v<Tx_>
+        Tx_* const loadOrAllocate() {
+
+            if (mem == nullptr) {
+                allocate<>();
             }
 
-            template <typename Tx_ = Ty_>
-            Tx_* const load() noexcept {
-                return mem;
-            }
+            return load();
+        }
 
-            template <typename Tx_ = Ty_> requires _STD is_destructible_v<Tx_> && _STD is_same_v<Tx_, Ty_>
-            void destruct() noexcept(_STD is_nothrow_destructible_v<Tx_>) {
-                (*mem).~Tx_();
-                flags = MemoryPointerStorageFlags::eUninitialized;
-            }
+        template <typename Ptx_ = Ty_*> requires _STD is_convertible_v<Ptx_, Ty_*>
+        [[nodiscard]] Ty_* exchange(Ptx_&& next_) {
+            return _STD exchange(mem, _STD forward<Ptx_>(next_));
+        }
 
-            template <typename Tx_ = Ty_> requires _STD is_destructible_v<Tx_> && _STD is_same_v<Tx_, Ty_>
-            bool safeDestruct() noexcept(_STD is_nothrow_destructible_v<Tx_>) {
+    public:
+        mem_type mem;
+    };
 
-                if (mem == nullptr || flags == MemoryPointerStorageFlags::eUninitialized) {
-                    return false;
-                }
-
-                (*mem).~Tx_();
-                flags = MemoryPointerStorageFlags::eUninitialized;
-
-                return true;
-            }
-
-        public:
-            template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_> && _STD is_default_constructible_v<Tx_>
-            Tx_* const loadOrAllocate() {
-
-                if (mem == nullptr) {
-                    allocate();
-                } else if (flags == MemoryPointerStorageFlags::eUninitialized) {
-                    construct();
-                }
-
-                return load();
-            }
-
-        public:
-            MemoryPointerStorageFlags flags : 1;
-            mem_type mem;
-        };
-    }
-
-    template <typename Ty_, bool Atomic_ = false>
+    template <typename Ty_, typename AllocType_, typename StorageType_>
     struct MemoryPointer {
     public:
-        using this_type = MemoryPointer<Ty_, Atomic_>;
+        using this_type = MemoryPointer<Ty_, AllocType_, StorageType_>;
+
+        using storage_type = StorageType_;
+
+        using allocator_type = AllocType_;
+        using allocator_traits = _STD allocator_traits<allocator_type>;
 
         using address_type = _STD ptrdiff_t;
-        using address_ref_type = _STD conditional_t<Atomic_, _STD atomic_ptrdiff_t, _STD ptrdiff_t>;
+        using difference_type = _STD ptrdiff_t;
 
-        using storage_non_atomic_type = MemoryPointerStorage<Ty_, false>;
-        using storage_atomic_type = MemoryPointerStorage<Ty_, true>;
-
-        template <bool MemoryAtomic_>
-        using storage_type = _STD conditional_t<MemoryAtomic_, storage_atomic_type, storage_non_atomic_type>;
+        using non_owning_type = NonOwningMemoryPointer<Ty_, storage_type>;
 
     public:
         constexpr MemoryPointer() noexcept :
             storage() { }
 
+        /* Weak protection against shared ownership for raw pointers */
+        constexpr MemoryPointer(cref<this_type>) = delete;
+
+        constexpr MemoryPointer(mref<this_type> other_) noexcept :
+            storage(_STD move(other_.storage)) {}
+
+        ~MemoryPointer() = default;
+
+    public:
+        /* Weak protection against shared ownership for raw pointers */
+        ref<this_type> operator=(cref<this_type>) = delete;
+
+        ref<this_type> operator=(mref<this_type> other_) noexcept {
+            if (_STD addressof(other_) != this) {
+                storage = _STD move(other_.storage);
+            }
+            return *this;
+        }
+
+        ref<this_type> operator=(mref<NonOwningMemoryPointer<Ty_, StorageType_>> other_) = delete;
+
     public:
         [[nodiscard]] constexpr static bool isAtomic() noexcept {
-            return _STD bool_constant<Atomic_>::value;
+            return storage_type::isAtomic();
         }
 
     public:
-        [[nodiscard]] constexpr static this_type make() {
+        template <typename... Args_> requires _STD is_constructible_v<Ty_, Args_...>
+        [[nodiscard]] constexpr static this_type make(Args_&&... args_) {
             this_type tmp {};
-            tmp.create();
+            tmp.create(_STD forward<Args_>(args_)...);
             return tmp;
         }
 
@@ -340,7 +315,7 @@ namespace hg {
 
     public:
         template <typename Tx_ = Ty_, typename... Args_>
-        this_type create(Args_... args_) {
+        ref<this_type> create(Args_... args_) {
             storage.allocate(_STD forward<Args_>(args_)...);
             return *this;
         }
@@ -350,7 +325,7 @@ namespace hg {
             return (*storage.template loadOrAllocate<Tx_>());
         }
 
-        this_type destroy() {
+        ref<this_type> destroy() {
             storage.deallocate();
             return *this;
         }
@@ -362,14 +337,22 @@ namespace hg {
             return *this;
         }
 
-        template <typename Tx_ = Ty_>
-        cref<Tx_> load() const noexcept {
+        cref<Ty_> load() const noexcept {
             return *(storage.template load<Ty_>());
         }
 
-        template <typename Tx_ = Ty_>
-        ref<Tx_> load() noexcept {
-            return *(storage.template load<Tx_>());
+        ref<Ty_> load() noexcept {
+            return *(storage.template load<Ty_>());
+        }
+
+    public:
+        template <typename Ptx_ = Ty_*> requires _STD is_nothrow_convertible_v<Ptx_, Ty_*>
+        [[nodiscard]] _STD _Compressed_pair<allocator_type, Ty_*> exchange(Ptx_&& next_) {
+            return _STD _Compressed_pair<allocator_type, Ty_*>(
+                _STD _One_then_variadic_args_t {},
+                allocator_type {},
+                storage.exchange(_STD forward<Ptx_>(next_))
+            );
         }
 
     public:
@@ -391,14 +374,126 @@ namespace hg {
 
     public:
         [[nodiscard]] bool operator!() const noexcept {
-            return storage.load() == nullptr;
+            return storage.template load<Ty_>() == nullptr;
         }
 
         [[nodiscard]] operator bool() const noexcept {
-            return storage.load() != nullptr;
+            return storage.template load<Ty_>() != nullptr;
         }
 
     public:
-        storage_type<Atomic_> storage;
+        storage_type storage;
+    };
+
+    /**/
+
+    template <typename Ty_, typename StorageType_>
+    struct NonOwningMemoryPointer {
+    public:
+        using this_type = NonOwningMemoryPointer<Ty_, StorageType_>;
+
+        using storage_type = StorageType_;
+
+        using address_type = _STD ptrdiff_t;
+        using difference_type = _STD ptrdiff_t;
+
+    public:
+        constexpr NonOwningMemoryPointer() noexcept :
+            storage() { }
+
+        template <
+            typename Tx_ = Ty_,
+            typename AllocType_ = typename StorageType_::allocator_type,
+            typename StorageTx_ = StorageType_>
+        constexpr NonOwningMemoryPointer(cref<MemoryPointer<Tx_, AllocType_, StorageTx_>> mp_) :
+            storage(mp_.storage) {}
+
+        constexpr NonOwningMemoryPointer(cref<this_type> other_) noexcept :
+            storage(other_.storage) {}
+
+        constexpr NonOwningMemoryPointer(mref<this_type> other_) noexcept :
+            storage(_STD move(other_.storage)) {}
+
+        ~NonOwningMemoryPointer() = default;
+
+    public:
+        ref<this_type> operator=(mref<this_type> other_) noexcept {
+            if (_STD addressof(other_) != this) {
+                storage = _STD move(other_.storage);
+            }
+            return *this;
+        }
+
+        ref<this_type> operator=(cref<this_type> other_) noexcept {
+            if (_STD addressof(other_) != this) {
+                storage = other_.storage;
+            }
+            return *this;
+        }
+
+        template <
+            typename Tx_ = Ty_,
+            typename AllocType_ = typename StorageType_::allocator_type,
+            typename StorageTx_ = StorageType_>
+        ref<this_type> operator=(cref<MemoryPointer<Tx_, AllocType_, StorageTx_>> mp_) {
+            if (_STD _Voidify_iter(_STD addressof(mp_)) != this) {
+                storage = mp_.storage;
+            }
+            return *this;
+        }
+
+    public:
+        [[nodiscard]] constexpr static bool isAtomic() noexcept {
+            return storage_type::isAtomic();
+        }
+
+    public:
+        [[nodiscard]] address_type address() const noexcept {
+            return _STD addressof(storage.template load<Ty_>());
+        }
+
+    public:
+        template <typename Tx_ = Ty_>
+        ref<this_type> store(Tx_&& value_) noexcept {
+            storage.template store<Tx_>(_STD forward<Tx_>(value_));
+            return *this;
+        }
+
+        cref<Ty_> load() const noexcept {
+            return *(storage.template load<Ty_>());
+        }
+
+        ref<Ty_> load() noexcept {
+            return *(storage.template load<Ty_>());
+        }
+
+    public:
+        [[nodiscard]] cref<Ty_> operator*() const noexcept {
+            return *(storage.template load<Ty_>());
+        }
+
+        [[nodiscard]] ref<Ty_> operator*() noexcept {
+            return *(storage.template load<Ty_>());
+        }
+
+        [[nodiscard]] const Ty_* const operator->() const noexcept {
+            return storage.template load<Ty_>();
+        }
+
+        [[nodiscard]] Ty_* const operator->() noexcept {
+            return storage.template load<Ty_>();
+        }
+
+    public:
+        [[nodiscard]] bool operator!() const noexcept {
+            return storage.template load<Ty_>() == nullptr;
+        }
+
+        [[nodiscard]] operator bool() const noexcept {
+            return storage.template load<Ty_>() != nullptr;
+        }
+
+    public:
+        storage_type storage;
     };
 }
