@@ -31,11 +31,19 @@ NativeWindowFlags Win32Window::flags() const noexcept {
 }
 
 math::ivec2 Win32Window::offset() const noexcept {
-    return _offset;
+    //return _offset;
+
+    math::ivec2 tmp {};
+    SDL_GetWindowPosition(_sdlWnd, &tmp.x, &tmp.y);
+    return tmp;
 }
 
 math::ivec2 Win32Window::size() const noexcept {
-    return _size;
+    //return _size;
+
+    math::ivec2 tmp {};
+    SDL_GetWindowSize(_sdlWnd, &tmp.x, &tmp.y);
+    return tmp;
 }
 
 void Win32Window::setOffset(const math::ivec2 offset_) {

@@ -56,6 +56,8 @@ namespace hg::engine::reflow {
     public:
         void setClientSize(cref<math::vec2> nextClientSize_);
 
+        math::vec2 getClientSize() const noexcept;
+
     private:
         FixedChildren<2> _children;
 

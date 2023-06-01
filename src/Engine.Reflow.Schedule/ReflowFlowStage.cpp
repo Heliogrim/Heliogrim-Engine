@@ -49,7 +49,7 @@ void ReflowFlowStage::staticDispatch(const non_owning_rptr<const scheduler::Stag
                     boundWnd->window->flow(ctx, clientSize, clientSize, stack);
                      */
 
-                    const math::vec2 clientSize = boundWnd->surface->getNativeWindow()->size();
+                    const math::vec2 clientSize = boundWnd->window->getClientSize();
                     auto start = _STD chrono::high_resolution_clock::now();
 
                     ReflowState state {};
