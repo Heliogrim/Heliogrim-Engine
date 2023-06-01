@@ -43,6 +43,10 @@ void Window::setClientSize(cref<math::vec2> nextClientSize_) {
     _clientSize = nextClientSize_;
 }
 
+math::vec2 Window::getClientSize() const noexcept {
+    return _clientSize;
+}
+
 void Window::setTitleBar(sptr<Widget> titleBar_) {
 
     titleBar_->setParent(shared_from_this());

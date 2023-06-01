@@ -152,10 +152,10 @@ void UniformGridPanel::applyLayout(ref<ReflowState> state_, mref<LayoutContext> 
     math::uivec2 lineLayout { 0 };
 
     if (attr.orientation.getValue() == algorithm::FlexLineOrientation::eVertical) {
-        lineLayout.x = static_cast<u32>(_STD floorf(itemsPerAxis.y));
+        lineLayout.x = MAX(static_cast<u32>(_STD floorf(itemsPerAxis.y)), 1ui32);
         lineLayout.y = gridItemCount / lineLayout.x + (gridItemCount % lineLayout.x == 0 ? 0ui32 : 1ui32);
     } else {
-        lineLayout.x = static_cast<u32>(_STD floorf(itemsPerAxis.x));
+        lineLayout.x = MAX(static_cast<u32>(_STD floorf(itemsPerAxis.x)), 1ui32);
         lineLayout.y = gridItemCount / lineLayout.x + (gridItemCount % lineLayout.x == 0 ? 0ui32 : 1ui32);
     }
 
