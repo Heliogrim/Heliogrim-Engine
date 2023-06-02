@@ -24,6 +24,8 @@ namespace hg::engine::serialization {
 
         [[nodiscard]] SeqScopedSlot intoSeq();
 
+        [[nodiscard]] SeqScopedSlot asSeq() const;
+
     public:
         [[nodiscard]] StringScopedSlot intoString();
 

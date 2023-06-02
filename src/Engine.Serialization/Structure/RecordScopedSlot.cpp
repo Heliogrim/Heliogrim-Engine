@@ -29,6 +29,14 @@ StructScopedSlot RecordScopedSlot::asStruct() const {
     return StructScopedSlot(ScopedSlotState { _state }, _STD move(aliasState));
 }
 
+SeqScopedSlot RecordScopedSlot::asSeq() const {
+
+    StructureSlotState aliasState { _slot->getState() };
+    aliasState.flags = StructureSlotStateFlag::eImmutable;
+
+    return SeqScopedSlot(ScopedSlotState { _state }, _STD move(aliasState));
+}
+
 SeqScopedSlot RecordScopedSlot::intoSeq() {
     return SeqScopedSlot { _STD move(_state), _STD move(_slot->getState()) };
 }

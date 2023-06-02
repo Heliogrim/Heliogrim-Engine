@@ -344,7 +344,7 @@ namespace SerializationModule {
         auto readAsset = HeliogrimObject::create<TestSerialDataBaseAsset>();
         arch >> readAsset;
 
-        EXPECT_EQ(readAsset->get_guid().as_uint64(), testGuid.as_uint64());
+        EXPECT_EQ(readAsset->get_guid(), testGuid);
         EXPECT_EQ(readAsset->getTypeId(), testType);
 
         HeliogrimObject::destroy(_STD move(writeAsset));
@@ -640,8 +640,11 @@ namespace SerializationModule {
         const auto memCpyStart { _STD chrono::high_resolution_clock::now() };
         Vector<TestSubTypePayload> memCpyTarget {};
         memCpyTarget.resize(writeAsset->payload.size());
-        memcpy(memCpyTarget.data(), writeAsset->payload.data(),
-            writeAsset->payload.size() * sizeof(TestSubTypePayload));
+        memcpy(
+            memCpyTarget.data(),
+            writeAsset->payload.data(),
+            writeAsset->payload.size() * sizeof(TestSubTypePayload)
+        );
         const auto memCpyEnd { _STD chrono::high_resolution_clock::now() };
 
         /**/
@@ -1012,7 +1015,7 @@ namespace SerializationModule {
         string dst1 {};
         {
             const auto read = arch.getRootSlot();
-            auto slot = read.intoStruct();
+            auto slot = read.asStruct();
             slot.getSlot<string>("test1") >> dst1;
             slot.getSlot<u64>("test0") >> dst0;
         }
@@ -1228,7 +1231,7 @@ namespace SerializationModule {
             }
 
             void deserialize(cref<RecordScopedSlot> slot_) {
-                auto slot = slot_.intoStruct();
+                auto slot = slot_.asStruct();
 
                 slot.getSlot<string>("name") >> name;
                 slot.getSlot<string>("surname") >> surname;
@@ -1261,7 +1264,7 @@ namespace SerializationModule {
             }
 
             void deserialize(cref<RecordScopedSlot> slot_) {
-                auto slot = slot_.intoStruct();
+                auto slot = slot_.asStruct();
 
                 slot.getSlot<string>("name") >> name;
                 slot.getSlot<string>("path") >> path;
@@ -1314,7 +1317,7 @@ namespace SerializationModule {
 
         {
             const auto read = arch.getRootSlot();
-            auto slot = read.intoSeq();
+            auto slot = read.asSeq();
 
             dst0.deserialize(slot.getRecordSlot(0));
             dst1.deserialize(slot.getRecordSlot(1));
@@ -1344,7 +1347,7 @@ namespace SerializationModule {
             }
 
             void deserialize(cref<RecordScopedSlot> slot_) {
-                const auto slot = slot_.intoStruct();
+                const auto slot = slot_.asStruct();
                 slot.getSlot<string>("data0") >> data0;
                 slot.getSlot<u64>("data1") >> data1;
             }
@@ -1378,7 +1381,7 @@ namespace SerializationModule {
             }
 
             void deserialize(cref<RecordScopedSlot> slot_) {
-                const auto slot = slot_.intoStruct();
+                const auto slot = slot_.asStruct();
 
                 slot.getSlot<string>("data0") >> data0;
                 slot.getSlot<u32>("data1") >> data1;
@@ -1420,7 +1423,7 @@ namespace SerializationModule {
             }
 
             void deserialize(cref<RecordScopedSlot> slot_) {
-                const auto slot = slot_.intoStruct();
+                const auto slot = slot_.asStruct();
                 slot.getSlot<u64>("data0") >> data0;
 
                 string test {};
@@ -1460,7 +1463,7 @@ namespace SerializationModule {
             }
 
             void deserialize(cref<RecordScopedSlot> slot_) {
-                const auto slot = slot_.intoStruct();
+                const auto slot = slot_.asStruct();
                 slot.getSlot<string>("data0") >> data0;
                 slot.getSlot<u64>("data1") >> data1;
                 slot.getSlot<u32>("data2") >> data2;
@@ -1559,7 +1562,7 @@ namespace SerializationModule {
 
         {
             const auto read = arch.getRootSlot();
-            auto slot = read.intoStruct();
+            auto slot = read.asStruct();
 
             EXPECT_FALSE(slot.hasRecordSlot("unknown"));
             EXPECT_TRUE(slot.hasRecordSlot("known"));
