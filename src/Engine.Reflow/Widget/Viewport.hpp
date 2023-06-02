@@ -62,6 +62,8 @@ namespace hg::engine::reflow {
 
         void handleViewListener(const ptr<gfx::VkSwapchain> next_);
 
+        uptr<gfx::VkSwapchain> buildNextView(cref<math::uivec2> extent_) const;
+
     public:
         void rebuildView();
 

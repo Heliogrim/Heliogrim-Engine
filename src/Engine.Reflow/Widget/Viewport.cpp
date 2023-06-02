@@ -91,41 +91,58 @@ bool Viewport::viewHasChanged() const noexcept {
         return true;
     }
 
-    const auto size { actualViewExtent() };
+    const auto size = math::compMax<u32>(actualViewExtent(), math::uivec2 { 1ui32 });
     return _swapchain->extent() != size;
 }
 
+uptr<engine::gfx::VkSwapchain> Viewport::buildNextView(cref<math::uivec2> extent_) const {
+
+    auto next = make_uptr<gfx::VkSwapchain>();
+
+    next->setExtent(extent_);
+    next->setFormat(gfx::TextureFormat::eB8G8R8A8Unorm);
+    next->setDesiredImages(2ui32);
+
+    const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+    next->setup(device);
+
+    return next;
+}
+
 void Viewport::rebuildView() {
-    const auto extent { actualViewExtent() };
-    auto nextSwapchain { make_uptr<gfx::VkSwapchain>() };
 
-    nextSwapchain->setExtent(extent);
-    nextSwapchain->setFormat(gfx::TextureFormat::eB8G8R8A8Unorm);
-    nextSwapchain->setDesiredImages(2ui32);
+    // Error: Will cause nullpointer exceptions
+    // TODO: Introduce Empty/Null-Swapchain or deal with zero-dimension case
+    auto extent { actualViewExtent() };
+    if (extent.zero()) {
+        IM_CORE_WARNF(
+            "Tried to rebuild Swapchain for Viewport (`{:#x}`) with zero dimension.",
+            reinterpret_cast<volatile ptrdiff_t>(this)
+        );
+        extent = math::compMax<u32>(extent, math::uivec2 { 1ui32 });
+    }
 
-    const auto device { Engine::getEngine()->getGraphics()->getCurrentDevice() };
-
-    nextSwapchain->setup(device);
+    auto next = buildNextView(extent);
 
     /**/
 
     if (_cameraActor) {
         auto* const cc { _cameraActor->getCameraComponent() };
         cc->setAspectRatio(
-            static_cast<float>(nextSwapchain->extent().x) / static_cast<float>(nextSwapchain->extent().y)
+            static_cast<float>(extent.x) / static_cast<float>(extent.y)
         );
     }
 
     /**/
 
-    handleViewListener(nextSwapchain.get());
+    handleViewListener(next.get());
 
     /**/
 
     if (_swapchain) {
         _swapchain->destroy();
     }
-    _swapchain = _STD move(nextSwapchain);
+    _swapchain = _STD move(next);
 }
 
 void Viewport::handleViewListener(const ptr<gfx::VkSwapchain> next_) {

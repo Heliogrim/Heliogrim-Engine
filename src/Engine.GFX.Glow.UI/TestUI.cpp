@@ -184,9 +184,7 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
 /**/
 
 static void configureMainViewport(
-    sptr<VerticalPanel> parent_,
-    cref<FlowContext> ctx_,
-    cref<math::vec2> available_
+    sptr<VerticalPanel> parent_
 );
 
 static void configureMainGraph(
@@ -482,8 +480,8 @@ void buildTestUI(
     mainSection->addChild(mainTopSection);
     mainSection->addChild(assetBrowsePanel);
 
-    if (false) {
-        configureMainViewport(mainTopSection, ctx, available);
+    if (true) {
+        configureMainViewport(mainTopSection);
     } else {
         configureMainGraph(mainTopSection);
     }
@@ -636,9 +634,7 @@ void storeHierarchyActor(cref<Vector<ptr<Actor>>> targets_) {
 }
 
 void configureMainViewport(
-    sptr<VerticalPanel> parent_,
-    cref<FlowContext> ctx_,
-    cref<math::vec2> available_
+    sptr<VerticalPanel> parent_
 ) {
 
     const ptr<engine::reflow::Font> defaultFont = getDefaultFont();
@@ -657,13 +653,13 @@ void configureMainViewport(
     viewportCtrls->attr.flexGrow.setValue(1.F);
 
     auto viewportWrapper = make_sptr<HorizontalPanel>();
-    viewportCtrls->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
-    viewportCtrls->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
-    viewportCtrls->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
-    viewportCtrls->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
-    viewportCtrls->attr.justify.setValue(ReflowSpacing::eSpaceAround);
-    viewportCtrls->attr.flexGrow.setValue(1.F);
-    viewportCtrls->attr.flexShrink.setValue(1.F);
+    viewportWrapper->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewportWrapper->attr.maxWidth.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewportWrapper->attr.height.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewportWrapper->attr.maxHeight.setValue({ ReflowUnitType::eRelative, 1.F });
+    viewportWrapper->attr.justify.setValue(ReflowSpacing::eSpaceAround);
+    viewportWrapper->attr.flexGrow.setValue(1.F);
+    viewportWrapper->attr.flexShrink.setValue(1.F);
 
     parent_->addChild(viewportCtrls);
     parent_->addChild(viewportWrapper);
@@ -743,6 +739,8 @@ void configureMainViewport(
     target->use(gfx->getCurrentDevice());
     target->use(gfx->getRenderer(AssocKey<string>::from("3DRenderer")).get());
     target->use(viewport->getSwapchain());
+
+    // Error: Will break, because viewport has no swapchain if dimension is zero
 
     const auto* const cc { camera->getCameraComponent() };
     const auto* const cm { *cc->getSceneNodeModels().begin() };
