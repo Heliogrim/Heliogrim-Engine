@@ -79,6 +79,19 @@ non_owning_rptr<render::Renderer> RenderTarget::use(cref<non_owning_rptr<render:
 }
 
 non_owning_rptr<Swapchain> RenderTarget::use(cref<non_owning_rptr<Swapchain>> swapchain_) {
+
+    assert(swapchain_ != nullptr);
+
+    const auto req = _onTheFlight ? 1ui32 : 2ui32;
+    if (swapchain_->imageCount() < req) {
+        IM_CORE_WARNF(
+            "Tried to use render target with unsupported swapchain. (min. Img. `{}`, provided `{}`)",
+            req,
+            swapchain_->imageCount()
+        );
+        return swapchain_;
+    }
+
     return _STD exchange(_swapchain, swapchain_);
 }
 

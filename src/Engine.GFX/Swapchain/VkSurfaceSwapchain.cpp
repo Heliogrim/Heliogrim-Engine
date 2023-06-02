@@ -159,6 +159,10 @@ void VkSurfaceSwapchain::destroy() {
     _vkSwapchain = VK_NULL_HANDLE;
 }
 
+s64 VkSurfaceSwapchain::imageCount() const noexcept {
+    return _images.size();
+}
+
 bool VkSurfaceSwapchain::acquireNext(ref<s64> idx_, ref<sptr<Texture>> image_, ref<vk::Semaphore> signal_) {
 
     const auto nxtSig { nextSignal() };
