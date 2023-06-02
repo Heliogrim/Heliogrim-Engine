@@ -20,6 +20,9 @@ namespace hg::engine::gfx {
         void destroy() override;
 
     public:
+        [[nodiscard]] s64 imageCount() const noexcept override;
+
+    public:
         bool acquireNext(ref<s64> idx_, ref<sptr<Texture>> image_, ref<vk::Semaphore> signal_) override;
 
         vk::Result presentNext(u64 idx_) override;

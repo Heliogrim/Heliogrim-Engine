@@ -229,6 +229,10 @@ void VkSwapchain::setFormat(TextureFormat format_) {
     _format = format_;
 }
 
+s64 VkSwapchain::imageCount() const noexcept {
+    return _images.size();
+}
+
 void VkSwapchain::setDesiredImages(const u32 desired_) {
     _desiredImages = desired_;
 }

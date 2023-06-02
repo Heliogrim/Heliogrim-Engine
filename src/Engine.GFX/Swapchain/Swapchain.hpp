@@ -51,6 +51,8 @@ namespace hg::engine::gfx {
         Vector<SwapchainImage> _images;
 
     public:
+        [[nodiscard]] virtual s64 imageCount() const noexcept;
+
         [[nodiscard]] cref<sptr<Texture>> at(u64 idx_) const;
 
     public:

@@ -48,6 +48,8 @@ namespace hg::engine::gfx {
         u32 _desiredImages;
 
     public:
+        [[nodiscard]] s64 imageCount() const noexcept override;
+
         void setDesiredImages(const u32 desired_);
 
     private:
