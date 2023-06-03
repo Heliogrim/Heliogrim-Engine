@@ -1269,6 +1269,23 @@ namespace hg::math {
             w(w_) { }
 
         /**
+         * Cast Constructor
+         *
+         * @author Julius
+         * @date 03.06.2023
+         *
+         * @tparam Ty_ The typename to cast the values from
+         *
+         * @param other_ The foreign vector to cast the values from.
+         */
+        template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
+        explicit constexpr vec4_t(const vec4_t<Ty_>& other_) :
+            x((value_type)(other_.x)),
+            y((value_type)(other_.y)),
+            z((value_type)(other_.z)),
+            w((value_type)(other_.w)) {}
+
+        /**
          * Sets an x coordinate
          *
          * @author Julius
