@@ -198,7 +198,56 @@ bool ReflowCommandBuffer::scissorCull(cref<math::fExtent2D> rect_) const noexcep
     return false;
 }
 
-void ReflowCommandBuffer::drawLine(math::vec2 p0_, math::vec2 p1_, const float strength_) {}
+void ReflowCommandBuffer::drawLine(math::vec2 p0_, math::vec2 p1_, const float strength_) {
+
+    color strokeColor { 255.F, 255.F, 255.F, 255.F };
+
+    const auto hs = strength_ / 2.F;
+
+    const auto mainAxis = p1_ - p0_;
+    const auto ortho = math::vec2 { mainAxis.y, -mainAxis.x }.normalize();
+
+    /**
+     *
+     */
+    constexpr u32 cqi[] { 0ui32, 1ui32, 2ui32, 2ui32, 3ui32, 0ui32 };
+    _runningIndexes.reserve(_runningIndexes.size() + (sizeof(cqi) / sizeof(u32)));
+
+    const u32 baseIdx { static_cast<u32>(_runningVertices.size()) };
+    _runningVertices.reserve(baseIdx + 4ui32);
+
+    /**
+     *
+     */
+    _runningIndexes.push_back(baseIdx + cqi[0]);
+    _runningIndexes.push_back(baseIdx + cqi[1]);
+    _runningIndexes.push_back(baseIdx + cqi[2]);
+    _runningIndexes.push_back(baseIdx + cqi[3]);
+    _runningIndexes.push_back(baseIdx + cqi[4]);
+    _runningIndexes.push_back(baseIdx + cqi[5]);
+
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { p0_ + ortho * hs }, math::vec4_t<u8>(strokeColor), math::vec3 {}
+        }
+    );
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { p1_ + ortho * hs }, math::vec4_t<u8>(strokeColor), math::vec3 {}
+        }
+    );
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { p1_ - ortho * hs }, math::vec4_t<u8>(strokeColor), math::vec3 {}
+        }
+    );
+    _runningVertices.push_back(
+        uivertex {
+            math::vec2 { p0_ - ortho * hs }, math::vec4_t<u8>(strokeColor), math::vec3 {}
+        }
+    );
+
+}
 
 void ReflowCommandBuffer::drawTriangle(math::vec2 p0_, math::vec2 p1_, math::vec2 p2_, cref<color> color_) {}
 
