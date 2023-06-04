@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Renderer/RenderDataToken.hpp"
+#include <Engine.GFX.Renderer/RenderDataToken.hpp>
 
 namespace hg::engine::gfx::render {
     constexpr RenderDataToken PerformanceQuery {

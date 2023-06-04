@@ -3,10 +3,9 @@
 #include <Heliogrim/SceneComponent.hpp>
 #include <Heliogrim/Components/CameraComponent.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
+#include <Engine.GFX.Renderer/RenderDataToken.hpp>
 #include <Engine.Scene/Scene.hpp>
 #include <Engine.Scene/RevScene.hpp>
-
-#include "../Renderer/RenderDataToken.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;

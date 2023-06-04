@@ -4,15 +4,21 @@ namespace hg::engine::gfx { }
 
 namespace hg::engine::gfx::render {
     class HORenderPass;
-    class Multiplexer;
-    class Renderer;
+    struct HORenderPassCreateData;
     struct RenderDataToken;
+    class Renderer;
     struct RenderPassState;
     class RenderPipeline;
-    class RenderStage;
+
+    /**/
+
     class RenderStageNode;
+
+    /**/
+
+    class Multiplexer;
+    class RenderStage;
+    struct RenderStageDependency;
     class RenderStagePass;
     class RenderStageProcessor;
-    struct HORenderPassCreateData;
-    struct RenderStageDependency;
 }

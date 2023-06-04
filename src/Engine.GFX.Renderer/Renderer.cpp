@@ -1,15 +1,15 @@
 #include "Renderer.hpp"
 
 #include <Engine.Core/Engine.hpp>
+#include <Engine.GFX/Graphics.hpp>
+#include <Engine.GFX/Command/CommandBatch.hpp>
+#include <Engine.GFX/Device/Device.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Thread/Thread.hpp>
 
 #include "HORenderPass.hpp"
 #include "RenderPassState.hpp"
 #include "RenderPipeline.hpp"
-#include "../Command/CommandBatch.hpp"
-#include "../Device/Device.hpp"
-#include "Engine.GFX/Graphics.hpp"
 
 using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;

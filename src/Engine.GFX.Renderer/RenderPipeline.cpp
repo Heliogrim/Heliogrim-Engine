@@ -1,12 +1,12 @@
 #include "RenderPipeline.hpp"
 
 #include <Engine.Common/Collection/Set.hpp>
+#include <Engine.GFX/Device/Device.hpp>
 
 #include "HORenderPass.hpp"
-#include "RenderStage.hpp"
-#include "RenderStagePass.hpp"
-#include "RenderStageProcessor.hpp"
-#include "../Device/Device.hpp"
+#include "Stage/RenderStage.hpp"
+#include "Stage/RenderStagePass.hpp"
+#include "Stage/RenderStageProcessor.hpp"
 
 using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;

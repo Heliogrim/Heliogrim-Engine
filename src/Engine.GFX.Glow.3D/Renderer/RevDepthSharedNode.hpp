@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.GFX/Pipeline/LORenderPass.hpp>
-#include <Engine.GFX/Renderer/RenderStageNode.hpp>
-#include <Engine.GFX/Renderer/__fwd.hpp>
+#include <Engine.GFX.Renderer/Node/RenderStageNode.hpp>
+#include <Engine.GFX.Renderer/__fwd.hpp>
 
 namespace hg::engine::gfx::glow::render {
     class RevDepthSharedNode :

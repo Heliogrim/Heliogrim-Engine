@@ -5,8 +5,8 @@
 #include "HORenderPassCreateData.hpp"
 #include "Renderer.hpp"
 #include "RenderPassState.hpp"
-#include "../Command/CommandBatch.hpp"
-#include "../Texture/Texture.hpp"
+#include <Engine.GFX/Command/CommandBatch.hpp>
+#include <Engine.GFX/Texture/Texture.hpp>
 
 using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;

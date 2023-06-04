@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.GFX/Scene/SceneNodeModel.hpp>
-#include <Engine.GFX/Renderer/__fwd.hpp>
+#include <Engine.GFX.Renderer/__fwd.hpp>
 
 namespace hg::engine::reflow {
     class UISceneModel final :

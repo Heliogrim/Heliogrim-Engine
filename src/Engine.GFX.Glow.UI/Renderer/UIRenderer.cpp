@@ -1,7 +1,7 @@
 #include "UIRenderer.hpp"
 
 #include <Engine.Common/Make.hpp>
-#include <Engine.GFX/Renderer/RenderPipeline.hpp>
+#include <Engine.GFX.Renderer/RenderPipeline.hpp>
 
 #include "UiMainStage.hpp"
 

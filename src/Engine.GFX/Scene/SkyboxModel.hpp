@@ -1,10 +1,10 @@
 #pragma once
 #include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
+#include <Engine.GFX.Renderer/__fwd.hpp>
 
 #include "GeometryModel.hpp"
 #include "../Shader/CachedDiscreteBinding.hpp"
-#include "../Renderer/__fwd.hpp"
 
 namespace hg::engine::gfx {
     class SkyboxModel final :

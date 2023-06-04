@@ -5,10 +5,10 @@
 #include <Engine.GFX/Command/CommandPool.hpp>
 #include <Engine.GFX/Command/CommandQueue.hpp>
 #include <Engine.GFX/Framebuffer/Framebuffer.hpp>
-#include <Engine.GFX/Renderer/HORenderPass.hpp>
-#include <Engine.GFX/Renderer/RenderDataToken.hpp>
-#include <Engine.GFX/Renderer/RenderPassState.hpp>
-#include <Engine.GFX/Renderer/RenderStagePass.hpp>
+#include <Engine.GFX.Renderer/HORenderPass.hpp>
+#include <Engine.GFX.Renderer/RenderDataToken.hpp>
+#include <Engine.GFX.Renderer/RenderPassState.hpp>
+#include <Engine.GFX.Renderer/Stage/RenderStagePass.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
 
 #include "__macro.hpp"

@@ -5,7 +5,7 @@
 
 #include "Multiplexer.hpp"
 #include "RenderStageDependency.hpp"
-#include "__fwd.hpp"
+#include "../__fwd.hpp"
 
 namespace hg::engine::gfx {
     /**

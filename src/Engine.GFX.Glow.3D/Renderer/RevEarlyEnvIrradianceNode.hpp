@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.GFX/FixedPipeline.hpp>
-#include <Engine.GFX/Renderer/RenderStageNode.hpp>
+#include <Engine.GFX.Renderer/Node/RenderStageNode.hpp>
 #include <Engine.GFX/Shader/ShaderBindingGroup.hpp>
 #include <Engine.GFX/Pipeline/LORenderPass.hpp>
 #include <Engine.GFX/Texture/__fwd.hpp>

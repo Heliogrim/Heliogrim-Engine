@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Texture/Texture.hpp"
+#include <Engine.GFX/Texture/Texture.hpp>
 
 namespace hg::engine::gfx::render {
     struct HORenderPassChanges {

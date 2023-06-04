@@ -19,6 +19,8 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
+#include <Engine.GFX.Renderer/HORenderPass.hpp>
+#include <Engine.GFX.Renderer/Renderer.hpp>
 
 #include "RenderTarget.hpp"
 #include "todo.h"
@@ -37,8 +39,6 @@
 #include "Importer/ModelFileTypes.hpp"
 #include "Importer/ModelImporter.hpp"
 #include "Pool/GlobalResourcePool.hpp"
-#include "Renderer/HORenderPass.hpp"
-#include "Renderer/Renderer.hpp"
 #include "Shader/ShaderStorage.hpp"
 #include "Surface/SurfaceManager.hpp"
 #include "Swapchain/Swapchain.hpp"
