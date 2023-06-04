@@ -1,9 +1,8 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.GFX/Command/CommandBatch.hpp>
 
-#include "../Command/CommandBatch.hpp"
-
-#include "__fwd.hpp"
+#include "../__fwd.hpp"
 
 namespace hg::engine::gfx::render {
     class RenderStagePass {

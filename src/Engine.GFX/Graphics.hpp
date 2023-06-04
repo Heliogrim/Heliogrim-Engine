@@ -5,13 +5,13 @@
 #include <Engine.Common/Collection/RobinMap.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Core/Module/CoreModule.hpp>
+#include <Engine.GFX.Renderer/__fwd.hpp>
 
 #include "Application/Application.hpp"
 #include "Cache/__fwd.hpp"
 #include "Pool/__fwd.hpp"
 #include "Command/CommandQueue.hpp"
 #include "Device/Device.hpp"
-#include "Renderer/__fwd.hpp"
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
 

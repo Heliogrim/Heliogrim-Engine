@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.GFX/FixedPipeline.hpp>
 #include <Engine.GFX/Pipeline/LORenderPass.hpp>
-#include <Engine.GFX/Renderer/RenderStageNode.hpp>
+#include <Engine.GFX.Renderer/Node/RenderStageNode.hpp>
 #include <Engine.GFX/Shader/ShaderBindingGroup.hpp>
 
 namespace hg::editor::gfx {

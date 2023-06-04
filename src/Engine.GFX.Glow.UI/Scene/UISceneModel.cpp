@@ -1,8 +1,8 @@
 #include "UISceneModel.hpp"
 
 #include <Engine.GFX/Cache/ModelBatch.hpp>
-#include <Engine.GFX/Renderer/RenderPassState.hpp>
-#include <Engine.GFX/Renderer/RenderDataToken.hpp>
+#include <Engine.GFX.Renderer/RenderPassState.hpp>
+#include <Engine.GFX.Renderer/RenderDataToken.hpp>
 
 #include "Heliogrim/UIComponent.hpp"
 

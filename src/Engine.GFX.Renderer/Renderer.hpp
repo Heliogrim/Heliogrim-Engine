@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.GFX/Command/__fwd.hpp>
 
 #include "HORenderPassCreateData.hpp"
 #include "HORenderPassChanges.hpp"
 #include "__fwd.hpp"
-#include "../Command/__fwd.hpp"
 
 namespace hg::engine::gfx {
     /**

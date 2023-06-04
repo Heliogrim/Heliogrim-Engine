@@ -5,9 +5,9 @@
 #endif
 
 #include "Multiplexer.hpp"
-#include "HORenderPass.hpp"
+#include "../HORenderPass.hpp"
 #include "RenderStagePass.hpp"
-#include "../Scene/SceneNodeModel.hpp"
+#include <Engine.GFX/Scene/SceneNodeModel.hpp>
 #include <Engine.Scene/IRenderScene.hpp>
 
 using namespace hg::engine::gfx::render;

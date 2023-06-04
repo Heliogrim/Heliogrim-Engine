@@ -3,7 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-#include "__fwd.hpp"
+#include "../__fwd.hpp"
 
 namespace hg::engine::gfx::render {
     enum class RenderStageOrder : u8 {

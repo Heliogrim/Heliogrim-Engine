@@ -2,10 +2,10 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/BytellHashMap.hpp>
 
-#include "../Framebuffer/Framebuffer.hpp"
-#include "../Shader/DiscreteBindingCache.hpp"
-#include "../Cache/LocalCacheCtrl.hpp"
-#include "../Memory/LocalPooledAllocator.hpp"
+#include <Engine.GFX/Framebuffer/Framebuffer.hpp>
+#include <Engine.GFX/Shader/DiscreteBindingCache.hpp>
+#include <Engine.GFX/Cache/LocalCacheCtrl.hpp>
+#include <Engine.GFX/Memory/LocalPooledAllocator.hpp>
 
 namespace hg::engine::gfx::render {
     struct RenderPassState {

@@ -5,7 +5,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 
-#include "__fwd.hpp"
+#include "../__fwd.hpp"
 
 namespace hg::engine::gfx {
     class Device;

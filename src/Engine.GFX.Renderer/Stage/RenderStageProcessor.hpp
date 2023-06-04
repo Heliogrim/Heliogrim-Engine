@@ -3,7 +3,8 @@
 #include <Engine.Scene/RenderGraph.hpp>
 #include <Engine.Scheduler/Fiber/Awaitable.hpp>
 
-#include "__fwd.hpp"
+#include "../__fwd.hpp"
+#include "../Command/AccelerationCommandPool.hpp"
 
 namespace hg::engine::gfx::render {
     class RenderStageProcessor {
@@ -79,5 +80,8 @@ namespace hg::engine::gfx::render {
 
     private:
         mutable scheduler::fiber::await_signal_type _signal;
+
+    private:
+        AccelerationCommandPool _acp;
     };
 }

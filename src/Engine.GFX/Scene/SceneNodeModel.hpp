@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Engine.Scene/SceneNodeModel.hpp>
+#include <Engine.GFX.Renderer/RenderPassState.hpp>
+#include <Engine.GFX.Renderer/__fwd.hpp>
 
 #include "../Cache/ModelBatch.hpp"
-#include "../Renderer/RenderPassState.hpp"
-#include "../Renderer/__fwd.hpp"
 
 #include "Engine.Scene/Node/SceneNodePath.hpp"
 

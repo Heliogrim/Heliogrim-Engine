@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.GFX/Scene/SceneNodeModel.hpp>
-#include <Engine.GFX/Renderer/__fwd.hpp>
+#include <Engine.GFX.Renderer/__fwd.hpp>
 
 #include "Engine.Reflow/Window/__fwd.hpp"
 

@@ -1,7 +1,8 @@
 #include "RenderStage.hpp"
 
-#include "RenderPipeline.hpp"
-#include "../Device/Device.hpp"
+#include <Engine.GFX/Device/Device.hpp>
+
+#include "../RenderPipeline.hpp"
 
 using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;

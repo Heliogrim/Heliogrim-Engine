@@ -18,10 +18,10 @@
 #include <Engine.GFX/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Memory/VkAllocator.hpp>
 #include <Engine.GFX/Performance/RenderTokens.hpp>
-#include <Engine.GFX/Renderer/HORenderPass.hpp>
-#include <Engine.GFX/Renderer/RenderDataToken.hpp>
-#include <Engine.GFX/Renderer/RenderPassState.hpp>
-#include <Engine.GFX/Renderer/RenderStagePass.hpp>
+#include <Engine.GFX.Renderer/HORenderPass.hpp>
+#include <Engine.GFX.Renderer/RenderDataToken.hpp>
+#include <Engine.GFX.Renderer/RenderPassState.hpp>
+#include <Engine.GFX.Renderer/Stage/RenderStagePass.hpp>
 #include <Engine.GFX/Scene/ModelDataTokens.hpp>
 #include <Engine.GFX/Scene/StaticGeometryBatch.hpp>
 #include <Engine.GFX/Scene/StaticGeometryModel.hpp>

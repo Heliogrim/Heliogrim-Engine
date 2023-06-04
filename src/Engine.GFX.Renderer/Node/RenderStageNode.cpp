@@ -1,9 +1,10 @@
 #include "RenderStageNode.hpp"
 
-#include "HORenderPass.hpp"
-#include "RenderStagePass.hpp"
-#include "../Scene/SceneNodeModel.hpp"
-#include "../Device/Device.hpp"
+#include <Engine.GFX/Scene/SceneNodeModel.hpp>
+#include <Engine.GFX/Device/Device.hpp>
+
+#include "../HORenderPass.hpp"
+#include "../Stage/RenderStagePass.hpp"
 
 using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;

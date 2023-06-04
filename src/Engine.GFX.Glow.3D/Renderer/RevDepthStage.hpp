@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine.GFX/Renderer/RenderStage.hpp>
+#include <Engine.GFX.Renderer/Stage/RenderStage.hpp>
 
 namespace hg::engine::gfx::glow::render {
     class RevDepthStage :

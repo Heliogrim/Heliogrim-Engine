@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine.GFX/Renderer/Renderer.hpp>
+#include <Engine.GFX.Renderer/Renderer.hpp>
 
 namespace hg::engine::gfx::glow::render {
     class RevRenderer :

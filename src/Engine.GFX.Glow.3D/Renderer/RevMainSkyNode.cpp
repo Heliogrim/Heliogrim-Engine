@@ -12,10 +12,10 @@
 #include <Engine.GFX/API/VkTranslate.hpp>
 #include <Engine.GFX/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Memory/VkAllocator.hpp>
-#include <Engine.GFX/Renderer/HORenderPass.hpp>
-#include <Engine.GFX/Renderer/RenderDataToken.hpp>
-#include <Engine.GFX/Renderer/RenderPassState.hpp>
-#include <Engine.GFX/Renderer/RenderStagePass.hpp>
+#include <Engine.GFX.Renderer/HORenderPass.hpp>
+#include <Engine.GFX.Renderer/RenderDataToken.hpp>
+#include <Engine.GFX.Renderer/RenderPassState.hpp>
+#include <Engine.GFX.Renderer/Stage/RenderStagePass.hpp>
 #include <Engine.GFX/Shader/DiscreteBindingGroup.hpp>
 #include <Engine.GFX/Shader/Factory.hpp>
 #include <Engine.GFX/Shader/Prototype.hpp>

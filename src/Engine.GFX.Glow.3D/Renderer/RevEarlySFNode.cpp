@@ -6,9 +6,9 @@
 #include <Engine.GFX/Command/CommandPool.hpp>
 #include <Engine.GFX/Command/CommandQueue.hpp>
 #include <Engine.GFX/Performance/RenderTokens.hpp>
-#include <Engine.GFX/Renderer/HORenderPass.hpp>
-#include <Engine.GFX/Renderer/RenderPassState.hpp>
-#include <Engine.GFX/Renderer/RenderStagePass.hpp>
+#include <Engine.GFX.Renderer/HORenderPass.hpp>
+#include <Engine.GFX.Renderer/RenderPassState.hpp>
+#include <Engine.GFX.Renderer/Stage/RenderStagePass.hpp>
 #include <Engine.GFX/Shader/Factory.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
 

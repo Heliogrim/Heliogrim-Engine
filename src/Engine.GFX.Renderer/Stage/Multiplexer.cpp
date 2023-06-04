@@ -6,11 +6,11 @@
 
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Exception/NotImplementedException.hpp>
+#include <Engine.GFX/Device/Device.hpp>
 
-#include "RenderStageNode.hpp"
+#include "../Node/RenderStageNode.hpp"
 #include "Engine.GFX/Scene/SceneNodeModel.hpp"
 #include "Engine.Reflect/HeliogrimReflect.hpp"
-#include "../Device/Device.hpp"
 
 using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;
