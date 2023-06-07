@@ -57,6 +57,10 @@ namespace hg {
             _ctrlBlock(nullptr),
             _packed(0) {}
 
+        constexpr SharedMemoryReference(nullptr_t) noexcept :
+            _ctrlBlock(nullptr),
+            _packed(0) {}
+
         constexpr SharedMemoryReference(
             _In_ const non_owning_rptr<ctrl_block_type> ctrlBlock_,
             _In_ const packed_type packed_
