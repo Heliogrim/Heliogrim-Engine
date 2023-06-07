@@ -180,6 +180,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.GFX.Renderer", "proj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Pedantic", "projects\Engine.Pedantic\Engine.Pedantic.vcxproj", "{B4752576-A4B8-4AD0-AFAA-13859453D9B0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.GFX.Acc", "projects\Engine.GFX.Acc\Engine.GFX.Acc.vcxproj", "{8333A07D-E717-4969-A2F5-416933B96AC1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.GFX.Material", "projects\Engine.GFX.Material\Engine.GFX.Material.vcxproj", "{2462CB7C-18E2-4E32-96E0-692141C48F9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -519,6 +523,18 @@ Global
 		{B4752576-A4B8-4AD0-AFAA-13859453D9B0}.Profile|x64.Build.0 = Profile|x64
 		{B4752576-A4B8-4AD0-AFAA-13859453D9B0}.Release|x64.ActiveCfg = Release|x64
 		{B4752576-A4B8-4AD0-AFAA-13859453D9B0}.Release|x64.Build.0 = Release|x64
+		{8333A07D-E717-4969-A2F5-416933B96AC1}.Debug|x64.ActiveCfg = Debug|x64
+		{8333A07D-E717-4969-A2F5-416933B96AC1}.Debug|x64.Build.0 = Debug|x64
+		{8333A07D-E717-4969-A2F5-416933B96AC1}.Profile|x64.ActiveCfg = Profile|x64
+		{8333A07D-E717-4969-A2F5-416933B96AC1}.Profile|x64.Build.0 = Profile|x64
+		{8333A07D-E717-4969-A2F5-416933B96AC1}.Release|x64.ActiveCfg = Release|x64
+		{8333A07D-E717-4969-A2F5-416933B96AC1}.Release|x64.Build.0 = Release|x64
+		{2462CB7C-18E2-4E32-96E0-692141C48F9E}.Debug|x64.ActiveCfg = Debug|x64
+		{2462CB7C-18E2-4E32-96E0-692141C48F9E}.Debug|x64.Build.0 = Debug|x64
+		{2462CB7C-18E2-4E32-96E0-692141C48F9E}.Profile|x64.ActiveCfg = Profile|x64
+		{2462CB7C-18E2-4E32-96E0-692141C48F9E}.Profile|x64.Build.0 = Profile|x64
+		{2462CB7C-18E2-4E32-96E0-692141C48F9E}.Release|x64.ActiveCfg = Release|x64
+		{2462CB7C-18E2-4E32-96E0-692141C48F9E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
