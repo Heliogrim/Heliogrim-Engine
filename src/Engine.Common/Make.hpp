@@ -82,7 +82,10 @@ namespace hg {
 
     template <class Ty, class... Args>
     smr<Ty> make_smr(Args&&... args_) {
-        auto* const ctrl = new SharedMemoryReferenceCtrlBlock<Ty>(new Ty(_STD forward<Args>(args_)...));
+        auto* const ctrl = new SharedMemoryReferenceCtrlBlock<Ty>(
+            // TODO: Check whether we get problems with types which differ between aggregate and list construction e.g std::vector<...>
+            new Ty { _STD forward<Args>(args_)... }
+        );
         return ctrl->acq();
     }
 }
