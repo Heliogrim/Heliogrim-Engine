@@ -178,6 +178,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor.GFX.Graphs", "projec
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.GFX.Renderer", "projects\Engine.GFX.Renderer\Engine.GFX.Renderer.vcxproj", "{596349A9-8C83-473F-8498-6B9C100C9A00}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Pedantic", "projects\Engine.Pedantic\Engine.Pedantic.vcxproj", "{B4752576-A4B8-4AD0-AFAA-13859453D9B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -511,6 +513,12 @@ Global
 		{596349A9-8C83-473F-8498-6B9C100C9A00}.Profile|x64.Build.0 = Profile|x64
 		{596349A9-8C83-473F-8498-6B9C100C9A00}.Release|x64.ActiveCfg = Release|x64
 		{596349A9-8C83-473F-8498-6B9C100C9A00}.Release|x64.Build.0 = Release|x64
+		{B4752576-A4B8-4AD0-AFAA-13859453D9B0}.Debug|x64.ActiveCfg = Debug|x64
+		{B4752576-A4B8-4AD0-AFAA-13859453D9B0}.Debug|x64.Build.0 = Debug|x64
+		{B4752576-A4B8-4AD0-AFAA-13859453D9B0}.Profile|x64.ActiveCfg = Profile|x64
+		{B4752576-A4B8-4AD0-AFAA-13859453D9B0}.Profile|x64.Build.0 = Profile|x64
+		{B4752576-A4B8-4AD0-AFAA-13859453D9B0}.Release|x64.ActiveCfg = Release|x64
+		{B4752576-A4B8-4AD0-AFAA-13859453D9B0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

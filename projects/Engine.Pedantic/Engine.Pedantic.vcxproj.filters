@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Quelldateien\Into">
+      <UniqueIdentifier>{1fea8ff5-4c3b-4fc9-8f4c-1b1897e1aa8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Into">
+      <UniqueIdentifier>{0856ea36-7749-48e6-a75c-78006cb394ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Clone">
+      <UniqueIdentifier>{568373ba-2b60-455d-adc1-8fb3a04d1382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\As">
+      <UniqueIdentifier>{01a363c6-4a74-44d6-83bd-11e85f811c8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Clone">
+      <UniqueIdentifier>{9aa93db3-35b1-4411-8d97-80683a426bef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\As">
+      <UniqueIdentifier>{2309e37a-85de-4697-a5f7-f03fd81a78eb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Pedantic\Into\Into.cpp">
+      <Filter>Quelldateien\Into</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Pedantic\Into\Into.hpp">
+      <Filter>Headerdateien\Into</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Pedantic\Clone\Clone.hpp">
+      <Filter>Headerdateien\Clone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Pedantic\As\As.hpp">
+      <Filter>Headerdateien\As</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Pedantic\Into\IntoMemberFunction.hpp">
+      <Filter>Headerdateien\Into</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Pedantic\Into\IntoSpecialization.hpp">
+      <Filter>Headerdateien\Into</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
