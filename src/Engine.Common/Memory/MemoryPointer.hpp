@@ -157,6 +157,9 @@ namespace hg {
         constexpr MemoryPointerStorage() noexcept :
             mem(nullptr) {}
 
+        constexpr MemoryPointerStorage(mem_type value_) noexcept :
+            mem(value_) {}
+
         constexpr MemoryPointerStorage(cref<this_type> other_) noexcept :
             mem(other_.mem) {}
 
@@ -211,12 +214,14 @@ namespace hg {
         }
 
     public:
-        template <typename Tx_ = Ty_> requires _STD is_move_assignable_v<Ty_> && _STD is_convertible_v<Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires
+            (not _STD is_const_v<Ty_>) && _STD is_move_assignable_v<Ty_> && _STD is_convertible_v<Tx_, Ty_>
         void store(Tx_&& value_) noexcept {
             (*mem) = _STD forward<Tx_>(value_);
         }
 
-        template <typename Tx_ = Ty_> requires _STD is_move_assignable_v<Ty_> && _STD is_convertible_v<Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires
+            (not _STD is_const_v<Ty_>) && _STD is_move_assignable_v<Ty_> && _STD is_convertible_v<Tx_, Ty_>
         bool safeStore(Tx_&& value_) noexcept {
             if (mem != nullptr) {
                 (*mem) = _STD forward<Tx_>(value_);
@@ -226,11 +231,11 @@ namespace hg {
         }
 
         template <typename Tx_ = Ty_>
-        const Tx_* const load() const noexcept {
+        const _STD remove_const_t<Tx_>* const load() const noexcept {
             return mem;
         }
 
-        template <typename Tx_ = Ty_>
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>)
         Tx_* const load() noexcept {
             return mem;
         }
@@ -320,7 +325,8 @@ namespace hg {
             return *this;
         }
 
-        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_> && _STD is_default_constructible_v<Tx_>
+        template <typename Tx_ = Ty_> requires
+            (not _STD is_const_v<Ty_>) && _STD is_same_v<Tx_, Ty_> && _STD is_default_constructible_v<Tx_>
         ref<Tx_> getOrCreate() noexcept(_STD is_nothrow_default_constructible_v<Tx_>) {
             return (*storage.template loadOrAllocate<Tx_>());
         }
@@ -331,17 +337,19 @@ namespace hg {
         }
 
     public:
-        template <typename Tx_ = Ty_>
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>)
         ref<this_type> store(Tx_&& value_) noexcept {
             storage.template store<Tx_>(_STD forward<Tx_>(value_));
             return *this;
         }
 
-        cref<Ty_> load() const noexcept {
+        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_>
+        cref<_STD remove_const_t<Tx_>> load() const noexcept {
             return *(storage.template load<Ty_>());
         }
 
-        ref<Ty_> load() noexcept {
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
+        ref<Tx_> load() noexcept {
             return *(storage.template load<Ty_>());
         }
 
@@ -356,19 +364,23 @@ namespace hg {
         }
 
     public:
-        [[nodiscard]] cref<Ty_> operator*() const noexcept {
+        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_>
+        [[nodiscard]] cref<_STD remove_const_t<Tx_>> operator*() const noexcept {
             return *(storage.template load<Ty_>());
         }
 
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
         [[nodiscard]] ref<Ty_> operator*() noexcept {
             return *(storage.template load<Ty_>());
         }
 
-        [[nodiscard]] const Ty_* const operator->() const noexcept {
+        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_>
+        [[nodiscard]] const _STD remove_const_t<Tx_>* const operator->() const noexcept {
             return storage.template load<Ty_>();
         }
 
-        [[nodiscard]] Ty_* const operator->() noexcept {
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
+        [[nodiscard]] Tx_* const operator->() noexcept {
             return storage.template load<Ty_>();
         }
 
@@ -407,6 +419,11 @@ namespace hg {
             typename StorageTx_ = StorageType_>
         constexpr NonOwningMemoryPointer(cref<MemoryPointer<Tx_, AllocType_, StorageTx_>> mp_) :
             storage(mp_.storage) {}
+
+        template <typename Tx_ = Ty_> requires
+            _STD is_nothrow_convertible_v<Tx_*, Ty_*>
+        constexpr NonOwningMemoryPointer(Tx_* value_) noexcept :
+            storage(value_) {}
 
         constexpr NonOwningMemoryPointer(cref<this_type> other_) noexcept :
             storage(other_.storage) {}
@@ -453,34 +470,40 @@ namespace hg {
         }
 
     public:
-        template <typename Tx_ = Ty_>
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>)
         ref<this_type> store(Tx_&& value_) noexcept {
             storage.template store<Tx_>(_STD forward<Tx_>(value_));
             return *this;
         }
 
-        cref<Ty_> load() const noexcept {
+        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_>
+        cref<_STD remove_const_t<Tx_>> load() const noexcept {
             return *(storage.template load<Ty_>());
         }
 
-        ref<Ty_> load() noexcept {
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
+        ref<Tx_> load() noexcept {
             return *(storage.template load<Ty_>());
         }
 
     public:
-        [[nodiscard]] cref<Ty_> operator*() const noexcept {
+        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_>
+        [[nodiscard]] cref<_STD remove_const_t<Tx_>> operator*() const noexcept {
             return *(storage.template load<Ty_>());
         }
 
-        [[nodiscard]] ref<Ty_> operator*() noexcept {
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
+        [[nodiscard]] ref<Tx_> operator*() noexcept {
             return *(storage.template load<Ty_>());
         }
 
-        [[nodiscard]] const Ty_* const operator->() const noexcept {
+        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_>
+        [[nodiscard]] const _STD remove_const_t<Tx_>* const operator->() const noexcept {
             return storage.template load<Ty_>();
         }
 
-        [[nodiscard]] Ty_* const operator->() noexcept {
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
+        [[nodiscard]] Tx_* const operator->() noexcept {
             return storage.template load<Ty_>();
         }
 
