@@ -327,6 +327,9 @@
     <ClInclude Include="..\..\src\Engine.Common\Memory\__fwd.hpp">
       <Filter>Headerdateien\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Meta\Constexpr.hpp">
+      <Filter>Headerdateien\Meta</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">
