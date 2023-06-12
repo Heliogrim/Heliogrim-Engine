@@ -5,6 +5,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.GFX.Acc/__fwd.hpp>
 
 #include "__fwd.hpp"
@@ -22,20 +23,39 @@ namespace hg::engine::gfx::material {
             mref<string> name_,
             mref<Set<smr<acc::AccelerationEffect>>> effects_,
             mref<Vector<MaterialPrototypeParameter>> parameters_
-        );
+        ) noexcept;
 
         ~MaterialPrototype();
+
+    private:
+        Guid _guid;
 
     public:
         [[nodiscard]] Guid getGuid() const noexcept;
 
-        [[nodiscard]] string getName() const noexcept;
-
-        [[nodiscard]] Set<smr<acc::AccelerationEffect>> getAccelerationEffects() const noexcept;
-
-        [[nodiscard]] cref<Vector<MaterialPrototypeParameter>> getParameters() const noexcept;
+    private:
+        string _name;
 
     public:
-        [[nodiscard]] Material instantiate() const noexcept;
+        [[nodiscard]] string getName() const noexcept;
+
+    private:
+        Set<smr<acc::AccelerationEffect>> _effects;
+
+    public:
+        [[nodiscard]] cref<Set<smr<acc::AccelerationEffect>>> getAccelerationEffects() const noexcept;
+
+    private:
+        Vector<MaterialPrototypeParameter> _parameters;
+
+    public:
+        [[nodiscard]] cref<Vector<MaterialPrototypeParameter>> getParameters() const noexcept;
+
+        bool addParameter(mref<MaterialPrototypeParameter> param_);
+
+        bool removeParameter(string_view uniqueName_);
+
+    public:
+        [[nodiscard]] smr<Material> instantiate() const noexcept;
     };
 }
