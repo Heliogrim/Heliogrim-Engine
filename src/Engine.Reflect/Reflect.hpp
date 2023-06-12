@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Heliogrim/Actor.hpp>
 #include "HeliogrimReflect.hpp"
 
 namespace hg {

@@ -30,6 +30,12 @@
     <ClInclude Include="..\..\src\Engine.Reflect\Cast.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\CompileString.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\CompileTypeId.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflect\HeliogrimReflect.cpp">
