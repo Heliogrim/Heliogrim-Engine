@@ -29,10 +29,12 @@ namespace hg {
         }
 
     public:
-        template <IsHeliogrimObject ClassType_, typename... Args_>
+        template <IsHeliogrimObject ClassType_, typename... Args_> requires
+            _STD is_constructible_v<ClassType_, Args_...>
         [[nodiscard]] static ptr<ClassType_> create(Args_&&... args_);
 
-        template <IsHeliogrimObject ClassType_, typename... Args_>
+        template <IsHeliogrimObject ClassType_, typename... Args_> requires
+            _STD is_constructible_v<ClassType_, Args_...>
         [[nodiscard]] static ptr<ClassType_> createInPlace(const ptr<void> pos_, Args_&&... args_);
 
         template <IsHeliogrimObject ClassType_>
@@ -149,8 +151,10 @@ namespace hg {
                 return obj_.getTypeId();
             }
             #ifdef _DEBUG
-            static_assert(HasStaticType<ClassType_, type_id> || HasDynamicType<ClassType_, type_id>,
-                "Failed to determine <static|dynamic> type_id while requested.");
+            static_assert(
+                HasStaticType<ClassType_, type_id> || HasDynamicType<ClassType_, type_id>,
+                "Failed to determine <static|dynamic> type_id while requested."
+            );
             #endif
             return type_id { 0ui64 };
         }
@@ -163,8 +167,10 @@ namespace hg {
                 return obj_->getTypeId();
             }
             #ifdef _DEBUG
-            static_assert(HasStaticType<ClassType_, type_id> || HasDynamicType<ClassType_, type_id>,
-                "Failed to determine <static|dynamic> type_id while requested.");
+            static_assert(
+                HasStaticType<ClassType_, type_id> || HasDynamicType<ClassType_, type_id>,
+                "Failed to determine <static|dynamic> type_id while requested."
+            );
             #endif
             return type_id { 0ui64 };
         }
@@ -205,14 +211,16 @@ namespace hg {
         void destruct(ptr<HeliogrimObject> obj_) const;
     };
 
-    template <IsHeliogrimObject ClassType_, typename... Args_>
+    template <IsHeliogrimObject ClassType_, typename... Args_> requires
+        _STD is_constructible_v<ClassType_, Args_...>
     ptr<ClassType_> HeliogrimObject::create(Args_&&... args_) {
         auto* obj { new ClassType_(_STD forward<Args_>(args_)...) };
         obj->_class = HeliogrimClass::of<ClassType_>();
         return obj;
     }
 
-    template <IsHeliogrimObject ClassType_, typename... Args_>
+    template <IsHeliogrimObject ClassType_, typename... Args_> requires
+        _STD is_constructible_v<ClassType_, Args_...>
     ptr<ClassType_> HeliogrimObject::createInPlace(const ptr<void> pos_, Args_&&... args_) {
         auto* obj { new(pos_) ClassType_(_STD forward<Args_>(args_)...) };
         obj->_class = HeliogrimClass::of<ClassType_>();
@@ -223,7 +231,8 @@ namespace hg {
     void HeliogrimClass::capture() {
 
         if constexpr (_STD is_default_constructible_v<Type_>) {
-            _rctor = reinterpret_cast<unary_fnc<ptr<HeliogrimObject>, ptr<void>>>(HeliogrimObject::createInPlace<Type_>);
+            _rctor = reinterpret_cast<unary_fnc<ptr<HeliogrimObject>, ptr<void>>>(HeliogrimObject::createInPlace<
+                Type_>);
             _rnctor = reinterpret_cast<nular_fnc<ptr<HeliogrimObject>>>(HeliogrimObject::create<Type_>);
         } else {
             _rctor = nullptr;
@@ -231,7 +240,8 @@ namespace hg {
         }
 
         if constexpr (_STD is_destructible_v<Type_>) {
-            _rdtor = reinterpret_cast<unary_fnc<void, const ptr<HeliogrimObject>>>(HeliogrimObject::destroyInPlace<Type_>);
+            _rdtor = reinterpret_cast<unary_fnc<void, const ptr<HeliogrimObject>>>(HeliogrimObject::destroyInPlace<
+                Type_>);
             _rndtor = reinterpret_cast<unary_fnc<void, mref<ptr<HeliogrimObject>>>>(HeliogrimObject::destroy<Type_>);
         } else {
             _rdtor = nullptr;
