@@ -404,3 +404,13 @@ namespace hg {
         }
     };
 }
+
+namespace std {
+    template <class Type_>
+    struct hash<::hg::SharedMemoryReference<Type_>> :
+        public ::std::hash<typename ::hg::SharedMemoryReference<Type_>::value_type*> {
+        [[nodiscard]] size_t operator()(const ::hg::SharedMemoryReference<Type_>& value_) const noexcept {
+            return static_cast<const ::std::hash<typename ::hg::SharedMemoryReference<Type_>::value_type*>&>(*this)(value_.get());
+        }
+    };
+}
