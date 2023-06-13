@@ -31,6 +31,9 @@
     <Filter Include="Quelldateien\As">
       <UniqueIdentifier>{2309e37a-85de-4697-a5f7-f03fd81a78eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Concept">
+      <UniqueIdentifier>{43c61d17-5142-48fe-a2ae-3a4d0bcade90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Pedantic\Into\Into.cpp">
@@ -50,8 +53,8 @@
     <ClInclude Include="..\..\src\Engine.Pedantic\Into\IntoMemberFunction.hpp">
       <Filter>Headerdateien\Into</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Pedantic\Into\IntoSpecialization.hpp">
-      <Filter>Headerdateien\Into</Filter>
+    <ClInclude Include="..\..\src\Engine.Pedantic\Concept\SameAs.hpp">
+      <Filter>Headerdateien\Concept</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
