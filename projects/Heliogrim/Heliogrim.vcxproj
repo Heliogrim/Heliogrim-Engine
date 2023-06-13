@@ -185,6 +185,9 @@
     <ProjectReference Include="..\Engine.Network\Engine.Network.vcxproj">
       <Project>{813c849e-7ee6-4241-ae94-a7d0a7abf9bc}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.Pedantic\Engine.Pedantic.vcxproj">
+      <Project>{b4752576-a4b8-4ad0-afaa-13859453d9b0}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.PFX\Engine.PFX.vcxproj">
       <Project>{9e26faad-2541-4e80-a913-cc87a40bb745}</Project>
     </ProjectReference>

@@ -8,55 +8,59 @@
 namespace hg {
     /**/
 
-    template <typename SubType_>
-    struct __unwrap_helper {
-        template <typename InjectType_>
-        using wrapper_type = _STD void_t<InjectType_>;
-        using substitution_type = SubType_;
-    };
+    namespace {
+        template <typename SubType_>
+        struct __unwrap_helper {
+            template <typename InjectType_>
+            using wrapper_type = _STD void_t<InjectType_>;
+            using substitution_type = SubType_;
+        };
 
-    template <template <typename...> typename ExternalType_, typename First_, typename... Args_>
-    struct __unwrap_helper<ExternalType_<First_, Args_...>> {
-        template <typename InjectType_>
-        using wrapper_type = ExternalType_<InjectType_>;
-        using substitution_type = First_;
-    };
+        template <template <typename...> typename ExternalType_, typename First_, typename... Args_>
+        struct __unwrap_helper<ExternalType_<First_, Args_...>> {
+            template <typename InjectType_>
+            using wrapper_type = ExternalType_<InjectType_>;
+            using substitution_type = First_;
+        };
 
-    template <typename SourceType_, typename TargetType_>
-    concept __ret_type = requires(SourceType_& obj_) {
-        { obj_.into() } -> _STD same_as<TargetType_>;
-    };
+        /**/
 
-    template <typename SourceType_, typename TargetType_>
-    concept __ret_template_type = requires(SourceType_& obj_) {
-        { obj_.template into<TargetType_>() };
-    };
+        template <typename SourceType_, typename TargetType_>
+        concept __ret_type = requires(SourceType_& obj_) {
+            { obj_.into() } -> _STD same_as<TargetType_>;
+        };
 
-    template <typename SourceType_, typename TargetType_>
-    struct __ret_type_helper {};
+        template <typename SourceType_, typename TargetType_>
+        concept __ret_template_type = requires(SourceType_& obj_) {
+            { obj_.template into<TargetType_>() };
+        };
 
-    template <typename SourceType_, typename TargetType_> requires __ret_type<SourceType_, TargetType_>
-    struct __ret_type_helper<SourceType_, TargetType_> {
-        using type = decltype(_STD declval<SourceType_>().into());
+        template <typename SourceType_, typename TargetType_>
+        struct __ret_type_helper {};
 
-        template <typename InjectType_>
-        using wrapper_type = _STD type_identity_t<InjectType_>;
-        using substitution_type = type;
-    };
+        template <typename SourceType_, typename TargetType_> requires __ret_type<SourceType_, TargetType_>
+        struct __ret_type_helper<SourceType_, TargetType_> {
+            using type = decltype(_STD declval<SourceType_>().into());
 
-    template <typename SourceType_, typename TargetType_> requires __ret_template_type<SourceType_, TargetType_>
-    struct __ret_type_helper<SourceType_, TargetType_> {
-        using type = decltype(_STD declval<SourceType_>().template into<TargetType_>());
+            template <typename InjectType_>
+            using wrapper_type = _STD type_identity_t<InjectType_>;
+            using substitution_type = type;
+        };
 
-        template <typename InjectType_>
-        using wrapper_type = typename __unwrap_helper<type>::template wrapper_type<InjectType_>;
-        using substitution_type = typename __unwrap_helper<type>::substitution_type;
+        template <typename SourceType_, typename TargetType_> requires __ret_template_type<SourceType_, TargetType_>
+        struct __ret_type_helper<SourceType_, TargetType_> {
+            using type = decltype(_STD declval<SourceType_>().template into<TargetType_>());
+
+            template <typename InjectType_>
+            using wrapper_type = typename __unwrap_helper<type>::template wrapper_type<InjectType_>;
+            using substitution_type = typename __unwrap_helper<type>::substitution_type;
+        };
     };
 
     /**/
 
     template <typename SourceType_> requires has_into_member_function<SourceType_, SourceType_>
-    SourceType_ into(SourceType_&& val_) {
+    [[nodiscard]] constexpr SourceType_ into(SourceType_&& val_) {
         return _STD forward<SourceType_>(val_).into();
     }
 
@@ -64,13 +68,15 @@ namespace hg {
         has_into_member_function<SourceType_, TargetType_> &&
         (not _STD is_same_v<_STD remove_cvref_t<TargetType_>, _STD remove_cvref_t<SourceType_>>) &&
         (_STD is_same_v<typename __unwrap_helper<SourceType_>::substitution_type, SourceType_>)
-    TargetType_ into(SourceType_&& val_) {
+    [[nodiscard]] constexpr TargetType_ into(SourceType_&& val_) {
         return _STD forward<SourceType_>(val_).into();
     }
 
+    /**/
+
     template <typename TargetType_, typename SourceType_, template <typename> typename TemplateType_> requires
         has_into_unwrap_template_member_function<TemplateType_, SourceType_, TargetType_>
-    TargetType_ into(TemplateType_<SourceType_>&& val_) {
+    [[nodiscard]] constexpr TargetType_ into(TemplateType_<SourceType_>&& val_) {
         return _STD forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
     }
 
@@ -78,7 +84,7 @@ namespace hg {
         has_into_boxed_template_member_function<TemplateType_, SourceType_, TargetType_> &&
         _STD is_same_v<typename __unwrap_helper<TargetType_>::substitution_type, TargetType_> &&
         _STD is_same_v<typename __unwrap_helper<SourceType_>::substitution_type, SourceType_>
-    TemplateType_<TargetType_> into(TemplateType_<SourceType_>&& val_) {
+    [[nodiscard]] constexpr TemplateType_<TargetType_> into(TemplateType_<SourceType_>&& val_) {
         return _STD forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
     }
 
@@ -88,7 +94,7 @@ namespace hg {
         template <typename> typename TemplateType_ = __ret_type_helper<SourceType_, TargetType_>::wrapper_type
     > requires has_into_wrap_template_member_function<TemplateType_, SourceType_, TargetType_> &&
         _STD is_same_v<typename __unwrap_helper<SourceType_>::substitution_type, SourceType_>
-    TemplateType_<TargetType_> into(SourceType_&& val_) {
+    [[nodiscard]] constexpr TemplateType_<TargetType_> into(SourceType_&& val_) {
         return _STD forward<SourceType_>(val_).template into<TargetType_>();
     }
 
@@ -100,7 +106,7 @@ namespace hg {
     >
         requires has_into_boxed_template_member_function<TemplateType_, SourceType_, TargetType_> &&
         (not _STD is_same_v<typename __unwrap_helper<ExternalType_>::substitution_type, ExternalType_>)
-    TemplateType_<TargetType_> into(TemplateType_<SourceType_>&& val_) {
+    [[nodiscard]] constexpr TemplateType_<TargetType_> into(TemplateType_<SourceType_>&& val_) {
         return _STD forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
     }
 
@@ -112,61 +118,11 @@ namespace hg {
     >
         requires has_into_wrap_template_member_function<TemplateType_, SourceType_, TargetType_> &&
         (not _STD is_same_v<typename __unwrap_helper<ExternalType_>::substitution_type, ExternalType_>)
-    TemplateType_<TargetType_> into(SourceType_&& val_) {
+    [[nodiscard]] constexpr TemplateType_<TargetType_> into(SourceType_&& val_) {
         return _STD forward<SourceType_>(val_).template into<TargetType_>();
     }
 
-    /*
-    // Duplicated :: @see `TemplateType_<TargetType_> into(TemplateType_<SourceType_>&& val_)`
-    template <
-        typename TargetType_,
-        typename ExternalType_,
-        typename SourceType_ = typename __unwrap_helper<ExternalType_>::substitution_type,
-        template <typename> typename TemplateType_ = __unwrap_helper<ExternalType_>::wrapper_type
-    >
-        requires has_into_boxed_template_member_function<TemplateType_, SourceType_, TargetType_> &&
-        _STD is_same_v<typename __unwrap_helper<TargetType_>::substitution_type, TargetType_> &&
-        (not _STD is_same_v<typename __unwrap_helper<ExternalType_>::substitution_type, ExternalType_>)
-    TemplateType_<TargetType_> into(ExternalType_&& val_) {
-        return _STD forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
-    }
-    */
-
-    /*
-    // Duplicated :: @see `TargetType_ into(TemplateType_<SourceType_>&& val_)`
-    template <
-        typename TargetType_,
-        typename ExternalType_,
-        typename SourceType_ = typename __unwrap_helper<ExternalType_>::substitution_type,
-        template <typename> typename TemplateType_ = __unwrap_helper<ExternalType_>::wrapper_type
-    >
-        requires has_into_unwrap_template_member_function<TemplateType_, SourceType_, TargetType_> &&
-        _STD is_same_v<typename __unwrap_helper<TargetType_>::substitution_type, TargetType_> &&
-        (not _STD is_same_v<typename __unwrap_helper<ExternalType_>::substitution_type, ExternalType_>)
-    TargetType_ into(ExternalType_&& val_) {
-        return _STD forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
-    }
-    */
-
-    /*
-    // Duplicated :: @see `TemplateType_<TargetType_> into(SourceType_&& val_)`
-    template <
-        typename TargetComposedType_,
-        typename SourceComposedType_,
-        typename TargetType_ = typename __unwrap_helper<TargetComposedType_>::substitution_type,
-        template <typename> typename TargetTemplateType_ = typename __unwrap_helper<TargetComposedType_>::wrapper_type,
-        typename SourceType_ = typename __unwrap_helper<SourceComposedType_>::substitution_type,
-        template <typename> typename SourceTemplateType_ = typename __unwrap_helper<SourceComposedType_>::wrapper_type
-    >
-        requires is_into_supported<
-            SourceTemplateType_<SourceType_>,
-            TargetTemplateType_<TargetType_>,
-            _STD type_identity_t
-        >
-    TargetTemplateType_<TargetType_> into(SourceTemplateType_<SourceType_>&& val_) {
-        return _STD forward<SourceTemplateType_<SourceType_>>(val_).into();
-    }
-    */
+    /**/
 
     template <
         typename TargetType_,
@@ -174,7 +130,7 @@ namespace hg {
         typename SourceType_ = typename __unwrap_helper<ExternalType_>::substitution_type,
         template <typename> typename TemplateType_ = __unwrap_helper<ExternalType_>::wrapper_type
     >
-    typename __ret_type_helper<TemplateType_<SourceType_>, TargetType_>::type into(
+    [[nodiscard]] constexpr typename __ret_type_helper<TemplateType_<SourceType_>, TargetType_>::type into(
         ExternalType_&& val_
     ) {
         return _STD forward<TemplateType_<SourceType_>>(val_).template into<TargetType_>();
@@ -188,7 +144,7 @@ namespace hg {
         (_STD is_unsigned_v<TargetType_> == _STD is_unsigned_v<SourceType_>) &&
         (_STD is_integral_v<TargetType_> == _STD is_integral_v<SourceType_>) &&
         (not has_into_member_function<SourceType_, TargetType_>)
-    constexpr TargetType_ into(SourceType_&& val_) {
+    [[nodiscard]] constexpr TargetType_ into(SourceType_&& val_) {
         return TargetType_ { _STD move(val_) };
     }
 
@@ -203,7 +159,7 @@ namespace hg {
             (_STD is_integral_v<TargetType_> != _STD is_integral_v<SourceType_>)
         ) &&
         (not has_into_member_function<SourceType_, TargetType_>)
-    constexpr TargetType_ into(SourceType_&& val_) {
+    [[nodiscard]] constexpr TargetType_ into(SourceType_&& val_) {
         // ReSharper disable once CppCStyleCast
         return (TargetType_)(_STD forward<SourceType_>(val_));
     }
