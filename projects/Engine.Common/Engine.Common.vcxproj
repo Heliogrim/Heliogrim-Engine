@@ -82,6 +82,8 @@
     <ClInclude Include="..\..\src\Engine.Common\Memory\allocator.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Memory\DbgMemoryStats.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Memory\MemoryPointer.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Memory\SharedPointer.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Memory\UniquePointer.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Memory\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Meta\Async.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Meta\Concept.hpp" />
@@ -115,6 +117,8 @@
     <ClCompile Include="..\..\src\Engine.Common\Math\Rotator.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Math\Transform.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Memory\DbgMemoryStats.cpp" />
+    <ClCompile Include="..\..\src\Engine.Common\Memory\SharedPointer.cpp" />
+    <ClCompile Include="..\..\src\Engine.Common\Memory\UniquePointer.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Profiler.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\Profiling\Stopwatch.cpp" />
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp" />

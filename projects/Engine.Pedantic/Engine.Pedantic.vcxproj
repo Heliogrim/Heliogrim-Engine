@@ -22,6 +22,7 @@
     <ClInclude Include="..\..\src\Engine.Pedantic\Clone\Clone.hpp" />
     <ClInclude Include="..\..\src\Engine.Pedantic\Concept\SameAs.hpp" />
     <ClInclude Include="..\..\src\Engine.Pedantic\Into\Into.hpp" />
+    <ClInclude Include="..\..\src\Engine.Pedantic\Into\IntoImpl.hpp" />
     <ClInclude Include="..\..\src\Engine.Pedantic\Into\IntoMemberFunction.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
