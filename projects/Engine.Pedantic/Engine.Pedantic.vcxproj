@@ -20,9 +20,9 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Pedantic\As\As.hpp" />
     <ClInclude Include="..\..\src\Engine.Pedantic\Clone\Clone.hpp" />
+    <ClInclude Include="..\..\src\Engine.Pedantic\Concept\SameAs.hpp" />
     <ClInclude Include="..\..\src\Engine.Pedantic\Into\Into.hpp" />
     <ClInclude Include="..\..\src\Engine.Pedantic\Into\IntoMemberFunction.hpp" />
-    <ClInclude Include="..\..\src\Engine.Pedantic\Into\IntoSpecialization.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
