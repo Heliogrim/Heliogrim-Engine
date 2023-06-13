@@ -56,5 +56,8 @@
     <ClInclude Include="..\..\src\Engine.Pedantic\Concept\SameAs.hpp">
       <Filter>Headerdateien\Concept</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Pedantic\Into\IntoImpl.hpp">
+      <Filter>Headerdateien\Into</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

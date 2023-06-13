@@ -330,6 +330,12 @@
     <ClInclude Include="..\..\src\Engine.Common\Meta\Constexpr.hpp">
       <Filter>Headerdateien\Meta</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Memory\UniquePointer.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Memory\SharedPointer.hpp">
+      <Filter>Headerdateien\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">
@@ -376,6 +382,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Common\GuidFormat.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Memory\UniquePointer.cpp">
+      <Filter>Quelldateien\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Common\Memory\SharedPointer.cpp">
+      <Filter>Quelldateien\Memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

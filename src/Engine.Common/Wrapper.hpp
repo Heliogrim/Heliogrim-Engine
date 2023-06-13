@@ -1,8 +1,10 @@
 #pragma once
 
-#include "__macro.hpp"
 #include <memory>
+#include "__macro.hpp"
 
+#include "Memory/SharedPointer.hpp"
+#include "Memory/UniquePointer.hpp"
 #include "Memory/__fwd.hpp"
 
 namespace hg {

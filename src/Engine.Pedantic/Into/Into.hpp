@@ -2,6 +2,7 @@
 
 #include <concepts>
 
+#include "IntoImpl.hpp"
 #include "IntoMemberFunction.hpp"
 #include "../Concept/SameAs.hpp"
 
@@ -23,15 +24,18 @@ namespace hg {
             using substitution_type = First_;
         };
 
+        template <typename Type_>
+        using __unwrap_substitude = typename __unwrap_helper<Type_>::substitution_type;
+
         /**/
 
         template <typename SourceType_, typename TargetType_>
-        concept __ret_type = requires(SourceType_& obj_) {
+        concept __ret_type = requires(SourceType_&& obj_) {
             { obj_.into() } -> _STD same_as<TargetType_>;
         };
 
         template <typename SourceType_, typename TargetType_>
-        concept __ret_template_type = requires(SourceType_& obj_) {
+        concept __ret_template_type = requires(SourceType_&& obj_) {
             { obj_.template into<TargetType_>() };
         };
 
@@ -59,8 +63,10 @@ namespace hg {
 
     /**/
 
-    template <typename SourceType_> requires has_into_member_function<SourceType_, SourceType_>
-    [[nodiscard]] constexpr SourceType_ into(SourceType_&& val_) {
+    template <typename TargetType_, typename SourceType_ = TargetType_> requires
+        (_STD is_same_v<_STD remove_cvref_t<SourceType_>, _STD remove_cvref_t<TargetType_>>) &&
+        has_into_member_function<SourceType_, TargetType_>
+    [[nodiscard]] constexpr TargetType_ into(SourceType_&& val_) {
         return _STD forward<SourceType_>(val_).into();
     }
 
@@ -166,13 +172,8 @@ namespace hg {
 
     /**/
 
-    template <
-        typename To_,
-        typename From_ = To_,
-        template <typename Type_, typename... Rest_> typename Template_ = _STD type_identity_t,
-        typename... Rest_
-    >
-    concept __is_into_invocable = requires(From_&& obj_) {
+    template <typename To_, typename From_, template <typename...> typename Template_, typename... Rest_>
+    concept __is_into_fwd_invocable = requires(From_&& obj_) {
             { ::hg::into<To_>(obj_) } -> not_same_as<void>;
         } || requires(From_&& obj_) {
             { ::hg::into<To_, From_>(obj_) } -> not_same_as<void>;
@@ -192,21 +193,94 @@ namespace hg {
             { ::hg::into<Template_<To_, Rest_...>, Template_<From_, Rest_...>, Template_>(obj_) } -> not_same_as<void>;
         };
 
+    /**/
+
+    template <
+        typename ExDstType_,
+        typename ExSrcType_,
+        typename TargetType_ = __unwrap_substitude<ExDstType_>,
+        typename SourceType = __unwrap_substitude<ExSrcType_>,
+        template <typename...> typename DstTemplate_ = __unwrap_helper<ExDstType_>::wrapper_type,
+        template <typename...> typename SrcTemplate_ = __unwrap_helper<ExSrcType_>::wrapper_type
+    > requires (
+        not has_into_member_function<SourceType, ExSrcType_, SrcTemplate_> &&
+        not __is_into_fwd_invocable<TargetType_, ExSrcType_, SrcTemplate_>
+    ) && has_into_impl_diff<
+        TargetType_,
+        SourceType,
+        DstTemplate_,
+        SrcTemplate_
+    >
+    [[nodiscard]] constexpr DstTemplate_<__unwrap_substitude<TargetType_>> into(ExSrcType_&& obj_) noexcept {
+        return into_impl<DstTemplate_<TargetType_>, SrcTemplate_<SourceType>> {}(
+            _STD forward<SrcTemplate_<SourceType>>(obj_)
+        );
+    }
+
+    template <
+        typename ExDstType_,
+        typename ExSrcType_,
+        typename TargetType_ = __unwrap_substitude<ExDstType_>,
+        typename SourceType = __unwrap_substitude<ExSrcType_>,
+        template <typename...> typename VoidTemplate_ = __unwrap_helper<ExDstType_>::wrapper_type,
+        template <typename...> typename Template_ = __unwrap_helper<ExSrcType_>::wrapper_type
+    > requires (
+        not has_into_member_function<SourceType, ExSrcType_, Template_> &&
+        not __is_into_fwd_invocable<TargetType_, ExSrcType_, Template_>
+    ) && has_into_impl_same<
+        TargetType_,
+        SourceType,
+        VoidTemplate_,
+        Template_
+    >
+    [[nodiscard]] constexpr Template_<__unwrap_substitude<TargetType_>> into(ExSrcType_&& obj_) noexcept {
+        return into_impl<Template_<TargetType_>, Template_<SourceType>> {}(
+            _STD forward<Template_<SourceType>>(obj_)
+        );
+    }
+
+    /**/
+
+    template <typename To_, typename From_>
+    concept __is_into_impl_invocable = has_into_impl<
+        __unwrap_substitude<To_>,
+        __unwrap_substitude<From_>,
+        __unwrap_helper<To_>::template wrapper_type,
+        __unwrap_helper<From_>::template wrapper_type
+    >;
+
     template <
         typename To_,
         typename From_ = To_,
         template <typename Type_, typename... Rest_> typename Template_ = _STD type_identity_t,
         typename... Rest_
     >
-    concept is_into_supported = __is_into_invocable<To_, From_, Template_, Rest_...> || (
+    concept __is_into_invocable = __is_into_impl_invocable<To_, From_> ||
+        __is_into_fwd_invocable<To_, From_, Template_, Rest_...>;
+
+    template <
+        typename To_,
+        typename From_ = To_,
+        template <typename Type_, typename... Rest_> typename Template_ = _STD type_identity_t,
+        typename... Rest_
+    >
+    concept is_into_supported = (
+        __is_into_impl_invocable<To_, From_>
+    ) || (
+        _STD is_same_v<typename __unwrap_helper<To_>::substitution_type, To_> &&
+        _STD is_same_v<typename __unwrap_helper<From_>::substitution_type, From_> &&
+        __is_into_invocable<To_, From_, Template_, Rest_...>
+    ) || (
         not _STD is_same_v<typename __unwrap_helper<To_>::substitution_type, To_> &&
+        _STD is_same_v<typename __unwrap_helper<From_>::substitution_type, From_> &&
         __is_into_invocable<
-            typename __unwrap_helper<To_>::substitution_type,
+            __unwrap_substitude<To_>,
             From_,
             __unwrap_helper<To_>::template wrapper_type,
             Rest_...
         >
     ) || (
+        _STD is_same_v<typename __unwrap_helper<To_>::substitution_type, To_> &&
         not _STD is_same_v<typename __unwrap_helper<From_>::substitution_type, From_> &&
         __is_into_invocable<
             To_,
