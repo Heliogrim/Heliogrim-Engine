@@ -33,7 +33,10 @@ namespace hg {
     /**/
 
     template <class Fty_, class Tty_>
-    concept IsSmrPointerCompatible = _STD is_convertible<ptr<Fty_>, ptr<Tty_>>::type::value;
+    concept IsSmrBiPointerCompatible = _STD is_convertible_v<ptr<Fty_>, ptr<Tty_>> || _STD derived_from<Tty_, Fty_>;
+
+    template <class Fty_, class Tty_>
+    concept IsSmrPointerCompatible = _STD is_convertible_v<ptr<Fty_>, ptr<Tty_>>;
 
     /**/
 
@@ -79,7 +82,8 @@ namespace hg {
             _packed(_STD exchange(other_._packed, 0)) {}
 
     protected:
-        template <class Fty_> requires IsSmrPointerCompatible<PayloadType_, Fty_>
+        template <class Fty_> requires IsSmrBiPointerCompatible<Fty_, PayloadType_> &&
+            (not IsSmrPointerCompatible<Fty_, PayloadType_>)
         explicit SharedMemoryReference(_Inout_ mref<SharedMemoryReference<Fty_>> other_) noexcept :
             _ctrlBlock(_void_cast<ctrl_block_type>(_STD exchange(other_._ctrlBlock, nullptr))),
             _packed(_STD exchange(other_._packed, 0)) {}
@@ -129,7 +133,7 @@ namespace hg {
         )
         [[nodiscard]] Pty_<Fty_> into();
 
-        template <class Fty_>
+        template <class Fty_> requires IsSmrBiPointerCompatible<PayloadType_, Fty_>
         [[nodiscard]] smr<Fty_> into() {
             return smr<Fty_> { _STD move(*this) };
         }
@@ -410,7 +414,9 @@ namespace std {
     struct hash<::hg::SharedMemoryReference<Type_>> :
         public ::std::hash<typename ::hg::SharedMemoryReference<Type_>::value_type*> {
         [[nodiscard]] size_t operator()(const ::hg::SharedMemoryReference<Type_>& value_) const noexcept {
-            return static_cast<const ::std::hash<typename ::hg::SharedMemoryReference<Type_>::value_type*>&>(*this)(value_.get());
+            return static_cast<const ::std::hash<typename ::hg::SharedMemoryReference<Type_>::value_type*>&>(*this)(
+                value_.get()
+            );
         }
     };
 }
