@@ -5,5 +5,5 @@
 #include <Engine.Common/Hash/Fnv-1a.hpp>
 
 namespace hg::engine::gfx::acc {
-    using AccelerationStageTransferToken = AssocKey<string/* TODO: hash::fnv1a */>;
+    using AccelerationStageTransferToken = AssocKey<string, hasher::fnv1a<string>>;
 }

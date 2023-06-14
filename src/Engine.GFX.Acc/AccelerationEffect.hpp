@@ -6,6 +6,11 @@
 
 #include "__fwd.hpp"
 
+#include "AccelerationStage.hpp"
+#include "AccelerationInputLayout.hpp"
+#include "AccelerationBindingLayout.hpp"
+#include "AccelerationOutputLayout.hpp"
+
 namespace hg::engine::gfx::acc {
     class AccelerationEffect {
     public:
@@ -25,11 +30,26 @@ namespace hg::engine::gfx::acc {
 
         ~AccelerationEffect();
 
+    private:
+        Guid _guid;
+
     public:
         [[nodiscard]] Guid getGuid() const noexcept;
 
+    private:
+        string _name;
+
+    public:
         [[nodiscard]] string getName() const noexcept;
 
+    private:
+        Vector<smr<AccelerationStage>> _stages;
+
+        AccelerationInputLayout _inputLayout;
+        AccelerationBindingLayout _bindingLayout;
+        AccelerationOutputLayout _outputLayout;
+
+    public:
         [[nodiscard]] cref<Vector<smr<AccelerationStage>>> getStages() const noexcept;
 
         [[nodiscard]] cref<AccelerationInputLayout> getInputLayout() const noexcept;
