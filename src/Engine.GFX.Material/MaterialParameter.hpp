@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
@@ -29,11 +30,13 @@ namespace hg::engine::gfx::material {
 
         template <typename Type_>
         typename mpts_t<Type_>::trait_type::cref_type get() const {
+            assert(_storage->getClass()->isExactType<mpts_t<Type_>>());
             return static_cast<ptr<mpts_t<Type_>>>(_storage.get())->template get<Type_>();
         }
 
         template <typename Type_>
         void set(Type_&& value_) {
+            assert(_storage->getClass()->isExactType<mpts_t<Type_>>());
             static_cast<ptr<mpts_t<Type_>>>(_storage.get())->template set<Type_>(_STD forward<Type_>(value_));
         }
     };

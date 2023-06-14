@@ -146,6 +146,9 @@
     <ProjectReference Include="..\Engine.Filesystem\Engine.Filesystem.vcxproj">
       <Project>{8d00049b-6f13-4eac-b541-78f98f2c3b81}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Acc\Engine.GFX.Acc.vcxproj">
+      <Project>{8333a07d-e717-4969-a2f5-416933b96ac1}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.Glow.3D\Engine.GFX.Glow.3D.vcxproj">
       <Project>{4f8e6e80-a58c-463c-b24a-391bfea54f9b}</Project>
     </ProjectReference>
@@ -157,6 +160,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.Loader\Engine.GFX.Loader.vcxproj">
       <Project>{54d27c3d-6106-470f-8d9c-b9d0b000efd9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Material\Engine.GFX.Material.vcxproj">
+      <Project>{2462cb7c-18e2-4e32-96e0-692141c48f9e}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.Renderer\Engine.GFX.Renderer.vcxproj">
       <Project>{596349a9-8c83-473f-8498-6b9c100c9a00}</Project>

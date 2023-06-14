@@ -24,23 +24,15 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -70,14 +62,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-    </ClCompile>
+    <ClCompile />
     <Link>
       <SubSystem>
       </SubSystem>
@@ -85,16 +70,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-    </ClCompile>
+    <ClCompile />
     <Link>
       <SubSystem>
       </SubSystem>
@@ -104,16 +80,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-    </ClCompile>
+    <ClCompile />
     <Link>
       <SubSystem>
       </SubSystem>
@@ -131,14 +98,39 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageDerivat.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageInput.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageModule.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageOutput.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageTransferDataType.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageTransferToken.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageTransferType.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\BindingLayoutAttributeDescription.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\BindingLayoutDescription.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\DataBindingMode.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\DataInputRate.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\DataOutputRate.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\InputLayoutAttributeDescription.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\InputLayoutDescription.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\OutputLayoutAttributeDescription.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\OutputLayoutDescription.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationComputePass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationGraphicsPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationMeshPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationRaytracingPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxAccelerationComputePass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxAccelerationGraphicsPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxAccelerationMeshPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxAccelerationRaytracingPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationComputePass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationGraphicsPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationMeshPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationRaytracingPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationStageDerivat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">

@@ -2,6 +2,8 @@
 
 namespace hg::engine::gfx::acc {
     enum class AccelerationStageTransferDataType {
+        eUnknown,
+        /**/
         eU8,
         eU16,
         eU32,
