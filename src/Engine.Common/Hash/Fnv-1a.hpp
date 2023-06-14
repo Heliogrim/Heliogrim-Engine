@@ -40,3 +40,12 @@ namespace hg::hash {
         return fnv1a_86(src_.data(), src_.length());
     }
 }
+
+namespace hg::hasher {
+    template <typename Type_>
+    struct fnv1a {
+        [[nodiscard]] constexpr size_t operator()(cref<Type_> val_) const noexcept {
+            return ::hg::hash::fnv1a(val_);
+        }
+    };
+}
