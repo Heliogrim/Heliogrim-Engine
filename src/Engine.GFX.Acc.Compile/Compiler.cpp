@@ -86,7 +86,7 @@ smr<const AccelerationPass> Compiler::compile(mref<smr<AccelerationEffect>> effe
 
     /* Compile module sources to finite acceleration modules */
 
-    Vector<CompiledModule> modules {};
+    Vector<uptr<CompiledModule>> modules {};
 
     for (auto&& source : sources) {
 

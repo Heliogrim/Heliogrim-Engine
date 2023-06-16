@@ -28,6 +28,15 @@
     <Filter Include="Headerdateien\Pass">
       <UniqueIdentifier>{5dfdc21d-62eb-4df0-a639-7b549df68d26}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Module">
+      <UniqueIdentifier>{093160c2-3c7d-4bf8-a23b-5179cb7ebe1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Module\Spirv">
+      <UniqueIdentifier>{b8a82d48-0f5f-4638-9892-72be67a52ee4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Pass">
+      <UniqueIdentifier>{48b49df8-3011-4fb6-bc59-d868b8cfc1fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.hpp">
@@ -69,6 +78,42 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\PassCompiler.hpp">
       <Filter>Headerdateien\Pass</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleBuilder.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\DxModuleBuilder.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleCompiler.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\DxModuleCompiler.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\Spirv\SpirvSrcLang.hpp">
+      <Filter>Headerdateien\Module\Spirv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\Spirv\SpirvDialect.hpp">
+      <Filter>Headerdateien\Module\Spirv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\Spirv\SpirvTargetVersion.hpp">
+      <Filter>Headerdateien\Module\Spirv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\Spirv\SpirvTargetClient.hpp">
+      <Filter>Headerdateien\Module\Spirv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\ModuleTargetStage.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkCompiledModule.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassBuilder.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassCompiler.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.cpp">
@@ -76,6 +121,21 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Compiler.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleBuilder.cpp">
+      <Filter>Quelldateien\Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleCompiler.cpp">
+      <Filter>Quelldateien\Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\SpirvCompiler.cpp">
+      <Filter>Quelldateien\Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassBuilder.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassCompiler.cpp">
+      <Filter>Quelldateien\Pass</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
