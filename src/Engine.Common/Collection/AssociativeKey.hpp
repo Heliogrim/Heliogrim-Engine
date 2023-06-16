@@ -14,6 +14,11 @@ namespace hg {
         using value_type = KeyType_;
 
     public:
+        template <typename KeyTx_ = KeyType_> requires _STD is_default_constructible_v<KeyTx_>
+        constexpr AssocKey() noexcept(_STD is_nothrow_default_constructible_v<KeyTx_>) :
+            hash(~0ui64),
+            value() {}
+
         constexpr AssocKey(mref<hash_type> hash_, mref<value_type> key_) :
             hash(_STD move(hash_)),
             value(_STD move(key_)) {}
@@ -78,9 +83,9 @@ namespace hg {
 }
 
 namespace std {
-    template <typename KeyType_>
-    struct hash<::hg::AssocKey<KeyType_>> {
-        [[nodiscard]] constexpr size_t operator()(::hg::cref<::hg::AssocKey<KeyType_>> obj_) const noexcept {
+    template <typename KeyType_, typename Hasher_>
+    struct hash<::hg::AssocKey<KeyType_, Hasher_>> {
+        [[nodiscard]] constexpr size_t operator()(::hg::cref<::hg::AssocKey<KeyType_, Hasher_>> obj_) const noexcept {
             return obj_.hash;
         }
     };
