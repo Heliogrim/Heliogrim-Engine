@@ -11,17 +11,13 @@ namespace hg::engine::gfx::acc {
     public:
         using this_type = AccelerationPass;
 
+    protected:
+        AccelerationPass(mref<smr<AccelerationEffect>> effect_) noexcept;
+
     public:
-        AccelerationPass() noexcept;
+        AccelerationPass(mref<this_type> other_) noexcept = delete;
 
-        AccelerationPass(
-            mref<smr<AccelerationEffect>> effect_,
-            mref<Vector<smr<AccelerationStageDerivat>>> stages_
-        ) noexcept;
-
-        AccelerationPass(mref<this_type> other_) noexcept = default;
-
-        AccelerationPass(cref<this_type> other_) = default;
+        AccelerationPass(cref<this_type> other_) = delete;
 
         virtual ~AccelerationPass();
 
