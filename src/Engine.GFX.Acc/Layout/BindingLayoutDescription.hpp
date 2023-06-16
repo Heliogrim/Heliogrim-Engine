@@ -4,6 +4,7 @@
 
 #include "BindingLayoutAttributeDescription.hpp"
 #include "DataBindingMode.hpp"
+#include "DataIoMode.hpp"
 #include "../AccelerationStageTransferDataType.hpp"
 #include "../AccelerationStageTransferToken.hpp"
 
@@ -12,7 +13,8 @@ namespace hg::engine::gfx::acc {
         AccelerationStageTransferToken token;
         AccelerationStageTransferDataType dataType { AccelerationStageTransferDataType::eUnknown };
 
-        DataBindingMode mode { DataBindingMode::eRead };
+        DataBindingMode bindingMode { DataBindingMode::eStatic };
+        DataIoMode ioMode { DataIoMode::eRead };
         Vector<BindingLayoutAttributeDescription> attributes;
     };
 }
