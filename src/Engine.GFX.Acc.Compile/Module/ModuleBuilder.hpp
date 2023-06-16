@@ -6,20 +6,20 @@
 #include "../Token/ScopedTokenStorage.hpp"
 
 namespace hg::engine::gfx::acc {
-    class ModuleBuilder {
+    class __declspec(novtable) ModuleBuilder {
     public:
         using this_type = ModuleBuilder;
 
     public:
         ModuleBuilder() noexcept = default;
 
-        ~ModuleBuilder() noexcept = default;
+        virtual ~ModuleBuilder() noexcept = default;
 
     public:
-        [[nodiscard]] ModuleSource build(
+        [[nodiscard]] virtual ModuleSource build(
             cref<smr<AccelerationPass>> targetPass_,
             cref<ScopedTokenStorage> scopedTokens_,
             cref<smr<AccelerationStageDerivat>> stage_
-        ) const;
+        ) const = 0;
     };
 }

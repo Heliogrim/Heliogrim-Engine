@@ -6,16 +6,19 @@
 #include "ModuleSource.hpp"
 
 namespace hg::engine::gfx::acc {
-    class ModuleCompiler {
+    class __declspec(novtable) ModuleCompiler {
     public:
         using this_type = ModuleCompiler;
 
     public:
         ModuleCompiler() noexcept = default;
 
-        ~ModuleCompiler() noexcept = default;
+        virtual ~ModuleCompiler() noexcept = default;
 
     public:
-        [[nodiscard]] CompiledModule compile(cref<smr<AccelerationPass>> targetPass_, mref<ModuleSource> source_) const;
+        [[nodiscard]] virtual uptr<CompiledModule> compile(
+            cref<smr<AccelerationPass>> targetPass_,
+            mref<ModuleSource> source_
+        ) const = 0;
     };
 }

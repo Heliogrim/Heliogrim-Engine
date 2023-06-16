@@ -14,7 +14,7 @@ namespace hg::engine::gfx::acc {
     public:
         AccelerationStageDerivat() noexcept;
 
-        AccelerationStageDerivat(
+    AccelerationStageDerivat(
             mref<nmpt<AccelerationStage>> owner_,
             mref<Vector<smr<AccelerationStage>>> supersedes_,
             mref<smr<AccelerationStageModule>> stageModule_,
