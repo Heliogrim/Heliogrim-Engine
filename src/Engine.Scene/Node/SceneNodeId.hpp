@@ -243,11 +243,11 @@ namespace hg::engine::scene {
     }
 
     [[nodiscard]] FORCE_INLINE SceneNodeId::operator bool() const noexcept {
-        return *this != invalid_node_id {};
+        return this->data != invalid_node_id::bit_sequence;
     }
 
     [[nodiscard]] FORCE_INLINE bool SceneNodeId::operator!() const noexcept {
-        return *this == invalid_node_id {};
+        return this->data == invalid_node_id::bit_sequence;
     }
 }
 
