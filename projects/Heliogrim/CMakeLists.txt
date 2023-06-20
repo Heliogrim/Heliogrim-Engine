@@ -11,11 +11,16 @@ set(
 		${META_PROJECT_NAME}::Engine.Core.Schedule
 		${META_PROJECT_NAME}::Engine.Env
 		${META_PROJECT_NAME}::Engine.Event
+		${META_PROJECT_NAME}::Engine.Filesystem
 		${META_PROJECT_NAME}::Engine.GFX
+		${META_PROJECT_NAME}::Engine.GFX.Acc
+		${META_PROJECT_NAME}::Engine.GFX.Acc.Compile
 		${META_PROJECT_NAME}::Engine.GFX.Glow
 		${META_PROJECT_NAME}::Engine.GFX.Glow.3D
 		${META_PROJECT_NAME}::Engine.GFX.Glow.UI
 		${META_PROJECT_NAME}::Engine.GFX.Loader
+		${META_PROJECT_NAME}::Engine.GFX.Material
+		${META_PROJECT_NAME}::Engine.GFX.Renderer
 		${META_PROJECT_NAME}::Engine.GFX.Scene
 		${META_PROJECT_NAME}::Engine.GFX.Schedule
 		${META_PROJECT_NAME}::Engine.Input
@@ -23,6 +28,7 @@ set(
 		${META_PROJECT_NAME}::Engine.IO.Dispatcher
 		${META_PROJECT_NAME}::Engine.Logging
 		${META_PROJECT_NAME}::Engine.Network
+		${META_PROJECT_NAME}::Engine.Pedantic
 		${META_PROJECT_NAME}::Engine.PFX
 		${META_PROJECT_NAME}::Engine.Platform
 		${META_PROJECT_NAME}::Engine.Reflect

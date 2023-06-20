@@ -73,7 +73,7 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
 else ()
     set(DEFAULT_LIBRARIES
             ${DEFAULT_LIBRARIES}
-	    "${META_PROJECT_LIB_DIR}/bin/freetype2/${CMAKE_BUILD_TYPE}/freetype.lib"
+	        "${META_PROJECT_LIB_DIR}/bin/freetype2/${CMAKE_BUILD_TYPE}/freetype.lib"
             "${META_PROJECT_LIB_DIR}/bin/assimp/${CMAKE_BUILD_TYPE}/assimp-vc142-mt.lib")
 endif ()
 
