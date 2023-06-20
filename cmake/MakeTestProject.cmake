@@ -12,8 +12,11 @@ function(make_test_project target link_libraries)
 
     message(STATUS "Setup library project for target `${target}`.")
 
-    __prepare_link_libs(${link_libraries} link_libraries)
     list(LENGTH link_libraries link_libraries_size)
+    if (link_libraries_size GREATER 0)
+        __prepare_link_libs(${link_libraries} link_libraries)
+        list(LENGTH link_libraries link_libraries_size)
+    endif ()
     message(STATUS "Using `${link_libraries_size}` libraries at linker.")
 
     # Discover Sources
@@ -74,7 +77,6 @@ function(make_test_project target link_libraries)
 
     # Target Health
     # Deployment
-
     set_target_properties(${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${META_PROJECT_DIST_DIR}/$<CONFIG>)
     set_target_properties(${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${META_PROJECT_DIST_DIR}/$<CONFIG>)
     set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${META_PROJECT_DIST_DIR}/$<CONFIG>)

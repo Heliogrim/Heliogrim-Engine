@@ -34,7 +34,7 @@ namespace hg::engine::gfx {
 
     /**
      * Due to the usage of forward declarations even within the templated class itself, we might need to include the external declaration of
-     *  underlying possible texture type, cause smart pointers might trigger pointer management (e.g. `virtual deleter´)
+     *  underlying possible texture type, cause smart pointers might trigger pointer management (e.g. `virtual deleter`)
      */
     template <template <typename> typename PtrType_>
     class ProxyTexture {
