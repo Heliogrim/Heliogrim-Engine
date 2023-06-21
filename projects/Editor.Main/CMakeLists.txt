@@ -96,4 +96,8 @@ target_link_options(
 
 # Target Health
 # Deployment
+set_target_properties(${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${META_PROJECT_DIST_DIR}/$<CONFIG>)
+set_target_properties(${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${META_PROJECT_DIST_DIR}/$<CONFIG>)
+set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${META_PROJECT_DIST_DIR}/$<CONFIG>)
+
 add_deploy_to_target(${target})

@@ -1,5 +1,15 @@
+workflow:
+    rules:
+        # Only protected branches
+        -   if: '$CI_COMMIT_REF_PROTECTED == "true"'
+        -   if: '$CI_COMMIT_TAG != null'
+
 variables:
     GIT_DEPTH: 0
+
+stages:
+    - build
+    - release
 
 build.windows.msvc:
     stage: build
@@ -11,7 +21,6 @@ build.windows.msvc:
     # Preparation
     before_script:
         - cmake --version
-        - cmake -E capabilities
     
     # Process
     script:
@@ -43,6 +52,12 @@ build.windows.msvc:
         #- New-Item -ItemType Junction -Path ".\dist\Profile\resources" -Target ".\resources"
         #- ln -sfrn resources dist/Release/resources
         #- New-Item -ItemType Junction -Path ".\dist\Release\resources" -Target ".\resources"
+
+    # Cleanup / Referencing
+    after_script:
+        #- CI_JOB_NAME=$CI_JOB_NAME
+        #- echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
+        - echo "JOB_build_windows_msvc_ID=$CI_JOB_ID" >> build.report.env
     
     artifacts:
         name: Heliogrim-Win-MSVC-$CI_COMMIT_REF_NAME
@@ -51,26 +66,32 @@ build.windows.msvc:
             #- dist/Release/
             #- dist/Profile/
         expire_in: 15min
+        reports:
+            dotenv: build.report.env
 
 build.linux.gcc:
     stage: build
     tags:
         - linux
-        - gcc11
-        - vulkan
         - amd64
     
     # Preparation
     before_script:
+        # Prepare Commands
+        - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install make -y; }
+        - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; sudo apt-get install cmake -y; }
+        - command -v g++ 2>&1 || { echo >&2 "Required unavailable command g++, try to recover."; sudo apt-get install build-essential -y; }
+        # Check Versions
         - cmake --version
-        - cmake -E capabilities
     
     # Process
     script:
         # Building
 
+        # Generator: Makefiles ~ '-A x64' by default
+
         # CMake - Debug
-        - cmake -S . -B build/Debug -A x64 -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Debug
+        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=/usr/bin/gcc -D CMAKE_CXX_COMPILER=/usr/bin/g++ -D CMAKE_BUILD_TYPE=Debug
         - cmake --build build/Debug -t Game --clean-first
 
         # CMake - Profile
@@ -82,6 +103,11 @@ build.linux.gcc:
         #- cmake --build build/Release -t Game --clean-first
 
         # Linking Resources
+
+    # Cleanup / Referencing
+    after_script:
+        - CI_JOB_NAME=$CI_JOB_NAME
+        - echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
     
     artifacts:
         name: Heliogrim-Unix-GCC-$CI_COMMIT_REF_NAME
@@ -90,26 +116,37 @@ build.linux.gcc:
             #- dist/Release/
             #- dist/Profile/
         expire_in: 15min
+        reports:
+            dotenv: build.report.env
 
 build.linux.clang:
     stage: build
     tags:
         - linux
-        - clang13
-        - vulkan
         - amd64
     
     # Preparation
     before_script:
+        # Prepare Commands
+        - command -v make 2>&1 || { echo >&2 "Required unavailable command make, try to recover."; sudo apt-get install make -y; }
+        - command -v cmake 2>&1 || { echo >&2 "Required unavailable command cmake, try to recover."; sudo apt-get install cmake -y; }
+        - |-
+            command -v clang 2>&1 || {
+                echo >&2 "Required unavailable command clang, try to recover."
+                sudo apt-get install lsb-release wget software-properties-common gnupg -y
+                sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+            }
+        # Check Versions
         - cmake --version
-        - cmake -E capabilities
     
     # Process
     script:
         # Building
 
+        # Generator: Makefiles ~ '-A x64' by default
+
         # CMake - Debug
-        - cmake -S . -B build/Debug -A x64 -D CMAKE_C_COMPILER=/usr/bin/clang -D CMAKE_CXX_COMPILER=/usr/bin/clang++ -D CMAKE_BUILD_TYPE=Debug
+        - cmake -S . -B build/Debug -D CMAKE_C_COMPILER=/usr/bin/clang-16 -D CMAKE_CXX_COMPILER=/usr/bin/clang++-16 -D CMAKE_BUILD_TYPE=Debug
         - cmake --build build/Debug -t Game --clean-first
 
         # CMake - Profile
@@ -121,6 +158,11 @@ build.linux.clang:
         #- cmake --build build/Release -t Game --clean-first
 
         # Linking Resources
+
+    # Cleanup / Referencing
+    after_script:
+        - CI_JOB_NAME=$CI_JOB_NAME
+        - echo "JOB_${CI_JOB_NAME//./_}_ID=$CI_JOB_ID" >> build.report.env
     
     artifacts:
         name: Heliogrim-Unix-Clang-$CI_COMMIT_REF_NAME
@@ -129,6 +171,8 @@ build.linux.clang:
             #- dist/Release/
             #- dist/Profile/
         expire_in: 15min
+        reports:
+            dotenv: build.report.env
 
 #test:
 #    stage: test
@@ -139,3 +183,45 @@ build.linux.clang:
 #    stage: deploy
 #    script:
 #        - echo "Deploy"
+
+release:
+    stage: release
+    tags:
+        - linux
+        - amd64
+    rules:
+        -   if: '$CI_COMMIT_TAG != null'
+    needs:
+        -   job: build.linux.gcc
+            artifacts: true
+        -   job: build.linux.clang
+            artifacts: true
+        -   job: build.windows.msvc
+            artifacts: true
+    before_script:
+        # Prepare Commands
+        - |-
+            command -v release-cli 2>&1 || {
+                echo >&2 "Required unavailable command release-cli, try to recover."
+                wget https://go.dev/dl/go1.20.5.linux-amd64.tar.gz
+                sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.5.linux-amd64.tar.gz
+                export PATH=$PATH:/usr/local/go/bin
+                source ~/.bashrc
+                sudo curl --location --output /usr/local/bin/release-cli "https://gitlab.com/api/v4/projects/gitlab-org%2Frelease-cli/packages/generic/release-cli/latest/release-cli-linux-amd64"
+                sudo chmod +x /usr/local/bin/release-cli
+                source ~/.bashrc
+            }
+    script:
+        - echo "Release '$CI_COMMIT_TAG' using jobs '$JOB_build_linux_gcc_ID', '$JOB_build_linux_clang_ID', '$JOB_build_windows_msvc_ID'"
+    release:
+        tag_name: '$CI_COMMIT_TAG'
+        name: "Release '$CI_COMMIT_TAG'"
+        description: 'CI automatic tagged release.'
+        assets:
+            links:
+                -   name: "Linux GCC Build"
+                    url: 'https://git.neogc.net/root/cpp-ci-cd-test/-/jobs/$JOB_build_linux_gcc_ID/artifacts/download'
+                -   name: "Linux Clang Build"
+                    url: 'https://git.neogc.net/root/cpp-ci-cd-test/-/jobs/$JOB_build_linux_clang_ID/artifacts/download'
+                -   name: "Windows MSVC Build"
+                    url: 'https://git.neogc.net/root/cpp-ci-cd-test/-/jobs/$JOB_build_windows_msvc_ID/artifacts/download'

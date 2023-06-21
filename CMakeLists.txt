@@ -1,4 +1,18 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.24)
+
+message(STATUS "------------------------------------------------------------------")
+message(STATUS "                                                                  ")
+message(STATUS "             __  __     ___                  _                    ")
+message(STATUS "            / / / /__  / (_)___  ____ ______(_)___ ___            ")
+message(STATUS "           / /_/ / _ \\/ / / __ \\/ __ `/ ___/ / __ `__ \           ")
+message(STATUS "          / __  /  __/ / / /_/ / /_/ / /  / / / / / / /           ")
+message(STATUS "         /_/ /_/\\___/_/_/\\____/\\__, /_/  /_/_/ /_/ /_/            ")
+message(STATUS "                              /____/                              ")
+message(STATUS "                                                                  ")
+message(STATUS "------------------------------------------------------------------")
+message(STATUS "| License: Private                                               |")
+message(STATUS "| Url: https://git.neogc.net/heliogrim-workgroup/engine          |")
+message(STATUS "------------------------------------------------------------------")
 
 # CMake Tools
 include(cmake/Tools.cmake)
@@ -31,23 +45,6 @@ set(IDE_FOLDER "")
 project(${META_PROJECT_NAME} VERSION 1.0)
 
 # Project Directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${META_PROJECT_DIST_DIR}/Debug")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${META_PROJECT_DIST_DIR}/Debug")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${META_PROJECT_DIST_DIR}/Debug")
-set(CMAKE_PDB_OUTPUT_DIRECTORY_DEBUG "${META_PROJECT_DIST_DIR}/Debug")
-set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY_DEBUG "${META_PROJECT_DIST_DIR}/Debug")
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${META_PROJECT_DIST_DIR}/Release")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${META_PROJECT_DIST_DIR}/Release")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${META_PROJECT_DIST_DIR}/Release")
-set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE "${META_PROJECT_DIST_DIR}/Release")
-set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY_RELEASE "${META_PROJECT_DIST_DIR}/Release")
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_PROFILE "${META_PROJECT_DIST_DIR}/Profile")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_PROFILE "${META_PROJECT_DIST_DIR}/Profile")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_PROFILE "${META_PROJECT_DIST_DIR}/Profile")
-set(CMAKE_PDB_OUTPUT_DIRECTORY_PROFILE "${META_PROJECT_DIST_DIR}/Profile")
-set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY_PROFILE "${META_PROJECT_DIST_DIR}/Profile")
 
 # Tools
 enable_cppcheck(OFF)
@@ -66,7 +63,7 @@ list_directories("libraries" "${META_PROJECT_SUB_DIR}")
 set(tests ${libraries})
 
 list(FILTER libraries EXCLUDE REGEX "\\.Test")
-list(FILTER libraries EXCLUDE REGEX "Game([^/]+)")
+list(FILTER libraries EXCLUDE REGEX "(\\.Main)|(Main$)")
 list(FILTER tests INCLUDE REGEX "\\.Test")
 
 foreach (lib IN LISTS libraries tests)
@@ -74,4 +71,5 @@ foreach (lib IN LISTS libraries tests)
     add_subdirectory(${lib})
 endforeach ()
 
+add_subdirectory("${META_PROJECT_SUB_DIR}/Editor.Main")
 add_subdirectory("${META_PROJECT_SUB_DIR}/Game.Main")
