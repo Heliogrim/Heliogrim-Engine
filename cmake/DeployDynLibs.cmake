@@ -18,6 +18,12 @@ function(add_deploy_to_target target)
     endif ()
 
     file(GLOB_RECURSE deployable ${META_PROJECT_LIB_DIR}/bin/**/${CMAKE_BUILD_TYPE}/*.dll)
+    list(LENGTH deployable deployable_size)
+
+    if (deployable_size LESS_EQUAL 0)
+        message(STATUS "Exit dynamic lib deployment, cause there are none.")
+        return()
+    endif ()
 
     add_custom_command(
             TARGET ${target}
