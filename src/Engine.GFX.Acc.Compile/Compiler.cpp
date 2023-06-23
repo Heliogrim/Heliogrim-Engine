@@ -94,7 +94,7 @@ smr<const AccelerationPass> Compiler::compile(mref<smr<AccelerationEffect>> effe
 
     /* Build module sources out of the scoped stages */
 
-    Vector<ModuleSource> sources {};
+    Vector<uptr<ModuleSource>> sources {};
 
     for (const auto& stageDerivat : stages) {
 

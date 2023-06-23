@@ -7,6 +7,7 @@
 #include <Engine.GFX/Device/Device.hpp>
 
 #include "VkCompiledModule.hpp"
+#include "VkModuleSource.hpp"
 
 using namespace hg::engine::gfx::acc;
 using namespace hg;
@@ -15,19 +16,21 @@ VkModuleCompiler::~VkModuleCompiler() noexcept = default;
 
 uptr<CompiledModule> VkModuleCompiler::compile(
     cref<smr<AccelerationPass>> targetPass_,
-    mref<ModuleSource> source_
+    mref<uptr<ModuleSource>> source_
 ) const {
+
+    auto* const source = static_cast<const ptr<VkModuleSource>>(source_.get());
 
     /* Assert module source and sanitize */
 
-    if (source_.targetStage <= ModuleTargetStage::eUndefined || source_.targetStage > ModuleTargetStage::eMesh) {
+    if (source->targetStage <= ModuleTargetStage::eUndefined || source->targetStage > ModuleTargetStage::eMesh) {
         return nullptr;
     }
 
     /* Fetch source code and transpile into spirv */
 
-    const auto& sourceCode = source_.sourceCode;
-    auto byteCode = _spirvCompiler.compile(source_, sourceCode);
+    const auto& sourceCode = source->sourceCode;
+    auto byteCode = _spirvCompiler.compile(*source, sourceCode);
 
     /**/
 
@@ -40,11 +43,15 @@ uptr<CompiledModule> VkModuleCompiler::compile(
     sptr<Device> device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
     vk::ShaderModuleCreateInfo smci {
-        vk::ShaderModuleCreateFlags {}, byteCode.size() * sizeof(SpirvWord), reinterpret_cast<u32*>(byteCode.data()), nullptr
+        vk::ShaderModuleCreateFlags {}, byteCode.size() * sizeof(SpirvWord), reinterpret_cast<u32*>(byteCode.data()),
+        nullptr
     };
     const auto vkModule = device->vkDevice().createShaderModule(smci);
 
     /**/
 
-    return make_uptr<VkCompiledModule>(reinterpret_cast<_::VkShaderModule>(vkModule.operator VkShaderModule()));
+    return make_uptr<VkCompiledModule>(
+        reinterpret_cast<_::VkShaderModule>(vkModule.operator VkShaderModule()),
+        _STD move(source->mappedLocations)
+    );
 }

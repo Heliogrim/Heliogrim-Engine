@@ -7,16 +7,16 @@ AccelerationEffect::AccelerationEffect(
     mref<Guid> guid_,
     mref<string> name_,
     mref<Vector<smr<AccelerationStage>>> stages_,
-    mref<AccelerationInputLayout> inputLayout_,
-    mref<AccelerationBindingLayout> bindingLayout_,
-    mref<AccelerationOutputLayout> outputLayout_
+    mref<AccelerationEffectInputs> inputs_,
+    mref<AccelerationEffectBindings> bindings_,
+    mref<AccelerationEffectOutputs> outputs_
 ) :
     _guid(_STD move(guid_)),
     _name(_STD move(name_)),
     _stages(_STD move(stages_)),
-    _inputLayout(_STD move(inputLayout_)),
-    _bindingLayout(_STD move(bindingLayout_)),
-    _outputLayout(_STD move(outputLayout_)) {}
+    _inputs(_STD move(inputs_)),
+    _bindings(_STD move(bindings_)),
+    _outputs(_STD move(outputs_)) {}
 
 AccelerationEffect::~AccelerationEffect() = default;
 
@@ -32,14 +32,14 @@ cref<Vector<smr<AccelerationStage>>> AccelerationEffect::getStages() const noexc
     return _stages;
 }
 
-cref<AccelerationInputLayout> AccelerationEffect::getInputLayout() const noexcept {
-    return _inputLayout;
+cref<AccelerationEffectInputs> AccelerationEffect::getInputLayout() const noexcept {
+    return _inputs;
 }
 
-cref<AccelerationBindingLayout> AccelerationEffect::getBindingLayout() const noexcept {
-    return _bindingLayout;
+cref<AccelerationEffectBindings> AccelerationEffect::getBindingLayout() const noexcept {
+    return _bindings;
 }
 
-cref<AccelerationOutputLayout> AccelerationEffect::getOutputLayout() const noexcept {
-    return _outputLayout;
+cref<AccelerationEffectOutputs> AccelerationEffect::getOutputLayout() const noexcept {
+    return _outputs;
 }

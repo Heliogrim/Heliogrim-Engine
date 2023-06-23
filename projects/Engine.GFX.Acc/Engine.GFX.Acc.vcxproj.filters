@@ -22,6 +22,12 @@
     <Filter Include="Quelldateien\Pass">
       <UniqueIdentifier>{de25ce12-7532-4e19-9563-9711bcc2232c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Effect">
+      <UniqueIdentifier>{39032614-a695-4c68-9ed6-3fbc76453150}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Pass\Layout">
+      <UniqueIdentifier>{c862a59e-cdb7-4ff3-ac76-c2ffc86ffda5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.hpp">
@@ -33,13 +39,13 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStage.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationInputLayout.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationEffectInputs.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationBindingLayout.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationEffectBindings.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationOutputLayout.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationEffectOutputs.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageInput.hpp">
@@ -102,44 +108,50 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxAccelerationRaytracingPass.hpp">
       <Filter>Headerdateien\Pass</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\DataInputRate.hpp">
-      <Filter>Headerdateien\Layout</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\DataOutputRate.hpp">
-      <Filter>Headerdateien\Layout</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\InputLayoutDescription.hpp">
-      <Filter>Headerdateien\Layout</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\InputLayoutAttributeDescription.hpp">
-      <Filter>Headerdateien\Layout</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\OutputLayoutDescription.hpp">
-      <Filter>Headerdateien\Layout</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\OutputLayoutAttributeDescription.hpp">
-      <Filter>Headerdateien\Layout</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\BindingLayoutDescription.hpp">
-      <Filter>Headerdateien\Layout</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\BindingLayoutAttributeDescription.hpp">
-      <Filter>Headerdateien\Layout</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\DataBindingMode.hpp">
-      <Filter>Headerdateien\Layout</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageModule.hpp">
       <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\DataIoMode.hpp">
-      <Filter>Headerdateien\Layout</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationGraphicsSpec.hpp">
       <Filter>Headerdateien\Pass</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationSpecification.hpp">
       <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\Layout\AccelerationPassBindings.hpp">
+      <Filter>Headerdateien\Pass\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\Layout\AccelerationBindingLayout.hpp">
+      <Filter>Headerdateien\Pass\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Effect\BindingLayoutAttributeDescription.hpp">
+      <Filter>Headerdateien\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Effect\BindingLayoutDescription.hpp">
+      <Filter>Headerdateien\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Effect\InputLayoutAttributeDescription.hpp">
+      <Filter>Headerdateien\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Effect\InputLayoutDescription.hpp">
+      <Filter>Headerdateien\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Effect\OutputLayoutAttributeDescription.hpp">
+      <Filter>Headerdateien\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Effect\OutputLayoutDescription.hpp">
+      <Filter>Headerdateien\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\DataBindingMode.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\DataInputRate.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\DataIoMode.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\DataOutputRate.hpp">
+      <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -155,13 +167,13 @@
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationPass.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationInputLayout.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffectInputs.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationBindingLayout.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffectBindings.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationOutputLayout.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffectOutputs.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationGraphicsPass.cpp">

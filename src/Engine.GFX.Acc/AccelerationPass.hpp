@@ -6,6 +6,7 @@
 #include <Engine.Reflect/HeliogrimReflect.hpp>
 
 #include "__fwd.hpp"
+#include "Pass/Layout/AccelerationPassBindings.hpp"
 
 namespace hg::engine::gfx::acc {
     class AccelerationPass :
@@ -31,5 +32,13 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] smr<AccelerationEffect> getEffect() const noexcept;
 
         [[nodiscard]] cref<Vector<smr<AccelerationStageDerivat>>> getStageDerivates() const noexcept;
+
+    protected:
+        AccelerationPassBindings _bindings;
+
+    public:
+        [[nodiscard]] cref<AccelerationPassBindings> getPassBindings() const noexcept;
+
+        void setPassBindings(mref<AccelerationPassBindings> bindings_);
     };
 }

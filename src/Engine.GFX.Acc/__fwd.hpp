@@ -5,9 +5,9 @@ namespace hg::engine::gfx::acc {
     class AccelerationPass;
     class AccelerationStage;
     class AccelerationStageDerivat;
-    class AccelerationInputLayout;
-    class AccelerationBindingLayout;
-    class AccelerationOutputLayout;
+    class AccelerationEffectInputs;
+    class AccelerationEffectBindings;
+    class AccelerationEffectOutputs;
     class AccelerationStageModule;
     struct AccelerationStageInput;
     struct AccelerationStageOutput;

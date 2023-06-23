@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Engine.GFX.Acc/Layout/InputLayoutDescription.hpp>
-#include <Engine.GFX.Acc/Layout/BindingLayoutDescription.hpp>
-#include <Engine.GFX.Acc/Layout/OutputLayoutDescription.hpp>
+#include <Engine.GFX.Acc/Effect/InputLayoutDescription.hpp>
+#include <Engine.GFX.Acc/Effect/BindingLayoutDescription.hpp>
+#include <Engine.GFX.Acc/Effect/OutputLayoutDescription.hpp>
 #include <Engine.GFX.Acc/AccelerationStageInput.hpp>
 #include <Engine.GFX.Acc/AccelerationStageOutput.hpp>
 
@@ -42,5 +42,8 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] Token generate(cref<AccelerationStageInput> asi_) const;
 
         [[nodiscard]] Token generate(cref<AccelerationStageOutput> aso_) const;
+
+    public:
+        [[nodiscard]] Token transformAccStageOut(cref<Token> src_, bool forwarding, bool dynamic) const;
     };
 }

@@ -1,9 +1,9 @@
-#include "AccelerationBindingLayout.hpp"
+#include "AccelerationEffectBindings.hpp"
 
 using namespace hg::engine::gfx::acc;
 using namespace hg;
 
-void AccelerationBindingLayout::addDescription(cref<BindingLayoutDescription> description_) {
+void AccelerationEffectBindings::addDescription(cref<BindingLayoutDescription> description_) {
 
     for (const auto& entry : _descriptions) {
         if (entry.token == description_.token) {
@@ -14,6 +14,6 @@ void AccelerationBindingLayout::addDescription(cref<BindingLayoutDescription> de
     _descriptions.push_back(description_);
 }
 
-cref<Vector<BindingLayoutDescription>> AccelerationBindingLayout::getDescriptions() const noexcept {
+cref<Vector<BindingLayoutDescription>> AccelerationEffectBindings::getDescriptions() const noexcept {
     return _descriptions;
 }

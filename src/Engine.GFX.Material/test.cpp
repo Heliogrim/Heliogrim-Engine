@@ -1,8 +1,5 @@
 #include <Engine.GFX.Acc/AccelerationEffect.hpp>
 #include <Engine.GFX.Acc/AccelerationStage.hpp>
-#include <Engine.GFX.Acc/AccelerationInputLayout.hpp>
-#include <Engine.GFX.Acc/AccelerationBindingLayout.hpp>
-#include <Engine.GFX.Acc/AccelerationOutputLayout.hpp>
 #include <Engine.GFX.Acc/__fwd.hpp>
 
 #include "Material.hpp"

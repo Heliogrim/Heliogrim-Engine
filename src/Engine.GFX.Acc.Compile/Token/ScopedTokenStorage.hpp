@@ -18,5 +18,14 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] bool hasToken(cref<Token> token_) const noexcept;
 
         void removeToken(cref<Token> token_);
+
+    public:
+        [[nodiscard]] auto begin() {
+            return _tokens.begin();
+        }
+
+        [[nodiscard]] auto end() {
+            return _tokens.end();
+        }
     };
 }

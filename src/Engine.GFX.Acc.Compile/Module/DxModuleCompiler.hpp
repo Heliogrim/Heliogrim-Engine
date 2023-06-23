@@ -15,7 +15,7 @@ namespace hg::engine::gfx::acc {
     public:
         [[nodiscard]] uptr<CompiledModule> compile(
             cref<smr<AccelerationPass>> targetPass_,
-            mref<ModuleSource> source_
+            mref<uptr<ModuleSource>> source_
         ) const override;
     };
 }

@@ -1,26 +1,26 @@
 #include "VkPassCompiler.hpp"
 
 #include <ranges>
-#include <Engine.Common/__macro.hpp>
-#include <Engine.Logging/Logger.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX.Acc/AccelerationEffect.hpp>
 #include <Engine.GFX.Acc/AccelerationStageDerivat.hpp>
+#include <Engine.GFX.Acc/AccelerationStageModule.hpp>
 #include <Engine.GFX/Graphics.hpp>
+#include <Engine.GFX.Acc/Pass/AccelerationGraphicsSpec.hpp>
 #include <Engine.GFX.Acc/Pass/VkAccelerationComputePass.hpp>
 #include <Engine.GFX.Acc/Pass/VkAccelerationGraphicsPass.hpp>
 #include <Engine.GFX.Acc/Pass/VkAccelerationMeshPass.hpp>
 #include <Engine.GFX.Acc/Pass/VkAccelerationRaytracingPass.hpp>
-#include <Engine.GFX.Acc/AccelerationStageModule.hpp>
+#include <Engine.GFX/Geometry/Vertex.hpp>
+#include <Engine.Logging/Logger.hpp>
 
-#include <Engine.GFX/VkFixedPipeline.hpp>
-#include <Engine.GFX.Acc/Pass/AccelerationGraphicsSpec.hpp>
-
-#include "../Module/VkCompiledModule.hpp"
 #include "../VkApi.hpp"
+#include "../Module/VkCompiledModule.hpp"
+#include "Engine.GFX.Acc.Compile/Token/Tokenizer.hpp"
 
 using namespace hg::engine::gfx::acc;
 using namespace hg;
@@ -37,7 +37,7 @@ Vector<smr<AccelerationStageDerivat>> VkPassCompiler::hydrateStages(
     const auto size = stages_.size();
     for (size_t idx = 0; idx < size; ++idx) {
 
-        auto stage = _STD move(stages_[idx]);
+        const auto& stage = stages_[idx];
         auto compModule = _STD move(modules_[idx]);
 
         /* Build acceleration stage module from compiler module */
@@ -135,6 +135,10 @@ bool VkPassCompiler::hasStencilBinding(cref<smr<AccelerationStageDerivat>> stage
     return false;
 }
 
+s32 VkPassCompiler::querySpecVertexBindingLocation(cref<AccelerationStageTransferToken> token_) const noexcept {
+    return -1i32;
+}
+
 template <typename Type_>
 smr<const AccelerationPass> VkPassCompiler::compileTypeSpec(
     mref<smr<AccelerationPass>> pass_,
@@ -214,9 +218,9 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
 
     // TODO: Check where to get the specification
     AccelerationGraphicsSpec spec {};
+    Tokenizer tokenizer {};
 
     const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
-    auto pipe = make_uptr<VkFixedPipeline>(device, nullptr);
 
     /**/
 
@@ -259,36 +263,70 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
 
     Vector<vk::PipelineColorBlendAttachmentState> colorBlendStates {};
 
+    const auto& outStage = pass_->getStageDerivates().back();
+    assert(outStage->getFlagBits() == AccelerationStageFlagBits::eFragment);
+
     for (const auto& description : pass_->getEffect()->getOutputLayout().getDescriptions()) {
 
-        description.token;
-        description.rate;
-        description.attributes;
-        description.attributes.front().token;
-        description.attributes.front().offset;
-        description.attributes.front().size;
+        const auto& descToken = description.token;
+        const auto searchToken = tokenizer.transformAccStageOut(descToken, true, true);
 
-    }
+        const auto& stageOuts = outStage->getStageOutputs();
+        const auto it = _STD ranges::find_if(
+            stageOuts,
+            [&searchToken](cref<AccelerationStageOutput> output_) {
 
-    const auto& outputStates = pass_->getStageDerivates().back()->getStageOutputs();
-    for (const auto& output : outputStates) {
+                if (output_.token != searchToken) {
+                    return false;
+                }
 
-        if (output.dataType >= AccelerationStageTransferDataType::eConstant &&
-            output.dataType <= AccelerationStageTransferDataType::eSampler) {
-            IM_CORE_WARNF(
-                "Found forwarding output state `{}` with invalid data type `{}`.",
-                output.token.value,
-                static_cast<_STD underlying_type_t<AccelerationStageTransferDataType>>(output.dataType)
-            );
+                if (output_.transferType != AccelerationStageTransferType::eForward) {
+                    IM_CORE_ERRORF(
+                        "Found effect output token `{}` within last stage, but failed to validate transfer type. `eForward` required, got `eBinding`...",
+                        output_.token.value
+                    );
+                    assert(false);
+                }
+
+                return true;
+            }
+        );
+
+        /**/
+
+        if (it == stageOuts.end()) {
+            IM_CORE_ERRORF("Failed to find matching output token for `{}` within last stage.", searchToken.value);
+            continue;
         }
 
-        if (output.token.value == "$depth") {
+        /**/
+
+        const auto& stageOut = *it;
+
+        if (stageOut.dataType >= AccelerationStageTransferDataType::eConstant &&
+            stageOut.dataType <= AccelerationStageTransferDataType::eSampler) {
+            IM_CORE_ERRORF(
+                "Found forwarding output state `{}` with invalid data type `{}`.",
+                stageOut.token.value,
+                static_cast<_STD underlying_type_t<AccelerationStageTransferDataType>>(stageOut.dataType)
+            );
+            continue;
+        }
+
+        if (stageOut.token.value == "$depth") {
             IM_CORE_ERROR("Found depth token as forward output state while resolving blendings.");
             __debugbreak();
         }
 
         constexpr vk::PipelineColorBlendAttachmentState blend { VK_FALSE };
         colorBlendStates.push_back(blend);
+
+        // description.token;
+        // description.rate;
+        // description.attributes;
+        // description.attributes.front().token;
+        // description.attributes.front().offset;
+        // description.attributes.front().size;
     }
 
     pcbsci.logicOpEnable = VK_FALSE;
@@ -412,23 +450,6 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
 
     Vector<vk::VertexInputBindingDescription> vertexBindings {};
     Vector<vk::VertexInputAttributeDescription> vertexAttributes {};
-
-    vertexBindings.push_back(
-        {
-            0ui32,
-            sizeof(0ui32),
-            vk::VertexInputRate::eVertex
-        }
-    );
-
-    vertexAttributes.push_back(
-        {
-            0ui32,
-            0ui32,
-            vk::Format::eUndefined,
-            /* offsetof(0, 0) */0
-        }
-    );
 
     const auto& vertexStage = pass_->getStageDerivates().front();
     const auto& vertexModule = vertexStage->getStageModule();

@@ -8,8 +8,12 @@
 using namespace hg::engine::gfx::acc;
 using namespace hg;
 
-VkCompiledModule::VkCompiledModule(mref<_::VkShaderModule> shaderModule_) noexcept :
-    shaderModule(_STD move(shaderModule_)) {}
+VkCompiledModule::VkCompiledModule(
+    mref<_::VkShaderModule> shaderModule_,
+    mref<DenseMap<AccelerationStageTransferToken, VkBindingLocation>> mapping_
+) noexcept :
+    shaderModule(_STD move(shaderModule_)),
+    _mappedLocations(_STD move(mapping_)) {}
 
 VkCompiledModule::~VkCompiledModule() {
 

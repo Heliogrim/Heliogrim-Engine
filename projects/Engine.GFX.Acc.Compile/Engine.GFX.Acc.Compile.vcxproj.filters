@@ -132,6 +132,12 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\VkApi.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkBindingLocation.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleSource.hpp">
+      <Filter>Headerdateien\Module</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.cpp">

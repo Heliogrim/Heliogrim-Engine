@@ -1,10 +1,10 @@
 #pragma once
-#include "Layout/OutputLayoutDescription.hpp"
+#include "Effect/OutputLayoutDescription.hpp"
 
 namespace hg::engine::gfx::acc {
-    class AccelerationOutputLayout {
+    class AccelerationEffectOutputs {
     public:
-        using this_type = AccelerationOutputLayout;
+        using this_type = AccelerationEffectOutputs;
 
     private:
         Vector<OutputLayoutDescription> _descriptions;

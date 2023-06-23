@@ -1,8 +1,5 @@
 #include <Engine.GFX.Acc/AccelerationEffect.hpp>
 #include <Engine.GFX.Acc/AccelerationStage.hpp>
-#include <Engine.GFX.Acc/AccelerationInputLayout.hpp>
-#include <Engine.GFX.Acc/AccelerationBindingLayout.hpp>
-#include <Engine.GFX.Acc/AccelerationOutputLayout.hpp>
 #include <Engine.GFX.Acc/AccelerationStageOutput.hpp>
 #include <Engine.GFX.Acc/AccelerationStageInput.hpp>
 #include <Engine.GFX.Acc/__fwd.hpp>
@@ -50,11 +47,13 @@ void test_brdf_material() {
                 AccelerationStageInput {
                     .transferType = AccelerationStageTransferType::eBinding,
                     .dataType = AccelerationStageTransferDataType::eUniform,
+                    .bindingMode = DataBindingMode::eDynamic,
                     .token = AccelerationStageTransferToken::from("camera")
                 },
                 AccelerationStageInput {
                     .transferType = AccelerationStageTransferType::eBinding,
                     .dataType = AccelerationStageTransferDataType::eUniform,
+                    .bindingMode = DataBindingMode::eDynamic,
                     .token = AccelerationStageTransferToken::from("model")
                 }
             },
@@ -101,16 +100,19 @@ void test_brdf_material() {
                 AccelerationStageInput {
                     .transferType = AccelerationStageTransferType::eBinding,
                     .dataType = AccelerationStageTransferDataType::eSampler,
+                    .bindingMode = DataBindingMode::eStatic,
                     .token = AccelerationStageTransferToken::from("albedo")
                 },
                 AccelerationStageInput {
                     .transferType = AccelerationStageTransferType::eBinding,
                     .dataType = AccelerationStageTransferDataType::eSampler,
+                    .bindingMode = DataBindingMode::eStatic,
                     .token = AccelerationStageTransferToken::from("normal")
                 },
                 AccelerationStageInput {
                     .transferType = AccelerationStageTransferType::eBinding,
                     .dataType = AccelerationStageTransferDataType::eSampler,
+                    .bindingMode = DataBindingMode::eStatic,
                     .token = AccelerationStageTransferToken::from("arm")
                 }
             },
@@ -128,7 +130,7 @@ void test_brdf_material() {
                 AccelerationStageOutput {
                     .transferType = AccelerationStageTransferType::eForward,
                     .dataType = AccelerationStageTransferDataType::eF32Vec4,
-                    .token = AccelerationStageTransferToken::from("color")
+                    .token = AccelerationStageTransferToken::from("albedo")
                 },
                 AccelerationStageOutput {
                     .transferType = AccelerationStageTransferType::eForward,
@@ -142,9 +144,9 @@ void test_brdf_material() {
     Guid effectGuid {};
     GuidGenerate(effectGuid);
 
-    AccelerationInputLayout input {};
-    AccelerationBindingLayout binding {};
-    AccelerationOutputLayout output {};
+    AccelerationEffectInputs input {};
+    AccelerationEffectBindings binding {};
+    AccelerationEffectOutputs output {};
 
     {
         InputLayoutDescription ild {

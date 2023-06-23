@@ -7,13 +7,9 @@
 #include <Engine.GFX.Acc/AccelerationStageTransferToken.hpp>
 
 #include "CompiledModule.hpp"
+#include "VkBindingLocation.hpp"
 
 namespace hg::engine::gfx::acc {
-    struct VkBindingLocation final {
-        s32 set;
-        s32 location;
-    };
-
     class VkCompiledModule final :
         public CompiledModule {
     public:
@@ -22,7 +18,10 @@ namespace hg::engine::gfx::acc {
     public:
         constexpr VkCompiledModule() noexcept = default;
 
-        VkCompiledModule(mref<_::VkShaderModule> shaderModule_) noexcept;
+        VkCompiledModule(
+            mref<_::VkShaderModule> shaderModule_,
+            mref<DenseMap<AccelerationStageTransferToken, VkBindingLocation>> mapping_
+        ) noexcept;
 
         VkCompiledModule(mref<this_type> other_) noexcept = default;
 
