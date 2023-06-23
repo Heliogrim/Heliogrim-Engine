@@ -17,7 +17,7 @@ Material::Material() noexcept :
 Material::Material(
     mref<Guid> guid_,
     mref<smr<MaterialPrototype>> prototype_,
-    mref<Set<smr<acc::AccelerationPass>>> passes_,
+    mref<Set<smr<const acc::AccelerationPass>>> passes_,
     mref<Vector<MaterialParameter>> parameters_
 ) noexcept :
     _guid(_STD move(guid_)),
@@ -35,7 +35,7 @@ smr<MaterialPrototype> Material::getPrototype() const noexcept {
     return _prototype;
 }
 
-cref<Set<smr<AccelerationPass>>> Material::getAccelerationPasses() const noexcept {
+cref<Set<smr<const AccelerationPass>>> Material::getAccelerationPasses() const noexcept {
     return _accelerationPasses;
 }
 

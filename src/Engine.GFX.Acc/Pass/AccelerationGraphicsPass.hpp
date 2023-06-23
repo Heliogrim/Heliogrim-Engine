@@ -8,6 +8,9 @@ namespace hg::engine::gfx::acc {
     public:
         using this_type = AccelerationGraphicsPass;
 
+    protected:
+        AccelerationGraphicsPass(mref<smr<AccelerationEffect>> effect_);
+
     public:
         ~AccelerationGraphicsPass() override = default;
     };

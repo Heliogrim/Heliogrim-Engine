@@ -3,11 +3,13 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Reflect/HeliogrimReflect.hpp>
 
 #include "__fwd.hpp"
 
 namespace hg::engine::gfx::acc {
-    class AccelerationPass {
+    class AccelerationPass :
+        public HeliogrimObject {
     public:
         using this_type = AccelerationPass;
 
@@ -21,7 +23,7 @@ namespace hg::engine::gfx::acc {
 
         virtual ~AccelerationPass();
 
-    private:
+    protected:
         smr<AccelerationEffect> _effect;
         Vector<smr<AccelerationStageDerivat>> _stages;
 

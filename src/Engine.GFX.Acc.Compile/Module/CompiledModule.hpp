@@ -1,5 +1,8 @@
 #pragma once
 
 namespace hg::engine::gfx::acc {
-    struct CompiledModule { };
+    class CompiledModule {
+    public:
+        virtual ~CompiledModule() noexcept = default;
+    };
 }

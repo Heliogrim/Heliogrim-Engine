@@ -91,17 +91,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Material\Material.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialParameter.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialParameterStorage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialPrototype.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialPrototypeParameter.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Material\test.brdf.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Material\Material.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Material\MaterialFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Material\MaterialParameter.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Material\MaterialPrototype.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Material\MaterialPrototypeParameter.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Material\test.brdf.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Material\test.cpp" />
   </ItemGroup>
   <ItemGroup>

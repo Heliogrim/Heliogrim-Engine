@@ -115,8 +115,10 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\OutputLayoutDescription.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationComputePass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationGraphicsPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationGraphicsSpec.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationMeshPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationRaytracingPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationSpecification.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxAccelerationComputePass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxAccelerationGraphicsPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxAccelerationMeshPass.hpp" />
@@ -128,10 +130,16 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationBindingLayout.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationInputLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationOutputLayout.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationStageDerivat.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationStageModule.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationGraphicsPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationGraphicsPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">

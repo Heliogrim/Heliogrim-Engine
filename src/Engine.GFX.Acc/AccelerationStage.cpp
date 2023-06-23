@@ -5,12 +5,12 @@ using namespace hg;
 
 AccelerationStage::AccelerationStage(
     mref<smr<AccelerationStageModule>> stageModule_,
-    mref<AccelerationStageFlags> flags_,
+    mref<AccelerationStageFlagBits> flagBits_,
     mref<Vector<AccelerationStageInput>> stageInputs_,
     mref<Vector<AccelerationStageOutput>> stageOutputs_
 ) :
     _stageModule(_STD move(stageModule_)),
-    _flags(_STD move(flags_)),
+    _flagBits(_STD move(flagBits_)),
     _stageInputs(_STD move(stageInputs_)),
     _stageOutputs(_STD move(stageOutputs_)) {}
 
@@ -20,8 +20,8 @@ smr<AccelerationStageModule> AccelerationStage::getStageModule() const noexcept 
     return _stageModule;
 }
 
-AccelerationStageFlags AccelerationStage::getFlags() const noexcept {
-    return _flags;
+AccelerationStageFlagBits AccelerationStage::getFlagBits() const noexcept {
+    return _flagBits;
 }
 
 cref<Vector<AccelerationStageInput>> AccelerationStage::getStageInputs() const noexcept {

@@ -19,26 +19,26 @@ namespace hg::engine::gfx::acc {
 
         AccelerationStage(
             mref<smr<AccelerationStageModule>> stageModule_,
-            mref<AccelerationStageFlags> flags_,
+            mref<AccelerationStageFlagBits> flagBits_,
             mref<Vector<AccelerationStageInput>> stageInputs_,
             mref<Vector<AccelerationStageOutput>> stageOutputs_
         );
 
         virtual ~AccelerationStage();
 
-    private:
+    protected:
         smr<AccelerationStageModule> _stageModule;
 
     public:
         [[nodiscard]] smr<AccelerationStageModule> getStageModule() const noexcept;
 
-    private:
-        AccelerationStageFlags _flags;
+    protected:
+        AccelerationStageFlagBits _flagBits;
 
     public:
-        [[nodiscard]] AccelerationStageFlags getFlags() const noexcept;
+        [[nodiscard]] AccelerationStageFlagBits getFlagBits() const noexcept;
 
-    private:
+    protected:
         Vector<AccelerationStageInput> _stageInputs;
         Vector<AccelerationStageOutput> _stageOutputs;
 

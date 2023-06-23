@@ -12,5 +12,7 @@ VkPassBuilder::VkPassBuilder() = default;
 VkPassBuilder::~VkPassBuilder() = default;
 
 smr<AccelerationPass> VkPassBuilder::build(mref<smr<AccelerationEffect>> effect_) const noexcept {
-    return make_smr<VkAccelerationGraphicsPass>(_STD move(effect_));
+    return make_smr<VkAccelerationGraphicsPass>(
+        VkAccelerationGraphicsPass::create<VkAccelerationGraphicsPass>(_STD move(effect_))
+    );
 }

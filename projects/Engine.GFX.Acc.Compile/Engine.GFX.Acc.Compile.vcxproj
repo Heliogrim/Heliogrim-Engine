@@ -91,6 +91,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Compiler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\DxCompiler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\CompiledModule.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\DxModuleBuilder.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\DxModuleCompiler.hpp" />
@@ -107,6 +108,8 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkCompiledModule.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleBuilder.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleCompiler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\DxPassBuilder.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\DxPassCompiler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\PassBuilder.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\PassCompiler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassBuilder.hpp" />
@@ -115,15 +118,25 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\ScopedTokenStorage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\Token.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\VkApi.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\VkCompiler.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Compiler.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\DxCompiler.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\SpirvCompiler.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkCompiledModule.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleBuilder.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleCompiler.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\DxPassBuilder.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\DxPassCompiler.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassBuilder.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassCompiler.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Stage\StageComposer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\ScopedTokenStorage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\VkCompiler.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\VkApi.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

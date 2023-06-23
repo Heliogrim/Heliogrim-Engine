@@ -62,7 +62,7 @@ void test() {
         {}
     };
 
-    Material mat0 = matProt.instantiate();
-    Material mat1 = matProt.instantiate();
+    smr<Material> mat0 = matProt.instantiate();
+    smr<Material> mat1 = matProt.instantiate();
 
 }

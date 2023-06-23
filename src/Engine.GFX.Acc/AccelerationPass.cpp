@@ -6,6 +6,7 @@ using namespace hg;
 AccelerationPass::AccelerationPass(
     mref<smr<AccelerationEffect>> effect_
 ) noexcept :
+    HeliogrimObject(),
     _effect(_STD move(effect_)),
     _stages() {}
 

@@ -146,6 +146,9 @@
     <ProjectReference Include="..\Engine.Filesystem\Engine.Filesystem.vcxproj">
       <Project>{8d00049b-6f13-4eac-b541-78f98f2c3b81}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Acc.Compile\Engine.GFX.Acc.Compile.vcxproj">
+      <Project>{cb472cf7-a83e-4320-87f1-c35f60f060a3}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.Acc\Engine.GFX.Acc.vcxproj">
       <Project>{8333a07d-e717-4969-a2f5-416933b96ac1}</Project>
     </ProjectReference>

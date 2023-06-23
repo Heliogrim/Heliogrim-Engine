@@ -20,6 +20,10 @@ namespace hg::engine::gfx::material {
 
         MaterialParameter(mref<uptr<MaterialParameterStorageBase>> storage_) noexcept;
 
+        MaterialParameter(cref<this_type>) = delete;
+
+        MaterialParameter(mref<this_type> other_) noexcept = default;
+
         ~MaterialParameter();
 
     private:

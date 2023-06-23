@@ -25,6 +25,8 @@ namespace hg::engine::gfx::material {
             mref<Vector<MaterialPrototypeParameter>> parameters_
         ) noexcept;
 
+        MaterialPrototype(mref<this_type> other_) noexcept = default;
+
         ~MaterialPrototype();
 
     private:

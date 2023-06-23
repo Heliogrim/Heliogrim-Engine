@@ -38,11 +38,12 @@ SpirvCompiler::~SpirvCompiler() {
     }
 }
 
-SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, _STD span<const char> source_) const {
+SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<Vector<string>> source_) const {
 
     const auto targetStage = static_cast<_STD underlying_type_t<ModuleTargetStage>>(module_.targetStage) - 1;
-    EShLanguage stage { reinterpret_cast<cref<EShLanguage>>(targetStage) };
+    assert(targetStage >= 0 && targetStage < EShLanguageMaskCount);
 
+    EShLanguage stage { reinterpret_cast<cref<EShLanguage>>(targetStage) };
     bool status = true;
 
     /**/
@@ -71,10 +72,18 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, _STD span<const
         reinterpret_cast<cref<glslang::EShTargetLanguageVersion>>(_targetVersion)
     );
 
-    auto* data = source_.data();
-    const s32 length = static_cast<s32>(source_.size());
+    Vector<ptr<const char>> codeSnippets {};
+    Vector<s32> codeSnippetLength {};
 
-    glslShader->setStringsWithLengths(&data, &length, 1);
+    codeSnippets.reserve(source_.size());
+    codeSnippetLength.reserve(source_.size());
+
+    for (u32 i = 0; i < source_.size(); ++i) {
+        codeSnippets.push_back(source_[i].data());
+        codeSnippetLength.push_back(static_cast<s32>(source_[i].size()));
+    }
+
+    glslShader->setStringsWithLengths(codeSnippets.data(), codeSnippetLength.data(), static_cast<s32>(source_.size()));
 
     /**/
 

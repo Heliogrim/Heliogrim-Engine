@@ -1,5 +1,6 @@
 #include "VkModuleCompiler.hpp"
 
+#include <Engine.Common/Make.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
@@ -17,9 +18,15 @@ uptr<CompiledModule> VkModuleCompiler::compile(
     mref<ModuleSource> source_
 ) const {
 
+    /* Assert module source and sanitize */
+
+    if (source_.targetStage <= ModuleTargetStage::eUndefined || source_.targetStage > ModuleTargetStage::eMesh) {
+        return nullptr;
+    }
+
     /* Fetch source code and transpile into spirv */
 
-    string sourceCode {};
+    const auto& sourceCode = source_.sourceCode;
     auto byteCode = _spirvCompiler.compile(source_, sourceCode);
 
     /**/
@@ -33,13 +40,11 @@ uptr<CompiledModule> VkModuleCompiler::compile(
     sptr<Device> device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
     vk::ShaderModuleCreateInfo smci {
-        vk::ShaderModuleCreateFlags {}, byteCode.size(), reinterpret_cast<u32*>(byteCode.data()), nullptr
+        vk::ShaderModuleCreateFlags {}, byteCode.size() * sizeof(SpirvWord), reinterpret_cast<u32*>(byteCode.data()), nullptr
     };
     const auto vkModule = device->vkDevice().createShaderModule(smci);
 
     /**/
 
-    return make_uptr<VkCompiledModule>(
-        VkCompiledModule { .shaderModule = reinterpret_cast<_::VkShaderModule>(vkModule.operator VkShaderModule()) }
-    );
+    return make_uptr<VkCompiledModule>(reinterpret_cast<_::VkShaderModule>(vkModule.operator VkShaderModule()));
 }
