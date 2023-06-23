@@ -27,7 +27,7 @@ namespace hg::engine::gfx::material {
         Material(
             mref<Guid> guid_,
             mref<smr<MaterialPrototype>> prototype_,
-            mref<Set<smr<acc::AccelerationPass>>> passes_,
+            mref<Set<smr<const acc::AccelerationPass>>> passes_,
             mref<Vector<MaterialParameter>> parameters_
         ) noexcept;
 
@@ -46,10 +46,10 @@ namespace hg::engine::gfx::material {
         [[nodiscard]] smr<MaterialPrototype> getPrototype() const noexcept;
 
     private:
-        Set<smr<acc::AccelerationPass>> _accelerationPasses;
+        Set<smr<const acc::AccelerationPass>> _accelerationPasses;
 
     public:
-        [[nodiscard]] cref<Set<smr<acc::AccelerationPass>>> getAccelerationPasses() const noexcept;
+        [[nodiscard]] cref<Set<smr<const acc::AccelerationPass>>> getAccelerationPasses() const noexcept;
 
     private:
         Vector<MaterialParameter> _parameters;

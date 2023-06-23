@@ -19,6 +19,9 @@
     <Filter Include="Headerdateien\Layout">
       <UniqueIdentifier>{c6443c2e-8f73-4c37-9848-e1f4f1eea235}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Pass">
+      <UniqueIdentifier>{de25ce12-7532-4e19-9563-9711bcc2232c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.hpp">
@@ -132,6 +135,12 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\DataIoMode.hpp">
       <Filter>Headerdateien\Layout</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationGraphicsSpec.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationSpecification.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.cpp">
@@ -144,6 +153,24 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationPass.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationInputLayout.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationBindingLayout.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationOutputLayout.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationGraphicsPass.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationGraphicsPass.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationStageModule.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

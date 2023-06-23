@@ -45,6 +45,7 @@ set(IDE_FOLDER "")
 project(${META_PROJECT_NAME} VERSION 1.0)
 
 # Project Directories
+## Deployment / Distribution directories will be configured within make library/test functions
 
 # Tools
 enable_cppcheck(OFF)

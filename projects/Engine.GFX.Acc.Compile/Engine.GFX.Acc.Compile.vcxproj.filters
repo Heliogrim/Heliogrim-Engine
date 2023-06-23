@@ -37,6 +37,9 @@
     <Filter Include="Quelldateien\Pass">
       <UniqueIdentifier>{48b49df8-3011-4fb6-bc59-d868b8cfc1fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Stage">
+      <UniqueIdentifier>{413e96c5-983a-46bc-8101-98a6b4253af4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.hpp">
@@ -114,6 +117,21 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassCompiler.hpp">
       <Filter>Headerdateien\Pass</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\VkCompiler.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\DxCompiler.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\DxPassBuilder.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\DxPassCompiler.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\VkApi.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.cpp">
@@ -136,6 +154,30 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassCompiler.cpp">
       <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkCompiledModule.cpp">
+      <Filter>Quelldateien\Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Stage\StageComposer.cpp">
+      <Filter>Quelldateien\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\VkCompiler.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\DxCompiler.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\DxPassBuilder.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\DxPassCompiler.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\ScopedTokenStorage.cpp">
+      <Filter>Quelldateien\Token</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\VkApi.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -12,6 +12,11 @@ namespace hg::_ {
 
     /**/
 
+    typedef struct _VkDescriptorSetLayout* VkDescriptorSetLayout;
+
+    /**/
+
+    typedef struct _VkGraphicsPipelineLayout* VkGraphicsPipelineLayout;
     typedef struct _VkGraphicsPipeline* VkGraphicsPipeline;
 }
 

@@ -17,6 +17,7 @@ namespace hg::engine::gfx::acc {
     public:
         [[nodiscard]] _Success_(return != nullptr) virtual smr<const AccelerationPass> compile(
             mref<smr<AccelerationPass>> source_,
+            mref<Vector<smr<AccelerationStageDerivat>>> stages_,
             mref<Vector<uptr<CompiledModule>>> modules_
         ) const = 0;
     };

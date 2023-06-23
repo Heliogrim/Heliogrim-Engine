@@ -18,6 +18,15 @@ namespace hg::engine::gfx::acc {
     public:
         Compiler() noexcept;
 
+        Compiler(
+            mref<uptr<PassBuilder>> passBuilder_,
+            mref<uptr<PassCompiler>> passCompiler_,
+            mref<uptr<StageComposer>> stageComposer_,
+            mref<uptr<ModuleBuilder>> moduleBuilder_,
+            mref<uptr<ModuleCompiler>> moduleCompiler_,
+            mref<Tokenizer> tokenizer_
+        ) noexcept;
+
         ~Compiler() noexcept;
 
     private:

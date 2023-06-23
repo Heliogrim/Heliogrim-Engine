@@ -30,6 +30,9 @@ namespace hg::engine::gfx::acc {
         SpirvTargetVersion _targetVersion;
 
     public:
-        [[nodiscard]] SpirvByteCode compile(cref<ModuleSource> module_, _STD span<const char> source_) const;
+        [[nodiscard]] SpirvByteCode compile(
+            cref<ModuleSource> module_,
+            cref<Vector<string>> source_
+        ) const;
     };
 }

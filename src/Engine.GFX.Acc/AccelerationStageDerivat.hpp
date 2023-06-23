@@ -14,11 +14,11 @@ namespace hg::engine::gfx::acc {
     public:
         AccelerationStageDerivat() noexcept;
 
-    AccelerationStageDerivat(
+        AccelerationStageDerivat(
             mref<nmpt<AccelerationStage>> owner_,
             mref<Vector<smr<AccelerationStage>>> supersedes_,
             mref<smr<AccelerationStageModule>> stageModule_,
-            mref<AccelerationStageFlags> flags_,
+            mref<AccelerationStageFlagBits> flagBits_,
             mref<Vector<AccelerationStageInput>> stageInputs_,
             mref<Vector<AccelerationStageOutput>> stageOutputs_,
             mref<Vector<AccelerationStageInput>> substitutionInputs_,
@@ -44,5 +44,10 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] nmpt<AccelerationStage> owner() const noexcept;
 
         [[nodiscard]] Vector<smr<AccelerationStage>> supersedes() const noexcept;
+
+    public:
+        void setStageFlagBits(mref<AccelerationStageFlagBits> flags_);
+
+        void setStageModule(mref<smr<AccelerationStageModule>> module_);
     };
 }

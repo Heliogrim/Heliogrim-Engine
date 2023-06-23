@@ -106,7 +106,7 @@ Token Tokenizer::generate(cref<AccelerationStageOutput> aso_) const {
     if (isFwd) {
         return generateToken(
             _prefix,
-            { _inScope },
+            { _outScope },
             aso_.token.value
         );
     }

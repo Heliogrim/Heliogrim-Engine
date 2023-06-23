@@ -13,7 +13,7 @@ namespace hg::engine::gfx::acc {
         ~DxModuleCompiler() noexcept override;
 
     public:
-        [[nodiscard]] CompiledModule compile(
+        [[nodiscard]] uptr<CompiledModule> compile(
             cref<smr<AccelerationPass>> targetPass_,
             mref<ModuleSource> source_
         ) const override;
