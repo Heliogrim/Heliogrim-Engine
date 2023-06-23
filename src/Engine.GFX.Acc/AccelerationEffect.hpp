@@ -7,9 +7,9 @@
 #include "__fwd.hpp"
 
 #include "AccelerationStage.hpp"
-#include "AccelerationInputLayout.hpp"
-#include "AccelerationBindingLayout.hpp"
-#include "AccelerationOutputLayout.hpp"
+#include "AccelerationEffectInputs.hpp"
+#include "AccelerationEffectBindings.hpp"
+#include "AccelerationEffectOutputs.hpp"
 
 namespace hg::engine::gfx::acc {
     class AccelerationEffect {
@@ -23,9 +23,9 @@ namespace hg::engine::gfx::acc {
             mref<Guid> guid_,
             mref<string> name_,
             mref<Vector<smr<AccelerationStage>>> stages_,
-            mref<AccelerationInputLayout> inputLayout_,
-            mref<AccelerationBindingLayout> bindingLayout_,
-            mref<AccelerationOutputLayout> outputLayout_
+            mref<AccelerationEffectInputs> inputs_,
+            mref<AccelerationEffectBindings> bindings_,
+            mref<AccelerationEffectOutputs> outputs_
         );
 
         ~AccelerationEffect();
@@ -45,17 +45,17 @@ namespace hg::engine::gfx::acc {
     private:
         Vector<smr<AccelerationStage>> _stages;
 
-        AccelerationInputLayout _inputLayout;
-        AccelerationBindingLayout _bindingLayout;
-        AccelerationOutputLayout _outputLayout;
+        AccelerationEffectInputs _inputs;
+        AccelerationEffectBindings _bindings;
+        AccelerationEffectOutputs _outputs;
 
     public:
         [[nodiscard]] cref<Vector<smr<AccelerationStage>>> getStages() const noexcept;
 
-        [[nodiscard]] cref<AccelerationInputLayout> getInputLayout() const noexcept;
+        [[nodiscard]] cref<AccelerationEffectInputs> getInputLayout() const noexcept;
 
-        [[nodiscard]] cref<AccelerationBindingLayout> getBindingLayout() const noexcept;
+        [[nodiscard]] cref<AccelerationEffectBindings> getBindingLayout() const noexcept;
 
-        [[nodiscard]] cref<AccelerationOutputLayout> getOutputLayout() const noexcept;
+        [[nodiscard]] cref<AccelerationEffectOutputs> getOutputLayout() const noexcept;
     };
 }

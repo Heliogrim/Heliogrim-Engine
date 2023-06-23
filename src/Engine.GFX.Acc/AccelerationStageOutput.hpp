@@ -3,7 +3,7 @@
 #include "AccelerationStageTransferDataType.hpp"
 #include "AccelerationStageTransferToken.hpp"
 #include "AccelerationStageTransferType.hpp"
-#include "Layout/DataBindingMode.hpp"
+#include "DataBindingMode.hpp"
 
 namespace hg::engine::gfx::acc {
     struct AccelerationStageOutput final {

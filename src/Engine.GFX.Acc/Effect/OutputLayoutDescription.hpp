@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Collection/Vector.hpp>
 
-#include "DataOutputRate.hpp"
+#include "../DataOutputRate.hpp"
 #include "OutputLayoutAttributeDescription.hpp"
 
 namespace hg::engine::gfx::acc {

@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Collection/Vector.hpp>
 
-#include "DataInputRate.hpp"
+#include "../DataInputRate.hpp"
 #include "InputLayoutAttributeDescription.hpp"
 
 namespace hg::engine::gfx::acc {

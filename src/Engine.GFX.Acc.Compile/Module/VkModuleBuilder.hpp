@@ -12,7 +12,7 @@ namespace hg::engine::gfx::acc {
         ~VkModuleBuilder() noexcept override;
 
     public:
-        [[nodiscard]] ModuleSource build(
+        [[nodiscard]] uptr<ModuleSource> build(
             cref<smr<AccelerationPass>> targetPass_,
             cref<ScopedTokenStorage> scopedTokens_,
             cref<smr<AccelerationStageDerivat>> stage_

@@ -3,8 +3,8 @@
 #include <Engine.Common/Collection/Vector.hpp>
 
 #include "BindingLayoutAttributeDescription.hpp"
-#include "DataBindingMode.hpp"
-#include "DataIoMode.hpp"
+#include "../DataBindingMode.hpp"
+#include "../DataIoMode.hpp"
 #include "../AccelerationStageTransferDataType.hpp"
 #include "../AccelerationStageTransferToken.hpp"
 

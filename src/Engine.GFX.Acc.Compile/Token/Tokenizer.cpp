@@ -113,7 +113,7 @@ Token Tokenizer::generate(cref<AccelerationStageOutput> aso_) const {
 
     if (not isFwd && isDyn) {
         return generateToken(
-            "$"sv,
+            _prefix,
             { _bindScope },
             aso_.token.value
         );
@@ -121,11 +121,41 @@ Token Tokenizer::generate(cref<AccelerationStageOutput> aso_) const {
 
     if (not isFwd && not isDyn) {
         return generateToken(
-            ""sv,
+            no_prefix,
             { _bindScope },
             aso_.token.value
         );
     }
 
     return Token {};
+}
+
+Token Tokenizer::transformAccStageOut(cref<Token> src_, const bool forwarding, const bool dynamic) const {
+
+    if (forwarding) {
+        return generateToken(
+            _prefix,
+            { _outScope },
+            src_.value
+        );
+    }
+
+    if (not forwarding && dynamic) {
+        return generateToken(
+            _prefix,
+            { _bindScope },
+            src_.value
+        );
+    }
+
+    if (not forwarding && not dynamic) {
+        return generateToken(
+            no_prefix,
+            { _bindScope },
+            src_.value
+        );
+    }
+
+    return Token {};
+
 }

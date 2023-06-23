@@ -105,9 +105,11 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\Spirv\SpirvSrcLang.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\Spirv\SpirvTargetClient.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\Spirv\SpirvTargetVersion.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkBindingLocation.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkCompiledModule.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleBuilder.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleCompiler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleSource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\DxPassBuilder.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\DxPassCompiler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\PassBuilder.hpp" />

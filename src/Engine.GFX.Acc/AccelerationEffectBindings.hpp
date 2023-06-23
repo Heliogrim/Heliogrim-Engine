@@ -1,10 +1,10 @@
 #pragma once
-#include "Layout/BindingLayoutDescription.hpp"
+#include "Effect/BindingLayoutDescription.hpp"
 
 namespace hg::engine::gfx::acc {
-    class AccelerationBindingLayout {
+    class AccelerationEffectBindings {
     public:
-        using this_type = AccelerationBindingLayout;
+        using this_type = AccelerationEffectBindings;
 
     private:
         Vector<BindingLayoutDescription> _descriptions;

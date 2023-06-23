@@ -1,10 +1,10 @@
 #pragma once
-#include "Layout/InputLayoutDescription.hpp"
+#include "Effect/InputLayoutDescription.hpp"
 
 namespace hg::engine::gfx::acc {
-    class AccelerationInputLayout {
+    class AccelerationEffectInputs {
     public:
-        using this_type = AccelerationInputLayout;
+        using this_type = AccelerationEffectInputs;
 
     private:
         Vector<InputLayoutDescription> _descriptions;

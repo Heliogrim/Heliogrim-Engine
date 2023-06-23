@@ -16,7 +16,7 @@ namespace hg::engine::gfx::acc {
         virtual ~ModuleBuilder() noexcept = default;
 
     public:
-        [[nodiscard]] virtual ModuleSource build(
+        [[nodiscard]] virtual uptr<ModuleSource> build(
             cref<smr<AccelerationPass>> targetPass_,
             cref<ScopedTokenStorage> scopedTokens_,
             cref<smr<AccelerationStageDerivat>> stage_

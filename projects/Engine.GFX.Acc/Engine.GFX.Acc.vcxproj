@@ -90,10 +90,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationBindingLayout.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationEffectBindings.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationInputLayout.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationOutputLayout.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationEffectInputs.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationEffectOutputs.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageDerivat.hpp" />
@@ -103,16 +103,16 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageTransferDataType.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageTransferToken.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationStageTransferType.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\BindingLayoutAttributeDescription.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\BindingLayoutDescription.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\DataBindingMode.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\DataInputRate.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\DataIoMode.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\DataOutputRate.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\InputLayoutAttributeDescription.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\InputLayoutDescription.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\OutputLayoutAttributeDescription.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Layout\OutputLayoutDescription.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\DataBindingMode.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\DataInputRate.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\DataIoMode.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\DataOutputRate.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Effect\BindingLayoutAttributeDescription.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Effect\BindingLayoutDescription.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Effect\InputLayoutAttributeDescription.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Effect\InputLayoutDescription.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Effect\OutputLayoutAttributeDescription.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Effect\OutputLayoutDescription.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationComputePass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationGraphicsPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationGraphicsSpec.hpp" />
@@ -123,6 +123,8 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxAccelerationGraphicsPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxAccelerationMeshPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxAccelerationRaytracingPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\Layout\AccelerationBindingLayout.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\Layout\AccelerationPassBindings.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationComputePass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationGraphicsPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationMeshPass.hpp" />
@@ -130,10 +132,10 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationBindingLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffectBindings.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationInputLayout.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationOutputLayout.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffectInputs.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffectOutputs.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationStageDerivat.cpp" />

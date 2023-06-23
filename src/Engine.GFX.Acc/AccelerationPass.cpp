@@ -19,3 +19,11 @@ smr<AccelerationEffect> AccelerationPass::getEffect() const noexcept {
 cref<Vector<smr<AccelerationStageDerivat>>> AccelerationPass::getStageDerivates() const noexcept {
     return _stages;
 }
+
+cref<AccelerationPassBindings> AccelerationPass::getPassBindings() const noexcept {
+    return _bindings;
+}
+
+void AccelerationPass::setPassBindings(mref<AccelerationPassBindings> bindings_) {
+    _bindings = _STD move(bindings_);
+}
