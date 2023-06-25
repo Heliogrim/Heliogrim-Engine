@@ -40,6 +40,12 @@
     <Filter Include="Quelldateien\Stage">
       <UniqueIdentifier>{413e96c5-983a-46bc-8101-98a6b4253af4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Spec">
+      <UniqueIdentifier>{b895931d-d91e-4e04-b816-54c9d4172123}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Spec">
+      <UniqueIdentifier>{044f7503-3ad9-4a99-8497-e983962bbf3f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.hpp">
@@ -138,6 +144,24 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleSource.hpp">
       <Filter>Headerdateien\Module</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SpecificationStorage.hpp">
+      <Filter>Headerdateien\Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\ComputePassSpecification.hpp">
+      <Filter>Headerdateien\Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\GraphicsPassSpecification.hpp">
+      <Filter>Headerdateien\Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\MeshPassSpecification.hpp">
+      <Filter>Headerdateien\Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\RaytracingPassSpecification.hpp">
+      <Filter>Headerdateien\Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleSpecificationStorage.hpp">
+      <Filter>Headerdateien\Spec</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.cpp">
@@ -184,6 +208,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\VkApi.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\PassCompiler.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\ModuleBuilder.cpp">
+      <Filter>Quelldateien\Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Spec\GraphicsPassSpecification.cpp">
+      <Filter>Quelldateien\Spec</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleSpecificationStorage.cpp">
+      <Filter>Quelldateien\Spec</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -9,9 +9,7 @@
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Meta/NoThrow.hpp>
-#include <Engine.GFX.Acc/__fwd.hpp>
 
-#include "__fwd.hpp"
 #include "MaterialParameter.hpp"
 #include "MaterialPrototype.hpp"
 #include "MaterialPrototypeParameter.hpp"
@@ -27,7 +25,6 @@ namespace hg::engine::gfx::material {
         Material(
             mref<Guid> guid_,
             mref<smr<MaterialPrototype>> prototype_,
-            mref<Set<smr<const acc::AccelerationPass>>> passes_,
             mref<Vector<MaterialParameter>> parameters_
         ) noexcept;
 
@@ -44,12 +41,6 @@ namespace hg::engine::gfx::material {
 
     public:
         [[nodiscard]] smr<MaterialPrototype> getPrototype() const noexcept;
-
-    private:
-        Set<smr<const acc::AccelerationPass>> _accelerationPasses;
-
-    public:
-        [[nodiscard]] cref<Set<smr<const acc::AccelerationPass>>> getAccelerationPasses() const noexcept;
 
     private:
         Vector<MaterialParameter> _parameters;

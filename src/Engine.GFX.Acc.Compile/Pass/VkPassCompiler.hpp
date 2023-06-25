@@ -23,6 +23,7 @@ namespace hg::engine::gfx::acc {
         ) const;
 
         smr<class VkAccelerationComputePass> linkVk(
+            mref<struct ComputePassSpecification> specification_,
             mref<smr<class VkAccelerationComputePass>> pass_
         ) const;
 
@@ -32,6 +33,7 @@ namespace hg::engine::gfx::acc {
         ) const;
 
         smr<class VkAccelerationGraphicsPass> linkVk(
+            mref<struct GraphicsPassSpecification> specification_,
             mref<smr<class VkAccelerationGraphicsPass>> pass_
         ) const;
 
@@ -41,6 +43,7 @@ namespace hg::engine::gfx::acc {
         ) const;
 
         smr<class VkAccelerationMeshPass> linkVk(
+            mref<struct MeshPassSpecification> specification_,
             mref<smr<class VkAccelerationMeshPass>> pass_
         ) const;
 
@@ -50,6 +53,7 @@ namespace hg::engine::gfx::acc {
         ) const;
 
         smr<class VkAccelerationRaytracingPass> linkVk(
+            mref<struct RaytracingPassSpecification> specification_,
             mref<smr<class VkAccelerationRaytracingPass>> pass_
         ) const;
 
@@ -68,17 +72,16 @@ namespace hg::engine::gfx::acc {
 
         [[nodiscard]] bool hasStencilBinding(cref<smr<AccelerationStageDerivat>> stage_) const noexcept;
 
-        template <typename Type_>
+        template <typename Type_, typename SpecificationType_>
         smr<const AccelerationPass> compileTypeSpec(
             mref<smr<AccelerationPass>> pass_,
-            mref<Vector<smr<AccelerationStageDerivat>>> stages_
+            mref<Vector<smr<AccelerationStageDerivat>>> stages_,
+            SpecificationType_ specification_
         ) const;
-
-    private:
-        [[nodiscard]] s32 querySpecVertexBindingLocation(cref<AccelerationStageTransferToken> token_) const noexcept;
 
     public:
         smr<const AccelerationPass> compile(
+            cref<class SpecificationStorage> specifications_,
             mref<smr<AccelerationPass>> source_,
             mref<Vector<smr<AccelerationStageDerivat>>> stages_,
             mref<Vector<uptr<CompiledModule>>> modules_

@@ -10,13 +10,19 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Core/Engine.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX/Geometry/Vertex.hpp>
+#include <Engine.GFX.Acc.Compile/VkCompiler.hpp>
+#include <Engine.GFX/Graphics.hpp>
+#include <Engine.GFX.Acc.Compile/Spec/SimpleSpecificationStorage.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "MaterialFactory.hpp"
 #include "MaterialParameter.hpp"
 #include "MaterialParameterStorage.hpp"
 #include "MaterialPrototypeParameter.hpp"
+#include <Engine.GFX.Acc.Compile/Spec/GraphicsPassSpecification.hpp>
 
 using namespace hg::engine::gfx::acc;
 using namespace hg::engine::gfx::material;
@@ -33,6 +39,11 @@ void test_brdf_material() {
                     .transferType = AccelerationStageTransferType::eForward,
                     .dataType = AccelerationStageTransferDataType::eF32Vec3,
                     .token = AccelerationStageTransferToken::from("vertex/position")
+                },
+                AccelerationStageInput {
+                    .transferType = AccelerationStageTransferType::eForward,
+                    .dataType = AccelerationStageTransferDataType::eU8Vec3,
+                    .token = AccelerationStageTransferToken::from("vertex/color")
                 },
                 AccelerationStageInput {
                     .transferType = AccelerationStageTransferType::eForward,
@@ -119,22 +130,22 @@ void test_brdf_material() {
             {
                 AccelerationStageOutput {
                     .transferType = AccelerationStageTransferType::eForward,
-                    .dataType = AccelerationStageTransferDataType::eF32Vec3,
+                    .dataType = AccelerationStageTransferDataType::eF32Vec4,
                     .token = AccelerationStageTransferToken::from("position")
                 },
                 AccelerationStageOutput {
                     .transferType = AccelerationStageTransferType::eForward,
-                    .dataType = AccelerationStageTransferDataType::eF32Vec3,
+                    .dataType = AccelerationStageTransferDataType::eF32Vec4,
                     .token = AccelerationStageTransferToken::from("normal")
                 },
                 AccelerationStageOutput {
                     .transferType = AccelerationStageTransferType::eForward,
-                    .dataType = AccelerationStageTransferDataType::eF32Vec4,
+                    .dataType = AccelerationStageTransferDataType::eU8Vec4,
                     .token = AccelerationStageTransferToken::from("albedo")
                 },
                 AccelerationStageOutput {
                     .transferType = AccelerationStageTransferType::eForward,
-                    .dataType = AccelerationStageTransferDataType::eF32Vec3,
+                    .dataType = AccelerationStageTransferDataType::eF16Vec4,
                     .token = AccelerationStageTransferToken::from("arm")
                 },
             }
@@ -309,4 +320,132 @@ void test_brdf_material() {
     mat0->setParam("albedo"sv, smr<hg::engine::gfx::TextureResource> {});
     mat0->setParam("normal"sv, smr<hg::engine::gfx::TextureResource> {});
     mat0->setParam("arm"sv, smr<hg::engine::gfx::TextureResource> {});
+
+    /**/
+
+    auto compiler = makeVkAccCompiler();
+    auto specifications = make_uptr<SimpleSpecificationStorage>();
+
+    /**/
+
+    const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+    auto renderPass = make_smr<engine::gfx::pipeline::LORenderPass>(device);
+
+    renderPass->set(
+        0ui32,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags {},
+            vk::Format::eR8G8B8A8Unorm,
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eColorAttachmentOptimal
+        }
+    );
+
+    renderPass->set(
+        1ui32,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags {},
+            vk::Format::eR32G32B32A32Sfloat,
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eColorAttachmentOptimal
+        }
+    );
+
+    renderPass->set(
+        2ui32,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags {},
+            vk::Format::eR32G32B32A32Sfloat,
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eColorAttachmentOptimal
+        }
+    );
+
+    renderPass->set(
+        3ui32,
+        vk::AttachmentDescription {
+            vk::AttachmentDescriptionFlags {},
+            vk::Format::eR16G16B16A16Sfloat,
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::eColorAttachmentOptimal
+        }
+    );
+    renderPass->setup();
+
+    /**/
+
+    specifications->set(
+        make_uptr<GraphicsPassSpecification>(
+            GraphicsPassSpecification {
+                .depthCompareOp = DepthCompareOp::eLess,
+                .stencilCompareOp = StencilCompareOp::eNever,
+                .stencilFailOp = StencilOp::eKeep,
+                .stencilPassOp = StencilOp::eKeep,
+                .stencilDepthFailOp = StencilOp::eKeep,
+                .stencilCompareMask = {},
+                .stencilWriteMask = {},
+                .primitiveTopology = PrimitiveTopology::eTriangleList,
+                .inputs = {
+                    _STD make_pair(
+                        AccelerationStageTransferToken::from("vertex"),
+                        InputSlotSpec { true, 0, DataInputRate::ePerInvocation, sizeof(engine::gfx::vertex) }
+                    )
+                },
+                .outputs = {
+                    _STD make_pair(
+                        AccelerationStageTransferToken::from("albedo"),
+                        OutputSlotSpec { true, 0, DataOutputRate {} }
+                    ),
+                    _STD make_pair(
+                        AccelerationStageTransferToken::from("normal"),
+                        OutputSlotSpec { true, 1, DataOutputRate {} }
+                    ),
+                    _STD make_pair(
+                        AccelerationStageTransferToken::from("position"),
+                        OutputSlotSpec { true, 2, DataOutputRate {} }
+                    ),
+                    _STD make_pair(
+                        AccelerationStageTransferToken::from("mrs"),
+                        OutputSlotSpec { true, 3, DataOutputRate {} }
+                    )
+                },
+                .renderPass = _STD move(renderPass)
+            }
+        )
+    );
+
+    /**/
+
+    Set<smr<const AccelerationPass>> passes {};
+    for (const auto& effect : mat0->getPrototype()->getAccelerationEffects()) {
+
+        auto pass = compiler->compile(clone(effect), *specifications);
+
+        if (pass.empty()) {
+            // Warning: Failed
+            assert(false);
+        }
+
+        passes.insert(_STD move(pass));
+    }
 }

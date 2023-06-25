@@ -14,7 +14,8 @@ namespace hg::engine::gfx::acc {
 
     public:
         [[nodiscard]] _Success_(return != nullptr) virtual smr<AccelerationPass> build(
-            mref<smr<AccelerationEffect>> effect_
+            mref<smr<AccelerationEffect>> effect_,
+            cref<class SpecificationStorage> specifications_
         ) const noexcept = 0;
     };
 }

@@ -11,14 +11,19 @@
 using namespace hg::engine::gfx::acc;
 using namespace hg;
 
+non_owning_rptr<const Tokenizer> StageComposer::getTokenizer() const noexcept {
+    return _tokenizer;
+}
+
+void StageComposer::setTokenizer(mref<non_owning_rptr<const Tokenizer>> tokenizer_) {
+    _tokenizer = _STD move(tokenizer_);
+}
+
 Vector<smr<AccelerationStageDerivat>> StageComposer::compose(
     cref<smr<AccelerationPass>> targetPass_,
-    cref<ScopedTokenStorage> tokens_
+    cref<ScopedTokenStorage> tokens_,
+    cref<class SpecificationStorage> specifications_
 ) const {
-
-    Tokenizer tokenizer {};
-
-    /**/
 
     const auto& stages = targetPass_->getEffect()->getStages();
 
@@ -37,11 +42,11 @@ Vector<smr<AccelerationStageDerivat>> StageComposer::compose(
         /**/
 
         for (auto& entry : inputs) {
-            entry.token = tokenizer.generate(entry);
+            entry.token = _tokenizer->generate(entry);
         }
 
         for (auto& entry : outputs) {
-            entry.token = tokenizer.generate(entry);
+            entry.token = _tokenizer->generate(entry);
         }
 
         /**/
