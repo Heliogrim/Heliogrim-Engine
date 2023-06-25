@@ -10,6 +10,9 @@ namespace hg::engine::gfx::acc {
         ~DxPassBuilder() override;
 
     public:
-        [[nodiscard]] smr<AccelerationPass> build(mref<smr<AccelerationEffect>> effect_) const noexcept override;
+        [[nodiscard]] smr<AccelerationPass> build(
+            mref<smr<AccelerationEffect>> effect_,
+            cref<class SpecificationStorage> specifications_
+        ) const noexcept override;
     };
 }

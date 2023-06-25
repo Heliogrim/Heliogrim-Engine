@@ -7,6 +7,7 @@
 #include "Module/ModuleCompiler.hpp"
 #include "Pass/PassBuilder.hpp"
 #include "Pass/PassCompiler.hpp"
+#include "Spec/SpecificationStorage.hpp"
 #include "Stage/StageComposer.hpp"
 #include "Token/Tokenizer.hpp"
 
@@ -41,6 +42,9 @@ namespace hg::engine::gfx::acc {
         Tokenizer _tokenizer;
 
     public:
-        [[nodiscard]] smr<const AccelerationPass> compile(mref<smr<AccelerationEffect>> effect_) const;
+        [[nodiscard]] smr<const AccelerationPass> compile(
+            mref<smr<AccelerationEffect>> effect_,
+            cref<SpecificationStorage> specifications_
+        ) const;
     };
 }

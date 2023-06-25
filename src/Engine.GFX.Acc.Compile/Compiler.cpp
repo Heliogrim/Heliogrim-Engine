@@ -61,11 +61,20 @@ Compiler::Compiler(
     _stageComposer(_STD move(stageComposer_)),
     _moduleBuilder(_STD move(moduleBuilder_)),
     _moduleCompiler(_STD move(moduleCompiler_)),
-    _tokenizer(_STD move(tokenizer_)) {}
+    _tokenizer(_STD move(tokenizer_)) {
+
+    /**/
+    _passCompiler->setTokenizer(&_tokenizer);
+    _stageComposer->setTokenizer(&_tokenizer);
+    _moduleBuilder->setTokenizer(&_tokenizer);
+}
 
 Compiler::~Compiler() noexcept = default;
 
-smr<const AccelerationPass> Compiler::compile(mref<smr<AccelerationEffect>> effect_) const {
+smr<const AccelerationPass> Compiler::compile(
+    mref<smr<AccelerationEffect>> effect_,
+    cref<SpecificationStorage> specifications_
+) const {
 
     /* Discover all tokens and resource dependencies */
 
@@ -80,7 +89,7 @@ smr<const AccelerationPass> Compiler::compile(mref<smr<AccelerationEffect>> effe
 
     /* Determine target pass type and spec based on effect */
 
-    smr<AccelerationPass> pass = _passBuilder->build(_STD move(effect_));
+    smr<AccelerationPass> pass = _passBuilder->build(_STD move(effect_), specifications_);
 
     /* Compose a modified ordered list of stage */
 
@@ -90,7 +99,7 @@ smr<const AccelerationPass> Compiler::compile(mref<smr<AccelerationEffect>> effe
     // TODO: Stage Composer should build stages only based on tokens and irrelated to the underlying platform
     // TODO: Stage Composer should emit a set of Binding Layouts (vkDescriptorLayout) based on tokenized bindings
     // TODO:    Binding layouts should be based on group and rate information, which should be present
-    auto stages = _stageComposer->compose(pass, sts);
+    auto stages = _stageComposer->compose(pass, sts, specifications_);
 
     /* Build module sources out of the scoped stages */
 
@@ -98,13 +107,10 @@ smr<const AccelerationPass> Compiler::compile(mref<smr<AccelerationEffect>> effe
 
     for (const auto& stageDerivat : stages) {
 
-        // TODO: Generate subset of token accessible at current stage
-        ScopedTokenStorage csts {};
-
         // TODO: Module builder should consume layouts to resolved tokenized bindings into platform specific bindings
         // TODO: Module builder should emit a binding mapping per module source ~> compiled module to be able to query defined
         // TODO:    bindings by tokens downstream
-        auto source = _moduleBuilder->build(pass, csts, stageDerivat);
+        auto source = _moduleBuilder->build(pass, specifications_, stageDerivat);
         sources.push_back(_STD move(source));
     }
 
@@ -114,13 +120,13 @@ smr<const AccelerationPass> Compiler::compile(mref<smr<AccelerationEffect>> effe
 
     for (auto&& source : sources) {
 
-        auto cmodule = _moduleCompiler->compile(pass, _STD move(source));
+        auto cmodule = _moduleCompiler->compile(pass, specifications_, _STD move(source));
         modules.push_back(_STD move(cmodule));
     }
 
     /* Finalize acceleration stage derivates */
 
-    return _passCompiler->compile(_STD move(pass), _STD move(stages), _STD move(modules));
+    return _passCompiler->compile(specifications_, _STD move(pass), _STD move(stages), _STD move(modules));
 }
 
 /**/

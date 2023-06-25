@@ -14,10 +14,19 @@ namespace hg::engine::gfx::acc {
 
         ~StageComposer() noexcept = default;
 
+    private:
+        non_owning_rptr<const class Tokenizer> _tokenizer;
+
+    public:
+        [[nodiscard]] non_owning_rptr<const class Tokenizer> getTokenizer() const noexcept;
+
+        void setTokenizer(mref<non_owning_rptr<const class Tokenizer>> tokenizer_);
+
     public:
         [[nodiscard]] Vector<smr<AccelerationStageDerivat>> compose(
             cref<smr<AccelerationPass>> targetPass_,
-            cref<ScopedTokenStorage> tokens_
+            cref<ScopedTokenStorage> tokens_,
+            cref<class SpecificationStorage> specifications_
         ) const;
     };
 }

@@ -18,6 +18,7 @@ namespace hg::engine::gfx::acc {
     public:
         [[nodiscard]] virtual uptr<CompiledModule> compile(
             cref<smr<AccelerationPass>> targetPass_,
+            cref<class SpecificationStorage> specifications_,
             mref<uptr<ModuleSource>> source_
         ) const = 0;
     };

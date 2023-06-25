@@ -14,8 +14,17 @@ namespace hg::engine::gfx::acc {
 
         virtual ~PassCompiler() noexcept = default;
 
+    protected:
+        non_owning_rptr<const class Tokenizer> _tokenizer;
+
+    public:
+        [[nodiscard]] non_owning_rptr<const class Tokenizer> getTokenizer() const noexcept;
+
+        void setTokenizer(mref<non_owning_rptr<const class Tokenizer>> tokenizer_);
+
     public:
         [[nodiscard]] _Success_(return != nullptr) virtual smr<const AccelerationPass> compile(
+            cref<class SpecificationStorage> specifications_,
             mref<smr<AccelerationPass>> source_,
             mref<Vector<smr<AccelerationStageDerivat>>> stages_,
             mref<Vector<uptr<CompiledModule>>> modules_

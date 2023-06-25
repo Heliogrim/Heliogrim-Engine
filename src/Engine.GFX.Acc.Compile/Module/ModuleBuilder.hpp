@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.GFX.Acc/AccelerationStageDerivat.hpp>
 #include <Engine.GFX.Acc/AccelerationPass.hpp>
 
@@ -15,10 +16,18 @@ namespace hg::engine::gfx::acc {
 
         virtual ~ModuleBuilder() noexcept = default;
 
+    private:
+        non_owning_rptr<const class Tokenizer> _tokenizer;
+
+    public:
+        [[nodiscard]] non_owning_rptr<const class Tokenizer> getTokenizer() const noexcept;
+
+        void setTokenizer(mref<non_owning_rptr<const class Tokenizer>> tokenizer_);
+
     public:
         [[nodiscard]] virtual uptr<ModuleSource> build(
             cref<smr<AccelerationPass>> targetPass_,
-            cref<ScopedTokenStorage> scopedTokens_,
+            cref<class SpecificationStorage> specifications_,
             cref<smr<AccelerationStageDerivat>> stage_
         ) const = 0;
     };

@@ -1,4 +1,6 @@
 #pragma once
+#include <Engine.Common/Collection/DenseMap.hpp>
+
 #include "ModuleBuilder.hpp"
 
 namespace hg::engine::gfx::acc {
@@ -14,7 +16,7 @@ namespace hg::engine::gfx::acc {
     public:
         [[nodiscard]] uptr<ModuleSource> build(
             cref<smr<AccelerationPass>> targetPass_,
-            cref<ScopedTokenStorage> scopedTokens_,
+            cref<class SpecificationStorage> specifications_,
             cref<smr<AccelerationStageDerivat>> stage_
         ) const override;
     };

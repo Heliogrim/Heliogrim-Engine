@@ -20,6 +20,7 @@
 
 #include "../VkApi.hpp"
 #include "../Module/VkCompiledModule.hpp"
+#include "Engine.GFX.Acc.Compile/Spec/SpecificationStorage.hpp"
 #include "Engine.GFX.Acc.Compile/Token/Tokenizer.hpp"
 
 using namespace hg::engine::gfx::acc;
@@ -135,21 +136,19 @@ bool VkPassCompiler::hasStencilBinding(cref<smr<AccelerationStageDerivat>> stage
     return false;
 }
 
-s32 VkPassCompiler::querySpecVertexBindingLocation(cref<AccelerationStageTransferToken> token_) const noexcept {
-    return -1i32;
-}
-
-template <typename Type_>
+template <typename Type_, typename SpecificationType_>
 smr<const AccelerationPass> VkPassCompiler::compileTypeSpec(
     mref<smr<AccelerationPass>> pass_,
-    mref<Vector<smr<AccelerationStageDerivat>>> stages_
+    mref<Vector<smr<AccelerationStageDerivat>>> stages_,
+    SpecificationType_ specification_
 ) const {
     auto pass = pass_.into<Type_>();
     pass = linkStages(_STD move(pass), _STD move(stages_));
-    return linkVk(_STD move(pass));
+    return linkVk(_STD move(specification_), _STD move(pass));
 }
 
 smr<const AccelerationPass> VkPassCompiler::compile(
+    cref<class SpecificationStorage> specifications_,
     mref<smr<AccelerationPass>> source_,
     mref<Vector<smr<AccelerationStageDerivat>>> stages_,
     mref<Vector<uptr<CompiledModule>>> modules_
@@ -164,16 +163,32 @@ smr<const AccelerationPass> VkPassCompiler::compile(
 
     switch (source_->getClass()->typeId().data) {
         case VkAccelerationComputePass::typeId.data: {
-            return compileTypeSpec<VkAccelerationComputePass>(_STD move(source_), _STD move(stages));
+            return compileTypeSpec<VkAccelerationComputePass>(
+                _STD move(source_),
+                _STD move(stages),
+                specifications_.get<ComputePassSpecification>()
+            );
         }
         case VkAccelerationGraphicsPass::typeId.data: {
-            return compileTypeSpec<VkAccelerationGraphicsPass>(_STD move(source_), _STD move(stages));
+            return compileTypeSpec<VkAccelerationGraphicsPass>(
+                _STD move(source_),
+                _STD move(stages),
+                specifications_.get<GraphicsPassSpecification>()
+            );
         }
         case VkAccelerationMeshPass::typeId.data: {
-            return compileTypeSpec<VkAccelerationMeshPass>(_STD move(source_), _STD move(stages));
+            return compileTypeSpec<VkAccelerationMeshPass>(
+                _STD move(source_),
+                _STD move(stages),
+                specifications_.get<MeshPassSpecification>()
+            );
         }
         case VkAccelerationRaytracingPass::typeId.data: {
-            return compileTypeSpec<VkAccelerationRaytracingPass>(_STD move(source_), _STD move(stages));
+            return compileTypeSpec<VkAccelerationRaytracingPass>(
+                _STD move(source_),
+                _STD move(stages),
+                specifications_.get<RaytracingPassSpecification>()
+            );
         }
         default: {
             return nullptr;
@@ -191,6 +206,7 @@ smr<VkAccelerationComputePass> VkPassCompiler::linkStages(
 }
 
 smr<VkAccelerationComputePass> VkPassCompiler::linkVk(
+    mref<struct ComputePassSpecification> specification_,
     mref<smr<VkAccelerationComputePass>> pass_
 ) const {
     return _STD move(pass_);
@@ -214,11 +230,10 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkStages(
     return _STD move(pass_);
 }
 
-smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGraphicsPass>> pass_) const {
-
-    // TODO: Check where to get the specification
-    AccelerationGraphicsSpec spec {};
-    Tokenizer tokenizer {};
+smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
+    mref<struct GraphicsPassSpecification> specification_,
+    mref<smr<VkAccelerationGraphicsPass>> pass_
+) const {
 
     const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
@@ -269,7 +284,7 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
     for (const auto& description : pass_->getEffect()->getOutputLayout().getDescriptions()) {
 
         const auto& descToken = description.token;
-        const auto searchToken = tokenizer.transformAccStageOut(descToken, true, true);
+        const auto searchToken = _tokenizer->transformAccStageOut(descToken, true, true);
 
         const auto& stageOuts = outStage->getStageOutputs();
         const auto it = _STD ranges::find_if(
@@ -337,52 +352,52 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
 
     /**/
 
-    bool hasDepthIn = false;
-    bool hasDepthOut = false;
-
     {
         const auto& back = pass_->getStageDerivates().back();
         assert(back->getFlagBits() == AccelerationStageFlagBits::eFragment);
 
-        hasDepthIn = hasDepthOut = hasDepthBinding(back);
+        bool hasDepthIn, hasDepthOut = hasDepthBinding(back);
+        hasDepthIn = hasDepthOut;
+
+        pdssci.depthTestEnable = (hasDepthIn || hasDepthOut) &&
+            specification_.depthCompareOp != DepthCompareOp::eAlways;
+        pdssci.depthWriteEnable = hasDepthOut && specification_.depthCompareOp != DepthCompareOp::eNever;
+        pdssci.depthCompareOp = reinterpret_cast<vk::CompareOp&>(specification_.depthCompareOp);
+
+        pdssci.depthBoundsTestEnable = VK_FALSE;
+        pdssci.minDepthBounds = 0.F;
+        pdssci.maxDepthBounds = 1.F;
+
+        bool hasStencil = false;
+
+        {
+            const auto& back = pass_->getStageDerivates().back();
+            hasStencil = hasStencilBinding(back);
+        }
+
+        constexpr bool isFrontFaceCulled = false;
+        constexpr bool isBackFaceCulled = false;
+
+        pdssci.stencilTestEnable = hasStencil;
+        pdssci.front = vk::StencilOpState {
+            isFrontFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilFailOp),
+            isFrontFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilPassOp),
+            isFrontFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilDepthFailOp),
+            isFrontFaceCulled ? vk::CompareOp::eNever : api::stencilCompareOp(specification_.stencilCompareOp),
+            isFrontFaceCulled ? 0ui32 : specification_.stencilCompareMask._Mask,
+            isFrontFaceCulled ? 0ui32 : specification_.stencilWriteMask._Mask,
+            {}
+        };
+        pdssci.back = vk::StencilOpState {
+            isBackFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilFailOp),
+            isBackFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilPassOp),
+            isBackFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilDepthFailOp),
+            isBackFaceCulled ? vk::CompareOp::eNever : api::stencilCompareOp(specification_.stencilCompareOp),
+            isBackFaceCulled ? 0ui32 : specification_.stencilCompareMask._Mask,
+            isBackFaceCulled ? 0ui32 : specification_.stencilWriteMask._Mask,
+            {}
+        };
     }
-
-    pdssci.depthTestEnable = (hasDepthIn || hasDepthOut) && spec.depthCompareOp != DepthCompareOp::eAlways;
-    pdssci.depthWriteEnable = hasDepthOut && spec.depthCompareOp != DepthCompareOp::eNever;
-    pdssci.depthCompareOp = reinterpret_cast<vk::CompareOp&>(spec.depthCompareOp) /* spec.depthCompareOp */;
-
-    pdssci.depthBoundsTestEnable = VK_FALSE;
-    pdssci.minDepthBounds = 0.F;
-    pdssci.maxDepthBounds = 1.F;
-
-    bool hasStencil = false;
-
-    {
-        const auto& back = pass_->getStageDerivates().back();
-        hasStencil = hasStencilBinding(back);
-    }
-
-    pdssci.stencilTestEnable = hasStencil;
-    /* TODO: spec.stencilFront */
-    pdssci.front = vk::StencilOpState {
-        vk::StencilOp::eKeep,
-        vk::StencilOp::eKeep,
-        vk::StencilOp::eKeep,
-        vk::CompareOp::eNever,
-        {},
-        {},
-        {}
-    };
-    /* TODO: spec.stencilBack */
-    pdssci.back = vk::StencilOpState {
-        vk::StencilOp::eKeep,
-        vk::StencilOp::eKeep,
-        vk::StencilOp::eKeep,
-        vk::CompareOp::eNever,
-        {},
-        {},
-        {}
-    };
 
     /**/
 
@@ -409,6 +424,11 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
 
     pdsci.dynamicStateCount = dynamicStates.size();
     pdsci.pDynamicStates = dynamicStates.data();
+
+    /**/
+
+    piasci.primitiveRestartEnable = VK_FALSE;
+    piasci.topology = reinterpret_cast<const vk::PrimitiveTopology&>(specification_.primitiveTopology);
 
     /**/
 
@@ -446,7 +466,7 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
         gpci.pTessellationState = nullptr;
     }
 
-    /**/
+    /* Input Bindings */
 
     Vector<vk::VertexInputBindingDescription> vertexBindings {};
     Vector<vk::VertexInputAttributeDescription> vertexAttributes {};
@@ -466,28 +486,16 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
 
     for (const auto& description : pass_->getEffect()->getInputLayout().getDescriptions()) {
 
-        // TODO: Query the binding and location for each vertex input and input attribute.
-        // TODO: This should be propagated by the compiled module ~ acceleration state module, cause the stage composer and downstream the module builder/compiler
-        // TODO:    are responsible for emitting the shader bindings.
+        const auto& descToken = description.token;
+        const auto inputSpec = specification_.queryInputSpec(descToken);
+        assert(inputSpec.has_value());
 
-        // layout (location = 0) in vec3 $in/vertex/position;
-        // //layout (location = 1) in vec3 $in/vertex/color;
-        // layout (location = 2) in vec3 $in/vertex/uvm;
-        // layout (location = 3) in vec3 $in/vertex/normal;
-
-        // layout (set = 0, binding = 1) uniform PbrPassUbo {
-        //     mat4 viewProj;
-        // } ubo;
-
-        const auto descToken = description.token;
-        s32 vertexDataBind = querySpecVertexBindingLocation(descToken);
-        u32 vertexDataStride = sizeof(vertex);
-
-        assert(vertexDataBind >= 0);
+        assert(inputSpec->index >= 0);
+        assert(inputSpec->stride > 0 && inputSpec->stride < ~0ui64);
 
         vk::VertexInputBindingDescription vibd {
-            static_cast<u32>(vertexDataBind),
-            vertexDataStride,
+            static_cast<u32>(inputSpec->index),
+            static_cast<u32>(inputSpec->stride),
             api::inputRate2VertexRate(description.rate)
         };
 
@@ -498,7 +506,11 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
         for (const auto& attribute : description.attributes) {
 
             const auto inputToken = descToken.value + "/" + attribute.token.value;
-            const auto stageToken = "$in/" + inputToken;
+            const auto stageToken = _tokenizer->transformAccStageIn(
+                AccelerationStageTransferToken::from(inputToken),
+                true,
+                true
+            );
 
             /**/
 
@@ -506,7 +518,7 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
                 stageInputs.begin(),
                 stageInputs.end(),
                 [&stageToken](const ptr<const AccelerationStageInput> input_) {
-                    return input_->token.value == stageToken;
+                    return input_->token == stageToken;
                 }
             );
 
@@ -514,7 +526,7 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
                 IM_CORE_WARNF(
                     "Found described input attribute binding, but no matching stage binding. (`{}` -> `{}`)",
                     descToken.value,
-                    stageToken
+                    stageToken.value
                 );
                 continue;
             }
@@ -530,7 +542,7 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
 
             vk::VertexInputAttributeDescription viad {
                 static_cast<u32>(bindLocation.location),
-                static_cast<u32>(vertexDataBind),
+                static_cast<u32>(inputSpec->index),
                 api::dataType2Format(asi.dataType),
                 static_cast<u32>(attribute.offset)
             };
@@ -539,12 +551,12 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
         }
     }
 
-    pvisci.vertexBindingDescriptionCount = vertexBindings.size();
+    pvisci.vertexBindingDescriptionCount = static_cast<u32>(vertexBindings.size());
     pvisci.pVertexBindingDescriptions = vertexBindings.data();
-    pvisci.vertexAttributeDescriptionCount = vertexAttributes.size();
+    pvisci.vertexAttributeDescriptionCount = static_cast<u32>(vertexAttributes.size());
     pvisci.pVertexAttributeDescriptions = vertexAttributes.data();
 
-    /**/
+    /* Viewport State */
 
     vk::Rect2D scissor {
         { 0ui32, 0ui32 },
@@ -637,6 +649,10 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationGr
 
     /**/
 
+    gpci.renderPass = specification_.renderPass->vkRenderPass();
+
+    /**/
+
     gpci.basePipelineHandle = nullptr;
     gpci.basePipelineIndex = -1i32;
 
@@ -664,7 +680,10 @@ smr<VkAccelerationMeshPass> VkPassCompiler::linkStages(
     return _STD move(pass_);
 }
 
-smr<VkAccelerationMeshPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationMeshPass>> pass_) const {
+smr<VkAccelerationMeshPass> VkPassCompiler::linkVk(
+    mref<struct MeshPassSpecification> specification_,
+    mref<smr<VkAccelerationMeshPass>> pass_
+) const {
     return _STD move(pass_);
 }
 
@@ -679,7 +698,10 @@ smr<VkAccelerationRaytracingPass> VkPassCompiler::linkStages(
     return _STD move(pass_);
 }
 
-smr<VkAccelerationRaytracingPass> VkPassCompiler::linkVk(mref<smr<VkAccelerationRaytracingPass>> pass_) const {
+smr<VkAccelerationRaytracingPass> VkPassCompiler::linkVk(
+    mref<struct RaytracingPassSpecification> specification_,
+    mref<smr<VkAccelerationRaytracingPass>> pass_
+) const {
     return _STD move(pass_);
 }
 

@@ -130,6 +130,34 @@ Token Tokenizer::generate(cref<AccelerationStageOutput> aso_) const {
     return Token {};
 }
 
+Token Tokenizer::transformAccStageIn(cref<Token> src_, bool forwarding, bool dynamic) const {
+    if (forwarding) {
+        return generateToken(
+            _prefix,
+            { _inScope },
+            src_.value
+        );
+    }
+
+    if (not forwarding && dynamic) {
+        return generateToken(
+            _prefix,
+            { _bindScope },
+            src_.value
+        );
+    }
+
+    if (not forwarding && not dynamic) {
+        return generateToken(
+            no_prefix,
+            { _bindScope },
+            src_.value
+        );
+    }
+
+    return Token {};
+}
+
 Token Tokenizer::transformAccStageOut(cref<Token> src_, const bool forwarding, const bool dynamic) const {
 
     if (forwarding) {

@@ -2,41 +2,21 @@
 
 #include <Engine.Common/Guid.hpp>
 #include <Engine.Common/Types.hpp>
-#include <Engine.Common/Math/Vector.hpp>
-#include <Engine.Common/Math/Matrix.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.GFX.Acc.Compile/VkCompiler.hpp>
+#include <Engine.Common/Math/Matrix.hpp>
+#include <Engine.Common/Math/Vector.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-#include "MaterialPrototype.hpp"
-#include "MaterialPrototypeParameter.hpp"
 #include "Material.hpp"
 #include "MaterialParameter.hpp"
+#include "MaterialPrototype.hpp"
+#include "MaterialPrototypeParameter.hpp"
 
 using namespace hg::engine::gfx::material;
 using namespace hg;
 
 smr<Material> MaterialFactory::buildMaterial(mref<smr<MaterialPrototype>> prototype_) const {
-
-    auto compiler = acc::makeVkAccCompiler();
-
-    /**/
-
-    Set<smr<const acc::AccelerationPass>> passes {};
-    for (const auto& effect : prototype_->getAccelerationEffects()) {
-
-        auto pass = compiler->compile(clone(effect));
-
-        if (pass.empty()) {
-            // Warning: Failed
-            assert(false);
-        }
-
-        passes.insert(_STD move(pass));
-    }
-
-    /**/
 
     Vector<MaterialParameter> params {};
 
@@ -53,7 +33,6 @@ smr<Material> MaterialFactory::buildMaterial(mref<smr<MaterialPrototype>> protot
     return make_smr<Material>(
         _STD move(guid),
         clone(prototype_),
-        _STD move(passes),
         _STD move(params)
     );
 }

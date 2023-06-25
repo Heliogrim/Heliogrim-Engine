@@ -44,6 +44,8 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] Token generate(cref<AccelerationStageOutput> aso_) const;
 
     public:
+        [[nodiscard]] Token transformAccStageIn(cref<Token> src_, bool forwarding, bool dynamic) const;
+
         [[nodiscard]] Token transformAccStageOut(cref<Token> src_, bool forwarding, bool dynamic) const;
     };
 }

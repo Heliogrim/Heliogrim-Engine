@@ -1,5 +1,7 @@
 #include "VkModuleBuilder.hpp"
 
+#include <Engine.GFX.Acc/Pass/VkAccelerationGraphicsPass.hpp>
+
 #include "VkModuleSource.hpp"
 
 using namespace hg::engine::gfx::acc;
@@ -16,7 +18,7 @@ VkModuleBuilder::~VkModuleBuilder() noexcept = default;
 
 uptr<ModuleSource> VkModuleBuilder::build(
     cref<smr<AccelerationPass>> targetPass_,
-    cref<ScopedTokenStorage> scopedTokens_,
+    cref<class SpecificationStorage> specifications_,
     cref<smr<AccelerationStageDerivat>> stage_
 ) const {
 
@@ -41,9 +43,39 @@ uptr<ModuleSource> VkModuleBuilder::build(
 
     /* Resolve tokenized binding layouts to platform specific location bindings */
 
-    s32 majorIndex = 0i32;
-    s32 minorIndex = 0i32;
+    if (targetPass_->getClass()->isExactType<VkAccelerationGraphicsPass>() &&
+        stage_->getFlagBits() == AccelerationStageFlagBits::eVertex
+    ) {
 
+        constexpr s32 invalidSet = -1i32;
+        s32 location = 0i32;
+
+        for (const auto& sib : stage_->getStageInputs()) {
+
+            if (sib.transferType != AccelerationStageTransferType::eForward) {
+                continue;
+            }
+
+            ms->mappedLocations.insert(
+                _STD make_pair(
+                    sib.token,
+                    VkBindingLocation {
+                        invalidSet,
+                        location++
+                    }
+                )
+            );
+
+        }
+
+    }
+
+    /**/
+
+    s32 dsetIndex = 0i32;
+    s32 dsetLocation = 0i32;
+
+    // Warning: This has to be invariant over all stages within one target pass
     for (const auto& layout : targetPass_->getPassBindings().layouts) {
 
         for (const auto& element : layout.elements) {
@@ -52,17 +84,17 @@ uptr<ModuleSource> VkModuleBuilder::build(
                 _STD make_pair(
                     element.token,
                     VkBindingLocation {
-                        majorIndex,
-                        minorIndex
+                        dsetIndex,
+                        dsetLocation
                     }
                 )
             );
 
-            ++minorIndex;
+            ++dsetLocation;
         }
 
-        minorIndex = 0i32;
-        ++majorIndex;
+        dsetLocation = 0i32;
+        ++dsetIndex;
     }
 
     /* Transform IL shader source code to platform shader source code. */
