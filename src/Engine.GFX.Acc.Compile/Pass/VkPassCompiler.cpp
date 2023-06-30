@@ -10,18 +10,16 @@
 #include <Engine.GFX.Acc/AccelerationStageDerivat.hpp>
 #include <Engine.GFX.Acc/AccelerationStageModule.hpp>
 #include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX.Acc/Pass/AccelerationGraphicsSpec.hpp>
 #include <Engine.GFX.Acc/Pass/VkAccelerationComputePass.hpp>
 #include <Engine.GFX.Acc/Pass/VkAccelerationGraphicsPass.hpp>
 #include <Engine.GFX.Acc/Pass/VkAccelerationMeshPass.hpp>
 #include <Engine.GFX.Acc/Pass/VkAccelerationRaytracingPass.hpp>
-#include <Engine.GFX/Geometry/Vertex.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #include "../VkApi.hpp"
 #include "../Module/VkCompiledModule.hpp"
-#include "Engine.GFX.Acc.Compile/Spec/SpecificationStorage.hpp"
-#include "Engine.GFX.Acc.Compile/Token/Tokenizer.hpp"
+#include "../Spec/SpecificationStorage.hpp"
+#include "../Token/Tokenizer.hpp"
 
 using namespace hg::engine::gfx::acc;
 using namespace hg;
@@ -54,9 +52,62 @@ Vector<smr<AccelerationStageDerivat>> VkPassCompiler::hydrateStages(
 }
 
 void VkPassCompiler::resolveBindLayouts(
-    cref<Vector<smr<AccelerationStageDerivat>>> stages_,
-    ref<CompactSet<_::VkDescriptorSetLayout>> layouts_
-) const {}
+    const non_owning_rptr<const AccelerationPass> pass_,
+    ref<Vector<_::VkDescriptorSetLayout>> layouts_
+) const {
+
+    const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+
+    u32 dsetIndex = 0;
+    u32 dsetLocation = 0;
+
+    for (const auto& layout : pass_->getPassBindings().layouts) {
+
+        vk::DescriptorSetLayoutCreateInfo dslci {};
+        Vector<vk::DescriptorSetLayoutBinding> vkBindings {};
+
+        for (const auto& element : layout.elements) {
+
+            vk::DescriptorSetLayoutBinding vkDslb {
+                dsetLocation++,
+                vk::DescriptorType::eSampler,
+                1ui32,
+                vk::ShaderStageFlagBits::eAll,
+                nullptr
+            };
+
+            switch (element.type) {
+                case AccelerationBindingType::eTexture: {
+                    vkDslb.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+                    break;
+                }
+                case AccelerationBindingType::eStorageBuffer: {
+                    vkDslb.descriptorType = vk::DescriptorType::eStorageBuffer;
+                    break;
+                }
+                case AccelerationBindingType::eUniformBuffer: {
+                    vkDslb.descriptorType = vk::DescriptorType::eUniformBuffer;
+                    break;
+                }
+                default: {
+                    __debugbreak();
+                }
+            }
+
+            vkBindings.push_back(_STD move(vkDslb));
+        }
+
+        dslci.setBindings(vkBindings);
+        const auto vkLayout = device->vkDevice().createDescriptorSetLayout(dslci);
+
+        layouts_.push_back(reinterpret_cast<_::VkDescriptorSetLayout>(vkLayout.operator VkDescriptorSetLayout()));
+
+        /**/
+        ++dsetIndex;
+        dsetLocation = 0;
+    }
+
+}
 
 bool VkPassCompiler::hasDepthBinding(cref<smr<AccelerationStageDerivat>> stage_) const noexcept {
 
@@ -384,8 +435,8 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
             isFrontFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilPassOp),
             isFrontFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilDepthFailOp),
             isFrontFaceCulled ? vk::CompareOp::eNever : api::stencilCompareOp(specification_.stencilCompareOp),
-            isFrontFaceCulled ? 0ui32 : specification_.stencilCompareMask._Mask,
-            isFrontFaceCulled ? 0ui32 : specification_.stencilWriteMask._Mask,
+            isFrontFaceCulled ? 0ui32 : specification_.stencilCompareMask.to_ulong(),
+            isFrontFaceCulled ? 0ui32 : specification_.stencilWriteMask.to_ulong(),
             {}
         };
         pdssci.back = vk::StencilOpState {
@@ -393,8 +444,8 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
             isBackFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilPassOp),
             isBackFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilDepthFailOp),
             isBackFaceCulled ? vk::CompareOp::eNever : api::stencilCompareOp(specification_.stencilCompareOp),
-            isBackFaceCulled ? 0ui32 : specification_.stencilCompareMask._Mask,
-            isBackFaceCulled ? 0ui32 : specification_.stencilWriteMask._Mask,
+            isBackFaceCulled ? 0ui32 : specification_.stencilCompareMask.to_ulong(),
+            isBackFaceCulled ? 0ui32 : specification_.stencilWriteMask.to_ulong(),
             {}
         };
     }
@@ -628,9 +679,9 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
 
     /**/
 
-    CompactSet<_::VkDescriptorSetLayout> bindLayouts {};
+    Vector<_::VkDescriptorSetLayout> bindLayouts {};
     // TODO: Will be retrieve from additional information provided by the Stage Composer
-    resolveBindLayouts(pass_->getStageDerivates(), bindLayouts);
+    resolveBindLayouts(pass_.get(), bindLayouts);
 
     Vector<vk::DescriptorSetLayout> setLayouts {};
     for (const auto layout : bindLayouts) {
@@ -665,6 +716,9 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
         _STD move(reinterpret_cast<_::VkGraphicsPipelineLayout>(gpci.layout.operator VkPipelineLayout()))
     );
     pass_->setVkPipe(_STD move(reinterpret_cast<_::VkGraphicsPipeline>(result.value.operator VkPipeline())));
+
+    // Warning: Temporary
+    pass_->_vkDescLayouts = _STD move(bindLayouts);
 
     return _STD move(pass_);
 }

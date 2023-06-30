@@ -10,6 +10,10 @@ using namespace hg;
 LORenderPass::LORenderPass(sptr<Device> device_) noexcept :
     _device(device_) {}
 
+LORenderPass::~LORenderPass() {
+    destroy();
+}
+
 void LORenderPass::setup() {
     /**
      * Prepare
@@ -237,6 +241,7 @@ void LORenderPass::setup(const Framebuffer& framebuffer_) {
 
 void LORenderPass::destroy() {
     _device->vkDevice().destroyRenderPass(_vkRenderPass);
+    _vkRenderPass = nullptr;
 }
 
 void LORenderPass::set(const u32 idx_, const vk::AttachmentDescription& attachment_) {

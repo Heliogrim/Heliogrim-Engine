@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 

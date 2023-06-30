@@ -23,7 +23,7 @@ namespace hg {
     }
 
     template <class Ty_, class... Args_> requires
-        (not _STD is_convertible_v<Ty_, Args_...>) &&
+        (not _STD is_constructible_v<Ty_, Args_...>) &&
         (_STD is_aggregate_v<Ty_>)
     [[nodiscard]] inline uptr<Ty_> make_uptr(Args_&&... args_) {
         return uptr<Ty_>(new Ty_ { _STD forward<Args_>(args_)... });

@@ -19,5 +19,9 @@ namespace hg::engine::gfx::acc {
 
     struct AccelerationBindingLayout {
         Vector<AccelerationBindingLayoutElement> elements;
+
+        [[nodiscard]] bool compatible(cref<AccelerationBindingLayoutElement> element_) const noexcept {
+            return false;
+        }
     };
 }

@@ -17,8 +17,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{2462cb7c-18e2-4e32-96e0-692141c48f9e}</ProjectGuid>
-    <RootNamespace>EngineGFXMaterial</RootNamespace>
+    <ProjectGuid>{df055ff3-86d2-4fcc-b14a-9e032c71abf6}</ProjectGuid>
+    <RootNamespace>EngineGFXAccLang</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -90,25 +90,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.GFX.Material\Material.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialFactory.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialParameter.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialParameterStorage.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialPrototype.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialPrototypeParameter.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Material\__fwd.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Lang\IL.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Lang\ILDialect.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Lang\Intermediate.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Lang\IR.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.GFX.Material\Material.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Material\MaterialFactory.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Material\MaterialParameter.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Material\MaterialPrototype.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Material\MaterialPrototypeParameter.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
-      <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
-    </ProjectReference>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Lang\Intermediate.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

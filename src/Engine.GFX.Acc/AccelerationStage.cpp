@@ -31,3 +31,11 @@ cref<Vector<AccelerationStageInput>> AccelerationStage::getStageInputs() const n
 cref<Vector<AccelerationStageOutput>> AccelerationStage::getStageOutputs() const noexcept {
     return _stageOutputs;
 }
+
+smr<lang::Intermediate> AccelerationStage::getIntermediate() const noexcept {
+    return _intermediate;
+}
+
+void AccelerationStage::setIntermediate(mref<smr<lang::Intermediate>> intermediate_) {
+    _intermediate = _STD move(intermediate_);
+}

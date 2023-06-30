@@ -64,8 +64,8 @@ namespace hg::engine::gfx::acc {
         ) const;
 
         void resolveBindLayouts(
-            cref<Vector<smr<AccelerationStageDerivat>>> stages_,
-            _Inout_ ref<CompactSet<_::VkDescriptorSetLayout>> layouts_
+            const non_owning_rptr<const AccelerationPass> pass_,
+            _Inout_ ref<Vector<_::VkDescriptorSetLayout>> layouts_
         ) const;
 
         [[nodiscard]] bool hasDepthBinding(cref<smr<AccelerationStageDerivat>> stage_) const noexcept;
@@ -73,14 +73,14 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] bool hasStencilBinding(cref<smr<AccelerationStageDerivat>> stage_) const noexcept;
 
         template <typename Type_, typename SpecificationType_>
-        smr<const AccelerationPass> compileTypeSpec(
+        [[nodiscard]] smr<const AccelerationPass> compileTypeSpec(
             mref<smr<AccelerationPass>> pass_,
             mref<Vector<smr<AccelerationStageDerivat>>> stages_,
             SpecificationType_ specification_
         ) const;
 
     public:
-        smr<const AccelerationPass> compile(
+        [[nodiscard]] smr<const AccelerationPass> compile(
             cref<class SpecificationStorage> specifications_,
             mref<smr<AccelerationPass>> source_,
             mref<Vector<smr<AccelerationStageDerivat>>> stages_,

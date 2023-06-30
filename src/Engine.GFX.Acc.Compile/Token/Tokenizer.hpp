@@ -28,13 +28,21 @@ namespace hg::engine::gfx::acc {
     private:
         string _prefix { "$" };
         string _inScope { "in" };
-        string _bindScope { "material" };
+        string _bindScope { "bind" };
         string _outScope { "out" };
+
+    private:
+        [[nodiscard]] Token expand(mref<Token> token_, cref<string> data_) const;
 
     public:
         [[nodiscard]] Token generate(cref<InputLayoutDescription> ild_) const;
 
         [[nodiscard]] Token generate(cref<BindingLayoutDescription> bld_) const;
+
+        [[nodiscard]] Token generate(
+            cref<BindingLayoutDescription> bld_,
+            cref<BindingLayoutAttributeDescription> blad_
+        ) const;
 
         [[nodiscard]] Token generate(cref<OutputLayoutDescription> old_) const;
 
@@ -47,5 +55,12 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] Token transformAccStageIn(cref<Token> src_, bool forwarding, bool dynamic) const;
 
         [[nodiscard]] Token transformAccStageOut(cref<Token> src_, bool forwarding, bool dynamic) const;
+
+        [[nodiscard]] Token transformAccStageInToOut(cref<Token> src_) const;
+
+    public:
+        [[nodiscard]] bool isStageIn(cref<Token> token_, bool forwarding, bool dynamic) const;
+
+        [[nodiscard]] bool isStageOut(cref<Token> token_, bool forwarding, bool dynamic) const;
     };
 }

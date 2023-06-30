@@ -45,7 +45,6 @@
 #include "Texture/VkTextureFactory.hpp"
 
 #include "Editor.GFX/Renderer/EdRevRenderer.hpp"
-#include "Engine.GFX.Material/test.brdf.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg::engine;
@@ -226,10 +225,6 @@ void Graphics::setup() {
      */
     auto renderScenePipeline = make_uptr<gfx::schedule::RenderScenePipeline>();
     _engine->getScheduler()->getCompositePipeline()->addPipeline(_STD move(renderScenePipeline));
-
-    /**/
-    test_brdf_material();
-    /**/
 }
 
 void Graphics::start() {}
