@@ -16,7 +16,7 @@ namespace hg::engine::gfx::acc {
 
         virtual ~ModuleBuilder() noexcept = default;
 
-    private:
+    protected:
         non_owning_rptr<const class Tokenizer> _tokenizer;
 
     public:
@@ -28,7 +28,8 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] virtual uptr<ModuleSource> build(
             cref<smr<AccelerationPass>> targetPass_,
             cref<class SpecificationStorage> specifications_,
-            cref<smr<AccelerationStageDerivat>> stage_
+            cref<smr<AccelerationStageDerivat>> stage_,
+            cref<uptr<ModuleSource>> previous_
         ) const = 0;
     };
 }

@@ -17,10 +17,10 @@ namespace hg::engine::gfx::acc {
         SpirvCompiler _spirvCompiler;
 
     public:
-        [[nodiscard]] _Success_(return != nullptr) uptr<CompiledModule> compile(
+        [[nodiscard]] _Success_(return != nullptr) uptr<class CompiledModule> compile(
             cref<smr<AccelerationPass>> targetPass_,
             cref<class SpecificationStorage> specifications_,
-            mref<uptr<ModuleSource>> source_
+            mref<uptr<class ModuleSource>> source_
         ) const override;
     };
 }

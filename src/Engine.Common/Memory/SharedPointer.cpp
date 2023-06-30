@@ -2,8 +2,6 @@
 
 #include <Engine.Pedantic/Into/Into.hpp>
 
-using namespace hg;
-
 struct Ty0 {};
 
 struct Ty1 : public Ty0 { };

@@ -460,6 +460,10 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     <None Include="..\..\resources\shader\mainpass_sky.vert.spv" />
     <None Include="..\..\resources\shader\mainpass_sky.vs" />
     <None Include="..\..\resources\shader\mainpass_static.frag" />
+    <None Include="..\..\resources\shader\nxg.mat.brdf.frag" />
+    <None Include="..\..\resources\shader\nxg.mat.brdf.frag.spv" />
+    <None Include="..\..\resources\shader\nxg.mat.brdf.vert" />
+    <None Include="..\..\resources\shader\nxg.mat.brdf.vert.spv" />
     <None Include="..\..\resources\shader\obj.frag" />
     <None Include="..\..\resources\shader\obj.frag.spv" />
     <None Include="..\..\resources\shader\obj.vert.spv" />

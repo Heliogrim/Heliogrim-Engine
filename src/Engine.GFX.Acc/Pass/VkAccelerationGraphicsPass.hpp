@@ -18,7 +18,10 @@ namespace hg::engine::gfx::acc {
     public:
         VkAccelerationGraphicsPass(mref<smr<AccelerationEffect>> effect_);
 
-        ~VkAccelerationGraphicsPass() override = default;
+        ~VkAccelerationGraphicsPass() override;
+
+    private:
+        void tidy();
 
     public:
         void setStageDerivat(const size_t idx_, mref<smr<AccelerationStageDerivat>> derivat_);
@@ -31,5 +34,9 @@ namespace hg::engine::gfx::acc {
         void setVkPipeLayout(mref<_::VkGraphicsPipelineLayout> vkPipeLayout_);
 
         void setVkPipe(mref<_::VkGraphicsPipeline> vkPipe_);
+
+        // Warning: Temporary
+    public:
+        Vector<_::VkDescriptorSetLayout> _vkDescLayouts;
     };
 }

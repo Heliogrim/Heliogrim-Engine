@@ -15,6 +15,7 @@ set(
 		${META_PROJECT_NAME}::Engine.GFX
 		${META_PROJECT_NAME}::Engine.GFX.Acc
 		${META_PROJECT_NAME}::Engine.GFX.Acc.Compile
+		${META_PROJECT_NAME}::Engine.GFX.Acc.Lang
 		${META_PROJECT_NAME}::Engine.GFX.Glow
 		${META_PROJECT_NAME}::Engine.GFX.Glow.3D
 		${META_PROJECT_NAME}::Engine.GFX.Glow.UI

@@ -2,6 +2,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.GFX.Acc.Lang/Intermediate.hpp>
 
 #include "__fwd.hpp"
 #include "AccelerationStageFlags.hpp"
@@ -46,5 +47,13 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] cref<Vector<AccelerationStageInput>> getStageInputs() const noexcept;
 
         [[nodiscard]] cref<Vector<AccelerationStageOutput>> getStageOutputs() const noexcept;
+
+    protected:
+        smr<lang::Intermediate> _intermediate;
+
+    public:
+        [[nodiscard]] smr<lang::Intermediate> getIntermediate() const noexcept;
+
+        void setIntermediate(mref<smr<lang::Intermediate>> intermediate_);
     };
 }

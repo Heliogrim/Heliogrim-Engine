@@ -33,7 +33,7 @@ namespace hg::engine::gfx::pipeline {
          * @author Julius
          * @date 03.12.2020
          */
-        ~LORenderPass() noexcept = default;
+        ~LORenderPass();
 
         /**
          * Setups this

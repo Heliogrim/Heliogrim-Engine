@@ -27,7 +27,7 @@ namespace hg::engine::gfx::acc {
             cref<class SpecificationStorage> specifications_,
             mref<smr<AccelerationPass>> source_,
             mref<Vector<smr<AccelerationStageDerivat>>> stages_,
-            mref<Vector<uptr<CompiledModule>>> modules_
+            mref<Vector<uptr<class CompiledModule>>> modules_
         ) const = 0;
     };
 }

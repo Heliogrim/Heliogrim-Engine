@@ -16,7 +16,8 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] uptr<ModuleSource> build(
             cref<smr<AccelerationPass>> targetPass_,
             cref<class SpecificationStorage> specifications_,
-            cref<smr<AccelerationStageDerivat>> stage_
+            cref<smr<AccelerationStageDerivat>> stage_,
+            cref<uptr<ModuleSource>> previous_
         ) const override;
     };
 }

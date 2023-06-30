@@ -93,9 +93,6 @@ smr<const AccelerationPass> Compiler::compile(
 
     /* Compose a modified ordered list of stage */
 
-    // TODO: Stage Composer has to provide the compose set of stages and the descriptor layout, because it should
-    // TODO:    resolve the token <-> binding mapping and knows about the binding groups and binding rates
-
     // TODO: Stage Composer should build stages only based on tokens and irrelated to the underlying platform
     // TODO: Stage Composer should emit a set of Binding Layouts (vkDescriptorLayout) based on tokenized bindings
     // TODO:    Binding layouts should be based on group and rate information, which should be present
@@ -107,10 +104,13 @@ smr<const AccelerationPass> Compiler::compile(
 
     for (const auto& stageDerivat : stages) {
 
+        constexpr uptr<ModuleSource> dummy {};
+        const auto& previous = sources.empty() ? dummy : sources.back();
+
         // TODO: Module builder should consume layouts to resolved tokenized bindings into platform specific bindings
         // TODO: Module builder should emit a binding mapping per module source ~> compiled module to be able to query defined
         // TODO:    bindings by tokens downstream
-        auto source = _moduleBuilder->build(pass, specifications_, stageDerivat);
+        auto source = _moduleBuilder->build(pass, specifications_, stageDerivat, previous);
         sources.push_back(_STD move(source));
     }
 

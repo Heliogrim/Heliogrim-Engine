@@ -1,17 +1,14 @@
 #include "SpirvCompiler.hpp"
 
+#include <fstream>
+
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 // glslang includes
-#include <glslang/Public/ShaderLang.h>
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
-
-// spirv includes
-#include <spirv-tools/libspirv.hpp>
-#include <spirv-tools/linker.hpp>
-#include <spirv-tools/optimizer.hpp>
 
 using namespace hg::engine::gfx::acc;
 using namespace hg;
@@ -26,14 +23,12 @@ SpirvCompiler::SpirvCompiler() :
     _targetClient(SpirvTargetClient::eVulkan13),
     _targetVersion(SpirvTargetVersion::eSpv16) {
     if (extern_compiler_ref_count.fetch_add(1ui32) == 0) {
-        ShInitialize();
         glslang::InitializeProcess();
     }
 }
 
 SpirvCompiler::~SpirvCompiler() {
     if (extern_compiler_ref_count.fetch_sub(1ui32) == 1ui32) {
-        ShFinalize();
         glslang::FinalizeProcess();
     }
 }
@@ -55,7 +50,7 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<Vector<str
 
     /**/
 
-    s32 langVersion { 100 /* 450 */ };
+    s32 langVersion { 100 /* EShClientVulkan, 100 => SPIR-V */ };
 
     glslShader->setEnvClient(
         reinterpret_cast<cref<glslang::EShClient>>(_dialect),
@@ -83,14 +78,25 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<Vector<str
         codeSnippetLength.push_back(static_cast<s32>(source_[i].size()));
     }
 
+    const char* const preamble { "" };
+    glslShader->setPreamble(preamble);
     glslShader->setStringsWithLengths(codeSnippets.data(), codeSnippetLength.data(), static_cast<s32>(source_.size()));
 
     /**/
 
     s32 defaultVersion { 110 };
-    EShMessages msg { EShMsgDefault };
+    EShMessages msg { EShMsgDefault | EShMsgSpvRules | EShMsgVulkanRules };
 
-    status = glslShader->parse(GetResources(), defaultVersion, false, msg);
+    // Warning: Currently broken, when `setDebugInfo(true)`, SPIRV Remapping will crash
+    //glslShader->setDebugInfo(false);
+    //glslShader->setEnhancedMsgs();
+
+    status = glslShader->parse(GetDefaultResources(), defaultVersion, false, msg);
+
+    if (not status) {
+        IM_CORE_WARN(glslShader->getInfoLog());
+        IM_CORE_WARN(glslShader->getInfoDebugLog());
+    }
 
     /**/
 
@@ -105,10 +111,23 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<Vector<str
     if (status) {
 
         const auto* const intermediate = glslProgram->getIntermediate(stage);
-        glslang::SpvOptions spvOpts {};
+        glslang::SpvOptions spvOpts {
+            .generateDebugInfo = true,
+            .stripDebugInfo = true,
+            .validate = true
+        };
         spv::SpvBuildLogger spvLog {};
 
         glslang::GlslangToSpv(*intermediate, reinterpret_cast<ref<Vector<u32>>>(byteCode), &spvLog, &spvOpts);
+
+        if (not spvLog.errors.empty()) {
+            for (auto&& error : spvLog.errors) {
+                IM_CORE_ERROR(_STD move(error));
+            }
+            __debugbreak();
+            status = false;
+            byteCode.clear();
+        }
     }
 
     /**/
