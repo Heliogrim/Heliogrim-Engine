@@ -1,51 +1,16 @@
 #pragma once
 
-#include <Engine.GFX/Buffer/__fwd.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
+#include <Engine.GFX.Material/Material.hpp>
 
-#include "../Texture/TextureResource.hpp"
-
-namespace hg::engine::gfx::loader {
-    class Material final {
-    public:
-        using this_type = Material;
-
-    public:
-        Material() noexcept;
-
-        ~Material();
-
-    private:
-    public:
-        smr<TextureResource> _diffuse;
-        smr<TextureResource> _normal;
-        smr<TextureResource> _roughness;
-        smr<TextureResource> _metalness;
-        smr<TextureResource> _ao;
-        smr<TextureResource> _alpha;
-
-    public:
-        [[nodiscard]] cref<smr<TextureResource>> diffuse() const noexcept;
-
-        [[nodiscard]] cref<smr<TextureResource>> normal() const noexcept;
-
-        [[nodiscard]] cref<smr<TextureResource>> roughness() const noexcept;
-
-        [[nodiscard]] cref<smr<TextureResource>> metalness() const noexcept;
-
-        [[nodiscard]] cref<smr<TextureResource>> ao() const noexcept;
-
-        [[nodiscard]] cref<smr<TextureResource>> alpha() const noexcept;
-
-    private:
-    public:
-        uptr<VirtualBufferView> _view;
-
-    public:
-        [[nodiscard]] const non_owning_rptr<const VirtualBufferView> view() const noexcept;
-    };
+namespace hg::engine::gfx {
+    typedef resource::Resource<material::Material> MaterialResource;
 }
 
 namespace hg::engine::gfx {
-    typedef resource::Resource<loader::Material> MaterialResource;
+    struct MaterialPrototypeWrapper {
+        smr<material::MaterialPrototype> instance;
+    };
+
+    typedef resource::Resource<MaterialPrototypeWrapper> MaterialPrototypeResource;
 }

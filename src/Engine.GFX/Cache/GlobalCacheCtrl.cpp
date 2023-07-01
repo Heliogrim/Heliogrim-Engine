@@ -7,6 +7,10 @@
 #include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.GFX.Loader/Texture/Traits.hpp>
 #include <Engine.GFX.Loader/Texture/TextureLoader.hpp>
+#include <Engine.GFX.Loader/Material/MaterialLoader.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Common/GuidFormat.hpp>
 
 #include "GlobalResourceCache.hpp"
 
@@ -257,3 +261,114 @@ void GlobalCacheCtrl::markAsUsed(ptr<StaticGeometryResource> resource_, mref<Cac
 void GlobalCacheCtrl::unmark(ptr<StaticGeometryResource> resource_, mref<CacheStaticGeometrySubject> subresource_) {
     throw NotImplementedException();
 }
+
+#pragma region Materials
+
+void GlobalCacheCtrl::markAsUsed(
+    const __restricted_ptr<const void> spec_,
+    mref<smr<MaterialResource>> material_,
+    mref<smr<acc::AccelerationPass>> accelerationPass_
+) {
+
+    using SubjectType = CacheCtrlSubject<_STD pair<smr<MaterialResource>, smr<acc::AccelerationPass>>>;
+    using SubMapType = RobinMap<__restricted_ptr<MaterialResource>, uptr<SubjectType>>;
+
+    if (not material_->isLoaded()) {
+        IM_CORE_ERROR("Tried to cache mark material resource which is still unloaded.");
+        return;
+    }
+
+    const auto guard = material_->acquire();
+    const auto guid = guard->getGuid();
+
+    const auto result = _cache->store(static_cast<cref<asset_guid>>(guid), clone(material_));
+
+    #if _DEBUG
+    if (result == StoreResultType::eFail) {
+        IM_CORE_WARNF("Material resource `{}` is already stored to global cache.", encodeGuid4228(guid));
+    }
+    #endif
+
+    /**/
+
+    auto specIt = _materialPasses.find(spec_);
+    if (specIt == _materialPasses.end()) {
+
+        const auto insertResult = _materialPasses.insert(_STD make_pair(spec_, SubMapType {}));
+        specIt = insertResult.first;
+
+        assert(insertResult.second);
+    }
+
+    /**/
+
+    auto& subMap = const_cast<SubMapType&>(specIt->second);
+    auto subIt = subMap.find(material_.get());
+
+    if (subIt == subMap.end()) {
+
+        auto key = material_.get();
+        auto val = make_uptr<SubjectType>(_STD make_pair(_STD move(material_), _STD move(accelerationPass_)), 1ui16);
+
+        subMap.insert(
+            _STD make_pair(
+                _STD move(key),
+                _STD move(val)
+            )
+        );
+        return;
+    }
+
+    /**/
+
+    subIt->second->marks.operator++();
+}
+
+void GlobalCacheCtrl::unmark(
+    const __restricted_ptr<const material_spec_type> spec_,
+    const __restricted_ptr<MaterialResource> resource_
+) {
+
+    using SubjectType = CacheCtrlSubject<_STD pair<smr<MaterialResource>, smr<acc::AccelerationPass>>>;
+    using SubMapType = RobinMap<__restricted_ptr<MaterialResource>, uptr<SubjectType>>;
+
+    if (not resource_->isLoaded()) {
+        IM_CORE_ERROR("Tried to unmark material resource with is not loaded.");
+        return;
+    }
+
+    const auto specIt = _materialPasses.find(spec_);
+    if (specIt == _materialPasses.end()) {
+        return;
+    }
+
+    auto& subMap = const_cast<SubMapType&>(specIt->second);
+    const auto subIt = subMap.find(resource_);
+
+    if (subIt == subMap.end()) {
+        return;
+    }
+
+    const auto left { (subIt->second)->marks.operator--() };
+
+    #if _DEBUG
+    // No constexpr, just debug expression
+    static const u16 wrapTest { 0xFFFEui16 };
+    if (left >= wrapTest) {
+        __debugbreak();
+    }
+    #endif
+
+    if (left > 0ui16) {
+        return;
+    }
+
+    subMap.erase(subIt);
+}
+
+void GlobalCacheCtrl::drop(mref<material_spec_type> spec_) {
+    // Warning: This could break, due to concurrent access
+    _materialPasses.erase(_STD move(spec_));
+}
+
+#pragma endregion

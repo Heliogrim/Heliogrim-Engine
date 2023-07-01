@@ -28,6 +28,9 @@ namespace hg::engine::gfx::cache {
 
         using texture_subject_type = LocalCacheCtrlSubject<TextureResource, AssocKey<TextureSubResource>>;
         using static_geometry_subject_type = LocalCacheCtrlSubject<StaticGeometryResource, StaticGeometrySubResource>;
+        using material_subject_type = LocalCacheCtrlSubject<
+            const void, _STD pair<ptr<MaterialResource>, ptr<acc::AccelerationPass>>
+        >;
 
     public:
         LocalCacheCtrl(mref<uptr<LocalResourceCache>> cache_);
@@ -60,6 +63,7 @@ namespace hg::engine::gfx::cache {
         // TODO: Check whether we want to use as high-load hash-set
         Vector<texture_subject_type> _textures;
         Vector<static_geometry_subject_type> _staticGeometries;
+        Vector<material_subject_type> _specMaterials;
 
     public:
         void markLoadedAsUsed(_In_ mref<smr<TextureResource>> resource_, _In_ mref<TextureSubResource> subResource_);
@@ -75,5 +79,11 @@ namespace hg::engine::gfx::cache {
         void markAsUsed(const ptr<TextureResource> resource_, cref<AssocKey<TextureSubResource>> subResource_);
 
         void markAsUsed(const ptr<StaticGeometryResource> resource_, mref<StaticGeometrySubResource> subResource_);
+
+        void markAsUsed(
+            _In_ const non_owning_rptr<const void> spec_,
+            _In_ mref<smr<MaterialResource>> material_,
+            _In_ mref<smr<acc::AccelerationPass>> accelerationPass_
+        );
     };
 }

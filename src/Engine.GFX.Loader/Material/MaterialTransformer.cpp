@@ -1,38 +1,41 @@
 #include "MaterialTransformer.hpp"
 
+#include <ranges>
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Assets/Types/Material/GfxMaterialPrototype.hpp>
 #include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX/Buffer/Buffer.hpp>
-#include <Engine.GFX/Buffer/VirtualBufferView.hpp>
-#include <Engine.GFX/Command/CommandBuffer.hpp>
-#include <Engine.GFX/Command/CommandPool.hpp>
-#include <Engine.GFX/Command/CommandQueue.hpp>
-#include <Engine.GFX/Material/MaterialMetaDto.hpp>
 #include <Engine.GFX/Pool/GlobalResourcePool.hpp>
-#include <Engine.GFX/Texture/VirtualTextureView.hpp>
+#include <Engine.GFX.Material/MaterialFactory.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Reflect/Cast.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 
 #include "../Texture/TextureResource.hpp"
 #include "../Texture/Traits.hpp"
-#include "Engine.Assets.System/IAssetRegistry.hpp"
-#include "Engine.Reflect/Cast.hpp"
 
 using namespace hg::engine::gfx::loader;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-[[nodiscard]] static smr<engine::gfx::TextureResource> resolveTexture(
+/**/
+
+[[nodiscard]] static smr<TextureResource> resolveTexture(
     mref<asset_guid> guid_,
     const non_owning_rptr<const engine::assets::IAssetRegistry> registry_,
     const non_owning_rptr<const engine::resource::LoaderManager> loader_
 );
 
-static void makeStageBuffer(cref<sptr<Device>> device_, const u64 size_, _Out_ ref<Buffer> buffer_);
+[[nodiscard]] static smr<MaterialPrototypeResource> resolvePrototype(
+    mref<asset_guid> guid_,
+    const non_owning_rptr<const engine::assets::IAssetRegistry> registry_,
+    const non_owning_rptr<const engine::resource::LoaderManager> loader_
+);
 
-static void destroyStageBuffer(mref<Buffer> buffer_);
+/**/
 
 MaterialTransformer::MaterialTransformer(const non_owning_rptr<pool::GlobalResourcePool> pool_) :
     Transformer(),
@@ -44,15 +47,25 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
     cref<next_type> next_
 ) const {
 
-    // Material does not require any additional binary data
-    // auto source = next_(next_type::next_request_type::type {}, next_type::next_request_type::options {});
+    // TODO: Consume source data to hydrate the instantiated resource object
+    auto source = next_(next_type::next_request_type::type {}, next_type::next_request_type::options {});
 
     const auto& loader = engine::Engine::getEngine()->getResources()->loader();
     const auto* const registry = engine::Engine::getEngine()->getAssets()->getRegistry();
 
+    /**/
+
+    const auto protoRes = resolvePrototype(request_->prototype(), registry, &loader);
+    const auto protoGuard = protoRes->acquire(resource::ResourceUsageFlag::eRead);
+
+    /**/
+
+    material::MaterialFactory factory {};
+    auto fmat = factory.buildMaterial(clone(protoGuard->instance));
+
     using derived_type = ::hg::engine::resource::UniqueResource<MaterialResource::value_type>;
     auto dst = make_smr<MaterialResource, derived_type>(
-        new derived_type(_STD in_place)
+        new derived_type(fmat.release())
     );
 
     auto materialGuard = dst->acquire(resource::ResourceUsageFlag::eAll);
@@ -60,178 +73,33 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
 
     /**/
 
-    if (request_->diffuse()) {
-        material._diffuse = resolveTexture(request_->diffuse(), registry, &loader);
-    }
+    const auto count = protoGuard->instance->getParameters().size();
+    for (size_t idx = 0; idx < count; ++idx) {
 
-    if (request_->normal()) {
-        material._normal = resolveTexture(request_->normal(), registry, &loader);
-    }
+        const auto& proto = protoGuard->instance->getParameters()[idx];
+        auto& param = const_cast<material::MaterialParameter&>(material.getParameters()[idx]);
 
-    if (request_->metalness()) {
-        material._metalness = resolveTexture(request_->metalness(), registry, &loader);
-    }
+        switch (proto.getDataType()) {
+            case acc::AccelerationStageTransferDataType::eConstant:
+            case acc::AccelerationStageTransferDataType::eUniform:
+            case acc::AccelerationStageTransferDataType::eStorage: break;
+            case acc::AccelerationStageTransferDataType::eSampler: {
 
-    if (request_->roughness()) {
-        material._roughness = resolveTexture(request_->roughness(), registry, &loader);
-    }
+                asset_guid guid {};
+                auto resolved = resolveTexture(_STD move(guid), registry, &loader);
 
-    if (request_->ao()) {
-        material._ao = resolveTexture(request_->ao(), registry, &loader);
-    }
-
-    if (request_->alpha()) {
-        material._alpha = resolveTexture(request_->alpha(), registry, &loader);
-    }
-
-    /**/
-
-    material._view = _pool->allocateVirtualBuffer(pool::MaterialBufferAllocation {});
-
-    /**/
-
-    experimental::MaterialMetaDto meta {};
-
-    if (material.diffuse()) {
-        auto guard = material.diffuse()->acquire(resource::ResourceUsageFlag::eRead);
-        if (guard.empty() || not guard->is<VirtualTextureView>()) {
-            meta.diffuse = ~0;
-
-        } else {
-            meta.diffuse = guard->as<VirtualTextureView>()->baseLayer();
+                param.set(_STD move(resolved));
+                break;
+            }
+            default: {}
         }
-    }
 
-    if (material.normal()) {
-        auto guard = material.normal()->acquire(resource::ResourceUsageFlag::eRead);
-        if (guard.empty() || not guard->is<VirtualTextureView>()) {
-            meta.normal = ~0;
-
-        } else {
-            meta.normal = guard->as<VirtualTextureView>()->baseLayer();
-        }
-    }
-
-    if (material.roughness()) {
-        auto guard = material.roughness()->acquire(resource::ResourceUsageFlag::eRead);
-        if (guard.empty() || not guard->is<VirtualTextureView>()) {
-            meta.roughness = ~0;
-
-        } else {
-            meta.roughness = guard->as<VirtualTextureView>()->baseLayer();
-        }
-    }
-
-    if (material.metalness()) {
-        auto guard = material.metalness()->acquire(resource::ResourceUsageFlag::eRead);
-        if (guard.empty() || not guard->is<VirtualTextureView>()) {
-            meta.metalness = ~0;
-
-        } else {
-            meta.metalness = guard->as<VirtualTextureView>()->baseLayer();
-        }
-    }
-
-    if (material.ao()) {
-        auto guard = material.ao()->acquire(resource::ResourceUsageFlag::eRead);
-        if (guard.empty() || not guard->is<VirtualTextureView>()) {
-            meta.ao = ~0;
-
-        } else {
-            meta.ao = guard->as<VirtualTextureView>()->baseLayer();
-        }
-    }
-
-    if (material.alpha()) {
-        auto guard = material.alpha()->acquire(resource::ResourceUsageFlag::eRead);
-        if (guard.empty() || not guard->is<VirtualTextureView>()) {
-            meta.alpha = ~0;
-
-        } else {
-            meta.alpha = guard->as<VirtualTextureView>()->baseLayer();
-        }
-    }
-
-    /**/
-
-    const u64 alignedSize = (sizeof(experimental::MaterialMetaDto) / 128ui64) * 128ui64 + (
-        (sizeof(experimental::MaterialMetaDto) % 128ui64) ? 128ui64 : 0ui64);
-
-    Buffer stage {};
-    makeStageBuffer(_pool->device(), alignedSize, stage);
-
-    stage.mapAligned(sizeof(experimental::MaterialMetaDto));
-    stage.write<experimental::MaterialMetaDto>(&meta, 1ui32);
-    stage.flushAligned(sizeof(experimental::MaterialMetaDto));
-
-    /**/
-
-    {
-        /**
-         * Copy meta data from stage to cached buffer
-         */
-        auto* const cmdPool = _pool->device()->transferQueue()->pool();
-        cmdPool->lck().acquire();
-
-        CommandBuffer cmd = cmdPool->make();
-        cmd.begin();
-
-        const vk::BufferMemoryBarrier sbmb {
-            vk::AccessFlags(), vk::AccessFlags(), VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, stage.buffer, 0ui32,
-            sizeof(experimental::MaterialMetaDto)
-        };
-
-        const vk::BufferCopy region { 0ui32, material.view()->offset(), sizeof(experimental::MaterialMetaDto) };
-
-        cmd.vkCommandBuffer().pipelineBarrier(
-            vk::PipelineStageFlagBits::eTransfer,
-            vk::PipelineStageFlagBits::eTransfer,
-            vk::DependencyFlags(),
-            0,
-            nullptr,
-            1,
-            &sbmb,
-            0,
-            nullptr
-        );
-
-        cmd.vkCommandBuffer().copyBuffer(stage.buffer, material.view()->owner()->vkBuffer(), 1ui32, &region);
-
-        /**
-         * Restore Buffer Layout
-         */
-        const vk::BufferMemoryBarrier ebmb {
-            vk::AccessFlags(), vk::AccessFlags(), VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, stage.buffer, 0ui32,
-            sizeof(experimental::MaterialMetaDto)
-        };
-
-        cmd.vkCommandBuffer().pipelineBarrier(
-            vk::PipelineStageFlagBits::eTransfer,
-            vk::PipelineStageFlagBits::eTransfer,
-            vk::DependencyFlags(),
-            0,
-            nullptr,
-            1,
-            &ebmb,
-            0,
-            nullptr
-        );
-
-        /**
-         * Dispatch Commands
-         */
-        cmd.end();
-        cmd.submitWait();
-        cmd.release();
-
-        cmdPool->lck().release();
     }
 
     /**
      * Cleanup and Return
      */
 
-    destroyStageBuffer(_STD move(stage));
     dst->setAssociation(request_);
 
     return dst;
@@ -275,28 +143,27 @@ smr<engine::gfx::TextureResource> resolveTexture(
     return texture;
 }
 
-void makeStageBuffer(cref<sptr<Device>> device_, const u64 size_, ref<Buffer> buffer_) {
+smr<MaterialPrototypeResource> resolvePrototype(
+    mref<asset_guid> guid_,
+    const non_owning_rptr<const engine::assets::IAssetRegistry> registry_,
+    const non_owning_rptr<const engine::resource::LoaderManager> loader_
+) {
+
+    /**
+     * Resolve material prototype asset from database
+     */
+    auto* const asset = registry_->findAssetByGuid(guid_);
+
+    /**
+     * Load material prototype to get the internal resource handle
+     */
+    auto* matProtAsset = Cast<engine::assets::GfxMaterialPrototype, engine::assets::Asset, false>(asset);
+    auto prototype = loader_->loadImmediately<engine::assets::GfxMaterialPrototype, MaterialPrototypeResource>(
+        _STD move(matProtAsset),
+        {}
+    );
 
     /**/
 
-    vk::BufferCreateInfo bci {
-        vk::BufferCreateFlags(), size_, vk::BufferUsageFlagBits::eTransferSrc, vk::SharingMode::eExclusive, 0, nullptr
-    };
-
-    buffer_.buffer = device_->vkDevice().createBuffer(bci);
-    buffer_.device = device_->vkDevice();
-    buffer_.size = size_;
-
-    /**/
-
-    const auto allocated = memory::allocate(device_->allocator(), device_, MemoryProperty::eHostVisible, buffer_);
-
-    assert(buffer_.buffer);
-    assert(buffer_.memory);
-
-    buffer_.bind();
-}
-
-void destroyStageBuffer(mref<Buffer> buffer_) {
-    buffer_.destroy();
+    return prototype;
 }

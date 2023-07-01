@@ -63,9 +63,6 @@
     <ClInclude Include="..\..\src\Engine.Assets\Types\Sound.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\GfxMaterial.hpp">
-      <Filter>Headerdateien\Types</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\PfxMaterial.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
@@ -111,12 +108,15 @@
     <ClInclude Include="..\..\src\Engine.Assets\Assets.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Material\GfxMaterialPrototype.hpp">
+      <Filter>Headerdateien\Types\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Material\GfxMaterial.hpp">
+      <Filter>Headerdateien\Types\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Asset.cpp">
-      <Filter>Quelldateien\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Assets\Types\GfxMaterial.cpp">
       <Filter>Quelldateien\Types</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Image.cpp">
@@ -162,6 +162,15 @@
       <Filter>Quelldateien\Types\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Material\GfxMaterialStructure.cpp">
+      <Filter>Quelldateien\Types\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Material\GfxMaterialPrototypeStructure.cpp">
+      <Filter>Quelldateien\Types\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Material\GfxMaterial.cpp">
+      <Filter>Quelldateien\Types\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Material\GfxMaterialPrototype.cpp">
       <Filter>Quelldateien\Types\Material</Filter>
     </ClCompile>
   </ItemGroup>
