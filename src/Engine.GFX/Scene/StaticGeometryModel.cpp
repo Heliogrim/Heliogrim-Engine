@@ -9,7 +9,7 @@
 #include "ModelDataTokens.hpp"
 #include "StaticGeometryBatch.hpp"
 #include "../Cache/CacheResult.hpp"
-#include "Engine.Assets/Types/GfxMaterial.hpp"
+#include "Engine.Assets/Types/Material/GfxMaterial.hpp"
 #include "Engine.GFX.Loader/Geometry/Traits.hpp"
 #include "Engine.GFX.Loader/Material/Traits.hpp"
 #include "../Buffer/Buffer.hpp"

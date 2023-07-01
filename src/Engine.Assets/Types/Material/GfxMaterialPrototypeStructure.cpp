@@ -1,4 +1,4 @@
-#include "GfxMaterial.hpp"
+#include "GfxMaterialPrototype.hpp"
 
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
@@ -12,7 +12,10 @@ using namespace hg::engine::assets;
 using namespace hg;
 
 template <>
-void access::Structure<GfxMaterial>::serialize(const GfxMaterial* const self_, mref<RecordScopedSlot> slot_) {
+void access::Structure<GfxMaterialPrototype>::serialize(
+    const GfxMaterialPrototype* const self_,
+    mref<RecordScopedSlot> slot_
+) {
 
     auto root = slot_.intoStruct();
 
@@ -26,7 +29,10 @@ void access::Structure<GfxMaterial>::serialize(const GfxMaterial* const self_, m
 }
 
 template <>
-void access::Structure<GfxMaterial>::deserialize(GfxMaterial* const self_, mref<RecordScopedSlot> slot_) {
+void access::Structure<GfxMaterialPrototype>::deserialize(
+    GfxMaterialPrototype* const self_,
+    mref<RecordScopedSlot> slot_
+) {
 
     const auto root = slot_.intoStruct();
 

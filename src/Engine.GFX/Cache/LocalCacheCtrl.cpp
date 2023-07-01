@@ -105,3 +105,19 @@ void LocalCacheCtrl::markAsUsed(
     _cache->_global->markAsUsed(resource_, _STD move(subResource_));
     #pragma warning(pop)
 }
+
+void LocalCacheCtrl::markAsUsed(
+    const non_owning_rptr<const void> spec_,
+    mref<smr<MaterialResource>> material_,
+    mref<smr<acc::AccelerationPass>> accelerationPass_
+) {
+    _specMaterials.push_back({ spec_, { material_.get(), accelerationPass_.get() } });
+
+    /**/
+
+    _cache->_global->markAsUsed(
+        spec_,
+        _STD move(material_),
+        _STD move(accelerationPass_)
+    );
+}

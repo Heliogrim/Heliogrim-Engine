@@ -10,7 +10,7 @@
 namespace hg::engine::gfx::material {
     class MaterialFactory {
     public:
-        [[nodiscard]] _Success_(not return.empty()) smr<Material> buildMaterial(
+        [[nodiscard]] _Success_(return != nullptr) uptr<Material> buildMaterial(
             mref<smr<MaterialPrototype>> prototype_
         ) const;
 

@@ -16,7 +16,7 @@
 using namespace hg::engine::gfx::material;
 using namespace hg;
 
-smr<Material> MaterialFactory::buildMaterial(mref<smr<MaterialPrototype>> prototype_) const {
+uptr<Material> MaterialFactory::buildMaterial(mref<smr<MaterialPrototype>> prototype_) const {
 
     Vector<MaterialParameter> params {};
 
@@ -30,7 +30,7 @@ smr<Material> MaterialFactory::buildMaterial(mref<smr<MaterialPrototype>> protot
     Guid guid {};
     GuidGenerate(guid);
 
-    return make_smr<Material>(
+    return make_uptr<Material>(
         _STD move(guid),
         clone(prototype_),
         _STD move(params)

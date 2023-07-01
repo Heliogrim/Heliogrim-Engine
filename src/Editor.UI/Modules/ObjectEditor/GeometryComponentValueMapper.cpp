@@ -15,7 +15,7 @@
 #include "Editor.UI/Widget/Input/InputAsset.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Heliogrim/Heliogrim.hpp"
-#include "Engine.Assets/Types/GfxMaterial.hpp"
+#include "Engine.Assets/Types/Material/GfxMaterial.hpp"
 #include "Engine.Assets.System/IAssetRegistry.hpp"
 #include "Engine.Core/Engine.hpp"
 #include "Engine.Reflect/Cast.hpp"

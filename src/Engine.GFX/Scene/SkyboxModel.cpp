@@ -10,7 +10,7 @@
 #include "StaticGeometryBatch.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "../Cache/CacheResult.hpp"
-#include "Engine.Assets/Types/GfxMaterial.hpp"
+#include "Engine.Assets/Types/Material/GfxMaterial.hpp"
 #include "Engine.GFX.Glow.3D/Renderer/State/RevSfMtt.hpp"
 
 using namespace hg::engine::gfx;

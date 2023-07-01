@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Engine.Assets/Types/GfxMaterial.hpp>
+#include <Engine.Assets/Types/Material/GfxMaterial.hpp>
+#include <Engine.Assets/Types/Material/GfxMaterialPrototype.hpp>
 
 #include <Engine.Resource/Loader/__fwd.hpp>
 

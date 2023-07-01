@@ -218,7 +218,8 @@ ptr<engine::assets::Texture> AssetBrowserHelper::getItemIconForDirectory(cref<st
 #include <Engine.Assets/Types/Image.hpp>
 #include <Engine.Assets/Types/Texture/Texture.hpp>
 #include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
-#include <Engine.Assets/Types/GfxMaterial.hpp>
+#include <Engine.Assets/Types/Material/GfxMaterial.hpp>
+#include <Engine.Assets/Types/Material/GfxMaterialPrototype.hpp>
 #include <Engine.Assets/Types/Font.hpp>
 
 string AssetBrowserHelper::getAssetTypeName(cref<asset_type_id> typeId_) const noexcept {
@@ -237,6 +238,9 @@ string AssetBrowserHelper::getAssetTypeName(cref<asset_type_id> typeId_) const n
         }
         case engine::assets::GfxMaterial::typeId.data: {
             return "Gfx Material";
+        }
+        case engine::assets::GfxMaterialPrototype::typeId.data: {
+            return "Gfx Material Prototype";
         }
         case engine::assets::Font::typeId.data: {
             return "Font";

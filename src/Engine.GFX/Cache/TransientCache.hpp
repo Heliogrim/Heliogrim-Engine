@@ -2,7 +2,7 @@
 #include <algorithm>
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/BytellHashMap.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 
 #include "__fwd.hpp"
 
@@ -29,7 +29,7 @@ namespace hg::engine::gfx::cache {
         void tidy();
 
     private:
-        ska::bytell_hash_map<_STD ptrdiff_t, ptr<ModelBatch>> _mapping;
+        DenseMap<_STD ptrdiff_t, ptr<ModelBatch>> _mapping;
 
     public:
         [[nodiscard]] CacheResult get(cref<_STD ptrdiff_t> key_, ref<ptr<ModelBatch>> dst_);

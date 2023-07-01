@@ -14,6 +14,7 @@
 namespace hg::engine::assets {
     class Font;
     class GfxMaterial;
+    class GfxMaterialPrototype;
     class Image;
     class LandscapeGeometry;
     class Level;
@@ -97,39 +98,7 @@ namespace hg::engine::assets {
          */
         [[nodiscard]] ptr<GfxMaterial> createGfxMaterialAsset(cref<asset_guid> guid_) const;
 
-        /**
-         * Creates a graphics material asset
-         *
-         * @author Julius
-         * @date 06.10.2021
-         *
-         * @param  guid_ Unique identifier.
-         * @param  albedo_ The albedo.
-         * @param  ao_ The ao.
-         * @param  cavity_ The cavity.
-         * @param  displacement_ The displacement.
-         * @param  gloss_ The gloss.
-         * @param  normal_ The normal.
-         * @param  roughness_ The roughness.
-         * @param  metalness_ The metalness.
-         * @param  specular_ The specular.
-         * @param  alpha_ The alpha.
-         *
-         * @returns The new graphics material asset.
-         */
-        [[nodiscard]] ptr<GfxMaterial> createGfxMaterialAsset(
-            cref<asset_guid> guid_,
-            cref<asset_guid> albedo_,
-            cref<asset_guid> ao_,
-            cref<asset_guid> cavity_,
-            cref<asset_guid> displacement_,
-            cref<asset_guid> gloss_,
-            cref<asset_guid> normal_,
-            cref<asset_guid> roughness_,
-            cref<asset_guid> metalness_,
-            cref<asset_guid> specular_,
-            cref<asset_guid> alpha_
-        ) const;
+        [[nodiscard]] ptr<GfxMaterialPrototype> createGfxMaterialPrototypeAsset(cref<asset_guid> guid_) const;
 
     public:
         /**

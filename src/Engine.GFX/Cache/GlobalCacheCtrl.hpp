@@ -7,7 +7,9 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.GFX.Loader/Geometry/StaticGeometryResource.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
+#include <Engine.GFX.Loader/Material/MaterialResource.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
+#include <Engine.GFX.Acc/__fwd.hpp>
 
 #include "CacheResult.hpp"
 #include "CacheCtrlSubject.hpp"
@@ -30,6 +32,9 @@ namespace hg::engine::gfx::cache {
 
         template <typename Type_ = void>
         using stream_result_type = Result<StreamCacheResultType, Type_>;
+
+        template <typename Type_ = void>
+        using loaded_result_type = Result<QueryResultType, Type_>;
 
     public:
         GlobalCacheCtrl(mref<uptr<GlobalResourceCache>> cache_);
@@ -138,5 +143,36 @@ namespace hg::engine::gfx::cache {
         );
 
         [[deprecated]] void unmark(ptr<StaticGeometryResource> resource_, mref<StaticGeometrySubResource> subresource_);
+
+    private:
+        /**
+         * Materials
+         */
+        using material_spec_type = __restricted_ptr<const void>;
+        using material_map_type = smr<MaterialResource>;
+        using material_pass_type = smr<acc::AccelerationPass>;
+
+        // TODO: We need a solution to track the usage markings for spec (1) -> material (2) -> pass (-)
+        RobinMap<
+            material_spec_type,
+            RobinMap<
+                __restricted_ptr<MaterialResource>,
+                uptr<CacheCtrlSubject<_STD pair<material_map_type, material_pass_type>>>
+            >
+        > _materialPasses;
+
+    public:
+        void markAsUsed(
+            _In_ const __restricted_ptr<const void> spec_,
+            _In_ mref<smr<MaterialResource>> material_,
+            _In_ mref<smr<acc::AccelerationPass>> accelerationPass_
+        );
+
+        void unmark(
+            _In_ const __restricted_ptr<const material_spec_type> spec_,
+            _In_ const __restricted_ptr<MaterialResource> material_
+        );
+
+        void drop(mref<material_spec_type> spec_);
     };
 }
