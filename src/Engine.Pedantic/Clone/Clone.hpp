@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <Engine.Common/Make.hpp>
 
 namespace hg {
     template <typename Type_>
