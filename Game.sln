@@ -188,6 +188,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.GFX.Acc.Compile", "p
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.GFX.Acc.Lang", "projects\Engine.GFX.Acc.Lang\Engine.GFX.Acc.Lang.vcxproj", "{DF055FF3-86D2-4FCC-B14A-9E032C71ABF6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.GFX.RenderGraph", "projects\Engine.GFX.RenderGraph\Engine.GFX.RenderGraph.vcxproj", "{8F126647-73B6-4C77-B1D4-A94C2C0D657D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -551,6 +553,12 @@ Global
 		{DF055FF3-86D2-4FCC-B14A-9E032C71ABF6}.Profile|x64.Build.0 = Profile|x64
 		{DF055FF3-86D2-4FCC-B14A-9E032C71ABF6}.Release|x64.ActiveCfg = Release|x64
 		{DF055FF3-86D2-4FCC-B14A-9E032C71ABF6}.Release|x64.Build.0 = Release|x64
+		{8F126647-73B6-4C77-B1D4-A94C2C0D657D}.Debug|x64.ActiveCfg = Debug|x64
+		{8F126647-73B6-4C77-B1D4-A94C2C0D657D}.Debug|x64.Build.0 = Debug|x64
+		{8F126647-73B6-4C77-B1D4-A94C2C0D657D}.Profile|x64.ActiveCfg = Profile|x64
+		{8F126647-73B6-4C77-B1D4-A94C2C0D657D}.Profile|x64.Build.0 = Profile|x64
+		{8F126647-73B6-4C77-B1D4-A94C2C0D657D}.Release|x64.ActiveCfg = Release|x64
+		{8F126647-73B6-4C77-B1D4-A94C2C0D657D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

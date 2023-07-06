@@ -46,6 +46,10 @@
 
 #include "Editor.GFX/Renderer/EdRevRenderer.hpp"
 
+/* Development Testing */
+#include <Engine.GFX.RenderGraph/test.hpp>
+/**/
+
 using namespace hg::engine::gfx;
 using namespace hg::engine;
 using namespace hg;
@@ -148,6 +152,8 @@ void Graphics::unhookEngineState() {
 
 void Graphics::setup() {
     SCOPED_STOPWATCH
+
+    test_render_graph();
 
     /**
      * Create a new application

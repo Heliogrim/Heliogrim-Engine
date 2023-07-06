@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\Node">
+      <UniqueIdentifier>{f67fb06c-a5e9-411c-8834-7a3802581650}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Node">
+      <UniqueIdentifier>{2b7dd9ea-4628-41f6-9ec3-b9c5dcd376ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Components">
+      <UniqueIdentifier>{282797bd-7054-41f0-9b83-15b54b2df90a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Component">
+      <UniqueIdentifier>{16a7bfdc-5c12-4fd4-9bb4-501c61f7618d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Visitor">
+      <UniqueIdentifier>{ddafe2c4-6d34-43bc-a238-f7c661c981af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Relation">
+      <UniqueIdentifier>{721ea8c7-1222-4e04-bbd8-2ec0d62895b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Resolver">
+      <UniqueIdentifier>{fa19dd39-b551-47cb-a96f-ffb350b9f6d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Resolver">
+      <UniqueIdentifier>{5dd71389-8405-47dd-aa10-be3b8e180e46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Visitor">
+      <UniqueIdentifier>{48e35c28-faee-4275-9a38-4725c5014a0f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\RenderGraph.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Node.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\AnchorNode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Component.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\AnchorComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Auxiliary.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\BarrierNode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\BarrierComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\DivergeNode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\SelectorNode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\ConvergeNode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Visitor\Visitor.hpp">
+      <Filter>Headerdateien\Visitor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\__fwd.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\SubpassNode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassAccelComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassMultiAccelComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassSingleAccelComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Visitor\MaterialVisitor.hpp">
+      <Filter>Headerdateien\Visitor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\Requirement.hpp">
+      <Filter>Headerdateien\Relation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\Provision.hpp">
+      <Filter>Headerdateien\Relation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\ProviderNode.hpp">
+      <Filter>Headerdateien\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\ProviderComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\Resolver.hpp">
+      <Filter>Headerdateien\Resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverPass.hpp">
+      <Filter>Headerdateien\Resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverOptions.hpp">
+      <Filter>Headerdateien\Resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\test.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RenderGraph.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Node.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\AnchorComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Component.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Auxiliary.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\AnchorNode.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\BarrierNode.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\ConvergeNode.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\DivergeNode.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\SelectorNode.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\BarrierComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\SubpassNode.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassSingleAccelComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassMultiAccelComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\test.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\ProviderComponent.cpp">
+      <Filter>Quelldateien\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\ProviderNode.cpp">
+      <Filter>Quelldateien\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\Resolver.cpp">
+      <Filter>Quelldateien\Resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverPass.cpp">
+      <Filter>Quelldateien\Resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Visitor\MaterialVisitor.cpp">
+      <Filter>Quelldateien\Visitor</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
