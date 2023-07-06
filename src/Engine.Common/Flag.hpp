@@ -5,9 +5,11 @@
 #include "Wrapper.hpp"
 
 namespace hg {
-    template <typename Ty, class UTy = u8>
+    template <
+        typename Ty,
+        class UTy = _STD underlying_type_t<Ty>>
     struct Flag {
-        static_assert(_STD is_enum<Ty>::value, "Enumeration required.");
+        static_assert(_STD is_enum_v<Ty>, "Enumeration required.");
 
         /** Type of the value */
         using value_type = UTy;
