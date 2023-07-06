@@ -336,6 +336,9 @@
     <ClInclude Include="..\..\src\Engine.Common\Memory\SharedPointer.hpp">
       <Filter>Headerdateien\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\DenseSet.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">

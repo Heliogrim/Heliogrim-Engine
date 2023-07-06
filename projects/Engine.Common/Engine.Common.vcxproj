@@ -23,6 +23,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\BytellHashMap.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\CompactArray.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\DenseMap.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\DenseSet.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Deque.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\FlatHashMap.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Bucket.hpp" />

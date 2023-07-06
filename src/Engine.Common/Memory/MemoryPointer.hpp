@@ -6,9 +6,6 @@
 
 #include "__fwd.hpp"
 
-#include "../Make.hpp"
-#include "../Types.hpp"
-#include "../Concurrent/SharedMemoryReference.hpp"
 #include "../Wrapper.hpp"
 
 namespace hg {
@@ -160,8 +157,16 @@ namespace hg {
         constexpr MemoryPointerStorage(mem_type value_) noexcept :
             mem(value_) {}
 
+        template <typename Tx_, typename AllocTx_> requires _STD is_convertible_v<Tx_*, Ty_*>
+        constexpr MemoryPointerStorage(cref<MemoryPointerStorage<Tx_, AllocTx_, false>> other_) noexcept :
+            mem(other_.mem) {}
+
         constexpr MemoryPointerStorage(cref<this_type> other_) noexcept :
             mem(other_.mem) {}
+
+        template <typename Tx_, typename AllocTx_> requires _STD is_nothrow_convertible_v<Tx_*, Ty_*>
+        constexpr MemoryPointerStorage(mref<MemoryPointerStorage<Tx_, AllocTx_, false>> other_) noexcept :
+            mem(_STD exchange(other_.mem, nullptr)) {}
 
         constexpr MemoryPointerStorage(mref<this_type> other_) noexcept :
             mem(_STD exchange(other_.mem, nullptr)) {}
@@ -427,8 +432,19 @@ namespace hg {
         constexpr NonOwningMemoryPointer(Tx_* value_) noexcept :
             storage(value_) {}
 
+        template <
+            typename Tx_ = Ty_,
+            typename StorageTx_ = typename MemoryPointer<Tx_>::storage_type> requires _STD is_nothrow_convertible_v<Tx_*
+            , Ty_*>
+        constexpr NonOwningMemoryPointer(cref<NonOwningMemoryPointer<Tx_, StorageTx_>> other_) noexcept :
+            storage(other_.storage) {}
+
         constexpr NonOwningMemoryPointer(cref<this_type> other_) noexcept :
             storage(other_.storage) {}
+
+        template <typename Tx_ = Ty_> requires _STD is_nothrow_convertible_v<Tx_*, Ty_*>
+        constexpr NonOwningMemoryPointer(mref<NonOwningMemoryPointer<Tx_>> other_) noexcept :
+            storage(_STD move(other_.storage)) {}
 
         constexpr NonOwningMemoryPointer(mref<this_type> other_) noexcept :
             storage(_STD move(other_.storage)) {}
@@ -461,6 +477,11 @@ namespace hg {
             return *this;
         }
 
+        ref<this_type> operator=(nullptr_t) noexcept {
+            storage.template exchange<nullptr_t>(nullptr);
+            return *this;
+        }
+
     public:
         [[nodiscard]] constexpr static bool isAtomic() noexcept {
             return storage_type::isAtomic();
@@ -487,6 +508,14 @@ namespace hg {
             <Tx_, Ty_>
         ref<Tx_> load() noexcept {
             return *(storage.template load<Ty_>());
+        }
+
+        [[nodiscard]] auto get() const noexcept {
+            return storage.template load<Ty_>();
+        }
+
+        [[nodiscard]] auto get() noexcept {
+            return storage.template load<Ty_>();
         }
 
     public:

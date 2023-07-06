@@ -14,9 +14,6 @@ namespace hg {
 
     /* Unique Pointer (STD) */
 
-    template <class Ty, class... Args>
-    [[nodiscard]] inline uptr<Ty> make_uptr(Args&&... args_);
-
     template <class Ty_, class... Args_> requires _STD is_constructible_v<Ty_, Args_...>
     [[nodiscard]] inline uptr<Ty_> make_uptr(Args_&&... args_) {
         return _STD make_unique<Ty_>(_STD forward<Args_>(args_)...);
@@ -55,11 +52,6 @@ namespace hg {
 
     /* Shared Memory References */
 
-    template <class Ty, class... Args>
-    smr<Ty> make_smr(Args&&... args_);
-
-    /**/
-
     template <class Ty>
     smr<Ty> make_smr(mref<uptr<Ty>> unique_) {
         auto* const ctrl = new SharedMemoryReferenceCtrlBlock<Ty>(unique_.release());
@@ -80,7 +72,7 @@ namespace hg {
         return ctrl->acq().template into<Ty_>();
     }
 
-    template <class Ty, class... Args>
+    template <class Ty, class... Args> requires _STD is_constructible_v<Ty, Args...>
     smr<Ty> make_smr(Args&&... args_) {
         auto* const ctrl = new SharedMemoryReferenceCtrlBlock<Ty>(
             // TODO: Check whether we get problems with types which differ between aggregate and list construction e.g std::vector<...>
