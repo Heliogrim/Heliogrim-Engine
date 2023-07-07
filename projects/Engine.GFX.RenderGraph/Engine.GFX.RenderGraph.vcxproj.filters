@@ -40,6 +40,12 @@
     <Filter Include="Quelldateien\Visitor">
       <UniqueIdentifier>{48e35c28-faee-4275-9a38-4725c5014a0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Builder">
+      <UniqueIdentifier>{45ef34d3-8f0b-40c1-828c-7a2518600b90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Builder">
+      <UniqueIdentifier>{911b990f-11b4-4d1a-98b6-621b39a6b129}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\RenderGraph.hpp">
@@ -123,6 +129,15 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\test.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\BuilderVisitor.hpp">
+      <Filter>Headerdateien\Builder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverVisitor.hpp">
+      <Filter>Headerdateien\Resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\Builder.hpp">
+      <Filter>Headerdateien\Builder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RenderGraph.cpp">
@@ -187,6 +202,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Visitor\MaterialVisitor.cpp">
       <Filter>Quelldateien\Visitor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Visitor\Visitor.cpp">
+      <Filter>Quelldateien\Visitor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\Builder.cpp">
+      <Filter>Quelldateien\Builder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\BuilderVisitor.cpp">
+      <Filter>Quelldateien\Builder</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

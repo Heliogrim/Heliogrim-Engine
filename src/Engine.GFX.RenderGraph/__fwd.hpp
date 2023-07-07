@@ -5,6 +5,9 @@ namespace hg::engine::gfx::render {
 }
 
 namespace hg::engine::gfx::render::graph {
+    class Builder;
+    class BuilderVisitor;
+    /**/
     class Component;
     class AnchorComponent;
     class BarrierComponent;

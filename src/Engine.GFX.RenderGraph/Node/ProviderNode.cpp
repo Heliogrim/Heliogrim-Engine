@@ -1,6 +1,7 @@
 #include "ProviderNode.hpp"
 
 #include "../Component/ProviderComponent.hpp"
+#include "../Visitor/Visitor.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg;
@@ -10,7 +11,11 @@ ProviderNode::ProviderNode() noexcept :
     _auxiliary->add(uptr<ProviderComponent> { HeliogrimObject::create<ProviderComponent>() });
 }
 
-void ProviderNode::traverse(ref<Visitor> visitor_) {
+void ProviderNode::accept(ref<Visitor> visitor_) const {
+    visitor_(*this);
+}
+
+void ProviderNode::traverse(ref<Visitor> visitor_) const {
     _next->accept(visitor_);
 }
 
@@ -20,6 +25,10 @@ bool ProviderNode::empty() const noexcept {
 
 void ProviderNode::setNext(mref<smr<Node>> next_) {
     _next = _STD move(next_);
+}
+
+smr<Node> ProviderNode::getNext() const noexcept {
+    return _next;
 }
 
 nmpt<ProviderComponent> ProviderNode::getProviderComponent() {

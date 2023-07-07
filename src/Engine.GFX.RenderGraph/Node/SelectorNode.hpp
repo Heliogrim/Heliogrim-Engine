@@ -19,7 +19,9 @@ namespace hg::engine::gfx::render::graph {
         ~SelectorNode() noexcept override = default;
 
     public:
-        void traverse(ref<Visitor> visitor_) override;
+        void accept(ref<Visitor> visitor_) const override;
+
+        void traverse(ref<Visitor> visitor_) const override;
 
     public:
         struct Next final {
@@ -34,5 +36,7 @@ namespace hg::engine::gfx::render::graph {
         void addNext(mask_type mask, mref<smr<Node>> next_);
 
         void addNext(bool active_, mref<smr<Node>> next_);
+
+        [[nodiscard]] cref<Vector<Next>> getNext() const noexcept;
     };
 }

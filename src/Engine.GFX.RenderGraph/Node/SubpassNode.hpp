@@ -20,13 +20,17 @@ namespace hg::engine::gfx::render::graph {
         ~SubpassNode() noexcept override;
 
     public:
-        void traverse(ref<Visitor> visitor_) override;
+        void accept(ref<Visitor> visitor_) const override;
+
+        void traverse(ref<Visitor> visitor_) const override;
 
     private:
         smr<Node> _next;
 
     public:
         void setNext(mref<smr<Node>> next_);
+
+        [[nodiscard]] smr<Node> getNext() const noexcept;
 
     public:
         [[nodiscard]] nmpt<SubpassComponent> getSubpassComponent() const noexcept;

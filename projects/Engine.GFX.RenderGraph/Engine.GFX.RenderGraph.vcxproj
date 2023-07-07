@@ -15,6 +15,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\Builder.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\BuilderVisitor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\AnchorComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\BarrierComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Component.hpp" />
@@ -38,12 +40,15 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\Resolver.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverOptions.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverVisitor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\test.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Visitor\MaterialVisitor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Visitor\Visitor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\Builder.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\BuilderVisitor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\AnchorComponent.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\BarrierComponent.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Component.cpp" />
@@ -64,6 +69,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\test.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Visitor\MaterialVisitor.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Visitor\Visitor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\ProviderNode.cpp" />

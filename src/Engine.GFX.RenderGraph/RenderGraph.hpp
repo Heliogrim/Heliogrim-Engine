@@ -19,21 +19,31 @@ namespace hg::engine::gfx::render {
 
     private:
         _STD allocator<graph::Node> _alloc;
-        mpt<graph::AnchorNode> _begin;
-        mpt<graph::AnchorNode> _end;
+        smr<graph::AnchorNode> _begin;
+        smr<graph::AnchorNode> _end;
+
+    public:
+        RenderGraph();
+
+        RenderGraph(mref<smr<graph::AnchorNode>> begin_, mref<smr<graph::AnchorNode>> end_) noexcept;
+
+        RenderGraph(mref<this_type>) noexcept = delete;
+
+        RenderGraph(cref<this_type>) = delete;
+
+        ~RenderGraph() = default;
 
     public:
         [[nodiscard]] nmpt<const graph::AnchorNode> begin() const noexcept;
 
+        [[nodiscard]] smr<graph::AnchorNode> begin();
+
         [[nodiscard]] nmpt<const graph::AnchorNode> end() const noexcept;
 
-    public:
-        ref<this_type> pushNode(nmpt<const graph::Node> where_, _In_ mref<smr<graph::Node>> node_);
-
-        ref<this_type> pullNode(_In_ mref<nmpt<const graph::Node>> node_);
+        [[nodiscard]] smr<graph::AnchorNode> end();
 
     public:
-        void update(cref<graph::Visitor> visitor_);
+        void update(ref<graph::Visitor> visitor_);
 
     public:
         [[nodiscard]] Vector<graph::Provision> aggregateProvisions() const noexcept;

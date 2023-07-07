@@ -3,6 +3,7 @@
 #include "../Component/SubpassComponent.hpp"
 #include "../Component/SubpassMultiAccelComponent.hpp"
 #include "../Component/SubpassSingleAccelComponent.hpp"
+#include "../Visitor/Visitor.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg;
@@ -22,12 +23,20 @@ SubpassNode::SubpassNode(SubpassAccelMode mode_) noexcept :
 
 SubpassNode::~SubpassNode() noexcept = default;
 
-void SubpassNode::traverse(ref<Visitor> visitor_) {
+void SubpassNode::accept(ref<Visitor> visitor_) const {
+    visitor_(*this);
+}
+
+void SubpassNode::traverse(ref<Visitor> visitor_) const {
     _next->accept(visitor_);
 }
 
 void SubpassNode::setNext(mref<smr<Node>> next_) {
     _next = _STD move(next_);
+}
+
+smr<Node> SubpassNode::getNext() const noexcept {
+    return _next;
 }
 
 nmpt<SubpassComponent> SubpassNode::getSubpassComponent() const noexcept {

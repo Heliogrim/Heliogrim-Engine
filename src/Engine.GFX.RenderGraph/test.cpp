@@ -2,11 +2,13 @@
 
 #include <Engine.GFX.Acc/AccelerationPass.hpp>
 #include <Engine.GFX.Acc/AccelerationStageTransferToken.hpp>
+#include <Engine.GFX.Acc.Compile/Spec/SimpleSpecificationStorage.hpp>
 #include <Engine.GFX.Acc.Compile/Spec/SpecificationStorage.hpp>
 #include <Engine.GFX.Material/Material.hpp>
 
 #include "RenderGraph.hpp"
 #include "__fwd.hpp"
+#include "Builder/Builder.hpp"
 #include "Component/BarrierComponent.hpp"
 #include "Component/SubpassAccelComponent.hpp"
 #include "Component/SubpassComponent.hpp"
@@ -24,13 +26,15 @@ using namespace hg;
 
 using AccToken = engine::gfx::acc::AccelerationStageTransferToken;
 
-extern uptr<engine::gfx::acc::SpecificationStorage> generateSpecStore();
+uptr<engine::gfx::acc::SpecificationStorage> generateSpecStore() {
+    return make_uptr<engine::gfx::acc::SimpleSpecificationStorage>();
+}
 
 void hg::test_render_graph() {
 
-    uptr<RenderGraph> graph {};
-    const auto begin = graph->begin();
-    const auto end = graph->end();
+    uptr<RenderGraph> graph = make_uptr<RenderGraph>();
+    const nmpt<Node> begin = graph->begin().get();
+    const nmpt<Node> end = graph->end().get();
 
     /**/
 
@@ -40,7 +44,7 @@ void hg::test_render_graph() {
         comp->setBarrierName("Depth Barrier");
 
         auto it = barrier.get();
-        graph->pushNode(begin, _STD move(barrier));
+        graph = Builder::insertNode(_STD move(graph), begin, _STD move(barrier));
 
         /**/
 
@@ -65,7 +69,7 @@ void hg::test_render_graph() {
         auto subpassAccel = subpassNode->getSubpassAcceleration();
         subpassAccel->pushSpecification(generateSpecStore());
 
-        graph->pushNode(it, _STD move(subpassNode));
+        graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
     }
 
     {
@@ -74,7 +78,7 @@ void hg::test_render_graph() {
         comp->setBarrierName("Material Barrier");
 
         auto it = barrier.get();
-        graph->pushNode(begin, _STD move(barrier));
+        graph = Builder::insertNode(_STD move(graph), begin, _STD move(barrier));
 
         /**/
 
@@ -101,7 +105,7 @@ void hg::test_render_graph() {
         auto subpassAccel = subpassNode->getSubpassAcceleration();
         subpassAccel->pushSpecification(generateSpecStore());
 
-        graph->pushNode(it, _STD move(subpassNode));
+        graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
     }
 
     {
@@ -110,7 +114,7 @@ void hg::test_render_graph() {
         comp->setBarrierName("Lighting Barrier");
 
         auto it = barrier.get();
-        graph->pushNode(begin, _STD move(barrier));
+        graph = Builder::insertNode(_STD move(graph), begin, _STD move(barrier));
 
         /**/
 
@@ -134,7 +138,7 @@ void hg::test_render_graph() {
         auto subpassAccel = subpassNode->getSubpassAcceleration();
         subpassAccel->pushSpecification(generateSpecStore());
 
-        graph->pushNode(it, _STD move(subpassNode));
+        graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
     }
 
     {
@@ -143,7 +147,7 @@ void hg::test_render_graph() {
         comp->setBarrierName("Compositing Barrier");
 
         auto it = barrier.get();
-        graph->pushNode(begin, _STD move(barrier));
+        graph = Builder::insertNode(_STD move(graph), begin, _STD move(barrier));
 
         /**/
 
@@ -165,7 +169,7 @@ void hg::test_render_graph() {
         auto subpassAccel = subpassNode->getSubpassAcceleration();
         subpassAccel->pushSpecification(generateSpecStore());
 
-        graph->pushNode(it, _STD move(subpassNode));
+        graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
     }
 
     /**/
