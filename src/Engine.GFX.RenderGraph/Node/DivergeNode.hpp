@@ -16,12 +16,18 @@ namespace hg::engine::gfx::render::graph {
         ~DivergeNode() noexcept override = default;
 
     public:
-        void traverse(ref<Visitor> visitor_) override;
+        void accept(ref<Visitor> visitor_) const override;
+
+        void traverse(ref<Visitor> visitor_) const override;
 
     private:
         Vector<smr<Node>> _next;
 
     public:
         void addNext(mref<smr<Node>> next_);
+
+        void setNext(mref<Vector<smr<Node>>> next_);
+
+        [[nodiscard]] cref<Vector<smr<Node>>> getNext() const noexcept;
     };
 }

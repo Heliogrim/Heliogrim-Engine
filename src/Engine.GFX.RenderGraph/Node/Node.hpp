@@ -22,8 +22,8 @@ namespace hg::engine::gfx::render::graph {
         [[nodiscard]] smr<Auxiliary> auxiliary() const noexcept;
 
     public:
-        virtual void accept(ref<Visitor> visitor_) const;
+        virtual void accept(ref<Visitor> visitor_) const = 0;
 
-        virtual void traverse(ref<Visitor> visitor_) = 0;
+        virtual void traverse(ref<Visitor> visitor_) const = 0;
     };
 }

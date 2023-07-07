@@ -14,7 +14,9 @@ namespace hg::engine::gfx::render::graph {
         ~ProviderNode() noexcept override = default;
 
     public:
-        void traverse(ref<Visitor> visitor_) override;
+        void accept(ref<Visitor> visitor_) const override;
+
+        void traverse(ref<Visitor> visitor_) const override;
 
     private:
         smr<Node> _next;
@@ -23,6 +25,8 @@ namespace hg::engine::gfx::render::graph {
         [[nodiscard]] bool empty() const noexcept;
 
         void setNext(mref<smr<Node>> next_);
+
+        [[nodiscard]] smr<Node> getNext() const noexcept;
 
     public:
         [[nodiscard]] nmpt<ProviderComponent> getProviderComponent();

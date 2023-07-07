@@ -14,7 +14,7 @@ namespace hg::engine::gfx::render::graph {
     public:
         SubpassAccelComponent() noexcept = default;
 
-        ~SubpassAccelComponent() noexcept override;
+        ~SubpassAccelComponent() noexcept override = default;
 
     public:
         [[nodiscard]] virtual _STD span<const uptr<acc::SpecificationStorage>> getSpecifications() const noexcept = 0;

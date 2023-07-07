@@ -11,7 +11,3 @@ Node::Node(mref<smr<Auxiliary>> auxiliary_) noexcept :
 smr<Auxiliary> Node::auxiliary() const noexcept {
     return _auxiliary;
 }
-
-void Node::accept(ref<Visitor> visitor_) const {
-    visitor_(*this);
-}
