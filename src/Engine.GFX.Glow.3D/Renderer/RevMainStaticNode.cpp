@@ -501,50 +501,68 @@ void RevMainStaticNode::invoke(
             auto dbg { createMaterialDescriptor(state) };
 
             //
-            dbg.getById(shader::ShaderBinding::id_type { 3 }).store(*material->view());
+            // TODO: Bind Material-Translation-Table
+            //dbg.getById(shader::ShaderBinding::id_type { 3 }).store(*material->view());
 
             //
-            auto diffGuard = material->diffuse()->acquire(resource::ResourceUsageFlag::eRead);
-            dbg.getById(shader::ShaderBinding::id_type { 4 }).store(diffGuard->as<VirtualTextureView>()->owner());
+
+            // TODO: Bind albedo/diffuse
+            // if (not material->diffuse().empty()) {
+            //     auto normal = material->diffuse()->acquire(resource::ResourceUsageFlag::eRead);
+            //     dbg.getById(shader::ShaderBinding::id_type { 4 }).store(
+            //         normal->as<VirtualTextureView>()->owner()
+            //     );
+            // }
 
             //
-            if (not material->normal().empty()) {
-                auto normal = material->normal()->acquire(resource::ResourceUsageFlag::eRead);
-                dbg.getById(shader::ShaderBinding::id_type { 5 }).store(
-                    normal->as<VirtualTextureView>()->owner()
-                );
-            }
-            if (not material->roughness().empty()) {
-                auto roughness = material->roughness()->acquire(resource::ResourceUsageFlag::eRead);
-                dbg.getById(shader::ShaderBinding::id_type { 6 }).store(
-                    roughness->as<VirtualTextureView>()->owner()
-                );
-            }
-            if (not material->metalness().empty()) {
-                auto metalness = material->metalness()->acquire(resource::ResourceUsageFlag::eRead);
-                dbg.getById(shader::ShaderBinding::id_type { 7 }).store(
-                    metalness->as<VirtualTextureView>()->owner()
-                );
-            }
-            // TODO: Specular ?!?
-            if (not material->ao().empty()) {
-                auto ao = material->ao()->acquire(resource::ResourceUsageFlag::eRead);
-                dbg.getById(shader::ShaderBinding::id_type { 8 }).store(
-                    ao->as<VirtualTextureView>()->owner()
-                );
-            }
-            if (not material->alpha().empty()) {
-                auto alpha = material->alpha()->acquire(resource::ResourceUsageFlag::eRead);
-                dbg.getById(shader::ShaderBinding::id_type { 9 }).store(
-                    alpha->as<VirtualTextureView>()->owner()
-                );
-            }
-            if (not material->ao().empty()) {
-                auto ao = material->ao()->acquire(resource::ResourceUsageFlag::eRead);
-                dbg.getById(shader::ShaderBinding::id_type { 10 }).store(
-                    ao->as<VirtualTextureView>()->owner()
-                );
-            }
+
+            // TODO: Bind normal
+            // if (not material->normal().empty()) {
+            //     auto normal = material->normal()->acquire(resource::ResourceUsageFlag::eRead);
+            //     dbg.getById(shader::ShaderBinding::id_type { 5 }).store(
+            //         normal->as<VirtualTextureView>()->owner()
+            //     );
+            // }
+
+            // TODO: Bind roughness
+            // if (not material->roughness().empty()) {
+            //     auto roughness = material->roughness()->acquire(resource::ResourceUsageFlag::eRead);
+            //     dbg.getById(shader::ShaderBinding::id_type { 6 }).store(
+            //         roughness->as<VirtualTextureView>()->owner()
+            //     );
+            // }
+
+            // TODO: Bind metalness
+            // if (not material->metalness().empty()) {
+            //     auto metalness = material->metalness()->acquire(resource::ResourceUsageFlag::eRead);
+            //     dbg.getById(shader::ShaderBinding::id_type { 7 }).store(
+            //         metalness->as<VirtualTextureView>()->owner()
+            //     );
+            // }
+
+            // TODO: Bind ao
+            //if (not material->ao().empty()) {
+            //    auto ao = material->ao()->acquire(resource::ResourceUsageFlag::eRead);
+            //    dbg.getById(shader::ShaderBinding::id_type { 8 }).store(
+            //        ao->as<VirtualTextureView>()->owner()
+            //    );
+            //}
+
+            // TODO: Bind alpa
+            //if (not material->alpha().empty()) {
+            //    auto alpha = material->alpha()->acquire(resource::ResourceUsageFlag::eRead);
+            //    dbg.getById(shader::ShaderBinding::id_type { 9 }).store(
+            //        alpha->as<VirtualTextureView>()->owner()
+            //    );
+            //}
+
+            // TODO: Bind ???
+            //if (not material->ao().empty()) {
+            //    auto ao = material->ao()->acquire(resource::ResourceUsageFlag::eRead);
+            //    dbg.getById(shader::ShaderBinding::id_type { 10 }).store(
+            //        ao->as<VirtualTextureView>()->owner()
+            //    );
+            //}
 
             //
             auto result {
@@ -560,7 +578,9 @@ void RevMainStaticNode::invoke(
 
         const auto& first = model->overrideMaterials().front();
         auto material = first->acquire(resource::ResourceUsageFlag::eRead);
-        const auto loaded = material->diffuse()->loaded();
+        // TODO: Check whether material is already loaded
+        //const auto loaded = material->diffuse()->loaded();
+        const auto loaded = false;
         material.release();
 
         if (loaded &&
@@ -664,25 +684,26 @@ void RevMainStaticNode::invoke(
 
                         auto material = resource->acquire(resource::ResourceUsageFlag::eRead);
 
-                        auto diff = material->diffuse()->acquire(resource::ResourceUsageFlag::eRead);
-                        auto& diffView = *diff->as<VirtualTextureView>();
-                        diff.release();
+                        // TODO: Fetch views for textures
+                        // auto diff = material->diffuse()->acquire(resource::ResourceUsageFlag::eRead);
+                        // auto& diffView = *diff->as<VirtualTextureView>();
+                        // diff.release();
 
-                        auto norm = material->normal()->acquire(resource::ResourceUsageFlag::eRead);
-                        auto& normView = *norm->as<VirtualTextureView>();
-                        norm.release();
+                        // auto norm = material->normal()->acquire(resource::ResourceUsageFlag::eRead);
+                        // auto& normView = *norm->as<VirtualTextureView>();
+                        // norm.release();
 
-                        auto rough = material->roughness()->acquire(resource::ResourceUsageFlag::eRead);
-                        auto& roughView = *rough->as<VirtualTextureView>();
-                        rough.release();
+                        // auto rough = material->roughness()->acquire(resource::ResourceUsageFlag::eRead);
+                        // auto& roughView = *rough->as<VirtualTextureView>();
+                        // rough.release();
 
-                        auto metal = material->metalness()->acquire(resource::ResourceUsageFlag::eRead);
-                        auto& metalView = *metal->as<VirtualTextureView>();
-                        metal.release();
+                        // auto metal = material->metalness()->acquire(resource::ResourceUsageFlag::eRead);
+                        // auto& metalView = *metal->as<VirtualTextureView>();
+                        // metal.release();
 
-                        auto ao = material->ao()->acquire(resource::ResourceUsageFlag::eRead);
-                        auto& aoView = *ao->as<VirtualTextureView>();
-                        ao.release();
+                        // auto ao = material->ao()->acquire(resource::ResourceUsageFlag::eRead);
+                        // auto& aoView = *ao->as<VirtualTextureView>();
+                        // ao.release();
 
                         for (auto&& sfi : indices) {
 
@@ -691,7 +712,9 @@ void RevMainStaticNode::invoke(
                             auto aksr {
                                 AssocKey<cache::TextureSubResource>::from(
                                     {
-                                        .layer = diffView.baseLayer(),
+                                        // TODO: Get material uniform base layer
+                                        //.layer = diffView.baseLayer(),
+                                        .layer = 0,
                                         .mip = static_cast<u32>(mip),
                                         .offset = offset,
                                         .extent = markerTexture->tileExtent(mip)
@@ -699,16 +722,17 @@ void RevMainStaticNode::invoke(
                                 )
                             };
 
-                            assert(normView.baseLayer() == aksr.value.layer);
-                            assert(roughView.baseLayer() == aksr.value.layer);
-                            assert(metalView.baseLayer() == aksr.value.layer);
-                            assert(aoView.baseLayer() == aksr.value.layer);
+                            // assert(normView.baseLayer() == aksr.value.layer);
+                            // assert(roughView.baseLayer() == aksr.value.layer);
+                            // assert(metalView.baseLayer() == aksr.value.layer);
+                            // assert(aoView.baseLayer() == aksr.value.layer);
 
-                            state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->diffuse() }, aksr);
-                            state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->normal() }, aksr);
-                            state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->roughness() }, aksr);
-                            state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->metalness() }, aksr);
-                            state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->ao() }, aksr);
+                            // TODO: Mark and enforce loaded (stream immediately) sub-texture resources
+                            // state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->diffuse() }, aksr);
+                            // state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->normal() }, aksr);
+                            // state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->roughness() }, aksr);
+                            // state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->metalness() }, aksr);
+                            // state->cacheCtrl.markLoadedAsUsed(smr<TextureResource> { material->ao() }, aksr);
                         }
                     }
                 }

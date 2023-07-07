@@ -466,10 +466,11 @@ void RevMainSkyNode::invoke(
 
             ptr<const VirtualTextureView> skyboxView { nullptr };
 
-            if (not guard.empty() && not guard->diffuse().empty()) {
+            if (false/* TODO: Check whether material has diffuse/albedo texture */) {
 
-                auto viewGuard = guard->diffuse()->acquire(resource::ResourceUsageFlag::eRead);
-                skyboxView = viewGuard->as<VirtualTextureView>();
+                // TODO: Resolve texture to use for skybox
+                // TODO: Bind image to descriptor set
+                assert(false);
 
             } else {
                 skyboxView = getDefaultSkybox();

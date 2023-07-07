@@ -441,20 +441,11 @@ void RevEarlyEnvIrradiance::invoke(
             const auto& first = model->overrideMaterials().front();
             auto guard = first->acquire(resource::ResourceUsageFlag::eRead);
 
-            if (not guard->diffuse().empty()) {
+            if (false/* TODO: Check whether material has diffuse/albedo texture */) {
 
-                auto skyboxGuard = guard->diffuse()->acquire(resource::ResourceUsageFlag::eRead);
-                const auto& skyboxView = *skyboxGuard;
-
-                auto* const dbgs {
-                    static_cast<const ptr<Vector<shader::DiscreteBindingGroup>>>(data.at(
-                        "RevEarlyEnvIrradianceNode::DiscreteBindingGroups"sv
-                    ).get())
-                };
-                (*dbgs)[1].getById(shader::ShaderBinding::id_type { 2 }).storeAs(
-                    skyboxView.as<VirtualTextureView>()->owner(),
-                    vk::ImageLayout::eShaderReadOnlyOptimal
-                );
+                // TODO: Resolve texture to use for irradiance generator
+                // TODO: Bind image to descriptor set
+                assert(false);
 
             } else {
                 IM_DEBUG_LOG("Irradiance generator picked up a skybox instance without satisfying resources.");
