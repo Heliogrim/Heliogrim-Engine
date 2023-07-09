@@ -31,6 +31,8 @@ namespace hg::engine::gfx::render::graph {
 
         void pushSpecification(mref<uptr<acc::SpecificationStorage>> specification_) override;
 
-        void pushAcceleration(mref<smr<const acc::AccelerationPass>> acceleration_) override;
+        void storeAcceleration(mref<smr<const acc::AccelerationPass>> acceleration_) override;
+
+        void dropAcceleration(mref<smr<const acc::AccelerationPass>> acceleration_) override;
     };
 }

@@ -23,6 +23,8 @@ namespace hg::engine::gfx::render::graph {
 
         virtual void pushSpecification(mref<uptr<acc::SpecificationStorage>> specification_) = 0;
 
-        virtual void pushAcceleration(mref<smr<const acc::AccelerationPass>> acceleration_) = 0;
+        virtual void storeAcceleration(mref<smr<const acc::AccelerationPass>> acceleration_) = 0;
+
+        virtual void dropAcceleration(mref<smr<const acc::AccelerationPass>> acceleration_) = 0;
     };
 }

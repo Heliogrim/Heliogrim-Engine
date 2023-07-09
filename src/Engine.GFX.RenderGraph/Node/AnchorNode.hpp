@@ -26,5 +26,10 @@ namespace hg::engine::gfx::render::graph {
         void setNext(mref<smr<Node>> next_);
 
         [[nodiscard]] smr<Node> getNext() const noexcept;
+
+    public:
+        [[nodiscard]] nmpt<const AnchorComponent> getAnchorComponent() const noexcept;
+
+        [[nodiscard]] nmpt<AnchorComponent> getAnchorComponent();
     };
 }

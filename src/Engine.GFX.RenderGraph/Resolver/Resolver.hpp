@@ -11,9 +11,9 @@ namespace hg::engine::gfx::render::graph {
         using this_type = Resolver;
 
     public:
-        Resolver() noexcept = default;
+        Resolver();
 
-        ~Resolver() noexcept = default;
+        ~Resolver() = default;
 
     private:
         Vector<uptr<ResolverPass>> _passes;
@@ -22,6 +22,6 @@ namespace hg::engine::gfx::render::graph {
         [[nodiscard]] uptr<RenderGraph> operator()(
             _In_ mref<uptr<RenderGraph>> graph_,
             _In_ mref<ResolverOptions> options_
-        ) const noexcept;
+        ) const;
     };
 }

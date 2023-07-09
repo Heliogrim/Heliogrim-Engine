@@ -31,6 +31,10 @@ smr<Node> ProviderNode::getNext() const noexcept {
     return _next;
 }
 
+nmpt<const ProviderComponent> ProviderNode::getProviderComponent() const noexcept {
+    return const_cast<ptr<this_type>>(this)->getProviderComponent();
+}
+
 nmpt<ProviderComponent> ProviderNode::getProviderComponent() {
     const auto it = _STD ranges::find_if(
         _auxiliary->components(),

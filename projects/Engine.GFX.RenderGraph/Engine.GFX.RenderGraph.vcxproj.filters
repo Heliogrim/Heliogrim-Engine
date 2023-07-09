@@ -46,6 +46,15 @@
     <Filter Include="Quelldateien\Builder">
       <UniqueIdentifier>{911b990f-11b4-4d1a-98b6-621b39a6b129}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Debug">
+      <UniqueIdentifier>{b0f04b70-5e82-4541-a742-bd096203867c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Debug">
+      <UniqueIdentifier>{8c55c28f-be80-4ace-b907-f919fcccb7ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Relation">
+      <UniqueIdentifier>{543ece6b-50a0-4b2c-a105-1309270c2263}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\RenderGraph.hpp">
@@ -138,6 +147,30 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\Builder.hpp">
       <Filter>Headerdateien\Builder</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Debug\DebugVisitor.hpp">
+      <Filter>Headerdateien\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverValidationPass.hpp">
+      <Filter>Headerdateien\Resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverValidationVisitor.hpp">
+      <Filter>Headerdateien\Resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\Description.hpp">
+      <Filter>Headerdateien\Relation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\TextureDescription.hpp">
+      <Filter>Headerdateien\Relation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneViewDescription.hpp">
+      <Filter>Headerdateien\Relation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\MeshDescription.hpp">
+      <Filter>Headerdateien\Relation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\ModelDescription.hpp">
+      <Filter>Headerdateien\Relation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RenderGraph.cpp">
@@ -211,6 +244,33 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\BuilderVisitor.cpp">
       <Filter>Quelldateien\Builder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Debug\DebugVisitor.cpp">
+      <Filter>Quelldateien\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverValidationPass.cpp">
+      <Filter>Quelldateien\Resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverValidationVisitor.cpp">
+      <Filter>Quelldateien\Resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverVisitor.cpp">
+      <Filter>Quelldateien\Resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\TextureDescription.cpp">
+      <Filter>Quelldateien\Relation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\Description.cpp">
+      <Filter>Quelldateien\Relation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\MeshDescription.cpp">
+      <Filter>Quelldateien\Relation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\ModelDescription.cpp">
+      <Filter>Quelldateien\Relation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneViewDescription.cpp">
+      <Filter>Quelldateien\Relation</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

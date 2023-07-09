@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Common/Collection/Set.hpp>
+#include <Engine.Common/Collection/DenseSet.hpp>
 #include <Engine.Common/Meta/Constexpr.hpp>
 #include <Engine.Reflect/CompileTypeId.hpp>
 
@@ -37,19 +37,19 @@ namespace hg::engine::gfx::render::graph {
         void unmounted(nmpt<const Component> unmounted_) override;
 
     private:
-        Set<Requirement> _required;
+        DenseSet<Requirement> _required;
 
     public:
-        [[nodiscard]] cref<Set<Requirement>> getRequirements() const noexcept;
+        [[nodiscard]] cref<DenseSet<Requirement>> getRequirements() const noexcept;
 
-        void setRequirements(mref<Set<Requirement>> requirements_);
+        void setRequirements(mref<DenseSet<Requirement>> requirements_);
 
     private:
-        Set<Provision> _provided;
+        DenseSet<Provision> _provided;
 
     public:
-        [[nodiscard]] cref<Set<Provision>> getProvided() const noexcept;
+        [[nodiscard]] cref<DenseSet<Provision>> getProvided() const noexcept;
 
-        void setProvided(mref<Set<Provision>> provided_);
+        void setProvided(mref<DenseSet<Provision>> provided_);
     };
 }

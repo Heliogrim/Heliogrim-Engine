@@ -31,6 +31,10 @@ smr<Node> BarrierNode::getNext() const noexcept {
     return _next;
 }
 
+nmpt<const BarrierComponent> BarrierNode::getBarrierComponent() const noexcept {
+    return const_cast<ptr<this_type>>(this)->getBarrierComponent();
+}
+
 nmpt<BarrierComponent> BarrierNode::getBarrierComponent() {
     const auto it = _STD ranges::find_if(
         _auxiliary->components(),
