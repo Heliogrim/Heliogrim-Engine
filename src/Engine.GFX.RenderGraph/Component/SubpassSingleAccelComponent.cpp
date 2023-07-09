@@ -25,6 +25,12 @@ void SubpassSingleAccelComponent::pushSpecification(mref<uptr<acc::Specification
     _specifications = _STD move(specification_);
 }
 
-void SubpassSingleAccelComponent::pushAcceleration(mref<smr<const acc::AccelerationPass>> acceleration_) {
+void SubpassSingleAccelComponent::storeAcceleration(mref<smr<const acc::AccelerationPass>> acceleration_) {
     _acceleration = _STD move(acceleration_);
+}
+
+void SubpassSingleAccelComponent::dropAcceleration(mref<smr<const acc::AccelerationPass>> acceleration_) {
+    if (_acceleration == acceleration_) {
+        _acceleration.reset();
+    }
 }

@@ -29,6 +29,8 @@ namespace hg::engine::gfx::render::graph {
         [[nodiscard]] smr<Node> getNext() const noexcept;
 
     public:
+        [[nodiscard]] nmpt<const ProviderComponent> getProviderComponent() const noexcept;
+
         [[nodiscard]] nmpt<ProviderComponent> getProviderComponent();
     };
 }

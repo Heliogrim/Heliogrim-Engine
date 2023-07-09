@@ -11,7 +11,7 @@ namespace hg::engine::gfx::render::graph {
         using this_type = ResolverPass;
 
     protected:
-        ResolverPass() noexcept = default;
+        ResolverPass(mref<ResolverPassFlags> flags_) noexcept;
 
     public:
         virtual ~ResolverPass() noexcept = default;
@@ -23,6 +23,6 @@ namespace hg::engine::gfx::render::graph {
         [[nodiscard]] ResolverPassFlags getResolverFlags() const noexcept;
 
     public:
-        [[nodiscard]] virtual uptr<RenderGraph> operator()(_In_ mref<uptr<RenderGraph>> graph_) const noexcept = 0;
+        [[nodiscard]] virtual uptr<RenderGraph> operator()(_In_ mref<uptr<RenderGraph>> graph_) const = 0;
     };
 }

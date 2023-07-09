@@ -10,12 +10,19 @@
 #include "__fwd.hpp"
 #include "Builder/Builder.hpp"
 #include "Component/BarrierComponent.hpp"
+#include "Component/ProviderComponent.hpp"
 #include "Component/SubpassAccelComponent.hpp"
 #include "Component/SubpassComponent.hpp"
+#include "Debug/DebugVisitor.hpp"
 
 #include "Node/AnchorNode.hpp"
 #include "Node/BarrierNode.hpp"
 #include "Node/SubpassNode.hpp"
+#include "Node/ProviderNode.hpp"
+#include "Relation/MeshDescription.hpp"
+#include "Relation/ModelDescription.hpp"
+#include "Relation/SceneViewDescription.hpp"
+#include "Relation/TextureDescription.hpp"
 #include "Resolver/Resolver.hpp"
 #include "Resolver/ResolverOptions.hpp"
 #include "Visitor/MaterialVisitor.hpp"
@@ -26,7 +33,8 @@ using namespace hg;
 
 using AccToken = engine::gfx::acc::AccelerationStageTransferToken;
 
-uptr<engine::gfx::acc::SpecificationStorage> generateSpecStore() {
+uptr<engine::gfx::acc::SpecificationStorage> generateSpecStore(nmpt<SubpassComponent> subpass_) {
+
     return make_uptr<engine::gfx::acc::SimpleSpecificationStorage>();
 }
 
@@ -36,7 +44,91 @@ void hg::test_render_graph() {
     const nmpt<Node> begin = graph->begin().get();
     const nmpt<Node> end = graph->end().get();
 
+    nmpt<Node> cursor { begin };
+
     /**/
+
+    // SceneViewDescription ~ Camera { position, rotation, fov, aspect, ... }
+    // MeshDescription ~ { primitive types, topology, static / skeletal, procedural ?!?, ... }
+    // TextureDescription ~ { type, format, layer, mip stack, ... }
+    // ModelDescription ~ { position, rotation, scale, materials ?!?, ... }
+
+    smr<Description> cameraDescription;
+    smr<Description> meshDescription;
+    smr<Description> modelDescription;
+    smr<Description> depthBufferDescription;
+    smr<Description> positionBufferDescription;
+    smr<Description> normalBufferDescription;
+    smr<Description> colorBufferDescription;
+
+    {
+        cameraDescription = make_smr<>(HeliogrimObject::create<SceneViewDescription>()).into<Description>();
+        meshDescription = make_smr<>(HeliogrimObject::create<MeshDescription>()).into<Description>();
+        modelDescription = make_smr<>(HeliogrimObject::create<ModelDescription>()).into<Description>();
+
+        depthBufferDescription = make_smr<TextureDescription>(
+            HeliogrimObject::create<TextureDescription>(
+                TextureDescription {
+                    { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
+                    { DescriptionValueMatchingMode::eCovariant, engine::gfx::TextureFormat::eD32Sfloat },
+                    { DescriptionValueMatchingMode::eInvariant, 1ui32 },
+                    {}
+                }
+            )
+        ).into<Description>();
+
+        positionBufferDescription = make_smr<TextureDescription>(
+            HeliogrimObject::create<TextureDescription>(
+                TextureDescription {
+                    { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
+                    { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR32G32B32Sfloat },
+                    { DescriptionValueMatchingMode::eInvariant, 1ui32 },
+                    {}
+                }
+            )
+        ).into<Description>();
+
+        normalBufferDescription = make_smr<TextureDescription>(
+            HeliogrimObject::create<TextureDescription>(
+                TextureDescription {
+                    { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
+                    { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR32G32B32Sfloat },
+                    { DescriptionValueMatchingMode::eInvariant, 1ui32 },
+                    {}
+                }
+            )
+        ).into<Description>();
+
+        colorBufferDescription = make_smr<TextureDescription>(
+            HeliogrimObject::create<TextureDescription>(
+                TextureDescription {
+                    { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
+                    { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR8G8B8A8Unorm },
+                    { DescriptionValueMatchingMode::eCovariant, 1ui32 },
+                    {}
+                }
+            )
+        ).into<Description>();
+    }
+
+    /**/
+
+    {
+        auto provider = make_smr<ProviderNode>();
+        auto comp = provider->getProviderComponent();
+
+        comp->setProvided(
+            {
+                // TODO: Add descriptions to required and provisioned data
+                Provision { AccToken::from("camera").hash, cameraDescription },
+                Provision { AccToken::from("mesh").hash, meshDescription },
+                Provision { AccToken::from("model").hash, modelDescription }
+            }
+        );
+
+        cursor = provider.get();
+        graph = Builder::insertNode(_STD move(graph), begin, _STD move(provider));
+    }
 
     {
         auto barrier = make_smr<BarrierNode>();
@@ -44,7 +136,7 @@ void hg::test_render_graph() {
         comp->setBarrierName("Depth Barrier");
 
         auto it = barrier.get();
-        graph = Builder::insertNode(_STD move(graph), begin, _STD move(barrier));
+        graph = Builder::insertNode(_STD move(graph), cursor, _STD move(barrier));
 
         /**/
 
@@ -53,22 +145,23 @@ void hg::test_render_graph() {
 
         subpassComp->setRequirements(
             {
-                Requirement { AccToken::from("camera").hash },
-                Requirement { AccToken::from("mesh").hash },
-                Requirement { AccToken::from("model").hash }
+                Requirement { AccToken::from("camera").hash, cameraDescription },
+                Requirement { AccToken::from("mesh").hash, meshDescription },
+                Requirement { AccToken::from("model").hash, modelDescription }
             }
         );
 
         subpassComp->setProvided(
             {
-                Provision { AccToken::from("depth").hash },
+                Provision { AccToken::from("depth").hash, depthBufferDescription },
                 //Provision { AccToken::from("stencil").hash }
             }
         );
 
         auto subpassAccel = subpassNode->getSubpassAcceleration();
-        subpassAccel->pushSpecification(generateSpecStore());
+        subpassAccel->pushSpecification(generateSpecStore(subpassComp));
 
+        cursor = subpassNode.get();
         graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
     }
 
@@ -78,7 +171,7 @@ void hg::test_render_graph() {
         comp->setBarrierName("Material Barrier");
 
         auto it = barrier.get();
-        graph = Builder::insertNode(_STD move(graph), begin, _STD move(barrier));
+        graph = Builder::insertNode(_STD move(graph), cursor, _STD move(barrier));
 
         /**/
 
@@ -90,21 +183,22 @@ void hg::test_render_graph() {
                 Requirement { AccToken::from("camera").hash },
                 Requirement { AccToken::from("mesh").hash },
                 Requirement { AccToken::from("model").hash },
-                Requirement { AccToken::from("depth").hash },
+                Requirement { AccToken::from("depth").hash, depthBufferDescription },
             }
         );
 
         subpassComp->setProvided(
             {
-                Provision { AccToken::from("depth").hash },
-                Provision { AccToken::from("position").hash },
-                Provision { AccToken::from("normal").hash }
+                Provision { AccToken::from("depth").hash, depthBufferDescription },
+                Provision { AccToken::from("position").hash, positionBufferDescription },
+                Provision { AccToken::from("normal").hash, normalBufferDescription }
             }
         );
 
         auto subpassAccel = subpassNode->getSubpassAcceleration();
-        subpassAccel->pushSpecification(generateSpecStore());
+        subpassAccel->pushSpecification(generateSpecStore(subpassComp));
 
+        cursor = subpassNode.get();
         graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
     }
 
@@ -114,7 +208,7 @@ void hg::test_render_graph() {
         comp->setBarrierName("Lighting Barrier");
 
         auto it = barrier.get();
-        graph = Builder::insertNode(_STD move(graph), begin, _STD move(barrier));
+        graph = Builder::insertNode(_STD move(graph), cursor, _STD move(barrier));
 
         /**/
 
@@ -123,21 +217,23 @@ void hg::test_render_graph() {
 
         subpassComp->setRequirements(
             {
-                Requirement { AccToken::from("depth").hash },
-                Requirement { AccToken::from("position").hash },
-                Requirement { AccToken::from("normal").hash }
+                Requirement { AccToken::from("camera").hash, cameraDescription },
+                Requirement { AccToken::from("depth").hash, depthBufferDescription },
+                Requirement { AccToken::from("position").hash, positionBufferDescription },
+                Requirement { AccToken::from("normal").hash, normalBufferDescription }
             }
         );
 
         subpassComp->setProvided(
             {
-                Provision { AccToken::from("color").hash }
+                Provision { AccToken::from("color").hash, colorBufferDescription }
             }
         );
 
         auto subpassAccel = subpassNode->getSubpassAcceleration();
-        subpassAccel->pushSpecification(generateSpecStore());
+        subpassAccel->pushSpecification(generateSpecStore(subpassComp));
 
+        cursor = subpassNode.get();
         graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
     }
 
@@ -147,7 +243,7 @@ void hg::test_render_graph() {
         comp->setBarrierName("Compositing Barrier");
 
         auto it = barrier.get();
-        graph = Builder::insertNode(_STD move(graph), begin, _STD move(barrier));
+        graph = Builder::insertNode(_STD move(graph), cursor, _STD move(barrier));
 
         /**/
 
@@ -156,19 +252,20 @@ void hg::test_render_graph() {
 
         subpassComp->setRequirements(
             {
-                Requirement { AccToken::from("color").hash }
+                Requirement { AccToken::from("color").hash, colorBufferDescription }
             }
         );
 
         subpassComp->setProvided(
             {
-                Provision { AccToken::from("color").hash }
+                Provision { AccToken::from("color").hash, colorBufferDescription }
             }
         );
 
         auto subpassAccel = subpassNode->getSubpassAcceleration();
-        subpassAccel->pushSpecification(generateSpecStore());
+        subpassAccel->pushSpecification(generateSpecStore(subpassComp));
 
+        cursor = subpassNode.get();
         graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
     }
 
@@ -176,14 +273,21 @@ void hg::test_render_graph() {
 
     Resolver resolver {};
     ResolverOptions options {
-        .flags = ResolverPassFlagBits::eBasicLayout
+        .flags = ResolverPassFlags {} | ResolverPassFlagBits::eBasicLayout | ResolverPassFlagBits::eValidate
     };
 
     graph = resolver(_STD move(graph), _STD move(options));
 
     /**/
 
-    smr<engine::gfx::material::Material> mat0 {}, mat1 {}, mat2 {};
+    {
+        DebugVisitor visitor {};
+        graph->begin()->accept(visitor);
+    }
+
+    /**/
+
+    smr<engine::gfx::MaterialResource> mat0 {}, mat1 {}, mat2 {};
     MaterialVisitor visitor {};
     visitor.addRaisedMaterial(_STD move(mat0));
     visitor.addRaisedMaterial(_STD move(mat1));

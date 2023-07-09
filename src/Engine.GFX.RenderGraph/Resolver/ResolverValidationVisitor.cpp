@@ -1,0 +1,87 @@
+#include "ResolverValidationVisitor.hpp"
+
+#include <Engine.Common/__macro.hpp>
+#include <Engine.Logging/Logger.hpp>
+
+#include "../Component/SubpassComponent.hpp"
+#include "../Node/Node.hpp"
+#include "../Node/ProviderNode.hpp"
+#include "../Node/SubpassNode.hpp"
+#include "../Component/ProviderComponent.hpp"
+
+using namespace hg::engine::gfx::render::graph;
+using namespace hg::engine::gfx::render;
+using namespace hg;
+
+ResolverValidationVisitor::ResolverValidationVisitor() noexcept = default;
+
+ResolverValidationVisitor::~ResolverValidationVisitor() = default;
+
+void ResolverValidationVisitor::operator()(cref<Node> node_) {
+    ResolverVisitor::operator()(node_);
+}
+
+void ResolverValidationVisitor::operator()(cref<AnchorNode> node_) {
+    Visitor::operator()(node_);
+}
+
+void ResolverValidationVisitor::operator()(cref<BarrierNode> node_) {
+    Visitor::operator()(node_);
+}
+
+void ResolverValidationVisitor::operator()(cref<ConvergeNode> node_) {
+    Visitor::operator()(node_);
+}
+
+void ResolverValidationVisitor::operator()(cref<DivergeNode> node_) {
+    Visitor::operator()(node_);
+}
+
+void ResolverValidationVisitor::operator()(cref<SelectorNode> node_) {
+    Visitor::operator()(node_);
+}
+
+void ResolverValidationVisitor::operator()(cref<ProviderNode> node_) {
+
+    const auto component = node_.getProviderComponent();
+    _providers.push_back(&component->getProvided());
+
+    Visitor::operator()(node_);
+}
+
+void ResolverValidationVisitor::operator()(cref<SubpassNode> node_) {
+
+    const auto component = node_.getSubpassComponent();
+    const auto& requirements = component->getRequirements();
+
+    for (const auto& required : requirements) {
+
+        const auto reqToProv = Provision { required.identifier };
+        bool matched = false;
+
+        for (const auto& provider : _providers) {
+            if (provider->contains(reqToProv)) {
+                matched = true;
+                break;
+            }
+        }
+
+        if (matched) {
+            continue;
+        }
+
+        /**/
+
+        IM_CORE_WARNF(
+            "Encountered unmet requirement `{}` for SubpassNode `{:x}` while in validation pass.",
+            required.identifier,
+            reinterpret_cast<ptrdiff_t>(_STD addressof(node_))
+        );
+    }
+
+    /**/
+
+    _providers.push_back(&component->getProvided());
+
+    Visitor::operator()(node_);
+}

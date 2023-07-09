@@ -1,5 +1,7 @@
 #include "SubpassComponent.hpp"
 
+#include <Engine.Common/Collection/DenseSet.hpp>
+
 #include "SubpassMultiAccelComponent.hpp"
 #include "SubpassSingleAccelComponent.hpp"
 
@@ -44,18 +46,18 @@ void SubpassComponent::unmounted(nmpt<const Component> unmounted_) {
     Component::unmounted(unmounted_);
 }
 
-cref<Set<Requirement>> SubpassComponent::getRequirements() const noexcept {
+cref<DenseSet<Requirement>> SubpassComponent::getRequirements() const noexcept {
     return _required;
 }
 
-void SubpassComponent::setRequirements(mref<Set<Requirement>> requirements_) {
+void SubpassComponent::setRequirements(mref<DenseSet<Requirement>> requirements_) {
     _required = _STD move(requirements_);
 }
 
-cref<Set<Provision>> SubpassComponent::getProvided() const noexcept {
+cref<DenseSet<Provision>> SubpassComponent::getProvided() const noexcept {
     return _provided;
 }
 
-void SubpassComponent::setProvided(mref<Set<Provision>> provided_) {
+void SubpassComponent::setProvided(mref<DenseSet<Provision>> provided_) {
     _provided = _STD move(provided_);
 }

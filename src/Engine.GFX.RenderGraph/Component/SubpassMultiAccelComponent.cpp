@@ -23,6 +23,14 @@ void SubpassMultiAccelComponent::pushSpecification(mref<uptr<acc::SpecificationS
     _specifications.push_back(_STD move(specification_));
 }
 
-void SubpassMultiAccelComponent::pushAcceleration(mref<smr<const acc::AccelerationPass>> acceleration_) {
+void SubpassMultiAccelComponent::storeAcceleration(mref<smr<const acc::AccelerationPass>> acceleration_) {
     _accelerations.push_back(_STD move(acceleration_));
+}
+
+void SubpassMultiAccelComponent::dropAcceleration(mref<smr<const acc::AccelerationPass>> acceleration_) {
+
+    const auto it = _STD ranges::find(_accelerations, acceleration_);
+    if (it != _accelerations.end()) {
+        _accelerations.erase(it);
+    }
 }
