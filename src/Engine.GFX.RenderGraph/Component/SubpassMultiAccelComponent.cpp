@@ -5,6 +5,20 @@ using namespace hg;
 
 SubpassMultiAccelComponent::~SubpassMultiAccelComponent() noexcept = default;
 
+_STD span<const smr<engine::gfx::MaterialResource>> SubpassMultiAccelComponent::getMaterials() const noexcept {
+    return _STD span {
+        _materials.begin(), _materials.size()
+    };
+}
+
+void SubpassMultiAccelComponent::storeMaterial(mref<smr<MaterialResource>> material_) {
+    _materials.push_back(_STD move(material_));
+}
+
+void SubpassMultiAccelComponent::dropMaterial(mref<smr<MaterialResource>> material_) {
+    _materials.erase(_STD ranges::find(_materials, material_));
+}
+
 _STD span<const uptr<engine::gfx::acc::SpecificationStorage>>
 SubpassMultiAccelComponent::getSpecifications() const noexcept {
     return _STD span {

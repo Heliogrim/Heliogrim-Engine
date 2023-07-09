@@ -5,6 +5,23 @@ using namespace hg;
 
 SubpassSingleAccelComponent::~SubpassSingleAccelComponent() noexcept = default;
 
+_STD span<const smr<engine::gfx::MaterialResource>> SubpassSingleAccelComponent::getMaterials() const noexcept {
+    if (_material.empty()) {
+        return {};
+    }
+    return _STD span { &_material, 1 };
+}
+
+void SubpassSingleAccelComponent::storeMaterial(mref<smr<MaterialResource>> material_) {
+    _material = _STD move(material_);
+}
+
+void SubpassSingleAccelComponent::dropMaterial(mref<smr<MaterialResource>> material_) {
+    if (_material == material_) {
+        _material.reset();
+    }
+}
+
 _STD span<const uptr<engine::gfx::acc::SpecificationStorage>>
 SubpassSingleAccelComponent::getSpecifications() const noexcept {
     if (_specifications == nullptr) {

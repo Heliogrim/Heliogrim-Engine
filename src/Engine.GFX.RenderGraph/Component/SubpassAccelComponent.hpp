@@ -2,6 +2,7 @@
 
 #include <Engine.GFX.Acc/AccelerationPass.hpp>
 #include <Engine.GFX.Acc.Compile/Spec/SpecificationStorage.hpp>
+#include <Engine.GFX.Loader/Material/MaterialResource.hpp>
 
 #include "Component.hpp"
 
@@ -15,6 +16,13 @@ namespace hg::engine::gfx::render::graph {
         SubpassAccelComponent() noexcept = default;
 
         ~SubpassAccelComponent() noexcept override = default;
+
+    public:
+        [[nodicarrd]] virtual _STD span<const smr<MaterialResource>> getMaterials() const noexcept = 0;
+
+        virtual void storeMaterial(mref<smr<MaterialResource>> material_) = 0;
+
+        virtual void dropMaterial(mref<smr<MaterialResource>> material_) = 0;
 
     public:
         [[nodiscard]] virtual _STD span<const uptr<acc::SpecificationStorage>> getSpecifications() const noexcept = 0;
