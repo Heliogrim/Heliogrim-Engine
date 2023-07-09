@@ -236,7 +236,7 @@ namespace hg {
         }
 
         template <typename Tx_ = Ty_>
-        const _STD remove_const_t<Tx_>* const load() const noexcept {
+        Tx_* const load() const noexcept {
             return mem;
         }
 
@@ -531,7 +531,7 @@ namespace hg {
         }
 
         template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_>
-        [[nodiscard]] const _STD remove_const_t<Tx_>* const operator->() const noexcept {
+        [[nodiscard]] Tx_* const operator->() const noexcept {
             return storage.template load<Ty_>();
         }
 
