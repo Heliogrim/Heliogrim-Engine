@@ -267,10 +267,10 @@ void GlobalCacheCtrl::unmark(ptr<StaticGeometryResource> resource_, mref<CacheSt
 void GlobalCacheCtrl::markAsUsed(
     const __restricted_ptr<const void> spec_,
     mref<smr<MaterialResource>> material_,
-    mref<smr<acc::AccelerationPass>> accelerationPass_
+    mref<smr<const acc::AccelerationPass>> accelerationPass_
 ) {
 
-    using SubjectType = CacheCtrlSubject<_STD pair<smr<MaterialResource>, smr<acc::AccelerationPass>>>;
+    using SubjectType = CacheCtrlSubject<_STD pair<smr<MaterialResource>, smr<const acc::AccelerationPass>>>;
     using SubMapType = RobinMap<__restricted_ptr<MaterialResource>, uptr<SubjectType>>;
 
     if (not material_->isLoaded()) {
@@ -329,7 +329,7 @@ void GlobalCacheCtrl::unmark(
     const __restricted_ptr<MaterialResource> resource_
 ) {
 
-    using SubjectType = CacheCtrlSubject<_STD pair<smr<MaterialResource>, smr<acc::AccelerationPass>>>;
+    using SubjectType = CacheCtrlSubject<_STD pair<smr<MaterialResource>, smr<const acc::AccelerationPass>>>;
     using SubMapType = RobinMap<__restricted_ptr<MaterialResource>, uptr<SubjectType>>;
 
     if (not resource_->isLoaded()) {
@@ -364,6 +364,26 @@ void GlobalCacheCtrl::unmark(
     }
 
     subMap.erase(subIt);
+}
+
+GlobalCacheCtrl::query_result_type<smr<const engine::gfx::acc::AccelerationPass>> GlobalCacheCtrl::query(
+    const __restricted_ptr<const void> spec_,
+    const __restricted_ptr<MaterialResource> material_
+) const noexcept {
+
+    const auto specIt = _materialPasses.find(spec_);
+    if (specIt == _materialPasses.end()) {
+        return { QueryResultType::eMiss };
+    }
+
+    const auto& subMap = specIt->second;
+    const auto subIt = subMap.find(material_);
+
+    if (subIt == subMap.end()) {
+        return { QueryResultType::eMiss };
+    }
+
+    return { QueryResultType::eHit, subIt->second->subject.second };
 }
 
 void GlobalCacheCtrl::drop(mref<material_spec_type> spec_) {
