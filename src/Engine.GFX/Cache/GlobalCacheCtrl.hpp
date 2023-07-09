@@ -34,7 +34,7 @@ namespace hg::engine::gfx::cache {
         using stream_result_type = Result<StreamCacheResultType, Type_>;
 
         template <typename Type_ = void>
-        using loaded_result_type = Result<QueryResultType, Type_>;
+        using query_result_type = Result<QueryResultType, Type_>;
 
     public:
         GlobalCacheCtrl(mref<uptr<GlobalResourceCache>> cache_);
@@ -150,7 +150,7 @@ namespace hg::engine::gfx::cache {
          */
         using material_spec_type = __restricted_ptr<const void>;
         using material_map_type = smr<MaterialResource>;
-        using material_pass_type = smr<acc::AccelerationPass>;
+        using material_pass_type = smr<const acc::AccelerationPass>;
 
         // TODO: We need a solution to track the usage markings for spec (1) -> material (2) -> pass (-)
         RobinMap<
@@ -165,13 +165,18 @@ namespace hg::engine::gfx::cache {
         void markAsUsed(
             _In_ const __restricted_ptr<const void> spec_,
             _In_ mref<smr<MaterialResource>> material_,
-            _In_ mref<smr<acc::AccelerationPass>> accelerationPass_
+            _In_ mref<smr<const acc::AccelerationPass>> accelerationPass_
         );
 
         void unmark(
             _In_ const __restricted_ptr<const material_spec_type> spec_,
             _In_ const __restricted_ptr<MaterialResource> material_
         );
+
+        [[nodiscard]] query_result_type<material_pass_type> query(
+            _In_ const __restricted_ptr<const void> spec_,
+            _In_ const __restricted_ptr<MaterialResource> material_
+        ) const noexcept;
 
         void drop(mref<material_spec_type> spec_);
     };
