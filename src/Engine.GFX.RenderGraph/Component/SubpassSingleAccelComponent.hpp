@@ -20,13 +20,23 @@ namespace hg::engine::gfx::render::graph {
         ~SubpassSingleAccelComponent() noexcept override;
 
     private:
+        smr<MaterialResource> _material;
+
+    public:
+        _STD span<const smr<MaterialResource>> getMaterials() const noexcept override;
+
+        void storeMaterial(mref<smr<MaterialResource>> material_) override;
+
+        void dropMaterial(mref<smr<MaterialResource>> material_) override;
+
+    private:
         uptr<acc::SpecificationStorage> _specifications;
         smr<const acc::AccelerationPass> _acceleration;
 
     public:
         [[nodiscard]] _STD span<const uptr<acc::SpecificationStorage>> getSpecifications() const noexcept override;
 
-        [[nodiscard]] std::span<const smr<const acc::AccelerationPass>> getAccelerations() const noexcept override;
+        [[nodiscard]] _STD span<const smr<const acc::AccelerationPass>> getAccelerations() const noexcept override;
 
         void pushSpecification(mref<uptr<acc::SpecificationStorage>> specification_) override;
 
