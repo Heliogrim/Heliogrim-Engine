@@ -176,6 +176,9 @@
     <ProjectReference Include="..\Engine.GFX.RenderGraph\Engine.GFX.RenderGraph.vcxproj">
       <Project>{8f126647-73b6-4c77-b1d4-a94c2c0d657d}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.RenderPipeline\Engine.GFX.RenderPipeline.vcxproj">
+      <Project>{18e4072e-08d3-455c-8610-29d6a23c3edb}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.Scene\Engine.GFX.Scene.vcxproj">
       <Project>{8fec3eae-4526-4991-a3a8-f9d562efbcba}</Project>
     </ProjectReference>
