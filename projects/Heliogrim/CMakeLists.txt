@@ -22,6 +22,7 @@ set(
 		${PROJECT_NAME}::Engine.GFX.Loader
 		${PROJECT_NAME}::Engine.GFX.Material
 		${PROJECT_NAME}::Engine.GFX.Renderer
+		${PROJECT_NAME}::Engine.GFX.RenderPipeline
 		${PROJECT_NAME}::Engine.GFX.Scene
 		${PROJECT_NAME}::Engine.GFX.Schedule
 		${PROJECT_NAME}::Engine.Input
