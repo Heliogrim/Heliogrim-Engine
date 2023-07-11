@@ -6,7 +6,7 @@
 using namespace hg::engine::gfx::cache;
 using namespace hg;
 
-LocalCacheCtrl::LocalCacheCtrl(mref<uptr<LocalResourceCache>> cache_) :
+LocalCacheCtrl::LocalCacheCtrl(mref<uptr<LocalResourceCache>> cache_) noexcept :
     _cache(_STD move(cache_)) {}
 
 LocalCacheCtrl::~LocalCacheCtrl() {

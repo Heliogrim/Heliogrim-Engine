@@ -12,7 +12,7 @@ namespace hg::engine::gfx::memory {
         using this_type = MemoryCache;
 
     public:
-        MemoryCache();
+        MemoryCache() noexcept;
 
         ~MemoryCache();
 
