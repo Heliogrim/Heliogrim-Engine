@@ -13,7 +13,7 @@ namespace hg::engine::gfx::memory {
         using this_type = LocalPooledAllocator;
 
     public:
-        LocalPooledAllocator(const ptr<GlobalPooledAllocator> global_);
+        LocalPooledAllocator(const ptr<GlobalPooledAllocator> global_) noexcept;
 
         ~LocalPooledAllocator() override;
 

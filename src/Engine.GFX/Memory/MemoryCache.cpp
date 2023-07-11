@@ -9,7 +9,7 @@
 using namespace hg::engine::gfx::memory;
 using namespace hg;
 
-MemoryCache::MemoryCache() :
+MemoryCache::MemoryCache() noexcept :
     _pools() {}
 
 MemoryCache::~MemoryCache() {

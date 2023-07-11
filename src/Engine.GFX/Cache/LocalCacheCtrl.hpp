@@ -33,7 +33,7 @@ namespace hg::engine::gfx::cache {
         >;
 
     public:
-        LocalCacheCtrl(mref<uptr<LocalResourceCache>> cache_);
+        LocalCacheCtrl(mref<uptr<LocalResourceCache>> cache_) noexcept;
 
         LocalCacheCtrl(cref<this_type>) = delete;
 
