@@ -13,15 +13,75 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Headerdateien\Stage">
+      <UniqueIdentifier>{7d1cccb2-4766-4301-b402-998ab2a56b7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\State">
+      <UniqueIdentifier>{c9ae422d-e133-4968-ae48-47b1d25ff85e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\State">
+      <UniqueIdentifier>{50837270-d2fb-4d85-9c21-fb58ac6cfd56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Stage">
+      <UniqueIdentifier>{cd49493e-3304-4be6-8cbc-8aba894ade00}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipeline.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\Stage.hpp">
+      <Filter>Headerdateien\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\SubpassStage.hpp">
+      <Filter>Headerdateien\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\InterlockStage.hpp">
+      <Filter>Headerdateien\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\DivergingStage.hpp">
+      <Filter>Headerdateien\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\ConvergingStage.hpp">
+      <Filter>Headerdateien\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\SignalStage.hpp">
+      <Filter>Headerdateien\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\State\State.hpp">
+      <Filter>Headerdateien\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\__fwd.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\State\StateAware.hpp">
+      <Filter>Headerdateien\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\State\SubStateInfo.hpp">
+      <Filter>Headerdateien\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipelineResult.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\State\ExecState.hpp">
+      <Filter>Headerdateien\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipeline.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\State\StateAware.cpp">
+      <Filter>Quelldateien\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\State\State.cpp">
+      <Filter>Quelldateien\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\test.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\Stage.cpp">
+      <Filter>Quelldateien\Stage</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
