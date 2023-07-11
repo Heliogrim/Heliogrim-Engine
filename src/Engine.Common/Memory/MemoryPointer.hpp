@@ -326,7 +326,8 @@ namespace hg {
         }
 
         template <typename Tx_ = Ty_> requires
-            (not _STD is_const_v<Ty_>) && _STD is_same_v<Tx_, Ty_> && _STD is_default_constructible_v<Tx_>
+            (not _STD is_const_v<Ty_>) && (not _STD is_void_v<Tx_>) && _STD is_same_v<Tx_, Ty_> &&
+            _STD is_default_constructible_v<Tx_>
         ref<Tx_> getOrCreate() noexcept(_STD is_nothrow_default_constructible_v<Tx_>) {
             return (*storage.template loadOrAllocate<Tx_>());
         }
@@ -343,7 +344,7 @@ namespace hg {
             return *this;
         }
 
-        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires (not _STD is_void_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
         cref<_STD remove_const_t<Tx_>> load() const noexcept {
             return *(storage.template load<Ty_>());
         }
@@ -364,13 +365,14 @@ namespace hg {
         }
 
     public:
-        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires (not _STD is_void_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
         [[nodiscard]] cref<_STD remove_const_t<Tx_>> operator*() const noexcept {
             return *(storage.template load<Ty_>());
         }
 
-        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
-        [[nodiscard]] ref<Ty_> operator*() noexcept {
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && (not _STD is_void_v<Ty_>) && _STD is_same_v
+            <Tx_, Ty_>
+        [[nodiscard]] ref<Tx_> operator*() noexcept {
             return *(storage.template load<Ty_>());
         }
 
@@ -476,23 +478,25 @@ namespace hg {
             return *this;
         }
 
-        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires (not _STD is_void_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
         cref<_STD remove_const_t<Tx_>> load() const noexcept {
             return *(storage.template load<Ty_>());
         }
 
-        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && (not _STD is_void_v<Ty_>) && _STD is_same_v
+            <Tx_, Ty_>
         ref<Tx_> load() noexcept {
             return *(storage.template load<Ty_>());
         }
 
     public:
-        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires (not _STD is_void_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
         [[nodiscard]] cref<_STD remove_const_t<Tx_>> operator*() const noexcept {
             return *(storage.template load<Ty_>());
         }
 
-        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && (not _STD is_void_v<Ty_>) && _STD is_same_v
+            <Tx_, Ty_>
         [[nodiscard]] ref<Tx_> operator*() noexcept {
             return *(storage.template load<Ty_>());
         }
@@ -513,6 +517,15 @@ namespace hg {
         }
 
         [[nodiscard]] operator bool() const noexcept {
+            return storage.template load<Ty_>() != nullptr;
+        }
+
+    public:
+        [[nodiscard]] bool operator==(nullptr_t) const noexcept {
+            return storage.template load<Ty_>() == nullptr;
+        }
+
+        [[nodiscard]] bool operator!=(nullptr_t) const noexcept {
             return storage.template load<Ty_>() != nullptr;
         }
 
