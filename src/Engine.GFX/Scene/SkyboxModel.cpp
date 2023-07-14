@@ -188,6 +188,8 @@ ptr<cache::ModelBatch> SkyboxModel::batch(const ptr<render::RenderPassState> sta
     return result;
 }
 
+void SkyboxModel::render(mref<nmpt<render::pipeline::IGCommandBuffer>> cmd_) const {}
+
 const ptr<engine::assets::StaticGeometry> SkyboxModel::geometryAsset() const noexcept {
     return _skyboxGeometryAsset;
 }

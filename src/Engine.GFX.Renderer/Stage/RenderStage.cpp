@@ -2,13 +2,13 @@
 
 #include <Engine.GFX/Device/Device.hpp>
 
-#include "../RenderPipeline.hpp"
+#include "../RenderPipeline_Deprecated.hpp"
 
 using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-void RenderStage::pipelineSetup(const non_owning_rptr<const RenderPipeline> pipeline_) {
+void RenderStage::pipelineSetup(const non_owning_rptr<const RenderPipeline_Deprecated> pipeline_) {
 
     const auto device { pipeline_->device() };
 
@@ -16,7 +16,7 @@ void RenderStage::pipelineSetup(const non_owning_rptr<const RenderPipeline> pipe
     _multiplexer.setup(device);
 }
 
-void RenderStage::pipelineDestroy(const non_owning_rptr<const RenderPipeline> pipeline_) {
+void RenderStage::pipelineDestroy(const non_owning_rptr<const RenderPipeline_Deprecated> pipeline_) {
     destroy();
 }
 

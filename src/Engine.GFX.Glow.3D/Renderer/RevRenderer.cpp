@@ -1,6 +1,6 @@
 #include "RevRenderer.hpp"
 
-#include <Engine.GFX.Renderer/RenderPipeline.hpp>
+#include <Engine.GFX.Renderer/RenderPipeline_Deprecated.hpp>
 #include <Engine.GFX.Renderer/Stage/RenderStageDependency.hpp>
 #include <Engine.Common/Make.hpp>
 

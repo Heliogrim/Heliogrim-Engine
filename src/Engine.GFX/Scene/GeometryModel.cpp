@@ -6,7 +6,7 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 GeometryModel::GeometryModel(const ptr<SceneComponent> owner_) :
-    SceneNodeModel(owner_) {}
+    InheritMeta(owner_) {}
 
 bool GeometryModel::hasOverrideMaterials() const noexcept {
     return !_overrideMaterials.empty();

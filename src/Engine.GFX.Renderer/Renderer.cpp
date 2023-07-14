@@ -9,7 +9,7 @@
 
 #include "HORenderPass.hpp"
 #include "RenderPassState.hpp"
-#include "RenderPipeline.hpp"
+#include "RenderPipeline_Deprecated.hpp"
 
 using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;
@@ -345,13 +345,13 @@ const non_owning_rptr<HORenderPass> Renderer::invoke(
     return renderPass_;
 }
 
-const non_owning_rptr<const RenderPipeline> Renderer::pipeline() const noexcept {
+const non_owning_rptr<const RenderPipeline_Deprecated> Renderer::pipeline() const noexcept {
     return _pipeline;
 }
 
-const non_owning_rptr<RenderPipeline> Renderer::getOrCreatePipeline() {
+const non_owning_rptr<RenderPipeline_Deprecated> Renderer::getOrCreatePipeline() {
     if (_pipeline == nullptr) {
-        _pipeline = new RenderPipeline();
+        _pipeline = new RenderPipeline_Deprecated();
     }
 
     return _pipeline;

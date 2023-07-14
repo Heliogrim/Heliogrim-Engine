@@ -31,7 +31,13 @@ namespace hg::engine::gfx::render {
 
         [[nodiscard]] decltype(_stages)::iterator moveNext(decltype(_stages)::iterator cursor_) const;
 
+    private:
+        _STD atomic_uint_fast8_t _startCnd;
+        nmpt<const _STD atomic_uint_fast8_t> _endCnd;
+
     public:
+        void reset();
+
         /**
          * Invocation function for this pipeline consuming a state to propagate
          *

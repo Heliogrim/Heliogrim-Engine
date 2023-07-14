@@ -14,6 +14,11 @@ namespace hg::engine::gfx::render::pipeline {
         ~ConvergingStage() noexcept override = default;
 
     public:
+        void reset() override;
+
+        void operator()(nmpt<State> state_) const override;
+
+    public:
         struct Predecessor {
             // Should be ConvergingStage | DivergingStage
             nmpt<SignalStage> signalStage;

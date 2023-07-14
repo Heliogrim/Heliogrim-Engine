@@ -148,6 +148,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\RenderTarget.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\CameraModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\GeometryModel.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SkyboxModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\StaticGeometryBatch.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.cpp" />

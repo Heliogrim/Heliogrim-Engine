@@ -36,6 +36,8 @@ namespace hg::engine::gfx {
     public:
         [[nodiscard]] ptr<cache::ModelBatch> batch(const ptr<render::RenderPassState> state_) override;
 
+        void render(mref<nmpt<render::pipeline::IGCommandBuffer>> cmd_) const override;
+
     private:
         ptr<assets::StaticGeometry> _skyboxGeometryAsset = nullptr;
         smr<resource::ResourceBase> _skyboxGeometryResource = {};
