@@ -923,5 +923,8 @@
     <ClCompile Include="..\..\src\Engine.GFX\Importer\ModelFileTypes.cpp">
       <Filter>Quelldateien\Importer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.cpp">
+      <Filter>Quelldateien\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

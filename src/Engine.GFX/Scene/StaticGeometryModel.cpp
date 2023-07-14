@@ -5,6 +5,7 @@
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene/RevScene.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.GFX.RenderPipeline/Invocation/IGCommandBuffer.hpp>
 
 #include "ModelDataTokens.hpp"
 #include "StaticGeometryBatch.hpp"
@@ -255,6 +256,15 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
 
     //
     return result;
+}
+
+void StaticGeometryModel::render(mref<nmpt<render::pipeline::IGCommandBuffer>> cmd_) const {
+
+    cmd_->bindVertexBuffer();
+    cmd_->bindIndexBuffer();
+
+    cmd_->drawIndexed();
+
 }
 
 const ptr<engine::assets::StaticGeometry> StaticGeometryModel::geometryAsset() const noexcept {

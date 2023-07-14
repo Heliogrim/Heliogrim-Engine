@@ -20,18 +20,18 @@ namespace hg::engine::gfx::render {
         eFailedUnique
     };
 
-    class RenderPipeline {
+    class RenderPipeline_Deprecated {
     public:
-        using this_type = RenderPipeline;
+        using this_type = RenderPipeline_Deprecated;
 
     public:
-        RenderPipeline();
+        RenderPipeline_Deprecated();
 
-        RenderPipeline(cref<this_type>) = delete;
+        RenderPipeline_Deprecated(cref<this_type>) = delete;
 
-        RenderPipeline(mref<this_type>) = delete;
+        RenderPipeline_Deprecated(mref<this_type>) = delete;
 
-        ~RenderPipeline();
+        ~RenderPipeline_Deprecated();
 
     public:
         void destroy();

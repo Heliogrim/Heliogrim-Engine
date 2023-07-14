@@ -25,6 +25,12 @@
     <Filter Include="Quelldateien\Stage">
       <UniqueIdentifier>{cd49493e-3304-4be6-8cbc-8aba894ade00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Invocation">
+      <UniqueIdentifier>{53427975-e861-46a1-bb9c-96d8fc273e8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Invocation">
+      <UniqueIdentifier>{eeecf173-4670-4a95-8aed-e20a91b928b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipeline.hpp">
@@ -66,6 +72,36 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\State\ExecState.hpp">
       <Filter>Headerdateien\State</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\test.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\InvocationGenerator.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneMeshIG.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneWalker.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGCommandBuffer.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\MaterialSubpassStage.hpp">
+      <Filter>Headerdateien\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\AccelSubpassStage.hpp">
+      <Filter>Headerdateien\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\MultiAccelSubpassStage.hpp">
+      <Filter>Headerdateien\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ProcMeshIG.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\PlaneMeshIG.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipeline.cpp">
@@ -83,5 +119,22 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\Stage.cpp">
       <Filter>Quelldateien\Stage</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\SubpassStage.cpp">
+      <Filter>Quelldateien\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\AccelSubpassStage.cpp">
+      <Filter>Quelldateien\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\MaterialSubpassStage.cpp">
+      <Filter>Quelldateien\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGCommandBuffer.cpp">
+      <Filter>Quelldateien\Invocation</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneWalkerFilter.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </None>
   </ItemGroup>
 </Project>

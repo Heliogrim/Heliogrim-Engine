@@ -25,9 +25,6 @@
     <Filter Include="Headerdateien\Stage">
       <UniqueIdentifier>{4890ed90-d659-4599-926e-4d1c6a7d2d48}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Command">
-      <UniqueIdentifier>{36b23de1-d170-4e75-8302-e03e37fb3f88}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\__fwd.hpp">
@@ -45,7 +42,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\Stage\RenderStage.hpp">
       <Filter>Headerdateien\Stage</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Renderer\RenderPipeline.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Renderer\RenderPipeline_Deprecated.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\RenderPassState.hpp">
@@ -71,15 +68,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\Stage\Multiplexer.hpp">
       <Filter>Headerdateien\Stage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Renderer\Command\AccelerationCommandPool.hpp">
-      <Filter>Headerdateien\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Renderer\Command\AccelerationCommandBuffer.hpp">
-      <Filter>Headerdateien\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Renderer\Command\__fwd.hpp">
-      <Filter>Headerdateien\Command</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -107,7 +95,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\RenderPassState.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Renderer\RenderPipeline.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Renderer\RenderPipeline_Deprecated.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

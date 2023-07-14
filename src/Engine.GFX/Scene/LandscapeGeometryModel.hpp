@@ -6,7 +6,7 @@
 
 namespace hg::engine::gfx {
     class LandscapeGeometryModel :
-        public SceneNodeModel {
+        public InheritMeta<LandscapeGeometryModel, SceneNodeModel> {
     public:
         LandscapeGeometryModel(const ptr<SceneComponent> owner_);
 

@@ -128,12 +128,12 @@ namespace hg::engine::gfx::render {
         /**
          * Internal Render Pipeline
          */
-        ptr<RenderPipeline> _pipeline;
+        ptr<RenderPipeline_Deprecated> _pipeline;
 
     public:
-        [[nodiscard]] const non_owning_rptr<const RenderPipeline> pipeline() const noexcept;
+        [[nodiscard]] const non_owning_rptr<const RenderPipeline_Deprecated> pipeline() const noexcept;
 
     protected:
-        [[nodiscard]] const non_owning_rptr<RenderPipeline> getOrCreatePipeline();
+        [[nodiscard]] const non_owning_rptr<RenderPipeline_Deprecated> getOrCreatePipeline();
     };
 }

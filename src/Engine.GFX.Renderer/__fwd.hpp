@@ -8,7 +8,7 @@ namespace hg::engine::gfx::render {
     struct RenderDataToken;
     class Renderer;
     struct RenderPassState;
-    class RenderPipeline;
+    class RenderPipeline_Deprecated;
 
     /**/
 

@@ -10,7 +10,7 @@ namespace hg::engine::gfx::render::pipeline {
     };
 
     struct ExecState {
-        nmpt<_STD atomic_uint_fast8_t> cnd;
+        nmpt<const _STD atomic_uint_fast8_t> cnd;
         _STD atomic_uint_fast8_t state;
 
     public:

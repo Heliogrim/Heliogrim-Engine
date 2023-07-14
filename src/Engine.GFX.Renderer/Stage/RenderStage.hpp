@@ -19,7 +19,7 @@ namespace hg::engine::gfx::render {
     public:
         using this_type = RenderStage;
 
-        friend class RenderPipeline;
+        friend class RenderPipeline_Deprecated;
 
     protected:
         /**
@@ -50,7 +50,7 @@ namespace hg::engine::gfx::render {
          *
          * @param pipeline_ The Pipeline invoking/containing this stage.
          */
-        void pipelineSetup(const non_owning_rptr<const RenderPipeline> pipeline_);
+        void pipelineSetup(const non_owning_rptr<const RenderPipeline_Deprecated> pipeline_);
 
         /**
          * Destroy call from containing RenderPipeline
@@ -62,7 +62,7 @@ namespace hg::engine::gfx::render {
          *
          * @param pipeline_ The Pipeline invoking/containing this stage.
          */
-        void pipelineDestroy(const non_owning_rptr<const RenderPipeline> pipeline_);
+        void pipelineDestroy(const non_owning_rptr<const RenderPipeline_Deprecated> pipeline_);
 
     protected:
         /**

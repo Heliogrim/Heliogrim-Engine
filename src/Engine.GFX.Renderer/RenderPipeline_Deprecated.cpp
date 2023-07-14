@@ -1,4 +1,4 @@
-#include "RenderPipeline.hpp"
+#include "RenderPipeline_Deprecated.hpp"
 
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.GFX/Device/Device.hpp>
@@ -12,11 +12,11 @@ using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-RenderPipeline::RenderPipeline() = default;
+RenderPipeline_Deprecated::RenderPipeline_Deprecated() = default;
 
-RenderPipeline::~RenderPipeline() = default;
+RenderPipeline_Deprecated::~RenderPipeline_Deprecated() = default;
 
-void RenderPipeline::destroy() {
+void RenderPipeline_Deprecated::destroy() {
     /**
      * Iterate backward/reverse over all stages
      */
@@ -25,7 +25,7 @@ void RenderPipeline::destroy() {
     }
 }
 
-void RenderPipeline::setup(cref<sptr<Device>> device_) {
+void RenderPipeline_Deprecated::setup(cref<sptr<Device>> device_) {
     /**
      * Store back associated device
      */
@@ -39,7 +39,7 @@ void RenderPipeline::setup(cref<sptr<Device>> device_) {
     }
 }
 
-void RenderPipeline::allocate(const ptr<HORenderPass> renderPass_) {
+void RenderPipeline_Deprecated::allocate(const ptr<HORenderPass> renderPass_) {
     /**
      * Iterate forward over all stages
      */
@@ -48,7 +48,7 @@ void RenderPipeline::allocate(const ptr<HORenderPass> renderPass_) {
     }
 }
 
-void RenderPipeline::free(const ptr<HORenderPass> renderPass_) {
+void RenderPipeline_Deprecated::free(const ptr<HORenderPass> renderPass_) {
     /**
      * Iterate backward/reverse over all stages
      */
@@ -57,7 +57,7 @@ void RenderPipeline::free(const ptr<HORenderPass> renderPass_) {
     }
 }
 
-void RenderPipeline::invoke(const non_owning_rptr<HORenderPass> renderPass_) const {
+void RenderPipeline_Deprecated::invoke(const non_owning_rptr<HORenderPass> renderPass_) const {
 
     Vector<CommandBatch> contextBatches { _STD move(renderPass_->batches()) };
 
@@ -151,11 +151,11 @@ inline bool guaranteeUnique(cref<Vector<sptr<RenderStage>>> stages_, cref<sptr<R
     return it == stages_.end();
 }
 
-cref<Vector<sptr<RenderStage>>> RenderPipeline::stages() const noexcept {
+cref<Vector<sptr<RenderStage>>> RenderPipeline_Deprecated::stages() const noexcept {
     return _stages;
 }
 
-RenderPipelineValidationResult RenderPipeline::push(cref<sptr<RenderStage>> stage_) {
+RenderPipelineValidationResult RenderPipeline_Deprecated::push(cref<sptr<RenderStage>> stage_) {
 
     if (!guaranteeUnique(_stages, stage_)) {
         return RenderPipelineValidationResult::eFailedUnique;
@@ -255,7 +255,7 @@ RenderPipelineValidationResult RenderPipeline::push(cref<sptr<RenderStage>> stag
     return RenderPipelineValidationResult::eSuccess;
 }
 
-bool RenderPipeline::pop(cref<sptr<RenderStage>> stage_) {
+bool RenderPipeline_Deprecated::pop(cref<sptr<RenderStage>> stage_) {
 
     const auto it { _STD remove(_stages.begin(), _stages.end(), stage_) };
 
@@ -267,7 +267,7 @@ bool RenderPipeline::pop(cref<sptr<RenderStage>> stage_) {
     return true;
 }
 
-RenderPipelineValidationResult RenderPipeline::validate() const noexcept {
+RenderPipelineValidationResult RenderPipeline_Deprecated::validate() const noexcept {
     /**
      * Order is guaranteed by push function, so we don't need to check again
      */
@@ -296,6 +296,6 @@ RenderPipelineValidationResult RenderPipeline::validate() const noexcept {
                RenderPipelineValidationResult::eFailedRequired;
 }
 
-cref<sptr<Device>> RenderPipeline::device() const noexcept {
+cref<sptr<Device>> RenderPipeline_Deprecated::device() const noexcept {
     return _device;
 }

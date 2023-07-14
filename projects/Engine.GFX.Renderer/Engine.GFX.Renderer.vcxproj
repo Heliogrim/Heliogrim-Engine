@@ -90,9 +90,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.GFX.Renderer\Command\AccelerationCommandBuffer.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Renderer\Command\AccelerationCommandPool.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Renderer\Command\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\HORenderPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\HORenderPassChanges.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\HORenderPassCreateData.hpp" />
@@ -100,7 +97,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\RenderDataToken.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\Renderer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\RenderPassState.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Renderer\RenderPipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Renderer\RenderPipeline_Deprecated.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\Stage\Multiplexer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\Stage\RenderStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\Stage\RenderStageDependency.hpp" />
@@ -113,7 +110,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\Node\RenderStageNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\Renderer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\RenderPassState.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Renderer\RenderPipeline.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Renderer\RenderPipeline_Deprecated.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\Stage\Multiplexer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\Stage\RenderStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\Stage\RenderStagePass.cpp" />

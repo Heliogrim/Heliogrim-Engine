@@ -90,11 +90,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGCommandBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\InvocationGenerator.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\PlaneMeshIG.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ProcMeshIG.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneMeshIG.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneWalker.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipelineResult.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\AccelSubpassStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\ConvergingStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\DivergingStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\InterlockStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\MaterialSubpassStage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\MultiAccelSubpassStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\SignalStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\Stage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\SubpassStage.hpp" />
@@ -102,14 +111,22 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\State\State.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\State\StateAware.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\State\SubStateInfo.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\test.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGCommandBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipeline.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\AccelSubpassStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\MaterialSubpassStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\Stage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\SubpassStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\State\State.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\State\StateAware.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneWalkerFilter.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
