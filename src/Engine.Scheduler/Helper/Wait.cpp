@@ -5,7 +5,7 @@
 using namespace hg::engine::scheduler;
 using namespace hg;
 
-void engine::scheduler::waitOnAtomic(ref<std::atomic_flag> atomic_, const bool prev_) {
+void engine::scheduler::waitOnAtomic(cref<std::atomic_flag> atomic_, const bool prev_) {
     if (/* TODO: Check whether we are thread or fiber */false) {
         while (atomic_.test(std::memory_order::relaxed) == prev_) {
             fiber::self::yield();
@@ -15,7 +15,7 @@ void engine::scheduler::waitOnAtomic(ref<std::atomic_flag> atomic_, const bool p
     }
 }
 
-void engine::scheduler::waitOnAtomic(ref<std::atomic_uint_fast8_t> atomic_, const u8 prev_) {
+void engine::scheduler::waitOnAtomic(cref<std::atomic_uint_fast8_t> atomic_, const u8 prev_) {
     if (/* TODO: Check whether we are thread or fiber */false) {
         while (atomic_.load(_STD memory_order::relaxed) == prev_) {
             fiber::self::yield();
@@ -25,7 +25,7 @@ void engine::scheduler::waitOnAtomic(ref<std::atomic_uint_fast8_t> atomic_, cons
     }
 }
 
-void engine::scheduler::waitUntilAtomic(ref<std::atomic_flag> atomic_, const bool expect_) {
+void engine::scheduler::waitUntilAtomic(cref<std::atomic_flag> atomic_, const bool expect_) {
 
     if (/* TODO: Check whether we are thread or fiber */false) {
         while (atomic_.test(std::memory_order::relaxed) != expect_) {
@@ -37,7 +37,7 @@ void engine::scheduler::waitUntilAtomic(ref<std::atomic_flag> atomic_, const boo
 
 }
 
-void engine::scheduler::waitUntilAtomic(ref<std::atomic_uint_fast8_t> atomic_, const u8 expect_) {
+void engine::scheduler::waitUntilAtomic(cref<std::atomic_uint_fast8_t> atomic_, const u8 expect_) {
 
     if (/* TODO: Check whether we are thread or fiber */false) {
         while (atomic_.load(_STD memory_order::relaxed) != expect_) {
