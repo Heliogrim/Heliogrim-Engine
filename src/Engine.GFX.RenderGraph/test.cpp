@@ -1,17 +1,14 @@
 #include "test.hpp"
 
-#include <Engine.GFX.Acc/AccelerationPass.hpp>
 #include <Engine.GFX.Acc/AccelerationStageTransferToken.hpp>
 #include <Engine.GFX.Acc.Compile/Spec/SimpleSpecificationStorage.hpp>
 #include <Engine.GFX.Acc.Compile/Spec/SpecificationStorage.hpp>
 #include <Engine.GFX.Material/Material.hpp>
 
 #include "RenderGraph.hpp"
-#include "__fwd.hpp"
 #include "Builder/Builder.hpp"
 #include "Component/BarrierComponent.hpp"
 #include "Component/ProviderComponent.hpp"
-#include "Component/SubpassAccelComponent.hpp"
 #include "Component/SubpassComponent.hpp"
 #include "Debug/DebugVisitor.hpp"
 
@@ -32,11 +29,6 @@ using namespace hg::engine::gfx::render;
 using namespace hg;
 
 using AccToken = engine::gfx::acc::AccelerationStageTransferToken;
-
-uptr<engine::gfx::acc::SpecificationStorage> generateSpecStore(nmpt<SubpassComponent> subpass_) {
-
-    return make_uptr<engine::gfx::acc::SimpleSpecificationStorage>();
-}
 
 void hg::test_render_graph() {
 
@@ -158,9 +150,6 @@ void hg::test_render_graph() {
             }
         );
 
-        auto subpassAccel = subpassNode->getSubpassAcceleration();
-        subpassAccel->pushSpecification(generateSpecStore(subpassComp));
-
         cursor = subpassNode.get();
         graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
     }
@@ -175,7 +164,7 @@ void hg::test_render_graph() {
 
         /**/
 
-        auto subpassNode = make_smr<SubpassNode>(SubpassAccelMode::eMulti);
+        auto subpassNode = make_smr<SubpassNode>(SubpassAccelMode::eMaterial);
         auto subpassComp = subpassNode->getSubpassComponent();
 
         subpassComp->setRequirements(
@@ -194,9 +183,6 @@ void hg::test_render_graph() {
                 Provision { AccToken::from("normal").hash, normalBufferDescription }
             }
         );
-
-        auto subpassAccel = subpassNode->getSubpassAcceleration();
-        subpassAccel->pushSpecification(generateSpecStore(subpassComp));
 
         cursor = subpassNode.get();
         graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
@@ -230,9 +216,6 @@ void hg::test_render_graph() {
             }
         );
 
-        auto subpassAccel = subpassNode->getSubpassAcceleration();
-        subpassAccel->pushSpecification(generateSpecStore(subpassComp));
-
         cursor = subpassNode.get();
         graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
     }
@@ -261,9 +244,6 @@ void hg::test_render_graph() {
                 Provision { AccToken::from("color").hash, colorBufferDescription }
             }
         );
-
-        auto subpassAccel = subpassNode->getSubpassAcceleration();
-        subpassAccel->pushSpecification(generateSpecStore(subpassComp));
 
         cursor = subpassNode.get();
         graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));

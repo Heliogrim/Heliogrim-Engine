@@ -21,10 +21,11 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\BarrierComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Component.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\ProviderComponent.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassAccelComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassComponent.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassMultiAccelComponent.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassSingleAccelComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassAccelComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassMaterialAccelComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassMultiAccelComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassSingleAccelComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Debug\DebugVisitor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\AnchorNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Auxiliary.hpp" />
@@ -62,8 +63,9 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Component.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\ProviderComponent.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassComponent.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassMultiAccelComponent.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassSingleAccelComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassMaterialAccelComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassMultiAccelComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassSingleAccelComponent.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Debug\DebugVisitor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\AnchorNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Auxiliary.cpp" />

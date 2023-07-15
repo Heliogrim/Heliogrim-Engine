@@ -1,8 +1,9 @@
 #include "SubpassNode.hpp"
 
 #include "../Component/SubpassComponent.hpp"
-#include "../Component/SubpassMultiAccelComponent.hpp"
-#include "../Component/SubpassSingleAccelComponent.hpp"
+#include "../Component/Subpass/SubpassMaterialAccelComponent.hpp"
+#include "../Component/Subpass/SubpassMultiAccelComponent.hpp"
+#include "../Component/Subpass/SubpassSingleAccelComponent.hpp"
 #include "../Visitor/Visitor.hpp"
 
 using namespace hg::engine::gfx::render::graph;
@@ -15,9 +16,17 @@ SubpassNode::SubpassNode(SubpassAccelMode mode_) noexcept :
     _auxiliary->add(uptr<SubpassComponent> { HeliogrimObject::create<SubpassComponent>() });
 
     if (mode_ == SubpassAccelMode::eSingle) {
-        _auxiliary->add(uptr<SubpassSingleAccelComponent> { HeliogrimObject::create<SubpassSingleAccelComponent>() });
-    } else {
-        _auxiliary->add(uptr<SubpassMultiAccelComponent> { HeliogrimObject::create<SubpassMultiAccelComponent>() });
+        _auxiliary->add(
+            uptr<SubpassSingleAccelComponent> { HeliogrimObject::create<SubpassSingleAccelComponent>() }
+        );
+    } else if (mode_ == SubpassAccelMode::eMulti) {
+        _auxiliary->add(
+            uptr<SubpassMultiAccelComponent> { HeliogrimObject::create<SubpassMultiAccelComponent>() }
+        );
+    } else if (mode_ == SubpassAccelMode::eMaterial) {
+        _auxiliary->add(
+            uptr<SubpassMaterialAccelComponent> { HeliogrimObject::create<SubpassMaterialAccelComponent>() }
+        );
     }
 }
 
