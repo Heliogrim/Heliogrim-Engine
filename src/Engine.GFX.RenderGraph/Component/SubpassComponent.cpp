@@ -2,8 +2,9 @@
 
 #include <Engine.Common/Collection/DenseSet.hpp>
 
-#include "SubpassMultiAccelComponent.hpp"
-#include "SubpassSingleAccelComponent.hpp"
+#include "Subpass/SubpassMultiAccelComponent.hpp"
+#include "Subpass/SubpassSingleAccelComponent.hpp"
+#include "Subpass/SubpassMaterialAccelComponent.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg;
@@ -27,6 +28,11 @@ void SubpassComponent::mounted(nmpt<const Component> mounted_) {
 
     if (mounted_->getClass()->isExactType<SubpassMultiAccelComponent>()) {
         _accel = &static_cast<cref<SubpassMultiAccelComponent>>(*mounted_);
+        return;
+    }
+
+    if (mounted_->getClass()->isExactType<SubpassMaterialAccelComponent>()) {
+        _accel = &static_cast<cref<SubpassMaterialAccelComponent>>(*mounted_);
         return;
     }
 

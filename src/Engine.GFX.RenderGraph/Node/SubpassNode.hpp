@@ -4,9 +4,10 @@
 #include "../__fwd.hpp"
 
 namespace hg::engine::gfx::render::graph {
-    enum class SubpassAccelMode : bool {
-        eSingle = false,
-        eMulti = true
+    enum class SubpassAccelMode {
+        eSingle = 0x0,
+        eMulti = 0x1,
+        eMaterial = 0x2
     };
 
     class SubpassNode final :

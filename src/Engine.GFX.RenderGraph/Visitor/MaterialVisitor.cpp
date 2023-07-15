@@ -2,10 +2,12 @@
 
 #include <cassert>
 #include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Reflect/Cast.hpp>
 
-#include "../Component/SubpassAccelComponent.hpp"
+#include "../Component/Subpass/SubpassAccelComponent.hpp"
 #include "../Component/SubpassComponent.hpp"
 #include "../Node/SubpassNode.hpp"
+#include "../Component/Subpass/SubpassMaterialAccelComponent.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg::engine::gfx;
@@ -18,12 +20,23 @@ void MaterialVisitor::operator()(cref<SubpassNode> node_) {
     const auto subpassComp = node_.getSubpassComponent();
     const auto accelComp = node_.getSubpassAcceleration();
 
-    for (const auto& orphaned : _orphaned) {
-        accelComp->dropMaterial(clone(orphaned));
-    }
+    // TODO:
+    // if (auto smac = Cast<SubpassMaterialAccelComponent>(accelComp.get())) { }
+    // Expected: Should expand to inlined `let smac = Cast<...>(...) ; if (smac ~ bool) { ... }`
+    // -> Implicit `Cast Failed -> smac := nullptr ~> if(nullptr) | Cast Succeeded -> smac != nullptr ~> if (not nullptr)`
 
-    for (const auto& raised : _raised) {
-        accelComp->storeMaterial(clone(raised));
+    if (accelComp->getClass()->isExactType<SubpassMaterialAccelComponent>()) {
+
+        auto* const smac = static_cast<const ptr<SubpassMaterialAccelComponent>>(accelComp.get());
+
+        for (const auto& orphaned : _orphaned) {
+            smac->removeMaterial(clone(orphaned));
+        }
+
+        for (const auto& raised : _raised) {
+            smac->addMaterial(clone(raised));
+        }
+
     }
 
     Visitor::operator()(node_);
