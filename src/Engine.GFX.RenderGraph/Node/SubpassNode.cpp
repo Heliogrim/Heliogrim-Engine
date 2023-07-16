@@ -5,6 +5,7 @@
 #include "../Component/SubpassComponent.hpp"
 #include "../Component/Subpass/SubpassMaterialAccelComponent.hpp"
 #include "../Component/Subpass/SubpassMultiAccelComponent.hpp"
+#include "../Component/Subpass/SubpassSceneMeshInvocationComponent.hpp"
 #include "../Component/Subpass/SubpassSingleAccelComponent.hpp"
 #include "../Visitor/Visitor.hpp"
 
@@ -73,4 +74,28 @@ nmpt<SubpassAccelComponent> SubpassNode::getSubpassAcceleration() const noexcept
     return it != _auxiliary->components().end() ?
                static_cast<ptr<SubpassAccelComponent>>(*it) :
                nmpt<SubpassAccelComponent> {};
+}
+
+nmpt<SubpassInvocationComponent> SubpassNode::getSubpassInvocation() const noexcept {
+    const auto it = _STD ranges::find_if(
+        _auxiliary->components(),
+        [](const ptr<Component> component_) {
+            return component_->getMetaClass()->exact<SubpassSceneMeshInvocationComponent>();
+        }
+    );
+    return it != _auxiliary->components().end() ?
+               static_cast<ptr<SubpassInvocationComponent>>(*it) :
+               nmpt<SubpassInvocationComponent> {};
+}
+
+void SubpassNode::setSubpassInvocation(mref<uptr<SubpassInvocationComponent>> invocationComponent_) {
+
+    auto prev = getSubpassInvocation();
+    if (prev != nullptr) {
+        _auxiliary->remove(prev.get());
+    }
+
+    /**/
+
+    _auxiliary->add(_STD move(invocationComponent_));
 }

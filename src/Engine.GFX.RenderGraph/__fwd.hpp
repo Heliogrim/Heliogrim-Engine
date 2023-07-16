@@ -15,6 +15,7 @@ namespace hg::engine::gfx::render::graph {
     class ProviderComponent;
     class SubpassComponent;
     class SubpassAccelComponent;
+    class SubpassInvocationComponent;
     /**/
     class Resolver;
     struct ResolverOptions;
