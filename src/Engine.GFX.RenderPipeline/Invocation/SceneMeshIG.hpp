@@ -22,10 +22,10 @@ namespace hg::engine::gfx::render::pipeline {
     public:
         void accept(mref<nmpt<const GeometryModel>> model_) {
 
-            if (model_->getClass()->isExactType<StaticGeometryModel>()) {
+            if (model_->getMetaClass()->exact<StaticGeometryModel>()) {
                 // nmpt<const StaticGeometryModel> model = _STD move(model_);
 
-            } else if (model_->getClass()->isExactType<SkeletalGeometryModel>()) {
+            } else if (model_->getMetaClass()->exact<SkeletalGeometryModel>()) {
                 // nmpt<const SkeletalGeometryModel> model = _STD move(model_);
             }
 

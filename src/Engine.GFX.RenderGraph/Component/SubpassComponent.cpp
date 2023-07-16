@@ -6,12 +6,16 @@
 #include "Subpass/SubpassSingleAccelComponent.hpp"
 #include "Subpass/SubpassMaterialAccelComponent.hpp"
 
+#include "Subpass/SubpassSceneMeshInvocationComponent.hpp"
+
 using namespace hg::engine::gfx::render::graph;
 using namespace hg;
 
 SubpassComponent::SubpassComponent() noexcept :
     InheritMeta(),
-    _mounted() {}
+    _mounted(),
+    _accel(),
+    _invoke() {}
 
 SubpassComponent::~SubpassComponent() noexcept = default;
 
@@ -23,17 +27,14 @@ void SubpassComponent::mounted(nmpt<const Component> mounted_) {
 
     if (mounted_->getMetaClass()->exact<SubpassSingleAccelComponent>()) {
         _accel = &static_cast<cref<SubpassSingleAccelComponent>>(*mounted_);
-        return;
-    }
-
-    if (mounted_->getMetaClass()->exact<SubpassMultiAccelComponent>()) {
+    } else if (mounted_->getMetaClass()->exact<SubpassMultiAccelComponent>()) {
         _accel = &static_cast<cref<SubpassMultiAccelComponent>>(*mounted_);
-        return;
+    } else if (mounted_->getMetaClass()->exact<SubpassMaterialAccelComponent>()) {
+        _accel = &static_cast<cref<SubpassMaterialAccelComponent>>(*mounted_);
     }
 
-    if (mounted_->getMetaClass()->exact<SubpassMaterialAccelComponent>()) {
-        _accel = &static_cast<cref<SubpassMaterialAccelComponent>>(*mounted_);
-        return;
+    if (mounted_->getMetaClass()->exact<SubpassSceneMeshInvocationComponent>()) {
+        _invoke = &static_cast<cref<SubpassSceneMeshInvocationComponent>>(*mounted_);
     }
 
     Component::mounted(mounted_);

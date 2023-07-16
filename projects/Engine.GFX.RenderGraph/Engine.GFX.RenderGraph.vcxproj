@@ -23,8 +23,10 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\ProviderComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassAccelComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassInvocationComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassMaterialAccelComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassMultiAccelComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassSceneMeshInvocationComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassSingleAccelComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Debug\DebugVisitor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\AnchorNode.hpp" />

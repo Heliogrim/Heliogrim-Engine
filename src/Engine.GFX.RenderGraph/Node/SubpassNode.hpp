@@ -37,5 +37,9 @@ namespace hg::engine::gfx::render::graph {
         [[nodiscard]] nmpt<SubpassComponent> getSubpassComponent() const noexcept;
 
         [[nodiscard]] nmpt<SubpassAccelComponent> getSubpassAcceleration() const noexcept;
+
+        [[nodiscard]] nmpt<SubpassInvocationComponent> getSubpassInvocation() const noexcept;
+
+        void setSubpassInvocation(mref<uptr<SubpassInvocationComponent>> invocationComponent_);
     };
 }

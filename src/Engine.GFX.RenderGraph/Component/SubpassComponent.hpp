@@ -26,6 +26,7 @@ namespace hg::engine::gfx::render::graph {
     private:
         nmpt<const Node> _mounted;
         nmpt<const SubpassAccelComponent> _accel;
+        nmpt<const SubpassInvocationComponent> _invoke;
 
     public:
         void mount(nmpt<const Node> target_) override;

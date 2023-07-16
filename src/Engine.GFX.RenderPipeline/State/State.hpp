@@ -8,6 +8,7 @@
 #include <Engine.GFX/Memory/LocalPooledAllocator.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Reflect/Meta/TypeId.hpp>
 
 #include "../__fwd.hpp"
 #include "SubStateInfo.hpp"
@@ -81,7 +82,7 @@ namespace hg::engine::gfx::render::pipeline {
         template <SubStateType Type_>
         void regSubState() {
 
-            const auto type = HeliogrimClass::stid<Type_>();
+            const auto type = reflect::typeId<Type_>();
             const auto size = sizeof(Type_);
 
             regSubState(type, size);
@@ -101,7 +102,7 @@ namespace hg::engine::gfx::render::pipeline {
         template <SubStateType Type_>
         void regSubState(size_t key_) {
 
-            const auto type = HeliogrimClass::stid<Type_>();
+            const auto type = reflect::typeId<Type_>();
             const auto size = sizeof(Type_);
 
             regSubState(type, size, key_);
@@ -113,7 +114,7 @@ namespace hg::engine::gfx::render::pipeline {
             void* mem = nullptr;
             if constexpr (HasStaticType<Type_>) {
 
-                constexpr auto type = HeliogrimClass::stid<Type_>();
+                constexpr auto type = reflect::typeId<Type_>();
                 mem = allocSubState(type);
 
             }
@@ -146,7 +147,7 @@ namespace hg::engine::gfx::render::pipeline {
         template <SubStateType Type_> requires HasStaticType<Type_>
         [[nodiscard]] nmpt<Type_> allocSubState(size_t key_) {
 
-            constexpr auto type = HeliogrimClass::stid<Type_>();
+            constexpr auto type = reflect::typeId<Type_>();
             auto* mem = allocSubState(type, key_);
             assert(mem != nullptr);
 
