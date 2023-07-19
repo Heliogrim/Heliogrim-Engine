@@ -25,6 +25,19 @@ namespace hg {
             return hash::fnv1a(_cs, _length);
         }
 
+    public:
+        constexpr const char* begin() const noexcept {
+            return _cs;
+        }
+
+        constexpr const char* end() const noexcept {
+            return _cs + _length;
+        }
+
+        std::string str() const {
+            return std::string { begin(), end() };
+        }
+
     private:
         const char* _cs;
         _STD size_t _length;
