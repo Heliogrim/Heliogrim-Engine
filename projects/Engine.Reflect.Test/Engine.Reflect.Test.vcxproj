@@ -54,6 +54,8 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflect.Test\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Reflect.Test\test.cpp" />
   </ItemGroup>
@@ -61,6 +63,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Engine.Logging\Engine.Logging.vcxproj">
+      <Project>{9d1b3213-b18e-4551-9a75-9ecd3f6196ee}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Reflect\Engine.Reflect.vcxproj">
       <Project>{9058623e-8475-4683-8131-0845fa5aa877}</Project>
     </ProjectReference>

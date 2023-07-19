@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Headerdateien\Meta">
+      <UniqueIdentifier>{b9e89430-23c8-4026-97d8-fe50ae34c63f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Inherit">
+      <UniqueIdentifier>{4e6eb1c5-203b-421b-9f7b-594be4546d3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Meta">
+      <UniqueIdentifier>{98483587-5970-44a6-ac24-cb3aa5f11769}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimStruct.hpp">
@@ -35,6 +44,24 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflect\CompileTypeId.hpp">
       <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Meta\MetaClass.hpp">
+      <Filter>Headerdateien\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Meta\TypedMetaClass.hpp">
+      <Filter>Headerdateien\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Inherit\Concept.hpp">
+      <Filter>Headerdateien\Inherit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Inherit\InheritBase.hpp">
+      <Filter>Headerdateien\Inherit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Inherit\InheritMeta.hpp">
+      <Filter>Headerdateien\Inherit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Inherit\ClassMetaBase.hpp">
+      <Filter>Headerdateien\Inherit</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
