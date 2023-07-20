@@ -22,6 +22,9 @@
     <Filter Include="Quelldateien\Meta">
       <UniqueIdentifier>{98483587-5970-44a6-ac24-cb3aa5f11769}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Compile">
+      <UniqueIdentifier>{0e97b977-05b8-4a9a-8e44-2d25008af38e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimStruct.hpp">
@@ -62,6 +65,24 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\ClassMetaBase.hpp">
       <Filter>Headerdateien\Inherit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Compile\Sort.hpp">
+      <Filter>Headerdateien\Compile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Compile\Relation.hpp">
+      <Filter>Headerdateien\Compile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Compile\Table.hpp">
+      <Filter>Headerdateien\Compile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Compile\Hash.hpp">
+      <Filter>Headerdateien\Compile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Compile\Map.hpp">
+      <Filter>Headerdateien\Compile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Compile\HashMap.hpp">
+      <Filter>Headerdateien\Compile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
