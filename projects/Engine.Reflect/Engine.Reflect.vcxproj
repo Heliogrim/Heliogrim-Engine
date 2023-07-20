@@ -102,6 +102,12 @@
     <ClInclude Include="..\..\src\Engine.Reflect\Cast.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\CompileString.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\CompileTypeId.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\Compile\Hash.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\Compile\HashMap.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\Compile\Map.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\Compile\Relation.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\Compile\Sort.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\Compile\Table.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimReflect.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimStruct.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\ClassMetaBase.hpp" />
