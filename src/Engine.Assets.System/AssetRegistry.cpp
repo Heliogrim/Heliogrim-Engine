@@ -5,6 +5,7 @@
 #include <filesystem>
 
 #include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Common/Make.hpp>
 
 #include "AssetDescriptor.hpp"
 #include "AssetRepository.hpp"

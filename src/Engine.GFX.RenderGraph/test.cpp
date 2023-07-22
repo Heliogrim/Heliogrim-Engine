@@ -54,12 +54,12 @@ void hg::test_render_graph() {
     smr<Description> colorBufferDescription;
 
     {
-        cameraDescription = make_smr<>(HeliogrimObject::create<SceneViewDescription>()).into<Description>();
-        meshDescription = make_smr<>(HeliogrimObject::create<MeshDescription>()).into<Description>();
-        modelDescription = make_smr<>(HeliogrimObject::create<ModelDescription>()).into<Description>();
+        cameraDescription = make_smr<>(new SceneViewDescription()).into<Description>();
+        meshDescription = make_smr<>(new MeshDescription()).into<Description>();
+        modelDescription = make_smr<>(new ModelDescription()).into<Description>();
 
         depthBufferDescription = make_smr<TextureDescription>(
-            HeliogrimObject::create<TextureDescription>(
+            new TextureDescription(
                 TextureDescription {
                     { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
                     { DescriptionValueMatchingMode::eCovariant, engine::gfx::TextureFormat::eD32Sfloat },
@@ -70,7 +70,7 @@ void hg::test_render_graph() {
         ).into<Description>();
 
         positionBufferDescription = make_smr<TextureDescription>(
-            HeliogrimObject::create<TextureDescription>(
+            new TextureDescription(
                 TextureDescription {
                     { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
                     { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR32G32B32Sfloat },
@@ -81,7 +81,7 @@ void hg::test_render_graph() {
         ).into<Description>();
 
         normalBufferDescription = make_smr<TextureDescription>(
-            HeliogrimObject::create<TextureDescription>(
+            new TextureDescription(
                 TextureDescription {
                     { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
                     { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR32G32B32Sfloat },
@@ -92,7 +92,7 @@ void hg::test_render_graph() {
         ).into<Description>();
 
         colorBufferDescription = make_smr<TextureDescription>(
-            HeliogrimObject::create<TextureDescription>(
+            new TextureDescription(
                 TextureDescription {
                     { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
                     { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR8G8B8A8Unorm },

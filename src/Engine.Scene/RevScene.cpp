@@ -26,7 +26,7 @@ RenderGraph makeRenderGraph() {
 }
 
 RevScene::RevScene() noexcept :
-    Scene(),
+    InheritMeta(),
     _renderGraph(makeRenderGraph()),
     _cached() {}
 
@@ -87,7 +87,7 @@ void RevScene::update() {
         assert(result);
         #endif
 
-        HeliogrimObject::destroy(_STD move(marked));
+        delete marked;
     }
 
     /**

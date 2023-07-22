@@ -7,7 +7,7 @@
 
 namespace hg::engine::gfx::render::graph {
     class AnchorComponent final :
-        public Component {
+        public InheritMeta<AnchorComponent, Component> {
     public:
         using this_type = AnchorComponent;
 

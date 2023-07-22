@@ -6,7 +6,7 @@
 
 namespace hg::engine::assets {
     class Level :
-        public Asset {
+        public InheritMeta<Level, Asset> {
     public:
         template <typename>
         friend class serialization::DataLayout;

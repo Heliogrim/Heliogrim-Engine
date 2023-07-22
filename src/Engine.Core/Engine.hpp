@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Reflect/HeliogrimReflect.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg {
     class GlobalEventEmitter;
@@ -32,7 +32,7 @@ namespace hg::engine::core {
 
 namespace hg::engine {
     class __declspec(novtable) Engine :
-        public HeliogrimObject {
+        public InheritBase<Engine> {
     public:
         using this_type = Engine;
 

@@ -11,7 +11,7 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 CameraModel::CameraModel(const non_owning_rptr<SceneComponent> owner_) :
-    SceneNodeModel(owner_),
+    InheritMeta(owner_),
     _sceneView(nullptr) {}
 
 CameraModel::~CameraModel() = default;
@@ -19,7 +19,7 @@ CameraModel::~CameraModel() = default;
 void CameraModel::create(const ptr<engine::scene::Scene> scene_) {
 
     #ifdef _DEBUG
-    assert(scene_->getClass()->isExactType<engine::scene::RevScene>());
+    assert(scene_->getMetaClass()->exact<engine::scene::RevScene>());
     #endif
 
     auto* const actor { _owner->getRootActor() };

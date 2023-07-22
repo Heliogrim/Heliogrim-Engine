@@ -3,6 +3,7 @@
 #include <span>
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Types.hpp>
 
 #include "__fwd.hpp"
 #include "../Archive/__fwd.hpp"

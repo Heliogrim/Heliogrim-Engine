@@ -24,7 +24,7 @@ namespace hg::engine::gfx::loader {
     >;
 
     class StaticGeometryLoader final :
-        public StaticGeometryLoaderType {
+        public InheritMeta<StaticGeometryLoader, StaticGeometryLoaderType> {
     public:
         using this_type = StaticGeometryLoader;
 

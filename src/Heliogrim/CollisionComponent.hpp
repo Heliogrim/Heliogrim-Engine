@@ -3,7 +3,7 @@
 
 namespace hg {
     class CollisionComponent :
-        public SceneComponent {
+        public InheritMeta<CollisionComponent, SceneComponent> {
     public:
         using this_type = CollisionComponent;
         using underlying_type = SceneComponent;

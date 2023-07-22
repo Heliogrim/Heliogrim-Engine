@@ -30,16 +30,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimStruct.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflect\Reflect.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimReflect.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Reflect\__fwd.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflect\Cast.hpp">
@@ -98,8 +89,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Reflect\HeliogrimReflect.cpp">
-      <Filter>Quelldateien</Filter>
+    <ClCompile Include="..\..\src\Engine.Reflect\Meta\MetaClass.cpp">
+      <Filter>Quelldateien\Meta</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

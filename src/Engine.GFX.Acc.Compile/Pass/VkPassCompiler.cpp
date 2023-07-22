@@ -212,7 +212,7 @@ smr<const AccelerationPass> VkPassCompiler::compile(
 
     /**/
 
-    switch (source_->getClass()->typeId().data) {
+    switch (source_->getMetaClass()->typeId().data) {
         case VkAccelerationComputePass::typeId.data: {
             return compileTypeSpec<VkAccelerationComputePass>(
                 _STD move(source_),

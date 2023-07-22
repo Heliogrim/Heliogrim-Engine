@@ -2,6 +2,7 @@
 
 #include <Engine.ACS/Registry.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
+#include <Engine.Common/Exception/NotImplementedException.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/SessionState.hpp>

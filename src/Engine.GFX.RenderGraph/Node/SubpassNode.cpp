@@ -1,5 +1,7 @@
 #include "SubpassNode.hpp"
 
+#include <Engine.Common/Make.hpp>
+
 #include "../Component/SubpassComponent.hpp"
 #include "../Component/Subpass/SubpassMaterialAccelComponent.hpp"
 #include "../Component/Subpass/SubpassMultiAccelComponent.hpp"
@@ -13,19 +15,19 @@ SubpassNode::SubpassNode(SubpassAccelMode mode_) noexcept :
     Node(
         make_smr<Auxiliary>()
     ) {
-    _auxiliary->add(uptr<SubpassComponent> { HeliogrimObject::create<SubpassComponent>() });
+    _auxiliary->add(uptr<SubpassComponent> { new SubpassComponent() });
 
     if (mode_ == SubpassAccelMode::eSingle) {
         _auxiliary->add(
-            uptr<SubpassSingleAccelComponent> { HeliogrimObject::create<SubpassSingleAccelComponent>() }
+            uptr<SubpassSingleAccelComponent> { new SubpassSingleAccelComponent() }
         );
     } else if (mode_ == SubpassAccelMode::eMulti) {
         _auxiliary->add(
-            uptr<SubpassMultiAccelComponent> { HeliogrimObject::create<SubpassMultiAccelComponent>() }
+            uptr<SubpassMultiAccelComponent> { new SubpassMultiAccelComponent() }
         );
     } else if (mode_ == SubpassAccelMode::eMaterial) {
         _auxiliary->add(
-            uptr<SubpassMaterialAccelComponent> { HeliogrimObject::create<SubpassMaterialAccelComponent>() }
+            uptr<SubpassMaterialAccelComponent> { new SubpassMaterialAccelComponent() }
         );
     }
 }
@@ -52,7 +54,7 @@ nmpt<SubpassComponent> SubpassNode::getSubpassComponent() const noexcept {
     const auto it = _STD ranges::find_if(
         _auxiliary->components(),
         [](const ptr<Component> component_) {
-            return component_->getClass()->isExactType<SubpassComponent>();
+            return component_->getMetaClass()->exact<SubpassComponent>();
         }
     );
     return it != _auxiliary->components().end() ?
@@ -64,8 +66,8 @@ nmpt<SubpassAccelComponent> SubpassNode::getSubpassAcceleration() const noexcept
     const auto it = _STD ranges::find_if(
         _auxiliary->components(),
         [](const ptr<Component> component_) {
-            return component_->getClass()->isExactType<SubpassSingleAccelComponent>() ||
-                component_->getClass()->isExactType<SubpassMultiAccelComponent>();
+            return component_->getMetaClass()->exact<SubpassSingleAccelComponent>() ||
+                component_->getMetaClass()->exact<SubpassMultiAccelComponent>();
         }
     );
     return it != _auxiliary->components().end() ?

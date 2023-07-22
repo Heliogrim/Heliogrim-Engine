@@ -1,5 +1,7 @@
 #include "Level.hpp"
 
+#include <Engine.Common/Exception/NotImplementedException.hpp>
+
 using namespace hg;
 
 Level::Level() noexcept {

@@ -28,9 +28,9 @@
 #include "Heliogrim/StaticGeometryComponent.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
 #include "Engine.GFX/Scene/StaticGeometryModel.hpp"
-#include "Engine.Reflect/HeliogrimReflect.hpp"
 #include <Engine.GFX/Scene/StaticGeometryBatch.hpp>
 #include <Engine.GFX.Glow/Texture/RevVirtualMarkerTexture.hpp>
+#include <Engine.Reflect/Meta/TypeId.hpp>
 
 using namespace hg::engine::gfx::glow::render;
 using namespace hg::engine::gfx::render;
@@ -40,7 +40,7 @@ RevDepthStaticNode::RevDepthStaticNode(const ptr<RevDepthSharedNode> sharedNode_
     RenderStageNode(),
     _modelTypes(
         {
-            HeliogrimClass::stid<StaticGeometryModel>()
+            reflect::typeId<StaticGeometryModel>()
         }
     ),
     _sharedNode(sharedNode_) {}

@@ -7,7 +7,7 @@
 
 namespace hg::engine::gfx::render::graph {
     class ModelDescription final :
-        public Description {
+        public InheritMeta<ModelDescription, Description> {
     public:
         using this_type = ModelDescription;
 

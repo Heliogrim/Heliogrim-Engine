@@ -1,5 +1,6 @@
 #include "WorldInit.hpp"
 
+#include <Engine.Common/Make.hpp>
 #include <Editor.Core/EditorEngine.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/World.hpp>

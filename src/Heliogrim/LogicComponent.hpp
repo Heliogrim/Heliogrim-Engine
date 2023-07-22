@@ -1,14 +1,14 @@
 #pragma once
 
-#include <Engine.Reflect/HeliogrimReflect.hpp>
 #include <Engine.ACS/ComponentTypeId.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg {
     class LogicComponent :
-        public HeliogrimObject {
+        public InheritBase<LogicComponent> {
     public:
         using this_type = LogicComponent;
-        using underlying_type = HeliogrimObject;
+        using underlying_type = InheritBase<LogicComponent>;
 
     public:
         LogicComponent(mref<component_type_id> typeId_) noexcept;

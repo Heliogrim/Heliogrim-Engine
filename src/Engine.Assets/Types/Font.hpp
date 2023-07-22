@@ -9,7 +9,7 @@
 
 namespace hg::engine::assets {
     class Font :
-        public Asset {
+        public InheritMeta<Font, Asset> {
     public:
         template <typename>
         friend class serialization::DataLayout;

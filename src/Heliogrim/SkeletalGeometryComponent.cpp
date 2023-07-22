@@ -6,4 +6,4 @@ SkeletalGeometryComponent::SkeletalGeometryComponent(
     mref<CachedActorPointer> owner_,
     mref<ptr<ActorComponent>> parent_
 ) :
-    ModelComponent(component_type_id { typeId }, _STD move(owner_), _STD move(parent_)) {}
+    InheritMeta(component_type_id { typeId }, _STD move(owner_), _STD move(parent_)) {}

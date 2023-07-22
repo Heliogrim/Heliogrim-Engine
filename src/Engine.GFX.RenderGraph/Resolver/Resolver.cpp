@@ -1,5 +1,7 @@
 #include "Resolver.hpp"
 
+#include <Engine.Common/Make.hpp>
+
 #include "ResolverPass.hpp"
 #include "ResolverValidationPass.hpp"
 #include "../RenderGraph.hpp"

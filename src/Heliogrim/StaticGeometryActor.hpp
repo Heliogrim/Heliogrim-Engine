@@ -4,7 +4,7 @@
 
 namespace hg {
     class StaticGeometryActor :
-        public Actor {
+        public InheritMeta<StaticGeometryActor, Actor> {
     public:
         using this_type = StaticGeometryActor;
         using underlying_type = Actor;

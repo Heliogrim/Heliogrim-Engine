@@ -4,7 +4,7 @@ using namespace hg::engine::gfx::render::graph;
 using namespace hg;
 
 ModelDescription::ModelDescription() noexcept :
-    Description() {}
+    InheritMeta() {}
 
 ModelDescription::~ModelDescription() = default;
 

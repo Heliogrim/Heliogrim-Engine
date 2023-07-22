@@ -8,7 +8,7 @@
 
 namespace hg::engine::gfx {
     class SkyboxModel final :
-        public GeometryModel {
+        public InheritMeta<SkyboxModel, GeometryModel> {
     public:
         using this_type = SkyboxModel;
         using underlying_type = SceneNodeModel;

@@ -30,7 +30,7 @@ bool VkModuleBuilder::isFirstStage(
     cref<smr<AccelerationStageDerivat>> stage_
 ) const noexcept {
 
-    if (targetPass_->getClass()->isExactType<VkAccelerationGraphicsPass>() &&
+    if (targetPass_->getMetaClass()->exact<VkAccelerationGraphicsPass>() &&
         stage_->getFlagBits() == AccelerationStageFlagBits::eVertex
     ) {
         return true;

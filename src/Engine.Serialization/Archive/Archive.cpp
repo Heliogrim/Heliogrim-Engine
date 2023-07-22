@@ -1,5 +1,7 @@
 #include "Archive.hpp"
 
+#include <Engine.Common/Exception/NotImplementedException.hpp>
+
 using namespace hg::engine::serialization;
 using namespace hg;
 
@@ -89,7 +91,7 @@ void Archive::serializeBytesSwapped(const ptr<void> value_, u64 size_, const Arc
     throw NotImplementedException();
 }
 
-ref<Archive::this_type> Archive::operator<<(const ptr<HeliogrimObject> object_) {
+ref<Archive::this_type> Archive::operator<<(const ptr<ClassMetaBase> object_) {
     throw NotImplementedException();
     return *this;
 }

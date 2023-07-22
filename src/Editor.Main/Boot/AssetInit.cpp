@@ -1031,7 +1031,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
             /**/
 
-            auto* image = HeliogrimObject::create<assets::Image>();
+            auto* image = new assets::Image();
             serialization::access::Structure<assets::Image>::deserialize(image, _STD move(record_));
 
             engine::assets::storeDefaultNameAndUrl(image, {});
@@ -1046,7 +1046,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
                 );
 
                 __debugbreak();
-                HeliogrimObject::destroy(_STD move(image));
+                delete image;
 
             } else {
                 IM_CORE_LOGF(
@@ -1071,7 +1071,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
             /**/
 
-            auto* texture = HeliogrimObject::create<assets::Texture>();
+            auto* texture = new assets::Texture();
             serialization::access::Structure<assets::Texture>::deserialize(texture, _STD move(record_));
 
             engine::assets::storeDefaultNameAndUrl(texture, {});
@@ -1086,7 +1086,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
                 );
 
                 __debugbreak();
-                HeliogrimObject::destroy(_STD move(texture));
+                delete texture;
 
             } else {
                 IM_CORE_LOGF(
@@ -1111,7 +1111,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
             /**/
 
-            auto* geom = HeliogrimObject::create<assets::StaticGeometry>();
+            auto* geom = new assets::StaticGeometry();
             serialization::access::Structure<assets::StaticGeometry>::deserialize(geom, _STD move(record_));
 
             engine::assets::storeDefaultNameAndUrl(geom, {});
@@ -1126,7 +1126,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
                 );
 
                 __debugbreak();
-                HeliogrimObject::destroy(_STD move(geom));
+                delete geom;
 
             } else {
                 IM_CORE_LOGF(

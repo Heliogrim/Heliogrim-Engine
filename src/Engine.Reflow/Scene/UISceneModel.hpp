@@ -4,7 +4,7 @@
 
 namespace hg::engine::reflow {
     class UISceneModel final :
-        public gfx::SceneNodeModel {
+        public InheritMeta<UISceneModel, gfx::SceneNodeModel> {
     public:
         using this_type = UISceneModel;
         using underlying_type = gfx::SceneNodeModel;

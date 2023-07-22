@@ -19,6 +19,6 @@ smr<AccelerationPass> VkPassBuilder::build(
 ) const noexcept {
     assert(specifications_.getGraphicsSpec().renderPass);
     return make_smr<VkAccelerationGraphicsPass>(
-        VkAccelerationGraphicsPass::create<VkAccelerationGraphicsPass>(_STD move(effect_))
+        new VkAccelerationGraphicsPass(_STD move(effect_))
     );
 }

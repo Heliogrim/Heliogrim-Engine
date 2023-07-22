@@ -30,17 +30,17 @@ namespace hg::engine::gfx::material {
         uptr<MaterialParameterStorageBase> _storage;
 
     public:
-        [[nodiscard]] nmpt<const HeliogrimClass> getStorageClass() const noexcept;
+        [[nodiscard]] nmpt<const MetaClass> getStorageClass() const noexcept;
 
         template <typename Type_>
         typename mpts_t<Type_>::trait_type::cref_type get() const {
-            assert(_storage->getClass()->isExactType<mpts_t<Type_>>());
+            assert(_storage->getMetaClass()->exact<mpts_t<Type_>>());
             return static_cast<ptr<mpts_t<Type_>>>(_storage.get())->template get<Type_>();
         }
 
         template <typename Type_>
         void set(Type_&& value_) {
-            assert(_storage->getClass()->isExactType<mpts_t<Type_>>());
+            assert(_storage->getMetaClass()->exact<mpts_t<Type_>>());
             static_cast<ptr<mpts_t<Type_>>>(_storage.get())->template set<Type_>(_STD forward<Type_>(value_));
         }
     };

@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/Bounding.hpp>
-#include <Engine.Reflect/HeliogrimReflect.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 /**
  * Forward Declaration
@@ -17,7 +17,7 @@ namespace hg::engine::scene {
 
 namespace hg::engine::scene {
     class __declspec(novtable) SceneNodeModel :
-        public HeliogrimObject {
+        public InheritBase<SceneNodeModel> {
     public:
         SceneNodeModel() = delete;
 

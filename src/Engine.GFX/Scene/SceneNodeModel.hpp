@@ -10,7 +10,7 @@
 
 namespace hg::engine::gfx {
     class __declspec(novtable) SceneNodeModel :
-        public ::hg::engine::scene::SceneNodeModel {
+        public InheritMeta<SceneNodeModel, ::hg::engine::scene::SceneNodeModel> {
     public:
         SceneNodeModel(const ptr<SceneComponent> owner_);
 

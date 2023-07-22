@@ -4,7 +4,7 @@ using namespace hg::engine::gfx::render::graph;
 using namespace hg;
 
 MeshDescription::MeshDescription() noexcept :
-    Description() {}
+    InheritMeta() {}
 
 MeshDescription::~MeshDescription() = default;
 

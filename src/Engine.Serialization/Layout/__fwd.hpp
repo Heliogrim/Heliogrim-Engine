@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Engine.Reflect/HeliogrimReflect.hpp>
-
 namespace hg::engine::serialization {
     template <typename>
     class DataLayout;

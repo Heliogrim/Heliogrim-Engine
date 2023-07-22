@@ -5,7 +5,7 @@
 using namespace hg;
 
 StaticGeometryActor::StaticGeometryActor(cref<ActorInitializer> initializer_) :
-    Actor(initializer_),
+    InheritMeta(initializer_),
     _staticGeometryComponent(nullptr) {
     _staticGeometryComponent = initializer_.createComponent<StaticGeometryComponent>(this);
 }

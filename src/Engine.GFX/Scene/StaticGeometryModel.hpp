@@ -10,7 +10,7 @@
 
 namespace hg::engine::gfx {
     class StaticGeometryModel final :
-        public GeometryModel {
+        public InheritMeta<StaticGeometryModel, GeometryModel> {
     public:
         using this_type = StaticGeometryModel;
         using underlying_type = SceneNodeModel;

@@ -34,9 +34,9 @@ AccelerationStageTransferDataType MaterialPrototypeParameter::getDataType() cons
     return _dataType;
 }
 
-nmpt<const HeliogrimClass> MaterialPrototypeParameter::getStorageClass() const noexcept {
+nmpt<const MetaClass> MaterialPrototypeParameter::getStorageClass() const noexcept {
     if (_defaultStorage) {
-        return _defaultStorage->getClass();
+        return _defaultStorage->getMetaClass();
     }
     return {};
 }

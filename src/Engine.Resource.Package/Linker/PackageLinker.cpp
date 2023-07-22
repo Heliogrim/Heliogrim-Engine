@@ -1,5 +1,6 @@
 #include "PackageLinker.hpp"
 
+#include <Engine.Common/Make.hpp>
 #include <Engine.Serialization/Archive/SourceReadWriteArchive.hpp>
 #include <Engine.Serialization/Archive/SourceReadonlyArchive.hpp>
 

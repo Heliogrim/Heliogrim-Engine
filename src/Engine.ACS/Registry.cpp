@@ -34,10 +34,10 @@ ptr<Actor> Registry::createActor(const ptr<const ActorClass> actorClass_, cref<A
     // Warning: Error prone behaviour
     // Warning: Just a hotfix
     // We can expect the have the class pointer at the base address, due to the fact
-    //  that Actor is based on HeliogrimObject
-    static_assert(sizeof(HeliogrimObject) == sizeof(ptr<HeliogrimClass>));
+    //  that Actor is based on ClassMetaBase
+    static_assert(sizeof(ClassMetaBase) == sizeof(ptr<MetaClass>));
     const auto** classLocator = reinterpret_cast<ptr<ptr<const ActorClass>>>(
-        _STD addressof(*static_cast<ptr<HeliogrimObject>>(actor))
+        _STD addressof(*static_cast<ptr<ClassMetaBase>>(actor))
     );
     *classLocator = actorClass_;
 
@@ -80,9 +80,9 @@ ptr<Actor> Registry::createActor(
     // Warning: Just a hotfix
     // We can expect the have the class pointer at the base address, due to the fact
     //  that Actor is based on HeliogrimObject
-    static_assert(sizeof(HeliogrimObject) == sizeof(ptr<HeliogrimClass>));
+    static_assert(sizeof(ClassMetaBase) == sizeof(ptr<MetaClass>));
     const auto** classLocator = reinterpret_cast<ptr<ptr<const ActorClass>>>(
-        _STD addressof(*static_cast<ptr<HeliogrimObject>>(actor))
+        _STD addressof(*static_cast<ptr<ClassMetaBase>>(actor))
     );
     *classLocator = actorClass_;
 
@@ -103,7 +103,7 @@ ptr<Actor> Registry::createActor(cref<ActorInitializer> initializer_) noexcept {
 
     /**/
 
-    auto* actor { pool->get(guid) };
+    auto* actor = pool->get(guid);
     if (actor == nullptr) {
         return nullptr;
     }
@@ -116,11 +116,11 @@ ptr<Actor> Registry::createActor(cref<ActorInitializer> initializer_) noexcept {
     // Warning: Just a hotfix
     // We can expect the have the class pointer at the base address, due to the fact
     //  that Actor is based on HeliogrimObject
-    static_assert(sizeof(HeliogrimObject) == sizeof(ptr<HeliogrimClass>));
+    static_assert(sizeof(ClassMetaBase) == sizeof(ptr<MetaClass>));
     const auto** classLocator = reinterpret_cast<ptr<ptr<const ActorClass>>>(
-        _STD addressof(*static_cast<ptr<HeliogrimObject>>(actor))
+        _STD addressof(*static_cast<ptr<ClassMetaBase>>(actor))
     );
-    *classLocator = HeliogrimClass::of<Actor>();
+    *classLocator = TypedMetaClass<Actor>::get();
 
     /**/
 
@@ -128,7 +128,7 @@ ptr<Actor> Registry::createActor(cref<ActorInitializer> initializer_) noexcept {
 }
 
 void Registry::destroyActor(mref<ptr<Actor>> actor_) {
-    auto* const pool { _actorPools.at(actor_->getClass()->typeId()) };
+    auto* const pool { _actorPools.at(actor_->getMetaClass()->typeId()) };
     pool->erase(actor_->guid());
 }
 

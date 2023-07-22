@@ -53,7 +53,8 @@ namespace hg::engine::resource::loader {
         class TransformerStageType_ = Transformer<RequestType_, ResponseType_>,
         class SourceLoaderType_ = SourceLoader>
     class LoaderChainBase :
-        public Loader<RequestType_, ResponseType_> {
+        public InheritMeta<LoaderChainBase<RequestType_, ResponseType_, StageRefTypes_, CacheStageType_,
+            FeedbackStageType_, TransformerStageType_, SourceLoaderType_>, Loader<RequestType_, ResponseType_>> {
     public:
         template <
             IsRequestValueType,
@@ -460,9 +461,12 @@ namespace hg::engine::resource::loader {
         class SourceLoaderType_ = SourceLoader,
         bool Streamable_ = assets::IsStreamableAsset<RequestType_>>
     class LoaderChain :
-        public LoaderChainBase<
-            RequestType_, ResponseType_, StageRefTypes_,
-            CacheStageType_, FeedbackStageType_, TransformerStageType_, SourceLoaderType_> {
+        public InheritMeta<
+            LoaderChain<RequestType_, ResponseType_, StageRefTypes_, CacheStageType_, FeedbackStageType_,
+                TransformerStageType_, SourceLoaderType_, Streamable_>,
+            LoaderChainBase<RequestType_, ResponseType_, StageRefTypes_, CacheStageType_, FeedbackStageType_,
+                TransformerStageType_, SourceLoaderType_>
+        > {
     public:
         using this_type = LoaderChain<
             RequestType_,
@@ -500,7 +504,7 @@ namespace hg::engine::resource::loader {
             TransformerTx_&& transformer_,
             SourceLoaderTx_&& sourceLoader_
         ) :
-            base_type(
+            InheritMeta<this_type, base_type>(
                 _STD forward<CacheTx_>(cache_),
                 _STD forward<FeedbackTx_>(feedback_),
                 _STD forward<TransformerTx_>(transformer_),
@@ -545,9 +549,10 @@ namespace hg::engine::resource::loader {
             SourceLoaderType_,
             true
         > :
-        public LoaderChainBase<
+        public InheritMeta<LoaderChain<RequestType_, ResponseType_, StageRefTypes_, CacheStageType_, FeedbackStageType_,
+            TransformerStageType_, SourceLoaderType_>, LoaderChainBase<
             RequestType_, ResponseType_, StageRefTypes_,
-            CacheStageType_, FeedbackStageType_, TransformerStageType_, SourceLoaderType_> {
+            CacheStageType_, FeedbackStageType_, TransformerStageType_, SourceLoaderType_>> {
     public:
         using this_type = LoaderChain<
             RequestType_,
@@ -585,7 +590,7 @@ namespace hg::engine::resource::loader {
             TransformerTx_&& transformer_,
             SourceLoaderTx_&& sourceLoader_
         ) :
-            base_type(
+            InheritMeta<this_type, base_type>(
                 _STD forward<CacheTx_>(cache_),
                 _STD forward<FeedbackTx_>(feedback_),
                 _STD forward<TransformerTx_>(transformer_),

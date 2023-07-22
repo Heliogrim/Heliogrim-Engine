@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 #include "Description.hpp"
 

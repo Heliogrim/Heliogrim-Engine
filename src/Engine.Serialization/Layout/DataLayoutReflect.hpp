@@ -3,9 +3,10 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Functional/Function.hpp>
-#include <Engine.Reflect/HeliogrimReflect.hpp>
+#include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 
 #include <cassert>
+#include <Engine.Reflect/Inherit/Concept.hpp>
 
 namespace hg::engine::serialization {
     class DataLayoutReflect {
@@ -30,21 +31,21 @@ namespace hg::engine::serialization {
         // unary_fnc<void, const ptr<void>> _post; // `self->shrink_to_fit()` | `self->clear()`
 
     public:
-        [[nodiscard]] ptr<HeliogrimObject> instantiate() const;
+        [[nodiscard]] ptr<ClassMetaBase> instantiate() const;
 
-        [[deprecated]] void destroy(mref<ptr<HeliogrimObject>> obj_) const;
+        [[deprecated]] void destroy(mref<ptr<ClassMetaBase>> obj_) const;
 
         void constructInPlace(const ptr<void> dst_) const;
 
         void destroyInPlace(const ptr<void> dst_) const;
 
     private:
-        ptr<HeliogrimClass> _rclass;
+        ptr<const MetaClass> _rclass;
 
     public:
         [[nodiscard]] bool hasClass() const noexcept;
 
-        [[nodiscard]] non_owning_rptr<HeliogrimClass> getClass() const noexcept;
+        [[nodiscard]] non_owning_rptr<const MetaClass> getClass() const noexcept;
 
     private:
         template <typename Type_>
@@ -61,8 +62,8 @@ namespace hg::engine::serialization {
         template <typename SubjectType_> requires _STD is_default_constructible_v<SubjectType_>
         void storeType() {
 
-            if constexpr (IsHeliogrimObject<SubjectType_>) {
-                _rclass = HeliogrimClass::of<SubjectType_>();
+            if constexpr (ClassHasMeta<SubjectType_>) {
+                _rclass = TypedMetaClass<SubjectType_>::get();
                 assert(_rclass);
 
             } else {

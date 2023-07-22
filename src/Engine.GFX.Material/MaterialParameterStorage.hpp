@@ -3,8 +3,8 @@
 #include <atomic>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/Constexpr.hpp>
-#include <Engine.Reflect/HeliogrimReflect.hpp>
 #include <Engine.Reflect/CompileTypeId.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg::engine::gfx::material {
     template <typename StoredType_>
@@ -30,7 +30,7 @@ namespace hg::engine::gfx::material {
     /**/
 
     class MaterialParameterStorageBase :
-        public HeliogrimObject {
+        public InheritBase<MaterialParameterStorageBase> {
     public:
         using this_type = MaterialParameterStorageBase;
 
@@ -43,7 +43,7 @@ namespace hg::engine::gfx::material {
 
     template <typename StoredType_>
     class MaterialParameterStorage :
-        public MaterialParameterStorageBase {
+        public InheritMeta<MaterialParameterStorage<StoredType_>, MaterialParameterStorageBase> {
     public:
         using this_type = MaterialParameterStorage<StoredType_>;
 

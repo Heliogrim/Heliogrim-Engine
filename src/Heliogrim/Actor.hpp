@@ -7,6 +7,7 @@
 #include <Engine.Common/Math/Transform.hpp>
 #include <Engine.Reflect/Reflect.hpp>
 #include <Engine.Reflect/Cast.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 #include "Future.hpp"
 #include "Traits.hpp"
@@ -23,7 +24,7 @@ namespace hg {
     class Session;
     class World;
 
-    using ActorClass = ::hg::HeliogrimClass;
+    using ActorClass = ::hg::MetaClass;
 
     /**
      * The base class of every actor
@@ -32,10 +33,10 @@ namespace hg {
      * @date 25.11.2021
      */
     class Actor :
-        public HeliogrimObject {
+        public InheritBase<Actor> {
     public:
         using this_type = Actor;
-        using underlying_type = HeliogrimObject;
+        using underlying_type = InheritBase<Actor>;
 
         inline constexpr static type_id typeId { "Actor"_typeId };
 

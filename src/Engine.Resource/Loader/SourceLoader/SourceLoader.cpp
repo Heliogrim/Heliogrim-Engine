@@ -1,5 +1,6 @@
 #include "SourceLoader.hpp"
 
+#include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #include "../../Source/FileSource.hpp"
@@ -41,7 +42,7 @@ SourceLoaderResponse<void>::type SourceLoader::operator()(
 
     /**/
 
-    hg::fs::File file { lfsUrl.path() };
+    hg::fs::File file { lfsUrl.path().string() };
     if (not file.exists() || file.isDirectory()) {
         IM_CORE_ERRORF(
             R"(Lfs source data for asset `{} -> {}` does not exist.)",
@@ -93,7 +94,8 @@ fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
             }
 
             fs::Url lfsUrl {};
-            const auto* const image = Cast<engine::assets::Image, engine::assets::Asset, false>(asset);
+            //const auto* const image = Cast<engine::assets::Image, engine::assets::Asset, false>(asset);
+            const auto* const image = static_cast<const ptr<const engine::assets::Image>>(asset);
 
             for (const auto& sourceUrl : image->sources()) {
                 if (sourceUrl.scheme() == "file") {

@@ -12,7 +12,7 @@ FontLoader::FontLoader(
     const non_owning_rptr<pool::GlobalResourcePool> pool_,
     mref<sptr<FontSourceLoader>> sourceLoader_
 ) :
-    LoaderChain(
+    InheritMeta(
         FontCache(cache_),
         FontFeedback(),
         FontTransformer(pool_),

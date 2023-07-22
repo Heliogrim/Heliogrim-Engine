@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine.Reflect/HeliogrimReflect.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg::engine::gfx::render::graph {
     enum class DescriptionValueMatchingMode : u8 {
@@ -19,7 +19,7 @@ namespace hg::engine::gfx::render::graph {
     };
 
     class __declspec(novtable) Description :
-        public HeliogrimObject {
+        public InheritBase<Description> {
     public:
         using this_type = Description;
 

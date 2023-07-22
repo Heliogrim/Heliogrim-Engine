@@ -9,7 +9,7 @@
 
 namespace hg::engine::gfx::render::graph {
     class ProviderComponent :
-        public Component {
+        public InheritMeta<ProviderComponent, Component> {
     public:
         using this_type = ProviderComponent;
 

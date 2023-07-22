@@ -3,20 +3,33 @@
 #include <concepts>
 #include <Engine.Common/Wrapper.hpp>
 
-#include "Compile.hpp"
+#include "../Meta/TypedMetaClass.hpp"
 
 namespace hg {
     class ClassMetaBase;
-
-    template <typename TargetType_, typename TypeList_ = reflect::__type_list_lookup<TargetType_>>
-    class TypedMetaClass;
 }
 
 namespace hg {
     namespace {
+        template <typename Type_>
+        struct remove_restricted {
+            using type = Type_;
+        };
+
+        template <typename Type_>
+        struct remove_restricted<__restricted_ptr<Type_>> {
+            using type = ptr<Type_>;
+        };
+
+        template <typename Type_>
+        using remove_restricted_t = typename remove_restricted<Type_>::type;
+
+        template <typename Left_, typename Right_>
+        concept unconstrained_same = _STD same_as<remove_restricted_t<Left_>, Right_>;
+
         template <class Type_>
         concept __DirectMetaInherit = requires(const Type_& obj_) {
-            { obj_.getMetaClass() } -> _STD same_as<const ptr<const TypedMetaClass<Type_>>>;
+            { obj_.getMetaClass() } -> unconstrained_same<ptr<const TypedMetaClass<Type_>>>;
         };
 
         template <

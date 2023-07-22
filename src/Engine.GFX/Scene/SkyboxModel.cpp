@@ -17,7 +17,7 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 SkyboxModel::SkyboxModel(const ptr<SceneComponent> owner_) :
-    GeometryModel(owner_) {}
+    InheritMeta(owner_) {}
 
 SkyboxModel::~SkyboxModel() {
     tidy();
@@ -65,7 +65,7 @@ ptr<cache::ModelBatch> SkyboxModel::batch(const ptr<render::RenderPassState> sta
         /**
          * On cache miss create new instance and store back for further usage
          */
-        result = HeliogrimObject::create<StaticGeometryBatch>();
+        result = new StaticGeometryBatch();
         state_->cacheCtrl.cache()->store(reinterpret_cast<ptrdiff_t>(owner()), ptr<cache::ModelBatch> { result });
         // TODO: Check whether we can improve storing a copy of the pointer, cause value copy currently requires a explicit copy
     }
@@ -78,7 +78,7 @@ ptr<cache::ModelBatch> SkyboxModel::batch(const ptr<render::RenderPassState> sta
     // TODO: Transition of State
     #ifdef _DEBUG
     assert(result != nullptr);
-    assert(result->getClass()->isExactType<StaticGeometryBatch>());
+    assert(result->getMetaClass()->exact<StaticGeometryBatch>());
     #endif
 
     #pragma region Instance Data

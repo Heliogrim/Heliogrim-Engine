@@ -4,7 +4,7 @@ using namespace hg::engine::gfx::render::graph;
 using namespace hg;
 
 SceneViewDescription::SceneViewDescription() noexcept :
-    Description() {}
+    InheritMeta() {}
 
 SceneViewDescription::~SceneViewDescription() = default;
 

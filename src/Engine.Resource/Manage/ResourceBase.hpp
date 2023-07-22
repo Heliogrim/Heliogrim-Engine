@@ -3,6 +3,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Assets/Types/Asset.hpp>
+#include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 
 #include "__fwd.hpp"
 #include "../ResourceUsageFlag.hpp"
@@ -92,7 +93,7 @@ namespace hg::engine::resource {
 
     protected:
         /**/
-        non_owning_rptr<const HeliogrimObject> _association;
+        non_owning_rptr<const ClassMetaBase> _association;
 
     public:
         /**
@@ -102,7 +103,7 @@ namespace hg::engine::resource {
          *
          * @returns A pointer to the stored association, otherwise nullptr
          */
-        [[nodiscard]] non_owning_rptr<const HeliogrimObject> getAssociation() const noexcept;
+        [[nodiscard]] non_owning_rptr<const ClassMetaBase> getAssociation() const noexcept;
 
         /**
          * Store a suitable association for this resource
@@ -114,6 +115,6 @@ namespace hg::engine::resource {
          *
          * @param association_ A pointer used as association for this resource.
          */
-        void setAssociation(const non_owning_rptr<const HeliogrimObject> association_) noexcept;
+        void setAssociation(const non_owning_rptr<const ClassMetaBase> association_) noexcept;
     };
 }

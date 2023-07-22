@@ -9,7 +9,7 @@
 
 namespace hg::engine::assets {
     class StaticGeometry :
-        public Geometry {
+        public InheritMeta<StaticGeometry, Geometry> {
     public:
         template <typename>
         friend class serialization::DataLayout;

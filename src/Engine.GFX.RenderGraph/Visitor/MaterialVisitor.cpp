@@ -25,7 +25,7 @@ void MaterialVisitor::operator()(cref<SubpassNode> node_) {
     // Expected: Should expand to inlined `let smac = Cast<...>(...) ; if (smac ~ bool) { ... }`
     // -> Implicit `Cast Failed -> smac := nullptr ~> if(nullptr) | Cast Succeeded -> smac != nullptr ~> if (not nullptr)`
 
-    if (accelComp->getClass()->isExactType<SubpassMaterialAccelComponent>()) {
+    if (accelComp->getMetaClass()->exact<SubpassMaterialAccelComponent>()) {
 
         auto* const smac = static_cast<const ptr<SubpassMaterialAccelComponent>>(accelComp.get());
 

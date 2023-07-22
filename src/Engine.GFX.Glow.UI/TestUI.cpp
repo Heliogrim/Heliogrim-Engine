@@ -534,7 +534,8 @@ const hg::ptr<hg::engine::reflow::Font> getDefaultFont() {
 
         /**/
 
-        auto* font = Cast<engine::assets::Font, engine::assets::Asset, false>(asset);
+        //auto* font = Cast<engine::assets::Font, engine::assets::Asset, false>(asset);
+        auto* font = static_cast<ptr<engine::assets::Font>>(asset);
         testFont = engine::Engine::getEngine()->getResources()->loader().load<
             engine::assets::Font,
             engine::gfx::FontResource

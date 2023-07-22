@@ -8,7 +8,7 @@
 
 namespace hg::engine::assets {
     class Image final :
-        public Asset {
+        public InheritMeta<Image, Asset> {
     public:
         template <typename>
         friend class serialization::DataLayout;

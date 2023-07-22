@@ -1,8 +1,6 @@
 #pragma once
 #include <span>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/DenseSet.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 
 #include "../Template/QueryTypeId.hpp"

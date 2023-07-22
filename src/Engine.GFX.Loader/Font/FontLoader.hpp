@@ -24,7 +24,7 @@ namespace hg::engine::gfx::loader {
     >;
 
     class FontLoader final :
-        public FontLoaderType {
+        public InheritMeta<FontLoader, FontLoaderType> {
     public:
         using this_type = FontLoader;
 

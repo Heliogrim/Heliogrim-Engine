@@ -24,7 +24,7 @@ namespace hg::engine::serialization {
 
         using serialization_type = SerializationType_;
 
-        inline static constexpr bool has_reflected_class = IsHeliogrimObject<serialization_type>;
+        inline static constexpr bool has_reflected_class = ClassHasMeta<serialization_type>;
 
     public:
         DataLayout() noexcept :

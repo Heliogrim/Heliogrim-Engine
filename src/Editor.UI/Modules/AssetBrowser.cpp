@@ -1,6 +1,7 @@
 #include "AssetBrowser.hpp"
 
 #include <Engine.Assets/Assets.hpp>
+#include <Engine.Common/Make.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Logging/Logger.hpp>
 

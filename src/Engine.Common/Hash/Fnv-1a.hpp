@@ -18,9 +18,12 @@ namespace hg::hash {
          * @returns A type_id.
          */
         constexpr u64 fnv1a_86(const char* str_, const _STD size_t count_) {
-            return (
-                (count_ ? fnv1a_86(str_, count_ - 1) : 2166136261u) ^ str_[count_]
-            ) * 16777619u;
+            u64 acc = 2166136261u;
+            for (size_t idx = 0; idx < count_; ++idx) {
+                const auto tmp = acc ^ str_[idx];
+                acc = tmp * 16777619u;
+            }
+            return acc;
         }
     }
 

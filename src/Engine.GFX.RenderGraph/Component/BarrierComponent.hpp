@@ -7,7 +7,7 @@
 
 namespace hg::engine::gfx::render::graph {
     class BarrierComponent final :
-        public Component {
+        public InheritMeta<BarrierComponent, Component> {
     public:
         using this_type = BarrierComponent;
 

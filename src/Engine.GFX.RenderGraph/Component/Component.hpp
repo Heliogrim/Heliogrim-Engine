@@ -1,12 +1,13 @@
 #pragma once
-#include <Engine.Reflect/HeliogrimReflect.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
+
 #include "../__fwd.hpp"
 
 namespace hg::engine::gfx::render::graph {
     class Component :
-        public HeliogrimObject {
+        public InheritBase<Component> {
     public:
         using this_type = Component;
 

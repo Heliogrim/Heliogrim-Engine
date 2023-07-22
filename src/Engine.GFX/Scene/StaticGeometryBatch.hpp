@@ -1,4 +1,6 @@
 #pragma once
+#include <Engine.Reflect/Inherit/InheritMeta.hpp>
+
 #include "../Cache/ModelBatch.hpp"
 
 #include "../Shader/CachedDiscreteBinding.hpp"
@@ -6,7 +8,7 @@
 
 namespace hg::engine::gfx {
     struct StaticGeometryBatch final :
-        public cache::ModelBatch {
+        public InheritMeta<StaticGeometryBatch, cache::ModelBatch> {
     public:
         inline constexpr static type_id typeId { "StaticGeometryBatch"_typeId };
 

@@ -3,7 +3,7 @@
 #include "Graph/SceneGraph.hpp"
 #include "SceneTag.hpp"
 #include "NodeTypeRegistry.hpp"
-#include <Engine.Reflect/HeliogrimReflect.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 /**
  * Forward Declaration
@@ -15,7 +15,7 @@ namespace hg {
 
 namespace hg::engine::scene {
     class __declspec(novtable) Scene :
-        public HeliogrimObject {
+        public InheritBase<Scene> {
     public:
         using this_type = Scene;
 

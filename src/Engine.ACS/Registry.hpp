@@ -2,6 +2,8 @@
 
 #include <Engine.Common/Collection/BytellHashMap.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Reflect/Meta/TypeId.hpp>
+#include <Engine.Reflect/Inherit/Concept.hpp>
 
 #include "ComponentTypeId.hpp"
 #include "Traits.hpp"
@@ -56,7 +58,7 @@ namespace hg::engine::acs {
             auto ptr = &pool_type::getOrCreate();
 
             // Temporary
-            const auto typeId { HeliogrimClass::stid<ValueType>() };
+            const auto typeId { reflect::typeId<ValueType>() };
             auto mapped = _pools[typeId];
 
             if (mapped == nullptr) {
@@ -162,7 +164,7 @@ namespace hg::engine::acs {
 
         void releaseActorComponent(cref<actor_guid> guid_, cref<type_id> typeId_);
 
-        template <IsHeliogrimObject ValueType_>
+        template <ClassHasMeta ValueType_>
         void releaseActorComponent(cref<actor_guid> guid_, mref<ptr<ValueType_>> value_) {
             // TODO: releaseActorComponent(guid_, value_->getClass()->typeId());
             releaseActorComponent(guid_, value_->getTypeId());
@@ -172,7 +174,7 @@ namespace hg::engine::acs {
         ska::bytell_hash_map<type_id, ptr<ActorPoolWrapperBase>> _actorPools;
 
     public:
-        template <IsHeliogrimObject ActorType_>
+        template <typename ActorType_>
         const ptr<pool_type<ActorType_>> getOrCreateActorPool() {
 
             using pool_type = pool_type<ActorType_>;
@@ -181,7 +183,7 @@ namespace hg::engine::acs {
             // TODO: Change static lifetime to scoped one
             auto* const pool { &pool_type::getOrCreate() };
 
-            const auto typeId { HeliogrimClass::stid<ActorType_>() };
+            const auto typeId { reflect::typeId<ActorType_>() };
             const auto* const mapped { _actorPools[typeId] };
 
             if (mapped == nullptr) {
@@ -192,7 +194,7 @@ namespace hg::engine::acs {
         }
 
     public:
-        template <IsHeliogrimObject ActorType_> requires _STD derived_from<ActorType_, Actor>
+        template <ClassHasMeta ActorType_> requires _STD derived_from<ActorType_, Actor>
         [[nodiscard]] ptr<ActorType_> createActor(cref<ActorInitializer> initializer_) noexcept {
 
             const auto guid = generate_actor_guid();

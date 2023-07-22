@@ -6,7 +6,7 @@ SkyboxComponent::SkyboxComponent(
     mref<CachedActorPointer> owner_,
     mref<ptr<ActorComponent>> parent_
 ) :
-    SceneComponent(
+    InheritMeta(
         component_type_id { typeId },
         _STD move(owner_),
         _STD move(parent_)

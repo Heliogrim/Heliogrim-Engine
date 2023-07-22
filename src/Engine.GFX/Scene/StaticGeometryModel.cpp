@@ -20,7 +20,7 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 StaticGeometryModel::StaticGeometryModel(const ptr<SceneComponent> owner_) :
-    GeometryModel(owner_) {}
+    InheritMeta(owner_) {}
 
 StaticGeometryModel::~StaticGeometryModel() {
     tidy();
@@ -137,7 +137,7 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
         /**
          * On cache miss create new instance and store back for further usage
          */
-        result = HeliogrimObject::create<StaticGeometryBatch>();
+        result = new StaticGeometryBatch();
         state_->cacheCtrl.cache()->store(reinterpret_cast<ptrdiff_t>(owner()), ptr<cache::ModelBatch> { result });
         // TODO: Check whether we can improve storing a copy of the pointer, cause value copy currently requires a explicit copy
     }
@@ -150,7 +150,7 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
     // TODO: Transition of State
     #ifdef _DEBUG
     assert(result != nullptr);
-    assert(result->getClass()->isExactType<StaticGeometryBatch>());
+    assert(result->getMetaClass()->exact<StaticGeometryBatch>());
     #endif
 
     #pragma region Instance Data

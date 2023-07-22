@@ -4,6 +4,7 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Engine.Common/Make.hpp>
 #include <Engine.Serialization.Layouts/LayoutManager.hpp>
 #include <Engine.Resource.Package/PackageManager.hpp>
 

@@ -3,7 +3,7 @@
 
 namespace hg {
     class LightComponent :
-        public SceneComponent {
+        public InheritMeta<LightComponent, SceneComponent> {
     public:
         using this_type = LightComponent;
         using underlying_type = SceneComponent;

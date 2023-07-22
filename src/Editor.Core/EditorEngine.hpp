@@ -6,7 +6,7 @@
 
 namespace hg::editor {
     class EditorEngine :
-        public ::hg::engine::Engine {
+        public InheritMeta<EditorEngine, ::hg::engine::Engine> {
     public:
         EditorEngine();
 

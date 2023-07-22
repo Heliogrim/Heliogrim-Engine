@@ -4,8 +4,8 @@
 #include <Engine.Filesystem/__fwd.hpp>
 #include <Engine.Filesystem/Url.hpp>
 
-#include <Engine.Reflect/__fwd.hpp>
-#include <Engine.Reflect/HeliogrimReflect.hpp>
+#include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
+#include <Engine.Reflect/Inherit/Concept.hpp>
 
 #include "../Compression/__fwd.hpp"
 #include "../Filter/__fwd.hpp"
@@ -138,10 +138,10 @@ namespace hg::engine::serialization {
         }
 
     public:
-        virtual ref<this_type> operator<<(const ptr<HeliogrimObject> object_);
+        virtual ref<this_type> operator<<(const ptr<ClassMetaBase> object_);
 
     public:
-        template <IsHeliogrimObject Type_>
+        template <ClassHasMeta Type_>
         FORCE_INLINE friend ref<this_type> operator<<(ref<this_type> self_, const ptr<const Type_> object_) {
             return self_ << object_;
         }
@@ -211,8 +211,10 @@ namespace hg::engine::serialization {
         FORCE_INLINE friend ref<this_type> operator>>(ref<this_type> self_, ref<EnumType_> value_) {
 
             using enum_raw_type = _STD underlying_type_t<EnumType_>;
-            static_assert(_STD is_integral_v<enum_raw_type>,
-                "Enum is required to be based on an integral underlying type while serialization.");
+            static_assert(
+                _STD is_integral_v<enum_raw_type>,
+                "Enum is required to be based on an integral underlying type while serialization."
+            );
 
             if constexpr (sizeof(enum_raw_type) == sizeof(u8)) {
                 self_.serializeBytes(&value_, sizeof(u8), ArchiveStreamMode::eOut);
@@ -223,8 +225,10 @@ namespace hg::engine::serialization {
             } else if constexpr (sizeof(enum_raw_type) == sizeof(u64)) {
                 self_.serializeByteOrdered(reinterpret_cast<ref<u64>>(value_), ArchiveStreamMode::eOut);
             } else {
-                static_assert(sizeof(enum_raw_type) > sizeof(u64) || sizeof(enum_raw_type) == 0,
-                    "Failed to determine usable integral type for enum while serializing.");
+                static_assert(
+                    sizeof(enum_raw_type) > sizeof(u64) || sizeof(enum_raw_type) == 0,
+                    "Failed to determine usable integral type for enum while serializing."
+                );
             }
 
             return self_;
@@ -309,8 +313,10 @@ namespace hg::engine::serialization {
         FORCE_INLINE friend ref<this_type> operator<<(ref<this_type> self_, cref<EnumType_> value_) {
 
             using enum_raw_type = _STD underlying_type_t<EnumType_>;
-            static_assert(_STD is_integral_v<enum_raw_type>,
-                "Enum is required to be based on an integral underlying type while serialization.");
+            static_assert(
+                _STD is_integral_v<enum_raw_type>,
+                "Enum is required to be based on an integral underlying type while serialization."
+            );
 
             if constexpr (sizeof(enum_raw_type) == sizeof(u8)) {
                 self_.serializeBytes(
@@ -338,8 +344,10 @@ namespace hg::engine::serialization {
                 );
 
             } else {
-                static_assert(sizeof(enum_raw_type) > sizeof(u64) || sizeof(enum_raw_type) == 0,
-                    "Failed to determine usable integral type for enum while serializing.");
+                static_assert(
+                    sizeof(enum_raw_type) > sizeof(u64) || sizeof(enum_raw_type) == 0,
+                    "Failed to determine usable integral type for enum while serializing."
+                );
             }
 
             return self_;

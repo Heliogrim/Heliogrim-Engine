@@ -1,5 +1,7 @@
 #include "StaticGeometryBatch.hpp"
 
+#include <Engine.Common/Exception/NotImplementedException.hpp>
+
 using namespace hg::engine::gfx;
 using namespace hg;
 

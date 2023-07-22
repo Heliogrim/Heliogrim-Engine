@@ -4,7 +4,7 @@ using namespace hg::engine::gfx::render::graph;
 using namespace hg;
 
 TextureDescription::TextureDescription() noexcept :
-    Description(),
+    InheritMeta(),
     _textureType(),
     _textureFormat(),
     _textureLayers(),
@@ -17,7 +17,7 @@ TextureDescription::TextureDescription(
     //mref<DescriptionValue<math::uivec3>> textureExtent_,
     mref<DescriptionValue<Vector<u32>>> textureMips_
 ) noexcept :
-    Description(),
+    InheritMeta(),
     _textureType(textureType_),
     _textureFormat(textureFormat_),
     _textureLayers(textureLayers_),
