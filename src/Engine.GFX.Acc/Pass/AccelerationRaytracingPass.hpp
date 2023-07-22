@@ -4,7 +4,7 @@
 
 namespace hg::engine::gfx::acc {
     class AccelerationRaytracingPass :
-        public AccelerationPass {
+        public InheritMeta<AccelerationRaytracingPass, AccelerationPass> {
     public:
         using this_type = AccelerationRaytracingPass;
 

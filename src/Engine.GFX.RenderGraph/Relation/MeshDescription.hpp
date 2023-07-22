@@ -7,7 +7,7 @@
 
 namespace hg::engine::gfx::render::graph {
     class MeshDescription final :
-        public Description {
+        public InheritMeta<MeshDescription, Description> {
     public:
         using this_type = MeshDescription;
 

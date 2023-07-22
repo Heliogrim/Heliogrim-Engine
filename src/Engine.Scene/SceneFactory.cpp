@@ -9,7 +9,7 @@ using namespace hg::engine::scene;
 using namespace hg;
 
 uptr<Scene> SceneFactory::createDefaultScene() {
-    return uptr<Scene>(HeliogrimObject::create<RevScene>());
+    return uptr<Scene>(new RevScene());
 }
 
 uptr<Scene> SceneFactory::createPreviewScene() {

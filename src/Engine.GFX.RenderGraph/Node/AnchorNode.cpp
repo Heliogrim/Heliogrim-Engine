@@ -12,7 +12,7 @@ AnchorNode::AnchorNode() noexcept :
     Node(
         make_smr<Auxiliary>()
     ) {
-    _auxiliary->add(uptr<AnchorComponent>(HeliogrimObject::create<AnchorComponent>()));
+    _auxiliary->add(uptr<AnchorComponent>(new AnchorComponent()));
 }
 
 void AnchorNode::accept(ref<Visitor> visitor_) const {
@@ -47,7 +47,7 @@ nmpt<AnchorComponent> AnchorNode::getAnchorComponent() {
     const auto it = _STD ranges::find_if(
         _auxiliary->components(),
         [](const ptr<Component> component_) {
-            return component_->getClass()->isExactType<AnchorComponent>();
+            return component_->getMetaClass()->exact<AnchorComponent>();
         }
     );
     return it != _auxiliary->components().end() ?

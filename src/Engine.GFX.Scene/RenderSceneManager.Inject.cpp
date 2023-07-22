@@ -25,7 +25,9 @@ void RenderSceneManager::injectSceneHooks(const ptr<RenderScene> renderScene_) {
     scene->setNodeType(
         tag,
         CameraComponent::typeId,
-        HeliogrimObject::create<CameraModel, const ptr<SceneComponent>>
+        [](const ptr<SceneComponent> sc_) {
+            return new CameraModel(sc_);
+        }
     );
 
     /**/
@@ -33,12 +35,16 @@ void RenderSceneManager::injectSceneHooks(const ptr<RenderScene> renderScene_) {
     scene->setNodeType(
         tag,
         StaticGeometryComponent::typeId,
-        HeliogrimObject::create<StaticGeometryModel, const ptr<SceneComponent>>
+        [](const ptr<SceneComponent> sc_) {
+            return new StaticGeometryModel(sc_);
+        }
     );
     scene->setNodeType(
         tag,
         SkyboxComponent::typeId,
-        HeliogrimObject::create<SkyboxModel, const ptr<SceneComponent>>
+        [](const ptr<SceneComponent> sc_) {
+            return new SkyboxModel(sc_);
+        }
     );
 
     /**/
@@ -46,6 +52,8 @@ void RenderSceneManager::injectSceneHooks(const ptr<RenderScene> renderScene_) {
     scene->setNodeType(
         tag,
         UIComponent::typeId,
-        HeliogrimObject::create<glow::ui::UISceneModel, const ptr<SceneComponent>>
+        [](const ptr<SceneComponent> sc_) {
+            return new glow::ui::UISceneModel(sc_);
+        }
     );
 }

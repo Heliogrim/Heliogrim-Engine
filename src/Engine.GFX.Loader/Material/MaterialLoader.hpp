@@ -24,7 +24,7 @@ namespace hg::engine::gfx::loader {
     >;
 
     class MaterialLoader final :
-        public MaterialLoaderType {
+        public InheritMeta<MaterialLoader, MaterialLoaderType> {
     public:
         using this_type = MaterialLoader;
 

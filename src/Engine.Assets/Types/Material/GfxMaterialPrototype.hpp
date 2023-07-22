@@ -4,7 +4,7 @@
 
 namespace hg::engine::assets {
     class GfxMaterialPrototype :
-        public Asset {
+        public InheritMeta<GfxMaterialPrototype, Asset> {
     public:
         using this_type = GfxMaterialPrototype;
 

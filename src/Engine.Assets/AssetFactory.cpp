@@ -139,7 +139,7 @@ void AssetFactory::prepare() {
 
     layouts.storeLayout("Assets::Texture"sv, cur);
     layouts.storeLayout(Texture::typeId, cur);
-    layouts.storeLayout(HeliogrimClass::of<Texture>(), cur);
+    layouts.storeLayout(TypedMetaClass<Texture>::get(), cur);
 
     cur = make_sptr<DataLayout<Image>>();
     cur->reflect().storeType<Image>();
@@ -147,12 +147,12 @@ void AssetFactory::prepare() {
 
     layouts.storeLayout("Assets::Image"sv, cur);
     layouts.storeLayout(Image::typeId, cur);
-    layouts.storeLayout(HeliogrimClass::of<Image>(), cur);
+    layouts.storeLayout(TypedMetaClass<Image>::get(), cur);
 }
 
 ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = HeliogrimObject::create<Font>(guid_, Vector<fs::Url> {});
+    auto* instance = new Font(guid_, Vector<fs::Url> {});
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
@@ -168,7 +168,7 @@ ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_, cref<string> url
         sources.push_back(src);
     }
 
-    auto* instance = HeliogrimObject::create<Font>(guid_, _STD move(sources));
+    auto* instance = new Font(guid_, _STD move(sources));
 
     storeDefaultNameAndUrl(instance, url_);
     _registry->insert({ instance });
@@ -183,7 +183,7 @@ ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset() const {
 
 ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = HeliogrimObject::create<GfxMaterial>(guid_);
+    auto* instance = new GfxMaterial(guid_);
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
@@ -192,7 +192,7 @@ ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) co
 
 ptr<GfxMaterialPrototype> AssetFactory::createGfxMaterialPrototypeAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = HeliogrimObject::create<GfxMaterialPrototype>(guid_);
+    auto* instance = new GfxMaterialPrototype(guid_);
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
@@ -207,7 +207,7 @@ ptr<Image> AssetFactory::createImageAsset() const {
 
 ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = HeliogrimObject::create<Image>(guid_, Vector<fs::Url> {});
+    auto* instance = new Image(guid_, Vector<fs::Url> {});
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
@@ -223,7 +223,7 @@ ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> u
         sources.push_back(src);
     }
 
-    auto* instance = HeliogrimObject::create<Image>(guid_, _STD move(sources));
+    auto* instance = new Image(guid_, _STD move(sources));
 
     storeDefaultNameAndUrl(instance, string { src.path() });
     _registry->insert({ instance });
@@ -232,7 +232,7 @@ ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> u
 
 ptr<LandscapeGeometry> AssetFactory::createLandscapeGeometryAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = HeliogrimObject::create<LandscapeGeometry>(guid_, Vector<fs::Url> {});
+    auto* instance = new LandscapeGeometry(guid_, Vector<fs::Url> {});
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
@@ -241,7 +241,7 @@ ptr<LandscapeGeometry> AssetFactory::createLandscapeGeometryAsset(cref<asset_gui
 
 ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = HeliogrimObject::create<StaticGeometry>(
+    auto* instance = new StaticGeometry(
         guid_,
         Vector<fs::Url> {},
         0ui64,
@@ -267,7 +267,7 @@ ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(
         sources.push_back(src);
     }
 
-    auto* instance = HeliogrimObject::create<StaticGeometry>(
+    auto* instance = new StaticGeometry(
         guid_,
         _STD move(sources),
         vertexCount_,
@@ -287,7 +287,7 @@ ptr<Texture> AssetFactory::createTextureAsset() const {
 
 ptr<Texture> AssetFactory::createTextureAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = HeliogrimObject::create<Texture>(
+    auto* instance = new Texture(
         guid_,
         invalid_asset_guid,
         Vector<asset_guid> { invalid_asset_guid },
@@ -311,7 +311,7 @@ ptr<Texture> AssetFactory::createTextureAsset(
     cref<u32> mipLevel_,
     cref<gfx::TextureType> type_
 ) const {
-    auto* instance = HeliogrimObject::create<Texture>(
+    auto* instance = new Texture(
         guid_,
         baseImage_,
         _STD forward<Vector<asset_guid>>(images_),

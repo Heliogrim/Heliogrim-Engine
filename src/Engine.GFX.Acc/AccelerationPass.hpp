@@ -3,14 +3,14 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.Reflect/HeliogrimReflect.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 #include "__fwd.hpp"
 #include "Pass/Layout/AccelerationPassBindings.hpp"
 
 namespace hg::engine::gfx::acc {
     class AccelerationPass :
-        public HeliogrimObject {
+        public InheritBase<AccelerationPass> {
     public:
         using this_type = AccelerationPass;
 

@@ -189,7 +189,7 @@ namespace SerializationModule {
     }
 
     class TestSerialAsset :
-        public ::hg::engine::assets::Asset {
+        public InheritMeta<TestSerialAsset, ::hg::engine::assets::Asset> {
     public:
         template <typename>
         friend class ::hg::engine::serialization::DataLayout;
@@ -199,7 +199,7 @@ namespace SerializationModule {
 
     public:
         TestSerialAsset() :
-            Asset({}, typeId) {}
+            InheritMeta({}, typeId) {}
 
     public:
         u8 t0 = 0x0;
@@ -248,7 +248,7 @@ namespace SerializationModule {
 
         TypedLayoutArchive<TestSerialAsset> arch { &archive, &layout };
 
-        auto writeAsset = HeliogrimObject::create<TestSerialAsset>();
+        auto writeAsset = new TestSerialAsset();
 
         writeAsset->t0 = 0x1;
         writeAsset->t1 = 0x2;
@@ -267,7 +267,7 @@ namespace SerializationModule {
 
         archive.seek(0);
 
-        auto readAsset = HeliogrimObject::create<TestSerialAsset>();
+        auto readAsset = new TestSerialAsset();
         arch >> readAsset;
 
         EXPECT_EQ(readAsset->t0, 0x1);
@@ -282,12 +282,12 @@ namespace SerializationModule {
         EXPECT_DOUBLE_EQ(readAsset->t9, -8.765432);
         EXPECT_EQ(readAsset->t10, EnumValueU8::eEntryTwo);
 
-        HeliogrimObject::destroy(_STD move(writeAsset));
-        HeliogrimObject::destroy(_STD move(readAsset));
+        delete writeAsset;
+        delete readAsset;
     }
 
     class TestSerialDataBaseAsset :
-        public ::hg::engine::assets::Asset {
+        public InheritMeta<TestSerialDataBaseAsset, ::hg::engine::assets::Asset> {
     public:
         template <typename>
         friend class ::hg::engine::serialization::DataLayout;
@@ -297,7 +297,7 @@ namespace SerializationModule {
 
     public:
         TestSerialDataBaseAsset() :
-            Asset({}, typeId) {}
+            InheritMeta({}, typeId) {}
 
     public:
         void setGuid(asset_guid guid_) {
@@ -334,21 +334,21 @@ namespace SerializationModule {
         constexpr auto testGuid = asset_guid { 0x2356ui16, 0x12, 0x56, 0x68537136ui32 };
         constexpr auto testType = asset_type_id { "TestBaseAsset_Changed"_typeId };
 
-        auto writeAsset = HeliogrimObject::create<TestSerialDataBaseAsset>();
+        auto writeAsset = new TestSerialDataBaseAsset();
         writeAsset->setGuid(testGuid);
         writeAsset->setType(testType);
         arch << writeAsset;
 
         archive.seek(0);
 
-        auto readAsset = HeliogrimObject::create<TestSerialDataBaseAsset>();
+        auto readAsset = new TestSerialDataBaseAsset();
         arch >> readAsset;
 
         EXPECT_EQ(readAsset->get_guid(), testGuid);
         EXPECT_EQ(readAsset->getTypeId(), testType);
 
-        HeliogrimObject::destroy(_STD move(writeAsset));
-        HeliogrimObject::destroy(_STD move(readAsset));
+        delete writeAsset;
+        delete readAsset;
     }
 
     struct TestSubTypePayload {
@@ -359,7 +359,7 @@ namespace SerializationModule {
     };
 
     class TestSerialSubTypeAsset :
-        public ::hg::engine::assets::Asset {
+        public InheritMeta<TestSerialSubTypeAsset, ::hg::engine::assets::Asset> {
     public:
         template <typename>
         friend class ::hg::engine::serialization::DataLayout;
@@ -369,7 +369,7 @@ namespace SerializationModule {
 
     public:
         TestSerialSubTypeAsset() :
-            Asset({}, typeId) {}
+            InheritMeta({}, typeId) {}
 
     public:
         TestSubTypePayload payload;
@@ -414,8 +414,8 @@ namespace SerializationModule {
 
         TypedLayoutArchive<TestSerialSubTypeAsset> arch { &archive, &layout };
 
-        auto writeAsset = HeliogrimObject::create<TestSerialSubTypeAsset>();
-        auto readAsset = HeliogrimObject::create<TestSerialSubTypeAsset>();
+        auto writeAsset = new TestSerialSubTypeAsset();
+        auto readAsset = new TestSerialSubTypeAsset();
 
         /**/
 
@@ -435,12 +435,12 @@ namespace SerializationModule {
         EXPECT_EQ(readAsset->payload.f0, 7896316.135F);
         EXPECT_EQ(readAsset->payload.f1, 32896.236F);
 
-        HeliogrimObject::destroy(_STD move(writeAsset));
-        HeliogrimObject::destroy(_STD move(readAsset));
+        delete writeAsset;
+        delete readAsset;
     }
 
     class TestSerialSubTypeSpanAsset :
-        public ::hg::engine::assets::Asset {
+        public InheritMeta<TestSerialSubTypeSpanAsset, ::hg::engine::assets::Asset> {
     public:
         template <typename>
         friend class ::hg::engine::serialization::DataLayout;
@@ -450,7 +450,7 @@ namespace SerializationModule {
 
     public:
         TestSerialSubTypeSpanAsset() :
-            Asset({}, typeId) {}
+            InheritMeta({}, typeId) {}
 
     public:
         Array<TestSubTypePayload, 5> payload;
@@ -482,7 +482,7 @@ namespace SerializationModule {
 
         TypedLayoutArchive<TestSerialSubTypeSpanAsset> arch { &archive, &layout };
 
-        auto writeAsset = HeliogrimObject::create<TestSerialSubTypeSpanAsset>();
+        auto writeAsset = new TestSerialSubTypeSpanAsset();
         writeAsset->payload[0] = { 32ui64 };
         writeAsset->payload[1] = { 754ui64 };
         writeAsset->payload[2] = { 16ui64 };
@@ -492,7 +492,7 @@ namespace SerializationModule {
 
         archive.seek(0);
 
-        auto readAsset = HeliogrimObject::create<TestSerialSubTypeSpanAsset>();
+        auto readAsset = new TestSerialSubTypeSpanAsset();
         arch >> readAsset;
 
         EXPECT_EQ(writeAsset->payload.size(), readAsset->payload.size());
@@ -502,12 +502,12 @@ namespace SerializationModule {
         EXPECT_EQ(readAsset->payload[3].p0, 5267ui64);
         EXPECT_EQ(readAsset->payload.back().p0, 1ui64);
 
-        HeliogrimObject::destroy(_STD move(writeAsset));
-        HeliogrimObject::destroy(_STD move(readAsset));
+        delete writeAsset;
+        delete readAsset;
     }
 
     class TestSerialSubTypeSliceAsset :
-        public ::hg::engine::assets::Asset {
+        public InheritMeta<TestSerialSubTypeSliceAsset, ::hg::engine::assets::Asset> {
     public:
         template <typename>
         friend class ::hg::engine::serialization::DataLayout;
@@ -517,7 +517,7 @@ namespace SerializationModule {
 
     public:
         TestSerialSubTypeSliceAsset() :
-            Asset({}, typeId) {}
+            InheritMeta({}, typeId) {}
 
     public:
         _STD list<TestSubTypePayload> payload;
@@ -549,7 +549,7 @@ namespace SerializationModule {
 
         TypedLayoutArchive<TestSerialSubTypeSliceAsset> arch { &archive, &layout };
 
-        auto writeAsset = HeliogrimObject::create<TestSerialSubTypeSliceAsset>();
+        auto writeAsset = new TestSerialSubTypeSliceAsset();
         writeAsset->payload.push_back({ 32ui64 });
         writeAsset->payload.push_back({ 754ui64 });
         writeAsset->payload.push_back({ 16ui64 });
@@ -559,7 +559,7 @@ namespace SerializationModule {
 
         archive.seek(0);
 
-        auto readAsset = HeliogrimObject::create<TestSerialSubTypeSliceAsset>();
+        auto readAsset = new TestSerialSubTypeSliceAsset();
         arch >> readAsset;
 
         EXPECT_EQ(writeAsset->payload.size(), readAsset->payload.size());
@@ -569,12 +569,12 @@ namespace SerializationModule {
         EXPECT_EQ((++(++(++readAsset->payload.begin())))->p0, 5267ui64);
         EXPECT_EQ(readAsset->payload.back().p0, 1ui64);
 
-        HeliogrimObject::destroy(_STD move(writeAsset));
-        HeliogrimObject::destroy(_STD move(readAsset));
+        delete writeAsset;
+        delete readAsset;
     }
 
     class TestSerialSubTypeVectorizedSliceAsset :
-        public ::hg::engine::assets::Asset {
+        public InheritMeta<TestSerialSubTypeVectorizedSliceAsset, ::hg::engine::assets::Asset> {
     public:
         template <typename>
         friend class ::hg::engine::serialization::DataLayout;
@@ -584,7 +584,7 @@ namespace SerializationModule {
 
     public:
         TestSerialSubTypeVectorizedSliceAsset() :
-            Asset({}, typeId) {}
+            InheritMeta({}, typeId) {}
 
     public:
         Vector<TestSubTypePayload> payload;
@@ -616,7 +616,7 @@ namespace SerializationModule {
 
         TypedLayoutArchive<TestSerialSubTypeVectorizedSliceAsset> arch { &archive, &layout };
 
-        auto writeAsset = HeliogrimObject::create<TestSerialSubTypeVectorizedSliceAsset>();
+        auto writeAsset = new TestSerialSubTypeVectorizedSliceAsset();
         //writeAsset->payload.resize(200'000'000, { 1231ui64, 738956ui64, 2.32906F, 9230.35F });
         writeAsset->payload.resize(2'000'000, { 1231ui64, 738956ui64, 2.32906F, 9230.35F });
 
@@ -626,7 +626,7 @@ namespace SerializationModule {
 
         archive.seek(0);
 
-        auto readAsset = HeliogrimObject::create<TestSerialSubTypeVectorizedSliceAsset>();
+        auto readAsset = new TestSerialSubTypeVectorizedSliceAsset();
 
         const auto readStart { _STD chrono::high_resolution_clock::now() };
         arch >> readAsset;
@@ -673,12 +673,12 @@ namespace SerializationModule {
             _STD chrono::duration_cast<_STD chrono::milliseconds>(cpyEnd - cpyStart) <<
             _STD endl;
 
-        HeliogrimObject::destroy(_STD move(writeAsset));
-        HeliogrimObject::destroy(_STD move(readAsset));
+        delete writeAsset;
+        delete readAsset;
     }
 
     class TestSerialSubTypeStringAsset :
-        public ::hg::engine::assets::Asset {
+        public InheritMeta<TestSerialSubTypeStringAsset, ::hg::engine::assets::Asset> {
     public:
         template <typename>
         friend class ::hg::engine::serialization::DataLayout;
@@ -688,7 +688,7 @@ namespace SerializationModule {
 
     public:
         TestSerialSubTypeStringAsset() :
-            Asset({}, typeId) {}
+            InheritMeta({}, typeId) {}
 
     public:
         string payload;
@@ -720,20 +720,20 @@ namespace SerializationModule {
 
         TypedLayoutArchive<TestSerialSubTypeStringAsset> arch { &archive, &layout };
 
-        auto writeAsset = HeliogrimObject::create<TestSerialSubTypeStringAsset>();
+        auto writeAsset = new TestSerialSubTypeStringAsset();
         writeAsset->payload = "I'm just a string test.";
         arch << writeAsset;
 
         archive.seek(0);
 
-        auto readAsset = HeliogrimObject::create<TestSerialSubTypeStringAsset>();
+        auto readAsset = new TestSerialSubTypeStringAsset();
         arch >> readAsset;
 
         EXPECT_EQ(writeAsset->payload.size(), readAsset->payload.size());
         EXPECT_STREQ(writeAsset->payload.c_str(), readAsset->payload.c_str());
 
-        HeliogrimObject::destroy(_STD move(writeAsset));
-        HeliogrimObject::destroy(_STD move(readAsset));
+        delete writeAsset;
+        delete readAsset;
     }
 }
 

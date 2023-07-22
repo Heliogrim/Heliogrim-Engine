@@ -12,26 +12,41 @@ DataLayoutReflect::DataLayoutReflect() :
 
 DataLayoutReflect::~DataLayoutReflect() noexcept = default;
 
-ptr<HeliogrimObject> DataLayoutReflect::instantiate() const {
-    return _rclass->instantiate();
+ptr<ClassMetaBase> DataLayoutReflect::instantiate() const {
+    // TODO:
+    // WARNING:
+    // ERROR:
+    //return _rclass->instantiate();
+    return nullptr;
 }
 
-void DataLayoutReflect::destroy(mref<ptr<HeliogrimObject>> obj_) const {
-    _rclass->destroy(_STD move(obj_));
+void DataLayoutReflect::destroy(mref<ptr<ClassMetaBase>> obj_) const {
+    // TODO:
+    // WARNING:
+    // ERROR:
+    //_rclass->destroy(_STD move(obj_));
 }
 
 void DataLayoutReflect::constructInPlace(const ptr<void> dst_) const {
-    hasClass() ? _rclass->construct(dst_) : _ipc(dst_);
+    // TODO:
+    // WARNING:
+    // ERROR:
+    //hasClass() ? _rclass->construct(dst_) : _ipc(dst_);
+    _ipc(dst_);
 }
 
 void DataLayoutReflect::destroyInPlace(const ptr<void> dst_) const {
-    hasClass() ? _rclass->destruct(static_cast<const ptr<HeliogrimObject>>(dst_)) : _ipd(dst_);
+    // TODO:
+    // WARNING:
+    // ERROR:
+    //hasClass() ? _rclass->destruct(static_cast<const ptr<ClassMetaBase>>(dst_)) : _ipd(dst_);
+    _ipd(dst_);
 }
 
 bool DataLayoutReflect::hasClass() const noexcept {
     return _rclass != nullptr;
 }
 
-non_owning_rptr<HeliogrimClass> DataLayoutReflect::getClass() const noexcept {
+non_owning_rptr<const MetaClass> DataLayoutReflect::getClass() const noexcept {
     return _rclass;
 }

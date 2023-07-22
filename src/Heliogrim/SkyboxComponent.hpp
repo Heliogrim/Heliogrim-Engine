@@ -5,7 +5,7 @@
 
 namespace hg {
     class SkyboxComponent :
-        public SceneComponent {
+        public InheritMeta<SkyboxComponent, SceneComponent> {
     public:
         using this_type = SkyboxComponent;
         using underlying_type = SceneComponent;

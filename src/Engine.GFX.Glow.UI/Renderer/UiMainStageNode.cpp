@@ -13,6 +13,7 @@
 #include <Engine.GFX.Renderer/Stage/RenderStagePass.hpp>
 #include <Engine.GFX.Renderer/RenderDataToken.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Reflect/Meta/TypeId.hpp>
 
 #include "Engine.Assets.System/IAssetRegistry.hpp"
 #include "Engine.Assets/AssetFactory.hpp"
@@ -55,7 +56,7 @@ UiMainStageNode::UiMainStageNode() :
     RenderStageNode(),
     _modelTypes(
         {
-            HeliogrimClass::stid<UISceneModel>()
+            reflect::typeId<UISceneModel>()
         }
     ) {}
 

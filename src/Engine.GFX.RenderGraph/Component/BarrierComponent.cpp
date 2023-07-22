@@ -4,7 +4,7 @@ using namespace hg::engine::gfx::render::graph;
 using namespace hg;
 
 BarrierComponent::BarrierComponent(mref<string> barrierName_) noexcept :
-    Component(),
+    InheritMeta(),
     _name(_STD move(barrierName_)) {}
 
 string_view BarrierComponent::getBarrierName() const noexcept {

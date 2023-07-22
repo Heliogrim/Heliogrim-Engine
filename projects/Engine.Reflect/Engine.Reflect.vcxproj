@@ -108,8 +108,6 @@
     <ClInclude Include="..\..\src\Engine.Reflect\Compile\Relation.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Compile\Sort.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Compile\Table.hpp" />
-    <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimReflect.hpp" />
-    <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimStruct.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\ClassMetaBase.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\Compile.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\Concept.hpp" />
@@ -120,15 +118,14 @@
     <ClInclude Include="..\..\src\Engine.Reflect\Meta\TypeId.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Reflect.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Template\QueryTypeId.hpp" />
-    <ClInclude Include="..\..\src\Engine.Reflect\__fwd.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Reflect\HeliogrimReflect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
       <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Reflect\Meta\MetaClass.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

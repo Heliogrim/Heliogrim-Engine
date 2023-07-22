@@ -1,6 +1,7 @@
 #include "SubModuleInit.hpp"
 
 #include <Editor.Core/EditorEngine.hpp>
+#include <Engine.Common/Make.hpp>
 #include <Engine.Reflow/Reflow.hpp>
 
 #include "../Editor.hpp"

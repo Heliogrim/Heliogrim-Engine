@@ -33,6 +33,7 @@
 #include "Engine.Resource/LoaderManager.hpp"
 #include "Game.Main/Assets/Textures/DefaultSkybox.hpp"
 #include <Engine.GFX.Scene/View/SceneView.hpp>
+#include <Engine.Reflect/Meta/TypeId.hpp>
 
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Assets/Types/Texture/Texture.hpp"
@@ -48,7 +49,7 @@ using namespace hg;
 RevMainSkyNode::RevMainSkyNode(const ptr<RevMainSharedNode> sharedNode_) :
     _modelTypes(
         {
-            HeliogrimClass::stid<SkyboxModel>()
+            reflect::typeId<SkyboxModel>()
         }
     ),
     _sharedNode(sharedNode_) {}
@@ -646,7 +647,7 @@ const ptr<const VirtualTextureView> RevMainSkyNode::getDefaultSkybox() const {
     assert(defaultAsset != nullptr);
 
     #ifdef _DEBUG
-    if (!defaultAsset->getClass()->isExactType<assets::Texture>()) {
+    if (!defaultAsset->getMetaClass()->exact<assets::Texture>()) {
         __debugbreak();
     }
     #endif

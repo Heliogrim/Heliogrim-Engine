@@ -3,7 +3,7 @@
 
 namespace hg::engine::scene {
     class PreviewScene final :
-        public Scene {
+        public InheritMeta<PreviewScene, Scene> {
     public:
         using this_type = PreviewScene;
         using underlying_type = Scene;

@@ -25,7 +25,6 @@
 #include "RevDepthSharedNode.hpp"
 #include "Heliogrim/StaticGeometryComponent.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
-#include "Engine.Reflect/HeliogrimReflect.hpp"
 #include <Engine.GFX/Scene/StaticGeometryBatch.hpp>
 
 #include "Engine.GFX/Graphics.hpp"
@@ -34,6 +33,7 @@
 #include "Engine.GFX/Texture/Texture.hpp"
 #include "Engine.GFX/Texture/VirtualTextureView.hpp"
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Reflect/Meta/TypeId.hpp>
 
 using namespace hg::engine::gfx::glow::render;
 using namespace hg::engine::gfx::render;
@@ -48,7 +48,7 @@ RevEarlyEnvPrefilterNode::RevEarlyEnvPrefilterNode() :
     RenderStageNode(),
     _modelTypes(
         {
-            HeliogrimClass::stid<SkyboxModel>()
+            reflect::typeId<SkyboxModel>()
         }
     ),
     _envPrefilterExtent(512ui32, 512ui32),

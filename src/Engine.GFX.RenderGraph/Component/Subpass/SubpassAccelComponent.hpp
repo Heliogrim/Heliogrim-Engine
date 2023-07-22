@@ -4,7 +4,7 @@
 
 namespace hg::engine::gfx::render::graph {
     class __declspec(novtable) SubpassAccelComponent :
-        public Component {
+        public InheritMeta<SubpassAccelComponent, Component> {
     public:
         using this_type = SubpassAccelComponent;
 

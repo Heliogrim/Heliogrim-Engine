@@ -1,6 +1,7 @@
 #include "StringScopedSlot.hpp"
 
 #include <span>
+#include <Engine.Common/Make.hpp>
 
 #include "../Archive/Archive.hpp"
 #include "ScopedSlotGuard.hpp"

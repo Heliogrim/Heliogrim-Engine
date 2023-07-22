@@ -31,12 +31,12 @@
 #include <Engine.GFX/Shader/PrototypeBinding.hpp>
 #include <Engine.GFX/Shader/ShaderStorage.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
-#include <Engine.Reflect/HeliogrimReflect.hpp>
 
 #include "RevMainSharedNode.hpp"
 #include "Engine.GFX/Texture/VirtualTextureView.hpp"
 #include "State/RevSfMtt.hpp"
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Reflect/Meta/TypeId.hpp>
 
 using namespace hg::engine::gfx::glow::render;
 using namespace hg::engine::gfx::render;
@@ -49,7 +49,7 @@ RevMainStaticNode::RevMainStaticNode(const ptr<RevMainSharedNode> sharedNode_) :
     RenderStageNode(),
     _modelTypes(
         {
-            HeliogrimClass::stid<StaticGeometryModel>()
+            reflect::typeId<StaticGeometryModel>()
         }
     ),
     _sharedNode(sharedNode_) {}

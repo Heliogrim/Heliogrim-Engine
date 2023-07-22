@@ -77,7 +77,7 @@ void Graphics::hookEngineState() {
         [this](cref<core::WorldAddedEvent> event_) {
 
             auto* const scene { event_.getWorld()->getScene() };
-            const auto* const sceneClass { scene->getClass() };
+            const auto* const sceneClass { scene->getMetaClass() };
 
             /*
             if (not sceneClass->isType<scene::IRenderScene>()) {
@@ -85,7 +85,7 @@ void Graphics::hookEngineState() {
             }
              */
 
-            if (not sceneClass->isExactType<scene::RevScene>()) {
+            if (not sceneClass->exact<scene::RevScene>()) {
                 return;
             }
 
@@ -98,7 +98,7 @@ void Graphics::hookEngineState() {
         [this](cref<core::WorldRemoveEvent> event_) {
 
             auto* const scene { event_.getWorld()->getScene() };
-            const auto* const sceneClass { scene->getClass() };
+            const auto* const sceneClass { scene->getMetaClass() };
 
             /*
             if (not sceneClass->isType<scene::IRenderScene>()) {
@@ -106,7 +106,7 @@ void Graphics::hookEngineState() {
             }
              */
 
-            if (not sceneClass->isExactType<scene::RevScene>()) {
+            if (not sceneClass->exact<scene::RevScene>()) {
                 return;
             }
 

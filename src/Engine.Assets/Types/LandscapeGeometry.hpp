@@ -7,7 +7,7 @@
 
 namespace hg::engine::assets {
     class LandscapeGeometry :
-        public Geometry {
+        public InheritMeta<LandscapeGeometry, Geometry> {
     public:
         template <typename>
         friend class serialization::DataLayout;

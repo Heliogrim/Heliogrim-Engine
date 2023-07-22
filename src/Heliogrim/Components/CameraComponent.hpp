@@ -6,7 +6,7 @@
 
 namespace hg {
     class CameraComponent :
-        public ModelComponent {
+        public InheritMeta<CameraComponent, ModelComponent> {
     public:
         using this_type = CameraComponent;
         using underlying_type = ModelComponent;

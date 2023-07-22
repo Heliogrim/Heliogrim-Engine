@@ -5,7 +5,7 @@
 #include <Engine.Common/Meta/TypeId.hpp>
 #include <Engine.Common/Collection/AssociativeKey.hpp>
 #include <Engine.Common/Collection/RobinMap.hpp>
-#include <Engine.Reflect/__fwd.hpp>
+#include <Engine.Reflect/Meta/MetaClass.hpp>
 #include <Engine.Serialization/Layout/__fwd.hpp>
 
 #include "LayoutOptimizer.hpp"
@@ -49,7 +49,7 @@ namespace hg::engine::serialization {
         sptr<DataLayoutBase> _nullLayout;
 
         RobinMap<type_id, sptr<DataLayoutBase>> _typeMapping;
-        RobinMap<ptr<const HeliogrimClass>, sptr<DataLayoutBase>> _classMapping;
+        RobinMap<ptr<const MetaClass>, sptr<DataLayoutBase>> _classMapping;
         RobinMap<AssocKey<string>, sptr<DataLayoutBase>> _symbolMapping;
 
     public:
@@ -57,7 +57,7 @@ namespace hg::engine::serialization {
 
         bool storeLayout(string_view symbol_, cref<sptr<DataLayoutBase>> layout_);
 
-        bool storeLayout(const ptr<const HeliogrimClass> class_, cref<sptr<DataLayoutBase>> layout_);
+        bool storeLayout(const ptr<const MetaClass> class_, cref<sptr<DataLayoutBase>> layout_);
 
         bool storeLayout(cref<type_id> typeId_, cref<sptr<DataLayoutBase>> layout_);
 
@@ -65,7 +65,7 @@ namespace hg::engine::serialization {
 
         [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(string_view symbol_) const noexcept;
 
-        [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(const ptr<const HeliogrimClass> class_) const noexcept;
+        [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(const ptr<const MetaClass> class_) const noexcept;
 
         [[nodiscard]] cref<sptr<DataLayoutBase>> getLayout(cref<type_id> typeId_) const noexcept;
     };

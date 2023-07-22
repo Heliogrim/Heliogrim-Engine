@@ -5,7 +5,7 @@
 
 namespace hg {
     class CameraActor :
-        public Actor {
+        public InheritMeta<CameraActor, Actor> {
     public:
         using this_type = CameraActor;
         using underlying_type = Actor;

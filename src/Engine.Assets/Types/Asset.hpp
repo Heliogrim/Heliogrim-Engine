@@ -2,8 +2,7 @@
 
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Meta/TypeId.hpp>
-#include <Engine.Reflect/HeliogrimReflect.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Serialization/Layout/__fwd.hpp>
 
 #include "../AssetGuid.hpp"
@@ -25,7 +24,7 @@ namespace hg::engine::assets {
      */
 
     class Asset :
-        public HeliogrimObject {
+        public InheritBase<Asset> {
     public:
         using value_type = Asset;
         using reference_type = Asset&;

@@ -12,7 +12,7 @@ StaticGeometryLoader::StaticGeometryLoader(
     const non_owning_rptr<pool::GlobalResourcePool> pool_,
     mref<sptr<StaticGeometrySourceLoader>> sourceLoader_
 ) :
-    LoaderChain(
+    InheritMeta(
         StaticGeometryCache(cache_),
         StaticGeometryFeedback(),
         StaticGeometryTransformer(pool_),

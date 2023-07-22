@@ -4,10 +4,10 @@ using namespace hg::engine::assets;
 using namespace hg;
 
 StaticGeometry::StaticGeometry() :
-    Asset(invalid_asset_guid, typeId) {}
+    InheritMeta(invalid_asset_guid, typeId) {}
 
 StaticGeometry::StaticGeometry(cref<asset_guid> guid_) :
-    Asset(guid_, typeId) {}
+    InheritMeta(guid_, typeId) {}
 
 StaticGeometry::StaticGeometry(
     cref<asset_guid> guid_,
@@ -15,7 +15,7 @@ StaticGeometry::StaticGeometry(
     cref<u64> vertexCount_,
     cref<u64> indexCount_
 ) :
-    Asset(guid_, typeId),
+    InheritMeta(guid_, typeId),
     _sources(_STD move(sources_)),
     _vertexCount(vertexCount_),
     _indexCount(indexCount_) {}

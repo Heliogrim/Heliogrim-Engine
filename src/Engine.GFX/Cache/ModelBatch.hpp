@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Reflect/HeliogrimReflect.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 namespace hg::engine::gfx::cache {
     // Warning: Do NOT instantiate ModelBatch itself (it might fail anyway cause of `novtable` annotation)
     struct __declspec(novtable) ModelBatch :
-        public HeliogrimObject {
+        public InheritBase<ModelBatch> {
     public:
         virtual ~ModelBatch() = default;
 

@@ -11,7 +11,7 @@
 
 namespace hg::engine::gfx::render::graph {
     class SubpassComponent final :
-        public Component {
+        public InheritMeta<SubpassComponent, Component> {
     public:
         using this_type = SubpassComponent;
 

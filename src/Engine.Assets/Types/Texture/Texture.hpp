@@ -9,7 +9,7 @@
 
 namespace hg::engine::assets {
     class Texture :
-        public Asset {
+        public InheritMeta<Texture, Asset> {
     public:
         template <typename>
         friend class serialization::DataLayout;

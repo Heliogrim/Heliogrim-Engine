@@ -12,7 +12,7 @@ MaterialLoader::MaterialLoader(
     const non_owning_rptr<pool::GlobalResourcePool> pool_,
     mref<sptr<MaterialSourceLoader>> sourceLoader_
 ) :
-    LoaderChain(
+    InheritMeta(
         MaterialCache(cache_),
         MaterialFeedback(),
         MaterialTransformer(pool_),

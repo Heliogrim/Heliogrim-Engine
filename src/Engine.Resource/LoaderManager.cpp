@@ -1,5 +1,7 @@
 #include "LoaderManager.hpp"
 
+#include <Engine.Common/Make.hpp>
+
 #include "Loader/SourceLoader/SourceLoader.hpp"
 
 using namespace hg::engine::resource;

@@ -46,17 +46,17 @@ namespace hg::engine::gfx::material {
     public:
         [[nodiscard]] acc::AccelerationStageTransferDataType getDataType() const noexcept;
 
-        [[nodiscard]] nmpt<const HeliogrimClass> getStorageClass() const noexcept;
+        [[nodiscard]] nmpt<const MetaClass> getStorageClass() const noexcept;
 
         template <typename Type_>
         typename mpts_t<Type_>::trait_type::cref_type getDefaultValue() const {
-            assert(_defaultStorage->getClass()->isExactType<mpts_t<Type_>>());
+            assert(_defaultStorage->getMetaClass()->exact<mpts_t<Type_>>());
             return static_cast<ptr<mpts_t<Type_>>>(_defaultStorage.get())->template get<Type_>();
         }
 
         template <typename Type_>
         void set(Type_&& value_) {
-            assert(_defaultStorage->getClass()->isExactType<mpts_t<Type_>>());
+            assert(_defaultStorage->getMetaClass()->exact<mpts_t<Type_>>());
             static_cast<ptr<mpts_t<Type_>>>(_defaultStorage.get())->template set<Type_>(_STD forward<Type_>(value_));
         }
     };

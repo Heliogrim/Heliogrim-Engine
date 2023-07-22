@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include "Auxiliary.hpp"
 #include "../__fwd.hpp"
 

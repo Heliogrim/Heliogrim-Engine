@@ -10,7 +10,7 @@ using namespace hg::engine::gfx::render::graph;
 using namespace hg;
 
 SubpassComponent::SubpassComponent() noexcept :
-    Component(),
+    InheritMeta(),
     _mounted() {}
 
 SubpassComponent::~SubpassComponent() noexcept = default;
@@ -21,17 +21,17 @@ void SubpassComponent::mount(nmpt<const Node> target_) {
 
 void SubpassComponent::mounted(nmpt<const Component> mounted_) {
 
-    if (mounted_->getClass()->isExactType<SubpassSingleAccelComponent>()) {
+    if (mounted_->getMetaClass()->exact<SubpassSingleAccelComponent>()) {
         _accel = &static_cast<cref<SubpassSingleAccelComponent>>(*mounted_);
         return;
     }
 
-    if (mounted_->getClass()->isExactType<SubpassMultiAccelComponent>()) {
+    if (mounted_->getMetaClass()->exact<SubpassMultiAccelComponent>()) {
         _accel = &static_cast<cref<SubpassMultiAccelComponent>>(*mounted_);
         return;
     }
 
-    if (mounted_->getClass()->isExactType<SubpassMaterialAccelComponent>()) {
+    if (mounted_->getMetaClass()->exact<SubpassMaterialAccelComponent>()) {
         _accel = &static_cast<cref<SubpassMaterialAccelComponent>>(*mounted_);
         return;
     }

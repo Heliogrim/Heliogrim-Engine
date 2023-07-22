@@ -25,10 +25,11 @@
 #include "RevDepthSharedNode.hpp"
 #include "Heliogrim/StaticGeometryComponent.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
-#include "Engine.Reflect/HeliogrimReflect.hpp"
 #include <Engine.GFX/Scene/StaticGeometryBatch.hpp>
 
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Reflect/Meta/TypeId.hpp>
+
 #include "Engine.GFX/Graphics.hpp"
 #include "Engine.GFX/Scene/SkyboxModel.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
@@ -43,7 +44,7 @@ RevEarlyEnvIrradiance::RevEarlyEnvIrradiance() :
     RenderStageNode(),
     _modelTypes(
         {
-            HeliogrimClass::stid<SkyboxModel>()
+            reflect::typeId<SkyboxModel>()
         }
     ),
     _envIrradExtent(64ui32, 64ui32),

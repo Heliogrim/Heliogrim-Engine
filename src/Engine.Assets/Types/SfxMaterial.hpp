@@ -3,7 +3,7 @@
 
 namespace hg::engine::assets {
     class SfxMaterial :
-        public Material {
+        public InheritMeta<SfxMaterial, Material> {
     public:
         template <typename>
         friend class serialization::DataLayout;

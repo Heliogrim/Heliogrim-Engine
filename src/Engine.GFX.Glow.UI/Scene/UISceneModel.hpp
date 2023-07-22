@@ -6,7 +6,7 @@
 
 namespace hg::engine::gfx::glow::ui {
     class UISceneModel final :
-        public SceneNodeModel {
+        public InheritMeta<UISceneModel, SceneNodeModel> {
     public:
         using this_type = UISceneModel;
         using underlying_type = SceneNodeModel;

@@ -6,7 +6,7 @@
 
 namespace hg {
     class SceneComponent :
-        public ActorComponent {
+        public InheritMeta<SceneComponent, ActorComponent> {
     public:
         using this_type = SceneComponent;
         using underlying_type = ActorComponent;

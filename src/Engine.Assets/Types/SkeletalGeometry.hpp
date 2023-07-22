@@ -4,7 +4,7 @@
 
 namespace hg::engine::assets {
     class SkeletalGeometry :
-        public Geometry {
+        public InheritMeta<SkeletalGeometry, Geometry> {
     public:
         template <typename>
         friend class serialization::DataLayout;

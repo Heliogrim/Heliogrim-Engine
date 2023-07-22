@@ -1,5 +1,7 @@
 #include "BuilderVisitor.hpp"
 
+#include <Engine.Common/Exception/NotImplementedException.hpp>
+
 #include "../Node/Node.hpp"
 #include "../Node/AnchorNode.hpp"
 #include "../Node/BarrierNode.hpp"

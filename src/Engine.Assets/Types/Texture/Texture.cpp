@@ -4,10 +4,10 @@ using namespace hg::engine::assets;
 using namespace hg;
 
 Texture::Texture() :
-    Asset(invalid_asset_guid, typeId) {}
+    InheritMeta(invalid_asset_guid, typeId) {}
 
 Texture::Texture(cref<asset_guid> guid_) :
-    Asset(guid_, typeId) {}
+    InheritMeta(guid_, typeId) {}
 
 Texture::Texture(
     cref<asset_guid> guid_,
@@ -18,7 +18,7 @@ Texture::Texture(
     cref<u32> mipLevel_,
     cref<gfx::TextureType> type_
 ) :
-    Asset(guid_, typeId),
+    InheritMeta(guid_, typeId),
     _baseImage(baseImage_),
     _images(images_),
     _extent(extent_),

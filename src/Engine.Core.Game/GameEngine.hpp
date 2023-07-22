@@ -5,7 +5,7 @@
 
 namespace hg::engine {
     class GameEngine :
-        public Engine {
+        public InheritMeta<GameEngine, Engine> {
     public:
         GameEngine();
 

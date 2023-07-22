@@ -6,9 +6,9 @@
 
 namespace hg::engine::scene {
     class RevScene final :
-        public Scene,
-        public IRenderScene,
-        public IComponentRegisterContext {
+        public InheritMeta<RevScene, Scene,
+            IRenderScene,
+            IComponentRegisterContext> {
     public:
         using this_type = RevScene;
         using underlying_type = Scene;

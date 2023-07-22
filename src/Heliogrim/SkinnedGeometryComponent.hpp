@@ -3,7 +3,7 @@
 
 namespace hg {
     class SkinnedGeometryComponent :
-        public SkeletalGeometryComponent {
+        public InheritMeta<SkinnedGeometryComponent, SkeletalGeometryComponent> {
     public:
         using this_type = SkinnedGeometryComponent;
         using underlying_type = SkeletalGeometryComponent;

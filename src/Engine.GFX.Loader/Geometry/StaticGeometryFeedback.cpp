@@ -1,5 +1,7 @@
 #include "StaticGeometryFeedback.hpp"
 
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+
 using namespace hg::engine::gfx::loader;
 using namespace hg;
 

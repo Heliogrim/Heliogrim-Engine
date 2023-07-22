@@ -12,7 +12,7 @@ BarrierNode::BarrierNode() noexcept :
     Node(
         make_smr<Auxiliary>()
     ) {
-    _auxiliary->add(uptr<BarrierComponent> { HeliogrimObject::create<BarrierComponent>() });
+    _auxiliary->add(uptr<BarrierComponent> { new BarrierComponent() });
 }
 
 void BarrierNode::accept(ref<Visitor> visitor_) const {
@@ -39,7 +39,7 @@ nmpt<BarrierComponent> BarrierNode::getBarrierComponent() {
     const auto it = _STD ranges::find_if(
         _auxiliary->components(),
         [](const ptr<Component> component_) {
-            return component_->getClass()->isExactType<BarrierComponent>();
+            return component_->getMetaClass()->exact<BarrierComponent>();
         }
     );
     return it != _auxiliary->components().end() ?

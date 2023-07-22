@@ -2,6 +2,7 @@
 
 #include <concepts>
 #include <type_traits>
+#include <Engine.Common/Make.hpp>
 
 #include "../Archive/Archive.hpp"
 #include "ScopedStructureSlot.hpp"

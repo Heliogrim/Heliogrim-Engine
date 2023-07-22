@@ -9,7 +9,7 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 UISceneModel::UISceneModel(const ptr<SceneComponent> owner_) :
-    SceneNodeModel(owner_) {}
+    InheritMeta(owner_) {}
 
 void UISceneModel::create(const ptr<scene::Scene> scene_) {}
 

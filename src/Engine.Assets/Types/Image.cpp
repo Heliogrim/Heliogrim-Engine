@@ -6,13 +6,13 @@ using namespace hg::engine::assets;
 using namespace hg;
 
 Image::Image() :
-    Asset(invalid_asset_guid, Image::typeId) {}
+    InheritMeta(invalid_asset_guid, Image::typeId) {}
 
 Image::Image(cref<asset_guid> guid_) :
-    Asset(guid_, Image::typeId) {}
+    InheritMeta(guid_, Image::typeId) {}
 
 Image::Image(cref<asset_guid> guid_, mref<Vector<fs::Url>> sources_) :
-    Asset(guid_, Image::typeId),
+    InheritMeta(guid_, Image::typeId),
     _sources(_STD move(sources_)) {}
 
 cref<Vector<fs::Url>> Image::sources() const noexcept {

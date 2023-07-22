@@ -5,11 +5,11 @@ using namespace hg;
 
 bool Description::isCompatible(const non_owning_rptr<const Description> other_) const noexcept {
 
-    if (other_ == nullptr || other_->getClass() == nullptr) {
+    if (other_ == nullptr || other_->getMetaClass() == nullptr) {
         return false;
     }
 
-    if (other_->getClass()->typeId() != this->getClass()->typeId()) {
+    if (other_->getMetaClass()->typeId() != this->getMetaClass()->typeId()) {
         return false;
     }
 

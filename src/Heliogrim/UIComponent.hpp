@@ -5,7 +5,7 @@
 
 namespace hg {
     class UIComponent :
-        public SceneComponent {
+        public InheritMeta<UIComponent, SceneComponent> {
     public:
         using this_type = UIComponent;
         using underlying_type = SceneComponent;
@@ -17,7 +17,7 @@ namespace hg {
             mref<CachedActorPointer> owner_,
             mref<ptr<ActorComponent>> parent_
         ) :
-            SceneComponent(component_type_id { typeId }, _STD move(owner_), _STD move(parent_)) {}
+            InheritMeta(component_type_id { typeId }, _STD move(owner_), _STD move(parent_)) {}
 
         ~UIComponent() = default;
 

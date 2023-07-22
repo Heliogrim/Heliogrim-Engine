@@ -10,7 +10,7 @@ namespace hg {
     class Actor;
 
     class ActorComponent :
-        public LogicComponent {
+        public InheritMeta<ActorComponent, LogicComponent> {
     public:
         using this_type = ActorComponent;
         using underlying_type = LogicComponent;

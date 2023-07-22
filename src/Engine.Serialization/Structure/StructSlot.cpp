@@ -1,5 +1,7 @@
 #include "StructSlot.hpp"
 
+#include <Engine.Common/Make.hpp>
+
 #include "../Archive/Archive.hpp"
 #include "StringSlot.hpp"
 #include "RecordSlot.hpp"

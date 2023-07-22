@@ -7,4 +7,4 @@ ModelComponent::ModelComponent(
     mref<CachedActorPointer> owner_,
     mref<ptr<ActorComponent>> parent_
 ) :
-    SceneComponent(_STD move(typeId_), _STD move(owner_), _STD move(parent_)) {}
+    InheritMeta(_STD move(typeId_), _STD move(owner_), _STD move(parent_)) {}

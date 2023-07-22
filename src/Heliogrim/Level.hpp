@@ -5,10 +5,10 @@
 
 namespace hg {
     class Level :
-        public HeliogrimObject {
+        public InheritBase<Level> {
     public:
         using this_type = Level;
-        using underlying_type = HeliogrimObject;
+        using underlying_type = InheritBase<Level>;
 
     public:
         /**

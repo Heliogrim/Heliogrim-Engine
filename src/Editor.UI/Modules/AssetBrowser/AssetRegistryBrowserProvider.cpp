@@ -1,6 +1,7 @@
 #include "AssetRegistryBrowserProvider.hpp"
 
 #include <algorithm>
+#include <cassert>
 #include <Engine.Assets/Types/Asset.hpp>
 
 #include <Engine.Assets.System/AssetRegistry.hpp>

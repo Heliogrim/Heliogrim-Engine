@@ -10,7 +10,6 @@
 
 #include "../Node/RenderStageNode.hpp"
 #include "Engine.GFX/Scene/SceneNodeModel.hpp"
-#include "Engine.Reflect/HeliogrimReflect.hpp"
 
 using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;
@@ -109,7 +108,7 @@ void Multiplexer::dispatchAny(
 ) const {
 
     // TODO: Get model type / for now just anything but null_type_id
-    const type_id modelType { model_->getClass()->typeId() };
+    const type_id modelType { model_->getMetaClass()->typeId() };
     const _STD array<type_id, 1> types { modelType };
 
     // Warning: This is just a dirty workaround saving us 500FPS when just iterating 1024 elements without any action\

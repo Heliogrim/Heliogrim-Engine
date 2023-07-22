@@ -8,7 +8,7 @@
 
 namespace hg {
     class StaticGeometryComponent :
-        public ModelComponent {
+        public InheritMeta<StaticGeometryComponent, ModelComponent> {
     public:
         using this_type = StaticGeometryComponent;
         using underlying_type = ModelComponent;

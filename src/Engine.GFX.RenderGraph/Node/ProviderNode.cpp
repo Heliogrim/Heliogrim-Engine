@@ -1,5 +1,7 @@
 #include "ProviderNode.hpp"
 
+#include <Engine.Common/Make.hpp>
+
 #include "../Component/ProviderComponent.hpp"
 #include "../Visitor/Visitor.hpp"
 
@@ -8,7 +10,7 @@ using namespace hg;
 
 ProviderNode::ProviderNode() noexcept :
     Node(make_smr<Auxiliary>()) {
-    _auxiliary->add(uptr<ProviderComponent> { HeliogrimObject::create<ProviderComponent>() });
+    _auxiliary->add(uptr<ProviderComponent> { new ProviderComponent() });
 }
 
 void ProviderNode::accept(ref<Visitor> visitor_) const {
@@ -39,7 +41,7 @@ nmpt<ProviderComponent> ProviderNode::getProviderComponent() {
     const auto it = _STD ranges::find_if(
         _auxiliary->components(),
         [](cref<ptr<Component>> component_) {
-            return component_->getClass()->isExactType<ProviderComponent>();
+            return component_->getMetaClass()->exact<ProviderComponent>();
         }
     );
     return it != _auxiliary->components().end() ?

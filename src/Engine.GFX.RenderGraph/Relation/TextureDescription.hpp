@@ -10,7 +10,7 @@
 
 namespace hg::engine::gfx::render::graph {
     class TextureDescription final :
-        public Description {
+        public InheritMeta<TextureDescription, Description> {
     public:
         using this_type = TextureDescription;
 

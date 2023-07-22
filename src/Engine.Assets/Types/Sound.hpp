@@ -7,7 +7,7 @@
 
 namespace hg::engine::assets {
     class Sound :
-        public Asset {
+        public InheritMeta<Sound, Asset> {
     public:
         template <typename>
         friend class serialization::DataLayout;

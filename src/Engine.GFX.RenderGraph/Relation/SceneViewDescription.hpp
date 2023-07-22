@@ -7,7 +7,7 @@
 
 namespace hg::engine::gfx::render::graph {
     class SceneViewDescription final :
-        public Description {
+        public InheritMeta<SceneViewDescription, Description> {
     public:
         using this_type = SceneViewDescription;
 

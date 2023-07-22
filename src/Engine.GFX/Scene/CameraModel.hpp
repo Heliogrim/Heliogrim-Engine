@@ -8,7 +8,7 @@ namespace hg::engine::gfx::scene {
 
 namespace hg::engine::gfx {
     class CameraModel final :
-        public SceneNodeModel {
+        public InheritMeta<CameraModel, SceneNodeModel> {
     public:
         using this_type = CameraModel;
 

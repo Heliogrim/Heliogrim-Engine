@@ -119,7 +119,7 @@ smr<engine::gfx::TextureResource> resolveTexture(
     #ifdef _DEBUG
     assert(asset != nullptr);
 
-    if (!asset->getClass()->isExactType<engine::assets::Texture>()) {
+    if (!asset->getMetaClass()->exact<engine::assets::Texture>()) {
         __debugbreak();
     }
     #endif
@@ -128,7 +128,8 @@ smr<engine::gfx::TextureResource> resolveTexture(
      * Load texture asset to get the internal resource handle
      *  // TODO: This should be a non-residential load operation, cause we only need the handle
      */
-    auto* textureAsset = Cast<engine::assets::Texture, engine::assets::Asset, false>(asset);
+    //auto* textureAsset = Cast<engine::assets::Texture, engine::assets::Asset, false>(asset);
+    auto* textureAsset = static_cast<ptr<engine::assets::Texture>>(asset);
     auto texture = loader_->loadImmediately<engine::assets::Texture, TextureResource>(
         _STD move(textureAsset),
         TextureLoadOptions {
@@ -157,7 +158,8 @@ smr<MaterialPrototypeResource> resolvePrototype(
     /**
      * Load material prototype to get the internal resource handle
      */
-    auto* matProtAsset = Cast<engine::assets::GfxMaterialPrototype, engine::assets::Asset, false>(asset);
+    //auto* matProtAsset = Cast<engine::assets::GfxMaterialPrototype, engine::assets::Asset, false>(asset);
+    auto* matProtAsset = static_cast<ptr<engine::assets::GfxMaterialPrototype>>(asset);
     auto prototype = loader_->loadImmediately<engine::assets::GfxMaterialPrototype, MaterialPrototypeResource>(
         _STD move(matProtAsset),
         {}

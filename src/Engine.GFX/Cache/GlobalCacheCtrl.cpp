@@ -11,6 +11,7 @@
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/GuidFormat.hpp>
+#include <Engine.Common/Exception/NotImplementedException.hpp>
 
 #include "GlobalResourceCache.hpp"
 

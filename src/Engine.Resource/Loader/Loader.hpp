@@ -2,6 +2,7 @@
 
 #include <Engine.Assets/Types/Asset.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 #include "LoaderTraits.hpp"
 #include "__fwd.hpp"
@@ -15,8 +16,11 @@ namespace hg::engine::resource::loader {
     concept IsLoader = _STD derived_from<Type_, LoaderBase>;
 
     class __declspec(novtable) LoaderBase :
-        public HeliogrimObject {
+        public InheritBase<LoaderBase> {
     public:
+        template <typename, typename, typename...>
+        friend class InheritMeta;
+
         template <IsRequestValueType, IsResponseValueType>
         friend class Loader;
 
@@ -81,9 +85,15 @@ namespace hg::engine::resource::loader {
 
     template <IsRequestValueType RequestType_, IsResponseValueType ResponseType_>
     class __declspec(novtable) Loader :
-        public LoaderBase,
-        public LoaderTypeBase<RequestType_, ResponseType_, assets::IsStreamableAsset<RequestType_>> {
+        public InheritMeta<
+            Loader<RequestType_, ResponseType_>,
+            LoaderBase,
+            LoaderTypeBase<RequestType_, ResponseType_, assets::IsStreamableAsset<RequestType_>>
+        > {
     public:
+        template <typename, typename, typename...>
+        friend class InheritMeta;
+
         template <
             IsRequestValueType,
             IsResponseValueType,

@@ -1,5 +1,6 @@
 #include "Builder.hpp"
 
+#include <Engine.Common/Exception/NotImplementedException.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "BuilderVisitor.hpp"

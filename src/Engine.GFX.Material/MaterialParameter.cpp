@@ -8,9 +8,9 @@ MaterialParameter::MaterialParameter(mref<uptr<MaterialParameterStorageBase>> st
 
 MaterialParameter::~MaterialParameter() = default;
 
-nmpt<const HeliogrimClass> MaterialParameter::getStorageClass() const noexcept {
+nmpt<const MetaClass> MaterialParameter::getStorageClass() const noexcept {
     if (_storage) {
-        return { _storage->getClass() };
+        return { _storage->getMetaClass() };
     }
     return {};
 }

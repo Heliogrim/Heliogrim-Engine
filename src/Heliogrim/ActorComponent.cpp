@@ -7,13 +7,13 @@ ActorComponent::ActorComponent(
     mref<CachedActorPointer> owner_,
     mref<ptr<ActorComponent>> parent_
 ) :
-    LogicComponent(_STD move(typeId_)),
+    InheritMeta(_STD move(typeId_)),
     _owner(_STD move(owner_)),
     _parent(_STD move(parent_)),
     _worldTransform({}, {}, math::vec3 { 1.F }) {}
 
 ActorComponent::ActorComponent(mref<CachedActorPointer> owner_, mref<ptr<ActorComponent>> parent_) :
-    LogicComponent(component_type_id { typeId }),
+    InheritMeta(component_type_id { typeId }),
     _owner(_STD move(owner_)),
     _parent(_STD move(parent_)),
     _worldTransform({}, {}, math::vec3 { 1.F }) {}

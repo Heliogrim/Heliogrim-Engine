@@ -10,7 +10,7 @@ using namespace hg::engine::gfx::glow::ui;
 using namespace hg;
 
 UISceneModel::UISceneModel(const ptr<SceneComponent> owner_) :
-    SceneNodeModel(owner_) {}
+    InheritMeta(owner_) {}
 
 void UISceneModel::create(const ptr<engine::scene::Scene> scene_) {}
 

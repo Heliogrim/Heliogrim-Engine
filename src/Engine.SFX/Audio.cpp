@@ -7,6 +7,8 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
+#include <Engine.Common/Make.hpp>
+
 #include "Importer/AudioFileTypes.hpp"
 #include "Importer/FlacImporter.hpp"
 #include "Importer/VorbisImporter.hpp"

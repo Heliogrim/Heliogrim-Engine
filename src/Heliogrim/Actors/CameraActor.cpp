@@ -5,7 +5,7 @@
 using namespace hg;
 
 CameraActor::CameraActor(cref<ActorInitializer> initializer_) :
-    Actor(initializer_),
+    InheritMeta(initializer_),
     _cameraComponent(nullptr),
     _mountComponent(nullptr) {
 
