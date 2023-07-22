@@ -3,10 +3,12 @@
 #include <concepts>
 #include <Engine.Common/Wrapper.hpp>
 
+#include "Compile.hpp"
+
 namespace hg {
     class ClassMetaBase;
 
-    template <typename, typename>
+    template <typename TargetType_, typename TypeList_ = reflect::__type_list_lookup<TargetType_>>
     class TypedMetaClass;
 }
 
@@ -21,11 +23,6 @@ namespace hg {
             class Type_,
             class RetTy_ = std::invoke_result_t<decltype(&Type_::getMetaClass)(Type_)>>
         concept __IndirectMetaInhert = _STD derived_from<Type_, typename RetTy_::target_type>;
-
-        template <class Type_>
-        concept __HasInheritTypeList = requires {
-            typename Type_::__inherit_types;
-        };
     }
 
     template <class Type_>

@@ -1,5 +1,11 @@
 #pragma once
-#include "Concept.hpp"
+
+namespace hg {
+    template <class Type_>
+    concept __HasInheritTypeList = requires {
+        typename Type_::__inherit_types;
+    };
+}
 
 namespace hg::reflect {
     template <typename...>

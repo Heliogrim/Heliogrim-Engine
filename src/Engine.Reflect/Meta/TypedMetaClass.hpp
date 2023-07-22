@@ -31,14 +31,14 @@ namespace hg {
 
     private:
         constexpr TypedMetaClass() noexcept :
-            MetaClass(ctid<TargetType_>()) {}
+            MetaClass((typename reflect::query_type_id<TargetType_>::result {})()) {}
 
         constexpr ~TypedMetaClass() override = default;
 
     private:
         CompileMap<type_id, nullptr_t, sizeof...(InheritTypes_)> _inheritance = make_compile_map<type_id, nullptr_t>(
             _STD make_pair<type_id, nullptr_t>(
-                ctid<InheritTypes_>(),
+                (typename reflect::query_type_id<InheritTypes_>::result {})(),
                 nullptr
             )...
         );
@@ -52,6 +52,8 @@ namespace hg {
             return _inheritance.contains(typeId_);
         }
     };
+
+    /**/
 
     template <typename TargetType_, typename TypeList_>
     struct typed_meta_holder {

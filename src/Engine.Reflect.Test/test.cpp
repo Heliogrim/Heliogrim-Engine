@@ -4,9 +4,9 @@
 #include <Engine.GFX.Glow/Texture/RevVirtualMarkerTexture.hpp>
 #include <Engine.Reflect/Compile/Map.hpp>
 #include <Engine.Reflect/Compile/HashMap.hpp>
-#include <Engine.Reflect/HeliogrimReflect.hpp>
 #include <Engine.Reflect/CompileTypeId.hpp>
 #include <Engine.Reflect/Meta/TypedMetaClass.hpp>
+#include <Engine.Reflect/Meta/TypeId.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
@@ -17,37 +17,38 @@ TEST(__DummyTest__, Exists) {
 }
 
 namespace ReflectModule {
-    class TestBase01 : public HeliogrimObject {
+    class TestBase01 : public InheritBase<TestBase01> {
     public:
         inline constexpr static hg::type_id typeId { "TestBase01"_typeId };
     };
 
-    class TestDerived01 : public TestBase01 {
+    class TestDerived01 : public InheritMeta<TestDerived01, TestBase01> {
     public:
         inline constexpr static hg::type_id typeId { "TestDerived01"_typeId };
     };
 
-    class TestDerived01F final : public TestBase01 {
+    class TestDerived01F final : public InheritMeta<TestDerived01F, TestBase01> {
     public:
         inline constexpr static hg::type_id typeId { "TestDerived01F"_typeId };
     };
 
-    class TestDerived02 : public TestDerived01 {
+    class TestDerived02 : public InheritMeta<TestDerived02, TestDerived01> {
     public:
         inline constexpr static hg::type_id typeId { "TestDerived02"_typeId };
     };
 
-    class TestDerived02F final : public TestDerived01 {
+    class TestDerived02F final : public InheritMeta<TestDerived02F, TestDerived01> {
     public:
         inline constexpr static hg::type_id typeId { "TestDerived02F"_typeId };
     };
 
     TEST(HeliogrimObject, Create) {
         //
-        auto obj { HeliogrimObject::create<TestBase01>() };
+        //auto obj { HeliogrimObject::create<TestBase01>() };
+        auto obj = new TestBase01();
 
         //
-        EXPECT_NE(obj->getClass(), nullptr);
+        EXPECT_NE(obj->getMetaClass(), nullptr);
 
         //
         delete obj;
@@ -55,22 +56,23 @@ namespace ReflectModule {
 
     TEST(HeliogrimObject, FinalIdentity) {
         //
-        auto obj { HeliogrimObject::create<TestDerived01F>() };
+        //auto obj { HeliogrimObject::create<TestDerived01F>() };
+        auto obj = new TestDerived01F();
 
         // Same Class Check
-        EXPECT_TRUE(obj->getClass()->isType<TestDerived01F>());
-        EXPECT_TRUE(obj->getClass()->isExactType<TestDerived01F>());
-        EXPECT_EQ(HeliogrimClass::stid<TestDerived01F>(), obj->getClass()->typeId());
+        EXPECT_TRUE(obj->getMetaClass()->is<TestDerived01F>());
+        EXPECT_TRUE(obj->getMetaClass()->exact<TestDerived01F>());
+        EXPECT_EQ(reflect::typeId<TestDerived01F>(), obj->getMetaClass()->typeId());
 
         // Outer Class Check
-        EXPECT_FALSE(obj->getClass()->isType<TestDerived02F>());
-        EXPECT_FALSE(obj->getClass()->isExactType<TestDerived02F>());
-        EXPECT_NE(HeliogrimClass::stid<TestDerived02F>(), obj->getClass()->typeId());
+        EXPECT_FALSE(obj->getMetaClass()->is<TestDerived02F>());
+        EXPECT_FALSE(obj->getMetaClass()->exact<TestDerived02F>());
+        EXPECT_NE(reflect::typeId<TestDerived02F>(), obj->getMetaClass()->typeId());
 
         // Base Class Check
-        //EXPECT_TRUE(obj->getClass()->isType<TestBase01>());
-        EXPECT_FALSE(obj->getClass()->isExactType<TestBase01>());
-        EXPECT_NE(HeliogrimClass::stid<TestBase01>(), obj->getClass()->typeId());
+        //EXPECT_TRUE(obj->getMetaClass()->isType<TestBase01>());
+        EXPECT_FALSE(obj->getMetaClass()->exact<TestBase01>());
+        EXPECT_NE(reflect::typeId<TestBase01>(), obj->getMetaClass()->typeId());
 
         //
         delete obj;
@@ -197,129 +199,6 @@ namespace ReflectModule {
             TestPolyMetaPolyDerived::meta_class::get()->inherits(TestMetaBase::meta_class::get())
         );
     }
-}
-
-template <typename>
-struct printer;
-
-template <typename... Types_>
-struct printer<reflect::__type_list<Types_...>> {
-    constexpr void operator()() const noexcept {
-        std::cout << "Types(" << sizeof...(Types_) << ")" << std::endl;
-        ((std::cout << Types_::name << std::endl), ...);
-    }
-};
-
-struct Base : InheritBase<Base> {
-    constexpr static const char* name = "Base";
-};
-
-struct Base2 : InheritBase<Base> {
-    constexpr static const char* name = "Base2";
-};
-
-struct Base3 : InheritBase<Base> {
-    constexpr static const char* name = "Base3";
-};
-
-struct Inter1L0 : InheritMeta<Inter1L0, Base> {
-    constexpr static const char* name = "Inter1L0";
-};
-
-struct Inter2L0 : InheritMeta<Inter2L0, Base, Base2> {
-    constexpr static const char* name = "Inter2L0";
-};
-
-struct Inter3L0 : InheritMeta<Inter3L0, Base, Base2, Base3> {
-    constexpr static const char* name = "Inter3L0";
-};
-
-struct Inter1L1 : InheritMeta<Inter1L1, Inter1L0> {
-    constexpr static const char* name = "Inter1L1";
-};
-
-struct Inter2L1 : InheritMeta<Inter2L1, Inter2L0> {
-    constexpr static const char* name = "Inter2L1";
-};
-
-struct Inter3L1 : InheritMeta<Inter3L1, Inter3L0> {
-    constexpr static const char* name = "Inter3L1";
-};
-
-struct Inter1L2 : InheritMeta<Inter1L2, Inter2L0> {
-    constexpr static const char* name = "Inter1L2";
-};
-
-struct Inter2L2 : InheritMeta<Inter2L2, Inter1L1, Base3> {
-    constexpr static const char* name = "Inter2L2";
-};
-
-struct Inter3L2 : InheritMeta<Inter3L2, Inter2L1, Base3> {
-    constexpr static const char* name = "Inter3L2";
-};
-
-struct Derived : InheritMeta<Derived, Inter1L2> {
-    constexpr static const char* name = "Derived";
-};
-
-struct Derived2 : InheritMeta<Derived2, Inter2L2> {
-    constexpr static const char* name = "Derived2";
-};
-
-struct Derived3 : InheritMeta<Derived3, Inter2L2> {
-    constexpr static const char* name = "Derived3";
-};
-
-struct Derived4 : InheritMeta<Derived4, Inter3L2> {
-    constexpr static const char* name = "Derived4";
-};
-
-struct meta_load {
-    u64 marker;
-};
-
-template <typename>
-struct gen_map;
-
-template <typename... Types_>
-struct gen_map<reflect::__type_list<Types_...>> {
-    constexpr auto operator()() const noexcept {
-        return make_compile_map<string_view, meta_load>(
-            _STD make_pair<string_view, meta_load>(Types_::name, {})...
-        );
-    }
-};
-
-TEST(____NS, ____TS) {
-
-    std::cout << "Derived Printer" << std::endl;
-    printer<Derived::__inherit_types> {}();
-
-    std::cout << "Derived2 Printer" << std::endl;
-    printer<Derived2::__inherit_types> {}();
-
-    std::cout << "Derived3 Printer" << std::endl;
-    printer<Derived3::__inherit_types> {}();
-
-    std::cout << "Derived4 Printer" << std::endl;
-    printer<Derived4::__inherit_types> {}();
-
-    // TODO: Move map structure to compile-time -> generate jump-table
-    //std::map<const char*, meta_load> jump_table = gen_map<Derived4::__dummy_type_list> {}();
-    constexpr auto ct = gen_map<Derived4::__inherit_types> {}();
-
-    EXPECT_TRUE(ct.contains("Inter3L2"sv));
-    EXPECT_TRUE(ct.contains("Inter2L0"sv));
-    EXPECT_FALSE(ct.contains("Inter1L2"sv));
-
-    /**/
-
-    constexpr auto result = Derived4::meta_class::get()->inherits(ctid<Inter2L1>());
-    EXPECT_TRUE(result);
-
-    Derived4 d4 {};
-    const Base& bt { d4 };
-    EXPECT_TRUE(bt.getMetaClass()->inherits(ctid<Inter2L1>()));
 }
 
 struct mapped_load {

@@ -117,7 +117,9 @@
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\InheritMeta.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Meta\MetaClass.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Meta\TypedMetaClass.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\Meta\TypeId.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Reflect.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\Template\QueryTypeId.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
