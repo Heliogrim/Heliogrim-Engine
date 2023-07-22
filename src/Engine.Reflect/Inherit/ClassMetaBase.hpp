@@ -1,6 +1,8 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
 
+#include "Compile.hpp"
+
 namespace hg {
     class __declspec(novtable) ClassMetaBase {
     public:
@@ -13,8 +15,12 @@ namespace hg {
         template <typename>
         friend struct lookup;
 
+        constexpr static const char* name = "ClassMetaBase";
+
     public:
         using this_type = ClassMetaBase;
+
+        using __inherit_types = reflect::__type_list<>;
 
     public:
         ClassMetaBase() noexcept = default;

@@ -84,6 +84,9 @@
     <ClInclude Include="..\..\src\Engine.Reflect\Compile\HashMap.hpp">
       <Filter>Headerdateien\Compile</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Inherit\Compile.hpp">
+      <Filter>Headerdateien\Inherit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Reflect\HeliogrimReflect.cpp">

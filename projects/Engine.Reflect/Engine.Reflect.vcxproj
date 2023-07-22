@@ -111,6 +111,7 @@
     <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimReflect.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimStruct.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\ClassMetaBase.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\Inherit\Compile.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\Concept.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\InheritBase.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\InheritMeta.hpp" />

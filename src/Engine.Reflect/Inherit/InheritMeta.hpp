@@ -14,24 +14,31 @@ namespace hg {
     public:
         using this_type = InheritMeta<Derived_, Base_, Rest_...>;
 
+        using __inherit_types = typename reflect::__type_list_append<
+            reflect::__type_list<Base_, Rest_...>,
+            typename reflect::__type_list_aggregate<Base_, Rest_...>::type
+        >::type;
+        using meta_class = TypedMetaClass<Derived_, __inherit_types>;
+
+        constexpr static auto __inherit_gen = meta_class::get();
+
     public:
         InheritMeta() :
             Base_(),
             Rest_()... {
-            ClassMetaBase::_meta = TypedMetaClass<Derived_>::template inherit<Base_, Rest_...>();
+            ClassMetaBase::_meta = __inherit_gen;
         }
 
         template <typename... Args_>
         InheritMeta(Args_&&... args_) :
             Base_(_STD forward<Args_>(args_)...),
             Rest_()... {
-            ClassMetaBase::_meta = TypedMetaClass<Derived_>::template inherit<Base_, Rest_...>();
+            ClassMetaBase::_meta = __inherit_gen;
         }
 
     public:
-        [[nodiscard]] const __restricted_ptr<const class TypedMetaClass<Derived_>> getMetaClass() const noexcept {
-            return static_cast<const __restricted_ptr<const class TypedMetaClass<Derived_>>>(
-                ClassMetaBase::getMetaClass());
+        [[nodiscard]] const __restricted_ptr<const meta_class> getMetaClass() const noexcept {
+            return static_cast<const __restricted_ptr<const meta_class>>(ClassMetaBase::getMetaClass());
         }
     };
 }
