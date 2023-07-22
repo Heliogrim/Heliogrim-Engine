@@ -158,7 +158,7 @@ namespace hg {
             constexpr ~Iterator() noexcept = default;
 
         private:
-            pointer _cursor;
+            pointer _cursor = nullptr;
 
         public:
             constexpr this_type& operator=(const this_type& other_) noexcept {
@@ -300,7 +300,7 @@ namespace hg {
             constexpr ~ConstIterator() noexcept = default;
 
         private:
-            const_pointer _cursor;
+            const_pointer _cursor = nullptr;
 
         public:
             constexpr this_type& operator=(const this_type& other_) noexcept {

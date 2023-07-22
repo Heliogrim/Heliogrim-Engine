@@ -20,27 +20,37 @@ namespace hg {
         explicit constexpr type_id(const u64 value_) :
             data(value_) {}
 
-        [[nodiscard]] FORCE_INLINE bool operator>(const type_id& other_) const noexcept {
+        constexpr type_id(const type_id& other_) noexcept = default;
+
+        constexpr type_id(type_id&& other_) noexcept = default;
+
+        constexpr ~type_id() = default;
+
+        type_id& operator=(const type_id& other_) noexcept = default;
+
+        type_id& operator=(type_id&& other_) noexcept = default;
+
+        [[nodiscard]] FORCE_INLINE constexpr bool operator>(const type_id& other_) const noexcept {
             return data > other_.data;
         }
 
-        [[nodiscard]] FORCE_INLINE bool operator<(const type_id& other_) const noexcept {
+        [[nodiscard]] FORCE_INLINE constexpr bool operator<(const type_id& other_) const noexcept {
             return data < other_.data;
         }
 
-        [[nodiscard]] FORCE_INLINE bool operator>=(const type_id& other_) const noexcept {
+        [[nodiscard]] FORCE_INLINE constexpr bool operator>=(const type_id& other_) const noexcept {
             return data >= other_.data;
         }
 
-        [[nodiscard]] FORCE_INLINE bool operator<=(const type_id& other_) const noexcept {
+        [[nodiscard]] FORCE_INLINE constexpr bool operator<=(const type_id& other_) const noexcept {
             return data <= other_.data;
         }
 
-        [[nodiscard]] FORCE_INLINE bool operator==(const type_id& other_) const noexcept {
+        [[nodiscard]] FORCE_INLINE constexpr bool operator==(const type_id& other_) const noexcept {
             return data == other_.data;
         }
 
-        [[nodiscard]] FORCE_INLINE bool operator!=(const type_id& other_) const noexcept {
+        [[nodiscard]] FORCE_INLINE constexpr bool operator!=(const type_id& other_) const noexcept {
             return data != other_.data;
         }
 
