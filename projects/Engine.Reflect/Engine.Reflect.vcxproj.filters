@@ -25,6 +25,9 @@
     <Filter Include="Headerdateien\Compile">
       <UniqueIdentifier>{0e97b977-05b8-4a9a-8e44-2d25008af38e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Template">
+      <UniqueIdentifier>{347efc84-5ab2-4f87-82a4-16aefe8165d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Reflect\HeliogrimStruct.hpp">
@@ -86,6 +89,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\Compile.hpp">
       <Filter>Headerdateien\Inherit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Template\QueryTypeId.hpp">
+      <Filter>Headerdateien\Template</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Reflect\Meta\TypeId.hpp">
+      <Filter>Headerdateien\Meta</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

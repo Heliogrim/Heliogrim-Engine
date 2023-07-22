@@ -5,10 +5,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 
-namespace hg {
-    template <typename, typename>
-    class TypedMetaClass;
-}
+#include "../Template/QueryTypeId.hpp"
 
 namespace hg {
     class MetaClass {
@@ -34,6 +31,27 @@ namespace hg {
         [[nodiscard]] constexpr virtual bool inherits(const ptr<const MetaClass> type_) const noexcept = 0;
 
         [[nodiscard]] constexpr virtual bool inherits(const type_id typeId_) const noexcept = 0;
+
+    public:
+        [[nodiscard]] constexpr bool exact(const type_id typeId_) const noexcept {
+            return _typeId == typeId_;
+        }
+
+        template <reflect::TypeQueryable Check_>
+        [[nodiscard]] constexpr bool exact() const noexcept {
+            constexpr typename reflect::query_type_id<Check_>::result query {};
+            return exact(query());
+        }
+
+        [[nodiscard]] constexpr bool is(const type_id typeId_) const noexcept {
+            return exact(typeId_) || inherits(typeId_);
+        }
+
+        template <typename Check_>
+        [[nodiscard]] constexpr bool is() const noexcept {
+            constexpr typename reflect::query_type_id<Check_>::result query {};
+            return is(query());
+        }
 
         #pragma endregion
 
