@@ -15,46 +15,27 @@ nmpt<Stage> RenderPipeline::selectNext(decltype(_stages)::iterator cursor_) cons
     while (cursor_ != _stages.end()) {
 
         auto& stage = **cursor_;
-
-        const auto cnd = static_cast<ExecStateFlag>(stage.getExecState().cnd->load(std::memory_order::consume));
-        switch (cnd) {
-            case ExecStateFlag::eDone: {
-                if (stage.getExecState().running()) {
-                    ++cursor_;
-                    continue;
-                }
-
-                // If the condition is fulfilled, schedule for execution
-                // TODO: Check whether we should drop the direct precondition, cause we already rely on a CAS operation
-                if (stage.start()) {
-                    return &stage;
-                }
-
-                return {};
-            }
-            case ExecStateFlag::eRunning: {
-
-                // As long as we iterate forward and the current stage is already executed, we can check direct neighbor stage for it's condition and execution
-                // This was we may create something like a rolling execution wave through the pipeline
-                if (stage.getExecState().running()) {
-                    ++cursor_;
-                    continue;
-                }
-
-                // If we encounter a stage with a running condition, but the state by itself is still stalled, we need to wait for another stage to finish.
-                // Any further iteration will probably be dependent on still unexecuted or unknown conditions
-
-                // TODO: Check whether we want to used the atomic exec state of the condition as conditional signal for the current fiber to yield
-
-                // TODO: yield();
-                // TODO: Could be fallthrough case
-                return {};
-            }
-            default: {
-                // If the state of the condition is unknown, break the iteration, cause we suspect that every following stage it also undefined.
-                return {};
-            }
+        if (stage.getExecState().done() || stage.getExecState().running()) {
+            ++cursor_;
+            continue;
         }
+
+        const auto cnd = stage.ready();
+        if (cnd) {
+
+            if (stage.start()) {
+                return &stage;
+            }
+
+            return {};
+        }
+
+        assert(
+            stage.getExecState().state.load(_STD memory_order::consume) ==
+            static_cast<_STD underlying_type_t<ExecStateFlag>>(ExecStateFlag::eUndefined)
+        );
+        assert(not cnd);
+        return {};
     }
 
     return {};
@@ -127,7 +108,7 @@ _STD pair<RenderPipelineResult, uptr<State>> RenderPipeline::operator()(
             }
             #endif
 
-            // If selected is not null, in was implicitly started via CAS expression
+            // If selected is not null, it was implicitly started via CAS expression
 
             // Removed: next->start();
             (*next)(state_.get());
@@ -173,7 +154,7 @@ void RenderPipeline::setStages(mref<Vector<smr<Stage>>> stages_) {
     _endCnd = &_stages.back()->getExecState().state;
 }
 
-void RenderPipeline::regSubState(nmpt<State> state_) {
+void RenderPipeline::regSubState(nmpt<State> state_) const {
 
     for (const auto& stage : _stages) {
 

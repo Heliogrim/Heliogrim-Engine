@@ -50,7 +50,7 @@ namespace hg::engine::gfx::render {
         );
 
     public:
-        void regSubState(nmpt<pipeline::State> state_) override;
+        void regSubState(nmpt<pipeline::State> state_) const override;
 
         [[nodiscard]] bool isReallocSupported() const noexcept override;
 

@@ -11,8 +11,6 @@ namespace hg::engine::gfx::render::pipeline {
         ~InterlockStage() noexcept override = default;
 
     public:
-        void reset() override;
-
         void operator()(nmpt<State> state_) const override;
     };
 }

@@ -49,6 +49,11 @@ namespace hg::engine::gfx::render::pipeline {
          */
 
         /**
+         * Check whether the current stage is ready to be started
+         */
+        [[nodiscard]] virtual bool ready() const noexcept;
+
+        /**
          * This is primarily used to reset the stored execution state.
          */
         virtual void reset();

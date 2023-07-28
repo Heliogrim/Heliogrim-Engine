@@ -22,7 +22,7 @@ namespace hg::engine::gfx::render::pipeline {
          *
          * @param state_ The state where to register and later allocate.
          */
-        virtual void regSubState(_Inout_ nmpt<State> state_);
+        virtual void regSubState(_Inout_ nmpt<State> state_) const;
 
     public:
         [[nodiscard]] virtual bool isReallocSupported() const noexcept;
