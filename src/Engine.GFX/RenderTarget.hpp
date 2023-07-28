@@ -7,7 +7,7 @@
 
 namespace hg::engine::gfx::render {
     class HORenderPass;
-    class Renderer;
+    class Renderer_Deprecated;
 }
 
 namespace hg::engine::gfx {
@@ -51,11 +51,11 @@ namespace hg::engine::gfx {
         /**
          * External renderer used to render to this target
          */
-        non_owning_rptr<render::Renderer> _renderer;
+        non_owning_rptr<render::Renderer_Deprecated> _renderer;
         Vector<ptr<render::HORenderPass>> _passes;
 
     public:
-        non_owning_rptr<render::Renderer> use(cref<non_owning_rptr<render::Renderer>> renderer_);
+        non_owning_rptr<render::Renderer_Deprecated> use(cref<non_owning_rptr<render::Renderer_Deprecated>> renderer_);
 
     private:
         /**

@@ -95,7 +95,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\HORenderPassCreateData.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\Node\RenderStageNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\RenderDataToken.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Renderer\Renderer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Renderer\Renderer_Deprecated.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\RenderPassState.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\RenderPipeline_Deprecated.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\Stage\Multiplexer.hpp" />
@@ -108,7 +108,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\HORenderPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\Node\RenderStageNode.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Renderer\Renderer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Renderer\Renderer_Deprecated.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\RenderPassState.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\RenderPipeline_Deprecated.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\Stage\Multiplexer.cpp" />

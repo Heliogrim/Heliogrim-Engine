@@ -17,7 +17,7 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 RevRenderer::RevRenderer() :
-    Renderer() {}
+    Renderer_Deprecated() {}
 
 void RevRenderer::setup(cref<sptr<Device>> device_) {
 
@@ -27,7 +27,7 @@ void RevRenderer::setup(cref<sptr<Device>> device_) {
     /**
      * Setup Pipeline & Store Device
      */
-    Renderer::setup(device_);
+    Renderer_Deprecated::setup(device_);
 }
 
 void RevRenderer::destroy() {}

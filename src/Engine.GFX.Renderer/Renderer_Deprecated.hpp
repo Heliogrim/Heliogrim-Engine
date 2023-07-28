@@ -15,9 +15,9 @@ namespace hg::engine::gfx {
 }
 
 namespace hg::engine::gfx::render {
-    class __declspec(novtable) Renderer {
+    class __declspec(novtable) Renderer_Deprecated {
     public:
-        using this_type = Renderer;
+        using this_type = Renderer_Deprecated;
 
     protected:
         /**
@@ -26,7 +26,7 @@ namespace hg::engine::gfx::render {
          * @author Julius
          * @date 30.03.2022
          */
-        Renderer() noexcept;
+        Renderer_Deprecated() noexcept;
 
     public:
         /**
@@ -35,7 +35,7 @@ namespace hg::engine::gfx::render {
          * @author Julius
          * @date 30.03.2022
          */
-        virtual ~Renderer();
+        virtual ~Renderer_Deprecated();
 
     public:
         /**

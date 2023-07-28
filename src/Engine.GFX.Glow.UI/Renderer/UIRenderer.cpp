@@ -11,7 +11,7 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 UiRenderer::UiRenderer() :
-    Renderer() {}
+    Renderer_Deprecated() {}
 
 void UiRenderer::setup(cref<sptr<Device>> device_) {
 
@@ -34,7 +34,7 @@ void UiRenderer::setup(cref<sptr<Device>> device_) {
     /**
      * Setup Pipeline & Store Device
      */
-    Renderer::setup(device_);
+    Renderer_Deprecated::setup(device_);
 }
 
 void UiRenderer::destroy() {}
