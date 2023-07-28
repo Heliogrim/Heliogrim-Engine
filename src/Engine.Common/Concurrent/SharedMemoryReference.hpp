@@ -184,6 +184,15 @@ namespace hg {
         }
 
     public:
+        [[nodiscard]] constexpr bool operator==(const this_type& other_) const noexcept {
+            return _ctrlBlock == other_._ctrlBlock;
+        }
+
+        [[nodiscard]] constexpr bool operator!=(const this_type& other_) const noexcept {
+            return _ctrlBlock != other_._ctrlBlock;
+        }
+
+    public:
         [[nodiscard]] bool operator!() const noexcept {
             return empty();
         }

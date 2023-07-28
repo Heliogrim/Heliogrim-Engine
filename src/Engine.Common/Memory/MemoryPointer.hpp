@@ -562,3 +562,14 @@ namespace hg {
         storage_type storage;
     };
 }
+
+namespace std {
+    template <class Type_>
+    struct hash<::hg::NonOwningMemoryPointer<Type_>> :
+        public ::std::hash<typename ::hg::NonOwningMemoryPointer<Type_>::storage_type::mem_type> {
+        [[nodiscard]] size_t operator()(const ::hg::NonOwningMemoryPointer<Type_>& value_) const noexcept {
+            return static_cast<const _STD hash<typename::hg::NonOwningMemoryPointer<Type_>::storage_type::mem_type>&>(*
+                this)(value_.get());
+        }
+    };
+}
