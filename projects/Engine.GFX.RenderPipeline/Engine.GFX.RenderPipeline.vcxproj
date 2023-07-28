@@ -118,6 +118,9 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGCommandBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\AccelSubpassStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\ConvergingStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\DivergingStage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\InterlockStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\MaterialSubpassStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\Stage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\SubpassStage.cpp" />

@@ -4,10 +4,13 @@ using namespace hg::engine::gfx::render::pipeline;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-State::State(mref<uptr<cache::LocalResourceCache>> cache_, mref<memory::LocalPooledAllocator> allocator_) noexcept :
+State::State(
+    //mref<uptr<cache::LocalResourceCache>> cache_,
+    //mref<memory::LocalPooledAllocator> gfxAllocator_
+) noexcept :
     _path(),
-    _cacheCtrl({ _STD move(cache_) }),
-    _gfxAllocator(_STD move(allocator_)),
+    //_cacheCtrl({ _STD move(cache_) }),
+    //_gfxAllocator(_STD move(gfxAllocator_)),
     _regSubState(),
     _arena(),
     _memList() {}
@@ -16,13 +19,13 @@ cref<Vector<nmpt<const Stage>>> State::getPath() const noexcept {
     return _path;
 }
 
-ref<cache::LocalCacheCtrl> State::cache() noexcept {
-    return _cacheCtrl;
-}
+//ref<cache::LocalCacheCtrl> State::cache() noexcept {
+//    return _cacheCtrl;
+//}
 
-ref<memory::LocalPooledAllocator> State::gfxAllocator() noexcept {
-    return _gfxAllocator;
-}
+//ref<memory::LocalPooledAllocator> State::gfxAllocator() noexcept {
+//    return _gfxAllocator;
+//}
 
 void State::regSubState(type_id type_, size_t byteSize_, size_t key_) {
 

@@ -4,8 +4,8 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.GFX/Cache/LocalCacheCtrl.hpp>
-#include <Engine.GFX/Memory/LocalPooledAllocator.hpp>
+//#include <Engine.GFX/Cache/LocalCacheCtrl.hpp>
+//#include <Engine.GFX/Memory/LocalPooledAllocator.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflect/Meta/TypeId.hpp>
@@ -20,8 +20,8 @@ namespace hg::engine::gfx::render::pipeline {
 
     public:
         State(
-            mref<uptr<cache::LocalResourceCache>> cache_,
-            mref<memory::LocalPooledAllocator> allocator_
+            //mref<uptr<cache::LocalResourceCache>> cache_,
+            //mref<memory::LocalPooledAllocator> gfxAllocator_
         ) noexcept;
 
         State(mref<State>) noexcept = delete;
@@ -41,13 +41,13 @@ namespace hg::engine::gfx::render::pipeline {
          * Resource Management
          */
 
-        cache::LocalCacheCtrl _cacheCtrl;
-        memory::LocalPooledAllocator _gfxAllocator;
+        //cache::LocalCacheCtrl _cacheCtrl;
+        //memory::LocalPooledAllocator _gfxAllocator;
 
     public:
-        [[nodiscard]] ref<cache::LocalCacheCtrl> cache() noexcept;
+        //[[nodiscard]] ref<cache::LocalCacheCtrl> cache() noexcept;
 
-        [[nodiscard]] ref<memory::LocalPooledAllocator> gfxAllocator() noexcept;
+        //[[nodiscard]] ref<memory::LocalPooledAllocator> gfxAllocator() noexcept;
 
     private:
         /**

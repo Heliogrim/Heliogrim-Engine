@@ -21,6 +21,10 @@ const nmpt<StateAware> Stage::getStateAware() noexcept {
     return {};
 }
 
+bool Stage::ready() const noexcept {
+    return static_cast<ExecStateFlag>(_execState.cnd->load(_STD memory_order::consume)) == ExecStateFlag::eDone;
+}
+
 void Stage::reset() {
     _execState.state.store(
         static_cast<u8>(ExecStateFlag::eUndefined),

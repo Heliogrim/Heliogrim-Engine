@@ -131,6 +131,15 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGCommandBuffer.cpp">
       <Filter>Quelldateien\Invocation</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\ConvergingStage.cpp">
+      <Filter>Quelldateien\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\DivergingStage.cpp">
+      <Filter>Quelldateien\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\InterlockStage.cpp">
+      <Filter>Quelldateien\Stage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneWalkerFilter.hpp">

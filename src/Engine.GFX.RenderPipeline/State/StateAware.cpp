@@ -3,7 +3,7 @@
 using namespace hg::engine::gfx::render::pipeline;
 using namespace hg;
 
-void StateAware::regSubState(nmpt<State> state_) {}
+void StateAware::regSubState(nmpt<State> state_) const {}
 
 bool StateAware::isReallocSupported() const noexcept {
     return false;

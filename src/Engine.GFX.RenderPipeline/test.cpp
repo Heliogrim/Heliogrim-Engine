@@ -33,7 +33,8 @@ auto build() {
 void test_render_pipe() {
 
     RenderPipeline pipeline {};
-    uptr<State> state = make_uptr<State>(nullptr, engine::gfx::memory::LocalPooledAllocator { nullptr });
+    //uptr<State> state = make_uptr<State>(nullptr, engine::gfx::memory::LocalPooledAllocator { nullptr });
+    uptr<State> state = make_uptr<State>();
 
     pipeline.setStages(build());
 
