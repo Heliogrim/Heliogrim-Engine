@@ -41,8 +41,35 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
-    <ProjectReference Include="..\Engine.GFX\Engine.GFX.vcxproj">
-      <Project>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</Project>
+    <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
+      <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Acc.Compile\Engine.GFX.Acc.Compile.vcxproj">
+      <Project>{cb472cf7-a83e-4320-87f1-c35f60f060a3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Acc.Lang\Engine.GFX.Acc.Lang.vcxproj">
+      <Project>{df055ff3-86d2-4fcc-b14a-9e032c71abf6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Acc\Engine.GFX.Acc.vcxproj">
+      <Project>{8333a07d-e717-4969-a2f5-416933b96ac1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.RenderGraph\Engine.GFX.RenderGraph.vcxproj">
+      <Project>{8f126647-73b6-4c77-b1d4-a94c2c0d657d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.RenderPipeline\Engine.GFX.RenderPipeline.vcxproj">
+      <Project>{18e4072e-08d3-455c-8610-29d6a23c3edb}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Render\Engine.GFX.Render.vcxproj">
+      <Project>{6df62a4b-0bf2-4346-b238-33ffe71b699b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Logging\Engine.Logging.vcxproj">
+      <Project>{9d1b3213-b18e-4551-9a75-9ecd3f6196ee}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Pedantic\Engine.Pedantic.vcxproj">
+      <Project>{b4752576-a4b8-4ad0-afaa-13859453d9b0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
+      <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
