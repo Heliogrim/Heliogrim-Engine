@@ -30,7 +30,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\__fwd.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Renderer\Renderer.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Renderer\Renderer_Deprecated.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Renderer\Node\RenderStageNode.hpp">
@@ -71,7 +71,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.GFX.Renderer\Renderer.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Renderer\Renderer_Deprecated.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Renderer\HORenderPass.cpp">

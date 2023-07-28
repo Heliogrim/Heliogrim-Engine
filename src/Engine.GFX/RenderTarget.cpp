@@ -1,7 +1,7 @@
 #include "RenderTarget.hpp"
 
 #include <Engine.GFX.Renderer/HORenderPass.hpp>
-#include <Engine.GFX.Renderer/Renderer.hpp>
+#include <Engine.GFX.Renderer/Renderer_Deprecated.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.Logging/Logger.hpp>
 
@@ -74,7 +74,7 @@ cref<sptr<Device>> RenderTarget::device() const noexcept {
     return _device;
 }
 
-non_owning_rptr<render::Renderer> RenderTarget::use(cref<non_owning_rptr<render::Renderer>> renderer_) {
+non_owning_rptr<render::Renderer_Deprecated> RenderTarget::use(cref<non_owning_rptr<render::Renderer_Deprecated>> renderer_) {
     return _STD exchange(_renderer, renderer_);
 }
 

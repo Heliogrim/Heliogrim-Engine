@@ -32,7 +32,7 @@ namespace hg::engine::gfx::render {
 
     public:
         HORenderPass(
-            const non_owning_rptr<Renderer> renderer_,
+            const non_owning_rptr<Renderer_Deprecated> renderer_,
             HORenderPassCreateData data_,
             cref<sptr<RenderPassState>> state_
         );
@@ -85,10 +85,10 @@ namespace hg::engine::gfx::render {
         [[nodiscard]] cref<sptr<Texture>> target() const noexcept;
 
     private:
-        non_owning_rptr<Renderer> _renderer;
+        non_owning_rptr<Renderer_Deprecated> _renderer;
 
     public:
-        [[nodiscard]] const non_owning_rptr<Renderer> renderer() const noexcept;
+        [[nodiscard]] const non_owning_rptr<Renderer_Deprecated> renderer() const noexcept;
 
     private:
         sptr<RenderPassState> _state;

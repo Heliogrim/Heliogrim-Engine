@@ -3,7 +3,7 @@
 #include <Engine.Scene/IRenderScene.hpp>
 
 #include "HORenderPassCreateData.hpp"
-#include "Renderer.hpp"
+#include "Renderer_Deprecated.hpp"
 #include "RenderPassState.hpp"
 #include <Engine.GFX/Command/CommandBatch.hpp>
 #include <Engine.GFX/Texture/Texture.hpp>
@@ -13,7 +13,7 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 HORenderPass::HORenderPass(
-    const non_owning_rptr<Renderer> renderer_,
+    const non_owning_rptr<Renderer_Deprecated> renderer_,
     HORenderPassCreateData data_,
     cref<sptr<RenderPassState>> state_
 ) :
@@ -123,7 +123,7 @@ cref<sptr<Texture>> HORenderPass::target() const noexcept {
     return _target;
 }
 
-const non_owning_rptr<Renderer> HORenderPass::renderer() const noexcept {
+const non_owning_rptr<Renderer_Deprecated> HORenderPass::renderer() const noexcept {
     return _renderer;
 }
 

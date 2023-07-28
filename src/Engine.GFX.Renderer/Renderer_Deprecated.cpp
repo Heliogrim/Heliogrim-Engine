@@ -1,4 +1,4 @@
-#include "Renderer.hpp"
+#include "Renderer_Deprecated.hpp"
 
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
@@ -15,11 +15,11 @@ using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-Renderer::Renderer() noexcept :
+Renderer_Deprecated::Renderer_Deprecated() noexcept :
     _device(nullptr),
     _pipeline(nullptr) {}
 
-Renderer::~Renderer() {
+Renderer_Deprecated::~Renderer_Deprecated() {
     /**
      *
      */
@@ -29,7 +29,7 @@ Renderer::~Renderer() {
     }
 }
 
-void Renderer::setup(cref<sptr<Device>> device_) {
+void Renderer_Deprecated::setup(cref<sptr<Device>> device_) {
     _device = device_;
 
     #ifdef _DEBUG
@@ -46,11 +46,11 @@ void Renderer::setup(cref<sptr<Device>> device_) {
     _pipeline->setup(device_);
 }
 
-cref<sptr<Device>> Renderer::device() const noexcept {
+cref<sptr<Device>> Renderer_Deprecated::device() const noexcept {
     return _device;
 }
 
-sptr<RenderPassState> Renderer::makeRenderPassState() const {
+sptr<RenderPassState> Renderer_Deprecated::makeRenderPassState() const {
 
     auto* const globalCacheCtrl { Engine::getEngine()->getGraphics()->cacheCtrl() };
 
@@ -69,7 +69,7 @@ sptr<RenderPassState> Renderer::makeRenderPassState() const {
     return sptr<RenderPassState>(state);
 }
 
-ptr<HORenderPass> Renderer::allocate(mref<HORenderPassCreateData> data_) {
+ptr<HORenderPass> Renderer_Deprecated::allocate(mref<HORenderPassCreateData> data_) {
     auto* renderPass {
         new HORenderPass {
             this,
@@ -82,7 +82,7 @@ ptr<HORenderPass> Renderer::allocate(mref<HORenderPassCreateData> data_) {
     return renderPass;
 }
 
-ptr<HORenderPass> Renderer::reallocate(mref<ptr<HORenderPass>> renderPass_, mref<HORenderPassChanges> changes_) {
+ptr<HORenderPass> Renderer_Deprecated::reallocate(mref<ptr<HORenderPass>> renderPass_, mref<HORenderPassChanges> changes_) {
 
     if (renderPass_->renderer() != this) {
         return nullptr;
@@ -95,7 +95,7 @@ ptr<HORenderPass> Renderer::reallocate(mref<ptr<HORenderPass>> renderPass_, mref
     return allocate(_STD move(tmp));
 }
 
-bool Renderer::free(mref<ptr<HORenderPass>> renderPass_) {
+bool Renderer_Deprecated::free(mref<ptr<HORenderPass>> renderPass_) {
 
     if (renderPass_->renderer() != this) {
         return false;
@@ -129,7 +129,7 @@ bool Renderer::free(mref<ptr<HORenderPass>> renderPass_) {
     return true;
 }
 
-void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mref<CommandBatch> batch_) const {
+void Renderer_Deprecated::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mref<CommandBatch> batch_) const {
 
     #if defined(_DEBUG) || TRUE
     assert(renderPass_->renderer() == this);
@@ -320,7 +320,7 @@ void Renderer::invokeBatched(const non_owning_rptr<HORenderPass> renderPass_, mr
     }
 }
 
-const non_owning_rptr<HORenderPass> Renderer::invoke(const non_owning_rptr<HORenderPass> renderPass_) {
+const non_owning_rptr<HORenderPass> Renderer_Deprecated::invoke(const non_owning_rptr<HORenderPass> renderPass_) {
     /**
      * Forward Invocation with default CommandBatch
      */
@@ -328,7 +328,7 @@ const non_owning_rptr<HORenderPass> Renderer::invoke(const non_owning_rptr<HORen
     return renderPass_;
 }
 
-const non_owning_rptr<HORenderPass> Renderer::invoke(
+const non_owning_rptr<HORenderPass> Renderer_Deprecated::invoke(
     const non_owning_rptr<HORenderPass> renderPass_,
     cref<CommandBatch> batchLayout_
 ) {
@@ -345,11 +345,11 @@ const non_owning_rptr<HORenderPass> Renderer::invoke(
     return renderPass_;
 }
 
-const non_owning_rptr<const RenderPipeline_Deprecated> Renderer::pipeline() const noexcept {
+const non_owning_rptr<const RenderPipeline_Deprecated> Renderer_Deprecated::pipeline() const noexcept {
     return _pipeline;
 }
 
-const non_owning_rptr<RenderPipeline_Deprecated> Renderer::getOrCreatePipeline() {
+const non_owning_rptr<RenderPipeline_Deprecated> Renderer_Deprecated::getOrCreatePipeline() {
     if (_pipeline == nullptr) {
         _pipeline = new RenderPipeline_Deprecated();
     }

@@ -20,7 +20,7 @@
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 #include <Engine.GFX.Renderer/HORenderPass.hpp>
-#include <Engine.GFX.Renderer/Renderer.hpp>
+#include <Engine.GFX.Renderer/Renderer_Deprecated.hpp>
 
 #include "RenderTarget.hpp"
 #include "todo.h"
@@ -317,11 +317,11 @@ const non_owning_rptr<gfx::cache::GlobalCacheCtrl> Graphics::cacheCtrl() const n
     return _cacheCtrl.get();
 }
 
-sptr<gfx::render::Renderer> Graphics::getRenderer(cref<AssocKey<string>> key_) const {
+sptr<gfx::render::Renderer_Deprecated> Graphics::getRenderer(cref<AssocKey<string>> key_) const {
     return _cachedRenderer.at(key_);
 }
 
-sptr<gfx::render::Renderer> Graphics::getRenderer(cref<AssocKey<string>> key_, std::nothrow_t) const noexcept {
+sptr<gfx::render::Renderer_Deprecated> Graphics::getRenderer(cref<AssocKey<string>> key_, std::nothrow_t) const noexcept {
     const auto it { _cachedRenderer.find(key_) };
     return it != _cachedRenderer.end() ? it->second : nullptr;
 }

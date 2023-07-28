@@ -6,7 +6,7 @@ namespace hg::engine::gfx::render {
     class HORenderPass;
     struct HORenderPassCreateData;
     struct RenderDataToken;
-    class Renderer;
+    class Renderer_Deprecated;
     struct RenderPassState;
     class RenderPipeline_Deprecated;
 

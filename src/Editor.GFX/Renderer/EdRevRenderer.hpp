@@ -8,7 +8,7 @@ namespace hg::editor::gfx {
     public:
         using this_type = EdRevRenderer;
         using underlying_type = ::hg::engine::gfx::glow::render::RevRenderer;
-        using base_type = Renderer;
+        using base_type = Renderer_Deprecated;
 
     public:
         EdRevRenderer();

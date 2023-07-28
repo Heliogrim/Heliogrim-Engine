@@ -162,12 +162,12 @@ namespace hg::engine {
         /**
          *
          */
-        RobinMap<AssocKey<string>, sptr<gfx::render::Renderer>> _cachedRenderer;
+        RobinMap<AssocKey<string>, sptr<gfx::render::Renderer_Deprecated>> _cachedRenderer;
 
     public:
-        [[nodiscard]] sptr<gfx::render::Renderer> getRenderer(cref<AssocKey<string>> key_) const;
+        [[nodiscard]] sptr<gfx::render::Renderer_Deprecated> getRenderer(cref<AssocKey<string>> key_) const;
 
-        [[nodiscard]] sptr<gfx::render::Renderer> getRenderer(
+        [[nodiscard]] sptr<gfx::render::Renderer_Deprecated> getRenderer(
             cref<AssocKey<string>> key_,
             _STD nothrow_t
         ) const noexcept;
