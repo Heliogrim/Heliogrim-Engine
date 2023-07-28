@@ -119,7 +119,7 @@ void hg::test_render_graph() {
         );
 
         cursor = provider.get();
-        graph = Builder::insertNode(_STD move(graph), begin, _STD move(provider));
+        graph = Builder::insertNode(_STD move(graph), begin, end, _STD move(provider));
     }
 
     {
@@ -128,7 +128,7 @@ void hg::test_render_graph() {
         comp->setBarrierName("Depth Barrier");
 
         auto it = barrier.get();
-        graph = Builder::insertNode(_STD move(graph), cursor, _STD move(barrier));
+        graph = Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
 
         /**/
 
@@ -151,7 +151,7 @@ void hg::test_render_graph() {
         );
 
         cursor = subpassNode.get();
-        graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
+        graph = Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
     }
 
     {
@@ -160,7 +160,7 @@ void hg::test_render_graph() {
         comp->setBarrierName("Material Barrier");
 
         auto it = barrier.get();
-        graph = Builder::insertNode(_STD move(graph), cursor, _STD move(barrier));
+        graph = Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
 
         /**/
 
@@ -185,7 +185,7 @@ void hg::test_render_graph() {
         );
 
         cursor = subpassNode.get();
-        graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
+        graph = Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
     }
 
     {
@@ -194,7 +194,7 @@ void hg::test_render_graph() {
         comp->setBarrierName("Lighting Barrier");
 
         auto it = barrier.get();
-        graph = Builder::insertNode(_STD move(graph), cursor, _STD move(barrier));
+        graph = Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
 
         /**/
 
@@ -217,7 +217,7 @@ void hg::test_render_graph() {
         );
 
         cursor = subpassNode.get();
-        graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
+        graph = Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
     }
 
     {
@@ -226,7 +226,7 @@ void hg::test_render_graph() {
         comp->setBarrierName("Compositing Barrier");
 
         auto it = barrier.get();
-        graph = Builder::insertNode(_STD move(graph), cursor, _STD move(barrier));
+        graph = Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
 
         /**/
 
@@ -246,7 +246,7 @@ void hg::test_render_graph() {
         );
 
         cursor = subpassNode.get();
-        graph = Builder::insertNode(_STD move(graph), it, _STD move(subpassNode));
+        graph = Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
     }
 
     /**/

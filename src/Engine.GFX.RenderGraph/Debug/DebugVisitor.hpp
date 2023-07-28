@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Collection/DenseSet.hpp>
+
 #include "../Visitor/Visitor.hpp"
 
 namespace hg::engine::gfx::render::graph {
@@ -12,6 +14,9 @@ namespace hg::engine::gfx::render::graph {
         DebugVisitor() noexcept = default;
 
         ~DebugVisitor() noexcept override;
+
+    private:
+        DenseSet<const void*> _seen;
 
     public:
         void operator()(cref<Node> node_) override;

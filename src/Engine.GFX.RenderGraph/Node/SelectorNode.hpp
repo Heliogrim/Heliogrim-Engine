@@ -37,6 +37,8 @@ namespace hg::engine::gfx::render::graph {
 
         void addNext(bool active_, mref<smr<Node>> next_);
 
+        void removeNext(cref<smr<Node>> next_);
+
         [[nodiscard]] cref<Vector<Next>> getNext() const noexcept;
     };
 }

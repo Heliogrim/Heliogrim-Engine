@@ -12,9 +12,6 @@ namespace hg::engine::gfx::render::graph {
         using this_type = SubpassSceneMeshInvocationComponent;
 
     public:
-        inline static constexpr type_id typeId { force_constexpr<ctid<this_type>()> };
-
-    public:
         SubpassSceneMeshInvocationComponent() noexcept = default;
 
         ~SubpassSceneMeshInvocationComponent() noexcept override = default;

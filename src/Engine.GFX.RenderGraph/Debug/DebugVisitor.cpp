@@ -16,7 +16,10 @@ using namespace hg;
 DebugVisitor::~DebugVisitor() noexcept = default;
 
 void DebugVisitor::operator()(cref<Node> node_) {
-    node_.traverse(*this);
+    if (_seen.insert(&node_).second) {
+        return node_.traverse(*this);
+    }
+    IM_DEBUG_LOG("<<(already seen)>>");
 }
 
 void DebugVisitor::operator()(cref<AnchorNode> node_) {

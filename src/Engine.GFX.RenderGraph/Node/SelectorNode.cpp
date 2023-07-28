@@ -39,6 +39,19 @@ void SelectorNode::addNext(bool active_, mref<smr<Node>> next_) {
     _next.push_back(Next { boolToMask(active_), _STD move(next_) });
 }
 
+void SelectorNode::removeNext(cref<smr<Node>> next_) {
+    _next.erase(
+        _STD remove_if(
+            _next.begin(),
+            _next.end(),
+            [next_](const auto& child_) {
+                return child_.node == next_;
+            }
+        ),
+        _next.end()
+    );
+}
+
 cref<Vector<SelectorNode::Next>> SelectorNode::getNext() const noexcept {
     return _next;
 }

@@ -3,6 +3,7 @@
 #include <functional>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "../Visitor/Visitor.hpp"
 
@@ -21,7 +22,8 @@ namespace hg::engine::gfx::render::graph {
 
     public:
         BuilderVisitor(
-            mref<predicate_type> predicate_,
+            mref<predicate_type> from_,
+            mref<predicate_type> to_,
             mref<smr<Node>> begin_,
             mref<smr<Node>> end_,
             BuilderPredicateMode predicateMode_ = BuilderPredicateMode::eSingle
@@ -32,7 +34,11 @@ namespace hg::engine::gfx::render::graph {
     private:
         BuilderPredicateMode _predicateMode;
 
-        predicate_type _predicate;
+        predicate_type _from;
+        predicate_type _to;
+
+        nmpt<const Node> _fromNode;
+        smr<Node> _toNode;
 
         smr<Node> _begin;
         smr<Node> _end;
@@ -63,5 +69,9 @@ namespace hg::engine::gfx::render::graph {
         void operator()(cref<ProviderNode> node_) override;
 
         void operator()(cref<SubpassNode> node_) override;
+
+    private:
+        template <typename NodeType_>
+        void simple_splice_insert(cref<NodeType_>);
     };
 }
