@@ -11,22 +11,27 @@ using namespace hg;
 
 uptr<engine::gfx::render::RenderGraph> Builder::insertNode(
     mref<uptr<RenderGraph>> graph_,
-    nmpt<const Node> where_,
+    nmpt<const Node> from_,
+    nmpt<const Node> to_,
     mref<smr<Node>> node_
 ) {
-    return insertSubGraph(_STD move(graph_), _STD move(where_), clone(node_), _STD move(node_));
+    return insertSubGraph(_STD move(graph_), _STD move(from_), _STD move(to_), clone(node_), _STD move(node_));
 }
 
 uptr<engine::gfx::render::RenderGraph> Builder::insertSubGraph(
     mref<uptr<RenderGraph>> graph_,
-    nmpt<const Node> where_,
+    nmpt<const Node> from_,
+    nmpt<const Node> to_,
     mref<smr<Node>> begin_,
     mref<smr<Node>> end_
 ) {
 
     BuilderVisitor visitor {
-        [where_](cref<Node> node_) {
-            return _STD addressof(node_) == where_.get();
+        [from_](cref<Node> node_) {
+            return _STD addressof(node_) == from_.get();
+        },
+        [to_](cref<Node> node_) {
+            return _STD addressof(node_) == to_.get();
         },
         _STD move(begin_),
         _STD move(end_)

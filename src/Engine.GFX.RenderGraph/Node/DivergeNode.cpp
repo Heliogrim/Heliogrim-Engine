@@ -10,7 +10,8 @@ void DivergeNode::accept(ref<Visitor> visitor_) const {
 }
 
 void DivergeNode::traverse(ref<Visitor> visitor_) const {
-    for (auto& child : _next) {
+    auto next = _next;
+    for (auto& child : next) {
         child->accept(visitor_);
     }
 }
@@ -21,6 +22,19 @@ void DivergeNode::addNext(mref<smr<Node>> next_) {
 
 void DivergeNode::setNext(mref<Vector<smr<Node>>> next_) {
     _next = _STD move(next_);
+}
+
+void DivergeNode::removeNext(cref<smr<Node>> next_) {
+    _next.erase(
+        _STD remove_if(
+            _next.begin(),
+            _next.end(),
+            [next_](const auto node_) {
+                return node_ == next_;
+            }
+        ),
+        _next.end()
+    );
 }
 
 cref<Vector<smr<Node>>> DivergeNode::getNext() const noexcept {

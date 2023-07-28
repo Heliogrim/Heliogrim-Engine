@@ -28,6 +28,8 @@ namespace hg::engine::gfx::render::graph {
 
         void setNext(mref<Vector<smr<Node>>> next_);
 
+        void removeNext(cref<smr<Node>> next_);
+
         [[nodiscard]] cref<Vector<smr<Node>>> getNext() const noexcept;
     };
 }
