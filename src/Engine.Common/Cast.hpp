@@ -4,7 +4,7 @@ namespace hg {
     template <typename From_, typename To_, typename VoidType = void>
     struct void_cast {
         [[nodiscard]] constexpr To_ operator()(From_ value_) const noexcept {
-            return *reinterpret_cast<To_*>(
+            return *reinterpret_cast<_STD remove_reference_t<To_>*>(
                 reinterpret_cast<VoidType*>(&value_)
             );
         }
