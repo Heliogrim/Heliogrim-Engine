@@ -4,9 +4,8 @@ set(target Heliogrim.Main)
 # Linker
 set(
         link_libraries
-        ${PROJECT_NAME}::Engine.Common
-        ${PROJECT_NAME}::Engine.Core
-        ${PROJECT_NAME}::Engine.Core.Game
+	${PROJECT_NAME}::Heliogrim
+	${PROJECT_NAME}::Engine.Core.Game
 )
 
 # Setup

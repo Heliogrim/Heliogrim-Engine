@@ -2,7 +2,7 @@
 set(target Editor.GFX.Graphs)
 
 # Linker
-set(link_libraries ${PROJECT_NAME}::Engine.Common)
+set(link_libraries ${PROJECT_NAME}::Heliogrim)
 
 # Setup
 make_library_project(${target} "${link_libraries}")
