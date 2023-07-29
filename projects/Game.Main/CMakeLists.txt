@@ -32,12 +32,12 @@ target_include_directories(
 
 # Libraries
 target_link_libraries(
-        ${target}
-        PRIVATE
-		${DEFAULT_LIBRARIES}
-		${PROJECT_NAME}::Heliogrim
-		${PROJECT_NAME}::Heliogrim.Default
-		${PROJECT_NAME}::Heliogrim.Main
+	${target}
+	PRIVATE
+	${DEFAULT_LIBRARIES}
+	${PROJECT_NAME}::Heliogrim
+	${PROJECT_NAME}::Heliogrim.Default
+	${PROJECT_NAME}::Heliogrim.Main
 )
 
 # Compile

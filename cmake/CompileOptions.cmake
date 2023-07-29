@@ -31,18 +31,18 @@ set(DEFAULT_PROJECT_OPTIONS
 #
 get_library_path(lib_dir)
 set(DEFAULT_INCLUDE_DIRECTORIES
-        "${Vulkan_INCLUDE_DIR}"
-        "${lib_dir}/ankerl"
-        "${lib_dir}/assimp"
-        "${lib_dir}/dr_flac"
-        "${lib_dir}/dr_wav"
-	    "${lib_dir}/freetype2"
-        "${lib_dir}/gli"
-        "${lib_dir}/glm"
-        "${lib_dir}/ryml"
-        "${lib_dir}/SDL2"
-        "${lib_dir}/tsl"
-        "${lib_dir}/vorbis")
+	"${Vulkan_INCLUDE_DIR}"
+	"${lib_dir}/ankerl"
+	"${lib_dir}/assimp"
+	"${lib_dir}/dr_flac"
+	"${lib_dir}/dr_wav"
+	"${lib_dir}/freetype2"
+	"${lib_dir}/gli"
+	"${lib_dir}/glm"
+	"${lib_dir}/ryml"
+	"${lib_dir}/SDL2"
+	"${lib_dir}/tsl"
+	"${lib_dir}/vorbis")
 
 set(TEST_INCLUDE_DIRECTORIES
         "${lib_dir}/gtest")
@@ -83,18 +83,18 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
 else ()
     set(DEFAULT_LIBRARIES
             ${DEFAULT_LIBRARIES}
-	        "${lib_dir}/bin/freetype2/${CMAKE_BUILD_TYPE}/freetype.lib"
-            "${lib_dir}/bin/assimp/${CMAKE_BUILD_TYPE}/assimp-vc142-mt.lib"
-            #
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/GenericCodeGen.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/glslang-default-resource-limits.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/glslang.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/HLSL.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/MachineIndependent.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/OGLCompiler.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/OSDependent.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPIRV.lib"
-            "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPVRemapper.lib")
+		"${lib_dir}/bin/freetype2/${CMAKE_BUILD_TYPE}/freetype.lib"
+		"${lib_dir}/bin/assimp/${CMAKE_BUILD_TYPE}/assimp-vc142-mt.lib"
+		#
+		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/GenericCodeGen.lib"
+		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/glslang-default-resource-limits.lib"
+		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/glslang.lib"
+		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/HLSL.lib"
+		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/MachineIndependent.lib"
+		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/OGLCompiler.lib"
+		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/OSDependent.lib"
+		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPIRV.lib"
+		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/SPVRemapper.lib")
 endif ()
 
 #
@@ -199,6 +199,7 @@ endif ()
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     set(DEFAULT_COMPILE_OPTIONS ${DEFAULT_COMPILE_OPTIONS}
             PRIVATE
+
             -Wall
             -Wextra
             -Wunused

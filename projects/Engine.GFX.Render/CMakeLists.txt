@@ -1,5 +1,5 @@
 # Target Name
-set(target Engine.GFX.RenderPipeline)
+set(target Engine.GFX.Render)
 
 # Linker
 set(link_libraries ${PROJECT_NAME}::Engine.Common)

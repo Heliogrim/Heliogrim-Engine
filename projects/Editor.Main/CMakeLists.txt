@@ -32,15 +32,15 @@ target_include_directories(
 
 # Libraries
 target_link_libraries(
-        ${target}
-        PRIVATE
-        ${DEFAULT_LIBRARIES}
-		${PROJECT_NAME}::Editor.Action
-		${PROJECT_NAME}::Editor.Core
-		${PROJECT_NAME}::Editor.GFX
-	    ${PROJECT_NAME}::Editor.UI
-        ${PROJECT_NAME}::Heliogrim
-		${PROJECT_NAME}::Heliogrim.Default
+	${target}
+	PRIVATE
+	${DEFAULT_LIBRARIES}
+	${PROJECT_NAME}::Editor.Action
+	${PROJECT_NAME}::Editor.Core
+	${PROJECT_NAME}::Editor.GFX
+	${PROJECT_NAME}::Editor.UI
+	${PROJECT_NAME}::Heliogrim
+	${PROJECT_NAME}::Heliogrim.Default
 )
 
 # Compile
