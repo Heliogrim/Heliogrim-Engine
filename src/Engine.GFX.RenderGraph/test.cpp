@@ -1,11 +1,11 @@
 #include "test.hpp"
 
-#include <Engine.GFX.Acc/AccelerationStageTransferToken.hpp>
+#include <Engine.GFX.Acc/Stage/TransferToken.hpp>
 #include <Engine.GFX.Acc.Compile/Spec/SimpleSpecificationStorage.hpp>
 #include <Engine.GFX.Acc.Compile/Spec/SpecificationStorage.hpp>
 #include <Engine.GFX.Material/Material.hpp>
 
-#include "RenderGraph.hpp"
+#include "CompileGraph.hpp"
 #include "Builder/Builder.hpp"
 #include "Component/BarrierComponent.hpp"
 #include "Component/ProviderComponent.hpp"
@@ -26,13 +26,14 @@
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg::engine::gfx::render;
+using namespace hg::engine::gfx;
 using namespace hg;
 
-using AccToken = engine::gfx::acc::AccelerationStageTransferToken;
+using AccToken = engine::gfx::acc::TransferToken;
 
 void hg::test_render_graph() {
 
-    uptr<RenderGraph> graph = make_uptr<RenderGraph>();
+    uptr<CompileGraph> graph = make_uptr<CompileGraph>();
     const nmpt<Node> begin = graph->begin().get();
     const nmpt<Node> end = graph->end().get();
 
@@ -46,45 +47,17 @@ void hg::test_render_graph() {
     // ModelDescription ~ { position, rotation, scale, materials ?!?, ... }
 
     smr<Description> cameraDescription;
-    smr<Description> meshDescription;
-    smr<Description> modelDescription;
     smr<Description> depthBufferDescription;
-    smr<Description> positionBufferDescription;
-    smr<Description> normalBufferDescription;
     smr<Description> colorBufferDescription;
 
     {
         cameraDescription = make_smr<>(new SceneViewDescription()).into<Description>();
-        meshDescription = make_smr<>(new MeshDescription()).into<Description>();
-        modelDescription = make_smr<>(new ModelDescription()).into<Description>();
 
         depthBufferDescription = make_smr<TextureDescription>(
             new TextureDescription(
                 TextureDescription {
                     { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
                     { DescriptionValueMatchingMode::eCovariant, engine::gfx::TextureFormat::eD32Sfloat },
-                    { DescriptionValueMatchingMode::eInvariant, 1ui32 },
-                    {}
-                }
-            )
-        ).into<Description>();
-
-        positionBufferDescription = make_smr<TextureDescription>(
-            new TextureDescription(
-                TextureDescription {
-                    { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
-                    { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR32G32B32Sfloat },
-                    { DescriptionValueMatchingMode::eInvariant, 1ui32 },
-                    {}
-                }
-            )
-        ).into<Description>();
-
-        normalBufferDescription = make_smr<TextureDescription>(
-            new TextureDescription(
-                TextureDescription {
-                    { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
-                    { DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR32G32B32Sfloat },
                     { DescriptionValueMatchingMode::eInvariant, 1ui32 },
                     {}
                 }
@@ -105,16 +78,63 @@ void hg::test_render_graph() {
 
     /**/
 
+    // TODO: renderer or outer context should provide a list of target symbols to expose externally
+    // TODO: in addition we could define a list of symbols carried/looped back by the instantiated render-pass
+    // Renderer :: exposedSymbols() -> List < Symbol >
+    // Renderer :: isolatedSymbols() -> List < Symbol >
+    // e.g. List < Color Symbol, ... > + List < Depth Symbol, ... >
+
+    Vector<smr<acc::Symbol>> exposedSymbols {};
+    Vector<smr<acc::Symbol>> isolatedSymbols {};
+
+    smr<acc::Symbol> sceneColorSymbol = make_smr<acc::Symbol>(
+        acc::Symbol {
+            .scope = acc::SymbolScope {
+                .type = acc::SymbolScopeType::eGlobal,
+                .layer = ""
+            },
+            .name = "scene::color",
+            .description = colorBufferDescription,
+            .flags = acc::SymbolFlagBits::eUndefined,
+            .token = AccToken {}
+        }
+    );
+
+    smr<acc::Symbol> sceneDepthSymbol = make_smr<acc::Symbol>(
+        acc::Symbol {
+            .scope = acc::SymbolScope {
+                .type = acc::SymbolScopeType::eGlobal,
+                .layer = ""
+            },
+            .name = "scene::depth",
+            .description = depthBufferDescription,
+            .flags = acc::SymbolFlagBits::eUndefined,
+            .token = AccToken {}
+        }
+    );
+
+    /**/
+
     {
         auto provider = make_smr<ProviderNode>();
         auto comp = provider->getProviderComponent();
 
+        auto cameraSymbol = make_smr<acc::Symbol>(
+            acc::Symbol {
+                .scope = acc::SymbolScope {
+                    .type = acc::SymbolScopeType::eGlobal,
+                    .layer = ""
+                },
+                .name = "scene::camera",
+                .description = cameraDescription,
+                .flags = acc::SymbolFlagBits::eUndefined,
+                .token = AccToken {}
+            }
+        );
+
         comp->setProvided(
             {
-                // TODO: Add descriptions to required and provisioned data
-                Provision { AccToken::from("camera").hash, cameraDescription },
-                Provision { AccToken::from("mesh").hash, meshDescription },
-                Provision { AccToken::from("model").hash, modelDescription }
+                Provision { cameraSymbol }
             }
         );
 
@@ -135,21 +155,6 @@ void hg::test_render_graph() {
         auto subpassNode = make_smr<SubpassNode>(SubpassAccelMode::eSingle);
         auto subpassComp = subpassNode->getSubpassComponent();
 
-        subpassComp->setRequirements(
-            {
-                Requirement { AccToken::from("camera").hash, cameraDescription },
-                Requirement { AccToken::from("mesh").hash, meshDescription },
-                Requirement { AccToken::from("model").hash, modelDescription }
-            }
-        );
-
-        subpassComp->setProvided(
-            {
-                Provision { AccToken::from("depth").hash, depthBufferDescription },
-                //Provision { AccToken::from("stencil").hash }
-            }
-        );
-
         cursor = subpassNode.get();
         graph = Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
     }
@@ -166,23 +171,6 @@ void hg::test_render_graph() {
 
         auto subpassNode = make_smr<SubpassNode>(SubpassAccelMode::eMaterial);
         auto subpassComp = subpassNode->getSubpassComponent();
-
-        subpassComp->setRequirements(
-            {
-                Requirement { AccToken::from("camera").hash },
-                Requirement { AccToken::from("mesh").hash },
-                Requirement { AccToken::from("model").hash },
-                Requirement { AccToken::from("depth").hash, depthBufferDescription },
-            }
-        );
-
-        subpassComp->setProvided(
-            {
-                Provision { AccToken::from("depth").hash, depthBufferDescription },
-                Provision { AccToken::from("position").hash, positionBufferDescription },
-                Provision { AccToken::from("normal").hash, normalBufferDescription }
-            }
-        );
 
         cursor = subpassNode.get();
         graph = Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
@@ -201,21 +189,6 @@ void hg::test_render_graph() {
         auto subpassNode = make_smr<SubpassNode>(SubpassAccelMode::eMulti);
         auto subpassComp = subpassNode->getSubpassComponent();
 
-        subpassComp->setRequirements(
-            {
-                Requirement { AccToken::from("camera").hash, cameraDescription },
-                Requirement { AccToken::from("depth").hash, depthBufferDescription },
-                Requirement { AccToken::from("position").hash, positionBufferDescription },
-                Requirement { AccToken::from("normal").hash, normalBufferDescription }
-            }
-        );
-
-        subpassComp->setProvided(
-            {
-                Provision { AccToken::from("color").hash, colorBufferDescription }
-            }
-        );
-
         cursor = subpassNode.get();
         graph = Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
     }
@@ -233,18 +206,6 @@ void hg::test_render_graph() {
         auto subpassNode = make_smr<SubpassNode>(SubpassAccelMode::eMulti);
         auto subpassComp = subpassNode->getSubpassComponent();
 
-        subpassComp->setRequirements(
-            {
-                Requirement { AccToken::from("color").hash, colorBufferDescription }
-            }
-        );
-
-        subpassComp->setProvided(
-            {
-                Provision { AccToken::from("color").hash, colorBufferDescription }
-            }
-        );
-
         cursor = subpassNode.get();
         graph = Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
     }
@@ -256,7 +217,8 @@ void hg::test_render_graph() {
         .flags = ResolverPassFlags {} | ResolverPassFlagBits::eBasicLayout | ResolverPassFlagBits::eValidate
     };
 
-    graph = resolver(_STD move(graph), _STD move(options));
+    // Warning: Invalid, base graph is no longer resolvable
+    //graph = resolver(_STD move(graph), _STD move(options));
 
     /**/
 

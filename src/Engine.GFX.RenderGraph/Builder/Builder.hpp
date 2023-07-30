@@ -16,23 +16,44 @@ namespace hg::engine::gfx::render::graph {
         constexpr ~Builder() noexcept = default;
 
     public:
-        [[nodiscard]] static uptr<RenderGraph> insertNode(
-            _In_ mref<uptr<RenderGraph>> graph_,
+        static void insertNode(
+            nmpt<const Node> from_,
+            nmpt<const Node> to_,
+            _In_ mref<smr<Node>> node_,
+            _Inout_ nmpt<RuntimeGraph> graph_
+        );
+
+        [[nodiscard]] static uptr<CompileGraph> insertNode(
+            _In_ mref<uptr<CompileGraph>> graph_,
             nmpt<const Node> from_,
             nmpt<const Node> to_,
             _In_ mref<smr<Node>> node_
         );
 
-        [[nodiscard]] static uptr<RenderGraph> insertSubGraph(
-            _In_ mref<uptr<RenderGraph>> graph_,
+        static void insertSubGraph(
+            nmpt<const Node> from_,
+            nmpt<const Node> to_,
+            _In_ mref<smr<Node>> begin_,
+            _In_ mref<smr<Node>> end_,
+            _Inout_ nmpt<RuntimeGraph> graph_
+        );
+
+        [[nodiscard]] static uptr<CompileGraph> insertSubGraph(
+            _In_ mref<uptr<CompileGraph>> graph_,
             nmpt<const Node> from_,
             nmpt<const Node> to_,
             _In_ mref<smr<Node>> begin_,
             _In_ mref<smr<Node>> end_
         );
 
-        [[nodiscard]] static uptr<RenderGraph> eraseNode(
-            _In_ mref<uptr<RenderGraph>> graph_,
+        [[nodiscard]] static uptr<RuntimeGraph> eraseNode(
+            _In_ mref<uptr<RuntimeGraph>> graph_,
+            nmpt<const Node> where_,
+            _In_ mref<smr<Node>> node_
+        );
+
+        [[nodiscard]] static uptr<CompileGraph> eraseNode(
+            _In_ mref<uptr<CompileGraph>> graph_,
             nmpt<const Node> where_,
             _In_ mref<smr<Node>> node_
         );

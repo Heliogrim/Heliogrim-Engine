@@ -19,6 +19,12 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\BuilderVisitor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\AnchorComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\BarrierComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\CompileComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\CompileSubpassComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassAccelComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassMaterialAccelComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassMultiAccelComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassSingleAccelComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Component.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\ProviderComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassComponent.hpp" />
@@ -32,6 +38,8 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\AnchorNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Auxiliary.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\BarrierNode.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileNode.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileSubpassNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\ConvergeNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\DivergeNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Node.hpp" />
@@ -45,7 +53,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\Requirement.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneViewDescription.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\TextureDescription.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\RenderGraph.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\RuntimeGraph.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\Resolver.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverOptions.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverPass.hpp" />
@@ -60,8 +68,13 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\Builder.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\BuilderVisitor.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\CompileGraph.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\AnchorComponent.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\BarrierComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\CompileSubpassComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassMaterialAccelComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassMultiAccelComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassSingleAccelComponent.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Component.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\ProviderComponent.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\SubpassComponent.cpp" />
@@ -72,6 +85,8 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\AnchorNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Auxiliary.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\BarrierNode.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileNode.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileSubpassNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\ConvergeNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\DivergeNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Node.cpp" />
@@ -82,7 +97,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\ModelDescription.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneViewDescription.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\TextureDescription.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RenderGraph.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RuntimeGraph.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\Resolver.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverValidationPass.cpp" />
@@ -94,6 +109,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\ProviderNode.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\CompileGraph.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

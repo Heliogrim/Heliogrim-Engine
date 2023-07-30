@@ -6,12 +6,15 @@
 #include "../Node/Node.hpp"
 #include "../Node/AnchorNode.hpp"
 #include "../Node/BarrierNode.hpp"
+#include "../Node/Compile/CompileNode.hpp"
 
 #include "../Component/AnchorComponent.hpp"
 #include "../Component/BarrierComponent.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg;
+
+DebugVisitor::DebugVisitor() noexcept = default;
 
 DebugVisitor::~DebugVisitor() noexcept = default;
 
@@ -80,6 +83,20 @@ void DebugVisitor::operator()(cref<ProviderNode> node_) {
 void DebugVisitor::operator()(cref<SubpassNode> node_) {
 
     IM_DEBUG_LOGF("SubpassNode `{:x}`", reinterpret_cast<ptrdiff_t>(_STD addressof(node_)));
+
+    Visitor::operator()(node_);
+}
+
+void DebugVisitor::operator()(cref<CompileNode> node_) {
+
+    //IM_DEBUG_LOGF("CompileNode `{:x}`", reinterpret_cast<ptrdiff_t>(_STD addressof(node_)));
+
+    DebugVisitor::operator()(static_cast<cref<Node>>(node_));
+}
+
+void DebugVisitor::operator()(cref<CompileSubpassNode> node_) {
+
+    IM_DEBUG_LOGF("CompileSubpassNode `{:x}`", reinterpret_cast<ptrdiff_t>(_STD addressof(node_)));
 
     Visitor::operator()(node_);
 }

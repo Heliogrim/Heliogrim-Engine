@@ -1,19 +1,22 @@
 #include "VkPassCompiler.hpp"
 
 #include <ranges>
+#include <variant>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX.Acc/AccelerationEffect.hpp>
-#include <Engine.GFX.Acc/AccelerationStageDerivat.hpp>
-#include <Engine.GFX.Acc/AccelerationStageModule.hpp>
+#include <Engine.GFX.Acc/Stage/StageDerivat.hpp>
+#include <Engine.GFX.Acc/Stage/StageModule.hpp>
 #include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX.Acc/Pass/VkAccelerationComputePass.hpp>
-#include <Engine.GFX.Acc/Pass/VkAccelerationGraphicsPass.hpp>
-#include <Engine.GFX.Acc/Pass/VkAccelerationMeshPass.hpp>
-#include <Engine.GFX.Acc/Pass/VkAccelerationRaytracingPass.hpp>
+#include <Engine.GFX.Acc/Pass/VkComputePass.hpp>
+#include <Engine.GFX.Acc/Pass/VkGraphicsPass.hpp>
+#include <Engine.GFX.Acc/Pass/VkMeshPass.hpp>
+#include <Engine.GFX.Acc/Pass/VkRaytracingPass.hpp>
+#include <Engine.GFX.Acc/Symbol/Symbol.hpp>
+#include <Engine.GFX.RenderGraph/Relation/MeshDescription.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #include "../VkApi.hpp"
@@ -28,8 +31,8 @@ VkPassCompiler::VkPassCompiler() = default;
 
 VkPassCompiler::~VkPassCompiler() = default;
 
-Vector<smr<AccelerationStageDerivat>> VkPassCompiler::hydrateStages(
-    mref<Vector<smr<AccelerationStageDerivat>>> stages_,
+Vector<smr<StageDerivat>> VkPassCompiler::hydrateStages(
+    mref<Vector<smr<StageDerivat>>> stages_,
     mref<Vector<uptr<VkCompiledModule>>> modules_
 ) const {
 
@@ -41,7 +44,7 @@ Vector<smr<AccelerationStageDerivat>> VkPassCompiler::hydrateStages(
 
         /* Build acceleration stage module from compiler module */
 
-        auto accModule = make_smr<AccelerationStageModule>(_STD move(compModule));
+        auto accModule = make_smr<StageModule>(_STD move(compModule));
 
         /* Hydrate stage derivat with modules */
 
@@ -109,7 +112,7 @@ void VkPassCompiler::resolveBindLayouts(
 
 }
 
-bool VkPassCompiler::hasDepthBinding(cref<smr<AccelerationStageDerivat>> stage_) const noexcept {
+bool VkPassCompiler::hasDepthBinding(cref<smr<StageDerivat>> stage_) const noexcept {
 
     if (stage_.empty()) {
         return false;
@@ -148,7 +151,7 @@ bool VkPassCompiler::hasDepthBinding(cref<smr<AccelerationStageDerivat>> stage_)
     return false;
 }
 
-bool VkPassCompiler::hasStencilBinding(cref<smr<AccelerationStageDerivat>> stage_) const noexcept {
+bool VkPassCompiler::hasStencilBinding(cref<smr<StageDerivat>> stage_) const noexcept {
 
     if (stage_.empty()) {
         return false;
@@ -190,7 +193,7 @@ bool VkPassCompiler::hasStencilBinding(cref<smr<AccelerationStageDerivat>> stage
 template <typename Type_, typename SpecificationType_>
 smr<const AccelerationPass> VkPassCompiler::compileTypeSpec(
     mref<smr<AccelerationPass>> pass_,
-    mref<Vector<smr<AccelerationStageDerivat>>> stages_,
+    mref<Vector<smr<StageDerivat>>> stages_,
     SpecificationType_ specification_
 ) const {
     auto pass = pass_.into<Type_>();
@@ -201,7 +204,7 @@ smr<const AccelerationPass> VkPassCompiler::compileTypeSpec(
 smr<const AccelerationPass> VkPassCompiler::compile(
     cref<class SpecificationStorage> specifications_,
     mref<smr<AccelerationPass>> source_,
-    mref<Vector<smr<AccelerationStageDerivat>>> stages_,
+    mref<Vector<smr<StageDerivat>>> stages_,
     mref<Vector<uptr<CompiledModule>>> modules_
 ) const {
 
@@ -213,29 +216,29 @@ smr<const AccelerationPass> VkPassCompiler::compile(
     /**/
 
     switch (source_->getMetaClass()->typeId().data) {
-        case VkAccelerationComputePass::typeId.data: {
-            return compileTypeSpec<VkAccelerationComputePass>(
+        case VkComputePass::typeId.data: {
+            return compileTypeSpec<VkComputePass>(
                 _STD move(source_),
                 _STD move(stages),
                 specifications_.get<ComputePassSpecification>()
             );
         }
-        case VkAccelerationGraphicsPass::typeId.data: {
-            return compileTypeSpec<VkAccelerationGraphicsPass>(
+        case VkGraphicsPass::typeId.data: {
+            return compileTypeSpec<VkGraphicsPass>(
                 _STD move(source_),
                 _STD move(stages),
                 specifications_.get<GraphicsPassSpecification>()
             );
         }
-        case VkAccelerationMeshPass::typeId.data: {
-            return compileTypeSpec<VkAccelerationMeshPass>(
+        case VkMeshPass::typeId.data: {
+            return compileTypeSpec<VkMeshPass>(
                 _STD move(source_),
                 _STD move(stages),
                 specifications_.get<MeshPassSpecification>()
             );
         }
-        case VkAccelerationRaytracingPass::typeId.data: {
-            return compileTypeSpec<VkAccelerationRaytracingPass>(
+        case VkRaytracingPass::typeId.data: {
+            return compileTypeSpec<VkRaytracingPass>(
                 _STD move(source_),
                 _STD move(stages),
                 specifications_.get<RaytracingPassSpecification>()
@@ -249,16 +252,16 @@ smr<const AccelerationPass> VkPassCompiler::compile(
 
 #pragma region Vk Compute Pipeline
 
-smr<VkAccelerationComputePass> VkPassCompiler::linkStages(
-    mref<smr<VkAccelerationComputePass>> pass_,
-    mref<Vector<smr<AccelerationStageDerivat>>> stages_
+smr<VkComputePass> VkPassCompiler::linkStages(
+    mref<smr<VkComputePass>> pass_,
+    mref<Vector<smr<StageDerivat>>> stages_
 ) const {
     return _STD move(pass_);
 }
 
-smr<VkAccelerationComputePass> VkPassCompiler::linkVk(
+smr<VkComputePass> VkPassCompiler::linkVk(
     mref<struct ComputePassSpecification> specification_,
-    mref<smr<VkAccelerationComputePass>> pass_
+    mref<smr<VkComputePass>> pass_
 ) const {
     return _STD move(pass_);
 }
@@ -267,9 +270,9 @@ smr<VkAccelerationComputePass> VkPassCompiler::linkVk(
 
 #pragma region Vk Programmable Pipeline
 
-smr<VkAccelerationGraphicsPass> VkPassCompiler::linkStages(
-    mref<smr<VkAccelerationGraphicsPass>> pass_,
-    mref<Vector<smr<AccelerationStageDerivat>>> stages_
+smr<VkGraphicsPass> VkPassCompiler::linkStages(
+    mref<smr<VkGraphicsPass>> pass_,
+    mref<Vector<smr<StageDerivat>>> stages_
 ) const {
 
     assert(stages_.size() >= 2 && stages_.size() < 6);
@@ -281,9 +284,9 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkStages(
     return _STD move(pass_);
 }
 
-smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
+smr<VkGraphicsPass> VkPassCompiler::linkVk(
     mref<struct GraphicsPassSpecification> specification_,
-    mref<smr<VkAccelerationGraphicsPass>> pass_
+    mref<smr<VkGraphicsPass>> pass_
 ) const {
 
     const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
@@ -330,23 +333,24 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
     Vector<vk::PipelineColorBlendAttachmentState> colorBlendStates {};
 
     const auto& outStage = pass_->getStageDerivates().back();
-    assert(outStage->getFlagBits() == AccelerationStageFlagBits::eFragment);
+    assert(outStage->getFlagBits() == StageFlagBits::eFragment);
 
-    for (const auto& description : pass_->getEffect()->getOutputLayout().getDescriptions()) {
+    for (const auto& symbol : pass_->getEffect()->getExportSymbols()) {
 
-        const auto& descToken = description.token;
-        const auto searchToken = _tokenizer->transformAccStageOut(descToken, true, true);
+        const auto& transferToken = symbol->token;
+        const auto searchToken = _tokenizer->transformAccStageOut(transferToken, true);
 
         const auto& stageOuts = outStage->getStageOutputs();
         const auto it = _STD ranges::find_if(
             stageOuts,
-            [&searchToken](cref<AccelerationStageOutput> output_) {
+            [&searchToken](cref<StageOutput> output_) {
 
                 if (output_.token != searchToken) {
                     return false;
                 }
 
-                if (output_.transferType != AccelerationStageTransferType::eForward) {
+                // TODO: Due to introduction of symbols, this is not an correct assumption anymore.
+                if (output_.transferType != TransferType::eForward) {
                     IM_CORE_ERRORF(
                         "Found effect output token `{}` within last stage, but failed to validate transfer type. `eForward` required, got `eBinding`...",
                         output_.token.value
@@ -369,12 +373,12 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
 
         const auto& stageOut = *it;
 
-        if (stageOut.dataType >= AccelerationStageTransferDataType::eConstant &&
-            stageOut.dataType <= AccelerationStageTransferDataType::eSampler) {
+        if (stageOut.dataType >= TransferDataType::eConstant &&
+            stageOut.dataType <= TransferDataType::eSampler) {
             IM_CORE_ERRORF(
                 "Found forwarding output state `{}` with invalid data type `{}`.",
                 stageOut.token.value,
-                static_cast<_STD underlying_type_t<AccelerationStageTransferDataType>>(stageOut.dataType)
+                static_cast<_STD underlying_type_t<TransferDataType>>(stageOut.dataType)
             );
             continue;
         }
@@ -405,7 +409,7 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
 
     {
         const auto& back = pass_->getStageDerivates().back();
-        assert(back->getFlagBits() == AccelerationStageFlagBits::eFragment);
+        assert(back->getFlagBits() == StageFlagBits::eFragment);
 
         bool hasDepthIn, hasDepthOut = hasDepthBinding(back);
         hasDepthIn = hasDepthOut;
@@ -498,15 +502,15 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
     {
         hasTessCtrl = _STD ranges::find_if(
             pass_->getStageDerivates(),
-            [](cref<smr<AccelerationStageDerivat>> stage_) {
-                return stage_->getFlagBits() == AccelerationStageFlagBits::eTessellationCtrl;
+            [](cref<smr<StageDerivat>> stage_) {
+                return stage_->getFlagBits() == StageFlagBits::eTessellationCtrl;
             }
         ) != pass_->getStageDerivates().end();
 
         hasTessEval = _STD ranges::find_if(
             pass_->getStageDerivates(),
-            [](cref<smr<AccelerationStageDerivat>> stage_) {
-                return stage_->getFlagBits() == AccelerationStageFlagBits::eTessellationEval;
+            [](cref<smr<StageDerivat>> stage_) {
+                return stage_->getFlagBits() == StageFlagBits::eTessellationEval;
             }
         ) != pass_->getStageDerivates().end();
     }
@@ -525,9 +529,9 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
     const auto& vertexStage = pass_->getStageDerivates().front();
     const auto& vertexModule = vertexStage->getStageModule();
     const auto& nativeModule = static_cast<ptr<const VkCompiledModule>>(vertexModule->getNativeModule());
-    assert(vertexStage->getFlagBits() == AccelerationStageFlagBits::eVertex);
+    assert(vertexStage->getFlagBits() == StageFlagBits::eVertex);
 
-    Vector<ptr<const AccelerationStageInput>> stageInputs {};
+    Vector<ptr<const StageInput>> stageInputs {};
     for (const auto& stageInput : vertexStage->getStageInputs()) {
         stageInputs.push_back(&stageInput);
     }
@@ -535,70 +539,76 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
         stageInputs.push_back(&stageInput);
     }
 
-    for (const auto& description : pass_->getEffect()->getInputLayout().getDescriptions()) {
+    s32 invariantBindIndex = -1L;
+    for (const auto& symbol : pass_->getEffect()->getImportSymbols()) {
 
-        const auto& descToken = description.token;
-        const auto inputSpec = specification_.queryInputSpec(descToken);
-        assert(inputSpec.has_value());
-
-        assert(inputSpec->index >= 0);
-        assert(inputSpec->stride > 0 && inputSpec->stride < ~0ui64);
-
-        vk::VertexInputBindingDescription vibd {
-            static_cast<u32>(inputSpec->index),
-            static_cast<u32>(inputSpec->stride),
-            api::inputRate2VertexRate(description.rate)
-        };
-
-        vertexBindings.push_back(_STD move(vibd));
+        auto input = pass_->getEffect()->getFirstInputFor(*symbol);
+        assert(input.has_value());
 
         /**/
 
-        for (const auto& attribute : description.attributes) {
+        // stride :: sizeof(vertex)
+        // off_pos :: offsetof(vertex, position);
+        // off_normal :: offsetof(vertex, normal);
+        // off_color :: offsetof(vertex, color);
+        // off_uv :: offsetof(vertex, uv);
 
-            const auto inputToken = descToken.value + "/" + attribute.token.value;
-            const auto stageToken = _tokenizer->transformAccStageIn(
-                AccelerationStageTransferToken::from(inputToken),
-                true,
-                true
-            );
+        // symbol -> description |-(Mesh Description)-> attribute layout
+        // symbol -> description |-(Model Description)-> <s>attribute layout</s>
 
-            /**/
+        // => assert `typeof symbol` == `Mesh Data Symbol`
+        // ?> `typeof mesh` == { vertex[N][M]... , index[K] }
 
-            auto it = _STD find_if(
-                stageInputs.begin(),
-                stageInputs.end(),
-                [&stageToken](const ptr<const AccelerationStageInput> input_) {
-                    return input_->token == stageToken;
-                }
-            );
+        // !> `typeof mesh` |-(Polygon Mesh)->  `typeof vertex` -> attribute layout
+        // !> `typeof mesh` |-(Cluster Mesh)->  `typeof cluster` -> attribute layout
+        //                                      `typeof cluster` -> attribute layout
+        // !> `typeof mesh` |-(Proc Mesh)->     `typeof emit` -> attribute layout
 
-            if (it == stageInputs.end()) {
-                IM_CORE_WARNF(
-                    "Found described input attribute binding, but no matching stage binding. (`{}` -> `{}`)",
-                    descToken.value,
-                    stageToken.value
-                );
-                continue;
-            }
+        const auto* const symbolDescription = symbol->description.get();
+        if (symbolDescription->getMetaClass()->is<render::graph::MeshDescription>()) {
+
+            const auto& desc = static_cast<cref<render::graph::MeshDescription>>(*symbolDescription);
 
             /**/
 
-            const auto& asi = **it;
-            const auto bindLocation = nativeModule->queryBindLocation(asi.token);
-
-            assert(asi.transferType == AccelerationStageTransferType::eForward);
-            assert(bindLocation.set < 0);
-            assert(bindLocation.location >= 0);
-
-            vk::VertexInputAttributeDescription viad {
-                static_cast<u32>(bindLocation.location),
-                static_cast<u32>(inputSpec->index),
-                api::dataType2Format(asi.dataType),
-                static_cast<u32>(attribute.offset)
+            vk::VertexInputBindingDescription vibd {
+                static_cast<u32>(++invariantBindIndex),
+                static_cast<u32>(desc.getMeshDataLayout().stride),
+                api::inputRate2VertexRate(input->rate)
             };
 
-            vertexAttributes.push_back(_STD move(viad));
+            vertexBindings.push_back(_STD move(vibd));
+
+            /**/
+
+            const auto define = [&vertexAttributes, nativeModule, invariantBindIndex](
+                const render::graph::MeshDescription::MeshDataLayoutAttribute& attribute_,
+                mref<string> token_
+            ) {
+                const auto location = nativeModule->queryBindLocation(TransferToken::from(token_));
+
+                if (/* Check forwarding */location.set >= 0) {
+                    return;
+                }
+
+                if (/* Check emitted */location.location < 0) {
+                    return;
+                }
+
+                vk::VertexInputAttributeDescription viad {
+                    static_cast<u32>(location.location),
+                    static_cast<u32>(invariantBindIndex),
+                    api::dataType2Format(attribute_.dataType),
+                    static_cast<u32>(attribute_.offset)
+                };
+
+                vertexAttributes.push_back(_STD move(viad));
+            };
+
+            define(desc.getMeshDataLayout().position, "geometry.position");
+            define(desc.getMeshDataLayout().normal, "geometry.normal");
+            define(desc.getMeshDataLayout().uv, "geometry.uv");
+            define(desc.getMeshDataLayout().color, "geometry.color");
         }
     }
 
@@ -634,27 +644,27 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
 
         vk::ShaderStageFlagBits stageBits { vk::ShaderStageFlagBits::eAll };
         switch (stage->getFlagBits()) {
-            case AccelerationStageFlagBits::eVertex: {
+            case StageFlagBits::eVertex: {
                 stageBits = vk::ShaderStageFlagBits::eVertex;
                 break;
             }
-            case AccelerationStageFlagBits::eTessellationCtrl: {
+            case StageFlagBits::eTessellationCtrl: {
                 stageBits = vk::ShaderStageFlagBits::eTessellationControl;
                 break;
             }
-            case AccelerationStageFlagBits::eTessellationEval: {
+            case StageFlagBits::eTessellationEval: {
                 stageBits = vk::ShaderStageFlagBits::eTessellationEvaluation;
                 break;
             }
-            case AccelerationStageFlagBits::eGeometry: {
+            case StageFlagBits::eGeometry: {
                 stageBits = vk::ShaderStageFlagBits::eGeometry;
                 break;
             }
-            case AccelerationStageFlagBits::eFragment: {
+            case StageFlagBits::eFragment: {
                 stageBits = vk::ShaderStageFlagBits::eFragment;
                 break;
             }
-            case AccelerationStageFlagBits::eCompute: {
+            case StageFlagBits::eCompute: {
                 stageBits = vk::ShaderStageFlagBits::eCompute;
                 break;
             }
@@ -700,7 +710,7 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
 
     /**/
 
-    gpci.renderPass = specification_.renderPass->vkRenderPass();
+    gpci.renderPass = static_cast<ptr<pipeline::LORenderPass>>(specification_.renderPass.get())->vkRenderPass();
 
     /**/
 
@@ -727,16 +737,16 @@ smr<VkAccelerationGraphicsPass> VkPassCompiler::linkVk(
 
 #pragma region Vk Mesh Pipeline
 
-smr<VkAccelerationMeshPass> VkPassCompiler::linkStages(
-    mref<smr<VkAccelerationMeshPass>> pass_,
-    mref<Vector<smr<AccelerationStageDerivat>>> stages_
+smr<VkMeshPass> VkPassCompiler::linkStages(
+    mref<smr<VkMeshPass>> pass_,
+    mref<Vector<smr<StageDerivat>>> stages_
 ) const {
     return _STD move(pass_);
 }
 
-smr<VkAccelerationMeshPass> VkPassCompiler::linkVk(
+smr<VkMeshPass> VkPassCompiler::linkVk(
     mref<struct MeshPassSpecification> specification_,
-    mref<smr<VkAccelerationMeshPass>> pass_
+    mref<smr<VkMeshPass>> pass_
 ) const {
     return _STD move(pass_);
 }
@@ -745,16 +755,16 @@ smr<VkAccelerationMeshPass> VkPassCompiler::linkVk(
 
 #pragma region Vk Raytracing Pipeline
 
-smr<VkAccelerationRaytracingPass> VkPassCompiler::linkStages(
-    mref<smr<VkAccelerationRaytracingPass>> pass_,
-    mref<Vector<smr<AccelerationStageDerivat>>> stages_
+smr<VkRaytracingPass> VkPassCompiler::linkStages(
+    mref<smr<VkRaytracingPass>> pass_,
+    mref<Vector<smr<StageDerivat>>> stages_
 ) const {
     return _STD move(pass_);
 }
 
-smr<VkAccelerationRaytracingPass> VkPassCompiler::linkVk(
+smr<VkRaytracingPass> VkPassCompiler::linkVk(
     mref<struct RaytracingPassSpecification> specification_,
-    mref<smr<VkAccelerationRaytracingPass>> pass_
+    mref<smr<VkRaytracingPass>> pass_
 ) const {
     return _STD move(pass_);
 }

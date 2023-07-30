@@ -11,7 +11,7 @@ namespace hg::engine::gfx::render::graph {
         using this_type = DebugVisitor;
 
     public:
-        DebugVisitor() noexcept = default;
+        DebugVisitor() noexcept;
 
         ~DebugVisitor() noexcept override;
 
@@ -35,5 +35,11 @@ namespace hg::engine::gfx::render::graph {
         void operator()(cref<ProviderNode> node_) override;
 
         void operator()(cref<SubpassNode> node_) override;
+
+    public:
+        void operator()(cref<CompileNode> node_) override;
+
+    public:
+        void operator()(cref<CompileSubpassNode> node_) override;
     };
 }

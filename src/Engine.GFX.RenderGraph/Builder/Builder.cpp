@@ -4,13 +4,23 @@
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "BuilderVisitor.hpp"
-#include "../RenderGraph.hpp"
+#include "../CompileGraph.hpp"
+#include "../RuntimeGraph.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg;
 
-uptr<engine::gfx::render::RenderGraph> Builder::insertNode(
-    mref<uptr<RenderGraph>> graph_,
+void Builder::insertNode(
+    nmpt<const Node> from_,
+    nmpt<const Node> to_,
+    mref<smr<Node>> node_,
+    nmpt<RuntimeGraph> graph_
+) {
+    return insertSubGraph(_STD move(from_), _STD move(to_), clone(node_), _STD move(node_), _STD move(graph_));
+}
+
+uptr<CompileGraph> Builder::insertNode(
+    mref<uptr<CompileGraph>> graph_,
     nmpt<const Node> from_,
     nmpt<const Node> to_,
     mref<smr<Node>> node_
@@ -18,8 +28,30 @@ uptr<engine::gfx::render::RenderGraph> Builder::insertNode(
     return insertSubGraph(_STD move(graph_), _STD move(from_), _STD move(to_), clone(node_), _STD move(node_));
 }
 
-uptr<engine::gfx::render::RenderGraph> Builder::insertSubGraph(
-    mref<uptr<RenderGraph>> graph_,
+void Builder::insertSubGraph(
+    nmpt<const Node> from_,
+    nmpt<const Node> to_,
+    mref<smr<Node>> begin_,
+    mref<smr<Node>> end_,
+    nmpt<RuntimeGraph> graph_
+) {
+
+    BuilderVisitor visitor {
+        [from_](cref<Node> node_) {
+            return _STD addressof(node_) == from_.get();
+        },
+        [to_](cref<Node> node_) {
+            return _STD addressof(node_) == to_.get();
+        },
+        _STD move(begin_),
+        _STD move(end_)
+    };
+
+    graph_->update(visitor);
+}
+
+uptr<CompileGraph> Builder::insertSubGraph(
+    mref<uptr<CompileGraph>> graph_,
     nmpt<const Node> from_,
     nmpt<const Node> to_,
     mref<smr<Node>> begin_,
@@ -41,8 +73,17 @@ uptr<engine::gfx::render::RenderGraph> Builder::insertSubGraph(
     return graph_;
 }
 
-uptr<engine::gfx::render::RenderGraph> Builder::eraseNode(
-    mref<uptr<RenderGraph>> graph_,
+uptr<RuntimeGraph> Builder::eraseNode(
+    mref<uptr<RuntimeGraph>> graph_,
+    nmpt<const Node> where_,
+    mref<smr<Node>> node_
+) {
+    throw NotImplementedException();
+    return graph_;
+}
+
+uptr<CompileGraph> Builder::eraseNode(
+    mref<uptr<CompileGraph>> graph_,
     nmpt<const Node> where_,
     mref<smr<Node>> node_
 ) {

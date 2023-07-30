@@ -72,9 +72,6 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\State\ExecState.hpp">
       <Filter>Headerdateien\State</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\test.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\InvocationGenerator.hpp">
       <Filter>Headerdateien\Invocation</Filter>
     </ClInclude>
@@ -113,9 +110,6 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\State\State.cpp">
       <Filter>Quelldateien\State</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\test.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\Stage.cpp">
       <Filter>Quelldateien\Stage</Filter>
     </ClCompile>
@@ -138,6 +132,9 @@
       <Filter>Quelldateien\Stage</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\InterlockStage.cpp">
+      <Filter>Quelldateien\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\MultiAccelSubpassStage.cpp">
       <Filter>Quelldateien\Stage</Filter>
     </ClCompile>
   </ItemGroup>

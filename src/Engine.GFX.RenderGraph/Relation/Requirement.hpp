@@ -1,28 +1,30 @@
 #pragma once
 
-#include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
-
-#include "Description.hpp"
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.GFX.Acc/Symbol/Symbol.hpp>
 
 namespace hg::engine::gfx::render::graph {
     struct Requirement final {
-        size_t identifier;
-        smr<Description> description;
+        smr<acc::Symbol> symbol;
     };
 
     [[nodiscard]] constexpr bool operator==(cref<Requirement> left_, cref<Requirement> right_) noexcept {
-        return left_.identifier == right_.identifier;
+        return left_.symbol == right_.symbol;
     }
 }
 
 namespace std {
     template <>
-    struct hash<::hg::engine::gfx::render::graph::Requirement> {
-        [[nodiscard]] constexpr size_t operator()(
+    struct hash<::hg::engine::gfx::render::graph::Requirement> :
+        public hash<decltype(::hg::engine::gfx::render::graph::Requirement::symbol)> {
+        [[nodiscard]] size_t operator()(
             const ::hg::engine::gfx::render::graph::Requirement& val_
         ) const noexcept {
-            return val_.identifier;
+            return static_cast<::hg::cref<hash<decltype(::hg::engine::gfx::render::graph::Requirement::symbol)>>>(*
+                this)(
+                val_.symbol
+            );
         }
     };
 }

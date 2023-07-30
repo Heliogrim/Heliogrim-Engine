@@ -4,7 +4,7 @@
 #include <regex>
 #include <string>
 #include <Engine.GFX.Acc/AccelerationEffect.hpp>
-#include <Engine.GFX.Acc/Pass/VkAccelerationGraphicsPass.hpp>
+#include <Engine.GFX.Acc/Pass/VkGraphicsPass.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #include "VkModuleSource.hpp"
@@ -27,11 +27,11 @@ VkModuleBuilder::~VkModuleBuilder() noexcept = default;
 
 bool VkModuleBuilder::isFirstStage(
     cref<smr<AccelerationPass>> targetPass_,
-    cref<smr<AccelerationStageDerivat>> stage_
+    cref<smr<StageDerivat>> stage_
 ) const noexcept {
 
-    if (targetPass_->getMetaClass()->exact<VkAccelerationGraphicsPass>() &&
-        stage_->getFlagBits() == AccelerationStageFlagBits::eVertex
+    if (targetPass_->getMetaClass()->exact<VkGraphicsPass>() &&
+        stage_->getFlagBits() == StageFlagBits::eVertex
     ) {
         return true;
     }
@@ -42,7 +42,7 @@ bool VkModuleBuilder::isFirstStage(
 uptr<ModuleSource> VkModuleBuilder::build(
     cref<smr<AccelerationPass>> targetPass_,
     cref<SpecificationStorage> specifications_,
-    cref<smr<AccelerationStageDerivat>> stage_,
+    cref<smr<StageDerivat>> stage_,
     cref<uptr<ModuleSource>> previous_
 ) const {
 
@@ -51,11 +51,11 @@ uptr<ModuleSource> VkModuleBuilder::build(
     /**/
 
     switch (stage_->getFlagBits()) {
-        case AccelerationStageFlagBits::eVertex: {
+        case StageFlagBits::eVertex: {
             ms->targetStage = ModuleTargetStage::eVertex;
             break;
         }
-        case AccelerationStageFlagBits::eFragment: {
+        case StageFlagBits::eFragment: {
             ms->targetStage = ModuleTargetStage::eFragment;
             break;
         }
@@ -102,7 +102,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
 
         for (const auto& sib : stage_->getStageInputs()) {
 
-            if (sib.transferType != AccelerationStageTransferType::eForward) {
+            if (sib.transferType != TransferType::eForward) {
                 continue;
             }
 
@@ -125,7 +125,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
 
         for (const auto& sib : stage_->getStageInputs()) {
 
-            if (sib.transferType != AccelerationStageTransferType::eForward) {
+            if (sib.transferType != TransferType::eForward) {
                 continue;
             }
 
@@ -159,7 +159,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
 
     for (const auto& sob : stage_->getStageOutputs()) {
 
-        if (sob.transferType != AccelerationStageTransferType::eForward) {
+        if (sob.transferType != TransferType::eForward) {
             continue;
         }
 
@@ -199,7 +199,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
 
 #pragma region Vk Transpile
 
-string VkModuleBuilder::transpile(cref<AccelerationStageTransferToken> token_) const {
+string VkModuleBuilder::transpile(cref<TransferToken> token_) const {
     string tmp = token_.value;
 
     // Change: '/' -> '_'
@@ -221,11 +221,11 @@ string VkModuleBuilder::transpile(cref<AccelerationStageTransferToken> token_) c
 }
 
 uptr<VkModuleSource> VkModuleBuilder::transpile(
-    cref<smr<AccelerationStageDerivat>> stage_,
+    cref<smr<StageDerivat>> stage_,
     mref<uptr<VkModuleSource>> module_
 ) const {
 
-    Vector<ptr<const _STD pair<AccelerationStageTransferToken, VkBindingLocation>>> mappings {};
+    Vector<ptr<const _STD pair<TransferToken, VkBindingLocation>>> mappings {};
     mappings.reserve(module_->mappedLocations.size());
 
     for (const auto& mapping : module_->mappedLocations) {
@@ -271,7 +271,7 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
             
              */
 
-            if (_tokenizer->isStageIn(token, true, true)) {
+            if (_tokenizer->isStageIn(token, true)) {
 
                 const auto ttoken = transpile(token);
 
@@ -296,7 +296,7 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
                 continue;
             }
 
-            if (_tokenizer->isStageOut(token, true, true)) {
+            if (_tokenizer->isStageOut(token, true)) {
 
                 const auto ttoken = transpile(token);
 
@@ -321,7 +321,7 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
                 continue;
             }
 
-            if (_tokenizer->isStageIn(token, false, true) || _tokenizer->isStageIn(token, false, false)) {
+            if (_tokenizer->isStageIn(token, false)) {
 
                 const auto ttoken = transpile(token);
                 string snippet = _STD move(code);

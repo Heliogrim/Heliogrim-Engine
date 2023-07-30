@@ -23,7 +23,7 @@ namespace hg::engine::gfx::render::graph {
         Stack<nmpt<const Node>> _lastDiverge;
         Stack<nmpt<const Node>> _lastConverge;
 
-        Vector<nmpt<const DenseSet<Provision>>> _providers;
+        Vector<DenseSet<Provision>> _providers;
 
     public:
         void operator()(cref<Node> node_) override;
@@ -42,5 +42,11 @@ namespace hg::engine::gfx::render::graph {
         void operator()(cref<ProviderNode> node_) override;
 
         void operator()(cref<SubpassNode> node_) override;
+
+    public:
+        void operator()(cref<CompileNode> node_) override;
+
+    public:
+        void operator()(cref<CompileSubpassNode> node_) override;
     };
 }

@@ -53,6 +53,9 @@
     <ProjectReference Include="..\Engine.GFX.Acc\Engine.GFX.Acc.vcxproj">
       <Project>{8333a07d-e717-4969-a2f5-416933b96ac1}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Material\Engine.GFX.Material.vcxproj">
+      <Project>{2462cb7c-18e2-4e32-96e0-692141c48f9e}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.RenderGraph\Engine.GFX.RenderGraph.vcxproj">
       <Project>{8f126647-73b6-4c77-b1d4-a94c2c0d657d}</Project>
     </ProjectReference>
@@ -67,6 +70,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine.Pedantic\Engine.Pedantic.vcxproj">
       <Project>{b4752576-a4b8-4ad0-afaa-13859453d9b0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Resource\Engine.Resource.vcxproj">
+      <Project>{b0e77d6c-45d7-4254-8630-d10fdf6ca290}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Scheduler\Engine.Scheduler.vcxproj">
       <Project>{5a3106b5-4d88-4bcd-b048-fc3bb3cfc523}</Project>

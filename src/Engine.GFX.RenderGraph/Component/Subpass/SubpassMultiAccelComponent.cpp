@@ -5,6 +5,14 @@ using namespace hg;
 
 SubpassMultiAccelComponent::~SubpassMultiAccelComponent() noexcept = default;
 
+Vector<smr<engine::gfx::acc::Symbol>> SubpassMultiAccelComponent::aggregateImportedSymbols() const {
+    return {};
+}
+
+Vector<smr<engine::gfx::acc::Symbol>> SubpassMultiAccelComponent::aggregateExportedSymbols() const {
+    return {};
+}
+
 _STD span<const smr<const engine::gfx::acc::AccelerationEffect>>
 SubpassMultiAccelComponent::getAccelEffects() const noexcept {
     return _STD span {

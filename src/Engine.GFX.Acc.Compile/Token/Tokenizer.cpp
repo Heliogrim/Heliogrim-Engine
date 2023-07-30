@@ -1,6 +1,7 @@
 #include "Tokenizer.hpp"
 
 #include <sstream>
+#include <Engine.Common/Collection/Vector.hpp>
 
 using namespace hg::engine::gfx::acc;
 using namespace hg;
@@ -38,108 +39,45 @@ Token Tokenizer::expand(mref<Token> token_, cref<string> data_) const {
     return Token::from(ss.str());
 }
 
-Token Tokenizer::generate(cref<InputLayoutDescription> ild_) const {
+Token Tokenizer::generate(cref<StageInput> asi_) const {
+
+    const bool isFwd = asi_.transferType == TransferType::eForward;
+
+    if (isFwd) {
+        return generateToken(
+            _prefix,
+            { _inScope },
+            asi_.token.value
+        );
+    }
+
     return generateToken(
         _prefix,
-        { _inScope },
-        ild_.token.value
-    );
-}
-
-Token Tokenizer::generate(cref<BindingLayoutDescription> bld_) const {
-
-    if (bld_.bindingMode == DataBindingMode::eDynamic) {
-        return generateToken(
-            _prefix,
-            { _bindScope },
-            bld_.token.value
-        );
-    }
-
-    return generateToken(
-        no_prefix,
         { _bindScope },
-        bld_.token.value
+        asi_.token.value
     );
 }
 
-Token Tokenizer::generate(cref<BindingLayoutDescription> bld_, cref<BindingLayoutAttributeDescription> blad_) const {
-    return expand(generate(bld_), blad_.token.value);
-}
+Token Tokenizer::generate(cref<StageOutput> aso_) const {
 
-Token Tokenizer::generate(cref<OutputLayoutDescription> old_) const {
+    const bool isFwd = aso_.transferType == TransferType::eForward;
+
+    if (isFwd) {
+        return generateToken(
+            _prefix,
+            { _outScope },
+            aso_.token.value
+        );
+    }
+
     return generateToken(
-        no_prefix,
-        { _outScope },
-        old_.token.value
+        _prefix,
+        { _bindScope },
+        aso_.token.value
     );
 }
 
-Token Tokenizer::generate(cref<AccelerationStageInput> asi_) const {
-
-    const bool isFwd = asi_.transferType == AccelerationStageTransferType::eForward;
-    const bool isDyn = asi_.bindingMode == DataBindingMode::eDynamic;
-
-    if (isFwd) {
-        return generateToken(
-            _prefix,
-            { _inScope },
-            asi_.token.value
-        );
-    }
-
-    if (not isFwd && isDyn) {
-        return generateToken(
-            _prefix,
-            { _bindScope },
-            asi_.token.value
-        );
-    }
-
-    if (not isFwd && not isDyn) {
-        return generateToken(
-            no_prefix,
-            { _bindScope },
-            asi_.token.value
-        );
-    }
-
-    return Token {};
-}
-
-Token Tokenizer::generate(cref<AccelerationStageOutput> aso_) const {
-
-    const bool isFwd = aso_.transferType == AccelerationStageTransferType::eForward;
-    const bool isDyn = aso_.bindingMode == DataBindingMode::eDynamic;
-
-    if (isFwd) {
-        return generateToken(
-            _prefix,
-            { _outScope },
-            aso_.token.value
-        );
-    }
-
-    if (not isFwd && isDyn) {
-        return generateToken(
-            _prefix,
-            { _bindScope },
-            aso_.token.value
-        );
-    }
-
-    if (not isFwd && not isDyn) {
-        return generateToken(
-            no_prefix,
-            { _bindScope },
-            aso_.token.value
-        );
-    }
-
-    return Token {};
-}
-
-Token Tokenizer::transformAccStageIn(cref<Token> src_, bool forwarding, bool dynamic) const {
+Token Tokenizer::transformAccStageIn(cref<Token> src_, bool forwarding) const {
     if (forwarding) {
         return generateToken(
             _prefix,
@@ -148,26 +86,14 @@ Token Tokenizer::transformAccStageIn(cref<Token> src_, bool forwarding, bool dyn
         );
     }
 
-    if (not forwarding && dynamic) {
-        return generateToken(
-            _prefix,
-            { _bindScope },
-            src_.value
-        );
-    }
-
-    if (not forwarding && not dynamic) {
-        return generateToken(
-            no_prefix,
-            { _bindScope },
-            src_.value
-        );
-    }
-
-    return Token {};
+    return generateToken(
+        _prefix,
+        { _bindScope },
+        src_.value
+    );
 }
 
-Token Tokenizer::transformAccStageOut(cref<Token> src_, const bool forwarding, const bool dynamic) const {
+Token Tokenizer::transformAccStageOut(cref<Token> src_, const bool forwarding) const {
 
     if (forwarding) {
         return generateToken(
@@ -177,24 +103,11 @@ Token Tokenizer::transformAccStageOut(cref<Token> src_, const bool forwarding, c
         );
     }
 
-    if (not forwarding && dynamic) {
-        return generateToken(
-            _prefix,
-            { _bindScope },
-            src_.value
-        );
-    }
-
-    if (not forwarding && not dynamic) {
-        return generateToken(
-            no_prefix,
-            { _bindScope },
-            src_.value
-        );
-    }
-
-    return Token {};
-
+    return generateToken(
+        _prefix,
+        { _bindScope },
+        src_.value
+    );
 }
 
 Token Tokenizer::transformAccStageInToOut(cref<Token> src_) const {
@@ -206,9 +119,9 @@ Token Tokenizer::transformAccStageInToOut(cref<Token> src_) const {
     return generateToken(_prefix, { _outScope }, src_.value.substr(prefixSize + inScopeSize + delimSize));
 }
 
-bool Tokenizer::isStageIn(cref<Token> token_, bool forwarding, bool dynamic) const {
+bool Tokenizer::isStageIn(cref<Token> token_, bool forwarding) const {
 
-    if ((dynamic || forwarding) && not token_.value.starts_with(_prefix)) {
+    if (forwarding && not token_.value.starts_with(_prefix)) {
         return false;
     }
 
@@ -218,22 +131,18 @@ bool Tokenizer::isStageIn(cref<Token> token_, bool forwarding, bool dynamic) con
         return false;
     }
 
-    if (not forwarding && dynamic && not(string_view {
+    if (not forwarding && not(string_view {
         token_.value.data() + _prefix.size(), token_.value.size() - _prefix.size()
     }.starts_with(_bindScope))) {
-        return false;
-    }
-
-    if (not forwarding && not dynamic && not token_.value.starts_with(_bindScope)) {
         return false;
     }
 
     return true;
 }
 
-bool Tokenizer::isStageOut(cref<Token> token_, bool forwarding, bool dynamic) const {
+bool Tokenizer::isStageOut(cref<Token> token_, bool forwarding) const {
 
-    if ((dynamic || forwarding) && not token_.value.starts_with(_prefix)) {
+    if (forwarding && not token_.value.starts_with(_prefix)) {
         return false;
     }
 
@@ -243,13 +152,9 @@ bool Tokenizer::isStageOut(cref<Token> token_, bool forwarding, bool dynamic) co
         return false;
     }
 
-    if (not forwarding && dynamic && not(string_view {
+    if (not forwarding && not(string_view {
         token_.value.data() + _prefix.size(), token_.value.size() - _prefix.size()
     }.starts_with(_bindScope))) {
-        return false;
-    }
-
-    if (not forwarding && not dynamic && not token_.value.starts_with(_bindScope)) {
         return false;
     }
 

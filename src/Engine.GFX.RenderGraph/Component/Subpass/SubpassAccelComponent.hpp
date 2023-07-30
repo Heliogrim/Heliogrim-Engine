@@ -12,5 +12,10 @@ namespace hg::engine::gfx::render::graph {
         SubpassAccelComponent() noexcept = default;
 
         ~SubpassAccelComponent() noexcept override = default;
+
+    public:
+        [[nodiscard]] virtual Vector<smr<acc::Symbol>> aggregateImportedSymbols() const = 0;
+
+        [[nodiscard]] virtual Vector<smr<acc::Symbol>> aggregateExportedSymbols() const = 0;
     };
 }

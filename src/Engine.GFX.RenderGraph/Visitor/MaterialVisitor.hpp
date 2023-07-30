@@ -20,8 +20,10 @@ namespace hg::engine::gfx::render::graph {
     public:
         void operator()(cref<Node> node_) override;
 
+        void operator()(cref<CompileNode> node_) override;
+
     public:
-        void operator()(cref<SubpassNode> node_) override;
+        void operator()(cref<CompileSubpassNode> node_) override;
 
     private:
         DenseSet<smr<MaterialResource>> _orphaned;

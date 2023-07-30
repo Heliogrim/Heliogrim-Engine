@@ -9,5 +9,9 @@ MeshDescription::MeshDescription() noexcept :
 MeshDescription::~MeshDescription() = default;
 
 bool MeshDescription::isValueCompatible(const non_owning_rptr<const Description> other_) const noexcept {
+
+    const auto& other = static_cast<cref<MeshDescription>>(*other_);
+
+    // TODO: _layout == other._layout;
     return true;
 }

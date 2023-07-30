@@ -12,7 +12,7 @@ namespace hg::engine::gfx::render {
     public:
         [[nodiscard]] uptr<RenderPipeline> operator()(
             mref<uptr<RenderPipeline>> pipeline_,
-            mref<uptr<RenderGraph>> nextGraph_
+            mref<uptr<graph::RuntimeGraph>> nextGraph_
         ) const;
     };
 }

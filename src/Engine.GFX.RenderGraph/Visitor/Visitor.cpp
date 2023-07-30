@@ -35,3 +35,7 @@ void Visitor::operator()(cref<ProviderNode> node_) {
 void Visitor::operator()(cref<SubpassNode> node_) {
     (*this)(override_cast<Node>(node_));
 }
+
+void Visitor::operator()(cref<CompileSubpassNode> node_) {
+    (*this)(override_cast<CompileNode>(node_));
+}

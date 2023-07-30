@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.GFX.Acc/AccelerationStageTransferToken.hpp>
+#include <Engine.GFX.Acc/Stage/TransferToken.hpp>
 
 #include "ModuleSource.hpp"
 #include "VkBindingLocation.hpp"
@@ -10,6 +10,6 @@ namespace hg::engine::gfx::acc {
         public ModuleSource {
     public:
         using this_type = VkModuleSource;
-        DenseMap<AccelerationStageTransferToken, VkBindingLocation> mappedLocations;
+        DenseMap<TransferToken, VkBindingLocation> mappedLocations;
     };
 }

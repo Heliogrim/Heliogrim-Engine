@@ -14,6 +14,6 @@ namespace hg::engine::gfx::render::graph {
         ~ResolverValidationPass() override;
 
     public:
-        [[nodiscard]] uptr<RenderGraph> operator()(mref<uptr<RenderGraph>> graph_) const override;
+        [[nodiscard]] uptr<RuntimeGraph> operator()(mref<uptr<RuntimeGraph>> graph_) const override;
     };
 }

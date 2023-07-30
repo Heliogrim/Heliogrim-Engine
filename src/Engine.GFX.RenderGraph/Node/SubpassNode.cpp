@@ -16,20 +16,14 @@ SubpassNode::SubpassNode(SubpassAccelMode mode_) noexcept :
     Node(
         make_smr<Auxiliary>()
     ) {
-    _auxiliary->add(uptr<SubpassComponent> { new SubpassComponent() });
+    auxAdd(make_uptr<SubpassComponent>());
 
     if (mode_ == SubpassAccelMode::eSingle) {
-        _auxiliary->add(
-            uptr<SubpassSingleAccelComponent> { new SubpassSingleAccelComponent() }
-        );
+        auxAdd(make_uptr<SubpassSingleAccelComponent>());
     } else if (mode_ == SubpassAccelMode::eMulti) {
-        _auxiliary->add(
-            uptr<SubpassMultiAccelComponent> { new SubpassMultiAccelComponent() }
-        );
+        auxAdd(make_uptr<SubpassMultiAccelComponent>());
     } else if (mode_ == SubpassAccelMode::eMaterial) {
-        _auxiliary->add(
-            uptr<SubpassMaterialAccelComponent> { new SubpassMaterialAccelComponent() }
-        );
+        auxAdd(make_uptr<SubpassMaterialAccelComponent>());
     }
 }
 
@@ -67,8 +61,7 @@ nmpt<SubpassAccelComponent> SubpassNode::getSubpassAcceleration() const noexcept
     const auto it = _STD ranges::find_if(
         _auxiliary->components(),
         [](const ptr<Component> component_) {
-            return component_->getMetaClass()->exact<SubpassSingleAccelComponent>() ||
-                component_->getMetaClass()->exact<SubpassMultiAccelComponent>();
+            return component_->getMetaClass()->is<SubpassAccelComponent>();
         }
     );
     return it != _auxiliary->components().end() ?

@@ -48,7 +48,6 @@
 
 /* Development Testing */
 #include <Engine.GFX.RenderGraph/test.hpp>
-#include <Engine.GFX.RenderPipeline/test.hpp>
 /**/
 
 using namespace hg::engine::gfx;
@@ -155,7 +154,6 @@ void Graphics::setup() {
     SCOPED_STOPWATCH
 
     test_render_graph();
-    test_render_pipe();
 
     /**
      * Create a new application

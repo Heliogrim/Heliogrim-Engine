@@ -94,3 +94,7 @@ void BuilderScanVisitor::operator()(cref<graph::SubpassNode> node_) {
     }
     Visitor::operator()(node_);
 }
+
+void BuilderScanVisitor::operator()(cref<graph::CompileNode> node_) {
+    assert(false);
+}

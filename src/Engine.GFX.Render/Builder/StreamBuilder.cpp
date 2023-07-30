@@ -1,7 +1,7 @@
 #include "StreamBuilder.hpp"
 
 #include <Engine.Common/Make.hpp>
-#include <Engine.GFX.RenderGraph/RenderGraph.hpp>
+#include <Engine.GFX.RenderGraph/RuntimeGraph.hpp>
 #include <Engine.GFX.RenderPipeline/RenderPipeline.hpp>
 
 #include "BuilderLayerVisitor.hpp"
@@ -11,7 +11,7 @@ using namespace hg;
 
 uptr<RenderPipeline> StreamBuilder::operator()(
     mref<uptr<RenderPipeline>> pipeline_,
-    mref<uptr<RenderGraph>> nextGraph_
+    mref<uptr<graph::RuntimeGraph>> nextGraph_
 ) const {
 
     auto visitor = BuilderLayerVisitor();

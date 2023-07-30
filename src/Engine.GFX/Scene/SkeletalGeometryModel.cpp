@@ -39,10 +39,10 @@ void SkeletalGeometryModel::destroy(const ptr<scene::Scene> scene_) {
 
 void SkeletalGeometryModel::render(mref<nmpt<IGCommandBuffer>> cmd_) const {
 
-    cmd_->bindVertexBuffer();
-    cmd_->bindIndexBuffer();
+    cmd_->bindVertexBuffer(nullptr);
+    cmd_->bindIndexBuffer(nullptr);
 
-    cmd_->bindStorage();
+    cmd_->bindStorage(nullptr);
 
-    cmd_->drawIndexed();
+    cmd_->drawIndexed(0uL, 0uL);
 }

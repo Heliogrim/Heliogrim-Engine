@@ -10,7 +10,7 @@ DxPassCompiler::~DxPassCompiler() = default;
 smr<const AccelerationPass> DxPassCompiler::compile(
     cref<class SpecificationStorage> specifications_,
     mref<smr<AccelerationPass>> source_,
-    mref<Vector<smr<AccelerationStageDerivat>>> stages_,
+    mref<Vector<smr<StageDerivat>>> stages_,
     mref<Vector<uptr<CompiledModule>>> modules_
 ) const {
     return nullptr;

@@ -6,17 +6,15 @@ using namespace hg;
 AccelerationEffect::AccelerationEffect(
     mref<Guid> guid_,
     mref<string> name_,
-    mref<Vector<smr<AccelerationStage>>> stages_,
-    mref<AccelerationEffectInputs> inputs_,
-    mref<AccelerationEffectBindings> bindings_,
-    mref<AccelerationEffectOutputs> outputs_
+    mref<Vector<smr<Stage>>> stages_,
+    mref<Vector<smr<Symbol>>> importSymbols_,
+    mref<Vector<smr<Symbol>>> exportSymbols_
 ) :
     _guid(_STD move(guid_)),
     _name(_STD move(name_)),
     _stages(_STD move(stages_)),
-    _inputs(_STD move(inputs_)),
-    _bindings(_STD move(bindings_)),
-    _outputs(_STD move(outputs_)) {}
+    _importSymbols(_STD move(importSymbols_)),
+    _exportSymbols(_STD move(exportSymbols_)) {}
 
 AccelerationEffect::~AccelerationEffect() = default;
 
@@ -28,18 +26,14 @@ string AccelerationEffect::getName() const noexcept {
     return _name;
 }
 
-cref<Vector<smr<AccelerationStage>>> AccelerationEffect::getStages() const noexcept {
+cref<Vector<smr<Stage>>> AccelerationEffect::getStages() const noexcept {
     return _stages;
 }
 
-cref<AccelerationEffectInputs> AccelerationEffect::getInputLayout() const noexcept {
-    return _inputs;
+cref<Vector<smr<Symbol>>> AccelerationEffect::getImportSymbols() const noexcept {
+    return _importSymbols;
 }
 
-cref<AccelerationEffectBindings> AccelerationEffect::getBindingLayout() const noexcept {
-    return _bindings;
-}
-
-cref<AccelerationEffectOutputs> AccelerationEffect::getOutputLayout() const noexcept {
-    return _outputs;
+cref<Vector<smr<Symbol>>> AccelerationEffect::getExportSymbols() const noexcept {
+    return _exportSymbols;
 }

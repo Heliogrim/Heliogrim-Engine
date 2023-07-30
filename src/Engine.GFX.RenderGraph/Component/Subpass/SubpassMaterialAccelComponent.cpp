@@ -5,6 +5,14 @@ using namespace hg;
 
 SubpassMaterialAccelComponent::~SubpassMaterialAccelComponent() noexcept = default;
 
+Vector<smr<engine::gfx::acc::Symbol>> SubpassMaterialAccelComponent::aggregateImportedSymbols() const {
+    return {};
+}
+
+Vector<smr<engine::gfx::acc::Symbol>> SubpassMaterialAccelComponent::aggregateExportedSymbols() const {
+    return {};
+}
+
 _STD span<const smr<engine::gfx::MaterialResource>> SubpassMaterialAccelComponent::getMaterials() const noexcept {
     return _STD span(_materials.begin(), _materials.size());
 }

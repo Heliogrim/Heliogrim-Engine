@@ -23,7 +23,7 @@ namespace hg::engine::gfx::render {
             mref<Guid> guid_,
             mref<string> name_,
             u32 runtimeVersion_,
-            mref<uptr<RenderGraph>> sourceGraph_,
+            mref<uptr<graph::CompileGraph>> compileGraph_,
             mref<smr<graph::Resolver>> baseResolver_,
             mref<smr<graph::InjectGraphRegistry>> injectionRegistry_,
             /**/
@@ -39,7 +39,7 @@ namespace hg::engine::gfx::render {
 
         _STD atomic_uint_fast32_t _rtVer;
 
-        uptr<RenderGraph> _srcGraph;
+        uptr<graph::CompileGraph> _compileGraph;
         smr<graph::Resolver> _baseRes;
 
         smr<graph::InjectGraphRegistry> _injectReg;
@@ -74,7 +74,7 @@ namespace hg::engine::gfx::render {
     private:
         [[nodiscard]] virtual uptr<RenderPass> updateIncremental(
             mref<uptr<RenderPass>> pass_,
-            mref<uptr<RenderGraph>> nextGraph_
+            mref<uptr<graph::RuntimeGraph>> nextGraph_
         ) const;
 
     public:

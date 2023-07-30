@@ -1,6 +1,7 @@
 #pragma once
 
 #include <span>
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Meta/Constexpr.hpp>
@@ -11,7 +12,7 @@
 
 namespace hg::engine::gfx::render::graph {
     class SubpassMaterialAccelComponent final :
-        public SubpassAccelComponent {
+        public InheritMeta<SubpassMaterialAccelComponent, SubpassAccelComponent> {
     public:
         using this_type = SubpassMaterialAccelComponent;
 
@@ -22,6 +23,14 @@ namespace hg::engine::gfx::render::graph {
         SubpassMaterialAccelComponent() noexcept = default;
 
         ~SubpassMaterialAccelComponent() noexcept override;
+
+    private:
+        DenseMap<smr<MaterialResource>, Vector<smr<const acc::AccelerationPass>>> _accelPasses;
+
+    public:
+        [[nodiscard]] Vector<smr<acc::Symbol>> aggregateImportedSymbols() const override;
+
+        [[nodiscard]] Vector<smr<acc::Symbol>> aggregateExportedSymbols() const override;
 
     private:
         Vector<smr<MaterialResource>> _materials;

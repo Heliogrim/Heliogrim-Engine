@@ -7,6 +7,7 @@
 #include "__fwd.hpp"
 
 #include "../Wrapper.hpp"
+#include "../Meta/Concept.hpp"
 
 namespace hg {
     template <typename Ty_, typename AllocType_, bool Atomic_>
@@ -349,14 +350,16 @@ namespace hg {
             return *this;
         }
 
-        template <typename Tx_ = Ty_> requires (not _STD is_void_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_> && (not similar_to<Ty_, void>)
         cref<_STD remove_const_t<Tx_>> load() const noexcept {
-            return *(storage.template load<Ty_>());
+            return *(storage.template load<Tx_>());
         }
 
-        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires _STD is_same_v<Tx_, Ty_>
+            && (not _STD is_const_v<Tx_>)
+            && (not similar_to<Ty_, void>)
         ref<Tx_> load() noexcept {
-            return *(storage.template load<Ty_>());
+            return *(storage.template load<Tx_>());
         }
 
     public:
@@ -370,12 +373,13 @@ namespace hg {
         }
 
     public:
-        template <typename Tx_ = Ty_> requires (not _STD is_void_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires (not similar_to<Tx_, void>) && _STD is_same_v<Tx_, Ty_>
         [[nodiscard]] cref<_STD remove_const_t<Tx_>> operator*() const noexcept {
             return *(storage.template load<Ty_>());
         }
 
-        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && (not _STD is_void_v<Ty_>) && _STD is_same_v
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && (not similar_to<Tx_, void>) &&
+            _STD is_same_v
             <Tx_, Ty_>
         [[nodiscard]] ref<Tx_> operator*() noexcept {
             return *(storage.template load<Ty_>());
@@ -499,13 +503,15 @@ namespace hg {
             return *this;
         }
 
-        template <typename Tx_ = Ty_> requires (not _STD is_void_v<Ty_>) && _STD is_same_v<Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires (not _STD is_void_v<Tx_>)
+            && _STD is_nothrow_convertible_v<ptr<Ty_>, ptr<Tx_>>
         cref<_STD remove_const_t<Tx_>> load() const noexcept {
             return *(storage.template load<Ty_>());
         }
 
-        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>) && (not _STD is_void_v<Ty_>) && _STD is_same_v
-            <Tx_, Ty_>
+        template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>)
+            && (not _STD is_void_v<Tx_>)
+            && _STD is_nothrow_convertible_v<ptr<Ty_>, ptr<Tx_>>
         ref<Tx_> load() noexcept {
             return *(storage.template load<Ty_>());
         }
