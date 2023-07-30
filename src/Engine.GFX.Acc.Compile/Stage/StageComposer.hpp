@@ -2,7 +2,6 @@
 
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.GFX.Acc/AccelerationPass.hpp>
-#include "../Token/ScopedTokenStorage.hpp"
 
 namespace hg::engine::gfx::acc {
     class StageComposer {
@@ -23,9 +22,8 @@ namespace hg::engine::gfx::acc {
         void setTokenizer(mref<non_owning_rptr<const class Tokenizer>> tokenizer_);
 
     public:
-        [[nodiscard]] Vector<smr<AccelerationStageDerivat>> compose(
+        [[nodiscard]] Vector<smr<StageDerivat>> compose(
             cref<smr<AccelerationPass>> targetPass_,
-            cref<ScopedTokenStorage> tokens_,
             cref<class SpecificationStorage> specifications_
         ) const;
     };

@@ -19,6 +19,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\BuilderProgGenVisitor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\BuilderScanVisitor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\BuilderLayerVisitor.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\CompileVisitor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\StreamBuilder.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render\Renderer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render\RenderPass.cpp" />
@@ -28,6 +29,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\BuilderProgGenVisitor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\BuilderScanVisitor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\BuilderLayerVisitor.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\CompileVisitor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\StreamBuilder.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render\InjectGraphRegistry.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render\Renderer.hpp" />

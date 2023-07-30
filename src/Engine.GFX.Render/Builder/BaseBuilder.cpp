@@ -2,25 +2,63 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.GFX.RenderGraph/RenderGraph.hpp>
+#include <Engine.GFX.RenderGraph/CompileGraph.hpp>
+#include <Engine.GFX.RenderGraph/RuntimeGraph.hpp>
+#include <Engine.GFX.RenderGraph/Debug/DebugVisitor.hpp>
+#include <Engine.GFX.RenderGraph/Resolver/Resolver.hpp>
+#include <Engine.GFX.RenderGraph/Resolver/ResolverOptions.hpp>
 #include <Engine.GFX.RenderPipeline/RenderPipeline.hpp>
 #include <Engine.GFX.RenderPipeline/Stage/Stage.hpp>
 
 #include "BuilderProgGenVisitor.hpp"
 #include "BuilderScanVisitor.hpp"
 #include "BuilderLayerVisitor.hpp"
+#include "CompileVisitor.hpp"
 
 using namespace hg::engine::gfx::render;
 using namespace hg;
 
-uptr<RenderPipeline> BaseBuilder::operator()(mref<nmpt<RenderGraph>> graph_) const {
+uptr<graph::RuntimeGraph> BaseBuilder::compile(mref<nmpt<graph::CompileGraph>> graph_) const {
+
+    auto runtime = make_uptr<graph::RuntimeGraph>();
+
+    /**/
+
+    auto compiler = CompileVisitor(runtime.get());
+    graph_->update(compiler);
+
+    /**/
+
+    graph::Resolver resolver {};
+    graph::ResolverOptions options {
+        .flags = graph::ResolverPassFlags {} | graph::ResolverPassFlagBits::eBasicLayout |
+        graph::ResolverPassFlagBits::eValidate
+    };
+
+    runtime = resolver(_STD move(runtime), _STD move(options));
+
+    /**/
+
+    graph::DebugVisitor debug {};
+    runtime->update(debug);
+
+    /**/
+
+    return runtime;
+}
+
+uptr<RenderPipeline> BaseBuilder::operator()(mref<nmpt<graph::CompileGraph>> graph_) const {
+
+    auto runtime = compile(_STD move(graph_));
+
+    /**/
 
     auto scanner = BuilderScanVisitor();
-    graph_->begin()->accept(scanner);
+    runtime->begin()->accept(scanner);
 
     auto layerer = BuilderLayerVisitor();
     layerer.setNodeRcDep(scanner.extractNodeRcMap());
-    graph_->begin()->accept(layerer);
+    runtime->begin()->accept(layerer);
 
     auto gen = BuilderProgGenVisitor();
     gen.setNodeRcDep(layerer.extractNodeRcDep());

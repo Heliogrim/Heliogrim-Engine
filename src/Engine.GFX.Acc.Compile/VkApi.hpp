@@ -2,8 +2,8 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.GFX/vkinc.hpp>
-#include <Engine.GFX.Acc/AccelerationStageTransferDataType.hpp>
-#include <Engine.GFX.Acc/DataInputRate.hpp>
+#include <Engine.GFX.Acc/Stage/TransferDataType.hpp>
+#include <Engine.GFX.Acc/Stage/DataInputRate.hpp>
 
 namespace hg::engine::gfx::acc {
     enum class StencilOp;
@@ -11,7 +11,7 @@ namespace hg::engine::gfx::acc {
 }
 
 namespace hg::engine::gfx::acc::api {
-    [[nodiscard]] vk::Format dataType2Format(cref<AccelerationStageTransferDataType> dataType_);
+    [[nodiscard]] vk::Format dataType2Format(cref<TransferDataType> dataType_);
 
     [[nodiscard]] vk::VertexInputRate inputRate2VertexRate(cref<DataInputRate> dataType_);
 

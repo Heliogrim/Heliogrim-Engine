@@ -13,5 +13,7 @@ namespace hg::engine::gfx::render::graph {
 
     public:
         void operator()(cref<Node> node_) override;
+
+        void operator()(cref<CompileNode> node_) override;
     };
 }

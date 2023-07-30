@@ -19,12 +19,12 @@ namespace hg::engine::gfx::material {
 
         [[nodiscard]] MaterialPrototypeParameter buildMaterialPrototypeParameter(
             mref<string> uniqueName_,
-            mref<acc::AccelerationStageTransferDataType> dataType_
+            mref<acc::TransferDataType> dataType_
         ) const;
 
     protected:
         [[nodiscard]] _Success_(return != nullptr) uptr<MaterialParameterStorageBase> buildMaterialParameterStorage(
-            acc::AccelerationStageTransferDataType dataType_
+            acc::TransferDataType dataType_
         ) const;
     };
 }

@@ -4,11 +4,13 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.GFX.Acc/AccelerationEffect.hpp>
-#include <Engine.GFX.Acc/AccelerationStageDerivat.hpp>
+#include <Engine.GFX.Acc/Stage/StageDerivat.hpp>
+#include <Engine.GFX.Acc/Symbol/Symbol.hpp>
+#include <Engine.GFX.Acc.Lang/Intermediate.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
+#include "../Token/ScopedTokenStorage.hpp"
 #include "../Token/Tokenizer.hpp"
-#include <Engine.GFX.Acc.Lang/Intermediate.hpp>
 
 using namespace hg::engine::gfx::acc;
 using namespace hg;
@@ -21,25 +23,24 @@ void StageComposer::setTokenizer(mref<non_owning_rptr<const Tokenizer>> tokenize
     _tokenizer = _STD move(tokenizer_);
 }
 
-Vector<smr<AccelerationStageDerivat>> StageComposer::compose(
+Vector<smr<StageDerivat>> StageComposer::compose(
     cref<smr<AccelerationPass>> targetPass_,
-    cref<ScopedTokenStorage> tokens_,
     cref<class SpecificationStorage> specifications_
 ) const {
 
     const auto& stages = targetPass_->getEffect()->getStages();
 
-    Vector<smr<AccelerationStageDerivat>> derivats {};
+    Vector<smr<StageDerivat>> derivats {};
     derivats.reserve(stages.size());
 
     for (const auto& stage : stages) {
 
-        Vector<AccelerationStageInput> inputs { stage->getStageInputs() };
-        Vector<AccelerationStageOutput> outputs { stage->getStageOutputs() };
-        Vector<AccelerationStageInput> substitutionInputs {};
-        Vector<AccelerationStageOutput> substitutionOutputs {};
+        Vector<StageInput> inputs { stage->getStageInputs() };
+        Vector<StageOutput> outputs { stage->getStageOutputs() };
+        Vector<StageInput> substitutionInputs {};
+        Vector<StageOutput> substitutionOutputs {};
 
-        AccelerationStageFlagBits flagBits { stage->getFlagBits() };
+        StageFlagBits flagBits { stage->getFlagBits() };
 
         /**/
 
@@ -54,10 +55,10 @@ Vector<smr<AccelerationStageDerivat>> StageComposer::compose(
         /**/
 
         derivats.push_back(
-            make_smr<AccelerationStageDerivat>(
+            make_smr<StageDerivat>(
                 stage.get(),
-                Vector<smr<AccelerationStage>> { stage },
-                smr<AccelerationStageModule> { nullptr },
+                Vector<smr<Stage>> { stage },
+                smr<StageModule> { nullptr },
                 _STD move(flagBits),
                 _STD move(inputs),
                 _STD move(outputs),
@@ -75,26 +76,26 @@ Vector<smr<AccelerationStageDerivat>> StageComposer::compose(
     for (const auto& derivat : derivats) {
 
         for (const auto& input : derivat->getStageInputs()) {
-            if (input.transferType == AccelerationStageTransferType::eForward) {
+            if (input.transferType == TransferType::eForward) {
                 continue;
             }
             bindingTokens.addToken(clone(input.token));
         }
         for (const auto& input : derivat->substitutionInputs()) {
-            if (input.transferType == AccelerationStageTransferType::eForward) {
+            if (input.transferType == TransferType::eForward) {
                 continue;
             }
             bindingTokens.addToken(clone(input.token));
         }
 
         for (const auto& output : derivat->getStageOutputs()) {
-            if (output.transferType == AccelerationStageTransferType::eForward) {
+            if (output.transferType == TransferType::eForward) {
                 continue;
             }
             bindingTokens.addToken(clone(output.token));
         }
         for (const auto& output : derivat->substitutionOutputs()) {
-            if (output.transferType == AccelerationStageTransferType::eForward) {
+            if (output.transferType == TransferType::eForward) {
                 continue;
             }
             bindingTokens.addToken(clone(output.token));
@@ -110,52 +111,78 @@ Vector<smr<AccelerationStageDerivat>> StageComposer::compose(
         AccelerationBindingLayoutElement element {};
         element.token = token;
 
-        // TODO: Query data type of binding
-        const auto& descriptions = targetPass_->getEffect()->getBindingLayout().getDescriptions();
-        const auto it = _STD find_if(
-            descriptions.begin(),
-            descriptions.end(),
-            [&](const auto& description_) {
-                const auto tmp = _tokenizer->generate(
-                    BindingLayoutDescription {
-                        description_.token,
-                        AccelerationStageTransferDataType::eUnknown,
-                        description_.bindingMode,
-                        description_.ioMode,
-                        {}
-                    }
-                );
-                return token == tmp;
-            }
-        );
+        /**/
 
-        if (it == descriptions.end()) {
-            // TODO:
-            __debugbreak();
+        const auto storeType = [](const auto& obj_, ref<AccelerationBindingLayoutElement> dst_) {
+            switch (obj_.dataType) {
+                case TransferDataType::eConstant: {
+                    // TODO:
+                    __debugbreak();
+                    break;
+                }
+                case TransferDataType::eSampler: {
+                    dst_.type = AccelerationBindingType::eTexture;
+                    break;
+                }
+                case TransferDataType::eStorage: {
+                    dst_.type = AccelerationBindingType::eStorageBuffer;
+                    break;
+                }
+                case TransferDataType::eUniform: {
+                    dst_.type = AccelerationBindingType::eUniformBuffer;
+                    break;
+                }
+                default: {
+                    // TODO:
+                    __debugbreak();
+                }
+            }
+        };
+
+        /**/
+
+        const auto& imported = targetPass_->getEffect()->getImportSymbols();
+        const auto& exported = targetPass_->getEffect()->getExportSymbols();
+
+        smr<Symbol> symbol { nullptr };
+        if (symbol.empty()) {
+            for (const auto& is : imported) {
+
+                const auto tmp = _tokenizer->transformAccStageIn(is->token, false);
+                if (tmp != token) {
+                    continue;
+                }
+
+                const auto input = targetPass_->getEffect()->getFirstInputFor(*is);
+                if (input.has_value() && input.value().transferType == TransferType::eBinding) {
+                    symbol = clone(is);
+                    storeType(input.value(), element);
+                    break;
+                }
+            }
         }
 
-        switch (it->dataType) {
-            case AccelerationStageTransferDataType::eConstant: {
-                // TODO:
-                __debugbreak();
-                break;
+        if (symbol.empty()) {
+            for (const auto& es : exported) {
+
+                const auto tmp = _tokenizer->transformAccStageOut(es->token, false);
+                if (tmp != token) {
+                    continue;
+                }
+
+                const auto output = targetPass_->getEffect()->getLastOutputFor(*es);
+                if (output.has_value() && output.value().transferType == TransferType::eBinding) {
+                    symbol = clone(es);
+                    storeType(output.value(), element);
+                    break;
+                }
             }
-            case AccelerationStageTransferDataType::eSampler: {
-                element.type = AccelerationBindingType::eTexture;
-                break;
-            }
-            case AccelerationStageTransferDataType::eStorage: {
-                element.type = AccelerationBindingType::eStorageBuffer;
-                break;
-            }
-            case AccelerationStageTransferDataType::eUniform: {
-                element.type = AccelerationBindingType::eUniformBuffer;
-                break;
-            }
-            default: {
-                // TODO:
-                __debugbreak();
-            }
+        }
+
+        if (symbol.empty()) {
+            /* Could happen if type is TransferType::eForwarding */
+            __debugbreak();
+            break;
         }
 
         /**/

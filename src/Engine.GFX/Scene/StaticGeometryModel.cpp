@@ -260,10 +260,10 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
 
 void StaticGeometryModel::render(mref<nmpt<render::pipeline::IGCommandBuffer>> cmd_) const {
 
-    cmd_->bindVertexBuffer();
-    cmd_->bindIndexBuffer();
+    cmd_->bindVertexBuffer(nullptr);
+    cmd_->bindIndexBuffer(nullptr);
 
-    cmd_->drawIndexed();
+    cmd_->drawIndexed(0uL, 0uL);
 
 }
 

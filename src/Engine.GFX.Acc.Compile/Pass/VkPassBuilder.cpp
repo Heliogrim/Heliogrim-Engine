@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.GFX.Acc/Pass/VkAccelerationGraphicsPass.hpp>
+#include <Engine.GFX.Acc/Pass/VkGraphicsPass.hpp>
 
 #include "../Spec/SpecificationStorage.hpp"
 
@@ -18,7 +18,7 @@ smr<AccelerationPass> VkPassBuilder::build(
     cref<class SpecificationStorage> specifications_
 ) const noexcept {
     assert(specifications_.getGraphicsSpec().renderPass);
-    return make_smr<VkAccelerationGraphicsPass>(
-        new VkAccelerationGraphicsPass(_STD move(effect_))
+    return make_smr<VkGraphicsPass>(
+        new VkGraphicsPass(_STD move(effect_))
     );
 }

@@ -48,6 +48,9 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\BuilderProgGenVisitor.hpp">
       <Filter>Headerdateien\Builder</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\CompileVisitor.hpp">
+      <Filter>Headerdateien\Builder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Render\Renderer.cpp">
@@ -69,6 +72,9 @@
       <Filter>Quelldateien\Builder</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\BuilderProgGenVisitor.cpp">
+      <Filter>Quelldateien\Builder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\CompileVisitor.cpp">
       <Filter>Quelldateien\Builder</Filter>
     </ClCompile>
   </ItemGroup>

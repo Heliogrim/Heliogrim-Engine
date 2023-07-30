@@ -11,7 +11,7 @@
 
 namespace hg::engine::gfx::render::graph {
     class SubpassMultiAccelComponent final :
-        public SubpassAccelComponent {
+        public InheritMeta<SubpassMultiAccelComponent, SubpassAccelComponent> {
     public:
         using this_type = SubpassMultiAccelComponent;
 
@@ -22,6 +22,14 @@ namespace hg::engine::gfx::render::graph {
         SubpassMultiAccelComponent() noexcept = default;
 
         ~SubpassMultiAccelComponent() noexcept override;
+
+    private:
+        Vector<smr<const acc::AccelerationPass>> _accelPasses;
+
+    public:
+        [[nodiscard]] Vector<smr<acc::Symbol>> aggregateImportedSymbols() const override;
+
+        [[nodiscard]] Vector<smr<acc::Symbol>> aggregateExportedSymbols() const override;
 
     private:
         Vector<smr<const acc::AccelerationEffect>> _accelerations;

@@ -61,9 +61,27 @@
     <Filter Include="Quelldateien\Component\Subpass">
       <UniqueIdentifier>{c7dda1e0-d7f3-4c7a-b1a0-34977c463ff0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Node\Compile">
+      <UniqueIdentifier>{a4b06061-cb5b-45f1-a6d8-ac1b9fb914b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Node\Compile">
+      <UniqueIdentifier>{67604508-07cc-4b95-8c12-4ea7db438462}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Components\Compile">
+      <UniqueIdentifier>{b8b0dad1-6718-46cf-9691-0d507735d4a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Component\Compile">
+      <UniqueIdentifier>{20e8b5b7-d92d-4fc3-918e-a2f1513a2f85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Components\Compile\Subpass">
+      <UniqueIdentifier>{2b19d7c0-51db-4dc7-9de3-2ee07ab802e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Component\Compile\Subpass">
+      <UniqueIdentifier>{57232cd8-6fea-4959-b300-b65a0931c11c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\RenderGraph.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\RuntimeGraph.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Node.hpp">
@@ -186,9 +204,36 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassSceneMeshInvocationComponent.hpp">
       <Filter>Headerdateien\Components\Subpass</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\CompileGraph.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileNode.hpp">
+      <Filter>Headerdateien\Node\Compile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileSubpassNode.hpp">
+      <Filter>Headerdateien\Node\Compile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\CompileSubpassComponent.hpp">
+      <Filter>Headerdateien\Components\Compile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\CompileComponent.hpp">
+      <Filter>Headerdateien\Components\Compile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassSingleAccelComponent.hpp">
+      <Filter>Headerdateien\Components\Compile\Subpass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassMultiAccelComponent.hpp">
+      <Filter>Headerdateien\Components\Compile\Subpass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassMaterialAccelComponent.hpp">
+      <Filter>Headerdateien\Components\Compile\Subpass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassAccelComponent.hpp">
+      <Filter>Headerdateien\Components\Compile\Subpass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RenderGraph.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RuntimeGraph.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Node.cpp">
@@ -289,6 +334,27 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassSingleAccelComponent.cpp">
       <Filter>Quelldateien\Component\Subpass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileNode.cpp">
+      <Filter>Quelldateien\Node\Compile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileSubpassNode.cpp">
+      <Filter>Quelldateien\Node\Compile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\CompileSubpassComponent.cpp">
+      <Filter>Quelldateien\Component\Compile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassMaterialAccelComponent.cpp">
+      <Filter>Quelldateien\Component\Compile\Subpass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassMultiAccelComponent.cpp">
+      <Filter>Quelldateien\Component\Compile\Subpass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassSingleAccelComponent.cpp">
+      <Filter>Quelldateien\Component\Compile\Subpass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\CompileGraph.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

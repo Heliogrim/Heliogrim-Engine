@@ -31,5 +31,11 @@ namespace hg::engine::gfx::render::graph {
         virtual void operator()(cref<ProviderNode> node_);
 
         virtual void operator()(cref<SubpassNode> node_);
+
+    public:
+        virtual void operator()(cref<CompileNode> node_) = 0;
+
+    public:
+        virtual void operator()(cref<CompileSubpassNode> node_);
     };
 }

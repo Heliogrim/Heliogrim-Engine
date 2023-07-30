@@ -19,6 +19,11 @@ namespace hg::engine::gfx::render::graph {
     protected:
         smr<Auxiliary> _auxiliary;
 
+    protected:
+        void auxAdd(mref<uptr<Component>> comp_);
+
+        void auxRem(mref<nmpt<Component>> comp_);
+
     public:
         [[nodiscard]] smr<Auxiliary> auxiliary() const noexcept;
 

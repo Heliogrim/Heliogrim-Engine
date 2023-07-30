@@ -26,12 +26,12 @@ namespace hg::engine::gfx::acc {
 
     protected:
         smr<AccelerationEffect> _effect;
-        Vector<smr<AccelerationStageDerivat>> _stages;
+        Vector<smr<StageDerivat>> _stages;
 
     public:
         [[nodiscard]] smr<AccelerationEffect> getEffect() const noexcept;
 
-        [[nodiscard]] cref<Vector<smr<AccelerationStageDerivat>>> getStageDerivates() const noexcept;
+        [[nodiscard]] cref<Vector<smr<StageDerivat>>> getStageDerivates() const noexcept;
 
     protected:
         AccelerationPassBindings _bindings;

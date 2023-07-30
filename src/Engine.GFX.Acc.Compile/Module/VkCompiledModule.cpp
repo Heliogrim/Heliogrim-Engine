@@ -10,7 +10,7 @@ using namespace hg;
 
 VkCompiledModule::VkCompiledModule(
     mref<_::VkShaderModule> shaderModule_,
-    mref<DenseMap<AccelerationStageTransferToken, VkBindingLocation>> mapping_
+    mref<DenseMap<TransferToken, VkBindingLocation>> mapping_
 ) noexcept :
     shaderModule(_STD move(shaderModule_)),
     _mappedLocations(_STD move(mapping_)) {}
@@ -33,7 +33,7 @@ VkCompiledModule::~VkCompiledModule() {
     shaderModule = nullptr;
 }
 
-VkBindingLocation VkCompiledModule::queryBindLocation(cref<AccelerationStageTransferToken> token_) const noexcept {
+VkBindingLocation VkCompiledModule::queryBindLocation(cref<TransferToken> token_) const noexcept {
 
     const auto it = _mappedLocations.find(token_);
     if (it != _mappedLocations.end()) {

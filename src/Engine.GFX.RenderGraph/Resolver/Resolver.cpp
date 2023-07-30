@@ -4,7 +4,7 @@
 
 #include "ResolverPass.hpp"
 #include "ResolverValidationPass.hpp"
-#include "../RenderGraph.hpp"
+#include "../RuntimeGraph.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg::engine::gfx::render;
@@ -14,12 +14,12 @@ Resolver::Resolver() {
     _passes.push_back(make_uptr<ResolverValidationPass>());
 }
 
-uptr<RenderGraph> Resolver::operator()(
-    mref<uptr<RenderGraph>> graph_,
+uptr<RuntimeGraph> Resolver::operator()(
+    mref<uptr<RuntimeGraph>> graph_,
     mref<ResolverOptions> options_
 ) const {
 
-    uptr<RenderGraph> graph = _STD move(graph_);
+    uptr<RuntimeGraph> graph = _STD move(graph_);
     for (const auto& pass : _passes) {
         if (pass->getResolverFlags() & options_.flags) {
             graph = (*pass)(_STD move(graph));

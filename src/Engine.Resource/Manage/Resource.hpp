@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/__macro.hpp>
+#include <Engine.Common/Make.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Assets/Types/Asset.hpp>

@@ -23,6 +23,6 @@ namespace hg::engine::gfx::render::graph {
         [[nodiscard]] ResolverPassFlags getResolverFlags() const noexcept;
 
     public:
-        [[nodiscard]] virtual uptr<RenderGraph> operator()(_In_ mref<uptr<RenderGraph>> graph_) const = 0;
+        [[nodiscard]] virtual uptr<RuntimeGraph> operator()(_In_ mref<uptr<RuntimeGraph>> graph_) const = 0;
     };
 }

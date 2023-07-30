@@ -92,6 +92,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Meta\CoreState.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Meta\NoThrow.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Meta\TypeId.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Optional.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Profiling\Profiler.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Profiling\Stopwatch.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Result.hpp" />

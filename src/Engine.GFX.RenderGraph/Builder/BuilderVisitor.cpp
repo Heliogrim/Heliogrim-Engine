@@ -11,9 +11,16 @@
 #include "../Node/ProviderNode.hpp"
 #include "../Node/SubpassNode.hpp"
 #include "../Node/SelectorNode.hpp"
+#include "../Node/Compile/CompileNode.hpp"
+#include "../Node/Compile/CompileSubpassNode.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg;
+
+template <typename TargetType_, typename SourceType_>
+constexpr cref<TargetType_> override_cast(cref<SourceType_> val_) noexcept {
+    return *reinterpret_cast<const TargetType_*>(reinterpret_cast<const void*>(&val_));
+}
 
 BuilderVisitor::BuilderVisitor(
     mref<predicate_type> from_,
@@ -209,5 +216,13 @@ void BuilderVisitor::operator()(cref<ProviderNode> node_) {
 }
 
 void BuilderVisitor::operator()(cref<SubpassNode> node_) {
+    return simple_splice_insert(node_);
+}
+
+void BuilderVisitor::operator()(cref<CompileNode> node_) {
+    BuilderVisitor::operator()(override_cast<Node>(node_));
+}
+
+void BuilderVisitor::operator()(cref<CompileSubpassNode> node_) {
     return simple_splice_insert(node_);
 }

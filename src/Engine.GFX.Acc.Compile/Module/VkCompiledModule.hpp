@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.GFX/API/__vkFwd.hpp>
-#include <Engine.GFX.Acc/AccelerationStageTransferToken.hpp>
+#include <Engine.GFX.Acc/Stage/TransferToken.hpp>
 
 #include "CompiledModule.hpp"
 #include "VkBindingLocation.hpp"
@@ -19,7 +19,7 @@ namespace hg::engine::gfx::acc {
 
         VkCompiledModule(
             mref<_::VkShaderModule> shaderModule_,
-            mref<DenseMap<AccelerationStageTransferToken, VkBindingLocation>> mapping_
+            mref<DenseMap<TransferToken, VkBindingLocation>> mapping_
         ) noexcept;
 
         VkCompiledModule(mref<this_type> other_) noexcept = default;
@@ -37,9 +37,9 @@ namespace hg::engine::gfx::acc {
         _::VkShaderModule shaderModule { nullptr };
 
     private:
-        DenseMap<AccelerationStageTransferToken, VkBindingLocation> _mappedLocations;
+        DenseMap<TransferToken, VkBindingLocation> _mappedLocations;
 
     public:
-        [[nodiscard]] VkBindingLocation queryBindLocation(cref<AccelerationStageTransferToken> token_) const noexcept;
+        [[nodiscard]] VkBindingLocation queryBindLocation(cref<TransferToken> token_) const noexcept;
     };
 }

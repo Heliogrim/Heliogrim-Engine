@@ -37,20 +37,9 @@ namespace hg::engine::gfx::render::graph {
 
         void unmounted(nmpt<const Component> unmounted_) override;
 
-    private:
-        DenseSet<Requirement> _required;
-
     public:
-        [[nodiscard]] cref<DenseSet<Requirement>> getRequirements() const noexcept;
+        [[nodiscard]] DenseSet<Requirement> getRequirements() const noexcept;
 
-        void setRequirements(mref<DenseSet<Requirement>> requirements_);
-
-    private:
-        DenseSet<Provision> _provided;
-
-    public:
-        [[nodiscard]] cref<DenseSet<Provision>> getProvided() const noexcept;
-
-        void setProvided(mref<DenseSet<Provision>> provided_);
+        [[nodiscard]] DenseSet<Provision> getProvided() const noexcept;
     };
 }

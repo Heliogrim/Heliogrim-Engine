@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Collection/DenseMap.hpp>
-#include <Engine.GFX.Acc/AccelerationStageDerivat.hpp>
+#include <Engine.GFX.Acc/Stage/StageDerivat.hpp>
 #include <Engine.GFX.Acc/AccelerationPass.hpp>
 
 #include "ModuleSource.hpp"
@@ -28,7 +28,7 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] virtual uptr<ModuleSource> build(
             cref<smr<AccelerationPass>> targetPass_,
             cref<class SpecificationStorage> specifications_,
-            cref<smr<AccelerationStageDerivat>> stage_,
+            cref<smr<StageDerivat>> stage_,
             cref<uptr<ModuleSource>> previous_
         ) const = 0;
     };

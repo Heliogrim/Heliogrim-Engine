@@ -6,7 +6,7 @@ using namespace hg;
 
 MaterialPrototypeParameter::MaterialPrototypeParameter(
     mref<string> uniqueName_,
-    mref<AccelerationStageTransferDataType> dataType_,
+    mref<TransferDataType> dataType_,
     mref<uptr<MaterialParameterStorageBase>> defaultStorage_
 ) noexcept :
     _uniqueName(_STD move(uniqueName_)),
@@ -30,7 +30,7 @@ string MaterialPrototypeParameter::getUniqueName() const noexcept {
     return _uniqueName;
 }
 
-AccelerationStageTransferDataType MaterialPrototypeParameter::getDataType() const noexcept {
+TransferDataType MaterialPrototypeParameter::getDataType() const noexcept {
     return _dataType;
 }
 

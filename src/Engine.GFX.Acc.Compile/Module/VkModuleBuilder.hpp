@@ -15,23 +15,23 @@ namespace hg::engine::gfx::acc {
     private:
         [[nodiscard]] bool isFirstStage(
             cref<smr<AccelerationPass>> targetPass_,
-            cref<smr<AccelerationStageDerivat>> stage_
+            cref<smr<StageDerivat>> stage_
         ) const noexcept;
 
     private:
-        [[nodiscard]] string transpile(cref<AccelerationStageTransferToken> token_) const;
+        [[nodiscard]] string transpile(cref<TransferToken> token_) const;
 
-        [[nodiscard]] uptr<class VkModuleSource> transpile(
-            cref<smr<AccelerationStageDerivat>> stage_,
-            mref<uptr<class VkModuleSource>> module_
+        [[nodiscard]] uptr<struct VkModuleSource> transpile(
+            cref<smr<StageDerivat>> stage_,
+            mref<uptr<struct VkModuleSource>> module_
         ) const;
 
     public:
-        [[nodiscard]] uptr<class ModuleSource> build(
+        [[nodiscard]] uptr<struct ModuleSource> build(
             cref<smr<AccelerationPass>> targetPass_,
             cref<class SpecificationStorage> specifications_,
-            cref<smr<AccelerationStageDerivat>> stage_,
-            cref<uptr<class ModuleSource>> previous_
+            cref<smr<StageDerivat>> stage_,
+            cref<uptr<struct ModuleSource>> previous_
         ) const override;
     };
 }

@@ -1,10 +1,9 @@
 #pragma once
 
-namespace hg::engine::gfx::render {
-    class RenderGraph;
-}
-
 namespace hg::engine::gfx::render::graph {
+    class CompileGraph;
+    class RuntimeGraph;
+    /**/
     class Builder;
     class BuilderVisitor;
     /**/
@@ -16,6 +15,13 @@ namespace hg::engine::gfx::render::graph {
     class SubpassComponent;
     class SubpassAccelComponent;
     class SubpassInvocationComponent;
+    /**/
+    class CompileComponent;
+    class CompileSubpassComponent;
+    class CompileSubpassAccelComponent;
+    class CompileSubpassSingleAccelComponent;
+    class CompileSubpassMultiAccelComponent;
+    class CompileSubpassMaterialAccelComponent;
     /**/
     class Resolver;
     struct ResolverOptions;
@@ -30,6 +36,9 @@ namespace hg::engine::gfx::render::graph {
     /**/
     class ProviderNode;
     class SubpassNode;
+    /**/
+    class CompileNode;
+    class CompileSubpassNode;
     /**/
     class Auxiliary;
     class Visitor;

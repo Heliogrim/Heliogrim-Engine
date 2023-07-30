@@ -4,7 +4,7 @@
 #include <Engine.Logging/Logger.hpp>
 
 #include "ResolverValidationVisitor.hpp"
-#include "Engine.GFX.RenderGraph/RenderGraph.hpp"
+#include "Engine.GFX.RenderGraph/RuntimeGraph.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg::engine::gfx::render;
@@ -15,7 +15,7 @@ ResolverValidationPass::ResolverValidationPass() noexcept :
 
 ResolverValidationPass::~ResolverValidationPass() = default;
 
-uptr<RenderGraph> ResolverValidationPass::operator()(mref<uptr<RenderGraph>> graph_) const {
+uptr<RuntimeGraph> ResolverValidationPass::operator()(mref<uptr<RuntimeGraph>> graph_) const {
 
     if (not graph_->begin().empty()) {
         ResolverValidationVisitor visitor {};

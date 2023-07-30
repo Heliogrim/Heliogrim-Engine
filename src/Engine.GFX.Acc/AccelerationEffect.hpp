@@ -1,15 +1,13 @@
 #pragma once
 
 #include <Engine.Common/Guid.hpp>
+#include <Engine.Common/Optional.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
 #include "__fwd.hpp"
 
-#include "AccelerationStage.hpp"
-#include "AccelerationEffectInputs.hpp"
-#include "AccelerationEffectBindings.hpp"
-#include "AccelerationEffectOutputs.hpp"
+#include "Stage/Stage.hpp"
 
 namespace hg::engine::gfx::acc {
     class AccelerationEffect {
@@ -22,10 +20,9 @@ namespace hg::engine::gfx::acc {
         AccelerationEffect(
             mref<Guid> guid_,
             mref<string> name_,
-            mref<Vector<smr<AccelerationStage>>> stages_,
-            mref<AccelerationEffectInputs> inputs_,
-            mref<AccelerationEffectBindings> bindings_,
-            mref<AccelerationEffectOutputs> outputs_
+            mref<Vector<smr<Stage>>> stages_,
+            mref<Vector<smr<Symbol>>> importSymbols_,
+            mref<Vector<smr<Symbol>>> exportSymbols_
         );
 
         ~AccelerationEffect();
@@ -43,19 +40,20 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] string getName() const noexcept;
 
     private:
-        Vector<smr<AccelerationStage>> _stages;
-
-        AccelerationEffectInputs _inputs;
-        AccelerationEffectBindings _bindings;
-        AccelerationEffectOutputs _outputs;
+        Vector<smr<Stage>> _stages;
+        Vector<smr<Symbol>> _importSymbols;
+        Vector<smr<Symbol>> _exportSymbols;
 
     public:
-        [[nodiscard]] cref<Vector<smr<AccelerationStage>>> getStages() const noexcept;
+        [[nodiscard]] cref<Vector<smr<Stage>>> getStages() const noexcept;
 
-        [[nodiscard]] cref<AccelerationEffectInputs> getInputLayout() const noexcept;
+        [[nodiscard]] cref<Vector<smr<Symbol>>> getImportSymbols() const noexcept;
 
-        [[nodiscard]] cref<AccelerationEffectBindings> getBindingLayout() const noexcept;
+        [[nodiscard]] cref<Vector<smr<Symbol>>> getExportSymbols() const noexcept;
 
-        [[nodiscard]] cref<AccelerationEffectOutputs> getOutputLayout() const noexcept;
+    public:
+        [[nodiscard]] Optional<ref<StageInput>> getFirstInputFor(cref<Symbol> symbol_) const noexcept;
+
+        [[nodiscard]] Optional<ref<StageOutput>> getLastOutputFor(cref<Symbol> symbol_) const noexcept;
     };
 }

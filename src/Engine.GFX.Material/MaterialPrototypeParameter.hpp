@@ -3,7 +3,7 @@
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.GFX.Acc/AccelerationStageTransferDataType.hpp>
+#include <Engine.GFX.Acc/Stage/TransferDataType.hpp>
 
 #include "MaterialParameterStorage.hpp"
 
@@ -18,7 +18,7 @@ namespace hg::engine::gfx::material {
     public:
         MaterialPrototypeParameter(
             mref<string> uniqueName_,
-            mref<acc::AccelerationStageTransferDataType> dataType_,
+            mref<acc::TransferDataType> dataType_,
             mref<uptr<MaterialParameterStorageBase>> defaultStorage_
         ) noexcept;
 
@@ -40,11 +40,11 @@ namespace hg::engine::gfx::material {
         [[nodiscard]] string getUniqueName() const noexcept;
 
     private:
-        acc::AccelerationStageTransferDataType _dataType;
+        acc::TransferDataType _dataType;
         uptr<MaterialParameterStorageBase> _defaultStorage;
 
     public:
-        [[nodiscard]] acc::AccelerationStageTransferDataType getDataType() const noexcept;
+        [[nodiscard]] acc::TransferDataType getDataType() const noexcept;
 
         [[nodiscard]] nmpt<const MetaClass> getStorageClass() const noexcept;
 

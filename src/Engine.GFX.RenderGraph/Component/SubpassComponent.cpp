@@ -53,18 +53,29 @@ void SubpassComponent::unmounted(nmpt<const Component> unmounted_) {
     Component::unmounted(unmounted_);
 }
 
-cref<DenseSet<Requirement>> SubpassComponent::getRequirements() const noexcept {
-    return _required;
+DenseSet<Requirement> SubpassComponent::getRequirements() const noexcept {
+    auto aggregated = _accel->aggregateImportedSymbols();
+
+    auto tmp = DenseSet<Requirement>();
+    tmp.reserve(aggregated.size());
+
+    for (auto&& symbol : aggregated) {
+        tmp.insert(_STD move(symbol));
+    }
+
+    return tmp;
 }
 
-void SubpassComponent::setRequirements(mref<DenseSet<Requirement>> requirements_) {
-    _required = _STD move(requirements_);
-}
+DenseSet<Provision> SubpassComponent::getProvided() const noexcept {
 
-cref<DenseSet<Provision>> SubpassComponent::getProvided() const noexcept {
-    return _provided;
-}
+    auto aggregated = _accel->aggregateExportedSymbols();
 
-void SubpassComponent::setProvided(mref<DenseSet<Provision>> provided_) {
-    _provided = _STD move(provided_);
+    auto tmp = DenseSet<Provision>();
+    tmp.reserve(aggregated.size());
+
+    for (auto&& symbol : aggregated) {
+        tmp.insert(_STD move(symbol));
+    }
+
+    return tmp;
 }

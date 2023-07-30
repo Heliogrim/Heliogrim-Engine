@@ -339,6 +339,9 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\DenseSet.hpp">
       <Filter>Headerdateien\Collection</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Optional.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">

@@ -7,6 +7,14 @@ using namespace hg;
 
 SubpassSingleAccelComponent::~SubpassSingleAccelComponent() noexcept = default;
 
+Vector<smr<engine::gfx::acc::Symbol>> SubpassSingleAccelComponent::aggregateImportedSymbols() const {
+    return {};
+}
+
+Vector<smr<engine::gfx::acc::Symbol>> SubpassSingleAccelComponent::aggregateExportedSymbols() const {
+    return {};
+}
+
 smr<const engine::gfx::acc::AccelerationEffect> SubpassSingleAccelComponent::getAccelEffect() const noexcept {
     return clone(_acceleration);
 }

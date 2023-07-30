@@ -15,7 +15,7 @@ smr<AccelerationEffect> AccelerationPass::getEffect() const noexcept {
     return _effect;
 }
 
-cref<Vector<smr<AccelerationStageDerivat>>> AccelerationPass::getStageDerivates() const noexcept {
+cref<Vector<smr<StageDerivat>>> AccelerationPass::getStageDerivates() const noexcept {
     return _stages;
 }
 

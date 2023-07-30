@@ -80,10 +80,10 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
         auto& param = const_cast<material::MaterialParameter&>(material.getParameters()[idx]);
 
         switch (proto.getDataType()) {
-            case acc::AccelerationStageTransferDataType::eConstant:
-            case acc::AccelerationStageTransferDataType::eUniform:
-            case acc::AccelerationStageTransferDataType::eStorage: break;
-            case acc::AccelerationStageTransferDataType::eSampler: {
+            case acc::TransferDataType::eConstant:
+            case acc::TransferDataType::eUniform:
+            case acc::TransferDataType::eStorage: break;
+            case acc::TransferDataType::eSampler: {
 
                 asset_guid guid {};
                 auto resolved = resolveTexture(_STD move(guid), registry, &loader);

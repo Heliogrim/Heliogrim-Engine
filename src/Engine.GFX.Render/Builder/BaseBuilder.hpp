@@ -10,7 +10,10 @@ namespace hg::engine::gfx::render {
     public:
         using this_type = BaseBuilder;
 
+    private:
+        [[nodiscard]] uptr<graph::RuntimeGraph> compile(mref<nmpt<graph::CompileGraph>> graph_) const;
+
     public:
-        [[nodiscard]] uptr<RenderPipeline> operator()(mref<nmpt<RenderGraph>> graph_) const;
+        [[nodiscard]] uptr<RenderPipeline> operator()(mref<nmpt<graph::CompileGraph>> graph_) const;
     };
 }

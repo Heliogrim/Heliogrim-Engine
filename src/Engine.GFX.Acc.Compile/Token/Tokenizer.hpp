@@ -1,10 +1,7 @@
 #pragma once
 
-#include <Engine.GFX.Acc/Effect/InputLayoutDescription.hpp>
-#include <Engine.GFX.Acc/Effect/BindingLayoutDescription.hpp>
-#include <Engine.GFX.Acc/Effect/OutputLayoutDescription.hpp>
-#include <Engine.GFX.Acc/AccelerationStageInput.hpp>
-#include <Engine.GFX.Acc/AccelerationStageOutput.hpp>
+#include <Engine.GFX.Acc/Stage/StageInput.hpp>
+#include <Engine.GFX.Acc/Stage/StageOutput.hpp>
 
 #include "Token.hpp"
 
@@ -35,32 +32,20 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] Token expand(mref<Token> token_, cref<string> data_) const;
 
     public:
-        [[nodiscard]] Token generate(cref<InputLayoutDescription> ild_) const;
+        [[nodiscard]] Token generate(cref<StageInput> asi_) const;
 
-        [[nodiscard]] Token generate(cref<BindingLayoutDescription> bld_) const;
-
-        [[nodiscard]] Token generate(
-            cref<BindingLayoutDescription> bld_,
-            cref<BindingLayoutAttributeDescription> blad_
-        ) const;
-
-        [[nodiscard]] Token generate(cref<OutputLayoutDescription> old_) const;
+        [[nodiscard]] Token generate(cref<StageOutput> aso_) const;
 
     public:
-        [[nodiscard]] Token generate(cref<AccelerationStageInput> asi_) const;
+        [[nodiscard]] Token transformAccStageIn(cref<Token> src_, bool forwarding) const;
 
-        [[nodiscard]] Token generate(cref<AccelerationStageOutput> aso_) const;
-
-    public:
-        [[nodiscard]] Token transformAccStageIn(cref<Token> src_, bool forwarding, bool dynamic) const;
-
-        [[nodiscard]] Token transformAccStageOut(cref<Token> src_, bool forwarding, bool dynamic) const;
+        [[nodiscard]] Token transformAccStageOut(cref<Token> src_, bool forwarding) const;
 
         [[nodiscard]] Token transformAccStageInToOut(cref<Token> src_) const;
 
     public:
-        [[nodiscard]] bool isStageIn(cref<Token> token_, bool forwarding, bool dynamic) const;
+        [[nodiscard]] bool isStageIn(cref<Token> token_, bool forwarding) const;
 
-        [[nodiscard]] bool isStageOut(cref<Token> token_, bool forwarding, bool dynamic) const;
+        [[nodiscard]] bool isStageOut(cref<Token> token_, bool forwarding) const;
     };
 }

@@ -8,7 +8,8 @@
 #include <Engine.GFX.RenderPipeline/RenderPipeline.hpp>
 #include <Engine.GFX.RenderPipeline/State/State.hpp>
 #include <Engine.GFX.RenderGraph/Resolver/Resolver.hpp>
-#include <Engine.GFX.RenderGraph/RenderGraph.hpp>
+#include <Engine.GFX.RenderGraph/CompileGraph.hpp>
+#include <Engine.GFX.RenderGraph/RuntimeGraph.hpp>
 
 #include "RenderPass.hpp"
 #include "Builder/BaseBuilder.hpp"
@@ -21,7 +22,7 @@ Renderer::Renderer(
     mref<Guid> guid_,
     mref<string> name_,
     u32 runtimeVersion_,
-    mref<uptr<RenderGraph>> sourceGraph_,
+    mref<uptr<graph::CompileGraph>> compileGraph_,
     mref<smr<graph::Resolver>> baseResolver_,
     mref<smr<graph::InjectGraphRegistry>> injectionRegistry_,
     mref<smr<cache::GlobalCacheCtrl>> globalCache_,
@@ -30,7 +31,7 @@ Renderer::Renderer(
     _guid(_STD move(guid_)),
     _name(_STD move(name_)),
     _rtVer(runtimeVersion_),
-    _srcGraph(_STD move(sourceGraph_)),
+    _compileGraph(_STD move(compileGraph_)),
     _baseRes(_STD move(baseResolver_)),
     _injectReg(_STD move(injectionRegistry_)),
     _globalCache(_STD move(globalCache_)),
@@ -43,7 +44,7 @@ smr<graph::Resolver> Renderer::makeAdvancedResolver() const {
 uptr<RenderPipeline> Renderer::makeRenderPipeline() const {
 
     constexpr auto builder = BaseBuilder();
-    auto next = builder(_srcGraph.get());
+    auto next = builder(_compileGraph.get());
 
     return next;
 }
@@ -105,7 +106,7 @@ void Renderer::free(mref<uptr<RenderPass>> pass_) const {
 
 uptr<RenderPass> Renderer::updateIncremental(
     mref<uptr<RenderPass>> pass_,
-    mref<uptr<RenderGraph>> nextGraph_
+    mref<uptr<graph::RuntimeGraph>> nextGraph_
 ) const {
 
     /* Update Pipeline */
@@ -134,8 +135,8 @@ uptr<RenderPass> Renderer::updateOnDelta(mref<uptr<RenderPass>> pass_) const {
     // TODO: Check whether we want to use the original graph as immutable source and build a new graph
     // TODO:    using the advanced resolver to prevent plane copies
     // Warning: Duplicating the graph and the internal state is a lot of work...
-    auto base = make_uptr<RenderGraph>();
-    //auto base = make_uptr<render::RenderGraph>(*_srcGraph);
+    auto base = make_uptr<graph::RuntimeGraph>();
+    //auto base = make_uptr<render::RuntimeGraph>(*_compileGraph);
 
     auto resolver = makeAdvancedResolver();
     auto resolverOptions = graph::ResolverOptions {};

@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Collection/Vector.hpp>
 
-#include "../../AccelerationStageTransferToken.hpp"
+#include "../../Stage/TransferToken.hpp"
 
 namespace hg::engine::gfx::acc {
     // TODO: @see vk::DescriptorType
@@ -13,7 +13,7 @@ namespace hg::engine::gfx::acc {
     };
 
     struct AccelerationBindingLayoutElement final {
-        AccelerationStageTransferToken token;
+        TransferToken token;
         AccelerationBindingType type;
     };
 

@@ -19,8 +19,8 @@ namespace hg::engine::gfx::render::graph {
         Vector<uptr<ResolverPass>> _passes;
 
     public:
-        [[nodiscard]] uptr<RenderGraph> operator()(
-            _In_ mref<uptr<RenderGraph>> graph_,
+        [[nodiscard]] uptr<RuntimeGraph> operator()(
+            _In_ mref<uptr<RuntimeGraph>> graph_,
             _In_ mref<ResolverOptions> options_
         ) const;
     };

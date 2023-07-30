@@ -89,3 +89,7 @@ void BuilderLayerVisitor::operator()(cref<graph::Node> node_) {
 
     streamUnwind();
 }
+
+void BuilderLayerVisitor::operator()(cref<graph::CompileNode> node_) {
+    assert(false);
+}

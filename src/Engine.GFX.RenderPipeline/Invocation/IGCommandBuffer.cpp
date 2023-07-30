@@ -3,20 +3,24 @@
 using namespace hg::engine::gfx::render::pipeline;
 using namespace hg;
 
-void IGCommandBuffer::draw() {}
+void IGCommandBuffer::draw(u32 instanceCount_, u32 vertexCount_) {}
 
-void IGCommandBuffer::drawIndexed() {}
+void IGCommandBuffer::drawIndexed(u32 instanceCount_, u32 indexCount_) {}
 
-void IGCommandBuffer::bindMaterial() {}
+void IGCommandBuffer::bindMaterial(mref<const MaterialIdentifier> identifier_, ptr<const Material> material_) {}
 
-void IGCommandBuffer::bindMesh() {}
+void IGCommandBuffer::bindStaticMesh(ptr<const Mesh> mesh_) {}
 
-void IGCommandBuffer::bindInstances() {}
+void IGCommandBuffer::bindStaticInstances(ptr<const MeshInstanceView> view_) {}
 
-void IGCommandBuffer::bindVertexBuffer() {}
+void IGCommandBuffer::bindSkeletalMesh(ptr<const Mesh> mesh_) {}
 
-void IGCommandBuffer::bindIndexBuffer() {}
+void IGCommandBuffer::bindSkeletalInstances(ptr<const MeshInstanceView> view_, ptr<const SkeletalBoneView> boneView_) {}
 
-void IGCommandBuffer::bindTexture() {}
+void IGCommandBuffer::bindVertexBuffer(ptr<const VertexBufferView> vertexView_) {}
 
-void IGCommandBuffer::bindStorage() {}
+void IGCommandBuffer::bindIndexBuffer(ptr<const IndexBufferView> indexView_) {}
+
+void IGCommandBuffer::bindTexture(ptr<const VirtualTextureView> textureView_) {}
+
+void IGCommandBuffer::bindStorage(ptr<const StorageBufferView> storageView_) {}

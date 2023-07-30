@@ -10,3 +10,7 @@ ResolverVisitor::~ResolverVisitor() noexcept = default;
 void ResolverVisitor::operator()(cref<Node> node_) {
     node_.traverse(*this);
 }
+
+void ResolverVisitor::operator()(cref<CompileNode> node_) {
+    assert(false);
+}
