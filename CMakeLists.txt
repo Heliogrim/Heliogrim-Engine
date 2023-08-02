@@ -2,12 +2,12 @@ cmake_minimum_required(VERSION 3.24)
 
 message(STATUS "------------------------------------------------------------------")
 message(STATUS "                                                                  ")
-message(STATUS "             __  __     ___                  _                    ")
-message(STATUS "            / / / /__  / (_)___  ____ ______(_)___ ___            ")
-message(STATUS "           / /_/ / _ \\/ / / __ \\/ __ `/ ___/ / __ `__ \           ")
-message(STATUS "          / __  /  __/ / / /_/ / /_/ / /  / / / / / / /           ")
-message(STATUS "         /_/ /_/\\___/_/_/\\____/\\__, /_/  /_/_/ /_/ /_/            ")
-message(STATUS "                              /____/                              ")
+message(STATUS "              __  __     ___                  _                   ")
+message(STATUS "             / / / /__  / (_)___  ____ ______(_)___ ___           ")
+message(STATUS "            / /_/ / _ \\/ / / __ \\/ __ `/ ___/ / __ `__ \\          ")
+message(STATUS "           / __  /  __/ / / /_/ / /_/ / /  / / / / / / /          ")
+message(STATUS "          /_/ /_/\\___/_/_/\\____/\\__, /_/  /_/_/ /_/ /_/           ")
+message(STATUS "                               /____/                             ")
 message(STATUS "                                                                  ")
 message(STATUS "------------------------------------------------------------------")
 message(STATUS "| License: Private                                               |")
@@ -28,21 +28,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 #
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Profile")
 
-# Meta
-set(META_PROJECT_NAME "Heliogrim")
-set(META_PROJECT_ROOT_DIR "${CMAKE_SOURCE_DIR}")
-set(META_PROJECT_SUB_DIR "${META_PROJECT_ROOT_DIR}/projects")
-set(META_PROJECT_DIST_DIR "${META_PROJECT_ROOT_DIR}/dist")
-set(META_PROJECT_SRC_DIR "${META_PROJECT_ROOT_DIR}/src")
-set(META_PROJECT_LIB_DIR "${META_PROJECT_ROOT_DIR}/library")
-
 # Project Options
+
+include(cmake/Dependencies.cmake)
 
 # Project Declaration
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(IDE_FOLDER "")
 
-project(${META_PROJECT_NAME} VERSION 1.0)
+project("Heliogrim" VERSION 1.0)
 
 # Project Directories
 ## Deployment / Distribution directories will be configured within make library/test functions
@@ -53,13 +47,13 @@ enable_clang_tidy(OFF)
 enable_deploy(ON)
 
 # Compile Options
-include(cmake/Dependencies.cmake)
 include(cmake/PreprocDefinitions.cmake)
 include(cmake/CompileOptions.cmake)
 
 # Modules
 set(libraries "")
-list_directories("libraries" "${META_PROJECT_SUB_DIR}")
+get_projects_path(projects_directory)
+list_directories("libraries" "${projects_directory}")
 
 set(tests ${libraries})
 
@@ -72,5 +66,7 @@ foreach (lib IN LISTS libraries tests)
     add_subdirectory(${lib})
 endforeach ()
 
-add_subdirectory("${META_PROJECT_SUB_DIR}/Editor.Main")
-add_subdirectory("${META_PROJECT_SUB_DIR}/Game.Main")
+add_subdirectory("${projects_directory}/Heliogrim.Main")
+
+add_subdirectory("${projects_directory}/Editor.Main")
+add_subdirectory("${projects_directory}/Game.Main")

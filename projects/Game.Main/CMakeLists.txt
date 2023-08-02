@@ -1,8 +1,12 @@
 # Target Name
-set(target Game)
+set(name Game)
+
+message(STATUS "Setup executable project for target `${name}`.")
+name_to_target(target ${name})
 
 # Discover Sources
-set(source_directory "${META_PROJECT_SRC_DIR}/${target}.Main")
+get_src_path(proj_src_dir)
+set(source_directory "${proj_src_dir}/${name}.Main")
 
 file(GLOB_RECURSE header_files ${source_directory}/*.hpp ${source_directory}/*.h ${source_directory}/*.hh)
 file(GLOB_RECURSE source_files ${source_directory}/*.cpp ${source_directory}/*.c ${source_directory}/*.cc)
@@ -13,7 +17,7 @@ set(sources ${source_files})
 
 # Executable
 add_executable(${target} ${sources} ${headers})
-add_executable(${META_PROJECT_NAME}::${target} ALIAS ${target})
+add_executable(${PROJECT_NAME}::${name} ALIAS ${target})
 
 # Project Options
 set_target_properties(${target} PROPERTIES ${DEFAULT_PROJECT_OPTIONS} FOLDER "${IDE_FOLDER}")
@@ -23,7 +27,7 @@ target_include_directories(
         ${target}
         PRIVATE
         ${DEFAULT_INCLUDE_DIRECTORIES}
-        ${META_PROJECT_SRC_DIR}
+        ${proj_src_dir}
 )
 
 # Libraries
@@ -31,38 +35,9 @@ target_link_libraries(
         ${target}
         PRIVATE
 		${DEFAULT_LIBRARIES}
-		${META_PROJECT_NAME}::Heliogrim
-		${META_PROJECT_NAME}::Heliogrim.Default
-		${META_PROJECT_NAME}::Heliogrim.Main
-		${META_PROJECT_NAME}::Engine.ACS
-		${META_PROJECT_NAME}::Engine.Assets
-		${META_PROJECT_NAME}::Engine.Common
-		${META_PROJECT_NAME}::Engine.Core
-		${META_PROJECT_NAME}::Engine.Core.Game
-		${META_PROJECT_NAME}::Engine.Core.Schedule
-		${META_PROJECT_NAME}::Engine.Env
-		${META_PROJECT_NAME}::Engine.Event
-		${META_PROJECT_NAME}::Engine.GFX
-		${META_PROJECT_NAME}::Engine.GFX.Glow
-		${META_PROJECT_NAME}::Engine.GFX.Glow.3D
-		${META_PROJECT_NAME}::Engine.GFX.Glow.UI
-		${META_PROJECT_NAME}::Engine.GFX.Scene
-		${META_PROJECT_NAME}::Engine.GFX.Schedule
-		${META_PROJECT_NAME}::Engine.Input
-		${META_PROJECT_NAME}::Engine.Input.Schedule
-		${META_PROJECT_NAME}::Engine.Logging
-		${META_PROJECT_NAME}::Engine.Network
-		${META_PROJECT_NAME}::Engine.PFX
-		${META_PROJECT_NAME}::Engine.Platform
-		${META_PROJECT_NAME}::Engine.Reflect
-		${META_PROJECT_NAME}::Engine.Reflow
-		${META_PROJECT_NAME}::Engine.Reflow.Schedule
-		${META_PROJECT_NAME}::Engine.Resource
-		${META_PROJECT_NAME}::Engine.Scene
-		${META_PROJECT_NAME}::Engine.Scheduler
-		${META_PROJECT_NAME}::Engine.Serialization
-		${META_PROJECT_NAME}::Engine.SFX
-		${META_PROJECT_NAME}::Engine.Utils
+		${PROJECT_NAME}::Heliogrim
+		${PROJECT_NAME}::Heliogrim.Default
+		${PROJECT_NAME}::Heliogrim.Main
 )
 
 # Compile
@@ -88,8 +63,9 @@ target_link_options(
 
 # Target Health
 # Deployment
-set_target_properties(${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${META_PROJECT_DIST_DIR}/$<CONFIG>)
-set_target_properties(${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${META_PROJECT_DIST_DIR}/$<CONFIG>)
-set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${META_PROJECT_DIST_DIR}/$<CONFIG>)
+get_dist_path(proj_dist_dir)
+set_target_properties(${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${proj_dist_dir}/$<CONFIG>)
+set_target_properties(${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${proj_dist_dir}/$<CONFIG>)
+set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${proj_dist_dir}/$<CONFIG>)
 
 add_deploy_to_target(${target})

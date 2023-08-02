@@ -1,5 +1,5 @@
 # Target Name
-set(target Editor.Action)
+set(target Engine.GFX.RenderGraph)
 
 # Linker
 set(link_libraries ${PROJECT_NAME}::Engine.Common)

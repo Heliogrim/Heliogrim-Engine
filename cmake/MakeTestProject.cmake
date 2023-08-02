@@ -4,13 +4,14 @@ function(__prepare_link_libs libs out)
     set("${out}" ${libs} PARENT_SCOPE)
 endfunction()
 
-function(make_test_project target link_libraries)
-    if (NOT DEFINED target)
-        message(FATAL_ERROR "Target `${target}` is required parameter name to generate setup.")
+function(make_test_project name link_libraries)
+    if (NOT DEFINED name)
+        message(FATAL_ERROR "Target `${name}` is required parameter name to generate setup.")
         return()
     endif ()
 
-    message(STATUS "Setup library project for target `${target}`.")
+    message(STATUS "Setup library project for target `${name}`.")
+    name_to_target(target "${name}")
 
     list(LENGTH link_libraries link_libraries_size)
     if (link_libraries_size GREATER 0)
@@ -20,7 +21,8 @@ function(make_test_project target link_libraries)
     message(STATUS "Using `${link_libraries_size}` libraries at linker.")
 
     # Discover Sources
-    set(source_directory "${META_PROJECT_SRC_DIR}/${target}")
+    get_src_path(proj_src_dir)
+    set(source_directory "${proj_src_dir}/${name}")
 
     file(GLOB_RECURSE header_files ${source_directory}/*.hpp ${source_directory}/*.h ${source_directory}/*.hh)
     file(GLOB_RECURSE source_files ${source_directory}/*.cpp ${source_directory}/*.c ${source_directory}/*.cc)
@@ -30,8 +32,8 @@ function(make_test_project target link_libraries)
     set(sources ${source_files})
 
     # Executable
-    add_executable(${target} ${sources} ${headers})
-    add_executable(${META_PROJECT_NAME}::${target} ALIAS ${target})
+    add_executable(${target} EXCLUDE_FROM_ALL ${sources} ${headers})
+    add_executable(${PROJECT_NAME}::${name} ALIAS ${target})
 
     # Project Options
     set_target_properties(${target} PROPERTIES ${DEFAULT_PROJECT_OPTIONS} FOLDER "${IDE_FOLDER}")
@@ -42,7 +44,7 @@ function(make_test_project target link_libraries)
             PRIVATE
             ${DEFAULT_INCLUDE_DIRECTORIES}
             ${TEST_INCLUDE_DIRECTORIES}
-            ${META_PROJECT_SRC_DIR}
+            ${proj_src_dir}
     )
 
     # Libraries
@@ -77,7 +79,8 @@ function(make_test_project target link_libraries)
 
     # Target Health
     # Deployment
-    set_target_properties(${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${META_PROJECT_DIST_DIR}/$<CONFIG>)
-    set_target_properties(${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${META_PROJECT_DIST_DIR}/$<CONFIG>)
-    set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${META_PROJECT_DIST_DIR}/$<CONFIG>)
+    get_dist_path(proj_dist_path)
+    set_target_properties(${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${proj_dist_path}/$<CONFIG>)
+    set_target_properties(${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${proj_dist_path}/$<CONFIG>)
+    set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${proj_dist_path}/$<CONFIG>)
 endfunction()
