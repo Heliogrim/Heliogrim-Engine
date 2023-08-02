@@ -17,7 +17,8 @@ function(add_deploy_to_target target)
         return()
     endif ()
 
-    file(GLOB_RECURSE deployable ${META_PROJECT_LIB_DIR}/bin/**/${CMAKE_BUILD_TYPE}/*.dll)
+    get_library_path(proj_lib_dir)
+    file(GLOB_RECURSE deployable ${proj_lib_dir}/bin/**/${CMAKE_BUILD_TYPE}/*.dll)
     list(LENGTH deployable deployable_size)
 
     if (deployable_size LESS_EQUAL 0)
@@ -25,9 +26,10 @@ function(add_deploy_to_target target)
         return()
     endif ()
 
+    get_dist_path(proj_dist_dir)
     add_custom_command(
             TARGET ${target}
             POST_BUILD COMMAND
-            ${CMAKE_COMMAND} -E copy_if_different ${deployable} "${META_PROJECT_DIST_DIR}/${CMAKE_BUILD_TYPE}"
+            ${CMAKE_COMMAND} -E copy_if_different ${deployable} "${proj_dist_dir}/${CMAKE_BUILD_TYPE}"
     )
 endfunction()
