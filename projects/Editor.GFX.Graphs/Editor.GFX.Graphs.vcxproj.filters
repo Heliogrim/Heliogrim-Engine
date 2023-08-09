@@ -300,4 +300,9 @@
       <Filter>Quelldateien\Node\Parameter</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\Editor.GFX.Graphs\__TestLang.hpp">
+      <Filter>Headerdateien</Filter>
+    </None>
+  </ItemGroup>
 </Project>
