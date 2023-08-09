@@ -176,6 +176,7 @@
     <ClInclude Include="..\..\src\Editor.GFX.Graphs\Node\__fwd.hpp" />
     <ClInclude Include="..\..\src\Editor.GFX.Graphs\__fwd.hpp" />
     <ClInclude Include="..\..\src\Editor.GFX.Graphs\__TestGraphs.hpp" />
+    <None Include="..\..\src\Editor.GFX.Graphs\__TestLang.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.GFX.Graphs\Graph\NodeGraph.cpp" />
