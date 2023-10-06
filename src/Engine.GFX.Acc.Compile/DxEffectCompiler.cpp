@@ -1,4 +1,4 @@
-#include "DxCompiler.hpp"
+#include "DxEffectCompiler.hpp"
 
 #include "Pass/DxPassBuilder.hpp"
 #include "Pass/DxPassCompiler.hpp"
@@ -9,8 +9,8 @@
 using namespace hg::engine::gfx::acc;
 using namespace hg;
 
-uptr<Compiler> engine::gfx::acc::makeDxAccCompiler() {
-    return make_uptr<Compiler>(
+uptr<EffectCompiler> engine::gfx::acc::makeDxAccCompiler() {
+    return make_uptr<EffectCompiler>(
         make_uptr<DxPassBuilder>(),
         make_uptr<DxPassCompiler>(),
         make_uptr<StageComposer>(),

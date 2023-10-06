@@ -36,12 +36,24 @@ void CompileSubpassNode::traverse(ref<Visitor> visitor_) const {
     _next->accept(visitor_);
 }
 
+void CompileSubpassNode::rtraverse(ref<Visitor> visitor_) const {
+    _prev->accept(visitor_);
+}
+
 void CompileSubpassNode::setNext(mref<smr<Node>> next_) {
     _next = _STD move(next_);
 }
 
 smr<Node> CompileSubpassNode::getNext() const noexcept {
     return _next;
+}
+
+void CompileSubpassNode::setPrev(mref<smr<Node>> prev_) {
+    _prev = _STD move(prev_);
+}
+
+smr<Node> CompileSubpassNode::getPrev() const noexcept {
+    return _prev;
 }
 
 nmpt<CompileSubpassComponent> CompileSubpassNode::getSubpassComponent() const noexcept {

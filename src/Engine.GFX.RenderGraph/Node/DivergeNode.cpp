@@ -16,6 +16,10 @@ void DivergeNode::traverse(ref<Visitor> visitor_) const {
     }
 }
 
+void DivergeNode::rtraverse(ref<Visitor> visitor_) const {
+    _prev->accept(visitor_);
+}
+
 void DivergeNode::addNext(mref<smr<Node>> next_) {
     _next.push_back(_STD move(next_));
 }
@@ -39,4 +43,12 @@ void DivergeNode::removeNext(cref<smr<Node>> next_) {
 
 cref<Vector<smr<Node>>> DivergeNode::getNext() const noexcept {
     return _next;
+}
+
+void DivergeNode::setPrev(mref<smr<Node>> prev_) {
+    _prev = _STD move(prev_);
+}
+
+smr<Node> DivergeNode::getPrev() const noexcept {
+    return _prev;
 }

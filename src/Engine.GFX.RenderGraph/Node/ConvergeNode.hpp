@@ -20,14 +20,23 @@ namespace hg::engine::gfx::render::graph {
 
         void traverse(ref<Visitor> visitor_) const override;
 
+        void rtraverse(ref<Visitor> visitor_) const override;
+
     private:
         smr<Node> _next;
+        Vector<smr<Node>> _prev;
 
     public:
-        [[nodiscard]] bool empty() const noexcept;
-
         void setNext(mref<smr<Node>> next_);
 
         [[nodiscard]] smr<Node> getNext() const noexcept;
+
+        void addPrev(mref<smr<Node>> prev_);
+
+        void setPrev(mref<Vector<smr<Node>>> prev_);
+
+        void removePrev(cref<smr<Node>> prev_);
+
+        [[nodiscard]] cref<Vector<smr<Node>>> getPrev() const noexcept;
     };
 }

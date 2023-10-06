@@ -46,6 +46,9 @@
     <Filter Include="Quelldateien\Spec">
       <UniqueIdentifier>{044f7503-3ad9-4a99-8497-e983962bbf3f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Profile">
+      <UniqueIdentifier>{66525241-5cc2-443f-a406-6e980ffcd7cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.hpp">
@@ -57,7 +60,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\ScopedTokenStorage.hpp">
       <Filter>Headerdateien\Token</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Compiler.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\EffectCompiler.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\ModuleBuilder.hpp">
@@ -123,10 +126,10 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassCompiler.hpp">
       <Filter>Headerdateien\Pass</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\VkCompiler.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\VkEffectCompiler.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\DxCompiler.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\DxEffectCompiler.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\DxPassBuilder.hpp">
@@ -162,12 +165,21 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleSpecificationStorage.hpp">
       <Filter>Headerdateien\Spec</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Profile\EffectProfile.hpp">
+      <Filter>Headerdateien\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Profile\ProfileDefinition.hpp">
+      <Filter>Headerdateien\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\EffectCompileRequest.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.cpp">
       <Filter>Quelldateien\Token</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Compiler.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\EffectCompiler.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleBuilder.cpp">
@@ -191,10 +203,10 @@
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Stage\StageComposer.cpp">
       <Filter>Quelldateien\Stage</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\VkCompiler.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\VkEffectCompiler.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\DxCompiler.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\DxEffectCompiler.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\DxPassBuilder.cpp">

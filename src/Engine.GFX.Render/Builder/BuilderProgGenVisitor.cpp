@@ -28,7 +28,7 @@ BuilderProgGenVisitor::BuilderProgGenVisitor() noexcept = default;
 
 BuilderProgGenVisitor::~BuilderProgGenVisitor() = default;
 
-smr<Stage> BuilderProgGenVisitor::recursiveDepLookup(ptr<const graph::Node> initial_) {
+smr<pipeline::Stage> BuilderProgGenVisitor::recursiveDepLookup(ptr<const graph::Node> initial_) {
 
     const auto sigStage = _mapping.find(initial_);
     if (sigStage != _mapping.end()) {
@@ -55,7 +55,7 @@ decltype(BuilderProgGenVisitor::_mapping) BuilderProgGenVisitor::extractNodeStag
     return _STD move(_mapping);
 }
 
-smr<Stage> BuilderProgGenVisitor::findStage(ptr<const graph::Node> node_) {
+smr<pipeline::Stage> BuilderProgGenVisitor::findStage(ptr<const graph::Node> node_) {
     if (const auto it = _mapping.find(node_); it != _mapping.end()) {
         return clone(it->second);
     }
@@ -79,7 +79,7 @@ void BuilderProgGenVisitor::operator()(cref<graph::BarrierNode> node_) {
     }
 
     /**/
-    _mapping.insert(_STD make_pair(&node_, tmp.into<Stage>()));
+    _mapping.insert(_STD make_pair(&node_, tmp.into<pipeline::Stage>()));
 }
 
 void BuilderProgGenVisitor::operator()(cref<graph::ConvergeNode> node_) {
@@ -96,7 +96,7 @@ void BuilderProgGenVisitor::operator()(cref<graph::ConvergeNode> node_) {
     }
 
     /**/
-    _mapping.insert(_STD make_pair(&node_, tmp.into<Stage>()));
+    _mapping.insert(_STD make_pair(&node_, tmp.into<pipeline::Stage>()));
 }
 
 void BuilderProgGenVisitor::operator()(cref<graph::DivergeNode> node_) {
@@ -109,7 +109,7 @@ void BuilderProgGenVisitor::operator()(cref<graph::DivergeNode> node_) {
     }
 
     /**/
-    _mapping.insert(_STD make_pair(&node_, tmp.into<Stage>()));
+    _mapping.insert(_STD make_pair(&node_, tmp.into<pipeline::Stage>()));
 }
 
 void BuilderProgGenVisitor::operator()(cref<graph::SelectorNode> node_) {
@@ -122,7 +122,7 @@ void BuilderProgGenVisitor::operator()(cref<graph::SelectorNode> node_) {
     }
 
     /**/
-    _mapping.insert(_STD make_pair(&node_, tmp.into<Stage>()));
+    _mapping.insert(_STD make_pair(&node_, tmp.into<pipeline::Stage>()));
 }
 
 void BuilderProgGenVisitor::operator()(cref<graph::ProviderNode> node_) {}
@@ -137,7 +137,7 @@ void BuilderProgGenVisitor::operator()(cref<graph::SubpassNode> node_) {
     }
 
     /**/
-    _mapping.insert(_STD make_pair(&node_, tmp.into<Stage>()));
+    _mapping.insert(_STD make_pair(&node_, tmp.into<pipeline::Stage>()));
 }
 
 void BuilderProgGenVisitor::operator()(cref<graph::CompileNode> node_) {

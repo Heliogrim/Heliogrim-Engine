@@ -1,4 +1,4 @@
-#include "VkCompiler.hpp"
+#include "VkEffectCompiler.hpp"
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Make.hpp>
@@ -12,8 +12,8 @@
 using namespace hg::engine::gfx::acc;
 using namespace hg;
 
-uptr<Compiler> hg::engine::gfx::acc::makeVkAccCompiler() {
-    return make_uptr<Compiler>(
+uptr<EffectCompiler> hg::engine::gfx::acc::makeVkAccCompiler() {
+    return make_uptr<EffectCompiler>(
         make_uptr<VkPassBuilder>(),
         make_uptr<VkPassCompiler>(),
         make_uptr<StageComposer>(),

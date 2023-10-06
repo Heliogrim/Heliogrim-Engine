@@ -43,6 +43,8 @@ namespace hg::engine::gfx::render::graph {
     public:
         void update(ref<Visitor> visitor_);
 
+        void reverse(ref<Visitor> visitor_);
+
     private:
         DenseSet<Provision> _expectedProvision;
         DenseSet<Requirement> _expectedRequirement;

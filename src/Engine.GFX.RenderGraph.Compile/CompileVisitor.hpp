@@ -1,0 +1,43 @@
+#pragma once
+#include <Engine.GFX.RenderGraph/Visitor/Visitor.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
+
+namespace hg::engine::gfx::render::graph {
+    class CompileVisitor final :
+        public Visitor {
+    public:
+        using this_type = CompileVisitor;
+
+    public:
+        CompileVisitor(mref<nmpt<RuntimeGraph>> target_) noexcept;
+
+        ~CompileVisitor() override = default;
+
+    private:
+        nmpt<RuntimeGraph> _target;
+
+    public:
+        void operator()(cref<Node> node_) override;
+
+    public:
+        void operator()(cref<AnchorNode> node_) override;
+
+        void operator()(cref<BarrierNode> node_) override;
+
+        void operator()(cref<ConvergeNode> node_) override;
+
+        void operator()(cref<DivergeNode> node_) override;
+
+        void operator()(cref<SelectorNode> node_) override;
+
+        void operator()(cref<ProviderNode> node_) override;
+
+        void operator()(cref<SubpassNode> node_) override;
+
+    public:
+        void operator()(cref<CompileNode> node_) override;
+
+    public:
+        void operator()(cref<CompileSubpassNode> node_) override;
+    };
+}

@@ -31,5 +31,7 @@ namespace hg::engine::gfx::render::graph {
         virtual void accept(ref<Visitor> visitor_) const = 0;
 
         virtual void traverse(ref<Visitor> visitor_) const = 0;
+
+        virtual void rtraverse(ref<Visitor> visitor_) const = 0;
     };
 }

@@ -1,10 +1,12 @@
 #pragma once
 
 #include <span>
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Meta/Constexpr.hpp>
 #include <Engine.GFX.Acc/AccelerationEffect.hpp>
+#include <Engine.GFX.Acc.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Reflect/CompileTypeId.hpp>
 
 #include "SubpassAccelComponent.hpp"
@@ -24,7 +26,7 @@ namespace hg::engine::gfx::render::graph {
         ~SubpassMultiAccelComponent() noexcept override;
 
     private:
-        Vector<smr<const acc::AccelerationPass>> _accelPasses;
+        DenseMap<smr<const acc::EffectProfile>, Vector<smr<const acc::AccelerationPass>>> _accelPasses;
 
     public:
         [[nodiscard]] Vector<smr<acc::Symbol>> aggregateImportedSymbols() const override;

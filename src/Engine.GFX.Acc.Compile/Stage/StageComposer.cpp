@@ -24,8 +24,10 @@ void StageComposer::setTokenizer(mref<non_owning_rptr<const Tokenizer>> tokenize
 }
 
 Vector<smr<StageDerivat>> StageComposer::compose(
-    cref<smr<AccelerationPass>> targetPass_,
-    cref<class SpecificationStorage> specifications_
+    cref<class SpecificationStorage> specifications_,
+    cref<smr<const class EffectProfile>> profile_,
+    cref<Vector<smr<const Symbol>>> targetSymbols_,
+    cref<smr<AccelerationPass>> targetPass_
 ) const {
 
     const auto& stages = targetPass_->getEffect()->getStages();
