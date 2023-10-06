@@ -443,27 +443,27 @@ namespace hg {
         constexpr NonOwningMemoryPointer(cref<NonOwningMemoryPointer<Tx_, StorageTx_>> other_) noexcept :
             storage(other_.storage) {}
 
-        constexpr NonOwningMemoryPointer(cref<this_type> other_) noexcept :
+        constexpr NonOwningMemoryPointer(const this_type& other_) noexcept :
             storage(other_.storage) {}
 
         template <typename Tx_ = Ty_> requires _STD is_nothrow_convertible_v<Tx_*, Ty_*>
         constexpr NonOwningMemoryPointer(mref<NonOwningMemoryPointer<Tx_>> other_) noexcept :
             storage(_STD move(other_.storage)) {}
 
-        constexpr NonOwningMemoryPointer(mref<this_type> other_) noexcept :
+        constexpr NonOwningMemoryPointer(this_type&& other_) noexcept :
             storage(_STD move(other_.storage)) {}
 
         ~NonOwningMemoryPointer() = default;
 
     public:
-        ref<this_type> operator=(mref<this_type> other_) noexcept {
+        ref<this_type> operator=(this_type&& other_) noexcept {
             if (_STD addressof(other_) != this) {
                 storage = _STD move(other_.storage);
             }
             return *this;
         }
 
-        ref<this_type> operator=(cref<this_type> other_) noexcept {
+        ref<this_type> operator=(const this_type& other_) noexcept {
             if (_STD addressof(other_) != this) {
                 storage = other_.storage;
             }
@@ -475,7 +475,7 @@ namespace hg {
             typename AllocType_ = typename StorageType_::allocator_type,
             typename StorageTx_ = StorageType_>
         ref<this_type> operator=(cref<MemoryPointer<Tx_, AllocType_, StorageTx_>> mp_) {
-            if (_STD _Voidify_iter(_STD addressof(mp_)) != this) {
+            if (static_cast<void*>(_STD addressof(mp_)) != this) {
                 storage = mp_.storage;
             }
             return *this;
