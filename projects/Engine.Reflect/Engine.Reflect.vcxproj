@@ -118,6 +118,7 @@
     <ClInclude Include="..\..\src\Engine.Reflect\Meta\TypeId.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Reflect.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Template\QueryTypeId.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\TypeSwitch.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
