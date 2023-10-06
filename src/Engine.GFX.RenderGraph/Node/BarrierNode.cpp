@@ -23,12 +23,24 @@ void BarrierNode::traverse(ref<Visitor> visitor_) const {
     _next->accept(visitor_);
 }
 
+void BarrierNode::rtraverse(ref<Visitor> visitor_) const {
+    _prev->accept(visitor_);
+}
+
 void BarrierNode::setNext(mref<smr<Node>> next_) {
     _next = _STD move(next_);
 }
 
 smr<Node> BarrierNode::getNext() const noexcept {
     return _next;
+}
+
+void BarrierNode::setPrev(mref<smr<Node>> prev_) {
+    _prev = _STD move(prev_);
+}
+
+smr<Node> BarrierNode::getPrev() const noexcept {
+    return _prev;
 }
 
 nmpt<const BarrierComponent> BarrierNode::getBarrierComponent() const noexcept {

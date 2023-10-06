@@ -23,6 +23,8 @@ namespace hg::engine::gfx::render::graph {
 
         void traverse(ref<Visitor> visitor_) const override;
 
+        void rtraverse(ref<Visitor> visitor_) const override;
+
     public:
         struct Next final {
             mask_type mask;
@@ -31,6 +33,7 @@ namespace hg::engine::gfx::render::graph {
 
     private:
         Vector<Next> _next;
+        smr<Node> _prev;
 
     public:
         void addNext(mask_type mask, mref<smr<Node>> next_);
@@ -40,5 +43,9 @@ namespace hg::engine::gfx::render::graph {
         void removeNext(cref<smr<Node>> next_);
 
         [[nodiscard]] cref<Vector<Next>> getNext() const noexcept;
+
+        void setPrev(mref<smr<Node>> prev_);
+
+        [[nodiscard]] smr<Node> getPrev() const noexcept;
     };
 }

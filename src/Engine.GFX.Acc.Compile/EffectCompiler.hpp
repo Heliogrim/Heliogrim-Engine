@@ -3,23 +3,25 @@
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.GFX.Acc/AccelerationPass.hpp>
 
+#include "EffectCompileRequest.hpp"
 #include "Module/ModuleBuilder.hpp"
 #include "Module/ModuleCompiler.hpp"
 #include "Pass/PassBuilder.hpp"
 #include "Pass/PassCompiler.hpp"
+#include "Profile/EffectProfile.hpp"
 #include "Spec/SpecificationStorage.hpp"
 #include "Stage/StageComposer.hpp"
 #include "Token/Tokenizer.hpp"
 
 namespace hg::engine::gfx::acc {
-    class Compiler {
+    class EffectCompiler {
     public:
-        using this_type = Compiler;
+        using this_type = EffectCompiler;
 
     public:
-        Compiler() noexcept;
+        EffectCompiler() noexcept;
 
-        Compiler(
+        EffectCompiler(
             mref<uptr<PassBuilder>> passBuilder_,
             mref<uptr<PassCompiler>> passCompiler_,
             mref<uptr<StageComposer>> stageComposer_,
@@ -28,7 +30,7 @@ namespace hg::engine::gfx::acc {
             mref<Tokenizer> tokenizer_
         ) noexcept;
 
-        ~Compiler() noexcept;
+        ~EffectCompiler() noexcept;
 
     private:
         uptr<PassBuilder> _passBuilder;
@@ -43,8 +45,7 @@ namespace hg::engine::gfx::acc {
 
     public:
         [[nodiscard]] smr<const AccelerationPass> compile(
-            mref<smr<AccelerationEffect>> effect_,
-            cref<SpecificationStorage> specifications_
+            mref<EffectCompileRequest> request_
         ) const;
     };
 }

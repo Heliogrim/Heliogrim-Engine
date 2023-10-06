@@ -5,6 +5,7 @@
 #include <Engine.GFX.Acc/Pass/VkGraphicsPass.hpp>
 
 #include "../Spec/SpecificationStorage.hpp"
+#include "../Profile/EffectProfile.hpp"
 
 using namespace hg::engine::gfx::acc;
 using namespace hg;
@@ -15,7 +16,8 @@ VkPassBuilder::~VkPassBuilder() = default;
 
 smr<AccelerationPass> VkPassBuilder::build(
     mref<smr<AccelerationEffect>> effect_,
-    cref<class SpecificationStorage> specifications_
+    cref<class SpecificationStorage> specifications_,
+    cref<smr<const class EffectProfile>> profile_
 ) const noexcept {
     assert(specifications_.getGraphicsSpec().renderPass);
     return make_smr<VkGraphicsPass>(

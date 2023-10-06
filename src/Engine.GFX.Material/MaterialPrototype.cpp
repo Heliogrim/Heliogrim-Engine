@@ -12,7 +12,7 @@ using namespace hg;
 MaterialPrototype::MaterialPrototype(
     mref<Guid> guid_,
     mref<string> name_,
-    mref<Set<smr<AccelerationEffect>>> effects_,
+    mref<Vector<smr<AccelerationEffect>>> effects_,
     mref<Vector<MaterialPrototypeParameter>> parameters_
 ) noexcept :
     _guid(_STD move(guid_)),
@@ -30,7 +30,7 @@ string MaterialPrototype::getName() const noexcept {
     return _name;
 }
 
-cref<Set<smr<AccelerationEffect>>> MaterialPrototype::getAccelerationEffects() const noexcept {
+cref<Vector<smr<AccelerationEffect>>> MaterialPrototype::getAccelerationEffects() const noexcept {
     return _effects;
 }
 

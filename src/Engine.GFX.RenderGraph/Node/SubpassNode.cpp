@@ -37,12 +37,24 @@ void SubpassNode::traverse(ref<Visitor> visitor_) const {
     _next->accept(visitor_);
 }
 
+void SubpassNode::rtraverse(ref<Visitor> visitor_) const {
+    _prev->accept(visitor_);
+}
+
 void SubpassNode::setNext(mref<smr<Node>> next_) {
     _next = _STD move(next_);
 }
 
 smr<Node> SubpassNode::getNext() const noexcept {
     return _next;
+}
+
+void SubpassNode::setPrev(mref<smr<Node>> prev_) {
+    _prev = _STD move(prev_);
+}
+
+smr<Node> SubpassNode::getPrev() const noexcept {
+    return _prev;
 }
 
 nmpt<SubpassComponent> SubpassNode::getSubpassComponent() const noexcept {

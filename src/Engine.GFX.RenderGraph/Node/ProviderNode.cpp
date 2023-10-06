@@ -21,8 +21,8 @@ void ProviderNode::traverse(ref<Visitor> visitor_) const {
     _next->accept(visitor_);
 }
 
-bool ProviderNode::empty() const noexcept {
-    return _next.empty();
+void ProviderNode::rtraverse(ref<Visitor> visitor_) const {
+    _prev->accept(visitor_);
 }
 
 void ProviderNode::setNext(mref<smr<Node>> next_) {
@@ -31,6 +31,14 @@ void ProviderNode::setNext(mref<smr<Node>> next_) {
 
 smr<Node> ProviderNode::getNext() const noexcept {
     return _next;
+}
+
+void ProviderNode::setPrev(mref<smr<Node>> prev_) {
+    _prev = _STD move(prev_);
+}
+
+smr<Node> ProviderNode::getPrev() const noexcept {
+    return _prev;
 }
 
 nmpt<const ProviderComponent> ProviderNode::getProviderComponent() const noexcept {

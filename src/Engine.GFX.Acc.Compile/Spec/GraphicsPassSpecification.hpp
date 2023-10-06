@@ -29,7 +29,7 @@ namespace hg::engine::gfx::acc {
 
         /**/
 
-        Vector<smr<Symbol>> requiredExports;
+        Vector<smr<const Symbol>> requiredExports;
 
         /**/
 

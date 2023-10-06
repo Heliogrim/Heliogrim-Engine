@@ -21,7 +21,7 @@ namespace hg::engine::gfx::material {
         MaterialPrototype(
             mref<Guid> guid_,
             mref<string> name_,
-            mref<Set<smr<acc::AccelerationEffect>>> effects_,
+            mref<Vector<smr<acc::AccelerationEffect>>> effects_,
             mref<Vector<MaterialPrototypeParameter>> parameters_
         ) noexcept;
 
@@ -42,10 +42,10 @@ namespace hg::engine::gfx::material {
         [[nodiscard]] string getName() const noexcept;
 
     private:
-        Set<smr<acc::AccelerationEffect>> _effects;
+        Vector<smr<acc::AccelerationEffect>> _effects;
 
     public:
-        [[nodiscard]] cref<Set<smr<acc::AccelerationEffect>>> getAccelerationEffects() const noexcept;
+        [[nodiscard]] cref<Vector<smr<acc::AccelerationEffect>>> getAccelerationEffects() const noexcept;
 
     private:
         Vector<MaterialPrototypeParameter> _parameters;

@@ -6,7 +6,7 @@
 
 namespace hg::engine::gfx::render::graph {
     struct Provision final {
-        smr<acc::Symbol> symbol;
+        smr<const acc::Symbol> symbol;
     };
 
     [[nodiscard]] constexpr bool operator==(cref<Provision> left_, cref<Provision> right_) noexcept {

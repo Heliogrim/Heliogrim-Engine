@@ -90,8 +90,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Compiler.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\DxCompiler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\EffectCompiler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\DxEffectCompiler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\EffectCompileRequest.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\CompiledModule.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\DxModuleBuilder.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\DxModuleCompiler.hpp" />
@@ -116,6 +117,8 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\PassCompiler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassBuilder.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassCompiler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Profile\ProfileDefinition.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Profile\EffectProfile.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\ComputePassSpecification.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\GraphicsPassSpecification.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\MeshPassSpecification.hpp" />
@@ -127,11 +130,11 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\Token.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\VkApi.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\VkCompiler.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\VkEffectCompiler.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Compiler.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\DxCompiler.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\EffectCompiler.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\DxEffectCompiler.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\ModuleBuilder.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\SpirvCompiler.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkCompiledModule.cpp" />
@@ -147,7 +150,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Stage\StageComposer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\ScopedTokenStorage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\VkCompiler.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\VkEffectCompiler.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\VkApi.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

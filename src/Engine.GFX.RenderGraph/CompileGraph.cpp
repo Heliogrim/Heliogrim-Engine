@@ -49,6 +49,11 @@ void CompileGraph::update(ref<Visitor> visitor_) {
     _begin->accept(visitor_);
 }
 
+void CompileGraph::reverse(ref<Visitor> visitor_) {
+    assert(_end);
+    _end->accept(visitor_);
+}
+
 bool CompileGraph::addExpectedProvision(mref<Provision> expected_) {
     const auto result = _expectedProvision.insert(_STD move(expected_));
     return result.second;

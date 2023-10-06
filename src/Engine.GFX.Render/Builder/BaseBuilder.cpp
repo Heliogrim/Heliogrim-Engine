@@ -24,6 +24,9 @@ uptr<graph::RuntimeGraph> BaseBuilder::compile(mref<nmpt<graph::CompileGraph>> g
 
     /**/
 
+    // Warning: We are required to iterate in reverse order to support dependency resolving.
+    // Warning: This is currently an anti-pattern to the directed acyclic graph we are using right now.
+
     auto compiler = CompileVisitor(runtime.get());
     graph_->update(compiler);
 
