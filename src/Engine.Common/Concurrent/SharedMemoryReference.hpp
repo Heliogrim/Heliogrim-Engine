@@ -68,7 +68,7 @@ namespace hg {
             _ctrlBlock(ctrlBlock_),
             _packed(packed_) {}
 
-        SharedMemoryReference(_In_ cref<this_type> other_) :
+        SharedMemoryReference(_In_ const this_type& other_) :
             SharedMemoryReference() {
 
             if (not other_.empty()) {
@@ -76,7 +76,16 @@ namespace hg {
             }
         }
 
-        SharedMemoryReference(_Inout_ mref<this_type> other_) noexcept :
+        template <class Tx_> requires _STD is_const_v<PayloadType_> && _STD is_same_v<_STD add_const_t<Tx_>, PayloadType_>
+        SharedMemoryReference(_In_ cref<SharedMemoryReference<Tx_>> other_) :
+            SharedMemoryReference() {
+
+            if (not other_.empty()) {
+                *this = _STD move(other_._ctrlBlock->acq());
+            }
+        }
+
+        SharedMemoryReference(_Inout_ this_type&& other_) noexcept :
             _ctrlBlock(_STD exchange(other_._ctrlBlock, nullptr)),
             _packed(_STD exchange(other_._packed, 0)) {}
 
@@ -112,7 +121,7 @@ namespace hg {
 
         template <class Fty_> requires IsSmrPointerCompatible<Fty_, PayloadType_>
         ref<this_type> operator=(_Inout_ mref<SharedMemoryReference<Fty_>> other_) noexcept {
-            if (_STD addressof(other_) != this) {
+            if (static_cast<void*>(_STD addressof(other_)) != this) {
                 reset();
                 _ctrlBlock = _void_cast<ctrl_block_type>(_STD exchange(other_._ctrlBlock, nullptr));
                 _packed = _STD exchange(other_._packed, 0);

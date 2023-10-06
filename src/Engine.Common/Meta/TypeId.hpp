@@ -122,19 +122,6 @@ namespace hg {
 
 namespace std {
     /**
-     * Specific equality check for type_id
-     *
-     * @author Julius
-     * @date 13.09.2021
-     */
-    template <>
-    struct equal_to<hg::type_id> {
-        [[nodiscard]] bool operator()(const hg::type_id& left_, const hg::type_id& right_) const noexcept {
-            return left_.data == right_.data;
-        }
-    };
-
-    /**
      * Specific less check for type_id
      *
      * @author Julius
