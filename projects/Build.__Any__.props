@@ -2,7 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup>
+    <EnableStdModules>false</EnableStdModules>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <ObjectFileName>$(IntDir)%(RelativeDir)\</ObjectFileName>
@@ -10,6 +12,7 @@
       <AssemblerListingLocation>$(IntDir)%(RelativeDir)\</AssemblerListingLocation>
       <XMLDocumentationFileName>$(IntDir)%(RelativeDir)\</XMLDocumentationFileName>
       <BuildStlModules>false</BuildStlModules>
+      <EnableModules>false</EnableModules>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)library\bin\assimp\$(Configuration)\;$(SolutionDir)library\bin\ryml\$(Configuration)\;$(SolutionDir)library\bin\vorbis\$(Configuration)\;$(SolutionDir)library\bin\glslang\$(Configuration)\;$(SolutionDir)library\bin\freetype2\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
