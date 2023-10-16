@@ -10,13 +10,13 @@ namespace hg::engine::gfx::render::graph {
         using this_type = RenderGraphCompiler;
 
     public:
-        RenderGraphCompiler();
+        constexpr RenderGraphCompiler() noexcept = default;
 
-        ~RenderGraphCompiler();
+        constexpr ~RenderGraphCompiler() noexcept = default;
 
     public:
         [[nodiscard]] uptr<RuntimeGraph> operator()(
             mref<CompileRequest> request_
-        );
+        ) const;
     };
 }

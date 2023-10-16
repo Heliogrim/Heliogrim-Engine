@@ -1,6 +1,7 @@
 #pragma once
-#include <Engine.GFX.RenderGraph/Visitor/Visitor.hpp>
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.GFX.RenderGraph/Visitor/Visitor.hpp>
 
 namespace hg::engine::gfx::render::graph {
     class CompileVisitor final :
@@ -11,7 +12,7 @@ namespace hg::engine::gfx::render::graph {
     public:
         CompileVisitor(mref<nmpt<RuntimeGraph>> target_) noexcept;
 
-        ~CompileVisitor() override = default;
+        ~CompileVisitor() noexcept override = default;
 
     private:
         nmpt<RuntimeGraph> _target;
