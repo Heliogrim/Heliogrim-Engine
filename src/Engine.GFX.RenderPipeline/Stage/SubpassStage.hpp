@@ -8,7 +8,7 @@ namespace hg::engine::gfx::render::pipeline {
     class __declspec(novtable) SubpassStage :
         public Stage {
     protected:
-        SubpassStage();
+        SubpassStage() noexcept;
 
     public:
         ~SubpassStage() noexcept override = default;

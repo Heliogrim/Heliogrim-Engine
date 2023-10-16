@@ -6,7 +6,11 @@
 using namespace hg::engine::gfx::render::pipeline;
 using namespace hg;
 
-AccelSubpassStage::AccelSubpassStage() = default;
+AccelSubpassStage::AccelSubpassStage() noexcept = default;
+
+AccelSubpassStage::AccelSubpassStage(mref<StagedAccelPass> stagedPass_) noexcept :
+    SubpassStage(),
+    _stagedAccelPass(_STD move(stagedPass_)) {}
 
 AccelSubpassStage::~AccelSubpassStage() = default;
 

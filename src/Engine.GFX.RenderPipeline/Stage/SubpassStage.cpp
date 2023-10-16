@@ -6,7 +6,7 @@
 using namespace hg::engine::gfx::render::pipeline;
 using namespace hg;
 
-SubpassStage::SubpassStage() {}
+SubpassStage::SubpassStage() noexcept = default;
 
 void SubpassStage::operator()(nmpt<State> state_) const {
     IM_DEBUG_LOGF("-> SubpassStage `{:x}`", reinterpret_cast<ptrdiff_t>(this));
