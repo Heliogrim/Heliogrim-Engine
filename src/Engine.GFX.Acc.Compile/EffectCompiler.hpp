@@ -8,8 +8,6 @@
 #include "Module/ModuleCompiler.hpp"
 #include "Pass/PassBuilder.hpp"
 #include "Pass/PassCompiler.hpp"
-#include "Profile/EffectProfile.hpp"
-#include "Spec/SpecificationStorage.hpp"
 #include "Stage/StageComposer.hpp"
 #include "Token/Tokenizer.hpp"
 

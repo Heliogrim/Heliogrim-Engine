@@ -10,7 +10,6 @@ namespace hg::engine::gfx::acc {
         string _name;
 
     public:
-        void* _preamble;
         Vector<ProfileDefinition> _definitions;
     };
 }

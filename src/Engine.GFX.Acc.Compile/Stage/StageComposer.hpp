@@ -23,9 +23,8 @@ namespace hg::engine::gfx::acc {
 
     public:
         [[nodiscard]] Vector<smr<StageDerivat>> compose(
-            cref<class SpecificationStorage> specifications_,
             cref<smr<const class EffectProfile>> profile_,
-            cref<Vector<smr<const Symbol>>> targetSymbols_,
+            cref<class EffectSpecification> specifications_,
             cref<smr<AccelerationPass>> targetPass_
         ) const;
     };

@@ -81,7 +81,7 @@ namespace hg::engine::gfx::acc {
 
     public:
         [[nodiscard]] smr<const AccelerationPass> compile(
-            cref<class SpecificationStorage> specifications_,
+            cref<class EffectSpecification> specifications_,
             mref<smr<AccelerationPass>> source_,
             mref<Vector<smr<StageDerivat>>> stages_,
             mref<Vector<uptr<CompiledModule>>> modules_

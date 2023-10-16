@@ -3,6 +3,7 @@
 #include <map>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.GFX.Acc/AccelerationEffect.hpp>
 #include <Engine.GFX.Acc/Stage/StageDerivat.hpp>
 #include <Engine.GFX.Acc/Symbol/Symbol.hpp>
@@ -11,9 +12,20 @@
 
 #include "../Token/ScopedTokenStorage.hpp"
 #include "../Token/Tokenizer.hpp"
+#include "Engine.GFX.Acc.Compile/Profile/EffectProfile.hpp"
 
 using namespace hg::engine::gfx::acc;
 using namespace hg;
+
+static void preprocessStageDerivat(
+    cref<smr<const Stage>> stage_,
+    cref<smr<const class EffectProfile>> profile_,
+    _Inout_ smr<StageDerivat> derivat_
+);
+
+static string read_shader_file(string name_);
+
+/**/
 
 non_owning_rptr<const Tokenizer> StageComposer::getTokenizer() const noexcept {
     return _tokenizer;
@@ -24,9 +36,8 @@ void StageComposer::setTokenizer(mref<non_owning_rptr<const Tokenizer>> tokenize
 }
 
 Vector<smr<StageDerivat>> StageComposer::compose(
-    cref<class SpecificationStorage> specifications_,
-    cref<smr<const class EffectProfile>> profile_,
-    cref<Vector<smr<const Symbol>>> targetSymbols_,
+    cref<smr<const EffectProfile>> profile_,
+    cref<EffectSpecification> specifications_,
     cref<smr<AccelerationPass>> targetPass_
 ) const {
 
@@ -69,7 +80,8 @@ Vector<smr<StageDerivat>> StageComposer::compose(
             )
         );
 
-        derivats.back()->setIntermediate(make_smr<lang::Intermediate>(*stage->getIntermediate()));
+        preprocessStageDerivat(stage, profile_, derivats.back());
+        //derivats.back()->setIntermediate(make_smr<lang::Intermediate>(*stage->getIntermediate()));
     }
 
     /**/
@@ -241,4 +253,116 @@ Vector<smr<StageDerivat>> StageComposer::compose(
      */
 
     return derivats;
+}
+
+#include <sstream>
+
+static void preprocessStageDerivat(
+    cref<smr<const Stage>> stage_,
+    cref<smr<const EffectProfile>> profile_,
+    smr<StageDerivat> derivat_
+) {
+
+    static string shaderMacros = read_shader_file("__macros__.glsl");
+
+    std::stringstream ss {};
+    ss << "#version 450 core\n";
+
+    switch (stage_->getFlagBits()) {
+        case StageFlagBits::eVertex: {
+            ss << "#define HG_SCTX_TYPE_VERTEX\n";
+            break;
+        }
+        case StageFlagBits::eTessellationCtrl: {
+            ss << "#define HG_SCTX_TYPE_TESSELLATION_CTRL\n";
+            break;
+        }
+        case StageFlagBits::eTessellationEval: {
+            ss << "#define HG_SCTX_TYPE_TESSELLATION_EVAL\n";
+            break;
+        }
+        case StageFlagBits::eGeometry: {
+            ss << "#define HG_SCTX_TYPE_GEOMETRY\n";
+            break;
+        }
+        case StageFlagBits::eFragment: {
+            ss << "#define HG_SCTX_TYPE_FRAGMENT\n";
+            break;
+        }
+        case StageFlagBits::eCompute: {
+            ss << "#define HG_SCTX_TYPE_COMPUTE\n";
+            break;
+        }
+        default: {
+            __debugbreak();
+        }
+    }
+
+    auto preamble = ss.str();
+
+    /**/
+
+    auto intermediate = make_smr<lang::Intermediate>(*stage_->getIntermediate());
+
+    auto& il = const_cast<lang::IL&>(intermediate->getIl().load());
+    _STD reverse(il._snippets.begin(), il._snippets.end());
+
+    /* Store injections and external definitions in reverse order */
+    il._snippets.push_back(shaderMacros);
+
+    for (auto iter = profile_->_definitions.rbegin(); iter != profile_->_definitions.rend(); ++iter) {
+
+        const auto& definition = *iter;
+        if (definition.type == DefinitionType::eText) {
+            il._snippets.push_back(definition.data);
+        }
+    }
+
+    il._snippets.push_back(_STD move(preamble));
+    /**/
+
+    /*
+     * Layout Inversion:
+     *
+     * | Preamble               |
+     * | ---------------------- |
+     * | Profile Definitions    |
+     * | ---------------------- |
+     * | Shader Macros          |
+     * | Shader Body            |
+     *
+     */
+    _STD reverse(il._snippets.begin(), il._snippets.end());
+
+    derivat_->setIntermediate(_STD move(intermediate));
+}
+
+#include <filesystem>
+#include <fstream>
+
+static string read_shader_file(string name_) {
+
+    const auto root = R"(R:\Development\C++\Vulkan API\Game\resources\shader\)";
+    std::filesystem::path file { root };
+    file.append(name_);
+
+    if (not std::filesystem::exists(file)) {
+        __debugbreak();
+        return {};
+    }
+
+    auto ifs = _STD ifstream(file, std::ios_base::in | std::ios_base::binary);
+
+    ifs.seekg(0, _STD ios::end);
+    const auto fsize = ifs.tellg();
+    ifs.seekg(0, _STD ios::beg);
+
+    string tmp {};
+    tmp.resize(fsize);
+
+    ifs.read(tmp.data(), fsize);
+    assert(!ifs.bad());
+
+    ifs.close();
+    return tmp;
 }
