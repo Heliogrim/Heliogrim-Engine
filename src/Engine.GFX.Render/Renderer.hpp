@@ -39,7 +39,7 @@ namespace hg::engine::gfx::render {
 
         _STD atomic_uint_fast32_t _rtVer;
 
-        uptr<graph::CompileGraph> _compileGraph;
+        smr<graph::CompileGraph> _compileGraph;
         smr<graph::Resolver> _baseRes;
 
         smr<graph::InjectGraphRegistry> _injectReg;
@@ -50,6 +50,8 @@ namespace hg::engine::gfx::render {
 
     private:
         [[nodiscard]] virtual smr<graph::Resolver> makeAdvancedResolver() const;
+
+        [[nodiscard]] virtual uptr<graph::RuntimeGraph> makeDefaultRuntimeGraph() const;
 
         [[nodiscard]] virtual uptr<RenderPipeline> makeRenderPipeline() const;
 

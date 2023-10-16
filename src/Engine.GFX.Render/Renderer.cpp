@@ -8,12 +8,14 @@
 #include <Engine.GFX.RenderPipeline/RenderPipeline.hpp>
 #include <Engine.GFX.RenderPipeline/State/State.hpp>
 #include <Engine.GFX.RenderGraph/Resolver/Resolver.hpp>
+#include <Engine.GFX.RenderGraph.Compile/RenderGraphCompiler.hpp>
 #include <Engine.GFX.RenderGraph/CompileGraph.hpp>
 #include <Engine.GFX.RenderGraph/RuntimeGraph.hpp>
+#include <Engine.GFX.RenderPipeline/Build/BaseBuilder.hpp>
+#include <Engine.GFX.RenderPipeline/Build/StreamBuilder.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "RenderPass.hpp"
-#include "Builder/BaseBuilder.hpp"
-#include "Builder/StreamBuilder.hpp"
 
 using namespace hg::engine::gfx::render;
 using namespace hg;
@@ -31,7 +33,7 @@ Renderer::Renderer(
     _guid(_STD move(guid_)),
     _name(_STD move(name_)),
     _rtVer(runtimeVersion_),
-    _compileGraph(_STD move(compileGraph_)),
+    _compileGraph(make_smr<>(_STD move(compileGraph_))),
     _baseRes(_STD move(baseResolver_)),
     _injectReg(_STD move(injectionRegistry_)),
     _globalCache(_STD move(globalCache_)),
@@ -41,12 +43,31 @@ smr<graph::Resolver> Renderer::makeAdvancedResolver() const {
     return make_smr<graph::Resolver>();
 }
 
+uptr<graph::RuntimeGraph> Renderer::makeDefaultRuntimeGraph() const {
+
+    const auto expected = _compileGraph->expectedProvision();
+
+    Vector<smr<const acc::Symbol>> defaultTargetSymbols {};
+    defaultTargetSymbols.reserve(expected.size());
+
+    for (const auto& provision : expected) {
+        defaultTargetSymbols.push_back(provision.symbol);
+    }
+
+    constexpr graph::RenderGraphCompiler rgc {};
+    return rgc(
+        graph::CompileRequest {
+            _compileGraph, _STD move(defaultTargetSymbols)
+        }
+    );
+}
+
 uptr<RenderPipeline> Renderer::makeRenderPipeline() const {
 
-    constexpr auto builder = BaseBuilder();
-    auto next = builder(_compileGraph.get());
+    constexpr auto builder = pipeline::BaseBuilder();
+    auto runtimeGraph = makeDefaultRuntimeGraph();
 
-    return next;
+    return builder(_STD move(runtimeGraph));
 }
 
 uptr<pipeline::State> Renderer::makePipelineState(mref<nmpt<const RenderPipeline>> pipeline_) const {
@@ -110,7 +131,7 @@ uptr<RenderPass> Renderer::updateIncremental(
 ) const {
 
     /* Update Pipeline */
-    constexpr auto builder = StreamBuilder();
+    constexpr auto builder = pipeline::StreamBuilder();
     pass_->_pipeline = builder(_STD move(pass_->_pipeline), _STD move(nextGraph_));
 
     /* Update Pipeline State sub-sequential */
