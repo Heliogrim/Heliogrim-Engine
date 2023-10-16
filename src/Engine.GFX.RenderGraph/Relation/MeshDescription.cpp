@@ -15,3 +15,7 @@ bool MeshDescription::isValueCompatible(const non_owning_rptr<const Description>
     // TODO: _layout == other._layout;
     return true;
 }
+
+cref<MeshDescription::MeshDataLayout> MeshDescription::getMeshDataLayout() const noexcept {
+    return _layout;
+}
