@@ -9,11 +9,7 @@ using namespace hg::engine::gfx::render::graph;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-RenderGraphCompiler::RenderGraphCompiler() = default;
-
-RenderGraphCompiler::~RenderGraphCompiler() = default;
-
-uptr<RuntimeGraph> RenderGraphCompiler::operator()(mref<CompileRequest> request_) {
+uptr<RuntimeGraph> RenderGraphCompiler::operator()(mref<CompileRequest> request_) const {
 
     if (request_.targetSymbols.empty()) {
         return nullptr;
@@ -23,7 +19,11 @@ uptr<RuntimeGraph> RenderGraphCompiler::operator()(mref<CompileRequest> request_
 
         bool exists = false;
         for (const auto& provision : request_.graph->expectedProvision()) {
-            if (provision.symbol == target) {
+
+            if (
+                provision.symbol->scope == target->scope &&
+                provision.symbol->name == target->name
+            ) {
                 exists = true;
                 break;
             }
@@ -38,7 +38,7 @@ uptr<RuntimeGraph> RenderGraphCompiler::operator()(mref<CompileRequest> request_
     /**/
 
     auto runtime = make_uptr<RuntimeGraph>();
-    auto visitor = CompileVisitor(runtime.get());
+    auto visitor = graph::CompileVisitor(runtime.get());
 
     request_.graph->reverse(visitor);
 
