@@ -3,6 +3,7 @@ Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
 Copyright (c) 2006-2020, assimp team
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -38,21 +39,41 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------
 */
 
-#pragma once
-#ifndef AI_DEFINES_H_INC
-#define AI_DEFINES_H_INC
+/** @file Provides facilities to replace the default assert handler. */
 
-#ifdef __GNUC__
-#   pragma GCC system_header
-#endif
+#ifndef INCLUDED_AI_ASSERTHANDLER_H
+#define INCLUDED_AI_ASSERTHANDLER_H
 
-// We need those constants, workaround for any platforms where nobody defined them yet
-#if (!defined SIZE_MAX)
-#   define SIZE_MAX (~((size_t)0))
-#endif
+#include <assimp/ai_assert.h>
+#include <assimp/defs.h>
 
-#if (!defined UINT_MAX)
-#   define UINT_MAX (~((unsigned int)0))
-#endif
+namespace Assimp {
 
-#endif // AI_DEINES_H_INC
+// ---------------------------------------------------------------------------
+/**
+ *  @brief  Signature of functions which handle assert violations.
+ */
+using AiAssertHandler = void (*)(const char* failedExpression, const char* file, int line);
+
+// ---------------------------------------------------------------------------
+/**
+ *  @brief  Set the assert handler.
+ */
+ASSIMP_API void setAiAssertHandler(AiAssertHandler handler);
+
+// ---------------------------------------------------------------------------
+/** The assert handler which is set by default.
+ *
+ *  @brief  This issues a message to stderr and calls abort.
+ */
+AI_WONT_RETURN ASSIMP_API void defaultAiAssertHandler(const char* failedExpression, const char* file, int line) AI_WONT_RETURN_SUFFIX;
+
+// ---------------------------------------------------------------------------
+/**
+ *  @brief  Dispatches an assert violation to the assert handler.
+ */
+ASSIMP_API void aiAssertViolation(const char* failedExpression, const char* file, int line);
+
+} // end of namespace Assimp
+
+#endif // INCLUDED_AI_ASSERTHANDLER_H

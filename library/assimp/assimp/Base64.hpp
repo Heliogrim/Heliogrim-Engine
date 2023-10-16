@@ -5,8 +5,6 @@ Open Asset Import Library (assimp)
 
 Copyright (c) 2006-2022, assimp team
 
-
-
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -41,54 +39,54 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ---------------------------------------------------------------------------
 */
 
-/** @file ZipArchiveIOSystem.h
- *  @brief Implementation of IOSystem to read a ZIP file from another IOSystem
-*/
-
 #pragma once
-#ifndef AI_ZIPARCHIVEIOSYSTEM_H_INC
-#define AI_ZIPARCHIVEIOSYSTEM_H_INC
+#ifndef AI_BASE64_HPP_INC
+#define AI_BASE64_HPP_INC
 
-#ifdef __GNUC__
-#   pragma GCC system_header
-#endif
+#include <assimp/defs.h>
 
-#include <assimp/IOStream.hpp>
-#include <assimp/IOSystem.hpp>
+#include <stdint.h>
+#include <vector>
+#include <string>
 
 namespace Assimp {
+namespace Base64 {
 
-class ZipArchiveIOSystem : public IOSystem {
-public:
-    //! Open a Zip using the proffered IOSystem
-    ZipArchiveIOSystem(IOSystem* pIOHandler, const char *pFilename, const char* pMode = "r");
-    ZipArchiveIOSystem(IOSystem* pIOHandler, const std::string& rFilename, const char* pMode = "r");
-    virtual ~ZipArchiveIOSystem() override;
-    bool Exists(const char* pFilename) const override;
-    char getOsSeparator() const override;
-    IOStream* Open(const char* pFilename, const char* pMode = "rb") override;
-    void Close(IOStream* pFile) override;
+/// @brief Will encode the given character buffer from UTF64 to ASCII
+/// @param in           The UTF-64 buffer.
+/// @param inLength     The size of the buffer
+/// @param out          The encoded ASCII string.
+ASSIMP_API void Encode(const uint8_t *in, size_t inLength, std::string &out);
 
-    // Specific to ZIP
-    //! The file was opened and is a ZIP
-    bool isOpen() const;
+/// @brief Will encode the given character buffer from UTF64 to ASCII.
+/// @param in   A vector, which contains the buffer for encoding.
+/// @param out  The encoded ASCII string.
+ASSIMP_API void Encode(const std::vector<uint8_t> &in, std::string &out);
 
-    //! Get the list of all files with their simplified paths
-    //! Intended for use within Assimp library boundaries
-    void getFileList(std::vector<std::string>& rFileList) const;
+/// @brief Will encode the given character buffer from UTF64 to ASCII.
+/// @param in   A vector, which contains the buffer for encoding.
+/// @return The encoded ASCII string.
+ASSIMP_API std::string Encode(const std::vector<uint8_t> &in);
 
-    //! Get the list of all files with extension (must be lowercase)
-    //! Intended for use within Assimp library boundaries
-    void getFileListExtension(std::vector<std::string>& rFileList, const std::string& extension) const;
+/// @brief Will decode the given character buffer from ASCII to UTF64.
+/// @param in           The ASCII buffer to decode.
+/// @param inLength     The size of the buffer.
+/// @param out          The decoded buffer.
+/// @return The new buffer size.
+ASSIMP_API size_t Decode(const char *in, size_t inLength, uint8_t *&out);
 
-    static bool isZipArchive(IOSystem* pIOHandler, const char *pFilename);
-    static bool isZipArchive(IOSystem* pIOHandler, const std::string& rFilename);
+/// @brief Will decode the given character buffer from ASCII to UTF64.
+/// @param in   The ASCII buffer to decode as a std::string.
+/// @param out  The decoded buffer.
+/// @return The new buffer size.
+ASSIMP_API size_t Decode(const std::string &in, std::vector<uint8_t> &out);
 
-private:
-    class Implement;
-    Implement *pImpl = nullptr;
-};
+/// @brief Will decode the given character buffer from ASCII to UTF64.
+/// @param in   The ASCII string.
+/// @return The decoded buffer in a vector.
+ASSIMP_API std::vector<uint8_t> Decode(const std::string &in);
 
-} // Namespace Assimp
+} // namespace Base64
+} // namespace Assimp
 
-#endif // AI_ZIPARCHIVEIOSYSTEM_H_INC
+#endif // AI_BASE64_HPP_INC

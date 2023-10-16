@@ -5,8 +5,6 @@ Open Asset Import Library (assimp)
 
 Copyright (c) 2006-2022, assimp team
 
-
-
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -41,54 +39,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ---------------------------------------------------------------------------
 */
 
-/** @file ZipArchiveIOSystem.h
- *  @brief Implementation of IOSystem to read a ZIP file from another IOSystem
-*/
+/** @file GltfMaterial.h
+ *  @brief glTF-specific material macros
+ *  These will be made generic at some future date
+ */
 
-#pragma once
-#ifndef AI_ZIPARCHIVEIOSYSTEM_H_INC
-#define AI_ZIPARCHIVEIOSYSTEM_H_INC
+#ifndef AI_GLTFMATERIAL_H_INC
+#define AI_GLTFMATERIAL_H_INC
 
 #ifdef __GNUC__
 #   pragma GCC system_header
 #endif
 
-#include <assimp/IOStream.hpp>
-#include <assimp/IOSystem.hpp>
+#include <assimp/material.h>
 
-namespace Assimp {
+#define AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_METALLICROUGHNESS_TEXTURE aiTextureType_UNKNOWN, 0
+#define AI_MATKEY_GLTF_ALPHAMODE "$mat.gltf.alphaMode", 0, 0
+#define AI_MATKEY_GLTF_ALPHACUTOFF "$mat.gltf.alphaCutoff", 0, 0
 
-class ZipArchiveIOSystem : public IOSystem {
-public:
-    //! Open a Zip using the proffered IOSystem
-    ZipArchiveIOSystem(IOSystem* pIOHandler, const char *pFilename, const char* pMode = "r");
-    ZipArchiveIOSystem(IOSystem* pIOHandler, const std::string& rFilename, const char* pMode = "r");
-    virtual ~ZipArchiveIOSystem() override;
-    bool Exists(const char* pFilename) const override;
-    char getOsSeparator() const override;
-    IOStream* Open(const char* pFilename, const char* pMode = "rb") override;
-    void Close(IOStream* pFile) override;
+#define _AI_MATKEY_GLTF_MAPPINGNAME_BASE "$tex.mappingname"
+#define _AI_MATKEY_GLTF_MAPPINGID_BASE "$tex.mappingid"
+#define _AI_MATKEY_GLTF_MAPPINGFILTER_MAG_BASE "$tex.mappingfiltermag"
+#define _AI_MATKEY_GLTF_MAPPINGFILTER_MIN_BASE "$tex.mappingfiltermin"
+#define _AI_MATKEY_GLTF_SCALE_BASE "$tex.scale"
+#define _AI_MATKEY_GLTF_STRENGTH_BASE "$tex.strength"
 
-    // Specific to ZIP
-    //! The file was opened and is a ZIP
-    bool isOpen() const;
+#define AI_MATKEY_GLTF_MAPPINGNAME(type, N) _AI_MATKEY_GLTF_MAPPINGNAME_BASE, type, N
+#define AI_MATKEY_GLTF_MAPPINGID(type, N) _AI_MATKEY_GLTF_MAPPINGID_BASE, type, N
+#define AI_MATKEY_GLTF_MAPPINGFILTER_MAG(type, N) _AI_MATKEY_GLTF_MAPPINGFILTER_MAG_BASE, type, N
+#define AI_MATKEY_GLTF_MAPPINGFILTER_MIN(type, N) _AI_MATKEY_GLTF_MAPPINGFILTER_MIN_BASE, type, N
+#define AI_MATKEY_GLTF_TEXTURE_SCALE(type, N) _AI_MATKEY_GLTF_SCALE_BASE, type, N
+#define AI_MATKEY_GLTF_TEXTURE_STRENGTH(type, N) _AI_MATKEY_GLTF_STRENGTH_BASE, type, N
 
-    //! Get the list of all files with their simplified paths
-    //! Intended for use within Assimp library boundaries
-    void getFileList(std::vector<std::string>& rFileList) const;
-
-    //! Get the list of all files with extension (must be lowercase)
-    //! Intended for use within Assimp library boundaries
-    void getFileListExtension(std::vector<std::string>& rFileList, const std::string& extension) const;
-
-    static bool isZipArchive(IOSystem* pIOHandler, const char *pFilename);
-    static bool isZipArchive(IOSystem* pIOHandler, const std::string& rFilename);
-
-private:
-    class Implement;
-    Implement *pImpl = nullptr;
-};
-
-} // Namespace Assimp
-
-#endif // AI_ZIPARCHIVEIOSYSTEM_H_INC
+#endif

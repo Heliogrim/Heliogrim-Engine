@@ -21,7 +21,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>assimp-vc142-mtd.lib;GenericCodeGend.lib;glslangd.lib;glslang-default-resource-limitsd.lib;MachineIndependentd.lib;OGLCompilerd.lib;OSDependentd.lib;SPIRVd.lib;SPVRemapperd.lib;vulkan-1.lib;SDL2.lib;ogg.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;c4core.lib;ryml.lib;freetyped.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc143-mtd.lib;GenericCodeGend.lib;glslangd.lib;glslang-default-resource-limitsd.lib;MachineIndependentd.lib;OGLCompilerd.lib;OSDependentd.lib;SPIRVd.lib;SPVRemapperd.lib;vulkan-1.lib;SDL2.lib;ogg.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;c4core.lib;ryml.lib;freetyped.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib;$(VULKAN_SDK)\Third-Party\Bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
