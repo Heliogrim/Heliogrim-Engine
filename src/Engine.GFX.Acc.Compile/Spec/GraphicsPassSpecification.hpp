@@ -29,10 +29,6 @@ namespace hg::engine::gfx::acc {
 
         /**/
 
-        Vector<smr<const Symbol>> requiredExports;
-
-        /**/
-
         // TODO: Remove, because this is just vk requirement
         //smr<pipeline::LORenderPass> renderPass;
         nmpt<void> renderPass;

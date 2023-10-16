@@ -2,18 +2,26 @@
 
 #include <Engine.Common/Wrapper.hpp>
 
-#include "SpecificationStorage.hpp"
+#include "EffectSpecification.hpp"
 
 namespace hg::engine::gfx::acc {
-    class SimpleSpecificationStorage :
-        public SpecificationStorage {
+    class SimpleEffectSpecification :
+        public EffectSpecification {
     public:
-        using this_type = SimpleSpecificationStorage;
+        using this_type = SimpleEffectSpecification;
 
     public:
-        SimpleSpecificationStorage() noexcept = default;
+        SimpleEffectSpecification() noexcept = default;
 
-        ~SimpleSpecificationStorage() noexcept override = default;
+        SimpleEffectSpecification(mref<Vector<smr<const Symbol>>> targetSymbols_) noexcept;
+
+        ~SimpleEffectSpecification() noexcept override = default;
+
+    private:
+        Vector<smr<const Symbol>> _targetSymbols;
+
+    public:
+        [[nodiscard]] cref<Vector<smr<const Symbol>>> targetSymbols() const noexcept override;
 
     private:
         uptr<ComputePassSpecification> _cps;
@@ -32,32 +40,32 @@ namespace hg::engine::gfx::acc {
 
     public:
         template <typename Type_>
-        void set(mref<uptr<Type_>> spec_);
+        void setPassSpec(mref<uptr<Type_>> spec_);
     };
 
     template <>
-    inline void SimpleSpecificationStorage::set<ComputePassSpecification>(
+    inline void SimpleEffectSpecification::setPassSpec<ComputePassSpecification>(
         mref<uptr<ComputePassSpecification>> spec_
     ) {
         _cps = _STD move(spec_);
     }
 
     template <>
-    inline void SimpleSpecificationStorage::set<GraphicsPassSpecification>(
+    inline void SimpleEffectSpecification::setPassSpec<GraphicsPassSpecification>(
         mref<uptr<GraphicsPassSpecification>> spec_
     ) {
         _gps = _STD move(spec_);
     }
 
     template <>
-    inline void SimpleSpecificationStorage::set<MeshPassSpecification>(
+    inline void SimpleEffectSpecification::setPassSpec<MeshPassSpecification>(
         mref<uptr<MeshPassSpecification>> spec_
     ) {
         _mps = _STD move(spec_);
     }
 
     template <>
-    inline void SimpleSpecificationStorage::set<RaytracingPassSpecification>(
+    inline void SimpleEffectSpecification::setPassSpec<RaytracingPassSpecification>(
         mref<uptr<RaytracingPassSpecification>> spec_
     ) {
         _rps = _STD move(spec_);

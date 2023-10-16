@@ -147,7 +147,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkModuleSource.hpp">
       <Filter>Headerdateien\Module</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SpecificationStorage.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\EffectSpecification.hpp">
       <Filter>Headerdateien\Spec</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\ComputePassSpecification.hpp">
@@ -162,7 +162,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\RaytracingPassSpecification.hpp">
       <Filter>Headerdateien\Spec</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleSpecificationStorage.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleEffectSpecification.hpp">
       <Filter>Headerdateien\Spec</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Profile\EffectProfile.hpp">
@@ -230,7 +230,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Spec\GraphicsPassSpecification.cpp">
       <Filter>Quelldateien\Spec</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleSpecificationStorage.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleEffectSpecification.cpp">
       <Filter>Quelldateien\Spec</Filter>
     </ClCompile>
   </ItemGroup>
