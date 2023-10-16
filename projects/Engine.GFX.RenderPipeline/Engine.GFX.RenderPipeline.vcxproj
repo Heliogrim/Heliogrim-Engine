@@ -90,6 +90,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Build\BaseBuilder.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Build\ProgressiveGenerator.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Build\GraphStager.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Build\GraphScanner.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Build\StreamBuilder.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ComplexInvocationGenerator.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ComputeIG.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGCommandBuffer.hpp" />
@@ -118,6 +123,11 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\BaseBuilder.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\ProgressiveGenerator.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\GraphStager.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\GraphScanner.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\StreamBuilder.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGCommandBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneMeshIG.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipeline.cpp" />

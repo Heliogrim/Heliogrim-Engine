@@ -31,6 +31,12 @@
     <Filter Include="Quelldateien\Invocation">
       <UniqueIdentifier>{eeecf173-4670-4a95-8aed-e20a91b928b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Build">
+      <UniqueIdentifier>{61e94bf6-1ad7-45ee-9e08-e02c514688c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Build">
+      <UniqueIdentifier>{a2e4d8e9-9112-40ee-b717-478d503cefc0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipeline.hpp">
@@ -99,6 +105,33 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\PlaneMeshIG.hpp">
       <Filter>Headerdateien\Invocation</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Build\BaseBuilder.hpp">
+      <Filter>Headerdateien\Build</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Build\StreamBuilder.hpp">
+      <Filter>Headerdateien\Build</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Build\ProgressiveGenerator.hpp">
+      <Filter>Headerdateien\Build</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Build\GraphScanner.hpp">
+      <Filter>Headerdateien\Build</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Build\GraphStager.hpp">
+      <Filter>Headerdateien\Build</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ComputeIG.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ComplexInvocationGenerator.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\StaticMeshIG.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SkeletalMeshIG.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipeline.cpp">
@@ -137,9 +170,30 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\MultiAccelSubpassStage.cpp">
       <Filter>Quelldateien\Stage</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\StreamBuilder.cpp">
+      <Filter>Quelldateien\Build</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\BaseBuilder.cpp">
+      <Filter>Quelldateien\Build</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\GraphScanner.cpp">
+      <Filter>Quelldateien\Build</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\GraphStager.cpp">
+      <Filter>Quelldateien\Build</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\ProgressiveGenerator.cpp">
+      <Filter>Quelldateien\Build</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneMeshIG.cpp">
+      <Filter>Quelldateien\Invocation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneWalkerFilter.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </None>
+    <None Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\GenericMeshIG.hpp">
       <Filter>Headerdateien\Invocation</Filter>
     </None>
   </ItemGroup>
