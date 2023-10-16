@@ -76,7 +76,8 @@ namespace hg {
             }
         }
 
-        template <class Tx_> requires _STD is_const_v<PayloadType_> && _STD is_same_v<_STD add_const_t<Tx_>, PayloadType_>
+        template <class Tx_> requires _STD is_const_v<PayloadType_> && _STD is_same_v<_STD add_const_t<Tx_>,
+            PayloadType_>
         SharedMemoryReference(_In_ cref<SharedMemoryReference<Tx_>> other_) :
             SharedMemoryReference() {
 
@@ -147,8 +148,8 @@ namespace hg {
         [[nodiscard]] Pty_<Fty_> into();
 
         template <class Fty_> requires IsSmrBiPointerCompatible<PayloadType_, Fty_>
-        [[nodiscard]] smr<Fty_> into() {
-            return smr<Fty_> { _STD move(*this) };
+        [[nodiscard]] SharedMemoryReference<Fty_> into() {
+            return SharedMemoryReference<Fty_> { _STD move(*this) };
         }
 
     private:
@@ -289,6 +290,9 @@ namespace hg {
             delete this;
         }
 
+        // Warning: !!
+        // Error: This will leak and break when used with incomplete type or type erasure
+        // TODO: Rebase virtual to preserve deleter
         void destroy(mref<ptr<value_type>> obj_) {
             delete obj_;
         }
@@ -441,4 +445,16 @@ namespace std {
             );
         }
     };
+}
+
+/**/
+/**/
+/**/
+
+namespace hg {
+    template <typename>
+    class SharedMemoryReference;
+
+    template <typename Ty>
+    using smr = SharedMemoryReference<Ty>;
 }

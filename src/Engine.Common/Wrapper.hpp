@@ -38,22 +38,6 @@ namespace hg {
     template <class Ty>
     using managed = _STD shared_ptr<Ty>;
 
-    /**/
-
-    template <typename Ty>
-    using mpt = MemoryPointer<Ty>;
-
-    template <typename Ty>
-    using nmpt = typename mpt<Ty>::non_owning_type;
-
-    /**/
-
-    template <typename>
-    class SharedMemoryReference;
-
-    template <typename Ty>
-    using smr = SharedMemoryReference<Ty>;
-
     /* C++ Language Extensions */
 
     /**

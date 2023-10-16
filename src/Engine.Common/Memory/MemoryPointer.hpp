@@ -475,7 +475,7 @@ namespace hg {
             typename AllocType_ = typename StorageType_::allocator_type,
             typename StorageTx_ = StorageType_>
         ref<this_type> operator=(cref<MemoryPointer<Tx_, AllocType_, StorageTx_>> mp_) {
-            if (static_cast<void*>(_STD addressof(mp_)) != this) {
+            if (static_cast<const void*>(_STD addressof(mp_)) != this) {
                 storage = mp_.storage;
             }
             return *this;
@@ -578,4 +578,16 @@ namespace std {
                 this)(value_.get());
         }
     };
+}
+
+/**/
+/**/
+/**/
+
+namespace hg {
+    template <typename Ty>
+    using mpt = MemoryPointer<Ty>;
+
+    template <typename Ty>
+    using nmpt = typename mpt<Ty>::non_owning_type;
 }
