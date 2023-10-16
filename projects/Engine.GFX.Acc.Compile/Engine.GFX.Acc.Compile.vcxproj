@@ -123,8 +123,8 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\GraphicsPassSpecification.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\MeshPassSpecification.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\RaytracingPassSpecification.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleSpecificationStorage.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SpecificationStorage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleEffectSpecification.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\EffectSpecification.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Stage\StageComposer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\ScopedTokenStorage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\Token.hpp" />
@@ -146,7 +146,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassBuilder.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Pass\VkPassCompiler.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Spec\GraphicsPassSpecification.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleSpecificationStorage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleEffectSpecification.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Stage\StageComposer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\ScopedTokenStorage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.cpp" />
