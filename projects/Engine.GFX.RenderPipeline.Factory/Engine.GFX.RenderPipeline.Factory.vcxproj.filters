@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\Acceleration">
+      <UniqueIdentifier>{512a9494-afa0-45ed-abc2-0b60b6b32b91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Acceleration\Invocation">
+      <UniqueIdentifier>{9ca648c6-f4f7-4eb0-a922-9fc815c8ab1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Acceleration\Pass">
+      <UniqueIdentifier>{7d93404f-1175-4d29-87f8-9de1862ce660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Acceleration">
+      <UniqueIdentifier>{396bbe6f-7c04-49d7-8b67-57924a32ab93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Acceleration\Pass">
+      <UniqueIdentifier>{221066e7-ea23-4aec-a8c3-da2ff4cae09b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Acceleration\Invocation">
+      <UniqueIdentifier>{db8af86b-f798-44f8-b7b0-17a6dbfafde6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Pass\Selector.cpp">
+      <Filter>Quelldateien\Acceleration\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\Selector.cpp">
+      <Filter>Quelldateien\Acceleration\Invocation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialCompute.cpp">
+      <Filter>Quelldateien\Acceleration\Invocation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialGeneric.cpp">
+      <Filter>Quelldateien\Acceleration\Invocation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialSkeletal.cpp">
+      <Filter>Quelldateien\Acceleration\Invocation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialStatic.cpp">
+      <Filter>Quelldateien\Acceleration\Invocation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialPlane.cpp">
+      <Filter>Quelldateien\Acceleration\Invocation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialProcedural.cpp">
+      <Filter>Quelldateien\Acceleration\Invocation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialScene.cpp">
+      <Filter>Quelldateien\Acceleration\Invocation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Pass\PartialMaterial.cpp">
+      <Filter>Quelldateien\Acceleration\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Pass\PartialMulti.cpp">
+      <Filter>Quelldateien\Acceleration\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Pass\PartialSingle.cpp">
+      <Filter>Quelldateien\Acceleration\Pass</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\Selector.hpp">
+      <Filter>Headerdateien\Acceleration\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialPlane.hpp">
+      <Filter>Headerdateien\Acceleration\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialProcedural.hpp">
+      <Filter>Headerdateien\Acceleration\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialCompute.hpp">
+      <Filter>Headerdateien\Acceleration\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialStatic.hpp">
+      <Filter>Headerdateien\Acceleration\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialSkeletal.hpp">
+      <Filter>Headerdateien\Acceleration\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialGeneric.hpp">
+      <Filter>Headerdateien\Acceleration\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Pass\Selector.hpp">
+      <Filter>Headerdateien\Acceleration\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Pass\PartialSingle.hpp">
+      <Filter>Headerdateien\Acceleration\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Pass\PartialMulti.hpp">
+      <Filter>Headerdateien\Acceleration\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Pass\PartialMaterial.hpp">
+      <Filter>Headerdateien\Acceleration\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\Acceleration\Invocation\PartialScene.hpp">
+      <Filter>Headerdateien\Acceleration\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\StaticMeshLayout.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\SkeletalMeshLayout.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline.Factory\PlaneMeshLayout.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
