@@ -107,7 +107,7 @@ DependencyValidationResult Modules::addSubModule(mref<uptr<SubModule>> subModule
      */
     for (const auto& stored : _subModules) {
 
-        const auto deps = stored->dependencies();
+        const auto& deps = stored->dependencies();
 
         const auto where = _STD ranges::find(
             deps,
