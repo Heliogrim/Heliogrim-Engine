@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Headerdateien\Builder">
-      <UniqueIdentifier>{2452dfdb-bc8c-4b8e-98a1-3d30b0238ba5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Builder">
-      <UniqueIdentifier>{05a5b037-fba3-49d2-94d8-a5c3f4587101}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Render\Renderer.hpp">
@@ -30,26 +24,8 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render\RenderPass.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\StreamBuilder.hpp">
-      <Filter>Headerdateien\Builder</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\BaseBuilder.hpp">
-      <Filter>Headerdateien\Builder</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render\RenderPassResult.hpp">
       <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\BuilderLayerVisitor.hpp">
-      <Filter>Headerdateien\Builder</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\BuilderScanVisitor.hpp">
-      <Filter>Headerdateien\Builder</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\BuilderProgGenVisitor.hpp">
-      <Filter>Headerdateien\Builder</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render\Builder\CompileVisitor.hpp">
-      <Filter>Headerdateien\Builder</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -58,24 +34,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Render\RenderPass.cpp">
       <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\BaseBuilder.cpp">
-      <Filter>Quelldateien\Builder</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\BuilderLayerVisitor.cpp">
-      <Filter>Quelldateien\Builder</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\StreamBuilder.cpp">
-      <Filter>Quelldateien\Builder</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\BuilderScanVisitor.cpp">
-      <Filter>Quelldateien\Builder</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\BuilderProgGenVisitor.cpp">
-      <Filter>Quelldateien\Builder</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render\Builder\CompileVisitor.cpp">
-      <Filter>Quelldateien\Builder</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
