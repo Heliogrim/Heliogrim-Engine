@@ -14,4 +14,8 @@ namespace hg::engine::gfx::acc {
         SymbolScopeType type;
         string layer;
     };
+
+    [[nodiscard]] inline bool operator==(cref<SymbolScope> left_, cref<SymbolScope> right_) noexcept {
+        return left_.type == right_.type && left_.layer == right_.layer;
+    }
 }
