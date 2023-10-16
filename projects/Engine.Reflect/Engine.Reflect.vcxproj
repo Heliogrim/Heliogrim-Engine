@@ -108,11 +108,13 @@
     <ClInclude Include="..\..\src\Engine.Reflect\Compile\Relation.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Compile\Sort.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Compile\Table.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\ExactType.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\ClassMetaBase.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\Compile.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\Concept.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\InheritBase.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Inherit\InheritMeta.hpp" />
+    <ClInclude Include="..\..\src\Engine.Reflect\IsType.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Meta\MetaClass.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Meta\TypedMetaClass.hpp" />
     <ClInclude Include="..\..\src\Engine.Reflect\Meta\TypeId.hpp" />
