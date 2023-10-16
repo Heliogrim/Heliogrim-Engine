@@ -231,6 +231,12 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassAccelComponent.hpp">
       <Filter>Headerdateien\Components\Compile\Subpass</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassComputeInvocationComponent.hpp">
+      <Filter>Headerdateien\Components\Subpass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassMeshInvocationComponent.hpp">
+      <Filter>Headerdateien\Components\Subpass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RuntimeGraph.cpp">

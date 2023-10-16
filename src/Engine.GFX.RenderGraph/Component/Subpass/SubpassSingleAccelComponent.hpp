@@ -1,7 +1,8 @@
 #pragma once
 
-#include <span>
 #include <Engine.Common/Collection/DenseMap.hpp>
+#include <Engine.Common/Collection/Set.hpp>
+#include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Meta/Constexpr.hpp>
 #include <Engine.GFX.Acc/AccelerationEffect.hpp>
 #include <Engine.GFX.Acc.Compile/Profile/EffectProfile.hpp>
