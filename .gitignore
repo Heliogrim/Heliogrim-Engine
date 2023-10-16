@@ -51,3 +51,5 @@
 /cmake-build-release
 [Bb]uild/
 [Dd]ist/
+
+!src/**/[Bb]uild/
