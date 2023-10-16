@@ -33,11 +33,11 @@ smr<Node> ProviderNode::getNext() const noexcept {
     return _next;
 }
 
-void ProviderNode::setPrev(mref<smr<Node>> prev_) {
+void ProviderNode::setPrev(mref<nmpt<const Node>> prev_) {
     _prev = _STD move(prev_);
 }
 
-smr<Node> ProviderNode::getPrev() const noexcept {
+nmpt<const Node> ProviderNode::getPrev() const noexcept {
     return _prev;
 }
 

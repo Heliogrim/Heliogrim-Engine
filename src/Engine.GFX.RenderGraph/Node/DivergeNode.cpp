@@ -45,10 +45,10 @@ cref<Vector<smr<Node>>> DivergeNode::getNext() const noexcept {
     return _next;
 }
 
-void DivergeNode::setPrev(mref<smr<Node>> prev_) {
+void DivergeNode::setPrev(mref<nmpt<const Node>> prev_) {
     _prev = _STD move(prev_);
 }
 
-smr<Node> DivergeNode::getPrev() const noexcept {
+nmpt<const Node> DivergeNode::getPrev() const noexcept {
     return _prev;
 }

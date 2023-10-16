@@ -28,15 +28,15 @@ smr<Node> ConvergeNode::getNext() const noexcept {
     return _next;
 }
 
-void ConvergeNode::addPrev(mref<smr<Node>> prev_) {
+void ConvergeNode::addPrev(mref<nmpt<const Node>> prev_) {
     _prev.push_back(_STD move(prev_));
 }
 
-void ConvergeNode::setPrev(mref<Vector<smr<Node>>> prev_) {
+void ConvergeNode::setPrev(mref<Vector<nmpt<const Node>>> prev_) {
     _prev = _STD move(prev_);
 }
 
-void ConvergeNode::removePrev(cref<smr<Node>> prev_) {
+void ConvergeNode::removePrev(cref<nmpt<const Node>> prev_) {
     _prev.erase(
         _STD remove_if(
             _prev.begin(),
@@ -49,6 +49,6 @@ void ConvergeNode::removePrev(cref<smr<Node>> prev_) {
     );
 }
 
-cref<Vector<smr<Node>>> ConvergeNode::getPrev() const noexcept {
+cref<Vector<nmpt<const Node>>> ConvergeNode::getPrev() const noexcept {
     return _prev;
 }

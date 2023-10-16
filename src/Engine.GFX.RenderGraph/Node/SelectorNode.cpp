@@ -60,10 +60,10 @@ cref<Vector<SelectorNode::Next>> SelectorNode::getNext() const noexcept {
     return _next;
 }
 
-void SelectorNode::setPrev(mref<smr<Node>> prev_) {
+void SelectorNode::setPrev(mref<nmpt<const Node>> prev_) {
     _prev = _STD move(prev_);
 }
 
-smr<Node> SelectorNode::getPrev() const noexcept {
+nmpt<const Node> SelectorNode::getPrev() const noexcept {
     return _prev;
 }
