@@ -41,8 +41,8 @@ smr<const AccelerationPass> EffectCompiler::compile(
 
     /* Discover all tokens and resource dependencies */
 
-    if (not request_.targetSymbols.empty()) {
-        for (const auto& requested : request_.targetSymbols) {
+    if (not request_.spec.targetSymbols().empty()) {
+        for (const auto& requested : request_.spec.targetSymbols()) {
             assert(_STD ranges::contains(request_.effect->getExportSymbols(), requested));
         }
     }
@@ -83,9 +83,8 @@ smr<const AccelerationPass> EffectCompiler::compile(
     //  it into a IL which can be used by the spirv compiler. ( GLSL Vulkan Dialect )
 
     auto stages = _stageComposer->compose(
-        request_.spec,
         request_.profile,
-        request_.targetSymbols,
+        request_.spec,
         pass
     );
 

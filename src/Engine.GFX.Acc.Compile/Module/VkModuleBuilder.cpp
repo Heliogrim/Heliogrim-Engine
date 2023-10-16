@@ -8,7 +8,7 @@
 #include <Engine.Logging/Logger.hpp>
 
 #include "VkModuleSource.hpp"
-#include "../Spec/SpecificationStorage.hpp"
+#include "../Spec/EffectSpecification.hpp"
 #include "../Token/Tokenizer.hpp"
 
 using namespace hg::engine::gfx::acc;
@@ -41,7 +41,7 @@ bool VkModuleBuilder::isFirstStage(
 
 uptr<ModuleSource> VkModuleBuilder::build(
     cref<smr<AccelerationPass>> targetPass_,
-    cref<SpecificationStorage> specifications_,
+    cref<EffectSpecification> specifications_,
     cref<smr<StageDerivat>> stage_,
     cref<uptr<ModuleSource>> previous_
 ) const {

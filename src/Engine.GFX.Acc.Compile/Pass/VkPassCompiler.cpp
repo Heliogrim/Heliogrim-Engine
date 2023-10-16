@@ -21,7 +21,7 @@
 
 #include "../VkApi.hpp"
 #include "../Module/VkCompiledModule.hpp"
-#include "../Spec/SpecificationStorage.hpp"
+#include "../Spec/EffectSpecification.hpp"
 #include "../Token/Tokenizer.hpp"
 
 using namespace hg::engine::gfx::acc;
@@ -202,7 +202,7 @@ smr<const AccelerationPass> VkPassCompiler::compileTypeSpec(
 }
 
 smr<const AccelerationPass> VkPassCompiler::compile(
-    cref<class SpecificationStorage> specifications_,
+    cref<class EffectSpecification> specifications_,
     mref<smr<AccelerationPass>> source_,
     mref<Vector<smr<StageDerivat>>> stages_,
     mref<Vector<uptr<CompiledModule>>> modules_
@@ -220,28 +220,28 @@ smr<const AccelerationPass> VkPassCompiler::compile(
             return compileTypeSpec<VkComputePass>(
                 _STD move(source_),
                 _STD move(stages),
-                specifications_.get<ComputePassSpecification>()
+                specifications_.getPassSpec<ComputePassSpecification>()
             );
         }
         case VkGraphicsPass::typeId.data: {
             return compileTypeSpec<VkGraphicsPass>(
                 _STD move(source_),
                 _STD move(stages),
-                specifications_.get<GraphicsPassSpecification>()
+                specifications_.getPassSpec<GraphicsPassSpecification>()
             );
         }
         case VkMeshPass::typeId.data: {
             return compileTypeSpec<VkMeshPass>(
                 _STD move(source_),
                 _STD move(stages),
-                specifications_.get<MeshPassSpecification>()
+                specifications_.getPassSpec<MeshPassSpecification>()
             );
         }
         case VkRaytracingPass::typeId.data: {
             return compileTypeSpec<VkRaytracingPass>(
                 _STD move(source_),
                 _STD move(stages),
-                specifications_.get<RaytracingPassSpecification>()
+                specifications_.getPassSpec<RaytracingPassSpecification>()
             );
         }
         default: {

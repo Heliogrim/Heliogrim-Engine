@@ -27,7 +27,7 @@ namespace hg::engine::gfx::acc {
     public:
         [[nodiscard]] virtual uptr<ModuleSource> build(
             cref<smr<AccelerationPass>> targetPass_,
-            cref<class SpecificationStorage> specifications_,
+            cref<class EffectSpecification> specifications_,
             cref<smr<StageDerivat>> stage_,
             cref<uptr<ModuleSource>> previous_
         ) const = 0;

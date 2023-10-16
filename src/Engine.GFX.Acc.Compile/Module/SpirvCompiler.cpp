@@ -7,6 +7,7 @@
 #include <Engine.Logging/Logger.hpp>
 
 // glslang includes
+#include <sstream>
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
 
@@ -78,9 +79,11 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<Vector<str
         codeSnippetLength.push_back(static_cast<s32>(source_[i].size()));
     }
 
-    const char* const preamble { "" };
-    glslShader->setPreamble(preamble);
-    glslShader->setStringsWithLengths(codeSnippets.data(), codeSnippetLength.data(), static_cast<s32>(source_.size()));
+    glslShader->setStringsWithLengths(
+        codeSnippets.data(),
+        codeSnippetLength.data(),
+        static_cast<s32>(source_.size())
+    );
 
     /**/
 
@@ -91,6 +94,18 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<Vector<str
     //glslShader->setDebugInfo(false);
     //glslShader->setEnhancedMsgs();
 
+    _STD string preprocessed {};
+    glslang::TShader::ForbidIncluder includer {};
+    glslShader->preprocess(
+        GetDefaultResources(),
+        defaultVersion,
+        ECoreProfile,
+        false,
+        false,
+        msg,
+        &preprocessed,
+        includer
+    );
     status = glslShader->parse(GetDefaultResources(), defaultVersion, false, msg);
 
     if (not status) {
@@ -100,8 +115,11 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<Vector<str
 
     /**/
 
-    if (status) {
-        status = glslProgram->link(msg);
+    if (status && not glslProgram->link(msg)) {
+        IM_CORE_WARN(glslProgram->getInfoLog());
+        IM_CORE_WARN(glslProgram->getInfoDebugLog());
+
+        status = false;
     }
 
     /**/
@@ -113,7 +131,7 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<Vector<str
         const auto* const intermediate = glslProgram->getIntermediate(stage);
         glslang::SpvOptions spvOpts {
             .generateDebugInfo = true,
-            .stripDebugInfo = true,
+            .stripDebugInfo = false,
             .validate = true
         };
         spv::SpvBuildLogger spvLog {};

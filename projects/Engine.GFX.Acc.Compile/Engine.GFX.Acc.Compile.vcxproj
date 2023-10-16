@@ -126,6 +126,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleEffectSpecification.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Spec\EffectSpecification.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Stage\StageComposer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\test.h" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\ScopedTokenStorage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\Token.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.hpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Spec\GraphicsPassSpecification.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Spec\SimpleEffectSpecification.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Stage\StageComposer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\test.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\ScopedTokenStorage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\VkEffectCompiler.cpp" />
