@@ -22,16 +22,16 @@ namespace hg::engine::gfx::render::graph {
 
     private:
         smr<Node> _next;
-        smr<Node> _prev;
+        nmpt<const Node> _prev;
 
     public:
         void setNext(mref<smr<Node>> next_);
 
         [[nodiscard]] smr<Node> getNext() const noexcept;
 
-        void setPrev(mref<smr<Node>> prev_);
+        void setPrev(mref<nmpt<const Node>> prev_);
 
-        [[nodiscard]] smr<Node> getPrev() const noexcept;
+        [[nodiscard]] nmpt<const Node> getPrev() const noexcept;
 
     public:
         [[nodiscard]] nmpt<const BarrierComponent> getBarrierComponent() const noexcept;

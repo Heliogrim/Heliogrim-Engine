@@ -50,14 +50,14 @@ smr<Node> AnchorNode::getNext() const noexcept {
 }
 
 bool AnchorNode::hasPrev() const noexcept {
-    return not _prev.empty();
+    return _prev;
 }
 
-void AnchorNode::setPrev(mref<smr<Node>> prev_) {
+void AnchorNode::setPrev(mref<nmpt<const Node>> prev_) {
     _prev = _STD move(prev_);
 }
 
-smr<Node> AnchorNode::getPrev() const noexcept {
+nmpt<const Node> AnchorNode::getPrev() const noexcept {
     return _prev;
 }
 

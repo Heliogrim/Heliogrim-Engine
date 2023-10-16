@@ -35,11 +35,11 @@ smr<Node> BarrierNode::getNext() const noexcept {
     return _next;
 }
 
-void BarrierNode::setPrev(mref<smr<Node>> prev_) {
+void BarrierNode::setPrev(mref<nmpt<const Node>> prev_) {
     _prev = _STD move(prev_);
 }
 
-smr<Node> BarrierNode::getPrev() const noexcept {
+nmpt<const Node> BarrierNode::getPrev() const noexcept {
     return _prev;
 }
 

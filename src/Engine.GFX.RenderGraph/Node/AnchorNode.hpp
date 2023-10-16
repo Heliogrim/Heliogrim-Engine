@@ -21,7 +21,7 @@ namespace hg::engine::gfx::render::graph {
 
     private:
         smr<Node> _next;
-        smr<Node> _prev;
+        nmpt<const Node> _prev;
 
     public:
         [[nodiscard]] bool hasNext() const noexcept;
@@ -32,9 +32,9 @@ namespace hg::engine::gfx::render::graph {
 
         [[nodiscard]] bool hasPrev() const noexcept;
 
-        void setPrev(mref<smr<Node>> prev_);
+        void setPrev(mref<nmpt<const Node>> prev_);
 
-        [[nodiscard]] smr<Node> getPrev() const noexcept;
+        [[nodiscard]] nmpt<const Node> getPrev() const noexcept;
 
     public:
         [[nodiscard]] nmpt<const AnchorComponent> getAnchorComponent() const noexcept;

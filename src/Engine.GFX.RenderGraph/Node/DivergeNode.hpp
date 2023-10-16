@@ -24,7 +24,7 @@ namespace hg::engine::gfx::render::graph {
 
     private:
         Vector<smr<Node>> _next;
-        smr<Node> _prev;
+        nmpt<const Node> _prev;
 
     public:
         void addNext(mref<smr<Node>> next_);
@@ -35,8 +35,8 @@ namespace hg::engine::gfx::render::graph {
 
         [[nodiscard]] cref<Vector<smr<Node>>> getNext() const noexcept;
 
-        void setPrev(mref<smr<Node>> prev_);
+        void setPrev(mref<nmpt<const Node>> prev_);
 
-        [[nodiscard]] smr<Node> getPrev() const noexcept;
+        [[nodiscard]] nmpt<const Node> getPrev() const noexcept;
     };
 }

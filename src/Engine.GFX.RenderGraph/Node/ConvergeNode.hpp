@@ -24,19 +24,19 @@ namespace hg::engine::gfx::render::graph {
 
     private:
         smr<Node> _next;
-        Vector<smr<Node>> _prev;
+        Vector<nmpt<const Node>> _prev;
 
     public:
         void setNext(mref<smr<Node>> next_);
 
         [[nodiscard]] smr<Node> getNext() const noexcept;
 
-        void addPrev(mref<smr<Node>> prev_);
+        void addPrev(mref<nmpt<const Node>> prev_);
 
-        void setPrev(mref<Vector<smr<Node>>> prev_);
+        void setPrev(mref<Vector<nmpt<const Node>>> prev_);
 
-        void removePrev(cref<smr<Node>> prev_);
+        void removePrev(cref<nmpt<const Node>> prev_);
 
-        [[nodiscard]] cref<Vector<smr<Node>>> getPrev() const noexcept;
+        [[nodiscard]] cref<Vector<nmpt<const Node>>> getPrev() const noexcept;
     };
 }

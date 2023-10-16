@@ -49,11 +49,11 @@ smr<Node> SubpassNode::getNext() const noexcept {
     return _next;
 }
 
-void SubpassNode::setPrev(mref<smr<Node>> prev_) {
+void SubpassNode::setPrev(mref<nmpt<const Node>> prev_) {
     _prev = _STD move(prev_);
 }
 
-smr<Node> SubpassNode::getPrev() const noexcept {
+nmpt<const Node> SubpassNode::getPrev() const noexcept {
     return _prev;
 }
 
