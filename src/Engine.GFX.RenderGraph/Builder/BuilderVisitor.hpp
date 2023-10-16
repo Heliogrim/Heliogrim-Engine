@@ -77,7 +77,7 @@ namespace hg::engine::gfx::render::graph {
         void operator()(cref<CompileSubpassNode> node_) override;
 
     private:
-        template <typename NodeType_>
+        template <class NodeType_>
         void simple_splice_insert(cref<NodeType_>);
     };
 }
