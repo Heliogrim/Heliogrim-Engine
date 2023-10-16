@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.GFX.Acc/AccelerationPass.hpp>
-#include <Engine.GFX.Acc.Compile/Spec/SpecificationStorage.hpp>
+#include <Engine.GFX.Acc.Compile/Spec/EffectSpecification.hpp>
 
 #include "SubpassStage.hpp"
 
@@ -9,7 +9,14 @@ namespace hg::engine::gfx::render::pipeline {
     class AccelSubpassStage :
         public SubpassStage {
     public:
-        AccelSubpassStage();
+        using this_type = AccelSubpassStage;
+
+        using StagedAccelPass = _STD pair<smr<const acc::EffectSpecification>, smr<const acc::AccelerationPass>>;
+
+    public:
+        AccelSubpassStage() noexcept;
+
+        AccelSubpassStage(mref<StagedAccelPass> stagedPass_) noexcept;
 
         ~AccelSubpassStage() override;
 
@@ -17,7 +24,6 @@ namespace hg::engine::gfx::render::pipeline {
         void operator()(nmpt<State> state_) const override;
 
     private:
-        smr<acc::SpecificationStorage> _specs;
-        smr<const acc::AccelerationPass> _accel;
+        StagedAccelPass _stagedAccelPass;
     };
 }
