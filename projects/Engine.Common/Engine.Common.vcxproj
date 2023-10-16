@@ -34,6 +34,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Set.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\InlineArray.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\InlineAutoArray.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Collection\InlineVector.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\List.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\ProxyVector.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Queue.hpp" />

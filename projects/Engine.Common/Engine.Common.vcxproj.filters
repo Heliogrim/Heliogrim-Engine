@@ -342,6 +342,9 @@
     <ClInclude Include="..\..\src\Engine.Common\Optional.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Collection\InlineVector.hpp">
+      <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">
