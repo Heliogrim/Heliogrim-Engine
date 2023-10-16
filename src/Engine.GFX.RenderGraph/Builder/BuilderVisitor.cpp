@@ -3,14 +3,15 @@
 #include <Engine.Common/Exception/NotImplementedException.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-#include "../Node/Node.hpp"
+#include "Linker.hpp"
 #include "../Node/AnchorNode.hpp"
 #include "../Node/BarrierNode.hpp"
 #include "../Node/ConvergeNode.hpp"
 #include "../Node/DivergeNode.hpp"
+#include "../Node/Node.hpp"
 #include "../Node/ProviderNode.hpp"
-#include "../Node/SubpassNode.hpp"
 #include "../Node/SelectorNode.hpp"
+#include "../Node/SubpassNode.hpp"
 #include "../Node/Compile/CompileNode.hpp"
 #include "../Node/Compile/CompileSubpassNode.hpp"
 
@@ -53,7 +54,7 @@ void BuilderVisitor::operator()(cref<Node> node_) {
     node_.traverse(*this);
 }
 
-template <typename NodeType_>
+template <class NodeType_>
 void BuilderVisitor::simple_splice_insert(cref<NodeType_> node_) {
 
     if (_fromNode == nullptr && _from(node_)) {
@@ -68,11 +69,27 @@ void BuilderVisitor::simple_splice_insert(cref<NodeType_> node_) {
         return Visitor::operator()(node_);
     }
 
-    auto& current = const_cast<ref<NodeType_>>(node_);
-
     if (_begin) {
-        if (_fromNode.get() == _STD addressof(current)) {
-            current.setNext(_STD move(_begin));
+        if (_fromNode.get() == _STD addressof(node_)) {
+
+            /**
+             * Backward Link :: Begin -> From
+             * Forward Link :: From -> Begin
+             *
+             *      [ ... ]
+             *         |
+             *    From ~ Current
+             *         $
+             *       Begin
+             *      [ ... ]
+             *        End
+             *         $
+             *      To ~ ???
+             *      [ ... ]
+             */
+
+            LinkNodes(const_cast<Node*>(_fromNode.get()), _STD move(_begin));
+
         } else {
             _fromNode->accept(*this);
         }
@@ -80,20 +97,29 @@ void BuilderVisitor::simple_splice_insert(cref<NodeType_> node_) {
 
     if (_end) {
 
-        assert(_toNode.get() != _STD addressof(current));
+        assert(_toNode.get() != _STD addressof(node_));
 
         // TODO: If we would like to guarantee no cuts
         //assert(_toNode.get() == node_.getNext().get());
 
-        // Modify current visitor
-        //_begin = clone(_toNode);
+        /**
+         * Backward Link :: To -> End
+         * Forward Link :: End -> To
+         *
+         *      [ ... ]
+         *         |
+         *    From ~ ???
+         *         $
+         *       Begin
+         *      [ ... ]
+         *        End
+         *         $
+         *      To ~ Current
+         *      [ ... ]
+         */
 
-        // Rotate `end` to `from` & `to` to `begin`
-        _fromNode = _end.get();
-        _begin = clone(_toNode);
-
-        auto tmp = _STD move(_end);
-        tmp->accept(*this);
+        LinkNodes(_end.get(), _STD move(_toNode));
+        _end.reset();
     }
 }
 
@@ -134,7 +160,7 @@ void BuilderVisitor::operator()(cref<DivergeNode> node_) {
         if (_fromNode.get() == _STD addressof(current)) {
 
             current.removeNext(_toNode);
-            current.addNext(_STD move(_begin));
+            LinkNodes(const_cast<Node*>(_fromNode.get()), _STD move(_begin));
 
         } else {
             _fromNode->accept(*this);
@@ -148,15 +174,8 @@ void BuilderVisitor::operator()(cref<DivergeNode> node_) {
         // TODO: If we would like to guarantee no cuts
         //assert(_toNode.get() == node_.getNext().get());
 
-        // Modify current visitor
-        //_begin = clone(_toNode);
-
-        // Rotate `end` to `from` & `to` to `begin`
-        _fromNode = _end.get();
-        _begin = clone(_toNode);
-
-        auto tmp = _STD move(_end);
-        tmp->accept(*this);
+        LinkNodes(_end.get(), _STD move(_toNode));
+        _end.reset();
     }
 }
 
@@ -184,8 +203,10 @@ void BuilderVisitor::operator()(cref<SelectorNode> node_) {
     if (_begin) {
         if (_fromNode.get() == _STD addressof(current)) {
 
+            // TODO: Check how we want to provide the active masking
+
             current.removeNext(_toNode);
-            current.addNext(true, _STD move(_begin));
+            LinkNodes(const_cast<Node*>(_fromNode.get()), _STD move(_begin));
 
         } else {
             _fromNode->accept(*this);
@@ -199,15 +220,8 @@ void BuilderVisitor::operator()(cref<SelectorNode> node_) {
         // TODO: If we would like to guarantee no cuts
         //assert(_toNode.get() == node_.getNext().get());
 
-        // Modify current visitor
-        //_begin = clone(_toNode);
-
-        // Rotate `end` to `from` & `to` to `begin`
-        _fromNode = _end.get();
-        _begin = clone(_toNode);
-
-        auto tmp = _STD move(_end);
-        tmp->accept(*this);
+        LinkNodes(_end.get(), _STD move(_toNode));
+        _end.reset();
     }
 }
 

@@ -15,8 +15,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\BLinkVisitor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\Builder.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\BuilderVisitor.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\FLinkVisitor.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\Linker.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\LinkMode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\AnchorComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\BarrierComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\CompileComponent.hpp" />
@@ -68,8 +72,11 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\BLinkVisitor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\Builder.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\BuilderVisitor.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\FLinkVisitor.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\Linker.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\CompileGraph.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\AnchorComponent.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\BarrierComponent.cpp" />

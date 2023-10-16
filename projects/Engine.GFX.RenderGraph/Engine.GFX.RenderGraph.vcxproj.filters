@@ -231,6 +231,18 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\Subpass\CompileSubpassAccelComponent.hpp">
       <Filter>Headerdateien\Components\Compile\Subpass</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\BLinkVisitor.hpp">
+      <Filter>Headerdateien\Builder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\FLinkVisitor.hpp">
+      <Filter>Headerdateien\Builder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\LinkMode.hpp">
+      <Filter>Headerdateien\Builder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\Linker.hpp">
+      <Filter>Headerdateien\Builder</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Subpass\SubpassComputeInvocationComponent.hpp">
       <Filter>Headerdateien\Components\Subpass</Filter>
     </ClInclude>
@@ -361,6 +373,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\CompileGraph.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\BLinkVisitor.cpp">
+      <Filter>Quelldateien\Builder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\FLinkVisitor.cpp">
+      <Filter>Quelldateien\Builder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Builder\Linker.cpp">
+      <Filter>Quelldateien\Builder</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
