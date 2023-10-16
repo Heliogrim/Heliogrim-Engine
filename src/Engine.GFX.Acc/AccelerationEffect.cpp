@@ -37,3 +37,11 @@ cref<Vector<smr<Symbol>>> AccelerationEffect::getImportSymbols() const noexcept 
 cref<Vector<smr<Symbol>>> AccelerationEffect::getExportSymbols() const noexcept {
     return _exportSymbols;
 }
+
+Optional<ref<StageInput>> AccelerationEffect::getFirstInputFor(cref<Symbol> symbol_) const noexcept {
+    return { tl::nullopt };
+}
+
+Optional<ref<StageOutput>> AccelerationEffect::getLastOutputFor(cref<Symbol> symbol_) const noexcept {
+    return { tl::nullopt };
+}

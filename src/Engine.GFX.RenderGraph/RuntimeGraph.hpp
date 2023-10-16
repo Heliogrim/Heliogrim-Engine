@@ -10,8 +10,6 @@
 #include "Relation/Provision.hpp"
 #include "Relation/Requirement.hpp"
 
-#include "Visitor/MaterialVisitor.hpp"
-
 namespace hg::engine::gfx::render::graph {
     class RuntimeGraph {
     public:
