@@ -10,6 +10,7 @@
 #include "ComplexInvocationGenerator.hpp"
 #include "InvocationGenerator.hpp"
 #include "ProcMeshIG.hpp"
+#include "SceneWalker.hpp"
 #include "StaticMeshIG.hpp"
 #include "../__fwd.hpp"
 
@@ -37,6 +38,11 @@ namespace hg::engine::gfx::render::pipeline {
             return _STD get<StaticIgType_>(_staticIgs);
         }
 
+        template <typename Fn_> requires _STD is_invocable_v<Fn_, ref<InvocationGenerator>>
+        void forEachStaticIg(Fn_&& fn_) noexcept {
+            ((fn_(_STD get<StaticIgTypes_>(_staticIgs))), ...);
+        }
+
         [[nodiscard]] cref<Vector<uptr<InvocationGenerator>>> getDynamicIgs() const noexcept {
             return _dynamicIgs;
         }
@@ -58,11 +64,13 @@ namespace hg::engine::gfx::render::pipeline {
     class SceneMeshIG :
         public SceneMeshBaseIG<StaticMeshIG, ProcMeshIG> {
     public:
-        SceneMeshIG();
+        SceneMeshIG() noexcept;
+
+        SceneMeshIG(mref<smr<SceneWalker>> sceneWalker_) noexcept;
 
         ~SceneMeshIG() override;
 
-    public:
+    private:
         smr<SceneWalker> _sceneWalker;
 
     private:
@@ -86,5 +94,19 @@ namespace hg::engine::gfx::render::pipeline {
         [[nodiscard]] ref<StaticMeshIG> getStaticMeshIg() noexcept;
 
         [[nodiscard]] ref<ProcMeshIG> getProcMeshIg() noexcept;
+
+        [[nodiscard]] ref<InvocationGenerator> selectSubGenerator(type_id modelTypeId_) const noexcept;
+
+    public:
+        void operator()();
+
+        void operator()(const ptr<const SceneWalker::scene_model_type> model_);
+
+        [[nodiscard]] IGProcessResult operator()(
+            mref<smr<const acc::AccelerationPass>> acceleration_,
+            mref<uptr<IGCommandBuffer>> igcb_
+        ) override;
+
+        tl::expected<AccelerationCommandBuffer, IGError> finalize() noexcept override;
     };
 }

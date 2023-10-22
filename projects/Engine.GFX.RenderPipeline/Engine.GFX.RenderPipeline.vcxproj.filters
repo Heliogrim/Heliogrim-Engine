@@ -132,6 +132,12 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SkeletalMeshIG.hpp">
       <Filter>Headerdateien\Invocation</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGProcessResult.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGError.hpp">
+      <Filter>Headerdateien\Invocation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipeline.cpp">
@@ -186,6 +192,12 @@
       <Filter>Quelldateien\Build</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneMeshIG.cpp">
+      <Filter>Quelldateien\Invocation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\StaticMeshIG.cpp">
+      <Filter>Quelldateien\Invocation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ComputeIG.cpp">
       <Filter>Quelldateien\Invocation</Filter>
     </ClCompile>
   </ItemGroup>

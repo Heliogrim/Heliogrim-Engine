@@ -2,6 +2,8 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
+#include <Engine.GFX.Material/__fwd.hpp>
+
 namespace hg::engine::gfx::render::pipeline {
     class IGCommandBuffer {
     public:
@@ -19,7 +21,7 @@ namespace hg::engine::gfx::render::pipeline {
 
         void bindMaterial(
             mref<const struct MaterialIdentifier> identifier_,
-            ptr<const class Material> material_
+            ptr<const material::Material> material_
         );
 
         void bindStaticMesh(
