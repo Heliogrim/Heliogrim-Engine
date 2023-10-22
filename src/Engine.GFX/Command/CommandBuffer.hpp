@@ -84,6 +84,8 @@ namespace hg::engine::gfx {
          */
         void bindIndexBuffer(const ptr<const VirtualBuffer> buffer_, u64 offset_);
 
+        void bindIndexBuffer(const ptr<const VirtualBufferView> bufferView_);
+
         //private:
     public:
         /**
@@ -149,6 +151,8 @@ namespace hg::engine::gfx {
          * @param   offset_ The offset into the buffer.
          */
         void bindVertexBuffer(const u32 binding_, const ptr<const VirtualBuffer> buffer_, u64 offset_);
+
+        void bindVertexBuffer(const u32 binding_, const ptr<const VirtualBufferView> bufferView_);
 
         /**
          * Blits
