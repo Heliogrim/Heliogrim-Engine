@@ -98,6 +98,8 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ComplexInvocationGenerator.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ComputeIG.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGCommandBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGError.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGProcessResult.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\InvocationGenerator.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\PlaneMeshIG.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ProcMeshIG.hpp" />
@@ -128,8 +130,10 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\GraphStager.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\GraphScanner.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\StreamBuilder.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ComputeIG.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGCommandBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneMeshIG.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\StaticMeshIG.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\RenderPipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\AccelSubpassStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\ConvergingStage.cpp" />

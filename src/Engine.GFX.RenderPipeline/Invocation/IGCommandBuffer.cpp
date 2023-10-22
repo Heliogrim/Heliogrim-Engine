@@ -7,7 +7,7 @@ void IGCommandBuffer::draw(u32 instanceCount_, u32 vertexCount_) {}
 
 void IGCommandBuffer::drawIndexed(u32 instanceCount_, u32 indexCount_) {}
 
-void IGCommandBuffer::bindMaterial(mref<const MaterialIdentifier> identifier_, ptr<const Material> material_) {}
+void IGCommandBuffer::bindMaterial(mref<const MaterialIdentifier> identifier_, ptr<const material::Material> material_) {}
 
 void IGCommandBuffer::bindStaticMesh(ptr<const Mesh> mesh_) {}
 
