@@ -5,6 +5,7 @@
 #include "../Framebuffer/Framebuffer.hpp"
 #include "../VkComputePipeline.hpp"
 #include "../VkFixedPipeline.hpp"
+#include "../Buffer/VirtualBufferView.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -77,6 +78,14 @@ void CommandBuffer::bindIndexBuffer(const ptr<const VirtualBuffer> buffer_, u64 
     );
 }
 
+void CommandBuffer::bindIndexBuffer(const ptr<const VirtualBufferView> bufferView_) {
+    _vkCmd.bindIndexBuffer(
+        bufferView_->owner()->vkBuffer(),
+        bufferView_->offset(),
+        vk::IndexType::eUint32
+    );
+}
+
 void CommandBuffer::bindPipeline(ptr<ComputePipeline> pipeline_) {
 
     const auto vkp = static_cast<ptr<VkComputePipeline>>(pipeline_);
@@ -134,6 +143,11 @@ void CommandBuffer::bindVertexBuffer(const u32 binding_, const VertexBuffer& buf
 
 void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const VirtualBuffer> buffer_, u64 offset_) {
     _vkCmd.bindVertexBuffers(binding_, 1ui32, &buffer_->vkBuffer(), &offset_);
+}
+
+void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const VirtualBufferView> bufferView_) {
+    const auto loff = bufferView_->offset();
+    _vkCmd.bindVertexBuffers(binding_, 1uL, &bufferView_->owner()->vkBuffer(), &loff);
 }
 
 void CommandBuffer::copyBuffer(const Buffer& src_, Buffer& dst_, const vk::BufferCopy& region_) {
