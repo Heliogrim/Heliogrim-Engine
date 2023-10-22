@@ -8,7 +8,7 @@
 
 namespace hg::engine::gfx::acc {
     class VkGraphicsPass final :
-        public GraphicsPass {
+        public InheritMeta<VkGraphicsPass, GraphicsPass> {
     public:
         using this_type = VkGraphicsPass;
 
@@ -27,6 +27,7 @@ namespace hg::engine::gfx::acc {
         void setStageDerivat(const size_t idx_, mref<smr<StageDerivat>> derivat_);
 
     private:
+    public:
         _::VkGraphicsPipelineLayout _vkPipeLayout;
         _::VkGraphicsPipeline _vkPipe;
 

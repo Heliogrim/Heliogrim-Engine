@@ -8,7 +8,7 @@ using namespace hg::engine::gfx::acc;
 using namespace hg;
 
 VkGraphicsPass::VkGraphicsPass(mref<smr<AccelerationEffect>> effect_) :
-    GraphicsPass(_STD move(effect_)),
+    InheritMeta(_STD move(effect_)),
     _vkPipeLayout(nullptr),
     _vkPipe(nullptr) {}
 
