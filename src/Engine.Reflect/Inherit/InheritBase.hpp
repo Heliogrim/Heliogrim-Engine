@@ -14,7 +14,7 @@ namespace hg {
         constexpr static auto __inherit_gen = meta_class::get();
 
     public:
-        InheritBase() :
+        constexpr InheritBase() :
             ClassMetaBase() {
             ClassMetaBase::_meta = __inherit_gen;
         }

@@ -23,14 +23,14 @@ namespace hg {
         constexpr static auto __inherit_gen = meta_class::get();
 
     public:
-        InheritMeta() :
+        constexpr InheritMeta() :
             Base_(),
             Rest_()... {
             ClassMetaBase::_meta = __inherit_gen;
         }
 
         template <typename... Args_>
-        InheritMeta(Args_&&... args_) :
+        constexpr InheritMeta(Args_&&... args_) :
             Base_(_STD forward<Args_>(args_)...),
             Rest_()... {
             ClassMetaBase::_meta = __inherit_gen;
