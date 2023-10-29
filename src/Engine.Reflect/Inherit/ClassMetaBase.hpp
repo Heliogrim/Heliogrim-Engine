@@ -23,7 +23,7 @@ namespace hg {
         using __inherit_types = reflect::__type_list<>;
 
     public:
-        ClassMetaBase() noexcept = default;
+        constexpr ClassMetaBase() noexcept = default;
 
     private:
         __restricted_ptr<const class MetaClass> _meta = nullptr;
