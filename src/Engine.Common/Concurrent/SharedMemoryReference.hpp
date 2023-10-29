@@ -24,7 +24,7 @@ namespace hg {
             0b11111111'11111111'11111111'11111111'11111111'11111111'00000000'00000000;
     };
 
-    template <typename PayloadType_>
+    template <typename PayloadType_, typename DeleterType_ = _STD default_delete<PayloadType_>>
     class SharedMemoryReferenceCtrlBlock;
 
     template <typename PayloadType_>
@@ -61,8 +61,9 @@ namespace hg {
             _ctrlBlock(nullptr),
             _packed(0) {}
 
+        template <typename CtrlBlockType_ = ctrl_block_type> requires _STD is_same_v<CtrlBlockType_, ctrl_block_type>
         constexpr SharedMemoryReference(
-            _In_ const non_owning_rptr<ctrl_block_type> ctrlBlock_,
+            _In_ const non_owning_rptr<CtrlBlockType_> ctrlBlock_,
             _In_ const packed_type packed_
         ) noexcept :
             _ctrlBlock(ctrlBlock_),
@@ -76,8 +77,8 @@ namespace hg {
             }
         }
 
-        template <class Tx_> requires _STD is_const_v<PayloadType_> && _STD is_same_v<_STD add_const_t<Tx_>,
-            PayloadType_>
+        template <class Tx_> requires _STD is_const_v<PayloadType_> &&
+            _STD is_same_v<_STD add_const_t<Tx_>, PayloadType_>
         SharedMemoryReference(_In_ cref<SharedMemoryReference<Tx_>> other_) :
             SharedMemoryReference() {
 
@@ -86,7 +87,7 @@ namespace hg {
             }
         }
 
-        SharedMemoryReference(_Inout_ this_type&& other_) noexcept :
+        constexpr SharedMemoryReference(_Inout_ this_type&& other_) noexcept :
             _ctrlBlock(_STD exchange(other_._ctrlBlock, nullptr)),
             _packed(_STD exchange(other_._packed, 0)) {}
 
@@ -234,19 +235,35 @@ namespace hg {
 
     /**/
 
-    template <typename PayloadType_>
-    class SharedMemoryReferenceCtrlBlock final {
-    public:
-        using this_type = SharedMemoryReferenceCtrlBlock<PayloadType_>;
-        using value_type = _STD remove_reference_t<PayloadType_>;
+    namespace {
+        class VirtualBase {
+        public:
+            virtual constexpr ~VirtualBase() noexcept = default;
 
-        using smr_type = SharedMemoryReference<value_type>;
+            virtual void destroy(mref<ptr<void>> obj_) = 0;
+        };
+    }
+
+    /**/
+
+    template <typename PayloadType_, typename DeleterType_>
+    class SharedMemoryReferenceCtrlBlock final :
+        public VirtualBase {
+    public:
+        using this_type = SharedMemoryReferenceCtrlBlock<PayloadType_, DeleterType_>;
+
+        using vty = _STD remove_reference_t<PayloadType_>;
+        using ivty = _STD remove_const_t<_STD remove_reference_t<PayloadType_>>;
+
+        using smr_type = SharedMemoryReference<vty>;
 
     public:
         constexpr SharedMemoryReferenceCtrlBlock() noexcept :
+            VirtualBase(),
             _packed(0) {}
 
-        SharedMemoryReferenceCtrlBlock(_In_ mref<ptr<value_type>> payload_) :
+        SharedMemoryReferenceCtrlBlock(_In_ mref<ptr<vty>> payload_) :
+            VirtualBase(),
             _packed(0) {
             this_type::store(_STD move(payload_));
         }
@@ -255,7 +272,7 @@ namespace hg {
 
         SharedMemoryReferenceCtrlBlock(mref<this_type>) noexcept = delete;
 
-        ~SharedMemoryReferenceCtrlBlock() {
+        ~SharedMemoryReferenceCtrlBlock() override {
             this_type::tidy();
         }
 
@@ -269,12 +286,12 @@ namespace hg {
          * @author Julius
          * @date 15.11.2021
          */
-        void tidy() {
+        void tidy() noexcept {
 
             const auto packed = _packed.load(_STD memory_order_relaxed);
 
             /**/
-            auto* ctrlp = reinterpret_cast<ptr<value_type>>(packed >> packed_shift);
+            auto* ctrlp = reinterpret_cast<ptr<ivty>>(packed >> packed_shift);
             if (ctrlp == nullptr) {
                 return;
             }
@@ -283,18 +300,15 @@ namespace hg {
             // IM_CORE_WARN("Destructing atomic ctrl block with active store resource.");
 
             /**/
-            this_type::destroy(_STD move(ctrlp));
+            this->destroy(_STD move(ctrlp));
         }
 
         void delete_this() const {
             delete this;
         }
 
-        // Warning: !!
-        // Error: This will leak and break when used with incomplete type or type erasure
-        // TODO: Rebase virtual to preserve deleter
-        void destroy(mref<ptr<value_type>> obj_) {
-            delete obj_;
+        void destroy(mref<ptr<void>> obj_) override {
+            delete static_cast<ptr<ivty>>(obj_);
         }
 
     public:
@@ -368,8 +382,8 @@ namespace hg {
                  */
                 // if (expect & packed_ref_mask)
                 if ((expect & packed_ref_mask) == 0 && maskedPtr) {
-                    auto* ctrlp = reinterpret_cast<ptr<value_type>>(packed >> packed_shift);
-                    this_type::destroy(_STD move(ctrlp));
+                    auto* ctrlp = reinterpret_cast<ptr<ivty>>(packed >> packed_shift);
+                    this->destroy(_STD move(ctrlp));
 
                     delete_this();
                 }
@@ -384,7 +398,7 @@ namespace hg {
          *
          * @param ptr_ The pointer to store into this ctrl block
          */
-        void store(_In_ const ptr<value_type> ptr_) {
+        void store(_In_ const ptr<vty> ptr_) {
             const auto original = reinterpret_cast<packed_type>(ptr_);
             const auto packed = original << packed_shift;
 
@@ -402,7 +416,7 @@ namespace hg {
          *
          * @param ptr_ The pointer to store into the ctrl block
          */
-        void push(_In_ const ptr<value_type> ptr_) {
+        void push(_In_ const ptr<vty> ptr_) {
             ++_packed;
             store(ptr_);
         }
@@ -417,7 +431,7 @@ namespace hg {
          *
          * @returns True if succeeded, otherwise false
          */
-        [[nodiscard]] bool try_push(_In_ const ptr<value_type> ptr_) {
+        [[nodiscard]] bool try_push(_In_ const ptr<vty> ptr_) {
 
             const auto original = reinterpret_cast<packed_type>(ptr_);
             const auto packed = (original << packed_shift) | 0x1;
