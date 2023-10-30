@@ -4,16 +4,16 @@
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "Linker.hpp"
-#include "../Node/AnchorNode.hpp"
-#include "../Node/BarrierNode.hpp"
-#include "../Node/ConvergeNode.hpp"
-#include "../Node/DivergeNode.hpp"
+#include "../Node/CompileNode.hpp"
 #include "../Node/Node.hpp"
-#include "../Node/ProviderNode.hpp"
-#include "../Node/SelectorNode.hpp"
-#include "../Node/SubpassNode.hpp"
-#include "../Node/Compile/CompileNode.hpp"
 #include "../Node/Compile/CompileSubpassNode.hpp"
+#include "../Node/Runtime/AnchorNode.hpp"
+#include "../Node/Runtime/BarrierNode.hpp"
+#include "../Node/Runtime/ConvergeNode.hpp"
+#include "../Node/Runtime/DivergeNode.hpp"
+#include "../Node/Runtime/ProviderNode.hpp"
+#include "../Node/Runtime/SelectorNode.hpp"
+#include "../Node/Runtime/SubpassNode.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg;

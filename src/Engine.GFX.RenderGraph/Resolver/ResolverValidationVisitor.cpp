@@ -4,10 +4,9 @@
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.GFX.Acc/Symbol/Symbol.hpp>
 
-#include "../Component/SubpassComponent.hpp"
 #include "../Node/Node.hpp"
-#include "../Node/ProviderNode.hpp"
-#include "../Node/SubpassNode.hpp"
+#include "../Node/Runtime/ProviderNode.hpp"
+#include "../Node/Runtime/SubpassNode.hpp"
 #include "../Component/ProviderComponent.hpp"
 
 using namespace hg::engine::gfx::render::graph;
@@ -52,6 +51,8 @@ void ResolverValidationVisitor::operator()(cref<ProviderNode> node_) {
 
 void ResolverValidationVisitor::operator()(cref<SubpassNode> node_) {
 
+    /*
+    // TODO:
     const auto component = node_.getSubpassComponent();
     const auto& requirements = component->getRequirements();
 
@@ -71,8 +72,6 @@ void ResolverValidationVisitor::operator()(cref<SubpassNode> node_) {
             continue;
         }
 
-        /**/
-
         IM_CORE_WARNF(
             "Encountered unmet requirement `[{}]\{\}` for SubpassNode `{:x}` while in validation pass.",
             required.symbol->name,
@@ -80,11 +79,12 @@ void ResolverValidationVisitor::operator()(cref<SubpassNode> node_) {
             reinterpret_cast<ptrdiff_t>(_STD addressof(node_))
         );
     }
+    */
 
     /**/
 
     // TODO: _providers.push_back(component->getProvided());
-    _providers.push_back(component->getProvided());
+    // TODO: _providers.push_back(component->getProvided());
 
     Visitor::operator()(node_);
 }
