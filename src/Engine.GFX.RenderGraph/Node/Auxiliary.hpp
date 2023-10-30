@@ -4,6 +4,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Reflect/IsType.hpp>
 
 #include "../Component/Component.hpp"
 
@@ -44,5 +45,28 @@ namespace hg::engine::gfx::render::graph {
          * @warning This will implicitly erase/delete the given component.
          */
         void remove(_In_ mref<ptr<Component>> component_) noexcept;
+
+    public:
+        template <typename ComponentType_>
+        [[nodiscard]] nmpt<ComponentType_> getFirstOfType() const noexcept {
+            const auto compIt = _STD ranges::find_if(
+                _comps,
+                [](const auto comp_) {
+                    return IsType<ComponentType_>(*comp_);
+                }
+            );
+            return compIt != _comps.end() ?
+                       static_cast<const ptr<ComponentType_>>(*compIt) :
+                       nmpt<ComponentType_> {};
+        }
+
+        template <typename ComponentType_, typename Fn_>
+        void eachOfType(Fn_&& fn_) const noexcept {
+            for (auto* const comp : _comps) {
+                if (IsType<ComponentType_>(*comp)) {
+                    fn_(static_cast<const ptr<ComponentType_>>(comp));
+                }
+            }
+        }
     };
 }

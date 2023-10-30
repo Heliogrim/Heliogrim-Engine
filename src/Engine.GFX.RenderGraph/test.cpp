@@ -9,20 +9,18 @@
 #include "Builder/Builder.hpp"
 #include "Component/BarrierComponent.hpp"
 #include "Component/ProviderComponent.hpp"
-#include "Component/SubpassComponent.hpp"
 #include "Debug/DebugVisitor.hpp"
 
-#include "Node/AnchorNode.hpp"
-#include "Node/BarrierNode.hpp"
-#include "Node/SubpassNode.hpp"
-#include "Node/ProviderNode.hpp"
+#include "Node/Runtime/AnchorNode.hpp"
+#include "Node/Runtime/BarrierNode.hpp"
+#include "Node/Runtime/SubpassNode.hpp"
+#include "Node/Runtime/ProviderNode.hpp"
 #include "Relation/MeshDescription.hpp"
 #include "Relation/ModelDescription.hpp"
 #include "Relation/SceneViewDescription.hpp"
 #include "Relation/TextureDescription.hpp"
 #include "Resolver/Resolver.hpp"
 #include "Resolver/ResolverOptions.hpp"
-#include "Visitor/MaterialVisitor.hpp"
 
 #include <fstream>
 #include <map>
@@ -53,12 +51,8 @@
 #include <Engine.GFX.RenderGraph/Component/AnchorComponent.hpp>
 #include <Engine.GFX.RenderGraph/Component/BarrierComponent.hpp>
 #include <Engine.GFX.RenderGraph/Component/ProviderComponent.hpp>
-#include <Engine.GFX.RenderGraph/Component/Compile/CompileSubpassComponent.hpp>
 #include <Engine.GFX.RenderGraph/Debug/DebugVisitor.hpp>
-#include <Engine.GFX.RenderGraph/Node/AnchorNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/BarrierNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/ProviderNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/SubpassNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/SubpassNode.hpp>
 #include <Engine.GFX.RenderGraph/Node/Compile/CompileSubpassNode.hpp>
 #include <Engine.GFX.RenderGraph/Relation/Description.hpp>
 #include <Engine.GFX.RenderGraph/Relation/MeshDescription.hpp>
@@ -67,223 +61,19 @@
 #include <Engine.GFX.RenderGraph/Relation/Requirement.hpp>
 #include <Engine.GFX.RenderGraph/Relation/SceneViewDescription.hpp>
 #include <Engine.GFX.RenderGraph/Relation/TextureDescription.hpp>
-#include <Engine.GFX.RenderGraph/Visitor/MaterialVisitor.hpp>
+#include <Engine.GFX.RenderPipeline/Build/StreamBuilder.hpp>
+
+#include "Component/Compile/AccelerationComponent.hpp"
+#include "Component/Compile/CommandRecordComponent.hpp"
+#include "Component/Compile/ImmutableAccelerationComponent.hpp"
+#include "Component/Compile/SceneCommandRecordComponent.hpp"
+#include "Node/Compile/AccelerationSubpassNode.hpp"
 
 using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;
 using namespace hg;
 
 using AccToken = engine::gfx::acc::TransferToken;
-
-void hg::test_render_graph() {
-
-    uptr<graph::CompileGraph> graph = make_uptr<graph::CompileGraph>();
-    const nmpt<graph::Node> begin = graph->begin().get();
-    const nmpt<graph::Node> end = graph->end().get();
-
-    nmpt<graph::Node> cursor { begin };
-
-    /**/
-
-    // SceneViewDescription ~ Camera { position, rotation, fov, aspect, ... }
-    // MeshDescription ~ { primitive types, topology, static / skeletal, procedural ?!?, ... }
-    // TextureDescription ~ { type, format, layer, mip stack, ... }
-    // ModelDescription ~ { position, rotation, scale, materials ?!?, ... }
-
-    smr<graph::Description> cameraDescription;
-    smr<graph::Description> depthBufferDescription;
-    smr<graph::Description> colorBufferDescription;
-
-    {
-        cameraDescription = make_smr<>(new graph::SceneViewDescription()).into<graph::Description>();
-
-        depthBufferDescription = make_smr<graph::TextureDescription>(
-            new graph::TextureDescription(
-                graph::TextureDescription {
-                    { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
-                    { graph::DescriptionValueMatchingMode::eCovariant, engine::gfx::TextureFormat::eD32Sfloat },
-                    { graph::DescriptionValueMatchingMode::eInvariant, 1ui32 },
-                    {}
-                }
-            )
-        ).into<graph::Description>();
-
-        colorBufferDescription = make_smr<graph::TextureDescription>(
-            new graph::TextureDescription(
-                graph::TextureDescription {
-                    { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureType::e2d },
-                    { graph::DescriptionValueMatchingMode::eInvariant, engine::gfx::TextureFormat::eR8G8B8A8Unorm },
-                    { graph::DescriptionValueMatchingMode::eCovariant, 1ui32 },
-                    {}
-                }
-            )
-        ).into<graph::Description>();
-    }
-
-    /**/
-
-    // TODO: renderer or outer context should provide a list of target symbols to expose externally
-    // TODO: in addition we could define a list of symbols carried/looped back by the instantiated render-pass
-    // Renderer :: exposedSymbols() -> List < Symbol >
-    // Renderer :: isolatedSymbols() -> List < Symbol >
-    // e.g. List < Color Symbol, ... > + List < Depth Symbol, ... >
-
-    Vector<smr<acc::Symbol>> exposedSymbols {};
-    Vector<smr<acc::Symbol>> isolatedSymbols {};
-
-    smr<acc::Symbol> sceneColorSymbol = make_smr<acc::Symbol>(
-        acc::Symbol {
-            .scope = acc::SymbolScope {
-                .type = acc::SymbolScopeType::eGlobal,
-                .layer = ""
-            },
-            .name = "scene::color",
-            .description = colorBufferDescription,
-            .flags = acc::SymbolFlagBits::eUndefined,
-            .token = AccToken {}
-        }
-    );
-
-    smr<acc::Symbol> sceneDepthSymbol = make_smr<acc::Symbol>(
-        acc::Symbol {
-            .scope = acc::SymbolScope {
-                .type = acc::SymbolScopeType::eGlobal,
-                .layer = ""
-            },
-            .name = "scene::depth",
-            .description = depthBufferDescription,
-            .flags = acc::SymbolFlagBits::eUndefined,
-            .token = AccToken {}
-        }
-    );
-
-    /**/
-
-    {
-        auto provider = make_smr<graph::ProviderNode>();
-        auto comp = provider->getProviderComponent();
-
-        auto cameraSymbol = make_smr<acc::Symbol>(
-            acc::Symbol {
-                .scope = acc::SymbolScope {
-                    .type = acc::SymbolScopeType::eGlobal,
-                    .layer = ""
-                },
-                .name = "scene::camera",
-                .description = cameraDescription,
-                .flags = acc::SymbolFlagBits::eUndefined,
-                .token = AccToken {}
-            }
-        );
-
-        comp->setProvided(
-            {
-                graph::Provision { cameraSymbol }
-            }
-        );
-
-        cursor = provider.get();
-        graph = graph::Builder::insertNode(_STD move(graph), begin, end, _STD move(provider));
-    }
-
-    {
-        auto barrier = make_smr<graph::BarrierNode>();
-        auto comp = barrier->getBarrierComponent();
-        comp->setBarrierName("Depth Barrier");
-
-        auto it = barrier.get();
-        graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
-
-        /**/
-
-        auto subpassNode = make_smr<graph::SubpassNode>(graph::SubpassAccelMode::eSingle);
-        auto subpassComp = subpassNode->getSubpassComponent();
-
-        cursor = subpassNode.get();
-        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
-    }
-
-    {
-        auto barrier = make_smr<graph::BarrierNode>();
-        auto comp = barrier->getBarrierComponent();
-        comp->setBarrierName("Material Barrier");
-
-        auto it = barrier.get();
-        graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
-
-        /**/
-
-        auto subpassNode = make_smr<graph::SubpassNode>(graph::SubpassAccelMode::eMaterial);
-        auto subpassComp = subpassNode->getSubpassComponent();
-
-        cursor = subpassNode.get();
-        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
-    }
-
-    {
-        auto barrier = make_smr<graph::BarrierNode>();
-        auto comp = barrier->getBarrierComponent();
-        comp->setBarrierName("Lighting Barrier");
-
-        auto it = barrier.get();
-        graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
-
-        /**/
-
-        auto subpassNode = make_smr<graph::SubpassNode>(graph::SubpassAccelMode::eMulti);
-        auto subpassComp = subpassNode->getSubpassComponent();
-
-        cursor = subpassNode.get();
-        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
-    }
-
-    {
-        auto barrier = make_smr<graph::BarrierNode>();
-        auto comp = barrier->getBarrierComponent();
-        comp->setBarrierName("Compositing Barrier");
-
-        auto it = barrier.get();
-        graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
-
-        /**/
-
-        auto subpassNode = make_smr<graph::SubpassNode>(graph::SubpassAccelMode::eMulti);
-        auto subpassComp = subpassNode->getSubpassComponent();
-
-        cursor = subpassNode.get();
-        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
-    }
-
-    /**/
-
-    graph::Resolver resolver {};
-    graph::ResolverOptions options {
-        .flags = graph::ResolverPassFlags {} | graph::ResolverPassFlagBits::eBasicLayout |
-        graph::ResolverPassFlagBits::eValidate
-    };
-
-    // Warning: Invalid, base graph is no longer resolvable
-    //graph = resolver(_STD move(graph), _STD move(options));
-
-    /**/
-
-    {
-        graph::DebugVisitor visitor {};
-        graph->begin()->accept(visitor);
-    }
-
-    /**/
-
-    smr<engine::gfx::MaterialResource> mat0 {}, mat1 {}, mat2 {};
-    graph::MaterialVisitor visitor {};
-    visitor.addRaisedMaterial(_STD move(mat0));
-    visitor.addRaisedMaterial(_STD move(mat1));
-    visitor.addRaisedMaterial(_STD move(mat2));
-
-    graph->update(visitor);
-}
-
-/**/
 
 /**/
 
@@ -294,27 +84,46 @@ static _STD map<string, smr<acc::Symbol>> static_symbol_map {};
 
 void hg::test_graph_process() {
 
+    /* Prepare */
+
     IM_CORE_LOG("Creating Graphs to process...");
     const auto compileGraph = make_smr<graph::CompileGraph>(make_test_graph());
 
-    /**/
-
     IM_CORE_LOG("Compile graph to runtime graph...");
     graph::RenderGraphCompiler rgc {};
+
+    /* Initial */
+
     auto runtimeGraph = rgc(
         graph::CompileRequest {
             compileGraph, { static_symbol_map["sceneColor"] }
         }
     );
 
-    /**/
-
     IM_CORE_LOG("Building render pipeline from runtime graph...");
-    const render::pipeline::BaseBuilder builder {};
-    const auto pipe = builder(_STD move(runtimeGraph));
+    const render::pipeline::BaseBuilder baseBuilder {};
+    auto pipe = baseBuilder(_STD move(runtimeGraph));
 
-    IM_CORE_LOG("Executing render pipeline...");
-    pipe->operator()(nullptr);
+    /* Iterative Update */
+
+    const render::pipeline::StreamBuilder streamBuilder {};
+
+    while (true) {
+
+        auto nextRuntimeGraph = rgc(
+            graph::CompileRequest {
+                compileGraph, { static_symbol_map["sceneColor"] }
+            }
+        );
+
+        /**/
+
+        IM_CORE_LOG("Iterative update of render pipeline with next runtime graph...");
+        pipe = streamBuilder(_STD move(pipe), _STD move(nextRuntimeGraph));
+
+        IM_CORE_LOG("Executing updated render pipeline...");
+        pipe->operator()(nullptr);
+    }
 }
 
 void setup_descriptions(ref<_STD map<string, smr<graph::Description>>> map_) {
@@ -1227,14 +1036,16 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
 
         /**/
 
-        auto subpassNode = make_smr<graph::CompileSubpassNode>(graph::SubpassAccelMode::eMaterial);
-        auto subpassComp = subpassNode->getSubpassComponent();
+        auto accelComp = make_uptr<graph::CompileImmutableAccelerationComponent>();
+        auto recordComp = make_uptr<graph::CompileSceneCommandRecordComponent>();
 
-        subpassComp->addExpectedRequirement(graph::Requirement { symbols.at("sceneCamera") });
-        subpassComp->addExpectedProvision(graph::Provision { symbols.at("sceneDepth") });
+        auto node = make_smr<graph::CompileAccelerationSubpassNode>(_STD move(accelComp), _STD move(recordComp));
 
-        cursor = subpassNode.get();
-        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
+        // TODO: subpassComp->addExpectedRequirement(graph::Requirement { symbols.at("sceneCamera") });
+        // TODO: subpassComp->addExpectedProvision(graph::Provision { symbols.at("sceneDepth") });
+
+        cursor = node.get();
+        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(node));
     }
 
     {
@@ -1247,17 +1058,19 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
 
         /**/
 
-        auto subpassNode = make_smr<graph::CompileSubpassNode>(graph::SubpassAccelMode::eMaterial);
-        auto subpassComp = subpassNode->getSubpassComponent();
+        auto accelComp = make_uptr<graph::CompileImmutableAccelerationComponent>();
+        auto recordComp = make_uptr<graph::CompileSceneCommandRecordComponent>();
 
-        subpassComp->addExpectedRequirement(graph::Requirement { symbols.at("sceneCamera") });
-        subpassComp->addExpectedRequirement(graph::Requirement { symbols.at("sceneDepth") });
-        subpassComp->addExpectedProvision(graph::Provision { symbols.at("sceneColor") });
+        auto node = make_smr<graph::CompileAccelerationSubpassNode>(_STD move(accelComp), _STD move(recordComp));
+
+        // TODO: subpassComp->addExpectedRequirement(graph::Requirement { symbols.at("sceneCamera") });
+        // TODO: subpassComp->addExpectedRequirement(graph::Requirement { symbols.at("sceneDepth") });
+        // TODO: subpassComp->addExpectedProvision(graph::Provision { symbols.at("sceneColor") });
 
         /**/
 
-        cursor = subpassNode.get();
-        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
+        cursor = node.get();
+        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(node));
     }
 
     {
@@ -1270,14 +1083,16 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
 
         /**/
 
-        auto subpassNode = make_smr<graph::CompileSubpassNode>(graph::SubpassAccelMode::eMulti);
-        auto subpassComp = subpassNode->getSubpassComponent();
+        auto accelComp = make_uptr<graph::CompileImmutableAccelerationComponent>();
+        auto recordComp = make_uptr<graph::CompileSceneCommandRecordComponent>();
 
-        subpassComp->addExpectedRequirement(graph::Requirement { symbols.at("sceneColor") });
-        subpassComp->addExpectedProvision(graph::Provision { symbols.at("sceneColor") });
+        auto node = make_smr<graph::CompileAccelerationSubpassNode>(_STD move(accelComp), _STD move(recordComp));
 
-        cursor = subpassNode.get();
-        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(subpassNode));
+        // TODO: subpassComp->addExpectedRequirement(graph::Requirement { symbols.at("sceneColor") });
+        // TODO: subpassComp->addExpectedProvision(graph::Provision { symbols.at("sceneColor") });
+
+        cursor = node.get();
+        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(node));
     }
 
     /**/
@@ -1286,34 +1101,6 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         graph::DebugVisitor visitor {};
         graph->begin()->accept(visitor);
     }
-
-    /**/
-
-    smr<engine::gfx::MaterialResource> mat0 {}, mat1 {}, mat2 {};
-
-    mat0 = nullptr;
-
-    Guid guid;
-    GuidGenerate(guid);
-    mat1 = make_smr<engine::resource::UniqueResource<material::Material>>(
-        _STD move(guid),
-        smr<material::MaterialPrototype> { nullptr },
-        Vector<material::MaterialParameter> {}
-    ).into<MaterialResource>();
-
-    GuidGenerate(guid);
-    mat2 = make_smr<engine::resource::UniqueResource<material::Material>>(
-        _STD move(guid),
-        smr<material::MaterialPrototype> { nullptr },
-        Vector<material::MaterialParameter> {}
-    ).into<MaterialResource>();
-
-    graph::MaterialVisitor visitor {};
-    visitor.addRaisedMaterial(_STD move(mat0));
-    visitor.addRaisedMaterial(_STD move(mat1));
-    visitor.addRaisedMaterial(_STD move(mat2));
-
-    graph->update(visitor);
 
     /**/
     static_desc_map = _STD move(descriptions);

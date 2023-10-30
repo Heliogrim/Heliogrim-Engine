@@ -8,7 +8,7 @@
 #include "Description.hpp"
 
 namespace hg::engine::gfx::render::graph {
-    class MeshDescription final :
+    class MeshDescription :
         public InheritMeta<MeshDescription, Description> {
     public:
         using this_type = MeshDescription;

@@ -1,18 +1,18 @@
 #pragma once
 
-#include "CompileNode.hpp"
-#include "../SubpassNode.hpp"
+#include "../CompileNode.hpp"
+#include "../Runtime/SubpassNode.hpp"
 
 namespace hg::engine::gfx::render::graph {
-    class CompileSubpassNode final :
+    class __declspec(novtable) CompileSubpassNode :
         public CompileNode {
     public:
         using this_type = CompileSubpassNode;
 
     public:
-        CompileSubpassNode(SubpassAccelMode mode_) noexcept;
+        CompileSubpassNode() noexcept;
 
-        ~CompileSubpassNode() override = default;
+        ~CompileSubpassNode() noexcept override = default;
 
     public:
         void accept(ref<Visitor> visitor_) const override;
@@ -33,10 +33,5 @@ namespace hg::engine::gfx::render::graph {
         void setPrev(mref<nmpt<const Node>> prev_);
 
         [[nodiscard]] nmpt<const Node> getPrev() const noexcept;
-
-    public:
-        [[nodiscard]] nmpt<CompileSubpassComponent> getSubpassComponent() const noexcept;
-
-        [[nodiscard]] nmpt<CompileSubpassAccelComponent> getSubpassAcceleration() const noexcept;
     };
 }

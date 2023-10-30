@@ -5,16 +5,12 @@
 #include <Engine.Reflect/TypeSwitch.hpp>
 
 #include "../Node/Node.hpp"
-#include "../Node/AnchorNode.hpp"
-#include "../Node/BarrierNode.hpp"
-#include "../Node/Compile/CompileNode.hpp"
+#include "../Node/Runtime/AnchorNode.hpp"
+#include "../Node/Runtime/BarrierNode.hpp"
+#include "../Node/CompileNode.hpp"
 
 #include "../Component/AnchorComponent.hpp"
 #include "../Component/BarrierComponent.hpp"
-#include "../Component/Subpass/SubpassMaterialAccelComponent.hpp"
-#include "../Component/Subpass/SubpassMultiAccelComponent.hpp"
-#include "../Component/Subpass/SubpassSingleAccelComponent.hpp"
-#include "Engine.GFX.RenderGraph/Node/SubpassNode.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg;
@@ -87,20 +83,7 @@ void DebugVisitor::operator()(cref<ProviderNode> node_) {
 
 void DebugVisitor::operator()(cref<SubpassNode> node_) {
 
-    const auto accel = switchType(
-        node_.getSubpassAcceleration().get(),
-        [](SubpassSingleAccelComponent*) {
-            return "SubpassSingleAccelComponent";
-        },
-        [](SubpassMultiAccelComponent*) {
-            return "SubpassMultiAccelComponent";
-        },
-        [](SubpassMaterialAccelComponent*) {
-            return "SubpassMaterialAccelComponent";
-        }
-    );
-
-    IM_DEBUG_LOGF("SubpassNode `{:x}` [{:s}]", reinterpret_cast<ptrdiff_t>(_STD addressof(node_)), accel);
+    IM_DEBUG_LOGF("SubpassNode `{:x}`", reinterpret_cast<ptrdiff_t>(_STD addressof(node_)));
 
     Visitor::operator()(node_);
 }

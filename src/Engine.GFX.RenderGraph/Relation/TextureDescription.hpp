@@ -36,6 +36,7 @@ namespace hg::engine::gfx::render::graph {
         ) const noexcept override;
 
     private:
+    public:
         DescriptionValue<TextureType> _textureType;
         DescriptionValue<TextureFormat> _textureFormat;
 
