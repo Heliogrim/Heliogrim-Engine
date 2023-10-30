@@ -93,6 +93,8 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\EffectCompiler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\DxEffectCompiler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\EffectCompileRequest.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\EffectCompileResult.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\EffectPassRemapping.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\CompiledModule.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\DxModuleBuilder.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\Module\DxModuleCompiler.hpp" />
@@ -136,6 +138,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\EffectCompiler.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\DxEffectCompiler.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\EffectPassRemapping.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\ModuleBuilder.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\SpirvCompiler.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Module\VkCompiledModule.cpp" />

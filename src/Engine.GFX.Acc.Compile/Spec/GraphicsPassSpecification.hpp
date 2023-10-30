@@ -1,7 +1,8 @@
 #pragma once
 #include <bitset>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.GFX.Acc/Pass/AccelerationSpecification.hpp>
+#include <Engine.GFX.Acc/Pass/GraphicsPass.hpp>
+#include <Engine.GFX.Acc/Pipeline/AccelerationSpecification.hpp>
 #include <Engine.GFX.Acc/Stage/TransferToken.hpp>
 #include <Engine.GFX.Acc/Symbol/Symbol.hpp>
 #include <Engine.GFX/Pipeline/LORenderPass.hpp>
@@ -31,6 +32,6 @@ namespace hg::engine::gfx::acc {
 
         // TODO: Remove, because this is just vk requirement
         //smr<pipeline::LORenderPass> renderPass;
-        nmpt<void> renderPass;
+        nmpt<GraphicsPass> pass;
     };
 }

@@ -18,6 +18,7 @@ namespace hg::engine::gfx::acc {
         ~SimpleEffectSpecification() noexcept override = default;
 
     private:
+        Vector<smr<const Symbol>> _referenceSymbols;
         Vector<smr<const Symbol>> _targetSymbols;
 
     public:

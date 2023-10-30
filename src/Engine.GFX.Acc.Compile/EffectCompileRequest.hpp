@@ -7,7 +7,7 @@
 
 namespace hg::engine::gfx::acc {
     struct EffectCompileRequest final {
-        smr<AccelerationEffect> effect;
+        smr<const AccelerationEffect> effect;
         smr<const EffectProfile> profile;
         cref<EffectSpecification> spec;
     };

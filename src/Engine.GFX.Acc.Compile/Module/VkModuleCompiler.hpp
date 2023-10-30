@@ -18,7 +18,7 @@ namespace hg::engine::gfx::acc {
 
     public:
         [[nodiscard]] _Success_(return != nullptr) uptr<class CompiledModule> compile(
-            cref<smr<AccelerationPass>> targetPass_,
+            cref<smr<AccelerationPipeline>> targetPass_,
             cref<class EffectSpecification> specifications_,
             mref<uptr<struct ModuleSource>> source_
         ) const override;

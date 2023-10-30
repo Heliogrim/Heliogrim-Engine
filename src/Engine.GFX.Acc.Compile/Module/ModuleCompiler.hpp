@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.GFX.Acc/AccelerationPass.hpp>
+#include <Engine.GFX.Acc/AccelerationPipeline.hpp>
 
 #include "CompiledModule.hpp"
 #include "ModuleSource.hpp"
@@ -17,7 +17,7 @@ namespace hg::engine::gfx::acc {
 
     public:
         [[nodiscard]] virtual uptr<CompiledModule> compile(
-            cref<smr<AccelerationPass>> targetPass_,
+            cref<smr<AccelerationPipeline>> targetPass_,
             cref<class EffectSpecification> specifications_,
             mref<uptr<ModuleSource>> source_
         ) const = 0;

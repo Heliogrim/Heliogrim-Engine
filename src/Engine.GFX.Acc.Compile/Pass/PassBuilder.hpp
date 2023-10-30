@@ -13,8 +13,8 @@ namespace hg::engine::gfx::acc {
         virtual ~PassBuilder() noexcept = default;
 
     public:
-        [[nodiscard]] _Success_(return != nullptr) virtual smr<AccelerationPass> build(
-            mref<smr<AccelerationEffect>> effect_,
+        [[nodiscard]] _Success_(return != nullptr) virtual smr<AccelerationPipeline> build(
+            mref<smr<const AccelerationEffect>> effect_,
             cref<class EffectSpecification> specifications_,
             cref<smr<const class EffectProfile>> profile_
         ) const noexcept = 0;

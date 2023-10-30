@@ -4,7 +4,7 @@
 #include <regex>
 #include <string>
 #include <Engine.GFX.Acc/AccelerationEffect.hpp>
-#include <Engine.GFX.Acc/Pass/VkGraphicsPass.hpp>
+#include <Engine.GFX.Acc/Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #include "VkModuleSource.hpp"
@@ -26,11 +26,11 @@ void main() {\n\
 VkModuleBuilder::~VkModuleBuilder() noexcept = default;
 
 bool VkModuleBuilder::isFirstStage(
-    cref<smr<AccelerationPass>> targetPass_,
+    cref<smr<AccelerationPipeline>> targetPass_,
     cref<smr<StageDerivat>> stage_
 ) const noexcept {
 
-    if (targetPass_->getMetaClass()->exact<VkGraphicsPass>() &&
+    if (targetPass_->getMetaClass()->exact<VkGraphicsPipeline>() &&
         stage_->getFlagBits() == StageFlagBits::eVertex
     ) {
         return true;
@@ -40,7 +40,7 @@ bool VkModuleBuilder::isFirstStage(
 }
 
 uptr<ModuleSource> VkModuleBuilder::build(
-    cref<smr<AccelerationPass>> targetPass_,
+    cref<smr<AccelerationPipeline>> targetPass_,
     cref<EffectSpecification> specifications_,
     cref<smr<StageDerivat>> stage_,
     cref<uptr<ModuleSource>> previous_

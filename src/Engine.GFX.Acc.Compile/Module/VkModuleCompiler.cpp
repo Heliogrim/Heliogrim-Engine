@@ -15,7 +15,7 @@ using namespace hg;
 VkModuleCompiler::~VkModuleCompiler() noexcept = default;
 
 uptr<CompiledModule> VkModuleCompiler::compile(
-    cref<smr<AccelerationPass>> targetPass_,
+    cref<smr<AccelerationPipeline>> targetPass_,
     cref<EffectSpecification> specifications_,
     mref<uptr<ModuleSource>> source_
 ) const {

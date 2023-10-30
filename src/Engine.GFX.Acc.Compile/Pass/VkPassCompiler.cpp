@@ -11,13 +11,16 @@
 #include <Engine.GFX.Acc/Stage/StageDerivat.hpp>
 #include <Engine.GFX.Acc/Stage/StageModule.hpp>
 #include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX.Acc/Pass/VkComputePass.hpp>
-#include <Engine.GFX.Acc/Pass/VkGraphicsPass.hpp>
-#include <Engine.GFX.Acc/Pass/VkMeshPass.hpp>
-#include <Engine.GFX.Acc/Pass/VkRaytracingPass.hpp>
+#include <Engine.GFX.Acc/Pipeline/VkComputePipeline.hpp>
+#include <Engine.GFX.Acc/Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.GFX.Acc/Pipeline/VkMeshPipeline.hpp>
+#include <Engine.GFX.Acc/Pipeline/VkRaytracingPipeline.hpp>
 #include <Engine.GFX.Acc/Symbol/Symbol.hpp>
 #include <Engine.GFX.RenderGraph/Relation/MeshDescription.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Reflect/IsType.hpp>
+#include <Engine.GFX.Acc/Pass/VkGraphicsPass.hpp>
+#include <Engine.Reflect/Cast.hpp>
 
 #include "../VkApi.hpp"
 #include "../Module/VkCompiledModule.hpp"
@@ -55,7 +58,7 @@ Vector<smr<StageDerivat>> VkPassCompiler::hydrateStages(
 }
 
 void VkPassCompiler::resolveBindLayouts(
-    const non_owning_rptr<const AccelerationPass> pass_,
+    const non_owning_rptr<const AccelerationPipeline> pass_,
     ref<Vector<_::VkDescriptorSetLayout>> layouts_
 ) const {
 
@@ -191,8 +194,8 @@ bool VkPassCompiler::hasStencilBinding(cref<smr<StageDerivat>> stage_) const noe
 }
 
 template <typename Type_, typename SpecificationType_>
-smr<const AccelerationPass> VkPassCompiler::compileTypeSpec(
-    mref<smr<AccelerationPass>> pass_,
+smr<const AccelerationPipeline> VkPassCompiler::compileTypeSpec(
+    mref<smr<AccelerationPipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_,
     SpecificationType_ specification_
 ) const {
@@ -201,9 +204,9 @@ smr<const AccelerationPass> VkPassCompiler::compileTypeSpec(
     return linkVk(_STD move(specification_), _STD move(pass));
 }
 
-smr<const AccelerationPass> VkPassCompiler::compile(
+smr<const AccelerationPipeline> VkPassCompiler::compile(
     cref<class EffectSpecification> specifications_,
-    mref<smr<AccelerationPass>> source_,
+    mref<smr<AccelerationPipeline>> source_,
     mref<Vector<smr<StageDerivat>>> stages_,
     mref<Vector<uptr<CompiledModule>>> modules_
 ) const {
@@ -216,29 +219,29 @@ smr<const AccelerationPass> VkPassCompiler::compile(
     /**/
 
     switch (source_->getMetaClass()->typeId().data) {
-        case VkComputePass::typeId.data: {
-            return compileTypeSpec<VkComputePass>(
+        case VkComputePipeline::typeId.data: {
+            return compileTypeSpec<VkComputePipeline>(
                 _STD move(source_),
                 _STD move(stages),
                 specifications_.getPassSpec<ComputePassSpecification>()
             );
         }
-        case VkGraphicsPass::typeId.data: {
-            return compileTypeSpec<VkGraphicsPass>(
+        case VkGraphicsPipeline::typeId.data: {
+            return compileTypeSpec<VkGraphicsPipeline>(
                 _STD move(source_),
                 _STD move(stages),
                 specifications_.getPassSpec<GraphicsPassSpecification>()
             );
         }
-        case VkMeshPass::typeId.data: {
-            return compileTypeSpec<VkMeshPass>(
+        case VkMeshPipeline::typeId.data: {
+            return compileTypeSpec<VkMeshPipeline>(
                 _STD move(source_),
                 _STD move(stages),
                 specifications_.getPassSpec<MeshPassSpecification>()
             );
         }
-        case VkRaytracingPass::typeId.data: {
-            return compileTypeSpec<VkRaytracingPass>(
+        case VkRaytracingPipeline::typeId.data: {
+            return compileTypeSpec<VkRaytracingPipeline>(
                 _STD move(source_),
                 _STD move(stages),
                 specifications_.getPassSpec<RaytracingPassSpecification>()
@@ -252,16 +255,16 @@ smr<const AccelerationPass> VkPassCompiler::compile(
 
 #pragma region Vk Compute Pipeline
 
-smr<VkComputePass> VkPassCompiler::linkStages(
-    mref<smr<VkComputePass>> pass_,
+smr<VkComputePipeline> VkPassCompiler::linkStages(
+    mref<smr<VkComputePipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_
 ) const {
     return _STD move(pass_);
 }
 
-smr<VkComputePass> VkPassCompiler::linkVk(
+smr<VkComputePipeline> VkPassCompiler::linkVk(
     mref<struct ComputePassSpecification> specification_,
-    mref<smr<VkComputePass>> pass_
+    mref<smr<VkComputePipeline>> pass_
 ) const {
     return _STD move(pass_);
 }
@@ -270,8 +273,8 @@ smr<VkComputePass> VkPassCompiler::linkVk(
 
 #pragma region Vk Programmable Pipeline
 
-smr<VkGraphicsPass> VkPassCompiler::linkStages(
-    mref<smr<VkGraphicsPass>> pass_,
+smr<VkGraphicsPipeline> VkPassCompiler::linkStages(
+    mref<smr<VkGraphicsPipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_
 ) const {
 
@@ -284,9 +287,9 @@ smr<VkGraphicsPass> VkPassCompiler::linkStages(
     return _STD move(pass_);
 }
 
-smr<VkGraphicsPass> VkPassCompiler::linkVk(
-    mref<struct GraphicsPassSpecification> specification_,
-    mref<smr<VkGraphicsPass>> pass_
+smr<VkGraphicsPipeline> VkPassCompiler::linkVk(
+    mref<GraphicsPassSpecification> specification_,
+    mref<smr<VkGraphicsPipeline>> pass_
 ) const {
 
     const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
@@ -710,7 +713,10 @@ smr<VkGraphicsPass> VkPassCompiler::linkVk(
 
     /**/
 
-    gpci.renderPass = static_cast<ptr<pipeline::LORenderPass>>(specification_.renderPass.get())->vkRenderPass();
+    assert(IsType<VkGraphicsPass>(*specification_.pass));
+    const auto* const gp = Cast<VkGraphicsPass>(specification_.pass.get());
+    assert(gp->_vkGraphicsPass != nullptr);
+    gpci.renderPass = reinterpret_cast<const vk::RenderPass&>(gp->_vkGraphicsPass);
 
     /**/
 
@@ -737,16 +743,16 @@ smr<VkGraphicsPass> VkPassCompiler::linkVk(
 
 #pragma region Vk Mesh Pipeline
 
-smr<VkMeshPass> VkPassCompiler::linkStages(
-    mref<smr<VkMeshPass>> pass_,
+smr<VkMeshPipeline> VkPassCompiler::linkStages(
+    mref<smr<VkMeshPipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_
 ) const {
     return _STD move(pass_);
 }
 
-smr<VkMeshPass> VkPassCompiler::linkVk(
+smr<VkMeshPipeline> VkPassCompiler::linkVk(
     mref<struct MeshPassSpecification> specification_,
-    mref<smr<VkMeshPass>> pass_
+    mref<smr<VkMeshPipeline>> pass_
 ) const {
     return _STD move(pass_);
 }
@@ -755,16 +761,16 @@ smr<VkMeshPass> VkPassCompiler::linkVk(
 
 #pragma region Vk Raytracing Pipeline
 
-smr<VkRaytracingPass> VkPassCompiler::linkStages(
-    mref<smr<VkRaytracingPass>> pass_,
+smr<VkRaytracingPipeline> VkPassCompiler::linkStages(
+    mref<smr<VkRaytracingPipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_
 ) const {
     return _STD move(pass_);
 }
 
-smr<VkRaytracingPass> VkPassCompiler::linkVk(
+smr<VkRaytracingPipeline> VkPassCompiler::linkVk(
     mref<struct RaytracingPassSpecification> specification_,
-    mref<smr<VkRaytracingPass>> pass_
+    mref<smr<VkRaytracingPipeline>> pass_
 ) const {
     return _STD move(pass_);
 }

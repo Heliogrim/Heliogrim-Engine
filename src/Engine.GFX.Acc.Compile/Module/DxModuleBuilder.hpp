@@ -14,7 +14,7 @@ namespace hg::engine::gfx::acc {
 
     public:
         [[nodiscard]] uptr<ModuleSource> build(
-            cref<smr<AccelerationPass>> targetPass_,
+            cref<smr<AccelerationPipeline>> targetPass_,
             cref<class EffectSpecification> specifications_,
             cref<smr<StageDerivat>> stage_,
             cref<uptr<ModuleSource>> previous_

@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.GFX.Acc/Pass/VkGraphicsPass.hpp>
+#include <Engine.GFX.Acc/Pipeline/VkGraphicsPipeline.hpp>
 
 #include "../Spec/EffectSpecification.hpp"
 #include "../Profile/EffectProfile.hpp"
@@ -14,13 +14,13 @@ VkPassBuilder::VkPassBuilder() = default;
 
 VkPassBuilder::~VkPassBuilder() = default;
 
-smr<AccelerationPass> VkPassBuilder::build(
-    mref<smr<AccelerationEffect>> effect_,
+smr<AccelerationPipeline> VkPassBuilder::build(
+    mref<smr<const AccelerationEffect>> effect_,
     cref<class EffectSpecification> specifications_,
     cref<smr<const class EffectProfile>> profile_
 ) const noexcept {
     //assert(specifications_.getGraphicsSpec().renderPass);
-    return make_smr<VkGraphicsPass>(
-        new VkGraphicsPass(_STD move(effect_))
+    return make_smr<VkGraphicsPipeline>(
+        new VkGraphicsPipeline(_STD move(effect_))
     );
 }

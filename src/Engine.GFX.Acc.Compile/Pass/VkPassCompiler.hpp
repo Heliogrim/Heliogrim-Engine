@@ -17,44 +17,44 @@ namespace hg::engine::gfx::acc {
         ~VkPassCompiler() override;
 
     private:
-        smr<class VkComputePass> linkStages(
-            mref<smr<class VkComputePass>> pass_,
+        smr<class VkComputePipeline> linkStages(
+            mref<smr<class VkComputePipeline>> pass_,
             mref<Vector<smr<StageDerivat>>> stages_
         ) const;
 
-        smr<class VkComputePass> linkVk(
+        smr<class VkComputePipeline> linkVk(
             mref<struct ComputePassSpecification> specification_,
-            mref<smr<class VkComputePass>> pass_
+            mref<smr<class VkComputePipeline>> pass_
         ) const;
 
-        smr<class VkGraphicsPass> linkStages(
-            mref<smr<class VkGraphicsPass>> pass_,
+        smr<class VkGraphicsPipeline> linkStages(
+            mref<smr<class VkGraphicsPipeline>> pass_,
             mref<Vector<smr<StageDerivat>>> stages_
         ) const;
 
-        smr<class VkGraphicsPass> linkVk(
+        smr<class VkGraphicsPipeline> linkVk(
             mref<struct GraphicsPassSpecification> specification_,
-            mref<smr<class VkGraphicsPass>> pass_
+            mref<smr<class VkGraphicsPipeline>> pass_
         ) const;
 
-        smr<class VkMeshPass> linkStages(
-            mref<smr<class VkMeshPass>> pass_,
+        smr<class VkMeshPipeline> linkStages(
+            mref<smr<class VkMeshPipeline>> pass_,
             mref<Vector<smr<StageDerivat>>> stages_
         ) const;
 
-        smr<class VkMeshPass> linkVk(
+        smr<class VkMeshPipeline> linkVk(
             mref<struct MeshPassSpecification> specification_,
-            mref<smr<class VkMeshPass>> pass_
+            mref<smr<class VkMeshPipeline>> pass_
         ) const;
 
-        smr<class VkRaytracingPass> linkStages(
-            mref<smr<class VkRaytracingPass>> pass_,
+        smr<class VkRaytracingPipeline> linkStages(
+            mref<smr<class VkRaytracingPipeline>> pass_,
             mref<Vector<smr<StageDerivat>>> stages_
         ) const;
 
-        smr<class VkRaytracingPass> linkVk(
+        smr<class VkRaytracingPipeline> linkVk(
             mref<struct RaytracingPassSpecification> specification_,
-            mref<smr<class VkRaytracingPass>> pass_
+            mref<smr<class VkRaytracingPipeline>> pass_
         ) const;
 
     private:
@@ -64,7 +64,7 @@ namespace hg::engine::gfx::acc {
         ) const;
 
         void resolveBindLayouts(
-            const non_owning_rptr<const AccelerationPass> pass_,
+            const non_owning_rptr<const AccelerationPipeline> pass_,
             _Inout_ ref<Vector<_::VkDescriptorSetLayout>> layouts_
         ) const;
 
@@ -73,16 +73,16 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] bool hasStencilBinding(cref<smr<StageDerivat>> stage_) const noexcept;
 
         template <typename Type_, typename SpecificationType_>
-        [[nodiscard]] smr<const AccelerationPass> compileTypeSpec(
-            mref<smr<AccelerationPass>> pass_,
+        [[nodiscard]] smr<const AccelerationPipeline> compileTypeSpec(
+            mref<smr<AccelerationPipeline>> pass_,
             mref<Vector<smr<StageDerivat>>> stages_,
             SpecificationType_ specification_
         ) const;
 
     public:
-        [[nodiscard]] smr<const AccelerationPass> compile(
+        [[nodiscard]] smr<const AccelerationPipeline> compile(
             cref<class EffectSpecification> specifications_,
-            mref<smr<AccelerationPass>> source_,
+            mref<smr<AccelerationPipeline>> source_,
             mref<Vector<smr<StageDerivat>>> stages_,
             mref<Vector<uptr<CompiledModule>>> modules_
         ) const override;

@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.GFX.Acc/Stage/StageDerivat.hpp>
-#include <Engine.GFX.Acc/AccelerationPass.hpp>
+#include <Engine.GFX.Acc/AccelerationPipeline.hpp>
 
 #include "ModuleSource.hpp"
 #include "../Token/ScopedTokenStorage.hpp"
@@ -26,7 +26,7 @@ namespace hg::engine::gfx::acc {
 
     public:
         [[nodiscard]] virtual uptr<ModuleSource> build(
-            cref<smr<AccelerationPass>> targetPass_,
+            cref<smr<AccelerationPipeline>> targetPass_,
             cref<class EffectSpecification> specifications_,
             cref<smr<StageDerivat>> stage_,
             cref<uptr<ModuleSource>> previous_

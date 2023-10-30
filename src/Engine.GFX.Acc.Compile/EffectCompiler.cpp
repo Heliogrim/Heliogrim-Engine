@@ -35,13 +35,14 @@ EffectCompiler::EffectCompiler(
 
 EffectCompiler::~EffectCompiler() noexcept = default;
 
-smr<const AccelerationPass> EffectCompiler::compile(
+EffectCompileResult EffectCompiler::compile(
     mref<EffectCompileRequest> request_
 ) const {
 
     /* Discover all tokens and resource dependencies */
 
     if (not request_.spec.targetSymbols().empty()) {
+        // TODO: Check whether we can generate a subpass using IR breakpoints to pass data with carrier functions
         for (const auto& requested : request_.spec.targetSymbols()) {
             assert(_STD ranges::contains(request_.effect->getExportSymbols(), requested));
         }
@@ -49,7 +50,7 @@ smr<const AccelerationPass> EffectCompiler::compile(
 
     /* Determine target pass type and spec based on effect */
 
-    smr<AccelerationPass> pass = _passBuilder->build(
+    smr<AccelerationPipeline> pass = _passBuilder->build(
         _STD move(request_.effect),
         request_.spec,
         request_.profile
@@ -116,5 +117,17 @@ smr<const AccelerationPass> EffectCompiler::compile(
 
     /* Finalize acceleration stage derivates */
 
-    return _passCompiler->compile(request_.spec, _STD move(pass), _STD move(stages), _STD move(modules));
+    return {
+        .flag = EffectCompileResultFlag::eCompiled,
+        .apass = _passCompiler->compile(
+            request_.spec,
+            _STD move(pass),
+            _STD move(stages),
+            _STD move(modules)
+        ),
+        .remapping = EffectPassRemapping {
+            {},
+            {}
+        }
+    };
 }
