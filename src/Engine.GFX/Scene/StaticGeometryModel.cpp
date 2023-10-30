@@ -5,7 +5,6 @@
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene/RevScene.hpp>
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX.RenderPipeline/Invocation/IGCommandBuffer.hpp>
 
 #include "ModelDataTokens.hpp"
 #include "StaticGeometryBatch.hpp"
@@ -16,6 +15,7 @@
 #include "../Buffer/Buffer.hpp"
 #include "Engine.GFX.Glow.3D/Renderer/State/RevSfMtt.hpp"
 #include "Engine.Common/Math/Convertion.hpp"
+#include <Engine.GFX.Render.Command/Commands/BindMaterial.hpp>
 
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -258,13 +258,26 @@ ptr<cache::ModelBatch> StaticGeometryModel::batch(const ptr<render::RenderPassSt
     return result;
 }
 
-void StaticGeometryModel::render(mref<nmpt<render::pipeline::IGCommandBuffer>> cmd_) const {
+void StaticGeometryModel::render(mref<nmpt<render::cmd::RenderCommandBuffer>> cmd_) const {
 
-    cmd_->bindVertexBuffer(nullptr);
-    cmd_->bindIndexBuffer(nullptr);
+    const auto worldTransform = _owner->getWorldTransform();
+    const auto trans { math::mat4::make_identity().translate(worldTransform.location().operator math::fvec3()) };
+    const auto rotation = math::as<math::quaternion, math::mat4>(worldTransform.rotator().quaternion());
+    const auto scale { math::mat4::make_identity().unchecked_scale(worldTransform.scale()) };
 
-    cmd_->drawIndexed(0uL, 0uL);
+    /**/
 
+    for (const auto& material : _overrideMaterials) {
+
+        const auto guard = material->acquire(resource::ResourceUsageFlag::eRead);
+        cmd_->bindMaterial(MaterialIdentifier {}, guard.imm());
+    }
+
+    const auto meshGuard = _staticGeometryResource->acquire(resource::ResourceUsageFlag::eRead);
+    cmd_->bindStaticMesh(meshGuard.imm());
+
+    cmd_->bindStaticMeshInstance(nullptr/*{ trans * rotation * scale }*/);
+    cmd_->drawStaticMeshIdx(1uL, 0uL, meshGuard->indices()->size(), 0uL);
 }
 
 const ptr<engine::assets::StaticGeometry> StaticGeometryModel::geometryAsset() const noexcept {

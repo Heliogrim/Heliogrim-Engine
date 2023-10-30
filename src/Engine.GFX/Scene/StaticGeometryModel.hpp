@@ -38,7 +38,7 @@ namespace hg::engine::gfx {
     public:
         [[nodiscard]] ptr<cache::ModelBatch> batch(const ptr<render::RenderPassState> state_) override;
 
-        void render(mref<nmpt<render::pipeline::IGCommandBuffer>> cmd_) const override;
+        void render(mref<nmpt<render::cmd::RenderCommandBuffer>> cmd_) const override;
 
     private:
         ptr<assets::StaticGeometry> _staticGeometryAsset = nullptr;

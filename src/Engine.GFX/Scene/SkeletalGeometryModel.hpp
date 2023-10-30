@@ -27,7 +27,7 @@ namespace hg::engine::gfx {
         void destroy(const ptr<scene::Scene> scene_) override final;
 
     public:
-        void render(mref<nmpt<render::pipeline::IGCommandBuffer>> cmd_) const override;
+        void render(mref<nmpt<render::cmd::RenderCommandBuffer>> cmd_) const override;
 
     private:
         ptr<assets::SkeletalGeometry> _skeletalGeometry = nullptr;
