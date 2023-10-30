@@ -2,7 +2,8 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
-#include "Engine.GFX.Render.Command/RenderCommand.hpp"
+#include <Engine.GFX.RenderGraph/Relation/MeshDescription.hpp>
+#include "../RenderCommand.hpp"
 
 namespace hg::engine::gfx::render::cmd {
     class DrawMeshRenderCommand :
@@ -11,8 +12,8 @@ namespace hg::engine::gfx::render::cmd {
         using this_type = DrawMeshRenderCommand;
 
     public:
-        constexpr DrawMeshRenderCommand(
-            const ptr<const MeshDescription> meshDescription_,
+        DrawMeshRenderCommand(
+            const ptr<const graph::MeshDescription> meshDescription_,
             const u32 instanceCount_,
             const u32 instanceOffset_,
             const u32 primitiveCount_,
@@ -30,7 +31,8 @@ namespace hg::engine::gfx::render::cmd {
         constexpr ~DrawMeshRenderCommand() noexcept = default;
 
     private:
-        const ptr<const MeshDescription> _meshDescription;
+    public:
+        const ptr<const graph::MeshDescription> _meshDescription;
         const u32 _instanceCount;
         const u32 _instanceOffset;
         const u32 _primitiveCount;
@@ -38,6 +40,6 @@ namespace hg::engine::gfx::render::cmd {
         const bool _indexedPrimitive;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) noexcept override;
+        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
     };
 }

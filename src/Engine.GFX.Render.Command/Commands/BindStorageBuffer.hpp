@@ -23,6 +23,6 @@ namespace hg::engine::gfx::render::cmd {
         const ptr<const StorageBufferView> _storageView;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) noexcept override;
+        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
     };
 }

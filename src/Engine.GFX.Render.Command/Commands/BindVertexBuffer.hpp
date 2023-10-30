@@ -20,9 +20,10 @@ namespace hg::engine::gfx::render::cmd {
         constexpr ~BindVertexBufferRenderCommand() noexcept = default;
 
     private:
+    public:
         const ptr<const VertexBufferView> _vertexView;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) noexcept override;
+        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
     };
 }

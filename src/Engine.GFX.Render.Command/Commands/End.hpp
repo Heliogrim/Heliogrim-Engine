@@ -10,6 +10,6 @@ namespace hg::engine::gfx::render::cmd {
         constexpr ~EndRenderCommand() noexcept = default;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) noexcept override;
+        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
     };
 }

@@ -15,7 +15,7 @@ namespace hg::engine::gfx::render::cmd {
         constexpr ~RenderCommand() noexcept = default;
 
     public:
-        virtual void operator()(ptr<RenderCommandTranslationUnit> rctu_) noexcept = 0;
+        virtual void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept = 0;
     };
 
     template <typename Type_>

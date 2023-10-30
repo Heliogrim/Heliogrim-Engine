@@ -1,6 +1,6 @@
 #include "PooledRenderCommandBuffer.hpp"
 
-#include <Engine.GFX.RenderPipeline.Factory/StaticMeshLayout.hpp>
+#include <Engine.GFX.Geometry/StaticMeshLayout.hpp>
 
 #include "Commands/Begin.hpp"
 #include "Commands/BindIndexBuffer.hpp"
