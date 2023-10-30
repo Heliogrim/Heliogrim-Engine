@@ -202,13 +202,11 @@ namespace hg::engine::scene {
     public:
         /**
          * Traversals the graph with the given consumer
-         *
-         * @tparam Consumer Type of the consumer.
-         * @param  consumer_ The consumer.
          */
-        template <typename Consumer> requires IsSceneNodeConsumer<Consumer, node_type>
-        void traversal(cref<Consumer> consumer_) const {
-            return traversal(static_cast<_STD function<bool(const ptr<node_type>)>>(consumer_));
+        template <typename Fn_>
+        void traversal(Fn_&& fn_) const {
+            const auto fn = _STD function<bool(const ptr<node_type>)>(_STD forward<Fn_>(fn_));
+            return traversal(fn);
         }
 
         /**
@@ -414,12 +412,10 @@ namespace hg::engine::scene {
         }
 
     public:
-        template <typename BatchConsumer> requires IsSceneNodeBatchConsumer<BatchConsumer, node_type>
-        void traversalBatched(u32 maxBatches_, cref<BatchConsumer> consumer_) const {
-            return traversalBatched(
-                maxBatches_,
-                static_cast<_STD function<bool(u32, const ptr<node_type>)>>(consumer_)
-            );
+        template <typename Fn_>
+        void traversalBatched(u32 maxBatches_, Fn_&& fn_) const {
+            const auto fn = _STD function<bool(u32, const ptr<node_type>)>(_STD forward<Fn_>(fn_));
+            return traversalBatched(maxBatches_, fn);
         }
 
         void traversalBatched(u32 maxBatches_, cref<_STD function<bool(u32, const ptr<node_type>)>> consumer_) const {
