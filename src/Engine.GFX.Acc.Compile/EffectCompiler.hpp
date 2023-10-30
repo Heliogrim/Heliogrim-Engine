@@ -1,9 +1,10 @@
 #pragma once
 
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.GFX.Acc/AccelerationPass.hpp>
+#include <Engine.GFX.Acc/AccelerationPipeline.hpp>
 
 #include "EffectCompileRequest.hpp"
+#include "EffectCompileResult.hpp"
 #include "Module/ModuleBuilder.hpp"
 #include "Module/ModuleCompiler.hpp"
 #include "Pass/PassBuilder.hpp"
@@ -42,7 +43,7 @@ namespace hg::engine::gfx::acc {
         Tokenizer _tokenizer;
 
     public:
-        [[nodiscard]] smr<const AccelerationPass> compile(
+        [[nodiscard]] EffectCompileResult compile(
             mref<EffectCompileRequest> request_
         ) const;
     };

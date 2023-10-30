@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.GFX.Acc/AccelerationPass.hpp>
+#include <Engine.GFX.Acc/AccelerationPipeline.hpp>
 
 namespace hg::engine::gfx::acc {
     class StageComposer {
@@ -25,7 +25,7 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] Vector<smr<StageDerivat>> compose(
             cref<smr<const class EffectProfile>> profile_,
             cref<class EffectSpecification> specifications_,
-            cref<smr<AccelerationPass>> targetPass_
+            cref<smr<AccelerationPipeline>> targetPass_
         ) const;
     };
 }

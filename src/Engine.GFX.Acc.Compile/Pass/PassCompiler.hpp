@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.GFX.Acc/AccelerationPass.hpp>
+#include <Engine.GFX.Acc/AccelerationPipeline.hpp>
 
 #include "../Module/CompiledModule.hpp"
 
@@ -23,9 +23,9 @@ namespace hg::engine::gfx::acc {
         void setTokenizer(mref<non_owning_rptr<const class Tokenizer>> tokenizer_);
 
     public:
-        [[nodiscard]] _Success_(return != nullptr) virtual smr<const AccelerationPass> compile(
+        [[nodiscard]] _Success_(return != nullptr) virtual smr<const AccelerationPipeline> compile(
             cref<class EffectSpecification> specifications_,
-            mref<smr<AccelerationPass>> source_,
+            mref<smr<AccelerationPipeline>> source_,
             mref<Vector<smr<StageDerivat>>> stages_,
             mref<Vector<uptr<class CompiledModule>>> modules_
         ) const = 0;

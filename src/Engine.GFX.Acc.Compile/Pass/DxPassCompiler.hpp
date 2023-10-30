@@ -13,9 +13,9 @@ namespace hg::engine::gfx::acc {
         ~DxPassCompiler() override;
 
     public:
-        smr<const AccelerationPass> compile(
+        smr<const AccelerationPipeline> compile(
             cref<class EffectSpecification> specifications_,
-            mref<smr<AccelerationPass>> source_,
+            mref<smr<AccelerationPipeline>> source_,
             mref<Vector<smr<StageDerivat>>> stages_,
             mref<Vector<uptr<class CompiledModule>>> modules_
         ) const override;

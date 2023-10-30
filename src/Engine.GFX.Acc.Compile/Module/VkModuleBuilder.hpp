@@ -14,7 +14,7 @@ namespace hg::engine::gfx::acc {
 
     private:
         [[nodiscard]] bool isFirstStage(
-            cref<smr<AccelerationPass>> targetPass_,
+            cref<smr<AccelerationPipeline>> targetPass_,
             cref<smr<StageDerivat>> stage_
         ) const noexcept;
 
@@ -28,7 +28,7 @@ namespace hg::engine::gfx::acc {
 
     public:
         [[nodiscard]] uptr<struct ModuleSource> build(
-            cref<smr<AccelerationPass>> targetPass_,
+            cref<smr<AccelerationPipeline>> targetPass_,
             cref<class EffectSpecification> specifications_,
             cref<smr<StageDerivat>> stage_,
             cref<uptr<struct ModuleSource>> previous_

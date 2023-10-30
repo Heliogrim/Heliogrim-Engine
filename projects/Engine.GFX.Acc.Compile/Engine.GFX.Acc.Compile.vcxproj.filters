@@ -177,6 +177,12 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\test.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\EffectCompileResult.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc.Compile\EffectPassRemapping.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\Token\Tokenizer.cpp">
@@ -237,6 +243,9 @@
       <Filter>Quelldateien\Spec</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\test.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc.Compile\EffectPassRemapping.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
