@@ -494,7 +494,8 @@ namespace hg::engine::scene {
             return _transform;
         }
 
-        [[nodiscard, deprecated]] ref<math::Bounding> bounding() noexcept {
+        // Warning: Deprecated
+        [[nodiscard]] ref<math::Bounding> bounding() noexcept {
             return _bounding;
         }
 
