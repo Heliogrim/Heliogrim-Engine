@@ -1,15 +1,12 @@
 #include "ProgressiveGenerator.hpp"
 
 #include <Engine.Common/Make.hpp>
-#include <Engine.GFX.RenderGraph/Component/Subpass/SubpassMaterialAccelComponent.hpp>
-#include <Engine.GFX.RenderGraph/Component/Subpass/SubpassMultiAccelComponent.hpp>
-#include <Engine.GFX.RenderGraph/Component/Subpass/SubpassSingleAccelComponent.hpp>
-#include <Engine.GFX.RenderGraph/Node/BarrierNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/ConvergeNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/DivergeNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/ProviderNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/SelectorNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/SubpassNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/BarrierNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/ConvergeNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/DivergeNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/ProviderNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/SelectorNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/SubpassNode.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
 
 #include "../Stage/AccelSubpassStage.hpp"
@@ -23,16 +20,6 @@
 using namespace hg::engine::gfx::render::pipeline;
 using namespace hg::engine::gfx::render;
 using namespace hg;
-
-/**/
-
-[[nodiscard]] static smr<SubpassStage> makeSubpassStage(cref<graph::SubpassNode> node_);
-
-static smr<SubpassStage> buildAccelSubpassStage(cref<graph::SubpassNode> node_);
-
-static smr<SubpassStage> buildMultiAccelSubpassStage(cref<graph::SubpassNode> node_);
-
-static smr<SubpassStage> buildMaterialSubpassStage(cref<graph::SubpassNode> node_);
 
 /**/
 
@@ -95,71 +82,14 @@ void ProgressiveGenerator::operator()(cref<graph::ProviderNode> node_) {
 
 void ProgressiveGenerator::operator()(cref<graph::SubpassNode> node_) {
 
-    auto tmp = makeSubpassStage(node_);
-    _nodeToStage.insert(_STD make_pair(&node_, tmp.into<Stage>()));
+    assert(false);
+
+    //auto tmp = make_smr<SubpassStage>();
+    //_nodeToStage.insert(_STD make_pair(&node_, tmp.into<Stage>()));
 }
 
 void ProgressiveGenerator::operator()(cref<graph::CompileNode> node_) {
     assert(false);
-}
-
-/**/
-
-smr<SubpassStage> makeSubpassStage(cref<graph::SubpassNode> node_) {
-
-    auto accel = node_.getSubpassAcceleration();
-
-    return switchType(
-        accel.get(),
-        [&node_](graph::SubpassSingleAccelComponent*) {
-            return buildAccelSubpassStage(node_);
-        },
-        [&node_](graph::SubpassMultiAccelComponent*) {
-            return buildMultiAccelSubpassStage(node_);
-        },
-        [&node_](graph::SubpassMaterialAccelComponent*) {
-            return buildMaterialSubpassStage(node_);
-        }
-    );
-}
-
-smr<SubpassStage> buildAccelSubpassStage(cref<graph::SubpassNode> node_) {
-
-    using StagedAccelPass = AccelSubpassStage::StagedAccelPass;
-
-    const auto main = node_.getSubpassComponent();
-    const auto accel = static_cast<graph::SubpassSingleAccelComponent*>(node_.getSubpassAcceleration().get());
-    const auto invoke = node_.getSubpassInvocation();
-
-    StagedAccelPass tmp {};
-
-    return make_smr<AccelSubpassStage>(_STD move(tmp)).into<SubpassStage>();
-}
-
-smr<SubpassStage> buildMultiAccelSubpassStage(cref<graph::SubpassNode> node_) {
-
-    using StagedAccelPass = MultiAccelSubpassStage::StagedAccelPass;
-
-    const auto main = node_.getSubpassAcceleration();
-    const auto accel = static_cast<graph::SubpassMultiAccelComponent*>(node_.getSubpassAcceleration().get());
-    const auto invoke = node_.getSubpassInvocation();
-
-    Vector<StagedAccelPass> tmp {};
-
-    return make_smr<MultiAccelSubpassStage>(_STD move(tmp)).into<SubpassStage>();
-}
-
-smr<SubpassStage> buildMaterialSubpassStage(cref<graph::SubpassNode> node_) {
-
-    using StagedAccelPass = MaterialSubpassStage::StagedAccelPass;
-
-    const auto main = node_.getSubpassAcceleration();
-    const auto accel = static_cast<graph::SubpassMaterialAccelComponent*>(node_.getSubpassAcceleration().get());
-    const auto invoke = node_.getSubpassInvocation();
-
-    DenseMap<smr<const engine::gfx::MaterialResource>, Vector<StagedAccelPass>> tmp {};
-
-    return make_smr<MaterialSubpassStage>(_STD move(tmp)).into<SubpassStage>();
 }
 
 /**/
