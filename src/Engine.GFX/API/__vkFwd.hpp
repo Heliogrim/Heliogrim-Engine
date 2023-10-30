@@ -21,6 +21,12 @@ namespace hg::_ {
 
     typedef struct _VkComputePipelineLayout* VkComputePipelineLayout;
     typedef struct _VkComputePipeline* VkComputePipeline;
+
+    /**/
+
+    typedef struct _VkGraphicsRenderPass* VkGraphicsRenderPass;
+    typedef struct _VkMeshRenderPass* VkMeshRenderPass;
+    typedef struct _VkRaytracingRenderPass* VkRaytracingRenderPass;
 }
 
 namespace vk {}
