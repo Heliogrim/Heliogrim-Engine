@@ -7,6 +7,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.GFX.Acc/__fwd.hpp>
+#include <tl/optional.hpp>
 
 #include "__fwd.hpp"
 
@@ -54,6 +55,10 @@ namespace hg::engine::gfx::material {
         [[nodiscard]] cref<Vector<MaterialPrototypeParameter>> getParameters() const noexcept;
 
         bool addParameter(mref<MaterialPrototypeParameter> param_);
+
+        [[nodiscard]] tl::optional<cref<MaterialPrototypeParameter>> getParameter(
+            string_view uniqueName_
+        ) const noexcept;
 
         bool removeParameter(string_view uniqueName_);
 

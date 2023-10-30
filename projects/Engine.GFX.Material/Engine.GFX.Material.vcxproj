@@ -94,6 +94,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialParameter.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialParameterStorage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialParameterStorageTable.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialPrototype.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialPrototypeParameter.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\__fwd.hpp" />
