@@ -1,13 +1,13 @@
 #include "GraphScanner.hpp"
 
-#include <Engine.GFX.RenderGraph/Node/AnchorNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/BarrierNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/ConvergeNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/DivergeNode.hpp>
 #include <Engine.GFX.RenderGraph/Node/Node.hpp>
-#include <Engine.GFX.RenderGraph/Node/ProviderNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/SelectorNode.hpp>
-#include <Engine.GFX.RenderGraph/Node/SubpassNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/AnchorNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/BarrierNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/ConvergeNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/DivergeNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/ProviderNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/SelectorNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/SubpassNode.hpp>
 
 using namespace hg::engine::gfx::render::pipeline;
 using namespace hg::engine::gfx::render;

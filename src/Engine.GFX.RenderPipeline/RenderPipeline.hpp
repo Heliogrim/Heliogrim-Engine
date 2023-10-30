@@ -6,6 +6,7 @@
 #include "RenderPipelineResult.hpp"
 #include "__fwd.hpp"
 #include "State/StateAware.hpp"
+#include "Stage/Stage.hpp"
 
 namespace hg::engine::gfx::render {
     class RenderPipeline final :

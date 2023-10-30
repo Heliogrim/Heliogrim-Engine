@@ -25,12 +25,6 @@
     <Filter Include="Quelldateien\Stage">
       <UniqueIdentifier>{cd49493e-3304-4be6-8cbc-8aba894ade00}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Invocation">
-      <UniqueIdentifier>{53427975-e861-46a1-bb9c-96d8fc273e8f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Invocation">
-      <UniqueIdentifier>{eeecf173-4670-4a95-8aed-e20a91b928b8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Build">
       <UniqueIdentifier>{61e94bf6-1ad7-45ee-9e08-e02c514688c5}</UniqueIdentifier>
     </Filter>
@@ -78,18 +72,6 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\State\ExecState.hpp">
       <Filter>Headerdateien\State</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\InvocationGenerator.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneMeshIG.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneWalker.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGCommandBuffer.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\MaterialSubpassStage.hpp">
       <Filter>Headerdateien\Stage</Filter>
     </ClInclude>
@@ -98,12 +80,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Stage\MultiAccelSubpassStage.hpp">
       <Filter>Headerdateien\Stage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ProcMeshIG.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\PlaneMeshIG.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Build\BaseBuilder.hpp">
       <Filter>Headerdateien\Build</Filter>
@@ -119,24 +95,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Build\GraphStager.hpp">
       <Filter>Headerdateien\Build</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ComputeIG.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ComplexInvocationGenerator.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\StaticMeshIG.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SkeletalMeshIG.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGProcessResult.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGError.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -160,9 +118,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\MaterialSubpassStage.cpp">
       <Filter>Quelldateien\Stage</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\IGCommandBuffer.cpp">
-      <Filter>Quelldateien\Invocation</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Stage\ConvergingStage.cpp">
       <Filter>Quelldateien\Stage</Filter>
@@ -191,22 +146,5 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Build\ProgressiveGenerator.cpp">
       <Filter>Quelldateien\Build</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneMeshIG.cpp">
-      <Filter>Quelldateien\Invocation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\StaticMeshIG.cpp">
-      <Filter>Quelldateien\Invocation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\ComputeIG.cpp">
-      <Filter>Quelldateien\Invocation</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\SceneWalkerFilter.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
-    </None>
-    <None Include="..\..\src\Engine.GFX.RenderPipeline\Invocation\GenericMeshIG.hpp">
-      <Filter>Headerdateien\Invocation</Filter>
-    </None>
   </ItemGroup>
 </Project>

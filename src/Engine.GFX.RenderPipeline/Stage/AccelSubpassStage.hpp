@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.GFX.Acc/AccelerationPass.hpp>
+#include <Engine.GFX.Acc/AccelerationPipeline.hpp>
 #include <Engine.GFX.Acc.Compile/Spec/EffectSpecification.hpp>
 
 #include "SubpassStage.hpp"
@@ -11,7 +11,7 @@ namespace hg::engine::gfx::render::pipeline {
     public:
         using this_type = AccelSubpassStage;
 
-        using StagedAccelPass = _STD pair<smr<const acc::EffectSpecification>, smr<const acc::AccelerationPass>>;
+        using StagedAccelPass = _STD pair<smr<const acc::EffectSpecification>, smr<const acc::AccelerationPipeline>>;
 
     public:
         AccelSubpassStage() noexcept;

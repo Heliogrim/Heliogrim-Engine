@@ -23,7 +23,7 @@ void MaterialSubpassStage::operator()(nmpt<State> state_) const {
 }
 
 /*
-smr<const engine::gfx::acc::AccelerationPass> MaterialSubpassStage::getAccelByMaterial(
+smr<const engine::gfx::acc::AccelerationPipeline> MaterialSubpassStage::getAccelByMaterial(
     mref<smr<MaterialResource>> material_,
     mref<smr<acc::SpecificationStorage>> spec_
 ) noexcept {
