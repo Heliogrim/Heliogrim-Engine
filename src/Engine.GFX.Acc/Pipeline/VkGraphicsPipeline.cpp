@@ -1,4 +1,4 @@
-#include "VkGraphicsPass.hpp"
+#include "VkGraphicsPipeline.hpp"
 
 #include <stdexcept>
 #include <Engine.Core/Engine.hpp>
@@ -7,16 +7,16 @@
 using namespace hg::engine::gfx::acc;
 using namespace hg;
 
-VkGraphicsPass::VkGraphicsPass(mref<smr<AccelerationEffect>> effect_) :
+VkGraphicsPipeline::VkGraphicsPipeline(mref<smr<const AccelerationEffect>> effect_) :
     InheritMeta(_STD move(effect_)),
     _vkPipeLayout(nullptr),
     _vkPipe(nullptr) {}
 
-VkGraphicsPass::~VkGraphicsPass() {
+VkGraphicsPipeline::~VkGraphicsPipeline() {
     tidy();
 }
 
-void VkGraphicsPass::tidy() {
+void VkGraphicsPipeline::tidy() {
 
     const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
@@ -39,7 +39,7 @@ void VkGraphicsPass::tidy() {
 
 }
 
-void VkGraphicsPass::setStageDerivat(const size_t idx_, mref<smr<StageDerivat>> derivat_) {
+void VkGraphicsPipeline::setStageDerivat(const size_t idx_, mref<smr<StageDerivat>> derivat_) {
 
     if (idx_ > _stages.size()) {
         throw _STD runtime_error("");
@@ -49,10 +49,10 @@ void VkGraphicsPass::setStageDerivat(const size_t idx_, mref<smr<StageDerivat>> 
     _stages.insert(where, _STD move(derivat_));
 }
 
-void VkGraphicsPass::setVkPipeLayout(mref<_::VkGraphicsPipelineLayout> vkPipeLayout_) {
+void VkGraphicsPipeline::setVkPipeLayout(mref<_::VkGraphicsPipelineLayout> vkPipeLayout_) {
     _vkPipeLayout = _STD move(vkPipeLayout_);
 }
 
-void VkGraphicsPass::setVkPipe(mref<_::VkGraphicsPipeline> vkPipe_) {
+void VkGraphicsPipeline::setVkPipe(mref<_::VkGraphicsPipeline> vkPipe_) {
     _vkPipe = _STD move(vkPipe_);
 }

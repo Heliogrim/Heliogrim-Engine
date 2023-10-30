@@ -4,9 +4,21 @@
 
 namespace hg::engine::gfx::acc {
     enum class SymbolScopeType {
+        // ...
         eGlobal,
+
+        // ...
         eMaterial,
+
+        // Should scope resources which may be expose under circumstances,
+        //  but are treated as local to the exposing instance.
         eLocal,
+
+        // Should scope resources which are spread out, but should only be touched
+        //  by the emitted procedures related to a unique effect.
+        eEffectInternal,
+
+        /**/
         eUserDefined
     };
 

@@ -4,10 +4,12 @@
 #include <Engine.Common/Optional.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 #include "__fwd.hpp"
 
 #include "Stage/Stage.hpp"
+#include "Symbol/Symbol.hpp"
 
 namespace hg::engine::gfx::acc {
     class AccelerationEffect {

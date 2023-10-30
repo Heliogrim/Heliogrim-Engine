@@ -2,6 +2,7 @@
 
 namespace hg::engine::gfx::acc {
     class AccelerationEffect;
+    class AccelerationPipeline;
     class AccelerationPass;
     class Stage;
     class StageDerivat;

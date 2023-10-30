@@ -19,9 +19,6 @@
     <Filter Include="Quelldateien\Pass">
       <UniqueIdentifier>{de25ce12-7532-4e19-9563-9711bcc2232c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Pass\Layout">
-      <UniqueIdentifier>{c862a59e-cdb7-4ff3-ac76-c2ffc86ffda5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Symbol">
       <UniqueIdentifier>{c01e3002-6bf9-41a3-ad84-b87fc12805fe}</UniqueIdentifier>
     </Filter>
@@ -31,64 +28,28 @@
     <Filter Include="Quelldateien\Stage">
       <UniqueIdentifier>{86371c02-32ac-423d-b407-3e91aa8a6a16}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Command">
+      <UniqueIdentifier>{97e0c5d1-2fb8-4641-a3a1-72c4ea79c2eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Pipeline">
+      <UniqueIdentifier>{5defdfb1-2dd7-4d6e-9de6-1469d5046351}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Pipeline\Layout">
+      <UniqueIdentifier>{26479787-ed88-4641-9440-f71cfc73154a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Pipeline">
+      <UniqueIdentifier>{e2dc3c38-51f6-480e-93dd-3cbb7e9d09be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationPass.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationPipeline.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Acc\__fwd.hpp">
       <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\ComputePass.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\GraphicsPass.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\RaytracingPass.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\MeshPass.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkComputePass.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkGraphicsPass.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkMeshPass.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkRaytracingPass.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxComputePass.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxGraphicsPass.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxMeshPass.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\DxRaytracingPass.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\GraphicsSpec.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationSpecification.hpp">
-      <Filter>Headerdateien\Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\Layout\AccelerationPassBindings.hpp">
-      <Filter>Headerdateien\Pass\Layout</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\Layout\AccelerationBindingLayout.hpp">
-      <Filter>Headerdateien\Pass\Layout</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Acc\DataBindingMode.hpp">
       <Filter>Headerdateien</Filter>
@@ -138,19 +99,88 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\DataIoMode.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Command\CommandBuffer.hpp">
+      <Filter>Headerdateien\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\Layout\AccelerationBindingLayout.hpp">
+      <Filter>Headerdateien\Pipeline\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\Layout\AccelerationPassBindings.hpp">
+      <Filter>Headerdateien\Pipeline\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\AccelerationSpecification.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\ComputePipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\DxComputePipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\DxGraphicsPipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\DxMeshPipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\DxRaytracingPipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\GraphicsPipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\GraphicsSpec.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\MeshPipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\RaytracingPipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\VkComputePipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\VkGraphicsPipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\VkMeshPipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\VkRaytracingPipeline.hpp">
+      <Filter>Headerdateien\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationPass.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\ComputePass.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\GraphicsPass.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkGraphicsPass.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationPassFactory.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\MeshPass.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\RaytracingPass.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationPassFactory.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationPass.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationPipeline.cpp">
       <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\VkGraphicsPass.cpp">
-      <Filter>Quelldateien\Pass</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\GraphicsPass.cpp">
-      <Filter>Quelldateien\Pass</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Acc\Stage\Stage.cpp">
       <Filter>Quelldateien\Stage</Filter>
@@ -160,6 +190,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Acc\Stage\StageModule.cpp">
       <Filter>Quelldateien\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\Pipeline\GraphicsPipeline.cpp">
+      <Filter>Quelldateien\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\Pipeline\VkGraphicsPipeline.cpp">
+      <Filter>Quelldateien\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationPassFactory.cpp">
+      <Filter>Quelldateien\Pass</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

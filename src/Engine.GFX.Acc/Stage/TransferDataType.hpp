@@ -8,6 +8,8 @@ namespace hg::engine::gfx::acc {
         eU16,
         eU32,
         eU64,
+        eF16,
+        eF32,
         /**/
         eU8Vec2,
         eU16Vec2,

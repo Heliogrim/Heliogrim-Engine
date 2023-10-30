@@ -1,10 +1,8 @@
 #pragma once
-
-#include <Engine.Common/Meta/Constexpr.hpp>
-#include <Engine.GFX/API/__vkFwd.hpp>
-#include <Engine.Reflect/CompileTypeId.hpp>
-
 #include "GraphicsPass.hpp"
+
+#include <Engine.GFX/API/__vkFwd.hpp>
+#include <Engine.GFX/vkinc.hpp>
 
 namespace hg::engine::gfx::acc {
     class VkGraphicsPass final :
@@ -13,31 +11,24 @@ namespace hg::engine::gfx::acc {
         using this_type = VkGraphicsPass;
 
     public:
-        inline static constexpr type_id typeId { force_constexpr<ctid<this_type>()> };
+        constexpr VkGraphicsPass() noexcept = default;
 
-    public:
-        VkGraphicsPass(mref<smr<AccelerationEffect>> effect_);
-
-        ~VkGraphicsPass() override;
-
-    private:
-        void tidy();
-
-    public:
-        void setStageDerivat(const size_t idx_, mref<smr<StageDerivat>> derivat_);
+        constexpr ~VkGraphicsPass() noexcept override = default;
 
     private:
     public:
-        _::VkGraphicsPipelineLayout _vkPipeLayout;
-        _::VkGraphicsPipeline _vkPipe;
+        Vector<vk::AttachmentDescription> _attachments;
+        Vector<vk::AttachmentReference> _references;
+        Vector<vk::SubpassDependency> _dependencies;
+
+        _::VkGraphicsRenderPass _vkGraphicsPass;
+
+    private:
+    public:
+        Vector<u32> _viewMasks;
+        Vector<u32> _correlationMasks;
 
     public:
-        void setVkPipeLayout(mref<_::VkGraphicsPipelineLayout> vkPipeLayout_);
-
-        void setVkPipe(mref<_::VkGraphicsPipeline> vkPipe_);
-
-        // Warning: Temporary
-    public:
-        Vector<_::VkDescriptorSetLayout> _vkDescLayouts;
+        [[nodiscard]] bool compatible(cref<AccelerationPipeline> pipeline_) const noexcept override;
     };
 }
