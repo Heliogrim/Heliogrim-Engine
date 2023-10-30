@@ -49,6 +49,26 @@ namespace hg {
             _externalStorage(nullptr),
             _externalEnd(nullptr) { }
 
+        template <typename InitialType_ = Type_, typename... InitialRest_> requires (Capacity_ == 1uLL)
+        constexpr InlineAutoArray(InitialType_&& value_, InitialRest_&&... rest_) noexcept :
+            _alloc(),
+            _traits(),
+            _inlineStorage(),
+            _inlineEnd(inline_begin()),
+            _externalStorage(nullptr),
+            _externalEnd(nullptr) {
+            inline_emplace_back(_STD forward<InitialType_>(value_));
+            ((inline_emplace_back(_STD forward<InitialRest_>(rest_))), ...);
+        }
+
+        /*
+        // TODO:
+        template <typename Type_ = this_type> requires _STD is_same_v<Type_, this_type>
+        constexpr InlineAutoArray(mref<Type_> other_) noexcept :
+            _alloc(_STD move(other_._alloc)),
+            _traits(_STD move(other_._traits)) {}
+         */
+
         constexpr ~InlineAutoArray() noexcept {
             tidy();
         }
