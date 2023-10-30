@@ -3,6 +3,7 @@
 #include <atomic>
 #include <concepts>
 #include <type_traits>
+#include <xmemory>
 
 #include "__fwd.hpp"
 
@@ -24,6 +25,9 @@ namespace hg {
 
     public:
         constexpr MemoryPointerStorage() noexcept :
+            mem(nullptr) {}
+
+        constexpr MemoryPointerStorage(nullptr_t) noexcept :
             mem(nullptr) {}
 
         MemoryPointerStorage(cref<this_type> other_) :
@@ -155,6 +159,9 @@ namespace hg {
         constexpr MemoryPointerStorage() noexcept :
             mem(nullptr) {}
 
+        constexpr MemoryPointerStorage(nullptr_t) noexcept :
+            mem(nullptr) {}
+
         constexpr MemoryPointerStorage(mem_type value_) noexcept :
             mem(value_) {}
 
@@ -196,7 +203,7 @@ namespace hg {
 
     public:
         template <typename... Args_> requires _STD is_constructible_v<Ty_, Args_...>
-        void allocateWith(allocator_type&& allocator_, Args_&&... args_) {
+        constexpr void allocateWith(allocator_type&& allocator_, Args_&&... args_) {
 
             auto* nextSnapshot = allocator_.allocate(1);
             _STD construct_at<Ty_, Args_...>(nextSnapshot, _STD forward<Args_>(args_)...);
@@ -205,7 +212,7 @@ namespace hg {
         }
 
         template <typename... Args_> requires _STD is_constructible_v<Ty_, Args_...>
-        void allocate(Args_&&... args_) {
+        constexpr void allocate(Args_&&... args_) {
             allocateWith<Args_...>(allocator_type {}, _STD forward<Args_>(args_)...);
         }
 
@@ -237,12 +244,12 @@ namespace hg {
         }
 
         template <typename Tx_ = Ty_>
-        Tx_* const load() const noexcept {
+        constexpr Tx_* const load() const noexcept {
             return mem;
         }
 
         template <typename Tx_ = Ty_> requires (not _STD is_const_v<Ty_>)
-        Tx_* const load() noexcept {
+        constexpr Tx_* const load() noexcept {
             return mem;
         }
 
@@ -258,7 +265,7 @@ namespace hg {
         }
 
         template <typename Ptx_ = Ty_*> requires _STD is_convertible_v<Ptx_, Ty_*>
-        [[nodiscard]] Ty_* exchange(Ptx_&& next_) {
+        [[nodiscard]] constexpr Ty_* exchange(Ptx_&& next_) {
             return _STD exchange(mem, _STD forward<Ptx_>(next_));
         }
 
@@ -424,6 +431,9 @@ namespace hg {
         constexpr NonOwningMemoryPointer() noexcept :
             storage() { }
 
+        constexpr NonOwningMemoryPointer(nullptr_t) noexcept :
+            storage(nullptr) {}
+
         template <
             typename Tx_ = Ty_,
             typename AllocType_ = typename StorageType_::allocator_type,
@@ -547,20 +557,20 @@ namespace hg {
         }
 
     public:
-        [[nodiscard]] bool operator!() const noexcept {
+        [[nodiscard]] constexpr bool operator!() const noexcept {
             return storage.template load<Ty_>() == nullptr;
         }
 
-        [[nodiscard]] operator bool() const noexcept {
+        [[nodiscard]] constexpr operator bool() const noexcept {
             return storage.template load<Ty_>() != nullptr;
         }
 
     public:
-        [[nodiscard]] bool operator==(nullptr_t) const noexcept {
+        [[nodiscard]] constexpr bool operator==(nullptr_t) const noexcept {
             return storage.template load<Ty_>() == nullptr;
         }
 
-        [[nodiscard]] bool operator!=(nullptr_t) const noexcept {
+        [[nodiscard]] constexpr bool operator!=(nullptr_t) const noexcept {
             return storage.template load<Ty_>() != nullptr;
         }
 
