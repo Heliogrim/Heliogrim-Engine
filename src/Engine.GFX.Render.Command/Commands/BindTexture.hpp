@@ -45,6 +45,6 @@ namespace hg::engine::gfx::render::cmd {
         } _texture;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) noexcept override;
+        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
     };
 }

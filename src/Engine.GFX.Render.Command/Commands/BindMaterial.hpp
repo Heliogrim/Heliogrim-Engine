@@ -27,10 +27,11 @@ namespace hg::engine::gfx::render::cmd {
         constexpr ~BindMaterialRenderCommand() noexcept = default;
 
     private:
+    public:
         const MaterialIdentifier _identifier;
         const ptr<const material::Material> _material;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) noexcept override;
+        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
     };
 }

@@ -3,10 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "../RenderCommand.hpp"
-
-namespace hg::engine::gfx {
-    class Mesh;
-}
+#include "__fwd.hpp"
 
 namespace hg::engine::gfx::render::cmd {
     class BindStaticMeshRenderCommand :
@@ -22,9 +19,10 @@ namespace hg::engine::gfx::render::cmd {
         constexpr ~BindStaticMeshRenderCommand() noexcept = default;
 
     private:
+    public:
         const ptr<const Mesh> _staticMesh;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) noexcept override;
+        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
     };
 }

@@ -22,9 +22,10 @@ namespace hg::engine::gfx::render::cmd {
         constexpr ~BindSkeletalMeshRenderCommand() noexcept = default;
 
     private:
+    public:
         const ptr<const Mesh> _skeletalMesh;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) noexcept override;
+        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
     };
 }

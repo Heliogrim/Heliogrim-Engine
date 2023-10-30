@@ -34,6 +34,6 @@ namespace hg::engine::gfx::render::cmd {
         const bool _indexedPrimitive;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) noexcept override;
+        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
     };
 }

@@ -20,9 +20,10 @@ namespace hg::engine::gfx::render::cmd {
         constexpr ~BindIndexBufferRenderCommand() noexcept = default;
 
     private:
+    public:
         const ptr<const IndexBufferView> _indexView;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) noexcept override;
+        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
     };
 }
