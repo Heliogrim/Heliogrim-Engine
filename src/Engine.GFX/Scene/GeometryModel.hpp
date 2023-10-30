@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Common/Collection/CompactArray.hpp>
 #include <Engine.GFX.Loader/Material/MaterialResource.hpp>
-#include <Engine.GFX.RenderPipeline/__fwd.hpp>
+#include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 
 #include "SceneNodeModel.hpp"
 
@@ -29,6 +29,6 @@ namespace hg::engine::gfx {
         [[nodiscard]] virtual cref<smr<MaterialResource>> material(const u32 index_) const noexcept;
 
     public:
-        virtual void render(mref<nmpt<render::pipeline::IGCommandBuffer>> cmd_) const = 0;
+        virtual void render(mref<nmpt<render::cmd::RenderCommandBuffer>> cmd_) const = 0;
     };
 }

@@ -1,9 +1,10 @@
 #include "SkeletalGeometryModel.hpp"
 
-#include <Engine.GFX.RenderPipeline/Invocation/IGCommandBuffer.hpp>
+#include <Engine.Common/Math/Convertion.hpp>
+#include <Engine.GFX.Render.Command/Commands/BindMaterial.hpp>
 #include <Heliogrim/StaticGeometryComponent.hpp>
 
-using namespace hg::engine::gfx::render::pipeline;
+using namespace hg::engine::gfx::render;
 using namespace hg::engine::gfx;
 using namespace hg;
 
@@ -37,12 +38,22 @@ void SkeletalGeometryModel::destroy(const ptr<scene::Scene> scene_) {
 
 }
 
-void SkeletalGeometryModel::render(mref<nmpt<IGCommandBuffer>> cmd_) const {
+void SkeletalGeometryModel::render(mref<nmpt<render::cmd::RenderCommandBuffer>> cmd_) const {
 
-    cmd_->bindVertexBuffer(nullptr);
-    cmd_->bindIndexBuffer(nullptr);
+    const auto worldTransform = _owner->getWorldTransform();
+    const auto pos = math::mat4::make_identity().translate(worldTransform.location().operator math::vec3());
+    const auto rotation = math::as<math::quaternion, math::mat4>(worldTransform.rotator().quaternion());
+    const auto scale = math::mat4::make_identity().unchecked_scale(worldTransform.scale());
 
-    cmd_->bindStorage(nullptr);
+    for (const auto& material : _overrideMaterials) {
 
-    cmd_->drawIndexed(0uL, 0uL);
+        const auto guard = material->acquire(resource::ResourceUsageFlag::eRead);
+        cmd_->bindMaterial(MaterialIdentifier {}, guard.imm());
+    }
+
+    const auto meshGuard = _skeletalGeometryResource->acquire(resource::ResourceUsageFlag::eRead);
+    cmd_->bindSkeletalMesh(meshGuard.imm());
+
+    cmd_->bindSkeletalMeshInstance(nullptr /*pos * rotation * scale*/, nullptr);
+    cmd_->drawSkeletalMeshIdx(1uL, 0uL, meshGuard->indices()->size(), 0uL);
 }
