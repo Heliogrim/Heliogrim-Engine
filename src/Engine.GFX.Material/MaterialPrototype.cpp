@@ -56,6 +56,19 @@ bool MaterialPrototype::addParameter(mref<MaterialPrototypeParameter> param_) {
     return true;
 }
 
+tl::optional<cref<MaterialPrototypeParameter>> MaterialPrototype::getParameter(string_view uniqueName_) const noexcept {
+
+    const auto it = _STD ranges::find_if(
+        _parameters,
+        [uniqueName_](const auto& param_) {
+            return param_.getUniqueName() == uniqueName_;
+        }
+    );
+
+    using opt_type = tl::optional<cref<MaterialPrototypeParameter>>;
+    return it != _parameters.end() ? opt_type { *it } : opt_type {};
+}
+
 bool MaterialPrototype::removeParameter(string_view uniqueName_) {
 
     const auto range = _STD ranges::remove(
