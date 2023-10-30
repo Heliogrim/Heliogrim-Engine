@@ -4,18 +4,18 @@
 #include <Engine.GFX/API/__vkFwd.hpp>
 #include <Engine.Reflect/CompileTypeId.hpp>
 
-#include "MeshPass.hpp"
+#include "RaytracingPipeline.hpp"
 
 namespace hg::engine::gfx::acc {
-    class VkMeshPass final :
-        public MeshPass {
+    class VkRaytracingPipeline final :
+        public RaytracingPipeline {
     public:
-        using this_type = VkMeshPass;
+        using this_type = VkRaytracingPipeline;
 
     public:
         inline static constexpr type_id typeId { force_constexpr<ctid<this_type>()> };
 
     public:
-        ~VkMeshPass() override = default;
+        ~VkRaytracingPipeline() override = default;
     };
 }

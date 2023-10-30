@@ -4,19 +4,19 @@
 #include <Engine.GFX/API/__vkFwd.hpp>
 #include <Engine.Reflect/CompileTypeId.hpp>
 
-#include "ComputePass.hpp"
+#include "ComputePipeline.hpp"
 
 namespace hg::engine::gfx::acc {
-    class VkComputePass final :
-        public InheritMeta<VkComputePass, ComputePass> {
+    class VkComputePipeline final :
+        public InheritMeta<VkComputePipeline, ComputePipeline> {
     public:
-        using this_type = VkComputePass;
+        using this_type = VkComputePipeline;
 
     public:
         inline static constexpr type_id typeId { force_constexpr<ctid<this_type>()> };
 
     public:
-        ~VkComputePass() override = default;
+        ~VkComputePipeline() override = default;
 
     private:
         void tidy();

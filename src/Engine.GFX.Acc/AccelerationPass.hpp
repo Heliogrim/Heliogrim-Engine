@@ -1,44 +1,19 @@
 #pragma once
-
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/Vector.hpp>
-#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
-
 #include "__fwd.hpp"
-#include "Pass/Layout/AccelerationPassBindings.hpp"
 
 namespace hg::engine::gfx::acc {
-    class AccelerationPass :
+    class __declspec(novtable) AccelerationPass :
         public InheritBase<AccelerationPass> {
     public:
         using this_type = AccelerationPass;
 
-    protected:
-        AccelerationPass(mref<smr<AccelerationEffect>> effect_) noexcept;
+    public:
+        constexpr AccelerationPass() noexcept = default;
+
+        constexpr virtual ~AccelerationPass() noexcept = default;
 
     public:
-        AccelerationPass(mref<this_type> other_) noexcept = delete;
-
-        AccelerationPass(cref<this_type> other_) = delete;
-
-        virtual ~AccelerationPass();
-
-    protected:
-        smr<AccelerationEffect> _effect;
-        Vector<smr<StageDerivat>> _stages;
-
-    public:
-        [[nodiscard]] smr<AccelerationEffect> getEffect() const noexcept;
-
-        [[nodiscard]] cref<Vector<smr<StageDerivat>>> getStageDerivates() const noexcept;
-
-    protected:
-        AccelerationPassBindings _bindings;
-
-    public:
-        [[nodiscard]] cref<AccelerationPassBindings> getPassBindings() const noexcept;
-
-        void setPassBindings(mref<AccelerationPassBindings> bindings_);
+        [[nodiscard]] virtual bool compatible(cref<AccelerationPipeline> pipeline_) const noexcept = 0;
     };
 }
