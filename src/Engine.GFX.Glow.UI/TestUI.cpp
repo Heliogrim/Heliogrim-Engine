@@ -738,7 +738,7 @@ void configureMainViewport(
 
     const auto target { make_sptr<engine::gfx::RenderTarget>() };
     target->use(gfx->getCurrentDevice());
-    target->use(gfx->getRenderer(AssocKey<string>::from("3DRenderer")).get());
+    target->use(gfx->getRenderer("3DRenderer").get());
     target->use(viewport->getSwapchain());
 
     // Error: Will break, because viewport has no swapchain if dimension is zero
