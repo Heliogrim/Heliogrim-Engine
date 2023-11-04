@@ -17,6 +17,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Render\Renderer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render\RenderPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render\__Test__Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Render\InjectGraphRegistry.hpp" />
@@ -24,6 +25,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render\RenderPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render\RenderPassResult.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render\RenderPassState.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render\__Test__Renderer.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
