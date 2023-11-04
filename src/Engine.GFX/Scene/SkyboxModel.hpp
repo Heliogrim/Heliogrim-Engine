@@ -1,7 +1,6 @@
 #pragma once
 #include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
-#include <Engine.GFX.Renderer/__fwd.hpp>
 
 #include "GeometryModel.hpp"
 #include "../Shader/CachedDiscreteBinding.hpp"
@@ -31,11 +30,6 @@ namespace hg::engine::gfx {
         void destroy(const ptr<::hg::engine::scene::Scene> scene_) override final;
 
     public:
-        [[nodiscard]] Vector<render::RenderDataToken> providedToken() const noexcept override;
-
-    public:
-        [[nodiscard]] ptr<cache::ModelBatch> batch(const ptr<render::RenderPassState> state_) override;
-
         void render(mref<nmpt<render::cmd::RenderCommandBuffer>> cmd_) const override;
 
     private:

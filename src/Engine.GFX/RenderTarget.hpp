@@ -1,14 +1,11 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.GFX.Render/Renderer.hpp>
 
 #include "RenderEnqueueResult.hpp"
 #include "vkinc.hpp"
-
-namespace hg::engine::gfx::render {
-    class HORenderPass;
-    class Renderer_Deprecated;
-}
 
 namespace hg::engine::gfx {
     class Camera;
@@ -51,11 +48,11 @@ namespace hg::engine::gfx {
         /**
          * External renderer used to render to this target
          */
-        non_owning_rptr<render::Renderer_Deprecated> _renderer;
-        Vector<ptr<render::HORenderPass>> _passes;
+        nmpt<const render::Renderer> _renderer;
+        Vector<uptr<render::RenderPass>> _renderPasses;
 
     public:
-        non_owning_rptr<render::Renderer_Deprecated> use(cref<non_owning_rptr<render::Renderer_Deprecated>> renderer_);
+        nmpt<const render::Renderer> use(mref<nmpt<const render::Renderer>> renderer_);
 
     private:
         /**
@@ -148,7 +145,7 @@ namespace hg::engine::gfx {
          *
          * @blocking
          */
-        const non_owning_rptr<render::HORenderPass> next();
+        nmpt<render::RenderPass> next();
 
         /**
          *

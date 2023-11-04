@@ -1,5 +1,6 @@
 #pragma once
 #include <Engine.Assets/Types/SkeletalGeometry.hpp>
+#include <Engine.GFX.Loader/Geometry/StaticGeometryResource.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
 
 #include "GeometryModel.hpp"

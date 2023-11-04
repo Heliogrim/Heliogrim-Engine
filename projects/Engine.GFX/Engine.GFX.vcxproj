@@ -296,7 +296,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Scene\CameraModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\GeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\LandscapeGeometryModel.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\ModelDataTokens.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SkyboxModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\StaticGeometryBatch.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.hpp" />
