@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\ColorBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\DepthBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\DepthStencilBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SceneView.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\StencilBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\V2F16DataBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\V4F32DataBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfIrradiance.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfLut.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfPrefilter.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredNormal.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredPosition.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneColor.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneDepth.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneStencil.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneView.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\ColorBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\DepthBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\DepthStencilBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SceneView.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\StencilBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\V2F16DataBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\V4F32DataBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfIrradiance.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfLut.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfPrefilter.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredNormal.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredPosition.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneColor.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneDepth.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneStencil.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneView.hpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{a44a97b4-b6ed-4397-b8bf-53220fa663cd}</ProjectGuid>
+    <RootNamespace>Engine_GFX_Render_Predefined</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Engine.Common.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Build.Debug.props" />
+    <Import Project="..\Build.__Any__.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Engine.Common.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Build.Release.props" />
+    <Import Project="..\Build.__Any__.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Engine.Common.props" />
+    <Import Project="..\Engine.__Any__.props" />
+    <Import Project="..\Build.Profiling.props" />
+    <Import Project="..\Build.__Any__.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile />
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile />
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile />
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
