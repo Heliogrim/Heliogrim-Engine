@@ -72,7 +72,7 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
 
         const auto targetFormat = td->_textureFormat.value;
 
-        vk::ImageLayout sourceLayout;
+        vk::ImageLayout sourceLayout = vk::ImageLayout::eUndefined;
         vk::ImageLayout targetLayout;
         vk::AttachmentLoadOp loadOp = vk::AttachmentLoadOp::eClear;
 
@@ -124,11 +124,9 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
             }
         );
 
-        result->_references.push_back(
-            vk::AttachmentReference {
-                attachIndex++,
-                targetLayout
-            }
+        result->_references.emplace_back(
+            attachIndex++,
+            targetLayout
         );
     }
 
@@ -154,7 +152,7 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
 
         vk::ImageLayout sourceLayout;
         vk::ImageLayout targetLayout;
-        const vk::AttachmentLoadOp loadOp = vk::AttachmentLoadOp::eLoad;
+        constexpr vk::AttachmentLoadOp loadOp = vk::AttachmentLoadOp::eLoad;
 
         const auto sourceFormat = td->_textureFormat.value;
 
@@ -191,11 +189,9 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
             }
         );
 
-        result->_references.push_back(
-            vk::AttachmentReference {
-                attachIndex++,
-                targetLayout
-            }
+        result->_references.emplace_back(
+            attachIndex++,
+            targetLayout
         );
     }
 
@@ -243,16 +239,14 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
 
         if (hasColorRef) {
 
-            result->_dependencies.push_back(
-                vk::SubpassDependency {
-                    VK_SUBPASS_EXTERNAL,
-                    0,
-                    vk::PipelineStageFlagBits::eBottomOfPipe,
-                    vk::PipelineStageFlagBits::eColorAttachmentOutput,
-                    vk::AccessFlagBits::eMemoryRead,
-                    vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
-                    vk::DependencyFlagBits::eByRegion
-                }
+            result->_dependencies.emplace_back(
+                VK_SUBPASS_EXTERNAL,
+                0,
+                vk::PipelineStageFlagBits::eBottomOfPipe,
+                vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                vk::AccessFlagBits::eMemoryRead,
+                vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
+                vk::DependencyFlagBits::eByRegion
             );
 
             result->_dependencies.push_back(

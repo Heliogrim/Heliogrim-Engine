@@ -138,6 +138,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationPipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationPassFactory.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\VkGraphicsPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\Pipeline\GraphicsPipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\Pipeline\VkGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\Stage\Stage.cpp" />

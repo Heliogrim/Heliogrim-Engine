@@ -7,8 +7,8 @@ AccelerationEffect::AccelerationEffect(
     mref<Guid> guid_,
     mref<string> name_,
     mref<Vector<smr<Stage>>> stages_,
-    mref<Vector<smr<Symbol>>> importSymbols_,
-    mref<Vector<smr<Symbol>>> exportSymbols_
+    mref<Vector<smr<const Symbol>>> importSymbols_,
+    mref<Vector<smr<const Symbol>>> exportSymbols_
 ) :
     _guid(_STD move(guid_)),
     _name(_STD move(name_)),
@@ -30,11 +30,11 @@ cref<Vector<smr<Stage>>> AccelerationEffect::getStages() const noexcept {
     return _stages;
 }
 
-cref<Vector<smr<Symbol>>> AccelerationEffect::getImportSymbols() const noexcept {
+cref<Vector<smr<const Symbol>>> AccelerationEffect::getImportSymbols() const noexcept {
     return _importSymbols;
 }
 
-cref<Vector<smr<Symbol>>> AccelerationEffect::getExportSymbols() const noexcept {
+cref<Vector<smr<const Symbol>>> AccelerationEffect::getExportSymbols() const noexcept {
     return _exportSymbols;
 }
 

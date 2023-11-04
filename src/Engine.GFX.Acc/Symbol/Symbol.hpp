@@ -17,7 +17,7 @@ namespace hg::engine::gfx::acc {
         string name;
 
     public:
-        smr<render::graph::Description> description;
+        smr<const render::graph::Description> description;
         SymbolFlags flags;
 
     public:

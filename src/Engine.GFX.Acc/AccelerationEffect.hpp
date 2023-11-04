@@ -23,8 +23,8 @@ namespace hg::engine::gfx::acc {
             mref<Guid> guid_,
             mref<string> name_,
             mref<Vector<smr<Stage>>> stages_,
-            mref<Vector<smr<Symbol>>> importSymbols_,
-            mref<Vector<smr<Symbol>>> exportSymbols_
+            mref<Vector<smr<const Symbol>>> importSymbols_,
+            mref<Vector<smr<const Symbol>>> exportSymbols_
         );
 
         ~AccelerationEffect();
@@ -43,15 +43,15 @@ namespace hg::engine::gfx::acc {
 
     private:
         Vector<smr<Stage>> _stages;
-        Vector<smr<Symbol>> _importSymbols;
-        Vector<smr<Symbol>> _exportSymbols;
+        Vector<smr<const Symbol>> _importSymbols;
+        Vector<smr<const Symbol>> _exportSymbols;
 
     public:
         [[nodiscard]] cref<Vector<smr<Stage>>> getStages() const noexcept;
 
-        [[nodiscard]] cref<Vector<smr<Symbol>>> getImportSymbols() const noexcept;
+        [[nodiscard]] cref<Vector<smr<const Symbol>>> getImportSymbols() const noexcept;
 
-        [[nodiscard]] cref<Vector<smr<Symbol>>> getExportSymbols() const noexcept;
+        [[nodiscard]] cref<Vector<smr<const Symbol>>> getExportSymbols() const noexcept;
 
     public:
         [[nodiscard]] Optional<ref<StageInput>> getFirstInputFor(cref<Symbol> symbol_) const noexcept;

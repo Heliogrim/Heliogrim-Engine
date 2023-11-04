@@ -13,7 +13,10 @@ namespace hg::engine::gfx::acc {
     public:
         constexpr VkGraphicsPass() noexcept = default;
 
-        constexpr ~VkGraphicsPass() noexcept override = default;
+        ~VkGraphicsPass() noexcept override;
+
+    private:
+        void tidy();
 
     private:
     public:
