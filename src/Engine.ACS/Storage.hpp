@@ -477,6 +477,9 @@ namespace hg::engine::acs {
         template <bool Const>
         class hybrid_key_value_iterator final {
         public:
+            friend class hybrid_storage<KeyType, ValueType, InvalidKey>;
+
+        public:
             using iterator_key_type = const key_type;
             using iterator_value_type = _STD conditional_t<Const, const value_type, value_type>;
 
@@ -486,7 +489,11 @@ namespace hg::engine::acs {
              * @author Julius
              * @date 02.11.2020
              */
-            hybrid_key_value_iterator() noexcept:
+            constexpr hybrid_key_value_iterator() noexcept:
+                _keys(nullptr),
+                _values(nullptr) {}
+
+            constexpr hybrid_key_value_iterator(nullptr_t) noexcept :
                 _keys(nullptr),
                 _values(nullptr) {}
 
@@ -1361,7 +1368,7 @@ namespace hg::engine::acs {
          */
         template <bool Const>
         class storage_key_value_iterator final {
-        private:
+        public:
             using this_type = storage_key_value_iterator<Const>;
 
             using key_type = KeyType_;
@@ -2144,8 +2151,12 @@ namespace hg::engine::acs {
          * @returns An iterator.
          */
         [[nodiscard]] iterator begin() noexcept {
+            auto pb = _pages.cbegin();
+
+            constexpr auto null_iter = iterator::template storage_page_iterator_type {};
             return iterator {
-                _pages.begin()
+                pb,
+                pb._Unwrapped() != nullptr ? pb->cbegin() : null_iter
             };
         }
 
@@ -2160,9 +2171,10 @@ namespace hg::engine::acs {
         [[nodiscard]] iterator end() noexcept {
             auto pe = _pages.end();
 
+            constexpr auto null_iter = iterator::template storage_page_iterator_type {};
             return iterator {
                 pe,
-                pe->end()
+                pe._Unwrapped() != nullptr ? (--pe)->end() : null_iter
             };
         }
 
@@ -2175,8 +2187,12 @@ namespace hg::engine::acs {
          * @returns A const_iterator.
          */
         [[nodiscard]] const_iterator begin() const noexcept {
+            auto pb = _pages.cbegin();
+
+            constexpr auto null_iter = const_iterator::template storage_page_iterator_type {};
             return const_iterator {
-                _pages.cbegin()
+                pb,
+                pb._Unwrapped() != nullptr ? pb->cbegin() : null_iter
             };
         }
 
@@ -2191,9 +2207,10 @@ namespace hg::engine::acs {
         [[nodiscard]] const_iterator end() const noexcept {
             auto pe = _pages.cend();
 
+            constexpr auto null_iter = const_iterator::template storage_page_iterator_type {};
             return const_iterator {
                 pe,
-                pe->end()
+                pe._Unwrapped() != nullptr ? (--pe)->end() : null_iter
             };
         }
 
@@ -2206,8 +2223,12 @@ namespace hg::engine::acs {
          * @returns A const_iterator.
          */
         [[nodiscard]] const_iterator cbegin() const noexcept {
+            auto pb = _pages.cbegin();
+
+            constexpr auto null_iter = const_iterator::template storage_page_iterator_type {};
             return const_iterator {
-                _pages.cbegin()
+                pb,
+                pb._Unwrapped() != nullptr ? pb->cbegin() : null_iter
             };
         }
 
@@ -2222,9 +2243,10 @@ namespace hg::engine::acs {
         [[nodiscard]] const_iterator cend() const noexcept {
             auto pe = _pages.cend();
 
+            constexpr auto null_iter = const_iterator::template storage_page_iterator_type {};
             return const_iterator {
                 pe,
-                (--pe)->end()
+                pe._Unwrapped() != nullptr ? (--pe)->end() : null_iter
             };
         }
 
