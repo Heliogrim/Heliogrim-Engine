@@ -31,12 +31,6 @@
     <Filter Include="Headerdateien\Relation">
       <UniqueIdentifier>{721ea8c7-1222-4e04-bbd8-2ec0d62895b4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Resolver">
-      <UniqueIdentifier>{fa19dd39-b551-47cb-a96f-ffb350b9f6d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Resolver">
-      <UniqueIdentifier>{5dd71389-8405-47dd-aa10-be3b8e180e46}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\Visitor">
       <UniqueIdentifier>{48e35c28-faee-4275-9a38-4725c5014a0f}</UniqueIdentifier>
     </Filter>
@@ -100,6 +94,9 @@
     <Filter Include="Quelldateien\Component\Runtime">
       <UniqueIdentifier>{ebb72121-d632-47c9-8684-e83c64019fe2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Symbol">
+      <UniqueIdentifier>{ea800086-d3dd-484e-b7fd-d44f1d83363d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\RuntimeGraph.hpp">
@@ -132,35 +129,17 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\ProviderComponent.hpp">
       <Filter>Headerdateien\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\Resolver.hpp">
-      <Filter>Headerdateien\Resolver</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverPass.hpp">
-      <Filter>Headerdateien\Resolver</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverOptions.hpp">
-      <Filter>Headerdateien\Resolver</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\test.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\BuilderVisitor.hpp">
       <Filter>Headerdateien\Builder</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverVisitor.hpp">
-      <Filter>Headerdateien\Resolver</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\Builder.hpp">
       <Filter>Headerdateien\Builder</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Debug\DebugVisitor.hpp">
       <Filter>Headerdateien\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverValidationPass.hpp">
-      <Filter>Headerdateien\Resolver</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverValidationVisitor.hpp">
-      <Filter>Headerdateien\Resolver</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\Description.hpp">
       <Filter>Headerdateien\Relation</Filter>
@@ -300,6 +279,21 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\SceneCommandRecordComponent.hpp">
       <Filter>Headerdateien\Components\Runtime</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\ImmutableCommandRecordComponent.hpp">
+      <Filter>Headerdateien\Components\Compile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\ImmutableCommandRecordComponent.hpp">
+      <Filter>Headerdateien\Components\Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Pass\IterationPass.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Pass\ResolvePass.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Pass\ExecutionPass.hpp">
+      <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RuntimeGraph.cpp">
@@ -326,12 +320,6 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\ProviderComponent.cpp">
       <Filter>Quelldateien\Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\Resolver.cpp">
-      <Filter>Quelldateien\Resolver</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverPass.cpp">
-      <Filter>Quelldateien\Resolver</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Visitor\Visitor.cpp">
       <Filter>Quelldateien\Visitor</Filter>
     </ClCompile>
@@ -343,15 +331,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Debug\DebugVisitor.cpp">
       <Filter>Quelldateien\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverValidationPass.cpp">
-      <Filter>Quelldateien\Resolver</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverValidationVisitor.cpp">
-      <Filter>Quelldateien\Resolver</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Resolver\ResolverVisitor.cpp">
-      <Filter>Quelldateien\Resolver</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\TextureDescription.cpp">
       <Filter>Quelldateien\Relation</Filter>
@@ -457,6 +436,27 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\ImmutableAccelerationComponent.cpp">
       <Filter>Quelldateien\Component\Runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Symbol\SymbolContext.cpp">
+      <Filter>Quelldateien\Symbol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Symbol\SymbolizedResource.cpp">
+      <Filter>Quelldateien\Symbol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\IterationPassContext.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\ResolvePassContext.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\ExecutionPassContext.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\ImmutableCommandRecordComponent.cpp">
+      <Filter>Quelldateien\Component\Runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\ImmutableCommandRecordComponent.cpp">
+      <Filter>Quelldateien\Component\Compile</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

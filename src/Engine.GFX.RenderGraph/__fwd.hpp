@@ -23,10 +23,6 @@ namespace hg::engine::gfx::render::graph {
     class CompileSubpassMultiAccelComponent;
     class CompileSubpassMaterialAccelComponent;
     /**/
-    class Resolver;
-    struct ResolverOptions;
-    class ResolverPass;
-    /**/
     class Node;
     class AnchorNode;
     class BarrierNode;

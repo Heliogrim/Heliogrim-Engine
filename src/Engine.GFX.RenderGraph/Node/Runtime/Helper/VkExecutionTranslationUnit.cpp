@@ -35,7 +35,7 @@ VkExecutionTranslationUnit::VkExecutionTranslationUnit(mref<uptr<Resolver>> reso
 
 VkExecutionTranslationUnit::~VkExecutionTranslationUnit() noexcept = default;
 
-void VkExecutionTranslationUnit::translate(ptr<cmd::BeginRenderCommand>) noexcept {
+void VkExecutionTranslationUnit::translate(ptr<const cmd::BeginRenderCommand>) noexcept {
     #ifdef _DEBUG
     if (not _inversions.empty()) {
         IM_CORE_ERROR("Failed to validate empty control inversion set while translating render commands.");
@@ -58,38 +58,40 @@ void VkExecutionTranslationUnit::translate(ptr<cmd::BeginRenderCommand>) noexcep
     #endif
 }
 
-void VkExecutionTranslationUnit::translate(ptr<cmd::NextSubpassRenderCommand>) noexcept {
+void VkExecutionTranslationUnit::translate(ptr<const cmd::NextSubpassRenderCommand>) noexcept {
     _inversions.clear();
     _bdctx.indexBuffer.clear();
     _bdctx.vertexBuffer.clear();
 }
 
-void VkExecutionTranslationUnit::translate(ptr<cmd::EndRenderCommand>) noexcept {
+void VkExecutionTranslationUnit::translate(ptr<const cmd::EndRenderCommand>) noexcept {
     _inversions.clear();
     _bdctx.indexBuffer.clear();
     _bdctx.vertexBuffer.clear();
 }
 
 void VkExecutionTranslationUnit::translate(
-    ptr<cmd::BindIndexBufferRenderCommand> cmd_
+    ptr<const cmd::BindIndexBufferRenderCommand> cmd_
 ) noexcept {
     const auto* const indexView = cmd_->_indexView;
     _bdctx.indexBuffer.emplace_back(indexView);
 }
 
 void VkExecutionTranslationUnit::translate(
-    ptr<cmd::BindVertexBufferRenderCommand> cmd_
+    ptr<const cmd::BindVertexBufferRenderCommand> cmd_
 ) noexcept {
     const auto* const vertexView = cmd_->_vertexView;
     _bdctx.vertexBuffer.emplace_back(vertexView);
 }
 
-void VkExecutionTranslationUnit::translate(ptr<cmd::BindMaterialRenderCommand> bindMaterialRenderCommand_) noexcept {
+void VkExecutionTranslationUnit::translate(
+    ptr<const cmd::BindMaterialRenderCommand> bindMaterialRenderCommand_
+) noexcept {
     ExecutionTranslationUnit::translate(bindMaterialRenderCommand_);
 }
 
 void VkExecutionTranslationUnit::translate(
-    ptr<cmd::BindSkeletalMeshRenderCommand> cmd_
+    ptr<const cmd::BindSkeletalMeshRenderCommand> cmd_
 ) noexcept {
 
     const auto* const mesh = cmd_->_skeletalMesh;
@@ -105,7 +107,7 @@ void VkExecutionTranslationUnit::translate(
 }
 
 void VkExecutionTranslationUnit::translate(
-    ptr<cmd::BindStaticMeshRenderCommand> cmd_
+    ptr<const cmd::BindStaticMeshRenderCommand> cmd_
 ) noexcept {
 
     const auto* const mesh = cmd_->_staticMesh;
@@ -121,16 +123,18 @@ void VkExecutionTranslationUnit::translate(
 }
 
 void VkExecutionTranslationUnit::translate(
-    ptr<cmd::BindStorageBufferRenderCommand> bindStorageBufferRenderCommand_
+    ptr<const cmd::BindStorageBufferRenderCommand> bindStorageBufferRenderCommand_
 ) noexcept {
     ExecutionTranslationUnit::translate(bindStorageBufferRenderCommand_);
 }
 
-void VkExecutionTranslationUnit::translate(ptr<cmd::BindTextureRenderCommand> bindTextureRenderCommand_) noexcept {
+void VkExecutionTranslationUnit::translate(
+    ptr<const cmd::BindTextureRenderCommand> bindTextureRenderCommand_
+) noexcept {
     ExecutionTranslationUnit::translate(bindTextureRenderCommand_);
 }
 
-void VkExecutionTranslationUnit::translate(ptr<cmd::DrawMeshRenderCommand> cmd_) noexcept {
+void VkExecutionTranslationUnit::translate(ptr<const cmd::DrawMeshRenderCommand> cmd_) noexcept {
 
     assert(_bdctx.vertexBuffer.size());
     assert(not _inversions.empty());
@@ -274,7 +278,7 @@ void VkExecutionTranslationUnit::translate(ptr<cmd::DrawMeshRenderCommand> cmd_)
 }
 
 void VkExecutionTranslationUnit::translate(
-    ptr<cmd::DrawSkeletalMeshRenderCommand> drawSkeletalMeshRenderCommand_
+    ptr<const cmd::DrawSkeletalMeshRenderCommand> drawSkeletalMeshRenderCommand_
 ) noexcept {
     ExecutionTranslationUnit::translate(drawSkeletalMeshRenderCommand_);
 }

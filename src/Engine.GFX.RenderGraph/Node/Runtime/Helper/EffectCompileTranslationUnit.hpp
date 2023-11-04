@@ -105,6 +105,6 @@ namespace hg::engine::gfx::render::graph {
         ) const noexcept;
 
     public:
-        void translate(ptr<cmd::BindMaterialRenderCommand>) noexcept override;
+        void translate(ptr<const cmd::BindMaterialRenderCommand>) noexcept override;
     };
 }

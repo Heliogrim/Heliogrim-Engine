@@ -16,7 +16,7 @@ EffectCompileTranslationUnit::EffectCompileTranslationUnit(
     _resolver(_STD move(resolver_)),
     _aggregator(_STD move(aggregator_)) {}
 
-void EffectCompileTranslationUnit::translate(ptr<cmd::BindMaterialRenderCommand> cmd_) noexcept {
+void EffectCompileTranslationUnit::translate(ptr<const cmd::BindMaterialRenderCommand> cmd_) noexcept {
 
     const auto materialGuid = cmd_->_material->getGuid();
     if (_aggregator->containsMaterial(materialGuid)) {
