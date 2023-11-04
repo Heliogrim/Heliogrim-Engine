@@ -11,16 +11,11 @@
 #include <Engine.Core/Event/WorldAddedEvent.hpp>
 #include <Engine.Core/Event/WorldChangeEvent.hpp>
 #include <Engine.Core/Event/WorldRemoveEvent.hpp>
-#include <Engine.GFX.Glow.3D/Renderer/RevRenderer.hpp>
-#include <Engine.GFX.Glow.UI/Renderer/UIRenderer.hpp>
 #include <Engine.GFX.Loader/Manager.hpp>
 #include <Engine.GFX.Scene/RenderSceneManager.hpp>
 #include <Engine.GFX.Schedule/RenderScenePipeline.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Scheduler/Fiber/Fiber.hpp>
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
-#include <Engine.GFX.Renderer/HORenderPass.hpp>
-#include <Engine.GFX.Renderer/Renderer_Deprecated.hpp>
 
 #include "RenderTarget.hpp"
 #include "todo.h"
@@ -44,10 +39,10 @@
 #include "Swapchain/Swapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
 
-#include "Editor.GFX/Renderer/EdRevRenderer.hpp"
-
 /* Development Testing */
 #include <Engine.GFX.RenderGraph/test.hpp>
+#include <Engine.GFX.Acc.Compile/test.h>
+#include <Engine.GFX.Render/__Test__Renderer.hpp>
 /**/
 
 using namespace hg::engine::gfx;
@@ -153,8 +148,6 @@ void Graphics::unhookEngineState() {
 void Graphics::setup() {
     SCOPED_STOPWATCH
 
-    test_render_graph();
-
     /**
      * Create a new application
      */
@@ -212,18 +205,8 @@ void Graphics::setup() {
      * Create Renderer
      */
     {
-        auto renderer = make_sptr<glow::ui::render::UiRenderer>();
-        renderer->setup(_device);
-
-        _cachedRenderer.insert_or_assign(AssocKey<string>::from("UIRenderer"), _STD move(renderer));
-    }
-
-    {
-        auto renderer = make_sptr<glow::render::RevRenderer>();
-        //auto renderer = make_sptr<hg::editor::gfx::EdRevRenderer>();
-        renderer->setup(_device);
-
-        _cachedRenderer.insert_or_assign(AssocKey<string>::from("3DRenderer"), _STD move(renderer));
+        auto renderer = make_smr<render::TestRenderer>(_cacheCtrl.get(), _device->allocator());
+        _cachedRenderer.insert_or_assign("Test-Renderer", _STD move(renderer));
     }
 
     /**
@@ -271,8 +254,9 @@ void Graphics::destroy() {
     /**
      * Renderer
      */
-    for (const auto& entry : _cachedRenderer) {
-        entry.second->destroy();
+    for (auto&& entry : _cachedRenderer) {
+        entry.second.reset();
+        // TODO: entry.second->destroy();
     }
     _cachedRenderer.clear();
 
@@ -315,20 +299,20 @@ const non_owning_rptr<gfx::cache::GlobalCacheCtrl> Graphics::cacheCtrl() const n
     return _cacheCtrl.get();
 }
 
-sptr<gfx::render::Renderer_Deprecated> Graphics::getRenderer(cref<AssocKey<string>> key_) const {
+smr<gfx::render::Renderer> Graphics::getRenderer(cref<string> key_) const {
     return _cachedRenderer.at(key_);
 }
 
-sptr<gfx::render::Renderer_Deprecated> Graphics::getRenderer(cref<AssocKey<string>> key_, std::nothrow_t) const noexcept {
+smr<gfx::render::Renderer> Graphics::getRenderer(cref<string> key_, std::nothrow_t) const noexcept {
     const auto it { _cachedRenderer.find(key_) };
     return it != _cachedRenderer.end() ? it->second : nullptr;
 }
 
-bool Graphics::hasRenderer(cref<AssocKey<string>> key_) {
+bool Graphics::hasRenderer(cref<string> key_) {
     return _cachedRenderer.contains(key_);
 }
 
-bool Graphics::removeRenderer(cref<AssocKey<string>> key_) {
+bool Graphics::removeRenderer(cref<string> key_) {
     return _cachedRenderer.erase(key_);
 }
 

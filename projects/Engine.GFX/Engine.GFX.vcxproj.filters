@@ -537,9 +537,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Scene\StaticGeometryBatch.hpp">
       <Filter>Headerdateien\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\ModelDataTokens.hpp">
-      <Filter>Headerdateien\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Performance\RenderTokens.hpp">
       <Filter>Headerdateien\Performance</Filter>
     </ClInclude>

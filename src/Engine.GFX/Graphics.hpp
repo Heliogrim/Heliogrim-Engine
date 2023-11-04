@@ -1,11 +1,12 @@
 #pragma once
 
+#include <map>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Collection/AssociativeKey.hpp>
 #include <Engine.Common/Collection/RobinMap.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Core/Module/CoreModule.hpp>
-#include <Engine.GFX.Renderer/__fwd.hpp>
+#include <Engine.GFX.Render/Renderer.hpp>
 
 #include "Application/Application.hpp"
 #include "Cache/__fwd.hpp"
@@ -162,20 +163,20 @@ namespace hg::engine {
         /**
          *
          */
-        RobinMap<AssocKey<string>, sptr<gfx::render::Renderer_Deprecated>> _cachedRenderer;
+        _STD map<string, smr<gfx::render::Renderer>> _cachedRenderer;
 
     public:
-        [[nodiscard]] sptr<gfx::render::Renderer_Deprecated> getRenderer(cref<AssocKey<string>> key_) const;
+        [[nodiscard]] smr<gfx::render::Renderer> getRenderer(cref<string> key_) const;
 
-        [[nodiscard]] sptr<gfx::render::Renderer_Deprecated> getRenderer(
-            cref<AssocKey<string>> key_,
+        [[nodiscard]] smr<gfx::render::Renderer> getRenderer(
+            cref<string> key_,
             _STD nothrow_t
         ) const noexcept;
 
-        [[nodiscard]] bool hasRenderer(cref<AssocKey<string>> key_);
+        [[nodiscard]] bool hasRenderer(cref<string> key_);
 
         [[nodiscard, deprecated("Might create memory leak and not-freeable resources")]] bool removeRenderer(
-            cref<AssocKey<string>> key_
+            cref<string> key_
         );
 
     private:

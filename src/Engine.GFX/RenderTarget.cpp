@@ -1,7 +1,6 @@
 #include "RenderTarget.hpp"
 
-#include <Engine.GFX.Renderer/HORenderPass.hpp>
-#include <Engine.GFX.Renderer/Renderer_Deprecated.hpp>
+#include <Engine.GFX.Render/RenderPass.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.Logging/Logger.hpp>
 
@@ -18,7 +17,7 @@ using namespace hg;
 RenderTarget::RenderTarget() :
     _device(nullptr),
     _renderer(nullptr),
-    _passes(),
+    _renderPasses(),
     _swapchain(nullptr),
     _surface(nullptr),
     _otfImage(),
@@ -28,7 +27,8 @@ RenderTarget::RenderTarget() :
     _onTheFlight(true),
     _syncIdx(0ui32),
     _swapIdx(~0ui32),
-    _swapSignal() {}
+    _swapSignal(),
+    _active(false) {}
 
 RenderTarget::~RenderTarget() {
     tidy();
@@ -41,11 +41,10 @@ void RenderTarget::tidy() {
     /**
      *
      */
-    for (auto* entry : _passes) {
-        _renderer->free(_STD move(entry));
+    for (auto&& renderPass : _renderPasses) {
+        _renderer->free(_STD move(renderPass));
     }
-
-    _passes.clear();
+    _renderPasses.clear();
 
     /**
      *
@@ -74,7 +73,7 @@ cref<sptr<Device>> RenderTarget::device() const noexcept {
     return _device;
 }
 
-non_owning_rptr<render::Renderer_Deprecated> RenderTarget::use(cref<non_owning_rptr<render::Renderer_Deprecated>> renderer_) {
+nmpt<const render::Renderer> RenderTarget::use(mref<nmpt<const render::Renderer>> renderer_) {
     return _STD exchange(_renderer, renderer_);
 }
 
@@ -114,7 +113,7 @@ void RenderTarget::nextSync() {
 }
 
 bool RenderTarget::ready() const noexcept {
-    return _device && _renderer && _swapchain && !_passes.empty();
+    return _device && _renderer && _swapchain && !_renderPasses.empty();
 }
 
 bool RenderTarget::active() const noexcept {
@@ -135,26 +134,19 @@ void RenderTarget::buildPasses(const ptr<scene::SceneView> sceneView_) {
 
     const auto req { _onTheFlight ? 2ui32 : 1ui32 };
 
-    /**
-     *
-     */
-    _passes.reserve(req);
+    /**/
 
-    for (u32 i { 0ui32 }; i < req; ++i) {
-        _passes.push_back(
-            _renderer->allocate(
-                {
-                    _swapchain->at(i),
-                    sceneView_->getScene(),
-                    sceneView_
-                }
-            )
-        );
+    if (_renderer) {
+        _renderPasses.reserve(req);
+
+        for (u32 i = 0; i < req; ++i) {
+            // TODO: Use contextual allocation
+            _renderPasses.push_back(_renderer->allocate());
+        }
     }
 
-    /**
-     *
-     */
+    /**/
+
     if (_onTheFlight) {
 
         _otfImage.resize(req);
@@ -189,25 +181,24 @@ bool RenderTarget::rebuildPasses(cref<non_owning_rptr<Swapchain>> swapchain_) {
      * Block render passes
      */
     if (_enforceCpuGpuSync) {
-        for (u32 tsi { 0ui32 }; tsi < req; ++tsi) {
 
-            auto cpuGpuSync { _passes[tsi]->unsafeSync() };
+        for (u32 i = 0; i < req; ++i) {
 
+            auto cpuGpuSync { _renderPasses[i]->unsafeSync() };
             if (cpuGpuSync) {
                 auto result { _device->vkDevice().waitForFences(1, &cpuGpuSync, VK_TRUE, UINT64_MAX) };
                 // Might fail when one was submitted or pipeline gets dumped/error state
                 assert(result == vk::Result::eSuccess);
             }
-
         }
     }
 
     /**
      *
      */
-    for (u32 tsi { 0ui32 }; tsi < req; ++tsi) {
-        _passes[tsi] = _renderer->reallocate(_STD move(_passes[tsi]), { .target = swapchain_->at(tsi) });
-        assert(_passes[tsi]);
+    for (u32 i = 0; i < req; ++i) {
+        _renderPasses[i] = _renderer->reallocate(_STD move(_renderPasses[i])).first;
+        assert(_renderPasses[i]);
     }
 
     /**
@@ -217,20 +208,17 @@ bool RenderTarget::rebuildPasses(cref<non_owning_rptr<Swapchain>> swapchain_) {
     return true;
 }
 
-const non_owning_rptr<render::HORenderPass> RenderTarget::next() {
-
+nmpt<RenderPass> RenderTarget::next() {
     /**
      * Check for enforced sync behaviour
      */
     if (_enforceCpuGpuSync) {
-
-        auto cpuGpuSync { _passes[_syncIdx]->unsafeSync() };
+        auto cpuGpuSync { _renderPasses[_syncIdx]->unsafeSync() };
 
         if (cpuGpuSync) {
             auto result { _device->vkDevice().waitForFences(1, &cpuGpuSync, VK_TRUE, UINT64_MAX) };
             assert(result == vk::Result::eSuccess);
         }
-
     }
 
     /**
@@ -253,8 +241,7 @@ const non_owning_rptr<render::HORenderPass> RenderTarget::next() {
         /**
          * Get Invocation / Await Last Render
          */
-        auto* pass { _passes[_syncIdx] };
-
+        const auto& pass = _renderPasses[_syncIdx];
         if (!pass->await()) {
             IM_CORE_WARN("Failed to validate await state of render invocation.");
         }
@@ -266,27 +253,29 @@ const non_owning_rptr<render::HORenderPass> RenderTarget::next() {
     /**
      *
      */
-    return _passes[nextIdx];
+    return _renderPasses[nextIdx].get();
 }
 
 void RenderTarget::update() {
 
-    /**
-     * Render
-     */
-    CommandBatch layout {};
+    auto& renderPass = _renderPasses[_syncIdx];
 
     if (_onTheFlight && _swapSignal) {
-        layout.pushBarrier(_swapSignal, vk::PipelineStageFlagBits::eColorAttachmentOutput);
+        renderPass->getTargetWaitSignals().clear();
+        renderPass->getTargetWaitSignalStages().clear();
+
+        renderPass->getTargetWaitSignals().push_back(_swapSignal);
+        renderPass->getTargetWaitSignalStages().push_back(vk::PipelineStageFlagBits::eColorAttachmentOutput);
     }
 
     if (_onTheFlight) {
-        layout.pushSignal(_otfFinish[_syncIdx]);
+        renderPass->getTargetReadySignals().clear();
+        renderPass->getTargetReadySignals().push_back(_otfFinish[_syncIdx]);
     }
 
-    auto* pass { _passes[_syncIdx] };
-    const auto* feedback { _renderer->invoke(pass, layout) };
-    assert(feedback);
+    auto updated = _renderer->update(_STD move(renderPass));
+    (*updated)();
+    _renderPasses[_syncIdx] = _STD move(updated);
 }
 
 RenderEnqueueResult RenderTarget::finish(

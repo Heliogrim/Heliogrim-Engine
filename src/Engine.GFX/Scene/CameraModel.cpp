@@ -1,9 +1,9 @@
 #include "CameraModel.hpp"
 
+#include <Engine.Common/Make.hpp>
 #include <Heliogrim/SceneComponent.hpp>
 #include <Heliogrim/Components/CameraComponent.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
-#include <Engine.GFX.Renderer/RenderDataToken.hpp>
 #include <Engine.Scene/Scene.hpp>
 #include <Engine.Scene/RevScene.hpp>
 
@@ -62,14 +62,6 @@ void CameraModel::update(const ptr<engine::scene::Scene> scene_) {
 
 void CameraModel::destroy(const ptr<engine::scene::Scene> scene_) {
     _sceneView.reset();
-}
-
-Vector<render::RenderDataToken> CameraModel::providedToken() const noexcept {
-    return {};
-}
-
-ptr<cache::ModelBatch> CameraModel::batch(const ptr<render::RenderPassState> state_) {
-    return nullptr;
 }
 
 const non_owning_rptr<scene::SceneView> CameraModel::getSceneView() const noexcept {

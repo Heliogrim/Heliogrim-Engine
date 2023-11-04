@@ -26,11 +26,6 @@ namespace hg::engine::gfx {
 
         void destroy(const ptr<engine::scene::Scene> scene_) override;
 
-    public:
-        [[nodiscard]] Vector<render::RenderDataToken> providedToken() const noexcept override;
-
-        [[nodiscard]] ptr<cache::ModelBatch> batch(const ptr<render::RenderPassState> state_) override;
-
     private:
         uptr<scene::SceneView> _sceneView;
 
