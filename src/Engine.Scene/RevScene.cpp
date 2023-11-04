@@ -1,5 +1,6 @@
 #include "RevScene.hpp"
 
+#include <Engine.Common/Make.hpp>
 #include <Heliogrim/SceneComponent.hpp>
 #include <Engine.GFX/Scene/SceneTag.hpp>
 #include <Engine.GFX/Scene/SceneNodeModel.hpp>

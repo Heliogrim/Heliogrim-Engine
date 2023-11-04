@@ -5,8 +5,8 @@
 #include <Engine.GFX/Scene/SceneTag.hpp>
 #include <Engine.GFX/Scene/StaticGeometryModel.hpp>
 #include <Engine.GFX/Scene/SkyboxModel.hpp>
-#include <Engine.GFX.Glow.UI/Scene/UISceneModel.hpp>
 #include <Engine.GFX/Scene/CameraModel.hpp>
+#include <Engine.Reflow/Scene/UISceneModel.hpp>
 #include <Engine.Scene/RevScene.hpp>
 
 #include "RenderSceneManager.hpp"
@@ -53,7 +53,7 @@ void RenderSceneManager::injectSceneHooks(const ptr<RenderScene> renderScene_) {
         tag,
         UIComponent::typeId,
         [](const ptr<SceneComponent> sc_) {
-            return new glow::ui::UISceneModel(sc_);
+            return new reflow::UISceneModel(sc_);
         }
     );
 }

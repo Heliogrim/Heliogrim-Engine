@@ -290,7 +290,7 @@ sptr<Window> WindowManager::requestWindow(
     target->use(gfx->getCurrentDevice());
     target->use(swapchain.get());
     target->use(surface);
-    target->use(gfx->getRenderer(AssocKey<string>::from("UIRenderer")).get());
+    target->use(gfx->getRenderer("UIRenderer").get());
 
     /**/
 
