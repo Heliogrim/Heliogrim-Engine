@@ -4,6 +4,7 @@
 #include <fstream>
 #include <Engine.GFX.Acc.Compile/VkEffectCompiler.hpp>
 #include <Engine.GFX.Acc/AccelerationEffect.hpp>
+#include <Engine.GFX.Acc/Pass/VkAccelerationPassFactory.hpp>
 
 #include "Spec/SimpleEffectSpecification.hpp"
 
@@ -80,8 +81,8 @@ void hg::test_spirv_compiler() {
         _STD move(guid),
         "",
         Vector<smr<Stage>> { vertex, fragment },
-        Vector<smr<Symbol>> {},
-        Vector<smr<Symbol>> {}
+        Vector<smr<const Symbol>> {},
+        Vector<smr<const Symbol>> {}
     );
 
     const auto profile = make_smr<EffectProfile>(
@@ -93,6 +94,16 @@ void hg::test_spirv_compiler() {
             }
         }
     );
+
+    /**/
+
+    constexpr auto passFactory = VkAccelerationPassFactory();
+    const auto graphicsPass = passFactory.buildGraphicsPass(
+        {},
+        {}
+    ).value();
+
+    /**/
 
     const auto spec = make_smr<SimpleEffectSpecification>(
         Vector<smr<const Symbol>> {}
@@ -108,7 +119,7 @@ void hg::test_spirv_compiler() {
                 .stencilCompareMask = 0ul,
                 .stencilWriteMask = 0ul,
                 .primitiveTopology = PrimitiveTopology::eTriangleList,
-                .renderPass = nmpt<void> {}
+                .pass = graphicsPass.get()
             }
         )
     );
