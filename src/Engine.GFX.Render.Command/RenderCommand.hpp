@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Wrapper.hpp>
+
 namespace hg::engine::gfx::render::cmd {
     class RenderCommandTranslationUnit;
 }

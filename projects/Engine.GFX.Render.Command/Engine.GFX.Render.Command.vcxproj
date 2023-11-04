@@ -18,6 +18,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Buffer\RenderCommandBufferIterator.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Buffer\RenderCommandBufferView.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\Begin.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindEffect.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindIndexBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindMaterial.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindSkeletalMesh.hpp" />
@@ -25,6 +26,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStorageBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindTexture.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindVertexBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatch.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawMesh.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawSkeletalMesh.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\End.hpp" />
@@ -40,6 +42,20 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandTranslationUnit.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\Begin.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindEffect.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindIndexBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindMaterial.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindSkeletalMesh.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStaticMesh.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStorageBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindTexture.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindVertexBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatch.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawMesh.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawSkeletalMesh.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\End.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\NextSubpass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\PooledRenderCommandAllocator.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\PooledRenderCommandBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\RenderCommandPool.cpp" />

@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.GFX/Material/Material.hpp>
+#include <Engine.GFX.Material/Material.hpp>
 
 #include "../RenderCommand.hpp"
 

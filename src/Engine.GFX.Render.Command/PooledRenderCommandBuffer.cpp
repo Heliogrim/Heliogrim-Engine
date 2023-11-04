@@ -3,6 +3,7 @@
 #include <Engine.GFX.Geometry/StaticMeshLayout.hpp>
 
 #include "Commands/Begin.hpp"
+#include "Commands/BindEffect.hpp"
 #include "Commands/BindIndexBuffer.hpp"
 #include "Commands/BindMaterial.hpp"
 #include "Commands/BindSkeletalMesh.hpp"
@@ -10,6 +11,7 @@
 #include "Commands/BindStorageBuffer.hpp"
 #include "Commands/BindTexture.hpp"
 #include "Commands/BindVertexBuffer.hpp"
+#include "Commands\DrawDispatch.hpp"
 #include "Commands/DrawMesh.hpp"
 #include "Commands/DrawSkeletalMesh.hpp"
 #include "Commands/End.hpp"
@@ -28,6 +30,10 @@ void PooledRenderCommandBuffer::nextSubpass() noexcept {
 
 void PooledRenderCommandBuffer::end() noexcept {
     [[maybe_unused]] const auto result = _allocator.allocateCommand<EndRenderCommand>();
+}
+
+void PooledRenderCommandBuffer::bindEffect(const ptr<const acc::AccelerationEffect> effect_) noexcept {
+    [[maybe_unused]] const auto result = _allocator.allocateCommand<BindEffectRenderCommand>(_STD move(effect_));
 }
 
 void PooledRenderCommandBuffer::bindMaterial(
@@ -212,6 +218,20 @@ void PooledRenderCommandBuffer::drawStaticMeshIdx(
 ) noexcept {
     this_type::drawMeshIdx(
         GetStaticMeshLayout().get(),
+        instanceCount_,
+        instanceOffset_,
+        primitiveCount_,
+        primitiveOffset_
+    );
+}
+
+void PooledRenderCommandBuffer::drawDispatch(
+    u32 instanceCount_,
+    u32 instanceOffset_,
+    u32 primitiveCount_,
+    u32 primitiveOffset_
+) noexcept {
+    [[maybe_unused]] const auto result = _allocator.allocateCommand<DrawDispatchRenderCommand>(
         instanceCount_,
         instanceOffset_,
         primitiveCount_,

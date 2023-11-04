@@ -19,6 +19,9 @@
     <Filter Include="Headerdateien\Buffer">
       <UniqueIdentifier>{a3beb3b2-d108-4f97-8cc8-c217c4eedf28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Commands">
+      <UniqueIdentifier>{6deb977f-b4a0-4a13-bc6b-a59ca9c1683b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandBuffer.hpp">
@@ -90,6 +93,12 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandTranslationResult.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindEffect.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatch.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\test.cpp">
@@ -103,6 +112,48 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\RenderCommandPool.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\Begin.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindIndexBuffer.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindMaterial.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindSkeletalMesh.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStaticMesh.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStorageBuffer.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindTexture.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindVertexBuffer.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawMesh.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawSkeletalMesh.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\End.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\NextSubpass.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindEffect.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatch.cpp">
+      <Filter>Quelldateien\Commands</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
