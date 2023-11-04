@@ -4,7 +4,6 @@
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.GFX.RenderGraph/__fwd.hpp>
-#include <Engine.GFX.RenderPipeline/__fwd.hpp>
 #include <Engine.GFX/Cache/__fwd.hpp>
 #include <Engine.GFX/Memory/__fwd.hpp>
 
@@ -22,13 +21,11 @@ namespace hg::engine::gfx::render {
         Renderer(
             mref<Guid> guid_,
             mref<string> name_,
-            u32 runtimeVersion_,
             mref<uptr<graph::CompileGraph>> compileGraph_,
-            mref<smr<graph::Resolver>> baseResolver_,
             mref<smr<graph::InjectGraphRegistry>> injectionRegistry_,
             /**/
-            mref<smr<cache::GlobalCacheCtrl>> globalCache_,
-            mref<smr<memory::GlobalPooledAllocator>> globalGfxAllocator_
+            mref<nmpt<cache::GlobalCacheCtrl>> globalCache_,
+            mref<nmpt<memory::GlobalPooledAllocator>> globalGfxAllocator_
         ) noexcept;
 
         virtual ~Renderer() = default;
@@ -37,32 +34,15 @@ namespace hg::engine::gfx::render {
         Guid _guid;
         string _name;
 
-        _STD atomic_uint_fast32_t _rtVer;
-
         smr<graph::CompileGraph> _compileGraph;
-        smr<graph::Resolver> _baseRes;
-
         smr<graph::InjectGraphRegistry> _injectReg;
 
     private:
-        smr<cache::GlobalCacheCtrl> _globalCache;
-        smr<memory::GlobalPooledAllocator> _globalGfxAlloc;
+        nmpt<cache::GlobalCacheCtrl> _globalCache;
+        nmpt<memory::GlobalPooledAllocator> _globalGfxAlloc;
 
     private:
-        [[nodiscard]] virtual smr<graph::Resolver> makeAdvancedResolver() const;
-
         [[nodiscard]] virtual uptr<graph::RuntimeGraph> makeDefaultRuntimeGraph() const;
-
-        [[nodiscard]] virtual uptr<RenderPipeline> makeRenderPipeline() const;
-
-        [[nodiscard]] virtual uptr<pipeline::State> makePipelineState(
-            mref<nmpt<const RenderPipeline>> pipeline_
-        ) const;
-
-        [[nodiscard]] virtual uptr<pipeline::State> updatePipelineState(
-            mref<nmpt<const RenderPipeline>> pipeline_,
-            mref<uptr<pipeline::State>> state_
-        ) const;
 
     public:
         [[nodiscard]] _Success_(return != nullptr) virtual uptr<class RenderPass> allocate() const;
@@ -75,11 +55,11 @@ namespace hg::engine::gfx::render {
 
     private:
         [[nodiscard]] virtual uptr<RenderPass> updateIncremental(
-            mref<uptr<RenderPass>> pass_,
-            mref<uptr<graph::RuntimeGraph>> nextGraph_
+            mref<uptr<RenderPass>> pass_
         ) const;
 
     public:
-        [[nodiscard]] virtual uptr<RenderPass> updateOnDelta(mref<uptr<RenderPass>> pass_) const;
+        // TODO: Check whether we need this member function, cause we only delegate to internal incremental update
+        [[nodiscard]] virtual uptr<RenderPass> update(mref<uptr<RenderPass>> pass_) const;
     };
 }

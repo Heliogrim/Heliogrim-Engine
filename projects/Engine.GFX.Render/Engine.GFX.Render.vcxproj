@@ -23,6 +23,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render\Renderer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render\RenderPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render\RenderPassResult.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render\RenderPassState.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
