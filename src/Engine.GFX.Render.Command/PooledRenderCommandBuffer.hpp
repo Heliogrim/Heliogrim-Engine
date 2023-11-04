@@ -34,6 +34,9 @@ namespace hg::engine::gfx::render::cmd {
         void end() noexcept override;
 
     public:
+        void bindEffect(const ptr<const acc::AccelerationEffect> effect_) noexcept override;
+
+    public:
         void bindMaterial(
             mref<MaterialIdentifier> identifier_,
             const ptr<const material::Material> material_
@@ -100,6 +103,13 @@ namespace hg::engine::gfx::render::cmd {
 
         void drawMeshIdx(
             const ptr<const MeshDescription> meshDescription_,
+            u32 instanceCount_,
+            u32 instanceOffset_,
+            u32 primitiveCount_,
+            u32 primitiveOffset_
+        ) noexcept override;
+
+        void drawDispatch(
             u32 instanceCount_,
             u32 instanceOffset_,
             u32 primitiveCount_,

@@ -5,6 +5,8 @@ namespace hg::engine::gfx::render::cmd {
     class NextSubpassRenderCommand;
     class EndRenderCommand;
     /**/
+    class BindEffectRenderCommand;
+    /**/
     class BindIndexBufferRenderCommand;
     class BindMaterialRenderCommand;
     class BindSkeletalMeshRenderCommand;
@@ -15,6 +17,7 @@ namespace hg::engine::gfx::render::cmd {
     /**/
     class DrawMeshRenderCommand;
     class DrawSkeletalMeshRenderCommand;
+    class DrawDispatchRenderCommand;
 }
 
 /* Forwarded Resource Declarations */

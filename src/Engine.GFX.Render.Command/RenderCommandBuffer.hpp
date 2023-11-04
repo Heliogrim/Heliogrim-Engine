@@ -16,6 +16,10 @@ namespace hg::engine::gfx {
     using MeshDescription = ::hg::engine::gfx::render::graph::MeshDescription;
 }
 
+namespace hg::engine::gfx::acc {
+    class AccelerationEffect;
+}
+
 namespace hg::engine::gfx::material {
     class Material;
 }
@@ -37,6 +41,9 @@ namespace hg::engine::gfx::render::cmd {
         virtual void nextSubpass() noexcept = 0;
 
         virtual void end() noexcept = 0;
+
+    public:
+        virtual void bindEffect(const ptr<const acc::AccelerationEffect> effect_) noexcept = 0;
 
     public:
         virtual void bindMaterial(
@@ -148,5 +155,12 @@ namespace hg::engine::gfx::render::cmd {
                 primitiveOffset_
             );
         }
+
+        virtual void drawDispatch(
+            u32 instanceCount_,
+            u32 instanceOffset_,
+            u32 primitiveCount_,
+            u32 primitiveOffset_
+        ) noexcept = 0;
     };
 }
