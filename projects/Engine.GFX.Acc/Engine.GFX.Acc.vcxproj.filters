@@ -200,5 +200,8 @@
     <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationPassFactory.cpp">
       <Filter>Quelldateien\Pass</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\VkGraphicsPass.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
