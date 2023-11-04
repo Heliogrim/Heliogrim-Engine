@@ -1,10 +1,12 @@
 #pragma once
 
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Common/Meta/Constexpr.hpp>
 #include <Engine.GFX/TextureFormat.hpp>
 #include <Engine.GFX/Texture/TextureType.hpp>
 #include <Engine.Reflect/CompileTypeId.hpp>
+#include <Engine.GFX/Texture/__fwd.hpp>
 
 #include "Description.hpp"
 
@@ -44,5 +46,14 @@ namespace hg::engine::gfx::render::graph {
         //DescriptionValue<math::uivec3> _textureExtent;
 
         DescriptionValue<Vector<u32>> _textureMips;
+
+    public:
+        [[nodiscard]] bool isValidTexture(const nmpt<Texture> texture_) const noexcept;
+
+        [[nodiscard]] bool isValidTexture(const nmpt<TextureView> textureView_) const noexcept;
+
+        [[nodiscard]] bool isValidTexture(const nmpt<VirtualTexture> texture_) const noexcept;
+
+        [[nodiscard]] bool isValidTexture(const nmpt<VirtualTextureView> textureView_) const noexcept;
     };
 }

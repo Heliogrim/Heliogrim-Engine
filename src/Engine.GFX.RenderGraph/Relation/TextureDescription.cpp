@@ -60,3 +60,19 @@ bool TextureDescription::isValueCompatible(const non_owning_rptr<const Descripti
 
     return true;
 }
+
+bool TextureDescription::isValidTexture(const nmpt<Texture> texture_) const noexcept {
+    return false;
+}
+
+bool TextureDescription::isValidTexture(const nmpt<TextureView> textureView_) const noexcept {
+    return false;
+}
+
+bool TextureDescription::isValidTexture(const nmpt<VirtualTexture> texture_) const noexcept {
+    return false;
+}
+
+bool TextureDescription::isValidTexture(const nmpt<VirtualTextureView> textureView_) const noexcept {
+    return false;
+}

@@ -41,30 +41,30 @@ namespace hg::engine::gfx::render::graph {
         BoundDispatchContext _bdctx;
 
     public:
-        void translate(ptr<cmd::BeginRenderCommand>) noexcept override;
+        void translate(ptr<const cmd::BeginRenderCommand>) noexcept override;
 
-        void translate(ptr<cmd::NextSubpassRenderCommand>) noexcept override;
+        void translate(ptr<const cmd::NextSubpassRenderCommand>) noexcept override;
 
-        void translate(ptr<cmd::EndRenderCommand>) noexcept override;
-
-    public:
-        void translate(ptr<cmd::BindIndexBufferRenderCommand>) noexcept override;
-
-        void translate(ptr<cmd::BindVertexBufferRenderCommand>) noexcept override;
-
-        void translate(ptr<cmd::BindMaterialRenderCommand>) noexcept override;
-
-        void translate(ptr<cmd::BindSkeletalMeshRenderCommand>) noexcept override;
-
-        void translate(ptr<cmd::BindStaticMeshRenderCommand>) noexcept override;
-
-        void translate(ptr<cmd::BindStorageBufferRenderCommand>) noexcept override;
-
-        void translate(ptr<cmd::BindTextureRenderCommand>) noexcept override;
+        void translate(ptr<const cmd::EndRenderCommand>) noexcept override;
 
     public:
-        void translate(ptr<cmd::DrawMeshRenderCommand>) noexcept override;
+        void translate(ptr<const cmd::BindIndexBufferRenderCommand>) noexcept override;
 
-        void translate(ptr<cmd::DrawSkeletalMeshRenderCommand>) noexcept override;
+        void translate(ptr<const cmd::BindVertexBufferRenderCommand>) noexcept override;
+
+        void translate(ptr<const cmd::BindMaterialRenderCommand>) noexcept override;
+
+        void translate(ptr<const cmd::BindSkeletalMeshRenderCommand>) noexcept override;
+
+        void translate(ptr<const cmd::BindStaticMeshRenderCommand>) noexcept override;
+
+        void translate(ptr<const cmd::BindStorageBufferRenderCommand>) noexcept override;
+
+        void translate(ptr<const cmd::BindTextureRenderCommand>) noexcept override;
+
+    public:
+        void translate(ptr<const cmd::DrawMeshRenderCommand>) noexcept override;
+
+        void translate(ptr<const cmd::DrawSkeletalMeshRenderCommand>) noexcept override;
     };
 }
