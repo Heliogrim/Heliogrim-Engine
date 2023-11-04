@@ -108,17 +108,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStage.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStageNode.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UIRenderer.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Scene\UISceneModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\TestUI.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStage.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStageNode.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UIRenderer.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Scene\UISceneModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\TestUI.cpp" />
   </ItemGroup>
   <ItemGroup>

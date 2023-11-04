@@ -13,57 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Headerdateien\Renderer">
-      <UniqueIdentifier>{9d6f80cc-fc1e-467b-810d-9e347638dc08}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Renderer">
-      <UniqueIdentifier>{96242e1d-c90c-417e-b262-b5e036135557}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headerdateien\Renderer\State">
-      <UniqueIdentifier>{40208761-378f-4605-9242-f6240c2a8003}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Renderer\State">
-      <UniqueIdentifier>{1f45301a-33d0-44ff-9963-cdb03190af03}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headerdateien\Scene">
-      <UniqueIdentifier>{57e01eb2-b32e-4db9-8290-46d710c5ed38}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Scene">
-      <UniqueIdentifier>{e5bca47f-ec6d-4b05-ad68-ab29c5d7a4aa}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UIRenderer.hpp">
-      <Filter>Headerdateien\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStage.hpp">
-      <Filter>Headerdateien\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStageNode.hpp">
-      <Filter>Headerdateien\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\Scene\UISceneModel.hpp">
-      <Filter>Headerdateien\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Glow.UI\TestUI.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UIRenderer.cpp">
-      <Filter>Quelldateien\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStage.cpp">
-      <Filter>Quelldateien\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Renderer\UiMainStageNode.cpp">
-      <Filter>Quelldateien\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\TestUI.cpp">
       <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Glow.UI\Scene\UISceneModel.cpp">
-      <Filter>Quelldateien\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
