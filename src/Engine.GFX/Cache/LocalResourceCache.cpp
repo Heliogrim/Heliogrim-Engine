@@ -7,13 +7,13 @@ using namespace hg::engine::gfx::cache;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-LocalResourceCache::LocalResourceCache(const non_owning_rptr<GlobalCacheCtrl> global_) :
+LocalResourceCache::LocalResourceCache(const nmpt<GlobalCacheCtrl> global_) :
     _global(global_),
     _caches(),
     _shifting({ &_caches.front(), &_caches.back() }) {}
 
 LocalResourceCache::LocalResourceCache(mref<this_type> other_) noexcept :
-    _global(other_._global),
+    _global(_STD move(other_._global)),
     _caches(_STD move(other_._caches)),
     _shifting({ &_caches.front(), &_caches.back() }) {}
 

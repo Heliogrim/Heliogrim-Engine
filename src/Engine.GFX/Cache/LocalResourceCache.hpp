@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "__fwd.hpp"
 #include "TransientCache.hpp"
@@ -14,7 +15,7 @@ namespace hg::engine::gfx::cache {
         using this_type = LocalResourceCache;
 
     public:
-        LocalResourceCache(const non_owning_rptr<GlobalCacheCtrl> global_);
+        LocalResourceCache(const nmpt<GlobalCacheCtrl> global_);
 
         LocalResourceCache(cref<this_type>) = delete;
 
@@ -31,7 +32,7 @@ namespace hg::engine::gfx::cache {
         void tidy();
 
     private:
-        non_owning_rptr<GlobalCacheCtrl> _global;
+        nmpt<GlobalCacheCtrl> _global;
 
     public:
         void reset();

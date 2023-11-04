@@ -23,7 +23,7 @@ void LocalCacheCtrl::tidy() {
 
 void LocalCacheCtrl::reset(const bool fully_) {
 
-    auto* global { _cache->_global };
+    auto global { _cache->_global };
 
     /**
      * Reset all texture marks

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "Allocator.hpp"
 #include "MemoryCache.hpp"
@@ -13,7 +14,7 @@ namespace hg::engine::gfx::memory {
         using this_type = LocalPooledAllocator;
 
     public:
-        LocalPooledAllocator(const ptr<GlobalPooledAllocator> global_) noexcept;
+        LocalPooledAllocator(const nmpt<GlobalPooledAllocator> global_) noexcept;
 
         ~LocalPooledAllocator() override;
 
@@ -21,7 +22,7 @@ namespace hg::engine::gfx::memory {
         void tidy();
 
     private:
-        ptr<GlobalPooledAllocator> _global;
+        nmpt<GlobalPooledAllocator> _global;
 
     private:
         MemoryCache _cache;

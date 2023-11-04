@@ -7,7 +7,7 @@
 using namespace hg::engine::gfx::memory;
 using namespace hg;
 
-LocalPooledAllocator::LocalPooledAllocator(const ptr<GlobalPooledAllocator> global_) noexcept :
+LocalPooledAllocator::LocalPooledAllocator(const nmpt<GlobalPooledAllocator> global_) noexcept :
     Allocator(),
     _global(global_),
     _cache() {}
