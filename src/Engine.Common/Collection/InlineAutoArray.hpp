@@ -49,7 +49,10 @@ namespace hg {
             _externalStorage(nullptr),
             _externalEnd(nullptr) { }
 
-        template <typename InitialType_ = Type_, typename... InitialRest_> requires (Capacity_ == 1uLL)
+        template <typename InitialType_ = Type_, typename... InitialRest_> requires
+            (Capacity_ == 1uLL) &&
+            _STD is_nothrow_move_constructible_v<Type_> &&
+            _STD is_constructible_v<Type_, InitialType_>
         constexpr InlineAutoArray(InitialType_&& value_, InitialRest_&&... rest_) noexcept :
             _alloc(),
             _traits(),
@@ -285,7 +288,11 @@ namespace hg {
                 return false;
             }
 
-            _traits.construct(_alloc, _inlineEnd, _STD forward<decltype(args_)>(args_)...);
+            _traits.template construct<Type_, decltype(args_)...>(
+                _alloc,
+                _inlineEnd,
+                _STD forward<decltype(args_)>(args_)...
+            );
             return ++_inlineEnd;
         }
 
@@ -404,6 +411,10 @@ namespace hg {
         }
 
     public:
+        [[nodiscard]] constexpr bool empty() const noexcept {
+            return size() == 0;
+        }
+
         [[nodiscard]] constexpr size_type size() const noexcept {
             return inline_size() + external_size();
         }
