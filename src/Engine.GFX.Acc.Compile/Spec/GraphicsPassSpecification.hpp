@@ -32,6 +32,6 @@ namespace hg::engine::gfx::acc {
 
         // TODO: Remove, because this is just vk requirement
         //smr<pipeline::LORenderPass> renderPass;
-        nmpt<GraphicsPass> pass;
+        nmpt<const GraphicsPass> pass;
     };
 }

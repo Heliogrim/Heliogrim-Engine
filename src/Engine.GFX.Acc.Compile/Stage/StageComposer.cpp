@@ -158,7 +158,7 @@ Vector<smr<StageDerivat>> StageComposer::compose(
         const auto& imported = targetPass_->getEffect()->getImportSymbols();
         const auto& exported = targetPass_->getEffect()->getExportSymbols();
 
-        smr<Symbol> symbol { nullptr };
+        smr<const Symbol> symbol { nullptr };
         if (symbol.empty()) {
             for (const auto& is : imported) {
 
