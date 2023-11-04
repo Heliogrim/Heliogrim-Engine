@@ -24,12 +24,6 @@
     <ClInclude Include="..\..\src\Editor.GFX\Graphics.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Editor.GFX\Renderer\EdPostCompStage.hpp">
-      <Filter>Headerdateien\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Editor.GFX\Renderer\EdGridNode.hpp">
-      <Filter>Headerdateien\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Editor.GFX\Renderer\EdRevRenderer.hpp">
       <Filter>Headerdateien\Renderer</Filter>
     </ClInclude>
@@ -37,12 +31,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.GFX\Graphics.cpp">
       <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Editor.GFX\Renderer\EdPostCompStage.cpp">
-      <Filter>Quelldateien\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Editor.GFX\Renderer\EdGridNode.cpp">
-      <Filter>Quelldateien\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Editor.GFX\Renderer\EdRevRenderer.cpp">
       <Filter>Quelldateien\Renderer</Filter>

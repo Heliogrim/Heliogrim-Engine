@@ -16,14 +16,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Editor.GFX\Graphics.hpp" />
-    <ClInclude Include="..\..\src\Editor.GFX\Renderer\EdGridNode.hpp" />
-    <ClInclude Include="..\..\src\Editor.GFX\Renderer\EdPostCompStage.hpp" />
     <ClInclude Include="..\..\src\Editor.GFX\Renderer\EdRevRenderer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.GFX\Graphics.cpp" />
-    <ClCompile Include="..\..\src\Editor.GFX\Renderer\EdGridNode.cpp" />
-    <ClCompile Include="..\..\src\Editor.GFX\Renderer\EdPostCompStage.cpp" />
     <ClCompile Include="..\..\src\Editor.GFX\Renderer\EdRevRenderer.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
