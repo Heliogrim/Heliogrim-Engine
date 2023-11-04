@@ -1,6 +1,5 @@
 #pragma once
 #include <Engine.GFX/Scene/SceneNodeModel.hpp>
-#include <Engine.GFX.Renderer/__fwd.hpp>
 
 namespace hg::engine::reflow {
     class UISceneModel final :
@@ -22,11 +21,5 @@ namespace hg::engine::reflow {
         void update(const ptr<scene::Scene> scene_) override;
 
         void destroy(const ptr<scene::Scene> scene_) override;
-
-    public:
-        Vector<gfx::render::RenderDataToken> providedToken() const noexcept override;
-
-    public:
-        ptr<gfx::cache::ModelBatch> batch(const ptr<gfx::render::RenderPassState> state_) override;
     };
 }
