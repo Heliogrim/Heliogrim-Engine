@@ -155,8 +155,8 @@
     <ProjectReference Include="..\Engine.GFX.Acc\Engine.GFX.Acc.vcxproj">
       <Project>{8333a07d-e717-4969-a2f5-416933b96ac1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Engine.GFX.Glow.3D\Engine.GFX.Glow.3D.vcxproj">
-      <Project>{4f8e6e80-a58c-463c-b24a-391bfea54f9b}</Project>
+    <ProjectReference Include="..\Engine.GFX.Geometry\Engine.GFX.Geometry.vcxproj">
+      <Project>{56f0aa17-a9b9-42cd-aea8-8876a36afd16}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.Glow.UI\Engine.GFX.Glow.UI.vcxproj">
       <Project>{14136e81-a7c5-4547-af82-819d8c0478e5}</Project>
@@ -170,17 +170,20 @@
     <ProjectReference Include="..\Engine.GFX.Material\Engine.GFX.Material.vcxproj">
       <Project>{2462cb7c-18e2-4e32-96e0-692141c48f9e}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Engine.GFX.Renderer\Engine.GFX.Renderer.vcxproj">
-      <Project>{596349a9-8c83-473f-8498-6b9c100c9a00}</Project>
+    <ProjectReference Include="..\Engine.GFX.Render.Command\Engine.GFX.Render.Command.vcxproj">
+      <Project>{9168a9f9-7a2d-4fb5-8b7f-9bfc4dce3438}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Render.Graph.Scene\Engine.GFX.Render.Graph.Scene.vcxproj">
+      <Project>{7b88b995-5750-45ec-b1b6-6ef2cdebf8c8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Render.Predefined\Engine.GFX.Render.Predefined.vcxproj">
+      <Project>{a44a97b4-b6ed-4397-b8bf-53220fa663cd}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.RenderGraph.Compile\Engine.GFX.RenderGraph.Compile.vcxproj">
       <Project>{a0a967b0-2d48-44b4-a3d5-a57e24803f87}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.RenderGraph\Engine.GFX.RenderGraph.vcxproj">
       <Project>{8f126647-73b6-4c77-b1d4-a94c2c0d657d}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.GFX.RenderPipeline.Factory\Engine.GFX.RenderPipeline.Factory.vcxproj">
-      <Project>{e659003b-400e-49c9-ab52-f973630b9297}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.RenderPipeline\Engine.GFX.RenderPipeline.vcxproj">
       <Project>{18e4072e-08d3-455c-8610-29d6a23c3edb}</Project>
