@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.GFX/Scene/SceneNodeModel.hpp>

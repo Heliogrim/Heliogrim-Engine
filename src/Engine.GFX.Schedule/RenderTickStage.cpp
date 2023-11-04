@@ -101,7 +101,7 @@ void RenderTickStage::invokeRenderTarget(cref<sptr<RenderTarget>> target_) const
         return;
     }
 
-    const auto* renderPass = target_->next();
+    const auto renderPass = target_->next();
 
     if (not renderPass) {
         IM_DEBUG_LOG("Skipping graphics tick due to missing RenderPass (No next Swapchain Image) at RenderTarget");
