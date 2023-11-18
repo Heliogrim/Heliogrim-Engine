@@ -1,5 +1,9 @@
 #pragma once
 
+namespace hg::engine::gfx::render {
+    class SubPass;
+}
+
 namespace hg::engine::gfx::render::graph {
     class CompileGraph;
     class RuntimeGraph;
@@ -24,6 +28,8 @@ namespace hg::engine::gfx::render::graph {
     class CompileSubpassMaterialAccelComponent;
     /**/
     class Node;
+    class SLNode;
+
     class AnchorNode;
     class BarrierNode;
     class ConvergeNode;
@@ -31,10 +37,12 @@ namespace hg::engine::gfx::render::graph {
     class SelectorNode;
     /**/
     class ProviderNode;
-    class SubpassNode;
+    class SubPassNodeBase;
+    template <typename SubPassType_> requires _STD derived_from<SubPassType_, SubPass>
+    class SubPassNode;
     /**/
     class CompileNode;
-    class CompileSubpassNode;
+    class CompileSubPassNode;
     /**/
     class Auxiliary;
     class Visitor;

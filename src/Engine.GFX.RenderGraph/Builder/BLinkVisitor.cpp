@@ -8,8 +8,9 @@
 #include "Engine.GFX.RenderGraph/Node/Runtime/DivergeNode.hpp"
 #include "Engine.GFX.RenderGraph/Node/Runtime/ProviderNode.hpp"
 #include "Engine.GFX.RenderGraph/Node/Runtime/SelectorNode.hpp"
-#include "Engine.GFX.RenderGraph/Node/Runtime/SubpassNode.hpp"
-#include "Engine.GFX.RenderGraph/Node/Compile/CompileSubpassNode.hpp"
+#include "Engine.GFX.RenderGraph/Node/Runtime/SLNode.hpp"
+#include "Engine.GFX.RenderGraph/Node/Runtime/SubPassNode.hpp"
+#include "Engine.GFX.RenderGraph/Node/Compile/CompileSubPassNode.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg::engine::gfx::render;
@@ -63,14 +64,18 @@ void BLinkVisitor::operator()(cref<ProviderNode> node_) {
     const_cast<ProviderNode&>(node_).setPrev(_STD move(_linkPredecessor));
 }
 
-void BLinkVisitor::operator()(cref<SubpassNode> node_) {
-    const_cast<SubpassNode&>(node_).setPrev(_STD move(_linkPredecessor));
+void BLinkVisitor::operator()(cref<SLNode> node_) {
+    const_cast<SLNode&>(node_).setPrev(_STD move(_linkPredecessor));
+}
+
+void BLinkVisitor::operator()(cref<SubPassNodeBase> node_) {
+    const_cast<SubPassNodeBase&>(node_).setPrev(_STD move(_linkPredecessor));
 }
 
 void BLinkVisitor::operator()(cref<CompileNode> node_) {
     assert(false);
 }
 
-void BLinkVisitor::operator()(cref<CompileSubpassNode> node_) {
-    const_cast<CompileSubpassNode&>(node_).setPrev(_STD move(_linkPredecessor));
+void BLinkVisitor::operator()(cref<CompileSubPassNode> node_) {
+    const_cast<CompileSubPassNode&>(node_).setPrev(_STD move(_linkPredecessor));
 }

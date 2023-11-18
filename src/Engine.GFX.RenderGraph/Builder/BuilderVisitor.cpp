@@ -6,7 +6,7 @@
 #include "Linker.hpp"
 #include "../Node/CompileNode.hpp"
 #include "../Node/Node.hpp"
-#include "../Node/Compile/CompileSubpassNode.hpp"
+#include "../Node/Compile/CompileSubPassNode.hpp"
 #include "../Node/Runtime/AnchorNode.hpp"
 #include "../Node/Runtime/BarrierNode.hpp"
 #include "../Node/Runtime/ConvergeNode.hpp"
@@ -229,7 +229,7 @@ void BuilderVisitor::operator()(cref<ProviderNode> node_) {
     return simple_splice_insert(node_);
 }
 
-void BuilderVisitor::operator()(cref<SubpassNode> node_) {
+void BuilderVisitor::operator()(cref<SubPassNodeBase> node_) {
     return simple_splice_insert(node_);
 }
 
@@ -237,6 +237,6 @@ void BuilderVisitor::operator()(cref<CompileNode> node_) {
     BuilderVisitor::operator()(override_cast<Node>(node_));
 }
 
-void BuilderVisitor::operator()(cref<CompileSubpassNode> node_) {
+void BuilderVisitor::operator()(cref<CompileSubPassNode> node_) {
     return simple_splice_insert(node_);
 }
