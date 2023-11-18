@@ -28,6 +28,8 @@ namespace hg::engine::gfx {
          */
         CommandBatch(const CommandBuffer& buffer_);
 
+        CommandBatch(mref<Vector<CommandBuffer>> buffers_);
+
         /**
          * Copy Constructor
          *

@@ -3,38 +3,43 @@
 #include "CommandPool.hpp"
 #include "CommandQueue.hpp"
 #include "../Framebuffer/Framebuffer.hpp"
-#include "../VkComputePipeline.hpp"
-#include "../VkFixedPipeline.hpp"
 #include "../Buffer/VirtualBufferView.hpp"
+#include "Engine.GFX/Buffer/IndexBufferView.hpp"
+#include "Engine.GFX/Buffer/VertexBufferView.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;
 
-CommandBuffer::CommandBuffer(ptr<CommandPool> pool_, const vk::CommandBuffer& vkCmd_) noexcept :
+CommandBuffer::CommandBuffer(ptr<CommandPool> pool_, const vk::CommandBuffer& vkCmd_, const bool faf_) noexcept :
+    _initialized(pool_ && vkCmd_),
+    _recording(false),
+    _valid(false),
+    _faf(faf_),
+    _root(true),
     _pool(pool_),
     _vkCmd(vkCmd_) {}
 
-void CommandBuffer::begin() {
+void CommandBuffer::begin(vk::CommandBufferInheritanceInfo* inheritanceInfo_) {
+    assert(_initialized);
+
+    vk::CommandBufferUsageFlags usage {
+        _faf ?
+            vk::CommandBufferUsageFlagBits::eOneTimeSubmit :
+            vk::CommandBufferUsageFlagBits::eSimultaneousUse
+    };
+
+    if (inheritanceInfo_ != nullptr) {
+        usage |= vk::CommandBufferUsageFlagBits::eRenderPassContinue;
+        _root = false;
+    }
+
     const vk::CommandBufferBeginInfo info {
-        vk::CommandBufferUsageFlagBits::eSimultaneousUse
+        usage,
+        inheritanceInfo_
     };
     _vkCmd.begin(info);
-}
 
-void CommandBuffer::beginRenderPass(
-    const pipeline::LORenderPass& renderPass_,
-    const Framebuffer& framebuffer_,
-    bool inline_
-) {
-
-    vk::RenderPassBeginInfo info = renderPass_.vkBeginInfo();
-    info.framebuffer = framebuffer_.vkFramebuffer();
-    info.renderArea = vk::Rect2D { { 0, 0 }, { framebuffer_.width(), framebuffer_.height() } };
-
-    _vkCmd.beginRenderPass(
-        info,
-        inline_ ? vk::SubpassContents::eInline : vk::SubpassContents::eSecondaryCommandBuffers
-    );
+    _recording = true;
 }
 
 void CommandBuffer::bindDescriptor(const Vector<vk::DescriptorSet>& descriptors_) {
@@ -86,41 +91,12 @@ void CommandBuffer::bindIndexBuffer(const ptr<const VirtualBufferView> bufferVie
     );
 }
 
-void CommandBuffer::bindPipeline(ptr<ComputePipeline> pipeline_) {
-
-    const auto vkp = static_cast<ptr<VkComputePipeline>>(pipeline_);
-
-    _vkCmd.bindPipeline(vk::PipelineBindPoint::eCompute, vkp->vkPipeline());
-
-    _pipelineLayout = vkp->vkLayout();
-    _pipelineBindPoint = vk::PipelineBindPoint::eCompute;
-}
-
-void CommandBuffer::bindPipeline(ptr<GraphicPipeline> pipeline_, cref<Viewport> viewport_) {
-    //const auto& viewport = pipeline_->viewport();
-
-    vk::Viewport vkViewport {
-        static_cast<float>(viewport_.offsetX()),
-        static_cast<float>(viewport_.offsetY()),
-        static_cast<float>(viewport_.width()),
-        static_cast<float>(viewport_.height()),
-        viewport_.minDepth(),
-        viewport_.maxDepth()
-    };
-
-    vk::Rect2D vkScissor {
-        { 0, 0 },
-        { viewport_.width(), viewport_.height() }
-    };
-
-    const auto vkp = static_cast<ptr<VkFixedPipeline>>(pipeline_);
-
-    _vkCmd.bindPipeline(vk::PipelineBindPoint::eGraphics, vkp->vkPipeline());
-    _vkCmd.setScissor(0, 1, &vkScissor);
-    _vkCmd.setViewport(0, 1, &vkViewport);
-
-    _pipelineLayout = vkp->vkLayout();
-    _pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
+void CommandBuffer::bindIndexBuffer(cref<IndexBufferView> indexBufferView_) {
+    _vkCmd.bindIndexBuffer(
+        reinterpret_cast<VkBuffer>(indexBufferView_.buffer),
+        indexBufferView_.offset,
+        indexBufferView_.vertexIndexType == VertexIndexType::eU32 ? vk::IndexType::eUint32 : vk::IndexType::eUint16
+    );
 }
 
 void CommandBuffer::bindVertexBuffer(const u32 binding_, cref<Buffer> buffer_, u64 offset_) {
@@ -148,6 +124,16 @@ void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const Virtual
 void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const VirtualBufferView> bufferView_) {
     const auto loff = bufferView_->offset();
     _vkCmd.bindVertexBuffers(binding_, 1uL, &bufferView_->owner()->vkBuffer(), &loff);
+}
+
+void CommandBuffer::bindVertexBuffer(const u32 index_, cref<VertexBufferView> vertexBufferView_) {
+    vkCmdBindVertexBuffers(
+        _vkCmd,
+        index_,
+        1ui32,
+        &reinterpret_cast<const VkBuffer&>(vertexBufferView_.buffer),
+        &static_cast<const VkDeviceSize&>(vertexBufferView_.offset)
+    );
 }
 
 void CommandBuffer::copyBuffer(const Buffer& src_, Buffer& dst_, const vk::BufferCopy& region_) {
@@ -231,6 +217,9 @@ void CommandBuffer::drawIndexedIndirect(
 void CommandBuffer::end() {
     _pipelineLayout = nullptr;
     _vkCmd.end();
+
+    _recording = false;
+    _valid = true;
 }
 
 void CommandBuffer::endRenderPass() {
@@ -238,7 +227,13 @@ void CommandBuffer::endRenderPass() {
 }
 
 void CommandBuffer::reset() {
+    assert(not _faf);
+
     _vkCmd.reset(vk::CommandBufferResetFlagBits::eReleaseResources);
+
+    _recording = false;
+    _valid = false;
+    _root = true;
 }
 
 ptr<CommandPool> CommandBuffer::pool() noexcept {
@@ -250,12 +245,21 @@ hg::concurrent::UnfairSpinLock& CommandBuffer::lck() const {
 }
 
 void CommandBuffer::submitWait() {
+    assert(_valid && _root);
+
     _pool->queue()->submitWait(*this);
+    _valid = not _faf;
 }
 
 void CommandBuffer::release() {
     _pool->release(*this);
     _vkCmd = nullptr;
+
+    _initialized = false;
+    _recording = false;
+    _valid = false;
+    _faf = false;
+    _root = false;
 }
 
 const vk::CommandBuffer& CommandBuffer::vkCommandBuffer() const noexcept {

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Engine.Common/Types.hpp>
+#include <Engine.Driver.Vulkan/VkNativeQueue.hpp>
+
 #include "../Device/Device.hpp"
 
 namespace hg::engine::gfx {
@@ -28,7 +30,8 @@ namespace hg::engine::gfx {
      */
     class CommandBatch;
 
-    class CommandQueue final {
+    class CommandQueue final :
+        public driver::vk::VkNativeQueue {
     public:
         using value_type = CommandQueue;
         using reference_type = CommandQueue&;

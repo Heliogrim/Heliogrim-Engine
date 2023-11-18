@@ -3,9 +3,10 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Vector.hpp>
-#include "Attachment.hpp"
+#include <Engine.GFX.Acc/AccelerationPass.hpp>
+
 #include "../Device/Device.hpp"
-#include "../Pipeline/LORenderPass.hpp"
+#include "Engine.GFX/Texture/TextureLikeObject.hpp"
 
 namespace hg::engine::gfx {
     class Framebuffer {
@@ -63,51 +64,12 @@ namespace hg::engine::gfx {
         void setup();
 
     private:
-        /**
-         * Attachments
-         */
-        Vector<FramebufferAttachment> _attachments;
+        Vector<smr<TextureLikeObject>> _attachments;
 
     public:
-        /**
-         * Gets the attachments
-         *
-         * @author Julius
-         * @date 21.11.2020
-         *
-         * @returns A list of.
-         */
-        [[nodiscard]] cref<Vector<FramebufferAttachment>> attachments() const noexcept;
+        void addAttachment(mref<smr<TextureLikeObject>> textureLikeObject_);
 
-        /**
-         * Gets the attachments
-         *
-         * @author Julius
-         * @date 31.01.2021
-         *
-         * @returns A ref&lt;vector&lt;FramebufferAttachment&gt;&gt;
-         */
-        [[nodiscard]] ref<Vector<FramebufferAttachment>> attachments() noexcept;
-
-        /**
-         * Adds attachment_
-         *
-         * @author Julius
-         * @date 12.12.2020
-         *
-         * @param [in] attachment_ The attachment to add.
-         */
-        void add(mref<FramebufferAttachment> attachment_);
-
-        /**
-         * Adds attachment_
-         *
-         * @author Julius
-         * @date 31.01.2021
-         *
-         * @param  attachment_ The attachment to add.
-         */
-        void add(cref<FramebufferAttachment> attachment_);
+        [[nodiscard]] cref<Vector<smr<TextureLikeObject>>> attachments() const noexcept;
 
     private:
         /**
@@ -177,28 +139,12 @@ namespace hg::engine::gfx {
         /**
          * Render Pass
          */
-        wptr<pipeline::LORenderPass> _renderPass;
+        smr<const acc::AccelerationPass> _renderPass;
 
     public:
-        /**
-         * Renders the pass
-         *
-         * @author Julius
-         * @date 04.12.2020
-         *
-         * @returns A cref&lt;wptr&lt;pipeline::RenderPass&gt;&gt;
-         */
-        [[nodiscard]] cref<wptr<pipeline::LORenderPass>> renderPass() const noexcept;
+        [[nodiscard]] cref<smr<const acc::AccelerationPass>> renderPass() const noexcept;
 
-        /**
-         * Sets render pass
-         *
-         * @author Julius
-         * @date 04.12.2020
-         *
-         * @param  renderPass_ The render pass.
-         */
-        void setRenderPass(wptr<pipeline::LORenderPass> renderPass_);
+        void setRenderPass(mref<smr<const acc::AccelerationPass>> renderPass_);
 
     private:
         /**

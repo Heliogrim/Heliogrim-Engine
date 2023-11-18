@@ -3,10 +3,12 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
+#include "BufferLikeObject.hpp"
 #include "__fwd.hpp"
 
 namespace hg::engine::gfx {
-    class VirtualBufferView final {
+    class VirtualBufferView final :
+        public InheritMeta<VirtualBufferView, BufferLikeObject> {
     public:
         friend class VirtualBuffer;
 
@@ -27,7 +29,7 @@ namespace hg::engine::gfx {
         VirtualBufferView(mref<this_type>) noexcept = delete;
 
     public:
-        ~VirtualBufferView();
+        ~VirtualBufferView() override;
 
     public:
         ref<this_type> operator=(cref<this_type>) = delete;

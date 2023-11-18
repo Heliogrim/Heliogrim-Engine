@@ -1,6 +1,9 @@
 #pragma once
 
 namespace hg::_ {
+    typedef struct _VkBuffer* VkBuffer;
+    typedef struct _VkBufferView* VkBufferView;
+
     typedef struct _VkImage* VkImage;
     typedef struct _VkImageView* VkImageView;
 
