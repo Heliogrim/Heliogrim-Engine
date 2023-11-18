@@ -14,7 +14,8 @@ namespace hg::engine::gfx::loader {
 }
 
 namespace hg::engine::gfx {
-    class VirtualTexture final {
+    class VirtualTexture final :
+        public InheritMeta<VirtualTexture, TextureObject> {
     public:
         friend class ::hg::engine::gfx::loader::TextureLoader;
 
@@ -54,7 +55,7 @@ namespace hg::engine::gfx {
 
         VirtualTexture(mref<this_type>) noexcept = delete;
 
-        ~VirtualTexture();
+        ~VirtualTexture() override;
 
     public:
         ref<this_type> operator=(cref<this_type>) = delete;

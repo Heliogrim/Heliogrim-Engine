@@ -6,9 +6,11 @@
 #include "../TextureFormat.hpp"
 #include "TextureBuffer.hpp"
 #include "TextureType.hpp"
+#include "TextureObject.hpp"
 
 namespace hg::engine::gfx {
-    class Texture {
+    class Texture :
+        public InheritMeta<Texture, TextureObject> {
     public:
         using value_type = Texture;
         using reference_type = Texture&;
@@ -47,7 +49,7 @@ namespace hg::engine::gfx {
          * @author Julius
          * @date 20.11.2020
          */
-        ~Texture();
+        ~Texture() override;
 
         /**
          * Copy assignment operator
