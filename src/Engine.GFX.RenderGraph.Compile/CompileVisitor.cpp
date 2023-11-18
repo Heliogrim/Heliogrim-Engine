@@ -10,7 +10,7 @@
 #include <Engine.GFX.Acc.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.GFX.RenderGraph/Node/CompileNode.hpp>
 #include <Engine.GFX.RenderGraph/Node/Node.hpp>
-#include <Engine.GFX.RenderGraph/Node/Compile/CompileSubpassNode.hpp>
+#include <Engine.GFX.RenderGraph/Node/Compile/CompileSubPassNode.hpp>
 #include <Engine.GFX.RenderGraph/Node/Runtime/AnchorNode.hpp>
 #include <Engine.GFX.RenderGraph/Node/Runtime/BarrierNode.hpp>
 #include <Engine.GFX.RenderGraph/Node/Runtime/ConvergeNode.hpp>
@@ -113,7 +113,7 @@ void CompileVisitor::operator()(cref<ProviderNode> node_) {
     Visitor::operator()(node_);
 }
 
-void CompileVisitor::operator()(cref<SubpassNode> node_) {
+void CompileVisitor::operator()(cref<SubPassNodeBase> node_) {
     assert(false);
 }
 
