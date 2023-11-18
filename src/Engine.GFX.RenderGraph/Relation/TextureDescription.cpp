@@ -1,5 +1,10 @@
 #include "TextureDescription.hpp"
 
+#include <Engine.GFX/Texture/Texture.hpp>
+#include <Engine.GFX/Texture/TextureView.hpp>
+#include <Engine.GFX/Texture/VirtualTexture.hpp>
+#include <Engine.GFX/Texture/VirtualTextureView.hpp>
+
 using namespace hg::engine::gfx::render::graph;
 using namespace hg;
 
@@ -15,7 +20,7 @@ TextureDescription::TextureDescription(
     mref<DescriptionValue<TextureFormat>> textureFormat_,
     mref<DescriptionValue<u32>> textureLayers_,
     //mref<DescriptionValue<math::uivec3>> textureExtent_,
-    mref<DescriptionValue<Vector<u32>>> textureMips_
+    mref<DescriptionValue<ActiveMipBitMask>> textureMips_
 ) noexcept :
     InheritMeta(),
     _textureType(textureType_),
@@ -61,18 +66,118 @@ bool TextureDescription::isValueCompatible(const non_owning_rptr<const Descripti
     return true;
 }
 
-bool TextureDescription::isValidTexture(const nmpt<Texture> texture_) const noexcept {
-    return false;
+bool TextureDescription::isValidObject(const nmpt<Texture> texture_) const noexcept {
+
+    bool valid = true;
+    if (_textureType.mode == DescriptionValueMatchingMode::eInvariant) {
+        valid &= _textureType.value == texture_->type();
+    }
+
+    if (_textureFormat.mode == DescriptionValueMatchingMode::eInvariant) {
+        valid &= _textureFormat.value == texture_->format();
+    }
+
+    if (_textureLayers.mode == DescriptionValueMatchingMode::eInvariant) {
+        valid &= _textureLayers.value == texture_->layer();
+    }
+
+    if (_textureMips.mode == DescriptionValueMatchingMode::eInvariant) {
+
+        for (auto i = 0; i <= ActiveMipBitMask::maxMipLevel(); ++i) {
+
+            const auto active = _textureMips.value.active(i);
+            const auto stored = texture_->mipLevels() > i;
+
+            valid &= (active == stored);
+        }
+    }
+
+    return valid;
 }
 
-bool TextureDescription::isValidTexture(const nmpt<TextureView> textureView_) const noexcept {
-    return false;
+bool TextureDescription::isValidObject(const nmpt<TextureView> textureView_) const noexcept {
+
+    bool valid = true;
+    if (_textureType.mode == DescriptionValueMatchingMode::eInvariant) {
+        valid &= _textureType.value == textureView_->owner()->type();
+    }
+
+    if (_textureFormat.mode == DescriptionValueMatchingMode::eInvariant) {
+        valid &= _textureFormat.value == textureView_->owner()->format();
+    }
+
+    if (_textureLayers.mode == DescriptionValueMatchingMode::eInvariant) {
+        valid &= _textureLayers.value == textureView_->layers();
+    }
+
+    if (_textureMips.mode == DescriptionValueMatchingMode::eInvariant) {
+
+        for (auto i = 0; i <= ActiveMipBitMask::maxMipLevel(); ++i) {
+
+            const auto active = _textureMips.value.active(i);
+            const auto stored = textureView_->mipLevels() > i;
+
+            valid &= (active == stored);
+        }
+    }
+
+    return valid;
 }
 
-bool TextureDescription::isValidTexture(const nmpt<VirtualTexture> texture_) const noexcept {
-    return false;
+bool TextureDescription::isValidObject(const nmpt<VirtualTexture> texture_) const noexcept {
+
+    bool valid = true;
+    if (_textureType.mode == DescriptionValueMatchingMode::eInvariant) {
+        valid &= _textureType.value == texture_->type();
+    }
+
+    if (_textureFormat.mode == DescriptionValueMatchingMode::eInvariant) {
+        valid &= _textureFormat.value == texture_->format();
+    }
+
+    if (_textureLayers.mode == DescriptionValueMatchingMode::eInvariant) {
+        valid &= _textureLayers.value == texture_->layers();
+    }
+
+    if (_textureMips.mode == DescriptionValueMatchingMode::eInvariant) {
+
+        for (auto i = 0; i <= ActiveMipBitMask::maxMipLevel(); ++i) {
+
+            const auto active = _textureMips.value.active(i);
+            const auto stored = texture_->mipLevels() > i;
+
+            valid &= (active == stored);
+        }
+    }
+
+    return valid;
 }
 
-bool TextureDescription::isValidTexture(const nmpt<VirtualTextureView> textureView_) const noexcept {
-    return false;
+bool TextureDescription::isValidObject(const nmpt<VirtualTextureView> textureView_) const noexcept {
+
+    bool valid = true;
+    if (_textureType.mode == DescriptionValueMatchingMode::eInvariant) {
+        valid &= _textureType.value == textureView_->type();
+    }
+
+    if (_textureFormat.mode == DescriptionValueMatchingMode::eInvariant) {
+        valid &= _textureFormat.value == textureView_->format();
+    }
+
+    if (_textureLayers.mode == DescriptionValueMatchingMode::eInvariant) {
+        valid &= _textureLayers.value == textureView_->layers();
+    }
+
+    if (_textureMips.mode == DescriptionValueMatchingMode::eInvariant) {
+
+        for (auto i = 0; i <= ActiveMipBitMask::maxMipLevel(); ++i) {
+
+            const auto active = _textureMips.value.active(i);
+            const auto stored = textureView_->mipLevels() > i;
+
+            valid &= (active == stored);
+        }
+    }
+
+    return valid;
 }

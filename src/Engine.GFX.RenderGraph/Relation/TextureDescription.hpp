@@ -11,6 +11,31 @@
 #include "Description.hpp"
 
 namespace hg::engine::gfx::render::graph {
+    struct ActiveMipBitMask {
+        using mask_type = u16;
+        mask_type mask;
+
+        [[nodiscard]] bool active(u8 baseTwoLevel_) const {
+            return mask & (0x1 << baseTwoLevel_);
+        }
+
+        [[nodiscard]] constexpr static u8 maxMipLevel() noexcept {
+            return static_cast<u8>(sizeof(mask) * 8 - 1);
+        }
+
+        [[nodiscard]] constexpr bool operator==(const ActiveMipBitMask& other_) const noexcept {
+            return mask == other_.mask;
+        }
+
+        [[nodiscard]] constexpr bool operator!=(const ActiveMipBitMask& other_) const noexcept {
+            return mask != other_.mask;
+        }
+
+        [[nodiscard]] constexpr _STD strong_ordering operator<=>(const ActiveMipBitMask& other_) const noexcept {
+            return mask <=> other_.mask;
+        }
+    };
+
     class TextureDescription final :
         public InheritMeta<TextureDescription, Description> {
     public:
@@ -27,7 +52,7 @@ namespace hg::engine::gfx::render::graph {
             mref<DescriptionValue<TextureFormat>> textureFormat_,
             mref<DescriptionValue<u32>> textureLayers_,
             //mref<DescriptionValue<math::uivec3>> textureExtent_,
-            mref<DescriptionValue<Vector<u32>>> textureMips_
+            mref<DescriptionValue<ActiveMipBitMask>> textureMips_
         ) noexcept;
 
         ~TextureDescription() override;
@@ -45,15 +70,15 @@ namespace hg::engine::gfx::render::graph {
         DescriptionValue<u32> _textureLayers;
         //DescriptionValue<math::uivec3> _textureExtent;
 
-        DescriptionValue<Vector<u32>> _textureMips;
+        DescriptionValue<ActiveMipBitMask> _textureMips;
 
     public:
-        [[nodiscard]] bool isValidTexture(const nmpt<Texture> texture_) const noexcept;
+        [[nodiscard]] bool isValidObject(const nmpt<Texture> texture_) const noexcept;
 
-        [[nodiscard]] bool isValidTexture(const nmpt<TextureView> textureView_) const noexcept;
+        [[nodiscard]] bool isValidObject(const nmpt<TextureView> textureView_) const noexcept;
 
-        [[nodiscard]] bool isValidTexture(const nmpt<VirtualTexture> texture_) const noexcept;
+        [[nodiscard]] bool isValidObject(const nmpt<VirtualTexture> texture_) const noexcept;
 
-        [[nodiscard]] bool isValidTexture(const nmpt<VirtualTextureView> textureView_) const noexcept;
+        [[nodiscard]] bool isValidObject(const nmpt<VirtualTextureView> textureView_) const noexcept;
     };
 }
