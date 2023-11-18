@@ -70,7 +70,7 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 /* Asset Specific Implementation */
 
 #include <Engine.Assets/Types/Image.hpp>
-#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
 #include <Engine.Assets/Types/Font.hpp>
 
@@ -81,9 +81,9 @@ SourceLoaderStreamResponse<void>::type SourceLoader::operator()(
 fs::Url getLfsUrl(const non_owning_rptr<const engine::assets::Asset> asset_) {
 
     switch (asset_->getTypeId().data) {
-        case engine::assets::Texture::typeId.data: {
+        case engine::assets::TextureAsset::typeId.data: {
 
-            const auto* const texture = static_cast<const ptr<const engine::assets::Texture>>(asset_);
+            const auto* const texture = static_cast<const ptr<const engine::assets::TextureAsset>>(asset_);
             const auto baseImageGuid = texture->baseImage();
 
             const auto* const registry = engine::Engine::getEngine()->getAssets()->getRegistry();

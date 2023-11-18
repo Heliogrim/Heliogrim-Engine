@@ -2,7 +2,7 @@
 
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Assets.hpp>
-#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 
 using namespace hg;
@@ -10,7 +10,7 @@ using namespace hg;
 TextureAsset::TextureAsset(cref<asset_guid> guid_) noexcept :
     StreamableRenderableAsset(
         guid_,
-        engine::assets::Texture::typeId,
+        engine::assets::TextureAsset::typeId,
         engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(guid_)
     ) {}
 
@@ -25,7 +25,7 @@ TextureAsset::TextureAsset(
 ) noexcept :
     StreamableRenderableAsset(
         guid_,
-        engine::assets::Texture::typeId,
+        engine::assets::TextureAsset::typeId,
         engine::Engine::getEngine()->getAssets()->getFactory()->createTextureAsset(
             guid_,
             baseImage_,
@@ -40,5 +40,5 @@ TextureAsset::TextureAsset(
 TextureAsset::~TextureAsset() noexcept = default;
 
 bool TextureAsset::isValidType() const noexcept {
-    return _typeId == engine::assets::Texture::typeId;
+    return _typeId == engine::assets::TextureAsset::typeId;
 }

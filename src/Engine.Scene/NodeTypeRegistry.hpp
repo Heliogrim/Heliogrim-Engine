@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.ACS/ComponentTypeId.hpp>
-#include <Engine.Common/Collection/BytellHashMap.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 
 /**
  * Forward Declaration
@@ -35,7 +35,7 @@ namespace hg::engine::scene {
 
     private:
         static NodeTypeRegistryValue _empty;
-        ska::bytell_hash_map<component_type_id, NodeTypeRegistryValue> _mapped;
+        DenseMap<component_type_id, NodeTypeRegistryValue> _mapped;
 
         void sanitize(cref<component_type_id> typeId_);
 
