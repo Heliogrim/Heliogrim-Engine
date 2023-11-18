@@ -26,7 +26,7 @@ namespace hg::engine::gfx {
         concurrent::RingBuffer<u64> _pQueue;
 
     public:
-        bool acquireNext(ref<s64> idx_, ref<sptr<Texture>> image_, ref<vk::Semaphore> signal_) override;
+        bool acquireNext(ref<s64> idx_, ref<smr<Texture>> image_, ref<vk::Semaphore> signal_) override;
 
         vk::Result presentNext(u64 idx_) override;
 
@@ -34,7 +34,7 @@ namespace hg::engine::gfx {
 
     public:
         bool consumeNext(
-            _Out_ ref<sptr<Texture>> image_,
+            _Out_ ref<smr<Texture>> image_,
             _Out_ ref<vk::Semaphore> signal_,
             _Out_ ref<Vector<vk::Semaphore>> waits_
         ) override;

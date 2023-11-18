@@ -1,5 +1,6 @@
 #include "VkSwapchain.hpp"
 
+#include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Scheduler/Fiber/Fiber.hpp>
 
 #include "../Texture/TextureFactory.hpp"
@@ -77,7 +78,7 @@ void VkSwapchain::setup(cref<sptr<Device>> device_) {
         factory->buildView(instance);
 
         /**/
-        _images[i].image = make_sptr<Texture>(_STD move(instance));
+        _images[i].image = make_smr<Texture>(_STD move(instance));
 
         /**/
         assert(_images[i].image);
@@ -118,7 +119,7 @@ void VkSwapchain::destroy() {
     while (_pQueue.try_pop(tmp)) {}
 }
 
-bool VkSwapchain::acquireNext(ref<s64> idx_, ref<sptr<Texture>> image_, ref<vk::Semaphore> signal_) {
+bool VkSwapchain::acquireNext(ref<s64> idx_, ref<smr<Texture>> image_, ref<vk::Semaphore> signal_) {
 
     u64 ridx { ~0ui64 };
     /*
@@ -139,7 +140,7 @@ bool VkSwapchain::acquireNext(ref<s64> idx_, ref<sptr<Texture>> image_, ref<vk::
      * Resolve
      */
     idx_ = ridx;
-    image_ = _images[ridx].image;
+    image_ = clone(_images[ridx].image);
     signal_ = (_images[ridx].readySignal) ? _images[ridx].readySignal : VK_NULL_HANDLE;
 
     return true;
@@ -180,7 +181,7 @@ vk::Result VkSwapchain::presentNext(u64 idx_, cref<Vector<vk::Semaphore>> waits_
 }
 
 bool VkSwapchain::consumeNext(
-    ref<sptr<Texture>> image_,
+    ref<smr<Texture>> image_,
     ref<vk::Semaphore> signal_,
     ref<Vector<vk::Semaphore>> waits_
 ) {
@@ -200,7 +201,7 @@ bool VkSwapchain::consumeNext(
     /**
      * Resolve
      */
-    image_ = _images[pidx].image;
+    image_ = clone(_images[pidx].image);
     signal_ = _images[pidx].readySignal;
     waits_ = _images[pidx].presentWaits;
 

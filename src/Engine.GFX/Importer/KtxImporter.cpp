@@ -3,7 +3,7 @@
 #include <sstream>
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Types/Image.hpp>
-#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Serialization/Archive/Archive.hpp>
 #include <Engine.Serialization/Archive/BufferArchive.hpp>
@@ -183,7 +183,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     auto* img { static_cast<ptr<Image>>(imgAsset) };
 
     auto texAsset { factory.createTextureAsset() };
-    auto* tex { static_cast<ptr<Texture>>(texAsset) };
+    auto* tex { static_cast<ptr<TextureAsset>>(texAsset) };
 
     /**/
 
@@ -265,7 +265,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     {
         auto root = texArch.insertRootSlot();
-        access::Structure<Texture>::serialize(tex, _STD move(root));
+        access::Structure<TextureAsset>::serialize(tex, _STD move(root));
     }
 
     Guid texArchGuid {};

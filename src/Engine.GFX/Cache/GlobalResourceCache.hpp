@@ -2,6 +2,7 @@
 
 #include <Engine.Assets/AssetGuid.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Resource/Manage/ResourceBase.hpp>
 
 #include "__fwd.hpp"
@@ -54,7 +55,7 @@ namespace hg::engine::gfx::cache {
         /**
          *
          */
-        ska::bytell_hash_map<asset_guid, smr<resource::ResourceBase>> _mapped;
+        DenseMap<asset_guid, smr<resource::ResourceBase>> _mapped;
 
     public:
         [[nodiscard]] bool contains(const non_owning_rptr<const assets::Asset> asset_) const noexcept;

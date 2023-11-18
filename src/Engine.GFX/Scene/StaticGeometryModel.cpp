@@ -6,12 +6,9 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX.Loader/Geometry/Traits.hpp>
 #include <Engine.GFX.Loader/Material/Traits.hpp>
-#include <Engine.GFX.Render.Command/Commands/BindMaterial.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Scene/RevScene.hpp>
 #include <Heliogrim/StaticGeometryComponent.hpp>
-
-#include "StaticGeometryBatch.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -104,7 +101,7 @@ void StaticGeometryModel::update(const ptr<::hg::engine::scene::Scene> scene_) {
 
 void StaticGeometryModel::destroy(const ptr<::hg::engine::scene::Scene> scene_) {}
 
-void StaticGeometryModel::render(mref<nmpt<render::cmd::RenderCommandBuffer>> cmd_) const {
+void StaticGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {
 
     const auto worldTransform = _owner->getWorldTransform();
     const auto trans { math::mat4::make_identity().translate(worldTransform.location().operator math::fvec3()) };
@@ -113,6 +110,7 @@ void StaticGeometryModel::render(mref<nmpt<render::cmd::RenderCommandBuffer>> cm
 
     /**/
 
+    #if FALSE
     for (const auto& material : _overrideMaterials) {
 
         const auto guard = material->acquire(resource::ResourceUsageFlag::eRead);
@@ -124,6 +122,7 @@ void StaticGeometryModel::render(mref<nmpt<render::cmd::RenderCommandBuffer>> cm
 
     cmd_->bindStaticMeshInstance(nullptr/*{ trans * rotation * scale }*/);
     cmd_->drawStaticMeshIdx(1uL, 0uL, meshGuard->indices()->size(), 0uL);
+    #endif
 }
 
 const ptr<engine::assets::StaticGeometry> StaticGeometryModel::geometryAsset() const noexcept {

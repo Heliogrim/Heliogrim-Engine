@@ -1,6 +1,7 @@
 #pragma once
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 #include "../TextureFormat.hpp"
 #include "../Device/Device.hpp"
@@ -10,7 +11,7 @@
 namespace hg::engine::gfx {
     struct SwapchainImage {
         /**/
-        sptr<Texture> image;
+        smr<Texture> image;
         /**/
         vk::Semaphore readySignal;
         /**/
@@ -53,12 +54,12 @@ namespace hg::engine::gfx {
     public:
         [[nodiscard]] virtual s64 imageCount() const noexcept;
 
-        [[nodiscard]] cref<sptr<Texture>> at(u64 idx_) const;
+        [[nodiscard]] cref<smr<Texture>> at(u64 idx_) const;
 
     public:
         virtual bool acquireNext(
             _Out_ ref<s64> idx_,
-            _Out_ ref<sptr<Texture>> image_,
+            _Out_ ref<smr<Texture>> image_,
             _Out_ ref<vk::Semaphore> signal_
         ) = 0;
 
@@ -68,7 +69,7 @@ namespace hg::engine::gfx {
 
     public:
         virtual bool consumeNext(
-            _Out_ ref<sptr<Texture>> image_,
+            _Out_ ref<smr<Texture>> image_,
             _Out_ ref<vk::Semaphore> signal_,
             _Out_ ref<Vector<vk::Semaphore>> waits_
         ) = 0;

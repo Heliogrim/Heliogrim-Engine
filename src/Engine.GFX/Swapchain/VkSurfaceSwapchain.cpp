@@ -1,5 +1,7 @@
 #include "VkSurfaceSwapchain.hpp"
 
+#include <Engine.Pedantic/Clone/Clone.hpp>
+
 #include "Engine.GFX/API/VkTranslate.hpp"
 #include "Engine.GFX/Command/CommandQueue.hpp"
 #include "Engine.GFX/Texture/TextureFactory.hpp"
@@ -98,7 +100,7 @@ void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
         /**
          *
          */
-        _images[i].image = make_sptr<Texture>();
+        _images[i].image = make_smr<Texture>();
         auto& texture = _images[i].image;
 
         assert(texture);
@@ -163,7 +165,7 @@ s64 VkSurfaceSwapchain::imageCount() const noexcept {
     return _images.size();
 }
 
-bool VkSurfaceSwapchain::acquireNext(ref<s64> idx_, ref<sptr<Texture>> image_, ref<vk::Semaphore> signal_) {
+bool VkSurfaceSwapchain::acquireNext(ref<s64> idx_, ref<smr<Texture>> image_, ref<vk::Semaphore> signal_) {
 
     const auto nxtSig { nextSignal() };
 
@@ -191,7 +193,7 @@ bool VkSurfaceSwapchain::acquireNext(ref<s64> idx_, ref<sptr<Texture>> image_, r
      * Store output
      */
     idx_ = static_cast<s64>(nextIdx);
-    image_ = _images[nextIdx].image;
+    image_ = clone(_images[nextIdx].image);
     signal_ = nxtSig;
 
     return true;
@@ -241,7 +243,7 @@ vk::Result VkSurfaceSwapchain::presentNext(u64 idx_, cref<Vector<vk::Semaphore>>
 }
 
 bool VkSurfaceSwapchain::consumeNext(
-    ref<sptr<Texture>> image_,
+    ref<smr<Texture>> image_,
     ref<vk::Semaphore> signal_,
     ref<Vector<vk::Semaphore>> waits_
 ) {

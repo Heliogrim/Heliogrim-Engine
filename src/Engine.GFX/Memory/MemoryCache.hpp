@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/BytellHashMap.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 
 #include "__fwd.hpp"
 #include "MemoryLayout.hpp"
@@ -20,7 +20,7 @@ namespace hg::engine::gfx::memory {
         void tidy();
 
     private:
-        ska::bytell_hash_map<MemoryLayout, ptr<MemoryPool>> _pools;
+        DenseMap<MemoryLayout, ptr<MemoryPool>> _pools;
 
     public:
         [[nodiscard]] non_owning_rptr<MemoryPool> getOrCreatePool(cref<MemoryLayout> layout_);

@@ -23,7 +23,7 @@ void CameraModel::create(const ptr<engine::scene::Scene> scene_) {
     #endif
 
     auto* const actor { _owner->getRootActor() };
-    _sceneView = make_uptr<gfx::scene::SceneView>(actor, static_cast<ptr<engine::scene::RevScene>>(scene_));
+    _sceneView = make_smr<gfx::scene::SceneView>(actor, static_cast<ptr<engine::scene::RevScene>>(scene_));
 }
 
 void CameraModel::update(const ptr<engine::scene::Scene> scene_) {
@@ -64,6 +64,6 @@ void CameraModel::destroy(const ptr<engine::scene::Scene> scene_) {
     _sceneView.reset();
 }
 
-const non_owning_rptr<scene::SceneView> CameraModel::getSceneView() const noexcept {
-    return _sceneView.get();
+smr<const scene::SceneView> CameraModel::getSceneView() const noexcept {
+    return _sceneView;
 }

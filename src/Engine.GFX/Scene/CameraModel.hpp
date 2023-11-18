@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+
 #include "SceneNodeModel.hpp"
 
 namespace hg::engine::gfx::scene {
@@ -27,9 +29,9 @@ namespace hg::engine::gfx {
         void destroy(const ptr<engine::scene::Scene> scene_) override;
 
     private:
-        uptr<scene::SceneView> _sceneView;
+        smr<scene::SceneView> _sceneView;
 
     public:
-        [[nodiscard]] const non_owning_rptr<scene::SceneView> getSceneView() const noexcept;
+        [[nodiscard]] smr<const scene::SceneView> getSceneView() const noexcept;
     };
 }
