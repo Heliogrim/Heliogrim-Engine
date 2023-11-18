@@ -6,6 +6,7 @@
 #include <Engine.GFX.RenderGraph/Pass/ExecutionPass.hpp>
 #include <Engine.GFX/vkinc.hpp>
 #include <Engine.Scheduler/Fiber/Awaitable.hpp>
+#include <Engine.GFX/Texture/__fwd.hpp>
 
 #include "RenderPassResult.hpp"
 #include "RenderPassState.hpp"
@@ -36,6 +37,7 @@ namespace hg::engine::gfx::render {
         nmpt<const Renderer> _renderer;
 
     protected:
+    public:
         RenderPassState _state;
         uptr<graph::RuntimeGraph> _graph;
 
@@ -53,36 +55,36 @@ namespace hg::engine::gfx::render {
         RenderPassResult operator()();
 
     public:
-        nmpt<scene::SceneView> changeSceneView(mref<nmpt<scene::SceneView>> nextSceneView_);
+        smr<const scene::SceneView> changeSceneView(mref<smr<const scene::SceneView>> nextSceneView_);
 
     public:
         #pragma region Render Pass Targets
         void unsafeBindTarget(
             mref<smr<const acc::Symbol>> target_,
-            mref<nmpt<void>> resource_
+            mref<smr<void>> resource_
         );
 
         [[nodiscard]] bool bindTarget(
             mref<smr<const acc::Symbol>> target_,
-            mref<nmpt<Texture>> texture_
+            mref<smr<Texture>> texture_
         );
 
         [[nodiscard]] bool bindTarget(
             mref<smr<const acc::Symbol>> target_,
-            mref<nmpt<TextureView>> textureView_
+            mref<smr<TextureView>> textureView_
         );
 
         [[nodiscard]] bool bindTarget(
             mref<smr<const acc::Symbol>> target_,
-            mref<nmpt<VirtualTexture>> texture_
+            mref<smr<VirtualTexture>> texture_
         );
 
         [[nodiscard]] bool bindTarget(
             mref<smr<const acc::Symbol>> target_,
-            mref<nmpt<VirtualTextureView>> textureView_
+            mref<smr<VirtualTextureView>> textureView_
         );
 
-        _Success_(return != nullptr) nmpt<void> unbindTarget(mref<smr<const acc::Symbol>> target_) noexcept;
+        _Success_(return != nullptr) smr<void> unbindTarget(mref<smr<const acc::Symbol>> target_) noexcept;
 
         #pragma endregion Render Pass Targets
 
@@ -94,8 +96,6 @@ namespace hg::engine::gfx::render {
 
         // May be used to synchronize command buffer submission related to swapchain dispatching
         Vector<vk::Semaphore> _targetWaitSignals;
-        Vector<vk::PipelineStageFlagBits> _targetWaitSignalStages;
-        Vector<vk::Semaphore> _targetReadySignals;
 
     private:
         void clearSync();
@@ -121,11 +121,19 @@ namespace hg::engine::gfx::render {
         void markAsTouched();
 
     public:
-        [[nodiscard]] ref<decltype(_targetWaitSignals)> getTargetWaitSignals() noexcept;
+        bool addTargetWaitSignal(mref<smr<const acc::Symbol>> targetSymbol_, cref<vk::Semaphore> signal_) noexcept;
 
-        [[nodiscard]] ref<decltype(_targetWaitSignalStages)> getTargetWaitSignalStages() noexcept;
+        void clearTargetWaitSignals(mref<smr<const acc::Symbol>> targetSymbol_) noexcept;
 
-        [[nodiscard]] ref<decltype(_targetReadySignals)> getTargetReadySignals() noexcept;
+        void enumerateTargetWaitSignals(
+            ref<Vector<vk::Semaphore>> signals_,
+            _In_opt_ mref<smr<const acc::Symbol>> targetSymbol_ = nullptr
+        ) noexcept;
+
+        void enumerateTargetReadySignals(
+            ref<Vector<vk::Semaphore>> signals_,
+            _In_opt_ mref<smr<const acc::Symbol>> targetSymbol_ = nullptr
+        ) noexcept;
 
         #pragma endregion Render Pass Synchronization
     };
