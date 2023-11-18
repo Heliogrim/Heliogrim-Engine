@@ -53,7 +53,7 @@
 #include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Assets/Types/Material/GfxMaterial.hpp"
 #include "Engine.Assets/Types/Material/GfxMaterialPrototype.hpp"
-#include "Engine.Assets/Types/Texture/Texture.hpp"
+#include "Engine.Assets/Types/Texture/TextureAsset.hpp"
 #include "Engine.Assets/Types/Image.hpp"
 #include "Engine.Common/Concurrent/Promise.hpp"
 #include "Engine.Common/Math/Coordinates.hpp"
@@ -61,7 +61,7 @@
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
 
-#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Serialization/Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
