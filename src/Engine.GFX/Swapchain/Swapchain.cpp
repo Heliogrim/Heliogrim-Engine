@@ -19,6 +19,6 @@ s64 Swapchain::imageCount() const noexcept {
     return -1i64;
 }
 
-cref<sptr<Texture>> Swapchain::at(u64 idx_) const {
+cref<smr<Texture>> Swapchain::at(u64 idx_) const {
     return _images[idx_].image;
 }

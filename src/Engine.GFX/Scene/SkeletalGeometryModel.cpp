@@ -1,7 +1,6 @@
 #include "SkeletalGeometryModel.hpp"
 
 #include <Engine.Common/Math/Convertion.hpp>
-#include <Engine.GFX.Render.Command/Commands/BindMaterial.hpp>
 #include <Heliogrim/StaticGeometryComponent.hpp>
 
 using namespace hg::engine::gfx::render;
@@ -38,13 +37,14 @@ void SkeletalGeometryModel::destroy(const ptr<scene::Scene> scene_) {
 
 }
 
-void SkeletalGeometryModel::render(mref<nmpt<render::cmd::RenderCommandBuffer>> cmd_) const {
+void SkeletalGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {
 
     const auto worldTransform = _owner->getWorldTransform();
     const auto pos = math::mat4::make_identity().translate(worldTransform.location().operator math::vec3());
     const auto rotation = math::as<math::quaternion, math::mat4>(worldTransform.rotator().quaternion());
     const auto scale = math::mat4::make_identity().unchecked_scale(worldTransform.scale());
 
+    #if FALSE
     for (const auto& material : _overrideMaterials) {
 
         const auto guard = material->acquire(resource::ResourceUsageFlag::eRead);
@@ -56,4 +56,5 @@ void SkeletalGeometryModel::render(mref<nmpt<render::cmd::RenderCommandBuffer>> 
 
     cmd_->bindSkeletalMeshInstance(nullptr /*pos * rotation * scale*/, nullptr);
     cmd_->drawSkeletalMeshIdx(1uL, 0uL, meshGuard->indices()->size(), 0uL);
+    #endif
 }

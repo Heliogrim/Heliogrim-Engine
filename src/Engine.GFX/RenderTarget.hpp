@@ -132,20 +132,20 @@ namespace hg::engine::gfx {
          *
          * @blocking
          */
-        void buildPasses(const ptr<scene::SceneView> sceneView_);
+        void buildPasses(mref<smr<const scene::SceneView>> sceneView_);
 
         /**
          *
          * @blocking
          */
-        [[nodiscard]] bool rebuildPasses(cref<non_owning_rptr<Swapchain>> swapchain_);
+        [[nodiscard]] bool rebuildPasses(cref<non_owning_rptr<Swapchain>> nextSwapChain_);
 
     public:
         /**
          *
          * @blocking
          */
-        nmpt<render::RenderPass> next();
+        _Success_(return != nullptr) nmpt<render::RenderPass> next();
 
         /**
          *

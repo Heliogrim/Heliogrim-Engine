@@ -6,7 +6,6 @@
 #include <Engine.Scene/RevScene.hpp>
 #include <Engine.Core/Engine.hpp>
 
-#include "StaticGeometryBatch.hpp"
 #include "Engine.Assets/Types/Material/GfxMaterial.hpp"
 
 using namespace hg::engine::gfx;
@@ -45,7 +44,7 @@ void SkyboxModel::update(const ptr<scene::Scene> scene_) {}
 
 void SkyboxModel::destroy(const ptr<scene::Scene> scene_) {}
 
-void SkyboxModel::render(mref<nmpt<render::cmd::RenderCommandBuffer>> cmd_) const {}
+void SkyboxModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {}
 
 const ptr<engine::assets::StaticGeometry> SkyboxModel::geometryAsset() const noexcept {
     return _skyboxGeometryAsset;

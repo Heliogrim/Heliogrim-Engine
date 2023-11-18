@@ -1,7 +1,7 @@
 #include "GlobalCacheCtrl.hpp"
 
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
 #include <Engine.Resource/LoaderManager.hpp>
@@ -61,7 +61,7 @@ GlobalCacheCtrl::stream_result_type<> GlobalCacheCtrl::markLoadedAsUsed(
         .extent = subresource_.value.extent
     };
 
-    _loader->streamImmediately<assets::Texture, TextureResource>(
+    _loader->streamImmediately<assets::TextureAsset, TextureResource>(
         smr<TextureResource> { resource_ },
         _STD move(options)
     );
@@ -152,7 +152,7 @@ void GlobalCacheCtrl::unmark(
 
     #ifdef _DEBUG
 
-    auto texture = static_cast<non_owning_rptr<const assets::Texture>>(resource_->getAssociation());
+    auto texture = static_cast<non_owning_rptr<const assets::TextureAsset>>(resource_->getAssociation());
     if (texture == nullptr) {
         Logger::error("Tried to unmark weak reference to texture resource without associative texture object.");
         return;
@@ -235,7 +235,7 @@ void GlobalCacheCtrl::unmark(mref<smr<TextureResource>> resource_, cref<AssocKey
             .extent = subresource_.value.extent
         };
 
-        _loader->streamImmediately<assets::Texture, TextureResource>(
+        _loader->streamImmediately<assets::TextureAsset, TextureResource>(
             _STD move(resource_),
             _STD move(options)
         );
@@ -309,7 +309,10 @@ void GlobalCacheCtrl::markAsUsed(
     if (subIt == subMap.end()) {
 
         auto key = material_.get();
-        auto val = make_uptr<SubjectType>(_STD make_pair(_STD move(material_), _STD move(accelerationPipeline_)), 1ui16);
+        auto val = make_uptr<SubjectType>(
+            _STD make_pair(_STD move(material_), _STD move(accelerationPipeline_)),
+            1ui16
+        );
 
         subMap.insert(
             _STD make_pair(

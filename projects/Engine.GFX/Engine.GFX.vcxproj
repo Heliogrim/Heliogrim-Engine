@@ -110,7 +110,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\ComputePipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Device\Device.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\FixedPipeline.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Framebuffer\Attachment.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Framebuffer\Framebuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Generator\MipMap.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Geometry\Cube.cpp" />
@@ -141,7 +140,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\FragmentStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\GeometryStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\RasterizationStage.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\LORenderPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pipeline\VertexStage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pool\GlobalResourcePool.cpp" />
@@ -150,7 +148,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Scene\GeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SkyboxModel.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Scene\StaticGeometryBatch.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\StaticGeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Shader\CachedDiscreteBinding.cpp" />
@@ -183,14 +180,16 @@
     <ClCompile Include="..\..\src\Engine.GFX\Texture\VirtualTextureView.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Viewport.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\VkComputePipeline.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\VkFixedPipeline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX\API\VkTranslate.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\API\__vkFwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Application\Application.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\Buffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\BufferLikeObject.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\BufferObject.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\IndexBufferView.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\VertexBufferView.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBufferPage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBufferView.hpp" />
@@ -218,7 +217,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Device\Device.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\FixedPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\FixedPipelineInput.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Framebuffer\Attachment.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Framebuffer\Framebuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Generator\MipMap.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Geometry\Cube.hpp" />
@@ -238,7 +236,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Graphics.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Handle\HandledObject.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Handle\LoopHandler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Handle\MaterialHandler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Handle\ModelHandler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Handle\TextureHandler.hpp" />
@@ -280,7 +277,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\FragmentStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\GeometryStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\RasterizationStage.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\LORenderPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pipeline\VertexStage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pool\GlobalResourcePool.hpp" />
@@ -297,7 +293,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Scene\GeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\LandscapeGeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SkyboxModel.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\StaticGeometryBatch.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneTag.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.hpp" />
@@ -325,10 +320,11 @@
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\TextureFormat.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Texture\ProxyTexture.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\Texture.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureFactory.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureLikeObject.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureObject.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureSampler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureType.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureView.hpp" />
@@ -340,8 +336,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Viewport.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\VkComputePipeline.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\VkFixedPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\vkinc.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\__macro.hpp" />
   </ItemGroup>
