@@ -8,8 +8,8 @@
 #include "../AssetConcept.hpp"
 
 namespace hg::engine::assets {
-    class Texture :
-        public InheritMeta<Texture, Asset> {
+    class TextureAsset :
+        public InheritMeta<TextureAsset, Asset> {
     public:
         template <typename>
         friend class serialization::DataLayout;
@@ -22,13 +22,13 @@ namespace hg::engine::assets {
 
     private:
     public:
-        Texture();
+        TextureAsset();
 
     protected:
-        Texture(cref<asset_guid> guid_);
+        TextureAsset(cref<asset_guid> guid_);
 
     public:
-        Texture(
+        TextureAsset(
             cref<asset_guid> guid_,
             cref<asset_guid> baseImage_,
             mref<Vector<asset_guid>> images_,
@@ -89,8 +89,8 @@ namespace hg::engine::assets {
 
 namespace hg::engine::assets {
     template <>
-    struct MetaStreamLoaderAsset<::hg::engine::assets::Texture> {
-        using type = ::hg::engine::assets::Texture;
+    struct MetaStreamLoaderAsset<::hg::engine::assets::TextureAsset> {
+        using type = ::hg::engine::assets::TextureAsset;
         inline static constexpr bool value = true;
     };
 }
