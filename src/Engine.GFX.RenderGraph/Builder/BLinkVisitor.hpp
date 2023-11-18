@@ -39,12 +39,14 @@ namespace hg::engine::gfx::render::graph {
 
         void operator()(cref<ProviderNode> node_) override;
 
-        void operator()(cref<SubpassNode> node_) override;
+        void operator()(cref<SLNode> node_) override;
+
+        void operator()(cref<SubPassNodeBase> node_) override;
 
     public:
         void operator()(cref<CompileNode> node_) override;
 
     public:
-        void operator()(cref<CompileSubpassNode> node_) override;
+        void operator()(cref<CompileSubPassNode> node_) override;
     };
 }

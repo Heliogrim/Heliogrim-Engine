@@ -8,8 +8,9 @@
 #include "Engine.GFX.RenderGraph/Node/Runtime/DivergeNode.hpp"
 #include "Engine.GFX.RenderGraph/Node/Runtime/ProviderNode.hpp"
 #include "Engine.GFX.RenderGraph/Node/Runtime/SelectorNode.hpp"
+#include "Engine.GFX.RenderGraph/Node/Runtime/SLNode.hpp"
 #include "Engine.GFX.RenderGraph/Node/Runtime/SubpassNode.hpp"
-#include "Engine.GFX.RenderGraph/Node/Compile/CompileSubpassNode.hpp"
+#include "Engine.GFX.RenderGraph/Node/Compile/CompileSubPassNode.hpp"
 
 using namespace hg::engine::gfx::render::graph;
 using namespace hg::engine::gfx::render;
@@ -68,14 +69,18 @@ void FLinkVisitor::operator()(cref<ProviderNode> node_) {
     const_cast<ProviderNode&>(node_).setNext(_STD move(_linkSuccessor));
 }
 
-void FLinkVisitor::operator()(cref<SubpassNode> node_) {
-    const_cast<SubpassNode&>(node_).setNext(_STD move(_linkSuccessor));
+void FLinkVisitor::operator()(cref<SLNode> node_) {
+    const_cast<SLNode&>(node_).setNext(_STD move(_linkSuccessor));
+}
+
+void FLinkVisitor::operator()(cref<SubPassNodeBase> node_) {
+    const_cast<SubPassNodeBase&>(node_).setNext(_STD move(_linkSuccessor));
 }
 
 void FLinkVisitor::operator()(cref<CompileNode> node_) {
     assert(false);
 }
 
-void FLinkVisitor::operator()(cref<CompileSubpassNode> node_) {
-    const_cast<CompileSubpassNode&>(node_).setNext(_STD move(_linkSuccessor));
+void FLinkVisitor::operator()(cref<CompileSubPassNode> node_) {
+    const_cast<CompileSubPassNode&>(node_).setNext(_STD move(_linkSuccessor));
 }

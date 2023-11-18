@@ -81,9 +81,9 @@ void DebugVisitor::operator()(cref<ProviderNode> node_) {
     Visitor::operator()(node_);
 }
 
-void DebugVisitor::operator()(cref<SubpassNode> node_) {
+void DebugVisitor::operator()(cref<SubPassNodeBase> node_) {
 
-    IM_DEBUG_LOGF("SubpassNode `{:x}`", reinterpret_cast<ptrdiff_t>(_STD addressof(node_)));
+    IM_DEBUG_LOGF("SubPassNodeBase `{:x}`", reinterpret_cast<ptrdiff_t>(_STD addressof(node_)));
 
     Visitor::operator()(node_);
 }
@@ -95,9 +95,9 @@ void DebugVisitor::operator()(cref<CompileNode> node_) {
     DebugVisitor::operator()(static_cast<cref<Node>>(node_));
 }
 
-void DebugVisitor::operator()(cref<CompileSubpassNode> node_) {
+void DebugVisitor::operator()(cref<CompileSubPassNode> node_) {
 
-    IM_DEBUG_LOGF("CompileSubpassNode `{:x}`", reinterpret_cast<ptrdiff_t>(_STD addressof(node_)));
+    IM_DEBUG_LOGF("CompileSubPassNode `{:x}`", reinterpret_cast<ptrdiff_t>(_STD addressof(node_)));
 
     Visitor::operator()(node_);
 }
