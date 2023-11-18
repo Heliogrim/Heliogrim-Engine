@@ -2,28 +2,28 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "Engine.GFX.Render.Command/RenderCommand.hpp"
-
-namespace hg::engine::gfx {
-    class VertexBufferView;
-}
+#include <Engine.GFX/Buffer/VertexBufferView.hpp>
 
 namespace hg::engine::gfx::render::cmd {
-    class BindVertexBufferRenderCommand :
+    class BindVertexBufferRCmd :
         public RenderCommand {
     public:
-        constexpr BindVertexBufferRenderCommand(
-            mref<const ptr<const VertexBufferView>> vertexView_
+        constexpr BindVertexBufferRCmd(
+            cref<VertexBufferView> vertexBufferView_
         ) noexcept :
             RenderCommand(),
-            _vertexView(_STD move(vertexView_)) {}
+            _vertexBufferView(vertexBufferView_) {}
 
-        constexpr ~BindVertexBufferRenderCommand() noexcept = default;
+        constexpr ~BindVertexBufferRCmd() noexcept override = default;
 
     private:
     public:
-        const ptr<const VertexBufferView> _vertexView;
+        VertexBufferView _vertexBufferView;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
+        void operator()(
+            ptr<RenderCommandTranslator::State> state_,
+            ptr<RenderCommandTranslator> translator_
+        ) const noexcept override;
     };
 }

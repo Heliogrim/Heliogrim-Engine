@@ -1,15 +1,18 @@
 #pragma once
-#include "Engine.GFX.Render.Command/RenderCommand.hpp"
+#include "../RenderCommand.hpp"
 
 namespace hg::engine::gfx::render::cmd {
-    class EndRenderCommand :
+    class EndRCmd :
         public RenderCommand {
     public:
-        constexpr EndRenderCommand() noexcept = default;
+        constexpr EndRCmd() noexcept = default;
 
-        constexpr ~EndRenderCommand() noexcept = default;
+        constexpr ~EndRCmd() noexcept override = default;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
+        void operator()(
+            ptr<RenderCommandTranslator::State> state_,
+            ptr<RenderCommandTranslator> translator_
+        ) const noexcept override;
     };
 }

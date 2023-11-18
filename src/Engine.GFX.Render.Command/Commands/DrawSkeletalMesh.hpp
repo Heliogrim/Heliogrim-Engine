@@ -4,13 +4,13 @@
 #include "Engine.GFX.Render.Command/RenderCommand.hpp"
 
 namespace hg::engine::gfx::render::cmd {
-    class DrawSkeletalMeshRenderCommand :
+    class DrawSkeletalMeshRCmd :
         public RenderCommand {
     public:
-        using this_type = DrawSkeletalMeshRenderCommand;
+        using this_type = DrawSkeletalMeshRCmd;
 
     public:
-        constexpr DrawSkeletalMeshRenderCommand(
+        constexpr DrawSkeletalMeshRCmd(
             const u32 instanceCount_,
             const u32 instanceOffset_,
             const u32 primitiveCount_,
@@ -24,7 +24,7 @@ namespace hg::engine::gfx::render::cmd {
             _primitiveOffset(primitiveOffset_),
             _indexedPrimitive(indexedPrimitive_) {}
 
-        constexpr ~DrawSkeletalMeshRenderCommand() noexcept = default;
+        constexpr ~DrawSkeletalMeshRCmd() noexcept override = default;
 
     private:
         const u32 _instanceCount;
@@ -34,6 +34,9 @@ namespace hg::engine::gfx::render::cmd {
         const bool _indexedPrimitive;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
+        void operator()(
+            ptr<RenderCommandTranslator::State> state_,
+            ptr<RenderCommandTranslator> translator_
+        ) const noexcept override;
     };
 }

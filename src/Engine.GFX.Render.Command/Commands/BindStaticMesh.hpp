@@ -1,28 +1,32 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "../RenderCommand.hpp"
 #include "__fwd.hpp"
 
 namespace hg::engine::gfx::render::cmd {
-    class BindStaticMeshRenderCommand :
+    class BindStaticMeshRCmd :
         public RenderCommand {
     public:
-        using this_type = BindStaticMeshRenderCommand;
+        using this_type = BindStaticMeshRCmd;
 
     public:
-        constexpr BindStaticMeshRenderCommand(mref<const ptr<const Mesh>> staticMesh_) noexcept :
+        constexpr BindStaticMeshRCmd(mref<const nmpt<const Mesh>> staticMesh_) noexcept :
             RenderCommand(),
             _staticMesh(_STD move(staticMesh_)) {}
 
-        constexpr ~BindStaticMeshRenderCommand() noexcept = default;
+        constexpr ~BindStaticMeshRCmd() noexcept override = default;
 
     private:
     public:
-        const ptr<const Mesh> _staticMesh;
+        const nmpt<const Mesh> _staticMesh;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
+        void operator()(
+            ptr<RenderCommandTranslator::State> state_,
+            ptr<RenderCommandTranslator> translator_
+        ) const noexcept override;
     };
 }

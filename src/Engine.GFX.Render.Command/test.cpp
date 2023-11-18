@@ -1,23 +1,17 @@
 #include <Engine.GFX.RenderGraph/Relation/MeshDescription.hpp>
 
-#include "PooledRenderCommandBuffer.hpp"
-#include "RenderCommand.hpp"
-#include "RenderCommandPool.hpp"
-#include "RenderCommandAllocator.hpp"
 #include "RenderCommandBuffer.hpp"
-#include "RenderCommandTranslationResult.hpp"
-#include "RenderCommandTranslationUnit.hpp"
+#include "RenderCommand.hpp"
+#include "RenderCommandAllocatorBase.hpp"
+#include "RenderCommandBufferBase.hpp"
+#include "RenderCommandTranslator.hpp"
 #include "Commands/Begin.hpp"
-#include "Commands/BindMaterial.hpp"
 
 using namespace hg::engine::gfx::render::cmd;
 using namespace hg;
 
 void ttt_test() {
-
-    RenderCommandPool rcp {};
-    auto ar = rcp.acquire();
-    uptr<PooledRenderCommandBuffer> rcb = _STD move(ar.value());
+    auto rcb = make_uptr<RenderCommandBuffer>();
 
     constexpr auto instanceCount = 1uL;
     constexpr auto instanceOffset = 0uL;
@@ -33,7 +27,7 @@ void ttt_test() {
     rcb->drawStaticMeshIdx(instanceCount, instanceOffset, primitiveCount, primitiveOffset);
 
     /**/
-    rcb->nextSubpass();
+    rcb->nextSubPass();
     /**/
 
     rcb->bindSkeletalMesh(nullptr);
@@ -41,12 +35,12 @@ void ttt_test() {
     rcb->drawSkeletalMeshIdx(instanceCount, instanceOffset, primitiveCount, primitiveOffset);
 
     /**/
-    rcb->nextSubpass();
+    rcb->nextSubPass();
     /**/
 
     rcb->bindIndexBuffer(nullptr);
     rcb->bindVertexBuffer(nullptr);
-    rcb->bindStorage(nullptr);
+    rcb->bindStorage(nullptr, nullptr);
 
     rcb->drawMesh(
         meshDescription,
@@ -69,12 +63,12 @@ void ttt_test() {
 
     /**/
 
-    auto view = rcp.view(rcb.get()).value();
-    RenderCommandTranslationUnit* tu { nullptr };
+    RenderCommandTranslator* tu { nullptr };
 
-    const auto result = (*tu)(_STD move(view));
+    const auto result = (*tu)(rcb.get());
+    result->commitAndDispose();
 
     /**/
 
-    rcp.release(_STD move(rcb));
+    rcb.release();
 }

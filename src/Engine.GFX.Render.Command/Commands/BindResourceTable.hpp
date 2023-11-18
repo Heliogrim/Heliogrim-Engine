@@ -5,26 +5,26 @@
 
 #include "../RenderCommand.hpp"
 
-namespace hg::engine::gfx {
-    class Mesh;
+namespace hg::engine::gfx::render::cmd {
+    struct ResourceTable;
 }
 
 namespace hg::engine::gfx::render::cmd {
-    class BindSkeletalMeshRCmd :
+    class BindResourceTablerRCmd :
         public RenderCommand {
     public:
-        using this_type = BindSkeletalMeshRCmd;
+        using this_type = BindResourceTablerRCmd;
 
     public:
-        constexpr BindSkeletalMeshRCmd(mref<const nmpt<const Mesh>> skeletalMesh_) noexcept :
+        constexpr BindResourceTablerRCmd(const ptr<const ResourceTable> resourceTable_) noexcept :
             RenderCommand(),
-            _skeletalMesh(_STD move(skeletalMesh_)) {}
+            _resourceTable(_STD move(resourceTable_)) {}
 
-        constexpr ~BindSkeletalMeshRCmd() noexcept override = default;
+        constexpr ~BindResourceTablerRCmd() noexcept override = default;
 
     private:
     public:
-        const nmpt<const Mesh> _skeletalMesh;
+        const ptr<const ResourceTable> _resourceTable;
 
     public:
         void operator()(

@@ -1,23 +1,32 @@
 #pragma once
 
 namespace hg::engine::gfx::render::cmd {
-    class BeginRenderCommand;
-    class NextSubpassRenderCommand;
-    class EndRenderCommand;
+    class RenderCommand;
     /**/
-    class BindEffectRenderCommand;
+    class BeginRCmd;
+    class BeginAccelerationPassRCmd;
+    class BeginSubPassRCmd;
+    class NextSubpassRCmd;
+    class EndSubPassRCmd;
+    class EndAccelerationPassRCmd;
+    class EndRCmd;
     /**/
-    class BindIndexBufferRenderCommand;
-    class BindMaterialRenderCommand;
-    class BindSkeletalMeshRenderCommand;
-    class BindStaticMeshRenderCommand;
-    class BindStorageBufferRenderCommand;
-    class BindTextureRenderCommand;
-    class BindVertexBufferRenderCommand;
+    class BindPipelineRCmd;
+    class BindResourceTableRCmd;
     /**/
-    class DrawMeshRenderCommand;
-    class DrawSkeletalMeshRenderCommand;
-    class DrawDispatchRenderCommand;
+    class BindIndexBufferRCmd;
+    class BindSkeletalMeshRCmd;
+    class BindStaticMeshRCmd;
+    class BindStorageBufferRCmd;
+    class BindTextureRCmd;
+    class BindVertexBufferRCmd;
+    /**/
+    class DrawMeshRCmd;
+    class DrawSkeletalMeshRCmd;
+    class DrawDispatchRCmd;
+    class DrawDispatchIndirectRCmd;
+    /**/
+    class LambdaRCmd;
 }
 
 /* Forwarded Resource Declarations */
