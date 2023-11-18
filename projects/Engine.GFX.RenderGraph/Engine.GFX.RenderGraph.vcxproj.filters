@@ -159,7 +159,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\CompileGraph.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileSubpassNode.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileSubPassNode.hpp">
       <Filter>Headerdateien\Node\Compile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Builder\BLinkVisitor.hpp">
@@ -204,47 +204,17 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Memory\GraphNodeAllocator.hpp">
       <Filter>Headerdateien\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\SubpassNode.hpp">
-      <Filter>Headerdateien\Node\Runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\AccelerationSubpassNode.hpp">
-      <Filter>Headerdateien\Node\Runtime</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\SymbolContext.hpp">
       <Filter>Headerdateien\Symbol</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\SymbolizedResource.hpp">
       <Filter>Headerdateien\Symbol</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\CommandRecordComponent.hpp">
-      <Filter>Headerdateien\Components\Compile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\Helper\ExecutionTranslationUnit.hpp">
-      <Filter>Headerdateien\Node\Runtime\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\Helper\VkExecutionTranslationUnit.hpp">
-      <Filter>Headerdateien\Node\Runtime\Helper</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\Helper\VkDescriptorWriter.hpp">
-      <Filter>Headerdateien\Node\Runtime\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\Helper\EffectCompileTranslationUnit.hpp">
       <Filter>Headerdateien\Node\Runtime\Helper</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\RuntimeComponent.hpp">
       <Filter>Headerdateien\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\CommandRecordComponent.hpp">
-      <Filter>Headerdateien\Components\Runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\AccelerationComponent.hpp">
-      <Filter>Headerdateien\Components\Compile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\AccelerationComponent.hpp">
-      <Filter>Headerdateien\Components\Runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\AccelerationSubpassNode.hpp">
-      <Filter>Headerdateien\Node\Compile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\AnchorNode.hpp">
       <Filter>Headerdateien\Node\Runtime</Filter>
@@ -267,24 +237,6 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\CompileNode.hpp">
       <Filter>Headerdateien\Node</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\ImmutableAccelerationComponent.hpp">
-      <Filter>Headerdateien\Components\Compile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\SceneCommandRecordComponent.hpp">
-      <Filter>Headerdateien\Components\Compile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\ImmutableAccelerationComponent.hpp">
-      <Filter>Headerdateien\Components\Runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\SceneCommandRecordComponent.hpp">
-      <Filter>Headerdateien\Components\Runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\ImmutableCommandRecordComponent.hpp">
-      <Filter>Headerdateien\Components\Compile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\ImmutableCommandRecordComponent.hpp">
-      <Filter>Headerdateien\Components\Runtime</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Pass\IterationPass.hpp">
       <Filter>Headerdateien\Pass</Filter>
     </ClInclude>
@@ -293,6 +245,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Pass\ExecutionPass.hpp">
       <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\SLNode.hpp">
+      <Filter>Headerdateien\Node\Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\SubPassNode.hpp">
+      <Filter>Headerdateien\Node\Runtime</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -347,7 +305,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneViewDescription.cpp">
       <Filter>Quelldateien\Relation</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileSubpassNode.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileSubPassNode.cpp">
       <Filter>Quelldateien\Node\Compile</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\CompileGraph.cpp">
@@ -365,37 +323,13 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\CompilePassContext.cpp">
       <Filter>Quelldateien\Pass</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\AccelerationSubpassNode.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\SLNode.cpp">
       <Filter>Quelldateien\Node\Runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\SubpassNode.cpp">
-      <Filter>Quelldateien\Node\Runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\Helper\VkExecutionTranslationUnit.cpp">
-      <Filter>Quelldateien\Node\Runtime\Helper</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\Helper\VkDescriptorWriter.cpp">
       <Filter>Quelldateien\Node\Runtime\Helper</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\Helper\EffectCompileTranslationUnit.cpp">
-      <Filter>Quelldateien\Node\Runtime\Helper</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\AccelerationComponent.cpp">
-      <Filter>Quelldateien\Component\Runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\CommandRecordComponent.cpp">
-      <Filter>Quelldateien\Component\Runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\AccelerationComponent.cpp">
-      <Filter>Quelldateien\Component\Compile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\CommandRecordComponent.cpp">
-      <Filter>Quelldateien\Component\Compile</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileBinNode.cpp">
-      <Filter>Quelldateien\Node\Compile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\AccelerationSubpassNode.cpp">
       <Filter>Quelldateien\Node\Compile</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\BinNode.cpp">
@@ -422,20 +356,8 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\SelectorNode.cpp">
       <Filter>Quelldateien\Node\Runtime</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\SceneCommandRecordComponent.cpp">
-      <Filter>Quelldateien\Component\Compile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\ImmutableAccelerationComponent.cpp">
-      <Filter>Quelldateien\Component\Compile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\SceneCommandRecordComponent.cpp">
-      <Filter>Quelldateien\Component\Runtime</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\RuntimeNode.cpp">
       <Filter>Quelldateien\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\ImmutableAccelerationComponent.cpp">
-      <Filter>Quelldateien\Component\Runtime</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Symbol\SymbolContext.cpp">
       <Filter>Quelldateien\Symbol</Filter>
@@ -451,12 +373,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\ExecutionPassContext.cpp">
       <Filter>Quelldateien\Pass</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Runtime\ImmutableCommandRecordComponent.cpp">
-      <Filter>Quelldateien\Component\Runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Component\Compile\ImmutableCommandRecordComponent.cpp">
-      <Filter>Quelldateien\Component\Compile</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
