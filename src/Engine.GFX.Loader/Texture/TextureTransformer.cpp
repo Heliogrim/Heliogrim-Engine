@@ -1,8 +1,10 @@
 #include "TextureTransformer.hpp"
 
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.GFX/Pool/GlobalResourcePool.hpp>
-#include <Engine.GFX/Texture/ProxyTexture.hpp>
 #include <Engine.GFX/Texture/VirtualTextureView.hpp>
+#include <Engine.GFX/Texture/TextureLikeObject.hpp>
+#include <Engine.Reflect/Cast.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
 
 #include "./Transformer/Ktx.hpp"
@@ -21,7 +23,7 @@ smr<TextureResource> TextureTransformer::transpose(
     mref<smr<resource::Source>> from_
 ) const {
 
-    const non_owning_rptr<const assets::Texture> asset = request_;
+    const non_owning_rptr<const assets::TextureAsset> asset = request_;
     auto view = _pool->allocateVirtualTexture(
         pool::VirtualTextureAllocation {
             .layers = 1ui32,
@@ -41,7 +43,7 @@ smr<TextureResource> TextureTransformer::transpose(
     using derived_type = resource::UniqueResource<TextureResource::value_type>;
 
     auto dst = make_smr<TextureResource, derived_type>(
-        new derived_type(_STD move(view.release()))
+        new derived_type(mpt<TextureLikeObject>(view.release()))
     );
     dst->setAssociation(asset);
 
@@ -57,12 +59,13 @@ void TextureTransformer::partialTranspose(
     mref<smr<TextureResource>> to_
 ) const {
 
-    const auto* const asset = static_cast<non_owning_rptr<const assets::Texture>>(request_->getAssociation());
+    const auto* const asset = static_cast<non_owning_rptr<const assets::TextureAsset>>(request_->getAssociation());
 
     /**/
 
     const auto guard = to_->acquire(resource::ResourceUsageFlag::eWrite);
-    auto* const view = guard->as<VirtualTextureView>();
+    auto& loaded = guard.mut()->load();
+    auto* const view = Cast<VirtualTextureView>(&loaded);
 
     assert(view);
 
@@ -84,7 +87,7 @@ TextureTransformer::response_type::type TextureTransformer::operator()(
     return transpose(_STD move(request_), _STD move(options_), _STD move(src));
 }
 
-engine::resource::loader::CacheStreamResponse<engine::assets::Texture>::type TextureTransformer::operator()(
+engine::resource::loader::CacheStreamResponse<engine::assets::TextureAsset>::type TextureTransformer::operator()(
     mref<stream_request_type::type> request_,
     mref<stream_request_type::options> options_,
     cref<next_type> next_

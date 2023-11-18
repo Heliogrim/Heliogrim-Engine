@@ -158,7 +158,7 @@ namespace hg::external::ktx {
 /**/
 
 void transformer::convertKtx(
-    const non_owning_rptr<const assets::Texture> asset_,
+    const non_owning_rptr<const assets::TextureAsset> asset_,
     cref<smr<resource::Source>> src_,
     const non_owning_rptr<VirtualTextureView> dst_,
     cref<sptr<Device>> device_,
@@ -209,7 +209,7 @@ void transformer::convertKtx(
 }
 
 void transformer::convertKtxPartial(
-    const non_owning_rptr<const assets::Texture> asset_,
+    const non_owning_rptr<const assets::TextureAsset> asset_,
     cref<smr<resource::Source>> src_,
     const non_owning_rptr<VirtualTextureView> dst_,
     cref<sptr<Device>> device_,
@@ -522,7 +522,7 @@ static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_)
 /**/
 
 void transformer::convertKtx10Gli(
-    const non_owning_rptr<const engine::assets::Texture> asset_,
+    const non_owning_rptr<const engine::assets::TextureAsset> asset_,
     cref<smr<engine::resource::Source>> src_,
     const non_owning_rptr<VirtualTextureView> dst_,
     cref<sptr<Device>> device_,
@@ -846,7 +846,7 @@ void transformer::convertKtx10Gli(
 }
 
 void transformer::convertKtx20(
-    const non_owning_rptr<const engine::assets::Texture> asset_,
+    const non_owning_rptr<const engine::assets::TextureAsset> asset_,
     cref<smr<engine::resource::Source>> src_,
     const non_owning_rptr<VirtualTextureView> dst_,
     cref<sptr<Device>> device_,
@@ -1108,7 +1108,7 @@ void transformer::convertKtx20(
 }
 
 void transformer::convertKtx20Partial(
-    const non_owning_rptr<const engine::assets::Texture> asset_,
+    const non_owning_rptr<const engine::assets::TextureAsset> asset_,
     cref<smr<engine::resource::Source>> src_,
     const non_owning_rptr<VirtualTextureView> dst_,
     cref<sptr<Device>> device_,
@@ -1358,7 +1358,7 @@ void transformer::convertKtx20Partial(
     /**
      *
      */
-    if (!changedMemory && not (options_.mip >= dst_->owner()->mipTailFirstLod())) {
+    if (!changedMemory && not(options_.mip >= dst_->owner()->mipTailFirstLod())) {
         return;
     }
     /**
@@ -1684,7 +1684,7 @@ void transformer::convertKtx20Partial(
 }
 
 void transformer::unloadPartialTmp(
-    const non_owning_rptr<const engine::assets::Texture> asset_,
+    const non_owning_rptr<const engine::assets::TextureAsset> asset_,
     cref<smr<engine::resource::Source>> src_,
     const non_owning_rptr<VirtualTextureView> dst_,
     cref<sptr<Device>> device_,

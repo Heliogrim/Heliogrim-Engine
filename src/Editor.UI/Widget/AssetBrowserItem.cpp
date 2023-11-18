@@ -47,7 +47,7 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 
     /**/
 
-    ptr<engine::assets::Texture> iconAsset {};
+    ptr<engine::assets::TextureAsset> iconAsset {};
     string typeTitle {};
 
     if (self->_value.type == AssetBrowserEntryType::eUndefined) {
@@ -115,7 +115,7 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
         typeTitle = helper->getAssetTypeName(asset->getTypeId());
     }
 
-    auto iconRes = engine::Engine::getEngine()->getResources()->loader().loadImmediately<engine::assets::Texture,
+    auto iconRes = engine::Engine::getEngine()->getResources()->loader().loadImmediately<engine::assets::TextureAsset,
         engine::gfx::TextureResource>(_STD move(iconAsset));
 
     /**/
@@ -143,8 +143,7 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
     item->addChild(icon);
 
     auto iconGuard = iconRes->acquire(engine::resource::ResourceUsageFlag::eRead);
-    auto* view = iconGuard->as<engine::gfx::VirtualTextureView>();
-    icon->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(view)), iconRes.get());
+    icon->setImage(*iconGuard.imm(), iconRes.get());
 
     const auto infoWrapper = make_sptr<VerticalPanel>();
     infoWrapper->attr.minWidth.setValue({ ReflowUnitType::eAbsolute, 96.F });

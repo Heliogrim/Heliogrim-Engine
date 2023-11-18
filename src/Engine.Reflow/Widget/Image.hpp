@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.GFX/Texture/ProxyTexture.hpp>
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 #include "Widget.hpp"
 #include "../Children.hpp"
@@ -32,7 +32,7 @@ namespace hg::engine::reflow {
 
             Attribute<engine::color> tint;
 
-            Attribute<sptr<gfx::ProxyTexture<non_owning_rptr>>> image;
+            Attribute<nmpt<gfx::TextureLikeObject>> image;
         } attr;
 
     private:
@@ -40,7 +40,7 @@ namespace hg::engine::reflow {
         ptr<void> _imageResource;
 
     public:
-        void setImage(cref<sptr<gfx::ProxyTexture<non_owning_rptr>>> image_, ptr<void> resource_ = nullptr);
+        void setImage(cref<nmpt<gfx::TextureLikeObject>> image_, ptr<void> resource_ = nullptr);
 
     private:
         NullChildren _children;

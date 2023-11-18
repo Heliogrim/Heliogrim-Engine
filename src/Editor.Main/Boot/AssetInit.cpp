@@ -149,7 +149,7 @@
 #include "Engine.Assets/Types/Image.hpp"
 #include "Engine.Assets/Types/Font.hpp"
 #include "Engine.Assets/Types/Geometry/StaticGeometry.hpp"
-#include "Engine.Assets/Types/Texture/Texture.hpp"
+#include "Engine.Assets/Types/Texture/TextureAsset.hpp"
 #include "Engine.Resource.Package/PackageManager.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Resource/Source/FileSource.hpp"
@@ -1060,7 +1060,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
             break;
         }
-        case assets::Texture::typeId.data: {
+        case assets::TextureAsset::typeId.data: {
 
             auto* const registry = Engine::getEngine()->getAssets()->getRegistry();
             const auto* const asset = registry->findAssetByGuid(guid);
@@ -1071,8 +1071,8 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
 
             /**/
 
-            auto* texture = new assets::Texture();
-            serialization::access::Structure<assets::Texture>::deserialize(texture, _STD move(record_));
+            auto* texture = new assets::TextureAsset();
+            serialization::access::Structure<assets::TextureAsset>::deserialize(texture, _STD move(record_));
 
             engine::assets::storeDefaultNameAndUrl(texture, {});
             const auto succeeded = registry->insert({ texture });

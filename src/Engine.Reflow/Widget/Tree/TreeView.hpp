@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.Common/Collection/BytellHashMap.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 
 #include "TreeItem.hpp"
@@ -178,7 +178,7 @@ namespace hg::engine::reflow {
         Vector<data_type> _linearizedData;
         Vector<view_item_type> _linearizedView;
 
-        ska::bytell_hash_map<
+        DenseMap<
             data_type,
             view_item_type,
             data_hash_type,

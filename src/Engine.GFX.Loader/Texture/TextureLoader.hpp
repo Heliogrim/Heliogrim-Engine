@@ -14,7 +14,7 @@ namespace hg::engine::gfx::loader {
     using TextureSourceLoader = ::hg::engine::resource::loader::SourceLoader;
 
     using TextureLoaderType = resource::loader::LoaderChain<
-        assets::Texture,
+        assets::TextureAsset,
         TextureResource,
         resource::loader::MetaTypeWrapperList<_STD type_identity_t, _STD type_identity_t, _STD type_identity_t, sptr>,
         TextureCache,

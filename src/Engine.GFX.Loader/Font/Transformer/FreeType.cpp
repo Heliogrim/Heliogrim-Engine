@@ -91,10 +91,12 @@ void transformer::convertFreeType(
 
     /**/
 
-    Buffer buffer {
-        nullptr, nullptr, device_->vkDevice(), sizeof(u8) * reqExt.x * reqExt.y * 4ui32,
-        vk::BufferUsageFlagBits::eTransferSrc
-    };
+    Buffer buffer {};
+    buffer.memory = nullptr;
+    buffer.buffer = nullptr;
+    buffer.device = device_->vkDevice();
+    buffer.size = sizeof(u8) * reqExt.x * reqExt.y * 4uL;
+    buffer.usageFlags = vk::BufferUsageFlagBits::eTransferSrc;
 
     buffer.buffer = device_->vkDevice().createBuffer(
         {

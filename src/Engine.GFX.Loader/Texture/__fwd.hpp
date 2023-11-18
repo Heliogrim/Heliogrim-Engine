@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 
 #include <Engine.Resource/Loader/__fwd.hpp>
 

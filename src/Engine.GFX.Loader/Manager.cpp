@@ -1,6 +1,6 @@
 #include "Manager.hpp"
 
-#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 
 #include "Font/FontLoader.hpp"
 #include "Geometry/StaticGeometryLoader.hpp"
@@ -18,7 +18,7 @@ void engine::gfx::loader::register_loader(
 ) {
     {
         auto tl = make_sptr<TextureLoader>(cacheCtrl_, pool_, manager_.sharedSourceLoader());
-        manager_.registerLoader<assets::Texture, TextureResource>(tl);
+        manager_.registerLoader<assets::TextureAsset, TextureResource>(tl);
     }
 
     {
@@ -43,7 +43,7 @@ void engine::gfx::loader::unregister_loader(
     const non_owning_rptr<gfx::cache::GlobalCacheCtrl> cacheCtrl_,
     const non_owning_rptr<gfx::pool::GlobalResourcePool> pool_
 ) {
-    manager_.unregisterLoader<assets::Texture>();
+    manager_.unregisterLoader<assets::TextureAsset>();
     manager_.unregisterLoader<assets::StaticGeometry>();
     manager_.unregisterLoader<assets::GfxMaterial>();
     manager_.unregisterLoader<assets::Font>();

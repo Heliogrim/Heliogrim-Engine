@@ -1,5 +1,7 @@
 #include "ReflowCommandBuffer.hpp"
 
+#include <Engine.GFX/Texture/TextureLikeObject.hpp>
+#include <Engine.GFX/Texture/Texture.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
 
 using namespace hg::engine::reflow;
@@ -475,9 +477,7 @@ void ReflowCommandBuffer::drawText(
      *
      */
     _imageIndices.push_back({ baseIdx, baseIdx + reqIdx });
-    auto atlas { font_.atlas().get() };
-    ProxyTexture<non_owning_rptr> proxy { _STD move(atlas) };
-    _images.push_back(_STD move(proxy));
+    _images.emplace_back(font_.atlas().get());
 
     /**
      *
@@ -588,7 +588,7 @@ void ReflowCommandBuffer::drawImage(
     math::vec2 uv2_,
     math::vec2 p3_,
     math::vec2 uv3_,
-    ProxyTexture<non_owning_rptr> image_,
+    nmpt<gfx::TextureLikeObject> image_,
     cref<color> color_
 ) {
     drawImageAsync(
@@ -616,7 +616,7 @@ void ReflowCommandBuffer::drawImageAsync(
     math::vec2 uv2_,
     math::vec2 p3_,
     math::vec2 uv3_,
-    ProxyTexture<non_owning_rptr> image_,
+    nmpt<gfx::TextureLikeObject> image_,
     _::VkSemaphore wait_,
     _::VkSemaphore signal_,
     cref<color> color_

@@ -122,9 +122,9 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
 
         assert(asset != nullptr);
 
-        auto request = static_cast<ptr<engine::assets::Texture>>(asset);
+        auto request = static_cast<ptr<engine::assets::TextureAsset>>(asset);
         testTexture = engine::Engine::getEngine()->getResources()->loader().load<
-            engine::assets::Texture, engine::gfx::TextureResource
+            engine::assets::TextureAsset, engine::gfx::TextureResource
         >(_STD move(request), engine::gfx::loader::TextureLoadOptions {});
 
         /*
@@ -259,8 +259,7 @@ void buildTestUI(
 
     // TODO: This will break
     auto testGuard = testTexture->acquire(engine::resource::ResourceUsageFlag::eAll);
-    auto testImage = *testGuard.mut();
-    navBrandIcon->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(testImage)), nullptr);
+    navBrandIcon->setImage(*testGuard.imm(), nullptr);
 
     auto navFileButton = make_sptr<Button>();
     navFileButton->attributes().padding.setValue(Padding { 4.F, 2.F });

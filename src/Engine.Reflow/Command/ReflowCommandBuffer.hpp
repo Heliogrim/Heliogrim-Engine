@@ -4,9 +4,9 @@
 #include <Engine.Common/Collection/Stack.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/__default.inl>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.GFX/Color/Color.hpp>
 #include <Engine.GFX/Geometry/UIVertex.hpp>
-#include <Engine.GFX/Texture/ProxyTexture.hpp>
 #include <Engine.GFX/API/__vkFwd.hpp>
 
 #include "../Font/Font.hpp"
@@ -46,7 +46,7 @@ namespace hg::engine::reflow {
         Vector<math::fExtent2D> _scissors;
 
         Vector<_STD pair<u32, u32>> _imageIndices;
-        Vector<gfx::ProxyTexture<non_owning_rptr>> _images;
+        Vector<nmpt<gfx::TextureLikeObject>> _images;
         Vector<_::VkSemaphore> _imageWait;
         Vector<_::VkSemaphore> _imageSignal;
 
@@ -104,7 +104,7 @@ namespace hg::engine::reflow {
             math::vec2 uv2_,
             math::vec2 p3_,
             math::vec2 uv3_,
-            gfx::ProxyTexture<non_owning_rptr> image_,
+            nmpt<gfx::TextureLikeObject> image_,
             cref<color> color_
         );
 
@@ -117,7 +117,7 @@ namespace hg::engine::reflow {
             math::vec2 uv2_,
             math::vec2 p3_,
             math::vec2 uv3_,
-            gfx::ProxyTexture<non_owning_rptr> image_,
+            nmpt<gfx::TextureLikeObject> image_,
             _::VkSemaphore wait_,
             _::VkSemaphore signal_,
             cref<color> color_

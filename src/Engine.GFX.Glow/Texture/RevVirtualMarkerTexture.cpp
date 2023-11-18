@@ -577,7 +577,7 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
 
     for (u16 pli { 0ui16 }; pli < ploctC; ++pli) {
 
-        if (not (*oct & (1 << pli))) {
+        if (not(*oct & (1 << pli))) {
             outerOffset += dpsn;
             continue;
         }
@@ -585,7 +585,7 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
         const auto slie { pli == (ploctC - 1) ? lloctC : sloctC };
         for (u16 sli { 0ui16 }; sli < slie; ++sli) {
 
-            if (not (*(oct + 1ui16 + pli) & (1 << sli))) {
+            if (not(*(oct + 1ui16 + pli) & (1 << sli))) {
                 outerOffset += patchSize;
                 continue;
             }
