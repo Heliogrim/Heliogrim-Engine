@@ -9,6 +9,12 @@ CommandBatch::CommandBatch(const CommandBuffer& buffer_) :
     _barrierStages(),
     _signals() {}
 
+CommandBatch::CommandBatch(mref<Vector<CommandBuffer>> buffers_) :
+    _buffers(_STD move(buffers_)),
+    _barriers(),
+    _barrierStages(),
+    _signals() {}
+
 CommandBatch::CommandBatch(cref<this_type> other_) :
     _buffers(other_._buffers),
     _barriers(other_._barriers),

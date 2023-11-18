@@ -6,7 +6,6 @@
 #include "../GraphicPipeline.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "../Buffer/VirtualBuffer.hpp"
-#include "../Pipeline/LORenderPass.hpp"
 #include "../Texture/TextureBuffer.hpp"
 
 namespace hg::engine::gfx {
@@ -22,8 +21,9 @@ namespace hg::engine::gfx {
          *
          * @param  pool_ The pool.
          * @param  vkCmd_ The vk command.
+         * @param  faf_ Flag for Fire-And-Forget command buffers.
          */
-        CommandBuffer(ptr<CommandPool> pool_, const vk::CommandBuffer& vkCmd_) noexcept;
+        CommandBuffer(ptr<CommandPool> pool_, const vk::CommandBuffer& vkCmd_, bool faf_ = false) noexcept;
 
     public:
         /**
@@ -32,31 +32,23 @@ namespace hg::engine::gfx {
          * @author Julius
          * @date 22.11.2020
          */
-        ~CommandBuffer() noexcept = default;
+        constexpr ~CommandBuffer() noexcept = default;
 
+    protected:
+        u8 _initialized : 1;
+        u8 _recording : 1;
+        u8 _valid : 1;
+        u8 _faf : 1;
+        u8 _root : 1;
+
+    public:
         /**
          * Begins recording
          *
          * @author Julius
          * @date 23.11.2020
          */
-        void begin();
-
-        /**
-         * Begins render pass
-         *
-         * @author Julius
-         * @date 12.12.2020
-         *
-         * @param  renderPass_ The render pass.
-         * @param  framebuffer_ The framebuffer.
-         * @param  inline_ (Optional) True to inline.
-         */
-        void beginRenderPass(
-            const pipeline::LORenderPass& renderPass_,
-            const Framebuffer& framebuffer_,
-            bool inline_ = true
-        );
+        void begin(vk::CommandBufferInheritanceInfo* = nullptr);
 
         void bindDescriptor(const Vector<vk::DescriptorSet>& descriptors_);
 
@@ -86,6 +78,8 @@ namespace hg::engine::gfx {
 
         void bindIndexBuffer(const ptr<const VirtualBufferView> bufferView_);
 
+        void bindIndexBuffer(cref<IndexBufferView> indexBufferView_);
+
         //private:
     public:
         /**
@@ -95,27 +89,6 @@ namespace hg::engine::gfx {
         vk::PipelineBindPoint _pipelineBindPoint;
 
     public:
-        /**
-         * Bind pipeline
-         *
-         * @author Julius
-         * @date 10.08.2022
-         *
-         * @param  pipeline_ The pipeline.
-         */
-        void bindPipeline(ptr<ComputePipeline> pipeline_);
-
-        /**
-         * Bind pipeline
-         *
-         * @author Julius
-         * @date 22.11.2020
-         *
-         * @param  pipeline_ The pipeline.
-         * @param  viewport_ The viewport.
-         */
-        void bindPipeline(ptr<GraphicPipeline> pipeline_, cref<Viewport> viewport_);
-
         /**
          * Bind vertex buffer
          *
@@ -153,6 +126,8 @@ namespace hg::engine::gfx {
         void bindVertexBuffer(const u32 binding_, const ptr<const VirtualBuffer> buffer_, u64 offset_);
 
         void bindVertexBuffer(const u32 binding_, const ptr<const VirtualBufferView> bufferView_);
+
+        void bindVertexBuffer(const u32 index_, cref<VertexBufferView> vertexBufferView_);
 
         /**
          * Blits
@@ -293,7 +268,7 @@ namespace hg::engine::gfx {
          */
         void reset();
 
-    private:
+    protected:
         /**
          * Command Pool
          */
@@ -335,7 +310,7 @@ namespace hg::engine::gfx {
          */
         void release();
 
-    private:
+    protected:
         /**
          * Vulkan API
          */

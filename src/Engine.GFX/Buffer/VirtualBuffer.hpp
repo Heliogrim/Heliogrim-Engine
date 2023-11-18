@@ -2,6 +2,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 
+#include "BufferObject.hpp"
 #include "../Device/Device.hpp"
 #include "VirtualBufferPage.hpp"
 #include "__fwd.hpp"
@@ -14,7 +15,8 @@ namespace hg::engine::gfx {
      *  TODO: Software solution for sparse set requires indirection buffer to handle sequences
      */
 
-    class VirtualBuffer {
+    class VirtualBuffer :
+        public InheritMeta<VirtualBuffer, BufferObject> {
     public:
         using this_type = VirtualBuffer;
 
@@ -31,7 +33,7 @@ namespace hg::engine::gfx {
 
         VirtualBuffer(mref<this_type> other_) noexcept;
 
-        ~VirtualBuffer();
+        ~VirtualBuffer() override;
 
     public:
         ref<this_type> operator=(cref<this_type>) = delete;

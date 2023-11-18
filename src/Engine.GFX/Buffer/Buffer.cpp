@@ -31,7 +31,7 @@ void Buffer::flushAligned(const u64 size_, const u64 offset_) {
 
     const auto aligned {
         ((range >> shift) << shift) +
-        ((range & mask) ? + 1ui64 << shift : 0ui64)
+        ((range & mask) ? +1ui64 << shift : 0ui64)
     };
 
     memory->flush(
@@ -56,7 +56,7 @@ void Buffer::mapAligned(const u64 size_, const u64 offset_) {
 
     const auto aligned {
         ((range >> shift) << shift) +
-        ((range & mask) ? + 1ui64 << shift : 0ui64)
+        ((range & mask) ? +1ui64 << shift : 0ui64)
     };
 
     memory->map(

@@ -1,17 +1,43 @@
 #pragma once
 
+#include "BufferObject.hpp"
 #include "../vkinc.hpp"
 #include "../Geometry/Vertex.hpp"
 #include "../Memory/AllocatedMemory.hpp"
 
 namespace hg::engine::gfx {
-    class Buffer {
+    class Buffer :
+        public InheritMeta<Buffer, BufferObject> {
     public:
         using this_type = Buffer;
 
         using value_type = Buffer;
         using reference_type = Buffer&;
         using const_reference_type = const Buffer&;
+
+    public:
+        constexpr Buffer() noexcept = default;
+
+        Buffer(mref<this_type> other_) noexcept :
+            memory(_STD exchange(other_.memory, nullptr)),
+            buffer(_STD exchange(other_.buffer, nullptr)),
+            device(other_.device),
+            size(other_.size),
+            usageFlags(other_.usageFlags) {}
+
+        ~Buffer() noexcept override = default;
+
+    public:
+        ref<this_type> operator=(mref<this_type> other_) noexcept {
+            if (this != _STD addressof(other_)) {
+                memory = _STD exchange(other_.memory, nullptr);
+                buffer = _STD exchange(other_.buffer, nullptr);
+                device = other_.device;
+                size = other_.size;
+                usageFlags = other_.usageFlags;
+            }
+            return *this;
+        }
 
     public:
         ptr<memory::AllocatedMemory> memory;
