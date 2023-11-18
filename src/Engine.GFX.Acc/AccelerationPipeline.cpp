@@ -19,10 +19,10 @@ cref<Vector<smr<StageDerivat>>> AccelerationPipeline::getStageDerivates() const 
     return _stages;
 }
 
-cref<AccelerationPassBindings> AccelerationPipeline::getPassBindings() const noexcept {
+cref<AccelerationPipelineBindings> AccelerationPipeline::getPipelineBindings() const noexcept {
     return _bindings;
 }
 
-void AccelerationPipeline::setPassBindings(mref<AccelerationPassBindings> bindings_) {
+void AccelerationPipeline::setPassBindings(mref<AccelerationPipelineBindings> bindings_) {
     _bindings = _STD move(bindings_);
 }

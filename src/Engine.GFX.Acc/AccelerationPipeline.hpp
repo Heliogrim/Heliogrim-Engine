@@ -6,7 +6,7 @@
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
 #include "__fwd.hpp"
-#include "Pipeline/Layout/AccelerationPassBindings.hpp"
+#include "Pipeline/Layout/AccelerationPipelineBindings.hpp"
 
 namespace hg::engine::gfx::acc {
     class AccelerationPipeline :
@@ -34,11 +34,11 @@ namespace hg::engine::gfx::acc {
         [[nodiscard]] cref<Vector<smr<StageDerivat>>> getStageDerivates() const noexcept;
 
     protected:
-        AccelerationPassBindings _bindings;
+        AccelerationPipelineBindings _bindings;
 
     public:
-        [[nodiscard]] cref<AccelerationPassBindings> getPassBindings() const noexcept;
+        [[nodiscard]] cref<AccelerationPipelineBindings> getPipelineBindings() const noexcept;
 
-        void setPassBindings(mref<AccelerationPassBindings> bindings_);
+        void setPassBindings(mref<AccelerationPipelineBindings> bindings_);
     };
 }

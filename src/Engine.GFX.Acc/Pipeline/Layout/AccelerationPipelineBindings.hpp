@@ -4,8 +4,8 @@
 #include "AccelerationBindingLayout.hpp"
 
 namespace hg::engine::gfx::acc {
-    struct AccelerationPassBindings {
-        using this_type = AccelerationPassBindings;
+    struct AccelerationPipelineBindings {
+        using this_type = AccelerationPipelineBindings;
 
     public:
         Vector<AccelerationBindingLayout> layouts;

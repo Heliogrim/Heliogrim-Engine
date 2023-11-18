@@ -94,6 +94,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Command\CommandBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Command\CommandBufferStructs.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\DataBindingMode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\DataIoMode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\AccelerationPassFactory.hpp" />
@@ -111,7 +112,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\GraphicsPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\GraphicsSpec.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\Layout\AccelerationBindingLayout.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\Layout\AccelerationPassBindings.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\Layout\AccelerationPipelineBindings.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\MeshPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\RaytracingPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\VkComputePipeline.hpp" />
@@ -137,6 +138,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationPipeline.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\Command\CommandBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationPassFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\VkGraphicsPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Acc\Pipeline\GraphicsPipeline.cpp" />
