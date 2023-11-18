@@ -16,7 +16,7 @@ VkPassBuilder::~VkPassBuilder() = default;
 
 smr<AccelerationPipeline> VkPassBuilder::build(
     mref<smr<const AccelerationEffect>> effect_,
-    cref<class EffectSpecification> specifications_,
+    cref<smr<const class EffectSpecification>> specifications_,
     cref<smr<const class EffectProfile>> profile_
 ) const noexcept {
     //assert(specifications_.getGraphicsSpec().renderPass);

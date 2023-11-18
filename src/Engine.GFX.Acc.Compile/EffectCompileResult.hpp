@@ -5,14 +5,15 @@
 
 namespace hg::engine::gfx::acc {
     enum class EffectCompileResultFlag {
-        eFailed = 0x0,
+        eUnknown = 0x0,
         eCompiled = 0x1,
-        eCached = 0x2 | eCompiled
+        eCached = 0x2 | eCompiled,
+        eFailed = ~eUnknown
     };
 
     struct EffectCompileResult final {
         EffectCompileResultFlag flag;
-        smr<const AccelerationPipeline> apass;
+        smr<const AccelerationPipeline> pipeline;
         EffectPassRemapping remapping;
     };
 }

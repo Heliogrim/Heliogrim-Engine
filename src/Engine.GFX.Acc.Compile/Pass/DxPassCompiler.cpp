@@ -8,7 +8,7 @@ DxPassCompiler::DxPassCompiler() = default;
 DxPassCompiler::~DxPassCompiler() = default;
 
 smr<const AccelerationPipeline> DxPassCompiler::compile(
-    cref<EffectSpecification> specifications_,
+    cref<smr<const EffectSpecification>> specifications_,
     mref<smr<AccelerationPipeline>> source_,
     mref<Vector<smr<StageDerivat>>> stages_,
     mref<Vector<uptr<CompiledModule>>> modules_

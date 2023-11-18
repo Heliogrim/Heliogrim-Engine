@@ -16,7 +16,7 @@ VkModuleCompiler::~VkModuleCompiler() noexcept = default;
 
 uptr<CompiledModule> VkModuleCompiler::compile(
     cref<smr<AccelerationPipeline>> targetPass_,
-    cref<EffectSpecification> specifications_,
+    cref<smr<const EffectSpecification>> specifications_,
     mref<uptr<ModuleSource>> source_
 ) const {
 

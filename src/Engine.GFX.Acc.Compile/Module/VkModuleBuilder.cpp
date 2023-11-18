@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <regex>
 #include <string>
+#include <Engine.Common/Make.hpp>
 #include <Engine.GFX.Acc/AccelerationEffect.hpp>
 #include <Engine.GFX.Acc/Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.Logging/Logger.hpp>
@@ -41,7 +42,7 @@ bool VkModuleBuilder::isFirstStage(
 
 uptr<ModuleSource> VkModuleBuilder::build(
     cref<smr<AccelerationPipeline>> targetPass_,
-    cref<EffectSpecification> specifications_,
+    cref<smr<const EffectSpecification>> specifications_,
     cref<smr<StageDerivat>> stage_,
     cref<uptr<ModuleSource>> previous_
 ) const {
@@ -71,7 +72,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
     s32 dsetLocation = 0i32;
 
     // Warning: This has to be invariant over all stages within one target pass
-    for (const auto& layout : targetPass_->getPassBindings().layouts) {
+    for (const auto& layout : targetPass_->getPipelineBindings().layouts) {
 
         for (const auto& element : layout.elements) {
 

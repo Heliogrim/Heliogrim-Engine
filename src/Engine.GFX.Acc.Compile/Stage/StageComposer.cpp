@@ -37,7 +37,7 @@ void StageComposer::setTokenizer(mref<non_owning_rptr<const Tokenizer>> tokenize
 
 Vector<smr<StageDerivat>> StageComposer::compose(
     cref<smr<const EffectProfile>> profile_,
-    cref<EffectSpecification> specifications_,
+    cref<smr<const EffectSpecification>> specifications_,
     cref<smr<AccelerationPipeline>> targetPass_
 ) const {
 
@@ -119,7 +119,7 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 
     /**/
 
-    AccelerationPassBindings bindings {};
+    AccelerationPipelineBindings bindings {};
     for (const auto& token : bindingTokens) {
 
         AccelerationBindingLayoutElement element {};

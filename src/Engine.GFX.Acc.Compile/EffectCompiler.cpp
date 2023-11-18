@@ -41,9 +41,9 @@ EffectCompileResult EffectCompiler::compile(
 
     /* Discover all tokens and resource dependencies */
 
-    if (not request_.spec.targetSymbols().empty()) {
+    if (not request_.spec->targetSymbols().empty()) {
         // TODO: Check whether we can generate a subpass using IR breakpoints to pass data with carrier functions
-        for (const auto& requested : request_.spec.targetSymbols()) {
+        for (const auto& requested : request_.spec->targetSymbols()) {
             assert(_STD ranges::contains(request_.effect->getExportSymbols(), requested));
         }
     }
@@ -119,7 +119,7 @@ EffectCompileResult EffectCompiler::compile(
 
     return {
         .flag = EffectCompileResultFlag::eCompiled,
-        .apass = _passCompiler->compile(
+        .pipeline = _passCompiler->compile(
             request_.spec,
             _STD move(pass),
             _STD move(stages),
