@@ -12,7 +12,7 @@ DxPassBuilder::~DxPassBuilder() = default;
 
 smr<AccelerationPipeline> DxPassBuilder::build(
     mref<smr<const AccelerationEffect>> effect_,
-    cref<class EffectSpecification> specifications_,
+    cref<smr<const class EffectSpecification>> specifications_,
     cref<smr<const class EffectProfile>> profile_
 ) const noexcept {
     return nullptr;

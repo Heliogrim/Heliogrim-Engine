@@ -5,7 +5,6 @@
 #include <Engine.GFX.Acc/Pipeline/AccelerationSpecification.hpp>
 #include <Engine.GFX.Acc/Stage/TransferToken.hpp>
 #include <Engine.GFX.Acc/Symbol/Symbol.hpp>
-#include <Engine.GFX/Pipeline/LORenderPass.hpp>
 
 namespace hg::engine::gfx::acc {
     struct GraphicsPassSpecification {

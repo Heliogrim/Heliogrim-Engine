@@ -1,5 +1,7 @@
 #include "DxEffectCompiler.hpp"
 
+#include <Engine.Common/Make.hpp>
+
 #include "Pass/DxPassBuilder.hpp"
 #include "Pass/DxPassCompiler.hpp"
 #include "Stage/StageComposer.hpp"

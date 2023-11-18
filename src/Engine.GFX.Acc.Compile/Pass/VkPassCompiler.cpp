@@ -67,7 +67,7 @@ void VkPassCompiler::resolveBindLayouts(
     u32 dsetIndex = 0;
     u32 dsetLocation = 0;
 
-    for (const auto& layout : pass_->getPassBindings().layouts) {
+    for (const auto& layout : pass_->getPipelineBindings().layouts) {
 
         vk::DescriptorSetLayoutCreateInfo dslci {};
         Vector<vk::DescriptorSetLayoutBinding> vkBindings {};
@@ -205,7 +205,7 @@ smr<const AccelerationPipeline> VkPassCompiler::compileTypeSpec(
 }
 
 smr<const AccelerationPipeline> VkPassCompiler::compile(
-    cref<class EffectSpecification> specifications_,
+    cref<smr<const EffectSpecification>> specifications_,
     mref<smr<AccelerationPipeline>> source_,
     mref<Vector<smr<StageDerivat>>> stages_,
     mref<Vector<uptr<CompiledModule>>> modules_
@@ -223,28 +223,28 @@ smr<const AccelerationPipeline> VkPassCompiler::compile(
             return compileTypeSpec<VkComputePipeline>(
                 _STD move(source_),
                 _STD move(stages),
-                specifications_.getPassSpec<ComputePassSpecification>()
+                specifications_->getPassSpec<ComputePassSpecification>()
             );
         }
         case VkGraphicsPipeline::typeId.data: {
             return compileTypeSpec<VkGraphicsPipeline>(
                 _STD move(source_),
                 _STD move(stages),
-                specifications_.getPassSpec<GraphicsPassSpecification>()
+                specifications_->getPassSpec<GraphicsPassSpecification>()
             );
         }
         case VkMeshPipeline::typeId.data: {
             return compileTypeSpec<VkMeshPipeline>(
                 _STD move(source_),
                 _STD move(stages),
-                specifications_.getPassSpec<MeshPassSpecification>()
+                specifications_->getPassSpec<MeshPassSpecification>()
             );
         }
         case VkRaytracingPipeline::typeId.data: {
             return compileTypeSpec<VkRaytracingPipeline>(
                 _STD move(source_),
                 _STD move(stages),
-                specifications_.getPassSpec<RaytracingPassSpecification>()
+                specifications_->getPassSpec<RaytracingPassSpecification>()
             );
         }
         default: {
@@ -391,7 +391,18 @@ smr<VkGraphicsPipeline> VkPassCompiler::linkVk(
             __debugbreak();
         }
 
-        constexpr vk::PipelineColorBlendAttachmentState blend { VK_FALSE };
+        vk::ColorComponentFlags ccf {};
+        ccf |= vk::ColorComponentFlagBits::eR;
+        ccf |= vk::ColorComponentFlagBits::eG;
+        ccf |= vk::ColorComponentFlagBits::eB;
+        ccf |= vk::ColorComponentFlagBits::eA;
+
+        vk::PipelineColorBlendAttachmentState blend {
+            VK_FALSE,
+            vk::BlendFactor::eOne, vk::BlendFactor::eZero, vk::BlendOp::eAdd,
+            vk::BlendFactor::eOne, vk::BlendFactor::eZero, vk::BlendOp::eAdd,
+            ccf
+        };
         colorBlendStates.push_back(blend);
 
         // description.token;
@@ -462,8 +473,9 @@ smr<VkGraphicsPipeline> VkPassCompiler::linkVk(
     prsci.rasterizerDiscardEnable = FALSE;
 
     prsci.polygonMode = vk::PolygonMode::eFill;
-    prsci.cullMode = vk::CullModeFlagBits::eBack;
-    prsci.frontFace = vk::FrontFace::eCounterClockwise;
+    //prsci.cullMode = vk::CullModeFlagBits::eBack;
+    prsci.cullMode = vk::CullModeFlagBits::eNone;
+    prsci.frontFace = vk::FrontFace::eClockwise;
 
     prsci.depthClampEnable = VK_TRUE;
     prsci.depthBiasEnable = VK_FALSE;

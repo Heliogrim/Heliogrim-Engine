@@ -32,6 +32,8 @@ namespace hg::engine::gfx::acc {
     public:
         ref<EffectPassRemapping> operator=(cref<EffectPassRemapping>) noexcept = delete;
 
+        ref<EffectPassRemapping> operator=(mref<EffectPassRemapping> other_) noexcept;
+
     private:
         DenseMap<RemappedSymbol, AliasSymbol> _remappedToAlias;
         DenseMap<AliasSymbol, RemappedSymbol> _aliasToRemapped;

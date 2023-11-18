@@ -81,7 +81,7 @@ namespace hg::engine::gfx::acc {
 
     public:
         [[nodiscard]] smr<const AccelerationPipeline> compile(
-            cref<class EffectSpecification> specifications_,
+            cref<smr<const class EffectSpecification>> specifications_,
             mref<smr<AccelerationPipeline>> source_,
             mref<Vector<smr<StageDerivat>>> stages_,
             mref<Vector<uptr<CompiledModule>>> modules_

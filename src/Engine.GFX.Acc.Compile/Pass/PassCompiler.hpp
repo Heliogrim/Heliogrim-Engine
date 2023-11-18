@@ -24,7 +24,7 @@ namespace hg::engine::gfx::acc {
 
     public:
         [[nodiscard]] _Success_(return != nullptr) virtual smr<const AccelerationPipeline> compile(
-            cref<class EffectSpecification> specifications_,
+            cref<smr<const class EffectSpecification>> specifications_,
             mref<smr<AccelerationPipeline>> source_,
             mref<Vector<smr<StageDerivat>>> stages_,
             mref<Vector<uptr<class CompiledModule>>> modules_

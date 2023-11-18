@@ -7,6 +7,14 @@ EffectPassRemapping::EffectPassRemapping(mref<this_type> other_) noexcept :
     _remappedToAlias(_STD move(other_._remappedToAlias)),
     _aliasToRemapped(_STD move(other_._aliasToRemapped)) {}
 
+ref<EffectPassRemapping> EffectPassRemapping::operator=(mref<EffectPassRemapping> other_) noexcept {
+    if (_STD addressof(other_) != this) {
+        _remappedToAlias = _STD move(other_._remappedToAlias);
+        _aliasToRemapped = _STD move(other_._aliasToRemapped);
+    }
+    return *this;
+}
+
 tl::optional<EffectPassRemapping::AliasSymbol>
 EffectPassRemapping::alias(mref<RemappedSymbol> remapped_) const noexcept {
     const auto it = _remappedToAlias.find(remapped_);

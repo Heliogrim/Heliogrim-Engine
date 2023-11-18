@@ -29,7 +29,7 @@ namespace hg::engine::gfx::acc {
     public:
         [[nodiscard]] uptr<struct ModuleSource> build(
             cref<smr<AccelerationPipeline>> targetPass_,
-            cref<class EffectSpecification> specifications_,
+            cref<smr<const class EffectSpecification>> specifications_,
             cref<smr<StageDerivat>> stage_,
             cref<uptr<struct ModuleSource>> previous_
         ) const override;
