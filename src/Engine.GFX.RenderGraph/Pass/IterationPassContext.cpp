@@ -4,5 +4,5 @@ using namespace hg::engine::gfx::render::graph;
 using namespace hg;
 
 ref<SymbolContext> IterationPassContext::symbols() const noexcept {
-    return const_cast<ref<SymbolContext>>(_symbolContext);
+    return _symbolContext;
 }

@@ -15,7 +15,9 @@ namespace hg::engine::gfx::render::graph {
         using this_type = IterationPass;
 
     public:
-        IterationPass() noexcept = default;
+        IterationPass(ref<SymbolContext> symbolContext_) noexcept :
+            RenderGraphPass(),
+            _context(symbolContext_) {}
 
         ~IterationPass() noexcept = default;
 
@@ -39,6 +41,7 @@ namespace hg::engine::gfx::render::graph {
                 const auto invalidation = const_cast<ref<RuntimeNode>>(static_cast<cref<RuntimeNode>>(node_)).iterate(
                     _owner->_context
                 );
+                node_.traverse(*this);
             }
 
             void operator()(cref<CompileNode> node_) override {

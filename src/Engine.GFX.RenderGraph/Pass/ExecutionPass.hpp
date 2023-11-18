@@ -15,7 +15,9 @@ namespace hg::engine::gfx::render::graph {
         using this_type = ExecutionPass;
 
     public:
-        constexpr ExecutionPass() noexcept = default;
+        constexpr ExecutionPass(cref<SymbolContext> symbolContext_) noexcept :
+            RenderGraphPass(),
+            _context(symbolContext_) {}
 
         constexpr ~ExecutionPass() noexcept = default;
 
@@ -38,6 +40,7 @@ namespace hg::engine::gfx::render::graph {
             void operator()(cref<Node> node_) override {
                 [[maybe_unused]] const auto invalidation = const_cast<ref<RuntimeNode>>(static_cast<cref<RuntimeNode>>(
                     node_)).execute(_owner->_context);
+                node_.traverse(*this);
             }
 
             void operator()(cref<CompileNode> node_) override {
