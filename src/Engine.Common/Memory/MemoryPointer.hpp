@@ -264,7 +264,7 @@ namespace hg {
             return load();
         }
 
-        template <typename Ptx_ = Ty_*> requires _STD is_convertible_v<Ptx_, Ty_*>
+        template <typename Ptx_ = Ty_*> requires _STD is_convertible_v<_STD remove_cvref_t<Ptx_>, Ty_*>
         [[nodiscard]] constexpr Ty_* exchange(Ptx_&& next_) {
             return _STD exchange(mem, _STD forward<Ptx_>(next_));
         }
@@ -291,6 +291,11 @@ namespace hg {
     public:
         constexpr MemoryPointer() noexcept :
             storage() { }
+
+        template <typename Tx_ = Ty_> requires
+            _STD is_nothrow_convertible_v<Tx_*, Ty_*>
+        constexpr MemoryPointer(Tx_* value_) noexcept :
+            storage(value_) {}
 
         /* Weak protection against shared ownership for raw pointers */
         constexpr MemoryPointer(cref<this_type>) = delete;
@@ -370,7 +375,7 @@ namespace hg {
         }
 
     public:
-        template <typename Ptx_ = Ty_*> requires _STD is_nothrow_convertible_v<Ptx_, Ty_*>
+        template <typename Ptx_ = Ty_*> requires _STD is_nothrow_convertible_v<_STD remove_cvref_t<Ptx_>, Ty_*>
         [[nodiscard]] _STD _Compressed_pair<allocator_type, Ty_*> exchange(Ptx_&& next_) {
             return _STD _Compressed_pair<allocator_type, Ty_*>(
                 _STD _One_then_variadic_args_t {},

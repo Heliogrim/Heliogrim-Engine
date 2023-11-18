@@ -23,6 +23,9 @@ namespace hg {
         constexpr PointerKey() noexcept :
             value(nullptr) {}
 
+        constexpr PointerKey(const pointer_type value_) noexcept :
+            value(value_) {}
+
         template <typename Type_> requires
             _STD is_same_v<Type_, PointerType_> &&
             _STD is_nothrow_convertible_v<Type_, pointer_type>
@@ -30,11 +33,11 @@ namespace hg {
             value(static_cast<pointer_type>(value_)) {}
 
         template <typename Type_, typename StorageType_>
-        constexpr PointerKey(NonOwningMemoryPointer<Type_, StorageType_>&& value_) noexcept :
+        constexpr PointerKey(const NonOwningMemoryPointer<Type_, StorageType_>& value_) noexcept :
             value(static_cast<pointer_type>(value_.get())) {}
 
         template <typename Type_>
-        constexpr PointerKey(SharedMemoryReference<Type_>&& value_) noexcept :
+        constexpr PointerKey(const SharedMemoryReference<Type_>& value_) noexcept :
             value(static_cast<pointer_type>(value_.get())) {}
 
         constexpr PointerKey(cref<this_type> other_) noexcept :
@@ -67,7 +70,7 @@ namespace hg {
             return value <=> other_.value;
         }
 
-        _STD nullptr_t value;
+        ptr<const void> value;
     };
 }
 

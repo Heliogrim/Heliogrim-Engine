@@ -20,7 +20,6 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\Array.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\AssociativeKey.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\AutoArray.hpp" />
-    <ClInclude Include="..\..\src\Engine.Common\Collection\BytellHashMap.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\CompactArray.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\DenseMap.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\DenseSet.hpp" />
@@ -63,6 +62,7 @@
     <ClInclude Include="..\..\src\Engine.Common\Inc.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Integral128.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Make.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Managed\Rc.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Managed\SharedFromThis.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Bezier.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Bounding.hpp" />
