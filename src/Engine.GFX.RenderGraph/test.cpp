@@ -13,37 +13,28 @@
 #include <Engine.GFX.Acc/Stage/TransferToken.hpp>
 #include <Engine.GFX.Loader/Material/MaterialResource.hpp>
 #include <Engine.GFX.Material/Material.hpp>
-#include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
-#include <Engine.GFX.Render.Predefined/Effects/BrdfIrradiance.hpp>
-#include <Engine.GFX.Render.Predefined/Effects/BrdfLut.hpp>
-#include <Engine.GFX.Render.Predefined/Effects/BrdfPrefilter.hpp>
+#include <Engine.GFX.Material/MaterialPrototype.hpp>
+#include <Engine.GFX.Material/MaterialParameter.hpp>
+#include <Engine.GFX.Render.Command/RenderCommandBufferBase.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/DeferredNormal.hpp>
-#include <Engine.GFX.Render.Predefined/Symbols/DeferredPosition.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp>
-#include <Engine.GFX.Render.Predefined/Symbols/SceneDepth.hpp>
+#include <Engine.GFX.RenderGraph/RuntimeGraph.hpp>
 #include <Engine.GFX.RenderGraph/Builder/BuilderVisitor.hpp>
 #include <Engine.GFX.RenderGraph/Relation/Description.hpp>
 #include <Engine.GFX.RenderGraph/Relation/Provision.hpp>
 #include <Engine.GFX.RenderGraph.Compile/RenderGraphCompiler.hpp>
-#include <Engine.GFX.RenderPipeline/RenderPipeline.hpp>
-#include <Engine.GFX.RenderPipeline/Build/BaseBuilder.hpp>
-#include <Engine.GFX.RenderPipeline/Build/StreamBuilder.hpp>
-#include <Engine.GFX.RenderPipeline/State/State.hpp>
+#include <Engine.Resource/Manage/UniqueResource.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 #include "CompileGraph.hpp"
 #include "Builder/Builder.hpp"
 #include "Component/BarrierComponent.hpp"
 #include "Component/ProviderComponent.hpp"
-#include "Component/Compile/AccelerationComponent.hpp"
-#include "Component/Compile/ImmutableAccelerationComponent.hpp"
-#include "Component/Compile/ImmutableCommandRecordComponent.hpp"
-#include "Component/Compile/SceneCommandRecordComponent.hpp"
 #include "Debug/DebugVisitor.hpp"
-#include "Node/Compile/AccelerationSubpassNode.hpp"
 #include "Node/Runtime/AnchorNode.hpp"
 #include "Node/Runtime/BarrierNode.hpp"
 #include "Node/Runtime/ProviderNode.hpp"
+#include "Node/Compile/CompileSubPassNode.hpp"
 #include "Relation/MeshDescription.hpp"
 #include "Relation/SceneViewDescription.hpp"
 #include "Relation/TextureDescription.hpp"
@@ -1066,13 +1057,10 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
 
         /**/
 
-        auto accelComp = make_uptr<graph::CompileImmutableAccelerationComponent>();
-        auto recordComp = make_uptr<graph::CompileSceneCommandRecordComponent>();
+        auto node = make_smr<graph::CompileSubPassNode>();
 
         // As we expect to have multiple materials, we need to progressively use the depth buffer to refine
-        accelComp->addTransform(makeSceneDepthSymbol());
-
-        auto node = make_smr<graph::CompileAccelerationSubpassNode>(_STD move(accelComp), _STD move(recordComp));
+        //accelComp->addTransform(makeSceneDepthSymbol());
 
         // TODO: subpassComp->addExpectedRequirement(graph::Requirement { symbols.at("sceneCamera") });
         // TODO: subpassComp->addExpectedProvision(graph::Provision { symbols.at("sceneDepth") });
@@ -1092,23 +1080,23 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         /**/
 
         {
-            auto accelComp = make_uptr<graph::CompileImmutableAccelerationComponent>();
-            auto recordComp = make_uptr<graph::CompileImmutableCommandRecordComponent>();
+            auto node = make_smr<graph::CompileSubPassNode>();
 
+            /*
             accelComp->addOutput(symbols.at("brdf::lut"));
+            
             recordComp->setInitializer(
                 [
-                    effect = makeBrdfLutEffect()
-                ](mref<nmpt<cmd::RenderCommandBuffer>> cmd_) {
+                    pipeline = makeBrdfLutPipeline()
+                ](mref<nmpt<cmd::RenderCommandBufferBase>> cmd_) {
                     cmd_->begin();
-                    cmd_->bindEffect(effect.get());
+                    cmd_->bindGraphicsPipeline(smr { pipeline });
                     //cmd_->bindStaticMesh(...);
                     cmd_->drawStaticMesh(1uL, 0uL, 2uL, 0uL);
                     cmd_->end();
                 }
             );
-
-            auto node = make_smr<graph::CompileAccelerationSubpassNode>(_STD move(accelComp), _STD move(recordComp));
+            */
 
             auto prevIt = it;
             it = node.get();
@@ -1119,26 +1107,25 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         /**/
 
         {
-            auto accelComp = make_uptr<graph::CompileImmutableAccelerationComponent>();
-            auto recordComp = make_uptr<graph::CompileImmutableCommandRecordComponent>();
+            auto node = make_smr<graph::CompileSubPassNode>();
 
+            /*
             accelComp->addOutput(symbols.at("brdf::prefilter"));
             recordComp->setInitializer(
-                [effect = makeBrdfPrefilterEffect()](mref<nmpt<cmd::RenderCommandBuffer>> cmd_) {
+                [pipeline = makeBrdfPrefilterPipeline()](mref<nmpt<cmd::RenderCommandBufferBase>> cmd_) {
                     cmd_->begin();
-                    cmd_->bindEffect(effect.get());
+                    cmd_->bindGraphicsPipeline(smr { pipeline });
                     // TBD: Bind 6 cubic camera matrices
-                    cmd_->bindStorage(nullptr);
+                    cmd_->bindStorage(nullptr, nullptr);
                     // TBD: Bind roughness and samples
-                    cmd_->bindStorage(nullptr);
+                    cmd_->bindStorage(nullptr, nullptr);
                     // TBD: Bind skybox cube texture
-                    cmd_->bindTexture(static_cast<ptr<const TextureView>>(nullptr));
+                    cmd_->bindTexture(nullptr, static_cast<ptr<const TextureView>>(nullptr));
                     cmd_->drawStaticMesh(1uL, 0uL, 36uL, 0uL);
                     cmd_->end();
                 }
             );
-
-            auto node = make_smr<graph::CompileAccelerationSubpassNode>(_STD move(accelComp), _STD move(recordComp));
+             */
 
             auto prevIt = it;
             it = node.get();
@@ -1149,27 +1136,26 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         /**/
 
         {
-            auto accelComp = make_uptr<graph::CompileImmutableAccelerationComponent>();
-            auto recordComp = make_uptr<graph::CompileImmutableCommandRecordComponent>();
+            auto node = make_smr<graph::CompileSubPassNode>();
 
+            /*
             accelComp->addInput(symbols.at("brdf::prefilter"));
             accelComp->addOutput(symbols.at("brdf::irradiance"));
             recordComp->setInitializer(
-                [effect = makeBrdfIrradianceEffect()](mref<nmpt<cmd::RenderCommandBuffer>> cmd_) {
+                [pipeline = makeBrdfIrradiancePipeline()](mref<nmpt<cmd::RenderCommandBufferBase>> cmd_) {
                     cmd_->begin();
-                    cmd_->bindEffect(effect.get());
+                    cmd_->bindGraphicsPipeline(smr { pipeline });
                     // TBD: Bind 6 cubic camera matrices
-                    cmd_->bindStorage(nullptr);
+                    cmd_->bindStorage(nullptr, nullptr);
                     // TBD: Bind prefiltered
-                    cmd_->bindTexture(static_cast<ptr<const TextureView>>(nullptr));
+                    cmd_->bindTexture(nullptr, static_cast<ptr<const TextureView>>(nullptr));
                     // TBD: Bind delta phi and delta theta
-                    cmd_->bindStorage(nullptr);
+                    cmd_->bindStorage(nullptr, nullptr);
                     cmd_->drawStaticMesh(1uL, 0uL, 5uL, 0uL);
                     cmd_->end();
                 }
             );
-
-            auto node = make_smr<graph::CompileAccelerationSubpassNode>(_STD move(accelComp), _STD move(recordComp));
+             */
 
             auto prevIt = it;
             it = node.get();
@@ -1188,9 +1174,9 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
 
         /**/
 
-        auto accelComp = make_uptr<graph::CompileImmutableAccelerationComponent>();
-        auto recordComp = make_uptr<graph::CompileSceneCommandRecordComponent>();
+        auto node = make_smr<graph::CompileSubPassNode>();
 
+        /*
         // We want to use the pre-populated depth buffer for solid geometry
         accelComp->addInput(makeSceneDepthSymbol());
 
@@ -1199,8 +1185,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         accelComp->addTransform(symbols.at("brdf::arm"));
         accelComp->addTransform(makeDeferredNormalSymbol());
         accelComp->addTransform(makeDeferredPositionSymbol());
-
-        auto node = make_smr<graph::CompileAccelerationSubpassNode>(_STD move(accelComp), _STD move(recordComp));
+         */
 
         // TODO: subpassComp->addExpectedRequirement(graph::Requirement { symbols.at("sceneCamera") });
         // TODO: subpassComp->addExpectedRequirement(graph::Requirement { symbols.at("sceneDepth") });
@@ -1222,9 +1207,9 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
 
         /**/
 
-        auto accelComp = make_uptr<graph::CompileImmutableAccelerationComponent>();
-        auto recordComp = make_uptr<graph::CompileSceneCommandRecordComponent>();
+        auto node = make_smr<graph::CompileSubPassNode>();
 
+        /*
         //
         accelComp->addInput(makeSceneDepthSymbol());
         //
@@ -1238,8 +1223,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         accelComp->addInput(symbols.at("brdf::irradiance"));
         //
         accelComp->addTransform(makeSceneColorSymbol());
-
-        auto node = make_smr<graph::CompileAccelerationSubpassNode>(_STD move(accelComp), _STD move(recordComp));
+         */
 
         cursor = node.get();
         graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(node));
@@ -1255,12 +1239,11 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
 
         /**/
 
-        auto accelComp = make_uptr<graph::CompileImmutableAccelerationComponent>();
-        auto recordComp = make_uptr<graph::CompileSceneCommandRecordComponent>();
+        auto node = make_smr<graph::CompileSubPassNode>();
 
+        /*
         accelComp->addTransform(makeSceneColorSymbol());
-
-        auto node = make_smr<graph::CompileAccelerationSubpassNode>(_STD move(accelComp), _STD move(recordComp));
+        */
 
         // TODO: subpassComp->addExpectedRequirement(graph::Requirement { symbols.at("sceneColor") });
         // TODO: subpassComp->addExpectedProvision(graph::Provision { symbols.at("sceneColor") });
