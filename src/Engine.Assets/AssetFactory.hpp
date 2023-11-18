@@ -23,7 +23,7 @@ namespace hg::engine::assets {
     class SkeletalGeometry;
     class Sound;
     class StaticGeometry;
-    class Texture;
+    class TextureAsset;
 }
 
 namespace hg::engine::assets {
@@ -145,7 +145,7 @@ namespace hg::engine::assets {
          *
          * @returns The new texture asset.
          */
-        [[nodiscard]] ptr<Texture> createTextureAsset() const;
+        [[nodiscard]] ptr<TextureAsset> createTextureAsset() const;
 
         /**
          * Creates texture asset
@@ -157,7 +157,7 @@ namespace hg::engine::assets {
          *
          * @returns The new texture asset.
          */
-        [[nodiscard]] ptr<Texture> createTextureAsset(cref<asset_guid> guid_) const;
+        [[nodiscard]] ptr<TextureAsset> createTextureAsset(cref<asset_guid> guid_) const;
 
         /**
          * Creates a texture asset
@@ -175,7 +175,7 @@ namespace hg::engine::assets {
          *
          * @returns The new texture asset.
          */
-        [[nodiscard]] ptr<Texture> createTextureAsset(
+        [[nodiscard]] ptr<TextureAsset> createTextureAsset(
             cref<asset_guid> guid_,
             cref<asset_guid> baseImage_,
             mref<Vector<asset_guid>> images_,

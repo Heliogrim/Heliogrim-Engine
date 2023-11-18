@@ -37,7 +37,7 @@
     <ClInclude Include="..\..\src\Engine.Assets\Types\SfxMaterial.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\SkeletalGeometry.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\Sound.hpp" />
-    <ClInclude Include="..\..\src\Engine.Assets\Types\Texture\Texture.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Texture\TextureAsset.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
@@ -61,7 +61,7 @@
     <ClCompile Include="..\..\src\Engine.Assets\Types\Material\GfxMaterialPrototype.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Material\GfxMaterialPrototypeStructure.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Material\GfxMaterialStructure.cpp" />
-    <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\Texture.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\TextureAsset.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\TextureDataLayout.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\TextureStructure.cpp" />
   </ItemGroup>

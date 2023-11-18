@@ -1,4 +1,4 @@
-#include "Texture.hpp"
+#include "TextureAsset.hpp"
 
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 
@@ -6,7 +6,7 @@ using namespace hg::engine::assets;
 
 namespace hg::engine::serialization {
     template <>
-    void DataLayout<Texture>::describe() {
+    void DataLayout<TextureAsset>::describe() {
 
         using namespace ::hg::engine::serialization::layout;
 
@@ -19,24 +19,24 @@ namespace hg::engine::serialization {
         assetNameLayout->describe();
 
         /**/
-        defineValue<LayoutDefineValueType::eUInt64>(offsetof(Texture, _guid));
-        defineValue<LayoutDefineValueType::eUInt64>(offsetof(Texture, _type));
-        defineSlice<string>(offsetof(Texture, _assetName), assetNameLayout);
+        defineValue<LayoutDefineValueType::eUInt64>(offsetof(TextureAsset, _guid));
+        defineValue<LayoutDefineValueType::eUInt64>(offsetof(TextureAsset, _type));
+        defineSlice<string>(offsetof(TextureAsset, _assetName), assetNameLayout);
 
         /**/
-        defineObject(offsetof(Texture, _baseImage), guidLayout);
-        defineSlice<Vector<asset_guid>>(offsetof(Texture, _images), guidLayout);
+        defineObject(offsetof(TextureAsset, _baseImage), guidLayout);
+        defineSlice<Vector<asset_guid>>(offsetof(TextureAsset, _images), guidLayout);
 
         #if USE_SPAN_LAYOUT
-    defineSpan(offsetof(Texture, _extent), sizeof(Texture::_extent));
+    defineSpan(offsetof(Texture, _extent), sizeof(TextureAsset::_extent));
         #else
-        defineValue<LayoutDefineValueType::eUInt32>(offsetof(Texture, _extent.x));
-        defineValue<LayoutDefineValueType::eUInt32>(offsetof(Texture, _extent.y));
-        defineValue<LayoutDefineValueType::eUInt32>(offsetof(Texture, _extent.z));
+        defineValue<LayoutDefineValueType::eUInt32>(offsetof(TextureAsset, _extent.x));
+        defineValue<LayoutDefineValueType::eUInt32>(offsetof(TextureAsset, _extent.y));
+        defineValue<LayoutDefineValueType::eUInt32>(offsetof(TextureAsset, _extent.z));
         #endif
 
-        defineValue<LayoutDefineValueType::eUInt8>(offsetof(Texture, _format));
-        defineValue<LayoutDefineValueType::eUInt32>(offsetof(Texture, _mipLevel));
-        defineValue<LayoutDefineValueType::eUInt8>(offsetof(Texture, _textureType));
+        defineValue<LayoutDefineValueType::eUInt8>(offsetof(TextureAsset, _format));
+        defineValue<LayoutDefineValueType::eUInt32>(offsetof(TextureAsset, _mipLevel));
+        defineValue<LayoutDefineValueType::eUInt8>(offsetof(TextureAsset, _textureType));
     }
 }

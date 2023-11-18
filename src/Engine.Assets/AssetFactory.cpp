@@ -18,7 +18,7 @@
 #include "Types/SkeletalGeometry.hpp"
 #include "Types/Sound.hpp"
 #include "Types/Geometry/StaticGeometry.hpp"
-#include "Types/Texture/Texture.hpp"
+#include "Types/Texture/TextureAsset.hpp"
 
 #include <sstream>
 
@@ -44,7 +44,7 @@ void engine::assets::storeDefaultNameAndUrl(non_owning_rptr<Asset> asset_, strin
                 pseudo = "texture";
                 break;
             }
-            case assets::Texture::typeId.data: {
+            case assets::TextureAsset::typeId.data: {
                 pseudo = "texture";
                 break;
             }
@@ -133,13 +133,13 @@ void AssetFactory::prepare() {
     /* Sound */
 
     /* Texture */
-    cur = make_sptr<DataLayout<Texture>>();
-    cur->reflect().storeType<Texture>();
+    cur = make_sptr<DataLayout<TextureAsset>>();
+    cur->reflect().storeType<TextureAsset>();
     cur->describe();
 
-    layouts.storeLayout("Assets::Texture"sv, cur);
-    layouts.storeLayout(Texture::typeId, cur);
-    layouts.storeLayout(TypedMetaClass<Texture>::get(), cur);
+    layouts.storeLayout("Assets::TextureAsset"sv, cur);
+    layouts.storeLayout(TextureAsset::typeId, cur);
+    layouts.storeLayout(TypedMetaClass<TextureAsset>::get(), cur);
 
     cur = make_sptr<DataLayout<Image>>();
     cur->reflect().storeType<Image>();
@@ -279,15 +279,15 @@ ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(
     return instance;
 }
 
-ptr<Texture> AssetFactory::createTextureAsset() const {
+ptr<TextureAsset> AssetFactory::createTextureAsset() const {
 
     auto guid = generate_asset_guid();
     return createTextureAsset(guid);
 }
 
-ptr<Texture> AssetFactory::createTextureAsset(cref<asset_guid> guid_) const {
+ptr<TextureAsset> AssetFactory::createTextureAsset(cref<asset_guid> guid_) const {
 
-    auto* instance = new Texture(
+    auto* instance = new TextureAsset(
         guid_,
         invalid_asset_guid,
         Vector<asset_guid> { invalid_asset_guid },
@@ -302,7 +302,7 @@ ptr<Texture> AssetFactory::createTextureAsset(cref<asset_guid> guid_) const {
     return instance;
 }
 
-ptr<Texture> AssetFactory::createTextureAsset(
+ptr<TextureAsset> AssetFactory::createTextureAsset(
     cref<asset_guid> guid_,
     cref<asset_guid> baseImage_,
     mref<Vector<asset_guid>> images_,
@@ -311,7 +311,7 @@ ptr<Texture> AssetFactory::createTextureAsset(
     cref<u32> mipLevel_,
     cref<gfx::TextureType> type_
 ) const {
-    auto* instance = new Texture(
+    auto* instance = new TextureAsset(
         guid_,
         baseImage_,
         _STD forward<Vector<asset_guid>>(images_),

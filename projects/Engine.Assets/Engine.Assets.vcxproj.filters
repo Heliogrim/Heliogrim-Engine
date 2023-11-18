@@ -96,7 +96,7 @@
     <ClInclude Include="..\..\src\Engine.Assets\Types\AssetConcept.hpp">
       <Filter>Headerdateien\Types</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Assets\Types\Texture\Texture.hpp">
+    <ClInclude Include="..\..\src\Engine.Assets\Types\Texture\TextureAsset.hpp">
       <Filter>Headerdateien\Types\Texture</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometry.hpp">
@@ -131,7 +131,7 @@
     <ClCompile Include="..\..\src\Engine.Assets\Types\LandscapeGeometry.cpp">
       <Filter>Quelldateien\Types</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\Texture.cpp">
+    <ClCompile Include="..\..\src\Engine.Assets\Types\Texture\TextureAsset.cpp">
       <Filter>Quelldateien\Types\Texture</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Font.cpp">

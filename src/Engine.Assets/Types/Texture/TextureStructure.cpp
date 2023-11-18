@@ -1,4 +1,4 @@
-#include "Texture.hpp"
+#include "TextureAsset.hpp"
 
 #include <Engine.Serialization/Access/Structure.hpp>
 #include <Engine.Serialization/Structure/IntegralScopedSlot.hpp>
@@ -28,7 +28,7 @@ void access::Structure<math::uivec3>::deserialize(math::uivec3* const self_, mre
 }
 
 template <>
-void access::Structure<Texture>::serialize(const Texture* const self_, mref<RecordScopedSlot> slot_) {
+void access::Structure<TextureAsset>::serialize(const TextureAsset* const self_, mref<RecordScopedSlot> slot_) {
 
     auto slot = slot_.intoStruct();
 
@@ -53,7 +53,7 @@ void access::Structure<Texture>::serialize(const Texture* const self_, mref<Reco
 }
 
 template <>
-void access::Structure<Texture>::deserialize(Texture* const self_, mref<RecordScopedSlot> slot_) {
+void access::Structure<TextureAsset>::deserialize(TextureAsset* const self_, mref<RecordScopedSlot> slot_) {
 
     const auto slot = slot_.intoStruct();
 
