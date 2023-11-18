@@ -8,10 +8,10 @@
 
 namespace hg::engine::gfx::loader {
     class TextureFeedback final :
-        public resource::loader::Feedback<assets::Texture, TextureResource> {
+        public resource::loader::Feedback<assets::TextureAsset, TextureResource> {
     public:
         using this_type = TextureFeedback;
-        using underlying_type = resource::loader::Feedback<assets::Texture, TextureResource>;
+        using underlying_type = resource::loader::Feedback<assets::TextureAsset, TextureResource>;
 
         using underlying_type::loader_traits;
         using underlying_type::request_type;

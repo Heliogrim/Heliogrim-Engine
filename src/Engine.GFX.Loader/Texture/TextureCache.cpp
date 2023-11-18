@@ -10,30 +10,30 @@ using namespace hg;
 TextureCache::TextureCache(const non_owning_rptr<cache::GlobalCacheCtrl> cacheCtrl_) :
     _cacheCtrl(cacheCtrl_) {}
 
-bool TextureCache::contains(const non_owning_rptr<const assets::Texture> asset_) const noexcept {
+bool TextureCache::contains(const non_owning_rptr<const assets::TextureAsset> asset_) const noexcept {
     return _cacheCtrl->cache()->contains(asset_);
 }
 
 cache::Result<cache::QueryResultType, smr<TextureResource>> TextureCache::query(
-    const non_owning_rptr<const assets::Texture> asset_
+    const non_owning_rptr<const assets::TextureAsset> asset_
 ) const noexcept {
     return cache_result_type { cache::QueryResultType::eMiss, {} };
 }
 
 bool TextureCache::store(
-    const non_owning_rptr<const assets::Texture> asset_,
+    const non_owning_rptr<const assets::TextureAsset> asset_,
     mref<smr<TextureResource>> resource_
 ) const noexcept {
     _cacheCtrl->cache()->store(asset_->get_guid(), _STD move(resource_));
     return true;
 }
 
-bool TextureCache::remove(const non_owning_rptr<const assets::Texture> asset_) noexcept {
+bool TextureCache::remove(const non_owning_rptr<const assets::TextureAsset> asset_) noexcept {
     return _cacheCtrl->cache()->remove(asset_->get_guid());
 }
 
 bool TextureCache::remove(
-    const non_owning_rptr<const assets::Texture> asset_,
+    const non_owning_rptr<const assets::TextureAsset> asset_,
     ref<smr<TextureResource>> resource_
 ) noexcept {
     smr<resource::ResourceBase> stored {};

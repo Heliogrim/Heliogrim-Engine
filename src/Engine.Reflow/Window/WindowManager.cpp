@@ -282,7 +282,7 @@ sptr<Window> WindowManager::requestWindow(
 
     /**/
 
-    auto sceneView { make_uptr<gfx::scene::SceneView>(nullptr, scene) };
+    auto sceneView { make_smr<gfx::scene::SceneView>(nullptr, scene) };
 
     /**/
 
@@ -290,11 +290,12 @@ sptr<Window> WindowManager::requestWindow(
     target->use(gfx->getCurrentDevice());
     target->use(swapchain.get());
     target->use(surface);
-    target->use(gfx->getRenderer("UIRenderer").get());
+    target->use(gfx->getRenderer("Test-Renderer").get());
 
     /**/
 
-    target->buildPasses(sceneView.get());
+    target->buildPasses(sceneView);
+    target->setActive(true);
 
     gfx->getSceneManager()->addPrimaryTarget(target);
 

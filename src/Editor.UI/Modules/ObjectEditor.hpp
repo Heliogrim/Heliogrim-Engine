@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine.Common/Collection/BytellHashMap.hpp>
 #include <Engine.Common/Meta/Concept.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 
@@ -28,7 +27,7 @@ namespace hg::editor::ui {
         [[nodiscard]] sptr<ObjectEditorPanel> makePanel();
 
     private:
-        ska::bytell_hash_map<type_id, uptr<ObjectValueMapperBase>> _mapper;
+        DenseMap<type_id, uptr<ObjectValueMapperBase>> _mapper;
 
     public:
         bool storeObjectMapper(const type_id typeId_, mref<uptr<ObjectValueMapperBase>> mapper_);

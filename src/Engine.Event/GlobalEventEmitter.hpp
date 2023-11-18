@@ -4,7 +4,7 @@
 #include <cassert>
 #endif
 
-#include <Engine.Common/Collection/BytellHashMap.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 
 #include "EventEmitter.hpp"
 
@@ -129,7 +129,7 @@ namespace hg {
 
     private:
         /** The emitter */
-        ska::bytell_hash_map<event_type_id, ptr<EventEmitter>> _emitter;
+        DenseMap<event_type_id, ptr<EventEmitter>> _emitter;
 
     public:
         template <IsStatefulEvent EventType_>

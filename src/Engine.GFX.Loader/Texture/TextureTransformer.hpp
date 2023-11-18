@@ -9,10 +9,10 @@
 
 namespace hg::engine::gfx::loader {
     class TextureTransformer final :
-        public resource::loader::Transformer<assets::Texture, TextureResource> {
+        public resource::loader::Transformer<assets::TextureAsset, TextureResource> {
     public:
         using this_type = TextureTransformer;
-        using underlying_type = resource::loader::Transformer<assets::Texture, TextureResource>;
+        using underlying_type = resource::loader::Transformer<assets::TextureAsset, TextureResource>;
 
         using underlying_type::loader_traits;
         using underlying_type::request_type;

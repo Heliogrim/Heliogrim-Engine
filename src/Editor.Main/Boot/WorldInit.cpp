@@ -43,7 +43,7 @@ void editor::boot::initPrimaryWorld() {
 
     /**/
 
-    addDefaultSkybox();
+    //addDefaultSkybox();
 }
 
 #include <Heliogrim/Heliogrim.hpp>

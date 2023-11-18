@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Engine.Common/Collection/BytellHashMap.hpp>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Reflect/Meta/TypeId.hpp>
 #include <Engine.Reflect/Inherit/Concept.hpp>
 
@@ -150,7 +150,7 @@ namespace hg::engine::acs {
         }
 
     private:
-        ska::bytell_hash_map<type_id, ptr<PoolWrapperBase>> _pools;
+        DenseMap<type_id, ptr<PoolWrapperBase>> _pools;
 
     public:
         template <class ValueType_, typename... Args_>
@@ -171,7 +171,7 @@ namespace hg::engine::acs {
         }
 
     private:
-        ska::bytell_hash_map<type_id, ptr<ActorPoolWrapperBase>> _actorPools;
+        DenseMap<type_id, ptr<ActorPoolWrapperBase>> _actorPools;
 
     public:
         template <typename ActorType_>

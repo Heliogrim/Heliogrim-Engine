@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine.Common/Collection/BytellHashMap.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Meta/Concept.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 
@@ -29,7 +29,7 @@ namespace hg::editor::ui {
         [[nodiscard]] sptr<SceneHierarchyPanel> makePanel();
 
     private:
-        ska::bytell_hash_map<type_id, uptr<HierarchyResolverBase>> _resolver;
+        DenseMap<type_id, uptr<HierarchyResolverBase>> _resolver;
 
     public:
         bool storeResolver(const type_id typeId_, mref<uptr<HierarchyResolverBase>> resolver_);
@@ -47,7 +47,7 @@ namespace hg::editor::ui {
         }
 
     private:
-        ska::bytell_hash_map<type_id, uptr<HierarchyGeneratorBase>> _generator;
+        DenseMap<type_id, uptr<HierarchyGeneratorBase>> _generator;
 
     public:
         bool storeGenerator(const type_id typeId_, mref<uptr<HierarchyGeneratorBase>> resolver_);

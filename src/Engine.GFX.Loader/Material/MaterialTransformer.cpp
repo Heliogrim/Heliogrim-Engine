@@ -3,7 +3,7 @@
 #include <ranges>
 #include <Engine.Assets/Assets.hpp>
 #include <Engine.Assets/Types/Material/GfxMaterialPrototype.hpp>
-#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Assets.System/IAssetRegistry.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Pool/GlobalResourcePool.hpp>
@@ -119,7 +119,7 @@ smr<engine::gfx::TextureResource> resolveTexture(
     #ifdef _DEBUG
     assert(asset != nullptr);
 
-    if (!asset->getMetaClass()->exact<engine::assets::Texture>()) {
+    if (!asset->getMetaClass()->exact<engine::assets::TextureAsset>()) {
         __debugbreak();
     }
     #endif
@@ -129,8 +129,8 @@ smr<engine::gfx::TextureResource> resolveTexture(
      *  // TODO: This should be a non-residential load operation, cause we only need the handle
      */
     //auto* textureAsset = Cast<engine::assets::Texture, engine::assets::Asset, false>(asset);
-    auto* textureAsset = static_cast<ptr<engine::assets::Texture>>(asset);
-    auto texture = loader_->loadImmediately<engine::assets::Texture, TextureResource>(
+    auto* textureAsset = static_cast<ptr<engine::assets::TextureAsset>>(asset);
+    auto texture = loader_->loadImmediately<engine::assets::TextureAsset, TextureResource>(
         _STD move(textureAsset),
         TextureLoadOptions {
             textureAsset->getExtent().x >= 8192 ?

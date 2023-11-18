@@ -6,7 +6,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/RobinMap.hpp>
 #include <Engine.Assets/AssetTypeId.hpp>
-#include <Engine.Assets/Types/Texture/Texture.hpp>
+#include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Assets.System/__fwd.hpp>
 
 namespace hg::editor::ui {
@@ -39,17 +39,17 @@ namespace hg::editor::ui {
         ptr<engine::assets::IAssetRegistry> _assetRegistry;
 
     private:
-        ptr<engine::assets::Texture> _defaultTypeIcon;
-        RobinMap<asset_type_id, ptr<engine::assets::Texture>> _typeIconMap;
+        ptr<engine::assets::TextureAsset> _defaultTypeIcon;
+        RobinMap<asset_type_id, ptr<engine::assets::TextureAsset>> _typeIconMap;
 
     private:
-        ptr<engine::assets::Texture> _directoryIcon;
-        Vector<_STD pair<string, ptr<engine::assets::Texture>>> _directoryIcons;
+        ptr<engine::assets::TextureAsset> _directoryIcon;
+        Vector<_STD pair<string, ptr<engine::assets::TextureAsset>>> _directoryIcons;
 
     public:
-        [[nodiscard]] ptr<engine::assets::Texture> getItemIconByAssetType(cref<asset_type_id> typeId_) const noexcept;
+        [[nodiscard]] ptr<engine::assets::TextureAsset> getItemIconByAssetType(cref<asset_type_id> typeId_) const noexcept;
 
-        [[nodiscard]] ptr<engine::assets::Texture> getItemIconForDirectory(cref<string_view> name_) const noexcept;
+        [[nodiscard]] ptr<engine::assets::TextureAsset> getItemIconForDirectory(cref<string_view> name_) const noexcept;
 
         [[nodiscard]] string getAssetTypeName(cref<asset_type_id> typeId_) const noexcept;
     };

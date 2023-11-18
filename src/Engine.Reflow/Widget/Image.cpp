@@ -42,7 +42,7 @@ string Image::getTag() const noexcept {
     return _STD format(R"(Image <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
-void Image::setImage(cref<sptr<gfx::ProxyTexture<non_owning_rptr>>> image_, ptr<void> resource_) {
+void Image::setImage(cref<nmpt<gfx::TextureLikeObject>> image_, ptr<void> resource_) {
     attr.image.setValue(image_);
     _imageResource = resource_;
 }
@@ -56,8 +56,6 @@ void Image::render(const ptr<ReflowCommandBuffer> cmd_) {
     const auto innerOffset = _layoutState.layoutOffset;
     const auto innerSize = _layoutState.layoutSize;
 
-    gfx::ProxyTexture<non_owning_rptr> proxy { *attr.image->get() };
-
     cmd_->drawImage(
         math::vec2 { innerOffset.x, innerOffset.y },
         _uvs[0],
@@ -67,7 +65,7 @@ void Image::render(const ptr<ReflowCommandBuffer> cmd_) {
         _uvs[2],
         math::vec2 { innerOffset.x, innerOffset.y + innerSize.y },
         _uvs[3],
-        _STD move(proxy),
+        attr.image->get(),
         attr.tint.getValue()
     );
 }

@@ -25,7 +25,6 @@
 #include "Engine.Reflow/Window/PopupLayer.hpp"
 #include "Engine.Reflow/Window/Window.hpp"
 #include "Engine.Common/Wrapper.hpp"
-#include "Engine.GFX/Texture/ProxyTexture.hpp"
 #include "Engine.GFX.Loader/Texture/TextureResource.hpp"
 #include "Engine.Assets/AssetFactory.hpp"
 
@@ -119,9 +118,8 @@ void configureImportTypeEntry(cref<sptr<AssetImportTypeItem>> parent_, cref<stri
 
     // Attention: This will most likely fail
     auto imageGuard = image->acquire(engine::resource::ResourceUsageFlag::eAll);
-    auto* const proxy = imageGuard.mut();
 
-    icon->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(*proxy)));
+    icon->setImage(*imageGuard.imm());
     wrapper->addChild(icon);
 
     /**/

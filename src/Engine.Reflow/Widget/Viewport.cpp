@@ -8,7 +8,6 @@
 #include <Engine.GFX/Graphics.hpp>
 #include "Engine.GFX/RenderTarget.hpp"
 #include <Engine.Common/Math/Coordinates.hpp>
-#include <Engine.GFX/Texture/ProxyTexture.hpp>
 #include <Heliogrim/Actors/CameraActor.hpp>
 #include <Engine.Core/Engine.hpp>
 #endif
@@ -191,7 +190,7 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
     const auto offset = _layoutState.layoutOffset;
     const auto size = _layoutState.layoutSize;
 
-    sptr<gfx::Texture> image {};
+    smr<gfx::Texture> image {};
     vk::Semaphore imageSignal {};
     Vector<vk::Semaphore> imageWaits {};
 
@@ -201,8 +200,6 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
     }
 
     if (result) {
-        gfx::ProxyTexture<non_owning_rptr> proxy { _STD move(image.get()) };
-
         cmd_->drawImageAsync(
             math::vec2 { offset.x, offset.y },
             _uvs[0],
@@ -212,7 +209,7 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
             _uvs[2],
             math::vec2 { offset.x, offset.y + size.y },
             _uvs[3],
-            _STD move(proxy),
+            image.get(),
             reinterpret_cast<_::VkSemaphore>(imageWaits.empty() ? nullptr : imageWaits.back().operator VkSemaphore()),
             reinterpret_cast<_::VkSemaphore>(imageSignal.operator VkSemaphore()),
             engine::color { 255.F, 255.F, 255.F, 255.F }

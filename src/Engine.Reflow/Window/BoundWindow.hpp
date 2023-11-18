@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 namespace hg::engine::gfx {
     class RenderTarget;
@@ -18,7 +19,7 @@ namespace hg::engine::reflow {
 namespace hg::engine::reflow {
     struct BoundWindow {
         sptr<gfx::RenderTarget> renderTarget;
-        uptr<gfx::scene::SceneView> sceneView;
+        smr<const gfx::scene::SceneView> sceneView;
         non_owning_rptr<gfx::Surface> surface;
         sptr<Window> window;
 

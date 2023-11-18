@@ -5,7 +5,7 @@
 #include <Engine.Resource/ImporterManager.hpp>
 #include <Engine.Resource/File.hpp>
 
-#include "Engine.Assets/Types/Texture/Texture.hpp"
+#include "Engine.Assets/Types/Texture/TextureAsset.hpp"
 #include "Engine.Assets/Types/Image.hpp"
 #include "Engine.Assets/Types/Geometry/StaticGeometry.hpp"
 
@@ -87,7 +87,7 @@ void SimpleImportAction::apply() {
 
     if (srcPath.ends_with(".ktx2")) {
         const auto result = importer.import<
-            _STD pair<ptr<::hg::engine::assets::Texture>, ptr<::hg::engine::assets::Image>>
+            _STD pair<ptr<::hg::engine::assets::TextureAsset>, ptr<::hg::engine::assets::Image>>
         >(::hg::engine::gfx::ImageFileType::Ktx2, file);
 
         const auto data { result.get() };

@@ -75,15 +75,14 @@ void InputAsset::setup() {
 
     auto* previewAsset = AssetBrowserHelper::get()->getItemIconByAssetType(asset_type_id {});
 
-    auto iconRes = engine::Engine::getEngine()->getResources()->loader().loadImmediately<engine::assets::Texture,
+    auto iconRes = engine::Engine::getEngine()->getResources()->loader().loadImmediately<engine::assets::TextureAsset,
         engine::gfx::TextureResource>(_STD move(previewAsset));
 
     auto previewGuard = iconRes->acquire(engine::resource::ResourceUsageFlag::eRead);
-    auto* view = previewGuard->as<engine::gfx::VirtualTextureView>();
 
     /**/
 
-    _preview->setImage(make_sptr<engine::gfx::ProxyTexture<non_owning_rptr>>(_STD move(view)), iconRes.get());
+    _preview->setImage(*previewGuard.imm(), iconRes.get());
     previewBox->setChild(_preview);
 
     auto actions { make_sptr<VerticalPanel>() };

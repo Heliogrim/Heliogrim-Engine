@@ -10,10 +10,10 @@
 
 namespace hg::engine::gfx::loader {
     class TextureCache final :
-        public resource::loader::Cache<assets::Texture, TextureResource> {
+        public resource::loader::Cache<assets::TextureAsset, TextureResource> {
     public:
         using this_type = TextureCache;
-        using underlying_type = resource::loader::Cache<assets::Texture, TextureResource>;
+        using underlying_type = resource::loader::Cache<assets::TextureAsset, TextureResource>;
 
         using underlying_type::loader_traits;
         using underlying_type::request_type;
@@ -22,7 +22,7 @@ namespace hg::engine::gfx::loader {
         using underlying_type::stream_request_type;
         using underlying_type::stream_response_type;
 
-        using cache_key_type = const non_owning_rptr<const assets::Texture>;
+        using cache_key_type = const non_owning_rptr<const assets::TextureAsset>;
         using cache_value_type = smr<TextureResource>;
         using cache_result_type = cache::Result<cache::QueryResultType, cache_value_type>;
 
@@ -37,22 +37,22 @@ namespace hg::engine::gfx::loader {
         const non_owning_rptr<cache::GlobalCacheCtrl> _cacheCtrl;
 
     public:
-        [[nodiscard]] bool contains(const non_owning_rptr<const assets::Texture> asset_) const noexcept;
+        [[nodiscard]] bool contains(const non_owning_rptr<const assets::TextureAsset> asset_) const noexcept;
 
         [[nodiscard]] cache::Result<cache::QueryResultType, smr<TextureResource>> query(
-            const non_owning_rptr<const assets::Texture> asset_
+            const non_owning_rptr<const assets::TextureAsset> asset_
         ) const noexcept;
 
     public:
         bool store(
-            const non_owning_rptr<const assets::Texture> asset_,
+            const non_owning_rptr<const assets::TextureAsset> asset_,
             _In_ mref<smr<TextureResource>> resource_
         ) const noexcept;
 
-        [[nodiscard]] bool remove(const non_owning_rptr<const assets::Texture> asset_) noexcept;
+        [[nodiscard]] bool remove(const non_owning_rptr<const assets::TextureAsset> asset_) noexcept;
 
         [[nodiscard]] bool remove(
-            const non_owning_rptr<const assets::Texture> asset_,
+            const non_owning_rptr<const assets::TextureAsset> asset_,
             _Out_ ref<smr<TextureResource>> resource_
         ) noexcept;
 
