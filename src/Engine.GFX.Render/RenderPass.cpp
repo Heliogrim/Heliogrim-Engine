@@ -1,12 +1,16 @@
 #include "RenderPass.hpp"
 
+#include <ranges>
 #include <Engine.GFX.RenderGraph/RuntimeGraph.hpp>
 #include <Engine.GFX.RenderGraph/Pass/ExecutionPass.hpp>
 #include <Engine.GFX.RenderGraph/Relation/TextureDescription.hpp>
-#include <Engine.GFX.RenderPipeline/RenderPipeline.hpp>
-#include <Engine.GFX.RenderPipeline/State/State.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/Cast.hpp>
+#include <Engine.GFX/Texture/Texture.hpp>
+#include <Engine.GFX/Texture/TextureView.hpp>
+#include <Engine.GFX/Texture/VirtualTexture.hpp>
+#include <Engine.GFX/Texture/VirtualTextureView.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 using namespace hg::engine::gfx::render;
 using namespace hg;
@@ -46,7 +50,9 @@ bool RenderPass::free() {
 }
 
 graph::ExecutionPass RenderPass::getExecutionPass() noexcept {
-    return graph::ExecutionPass {};
+    return graph::ExecutionPass {
+        _state.rootSymbolContext()
+    };
 }
 
 RenderPassResult RenderPass::operator()() {
@@ -60,75 +66,120 @@ RenderPassResult RenderPass::operator()() {
     return RenderPassResult::eSuccess;
 }
 
-nmpt<engine::gfx::scene::SceneView> RenderPass::changeSceneView(mref<nmpt<scene::SceneView>> nextSceneView_) {
+smr<const engine::gfx::scene::SceneView> RenderPass::changeSceneView(mref<smr<const scene::SceneView>> nextSceneView_) {
     return _STD exchange(_state._sceneView, _STD move(nextSceneView_));
 }
 
-void RenderPass::unsafeBindTarget(mref<smr<const acc::Symbol>> target_, mref<nmpt<void>> resource_) {
-    _state._boundTargets.insert_or_assign(target_, _STD move(resource_));
+void RenderPass::unsafeBindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<void>> resource_) {
+
+    if (_state._boundTargets.contains(target_)) {
+        IM_CORE_ERRORF("Tried to bind target `{}` while implicit rebinding is not allowed.", target_->name);
+        return;
+    }
+
+    _state._boundTargets.insert_or_assign(clone(target_), clone(resource_));
+
+    auto storage = _state.rootSymbolContext().exportSymbol(_STD move(target_));
+    storage->create(_STD move(resource_));
 }
 
-bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<nmpt<Texture>> texture_) {
+bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<Texture>> texture_) {
 
     const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
     if (not textureDescription) {
         return false;
     }
 
-    if (not textureDescription->isValidTexture(clone(texture_))) {
+    if (not textureDescription->isValidObject(texture_.get())) {
         return false;
     }
 
-    _state._boundTargets.insert_or_assign(target_, _STD move(texture_));
+    if (_state._boundTargets.contains(target_)) {
+        IM_CORE_ERRORF("Tried to bind target `{}` while implicit rebinding is not allowed.", target_->name);
+        return false;
+    }
+
+    _state._boundTargets.insert_or_assign(clone(target_), clone(texture_));
+
+    auto storage = _state.rootSymbolContext().exportSymbol(_STD move(target_));
+    storage->create(texture_.into<TextureLikeObject>());
+
     return true;
 }
 
-bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<nmpt<TextureView>> textureView_) {
+bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<TextureView>> textureView_) {
 
     const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
     if (not textureDescription) {
         return false;
     }
 
-    if (not textureDescription->isValidTexture(clone(textureView_))) {
+    if (not textureDescription->isValidObject(textureView_.get())) {
         return false;
     }
 
-    _state._boundTargets.insert_or_assign(target_, _STD move(textureView_));
+    if (_state._boundTargets.contains(target_)) {
+        IM_CORE_ERRORF("Tried to bind target `{}` while implicit rebinding is not allowed.", target_->name);
+        return false;
+    }
+
+    _state._boundTargets.insert_or_assign(clone(target_), clone(textureView_));
+
+    auto storage = _state.rootSymbolContext().exportSymbol(_STD move(target_));
+    storage->create(textureView_.into<TextureLikeObject>());
+
     return true;
 }
 
-bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<nmpt<VirtualTexture>> texture_) {
+bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<VirtualTexture>> texture_) {
 
     const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
     if (not textureDescription) {
         return false;
     }
 
-    if (not textureDescription->isValidTexture(clone(texture_))) {
+    if (not textureDescription->isValidObject(texture_.get())) {
         return false;
     }
 
-    _state._boundTargets.insert_or_assign(target_, _STD move(texture_));
+    if (_state._boundTargets.contains(target_)) {
+        IM_CORE_ERRORF("Tried to bind target `{}` while implicit rebinding is not allowed.", target_->name);
+        return false;
+    }
+
+    _state._boundTargets.insert_or_assign(clone(target_), clone(texture_));
+
+    auto storage = _state.rootSymbolContext().exportSymbol(_STD move(target_));
+    storage->create(texture_.into<TextureLikeObject>());
+
     return true;
 }
 
-bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<nmpt<VirtualTextureView>> textureView_) {
+bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<VirtualTextureView>> textureView_) {
 
     const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
     if (not textureDescription) {
         return false;
     }
 
-    if (not textureDescription->isValidTexture(clone(textureView_))) {
+    if (not textureDescription->isValidObject(textureView_.get())) {
         return false;
     }
 
-    _state._boundTargets.insert_or_assign(target_, _STD move(textureView_));
+    if (_state._boundTargets.contains(target_)) {
+        IM_CORE_ERRORF("Tried to bind target `{}` while implicit rebinding is not allowed.", target_->name);
+        return false;
+    }
+
+    _state._boundTargets.insert_or_assign(clone(target_), clone(textureView_));
+
+    auto storage = _state.rootSymbolContext().exportSymbol(_STD move(target_));
+    storage->create(textureView_.into<TextureLikeObject>());
+
     return true;
 }
 
-nmpt<void> RenderPass::unbindTarget(mref<smr<const acc::Symbol>> target_) noexcept {
+smr<void> RenderPass::unbindTarget(mref<smr<const acc::Symbol>> target_) noexcept {
 
     const auto iter = _state._boundTargets.find(target_);
     if (iter == _state._boundTargets.end()) {
@@ -137,6 +188,16 @@ nmpt<void> RenderPass::unbindTarget(mref<smr<const acc::Symbol>> target_) noexce
 
     auto stored = _STD move(iter->second);
     _state._boundTargets.erase(iter);
+
+    auto storage = _state.rootSymbolContext().getExportSymbol(_STD move(target_));
+
+    // TODO: ensure( storage->valid<>() );
+    auto result = storage->load<smr<void>>() == stored;
+    assert(result);
+
+    storage->destroy<smr<void>>();
+    result = _state.rootSymbolContext().eraseExportSymbol(_STD move(storage));
+    assert(result);
 
     return stored;
 }
@@ -248,14 +309,81 @@ void RenderPass::markAsTouched() {
     _reset.clear(_STD memory_order::release);
 }
 
-ref<decltype(RenderPass::_targetWaitSignals)> RenderPass::getTargetWaitSignals() noexcept {
-    return _targetWaitSignals;
+bool RenderPass::addTargetWaitSignal(
+    mref<smr<const acc::Symbol>> targetSymbol_,
+    cref<vk::Semaphore> signal_
+) noexcept {
+
+    if (not _state._boundTargets.contains(targetSymbol_)) {
+        return false;
+    }
+
+    const auto resource = _state.rootSymbolContext().getExportSymbol(clone(targetSymbol_));
+
+    const auto valid = resource->valid<smr<const TextureLikeObject>,
+        graph::TextureDescription,
+        decltype([](auto&& obj_) {
+            return obj_.get();
+        })>();
+    assert(valid);
+    resource->barriers.push_back(signal_.operator VkSemaphore());
+
+    return true;
 }
 
-ref<decltype(RenderPass::_targetWaitSignalStages)> RenderPass::getTargetWaitSignalStages() noexcept {
-    return _targetWaitSignalStages;
+void RenderPass::clearTargetWaitSignals(mref<smr<const acc::Symbol>> targetSymbol_) noexcept {
+
+    if (not _state._boundTargets.contains(targetSymbol_)) {
+        return;
+    }
+
+    const auto resource = _state.rootSymbolContext().getExportSymbol(clone(targetSymbol_));
+
+    const auto valid = resource->valid<smr<const TextureLikeObject>,
+        graph::TextureDescription,
+        decltype([](auto&& obj_) {
+            return obj_.get();
+        })>();
+    assert(valid);
+    resource->barriers.clear();
 }
 
-ref<decltype(RenderPass::_targetReadySignals)> RenderPass::getTargetReadySignals() noexcept {
-    return _targetReadySignals;
+void RenderPass::enumerateTargetWaitSignals(
+    ref<Vector<vk::Semaphore>> signals_,
+    mref<smr<const acc::Symbol>> targetSymbol_
+) noexcept {
+
+    // Warning: This is just temporary
+    enumerateTargetReadySignals(signals_, _STD move(targetSymbol_));
+}
+
+void RenderPass::enumerateTargetReadySignals(
+    ref<Vector<vk::Semaphore>> signals_,
+    mref<smr<const acc::Symbol>> targetSymbol_
+) noexcept {
+
+    if (not targetSymbol_.empty()) {
+
+        if (not _state._boundTargets.contains(targetSymbol_)) {
+            return;
+        }
+
+        const auto resource = _state.rootSymbolContext().getExportSymbol(_STD move(targetSymbol_));
+        for (auto* const barrier : resource->barriers) {
+            signals_.push_back(static_cast<VkSemaphore>(barrier));
+        }
+
+        return;
+    }
+
+    /**/
+
+    for (const auto& symbol : _state._boundTargets | std::views::keys) {
+
+        auto resource = _state.rootSymbolContext().getExportSymbol(clone(symbol));
+        for (auto* const barrier : resource->barriers) {
+            signals_.push_back(static_cast<VkSemaphore>(barrier));
+        }
+    }
+
 }

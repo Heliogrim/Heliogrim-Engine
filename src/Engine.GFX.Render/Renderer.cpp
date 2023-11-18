@@ -5,16 +5,11 @@
 #include <Engine.GFX/Cache/GlobalCacheCtrl.hpp>
 #include <Engine.GFX/Memory/LocalPooledAllocator.hpp>
 #include <Engine.GFX/Memory/GlobalPooledAllocator.hpp>
-#include <Engine.GFX.RenderPipeline/RenderPipeline.hpp>
-#include <Engine.GFX.RenderPipeline/State/State.hpp>
 #include <Engine.GFX.RenderGraph.Compile/RenderGraphCompiler.hpp>
 #include <Engine.GFX.RenderGraph/CompileGraph.hpp>
 #include <Engine.GFX.RenderGraph/RuntimeGraph.hpp>
 #include <Engine.GFX.RenderGraph/Pass/IterationPass.hpp>
 #include <Engine.GFX.RenderGraph/Pass/ResolvePass.hpp>
-#include <Engine.GFX.RenderPipeline/Build/BaseBuilder.hpp>
-#include <Engine.GFX.RenderPipeline/Build/StreamBuilder.hpp>
-#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "RenderPass.hpp"
 
@@ -83,13 +78,19 @@ void Renderer::free(mref<uptr<RenderPass>> pass_) const {
 
 uptr<RenderPass> Renderer::updateIncremental(mref<uptr<RenderPass>> pass_) const {
 
+    auto& symbolContext = pass_->_state.rootSymbolContext();
+
     /* Update Runtime Graph */
-    graph::IterationPass iterationPass {};
+    graph::IterationPass iterationPass {
+        symbolContext
+    };
     auto iteration = iterationPass.visitor();
     pass_->_graph->update(iteration);
 
     /* Resolve Runtime Graph */
-    graph::ResolvePass resolvePass {};
+    graph::ResolvePass resolvePass {
+        symbolContext
+    };
     auto resolve = resolvePass.visitor();
     pass_->_graph->update(resolve);
 
