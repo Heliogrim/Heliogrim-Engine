@@ -43,6 +43,9 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfIrradiance.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfLut.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfPrefilter.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Pipelines\BrdfIrradiance.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Pipelines\BrdfLut.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Pipelines\BrdfPrefilter.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredNormal.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredPosition.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneColor.hpp" />

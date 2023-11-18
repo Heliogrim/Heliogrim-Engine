@@ -15,7 +15,7 @@ smr<const graph::Description> engine::gfx::render::makeStencilBufferDescription(
         graph::DescriptionValue { graph::DescriptionValueMatchingMode::eInvariant, TextureType::e2d },
         graph::DescriptionValue { graph::DescriptionValueMatchingMode::eInvariant, global_stencil_format },
         graph::DescriptionValue { graph::DescriptionValueMatchingMode::eInvariant, 1u },
-        graph::DescriptionValue { graph::DescriptionValueMatchingMode::eIgnored, Vector<u32> {} }
+        graph::DescriptionValue { graph::DescriptionValueMatchingMode::eIgnored, graph::ActiveMipBitMask {} }
     );
     return clone(obj).into<const graph::Description>();
 }
