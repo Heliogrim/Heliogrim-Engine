@@ -1,19 +1,20 @@
 #pragma once
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include <Engine.GFX.RenderGraph/Relation/MeshDescription.hpp>
 #include "../RenderCommand.hpp"
 
 namespace hg::engine::gfx::render::cmd {
-    class DrawMeshRenderCommand :
+    class DrawMeshRCmd :
         public RenderCommand {
     public:
-        using this_type = DrawMeshRenderCommand;
+        using this_type = DrawMeshRCmd;
 
     public:
-        DrawMeshRenderCommand(
-            const ptr<const graph::MeshDescription> meshDescription_,
+        DrawMeshRCmd(
+            const nmpt<const graph::MeshDescription> meshDescription_,
             const u32 instanceCount_,
             const u32 instanceOffset_,
             const u32 primitiveCount_,
@@ -28,11 +29,11 @@ namespace hg::engine::gfx::render::cmd {
             _primitiveOffset(primitiveOffset_),
             _indexedPrimitive(indexedPrimitive_) {}
 
-        constexpr ~DrawMeshRenderCommand() noexcept = default;
+        constexpr ~DrawMeshRCmd() noexcept override = default;
 
     private:
     public:
-        const ptr<const graph::MeshDescription> _meshDescription;
+        const nmpt<const graph::MeshDescription> _meshDescription;
         const u32 _instanceCount;
         const u32 _instanceOffset;
         const u32 _primitiveCount;
@@ -40,6 +41,9 @@ namespace hg::engine::gfx::render::cmd {
         const bool _indexedPrimitive;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
+        void operator()(
+            ptr<RenderCommandTranslator::State> state_,
+            ptr<RenderCommandTranslator> translator_
+        ) const noexcept override;
     };
 }

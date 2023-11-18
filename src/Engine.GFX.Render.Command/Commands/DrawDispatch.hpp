@@ -4,32 +4,39 @@
 #include "../RenderCommand.hpp"
 
 namespace hg::engine::gfx::render::cmd {
-    class DrawDispatchRenderCommand final :
+    class DrawDispatchRCmd final :
         public RenderCommand {
     public:
-        using this_type = DrawDispatchRenderCommand;
+        using this_type = DrawDispatchRCmd;
 
     public:
-        constexpr DrawDispatchRenderCommand(
+        constexpr DrawDispatchRCmd(
             const u32 instanceCount_,
             const u32 instanceOffset_,
-            const u32 primitiveCount_,
-            const u32 primitiveOffset_
+            const u32 vertexCount_,
+            const u32 vertexOffset_,
+            const bool indexedPrimitive_
         ) noexcept :
             _instanceCount(instanceCount_),
             _instanceOffset(instanceOffset_),
-            _primitiveCount(primitiveCount_),
-            _primitiveOffset(primitiveOffset_) {}
+            _vertexCount(vertexCount_),
+            _vertexOffset(vertexOffset_),
+            _indexedPrimitive(indexedPrimitive_) {}
 
-        constexpr ~DrawDispatchRenderCommand() noexcept = default;
+        constexpr ~DrawDispatchRCmd() noexcept override = default;
 
     private:
+    public:
         const u32 _instanceCount;
         const u32 _instanceOffset;
-        const u32 _primitiveCount;
-        const u32 _primitiveOffset;
+        const u32 _vertexCount;
+        const u32 _vertexOffset;
+        const bool _indexedPrimitive;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
+        void operator()(
+            ptr<RenderCommandTranslator::State> state_,
+            ptr<RenderCommandTranslator> translator_
+        ) const noexcept override;
     };
 }

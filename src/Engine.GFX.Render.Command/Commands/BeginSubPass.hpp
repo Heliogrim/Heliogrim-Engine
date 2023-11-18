@@ -1,13 +1,19 @@
 #pragma once
 #include "../RenderCommand.hpp"
+#include "Structs.hpp"
 
 namespace hg::engine::gfx::render::cmd {
-    class NextSubpassRCmd :
+    class BeginSubPassRCmd :
         public RenderCommand {
     public:
-        constexpr NextSubpassRCmd() noexcept = default;
+        constexpr BeginSubPassRCmd(BeginSubPassStruct data_) noexcept :
+            data(_STD move(data_)) {}
 
-        constexpr ~NextSubpassRCmd() noexcept override = default;
+        constexpr ~BeginSubPassRCmd() noexcept override = default;
+
+    private:
+    public:
+        BeginSubPassStruct data;
 
     public:
         void operator()(

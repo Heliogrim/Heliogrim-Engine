@@ -2,12 +2,12 @@
 #include "../RenderCommand.hpp"
 
 namespace hg::engine::gfx::render::cmd {
-    class NextSubpassRCmd :
+    class EndSubPassRCmd :
         public RenderCommand {
     public:
-        constexpr NextSubpassRCmd() noexcept = default;
+        constexpr EndSubPassRCmd() noexcept = default;
 
-        constexpr ~NextSubpassRCmd() noexcept override = default;
+        constexpr ~EndSubPassRCmd() noexcept override = default;
 
     public:
         void operator()(

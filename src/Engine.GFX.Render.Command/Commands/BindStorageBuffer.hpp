@@ -1,5 +1,6 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "Engine.GFX.Render.Command/RenderCommand.hpp"
 
@@ -8,21 +9,24 @@ namespace hg::engine::gfx {
 }
 
 namespace hg::engine::gfx::render::cmd {
-    class BindStorageBufferRenderCommand :
+    class BindStorageBufferRCmd :
         public RenderCommand {
     public:
-        constexpr BindStorageBufferRenderCommand(
-            mref<const ptr<const StorageBufferView>> storageView_
+        constexpr BindStorageBufferRCmd(
+            mref<const nmpt<const StorageBufferView>> storageView_
         ) noexcept :
             RenderCommand(),
             _storageView(_STD move(storageView_)) {}
 
-        constexpr ~BindStorageBufferRenderCommand() noexcept = default;
+        constexpr ~BindStorageBufferRCmd() noexcept override = default;
 
     private:
-        const ptr<const StorageBufferView> _storageView;
+        const nmpt<const StorageBufferView> _storageView;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
+        void operator()(
+            ptr<RenderCommandTranslator::State> state_,
+            ptr<RenderCommandTranslator> translator_
+        ) const noexcept override;
     };
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "Engine.GFX.Render.Command/RenderCommand.hpp"
 
@@ -12,31 +13,31 @@ namespace hg::engine::gfx::render::cmd {
     namespace {
         struct VirtualTextureBinding {
             const bool vt;
-            const ptr<const VirtualTextureView> view;
+            const nmpt<const VirtualTextureView> view;
         };
 
         struct OpaqueTextureBinding {
             const bool vt;
-            const ptr<const TextureView> view;
+            const nmpt<const TextureView> view;
         };
     }
 
-    class BindTextureRenderCommand :
+    class BindTextureRCmd :
         public RenderCommand {
     public:
-        constexpr BindTextureRenderCommand(
-            mref<const ptr<const TextureView>> textureView_
+        constexpr BindTextureRCmd(
+            mref<const nmpt<const TextureView>> textureView_
         ) noexcept :
             RenderCommand(),
-            _texture({ .otb = OpaqueTextureBinding { false, _STD move(textureView_) } }) {}
+            _texture(decltype(_texture) { .otb = OpaqueTextureBinding { false, _STD move(textureView_) } }) {}
 
-        constexpr BindTextureRenderCommand(
-            mref<const ptr<const VirtualTextureView>> textureView_
+        constexpr BindTextureRCmd(
+            mref<const nmpt<const VirtualTextureView>> textureView_
         ) noexcept :
             RenderCommand(),
-            _texture({ .vtb = VirtualTextureBinding { true, _STD move(textureView_) } }) {}
+            _texture(decltype(_texture) { .vtb = VirtualTextureBinding { true, _STD move(textureView_) } }) {}
 
-        constexpr ~BindTextureRenderCommand() noexcept = default;
+        constexpr ~BindTextureRCmd() noexcept override = default;
 
     private:
         union {
@@ -45,6 +46,9 @@ namespace hg::engine::gfx::render::cmd {
         } _texture;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
+        void operator()(
+            ptr<RenderCommandTranslator::State> state_,
+            ptr<RenderCommandTranslator> translator_
+        ) const noexcept override;
     };
 }

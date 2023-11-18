@@ -1,10 +1,11 @@
 #include "BindStaticMesh.hpp"
 
-#include "Engine.GFX.Render.Command/RenderCommandTranslationUnit.hpp"
-
 using namespace hg::engine::gfx::render::cmd;
 using namespace hg;
 
-void BindStaticMeshRenderCommand::operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept {
-    rctu_->translate(this);
+void BindStaticMeshRCmd::operator()(
+    ptr<RenderCommandTranslator::State> state_,
+    ptr<RenderCommandTranslator> translator_
+) const noexcept {
+    translator_->translate(state_, this);
 }

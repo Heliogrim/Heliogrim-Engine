@@ -2,28 +2,28 @@
 #include <Engine.Common/Wrapper.hpp>
 
 #include "Engine.GFX.Render.Command/RenderCommand.hpp"
-
-namespace hg::engine::gfx {
-    class IndexBufferView;
-}
+#include <Engine.GFX/Buffer/IndexBufferView.hpp>
 
 namespace hg::engine::gfx::render::cmd {
-    class BindIndexBufferRenderCommand :
+    class BindIndexBufferRCmd :
         public RenderCommand {
     public:
-        constexpr BindIndexBufferRenderCommand(
-            mref<const ptr<const IndexBufferView>> indexView_
+        constexpr BindIndexBufferRCmd(
+            cref<IndexBufferView> indexBufferView_
         ) noexcept :
             RenderCommand(),
-            _indexView(_STD move(indexView_)) {}
+            _indexBufferView(indexBufferView_) {}
 
-        constexpr ~BindIndexBufferRenderCommand() noexcept = default;
+        constexpr ~BindIndexBufferRCmd() noexcept override = default;
 
     private:
     public:
-        const ptr<const IndexBufferView> _indexView;
+        IndexBufferView _indexBufferView;
 
     public:
-        void operator()(ptr<RenderCommandTranslationUnit> rctu_) const noexcept override;
+        void operator()(
+            ptr<RenderCommandTranslator::State> state_,
+            ptr<RenderCommandTranslator> translator_
+        ) const noexcept override;
     };
 }

@@ -1,9 +1,9 @@
-#include "BindIndexBuffer.hpp"
+#include "BeginAccelerationPass.hpp"
 
 using namespace hg::engine::gfx::render::cmd;
 using namespace hg;
 
-void BindIndexBufferRCmd::operator()(
+void BeginAccelerationPassRCmd::operator()(
     ptr<RenderCommandTranslator::State> state_,
     ptr<RenderCommandTranslator> translator_
 ) const noexcept {

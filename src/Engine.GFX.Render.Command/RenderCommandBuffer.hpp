@@ -1,166 +1,148 @@
 #pragma once
-#include <Engine.Common/Types.hpp>
-#include <Engine.Common/Wrapper.hpp>
-#include <Engine.GFX.RenderGraph/Relation/MeshDescription.hpp>
-
-namespace hg::engine::gfx {
-    class Mesh;
-    class MeshInstanceView;
-    class SkeletalBoneView;
-    class IndexBufferView;
-    class VertexBufferView;
-    class StorageBufferView;
-    class TextureView;
-    class VirtualTextureView;
-    struct MaterialIdentifier;
-    using MeshDescription = ::hg::engine::gfx::render::graph::MeshDescription;
-}
-
-namespace hg::engine::gfx::acc {
-    class AccelerationEffect;
-}
-
-namespace hg::engine::gfx::material {
-    class Material;
-}
+#include "RenderCommandAllocator.hpp"
+#include "RenderCommandBufferBase.hpp"
+#include "RenderResourceTable.hpp"
 
 namespace hg::engine::gfx::render::cmd {
-    class RenderCommandBuffer {
+    class RenderCommandBuffer :
+        public RenderCommandBufferBase,
+        protected RenderCommandAllocator {
     public:
         using this_type = RenderCommandBuffer;
 
+    public:
+        RenderCommandBuffer() noexcept;
+
+        RenderCommandBuffer(mref<this_type> other_) noexcept;
+
+        RenderCommandBuffer(cref<this_type>) = delete;
+
+        ~RenderCommandBuffer() noexcept override;
+
     protected:
-        constexpr RenderCommandBuffer() noexcept = default;
+        nmpt<RenderCommand> _begin;
+        nmpt<RenderCommand> _last;
+
+        RenderResourceTable _resourceTable;
 
     public:
-        constexpr virtual ~RenderCommandBuffer() noexcept = default;
+        ref<this_type> operator=(mref<this_type>) noexcept = delete;
+
+        ref<this_type> operator=(cref<this_type>) = delete;
+
+    protected:
+        [[nodiscard]] cref<RenderCommandAllocator> alloc() const noexcept;
+
+        [[nodiscard]] ref<RenderCommandAllocator> alloc() noexcept;
 
     public:
-        virtual void begin() noexcept = 0;
+        [[nodiscard]] nmpt<RenderCommand> root() const noexcept;
 
-        virtual void nextSubpass() noexcept = 0;
-
-        virtual void end() noexcept = 0;
+        void release(_Out_opt_ ptr<RenderResourceTable> resourceTable_ = nullptr);
 
     public:
-        virtual void bindEffect(const ptr<const acc::AccelerationEffect> effect_) noexcept = 0;
+        void begin() noexcept override;
+
+        void beginAccelPass(mref<BeginAccelerationPassStruct>) noexcept override;
+
+        void beginSubPass(mref<BeginSubPassStruct>) noexcept override;
+
+        void nextSubPass() noexcept override;
+
+        void endSubPass() noexcept override;
+
+        void endAccelPass() noexcept override;
+
+        void end() noexcept override;
 
     public:
-        virtual void bindMaterial(
-            mref<MaterialIdentifier> identifier_,
-            const ptr<const material::Material> material_
-        ) noexcept = 0;
+        void bindComputePipeline(mref<smr<const acc::ComputePipeline>> pipeline_) noexcept override;
 
-        virtual void bindStaticMesh(const ptr<const Mesh> mesh_) noexcept = 0;
-
-        virtual void bindStaticMeshInstance(const ptr<const MeshInstanceView> view_) noexcept = 0;
-
-        virtual void bindSkeletalMesh(const ptr<const Mesh> mesh_) noexcept = 0;
-
-        virtual void bindSkeletalMeshInstance(
-            const ptr<const MeshInstanceView> meshView_,
-            const ptr<const SkeletalBoneView> boneView_
-        ) noexcept = 0;
+        void bindGraphicsPipeline(mref<smr<const acc::GraphicsPipeline>> pipeline_) noexcept override;
 
     public:
-        virtual void bindIndexBuffer(const ptr<const IndexBufferView> indexView_) noexcept = 0;
+        void bindStaticMesh(const nmpt<const Mesh> mesh_) noexcept override;
 
-        virtual void bindVertexBuffer(const ptr<const VertexBufferView> vertexView_) noexcept = 0;
+        void bindStaticMeshInstance(const nmpt<const MeshInstanceView> view_) noexcept override;
 
-        virtual void bindStorage(const ptr<const StorageBufferView> storageView_) noexcept = 0;
+        void bindSkeletalMesh(const nmpt<const Mesh> mesh_) noexcept override;
 
-        virtual void bindTexture(const ptr<const TextureView> textureView_) noexcept = 0;
-
-        virtual void bindTexture(const ptr<const VirtualTextureView> textureView_) noexcept = 0;
+        void bindSkeletalMeshInstance(
+            const nmpt<const MeshInstanceView> meshView_,
+            const nmpt<const SkeletalBoneView> boneView_
+        ) noexcept override;
 
     public:
-        virtual void drawSkeletalMesh(
+        void bindIndexBuffer(const nmpt<const IndexBufferView> indexView_) noexcept override;
+
+        void bindVertexBuffer(const nmpt<const VertexBufferView> vertexView_) noexcept override;
+
+    public:
+        void bindStorage(
+            const nmpt<const acc::Symbol> symbol_,
+            const nmpt<const StorageBufferView> storageView_
+        ) noexcept override;
+
+        void bindTexture(
+            const nmpt<const acc::Symbol> symbol_,
+            const nmpt<const TextureView> textureView_
+        ) noexcept override;
+
+        void bindTexture(
+            const nmpt<const acc::Symbol> symbol_,
+            const nmpt<const VirtualTextureView> textureView_
+        ) noexcept override;
+
+    public:
+        void drawSkeletalMesh(
             u32 instanceCount_,
             u32 instanceOffset_,
             u32 primitiveCount_,
             u32 primitiveOffset_
-        ) noexcept = 0;
+        ) noexcept override;
 
-        virtual void drawSkeletalMeshIdx(
+        void drawSkeletalMeshIdx(
             u32 instanceCount_,
             u32 instanceOffset_,
             u32 primitiveCount_,
             u32 primitiveOffset_
-        ) noexcept = 0;
+        ) noexcept override;
 
-        virtual void drawStaticMesh(
+        void drawStaticMesh(
             u32 instanceCount_,
             u32 instanceOffset_,
             u32 primitiveCount_,
             u32 primitiveOffset_
-        ) noexcept = 0;
+        ) noexcept override;
 
-        virtual void drawStaticMeshIdx(
+        void drawStaticMeshIdx(
             u32 instanceCount_,
             u32 instanceOffset_,
             u32 primitiveCount_,
             u32 primitiveOffset_
-        ) noexcept = 0;
+        ) noexcept override;
 
-        virtual void drawMesh(
-            const ptr<const MeshDescription> meshDescription_,
-            u32 instanceCount_,
-            u32 instanceOffset_,
-            u32 primitiveCount_,
-            u32 primitiveOffset_
-        ) noexcept = 0;
-
-        template <typename MeshDescType_ = MeshDescription> requires
-            _STD derived_from<MeshDescType_, MeshDescription> &&
-            _STD is_nothrow_convertible_v<MeshDescType_, MeshDescription>
         void drawMesh(
-            const ptr<const MeshDescType_> meshDescription_,
+            const nmpt<const MeshDescription> meshDescription_,
             u32 instanceCount_,
             u32 instanceOffset_,
             u32 primitiveCount_,
             u32 primitiveOffset_
-        ) noexcept {
-            this->drawMesh(
-                static_cast<const ptr<const MeshDescription>>(meshDescription_),
-                instanceCount_,
-                instanceOffset_,
-                primitiveCount_,
-                primitiveOffset_
-            );
-        }
+        ) noexcept override;
 
-        virtual void drawMeshIdx(
-            const ptr<const MeshDescription> meshDescription_,
-            u32 instanceCount_,
-            u32 instanceOffset_,
-            u32 primitiveCount_,
-            u32 primitiveOffset_
-        ) noexcept = 0;
-
-        template <typename MeshDescType_ = MeshDescription> requires
-            _STD derived_from<MeshDescType_, MeshDescription> &&
-            _STD is_nothrow_convertible_v<MeshDescType_, MeshDescription>
         void drawMeshIdx(
-            const ptr<const MeshDescType_> meshDescription_,
+            const nmpt<const MeshDescription> meshDescription_,
             u32 instanceCount_,
             u32 instanceOffset_,
             u32 primitiveCount_,
             u32 primitiveOffset_
-        ) noexcept {
-            this->drawMeshIdx(
-                static_cast<const ptr<const MeshDescription>>(meshDescription_),
-                instanceCount_,
-                instanceOffset_,
-                primitiveCount_,
-                primitiveOffset_
-            );
-        }
+        ) noexcept override;
 
-        virtual void drawDispatch(
+        void drawDispatch(
             u32 instanceCount_,
             u32 instanceOffset_,
-            u32 primitiveCount_,
-            u32 primitiveOffset_
-        ) noexcept = 0;
+            u32 vertexCount_,
+            u32 vertexOffset_
+        ) noexcept override;
     };
 }

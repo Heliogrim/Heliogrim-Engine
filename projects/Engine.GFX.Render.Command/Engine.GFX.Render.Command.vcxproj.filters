@@ -16,28 +16,25 @@
     <Filter Include="Headerdateien\Commands">
       <UniqueIdentifier>{b3e02f31-5f94-4bd7-8814-367c7d0d13f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Buffer">
-      <UniqueIdentifier>{a3beb3b2-d108-4f97-8cc8-c217c4eedf28}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\Commands">
       <UniqueIdentifier>{6deb977f-b4a0-4a13-bc6b-a59ca9c1683b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Translator">
+      <UniqueIdentifier>{e319a7bd-f846-4eaa-b605-f2ad13b1dcda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Resource">
+      <UniqueIdentifier>{aef299ba-4701-467d-832c-6b11e80ce04f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandBuffer.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandBufferBase.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandPool.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandAllocator.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandAllocatorBase.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommand.hpp">
       <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindMaterial.hpp">
-      <Filter>Headerdateien\Commands</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStaticMesh.hpp">
       <Filter>Headerdateien\Commands</Filter>
@@ -57,10 +54,10 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\NextSubpass.hpp">
       <Filter>Headerdateien\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\PooledRenderCommandBuffer.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandBuffer.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\PooledRenderCommandAllocator.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandAllocator.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawMesh.hpp">
@@ -78,25 +75,64 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindTexture.hpp">
       <Filter>Headerdateien\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Buffer\RenderCommandBufferView.hpp">
-      <Filter>Headerdateien\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Buffer\RenderCommandBufferIterator.hpp">
-      <Filter>Headerdateien\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandTranslationUnit.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandTranslator.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\__fwd.hpp">
       <Filter>Headerdateien\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandTranslationResult.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindEffect.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatch.hpp">
       <Filter>Headerdateien\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatch.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\Structs.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BeginAccelerationPass.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BeginSubPass.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\EndSubPass.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\EndAccelerationPass.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\ForwardRenderCommandBuffer.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindPipeline.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatchIndirect.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\Lambda.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Translator\UnreachableTranslator.hpp">
+      <Filter>Headerdateien\Translator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderResource.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandIterator.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderResourceTable.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Resource\Pipeline.hpp">
+      <Filter>Headerdateien\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\NativeBatch.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\NativeQueue.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindResourceTable.hpp">
       <Filter>Headerdateien\Commands</Filter>
     </ClInclude>
   </ItemGroup>
@@ -104,22 +140,16 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\test.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\PooledRenderCommandAllocator.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\RenderCommandAllocator.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\PooledRenderCommandBuffer.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\RenderCommandPool.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\RenderCommandBuffer.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\Begin.cpp">
       <Filter>Quelldateien\Commands</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindIndexBuffer.cpp">
-      <Filter>Quelldateien\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindMaterial.cpp">
       <Filter>Quelldateien\Commands</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindSkeletalMesh.cpp">
@@ -149,10 +179,25 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\NextSubpass.cpp">
       <Filter>Quelldateien\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindEffect.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatch.cpp">
       <Filter>Quelldateien\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatch.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BeginAccelerationPass.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BeginSubPass.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\EndSubPass.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\EndAccelerationPass.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\ForwardRenderCommandBuffer.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindPipeline.cpp">
       <Filter>Quelldateien\Commands</Filter>
     </ClCompile>
   </ItemGroup>

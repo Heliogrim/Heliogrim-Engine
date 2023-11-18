@@ -15,37 +15,49 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Buffer\RenderCommandBufferIterator.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Buffer\RenderCommandBufferView.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\Begin.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindEffect.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BeginAccelerationPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BeginSubPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindIndexBuffer.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindMaterial.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindPipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindResourceTable.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindSkeletalMesh.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStaticMesh.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStorageBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindTexture.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindVertexBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatch.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatchIndirect.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawMesh.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawSkeletalMesh.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\End.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\EndAccelerationPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\EndSubPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\Lambda.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\NextSubpass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\Structs.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\__fwd.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\PooledRenderCommandAllocator.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\PooledRenderCommandBuffer.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommand.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\ForwardRenderCommandBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\NativeBatch.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\NativeQueue.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandAllocator.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandBuffer.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandPool.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandTranslationResult.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandTranslationUnit.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommand.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandAllocatorBase.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandBufferBase.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandIterator.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderResource.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandTranslator.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderResourceTable.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Resource\Pipeline.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Translator\UnreachableTranslator.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\Begin.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindEffect.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BeginAccelerationPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BeginSubPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindIndexBuffer.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindMaterial.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindPipeline.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindSkeletalMesh.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStaticMesh.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStorageBuffer.cpp" />
@@ -55,10 +67,12 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawMesh.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawSkeletalMesh.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\End.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\EndAccelerationPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\EndSubPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\NextSubpass.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\PooledRenderCommandAllocator.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\PooledRenderCommandBuffer.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\RenderCommandPool.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\ForwardRenderCommandBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\RenderCommandAllocator.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\RenderCommandBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\test.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
