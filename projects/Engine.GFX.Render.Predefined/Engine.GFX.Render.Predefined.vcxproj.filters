@@ -37,6 +37,9 @@
     <Filter Include="Quelldateien\Symbols">
       <UniqueIdentifier>{6dcb7484-d346-44de-8ddb-c5b32a2ae439}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Pipelines">
+      <UniqueIdentifier>{a610fb16-301a-434c-a4e7-d71216474d30}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneView.cpp">
@@ -136,6 +139,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\V2F16DataBuffer.hpp">
       <Filter>Headerdateien\Descriptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Pipelines\BrdfLut.hpp">
+      <Filter>Headerdateien\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Pipelines\BrdfPrefilter.hpp">
+      <Filter>Headerdateien\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Pipelines\BrdfIrradiance.hpp">
+      <Filter>Headerdateien\Pipelines</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

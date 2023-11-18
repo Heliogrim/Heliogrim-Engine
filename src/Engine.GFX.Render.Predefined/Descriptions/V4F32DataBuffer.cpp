@@ -12,7 +12,7 @@ smr<const graph::Description> engine::gfx::render::makeV4F32DataBufferDescriptio
         graph::DescriptionValue { graph::DescriptionValueMatchingMode::eInvariant, TextureType::e2d },
         graph::DescriptionValue { graph::DescriptionValueMatchingMode::eInvariant, TextureFormat::eR32G32B32A32Sfloat },
         graph::DescriptionValue { graph::DescriptionValueMatchingMode::eInvariant, 1u },
-        graph::DescriptionValue { graph::DescriptionValueMatchingMode::eIgnored, Vector<u32> {} }
+        graph::DescriptionValue { graph::DescriptionValueMatchingMode::eIgnored, graph::ActiveMipBitMask {} }
     );
     return clone(obj).into<const graph::Description>();
 }
