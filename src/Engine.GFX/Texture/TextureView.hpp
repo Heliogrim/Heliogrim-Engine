@@ -5,9 +5,11 @@
 #include <Engine.Common/Math/Vector.hpp>
 
 #include "__fwd.hpp"
+#include "TextureLikeObject.hpp"
 
 namespace hg::engine::gfx {
-    class TextureView final {
+    class TextureView final :
+        public InheritMeta<TextureView, TextureLikeObject> {
     public:
         friend class Texture;
 
@@ -28,7 +30,7 @@ namespace hg::engine::gfx {
         TextureView(mref<this_type>) noexcept = delete;
 
     public:
-        ~TextureView();
+        ~TextureView() override;
 
     public:
         ref<this_type> operator=(cref<this_type>) = delete;

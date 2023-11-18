@@ -5,6 +5,7 @@
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/__default.inl>
 
+#include "TextureLikeObject.hpp"
 #include "__fwd.hpp"
 #include "../TextureFormat.hpp"
 #include "TextureType.hpp"
@@ -15,7 +16,8 @@ namespace hg::engine::gfx::loader {
 }
 
 namespace hg::engine::gfx {
-    class VirtualTextureView final {
+    class VirtualTextureView final :
+        public InheritMeta<VirtualTextureView, TextureLikeObject> {
     public:
         friend class VirtualTexture;
         friend class ::hg::engine::gfx::loader::TextureLoader;
@@ -40,7 +42,7 @@ namespace hg::engine::gfx {
         VirtualTextureView(mref<this_type>) noexcept = delete;
 
     public:
-        ~VirtualTextureView();
+        ~VirtualTextureView() override;
 
     public:
         ref<this_type> operator=(cref<this_type>) = delete;
