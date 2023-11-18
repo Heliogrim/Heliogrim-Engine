@@ -1,4 +1,4 @@
-#include "CompileSubpassNode.hpp"
+#include "CompileSubPassNode.hpp"
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Make.hpp>
@@ -8,35 +8,44 @@
 using namespace hg::engine::gfx::render::graph;
 using namespace hg;
 
-CompileSubpassNode::CompileSubpassNode() noexcept :
+CompileSubPassNode::CompileSubPassNode() noexcept :
     CompileNode(
         make_smr<Auxiliary>()
     ) {}
 
-void CompileSubpassNode::accept(ref<Visitor> visitor_) const {
+void CompileSubPassNode::accept(ref<Visitor> visitor_) const {
     visitor_(*this);
 }
 
-void CompileSubpassNode::traverse(ref<Visitor> visitor_) const {
+void CompileSubPassNode::traverse(ref<Visitor> visitor_) const {
     _next->accept(visitor_);
 }
 
-void CompileSubpassNode::rtraverse(ref<Visitor> visitor_) const {
+void CompileSubPassNode::rtraverse(ref<Visitor> visitor_) const {
     _prev->accept(visitor_);
 }
 
-void CompileSubpassNode::setNext(mref<smr<Node>> next_) {
+void CompileSubPassNode::setNext(mref<smr<Node>> next_) {
     _next = _STD move(next_);
 }
 
-smr<Node> CompileSubpassNode::getNext() const noexcept {
+smr<Node> CompileSubPassNode::getNext() const noexcept {
     return _next;
 }
 
-void CompileSubpassNode::setPrev(mref<nmpt<const Node>> prev_) {
+void CompileSubPassNode::setPrev(mref<nmpt<const Node>> prev_) {
     _prev = _STD move(prev_);
 }
 
-nmpt<const Node> CompileSubpassNode::getPrev() const noexcept {
+nmpt<const Node> CompileSubPassNode::getPrev() const noexcept {
     return _prev;
+}
+
+void CompileSubPassNode::setSubPassBuilder(mref<decltype(_subPassBuilder)> subPassBuilder_) noexcept {
+    _subPassBuilder = _STD move(subPassBuilder_);
+}
+
+uptr<RuntimeNode> CompileSubPassNode::compile(cref<CompilePassContext> ctx_) const noexcept {
+    assert(_subPassBuilder);
+    return _subPassBuilder(ctx_);
 }
