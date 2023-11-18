@@ -181,6 +181,17 @@ namespace hg::concurrent {
          */
         UnfairSpinLock& operator=(UnfairSpinLock&&) = delete;
 
+    public:
+        /**
+         * Alias for acquire to maintain std compatibility
+         */
+        void lock();
+
+        /**
+         * Alias for release to maintain std compatibility
+         */
+        void unlock();
+
     private:
         /** The gate */
         _STD atomic<hg::engine::scheduler::thread::thread_id> _gate;

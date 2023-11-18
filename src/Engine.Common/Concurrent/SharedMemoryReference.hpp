@@ -143,11 +143,6 @@ namespace hg {
         }
 
     public:
-        template <class Fty_, template <typename> typename Pty_> requires (
-            IsSmrPointerCompatible<Fty_, PayloadType_> || IsSmrPointerCompatible<PayloadType_, Fty_>
-        )
-        [[nodiscard]] Pty_<Fty_> into();
-
         template <class Fty_> requires IsSmrBiPointerCompatible<PayloadType_, Fty_>
         [[nodiscard]] SharedMemoryReference<Fty_> into() {
             return SharedMemoryReference<Fty_> { _STD move(*this) };

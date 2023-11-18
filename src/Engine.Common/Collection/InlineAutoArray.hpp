@@ -27,8 +27,10 @@ namespace hg {
     public:
         using this_type = InlineAutoArray<Type_, Capacity_, Allocator_>;
 
-        static constexpr auto element_align = alignof(Type_);
-        static constexpr auto element_size = sizeof(Type_);
+        using value_type = Type_;
+
+        static constexpr auto element_align = alignof(value_type);
+        static constexpr auto element_size = sizeof(value_type);
         static constexpr auto element_capacity = Capacity_;
 
         static constexpr auto inline_byte_size = element_size * Capacity_;
@@ -49,11 +51,11 @@ namespace hg {
             _externalStorage(nullptr),
             _externalEnd(nullptr) { }
 
-        template <typename InitialType_ = Type_, typename... InitialRest_> requires
+        template <typename InitialType_ = Type_> requires
             (Capacity_ == 1uLL) &&
             _STD is_nothrow_move_constructible_v<Type_> &&
             _STD is_constructible_v<Type_, InitialType_>
-        constexpr InlineAutoArray(InitialType_&& value_, InitialRest_&&... rest_) noexcept :
+        constexpr InlineAutoArray(InitialType_&& value_) noexcept :
             _alloc(),
             _traits(),
             _inlineStorage(),
@@ -61,20 +63,48 @@ namespace hg {
             _externalStorage(nullptr),
             _externalEnd(nullptr) {
             inline_emplace_back(_STD forward<InitialType_>(value_));
-            ((inline_emplace_back(_STD forward<InitialRest_>(rest_))), ...);
         }
 
-        /*
-        // TODO:
-        template <typename Type_ = this_type> requires _STD is_same_v<Type_, this_type>
-        constexpr InlineAutoArray(mref<Type_> other_) noexcept :
+        template <typename... InitialType_> requires
+            (Capacity_ >= sizeof...(InitialType_)) &&
+            _STD is_nothrow_move_constructible_v<Type_>
+        constexpr InlineAutoArray(InitialType_&&... values_) noexcept :
+            _alloc(),
+            _traits(),
+            _inlineStorage(),
+            _inlineEnd(inline_begin()),
+            _externalStorage(nullptr),
+            _externalEnd(nullptr) {
+            ((inline_emplace_back(_STD forward<InitialType_>(values_))), ...);
+        }
+
+        template <typename OtherType_ = this_type> requires
+            _STD is_same_v<OtherType_, this_type> &&
+            _STD is_nothrow_move_constructible_v<Type_>
+        constexpr InlineAutoArray(mref<OtherType_> other_) noexcept :
             _alloc(_STD move(other_._alloc)),
-            _traits(_STD move(other_._traits)) {}
-         */
+            _traits(_STD move(other_._traits)),
+            _inlineStorage(),
+            _inlineEnd(inline_begin()),
+            _externalStorage(_STD exchange(other_._externalStorage, nullptr)),
+            _externalEnd(_STD exchange(other_._externalEnd, nullptr)) {
+            for (auto* iIt = other_.inline_begin(); iIt < other_._inlineEnd; ++iIt) {
+                inline_emplace_back(_STD move(*iIt));
+            }
+            _STD _Destroy_range(other_.inline_begin(), other_._inlineEnd, _alloc);
+            other_._inlineEnd = other_.inline_begin();
+        }
+
+        constexpr InlineAutoArray(cref<this_type>) noexcept = delete;
 
         constexpr ~InlineAutoArray() noexcept {
             tidy();
         }
+
+    public:
+        ref<this_type> operator=(mref<this_type>) noexcept = delete;
+
+        ref<this_type> operator=(cref<this_type>) noexcept = delete;
 
     private:
         allocator_type _alloc;
@@ -130,6 +160,11 @@ namespace hg {
 
             constexpr ~IteratorImpl() noexcept = default;
 
+        public:
+            ref<this_type> operator=(mref<this_type> other_) noexcept = default;
+
+            ref<this_type> operator=(cref<this_type> other_) noexcept = default;
+
         private:
             pointer _inlineBase;
             pointer _externalBase;
@@ -179,11 +214,11 @@ namespace hg {
                 return tmp;
             }
 
-            constexpr ref<this_type> operator++() {
+            constexpr ref<this_type> operator++() noexcept {
                 return ++_idx, *this;
             }
 
-            [[nodiscard]] constexpr this_type operator++(int) {
+            [[nodiscard]] constexpr this_type operator++(int) noexcept {
                 auto tmp { *this };
                 ++(*this);
                 return tmp;
@@ -200,11 +235,11 @@ namespace hg {
                 return tmp;
             }
 
-            constexpr ref<this_type> operator--() {
+            constexpr ref<this_type> operator--() noexcept {
                 return --_idx, *this;
             }
 
-            [[nodiscard]] constexpr this_type operator--(int) {
+            [[nodiscard]] constexpr this_type operator--(int) noexcept {
                 auto tmp { *this };
                 --(*this);
                 return tmp;
@@ -247,6 +282,7 @@ namespace hg {
             /* Destroy inline allocated objects */
 
             _STD _Destroy_range(inline_begin(), _inlineEnd, _alloc);
+            _inlineEnd = inline_begin();
 
             /* Destroy external allocated objects */
 
@@ -265,7 +301,7 @@ namespace hg {
         }
 
         [[nodiscard]] constexpr ptr<Type_> inline_last() const noexcept {
-            return _inlineEnd != _inlineStorage ? _inlineEnd - 1 : _inlineEnd;
+            return _inlineEnd != inline_begin() ? _inlineEnd - 1 : _inlineEnd;
         }
 
         [[nodiscard]] constexpr size_type inline_size() const noexcept {
@@ -441,6 +477,29 @@ namespace hg {
 
         [[nodiscard]] constexpr auto cend() noexcept {
             return ConstIterator { inline_begin(), _externalStorage, static_cast<difference_type>(size()) };
+        }
+
+    public:
+        [[nodiscard]] cref<Type_> front() const noexcept {
+            return *inline_begin();
+        }
+
+        [[nodiscard]] ref<Type_> front() noexcept {
+            return *inline_begin();
+        }
+
+        [[nodiscard]] cref<Type_> back() const noexcept {
+            if (_externalEnd != nullptr) {
+                return *(_externalEnd - 1uLL);
+            }
+            return *inline_last();
+        }
+
+        [[nodiscard]] ref<Type_> back() noexcept {
+            if (_externalEnd != nullptr) {
+                return *(_externalEnd - 1uLL);
+            }
+            return *inline_last();
         }
 
     public:

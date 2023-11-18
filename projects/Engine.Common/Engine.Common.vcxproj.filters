@@ -222,9 +222,6 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\HopScotch.hpp">
       <Filter>Headerdateien\Collection\HopScotch</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Common\Collection\BytellHashMap.hpp">
-      <Filter>Headerdateien\Collection</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\Collection\FlatHashMap.hpp">
       <Filter>Headerdateien\Collection</Filter>
     </ClInclude>
@@ -347,6 +344,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Common\Collection\PointerKey.hpp">
       <Filter>Headerdateien\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Managed\Rc.hpp">
+      <Filter>Headerdateien\Managed</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

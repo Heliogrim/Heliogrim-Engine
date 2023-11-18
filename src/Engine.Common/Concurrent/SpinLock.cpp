@@ -49,6 +49,14 @@ bool UnfairSpinLock::try_release() noexcept {
     return _gate.compare_exchange_strong(expect, 0, _STD memory_order::seq_cst);
 }
 
+void UnfairSpinLock::lock() {
+    acquire();
+}
+
+void UnfairSpinLock::unlock() {
+    release();
+}
+
 void UnfairSpinLock::spin() noexcept {
     u32 i { 0 };
     while (i < 4)
