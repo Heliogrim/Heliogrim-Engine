@@ -116,6 +116,9 @@
     <ClCompile Include="..\..\src\Heliogrim\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Engine.Accel.Storage\Engine.Accel.Storage.vcxproj">
+      <Project>{1b6dc406-cb6d-4bbc-9b08-482f19fd292a}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.ACS\Engine.ACS.vcxproj">
       <Project>{bdd7b57f-5aee-4ddb-95fd-e0f89bb25ec7}</Project>
     </ProjectReference>
@@ -136,6 +139,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine.Core\Engine.Core.vcxproj">
       <Project>{c4a9ab6d-512c-472a-ae8d-5242e7ba4ec3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Driver.Vulkan\Engine.Driver.Vulkan.vcxproj">
+      <Project>{2f53f944-15cc-4f48-ab45-16c0fbf722fa}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Env\Engine.Env.vcxproj">
       <Project>{f73e4ef6-247e-42e0-bd0a-04d104e6837d}</Project>
@@ -179,14 +185,14 @@
     <ProjectReference Include="..\Engine.GFX.Render.Predefined\Engine.GFX.Render.Predefined.vcxproj">
       <Project>{a44a97b4-b6ed-4397-b8bf-53220fa663cd}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Render.Subpass\Engine.GFX.Render.Subpass.vcxproj">
+      <Project>{35ba7d25-0506-4b56-a98b-d01b3525a4ff}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.RenderGraph.Compile\Engine.GFX.RenderGraph.Compile.vcxproj">
       <Project>{a0a967b0-2d48-44b4-a3d5-a57e24803f87}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.RenderGraph\Engine.GFX.RenderGraph.vcxproj">
       <Project>{8f126647-73b6-4c77-b1d4-a94c2c0d657d}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.GFX.RenderPipeline\Engine.GFX.RenderPipeline.vcxproj">
-      <Project>{18e4072e-08d3-455c-8610-29d6a23c3edb}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.Render\Engine.GFX.Render.vcxproj">
       <Project>{6df62a4b-0bf2-4346-b238-33ffe71b699b}</Project>
