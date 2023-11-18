@@ -1,36 +1,62 @@
 #pragma once
-#include "../RuntimeNode.hpp"
+#include "SLNode.hpp"
+
+#include <Engine.GFX.Render.Subpass/SubPass.hpp>
 
 namespace hg::engine::gfx::render::graph {
-    class __declspec(novtable) SubpassNode :
-        public RuntimeNode {
+    class __declspec(novtable) SubPassNodeBase :
+        public SLNode {
     public:
-        using this_type = SubpassNode;
+        using this_type = SubPassNodeBase;
 
     protected:
-        SubpassNode() noexcept;
+        SubPassNodeBase() noexcept = default;
 
     public:
-        ~SubpassNode() noexcept override = default;
+        ~SubPassNodeBase() noexcept override = default;
 
     public:
-        void accept(ref<Visitor> visitor_) const override;
+        [[nodiscard]] virtual ptr<SubPass> subpass() noexcept = 0;
+    };
 
-        void traverse(ref<Visitor> visitor_) const override;
+    template <typename SubPassType_> requires _STD derived_from<SubPassType_, SubPass>
+    class SubPassNode :
+        public SubPassNodeBase {
+    public:
+        using this_type = SubPassNode<SubPassType_>;
 
-        void rtraverse(ref<Visitor> visitor_) const override;
+        using subpass_type = SubPassType_;
+
+    public:
+        SubPassNode() noexcept = default;
+
+        SubPassNode(mref<subpass_type> subpass_) noexcept :
+            _subpass(_STD move(subpass_)) {}
+
+        ~SubPassNode() noexcept override = default;
 
     private:
-        smr<Node> _next;
-        nmpt<const Node> _prev;
+        subpass_type _subpass;
 
     public:
-        void setNext(mref<smr<Node>> next_);
+        [[nodiscard]] ptr<subpass_type> subpass() noexcept override {
+            return &_subpass;
+        }
 
-        [[nodiscard]] smr<Node> getNext() const noexcept;
+    public:
+        [[nodiscard]] IterationResult iterate(cref<IterationPassContext> ctx_) noexcept override {
+            _subpass.iterate();
+            return IterationResultBits::eNone;
+        }
 
-        void setPrev(mref<nmpt<const Node>> prev_);
+        [[nodiscard]] IterationResult resolve(cref<ResolvePassContext> ctx_) noexcept override {
+            _subpass.resolve();
+            return IterationResultBits::eNone;
+        }
 
-        [[nodiscard]] nmpt<const Node> getPrev() const noexcept;
+        [[nodiscard]] IterationResult execute(cref<ExecutionPassContext> ctx_) noexcept override {
+            _subpass.execute(ctx_.symbols());
+            return IterationResultBits::eNone;
+        }
     };
 }

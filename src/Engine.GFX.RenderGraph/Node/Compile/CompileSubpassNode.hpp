@@ -2,17 +2,18 @@
 
 #include "../CompileNode.hpp"
 #include "../Runtime/SubpassNode.hpp"
+#include "Engine.GFX.RenderGraph/Node/Runtime/SubPassNode.hpp"
 
 namespace hg::engine::gfx::render::graph {
-    class __declspec(novtable) CompileSubpassNode :
+    class CompileSubPassNode :
         public CompileNode {
     public:
-        using this_type = CompileSubpassNode;
+        using this_type = CompileSubPassNode;
 
     public:
-        CompileSubpassNode() noexcept;
+        CompileSubPassNode() noexcept;
 
-        ~CompileSubpassNode() noexcept override = default;
+        ~CompileSubPassNode() noexcept override = default;
 
     public:
         void accept(ref<Visitor> visitor_) const override;
@@ -33,5 +34,16 @@ namespace hg::engine::gfx::render::graph {
         void setPrev(mref<nmpt<const Node>> prev_);
 
         [[nodiscard]] nmpt<const Node> getPrev() const noexcept;
+
+    public:
+        /**/
+    private:
+        _STD function<uptr<SubPassNodeBase>(cref<CompilePassContext> ctx_)> _subPassBuilder;
+
+    public:
+        void setSubPassBuilder(mref<decltype(_subPassBuilder)> subPassBuilder_) noexcept;
+
+    public:
+        [[nodiscard]] uptr<RuntimeNode> compile(cref<CompilePassContext> ctx_) const noexcept override;
     };
 }
