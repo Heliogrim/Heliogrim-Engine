@@ -40,6 +40,9 @@
     <Filter Include="Quelldateien\Pipeline">
       <UniqueIdentifier>{e2dc3c38-51f6-480e-93dd-3cbb7e9d09be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Command">
+      <UniqueIdentifier>{c4aaea01-e434-4c00-9269-5f15d3aee140}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.hpp">
@@ -105,7 +108,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\Layout\AccelerationBindingLayout.hpp">
       <Filter>Headerdateien\Pipeline\Layout</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\Layout\AccelerationPassBindings.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\Layout\AccelerationPipelineBindings.hpp">
       <Filter>Headerdateien\Pipeline\Layout</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pipeline\AccelerationSpecification.hpp">
@@ -174,6 +177,9 @@
     <ClInclude Include="..\..\src\Engine.GFX.Acc\Pass\VkAccelerationPassFactory.hpp">
       <Filter>Headerdateien\Pass</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Acc\Command\CommandBufferStructs.hpp">
+      <Filter>Headerdateien\Command</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Acc\AccelerationEffect.cpp">
@@ -202,6 +208,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Acc\Pass\VkGraphicsPass.cpp">
       <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Acc\Command\CommandBuffer.cpp">
+      <Filter>Quelldateien\Command</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
