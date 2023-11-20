@@ -2,6 +2,7 @@
 #include <Engine.GFX.Acc/Pass/GraphicsPass.hpp>
 #include <Engine.GFX/Framebuffer/Framebuffer.hpp>
 #include <Engine.GFX.Acc.Compile/EffectCompileResult.hpp>
+#include <Engine.GFX.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/SymbolizedResource.hpp>
 
 #include "../Mesh/MeshSubPass.hpp"
@@ -17,17 +18,20 @@ namespace hg::engine::gfx::render {
         vk::Semaphore _tmpSignal;
 
         struct Resources {
-            nmpt<graph::SymbolizedResource> sceneColor;
+            graph::Subscribed<graph::SymbolizedResource> sceneColor;
         } _resources;
 
     public:
-        void declareOutputs(ref<graph::SymbolContext> symCtx_) noexcept override;
+        void destroy() noexcept override;
+
+    public:
+        void declareOutputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept override;
 
     public:
         void iterate() noexcept override;
 
         void resolve() noexcept override;
 
-        void execute(cref<graph::SymbolContext> symCtx_) noexcept override;
+        void execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept override;
     };
 }

@@ -1,14 +1,20 @@
 #pragma once
 #include <map>
+#include <variant>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.GFX.Acc/Symbol/Symbol.hpp>
 
+#include "Observed.hpp"
+#include "Subscribed.hpp"
 #include "SymbolizedResource.hpp"
 
 namespace hg::engine::gfx::render::graph {
     class SymbolContext {
     public:
         using this_type = SymbolContext;
+
+        using observe_type = Observed<SymbolizedResource>;
+        using subscribe_type = Subscribed<SymbolizedResource>;
 
     public:
         SymbolContext() noexcept;
@@ -34,6 +40,12 @@ namespace hg::engine::gfx::render::graph {
 
     private:
         std::map<smr<const acc::Symbol>, nmpt<SymbolizedResource>> _resources;
+        Vector<
+            _STD pair<
+                smr<const acc::Symbol>,
+                Vector<_STD variant<const ptr<observe_type>, const ptr<subscribe_type>>>
+            >
+        > _register;
 
     public:
         void exposeSymbol(mref<smr<const acc::Symbol>> symbol_, nmpt<SymbolizedResource> resource_);
@@ -41,6 +53,22 @@ namespace hg::engine::gfx::render::graph {
         [[nodiscard]] nmpt<SymbolizedResource> exportSymbol(mref<smr<const acc::Symbol>> symbol_);
 
         [[nodiscard]] nmpt<SymbolizedResource> importSymbol(mref<smr<const acc::Symbol>> symbol_);
+
+    public:
+        bool registerExposeSymbol(
+            mref<smr<const acc::Symbol>> symbol_,
+            const ptr<Observed<SymbolizedResource>> observation_
+        );
+
+        bool registerExportSymbol(
+            mref<smr<const acc::Symbol>> symbol_,
+            const ptr<Subscribed<SymbolizedResource>> subscription_
+        );
+
+        bool registerImportSymbol(
+            mref<smr<const acc::Symbol>> symbol_,
+            const ptr<Subscribed<SymbolizedResource>> subscription_
+        );
 
     public:
         [[nodiscard]] _Success_(return != nullptr) nmpt<SymbolizedResource> getExportSymbol(

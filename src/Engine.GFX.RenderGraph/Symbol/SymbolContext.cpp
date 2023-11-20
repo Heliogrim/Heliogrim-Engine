@@ -81,6 +81,41 @@ nmpt<SymbolizedResource> SymbolContext::importSymbol(mref<smr<const acc::Symbol>
     return iter != _resources.end() ? iter->second : nullptr;
 }
 
+bool SymbolContext::registerExposeSymbol(
+    mref<smr<const acc::Symbol>> symbol_,
+    const ptr<Observed<SymbolizedResource>> observation_
+) {
+
+    auto iter = _STD ranges::find_if(
+        _register,
+        [&symbol_](const auto& pair_) {
+            return pair_.first == symbol_;
+        }
+    );
+
+    if (iter == _register.end()) {
+        _register.emplace_back(_STD make_pair(clone(symbol_), decltype(_register)::value_type::second_type {}));
+        iter = _register.rbegin().base();
+    }
+
+    iter->second.push_back({ observation_ });
+    return true;
+}
+
+bool SymbolContext::registerExportSymbol(
+    mref<smr<const acc::Symbol>> symbol_,
+    const ptr<Subscribed<SymbolizedResource>> subscription_
+) {
+    return false;
+}
+
+bool SymbolContext::registerImportSymbol(
+    mref<smr<const acc::Symbol>> symbol_,
+    const ptr<Subscribed<SymbolizedResource>> subscription_
+) {
+    return false;
+}
+
 nmpt<SymbolizedResource> SymbolContext::getExportSymbol(mref<smr<const acc::Symbol>> symbol_) const {
     return getImportSymbol(_STD move(symbol_));
 }
