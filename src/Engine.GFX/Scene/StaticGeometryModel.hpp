@@ -5,7 +5,6 @@
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 
 #include "GeometryModel.hpp"
-#include "../Shader/CachedDiscreteBinding.hpp"
 
 namespace hg::engine::gfx {
     class StaticGeometryModel final :

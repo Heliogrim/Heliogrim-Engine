@@ -3,7 +3,6 @@
 #include <Engine.Resource/Manage/Resource.hpp>
 
 #include "GeometryModel.hpp"
-#include "../Shader/CachedDiscreteBinding.hpp"
 
 namespace hg::engine::gfx {
     class SkyboxModel final :

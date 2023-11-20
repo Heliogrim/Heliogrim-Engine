@@ -2,8 +2,6 @@
 
 #include <Engine.Common/Concurrent/SpinLock.hpp>
 #include "CommandPool.hpp"
-#include "../ComputePipeline.hpp"
-#include "../GraphicPipeline.hpp"
 #include "../Buffer/Buffer.hpp"
 #include "../Buffer/VirtualBuffer.hpp"
 #include "../Texture/TextureBuffer.hpp"
