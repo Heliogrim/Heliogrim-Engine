@@ -149,7 +149,7 @@ namespace hg::engine::gfx {
         ptr<CommandQueue> transferQueue() const noexcept;
 
     private:
-        Application _application;
+        cref<Application> _application;
         ptr<Surface> _surface;
 
         mutable vk::Device _device;
