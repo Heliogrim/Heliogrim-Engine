@@ -230,14 +230,15 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
     #endif
 
     bound->renderTarget->setActive(false);
-
     gfx->getSceneManager()->dropPrimaryTarget(bound->renderTarget);
-    gfx->getSurfaceManager()->destroySurface(_STD move(bound->surface));
 
     bound->sceneView.reset();
+    bound->renderTarget.reset();
+    gfx->getSurfaceManager()->destroySurface(_STD move(bound->surface));
+
+    bound.reset();
 
     /**/
-    bound.reset();
     #ifdef _DEBUG
     if (wnd.use_count() > 1) {
         // We should just have one instance, which is incoming
