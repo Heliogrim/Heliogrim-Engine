@@ -64,12 +64,6 @@
     <Filter Include="Quelldateien\Device">
       <UniqueIdentifier>{89142d85-5d9c-4ee6-a609-e5c5bf3019a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Shader">
-      <UniqueIdentifier>{4c1bc746-d494-4380-a23e-4660a1bf87d0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headerdateien\Pipeline">
-      <UniqueIdentifier>{cec41822-7154-4849-a17d-111e431db06b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\Color">
       <UniqueIdentifier>{eee60cbc-cd9e-44a8-a224-5a0a304b055a}</UniqueIdentifier>
     </Filter>
@@ -96,12 +90,6 @@
     </Filter>
     <Filter Include="Quelldateien\Generator">
       <UniqueIdentifier>{6dff6c67-7ebb-4efb-afa6-3e7431d5a625}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Shader">
-      <UniqueIdentifier>{193d1791-312d-4a83-a3e4-03971343a7cc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\Pipeline">
-      <UniqueIdentifier>{6fa17356-0c45-47fd-a055-726679bb1734}</UniqueIdentifier>
     </Filter>
     <Filter Include="Quelldateien\Framebuffer">
       <UniqueIdentifier>{d64314e4-5d65-47b7-89d3-5c05fcf3d19a}</UniqueIdentifier>
@@ -240,15 +228,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Device\Device.hpp">
       <Filter>Headerdateien\Device</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\DiscreteBinding.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\Prototype.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\Shader.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\__macro.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -282,53 +261,17 @@
     <ClInclude Include="..\..\src\Engine.GFX\Command\CommandPool.hpp">
       <Filter>Headerdateien\Command</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\Type.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Generator\MipMap.hpp">
       <Filter>Headerdateien\Generator</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\PrototypeBinding.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\Factory.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\ShaderBindingGroup.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\VertexStage.hpp">
-      <Filter>Headerdateien\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\FragmentStage.hpp">
-      <Filter>Headerdateien\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\GeometryStage.hpp">
-      <Filter>Headerdateien\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.hpp">
-      <Filter>Headerdateien\Pipeline</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Viewport.hpp">
       <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Pipeline\RasterizationStage.hpp">
-      <Filter>Headerdateien\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\ShaderStorage.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\ShaderSlot.hpp">
-      <Filter>Headerdateien\Shader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureFactory.hpp">
       <Filter>Headerdateien\Texture</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.hpp">
       <Filter>Headerdateien\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\todo.h">
-      <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMapFlags.hpp">
       <Filter>Headerdateien\Material</Filter>
@@ -345,15 +288,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureType.hpp">
       <Filter>Headerdateien\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\GraphicPipeline.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\ComputePipeline.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\FixedPipeline.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\MeshPipeline.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -367,9 +301,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\InputAttribute.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\FixedPipelineInput.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\RasterCullFace.hpp">
@@ -450,12 +381,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBufferPage.hpp">
       <Filter>Headerdateien\Buffer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\ShaderBinding.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\DiscreteBindingGroup.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\GraphicPassResult.hpp">
       <Filter>Headerdateien\GraphicPass</Filter>
     </ClInclude>
@@ -473,18 +398,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Command\__fwd.hpp">
       <Filter>Headerdateien\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\DiscreteBindingPool.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\DiscreteBindingCache.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\ShaderBindingGroupLayout.hpp">
-      <Filter>Headerdateien\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Shader\CachedDiscreteBinding.hpp">
-      <Filter>Headerdateien\Shader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Memory\MemoryCache.hpp">
       <Filter>Headerdateien\Memory</Filter>
@@ -674,30 +587,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Generator\MipMap.cpp">
       <Filter>Quelldateien\Generator</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\PrototypeBinding.cpp">
-      <Filter>Quelldateien\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\Prototype.cpp">
-      <Filter>Quelldateien\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\Shader.cpp">
-      <Filter>Quelldateien\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\DiscreteBinding.cpp">
-      <Filter>Quelldateien\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\Factory.cpp">
-      <Filter>Quelldateien\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\ShaderBindingGroup.cpp">
-      <Filter>Quelldateien\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\ShaderStorage.cpp">
-      <Filter>Quelldateien\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\ShaderSlot.cpp">
-      <Filter>Quelldateien\Shader</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Framebuffer\Framebuffer.cpp">
       <Filter>Quelldateien\Framebuffer</Filter>
     </ClCompile>
@@ -713,21 +602,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Viewport.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\FragmentStage.cpp">
-      <Filter>Quelldateien\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\GeometryStage.cpp">
-      <Filter>Quelldateien\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\VertexStage.cpp">
-      <Filter>Quelldateien\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\TessellationStage.cpp">
-      <Filter>Quelldateien\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Pipeline\RasterizationStage.cpp">
-      <Filter>Quelldateien\Pipeline</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Texture\VirtualTexture.cpp">
       <Filter>Quelldateien\Texture</Filter>
     </ClCompile>
@@ -739,12 +613,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Camera\CameraFrustum.cpp">
       <Filter>Quelldateien\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\GraphicPipeline.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\FixedPipeline.cpp">
-      <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureSampler.cpp">
       <Filter>Quelldateien\Texture</Filter>
@@ -794,12 +662,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Memory\Allocator.cpp">
       <Filter>Quelldateien\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\ShaderBinding.cpp">
-      <Filter>Quelldateien\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\DiscreteBindingGroup.cpp">
-      <Filter>Quelldateien\Shader</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\GraphicPassPipeline.cpp">
       <Filter>Quelldateien\GraphicPass</Filter>
     </ClCompile>
@@ -811,15 +673,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\GraphicPass\ProcessedModelBatch.cpp">
       <Filter>Quelldateien\GraphicPass</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\DiscreteBindingCache.cpp">
-      <Filter>Quelldateien\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\DiscreteBindingPool.cpp">
-      <Filter>Quelldateien\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Shader\CachedDiscreteBinding.cpp">
-      <Filter>Quelldateien\Shader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Memory\LocalPooledAllocator.cpp">
       <Filter>Quelldateien\Memory</Filter>
@@ -862,9 +715,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBufferView.cpp">
       <Filter>Quelldateien\Buffer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\ComputePipeline.cpp">
-      <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SkyboxModel.cpp">
       <Filter>Quelldateien\Scene</Filter>
