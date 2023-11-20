@@ -2,7 +2,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace hg::engine::gfx::render::graph {
-    class SymbolContext;
+    class ScopedSymbolContext;
 }
 
 namespace hg::engine::gfx::render {
@@ -16,17 +16,22 @@ namespace hg::engine::gfx::render {
         constexpr virtual ~SubPass() noexcept = default;
 
     public:
-        virtual void declareOutputs(ref<graph::SymbolContext> symCtx_) noexcept;
+        virtual void setup(ref<graph::ScopedSymbolContext> symCtx_) noexcept;
 
-        virtual void declareTransforms(ref<graph::SymbolContext> symCtx_) noexcept;
+        virtual void destroy() noexcept;
 
-        virtual void declareInputs(ref<graph::SymbolContext> symCtx_) noexcept;
+    public:
+        virtual void declareOutputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept;
+
+        virtual void declareTransforms(ref<graph::ScopedSymbolContext> symCtx_) noexcept;
+
+        virtual void declareInputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept;
 
     public:
         virtual void iterate() noexcept = 0;
 
         virtual void resolve() noexcept = 0;
 
-        virtual void execute(cref<graph::SymbolContext> symCtx_) noexcept = 0;
+        virtual void execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept = 0;
     };
 }

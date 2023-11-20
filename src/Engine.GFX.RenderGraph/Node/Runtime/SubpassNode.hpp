@@ -2,6 +2,7 @@
 #include "SLNode.hpp"
 
 #include <Engine.GFX.Render.Subpass/SubPass.hpp>
+#include "../../Symbol/ScopedSymbolContext.hpp"
 
 namespace hg::engine::gfx::render::graph {
     class __declspec(novtable) SubPassNodeBase :
@@ -31,9 +32,13 @@ namespace hg::engine::gfx::render::graph {
         SubPassNode() noexcept = default;
 
         SubPassNode(mref<subpass_type> subpass_) noexcept :
-            _subpass(_STD move(subpass_)) {}
+            _subpass(_STD move(subpass_)) {
+            // TODO: _subpass.setup();
+        }
 
-        ~SubPassNode() noexcept override = default;
+        ~SubPassNode() noexcept override {
+            _subpass.destroy();
+        }
 
     private:
         subpass_type _subpass;
@@ -55,7 +60,7 @@ namespace hg::engine::gfx::render::graph {
         }
 
         [[nodiscard]] IterationResult execute(cref<ExecutionPassContext> ctx_) noexcept override {
-            _subpass.execute(ctx_.symbols());
+            _subpass.execute(static_cast<cref<ScopedSymbolContext>>(ctx_.symbols()));
             return IterationResultBits::eNone;
         }
     };

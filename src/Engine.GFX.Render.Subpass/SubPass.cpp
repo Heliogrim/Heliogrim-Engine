@@ -3,8 +3,16 @@
 using namespace hg::engine::gfx::render;
 using namespace hg;
 
-void SubPass::declareOutputs(ref<graph::SymbolContext> symCtx_) noexcept {}
+void SubPass::setup(ref<graph::ScopedSymbolContext> symCtx_) noexcept {
+    declareOutputs(symCtx_);
+    declareTransforms(symCtx_);
+    declareInputs(symCtx_);
+}
 
-void SubPass::declareTransforms(ref<graph::SymbolContext> symCtx_) noexcept {}
+void SubPass::destroy() noexcept {}
 
-void SubPass::declareInputs(ref<graph::SymbolContext> symCtx_) noexcept {}
+void SubPass::declareOutputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept {}
+
+void SubPass::declareTransforms(ref<graph::ScopedSymbolContext> symCtx_) noexcept {}
+
+void SubPass::declareInputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept {}

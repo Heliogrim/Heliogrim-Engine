@@ -252,6 +252,15 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\SubPassNode.hpp">
       <Filter>Headerdateien\Node\Runtime</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\ScopedSymbolContext.hpp">
+      <Filter>Headerdateien\Symbol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\Observed.hpp">
+      <Filter>Headerdateien\Symbol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\Subscribed.hpp">
+      <Filter>Headerdateien\Symbol</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RuntimeGraph.cpp">

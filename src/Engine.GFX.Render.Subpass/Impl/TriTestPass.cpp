@@ -21,6 +21,7 @@
 #include <Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.GFX.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/SymbolContext.hpp>
+#include <Engine.GFX.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/Cast.hpp>
 
@@ -39,9 +40,24 @@ using namespace hg;
 
 /**/
 
-void TriTestPass::declareOutputs(ref<graph::SymbolContext> symCtx_) noexcept {
+void TriTestPass::destroy() noexcept {
+    MeshSubPass::destroy();
+
+    auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
+
+    device->vkDevice().destroySemaphore(_STD exchange(_tmpSignal, nullptr));
+
+    _framebuffer->destroy();
+    _framebuffer.reset();
+
+    _compiled.pipeline.reset();
+    _pass.reset();
+    _effect.reset();
+}
+
+void TriTestPass::declareOutputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept {
     // Error: Will fail
-    _resources.sceneColor = symCtx_.exportSymbol(makeSceneColorSymbol());
+    symCtx_.registerExportSymbol(makeSceneColorSymbol(), &_resources.sceneColor);
 }
 
 void TriTestPass::iterate() noexcept {
@@ -59,7 +75,7 @@ void TriTestPass::resolve() noexcept {
     }
 }
 
-void TriTestPass::execute(cref<graph::SymbolContext> symCtx_) noexcept {
+void TriTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     assert(_effect);
     assert(_compiled.pipeline);
