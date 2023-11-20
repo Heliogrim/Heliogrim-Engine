@@ -8,7 +8,6 @@
 #include "../TextureFormat.hpp"
 #include "../vkinc.hpp"
 #include "../Memory/MemoryProperty.hpp"
-#include "../Shader/Type.hpp"
 
 namespace hg::engine::gfx::api {
     /**
@@ -106,18 +105,6 @@ namespace hg::engine::gfx::api {
      * @returns A TextureFormat.
      */
     [[nodiscard]] TextureFormat vkTranslateFormat(vk::Format format_);
-
-    /**
-     * Translate internal to vulkan
-     *
-     * @author Julius
-     * @date 17.02.2022
-     *
-     * @param  type_ The type of the binding to use.
-     *
-     * @returns A vk::DescriptorType
-     */
-    [[nodiscard]] vk::DescriptorType vkTranslateBindingType(const shader::BindingType type_);
 
     /**
      * Translate internal to vulkan

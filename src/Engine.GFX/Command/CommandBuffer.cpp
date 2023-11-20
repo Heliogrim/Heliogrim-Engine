@@ -4,8 +4,8 @@
 #include "CommandQueue.hpp"
 #include "../Framebuffer/Framebuffer.hpp"
 #include "../Buffer/VirtualBufferView.hpp"
-#include "Engine.GFX/Buffer/IndexBufferView.hpp"
-#include "Engine.GFX/Buffer/VertexBufferView.hpp"
+#include "../Buffer/IndexBufferView.hpp"
+#include "../Buffer/VertexBufferView.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;

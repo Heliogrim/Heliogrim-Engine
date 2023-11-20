@@ -18,7 +18,6 @@
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
 #include "RenderTarget.hpp"
-#include "todo.h"
 #include "Cache/GlobalCacheCtrl.hpp"
 #include "Cache/GlobalResourceCache.hpp"
 #include "Command/CommandBatch.hpp"
@@ -34,7 +33,6 @@
 #include "Importer/ModelFileTypes.hpp"
 #include "Importer/ModelImporter.hpp"
 #include "Pool/GlobalResourcePool.hpp"
-#include "Shader/ShaderStorage.hpp"
 #include "Surface/SurfaceManager.hpp"
 #include "Swapchain/Swapchain.hpp"
 #include "Texture/VkTextureFactory.hpp"
@@ -184,8 +182,8 @@ void Graphics::setup() {
     /**
      * Create Shader Storage
      */
-    ShaderStorage::make();
-    build_shader(_device);
+    // TODO: ShaderStorage::make();
+    // TODO: build_shader(_device);
 
     /**
      * Render Scenes
@@ -261,7 +259,7 @@ void Graphics::destroy() {
     _cachedRenderer.clear();
 
     /**/
-    ShaderStorage::destroy();
+    // TODO: ShaderStorage::destroy();
 
     /**
      *

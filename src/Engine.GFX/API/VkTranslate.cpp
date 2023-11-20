@@ -241,23 +241,6 @@ hg::engine::gfx::TextureFormat hg::engine::gfx::api::vkTranslateFormat(vk::Forma
     }
 }
 
-vk::DescriptorType hg::engine::gfx::api::vkTranslateBindingType(const shader::BindingType type_) {
-    switch (type_) {
-        case shader::BindingType::eUniformBuffer: {
-            return vk::DescriptorType::eUniformBuffer;
-        }
-        case shader::BindingType::eStorageBuffer: {
-            return vk::DescriptorType::eStorageBuffer;
-        }
-        case shader::BindingType::eImageSampler: {
-            return vk::DescriptorType::eCombinedImageSampler;
-        }
-        default: {
-            throw _STD runtime_error("Can not translate undefined `BindingType` to `vk::DescriptorType`.");
-        }
-    }
-}
-
 vk::MemoryPropertyFlags hg::engine::gfx::api::vkTranslateMemoryProperties(const MemoryProperties properties_) {
 
     vk::MemoryPropertyFlags flags {};
