@@ -41,9 +41,21 @@ void RenderTarget::tidy() {
 
     const auto req { _onTheFlight ? 2ui32 : 1ui32 };
 
-    /**
-     *
-     */
+    /**/
+
+    for (u32 i = 0; i < req; ++i) {
+
+        auto& renderPass = *_renderPasses[i];
+
+        // Store Scene View
+        //renderPass.changeSceneView(clone(sceneView_));
+
+        // Release bound Render Targets
+        // renderPass.unbindTarget(<<symbol>>);
+        auto storedSceneColor = renderPass.unbindTarget(makeSceneColorSymbol());
+        assert(_swapchain->at(i) == storedSceneColor);
+    }
+
     for (auto&& renderPass : _renderPasses) {
         _renderer->free(_STD move(renderPass));
     }
