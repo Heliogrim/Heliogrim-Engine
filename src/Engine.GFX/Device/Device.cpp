@@ -272,6 +272,11 @@ void Device::destroy() {
 
     //
     _alloc.reset();
+
+    /**/
+
+    _device.destroy();
+    _device = nullptr;
 }
 
 vk::Device& Device::vkDevice() const {
