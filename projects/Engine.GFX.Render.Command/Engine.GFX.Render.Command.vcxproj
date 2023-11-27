@@ -69,6 +69,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\End.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\EndAccelerationPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\EndSubPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\Lambda.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\NextSubpass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\ForwardRenderCommandBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\RenderCommandAllocator.cpp" />

@@ -200,5 +200,8 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindPipeline.cpp">
       <Filter>Quelldateien\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\Lambda.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

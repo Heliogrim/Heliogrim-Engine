@@ -144,5 +144,10 @@ namespace hg::engine::gfx::render::cmd {
             u32 vertexCount_,
             u32 vertexOffset_
         ) noexcept override;
+
+    public:
+        void lambda(
+            mref<_STD function<void(ref<AccelCommandBuffer>)>> lambda_
+        ) noexcept override;
     };
 }

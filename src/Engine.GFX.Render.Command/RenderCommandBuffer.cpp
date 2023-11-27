@@ -23,6 +23,7 @@
 #include "Commands/EndAccelerationPass.hpp"
 #include "Commands/EndSubPass.hpp"
 #include "Commands/NextSubpass.hpp"
+#include "Commands/Lambda.hpp"
 
 using namespace hg::engine::gfx::render::cmd;
 using namespace hg;
@@ -357,6 +358,13 @@ void RenderCommandBuffer::drawDispatch(
         vertexCount_,
         vertexOffset_,
         false
+    );
+    link(_last, result.value());
+}
+
+void RenderCommandBuffer::lambda(mref<std::function<void(ref<AccelCommandBuffer>)>> lambda_) noexcept {
+    const auto result = alloc().allocateCommand<LambdaRCmd>(
+        _STD move(lambda_)
     );
     link(_last, result.value());
 }
