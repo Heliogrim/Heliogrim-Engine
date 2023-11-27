@@ -114,6 +114,9 @@
     <ClInclude Include="..\..\src\Engine.Assets\Types\Material\GfxMaterial.hpp">
       <Filter>Headerdateien\Types\Material</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Assets\Types\AccelEffect.hpp">
+      <Filter>Headerdateien\Types</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Asset.cpp">
@@ -172,6 +175,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Assets\Types\Material\GfxMaterialPrototype.cpp">
       <Filter>Quelldateien\Types\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Assets\Types\AccelEffect.cpp">
+      <Filter>Quelldateien\Types</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

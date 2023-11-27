@@ -21,6 +21,9 @@
 #include "Types/Texture/TextureAsset.hpp"
 
 #include <sstream>
+#include <Engine.Pedantic/Clone/Clone.hpp>
+
+#include "Types/AccelEffect.hpp"
 
 using namespace hg::engine::assets;
 using namespace hg;
@@ -175,15 +178,27 @@ ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_, cref<string> url
     return instance;
 }
 
-ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset() const {
+ptr<AccelEffect> AssetFactory::createAccelEffectAsset(cref<asset_guid> guid_) const {
 
-    auto guid = generate_asset_guid();
-    return createGfxMaterialAsset(guid);
+    auto* instance = new AccelEffect(clone(guid_));
+
+    storeDefaultNameAndUrl(instance, {});
+    _registry->insert({ instance });
+    return instance;
 }
 
-ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(cref<asset_guid> guid_) const {
+ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(mref<asset_guid> prototypeGuid_) const {
 
-    auto* instance = new GfxMaterial(guid_);
+    auto guid = generate_asset_guid();
+    return createGfxMaterialAsset(guid, _STD move(prototypeGuid_));
+}
+
+ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(
+    cref<asset_guid> guid_,
+    mref<asset_guid> prototypeGuid_
+) const {
+
+    auto* instance = new GfxMaterial(guid_, _STD move(prototypeGuid_));
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
