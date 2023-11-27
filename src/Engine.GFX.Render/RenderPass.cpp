@@ -1,8 +1,10 @@
 #include "RenderPass.hpp"
 
 #include <ranges>
+#include <Engine.GFX.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.GFX.RenderGraph/RuntimeGraph.hpp>
 #include <Engine.GFX.RenderGraph/Pass/ExecutionPass.hpp>
+#include <Engine.GFX.RenderGraph/Relation/SceneViewDescription.hpp>
 #include <Engine.GFX.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/Cast.hpp>
@@ -67,7 +69,40 @@ RenderPassResult RenderPass::operator()() {
 }
 
 smr<const engine::gfx::scene::SceneView> RenderPass::changeSceneView(mref<smr<const scene::SceneView>> nextSceneView_) {
+
+    const auto symbol = makeSceneViewSymbol();
+
+    auto stored = _state.rootSymbolContext().getExportSymbol(clone(symbol));
+    if (stored == nullptr) {
+
+        stored = _state.rootSymbolContext().exportSymbol(clone(symbol));
+        stored->create<smr<const scene::SceneView>, graph::SceneViewDescription>(clone(nextSceneView_));
+
+    } else {
+        stored->store<smr<const scene::SceneView>, graph::SceneViewDescription>(clone(nextSceneView_));
+    }
+
     return _STD exchange(_state._sceneView, _STD move(nextSceneView_));
+}
+
+smr<const engine::gfx::scene::SceneView> RenderPass::unbindSceneView() {
+
+    const auto symbol = makeSceneViewSymbol();
+
+    auto stored = _state.rootSymbolContext().getExportSymbol(clone(symbol));
+    if (stored == nullptr) {
+        return nullptr;
+    }
+
+    if (stored->empty()) {
+        _state.rootSymbolContext().eraseExportSymbol(clone(symbol));
+        return nullptr;
+    }
+
+    auto report = stored->load<smr<const scene::SceneView>>();
+    stored->destroy<smr<const scene::SceneView>>();
+
+    return report;
 }
 
 void RenderPass::unsafeBindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<void>> resource_) {
