@@ -57,6 +57,8 @@ namespace hg::engine::gfx::render {
     public:
         smr<const scene::SceneView> changeSceneView(mref<smr<const scene::SceneView>> nextSceneView_);
 
+        smr<const scene::SceneView> unbindSceneView();
+
     public:
         #pragma region Render Pass Targets
         void unsafeBindTarget(
