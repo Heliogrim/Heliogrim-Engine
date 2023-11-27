@@ -3,22 +3,24 @@
 
 #include <Engine.Common/Functional/Function.hpp>
 
-namespace hg::engine::gfx::render::cmd {
-    class ForwardRenderCommandBuffer;
+namespace hg::engine::gfx {
+    class AccelCommandBuffer;
+}
 
+namespace hg::engine::gfx::render::cmd {
     class LambdaRCmd :
         public RenderCommand {
     public:
         using this_type = LambdaRCmd;
 
-        using signature = void (*)(ref<ForwardRenderCommandBuffer>);
+        using signature = void(ref<AccelCommandBuffer>);
 
     public:
         template <typename Fn_>
-        constexpr LambdaRCmd(Fn_&& fn_) noexcept :
+        LambdaRCmd(Fn_&& fn_) noexcept :
             fn(_STD forward<Fn_>(fn_)) {}
 
-        constexpr LambdaRCmd(mref<_STD function<signature>> fn_) noexcept :
+        LambdaRCmd(mref<_STD function<signature>> fn_) noexcept :
             fn(_STD move(fn_)) {}
 
     private:

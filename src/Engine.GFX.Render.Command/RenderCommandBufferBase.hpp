@@ -17,6 +17,7 @@ namespace hg::engine::gfx {
     class VirtualTextureView;
     struct MaterialIdentifier;
     using MeshDescription = ::hg::engine::gfx::render::graph::MeshDescription;
+    class AccelCommandBuffer;
 }
 
 namespace hg::engine::gfx::acc {
@@ -179,6 +180,11 @@ namespace hg::engine::gfx::render::cmd {
             u32 instanceOffset_,
             u32 vertexCount_,
             u32 vertexOffset_
+        ) noexcept = 0;
+
+    public:
+        virtual void lambda(
+            mref<_STD function<void(ref<AccelCommandBuffer>)>> lambda_
         ) noexcept = 0;
     };
 }
