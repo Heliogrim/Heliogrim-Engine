@@ -43,7 +43,7 @@ void editor::boot::initPrimaryWorld() {
 
     /**/
 
-    //addDefaultSkybox();
+    addDefaultSkybox();
 }
 
 #include <Heliogrim/Heliogrim.hpp>
@@ -55,10 +55,13 @@ void editor::boot::initPrimaryWorld() {
 
 #include <Heliogrim.Default/Assets/GfxMaterials/DefaultSkybox.hpp>
 #include <Game.Main/Assets/Meshes/Sphere.hpp>
+#include <Editor.Core/HeliogrimEditor.hpp>
 
 static void addDefaultSkybox() {
 
-    auto session = GetSession();
+    const auto session = HeliogrimEditor::getEditorSession();
+
+    //auto session = GetSession();
     auto primaryWorld = GetWorld(session);
 
     auto* actor { CreateActor(session) };
