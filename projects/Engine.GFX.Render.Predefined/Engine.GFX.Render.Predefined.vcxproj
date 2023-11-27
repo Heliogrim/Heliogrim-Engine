@@ -18,40 +18,50 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\ColorBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\DepthBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\DepthStencilBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SceneCameraBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SceneView.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SkyboxColorBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\StencilBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\V2F16DataBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\V4F32DataBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfIrradiance.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfLut.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfPrefilter.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Effects\Skybox.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredNormal.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredPosition.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneCamera.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneColor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneDepth.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneStencil.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneView.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SkyboxTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\ColorBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\DepthBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\DepthStencilBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SceneCameraBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SceneView.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SkyboxColorBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\StencilBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\V2F16DataBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\V4F32DataBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfIrradiance.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfLut.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfPrefilter.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\Skybox.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Pipelines\BrdfIrradiance.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Pipelines\BrdfLut.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Pipelines\BrdfPrefilter.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredNormal.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredPosition.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneCamera.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneColor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneDepth.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneStencil.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneView.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SkyboxTexture.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
