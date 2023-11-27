@@ -90,5 +90,13 @@ namespace hg::engine::gfx::material {
         void set(typename trait_type_t<Tx_>::store_type&& value_) {
             _store = _STD forward<typename trait_type_t<Tx_>::store_type>(value_);
         }
+
+        template <typename Tx_ = typename trait_type_t<StoredType_>::data_type> requires
+            (not _STD is_pointer_v<typename trait_type_t<Tx_>::store_type>) &&
+            _STD is_move_assignable_v<typename trait_type_t<Tx_>::data_type> &&
+            _STD is_trivially_copy_assignable_v<typename trait_type_t<Tx_>::data_type>
+        void set(cref<typename trait_type_t<Tx_>::data_type> value_) {
+            _store = value_;
+        }
     };
 }
