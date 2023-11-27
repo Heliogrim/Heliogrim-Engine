@@ -1,6 +1,7 @@
 #include "SubModuleInit.hpp"
 
 #include <Editor.Core/EditorEngine.hpp>
+#include <Engine.Accel/Accel.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Reflow/Reflow.hpp>
 
@@ -16,7 +17,10 @@ void editor::boot::preInitSubModules() {
 
     /**/
 
-    auto result = modules.addSubModule(make_uptr<engine::Reflow>(engine));
+    auto result = modules.addSubModule(make_uptr<engine::Accel>(engine));
+    assert(result == engine::core::DependencyValidationResult::eSuccess);
+
+    result = modules.addSubModule(make_uptr<engine::Reflow>(engine));
     assert(result == engine::core::DependencyValidationResult::eSuccess);
 
     result = modules.addSubModule(make_uptr<Editor>(engine));
