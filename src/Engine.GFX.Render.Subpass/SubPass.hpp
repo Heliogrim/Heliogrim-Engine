@@ -28,7 +28,7 @@ namespace hg::engine::gfx::render {
         virtual void declareInputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept;
 
     public:
-        virtual void iterate() noexcept = 0;
+        virtual void iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept = 0;
 
         virtual void resolve() noexcept = 0;
 

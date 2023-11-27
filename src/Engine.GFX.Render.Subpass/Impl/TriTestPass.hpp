@@ -19,16 +19,19 @@ namespace hg::engine::gfx::render {
 
         struct Resources {
             graph::Subscribed<graph::SymbolizedResource> sceneColor;
+            graph::Subscribed<graph::SymbolizedResource> trDepthBuffer;
         } _resources;
 
     public:
         void destroy() noexcept override;
 
     public:
+        void declareTransforms(ref<graph::ScopedSymbolContext> symCtx_) noexcept override;
+
         void declareOutputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept override;
 
     public:
-        void iterate() noexcept override;
+        void iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept override;
 
         void resolve() noexcept override;
 

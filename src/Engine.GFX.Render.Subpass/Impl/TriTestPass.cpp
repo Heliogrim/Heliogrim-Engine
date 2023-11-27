@@ -19,6 +19,7 @@
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp>
+#include <Engine.GFX.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.GFX.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/SymbolContext.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/ScopedSymbolContext.hpp>
@@ -55,12 +56,17 @@ void TriTestPass::destroy() noexcept {
     _effect.reset();
 }
 
+void TriTestPass::declareTransforms(ref<graph::ScopedSymbolContext> symCtx_) noexcept {
+    symCtx_.registerImportSymbol(makeSceneDepthSymbol(), &_resources.trDepthBuffer);
+    symCtx_.registerExportSymbol(makeSceneDepthSymbol(), &_resources.trDepthBuffer);
+}
+
 void TriTestPass::declareOutputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept {
     // Error: Will fail
     symCtx_.registerExportSymbol(makeSceneColorSymbol(), &_resources.sceneColor);
 }
 
-void TriTestPass::iterate() noexcept {
+void TriTestPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     if (_effect.empty()) {
         _effect = build_test_effect();
     }
@@ -82,16 +88,24 @@ void TriTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     /**/
 
-    auto resource = symCtx_.getExportSymbol(makeSceneColorSymbol());
-    const auto& texture = resource->load<smr<const TextureLikeObject>>();
-    if (!_framebuffer.empty() && _framebuffer->attachments().front() != texture) {
+    auto sceneColorRes = symCtx_.getExportSymbol(makeSceneColorSymbol());
+    const auto& sceneColorTex = sceneColorRes->load<smr<const TextureLikeObject>>();
+
+    auto sceneDepthRes = symCtx_.getImportSymbol(makeSceneDepthSymbol());
+    const auto& sceneDepthTex = sceneDepthRes->load<smr<const TextureLikeObject>>();
+
+    if (
+        !_framebuffer.empty() &&
+        (_framebuffer->attachments().front() != sceneColorTex || _framebuffer->attachments().back() != sceneDepthTex)
+    ) {
         _framebuffer->device()->vkDevice().destroySemaphore(_tmpSignal);
         _framebuffer->destroy();
         _framebuffer.reset();
     }
 
     if (_framebuffer.empty()) {
-        const Vector<smr<const acc::Symbol>> outputSymbols { makeSceneColorSymbol() };
+
+        const Vector<smr<const acc::Symbol>> outputSymbols { makeSceneColorSymbol(), makeSceneDepthSymbol() };
         _framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
 
         for (const auto& output : outputSymbols) {
@@ -146,19 +160,34 @@ void TriTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     auto batch = (*translator)(&cmd);
 
     {
-        auto resource = symCtx_.getExportSymbol(makeSceneColorSymbol());
-
         batch->_tmpWaits.insert_range(
             batch->_tmpWaits.end(),
-            reinterpret_cast<Vector<VkSemaphore>&>(resource->barriers)
+            reinterpret_cast<Vector<VkSemaphore>&>(sceneColorRes->barriers)
         );
         for (auto i = batch->_tmpWaitFlags.size(); i < batch->_tmpWaits.size(); ++i) {
-            batch->_tmpWaitFlags.push_back(VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+            batch->_tmpWaitFlags.push_back(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
         }
         batch->_tmpSignals.push_back(_tmpSignal);
 
-        resource->barriers.clear();
-        resource->barriers.push_back(_tmpSignal.operator VkSemaphore());
+        sceneColorRes->barriers.clear();
+        sceneColorRes->barriers.push_back(_tmpSignal.operator VkSemaphore());
+
+        batch->_tmpWaits.insert_range(
+            batch->_tmpWaits.end(),
+            reinterpret_cast<Vector<VkSemaphore>&>(sceneDepthRes->barriers)
+        );
+        for (auto i = batch->_tmpWaitFlags.size(); i < batch->_tmpWaits.size(); ++i) {
+            batch->_tmpWaitFlags.push_back(
+                VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT
+            );
+        }
+
+        // Warning: Assume color output raises after late fragment test -> transient barrier assumption
+        // Warning: Semaphores are single-producer single-consumer -> we need one semaphore per resource synchronization
+        // batch->_tmpSignals.push_back(_tmpSignal);
+        // 
+        // sceneDepthRes->barriers.clear();
+        // sceneDepthRes->barriers.push_back(_tmpSignal.operator VkSemaphore());
     }
 
     batch->commitAndDispose();
@@ -218,12 +247,22 @@ smr<AccelerationEffect> build_test_effect() {
                 TransferToken {}, TransferType::eForward, TransferDataType::eU8Vec3,
                 DataInputRate::ePerInvocation
             },
+            StageInput {
+                TransferToken::from("depth"), TransferType::eForward, TransferDataType::eF32,
+                DataInputRate::ePerInvocation
+            }
         },
         Vector<StageOutput> {
             StageOutput {
                 TransferToken {}, TransferType::eForward, TransferDataType::eU8Vec4,
                 DataOutputRate {}
             }
+            /*
+            StageOutput {
+                TransferToken::from("out/depth"), TransferType::eForward, TransferDataType::eF32,
+                DataOutputRate {}
+            }
+             */
         }
     );
 
@@ -259,7 +298,7 @@ smr<AccelerationEffect> build_test_effect() {
         _STD move(guid),
         "test-render-effect",
         Vector<smr<Stage>> { _STD move(vertexStage), _STD move(fragmentStage) },
-        Vector<smr<const Symbol>> {},
+        Vector<smr<const Symbol>> { /*makeSceneDepthSymbol()*/ },
         Vector<smr<const Symbol>> { makeSceneColorSymbol() }
     );
 }
@@ -271,7 +310,9 @@ smr<const acc::GraphicsPass> build_test_pass() {
         {
             makeSceneColorSymbol()
         },
-        {}
+        {
+            makeSceneDepthSymbol()
+        }
     ).value();
 
     return graphicsPass;

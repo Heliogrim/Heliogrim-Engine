@@ -33,6 +33,18 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TriTestPass.cpp">
       <Filter>Quelldateien\Impl</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\DepthPrePass.cpp">
+      <Filter>Quelldateien\Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\DummyProvider.cpp">
+      <Filter>Quelldateien\Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\Visualize.cpp">
+      <Filter>Quelldateien\Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\SkyBoxPass.cpp">
+      <Filter>Quelldateien\Impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\SubPass.hpp">
@@ -54,6 +66,18 @@
       <Filter>Headerdateien\Impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TriTestPass.hpp">
+      <Filter>Headerdateien\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\__tmp_helper.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\DummyProvider.hpp">
+      <Filter>Headerdateien\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\Visualize.hpp">
+      <Filter>Headerdateien\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\SkyBoxPass.hpp">
       <Filter>Headerdateien\Impl</Filter>
     </ClInclude>
   </ItemGroup>
