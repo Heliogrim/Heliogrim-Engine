@@ -12,6 +12,7 @@
 #include "Types/Asset.hpp"
 
 namespace hg::engine::assets {
+    class AccelEffect;
     class Font;
     class GfxMaterial;
     class GfxMaterialPrototype;
@@ -76,27 +77,16 @@ namespace hg::engine::assets {
 
         [[nodiscard]] ptr<Font> createFontAsset(cref<asset_guid> guid_, cref<string> url_) const;
 
-        /**
-         * Creates a graphics material asset
-         *
-         * @author Julius
-         * @date 06.10.2021
-         *
-         * @returns The new graphics material asset.
-         */
-        [[nodiscard]] ptr<GfxMaterial> createGfxMaterialAsset() const;
+        [[nodiscard]] ptr<AccelEffect> createAccelEffectAsset(cref<asset_guid> guid_) const;
 
-        /**
-         * Creates a graphics material asset
-         *
-         * @author Julius
-         * @date 06.10.2021
-         *
-         * @param  guid_ Unique identifier.
-         *
-         * @returns The new graphics material asset.
-         */
-        [[nodiscard]] ptr<GfxMaterial> createGfxMaterialAsset(cref<asset_guid> guid_) const;
+        [[nodiscard]] ptr<GfxMaterial> createGfxMaterialAsset(
+            mref<asset_guid> prototypeGuid_
+        ) const;
+
+        [[nodiscard]] ptr<GfxMaterial> createGfxMaterialAsset(
+            cref<asset_guid> guid_,
+            mref<asset_guid> prototypeGuid_
+        ) const;
 
         [[nodiscard]] ptr<GfxMaterialPrototype> createGfxMaterialPrototypeAsset(cref<asset_guid> guid_) const;
 

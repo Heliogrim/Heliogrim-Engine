@@ -22,6 +22,7 @@
     <ClInclude Include="..\..\src\Engine.Assets\AssetOutputStream.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Assets.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\AssetTypeId.hpp" />
+    <ClInclude Include="..\..\src\Engine.Assets\Types\AccelEffect.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\Asset.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\AssetConcept.hpp" />
     <ClInclude Include="..\..\src\Engine.Assets\Types\Font.hpp" />
@@ -49,6 +50,7 @@
     <ClCompile Include="..\..\src\Engine.Assets\AssetGuid.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\AssetGuidDataLayout.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Assets.cpp" />
+    <ClCompile Include="..\..\src\Engine.Assets\Types\AccelEffect.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Asset.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Font.cpp" />
     <ClCompile Include="..\..\src\Engine.Assets\Types\Geometry\StaticGeometry.cpp" />
