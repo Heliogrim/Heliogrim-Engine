@@ -9,7 +9,9 @@
 #include "__fwd.hpp"
 
 #include "MaterialLoadOptions.hpp"
+#include "MaterialPrototypeLoadOptions.hpp"
 #include "MaterialResource.hpp"
+#include "MaterialPrototypeResource.hpp"
 
 namespace hg::engine::resource::loader {
     using namespace ::hg::engine::gfx::loader;

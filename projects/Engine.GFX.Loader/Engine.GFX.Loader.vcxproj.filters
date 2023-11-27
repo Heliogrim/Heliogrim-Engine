@@ -162,6 +162,24 @@
     <ClInclude Include="..\..\src\Engine.GFX.Loader\Font\Transformer\FreeType.hpp">
       <Filter>Headerdateien\Font\Transformer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialPrototypeLoader.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialPrototypeResource.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialPrototypeLoadOptions.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialPrototypeTransformer.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialPrototypeFeedback.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Loader\Material\MaterialPrototypeCache.hpp">
+      <Filter>Headerdateien\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Texture\TextureLoader.cpp">
@@ -223,6 +241,21 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Loader\Font\Transformer\FreeType.cpp">
       <Filter>Quelldateien\Font\Transformer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialPrototypeCache.cpp">
+      <Filter>Quelldateien\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialPrototypeFeedback.cpp">
+      <Filter>Quelldateien\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialPrototypeLoader.cpp">
+      <Filter>Quelldateien\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialPrototypeResource.cpp">
+      <Filter>Quelldateien\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Loader\Material\MaterialPrototypeTransformer.cpp">
+      <Filter>Quelldateien\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

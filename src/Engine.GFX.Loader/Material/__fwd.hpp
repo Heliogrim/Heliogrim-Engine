@@ -14,4 +14,9 @@ namespace hg::engine::gfx::loader {
     class MaterialCache;
     class MaterialFeedback;
     class MaterialTransformer;
+
+    class MaterialPrototypeLoader;
+    class MaterialPrototypeCache;
+    class MaterialPrototypeFeedback;
+    class MaterialPrototypeTransformer;
 }
