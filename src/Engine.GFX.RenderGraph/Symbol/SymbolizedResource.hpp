@@ -14,7 +14,8 @@ namespace hg::engine::gfx::render::graph {
 }
 
 namespace hg::engine::gfx::render::graph {
-    struct SymbolizedResource {
+    class SymbolizedResource {
+    public:
         bool owned : 1/* Whether the resource is NOT owned by the context */ = false;
         bool transient : 1/* Currently unused */ = false;
 
@@ -73,28 +74,29 @@ namespace hg::engine::gfx::render::graph {
 
         template <typename Type_, typename Validation_ = _STD void_t<Type_>, typename Proj_ = _STD identity> requires
             _STD is_move_constructible_v<Type_> && (not _STD is_void_v<Type_>) && (not _STD is_reference_v<Type_>)
-        ref<Type_> create(mref<Type_> data_) noexcept(_STD is_nothrow_move_constructible_v<Type_>) {
+        nmpt<Type_> create(mref<Type_> data_) noexcept(_STD is_nothrow_move_constructible_v<Type_>) {
 
             assert(empty() && "Tried to create at already initialized symbolized resource.");
 
             if constexpr (not _STD is_void_v<Validation_>) {
 
                 if (not IsType<Validation_>(*symbol->description)) {
-                    return false;
+                    // Warning: Rework
+                    return nullptr;
                 }
 
                 if constexpr (HasValueValidation<Validation_, Type_>) {
 
                     constexpr static Proj_ proj {};
                     if (static_cast<Validation_&>(*symbol->description).isValidObject({ proj(data_) })) {
-                        return false;
+                        return nullptr;
                     }
                 }
 
             }
 
             data = new Type_(_STD move(data_));
-            return load<Type_>();
+            return nmpt<Type_> { static_cast<Type_*>(data) };
         }
 
         template <typename Type_> requires _STD is_void_v<Type_> && (not _STD is_reference_v<Type_>)

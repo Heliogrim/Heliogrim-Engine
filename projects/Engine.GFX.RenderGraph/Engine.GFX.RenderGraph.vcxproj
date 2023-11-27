@@ -57,6 +57,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\ModelDescription.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\Provision.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\Requirement.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneCameraDescription.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneViewDescription.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\TextureDescription.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\RuntimeGraph.hpp" />
@@ -103,6 +104,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\Description.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\MeshDescription.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\ModelDescription.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneCameraDescription.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneViewDescription.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\TextureDescription.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RuntimeGraph.cpp" />

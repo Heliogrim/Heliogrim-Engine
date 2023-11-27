@@ -39,7 +39,12 @@ namespace hg::engine::gfx::render::graph {
         [[nodiscard]] nmpt<this_type> parent() const noexcept;
 
     private:
-        std::map<smr<const acc::Symbol>, nmpt<SymbolizedResource>> _resources;
+        std::map<
+            smr<const acc::Symbol>, nmpt<SymbolizedResource>,
+            decltype([](cref<smr<const acc::Symbol>> left_, cref<smr<const acc::Symbol>> right_) -> bool {
+                return left_.get() < right_.get();
+            })
+        > _resources;
         Vector<
             _STD pair<
                 smr<const acc::Symbol>,
