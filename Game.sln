@@ -230,6 +230,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Audio", "Audio", "{91685913
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Driver.Vulkan", "projects\Engine.Driver.Vulkan\Engine.Driver.Vulkan.vcxproj", "{2F53F944-15CC-4F48-AB45-16C0FBF722FA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Accel.Loader", "projects\Engine.Accel.Loader\Engine.Accel.Loader.vcxproj", "{9FFF979F-68A8-44B1-B983-52278FCA1AA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -638,6 +640,12 @@ Global
 		{2F53F944-15CC-4F48-AB45-16C0FBF722FA}.Profile|x64.Build.0 = Profile|x64
 		{2F53F944-15CC-4F48-AB45-16C0FBF722FA}.Release|x64.ActiveCfg = Release|x64
 		{2F53F944-15CC-4F48-AB45-16C0FBF722FA}.Release|x64.Build.0 = Release|x64
+		{9FFF979F-68A8-44B1-B983-52278FCA1AA4}.Debug|x64.ActiveCfg = Debug|x64
+		{9FFF979F-68A8-44B1-B983-52278FCA1AA4}.Debug|x64.Build.0 = Debug|x64
+		{9FFF979F-68A8-44B1-B983-52278FCA1AA4}.Profile|x64.ActiveCfg = Profile|x64
+		{9FFF979F-68A8-44B1-B983-52278FCA1AA4}.Profile|x64.Build.0 = Profile|x64
+		{9FFF979F-68A8-44B1-B983-52278FCA1AA4}.Release|x64.ActiveCfg = Release|x64
+		{9FFF979F-68A8-44B1-B983-52278FCA1AA4}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -720,6 +728,7 @@ Global
 		{A683CFF6-D718-45FE-A5B6-312A92E0377C} = {24E08083-0467-4F93-8003-58332292857F}
 		{91685913-E48E-4118-AD12-ED10C030D8FA} = {24E08083-0467-4F93-8003-58332292857F}
 		{2F53F944-15CC-4F48-AB45-16C0FBF722FA} = {45EF2A2B-35D1-45BD-9239-AA913B55EC67}
+		{9FFF979F-68A8-44B1-B983-52278FCA1AA4} = {78C9A4AE-980D-48DF-8289-5EA85D056476}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {045F3307-C3BE-45A8-88A0-BB88AD5695BE}
