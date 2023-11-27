@@ -23,6 +23,8 @@ namespace hg::engine {
 namespace hg::engine::core {
     enum class EngineState : u8;
 
+    class Modules;
+
     class Session;
     class SessionState;
 
@@ -243,6 +245,8 @@ namespace hg::engine {
 
     public:
         [[nodiscard]] virtual ref<GlobalEventEmitter> getEmitter() const noexcept = 0;
+
+        [[nodiscard]] virtual ref<core::Modules> getModules() const noexcept = 0;
 
     public:
         [[nodiscard]] virtual Vector<non_owning_rptr<core::WorldContext>> getWorldContexts() const noexcept = 0;

@@ -34,6 +34,10 @@ namespace hg::engine::core {
         [[nodiscard]] bool validateDependency(cref<SubModuleDependency> dependency_) const noexcept;
 
     public:
+        [[nodiscard]] size_t getCoreModuleCount() const noexcept;
+
+        [[nodiscard]] size_t getSubModuleCount() const noexcept;
+
         [[nodiscard]] cref<Deque<uptr<SubModule>>> getSubModules() const noexcept;
 
     public:

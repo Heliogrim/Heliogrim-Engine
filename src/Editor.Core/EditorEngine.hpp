@@ -72,7 +72,7 @@ namespace hg::editor {
         [[nodiscard]] ref<GlobalEventEmitter> getEmitter() const noexcept override;
 
     public:
-        [[nodiscard]] ref<engine::core::Modules> getModules() const noexcept;
+        [[nodiscard]] ref<engine::core::Modules> getModules() const noexcept override;
 
     private:
         Vector<non_owning_rptr<engine::core::WorldContext>> _worldContexts;
