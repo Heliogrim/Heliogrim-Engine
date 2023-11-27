@@ -261,6 +261,9 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\Subscribed.hpp">
       <Filter>Headerdateien\Symbol</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneCameraDescription.hpp">
+      <Filter>Headerdateien\Relation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RuntimeGraph.cpp">
@@ -382,6 +385,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\ExecutionPassContext.cpp">
       <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneCameraDescription.cpp">
+      <Filter>Quelldateien\Relation</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

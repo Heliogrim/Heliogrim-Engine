@@ -2,7 +2,6 @@
 
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Logging/Logger.hpp>
-#include <Engine.Reflect/TypeSwitch.hpp>
 
 #include "../Node/Node.hpp"
 #include "../Node/Runtime/AnchorNode.hpp"

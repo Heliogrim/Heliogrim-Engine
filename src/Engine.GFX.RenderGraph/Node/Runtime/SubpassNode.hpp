@@ -50,7 +50,7 @@ namespace hg::engine::gfx::render::graph {
 
     public:
         [[nodiscard]] IterationResult iterate(cref<IterationPassContext> ctx_) noexcept override {
-            _subpass.iterate();
+            _subpass.iterate(static_cast<cref<ScopedSymbolContext>>(ctx_.symbols()));
             return IterationResultBits::eNone;
         }
 
