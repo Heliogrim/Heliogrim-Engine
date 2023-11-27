@@ -5,6 +5,7 @@
 #include "Font/FontLoader.hpp"
 #include "Geometry/StaticGeometryLoader.hpp"
 #include "Material/MaterialLoader.hpp"
+#include "Material/MaterialPrototypeLoader.hpp"
 #include "Texture/TextureLoader.hpp"
 
 using namespace hg::engine::gfx::loader;
@@ -27,6 +28,11 @@ void engine::gfx::loader::register_loader(
     }
 
     {
+        auto mpl = make_sptr<MaterialPrototypeLoader>(cacheCtrl_, pool_, manager_.sharedSourceLoader());
+        manager_.registerLoader<assets::GfxMaterialPrototype, MaterialPrototypeResource>(mpl);
+    }
+
+    {
         auto ml = make_sptr<MaterialLoader>(cacheCtrl_, pool_, manager_.sharedSourceLoader());
         manager_.registerLoader<assets::GfxMaterial, MaterialResource>(ml);
     }
@@ -46,6 +52,7 @@ void engine::gfx::loader::unregister_loader(
     manager_.unregisterLoader<assets::TextureAsset>();
     manager_.unregisterLoader<assets::StaticGeometry>();
     manager_.unregisterLoader<assets::GfxMaterial>();
+    manager_.unregisterLoader<assets::GfxMaterialPrototype>();
     manager_.unregisterLoader<assets::Font>();
 }
 
