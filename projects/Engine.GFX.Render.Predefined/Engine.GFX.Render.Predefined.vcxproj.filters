@@ -90,6 +90,21 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\V4F32DataBuffer.cpp">
       <Filter>Quelldateien\Descriptions</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Effects\Skybox.cpp">
+      <Filter>Quelldateien\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneCamera.cpp">
+      <Filter>Quelldateien\Symbols</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SceneCameraBuffer.cpp">
+      <Filter>Quelldateien\Descriptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SkyboxTexture.cpp">
+      <Filter>Quelldateien\Symbols</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SkyboxColorBuffer.cpp">
+      <Filter>Quelldateien\Descriptions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfLut.hpp">
@@ -148,6 +163,21 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Pipelines\BrdfIrradiance.hpp">
       <Filter>Headerdateien\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\Skybox.hpp">
+      <Filter>Headerdateien\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneCamera.hpp">
+      <Filter>Headerdateien\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SkyboxTexture.hpp">
+      <Filter>Headerdateien\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SceneCameraBuffer.hpp">
+      <Filter>Headerdateien\Descriptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SkyboxColorBuffer.hpp">
+      <Filter>Headerdateien\Descriptions</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
