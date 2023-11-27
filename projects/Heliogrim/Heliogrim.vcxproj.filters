@@ -201,6 +201,9 @@
     <ClInclude Include="..\..\src\Heliogrim\Future.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Heliogrim\GfxMatProtoAsset.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Heliogrim\AudioFormat.cpp">
@@ -324,6 +327,9 @@
       <Filter>Quelldateien\Actors\Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Heliogrim\Session.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Heliogrim\GfxMatProtoAsset.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

@@ -27,6 +27,7 @@
     <ClInclude Include="..\..\src\Heliogrim\AudioFormat.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\CollisionComponent.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\Components\CameraComponent.hpp" />
+    <ClInclude Include="..\..\src\Heliogrim\GfxMatProtoAsset.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\HeliogrimStatic.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\FontAsset.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\Future.hpp" />
@@ -78,6 +79,7 @@
     <ClCompile Include="..\..\src\Heliogrim\AssetDatabase.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\AudioFormat.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\Components\CameraComponent.cpp" />
+    <ClCompile Include="..\..\src\Heliogrim\GfxMatProtoAsset.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\Heliogrim.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\FontAsset.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\GfxMaterial.cpp" />
@@ -116,8 +118,14 @@
     <ClCompile Include="..\..\src\Heliogrim\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Engine.Accel.Loader\Engine.Accel.Loader.vcxproj">
+      <Project>{9fff979f-68a8-44b1-b983-52278fca1aa4}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Accel.Storage\Engine.Accel.Storage.vcxproj">
       <Project>{1b6dc406-cb6d-4bbc-9b08-482f19fd292a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Accel\Engine.Accel.vcxproj">
+      <Project>{f6258ff8-864a-4003-b0c4-ca219d2cab82}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.ACS\Engine.ACS.vcxproj">
       <Project>{bdd7b57f-5aee-4ddb-95fd-e0f89bb25ec7}</Project>
