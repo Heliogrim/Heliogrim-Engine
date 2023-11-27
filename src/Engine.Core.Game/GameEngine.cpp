@@ -5,6 +5,7 @@
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/Event/WorldAddedEvent.hpp>
 #include <Engine.Core/Event/WorldRemoveEvent.hpp>
+#include <Engine.Core/Module/SubModule.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Input/Input.hpp>
 #include <Engine.Network/Network.hpp>
@@ -130,6 +131,22 @@ bool GameEngine::init() {
 
     /**/
     scheduler::waitUntilAtomic(setupCounter, 6ui8);
+    setupCounter.store(0ui8, _STD memory_order::relaxed);
+
+    scheduler::exec(
+        [this, &setupCounter] {
+
+            for (const auto& subModule : _modules.getSubModules()) {
+                subModule->setup();
+            }
+
+            ++setupCounter;
+            setupCounter.notify_one();
+        }
+    );
+
+    /**/
+    scheduler::waitUntilAtomic(setupCounter, static_cast<u8>(_modules.getSubModuleCount()));
     return setEngineState(EngineState::eInitialized);
 }
 
@@ -192,6 +209,14 @@ bool GameEngine::start() {
             _gameSession = make_uptr<core::Session>();
             _worldContexts.push_back(_gameSession->getWorldContext());
 
+            /**/
+
+            for (const auto& subModule : _modules.getSubModules()) {
+                subModule->start();
+            }
+
+            /**/
+
             next.test_and_set(std::memory_order::relaxed);
             next.notify_one();
         }
@@ -211,9 +236,18 @@ bool GameEngine::stop() {
     _STD atomic_flag next {};
     scheduler::exec(
         [this, &next] {
+
+            for (const auto& subModule : _modules.getSubModules()) {
+                subModule->stop();
+            }
+
+            /**/
+
             auto where = std::ranges::remove(_worldContexts, _gameSession->getWorldContext());
             _worldContexts.erase(where.begin(), where.end());
             _gameSession.reset();
+
+            /**/
 
             next.test_and_set(std::memory_order::relaxed);
             next.notify_one();
@@ -262,6 +296,22 @@ bool GameEngine::shutdown() {
     if (getEngineState() != EngineState::eStopped && getEngineState() != EngineState::eInitialized) {
         return false;
     }
+
+    _STD atomic_flag subModuleFlag {};
+    scheduler::exec(
+        [this, &subModuleFlag] {
+
+            const auto& modules = _modules.getSubModules();
+            for (auto iter = modules.rbegin(); iter != modules.rend(); ++iter) {
+                (*iter)->destroy();
+            }
+
+            subModuleFlag.test_and_set(_STD memory_order::relaxed);
+            subModuleFlag.notify_one();
+        }
+    );
+
+    scheduler::waitOnAtomic(subModuleFlag, false);
 
     /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
     _STD atomic_uint_fast8_t moduleCount { 0ui8 };
@@ -384,6 +434,10 @@ non_owning_rptr<Scheduler> GameEngine::getScheduler() const noexcept {
 
 ref<GlobalEventEmitter> GameEngine::getEmitter() const noexcept {
     return const_cast<ref<GlobalEventEmitter>>(_emitter);
+}
+
+ref<core::Modules> GameEngine::getModules() const noexcept {
+    return const_cast<ref<core::Modules>>(_modules);
 }
 
 Vector<non_owning_rptr<core::WorldContext>> GameEngine::getWorldContexts() const noexcept {

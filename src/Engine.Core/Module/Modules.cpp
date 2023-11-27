@@ -37,6 +37,14 @@ bool Modules::validateDependency(cref<SubModuleDependency> dependency_) const no
     return dependency_.order != SubModuleOrder::ePredecessor;
 }
 
+size_t Modules::getCoreModuleCount() const noexcept {
+    return _coreModules.size();
+}
+
+size_t Modules::getSubModuleCount() const noexcept {
+    return _subModules.size();
+}
+
 cref<Deque<uptr<SubModule>>> Modules::getSubModules() const noexcept {
     return _subModules;
 }

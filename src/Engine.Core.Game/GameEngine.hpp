@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Core/Module/Modules.hpp>
 #include <Engine.Event/GlobalEventEmitter.hpp>
 
 namespace hg::engine {
@@ -39,6 +40,7 @@ namespace hg::engine {
         uptr<Scheduler> _scheduler;
 
         GlobalEventEmitter _emitter;
+        core::Modules _modules;
 
     public:
         [[nodiscard]] non_owning_rptr<Assets> getAssets() const noexcept override;
@@ -59,7 +61,10 @@ namespace hg::engine {
 
         [[nodiscard]] non_owning_rptr<Scheduler> getScheduler() const noexcept override;
 
+    public:
         [[nodiscard]] ref<GlobalEventEmitter> getEmitter() const noexcept override;
+
+        [[nodiscard]] ref<core::Modules> getModules() const noexcept override;
 
     private:
         Vector<non_owning_rptr<core::WorldContext>> _worldContexts;
