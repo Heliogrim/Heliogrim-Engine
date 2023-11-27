@@ -1,5 +1,7 @@
 #include "SkyboxComponent.hpp"
 
+#include <Engine.Pedantic/Clone/Clone.hpp>
+
 using namespace hg;
 
 SkyboxComponent::SkyboxComponent(
@@ -12,7 +14,7 @@ SkyboxComponent::SkyboxComponent(
         _STD move(parent_)
     ),
     _skyboxGeometry(invalid_asset_guid),
-    _skyboxMaterial(invalid_asset_guid) {}
+    _skyboxMaterial(invalid_asset_guid, clone(invalid_asset_guid)) {}
 
 cref<StaticGeometryAsset> SkyboxComponent::getSkyboxGeometryAsset() const noexcept {
     return _skyboxGeometry;

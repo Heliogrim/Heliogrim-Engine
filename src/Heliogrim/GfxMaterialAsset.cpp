@@ -8,15 +8,25 @@
 
 using namespace hg;
 
-GfxMaterialAsset::GfxMaterialAsset(cref<asset_guid> guid_) noexcept :
+GfxMaterialAsset::GfxMaterialAsset(
+    cref<asset_guid> guid_,
+    mref<asset_guid> prototypeGuid_
+) noexcept :
     StreamableRenderableAsset(
         guid_,
         engine::assets::GfxMaterial::typeId,
-        engine::Engine::getEngine()->getAssets()->getFactory()->createGfxMaterialAsset(guid_)
+        engine::Engine::getEngine()->getAssets()->getFactory()->createGfxMaterialAsset(
+            guid_,
+            _STD move(prototypeGuid_)
+        )
     ) {}
 
 GfxMaterialAsset::~GfxMaterialAsset() noexcept = default;
 
 bool GfxMaterialAsset::isValidType() const noexcept {
     return _typeId == engine::assets::GfxMaterial::typeId;
+}
+
+const ptr<const GfxMatProtoAsset> GfxMaterialAsset::prototype() const noexcept {
+    return nullptr;
 }

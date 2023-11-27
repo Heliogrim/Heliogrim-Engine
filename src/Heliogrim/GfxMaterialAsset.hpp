@@ -3,7 +3,7 @@
 #include "StreamableRenderableAsset.hpp"
 
 namespace hg {
-    class TextureAsset;
+    class GfxMatProtoAsset;
 
     class GfxMaterialAsset :
         public StreamableRenderableAsset {
@@ -15,15 +15,10 @@ namespace hg {
         using const_reference_type = cref<value_type>;
 
     public:
-        /**
-         * Constructor
-         *
-         * @author Julius
-         * @date 06.10.2021
-         *
-         * @param  guid_ Unique identifier.
-         */
-        GfxMaterialAsset(cref<asset_guid> guid_) noexcept;
+        GfxMaterialAsset(
+            cref<asset_guid> guid_,
+            mref<asset_guid> prototypeGuid_
+        ) noexcept;
 
         /**
          * Destructor
@@ -43,5 +38,8 @@ namespace hg {
          * @returns True if valid type, false if not.
          */
         [[nodiscard]] bool isValidType() const noexcept;
+
+    public:
+        [[nodiscard]] const ptr<const GfxMatProtoAsset> prototype() const noexcept;
     };
 }
