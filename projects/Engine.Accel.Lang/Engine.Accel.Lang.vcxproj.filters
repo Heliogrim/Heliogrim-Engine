@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\Rep">
+      <UniqueIdentifier>{106a199a-6d39-4c4a-8703-a1e961bb5501}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Lang">
+      <UniqueIdentifier>{a491ae70-3d4f-4e0c-8a53-29d00a02c32c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Emitter">
+      <UniqueIdentifier>{387f99d2-afee-432a-b51a-2adf94fbab3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Emitter">
+      <UniqueIdentifier>{76c510ef-6ac0-4565-86d5-3dd78a1e71e4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Engine.Accel.Lang\Intermediate.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Accel.Lang\Representation.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Accel.Lang\Emitter\GlslEmitter.cpp">
+      <Filter>Quelldateien\Emitter</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Intermediate.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Representation.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Language.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Dialect.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Rep\Expression.hpp">
+      <Filter>Headerdateien\Rep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Rep\Scope.hpp">
+      <Filter>Headerdateien\Rep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Rep\Type.hpp">
+      <Filter>Headerdateien\Rep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Rep\Function.hpp">
+      <Filter>Headerdateien\Rep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Rep\Variable.hpp">
+      <Filter>Headerdateien\Rep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Rep\GlobalScope.hpp">
+      <Filter>Headerdateien\Rep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Rep\Annotation.hpp">
+      <Filter>Headerdateien\Rep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Lang\TextBlock.hpp">
+      <Filter>Headerdateien\Lang</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Rep\Symbol.hpp">
+      <Filter>Headerdateien\Rep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Emitter\GlslEmitter.hpp">
+      <Filter>Headerdateien\Emitter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Emitter.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Emitter\AccelEmitter.hpp">
+      <Filter>Headerdateien\Emitter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Rep\CallExpr.hpp">
+      <Filter>Headerdateien\Rep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Rep\LoadExpr.hpp">
+      <Filter>Headerdateien\Rep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Lang\Rep\StoreExpr.hpp">
+      <Filter>Headerdateien\Rep</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
