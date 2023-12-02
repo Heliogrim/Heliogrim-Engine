@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine.GFX.Acc/AccelerationPipeline.hpp>
+#include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 
 #include "Engine.GFX.Render.Command/RenderCommand.hpp"
 #include "Engine.GFX.Render.Command/RenderResource.hpp"
@@ -17,7 +17,7 @@ namespace hg::engine::gfx::render::cmd {
 
     public:
         constexpr BindPipelineRCmd(
-            mref<smr<const acc::AccelerationPipeline>> pipeline_,
+            mref<smr<const accel::AccelerationPipeline>> pipeline_,
             const BindPipelineFeatureSet featureSet_
         ) noexcept :
             pipeline(_STD move(pipeline_)),
@@ -27,7 +27,7 @@ namespace hg::engine::gfx::render::cmd {
 
     private:
     public:
-        smr<const acc::AccelerationPipeline> pipeline;
+        smr<const accel::AccelerationPipeline> pipeline;
         BindPipelineFeatureSet featureSet;
 
     public:

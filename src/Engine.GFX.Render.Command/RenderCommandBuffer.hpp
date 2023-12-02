@@ -1,4 +1,6 @@
 #pragma once
+#include <Engine.Accel.Lang/Rep/Symbol.hpp>
+
 #include "RenderCommandAllocator.hpp"
 #include "RenderCommandBufferBase.hpp"
 #include "RenderResourceTable.hpp"
@@ -56,9 +58,9 @@ namespace hg::engine::gfx::render::cmd {
         void end() noexcept override;
 
     public:
-        void bindComputePipeline(mref<smr<const acc::ComputePipeline>> pipeline_) noexcept override;
+        void bindComputePipeline(mref<smr<const accel::ComputePipeline>> pipeline_) noexcept override;
 
-        void bindGraphicsPipeline(mref<smr<const acc::GraphicsPipeline>> pipeline_) noexcept override;
+        void bindGraphicsPipeline(mref<smr<const accel::GraphicsPipeline>> pipeline_) noexcept override;
 
     public:
         void bindStaticMesh(const nmpt<const Mesh> mesh_) noexcept override;
@@ -79,17 +81,17 @@ namespace hg::engine::gfx::render::cmd {
 
     public:
         void bindStorage(
-            const nmpt<const acc::Symbol> symbol_,
+            const nmpt<const accel::lang::Symbol> symbol_,
             const nmpt<const StorageBufferView> storageView_
         ) noexcept override;
 
         void bindTexture(
-            const nmpt<const acc::Symbol> symbol_,
+            const nmpt<const accel::lang::Symbol> symbol_,
             const nmpt<const TextureView> textureView_
         ) noexcept override;
 
         void bindTexture(
-            const nmpt<const acc::Symbol> symbol_,
+            const nmpt<const accel::lang::Symbol> symbol_,
             const nmpt<const VirtualTextureView> textureView_
         ) noexcept override;
 

@@ -2,8 +2,8 @@
 
 #include <Engine.Accel.Storage/Storage.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
-#include <Engine.GFX.Acc/Pipeline/ComputePipeline.hpp>
-#include <Engine.GFX.Acc/Pipeline/GraphicsPipeline.hpp>
+#include <Engine.Accel.Pipeline/ComputePipeline.hpp>
+#include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 
 #include "Commands/BindPipeline.hpp"
 
@@ -22,15 +22,15 @@ ForwardRenderCommandBuffer::ForwardRenderCommandBuffer(mref<this_type> other_) n
     RenderCommandBuffer(_STD move(other_)) {}
 
 GraphicsPipelineRComRef ForwardRenderCommandBuffer::createGraphicsPipelineImmediately(
-    mref<smr<const acc::AccelerationEffect>> effect_,
+    mref<smr<const accel::AccelerationEffect>> effect_,
     nmpt<void> specification_,
     nmpt<void> profile_
 ) {
 
     ptr<accel::AccelStorage> storage {};
     const accel::Permutation permutation {
-        static_cast<acc::EffectProfile*>(profile_.get()),
-        static_cast<acc::EffectSpecification*>(specification_.get())
+        static_cast<accel::EffectProfile*>(profile_.get()),
+        static_cast<accel::EffectSpecification*>(specification_.get())
     };
 
     auto pipeline = storage->getAccelPipeline(
