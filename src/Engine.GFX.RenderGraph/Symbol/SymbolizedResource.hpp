@@ -3,8 +3,9 @@
 #include <type_traits>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.GFX.Acc/Symbol/Symbol.hpp>
 #include <Engine.Reflect/IsType.hpp>
+
+#include "Symbol.hpp"
 
 namespace hg::engine::gfx::render::graph {
     template <typename Validator_, typename Type_>
@@ -19,7 +20,7 @@ namespace hg::engine::gfx::render::graph {
         bool owned : 1/* Whether the resource is NOT owned by the context */ = false;
         bool transient : 1/* Currently unused */ = false;
 
-        smr<const acc::Symbol> symbol = nullptr;
+        smr<const Symbol> symbol = nullptr;
         void* data = nullptr;
 
         // Warning: Temporary -> May be offloaded into a transition chaining layer

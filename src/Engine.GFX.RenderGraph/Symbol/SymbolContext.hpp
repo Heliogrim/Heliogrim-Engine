@@ -2,11 +2,11 @@
 #include <map>
 #include <variant>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.GFX.Acc/Symbol/Symbol.hpp>
 
 #include "Observed.hpp"
 #include "Subscribed.hpp"
 #include "SymbolizedResource.hpp"
+#include "Symbol.hpp"
 
 namespace hg::engine::gfx::render::graph {
     class SymbolContext {
@@ -40,64 +40,64 @@ namespace hg::engine::gfx::render::graph {
 
     private:
         std::map<
-            smr<const acc::Symbol>, nmpt<SymbolizedResource>,
-            decltype([](cref<smr<const acc::Symbol>> left_, cref<smr<const acc::Symbol>> right_) -> bool {
+            smr<const Symbol>, nmpt<SymbolizedResource>,
+            decltype([](cref<smr<const Symbol>> left_, cref<smr<const Symbol>> right_) -> bool {
                 return left_.get() < right_.get();
             })
         > _resources;
         Vector<
             _STD pair<
-                smr<const acc::Symbol>,
+                smr<const Symbol>,
                 Vector<_STD variant<const ptr<observe_type>, const ptr<subscribe_type>>>
             >
         > _register;
 
     public:
-        void exposeSymbol(mref<smr<const acc::Symbol>> symbol_, nmpt<SymbolizedResource> resource_);
+        void exposeSymbol(mref<smr<const Symbol>> symbol_, nmpt<SymbolizedResource> resource_);
 
-        [[nodiscard]] nmpt<SymbolizedResource> exportSymbol(mref<smr<const acc::Symbol>> symbol_);
+        [[nodiscard]] nmpt<SymbolizedResource> exportSymbol(mref<smr<const Symbol>> symbol_);
 
-        [[nodiscard]] nmpt<SymbolizedResource> importSymbol(mref<smr<const acc::Symbol>> symbol_);
+        [[nodiscard]] nmpt<SymbolizedResource> importSymbol(mref<smr<const Symbol>> symbol_);
 
     public:
         bool registerExposeSymbol(
-            mref<smr<const acc::Symbol>> symbol_,
+            mref<smr<const Symbol>> symbol_,
             const ptr<Observed<SymbolizedResource>> observation_
         );
 
         bool registerExportSymbol(
-            mref<smr<const acc::Symbol>> symbol_,
+            mref<smr<const Symbol>> symbol_,
             const ptr<Subscribed<SymbolizedResource>> subscription_
         );
 
         bool registerImportSymbol(
-            mref<smr<const acc::Symbol>> symbol_,
+            mref<smr<const Symbol>> symbol_,
             const ptr<Subscribed<SymbolizedResource>> subscription_
         );
 
     public:
         [[nodiscard]] _Success_(return != nullptr) nmpt<SymbolizedResource> getExportSymbol(
-            mref<smr<const acc::Symbol>> symbol_
+            mref<smr<const Symbol>> symbol_
         ) const;
 
         [[nodiscard]] _Success_(return != nullptr) nmpt<SymbolizedResource> getImportSymbol(
-            mref<smr<const acc::Symbol>> symbol_
+            mref<smr<const Symbol>> symbol_
         ) const;
 
     public:
-        bool eraseExposedSymbol(mref<smr<const acc::Symbol>> symbol_);
+        bool eraseExposedSymbol(mref<smr<const Symbol>> symbol_);
 
         bool eraseExposedSymbol(mref<nmpt<SymbolizedResource>> resource_);
 
-        [[nodiscard]] bool eraseExportSymbol(mref<smr<const acc::Symbol>> symbol_);
+        [[nodiscard]] bool eraseExportSymbol(mref<smr<const Symbol>> symbol_);
 
         [[nodiscard]] bool eraseExportSymbol(mref<nmpt<SymbolizedResource>> resource_);
 
-        [[nodiscard]] bool eraseImportSymbol(mref<smr<const acc::Symbol>> symbol_);
+        [[nodiscard]] bool eraseImportSymbol(mref<smr<const Symbol>> symbol_);
 
         [[nodiscard]] bool eraseImportSymbol(mref<nmpt<SymbolizedResource>> resource_);
 
     public:
-        [[nodiscard]] bool isShadowing(mref<smr<const acc::Symbol>> symbol_);
+        [[nodiscard]] bool isShadowing(mref<smr<const Symbol>> symbol_);
     };
 }

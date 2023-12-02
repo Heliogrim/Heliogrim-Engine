@@ -264,6 +264,9 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneCameraDescription.hpp">
       <Filter>Headerdateien\Relation</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\Symbol.hpp">
+      <Filter>Headerdateien\Symbol</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\RuntimeGraph.cpp">

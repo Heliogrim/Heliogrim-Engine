@@ -972,7 +972,7 @@ auto make_material_prototype() -> uptr<material::MaterialPrototype> {
     auto proto = make_uptr<material::MaterialPrototype>(
         _STD move(guid),
         _STD move(name),
-        Vector<smr<acc::AccelerationEffect>> {},
+        InlineAutoArray<material::MaterialEffect> {},
         Vector<material::MaterialPrototypeParameter> {}
     );
 
