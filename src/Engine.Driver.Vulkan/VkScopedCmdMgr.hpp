@@ -1,15 +1,15 @@
 #pragma once
 
+#include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <tl/optional.hpp>
 #include <Engine.Common/Types.hpp>
-#include <Engine.GFX.Acc/Command/CommandBuffer.hpp>
 
 namespace hg::driver::vk {
     class VkScopedCmdMgr {
     public:
         constexpr VkScopedCmdMgr() noexcept = default;
 
-        constexpr VkScopedCmdMgr(u16 scopeId_, ref<engine::gfx::AccelCommandBuffer> cmd_) noexcept :
+        constexpr VkScopedCmdMgr(u16 scopeId_, ref<engine::accel::AccelCommandBuffer> cmd_) noexcept :
             _scopeId(scopeId_),
             _cmdBuf(cmd_) {}
 
@@ -17,11 +17,11 @@ namespace hg::driver::vk {
 
     private:
         u16 _scopeId;
-        tl::optional<engine::gfx::AccelCommandBuffer&> _cmdBuf;
+        tl::optional<engine::accel::AccelCommandBuffer&> _cmdBuf;
 
     public:
         [[nodiscard]] u16 scopeId() const noexcept;
 
-        [[nodiscard]] tl::optional<engine::gfx::AccelCommandBuffer&> active() const noexcept;
+        [[nodiscard]] tl::optional<engine::accel::AccelCommandBuffer&> active() const noexcept;
     };
 }

@@ -1,8 +1,8 @@
 #include "VkRCmdTranslator.hpp"
 
 #include <Engine.Core/Engine.hpp>
-#include <Engine.GFX.Acc/Pass/VkGraphicsPass.hpp>
-#include <Engine.GFX.Acc/Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.Accel.Pass/VkGraphicsPass.hpp>
+#include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
 #include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.GFX.Render.Command/RenderCommandIterator.hpp>
 #include <Engine.GFX/Graphics.hpp>
@@ -16,6 +16,7 @@
 
 using namespace hg::driver::vk;
 using namespace hg::engine::gfx::render;
+using namespace hg::engine::accel;
 using namespace hg;
 
 ptr<VkNativeBatch> VkRCmdTranslator::operator()(const ptr<const cmd::RenderCommandBuffer> commands_) noexcept {
@@ -27,7 +28,7 @@ ptr<VkNativeBatch> VkRCmdTranslator::operator()(const ptr<const cmd::RenderComma
 
     auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
     auto ecpool = device->graphicsQueue()->pool();
-    engine::gfx::AccelCommandBuffer eccmd = ecpool->make();
+    AccelCommandBuffer eccmd = ecpool->make();
     /**/
 
     auto* state = new VkState(driver::vk::VkScopedCmdMgr { 0u, eccmd });
@@ -40,7 +41,7 @@ ptr<VkNativeBatch> VkRCmdTranslator::operator()(const ptr<const cmd::RenderComma
     delete state;
 
     /**/
-    batch->add(make_uptr<engine::gfx::AccelCommandBuffer>(_STD move(eccmd)));
+    batch->add(make_uptr<AccelCommandBuffer>(_STD move(eccmd)));
     /**/
 
     return batch;
@@ -62,7 +63,7 @@ void VkRCmdTranslator::translate(
     auto active = static_cast<VkState*>(state_)->cmd.active();
     assert(active.has_value());
 
-    const auto graphicsPass = Cast<engine::gfx::acc::VkGraphicsPass>(cmd_->data.pass.get());
+    const auto graphicsPass = Cast<VkGraphicsPass>(cmd_->data.pass.get());
     assert(graphicsPass);
 
     active->bindRenderPass(
@@ -109,7 +110,7 @@ void VkRCmdTranslator::translate(const ptr<State> state_, const ptr<const cmd::B
 
     // TODO: assert(active->getFeatureSet() & cmd_->featureSet);
 
-    const auto graphicsPipeline = Cast<engine::gfx::acc::VkGraphicsPipeline>(cmd_->pipeline.get());
+    const auto graphicsPipeline = Cast<VkGraphicsPipeline>(cmd_->pipeline.get());
     assert(graphicsPipeline);
 
     active->bindPipeline(graphicsPipeline);

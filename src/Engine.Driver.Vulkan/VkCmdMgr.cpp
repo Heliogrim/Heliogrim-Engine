@@ -6,7 +6,7 @@
 using namespace hg::driver::vk;
 using namespace hg;
 
-_STD span<const Vector<engine::gfx::AccelCommandBuffer>> VkCmdMgr::getCommitted() const noexcept {
+_STD span<const Vector<engine::accel::AccelCommandBuffer>> VkCmdMgr::getCommitted() const noexcept {
     return {
         committed.data(),
         committed.size()
@@ -28,7 +28,7 @@ size_t VkCmdMgr::getCommittedCount() const noexcept {
     );
 }
 
-_STD span<const engine::gfx::AccelCommandBuffer> VkCmdMgr::getPending() const noexcept {
+_STD span<const engine::accel::AccelCommandBuffer> VkCmdMgr::getPending() const noexcept {
     return pending;
 }
 
@@ -40,11 +40,11 @@ bool VkCmdMgr::isActiveRoot() const noexcept {
     return active.size() == 1;
 }
 
-ref<engine::gfx::AccelCommandBuffer> VkCmdMgr::getActive() const noexcept {
-    return const_cast<ref<engine::gfx::AccelCommandBuffer>>(active.back());
+ref<engine::accel::AccelCommandBuffer> VkCmdMgr::getActive() const noexcept {
+    return const_cast<ref<engine::accel::AccelCommandBuffer>>(active.back());
 }
 
-ref<engine::gfx::AccelCommandBuffer> VkCmdMgr::allocate() {
+ref<engine::accel::AccelCommandBuffer> VkCmdMgr::allocate() {
 
     const auto pool = queues.front().front()->pool();
 
@@ -52,7 +52,7 @@ ref<engine::gfx::AccelCommandBuffer> VkCmdMgr::allocate() {
     auto result = pool->make();
 
     active.emplace_back(
-        _STD move(static_cast<engine::gfx::AccelCommandBuffer&&>(result))
+        _STD move(static_cast<engine::accel::AccelCommandBuffer&&>(result))
     );
 
     return active.back();

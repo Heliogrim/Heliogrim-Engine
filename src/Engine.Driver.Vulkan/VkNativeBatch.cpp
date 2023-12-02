@@ -73,7 +73,7 @@ void VkNativeBatch::commit() {
     ::VkSubmitInfo si {
         VK_STRUCTURE_TYPE_SUBMIT_INFO,
         nullptr,
-        signals.size() - readyCount, signals.data(), stages.data(),
+        signals.size() - readyCount, signals.data() + readyCount, stages.data(),
         static_cast<u32>(roots.size()), roots.data(),
         readyCount, signals.data()
     };
@@ -143,7 +143,7 @@ bool VkNativeBatch::enumerateNativeQueues(
     return not _batched.empty();
 }
 
-void VkNativeBatch::add(mref<uptr<engine::gfx::AccelCommandBuffer>> cmd_) noexcept {
+void VkNativeBatch::add(mref<uptr<engine::accel::AccelCommandBuffer>> cmd_) noexcept {
     _batched.emplace_back(_STD move(cmd_));
 }
 
