@@ -24,44 +24,44 @@ set_target_properties(${target} PROPERTIES ${DEFAULT_PROJECT_OPTIONS} FOLDER "${
 
 # Include Directories
 target_include_directories(
-        ${target}
-        PRIVATE
-        ${DEFAULT_INCLUDE_DIRECTORIES}
-        ${proj_src_dir}
+	${target}
+	PRIVATE
+	${DEFAULT_INCLUDE_DIRECTORIES}
+	${proj_src_dir}
 )
 
 # Libraries
 target_link_libraries(
-	${target}
-	PRIVATE
-	${DEFAULT_LIBRARIES}
-	${PROJECT_NAME}::Editor.Action
-	${PROJECT_NAME}::Editor.Core
-	${PROJECT_NAME}::Editor.GFX
-	${PROJECT_NAME}::Editor.UI
-	${PROJECT_NAME}::Heliogrim
-	${PROJECT_NAME}::Heliogrim.Default
+    ${target}
+    PRIVATE
+    ${DEFAULT_LIBRARIES}
+    ${PROJECT_NAME}::Editor.Action
+    ${PROJECT_NAME}::Editor.Core
+    ${PROJECT_NAME}::Editor.GFX
+    ${PROJECT_NAME}::Editor.UI
+    ${PROJECT_NAME}::Heliogrim
+    ${PROJECT_NAME}::Heliogrim.Default
 )
 
 # Compile
 target_compile_definitions(
-        ${target}
-        PRIVATE
-        ${DEFAULT_COMPILE_DEFINITIONS}
+    ${target}
+    PRIVATE
+    ${DEFAULT_COMPILE_DEFINITIONS}
 )
 
 # Compile Options
 target_compile_options(
-        ${target}
-        PRIVATE
-        ${DEFAULT_COMPILE_OPTIONS}
+    ${target}
+    PRIVATE
+    ${DEFAULT_COMPILE_OPTIONS}
 )
 
 # Linker Options
 target_link_options(
-        ${target}
-        PRIVATE
-        ${DEFAULT_LINKER_OPTIONS}
+    ${target}
+    PRIVATE
+    ${DEFAULT_LINKER_OPTIONS}
 )
 
 # Target Health

@@ -5,6 +5,13 @@ set(target Heliogrim)
 set(
 	link_libraries
 	${PROJECT_NAME}::Engine.ACS
+	${PROJECT_NAME}::Engine.Accel
+	${PROJECT_NAME}::Engine.Accel.Command
+	${PROJECT_NAME}::Engine.Accel.Effect
+	${PROJECT_NAME}::Engine.Accel.Lang
+	${PROJECT_NAME}::Engine.Accel.Loader
+	${PROJECT_NAME}::Engine.Accel.Pass
+	${PROJECT_NAME}::Engine.Accel.Pipeline
 	${PROJECT_NAME}::Engine.Accel.Storage
 	${PROJECT_NAME}::Engine.Assets
 	${PROJECT_NAME}::Engine.Assets.System
@@ -16,9 +23,7 @@ set(
 	${PROJECT_NAME}::Engine.Event
 	${PROJECT_NAME}::Engine.Filesystem
 	${PROJECT_NAME}::Engine.GFX
-	${PROJECT_NAME}::Engine.GFX.Acc
-	${PROJECT_NAME}::Engine.GFX.Acc.Compile
-	${PROJECT_NAME}::Engine.GFX.Acc.Lang
+	${PROJECT_NAME}::Engine.GFX.Geometry
 	${PROJECT_NAME}::Engine.GFX.Glow
 	${PROJECT_NAME}::Engine.GFX.Glow.UI
 	${PROJECT_NAME}::Engine.GFX.Loader
