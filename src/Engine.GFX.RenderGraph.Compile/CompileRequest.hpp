@@ -5,6 +5,6 @@ namespace hg::engine::gfx::render::graph {
     struct CompileRequest final {
         smr<CompileGraph> graph;
         /**/
-        Vector<smr<const acc::Symbol>> targetSymbols;
+        Vector<smr<const Symbol>> targetSymbols;
     };
 }

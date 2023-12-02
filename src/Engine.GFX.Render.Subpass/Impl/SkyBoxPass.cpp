@@ -3,9 +3,9 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX.Acc.Compile/Profile/EffectProfile.hpp>
-#include <Engine.GFX.Acc.Compile/Spec/SimpleEffectSpecification.hpp>
-#include <Engine.GFX.Acc/Pass/VkAccelerationPassFactory.hpp>
+#include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
+#include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
+#include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/ScopedSymbolContext.hpp>
@@ -13,22 +13,23 @@
 #include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/Cast.hpp>
-#include <Engine.GFX.Acc/Pipeline/GraphicsPipeline.hpp>
-#include <Engine.GFX.Acc.Compile/VkEffectCompiler.hpp>
+#include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
+#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.Reflect/ExactType.hpp>
 #include <Engine.Scene/IRenderScene.hpp>
 
 using namespace hg::engine::gfx::render;
+using namespace hg::engine::accel;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-[[nodiscard]] static smr<const acc::GraphicsPass> build_test_pass();
+[[nodiscard]] static smr<const GraphicsPass> build_test_pass();
 
-[[nodiscard]] static acc::EffectCompileResult build_test_pipeline(
-    mref<smr<const acc::AccelerationEffect>> effect_,
-    mref<smr<const acc::GraphicsPass>> pass_
+[[nodiscard]] static EffectCompileResult build_test_pipeline(
+    mref<smr<const AccelerationEffect>> effect_,
+    mref<smr<const GraphicsPass>> pass_
 );
 
 /**/
@@ -49,7 +50,7 @@ void SkyBoxPass::destroy() noexcept {
 
     _compiled.pipeline.reset();
     _pass.reset();
-    _effect.reset();
+    _materialEffect.effect.reset();
 }
 
 void SkyBoxPass::declareTransforms(ref<graph::ScopedSymbolContext> symCtx_) noexcept {
@@ -106,24 +107,24 @@ void SkyBoxPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     auto proto = guard->getPrototype();
     assert(proto->getAccelerationEffects().size() == 1uLL);
 
-    auto recompile = _effect != proto->getAccelerationEffects().front();
+    auto recompile = _materialEffect.effect != proto->getAccelerationEffects().front().effect;
     if (recompile) {
         _compiled.pipeline.reset();
-        _compiled.flag = acc::EffectCompileResultFlag::eUnknown;
+        _compiled.flag = EffectCompileResultFlag::eUnknown;
 
-        _effect = clone(proto->getAccelerationEffects().front());
+        _materialEffect = clone(proto->getAccelerationEffects().front());
     }
 }
 
 void SkyBoxPass::resolve() noexcept {
-    if (_effect && _compiled.flag == acc::EffectCompileResultFlag::eUnknown) {
-        _compiled = build_test_pipeline(clone(_effect), clone(_pass));
+    if (_materialEffect.effect && _compiled.flag == EffectCompileResultFlag::eUnknown) {
+        _compiled = build_test_pipeline(clone(_materialEffect.effect), clone(_pass));
     }
 }
 
 void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
-    if (!_effect || !_compiled.pipeline) {
+    if (!_materialEffect.effect || !_compiled.pipeline) {
         return;
     }
 
@@ -176,7 +177,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     cmd.beginAccelPass({ _pass.get(), _framebuffer.get() });
     cmd.beginSubPass({});
 
-    cmd.bindGraphicsPipeline(clone(_compiled.pipeline).into<acc::GraphicsPipeline>());
+    cmd.bindGraphicsPipeline(clone(_compiled.pipeline).into<GraphicsPipeline>());
     cmd.drawDispatch(1uL, 0uL, 36uL, 0uL);
 
     cmd.endSubPass();
@@ -215,9 +216,9 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
 /**/
 
-smr<const acc::GraphicsPass> build_test_pass() {
+smr<const GraphicsPass> build_test_pass() {
 
-    constexpr auto passFactory = acc::VkAccelerationPassFactory {};
+    constexpr auto passFactory = VkAccelerationPassFactory {};
     auto graphicsPass = passFactory.buildGraphicsPass(
         { makeSceneColorSymbol() },
         { makeSceneColorSymbol(), makeSceneDepthSymbol() }
@@ -226,13 +227,13 @@ smr<const acc::GraphicsPass> build_test_pass() {
     return graphicsPass;
 }
 
-acc::EffectCompileResult build_test_pipeline(
-    mref<smr<const acc::AccelerationEffect>> effect_,
-    mref<smr<const acc::GraphicsPass>> pass_
+EffectCompileResult build_test_pipeline(
+    mref<smr<const AccelerationEffect>> effect_,
+    mref<smr<const GraphicsPass>> pass_
 ) {
 
-    auto profile = make_smr<acc::EffectProfile>(
-        acc::EffectProfile {
+    auto profile = make_smr<EffectProfile>(
+        EffectProfile {
             ._name = "Test-Sky-Profile",
             ._definitions = {}
         }
@@ -240,20 +241,20 @@ acc::EffectCompileResult build_test_pipeline(
 
     /**/
 
-    auto spec = make_smr<acc::SimpleEffectSpecification>(
-        Vector<smr<const acc::Symbol>> {}
+    auto spec = make_smr<SimpleEffectSpecification>(
+        Vector<smr<const lang::Symbol>> {}
     );
     spec->setPassSpec(
-        make_uptr<acc::GraphicsPassSpecification>(
-            acc::GraphicsPassSpecification {
-                .depthCompareOp = acc::DepthCompareOp::eLessEqual,
-                .stencilCompareOp = acc::StencilCompareOp::eNever,
-                .stencilFailOp = acc::StencilOp::eKeep,
-                .stencilPassOp = acc::StencilOp::eKeep,
-                .stencilDepthFailOp = acc::StencilOp::eKeep,
+        make_uptr<GraphicsPassSpecification>(
+            GraphicsPassSpecification {
+                .depthCompareOp = DepthCompareOp::eLessEqual,
+                .stencilCompareOp = StencilCompareOp::eNever,
+                .stencilFailOp = StencilOp::eKeep,
+                .stencilPassOp = StencilOp::eKeep,
+                .stencilDepthFailOp = StencilOp::eKeep,
                 .stencilCompareMask = 0uL,
                 .stencilWriteMask = 0uL,
-                .primitiveTopology = acc::PrimitiveTopology::eTriangleList,
+                .primitiveTopology = PrimitiveTopology::eTriangleList,
                 .pass = pass_.get()
             }
         )
@@ -261,7 +262,7 @@ acc::EffectCompileResult build_test_pipeline(
 
     /**/
 
-    const auto compiler = acc::makeVkAccCompiler();
+    const auto compiler = makeVkAccCompiler();
     auto result = compiler->compile(
         {
             .effect = _STD move(effect_),

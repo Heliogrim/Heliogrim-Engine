@@ -1,7 +1,7 @@
 #pragma once
+#include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.GFX.Acc/Pipeline/GraphicsPipeline.hpp>
 
 namespace hg::engine::gfx::render {
-    [[nodiscard]] extern smr<const acc::GraphicsPipeline> makeBrdfPrefilterPipeline();
+    [[nodiscard]] extern smr<const accel::GraphicsPipeline> makeBrdfPrefilterPipeline();
 }

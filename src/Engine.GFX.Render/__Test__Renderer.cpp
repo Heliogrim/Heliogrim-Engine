@@ -1,12 +1,14 @@
 #include "__Test__Renderer.hpp"
 
 #include <Engine.Common/Make.hpp>
-#include <Engine.GFX.Acc/AccelerationEffect.hpp>
-#include <Engine.GFX.Acc/Stage/Stage.hpp>
-#include <Engine.GFX.Acc/Stage/StageFlags.hpp>
-#include <Engine.GFX.Acc/Symbol/Symbol.hpp>
+#include <Engine.Accel.Effect/AccelerationEffect.hpp>
+#include <Engine.Accel.Effect/Stage/Stage.hpp>
+#include <Engine.Accel.Effect/Stage/StageFlags.hpp>
 #include <Engine.GFX.Render.Command/RenderCommandBufferBase.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/DepthPrePass.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/DummyProvider.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/SkyBoxPass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/TriTestPass.hpp>
 #include <Engine.GFX.RenderGraph/CompileGraph.hpp>
 #include <Engine.GFX.RenderGraph/Builder/Builder.hpp>
@@ -17,9 +19,9 @@
 using namespace hg::engine::gfx::render;
 using namespace hg;
 
-[[nodiscard]] static smr<engine::gfx::acc::AccelerationEffect> build_test_effect();
+[[nodiscard]] static smr<engine::accel::AccelerationEffect> build_test_effect();
 
-[[nodiscard]] static smr<engine::gfx::acc::GraphicsPipeline> build_test_pipeline();
+[[nodiscard]] static smr<engine::accel::GraphicsPipeline> build_test_pipeline();
 
 TestRenderer::TestRenderer(
     mref<nmpt<cache::GlobalCacheCtrl>> globalCache_,
@@ -54,14 +56,39 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
     /**/
 
     auto beforeBarrier = make_smr<graph::BarrierNode>();
+    auto dummyProvider = make_smr<graph::CompileSubPassNode>();
+    auto depthPrePass = make_smr<graph::CompileSubPassNode>();
     auto subpass = make_smr<graph::CompileSubPassNode>();
+    auto skyBoxPass = make_smr<graph::CompileSubPassNode>();
     auto afterBarrier = make_smr<graph::BarrierNode>();
 
     /**/
 
+    dummyProvider->setSubPassBuilder(
+        [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
+            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<DummyProvider>>();
+            return node;
+        }
+    );
+
+    depthPrePass->setSubPassBuilder(
+        [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
+            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<DepthPrePass>>();
+            return node;
+        }
+    );
+
     subpass->setSubPassBuilder(
         [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
             auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<TriTestPass>>();
+            // acceleration->addOutput(makeSceneColorSymbol());
+            return node;
+        }
+    );
+
+    skyBoxPass->setSubPassBuilder(
+        [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
+            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<SkyBoxPass>>();
             // acceleration->addOutput(makeSceneColorSymbol());
             return node;
         }
@@ -72,8 +99,17 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
     nmpt<graph::Node> nextCursor = beforeBarrier.get();
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(beforeBarrier));
 
+    cursor = _STD exchange(nextCursor, dummyProvider.get());
+    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(dummyProvider));
+
+    cursor = _STD exchange(nextCursor, depthPrePass.get());
+    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(depthPrePass));
+
     cursor = _STD exchange(nextCursor, subpass.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(subpass));
+
+    //cursor = _STD exchange(nextCursor, skyBoxPass.get());
+    //graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(skyBoxPass));
 
     cursor = _STD exchange(nextCursor, afterBarrier.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(afterBarrier));
@@ -87,7 +123,6 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
 
 #include <filesystem>
 #include <fstream>
-using namespace ::hg::engine::gfx::acc;
 
 static string read_shader_file(string name_) {
 
@@ -116,62 +151,56 @@ static string read_shader_file(string name_) {
     return tmp;
 }
 
-smr<AccelerationEffect> build_test_effect() {
+smr<engine::accel::AccelerationEffect> build_test_effect() {
 
-    auto vertexStage = make_smr<Stage>(
-        StageFlagBits::eVertex,
-        Vector<StageInput> {},
-        Vector<StageOutput> {
-            StageOutput { TransferToken {}, TransferType::eForward, TransferDataType::eU8Vec3, DataOutputRate {} }
-        }
+    auto vertexStage = make_smr<engine::accel::Stage>(
+        engine::accel::StageFlagBits::eVertex
+        // Vector<StageInput> {},
+        // Vector<StageOutput> {
+        //     StageOutput { TransferToken {}, TransferType::eForward, TransferDataType::eU8Vec3, DataOutputRate {} }
+        // }
     );
 
-    auto fragmentStage = make_smr<Stage>(
-        StageFlagBits::eFragment,
-        Vector<StageInput> {
-            StageInput {
-                TransferToken {}, TransferType::eForward, TransferDataType::eU8Vec3, DataInputRate::ePerInvocation
-            },
-        },
-        Vector<StageOutput> {
-            StageOutput { TransferToken {}, TransferType::eForward, TransferDataType::eU8Vec4, DataOutputRate {} }
-        }
+    auto fragmentStage = make_smr<engine::accel::Stage>(
+        engine::accel::StageFlagBits::eFragment
+        // Vector<StageInput> {
+        //     StageInput {
+        //         TransferToken {}, TransferType::eForward, TransferDataType::eU8Vec3, DataInputRate::ePerInvocation
+        //     },
+        // },
+        // Vector<StageOutput> {
+        //     StageOutput { TransferToken {}, TransferType::eForward, TransferDataType::eU8Vec4, DataOutputRate {} }
+        // }
     );
 
     /**/
 
     const auto vertexShaderCode = read_shader_file("__test__render.vs");
 
-    vertexStage->setIntermediate(
-        make_smr<lang::Intermediate>(
-            make_uptr<lang::IL>(lang::ILDialect::eVulkanGlsl, Vector<string> { _STD move(vertexShaderCode) }),
-            nullptr
-        )
-    );
+    vertexStage->setIntermediate(make_smr<engine::accel::lang::Intermediate>());
+    vertexStage->getIntermediate()->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
+    vertexStage->getIntermediate()->lang.text.emplace_back(_STD move(vertexShaderCode));
 
     const auto fragmentShaderCode = read_shader_file("__test__render.fs");
 
-    fragmentStage->setIntermediate(
-        make_smr<lang::Intermediate>(
-            make_uptr<lang::IL>(lang::ILDialect::eVulkanGlsl, Vector<string> { _STD move(fragmentShaderCode) }),
-            nullptr
-        )
-    );
+    fragmentStage->setIntermediate(make_smr<engine::accel::lang::Intermediate>());
+    fragmentStage->getIntermediate()->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
+    fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
 
     /**/
 
     Guid guid;
     GuidGenerate(guid);
 
-    return make_smr<AccelerationEffect>(
+    return make_smr<engine::accel::AccelerationEffect>(
         _STD move(guid),
         "test-render-effect",
-        Vector<smr<Stage>> { _STD move(vertexStage), _STD move(fragmentStage) },
-        Vector<smr<const Symbol>> {},
-        Vector<smr<const Symbol>> { makeSceneColorSymbol() }
+        Vector<smr<engine::accel::Stage>> { _STD move(vertexStage), _STD move(fragmentStage) }
+        // Vector<smr<const Symbol>> {},
+        // Vector<smr<const Symbol>> { makeSceneColorSymbol() }
     );
 }
 
-smr<engine::gfx::acc::GraphicsPipeline> build_test_pipeline() {
+smr<engine::accel::GraphicsPipeline> build_test_pipeline() {
     return nullptr;
 }

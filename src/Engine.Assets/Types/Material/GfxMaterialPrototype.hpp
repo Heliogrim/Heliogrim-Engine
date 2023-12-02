@@ -1,8 +1,8 @@
 #pragma once
 #include <variant>
+#include <Engine.Accel.Effect/Stage/TransferDataType.hpp>
 #include <Engine.Common/Math/Matrix.hpp>
 #include <Engine.Common/Math/Vector.hpp>
-#include <Engine.GFX.Acc/Stage/TransferDataType.hpp>
 
 #include "../Asset.hpp"
 #include <Engine.Serialization/Access/__fwd.hpp>
@@ -26,7 +26,7 @@ namespace hg::engine::assets {
     public:
         struct TmpParam {
             string uniqueName;
-            gfx::acc::TransferDataType dataType;
+            accel::TransferDataType dataType;
             _STD variant<
                 asset_guid,
                 u8,

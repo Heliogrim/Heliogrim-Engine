@@ -105,7 +105,7 @@ smr<const engine::gfx::scene::SceneView> RenderPass::unbindSceneView() {
     return report;
 }
 
-void RenderPass::unsafeBindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<void>> resource_) {
+void RenderPass::unsafeBindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<void>> resource_) {
 
     if (_state._boundTargets.contains(target_)) {
         IM_CORE_ERRORF("Tried to bind target `{}` while implicit rebinding is not allowed.", target_->name);
@@ -118,7 +118,7 @@ void RenderPass::unsafeBindTarget(mref<smr<const acc::Symbol>> target_, mref<smr
     storage->create(_STD move(resource_));
 }
 
-bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<Texture>> texture_) {
+bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<Texture>> texture_) {
 
     const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
     if (not textureDescription) {
@@ -142,7 +142,7 @@ bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<Textu
     return true;
 }
 
-bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<TextureView>> textureView_) {
+bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<TextureView>> textureView_) {
 
     const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
     if (not textureDescription) {
@@ -166,7 +166,7 @@ bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<Textu
     return true;
 }
 
-bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<VirtualTexture>> texture_) {
+bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<VirtualTexture>> texture_) {
 
     const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
     if (not textureDescription) {
@@ -190,7 +190,7 @@ bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<Virtu
     return true;
 }
 
-bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<VirtualTextureView>> textureView_) {
+bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<VirtualTextureView>> textureView_) {
 
     const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
     if (not textureDescription) {
@@ -214,7 +214,7 @@ bool RenderPass::bindTarget(mref<smr<const acc::Symbol>> target_, mref<smr<Virtu
     return true;
 }
 
-smr<void> RenderPass::unbindTarget(mref<smr<const acc::Symbol>> target_) noexcept {
+smr<void> RenderPass::unbindTarget(mref<smr<const graph::Symbol>> target_) noexcept {
 
     const auto iter = _state._boundTargets.find(target_);
     if (iter == _state._boundTargets.end()) {
@@ -345,7 +345,7 @@ void RenderPass::markAsTouched() {
 }
 
 bool RenderPass::addTargetWaitSignal(
-    mref<smr<const acc::Symbol>> targetSymbol_,
+    mref<smr<const graph::Symbol>> targetSymbol_,
     cref<vk::Semaphore> signal_
 ) noexcept {
 
@@ -366,7 +366,7 @@ bool RenderPass::addTargetWaitSignal(
     return true;
 }
 
-void RenderPass::clearTargetWaitSignals(mref<smr<const acc::Symbol>> targetSymbol_) noexcept {
+void RenderPass::clearTargetWaitSignals(mref<smr<const graph::Symbol>> targetSymbol_) noexcept {
 
     if (not _state._boundTargets.contains(targetSymbol_)) {
         return;
@@ -385,7 +385,7 @@ void RenderPass::clearTargetWaitSignals(mref<smr<const acc::Symbol>> targetSymbo
 
 void RenderPass::enumerateTargetWaitSignals(
     ref<Vector<vk::Semaphore>> signals_,
-    mref<smr<const acc::Symbol>> targetSymbol_
+    mref<smr<const graph::Symbol>> targetSymbol_
 ) noexcept {
 
     // Warning: This is just temporary
@@ -394,7 +394,7 @@ void RenderPass::enumerateTargetWaitSignals(
 
 void RenderPass::enumerateTargetReadySignals(
     ref<Vector<vk::Semaphore>> signals_,
-    mref<smr<const acc::Symbol>> targetSymbol_
+    mref<smr<const graph::Symbol>> targetSymbol_
 ) noexcept {
 
     if (not targetSymbol_.empty()) {

@@ -6,8 +6,8 @@
 #include <Engine.Reflect/TypeSwitch.hpp>
 
 /**/
-#include <Engine.GFX.Acc.Compile/VkEffectCompiler.hpp>
-#include <Engine.GFX.Acc.Compile/Spec/SimpleEffectSpecification.hpp>
+#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
+#include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.GFX.RenderGraph/Node/CompileNode.hpp>
 #include <Engine.GFX.RenderGraph/Node/Node.hpp>
 #include <Engine.GFX.RenderGraph/Node/Compile/CompileSubPassNode.hpp>

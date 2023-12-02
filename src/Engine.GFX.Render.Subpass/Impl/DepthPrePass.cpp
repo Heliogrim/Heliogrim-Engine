@@ -11,30 +11,30 @@
 #include <Engine.GFX.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
-#include <Engine.GFX.Acc/AccelerationPipeline.hpp>
-#include <Engine.GFX.Acc.Compile/Profile/EffectProfile.hpp>
-#include <Engine.GFX.Acc.Compile/Spec/SimpleEffectSpecification.hpp>
-#include <Engine.GFX.Acc/Pass/VkAccelerationPassFactory.hpp>
-#include <Engine.GFX.Acc/Pipeline/GraphicsPipeline.hpp>
-#include <Engine.GFX.Acc/Stage/DataInputRate.hpp>
-#include <Engine.GFX.Acc/Stage/DataOutputRate.hpp>
-#include <Engine.GFX.Acc/Stage/StageFlags.hpp>
-#include <Engine.GFX.Acc/Stage/TransferType.hpp>
-#include <Engine.GFX.Acc.Compile/VkEffectCompiler.hpp>
-#include <Engine.GFX.Acc.Lang/Intermediate.hpp>
+#include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
+#include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
+#include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
+#include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
+#include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
+#include <Engine.Accel.Effect/Stage/StageFlags.hpp>
+#include <Engine.Accel.Effect/Stage/TransferType.hpp>
+#include <Engine.Accel.Compile/VkEffectCompiler.hpp>
+#include <Engine.Accel.Lang/Intermediate.hpp>
 #include <Engine.Reflect/Cast.hpp>
+#include <Engine.Accel.Effect/AccelerationEffect.hpp>
 
 using namespace hg::engine::gfx::render;
+using namespace hg::engine::accel;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-[[nodiscard]] static smr<acc::AccelerationEffect> build_test_effect();
+[[nodiscard]] static smr<AccelerationEffect> build_test_effect();
 
-[[nodiscard]] static smr<const acc::GraphicsPass> build_test_pass();
+[[nodiscard]] static smr<const GraphicsPass> build_test_pass();
 
-[[nodiscard]] static acc::EffectCompileResult build_test_pipeline(
-    mref<smr<const acc::AccelerationEffect>> effect_,
-    mref<smr<const acc::GraphicsPass>> pass_
+[[nodiscard]] static EffectCompileResult build_test_pipeline(
+    mref<smr<const AccelerationEffect>> effect_,
+    mref<smr<const GraphicsPass>> pass_
 );
 
 /**/
@@ -94,7 +94,7 @@ void DepthPrePass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 }
 
 void DepthPrePass::resolve() noexcept {
-    if (_effect && _compiled.flag == acc::EffectCompileResultFlag::eUnknown) {
+    if (_effect && _compiled.flag == EffectCompileResultFlag::eUnknown) {
         _compiled = build_test_pipeline(clone(_effect), clone(_pass));
     }
 }
@@ -118,7 +118,7 @@ void DepthPrePass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     if (_framebuffer.empty()) {
 
-        const Vector<smr<const acc::Symbol>> outputSymbols { makeSceneDepthSymbol() };
+        const Vector<smr<const graph::Symbol>> outputSymbols { makeSceneDepthSymbol() };
         _framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
 
         for (const auto& output : outputSymbols) {
@@ -147,7 +147,7 @@ void DepthPrePass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     cmd.beginAccelPass({ _pass.get(), _framebuffer.get() });
     cmd.beginSubPass({});
 
-    cmd.bindGraphicsPipeline(clone(_compiled.pipeline).into<acc::GraphicsPipeline>());
+    cmd.bindGraphicsPipeline(clone(_compiled.pipeline).into<GraphicsPipeline>());
     cmd.drawDispatch(1uL, 0uL, 3uL, 0uL);
 
     cmd.endSubPass();
@@ -186,48 +186,38 @@ void DepthPrePass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 /**/
 
 #include "__tmp_helper.hpp"
-using namespace ::hg::engine::gfx::acc;
 
 smr<AccelerationEffect> build_test_effect() {
 
     auto vertexStage = make_smr<Stage>(
-        StageFlagBits::eVertex,
-        Vector<StageInput> {},
-        Vector<StageOutput> {}
+        StageFlagBits::eVertex
+        // Vector<StageInput> {},
+        // Vector<StageOutput> {}
     );
 
     auto fragmentStage = make_smr<Stage>(
-        StageFlagBits::eFragment,
-        Vector<StageInput> {},
-        Vector<StageOutput> {
-            StageOutput {
-                TransferToken::from("depth"), TransferType::eForward, TransferDataType::eF32, DataOutputRate {}
-            }
-        }
+        StageFlagBits::eFragment
+        // Vector<StageInput> {},
+        // Vector<StageOutput> {
+        //     StageOutput {
+        //         TransferToken::from("depth"), TransferType::eForward, TransferDataType::eF32, DataOutputRate {}
+        //     }
+        // }
     );
 
     /**/
 
     const auto vertexShaderCode = read_shader_file("__test__predepth.vs");
 
-    vertexStage->setIntermediate(
-        make_smr<lang::Intermediate>(
-            make_uptr<lang::IL>(lang::ILDialect::eVulkanGlsl, Vector<string> { _STD move(vertexShaderCode) }),
-            nullptr
-        )
-    );
+    vertexStage->setIntermediate(make_smr<lang::Intermediate>());
+    vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
+    vertexStage->getIntermediate()->lang.text.emplace_back(_STD move(vertexShaderCode));
 
     const auto fragmentShaderCode = read_shader_file("__test__predepth.fs");
 
-    fragmentStage->setIntermediate(
-        make_smr<lang::Intermediate>(
-            make_uptr<lang::IL>(
-                lang::ILDialect::eVulkanGlsl,
-                Vector<string> { _STD move(fragmentShaderCode) }
-            ),
-            nullptr
-        )
-    );
+    fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
+    fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
+    fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
 
     /**/
 
@@ -237,13 +227,13 @@ smr<AccelerationEffect> build_test_effect() {
     return make_smr<AccelerationEffect>(
         _STD move(guid),
         "test-predepth-effect",
-        Vector<smr<Stage>> { _STD move(vertexStage), _STD move(fragmentStage) },
-        Vector<smr<const Symbol>> {},
-        Vector<smr<const Symbol>> { makeSceneDepthSymbol() }
+        Vector<smr<Stage>> { _STD move(vertexStage), _STD move(fragmentStage) }
+        // Vector<smr<const Symbol>> {},
+        // Vector<smr<const Symbol>> { makeSceneDepthSymbol() }
     );
 }
 
-smr<const acc::GraphicsPass> build_test_pass() {
+smr<const GraphicsPass> build_test_pass() {
 
     constexpr auto passFactory = VkAccelerationPassFactory();
     auto graphicsPass = passFactory.buildGraphicsPass(
@@ -271,7 +261,7 @@ EffectCompileResult build_test_pipeline(
     /**/
 
     auto spec = make_smr<SimpleEffectSpecification>(
-        Vector<smr<const Symbol>> {}
+        Vector<smr<const lang::Symbol>> {}
     );
     spec->setPassSpec(
         make_uptr<GraphicsPassSpecification>(

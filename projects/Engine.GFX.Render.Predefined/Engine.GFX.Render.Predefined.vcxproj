@@ -38,6 +38,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SkyboxTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Buffer\ViewBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\ColorBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\DepthBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\DepthStencilBuffer.hpp" />
