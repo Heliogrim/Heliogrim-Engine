@@ -118,8 +118,26 @@
     <ClCompile Include="..\..\src\Heliogrim\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Engine.Accel.Command\Engine.Accel.Command.vcxproj">
+      <Project>{66124689-4f02-4797-8c29-b951f8ed772b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Accel.Compile\Engine.Accel.Compile.vcxproj">
+      <Project>{64e1975b-4797-4ae5-aad2-e3068f1a6c5f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Accel.Effect\Engine.Accel.Effect.vcxproj">
+      <Project>{cd70076b-b946-4453-8161-2bb071596670}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Accel.Lang\Engine.Accel.Lang.vcxproj">
+      <Project>{a96e9e4d-1e82-4e16-ad4f-55c72d713424}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Accel.Loader\Engine.Accel.Loader.vcxproj">
       <Project>{9fff979f-68a8-44b1-b983-52278fca1aa4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Accel.Pass\Engine.Accel.Pass.vcxproj">
+      <Project>{27e27f6a-81ff-427f-a948-352dce9be943}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Accel.Pipeline\Engine.Accel.Pipeline.vcxproj">
+      <Project>{3cbfc638-2306-4975-8233-365a201d6473}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Accel.Storage\Engine.Accel.Storage.vcxproj">
       <Project>{1b6dc406-cb6d-4bbc-9b08-482f19fd292a}</Project>
@@ -159,15 +177,6 @@
     </ProjectReference>
     <ProjectReference Include="..\Engine.Filesystem\Engine.Filesystem.vcxproj">
       <Project>{8d00049b-6f13-4eac-b541-78f98f2c3b81}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.GFX.Acc.Compile\Engine.GFX.Acc.Compile.vcxproj">
-      <Project>{cb472cf7-a83e-4320-87f1-c35f60f060a3}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.GFX.Acc.Lang\Engine.GFX.Acc.Lang.vcxproj">
-      <Project>{df055ff3-86d2-4fcc-b14a-9e032c71abf6}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine.GFX.Acc\Engine.GFX.Acc.vcxproj">
-      <Project>{8333a07d-e717-4969-a2f5-416933b96ac1}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.Geometry\Engine.GFX.Geometry.vcxproj">
       <Project>{56f0aa17-a9b9-42cd-aea8-8876a36afd16}</Project>
