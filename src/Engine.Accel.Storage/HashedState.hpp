@@ -3,15 +3,12 @@
 #include <Engine.Common/Math/Hash.hpp>
 
 namespace hg::engine::accel {
-    struct Permutation;
-}
-
-namespace hg::engine::gfx::acc {
     class AccelerationEffect;
     class AccelerationPipeline;
     class EffectProfile;
     class EffectSpecification;
     class Stage;
+    struct Permutation;
 }
 
 namespace hg::engine::accel {
@@ -31,40 +28,40 @@ namespace hg::engine::accel {
         return {};
     }
 
-    constexpr HashedState<gfx::acc::AccelerationEffect> calcStorageHash(
-        cref<gfx::acc::AccelerationEffect> value_
+    constexpr HashedState<AccelerationEffect> calcStorageHash(
+        cref<AccelerationEffect> value_
     ) noexcept {
         return {};
     }
 
-    constexpr HashedState<gfx::acc::AccelerationPipeline> calcStorageHash(
-        cref<gfx::acc::AccelerationPipeline> value_
+    constexpr HashedState<AccelerationPipeline> calcStorageHash(
+        cref<AccelerationPipeline> value_
     ) noexcept {
         return {};
     }
 
-    constexpr HashedState<gfx::acc::EffectProfile> calcStorageHash(cref<gfx::acc::EffectProfile> value_) noexcept {
+    constexpr HashedState<EffectProfile> calcStorageHash(cref<EffectProfile> value_) noexcept {
         return {};
     }
 
-    constexpr HashedState<gfx::acc::EffectSpecification> calcStorageHash(
-        cref<gfx::acc::EffectSpecification> value_
+    constexpr HashedState<EffectSpecification> calcStorageHash(
+        cref<EffectSpecification> value_
     ) noexcept {
         return {};
     }
 
-    constexpr HashedState<gfx::acc::Stage> calcStorageHash(cref<gfx::acc::Stage> value_) noexcept {
+    constexpr HashedState<Stage> calcStorageHash(cref<Stage> value_) noexcept {
         return {};
     }
 
-    constexpr HashedState<gfx::acc::AccelerationPipeline> combineStorageHash(
+    constexpr HashedState<AccelerationPipeline> combineStorageHash(
         cref<HashedState<Permutation>> hashedPermutation_,
-        cref<HashedState<gfx::acc::AccelerationEffect>> hashedEffect_
+        cref<HashedState<AccelerationEffect>> hashedEffect_
     ) noexcept {
 
         size_t combined = 16538761uLL;
         hash::hashCombine(combined, hashedEffect_.value, hashedPermutation_.value);
 
-        return HashedState<gfx::acc::AccelerationPipeline> { combined };
+        return HashedState<AccelerationPipeline> { combined };
     }
 }

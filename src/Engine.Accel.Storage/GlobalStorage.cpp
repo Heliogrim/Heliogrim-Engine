@@ -1,12 +1,11 @@
 #include "GlobalStorage.hpp"
 
-#include <Engine.GFX.Acc/Stage/Stage.hpp>
-#include <Engine.GFX.Acc/AccelerationEffect.hpp>
-#include <Engine.GFX.Acc/AccelerationPipeline.hpp>
+#include <Engine.Accel.Effect/Stage/Stage.hpp>
+#include <Engine.Accel.Effect/AccelerationEffect.hpp>
+#include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 
 #include <algorithm>
 
-using namespace hg::engine::gfx::acc;
 using namespace hg::engine::accel;
 using namespace hg;
 
@@ -51,7 +50,7 @@ bool GlobalStorage::hasAccelEffect(cref<Guid> effectGuid_) noexcept {
     );
 }
 
-bool GlobalStorage::hasAccelEffect(cref<smr<const gfx::acc::AccelerationEffect>> effect_) noexcept {
+bool GlobalStorage::hasAccelEffect(cref<smr<const AccelerationEffect>> effect_) noexcept {
     return _STD ranges::contains(
         _effects.values(),
         effect_,
