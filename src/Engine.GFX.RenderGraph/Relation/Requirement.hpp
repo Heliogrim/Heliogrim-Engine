@@ -2,11 +2,11 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.GFX.Acc/Symbol/Symbol.hpp>
+#include "../Symbol/Symbol.hpp"
 
 namespace hg::engine::gfx::render::graph {
     struct Requirement final {
-        smr<const acc::Symbol> symbol;
+        smr<const Symbol> symbol;
     };
 
     [[nodiscard]] constexpr bool operator==(cref<Requirement> left_, cref<Requirement> right_) noexcept {

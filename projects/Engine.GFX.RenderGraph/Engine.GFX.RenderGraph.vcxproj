@@ -64,6 +64,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\Observed.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\ScopedSymbolContext.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\Subscribed.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\Symbol.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\SymbolContext.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Symbol\SymbolizedResource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\test.hpp" />

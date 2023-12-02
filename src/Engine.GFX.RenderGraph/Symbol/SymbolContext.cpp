@@ -51,7 +51,7 @@ nmpt<SymbolContext::this_type> SymbolContext::parent() const noexcept {
     return _parent;
 }
 
-void SymbolContext::exposeSymbol(mref<smr<const acc::Symbol>> symbol_, nmpt<SymbolizedResource> resource_) {
+void SymbolContext::exposeSymbol(mref<smr<const Symbol>> symbol_, nmpt<SymbolizedResource> resource_) {
 
     // Warning: Temporary
     assert(not _resources.contains(symbol_));
@@ -59,7 +59,7 @@ void SymbolContext::exposeSymbol(mref<smr<const acc::Symbol>> symbol_, nmpt<Symb
     _resources.emplace(_STD move(symbol_), _STD move(resource_));
 }
 
-nmpt<SymbolizedResource> SymbolContext::exportSymbol(mref<smr<const acc::Symbol>> symbol_) {
+nmpt<SymbolizedResource> SymbolContext::exportSymbol(mref<smr<const Symbol>> symbol_) {
 
     // Warning: Temporary
     assert(not _resources.contains(symbol_));
@@ -72,7 +72,7 @@ nmpt<SymbolizedResource> SymbolContext::exportSymbol(mref<smr<const acc::Symbol>
     return resource;
 }
 
-nmpt<SymbolizedResource> SymbolContext::importSymbol(mref<smr<const acc::Symbol>> symbol_) {
+nmpt<SymbolizedResource> SymbolContext::importSymbol(mref<smr<const Symbol>> symbol_) {
 
     // Warning: Temporary
     assert(_resources.contains(symbol_));
@@ -82,7 +82,7 @@ nmpt<SymbolizedResource> SymbolContext::importSymbol(mref<smr<const acc::Symbol>
 }
 
 bool SymbolContext::registerExposeSymbol(
-    mref<smr<const acc::Symbol>> symbol_,
+    mref<smr<const Symbol>> symbol_,
     const ptr<Observed<SymbolizedResource>> observation_
 ) {
 
@@ -103,24 +103,24 @@ bool SymbolContext::registerExposeSymbol(
 }
 
 bool SymbolContext::registerExportSymbol(
-    mref<smr<const acc::Symbol>> symbol_,
+    mref<smr<const Symbol>> symbol_,
     const ptr<Subscribed<SymbolizedResource>> subscription_
 ) {
     return false;
 }
 
 bool SymbolContext::registerImportSymbol(
-    mref<smr<const acc::Symbol>> symbol_,
+    mref<smr<const Symbol>> symbol_,
     const ptr<Subscribed<SymbolizedResource>> subscription_
 ) {
     return false;
 }
 
-nmpt<SymbolizedResource> SymbolContext::getExportSymbol(mref<smr<const acc::Symbol>> symbol_) const {
+nmpt<SymbolizedResource> SymbolContext::getExportSymbol(mref<smr<const Symbol>> symbol_) const {
     return getImportSymbol(_STD move(symbol_));
 }
 
-nmpt<SymbolizedResource> SymbolContext::getImportSymbol(mref<smr<const acc::Symbol>> symbol_) const {
+nmpt<SymbolizedResource> SymbolContext::getImportSymbol(mref<smr<const Symbol>> symbol_) const {
 
     if (const auto iter = _resources.find(symbol_); iter != _resources.end()) {
         return iter->second;
@@ -135,7 +135,7 @@ nmpt<SymbolizedResource> SymbolContext::getImportSymbol(mref<smr<const acc::Symb
     return nullptr;
 }
 
-bool SymbolContext::eraseExposedSymbol(mref<smr<const acc::Symbol>> symbol_) {
+bool SymbolContext::eraseExposedSymbol(mref<smr<const Symbol>> symbol_) {
 
     if (not _resources.contains(symbol_)) {
         return false;
@@ -178,7 +178,7 @@ bool SymbolContext::eraseExposedSymbol(mref<nmpt<SymbolizedResource>> resource_)
     return true;
 }
 
-bool SymbolContext::eraseExportSymbol(mref<smr<const acc::Symbol>> symbol_) {
+bool SymbolContext::eraseExportSymbol(mref<smr<const Symbol>> symbol_) {
 
     if (not _resources.contains(symbol_)) {
         return false;
@@ -237,7 +237,7 @@ bool SymbolContext::eraseExportSymbol(mref<nmpt<SymbolizedResource>> resource_) 
     return true;
 }
 
-bool SymbolContext::eraseImportSymbol(mref<smr<const acc::Symbol>> symbol_) {
+bool SymbolContext::eraseImportSymbol(mref<smr<const Symbol>> symbol_) {
     // We are not allowed to manipulate memory of import symbols, cause the associated resources
     //  are owned or proxy owned by other handlers.
     // __noop;
@@ -251,7 +251,7 @@ bool SymbolContext::eraseImportSymbol(mref<nmpt<SymbolizedResource>> resource_) 
     return true;
 }
 
-bool SymbolContext::isShadowing(mref<smr<const acc::Symbol>> symbol_) {
+bool SymbolContext::isShadowing(mref<smr<const Symbol>> symbol_) {
 
     const bool local = _resources.contains(symbol_);
     auto cur = nmpt<SymbolContext> { this };

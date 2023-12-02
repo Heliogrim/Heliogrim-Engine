@@ -1,7 +1,7 @@
 #pragma once
 
+#include <Engine.Accel.Effect/Stage/TransferDataType.hpp>
 #include <Engine.Common/Meta/Constexpr.hpp>
-#include <Engine.GFX.Acc/Stage/TransferDataType.hpp>
 #include <Engine.GFX/Geometry/Vertex.hpp>
 #include <Engine.Reflect/CompileTypeId.hpp>
 
@@ -39,7 +39,7 @@ namespace hg::engine::gfx::render::graph {
             ptrdiff_t offset { 0LL };
             ptrdiff_t size { 0LL };
             /**/
-            acc::TransferDataType dataType;
+            accel::TransferDataType dataType;
         };
 
         struct MeshDataLayout {
@@ -47,25 +47,25 @@ namespace hg::engine::gfx::render::graph {
                 MeshDataLayoutAttributeId::ePosition,
                 offsetof(vertex, position),
                 sizeof(vertex::position),
-                acc::TransferDataType::eF32Vec3
+                accel::TransferDataType::eF32Vec3
             };
             MeshDataLayoutAttribute normal {
                 MeshDataLayoutAttributeId::eNormal,
                 offsetof(vertex, normal),
                 sizeof(vertex::normal),
-                acc::TransferDataType::eF32Vec3
+                accel::TransferDataType::eF32Vec3
             };
             MeshDataLayoutAttribute uv {
                 MeshDataLayoutAttributeId::eUv,
                 offsetof(vertex, uvm),
                 sizeof(vertex::uvm),
-                acc::TransferDataType::eF32Vec3
+                accel::TransferDataType::eF32Vec3
             };
             MeshDataLayoutAttribute color {
                 MeshDataLayoutAttributeId::eColor,
                 offsetof(vertex, color),
                 sizeof(vertex::color),
-                acc::TransferDataType::eU8Vec3
+                accel::TransferDataType::eU8Vec3
             };
             /**/
             u64 stride = sizeof(vertex);
