@@ -43,111 +43,111 @@ MaterialParameter MaterialFactory::buildMaterialParameter(cref<MaterialPrototype
 
 MaterialPrototypeParameter MaterialFactory::buildMaterialPrototypeParameter(
     mref<string> uniqueName_,
-    mref<acc::TransferDataType> dataType_
+    mref<accel::TransferDataType> dataType_
 ) const {
     auto storage = buildMaterialParameterStorage(dataType_);
     return MaterialPrototypeParameter(_STD move(uniqueName_),_STD move(dataType_), _STD move(storage));
 }
 
 uptr<MaterialParameterStorageBase> MaterialFactory::buildMaterialParameterStorage(
-    acc::TransferDataType dataType_
+    accel::TransferDataType dataType_
 ) const {
     switch (dataType_) {
         /**/
-        case acc::TransferDataType::eSampler: {
+        case accel::TransferDataType::eSampler: {
             return make_uptr<MaterialParameterStorage<smr<TextureResource>>>();
         }
-        case acc::TransferDataType::eUniform: {
+        case accel::TransferDataType::eUniform: {
             return make_uptr<MaterialParameterStorage<smr<void>>>();
         }
-        case acc::TransferDataType::eConstant: {
+        case accel::TransferDataType::eConstant: {
             return make_uptr<MaterialParameterStorage<smr<void>>>();
         }
-        case acc::TransferDataType::eStorage: {
+        case accel::TransferDataType::eStorage: {
             return make_uptr<MaterialParameterStorage<smr<void>>>();
         }
         /**/
-        case acc::TransferDataType::eU8: {
+        case accel::TransferDataType::eU8: {
             return make_uptr<MaterialParameterStorage<u8>>();
         }
-        case acc::TransferDataType::eU16: {
+        case accel::TransferDataType::eU16: {
             return make_uptr<MaterialParameterStorage<u16>>();
         }
-        case acc::TransferDataType::eU32: {
+        case accel::TransferDataType::eU32: {
             return make_uptr<MaterialParameterStorage<u32>>();
         }
-        case acc::TransferDataType::eU64: {
+        case accel::TransferDataType::eU64: {
             return make_uptr<MaterialParameterStorage<u64>>();
         }
-        case acc::TransferDataType::eU8Vec2: {
+        case accel::TransferDataType::eU8Vec2: {
             return make_uptr<MaterialParameterStorage<math::vec2_t<u8>>>();
         }
-        case acc::TransferDataType::eU16Vec2: {
+        case accel::TransferDataType::eU16Vec2: {
             return make_uptr<MaterialParameterStorage<math::vec2_t<u16>>>();
         }
-        case acc::TransferDataType::eU32Vec2: {
+        case accel::TransferDataType::eU32Vec2: {
             return make_uptr<MaterialParameterStorage<math::vec2_t<u32>>>();
         }
-        case acc::TransferDataType::eU64Vec2: {
+        case accel::TransferDataType::eU64Vec2: {
             return make_uptr<MaterialParameterStorage<math::vec2_t<u64>>>();
         }
-        case acc::TransferDataType::eF16Vec2: {
+        case accel::TransferDataType::eF16Vec2: {
             // Currently not Supported
             return nullptr;
         }
-        case acc::TransferDataType::eF32Vec2: {
+        case accel::TransferDataType::eF32Vec2: {
             return make_uptr<MaterialParameterStorage<math::vec2_t<float>>>();
         }
-        case acc::TransferDataType::eU8Vec3: {
+        case accel::TransferDataType::eU8Vec3: {
             return make_uptr<MaterialParameterStorage<math::vec3_t<u8>>>();
         }
-        case acc::TransferDataType::eU16Vec3: {
+        case accel::TransferDataType::eU16Vec3: {
             return make_uptr<MaterialParameterStorage<math::vec3_t<u16>>>();
         }
-        case acc::TransferDataType::eU32Vec3: {
+        case accel::TransferDataType::eU32Vec3: {
             return make_uptr<MaterialParameterStorage<math::vec3_t<u32>>>();
         }
-        case acc::TransferDataType::eU64Vec3: {
+        case accel::TransferDataType::eU64Vec3: {
             return make_uptr<MaterialParameterStorage<math::vec3_t<u64>>>();
         }
-        case acc::TransferDataType::eF16Vec3: {
+        case accel::TransferDataType::eF16Vec3: {
             // Currently not Supported
             return nullptr;
         }
-        case acc::TransferDataType::eF32Vec3: {
+        case accel::TransferDataType::eF32Vec3: {
             return make_uptr<MaterialParameterStorage<math::vec3_t<float>>>();
         }
-        case acc::TransferDataType::eU8Vec4: {
+        case accel::TransferDataType::eU8Vec4: {
             return make_uptr<MaterialParameterStorage<math::vec4_t<u8>>>();
         }
-        case acc::TransferDataType::eU16Vec4: {
+        case accel::TransferDataType::eU16Vec4: {
             return make_uptr<MaterialParameterStorage<math::vec4_t<u16>>>();
         }
-        case acc::TransferDataType::eU32Vec4: {
+        case accel::TransferDataType::eU32Vec4: {
             return make_uptr<MaterialParameterStorage<math::vec4_t<u32>>>();
         }
-        case acc::TransferDataType::eU64Vec4: {
+        case accel::TransferDataType::eU64Vec4: {
             return make_uptr<MaterialParameterStorage<math::vec4_t<u64>>>();
         }
-        case acc::TransferDataType::eF16Vec4: {
+        case accel::TransferDataType::eF16Vec4: {
             // Currently not Supported
             return nullptr;
         }
-        case acc::TransferDataType::eF32Vec4: {
+        case accel::TransferDataType::eF32Vec4: {
             return make_uptr<MaterialParameterStorage<math::vec4_t<float>>>();
         }
-        case acc::TransferDataType::eF16Mat3x3: {
+        case accel::TransferDataType::eF16Mat3x3: {
             // Currently not Supported
             return nullptr;
         }
-        case acc::TransferDataType::eF32Mat3x3: {
+        case accel::TransferDataType::eF32Mat3x3: {
             return make_uptr<MaterialParameterStorage<math::matq3_t<float>>>();
         }
-        case acc::TransferDataType::eF16Mat4x4: {
+        case accel::TransferDataType::eF16Mat4x4: {
             // Currently not Supported
             return nullptr;
         }
-        case acc::TransferDataType::eF32Mat4x4: {
+        case accel::TransferDataType::eF32Mat4x4: {
             return make_uptr<MaterialParameterStorage<math::matq4_t<float>>>();
         }
         default: {

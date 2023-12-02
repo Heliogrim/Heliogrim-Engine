@@ -90,7 +90,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX.Material\EffectUsagePattern.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\Material.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialEffect.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialParameter.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialParameterStorage.hpp" />

@@ -1,12 +1,11 @@
 #include "MaterialPrototypeParameter.hpp"
 
 using namespace hg::engine::gfx::material;
-using namespace hg::engine::gfx::acc;
 using namespace hg;
 
 MaterialPrototypeParameter::MaterialPrototypeParameter(
     mref<string> uniqueName_,
-    mref<TransferDataType> dataType_,
+    mref<accel::TransferDataType> dataType_,
     mref<uptr<MaterialParameterStorageBase>> defaultStorage_
 ) noexcept :
     _uniqueName(_STD move(uniqueName_)),
@@ -30,7 +29,7 @@ string MaterialPrototypeParameter::getUniqueName() const noexcept {
     return _uniqueName;
 }
 
-TransferDataType MaterialPrototypeParameter::getDataType() const noexcept {
+engine::accel::TransferDataType MaterialPrototypeParameter::getDataType() const noexcept {
     return _dataType;
 }
 

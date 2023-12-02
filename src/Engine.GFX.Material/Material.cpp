@@ -5,7 +5,6 @@
 #include "MaterialPrototype.hpp"
 
 using namespace hg::engine::gfx::material;
-using namespace hg::engine::gfx::acc;
 using namespace hg;
 
 Material::Material() noexcept :
