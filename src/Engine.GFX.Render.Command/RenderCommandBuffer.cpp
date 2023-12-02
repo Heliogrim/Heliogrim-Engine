@@ -1,9 +1,9 @@
 #include "RenderCommandBuffer.hpp"
 
 #include <Engine.GFX.Geometry/StaticMeshLayout.hpp>
-#include <Engine.GFX.Acc/AccelerationPipeline.hpp>
-#include <Engine.GFX.Acc/Pipeline/ComputePipeline.hpp>
-#include <Engine.GFX.Acc/Pipeline/GraphicsPipeline.hpp>
+#include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
+#include <Engine.Accel.Pipeline/ComputePipeline.hpp>
+#include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 
 #include "RenderCommandIterator.hpp"
 #include "Commands/Begin.hpp"
@@ -123,17 +123,17 @@ void RenderCommandBuffer::end() noexcept {
     link(_last, result.value());
 }
 
-void RenderCommandBuffer::bindComputePipeline(mref<smr<const acc::ComputePipeline>> pipeline_) noexcept {
+void RenderCommandBuffer::bindComputePipeline(mref<smr<const accel::ComputePipeline>> pipeline_) noexcept {
     const auto result = alloc().allocateCommand<BindPipelineRCmd>(
-        pipeline_.into<const acc::AccelerationPipeline>(),
+        pipeline_.into<const accel::AccelerationPipeline>(),
         BindPipelineFeatureSet::eCompute
     );
     link(_last, result.value());
 }
 
-void RenderCommandBuffer::bindGraphicsPipeline(mref<smr<const acc::GraphicsPipeline>> pipeline_) noexcept {
+void RenderCommandBuffer::bindGraphicsPipeline(mref<smr<const accel::GraphicsPipeline>> pipeline_) noexcept {
     const auto result = alloc().allocateCommand<BindPipelineRCmd>(
-        pipeline_.into<const acc::AccelerationPipeline>(),
+        pipeline_.into<const accel::AccelerationPipeline>(),
         BindPipelineFeatureSet::eGraphics
     );
     link(_last, result.value());
@@ -219,7 +219,7 @@ void RenderCommandBuffer::bindVertexBuffer(const nmpt<const VertexBufferView> ve
 }
 
 void RenderCommandBuffer::bindStorage(
-    const nmpt<const acc::Symbol> symbol_,
+    const nmpt<const accel::lang::Symbol> symbol_,
     const nmpt<const StorageBufferView> storageView_
 ) noexcept {
     const auto result = alloc().allocateCommand<BindStorageBufferRCmd>(
@@ -229,7 +229,7 @@ void RenderCommandBuffer::bindStorage(
 }
 
 void RenderCommandBuffer::bindTexture(
-    const nmpt<const acc::Symbol> symbol_,
+    const nmpt<const accel::lang::Symbol> symbol_,
     const nmpt<const TextureView> textureView_
 ) noexcept {
     const auto result = alloc().allocateCommand<BindTextureRCmd>(
@@ -239,7 +239,7 @@ void RenderCommandBuffer::bindTexture(
 }
 
 void RenderCommandBuffer::bindTexture(
-    const nmpt<const acc::Symbol> symbol_,
+    const nmpt<const accel::lang::Symbol> symbol_,
     const nmpt<const VirtualTextureView> textureView_
 ) noexcept {
     const auto result = alloc().allocateCommand<BindTextureRCmd>(

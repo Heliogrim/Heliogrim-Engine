@@ -1,4 +1,7 @@
 #pragma once
+
+#include <Engine.Accel.Effect/__fwd.hpp>
+
 #include "RenderCommandBuffer.hpp"
 #include "Resource/Pipeline.hpp"
 
@@ -37,7 +40,7 @@ namespace hg::engine::gfx::render::cmd {
         ) = delete;
 
         [[nodiscard]] GraphicsPipelineRComRef createGraphicsPipelineImmediately(
-            mref<smr<const acc::AccelerationEffect>> effect_,
+            mref<smr<const accel::AccelerationEffect>> effect_,
             nmpt<void> specification_,
             nmpt<void> profile_
         );

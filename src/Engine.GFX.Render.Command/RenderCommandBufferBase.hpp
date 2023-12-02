@@ -55,9 +55,9 @@ namespace hg::engine::gfx::render::cmd {
         virtual void end() noexcept = 0;
 
     public:
-        virtual void bindComputePipeline(mref<smr<const acc::ComputePipeline>> pipeline_) noexcept = 0;
+        virtual void bindComputePipeline(mref<smr<const accel::ComputePipeline>> pipeline_) noexcept = 0;
 
-        virtual void bindGraphicsPipeline(mref<smr<const acc::GraphicsPipeline>> pipeline_) noexcept = 0;
+        virtual void bindGraphicsPipeline(mref<smr<const accel::GraphicsPipeline>> pipeline_) noexcept = 0;
 
     public:
         virtual void bindStaticMesh(const nmpt<const Mesh> mesh_) noexcept = 0;
@@ -78,17 +78,17 @@ namespace hg::engine::gfx::render::cmd {
 
     public:
         virtual void bindStorage(
-            const nmpt<const acc::Symbol> symbol_,
+            const nmpt<const accel::lang::Symbol> symbol_,
             const nmpt<const StorageBufferView> storageView_
         ) noexcept = 0;
 
         virtual void bindTexture(
-            const nmpt<const acc::Symbol> symbol_,
+            const nmpt<const accel::lang::Symbol> symbol_,
             const nmpt<const TextureView> textureView_
         ) noexcept = 0;
 
         virtual void bindTexture(
-            const nmpt<const acc::Symbol> symbol_,
+            const nmpt<const accel::lang::Symbol> symbol_,
             const nmpt<const VirtualTextureView> textureView_
         ) noexcept = 0;
 

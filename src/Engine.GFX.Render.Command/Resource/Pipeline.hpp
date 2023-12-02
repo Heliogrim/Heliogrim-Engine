@@ -2,12 +2,12 @@
 
 #include "../RenderResource.hpp"
 
-namespace hg::engine::gfx::acc {
+namespace hg::engine::accel {
     class ComputePipeline;
     class GraphicsPipeline;
 }
 
 namespace hg::engine::gfx::render::cmd {
-    typedef RCmdRef<smr<const acc::ComputePipeline>> ComputePipelineRComRef;
-    typedef RCmdRef<smr<const acc::GraphicsPipeline>> GraphicsPipelineRComRef;
+    typedef RCmdRef<smr<const accel::ComputePipeline>> ComputePipelineRComRef;
+    typedef RCmdRef<smr<const accel::GraphicsPipeline>> GraphicsPipelineRComRef;
 }
