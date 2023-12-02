@@ -1,9 +1,9 @@
 #pragma once
-#include <Engine.GFX.Acc/AccelerationEffect.hpp>
+#include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
 
 namespace hg::engine::accel {
-    using AccelEffect = ::hg::engine::gfx::acc::AccelerationEffect;
+    using AccelEffect = ::hg::engine::accel::AccelerationEffect;
 
     struct AccelEffectWrapper {
         smr<const AccelEffect> instance;

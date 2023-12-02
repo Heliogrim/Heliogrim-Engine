@@ -1,6 +1,5 @@
 #include "Visualize.hpp"
 
-#include <Engine.GFX.Acc/Command/CommandBuffer.hpp>
 #include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneDepth.hpp>

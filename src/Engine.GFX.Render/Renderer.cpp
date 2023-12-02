@@ -35,7 +35,7 @@ uptr<graph::RuntimeGraph> Renderer::makeDefaultRuntimeGraph() const {
 
     const auto expected = _compileGraph->expectedProvision();
 
-    Vector<smr<const acc::Symbol>> defaultTargetSymbols {};
+    Vector<smr<const graph::Symbol>> defaultTargetSymbols {};
     defaultTargetSymbols.reserve(expected.size());
 
     for (const auto& provision : expected) {

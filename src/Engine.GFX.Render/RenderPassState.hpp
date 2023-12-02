@@ -24,7 +24,7 @@ namespace hg::engine::gfx::render {
     public:
         /* Scoped / Local Resources */
         //pipeline::State _structuredState;
-        std::map<smr<const acc::Symbol>, smr<void>> _boundTargets;
+        std::map<smr<const graph::Symbol>, smr<void>> _boundTargets;
         graph::SymbolContext _symbolContext;
 
     public:

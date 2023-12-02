@@ -11,7 +11,7 @@ using namespace hg;
 
 #include <filesystem>
 #include <fstream>
-using namespace ::hg::engine::gfx::acc;
+using namespace ::hg::engine::accel;
 
 static string read_shader_file(string name_) {
 
@@ -43,67 +43,52 @@ static string read_shader_file(string name_) {
 smr<AccelerationEffect> build_test_effect() {
 
     auto vertexStage = make_smr<Stage>(
-        StageFlagBits::eVertex,
-        Vector<StageInput> {
-            StageInput {
-                TransferToken::from("camera"), TransferType::eBinding, TransferDataType::eUniform,
-                DataInputRate::ePerPassInvocation
-            }
-        },
-        Vector<StageOutput> {
-            StageOutput {
-                TransferToken {}, TransferType::eForward, TransferDataType::eF32Vec3,
-                DataOutputRate {}
-            }
-        }
+        StageFlagBits::eVertex
+        // Vector<StageInput> {
+        //     StageInput {
+        //         // TransferToken::from("camera"), TransferType::eBinding, TransferDataType::eUniform, DataInputRate::ePerPassInvocation
+        //     }
+        // },
+        // Vector<StageOutput> {
+        //     StageOutput {
+        //         // TransferToken {}, TransferType::eForward, TransferDataType::eF32Vec3, DataOutputRate {}
+        //     }
+        // }
     );
 
     auto fragmentStage = make_smr<Stage>(
-        StageFlagBits::eFragment,
-        Vector<StageInput> {
-            StageInput {
-                TransferToken {}, TransferType::eForward, TransferDataType::eF32Vec3,
-                DataInputRate::ePerInvocation
-            },
-            StageInput {
-                TransferToken::from("depth"), TransferType::eForward, TransferDataType::eF32,
-                DataInputRate::ePerInvocation
-            },
-            StageInput {
-                TransferToken::from("skybox"), TransferType::eBinding, TransferDataType::eSampler,
-                DataInputRate::ePerPassInvocation
-            }
-        },
-        Vector<StageOutput> {
-            StageOutput {
-                TransferToken {}, TransferType::eForward, TransferDataType::eU8Vec4,
-                DataOutputRate {}
-            }
-        }
+        StageFlagBits::eFragment
+        // Vector<StageInput> {
+        //     StageInput {
+        //         // TransferToken {}, TransferType::eForward, TransferDataType::eF32Vec3, DataInputRate::ePerInvocation
+        //     },
+        //     StageInput {
+        //         // TransferToken::from("depth"), TransferType::eForward, TransferDataType::eF32, DataInputRate::ePerInvocation
+        //     },
+        //     StageInput {
+        //         // TransferToken::from("skybox"), TransferType::eBinding, TransferDataType::eSampler, DataInputRate::ePerPassInvocation
+        //     }
+        // },
+        // Vector<StageOutput> {
+        //     StageOutput {
+        //         // TransferToken {}, TransferType::eForward, TransferDataType::eU8Vec4, DataOutputRate {}
+        //     }
+        // }
     );
 
     /**/
 
     const auto vertexShaderCode = read_shader_file("__test__sky.vs");
 
-    vertexStage->setIntermediate(
-        make_smr<lang::Intermediate>(
-            make_uptr<lang::IL>(lang::ILDialect::eVulkanGlsl, Vector<string> { _STD move(vertexShaderCode) }),
-            nullptr
-        )
-    );
+    vertexStage->setIntermediate(make_smr<lang::Intermediate>());
+    vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
+    vertexStage->getIntermediate()->lang.text.emplace_back(_STD move(vertexShaderCode));
 
     const auto fragmentShaderCode = read_shader_file("__test__sky.fs");
 
-    fragmentStage->setIntermediate(
-        make_smr<lang::Intermediate>(
-            make_uptr<lang::IL>(
-                lang::ILDialect::eVulkanGlsl,
-                Vector<string> { _STD move(fragmentShaderCode) }
-            ),
-            nullptr
-        )
-    );
+    fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
+    fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
+    fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
 
     /**/
 
@@ -117,14 +102,14 @@ smr<AccelerationEffect> build_test_effect() {
     return make_smr<AccelerationEffect>(
         _STD move(guid),
         "test-sky-effect",
-        Vector<smr<Stage>> { _STD move(vertexStage), _STD move(fragmentStage) },
-        Vector<smr<const Symbol>> { makeSceneCameraSymbol(), makeSkyboxTextureSymbol(), /*makeSceneDepthSymbol()*/ },
-        Vector<smr<const Symbol>> { makeSceneColorSymbol() }
+        Vector<smr<Stage>> { _STD move(vertexStage), _STD move(fragmentStage) }
     );
+    // Vector<smr<const Symbol>> { makeSceneCameraSymbol(), makeSkyboxTextureSymbol(), /*makeSceneDepthSymbol()*/ },
+    // Vector<smr<const Symbol>> { makeSceneColorSymbol() }
 }
 
 /**/
 
-smr<const engine::gfx::acc::AccelerationEffect> engine::gfx::render::makeSkyboxEffect() {
+smr<const AccelerationEffect> engine::gfx::render::makeSkyboxEffect() {
     return build_test_effect();
 }

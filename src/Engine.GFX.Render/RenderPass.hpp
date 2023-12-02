@@ -62,31 +62,31 @@ namespace hg::engine::gfx::render {
     public:
         #pragma region Render Pass Targets
         void unsafeBindTarget(
-            mref<smr<const acc::Symbol>> target_,
+            mref<smr<const graph::Symbol>> target_,
             mref<smr<void>> resource_
         );
 
         [[nodiscard]] bool bindTarget(
-            mref<smr<const acc::Symbol>> target_,
+            mref<smr<const graph::Symbol>> target_,
             mref<smr<Texture>> texture_
         );
 
         [[nodiscard]] bool bindTarget(
-            mref<smr<const acc::Symbol>> target_,
+            mref<smr<const graph::Symbol>> target_,
             mref<smr<TextureView>> textureView_
         );
 
         [[nodiscard]] bool bindTarget(
-            mref<smr<const acc::Symbol>> target_,
+            mref<smr<const graph::Symbol>> target_,
             mref<smr<VirtualTexture>> texture_
         );
 
         [[nodiscard]] bool bindTarget(
-            mref<smr<const acc::Symbol>> target_,
+            mref<smr<const graph::Symbol>> target_,
             mref<smr<VirtualTextureView>> textureView_
         );
 
-        _Success_(return != nullptr) smr<void> unbindTarget(mref<smr<const acc::Symbol>> target_) noexcept;
+        _Success_(return != nullptr) smr<void> unbindTarget(mref<smr<const graph::Symbol>> target_) noexcept;
 
         #pragma endregion Render Pass Targets
 
@@ -123,18 +123,18 @@ namespace hg::engine::gfx::render {
         void markAsTouched();
 
     public:
-        bool addTargetWaitSignal(mref<smr<const acc::Symbol>> targetSymbol_, cref<vk::Semaphore> signal_) noexcept;
+        bool addTargetWaitSignal(mref<smr<const graph::Symbol>> targetSymbol_, cref<vk::Semaphore> signal_) noexcept;
 
-        void clearTargetWaitSignals(mref<smr<const acc::Symbol>> targetSymbol_) noexcept;
+        void clearTargetWaitSignals(mref<smr<const graph::Symbol>> targetSymbol_) noexcept;
 
         void enumerateTargetWaitSignals(
             ref<Vector<vk::Semaphore>> signals_,
-            _In_opt_ mref<smr<const acc::Symbol>> targetSymbol_ = nullptr
+            _In_opt_ mref<smr<const graph::Symbol>> targetSymbol_ = nullptr
         ) noexcept;
 
         void enumerateTargetReadySignals(
             ref<Vector<vk::Semaphore>> signals_,
-            _In_opt_ mref<smr<const acc::Symbol>> targetSymbol_ = nullptr
+            _In_opt_ mref<smr<const graph::Symbol>> targetSymbol_ = nullptr
         ) noexcept;
 
         #pragma endregion Render Pass Synchronization

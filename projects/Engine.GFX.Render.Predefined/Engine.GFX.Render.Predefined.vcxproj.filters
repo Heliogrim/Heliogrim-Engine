@@ -40,6 +40,9 @@
     <Filter Include="Headerdateien\Pipelines">
       <UniqueIdentifier>{a610fb16-301a-434c-a4e7-d71216474d30}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Buffer">
+      <UniqueIdentifier>{2662499f-9213-4cb2-8396-4839db2c2942}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneView.cpp">
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Descriptions\SkyboxColorBuffer.hpp">
       <Filter>Headerdateien\Descriptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Buffer\ViewBuffer.hpp">
+      <Filter>Headerdateien\Buffer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -7,16 +7,15 @@
 using namespace hg::engine::gfx::render;
 using namespace hg;
 
-smr<const engine::gfx::acc::Symbol> engine::gfx::render::makeDeferredNormalSymbol() {
-    static auto obj = make_smr<acc::Symbol>(
-        acc::SymbolScope {
-            .type = acc::SymbolScopeType::eGlobal,
+smr<const graph::Symbol> engine::gfx::render::makeDeferredNormalSymbol() {
+    static auto obj = make_smr<graph::Symbol>(
+        graph::SymbolFlagBits::eUndefined,
+        graph::SymbolScope {
+            .type = graph::SymbolScopeType::eGlobal,
             .layer = ""
         },
         "deferred::normal",
-        makeV4F32DataBufferDescription(),
-        acc::SymbolFlagBits::eUndefined,
-        acc::TransferToken {}
+        makeV4F32DataBufferDescription()
     );
     return obj;
 }

@@ -1,7 +1,5 @@
 #pragma once
-#include <Engine.GFX.Acc/Pass/GraphicsPass.hpp>
 #include <Engine.GFX/Framebuffer/Framebuffer.hpp>
-#include <Engine.GFX.Acc.Compile/EffectCompileResult.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/Observed.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/SymbolizedResource.hpp>

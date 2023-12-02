@@ -1,10 +1,10 @@
 #pragma once
+
 #include <map>
-#include <Engine.GFX.Acc/Pass/GraphicsPass.hpp>
 #include <Engine.GFX/Framebuffer/Framebuffer.hpp>
-#include <Engine.GFX.Acc.Compile/EffectCompileResult.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/Observed.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/Subscribed.hpp>
+#include <Engine.GFX.RenderGraph/Symbol/Symbol.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/SymbolizedResource.hpp>
 #include <Engine.GFX/Texture/Texture.hpp>
 
@@ -14,8 +14,8 @@ namespace hg::engine::gfx::render {
     class Visualize :
         public SubPass {
     private:
-        _STD map<smr<const acc::Symbol>, _STD function<void()>> _available;
-        smr<const acc::Symbol> _selected;
+        _STD map<smr<const graph::Symbol>, _STD function<void()>> _available;
+        smr<const graph::Symbol> _selected;
 
         struct Resources {
             graph::Subscribed<graph::SymbolizedResource> outSceneColor;

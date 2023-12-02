@@ -6,17 +6,16 @@
 using namespace hg::engine::gfx::render;
 using namespace hg;
 
-smr<const engine::gfx::acc::Symbol> engine::gfx::render::makeSceneViewSymbol() {
+smr<const graph::Symbol> engine::gfx::render::makeSceneViewSymbol() {
 
-    static auto obj = make_smr<acc::Symbol>(
-        acc::SymbolScope {
-            .type = acc::SymbolScopeType::eGlobal,
+    static auto obj = make_smr<graph::Symbol>(
+        graph::SymbolFlagBits::eUndefined,
+        graph::SymbolScope {
+            .type = graph::SymbolScopeType::eGlobal,
             .layer = ""
         },
         "scene::view",
-        makeSceneViewDescription(),
-        acc::SymbolFlagBits::eUndefined,
-        acc::TransferToken {}
+        makeSceneViewDescription()
     );
     return obj;
 }
