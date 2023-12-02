@@ -1,6 +1,7 @@
 #include "Framebuffer.hpp"
 
-#include <Engine.GFX.Acc/Pass/VkGraphicsPass.hpp>
+#include <Engine.Accel.Pass/AccelerationPass.hpp>
+#include <Engine.Accel.Pass/VkGraphicsPass.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
 
@@ -45,7 +46,7 @@ void Framebuffer::setup() {
     assert(!_vkFramebuffer);
 
     assert(not _renderPass.empty());
-    const auto* const renderPass = Cast<acc::VkGraphicsPass>(_renderPass.get());
+    const auto* const renderPass = Cast<accel::VkGraphicsPass>(_renderPass.get());
 
     /**
      * Prepare
@@ -118,11 +119,11 @@ cref<sptr<Device>> Framebuffer::device() const noexcept {
     return _device;
 }
 
-cref<smr<const acc::AccelerationPass>> Framebuffer::renderPass() const noexcept {
+cref<smr<const engine::accel::AccelerationPass>> Framebuffer::renderPass() const noexcept {
     return _renderPass;
 }
 
-void Framebuffer::setRenderPass(mref<smr<const acc::AccelerationPass>> renderPass_) {
+void Framebuffer::setRenderPass(mref<smr<const engine::accel::AccelerationPass>> renderPass_) {
     _renderPass = _STD move(renderPass_);
 }
 

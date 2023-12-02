@@ -39,7 +39,7 @@
 
 /* Development Testing */
 #include <Engine.GFX.RenderGraph/test.hpp>
-#include <Engine.GFX.Acc.Compile/test.h>
+#include <Engine.Accel.Compile/test.h>
 #include <Engine.GFX.Render/__Test__Renderer.hpp>
 /**/
 
