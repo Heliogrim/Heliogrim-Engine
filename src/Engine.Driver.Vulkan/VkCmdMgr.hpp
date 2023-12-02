@@ -1,8 +1,8 @@
 #pragma once
+#include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Flag.hpp>
 #include <Engine.Common/Collection/InlineAutoArray.hpp>
-#include <Engine.GFX.Acc/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Device/Device.hpp>
 
 namespace hg::driver::vk {
@@ -22,28 +22,28 @@ namespace hg::driver::vk {
         InlineAutoArray<InlineAutoArray<nmpt<engine::gfx::CommandQueue>>, 3uLL> queues;
 
     public:
-        Vector<Vector<engine::gfx::AccelCommandBuffer>> committed;
-        Vector<engine::gfx::AccelCommandBuffer> pending;
-        InlineAutoArray<engine::gfx::AccelCommandBuffer, 2uLL> active;
+        Vector<Vector<engine::accel::AccelCommandBuffer>> committed;
+        Vector<engine::accel::AccelCommandBuffer> pending;
+        InlineAutoArray<engine::accel::AccelCommandBuffer, 2uLL> active;
 
     public:
-        [[nodiscard]] _STD span<const Vector<engine::gfx::AccelCommandBuffer>> getCommitted() const noexcept;
+        [[nodiscard]] _STD span<const Vector<engine::accel::AccelCommandBuffer>> getCommitted() const noexcept;
 
         [[nodiscard]] size_t getCommitCount() const noexcept;
 
         [[nodiscard]] size_t getCommittedCount() const noexcept;
 
-        [[nodiscard]] _STD span<const engine::gfx::AccelCommandBuffer> getPending() const noexcept;
+        [[nodiscard]] _STD span<const engine::accel::AccelCommandBuffer> getPending() const noexcept;
 
         [[nodiscard]] size_t getPendingCount() const noexcept;
 
     public:
         [[nodiscard]] bool isActiveRoot() const noexcept;
 
-        [[nodiscard]] ref<engine::gfx::AccelCommandBuffer> getActive() const noexcept;
+        [[nodiscard]] ref<engine::accel::AccelCommandBuffer> getActive() const noexcept;
 
     public:
-        ref<engine::gfx::AccelCommandBuffer> allocate();
+        ref<engine::accel::AccelCommandBuffer> allocate();
 
         void submit();
 

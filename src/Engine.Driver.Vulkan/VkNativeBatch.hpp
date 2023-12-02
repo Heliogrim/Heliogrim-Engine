@@ -1,5 +1,5 @@
 #pragma once
-#include <Engine.GFX.Acc/Command/CommandBuffer.hpp>
+#include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.GFX.Render.Command/NativeBatch.hpp>
 
 namespace hg::driver::vk {
@@ -14,7 +14,7 @@ namespace hg::driver::vk {
         constexpr ~VkNativeBatch() noexcept override = default;
 
     private:
-        InlineAutoArray<uptr<engine::gfx::AccelCommandBuffer>, 2uLL> _batched;
+        InlineAutoArray<uptr<engine::accel::AccelCommandBuffer>, 2uLL> _batched;
 
     public:
         [[nodiscard]] bool ready() const noexcept override;
@@ -32,7 +32,7 @@ namespace hg::driver::vk {
         ) const noexcept override;
 
     public:
-        void add(mref<uptr<engine::gfx::AccelCommandBuffer>> cmd_) noexcept;
+        void add(mref<uptr<engine::accel::AccelCommandBuffer>> cmd_) noexcept;
 
     private:
         void enumerateWaitSignals(
