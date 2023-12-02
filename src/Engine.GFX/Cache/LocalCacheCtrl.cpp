@@ -109,7 +109,7 @@ void LocalCacheCtrl::markAsUsed(
 void LocalCacheCtrl::markAsUsed(
     const non_owning_rptr<const void> spec_,
     mref<smr<MaterialResource>> material_,
-    mref<smr<acc::AccelerationPipeline>> accelerationPipeline_
+    mref<smr<accel::AccelerationPipeline>> accelerationPipeline_
 ) {
     _specMaterials.push_back({ spec_, { material_.get(), accelerationPipeline_.get() } });
 

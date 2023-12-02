@@ -12,6 +12,7 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Exception/NotImplementedException.hpp>
+#include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 
 #include "GlobalResourceCache.hpp"
 
@@ -268,10 +269,10 @@ void GlobalCacheCtrl::unmark(ptr<StaticGeometryResource> resource_, mref<CacheSt
 void GlobalCacheCtrl::markAsUsed(
     const __restricted_ptr<const void> spec_,
     mref<smr<MaterialResource>> material_,
-    mref<smr<const acc::AccelerationPipeline>> accelerationPipeline_
+    mref<smr<const accel::AccelerationPipeline>> accelerationPipeline_
 ) {
 
-    using SubjectType = CacheCtrlSubject<_STD pair<smr<MaterialResource>, smr<const acc::AccelerationPipeline>>>;
+    using SubjectType = CacheCtrlSubject<_STD pair<smr<MaterialResource>, smr<const accel::AccelerationPipeline>>>;
     using SubMapType = RobinMap<__restricted_ptr<MaterialResource>, uptr<SubjectType>>;
 
     if (not material_->isLoaded()) {
@@ -333,7 +334,7 @@ void GlobalCacheCtrl::unmark(
     const __restricted_ptr<MaterialResource> resource_
 ) {
 
-    using SubjectType = CacheCtrlSubject<_STD pair<smr<MaterialResource>, smr<const acc::AccelerationPipeline>>>;
+    using SubjectType = CacheCtrlSubject<_STD pair<smr<MaterialResource>, smr<const accel::AccelerationPipeline>>>;
     using SubMapType = RobinMap<__restricted_ptr<MaterialResource>, uptr<SubjectType>>;
 
     if (not resource_->isLoaded()) {
@@ -370,7 +371,7 @@ void GlobalCacheCtrl::unmark(
     subMap.erase(subIt);
 }
 
-GlobalCacheCtrl::query_result_type<smr<const engine::gfx::acc::AccelerationPipeline>> GlobalCacheCtrl::query(
+GlobalCacheCtrl::query_result_type<smr<const engine::accel::AccelerationPipeline>> GlobalCacheCtrl::query(
     const __restricted_ptr<const void> spec_,
     const __restricted_ptr<MaterialResource> material_
 ) const noexcept {

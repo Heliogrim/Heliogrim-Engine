@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/Vector.hpp>
-#include <Engine.GFX.Acc/AccelerationPass.hpp>
+#include <Engine.Accel.Pass/__fwd.hpp>
 
 #include "../Device/Device.hpp"
 #include "Engine.GFX/Texture/TextureLikeObject.hpp"
@@ -139,12 +139,12 @@ namespace hg::engine::gfx {
         /**
          * Render Pass
          */
-        smr<const acc::AccelerationPass> _renderPass;
+        smr<const accel::AccelerationPass> _renderPass;
 
     public:
-        [[nodiscard]] cref<smr<const acc::AccelerationPass>> renderPass() const noexcept;
+        [[nodiscard]] cref<smr<const accel::AccelerationPass>> renderPass() const noexcept;
 
-        void setRenderPass(mref<smr<const acc::AccelerationPass>> renderPass_);
+        void setRenderPass(mref<smr<const accel::AccelerationPass>> renderPass_);
 
     private:
         /**
