@@ -96,97 +96,97 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
         if (matParamIt == request_->_params.end()) {
 
             switch (protoParam.getDataType()) {
-                case acc::TransferDataType::eConstant:
-                case acc::TransferDataType::eUniform:
-                case acc::TransferDataType::eStorage: {
+                case accel::TransferDataType::eConstant:
+                case accel::TransferDataType::eUniform:
+                case accel::TransferDataType::eStorage: {
                     dst.set(clone(protoParam.getDefaultValue<smr<void>>()));
                     break;
                 }
-                case acc::TransferDataType::eSampler: {
+                case accel::TransferDataType::eSampler: {
                     dst.set(clone(protoParam.getDefaultValue<smr<TextureResource>>()));
                     break;
                 }
-                case acc::TransferDataType::eU8: {
+                case accel::TransferDataType::eU8: {
                     dst.set(protoParam.getDefaultValue<u8>());
                     break;
                 }
-                case acc::TransferDataType::eU16: {
+                case accel::TransferDataType::eU16: {
                     dst.set(protoParam.getDefaultValue<u16>());
                     break;
                 }
-                case acc::TransferDataType::eU32: {
+                case accel::TransferDataType::eU32: {
                     dst.set(protoParam.getDefaultValue<u32>());
                     break;
                 }
-                case acc::TransferDataType::eU64: {
+                case accel::TransferDataType::eU64: {
                     dst.set(protoParam.getDefaultValue<u64>());
                     break;
                 }
-                case acc::TransferDataType::eU8Vec2: {
+                case accel::TransferDataType::eU8Vec2: {
                     dst.set(protoParam.getDefaultValue<math::vec2_t<u8>>());
                     break;
                 }
-                case acc::TransferDataType::eU16Vec2: {
+                case accel::TransferDataType::eU16Vec2: {
                     dst.set(protoParam.getDefaultValue<math::vec2_t<u16>>());
                     break;
                 }
-                case acc::TransferDataType::eU32Vec2: {
+                case accel::TransferDataType::eU32Vec2: {
                     dst.set(protoParam.getDefaultValue<math::vec2_t<u32>>());
                     break;
                 }
-                case acc::TransferDataType::eU64Vec2: {
+                case accel::TransferDataType::eU64Vec2: {
                     dst.set(protoParam.getDefaultValue<math::vec2_t<u64>>());
                     break;
                 }
-                case acc::TransferDataType::eF32Vec2: {
+                case accel::TransferDataType::eF32Vec2: {
                     dst.set(protoParam.getDefaultValue<math::vec2_t<float>>());
                     break;
                 }
-                case acc::TransferDataType::eU8Vec3: {
+                case accel::TransferDataType::eU8Vec3: {
                     dst.set(protoParam.getDefaultValue<math::vec3_t<u8>>());
                     break;
                 }
-                case acc::TransferDataType::eU16Vec3: {
+                case accel::TransferDataType::eU16Vec3: {
                     dst.set(protoParam.getDefaultValue<math::vec3_t<u16>>());
                     break;
                 }
-                case acc::TransferDataType::eU32Vec3: {
+                case accel::TransferDataType::eU32Vec3: {
                     dst.set(protoParam.getDefaultValue<math::vec3_t<u32>>());
                     break;
                 }
-                case acc::TransferDataType::eU64Vec3: {
+                case accel::TransferDataType::eU64Vec3: {
                     dst.set(protoParam.getDefaultValue<math::vec3_t<u64>>());
                     break;
                 }
-                case acc::TransferDataType::eF32Vec3: {
+                case accel::TransferDataType::eF32Vec3: {
                     dst.set(protoParam.getDefaultValue<math::vec3_t<float>>());
                     break;
                 }
-                case acc::TransferDataType::eU8Vec4: {
+                case accel::TransferDataType::eU8Vec4: {
                     dst.set(protoParam.getDefaultValue<math::vec4_t<u8>>());
                     break;
                 }
-                case acc::TransferDataType::eU16Vec4: {
+                case accel::TransferDataType::eU16Vec4: {
                     dst.set(protoParam.getDefaultValue<math::vec4_t<u16>>());
                     break;
                 }
-                case acc::TransferDataType::eU32Vec4: {
+                case accel::TransferDataType::eU32Vec4: {
                     dst.set(protoParam.getDefaultValue<math::vec4_t<u32>>());
                     break;
                 }
-                case acc::TransferDataType::eU64Vec4: {
+                case accel::TransferDataType::eU64Vec4: {
                     dst.set(protoParam.getDefaultValue<math::vec4_t<u64>>());
                     break;
                 }
-                case acc::TransferDataType::eF32Vec4: {
+                case accel::TransferDataType::eF32Vec4: {
                     dst.set(protoParam.getDefaultValue<math::vec4_t<float>>());
                     break;
                 }
-                case acc::TransferDataType::eF32Mat3x3: {
+                case accel::TransferDataType::eF32Mat3x3: {
                     dst.set(protoParam.getDefaultValue<math::matq3_t<float>>());
                     break;
                 }
-                case acc::TransferDataType::eF32Mat4x4: {
+                case accel::TransferDataType::eF32Mat4x4: {
                     dst.set(protoParam.getDefaultValue<math::matq4_t<float>>());
                     break;
                 }
@@ -205,10 +205,10 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
         assert(matParam.dataType == protoParam.getDataType());
 
         switch (matParam.dataType) {
-            case acc::TransferDataType::eConstant:
-            case acc::TransferDataType::eUniform:
-            case acc::TransferDataType::eStorage: break;
-            case acc::TransferDataType::eSampler: {
+            case accel::TransferDataType::eConstant:
+            case accel::TransferDataType::eUniform:
+            case accel::TransferDataType::eStorage: break;
+            case accel::TransferDataType::eSampler: {
 
                 assert(_STD holds_alternative<asset_guid>(matParam.value));
 
@@ -218,112 +218,112 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
                 dst.set(_STD move(resolved));
                 break;
             }
-            case acc::TransferDataType::eU8: {
+            case accel::TransferDataType::eU8: {
                 assert(_STD holds_alternative<u8>(matParam.value));
                 dst.set(_STD get<u8>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU16: {
+            case accel::TransferDataType::eU16: {
                 assert(_STD holds_alternative<u16>(matParam.value));
                 dst.set(_STD get<u16>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU32: {
+            case accel::TransferDataType::eU32: {
                 assert(_STD holds_alternative<u32>(matParam.value));
                 dst.set(_STD get<u32>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU64: {
+            case accel::TransferDataType::eU64: {
                 assert(_STD holds_alternative<u64>(matParam.value));
                 dst.set(_STD get<u64>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eF32: {
+            case accel::TransferDataType::eF32: {
                 assert(_STD holds_alternative<float>(matParam.value));
                 dst.set(_STD get<float>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU8Vec2: {
+            case accel::TransferDataType::eU8Vec2: {
                 assert(_STD holds_alternative<math::vec2_t<u8>>(matParam.value));
                 dst.set(_STD get<math::vec2_t<u8>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU16Vec2: {
+            case accel::TransferDataType::eU16Vec2: {
                 assert(_STD holds_alternative<math::vec2_t<u16>>(matParam.value));
                 dst.set(_STD get<math::vec2_t<u16>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU32Vec2: {
+            case accel::TransferDataType::eU32Vec2: {
                 assert(_STD holds_alternative<math::vec2_t<u32>>(matParam.value));
                 dst.set(_STD get<math::vec2_t<u32>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU64Vec2: {
+            case accel::TransferDataType::eU64Vec2: {
                 assert(_STD holds_alternative<math::vec2_t<u64>>(matParam.value));
                 dst.set(_STD get<math::vec2_t<u64>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eF32Vec2: {
+            case accel::TransferDataType::eF32Vec2: {
                 assert(_STD holds_alternative<math::vec2_t<float>>(matParam.value));
                 dst.set(_STD get<math::vec2_t<float>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU8Vec3: {
+            case accel::TransferDataType::eU8Vec3: {
                 assert(_STD holds_alternative<math::vec3_t<u8>>(matParam.value));
                 dst.set(_STD get<math::vec3_t<u8>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU16Vec3: {
+            case accel::TransferDataType::eU16Vec3: {
                 assert(_STD holds_alternative<math::vec3_t<u16>>(matParam.value));
                 dst.set(_STD get<math::vec3_t<u16>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU32Vec3: {
+            case accel::TransferDataType::eU32Vec3: {
                 assert(_STD holds_alternative<math::vec3_t<u32>>(matParam.value));
                 dst.set(_STD get<math::vec3_t<u32>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU64Vec3: {
+            case accel::TransferDataType::eU64Vec3: {
                 assert(_STD holds_alternative<math::vec3_t<u64>>(matParam.value));
                 dst.set(_STD get<math::vec3_t<u64>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eF32Vec3: {
+            case accel::TransferDataType::eF32Vec3: {
                 assert(_STD holds_alternative<math::vec3_t<float>>(matParam.value));
                 dst.set(_STD get<math::vec3_t<float>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU8Vec4: {
+            case accel::TransferDataType::eU8Vec4: {
                 assert(_STD holds_alternative<math::vec4_t<u8>>(matParam.value));
                 dst.set(_STD get<math::vec4_t<u8>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU16Vec4: {
+            case accel::TransferDataType::eU16Vec4: {
                 assert(_STD holds_alternative<math::vec4_t<u16>>(matParam.value));
                 dst.set(_STD get<math::vec4_t<u16>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU32Vec4: {
+            case accel::TransferDataType::eU32Vec4: {
                 assert(_STD holds_alternative<math::vec4_t<u32>>(matParam.value));
                 dst.set(_STD get<math::vec4_t<u32>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eU64Vec4: {
+            case accel::TransferDataType::eU64Vec4: {
                 assert(_STD holds_alternative<math::vec4_t<u64>>(matParam.value));
                 dst.set(_STD get<math::vec4_t<u64>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eF32Vec4: {
+            case accel::TransferDataType::eF32Vec4: {
                 assert(_STD holds_alternative<math::vec4_t<u32>>(matParam.value));
                 dst.set(_STD get<math::vec4_t<u32>>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eF32Mat3x3: {
+            case accel::TransferDataType::eF32Mat3x3: {
                 assert(_STD holds_alternative<math::matq3_t<float>>(matParam.value));
                 dst.set(_STD get<u8>(matParam.value));
                 break;
             }
-            case acc::TransferDataType::eF32Mat4x4: {
+            case accel::TransferDataType::eF32Mat4x4: {
                 assert(_STD holds_alternative<math::matq4_t<float>>(matParam.value));
                 dst.set(_STD get<math::matq4_t<float>>(matParam.value));
                 break;

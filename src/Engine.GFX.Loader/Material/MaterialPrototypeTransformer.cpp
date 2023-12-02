@@ -33,7 +33,7 @@ using namespace hg;
     const non_owning_rptr<const engine::resource::LoaderManager> loader_
 );
 
-[[nodiscard]] static smr<const acc::AccelerationEffect> resolveEffect(
+[[nodiscard]] static smr<const engine::accel::AccelerationEffect> resolveEffect(
     mref<asset_guid> guid_,
     const non_owning_rptr<const engine::assets::IAssetRegistry> registry_,
     const non_owning_rptr<const engine::resource::LoaderManager> loader_
@@ -62,7 +62,7 @@ MaterialPrototypeTransformer::response_type::type MaterialPrototypeTransformer::
     material::MaterialFactory factory {};
 
     Vector<material::MaterialPrototypeParameter> params {};
-    Vector<smr<const acc::AccelerationEffect>> effects {};
+    InlineAutoArray<material::MaterialEffect> effects {};
 
     for (const auto& serialParam : request_->_params) {
 
@@ -73,10 +73,10 @@ MaterialPrototypeTransformer::response_type::type MaterialPrototypeTransformer::
         }
 
         switch (dst.getDataType()) {
-            case acc::TransferDataType::eConstant:
-            case acc::TransferDataType::eUniform:
-            case acc::TransferDataType::eStorage: break;
-            case acc::TransferDataType::eSampler: {
+            case accel::TransferDataType::eConstant:
+            case accel::TransferDataType::eUniform:
+            case accel::TransferDataType::eStorage: break;
+            case accel::TransferDataType::eSampler: {
 
                 assert(_STD holds_alternative<asset_guid>(serialParam.defaultValue));
 
@@ -85,112 +85,112 @@ MaterialPrototypeTransformer::response_type::type MaterialPrototypeTransformer::
                 dst.set(_STD move(resolved));
                 break;
             }
-            case acc::TransferDataType::eU8: {
+            case accel::TransferDataType::eU8: {
                 assert(_STD holds_alternative<u8>(serialParam.defaultValue));
                 dst.set(_STD get<u8>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU16: {
+            case accel::TransferDataType::eU16: {
                 assert(_STD holds_alternative<u16>(serialParam.defaultValue));
                 dst.set(_STD get<u16>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU32: {
+            case accel::TransferDataType::eU32: {
                 assert(_STD holds_alternative<u32>(serialParam.defaultValue));
                 dst.set(_STD get<u32>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU64: {
+            case accel::TransferDataType::eU64: {
                 assert(_STD holds_alternative<u64>(serialParam.defaultValue));
                 dst.set(_STD get<u64>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eF32: {
+            case accel::TransferDataType::eF32: {
                 assert(_STD holds_alternative<float>(serialParam.defaultValue));
                 dst.set(_STD get<float>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU8Vec2: {
+            case accel::TransferDataType::eU8Vec2: {
                 assert(_STD holds_alternative<math::vec2_t<u8>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec2_t<u8>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU16Vec2: {
+            case accel::TransferDataType::eU16Vec2: {
                 assert(_STD holds_alternative<math::vec2_t<u16>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec2_t<u16>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU32Vec2: {
+            case accel::TransferDataType::eU32Vec2: {
                 assert(_STD holds_alternative<math::vec2_t<u32>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec2_t<u32>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU64Vec2: {
+            case accel::TransferDataType::eU64Vec2: {
                 assert(_STD holds_alternative<math::vec2_t<u64>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec2_t<u64>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eF32Vec2: {
+            case accel::TransferDataType::eF32Vec2: {
                 assert(_STD holds_alternative<math::vec2_t<float>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec2_t<float>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU8Vec3: {
+            case accel::TransferDataType::eU8Vec3: {
                 assert(_STD holds_alternative<math::vec3_t<u8>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec3_t<u8>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU16Vec3: {
+            case accel::TransferDataType::eU16Vec3: {
                 assert(_STD holds_alternative<math::vec3_t<u16>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec3_t<u16>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU32Vec3: {
+            case accel::TransferDataType::eU32Vec3: {
                 assert(_STD holds_alternative<math::vec3_t<u32>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec3_t<u32>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU64Vec3: {
+            case accel::TransferDataType::eU64Vec3: {
                 assert(_STD holds_alternative<math::vec3_t<u64>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec3_t<u64>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eF32Vec3: {
+            case accel::TransferDataType::eF32Vec3: {
                 assert(_STD holds_alternative<math::vec3_t<float>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec3_t<float>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU8Vec4: {
+            case accel::TransferDataType::eU8Vec4: {
                 assert(_STD holds_alternative<math::vec4_t<u8>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec4_t<u8>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU16Vec4: {
+            case accel::TransferDataType::eU16Vec4: {
                 assert(_STD holds_alternative<math::vec4_t<u16>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec4_t<u16>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU32Vec4: {
+            case accel::TransferDataType::eU32Vec4: {
                 assert(_STD holds_alternative<math::vec4_t<u32>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec4_t<u32>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eU64Vec4: {
+            case accel::TransferDataType::eU64Vec4: {
                 assert(_STD holds_alternative<math::vec4_t<u64>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec4_t<u64>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eF32Vec4: {
+            case accel::TransferDataType::eF32Vec4: {
                 assert(_STD holds_alternative<math::vec4_t<u32>>(serialParam.defaultValue));
                 dst.set(_STD get<math::vec4_t<u32>>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eF32Mat3x3: {
+            case accel::TransferDataType::eF32Mat3x3: {
                 assert(_STD holds_alternative<math::matq3_t<float>>(serialParam.defaultValue));
                 dst.set(_STD get<u8>(serialParam.defaultValue));
                 break;
             }
-            case acc::TransferDataType::eF32Mat4x4: {
+            case accel::TransferDataType::eF32Mat4x4: {
                 assert(_STD holds_alternative<math::matq4_t<float>>(serialParam.defaultValue));
                 dst.set(_STD get<math::matq4_t<float>>(serialParam.defaultValue));
                 break;
@@ -208,8 +208,7 @@ MaterialPrototypeTransformer::response_type::type MaterialPrototypeTransformer::
     for (auto effect : request_->_effects) {
 
         auto resolved = resolveEffect(_STD move(effect), registry, &loader);
-        effects.push_back(_STD move(resolved));
-
+        effects.emplace_back(_STD move(resolved), nullptr);
     }
 
     /**
@@ -298,7 +297,7 @@ smr<MaterialPrototypeResource> resolvePrototype(
     return prototype;
 }
 
-smr<const acc::AccelerationEffect> resolveEffect(
+smr<const engine::accel::AccelerationEffect> resolveEffect(
     mref<asset_guid> guid_,
     const non_owning_rptr<const engine::assets::IAssetRegistry> registry_,
     const non_owning_rptr<const engine::resource::LoaderManager> loader_
