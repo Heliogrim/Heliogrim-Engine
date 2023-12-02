@@ -3,12 +3,13 @@
 #include <Engine.Common/Guid.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/InlineAutoArray.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.GFX.Acc/__fwd.hpp>
 #include <tl/optional.hpp>
 
+#include "MaterialEffect.hpp"
 #include "__fwd.hpp"
 
 namespace hg::engine::gfx::material {
@@ -22,7 +23,7 @@ namespace hg::engine::gfx::material {
         MaterialPrototype(
             mref<Guid> guid_,
             mref<string> name_,
-            mref<Vector<smr<const acc::AccelerationEffect>>> effects_,
+            mref<InlineAutoArray<MaterialEffect>> effects_,
             mref<Vector<MaterialPrototypeParameter>> parameters_
         ) noexcept;
 
@@ -43,10 +44,10 @@ namespace hg::engine::gfx::material {
         [[nodiscard]] string getName() const noexcept;
 
     private:
-        Vector<smr<const acc::AccelerationEffect>> _effects;
+        InlineAutoArray<MaterialEffect> _materialEffects;
 
     public:
-        [[nodiscard]] cref<Vector<smr<const acc::AccelerationEffect>>> getAccelerationEffects() const noexcept;
+        [[nodiscard]] cref<InlineAutoArray<MaterialEffect>> getAccelerationEffects() const noexcept;
 
     private:
         Vector<MaterialPrototypeParameter> _parameters;

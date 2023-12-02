@@ -6,18 +6,17 @@
 #include "MaterialPrototypeParameter.hpp"
 
 using namespace hg::engine::gfx::material;
-using namespace hg::engine::gfx::acc;
 using namespace hg;
 
 MaterialPrototype::MaterialPrototype(
     mref<Guid> guid_,
     mref<string> name_,
-    mref<Vector<smr<const AccelerationEffect>>> effects_,
+    mref<InlineAutoArray<MaterialEffect>> effects_,
     mref<Vector<MaterialPrototypeParameter>> parameters_
 ) noexcept :
     _guid(_STD move(guid_)),
     _name(_STD move(name_)),
-    _effects(_STD move(effects_)),
+    _materialEffects(_STD move(effects_)),
     _parameters(_STD move(parameters_)) {}
 
 MaterialPrototype::~MaterialPrototype() = default;
@@ -30,8 +29,8 @@ string MaterialPrototype::getName() const noexcept {
     return _name;
 }
 
-cref<Vector<smr<const AccelerationEffect>>> MaterialPrototype::getAccelerationEffects() const noexcept {
-    return _effects;
+cref<InlineAutoArray<MaterialEffect>> MaterialPrototype::getAccelerationEffects() const noexcept {
+    return _materialEffects;
 }
 
 cref<Vector<MaterialPrototypeParameter>> MaterialPrototype::getParameters() const noexcept {

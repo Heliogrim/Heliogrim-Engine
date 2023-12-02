@@ -39,6 +39,12 @@
     <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialParameterStorageTable.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Material\MaterialEffect.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Material\EffectUsagePattern.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Material\Material.cpp">

@@ -1,9 +1,9 @@
 #pragma once
 
+#include <Engine.Accel.Effect/Stage/TransferDataType.hpp>
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
-#include <Engine.GFX.Acc/Stage/TransferDataType.hpp>
 
 #include "MaterialParameterStorage.hpp"
 
@@ -18,7 +18,7 @@ namespace hg::engine::gfx::material {
     public:
         MaterialPrototypeParameter(
             mref<string> uniqueName_,
-            mref<acc::TransferDataType> dataType_,
+            mref<accel::TransferDataType> dataType_,
             mref<uptr<MaterialParameterStorageBase>> defaultStorage_
         ) noexcept;
 
@@ -40,11 +40,11 @@ namespace hg::engine::gfx::material {
         [[nodiscard]] string getUniqueName() const noexcept;
 
     private:
-        acc::TransferDataType _dataType;
+        accel::TransferDataType _dataType;
         uptr<MaterialParameterStorageBase> _defaultStorage;
 
     public:
-        [[nodiscard]] acc::TransferDataType getDataType() const noexcept;
+        [[nodiscard]] accel::TransferDataType getDataType() const noexcept;
 
         [[nodiscard]] nmpt<const MetaClass> getStorageClass() const noexcept;
 

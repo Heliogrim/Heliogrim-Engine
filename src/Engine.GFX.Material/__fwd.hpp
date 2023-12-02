@@ -5,4 +5,6 @@ namespace hg::engine::gfx::material {
     class MaterialParameter;
     class MaterialPrototype;
     class MaterialPrototypeParameter;
+    /**/
+    struct EffectUsagePattern;
 }
