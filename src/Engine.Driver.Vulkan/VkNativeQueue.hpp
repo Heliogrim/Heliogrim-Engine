@@ -69,7 +69,7 @@ namespace hg::driver::vk {
     /**/
 
     class VkNativeQueue :
-        public engine::gfx::render::cmd::NativeQueue {
+        public engine::render::cmd::NativeQueue {
     public:
         using this_type = VkNativeQueue;
 
