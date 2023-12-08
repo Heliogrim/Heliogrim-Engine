@@ -19,7 +19,7 @@
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg::engine::accel;
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -272,6 +272,19 @@ smr<AccelerationEffect> build_test_effect() {
     fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
     fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
     fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
+
+    uptr<lang::Variable> tmpVar {};
+    uptr<lang::Symbol> tmpSym {};
+
+    tmpVar = make_uptr<lang::Variable>();
+    tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>();
+    tmpSym = make_uptr<lang::Symbol>(
+        lang::SymbolId::from("color"),
+        lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
+    );
+
+    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.emplace(_STD move(tmpSym));
 
     /**/
 

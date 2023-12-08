@@ -2,24 +2,32 @@
 
 #include <Engine.Accel.Compile/EffectCompileResult.hpp>
 #include <Engine.Accel.Pass/GraphicsPass.hpp>
+#include <Engine.GFX.Loader/Material/MaterialResource.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/SymbolizedResource.hpp>
+#include <Engine.GFX/Buffer/Buffer.hpp>
+#include <Engine.GFX/Buffer/UniformBufferView.hpp>
 #include <Engine.GFX/Framebuffer/Framebuffer.hpp>
+#include <Engine.GFX/Texture/TextureSampler.hpp>
 #include <Engine.GFX.Material/MaterialEffect.hpp>
 
 #include "../SubPass.hpp"
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class SkyBoxPass :
         public SubPass {
     public:
         using this_type = SkyBoxPass;
 
     private:
-        material::MaterialEffect _materialEffect;
+        smr<gfx::MaterialResource> _material;
+        gfx::material::MaterialEffect _materialEffect;
         smr<const accel::GraphicsPass> _pass;
         accel::EffectCompileResult _compiled;
-        smr<Framebuffer> _framebuffer;
+        uptr<gfx::TextureSampler> _sampler;
+        gfx::Buffer _cameraBuffer;
+        uptr<gfx::UniformBufferView> _cameraBufferView;
+        smr<gfx::Framebuffer> _framebuffer;
         vk::Semaphore _tmpSignal;
 
         struct Resources {

@@ -9,14 +9,14 @@
 
 #include "../Mesh/MeshSubPass.hpp"
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class TriTestPass :
         public MeshSubPass {
     private:
         smr<const accel::AccelerationEffect> _effect;
         smr<const accel::GraphicsPass> _pass;
         accel::EffectCompileResult _compiled;
-        smr<Framebuffer> _framebuffer;
+        smr<gfx::Framebuffer> _framebuffer;
         vk::Semaphore _tmpSignal;
 
         struct Resources {
