@@ -40,7 +40,7 @@ namespace hg {
 
     template <class Type_>
     concept ClassHasMeta =
-        (__DirectMetaInherit<Type_> || __IndirectMetaInhert<Type_>) &&
+        (_STD same_as<ClassMetaBase, Type_> || __DirectMetaInherit<Type_> || __IndirectMetaInhert<Type_>) &&
         __HasInheritTypeList<Type_> &&
         _STD derived_from<Type_, ClassMetaBase>;
 }

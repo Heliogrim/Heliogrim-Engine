@@ -54,11 +54,11 @@ namespace hg {
     }
 
     template <
-        ClassHasMeta Value_,
+        class Value_,
         typename ReturnType_,
         typename Fn_,
         typename... Rest_
-    >
+    > requires (ClassHasMeta<_STD remove_const_t<Value_>>)
     ReturnType_ switchTypeImpl(
         Value_* value_,
         Fn_&& fn_,
@@ -67,7 +67,7 @@ namespace hg {
 
         using check_type = _STD remove_pointer_t<typename decompose<Fn_>::subject_type>;
 
-        if (value_->getMetaClass()->typeId().data == reflect::typeId<check_type>().data) {
+        if (value_->getMetaClass()->typeId().data == reflect::typeId<_STD remove_const_t<check_type>>().data) {
             return fn_(static_cast<check_type*>(value_));
         }
         return switchTypeImpl<Value_, ReturnType_, Rest_...>(
@@ -77,10 +77,10 @@ namespace hg {
     }
 
     template <
-        ClassHasMeta Value_,
+        class Value_,
         typename ReturnType_,
         typename Fn_
-    > requires (not _STD is_void_v<ReturnType_>)
+    > requires (ClassHasMeta<_STD remove_const_t<Value_>>) && (not _STD is_void_v<ReturnType_>)
     ReturnType_ switchTypeImpl(
         Value_* value_,
         Fn_&& fn_
@@ -88,7 +88,7 @@ namespace hg {
 
         using check_type = _STD remove_pointer_t<typename decompose<Fn_>::subject_type>;
 
-        if (value_->getMetaClass()->typeId().data == reflect::typeId<check_type>().data) {
+        if (value_->getMetaClass()->typeId().data == reflect::typeId<_STD remove_const_t<check_type>>().data) {
             return fn_(static_cast<check_type*>(value_));
         }
 
@@ -96,10 +96,10 @@ namespace hg {
     }
 
     template <
-        ClassHasMeta Value_,
+        class Value_,
         typename ReturnType_,
         typename Fn_
-    > requires (_STD is_void_v<ReturnType_>)
+    > requires (ClassHasMeta<_STD remove_const_t<Value_>>) && (_STD is_void_v<ReturnType_>)
     void switchTypeImpl(
         Value_* value_,
         Fn_&& fn_
@@ -107,7 +107,7 @@ namespace hg {
 
         using check_type = _STD remove_pointer_t<typename decompose<Fn_>::subject_type>;
 
-        if (value_->getMetaClass()->typeId().data == reflect::typeId<check_type>().data) {
+        if (value_->getMetaClass()->typeId().data == reflect::typeId<_STD remove_const_t<check_type>>().data) {
             return fn_(static_cast<check_type*>(value_));
         }
     }
@@ -118,6 +118,18 @@ namespace hg {
         using return_type = typename decompose<Fn_>::return_type;
 
         return switchTypeImpl<Ty_, return_type, Fn_, Rfn_...>(
+            value_,
+            _STD forward<Fn_>(fn_),
+            _STD forward<Rfn_>(rest_)...
+        );
+    }
+
+    template <ClassHasMeta Ty_, typename Fn_, typename... Rfn_>
+    typename decompose<Fn_>::return_type switchType(const Ty_* value_, Fn_&& fn_, Rfn_&&... rest_) {
+
+        using return_type = typename decompose<Fn_>::return_type;
+
+        return switchTypeImpl<const Ty_, return_type, Fn_, Rfn_...>(
             value_,
             _STD forward<Fn_>(fn_),
             _STD forward<Rfn_>(rest_)...
