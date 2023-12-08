@@ -25,6 +25,9 @@
     <Filter Include="Headerdateien\Resource">
       <UniqueIdentifier>{aef299ba-4701-467d-832c-6b11e80ce04f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Resource">
+      <UniqueIdentifier>{0ea9f9f1-fe0b-485c-8207-af250796a402}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderCommandBufferBase.hpp">
@@ -135,6 +138,18 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindResourceTable.hpp">
       <Filter>Headerdateien\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Resource\ResourceTable.hpp">
+      <Filter>Headerdateien\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Resource\ResourceView.hpp">
+      <Filter>Headerdateien\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindUniformBuffer.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\AttachResource.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\test.cpp">
@@ -201,6 +216,21 @@
       <Filter>Quelldateien\Commands</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\Lambda.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Resource\ResourceTable.cpp">
+      <Filter>Quelldateien\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Resource\ResourceView.cpp">
+      <Filter>Quelldateien\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindResourceTable.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\AttachResource.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindUniformBuffer.cpp">
       <Filter>Quelldateien\Commands</Filter>
     </ClCompile>
   </ItemGroup>

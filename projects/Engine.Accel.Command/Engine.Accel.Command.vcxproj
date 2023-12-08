@@ -21,6 +21,14 @@
     <ClInclude Include="..\..\src\Engine.Accel.Command\CommandBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.Accel.Command\CommandBufferStructs.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Engine.Common\Engine.Common.vcxproj">
+      <Project>{3581447f-2d21-4a67-9c4f-60c33fcf1b6c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX\Engine.GFX.vcxproj">
+      <Project>{a78ca948-af5e-46ae-8e2c-9449cb0d942b}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

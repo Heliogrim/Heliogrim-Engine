@@ -3,17 +3,17 @@
 
 #include <Engine.Common/Functional/Function.hpp>
 
-namespace hg::engine::gfx {
+namespace hg::engine::accel {
     class AccelCommandBuffer;
 }
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class LambdaRCmd :
         public RenderCommand {
     public:
         using this_type = LambdaRCmd;
 
-        using signature = void(ref<AccelCommandBuffer>);
+        using signature = void(ref<accel::AccelCommandBuffer>);
 
     public:
         template <typename Fn_>

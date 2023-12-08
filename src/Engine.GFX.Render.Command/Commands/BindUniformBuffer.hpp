@@ -3,30 +3,30 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
-#include "../RenderCommand.hpp"
+#include "Engine.GFX.Render.Command/RenderCommand.hpp"
 
 namespace hg::engine::gfx {
-    class SampledTextureView;
+    class UniformBufferView;
 }
 
 namespace hg::engine::render::cmd {
-    class BindTextureRCmd :
+    class BindUniformBufferRCmd :
         public RenderCommand {
     public:
-        constexpr BindTextureRCmd(
+        constexpr BindUniformBufferRCmd(
             mref<accel::lang::SymbolId> symbolId_,
-            mref<const nmpt<const gfx::SampledTextureView>> textureView_
+            mref<const nmpt<const gfx::UniformBufferView>> uniformView_
         ) noexcept :
             RenderCommand(),
             _symbolId(_STD move(symbolId_)),
-            _sampledTexture(_STD move(textureView_)) {}
+            _uniformView(_STD move(uniformView_)) {}
 
-        constexpr ~BindTextureRCmd() noexcept override = default;
+        constexpr ~BindUniformBufferRCmd() noexcept override = default;
 
     private:
     public:
-        accel::lang::SymbolId _symbolId;
-        const nmpt<const gfx::SampledTextureView> _sampledTexture;
+        const accel::lang::SymbolId _symbolId;
+        const nmpt<const gfx::UniformBufferView> _uniformView;
 
     public:
         void operator()(

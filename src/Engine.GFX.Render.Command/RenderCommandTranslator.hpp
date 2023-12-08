@@ -2,11 +2,11 @@
 #include "NativeBatch.hpp"
 #include "Commands/__fwd.hpp"
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class RenderCommandBuffer;
 }
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class __declspec(novtable) RenderCommandTranslator {
     public:
         using this_type = RenderCommandTranslator;
@@ -61,6 +61,8 @@ namespace hg::engine::gfx::render::cmd {
 
         virtual void translate(_Inout_ ptr<State>, _In_ ptr<const BindTextureRCmd>) noexcept = 0;
 
+        virtual void translate(_Inout_ ptr<State>, _In_ ptr<const BindUniformBufferRCmd>) noexcept = 0;
+
         /**/
 
         virtual void translate(_Inout_ ptr<State>, _In_ ptr<const DrawMeshRCmd>) noexcept = 0;
@@ -74,5 +76,9 @@ namespace hg::engine::gfx::render::cmd {
         /**/
 
         virtual void translate(_Inout_ ptr<State>, _In_ ptr<const LambdaRCmd>) noexcept = 0;
+
+        /**/
+
+        virtual void translate(_Inout_ ptr<State>, _In_ ptr<const AttachResourceRCmd>) noexcept = 0;
     };
 }

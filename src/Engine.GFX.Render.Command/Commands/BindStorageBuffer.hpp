@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Accel.Lang/Rep/Symbol.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
@@ -8,20 +9,23 @@ namespace hg::engine::gfx {
     class StorageBufferView;
 }
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class BindStorageBufferRCmd :
         public RenderCommand {
     public:
         constexpr BindStorageBufferRCmd(
-            mref<const nmpt<const StorageBufferView>> storageView_
+            mref<accel::lang::SymbolId> symbolId_,
+            mref<const nmpt<const gfx::StorageBufferView>> storageView_
         ) noexcept :
             RenderCommand(),
+            _symbolId(_STD move(symbolId_)),
             _storageView(_STD move(storageView_)) {}
 
         constexpr ~BindStorageBufferRCmd() noexcept override = default;
 
     private:
-        const nmpt<const StorageBufferView> _storageView;
+        const accel::lang::SymbolId _symbolId;
+        const nmpt<const gfx::StorageBufferView> _storageView;
 
     public:
         void operator()(
