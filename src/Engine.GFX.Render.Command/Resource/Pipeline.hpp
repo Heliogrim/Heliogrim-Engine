@@ -7,7 +7,7 @@ namespace hg::engine::accel {
     class GraphicsPipeline;
 }
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     typedef RCmdRef<smr<const accel::ComputePipeline>> ComputePipelineRComRef;
     typedef RCmdRef<smr<const accel::GraphicsPipeline>> GraphicsPipelineRComRef;
 }

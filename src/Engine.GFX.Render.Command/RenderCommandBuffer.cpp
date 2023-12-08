@@ -6,15 +6,18 @@
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 
 #include "RenderCommandIterator.hpp"
+#include "Commands/AttachResource.hpp"
 #include "Commands/Begin.hpp"
 #include "Commands/BeginAccelerationPass.hpp"
 #include "Commands/BeginSubPass.hpp"
 #include "Commands/BindIndexBuffer.hpp"
 #include "Commands/BindPipeline.hpp"
+#include "Commands/BindResourceTable.hpp"
 #include "Commands/BindSkeletalMesh.hpp"
 #include "Commands/BindStaticMesh.hpp"
 #include "Commands/BindStorageBuffer.hpp"
 #include "Commands/BindTexture.hpp"
+#include "Commands/BindUniformBuffer.hpp"
 #include "Commands/BindVertexBuffer.hpp"
 #include "Commands/DrawDispatch.hpp"
 #include "Commands/DrawMesh.hpp"
@@ -25,7 +28,7 @@
 #include "Commands/NextSubpass.hpp"
 #include "Commands/Lambda.hpp"
 
-using namespace hg::engine::gfx::render::cmd;
+using namespace hg::engine::render::cmd;
 using namespace hg;
 
 FORCE_INLINE static void link(ref<nmpt<RenderCommand>> prev_, mref<ptr<RenderCommand>> next_);
@@ -139,64 +142,67 @@ void RenderCommandBuffer::bindGraphicsPipeline(mref<smr<const accel::GraphicsPip
     link(_last, result.value());
 }
 
-void RenderCommandBuffer::bindStaticMesh(const nmpt<const Mesh> mesh_) noexcept {
+void RenderCommandBuffer::bindStaticMesh(const nmpt<const gfx::Mesh> mesh_) noexcept {
     const auto result = alloc().allocateCommand<BindStaticMeshRCmd>(_STD move(mesh_));
     link(_last, result.value());
 }
 
-void RenderCommandBuffer::bindStaticMeshInstance(const nmpt<const MeshInstanceView> view_) noexcept {
+void RenderCommandBuffer::bindStaticMeshInstance(const nmpt<const gfx::MeshInstanceView> view_) noexcept {
 
     if constexpr (true) {
 
-        const StorageBufferView* const sbv {};
-        const auto result = alloc().allocateCommand<BindStorageBufferRCmd>(_STD move(sbv));
+        const gfx::StorageBufferView* const sbv {};
+        const auto result = alloc().allocateCommand<BindStorageBufferRCmd>(accel::lang::SymbolId {}, _STD move(sbv));
         link(_last, result.value());
 
     } else {
 
-        const VertexBufferView* const vbv {};
-        const auto result = alloc().allocateCommand<BindVertexBufferRCmd>(VertexBufferView {});
+        const gfx::VertexBufferView* const vbv {};
+        const auto result = alloc().allocateCommand<BindVertexBufferRCmd>(gfx::VertexBufferView {});
         link(_last, result.value());
     }
 
 }
 
-void RenderCommandBuffer::bindSkeletalMesh(const nmpt<const Mesh> mesh_) noexcept {
+void RenderCommandBuffer::bindSkeletalMesh(const nmpt<const gfx::Mesh> mesh_) noexcept {
     const auto result = alloc().allocateCommand<BindSkeletalMeshRCmd>(_STD move(mesh_));
     link(_last, result.value());
 }
 
 void RenderCommandBuffer::bindSkeletalMeshInstance(
-    const nmpt<const MeshInstanceView> meshView_,
-    const nmpt<const SkeletalBoneView> boneView_
+    const nmpt<const gfx::MeshInstanceView> meshView_,
+    const nmpt<const gfx::SkeletalBoneView> boneView_
 ) noexcept {
 
     if constexpr (true) {
 
-        const StorageBufferView* const isbv {};
-        const StorageBufferView* const bsbv {};
+        const gfx::StorageBufferView* const isbv {};
+        const gfx::StorageBufferView* const bsbv {};
 
         const auto instanceResult = alloc().allocateCommand<BindStorageBufferRCmd>(
+            accel::lang::SymbolId {},
             _STD move(isbv)
         );
         link(_last, instanceResult.value());
 
         const auto boneResult = alloc().allocateCommand<BindStorageBufferRCmd>(
+            accel::lang::SymbolId {},
             _STD move(bsbv)
         );
         link(_last, boneResult.value());
 
     } else {
 
-        const VertexBufferView* const ivbv {};
-        const StorageBufferView* const bsbv {};
+        const gfx::VertexBufferView* const ivbv {};
+        const gfx::StorageBufferView* const bsbv {};
 
         const auto instanceResult = alloc().allocateCommand<BindVertexBufferRCmd>(
-            VertexBufferView {}
+            gfx::VertexBufferView {}
         );
         link(_last, instanceResult.value());
 
         const auto boneResult = alloc().allocateCommand<BindStorageBufferRCmd>(
+            accel::lang::SymbolId {},
             _STD move(bsbv)
         );
         link(_last, boneResult.value());
@@ -204,14 +210,14 @@ void RenderCommandBuffer::bindSkeletalMeshInstance(
 
 }
 
-void RenderCommandBuffer::bindIndexBuffer(const nmpt<const IndexBufferView> indexView_) noexcept {
+void RenderCommandBuffer::bindIndexBuffer(const nmpt<const gfx::IndexBufferView> indexView_) noexcept {
     const auto result = alloc().allocateCommand<BindIndexBufferRCmd>(
         *indexView_
     );
     link(_last, result.value());
 }
 
-void RenderCommandBuffer::bindVertexBuffer(const nmpt<const VertexBufferView> vertexView_) noexcept {
+void RenderCommandBuffer::bindVertexBuffer(const nmpt<const gfx::VertexBufferView> vertexView_) noexcept {
     const auto result = alloc().allocateCommand<BindVertexBufferRCmd>(
         *vertexView_
     );
@@ -219,37 +225,91 @@ void RenderCommandBuffer::bindVertexBuffer(const nmpt<const VertexBufferView> ve
 }
 
 void RenderCommandBuffer::bindStorage(
-    const nmpt<const accel::lang::Symbol> symbol_,
-    const nmpt<const StorageBufferView> storageView_
+    mref<accel::lang::SymbolId> symbolId_,
+    const nmpt<const gfx::StorageBufferView> storageView_
 ) noexcept {
     const auto result = alloc().allocateCommand<BindStorageBufferRCmd>(
+        _STD move(symbolId_),
         _STD move(storageView_)
     );
     link(_last, result.value());
 }
 
 void RenderCommandBuffer::bindTexture(
-    const nmpt<const accel::lang::Symbol> symbol_,
-    const nmpt<const TextureView> textureView_
+    mref<accel::lang::SymbolId> symbolId_,
+    const nmpt<const gfx::SampledTextureView> sampledTextureView_
 ) noexcept {
     const auto result = alloc().allocateCommand<BindTextureRCmd>(
-        _STD move(textureView_)
+        _STD move(symbolId_),
+        _STD move(sampledTextureView_)
     );
     link(_last, result.value());
 }
 
 void RenderCommandBuffer::bindTexture(
-    const nmpt<const accel::lang::Symbol> symbol_,
-    const nmpt<const VirtualTextureView> textureView_
+    mref<accel::lang::SymbolId> symbolId_,
+    const nmpt<const gfx::TextureView> textureView_,
+    const nmpt<const gfx::TextureSampler> sampler_
 ) noexcept {
+
+    const auto preserve = alloc().allocateCommand<AttachResourceRCmd>(
+        textureView_,
+        sampler_
+    );
+    link(_last, preserve.value());
+
+    auto sampledTexture = (preserve.value())->asTextureView();
+    assert(sampledTexture);
+
     const auto result = alloc().allocateCommand<BindTextureRCmd>(
-        _STD move(textureView_)
+        _STD move(symbolId_),
+        _STD move(sampledTexture)
+    );
+    link(_last, result.value());
+}
+
+void RenderCommandBuffer::bindTexture(
+    mref<accel::lang::SymbolId> symbolId_,
+    const nmpt<const gfx::VirtualTextureView> textureView_,
+    const nmpt<const gfx::TextureSampler> sampler_
+) noexcept {
+
+    const auto preserve = alloc().allocateCommand<AttachResourceRCmd>(
+        textureView_,
+        sampler_
+    );
+    link(_last, preserve.value());
+
+    auto sampledTexture = (preserve.value())->asTextureView();
+    assert(sampledTexture);
+
+    const auto result = alloc().allocateCommand<BindTextureRCmd>(
+        _STD move(symbolId_),
+        _STD move(sampledTexture)
+    );
+    link(_last, result.value());
+}
+
+void RenderCommandBuffer::bindUniform(
+    mref<accel::lang::SymbolId> symbolId_,
+    const nmpt<const gfx::UniformBufferView> uniformView_
+) noexcept {
+    const auto result = alloc().allocateCommand<BindUniformBufferRCmd>(
+        _STD move(symbolId_),
+        _STD move(uniformView_)
+    );
+    link(_last, result.value());
+}
+
+void RenderCommandBuffer::bind(mref<engine::render::ResourceTable> table_) noexcept {
+    const auto result = alloc().allocateCommand<BindResourceTableRCmd>(
+        _STD move(table_)
     );
     link(_last, result.value());
 }
 
 void RenderCommandBuffer::drawMesh(
-    const nmpt<const MeshDescription> meshDescription_,
+    const nmpt<const gfx::MeshDescription> meshDescription_,
     u32 instanceCount_,
     u32 instanceOffset_,
     u32 primitiveCount_,
@@ -267,7 +327,7 @@ void RenderCommandBuffer::drawMesh(
 }
 
 void RenderCommandBuffer::drawMeshIdx(
-    const nmpt<const MeshDescription> meshDescription_,
+    const nmpt<const gfx::MeshDescription> meshDescription_,
     u32 instanceCount_,
     u32 instanceOffset_,
     u32 primitiveCount_,
@@ -323,7 +383,7 @@ void RenderCommandBuffer::drawStaticMesh(
     u32 primitiveOffset_
 ) noexcept {
     this_type::drawMesh(
-        GetStaticMeshLayout().get(),
+        gfx::GetStaticMeshLayout().get(),
         instanceCount_,
         instanceOffset_,
         primitiveCount_,
@@ -338,7 +398,7 @@ void RenderCommandBuffer::drawStaticMeshIdx(
     u32 primitiveOffset_
 ) noexcept {
     this_type::drawMeshIdx(
-        GetStaticMeshLayout().get(),
+        gfx::GetStaticMeshLayout().get(),
         instanceCount_,
         instanceOffset_,
         primitiveCount_,
@@ -362,12 +422,14 @@ void RenderCommandBuffer::drawDispatch(
     link(_last, result.value());
 }
 
-void RenderCommandBuffer::lambda(mref<std::function<void(ref<AccelCommandBuffer>)>> lambda_) noexcept {
+void RenderCommandBuffer::lambda(mref<std::function<void(ref<accel::AccelCommandBuffer>)>> lambda_) noexcept {
     const auto result = alloc().allocateCommand<LambdaRCmd>(
         _STD move(lambda_)
     );
     link(_last, result.value());
 }
+
+void RenderCommandBuffer::attach(mref<smr<void>> obj_) noexcept {}
 
 /**/
 

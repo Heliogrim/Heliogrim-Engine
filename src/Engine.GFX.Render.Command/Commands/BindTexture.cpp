@@ -1,6 +1,6 @@
 #include "BindTexture.hpp"
 
-using namespace hg::engine::gfx::render::cmd;
+using namespace hg::engine::render::cmd;
 using namespace hg;
 
 void BindTextureRCmd::operator()(

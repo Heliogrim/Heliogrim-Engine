@@ -16,12 +16,15 @@ namespace hg::engine::accel {
         public ::hg::engine::gfx::CommandBuffer {
     public:
         using this_type = AccelCommandBuffer;
-        using ::hg::engine::gfx::CommandBuffer::CommandBuffer;
 
     public:
         AccelCommandBuffer(mref<::hg::engine::gfx::CommandBuffer> commandBuffer_) noexcept;
 
-        constexpr ~AccelCommandBuffer() noexcept = default;
+        AccelCommandBuffer(cref<this_type>) = delete;
+
+        AccelCommandBuffer(mref<this_type> other_) noexcept;
+
+        ~AccelCommandBuffer() noexcept;
 
     public:
         [[nodiscard]] bool initialized() const noexcept {

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class RenderCommand;
     /**/
     class BeginRCmd;
@@ -19,6 +19,7 @@ namespace hg::engine::gfx::render::cmd {
     class BindStaticMeshRCmd;
     class BindStorageBufferRCmd;
     class BindTextureRCmd;
+    class BindUniformBufferRCmd;
     class BindVertexBufferRCmd;
     /**/
     class DrawMeshRCmd;
@@ -27,6 +28,8 @@ namespace hg::engine::gfx::render::cmd {
     class DrawDispatchIndirectRCmd;
     /**/
     class LambdaRCmd;
+    /**/
+    class AttachResourceRCmd;
 }
 
 /* Forwarded Resource Declarations */

@@ -5,6 +5,11 @@
 
 #include "Commands/Structs.hpp"
 #include "Resource/Pipeline.hpp"
+#include "Resource/ResourceTable.hpp"
+
+namespace hg::engine::accel {
+    class AccelCommandBuffer;
+}
 
 namespace hg::engine::gfx {
     class Mesh;
@@ -13,11 +18,12 @@ namespace hg::engine::gfx {
     class IndexBufferView;
     class VertexBufferView;
     class StorageBufferView;
+    class UniformBufferView;
     class TextureView;
     class VirtualTextureView;
     struct MaterialIdentifier;
-    using MeshDescription = ::hg::engine::gfx::render::graph::MeshDescription;
-    class AccelCommandBuffer;
+    using MeshDescription = ::hg::engine::render::graph::MeshDescription;
+    class TextureSampler;
 }
 
 namespace hg::engine::gfx::acc {
@@ -28,7 +34,7 @@ namespace hg::engine::gfx::material {
     class Material;
 }
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class RenderCommandBufferBase {
     public:
         using this_type = RenderCommandBufferBase;
@@ -60,36 +66,52 @@ namespace hg::engine::gfx::render::cmd {
         virtual void bindGraphicsPipeline(mref<smr<const accel::GraphicsPipeline>> pipeline_) noexcept = 0;
 
     public:
-        virtual void bindStaticMesh(const nmpt<const Mesh> mesh_) noexcept = 0;
+        virtual void bindStaticMesh(const nmpt<const gfx::Mesh> mesh_) noexcept = 0;
 
-        virtual void bindStaticMeshInstance(const nmpt<const MeshInstanceView> view_) noexcept = 0;
+        virtual void bindStaticMeshInstance(const nmpt<const gfx::MeshInstanceView> view_) noexcept = 0;
 
-        virtual void bindSkeletalMesh(const nmpt<const Mesh> mesh_) noexcept = 0;
+        virtual void bindSkeletalMesh(const nmpt<const gfx::Mesh> mesh_) noexcept = 0;
 
         virtual void bindSkeletalMeshInstance(
-            const nmpt<const MeshInstanceView> meshView_,
-            const nmpt<const SkeletalBoneView> boneView_
+            const nmpt<const gfx::MeshInstanceView> meshView_,
+            const nmpt<const gfx::SkeletalBoneView> boneView_
         ) noexcept = 0;
 
     public:
-        virtual void bindIndexBuffer(const nmpt<const IndexBufferView> indexView_) noexcept = 0;
+        virtual void bindIndexBuffer(const nmpt<const gfx::IndexBufferView> indexView_) noexcept = 0;
 
-        virtual void bindVertexBuffer(const nmpt<const VertexBufferView> vertexView_) noexcept = 0;
+        virtual void bindVertexBuffer(const nmpt<const gfx::VertexBufferView> vertexView_) noexcept = 0;
 
     public:
         virtual void bindStorage(
-            const nmpt<const accel::lang::Symbol> symbol_,
-            const nmpt<const StorageBufferView> storageView_
+            mref<accel::lang::SymbolId> symbolId_,
+            const nmpt<const gfx::StorageBufferView> storageView_
         ) noexcept = 0;
 
         virtual void bindTexture(
-            const nmpt<const accel::lang::Symbol> symbol_,
-            const nmpt<const TextureView> textureView_
+            mref<accel::lang::SymbolId> symbolId_,
+            const nmpt<const gfx::SampledTextureView> sampledTextureView_
         ) noexcept = 0;
 
         virtual void bindTexture(
-            const nmpt<const accel::lang::Symbol> symbol_,
-            const nmpt<const VirtualTextureView> textureView_
+            mref<accel::lang::SymbolId> symbolId_,
+            const nmpt<const gfx::TextureView> textureView_,
+            const nmpt<const gfx::TextureSampler> sampler_
+        ) noexcept = 0;
+
+        virtual void bindTexture(
+            mref<accel::lang::SymbolId> symbolId_,
+            const nmpt<const gfx::VirtualTextureView> textureView_,
+            const nmpt<const gfx::TextureSampler> sampler_
+        ) noexcept = 0;
+
+        virtual void bindUniform(
+            mref<accel::lang::SymbolId> symbolId_,
+            const nmpt<const gfx::UniformBufferView> storageView_
+        ) noexcept = 0;
+
+        virtual void bind(
+            mref<engine::render::ResourceTable> table_
         ) noexcept = 0;
 
     public:
@@ -122,16 +144,16 @@ namespace hg::engine::gfx::render::cmd {
         ) noexcept = 0;
 
         virtual void drawMesh(
-            const nmpt<const MeshDescription> meshDescription_,
+            const nmpt<const gfx::MeshDescription> meshDescription_,
             u32 instanceCount_,
             u32 instanceOffset_,
             u32 primitiveCount_,
             u32 primitiveOffset_
         ) noexcept = 0;
 
-        template <typename MeshDescType_ = MeshDescription> requires
-            _STD derived_from<MeshDescType_, MeshDescription> &&
-            _STD is_nothrow_convertible_v<MeshDescType_, MeshDescription>
+        template <typename MeshDescType_ = gfx::MeshDescription> requires
+            _STD derived_from<MeshDescType_, gfx::MeshDescription> &&
+            _STD is_nothrow_convertible_v<MeshDescType_, gfx::MeshDescription>
         void drawMesh(
             const nmpt<const MeshDescType_> meshDescription_,
             u32 instanceCount_,
@@ -140,7 +162,7 @@ namespace hg::engine::gfx::render::cmd {
             u32 primitiveOffset_
         ) noexcept {
             this->drawMesh(
-                static_cast<const nmpt<const MeshDescription>>(meshDescription_),
+                static_cast<const nmpt<const gfx::MeshDescription>>(meshDescription_),
                 instanceCount_,
                 instanceOffset_,
                 primitiveCount_,
@@ -149,16 +171,16 @@ namespace hg::engine::gfx::render::cmd {
         }
 
         virtual void drawMeshIdx(
-            const nmpt<const MeshDescription> meshDescription_,
+            const nmpt<const gfx::MeshDescription> meshDescription_,
             u32 instanceCount_,
             u32 instanceOffset_,
             u32 primitiveCount_,
             u32 primitiveOffset_
         ) noexcept = 0;
 
-        template <typename MeshDescType_ = MeshDescription> requires
-            _STD derived_from<MeshDescType_, MeshDescription> &&
-            _STD is_nothrow_convertible_v<MeshDescType_, MeshDescription>
+        template <typename MeshDescType_ = gfx::MeshDescription> requires
+            _STD derived_from<MeshDescType_, gfx::MeshDescription> &&
+            _STD is_nothrow_convertible_v<MeshDescType_, gfx::MeshDescription>
         void drawMeshIdx(
             const nmpt<const MeshDescType_> meshDescription_,
             u32 instanceCount_,
@@ -167,7 +189,7 @@ namespace hg::engine::gfx::render::cmd {
             u32 primitiveOffset_
         ) noexcept {
             this->drawMeshIdx(
-                static_cast<const nmpt<const MeshDescription>>(meshDescription_),
+                static_cast<const nmpt<const gfx::MeshDescription>>(meshDescription_),
                 instanceCount_,
                 instanceOffset_,
                 primitiveCount_,
@@ -184,7 +206,12 @@ namespace hg::engine::gfx::render::cmd {
 
     public:
         virtual void lambda(
-            mref<_STD function<void(ref<AccelCommandBuffer>)>> lambda_
+            mref<_STD function<void(ref<accel::AccelCommandBuffer>)>> lambda_
+        ) noexcept = 0;
+
+    public:
+        virtual void attach(
+            mref<smr<void>> obj_
         ) noexcept = 0;
     };
 }

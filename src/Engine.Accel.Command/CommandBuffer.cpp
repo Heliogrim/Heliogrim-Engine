@@ -2,6 +2,7 @@
 
 #include <Engine.Accel.Pass/VkGraphicsPass.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.GFX/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Framebuffer/Framebuffer.hpp>
 
 using namespace hg::engine::accel;
@@ -10,6 +11,15 @@ using namespace hg;
 
 AccelCommandBuffer::AccelCommandBuffer(mref<CommandBuffer> commandBuffer_) noexcept :
     CommandBuffer(_STD move(commandBuffer_)) {}
+
+AccelCommandBuffer::AccelCommandBuffer(mref<this_type> other_) noexcept :
+    CommandBuffer(_STD move(other_)) {}
+
+AccelCommandBuffer::~AccelCommandBuffer() noexcept {
+    if (_vkCmd) {
+        release();
+    }
+}
 
 void AccelCommandBuffer::commit() {
     assert(_valid);
@@ -61,6 +71,10 @@ void AccelCommandBuffer::bindRenderPass(mref<BindRenderPassStruct> bindRenderPas
 }
 
 void AccelCommandBuffer::bindPipeline(const nmpt<const ComputePipeline> computePipeline_) {
+
+    _pipelineBindPoint = vk::PipelineBindPoint::eCompute;
+    _pipelineLayout = nullptr;
+
     assert(false);
 }
 
@@ -68,4 +82,7 @@ void AccelCommandBuffer::bindPipeline(const nmpt<const GraphicsPipeline> graphic
 
     const auto& graphicsPipeline = static_cast<cref<VkGraphicsPipeline>>(*graphicsPipeline_);
     _vkCmd.bindPipeline(vk::PipelineBindPoint::eGraphics, reinterpret_cast<VkPipeline>(graphicsPipeline._vkPipe));
+
+    _pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
+    _pipelineLayout = reinterpret_cast<const vk::PipelineLayout&>(graphicsPipeline._vkPipeLayout);
 }

@@ -5,7 +5,7 @@
 #include "RenderCommandBufferBase.hpp"
 #include "RenderResourceTable.hpp"
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class RenderCommandBuffer :
         public RenderCommandBufferBase,
         protected RenderCommandAllocator {
@@ -58,42 +58,94 @@ namespace hg::engine::gfx::render::cmd {
         void end() noexcept override;
 
     public:
-        void bindComputePipeline(mref<smr<const accel::ComputePipeline>> pipeline_) noexcept override;
+        void bindComputePipeline(
+            mref<smr<const accel::ComputePipeline>> pipeline_
+        ) noexcept override;
 
-        void bindGraphicsPipeline(mref<smr<const accel::GraphicsPipeline>> pipeline_) noexcept override;
-
-    public:
-        void bindStaticMesh(const nmpt<const Mesh> mesh_) noexcept override;
-
-        void bindStaticMeshInstance(const nmpt<const MeshInstanceView> view_) noexcept override;
-
-        void bindSkeletalMesh(const nmpt<const Mesh> mesh_) noexcept override;
-
-        void bindSkeletalMeshInstance(
-            const nmpt<const MeshInstanceView> meshView_,
-            const nmpt<const SkeletalBoneView> boneView_
+        void bindGraphicsPipeline(
+            mref<smr<const accel::GraphicsPipeline>> pipeline_
         ) noexcept override;
 
     public:
-        void bindIndexBuffer(const nmpt<const IndexBufferView> indexView_) noexcept override;
+        void bindStaticMesh(
+            const nmpt<const gfx::Mesh> mesh_
+        ) noexcept override;
 
-        void bindVertexBuffer(const nmpt<const VertexBufferView> vertexView_) noexcept override;
+        void bindStaticMeshInstance(
+            const nmpt<const gfx::MeshInstanceView> view_
+        ) noexcept override;
+
+        void bindSkeletalMesh(
+            const nmpt<const gfx::Mesh> mesh_
+        ) noexcept override;
+
+        void bindSkeletalMeshInstance(
+            const nmpt<const gfx::MeshInstanceView> meshView_,
+            const nmpt<const gfx::SkeletalBoneView> boneView_
+        ) noexcept override;
+
+    public:
+        void bindIndexBuffer(
+            const nmpt<const gfx::IndexBufferView> indexView_
+        ) noexcept override;
+
+        void bindVertexBuffer(
+            const nmpt<const gfx::VertexBufferView> vertexView_
+        ) noexcept override;
 
     public:
         void bindStorage(
-            const nmpt<const accel::lang::Symbol> symbol_,
-            const nmpt<const StorageBufferView> storageView_
+            mref<accel::lang::SymbolId> symbolId_,
+            const nmpt<const gfx::StorageBufferView> storageView_
         ) noexcept override;
 
         void bindTexture(
-            const nmpt<const accel::lang::Symbol> symbol_,
-            const nmpt<const TextureView> textureView_
+            mref<accel::lang::SymbolId> symbolId_,
+            const nmpt<const gfx::SampledTextureView> sampledTextureView_
         ) noexcept override;
 
         void bindTexture(
-            const nmpt<const accel::lang::Symbol> symbol_,
-            const nmpt<const VirtualTextureView> textureView_
+            mref<accel::lang::SymbolId> symbolId_,
+            const nmpt<const gfx::TextureView> textureView_,
+            const nmpt<const gfx::TextureSampler> sampler_
         ) noexcept override;
+
+        void bindTexture(
+            mref<accel::lang::SymbolId> symbolId_,
+            const nmpt<const gfx::VirtualTextureView> textureView_,
+            const nmpt<const gfx::TextureSampler> sampler_
+        ) noexcept override;
+
+        void bindUniform(
+            mref<accel::lang::SymbolId> symbolId_,
+            const nmpt<const gfx::UniformBufferView> uniformView_
+        ) noexcept override;
+
+        void bind(
+            mref<engine::render::ResourceTable> table_
+        ) noexcept override;
+
+        void bind(
+            _STD initializer_list<_STD pair<accel::lang::SymbolId, ResourceView>> list_
+        ) noexcept {
+            engine::render::ResourceTable tmp {};
+            tmp.table.insert(list_);
+            bind(_STD move(tmp));
+        }
+
+        template <typename... Types_>
+        void bind(_STD pair<accel::lang::SymbolId, Types_>&&... args_) noexcept {
+            engine::render::ResourceTable tmp {};
+
+            (tmp.table.insert(
+                _STD make_pair<accel::lang::SymbolId, ResourceView>(
+                    _STD move(args_.first),
+                    ResourceView(_STD move(args_.second))
+                )
+            ), ...);
+
+            bind(_STD move(tmp));
+        }
 
     public:
         void drawSkeletalMesh(
@@ -125,7 +177,7 @@ namespace hg::engine::gfx::render::cmd {
         ) noexcept override;
 
         void drawMesh(
-            const nmpt<const MeshDescription> meshDescription_,
+            const nmpt<const gfx::MeshDescription> meshDescription_,
             u32 instanceCount_,
             u32 instanceOffset_,
             u32 primitiveCount_,
@@ -133,7 +185,7 @@ namespace hg::engine::gfx::render::cmd {
         ) noexcept override;
 
         void drawMeshIdx(
-            const nmpt<const MeshDescription> meshDescription_,
+            const nmpt<const gfx::MeshDescription> meshDescription_,
             u32 instanceCount_,
             u32 instanceOffset_,
             u32 primitiveCount_,
@@ -149,7 +201,12 @@ namespace hg::engine::gfx::render::cmd {
 
     public:
         void lambda(
-            mref<_STD function<void(ref<AccelCommandBuffer>)>> lambda_
+            mref<_STD function<void(ref<accel::AccelCommandBuffer>)>> lambda_
+        ) noexcept override;
+
+    public:
+        void attach(
+            mref<smr<void>> obj_
         ) noexcept override;
     };
 }

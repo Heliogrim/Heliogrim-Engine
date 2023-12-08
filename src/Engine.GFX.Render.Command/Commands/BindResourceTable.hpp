@@ -4,27 +4,24 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "../RenderCommand.hpp"
+#include "../Resource/ResourceTable.hpp"
 
-namespace hg::engine::gfx::render::cmd {
-    struct ResourceTable;
-}
-
-namespace hg::engine::gfx::render::cmd {
-    class BindResourceTablerRCmd :
+namespace hg::engine::render::cmd {
+    class BindResourceTableRCmd :
         public RenderCommand {
     public:
-        using this_type = BindResourceTablerRCmd;
+        using this_type = BindResourceTableRCmd;
 
     public:
-        constexpr BindResourceTablerRCmd(const ptr<const ResourceTable> resourceTable_) noexcept :
+        BindResourceTableRCmd(mref<ResourceTable> table_) noexcept :
             RenderCommand(),
-            _resourceTable(_STD move(resourceTable_)) {}
+            _table(_STD move(table_)) {}
 
-        constexpr ~BindResourceTablerRCmd() noexcept override = default;
+        ~BindResourceTableRCmd() noexcept override = default;
 
     private:
     public:
-        const ptr<const ResourceTable> _resourceTable;
+        ResourceTable _table;
 
     public:
         void operator()(
