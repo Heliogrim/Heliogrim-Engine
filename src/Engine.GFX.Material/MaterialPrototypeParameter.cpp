@@ -4,20 +4,23 @@ using namespace hg::engine::gfx::material;
 using namespace hg;
 
 MaterialPrototypeParameter::MaterialPrototypeParameter(
-    mref<string> uniqueName_,
+    mref<ParameterIdentifier> identifier_,
+    mref<String> name_,
     mref<accel::TransferDataType> dataType_,
     mref<uptr<MaterialParameterStorageBase>> defaultStorage_
 ) noexcept :
-    _uniqueName(_STD move(uniqueName_)),
+    _identifier(_STD move(identifier_)),
+    _name(_STD move(name_)),
     _dataType(_STD move(dataType_)),
     _defaultStorage(_STD move(defaultStorage_)) {}
 
 MaterialPrototypeParameter::~MaterialPrototypeParameter() noexcept = default;
 
-ref<MaterialPrototypeParameter::this_type> MaterialPrototypeParameter::operator=(mref<this_type> other_) {
+ref<MaterialPrototypeParameter::this_type> MaterialPrototypeParameter::operator=(mref<this_type> other_) noexcept {
 
     if (_STD addressof(other_) != this) {
-        _uniqueName = _STD move(other_._uniqueName);
+        _identifier = _STD exchange(other_._identifier, ParameterIdentifier { static_cast<u16>(~0u) });
+        _name = _STD move(other_._name);
         _dataType = _STD move(other_._dataType);
         _defaultStorage = _STD move(other_._defaultStorage);
     }
@@ -25,8 +28,12 @@ ref<MaterialPrototypeParameter::this_type> MaterialPrototypeParameter::operator=
     return *this;
 }
 
-string MaterialPrototypeParameter::getUniqueName() const noexcept {
-    return _uniqueName;
+ParameterIdentifier MaterialPrototypeParameter::getId() const noexcept {
+    return _identifier;
+}
+
+StringView MaterialPrototypeParameter::getName() const noexcept {
+    return _name;
 }
 
 engine::accel::TransferDataType MaterialPrototypeParameter::getDataType() const noexcept {

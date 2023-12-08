@@ -35,15 +35,15 @@ cref<Vector<MaterialParameter>> Material::getParameters() const noexcept {
     return _parameters;
 }
 
-bool Material::hasParam(string_view uniqueName_) const noexcept {
+bool Material::hasParam(string_view name_) const noexcept {
 
     assert(_prototype);
     const auto& mpp = _prototype->getParameters();
     const auto mppit = _STD ranges::find(
         mpp,
-        uniqueName_,
+        name_,
         [](cref<MaterialPrototypeParameter> param_) {
-            return param_.getUniqueName();
+            return param_.getName();
         }
     );
 

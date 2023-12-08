@@ -18,7 +18,8 @@ namespace hg::engine::gfx::material {
         [[nodiscard]] MaterialParameter buildMaterialParameter(cref<MaterialPrototypeParameter> prototype_) const;
 
         [[nodiscard]] MaterialPrototypeParameter buildMaterialPrototypeParameter(
-            mref<string> uniqueName_,
+            mref<ParameterIdentifier> identifier_,
+            mref<string> name_,
             mref<accel::TransferDataType> dataType_
         ) const;
 

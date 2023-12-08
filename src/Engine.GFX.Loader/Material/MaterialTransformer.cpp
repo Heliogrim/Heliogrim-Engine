@@ -87,7 +87,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
             request_->_params.begin(),
             request_->_params.end(),
             [&protoParam](cref<assets::GfxMaterial::TmpParam> candidate_) {
-                return candidate_.uniqueName == protoParam.getUniqueName();
+                return candidate_.identifier == protoParam.getId();
             }
         );
 
@@ -120,6 +120,10 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
                 }
                 case accel::TransferDataType::eU64: {
                     dst.set(protoParam.getDefaultValue<u64>());
+                    break;
+                }
+                case accel::TransferDataType::eF32: {
+                    dst.set(protoParam.getDefaultValue<float>());
                     break;
                 }
                 case accel::TransferDataType::eU8Vec2: {

@@ -48,19 +48,30 @@ namespace hg::engine::gfx::material {
     public:
         [[nodiscard]] cref<Vector<MaterialParameter>> getParameters() const noexcept;
 
-        [[nodiscard]] bool hasParam(string_view uniqueName_) const noexcept;
+        [[nodiscard]] bool hasParam(string_view name_) const noexcept;
 
         template <typename Type_>
-        bool setParam(string_view uniqueName_, Type_&& value_);
+        bool setParam(string_view name_, Type_&& value_);
 
         template <typename Type_>
         _STD optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type> getParam(
-            string_view uniqueName_,
+            ParameterIdentifier identifier_,
             nothrow_t
         ) const noexcept;
 
         template <typename Type_>
-        typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type getParam(string_view uniqueName_) const;
+        typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type getParam(
+            ParameterIdentifier identifier_
+        ) const;
+
+        template <typename Type_>
+        _STD optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type> getParam(
+            string_view name_,
+            nothrow_t
+        ) const noexcept;
+
+        template <typename Type_>
+        typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type getParam(string_view name_) const;
 
     public:
         [[nodiscard]] Material clone() const noexcept;
@@ -69,14 +80,14 @@ namespace hg::engine::gfx::material {
     /**/
 
     template <typename Type_>
-    bool Material::setParam(string_view uniqueName_, Type_&& value_) {
+    bool Material::setParam(string_view name_, Type_&& value_) {
 
         const auto& mpp = _prototype->getParameters();
         const auto iter = _STD ranges::find(
             mpp,
-            uniqueName_,
+            name_,
             [](cref<MaterialPrototypeParameter> param_) {
-                return param_.getUniqueName();
+                return param_.getName();
             }
         );
 
@@ -97,7 +108,30 @@ namespace hg::engine::gfx::material {
 
     template <typename Type_>
     _STD optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type> Material::getParam(
-        string_view uniqueName_,
+        ParameterIdentifier identifier_,
+        nothrow_t
+    ) const noexcept {
+
+        using result_type = _STD optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type>;
+
+        if (identifier_.data >= _parameters.size()) {
+            return result_type {};
+        }
+
+        const auto it = _parameters.begin() + identifier_.data;
+        return result_type { it->get<Type_>() };
+    }
+
+    template <typename Type_>
+    typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type Material::getParam(
+        ParameterIdentifier identifier_
+    ) const {
+        return (_parameters.begin() + identifier_.data)->get<Type_>();
+    }
+
+    template <typename Type_>
+    _STD optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type> Material::getParam(
+        string_view name_,
         nothrow_t
     ) const noexcept {
 
@@ -106,9 +140,9 @@ namespace hg::engine::gfx::material {
         const auto& mpp = _prototype->getParameters();
         const auto iter = _STD ranges::find(
             mpp,
-            uniqueName_,
+            name_,
             [](cref<MaterialPrototypeParameter> param_) {
-                return param_.getUniqueName();
+                return param_.getName();
             }
         );
 
@@ -123,14 +157,14 @@ namespace hg::engine::gfx::material {
     }
 
     template <typename Type_>
-    typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type Material::getParam(string_view uniqueName_) const {
+    typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type Material::getParam(string_view name_) const {
 
         const auto& mpp = _prototype->getParameters();
         const auto iter = _STD ranges::find(
             mpp,
-            uniqueName_,
+            name_,
             [](cref<MaterialPrototypeParameter> param_) {
-                return param_.getUniqueName();
+                return param_.getName();
             }
         );
 

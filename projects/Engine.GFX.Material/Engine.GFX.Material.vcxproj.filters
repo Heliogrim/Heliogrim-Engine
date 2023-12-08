@@ -45,6 +45,9 @@
     <ClInclude Include="..\..\src\Engine.GFX.Material\EffectUsagePattern.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Material\ParameterIdentifier.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Material\Material.cpp">

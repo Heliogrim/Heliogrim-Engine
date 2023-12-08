@@ -42,11 +42,17 @@ MaterialParameter MaterialFactory::buildMaterialParameter(cref<MaterialPrototype
 }
 
 MaterialPrototypeParameter MaterialFactory::buildMaterialPrototypeParameter(
-    mref<string> uniqueName_,
+    mref<ParameterIdentifier> identifier_,
+    mref<string> name_,
     mref<accel::TransferDataType> dataType_
 ) const {
     auto storage = buildMaterialParameterStorage(dataType_);
-    return MaterialPrototypeParameter(_STD move(uniqueName_),_STD move(dataType_), _STD move(storage));
+    return MaterialPrototypeParameter(
+        _STD move(identifier_),
+        _STD move(name_),
+        _STD move(dataType_),
+        _STD move(storage)
+    );
 }
 
 uptr<MaterialParameterStorageBase> MaterialFactory::buildMaterialParameterStorage(

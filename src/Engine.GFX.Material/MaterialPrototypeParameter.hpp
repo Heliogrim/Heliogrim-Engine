@@ -6,6 +6,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "MaterialParameterStorage.hpp"
+#include "ParameterIdentifier.hpp"
 
 namespace hg::engine::gfx::material {
     class MaterialPrototypeParameter {
@@ -17,7 +18,8 @@ namespace hg::engine::gfx::material {
 
     public:
         MaterialPrototypeParameter(
-            mref<string> uniqueName_,
+            mref<ParameterIdentifier> identifier_,
+            mref<String> name_,
             mref<accel::TransferDataType> dataType_,
             mref<uptr<MaterialParameterStorageBase>> defaultStorage_
         ) noexcept;
@@ -29,15 +31,18 @@ namespace hg::engine::gfx::material {
         ~MaterialPrototypeParameter() noexcept;
 
     public:
-        ref<this_type> operator=(mref<this_type> other_);
+        ref<this_type> operator=(mref<this_type> other_) noexcept;
 
         ref<this_type> operator=(cref<this_type>) = delete;
 
     private:
-        string _uniqueName;
+        ParameterIdentifier _identifier;
+        String _name;
 
     public:
-        [[nodiscard]] string getUniqueName() const noexcept;
+        [[nodiscard]] ParameterIdentifier getId() const noexcept;
+
+        [[nodiscard]] StringView getName() const noexcept;
 
     private:
         accel::TransferDataType _dataType;
