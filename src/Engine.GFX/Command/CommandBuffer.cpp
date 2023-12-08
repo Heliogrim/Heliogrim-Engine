@@ -19,6 +19,24 @@ CommandBuffer::CommandBuffer(ptr<CommandPool> pool_, const vk::CommandBuffer& vk
     _pool(pool_),
     _vkCmd(vkCmd_) {}
 
+CommandBuffer::CommandBuffer(mref<CommandBuffer> other_) noexcept :
+    _initialized(other_._initialized),
+    _recording(other_._recording),
+    _valid(other_._valid),
+    _faf(other_._faf),
+    _root(other_._root),
+    _pipelineLayout(_STD exchange(other_._pipelineLayout, nullptr)),
+    _pipelineBindPoint(other_._pipelineBindPoint),
+    _pool(_STD exchange(other_._pool, nullptr)),
+    _vkCmd(_STD exchange(other_._vkCmd, nullptr)) {
+    /**/
+    other_._initialized = false;
+    other_._recording = false;
+    other_._valid = false;
+    other_._faf = false;
+    other_._root = true;
+}
+
 void CommandBuffer::begin(vk::CommandBufferInheritanceInfo* inheritanceInfo_) {
     assert(_initialized);
 
@@ -43,6 +61,11 @@ void CommandBuffer::begin(vk::CommandBufferInheritanceInfo* inheritanceInfo_) {
 }
 
 void CommandBuffer::bindDescriptor(const Vector<vk::DescriptorSet>& descriptors_) {
+
+    if (descriptors_.empty()) {
+        return;
+    }
+
     _vkCmd.bindDescriptorSets(
         _pipelineBindPoint,
         _pipelineLayout,

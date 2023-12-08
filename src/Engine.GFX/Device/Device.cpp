@@ -18,12 +18,14 @@ using namespace hg;
 #ifdef _DEBUG
 static std::vector<const char*> deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    VK_KHR_MULTIVIEW_EXTENSION_NAME
+    VK_KHR_MULTIVIEW_EXTENSION_NAME,
+    VK_KHR_SEPARATE_DEPTH_STENCIL_LAYOUTS_EXTENSION_NAME
 };
 #else
 static std::vector<const char*> deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    VK_KHR_MULTIVIEW_EXTENSION_NAME
+    VK_KHR_MULTIVIEW_EXTENSION_NAME,
+    VK_KHR_SEPARATE_DEPTH_STENCIL_LAYOUTS_EXTENSION_NAME
 };
 #endif
 
@@ -176,7 +178,11 @@ void Device::setup() {
     vk::PhysicalDeviceMultiviewFeatures pdmf {};
     pdmf.multiview = VK_TRUE;
 
-    dCi.pNext = &pdmf;
+    vk::PhysicalDeviceSeparateDepthStencilLayoutsFeatures pdsdslf {};
+    pdsdslf.separateDepthStencilLayouts = VK_TRUE;
+
+    pdsdslf.pNext = &pdmf;
+    dCi.pNext = &pdsdslf;
 
     #ifdef _DEBUG
     assert(_physicalDevice.createDevice(&dCi, nullptr, &_device) == vk::Result::eSuccess);
