@@ -38,7 +38,7 @@ void TextureSampler::setup(cref<sptr<Device>> device_) {
         {},
         {},
         0.F,
-        MAX(static_cast<float>(_lods) - 1.F, 0.F),
+        VK_LOD_CLAMP_NONE,//MAX(static_cast<float>(_lods) - 1.F, 0.F),
         _borderColor,
         {}
     };

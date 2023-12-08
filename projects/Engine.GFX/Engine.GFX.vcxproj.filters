@@ -546,6 +546,15 @@
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VertexBufferView.hpp">
       <Filter>Headerdateien\Buffer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\UniformBufferView.hpp">
+      <Filter>Headerdateien\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\StorageBufferView.hpp">
+      <Filter>Headerdateien\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\SampledTextureView.hpp">
+      <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp">
@@ -754,6 +763,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.cpp">
       <Filter>Quelldateien\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\SampledTextureView.cpp">
+      <Filter>Quelldateien\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\UniformBufferView.cpp">
+      <Filter>Quelldateien\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\StorageBufferView.cpp">
+      <Filter>Quelldateien\Buffer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

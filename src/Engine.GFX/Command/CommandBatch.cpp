@@ -3,23 +3,19 @@
 using namespace hg::engine::gfx;
 using namespace hg;
 
-CommandBatch::CommandBatch(const CommandBuffer& buffer_) :
-    _buffers({ buffer_ }),
+CommandBatch::CommandBatch(mref<CommandBuffer> buffer_) :
+    _buffers(),
     _barriers(),
     _barrierStages(),
-    _signals() {}
+    _signals() {
+    _buffers.emplace_back(_STD move(buffer_));
+}
 
 CommandBatch::CommandBatch(mref<Vector<CommandBuffer>> buffers_) :
     _buffers(_STD move(buffers_)),
     _barriers(),
     _barrierStages(),
     _signals() {}
-
-CommandBatch::CommandBatch(cref<this_type> other_) :
-    _buffers(other_._buffers),
-    _barriers(other_._barriers),
-    _barrierStages(other_._barrierStages),
-    _signals(other_._signals) {}
 
 bool CommandBatch::empty() const noexcept {
     return _buffers.empty() && _signals.empty();
@@ -38,10 +34,6 @@ const std::vector<CommandBuffer>& CommandBatch::buffers() const noexcept {
 
 void CommandBatch::push(CommandBuffer&& buffer_) {
     _buffers.push_back(_STD forward<CommandBuffer>(buffer_));
-}
-
-void CommandBatch::push(const CommandBuffer& buffer_) {
-    _buffers.push_back(buffer_);
 }
 
 const Vector<vk::Semaphore>& CommandBatch::barriers() const noexcept {

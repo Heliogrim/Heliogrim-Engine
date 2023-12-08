@@ -26,19 +26,11 @@ namespace hg::engine::gfx {
          *
          * @param  buffer_ The buffer.
          */
-        CommandBatch(const CommandBuffer& buffer_);
+        CommandBatch(mref<CommandBuffer> buffer_);
 
         CommandBatch(mref<Vector<CommandBuffer>> buffers_);
 
-        /**
-         * Copy Constructor
-         *
-         * @author Julius
-         * @date 07.03.2022
-         *
-         * @param other_ The other CommandBatch to copy from.
-         */
-        CommandBatch(cref<this_type> other_);
+        CommandBatch(cref<this_type>) = delete;
 
         /**
          * Destructor
@@ -94,16 +86,6 @@ namespace hg::engine::gfx {
          * @param [in,out] buffer_ The buffer to push.
          */
         void push(CommandBuffer&& buffer_);
-
-        /**
-         * Pushes an object onto this fifo
-         *
-         * @author Julius
-         * @date 13.12.2020
-         *
-         * @param  buffer_ The buffer to push.
-         */
-        void push(const CommandBuffer& buffer_);
 
     private:
         /**

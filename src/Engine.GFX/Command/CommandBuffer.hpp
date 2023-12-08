@@ -24,6 +24,10 @@ namespace hg::engine::gfx {
         CommandBuffer(ptr<CommandPool> pool_, const vk::CommandBuffer& vkCmd_, bool faf_ = false) noexcept;
 
     public:
+        CommandBuffer(cref<CommandBuffer>) = delete;
+
+        CommandBuffer(mref<CommandBuffer> other_) noexcept;
+
         /**
          * Destructor
          *
