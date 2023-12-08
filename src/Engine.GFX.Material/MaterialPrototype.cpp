@@ -29,7 +29,7 @@ string MaterialPrototype::getName() const noexcept {
     return _name;
 }
 
-cref<InlineAutoArray<MaterialEffect>> MaterialPrototype::getAccelerationEffects() const noexcept {
+cref<InlineAutoArray<MaterialEffect>> MaterialPrototype::getMaterialEffects() const noexcept {
     return _materialEffects;
 }
 
@@ -41,9 +41,9 @@ bool MaterialPrototype::addParameter(mref<MaterialPrototypeParameter> param_) {
 
     const auto iter = _STD ranges::find(
         _parameters,
-        param_.getUniqueName(),
+        param_.getId(),
         [](cref<MaterialPrototypeParameter> entry_) {
-            return entry_.getUniqueName();
+            return entry_.getId();
         }
     );
 
@@ -55,33 +55,62 @@ bool MaterialPrototype::addParameter(mref<MaterialPrototypeParameter> param_) {
     return true;
 }
 
-tl::optional<cref<MaterialPrototypeParameter>> MaterialPrototype::getParameter(string_view uniqueName_) const noexcept {
-
-    const auto it = _STD ranges::find_if(
+tl::optional<cref<MaterialPrototypeParameter>> MaterialPrototype::getParameter(
+    ParameterIdentifier identifier_
+) const noexcept {
+    const auto it = _STD ranges::find(
         _parameters,
-        [uniqueName_](const auto& param_) {
-            return param_.getUniqueName() == uniqueName_;
+        identifier_,
+        [](const auto& param_) {
+            return param_.getId();
         }
     );
 
-    using opt_type = tl::optional<cref<MaterialPrototypeParameter>>;
-    return it != _parameters.end() ? opt_type { *it } : opt_type {};
+    return it != _parameters.end() ?
+               tl::make_optional<cref<MaterialPrototypeParameter>>(*it) :
+               tl::make_optional<cref<MaterialPrototypeParameter>>(tl::nullopt);
 }
 
-bool MaterialPrototype::removeParameter(string_view uniqueName_) {
+tl::optional<cref<MaterialPrototypeParameter>> MaterialPrototype::getFirstParameter(
+    string_view name_
+) const noexcept {
+
+    const auto it = _STD ranges::find_if(
+        _parameters,
+        [name_](const auto& param_) {
+            return param_.getName() == name_;
+        }
+    );
+
+    return it != _parameters.end() ?
+               tl::make_optional<cref<MaterialPrototypeParameter>>(*it) :
+               tl::make_optional<cref<MaterialPrototypeParameter>>(tl::nullopt);
+}
+
+bool MaterialPrototype::removeParameter(ParameterIdentifier identifier_) {
 
     const auto range = _STD ranges::remove(
         _parameters,
-        uniqueName_,
-        [](cref<MaterialPrototypeParameter> entry_) {
-            return entry_.getUniqueName();
+        identifier_,
+        [](const auto& param_) {
+            return param_.getId();
+        }
+    );
+
+    _parameters.erase(range.begin(), range.end());
+    return range.begin() != range.end();
+}
+
+bool MaterialPrototype::removeFirstParameter(StringView name_) {
+
+    const auto range = _STD ranges::remove(
+        _parameters,
+        name_,
+        [](const auto& param_) {
+            return param_.getName();
         }
     );
 
     _parameters.erase(range.begin(), range.end());
     return range.begin() != _parameters.end();
-}
-
-smr<Material> MaterialPrototype::instantiate() const noexcept {
-    return smr<Material> {};
 }

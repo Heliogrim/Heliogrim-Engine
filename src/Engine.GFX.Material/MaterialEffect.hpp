@@ -7,6 +7,6 @@
 namespace hg::engine::gfx::material {
     struct MaterialEffect {
         smr<const accel::AccelerationEffect> effect;
-        ptr<EffectUsagePattern> pattern;
+        smr<EffectUsagePattern> pattern;
     };
 }

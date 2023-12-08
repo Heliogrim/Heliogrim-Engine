@@ -9,6 +9,7 @@
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <tl/optional.hpp>
 
+#include "EffectUsagePattern.hpp"
 #include "MaterialEffect.hpp"
 #include "__fwd.hpp"
 
@@ -47,7 +48,7 @@ namespace hg::engine::gfx::material {
         InlineAutoArray<MaterialEffect> _materialEffects;
 
     public:
-        [[nodiscard]] cref<InlineAutoArray<MaterialEffect>> getAccelerationEffects() const noexcept;
+        [[nodiscard]] cref<InlineAutoArray<MaterialEffect>> getMaterialEffects() const noexcept;
 
     private:
         Vector<MaterialPrototypeParameter> _parameters;
@@ -58,12 +59,17 @@ namespace hg::engine::gfx::material {
         bool addParameter(mref<MaterialPrototypeParameter> param_);
 
         [[nodiscard]] tl::optional<cref<MaterialPrototypeParameter>> getParameter(
-            string_view uniqueName_
+            ParameterIdentifier identifier_
         ) const noexcept;
 
-        bool removeParameter(string_view uniqueName_);
+        [[nodiscard]] tl::optional<cref<MaterialPrototypeParameter>> getFirstParameter(
+            StringView name_
+        ) const noexcept;
 
-    public:
-        [[nodiscard]] smr<Material> instantiate() const noexcept;
+        bool removeParameter(
+            ParameterIdentifier identifier_
+        );
+
+        bool removeFirstParameter(StringView uniqueName_);
     };
 }

@@ -3,6 +3,7 @@
 #include <Engine.Accel.Effect/Stage/TransferDataType.hpp>
 #include <Engine.Common/Math/Matrix.hpp>
 #include <Engine.Common/Math/Vector.hpp>
+#include <Engine.GFX.Material/ParameterIdentifier.hpp>
 
 #include "../Asset.hpp"
 #include <Engine.Serialization/Access/__fwd.hpp>
@@ -25,7 +26,8 @@ namespace hg::engine::assets {
     private:
     public:
         struct TmpParam {
-            string uniqueName;
+            gfx::material::ParameterIdentifier identifier;
+            string name;
             accel::TransferDataType dataType;
             _STD variant<
                 asset_guid,

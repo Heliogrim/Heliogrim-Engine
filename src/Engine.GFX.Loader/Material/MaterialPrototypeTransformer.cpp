@@ -20,6 +20,7 @@
 
 #include <Engine.Accel.Loader/Effect/EffectResource.hpp>
 #include <Engine.Accel.Loader/Effect/Traits.hpp>
+#include <Engine.GFX.Render.Predefined/Descriptions/SceneView.hpp>
 
 using namespace hg::engine::gfx::loader;
 using namespace hg::engine::gfx;
@@ -66,7 +67,11 @@ MaterialPrototypeTransformer::response_type::type MaterialPrototypeTransformer::
 
     for (const auto& serialParam : request_->_params) {
 
-        auto dst = factory.buildMaterialPrototypeParameter(clone(serialParam.uniqueName), clone(serialParam.dataType));
+        auto dst = factory.buildMaterialPrototypeParameter(
+            clone(serialParam.identifier),
+            clone(serialParam.name),
+            clone(serialParam.dataType)
+        );
         if (serialParam.defaultValue.valueless_by_exception()) {
             params.push_back(_STD move(dst));
             continue;
@@ -208,7 +213,43 @@ MaterialPrototypeTransformer::response_type::type MaterialPrototypeTransformer::
     for (auto effect : request_->_effects) {
 
         auto resolved = resolveEffect(_STD move(effect), registry, &loader);
-        effects.emplace_back(_STD move(resolved), nullptr);
+        auto usagePattern = make_smr<material::EffectUsagePattern>();
+
+        // Warning: Temporary Assumption to fast-forward
+        // TODO: Rework as serialized data parameter
+
+        Vector<accel::StageInput> imports {};
+        resolved->enumerateImportSymbols(imports);
+
+        /* Iterate Parameters */
+
+        for (const auto& param : params) {
+
+            // Warning:
+            auto composed = string { "mat-static-" + _STD to_string(param.getId().data) };
+            auto maySymId = accel::lang::SymbolId::from(_STD move(composed));
+
+            for (const auto& import : imports) {
+                if (import.symbol->symbolId == maySymId) {
+                    usagePattern->st.pairs.emplace_back(param.getId(), _STD move(maySymId));
+                    break;
+                }
+            }
+
+        }
+
+        /* Iterate contextuals */
+
+        for (const auto& import : imports) {
+
+            // Warning:
+            if (import.symbol->symbolId.value == "view") {
+                usagePattern->ctx.pairs.emplace_back(render::makeSceneViewDescription(), import.symbol->symbolId);
+            }
+
+        }
+
+        effects.emplace_back(_STD move(resolved), _STD move(usagePattern));
     }
 
     /**
