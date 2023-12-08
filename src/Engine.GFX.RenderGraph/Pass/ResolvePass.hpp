@@ -4,7 +4,7 @@
 #include "../Visitor/Visitor.hpp"
 #include "../Node/RuntimeNode.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class ResolvePass final :
         public RenderGraphPass {
     public:

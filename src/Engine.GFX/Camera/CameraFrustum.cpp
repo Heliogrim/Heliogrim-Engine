@@ -36,20 +36,19 @@ void CameraFrustum::update(math::mat4 src_) {
     _planes[eFront].z = src_[2].w - src_[2].z;
     _planes[eFront].w = src_[3].w - src_[3].z;
 
-    for (u8 i = 0; i < _planes.size(); i++) {
+    for (auto& plane : _planes) {
         const float length = std::sqrtf(
-            _planes[i].x * _planes[i].x +
-            _planes[i].y * _planes[i].y +
-            _planes[i].z * _planes[i].z
+            plane.x * plane.x +
+            plane.y * plane.y +
+            plane.z * plane.z
         );
-        _planes[i] /= length;
+        plane /= length;
     }
 }
 
 bool CameraFrustum::checkSpherical(const math::vec3& origin_, const float radius_) const noexcept {
-    for (u8 i = 0; i < _planes.size(); ++i) {
-        if ((_planes[i].x * origin_.x) + (_planes[i].y * origin_.y) + (_planes[i].z * origin_.z) + _planes[i].w <= -
-            radius_) {
+    for (auto plane : _planes) {
+        if ((plane.x * origin_.x) + (plane.y * origin_.y) + (plane.z * origin_.z) + plane.w <= -radius_) {
             return false;
         }
     }

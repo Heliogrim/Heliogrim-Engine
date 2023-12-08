@@ -7,7 +7,7 @@
 #include "RenderCommandTranslator.hpp"
 #include "Commands/Begin.hpp"
 
-using namespace hg::engine::gfx::render::cmd;
+using namespace hg::engine::render::cmd;
 using namespace hg;
 
 void ttt_test() {
@@ -40,7 +40,7 @@ void ttt_test() {
 
     rcb->bindIndexBuffer(nullptr);
     rcb->bindVertexBuffer(nullptr);
-    rcb->bindStorage(nullptr, nullptr);
+    rcb->bindStorage({}, nullptr);
 
     rcb->drawMesh(
         meshDescription,

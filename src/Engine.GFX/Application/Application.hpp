@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include "../vkinc.hpp"
 
@@ -50,6 +51,8 @@ namespace hg::engine::gfx {
          * @returns The dereferenced object.
          */
         vk::Instance* operator->();
+
+        const ptr<const vk::Instance> operator->() const noexcept;
 
         /**
          * Instance casting operator

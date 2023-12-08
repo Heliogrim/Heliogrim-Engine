@@ -12,8 +12,8 @@
 #include "Engine.GFX.RenderGraph/Node/Runtime/SubPassNode.hpp"
 #include "Engine.GFX.RenderGraph/Node/Compile/CompileSubPassNode.hpp"
 
-using namespace hg::engine::gfx::render::graph;
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render::graph;
+using namespace hg::engine::render;
 using namespace hg;
 
 BLinkVisitor::BLinkVisitor() noexcept = default;

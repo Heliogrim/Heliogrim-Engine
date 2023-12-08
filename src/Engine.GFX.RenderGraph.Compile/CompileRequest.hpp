@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.GFX.RenderGraph/CompileGraph.hpp>
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     struct CompileRequest final {
         smr<CompileGraph> graph;
         /**/

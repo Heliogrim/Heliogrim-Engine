@@ -10,7 +10,7 @@
 
 #include "Description.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     struct ActiveMipBitMask {
         using mask_type = u16;
         mask_type mask;
@@ -48,8 +48,8 @@ namespace hg::engine::gfx::render::graph {
         TextureDescription() noexcept;
 
         TextureDescription(
-            mref<DescriptionValue<TextureType>> textureType_,
-            mref<DescriptionValue<TextureFormat>> textureFormat_,
+            mref<DescriptionValue<gfx::TextureType>> textureType_,
+            mref<DescriptionValue<gfx::TextureFormat>> textureFormat_,
             mref<DescriptionValue<u32>> textureLayers_,
             //mref<DescriptionValue<math::uivec3>> textureExtent_,
             mref<DescriptionValue<ActiveMipBitMask>> textureMips_
@@ -64,8 +64,8 @@ namespace hg::engine::gfx::render::graph {
 
     private:
     public:
-        DescriptionValue<TextureType> _textureType;
-        DescriptionValue<TextureFormat> _textureFormat;
+        DescriptionValue<gfx::TextureType> _textureType;
+        DescriptionValue<gfx::TextureFormat> _textureFormat;
 
         DescriptionValue<u32> _textureLayers;
         //DescriptionValue<math::uivec3> _textureExtent;
@@ -73,12 +73,12 @@ namespace hg::engine::gfx::render::graph {
         DescriptionValue<ActiveMipBitMask> _textureMips;
 
     public:
-        [[nodiscard]] bool isValidObject(const nmpt<Texture> texture_) const noexcept;
+        [[nodiscard]] bool isValidObject(const nmpt<gfx::Texture> texture_) const noexcept;
 
-        [[nodiscard]] bool isValidObject(const nmpt<TextureView> textureView_) const noexcept;
+        [[nodiscard]] bool isValidObject(const nmpt<gfx::TextureView> textureView_) const noexcept;
 
-        [[nodiscard]] bool isValidObject(const nmpt<VirtualTexture> texture_) const noexcept;
+        [[nodiscard]] bool isValidObject(const nmpt<gfx::VirtualTexture> texture_) const noexcept;
 
-        [[nodiscard]] bool isValidObject(const nmpt<VirtualTextureView> textureView_) const noexcept;
+        [[nodiscard]] bool isValidObject(const nmpt<gfx::VirtualTextureView> textureView_) const noexcept;
     };
 }

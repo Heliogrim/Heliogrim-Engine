@@ -5,8 +5,7 @@
 
 #include "CompileVisitor.hpp"
 
-using namespace hg::engine::gfx::render::graph;
-using namespace hg::engine::gfx;
+using namespace hg::engine::render::graph;
 using namespace hg;
 
 uptr<RuntimeGraph> RenderGraphCompiler::operator()(mref<CompileRequest> request_) const {

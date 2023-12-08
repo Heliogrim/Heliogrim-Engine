@@ -10,7 +10,7 @@
 
 #include "../SubPass.hpp"
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class Visualize :
         public SubPass {
     private:

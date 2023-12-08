@@ -8,7 +8,7 @@
 #include "SceneHookFilter.hpp"
 #include "SceneWalkerFilter.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class SceneWalker {
     public:
         using this_type = SceneWalker;
@@ -42,6 +42,10 @@ namespace hg::engine::gfx::render::graph {
         _STD function<void(const ptr<const scene_model_type> model_)> _hook;
 
     public:
+        void addWalkerFilter(mref<uptr<SceneWalkerFilter>> walkerFilter_);
+
+        void addHookFilter(mref<uptr<SceneHookFilter>> hookFilter_);
+
         void setHook(mref<decltype(_hook)> hook_);
 
         template <typename Fn_>
@@ -57,9 +61,9 @@ namespace hg::engine::gfx::render::graph {
         [[nodiscard]] bool operator()(u32 batch_, const scene_node_type node_) const;
 
     public:
-        ref<this_type> operator()(cref<scene::SceneView> sceneView_);
+        ref<this_type> operator()(cref<gfx::scene::SceneView> sceneView_);
 
-        ref<this_type> operator()(cref<scene::SceneView> sceneView_, u32 maxBatches_);
+        ref<this_type> operator()(cref<gfx::scene::SceneView> sceneView_, u32 maxBatches_);
 
     public:
         [[nodiscard]] SceneWalkerFilter::checksum_type checksum() const noexcept;

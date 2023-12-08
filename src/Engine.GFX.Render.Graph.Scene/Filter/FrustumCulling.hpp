@@ -6,7 +6,7 @@
 
 #include "Culling.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class FrustumCullingFilter :
         public InheritMeta<FrustumCullingFilter, CullingFilter> {
     public:
@@ -18,8 +18,8 @@ namespace hg::engine::gfx::render::graph {
         constexpr ~FrustumCullingFilter() noexcept override = default;
 
     private:
-        CameraFrustum _frustum;
-        ptr<const scene::SceneView> _sceneView;
+        gfx::CameraFrustum _frustum;
+        ptr<const gfx::scene::SceneView> _sceneView;
 
     public:
         [[nodiscard]] checksum_type checksum() const noexcept override {
@@ -39,7 +39,7 @@ namespace hg::engine::gfx::render::graph {
         }
 
     public:
-        void update(cref<scene::SceneView> sceneView_) noexcept override;
+        void update(cref<gfx::scene::SceneView> sceneView_) noexcept override;
 
         [[nodiscard]] bool operator()(scene_node_type node_) const noexcept override;
     };

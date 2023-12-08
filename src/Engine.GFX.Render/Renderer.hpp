@@ -9,7 +9,7 @@
 
 #include "InjectGraphRegistry.hpp"
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class Renderer {
     public:
         using this_type = Renderer;
@@ -24,8 +24,8 @@ namespace hg::engine::gfx::render {
             mref<uptr<graph::CompileGraph>> compileGraph_,
             mref<smr<graph::InjectGraphRegistry>> injectionRegistry_,
             /**/
-            mref<nmpt<cache::GlobalCacheCtrl>> globalCache_,
-            mref<nmpt<memory::GlobalPooledAllocator>> globalGfxAllocator_
+            mref<nmpt<gfx::cache::GlobalCacheCtrl>> globalCache_,
+            mref<nmpt<gfx::memory::GlobalPooledAllocator>> globalGfxAllocator_
         ) noexcept;
 
         virtual ~Renderer() = default;
@@ -38,8 +38,8 @@ namespace hg::engine::gfx::render {
         smr<graph::InjectGraphRegistry> _injectReg;
 
     private:
-        nmpt<cache::GlobalCacheCtrl> _globalCache;
-        nmpt<memory::GlobalPooledAllocator> _globalGfxAlloc;
+        nmpt<gfx::cache::GlobalCacheCtrl> _globalCache;
+        nmpt<gfx::memory::GlobalPooledAllocator> _globalGfxAlloc;
 
     private:
         [[nodiscard]] virtual uptr<graph::RuntimeGraph> makeDefaultRuntimeGraph() const;

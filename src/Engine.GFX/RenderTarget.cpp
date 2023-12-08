@@ -13,7 +13,7 @@
 #include "Surface/Surface.hpp"
 #include "Swapchain/Swapchain.hpp"
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg::engine::gfx;
 using namespace hg;
 
@@ -47,13 +47,14 @@ void RenderTarget::tidy() {
 
         auto& renderPass = *_renderPasses[i];
 
-        // Store Scene View
-        //renderPass.changeSceneView(clone(sceneView_));
-
         // Release bound Render Targets
         // renderPass.unbindTarget(<<symbol>>);
         auto storedSceneColor = renderPass.unbindTarget(makeSceneColorSymbol());
         assert(_swapchain->at(i) == storedSceneColor);
+
+        // Release bound Scene View
+        //renderPass.changeSceneView(clone(sceneView_));
+        renderPass.unbindSceneView();
     }
 
     for (auto&& renderPass : _renderPasses) {
@@ -88,7 +89,7 @@ cref<sptr<Device>> RenderTarget::device() const noexcept {
     return _device;
 }
 
-nmpt<const render::Renderer> RenderTarget::use(mref<nmpt<const render::Renderer>> renderer_) {
+nmpt<const Renderer> RenderTarget::use(mref<nmpt<const render::Renderer>> renderer_) {
     return _STD exchange(_renderer, renderer_);
 }
 

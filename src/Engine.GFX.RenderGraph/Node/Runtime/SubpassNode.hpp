@@ -4,7 +4,7 @@
 #include <Engine.GFX.Render.Subpass/SubPass.hpp>
 #include "../../Symbol/ScopedSymbolContext.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class __declspec(novtable) SubPassNodeBase :
         public SLNode {
     public:

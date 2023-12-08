@@ -2,7 +2,7 @@
 #include "../RuntimeNode.hpp"
 #include "../../__fwd.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class BarrierNode final :
         public RuntimeNode {
     public:

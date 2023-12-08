@@ -16,7 +16,7 @@
 #include <Engine.GFX.RenderGraph/Node/Runtime/BarrierNode.hpp>
 #include <Engine.GFX.RenderGraph/Pass/CompilePassContext.hpp>
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg;
 
 [[nodiscard]] static smr<engine::accel::AccelerationEffect> build_test_effect();
@@ -24,8 +24,8 @@ using namespace hg;
 [[nodiscard]] static smr<engine::accel::GraphicsPipeline> build_test_pipeline();
 
 TestRenderer::TestRenderer(
-    mref<nmpt<cache::GlobalCacheCtrl>> globalCache_,
-    mref<nmpt<memory::GlobalPooledAllocator>> globalGfxAllocator_
+    mref<nmpt<gfx::cache::GlobalCacheCtrl>> globalCache_,
+    mref<nmpt<gfx::memory::GlobalPooledAllocator>> globalGfxAllocator_
 ) noexcept :
     Renderer(
         Guid {},
@@ -108,8 +108,8 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
     cursor = _STD exchange(nextCursor, subpass.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(subpass));
 
-    //cursor = _STD exchange(nextCursor, skyBoxPass.get());
-    //graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(skyBoxPass));
+    cursor = _STD exchange(nextCursor, skyBoxPass.get());
+    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(skyBoxPass));
 
     cursor = _STD exchange(nextCursor, afterBarrier.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(afterBarrier));

@@ -5,7 +5,7 @@
 #include <Engine.GFX.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg;
 
 void Visualize::destroy() noexcept {

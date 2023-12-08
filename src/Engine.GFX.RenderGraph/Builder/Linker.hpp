@@ -6,7 +6,7 @@
 #include "LinkMode.hpp"
 #include "../__fwd.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     void LinkNodes(
         mref<nmpt<Node>> predecessor_,
         mref<smr<Node>> successor_,

@@ -4,10 +4,10 @@
 
 #include "../Descriptions/DepthBuffer.hpp"
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg;
 
-smr<const graph::Symbol> engine::gfx::render::makeSceneDepthSymbol() {
+smr<const graph::Symbol> engine::render::makeSceneDepthSymbol() {
 
     static auto obj = make_smr<graph::Symbol>(
         graph::SymbolFlagBits::eUndefined,

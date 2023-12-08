@@ -2,7 +2,7 @@
 
 #include "Component.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class __declspec(novtable) RuntimeComponent :
         public InheritMeta<RuntimeComponent, Component> {
     public:

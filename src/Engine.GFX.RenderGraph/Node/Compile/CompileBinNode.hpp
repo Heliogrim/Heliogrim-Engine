@@ -3,7 +3,7 @@
 
 #include "../CompileNode.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class CompileBinNode :
         public CompileNode {
     public:

@@ -4,7 +4,7 @@
 
 #include "CompileRequest.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class RenderGraphCompiler {
     public:
         using this_type = RenderGraphCompiler;

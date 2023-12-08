@@ -11,10 +11,10 @@ namespace hg {
     template <typename Type_, size_t Capacity_, typename Allocator_ = _STD allocator<Type_>>
     using InlineAutoArray = InlineArray<Type_, Capacity_>;
      */
-    template <class Type_, size_t Capacity_, typename Allocator_>
+    template <class Type_, size_t Capacity_, typename Allocator_> requires (sizeof(Type_) > 0)
     class InlineAutoArray;
 
-    template <class Type_, typename Allocator_>
+    template <class Type_, typename Allocator_> requires (sizeof(Type_) > 0)
     class InlineAutoArray<Type_, 0, Allocator_> {
         static_assert(
             not _STD is_void_v<_STD void_t<Type_>>,
@@ -22,7 +22,10 @@ namespace hg {
         );
     };
 
-    template <class Type_, size_t Capacity_ = 1, typename Allocator_ = _STD allocator<Type_>>
+    template <
+        class Type_,
+        size_t Capacity_ = 1,
+        typename Allocator_ = _STD allocator<Type_>> requires (sizeof(Type_) > 0)
     class InlineAutoArray {
     public:
         using this_type = InlineAutoArray<Type_, Capacity_, Allocator_>;
@@ -49,7 +52,7 @@ namespace hg {
             _inlineStorage(),
             _inlineEnd(inline_begin()),
             _externalStorage(nullptr),
-            _externalEnd(nullptr) { }
+            _externalEnd(nullptr) {}
 
         template <typename InitialType_ = Type_> requires
             (Capacity_ == 1uLL) &&
@@ -95,7 +98,7 @@ namespace hg {
             other_._inlineEnd = other_.inline_begin();
         }
 
-        constexpr InlineAutoArray(cref<this_type>) noexcept = delete;
+        constexpr InlineAutoArray(cref<this_type>) = delete;
 
         constexpr ~InlineAutoArray() noexcept {
             tidy();
@@ -124,6 +127,8 @@ namespace hg {
 
             using iterator_category = _STD random_access_iterator_tag;
             using difference_type = InlineAutoArray<Type_, Capacity_, Allocator_>::difference_type;
+            using size_type = InlineAutoArray<Type_, Capacity_, Allocator_>::size_type;
+
             using value_type = _STD conditional_t<Const_, const Type_, Type_>;
             using pointer = _STD conditional_t<Const_, ptr<const Type_>, ptr<Type_>>;
             using reference = _STD conditional_t<Const_, cref<Type_>, ref<Type_>>;
@@ -203,12 +208,12 @@ namespace hg {
             }
 
         public:
-            constexpr ref<this_type> operator+=(difference_type distance_) noexcept {
+            constexpr ref<this_type> operator+=(const size_type distance_) noexcept {
                 _idx += distance_;
                 return *this;
             }
 
-            [[nodiscard]] constexpr this_type operator+(difference_type distance_) noexcept {
+            [[nodiscard]] constexpr this_type operator+(size_type distance_) noexcept {
                 auto tmp { *this };
                 tmp += distance_;
                 return tmp;
@@ -224,12 +229,12 @@ namespace hg {
                 return tmp;
             }
 
-            constexpr ref<this_type> operator-=(difference_type distance_) noexcept {
+            constexpr ref<this_type> operator-=(const size_type distance_) noexcept {
                 _idx -= distance_;
                 return *this;
             }
 
-            [[nodiscard]] constexpr this_type operator-(difference_type distance_) noexcept {
+            [[nodiscard]] constexpr this_type operator-(size_type distance_) noexcept {
                 auto tmp { *this };
                 tmp -= distance_;
                 return tmp;
@@ -503,7 +508,7 @@ namespace hg {
         }
 
     public:
-        constexpr void emplace_back(auto&&... val_) {
+        constexpr void emplace_back(auto&&... val_) requires _STD is_constructible_v<Type_, decltype(val_)...> {
 
             if (inline_emplace_back(_STD forward<decltype(val_)>(val_)...)) {
                 return;
@@ -521,7 +526,7 @@ namespace hg {
             inline_pop_back();
         }
 
-        constexpr Iterator erase(cref<ConstIterator> where_) noexcept {
+        constexpr void erase(cref<ConstIterator> where_) noexcept {
             assert(where_ >= cbegin());
 
             if (where_._idx < element_capacity) {

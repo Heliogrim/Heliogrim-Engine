@@ -6,7 +6,7 @@
 
 #include <Engine.Common/String.hpp>
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     enum class SymbolScopeType : u8 {
         // ...
         eGlobal,

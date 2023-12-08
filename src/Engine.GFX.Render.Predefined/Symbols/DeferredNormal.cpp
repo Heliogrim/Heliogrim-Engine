@@ -4,10 +4,10 @@
 
 #include "../Descriptions/V4F32DataBuffer.hpp"
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg;
 
-smr<const graph::Symbol> engine::gfx::render::makeDeferredNormalSymbol() {
+smr<const graph::Symbol> engine::render::makeDeferredNormalSymbol() {
     static auto obj = make_smr<graph::Symbol>(
         graph::SymbolFlagBits::eUndefined,
         graph::SymbolScope {

@@ -5,7 +5,7 @@
 #include "../SubPass.hpp"
 #include "MeshCaptureInterface.hpp"
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class __declspec(novtable) MeshSubPassBase :
         public SubPass { };
 
@@ -14,7 +14,7 @@ namespace hg::engine::gfx::render {
     public:
         using this_type = MeshSubPass;
 
-        using model_type = GeometryModel;
+        using model_type = gfx::GeometryModel;
         using capture_type = MeshCaptureInterface;
 
     public:

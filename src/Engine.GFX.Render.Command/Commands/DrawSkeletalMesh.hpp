@@ -3,7 +3,7 @@
 
 #include "Engine.GFX.Render.Command/RenderCommand.hpp"
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class DrawSkeletalMeshRCmd :
         public RenderCommand {
     public:

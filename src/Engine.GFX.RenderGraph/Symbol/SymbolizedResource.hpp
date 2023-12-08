@@ -7,14 +7,14 @@
 
 #include "Symbol.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     template <typename Validator_, typename Type_>
     concept HasValueValidation = requires(const Validator_& valid_, const nmpt<Type_> data_) {
         { valid_.isValidObject(data_) } -> _STD same_as<bool>;
     };
 }
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class SymbolizedResource {
     public:
         bool owned : 1/* Whether the resource is NOT owned by the context */ = false;

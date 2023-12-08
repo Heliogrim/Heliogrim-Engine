@@ -1,5 +1,5 @@
 #pragma once
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     struct RenderGraphPass {};
 }

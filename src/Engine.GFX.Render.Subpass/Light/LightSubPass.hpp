@@ -9,7 +9,7 @@ namespace hg::engine::gfx {
 #include "../SubPass.hpp"
 #include "LightCaptureInterface.hpp"
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class __declspec(novtable) LightSubPassBase :
         public SubPass { };
 

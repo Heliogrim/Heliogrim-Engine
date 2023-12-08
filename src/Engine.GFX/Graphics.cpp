@@ -297,11 +297,11 @@ const non_owning_rptr<gfx::cache::GlobalCacheCtrl> Graphics::cacheCtrl() const n
     return _cacheCtrl.get();
 }
 
-smr<gfx::render::Renderer> Graphics::getRenderer(cref<string> key_) const {
+smr<render::Renderer> Graphics::getRenderer(cref<string> key_) const {
     return _cachedRenderer.at(key_);
 }
 
-smr<gfx::render::Renderer> Graphics::getRenderer(cref<string> key_, std::nothrow_t) const noexcept {
+smr<render::Renderer> Graphics::getRenderer(cref<string> key_, std::nothrow_t) const noexcept {
     const auto it { _cachedRenderer.find(key_) };
     return it != _cachedRenderer.end() ? it->second : nullptr;
 }

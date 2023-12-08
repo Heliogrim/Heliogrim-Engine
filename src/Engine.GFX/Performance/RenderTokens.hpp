@@ -2,7 +2,7 @@
 
 #include <Engine.GFX.Renderer/RenderDataToken.hpp>
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     constexpr RenderDataToken PerformanceQuery {
         RenderDataToken::make(
             "PerformanceQuery"sv,

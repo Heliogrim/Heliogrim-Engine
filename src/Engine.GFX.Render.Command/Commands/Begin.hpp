@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine.GFX.Render.Command/RenderCommand.hpp"
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class BeginRCmd :
         public RenderCommand {
     public:

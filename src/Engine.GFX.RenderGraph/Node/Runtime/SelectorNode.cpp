@@ -4,7 +4,7 @@
 
 #include "../../Visitor/Visitor.hpp"
 
-using namespace hg::engine::gfx::render::graph;
+using namespace hg::engine::render::graph;
 using namespace hg;
 
 constexpr SelectorNode::mask_type boolToMask(bool active_) noexcept {

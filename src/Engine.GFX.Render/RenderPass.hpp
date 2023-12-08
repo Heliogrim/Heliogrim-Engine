@@ -11,7 +11,7 @@
 #include "RenderPassResult.hpp"
 #include "RenderPassState.hpp"
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class RenderPass final {
     public:
         friend class Renderer;
@@ -23,8 +23,8 @@ namespace hg::engine::gfx::render {
         RenderPass(
             mref<nmpt<const Renderer>> renderer_,
             mref<uptr<graph::RuntimeGraph>> runtimeGraph_,
-            mref<smr<cache::LocalCacheCtrl>> localGeneralCache_,
-            mref<smr<memory::LocalPooledAllocator>> localDeviceAllocator_
+            mref<smr<gfx::cache::LocalCacheCtrl>> localGeneralCache_,
+            mref<smr<gfx::memory::LocalPooledAllocator>> localDeviceAllocator_
         ) noexcept;
 
         RenderPass(cref<this_type>) = delete;
@@ -55,9 +55,9 @@ namespace hg::engine::gfx::render {
         RenderPassResult operator()();
 
     public:
-        smr<const scene::SceneView> changeSceneView(mref<smr<const scene::SceneView>> nextSceneView_);
+        smr<const gfx::scene::SceneView> changeSceneView(mref<smr<const gfx::scene::SceneView>> nextSceneView_);
 
-        smr<const scene::SceneView> unbindSceneView();
+        smr<const gfx::scene::SceneView> unbindSceneView();
 
     public:
         #pragma region Render Pass Targets
@@ -68,22 +68,22 @@ namespace hg::engine::gfx::render {
 
         [[nodiscard]] bool bindTarget(
             mref<smr<const graph::Symbol>> target_,
-            mref<smr<Texture>> texture_
+            mref<smr<gfx::Texture>> texture_
         );
 
         [[nodiscard]] bool bindTarget(
             mref<smr<const graph::Symbol>> target_,
-            mref<smr<TextureView>> textureView_
+            mref<smr<gfx::TextureView>> textureView_
         );
 
         [[nodiscard]] bool bindTarget(
             mref<smr<const graph::Symbol>> target_,
-            mref<smr<VirtualTexture>> texture_
+            mref<smr<gfx::VirtualTexture>> texture_
         );
 
         [[nodiscard]] bool bindTarget(
             mref<smr<const graph::Symbol>> target_,
-            mref<smr<VirtualTextureView>> textureView_
+            mref<smr<gfx::VirtualTextureView>> textureView_
         );
 
         _Success_(return != nullptr) smr<void> unbindTarget(mref<smr<const graph::Symbol>> target_) noexcept;
@@ -141,4 +141,4 @@ namespace hg::engine::gfx::render {
     };
 }
 
-static_assert(::hg::engine::scheduler::fiber::IsAwaitable<hg::engine::gfx::render::RenderPass>);
+static_assert(::hg::engine::scheduler::fiber::IsAwaitable<hg::engine::render::RenderPass>);

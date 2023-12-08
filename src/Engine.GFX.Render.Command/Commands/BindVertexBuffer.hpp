@@ -4,12 +4,12 @@
 #include "Engine.GFX.Render.Command/RenderCommand.hpp"
 #include <Engine.GFX/Buffer/VertexBufferView.hpp>
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class BindVertexBufferRCmd :
         public RenderCommand {
     public:
         constexpr BindVertexBufferRCmd(
-            cref<VertexBufferView> vertexBufferView_
+            cref<gfx::VertexBufferView> vertexBufferView_
         ) noexcept :
             RenderCommand(),
             _vertexBufferView(vertexBufferView_) {}
@@ -18,7 +18,7 @@ namespace hg::engine::gfx::render::cmd {
 
     private:
     public:
-        VertexBufferView _vertexBufferView;
+        gfx::VertexBufferView _vertexBufferView;
 
     public:
         void operator()(

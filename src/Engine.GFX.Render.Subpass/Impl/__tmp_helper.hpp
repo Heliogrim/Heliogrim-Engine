@@ -5,7 +5,7 @@
 #include <fstream>
 #include <Engine.Common/String.hpp>
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     inline static string read_shader_file(string name_) {
 
         const auto root = R"(R:\Development\C++\Vulkan API\Game\resources\shader\)";

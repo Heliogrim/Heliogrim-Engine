@@ -4,10 +4,10 @@
 #include <Engine.GFX.RenderGraph/Relation/SceneCameraDescription.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg;
 
-smr<const graph::Description> engine::gfx::render::makeSceneCameraBufferDescription() {
+smr<const graph::Description> engine::render::makeSceneCameraBufferDescription() {
     static auto obj = make_smr<graph::SceneCameraDescription>();
     return clone(obj).into<graph::Description>();
 }

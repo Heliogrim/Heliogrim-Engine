@@ -2,7 +2,7 @@
 
 #include "../RuntimeNode.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class ProviderNode final :
         public RuntimeNode {
     public:

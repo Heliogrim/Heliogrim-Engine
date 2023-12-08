@@ -10,7 +10,7 @@
 #include "Relation/Provision.hpp"
 #include "Relation/Requirement.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class CompileGraph {
     public:
         using this_type = CompileGraph;

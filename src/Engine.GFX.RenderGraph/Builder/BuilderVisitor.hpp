@@ -7,7 +7,7 @@
 
 #include "../Visitor/Visitor.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     enum class BuilderPredicateMode : bool {
         eSingle = false,
         eMulti = true

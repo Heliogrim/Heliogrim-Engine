@@ -4,7 +4,7 @@
 
 #include "../Visitor/Visitor.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class DebugVisitor :
         public Visitor {
     public:

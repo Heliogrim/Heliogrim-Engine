@@ -1,11 +1,11 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class ScopedSymbolContext;
 }
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class SubPass {
     public:
         using this_type = SubPass;

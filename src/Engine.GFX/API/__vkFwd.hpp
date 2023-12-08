@@ -16,6 +16,7 @@ namespace hg::_ {
     /**/
 
     typedef struct _VkDescriptorSetLayout* VkDescriptorSetLayout;
+    typedef struct _VkDescriptorSet* VkDescriptorSet;
 
     /**/
 

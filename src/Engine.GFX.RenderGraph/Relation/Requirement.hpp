@@ -4,7 +4,7 @@
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include "../Symbol/Symbol.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     struct Requirement final {
         smr<const Symbol> symbol;
     };
@@ -16,12 +16,12 @@ namespace hg::engine::gfx::render::graph {
 
 namespace std {
     template <>
-    struct hash<::hg::engine::gfx::render::graph::Requirement> :
-        public hash<decltype(::hg::engine::gfx::render::graph::Requirement::symbol)> {
+    struct hash<::hg::engine::render::graph::Requirement> :
+        public hash<decltype(::hg::engine::render::graph::Requirement::symbol)> {
         [[nodiscard]] size_t operator()(
-            const ::hg::engine::gfx::render::graph::Requirement& val_
+            const ::hg::engine::render::graph::Requirement& val_
         ) const noexcept {
-            return static_cast<::hg::cref<hash<decltype(::hg::engine::gfx::render::graph::Requirement::symbol)>>>(*
+            return static_cast<::hg::cref<hash<decltype(::hg::engine::render::graph::Requirement::symbol)>>>(*
                 this)(
                 val_.symbol
             );

@@ -5,7 +5,7 @@
 #include "RenderCommandBuffer.hpp"
 #include "Resource/Pipeline.hpp"
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class ForwardRenderCommandBuffer final :
         public RenderCommandBuffer {
     public:

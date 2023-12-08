@@ -4,12 +4,12 @@
 #include "Engine.GFX.Render.Command/RenderCommand.hpp"
 #include <Engine.GFX/Buffer/IndexBufferView.hpp>
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class BindIndexBufferRCmd :
         public RenderCommand {
     public:
         constexpr BindIndexBufferRCmd(
-            cref<IndexBufferView> indexBufferView_
+            cref<gfx::IndexBufferView> indexBufferView_
         ) noexcept :
             RenderCommand(),
             _indexBufferView(indexBufferView_) {}
@@ -18,7 +18,7 @@ namespace hg::engine::gfx::render::cmd {
 
     private:
     public:
-        IndexBufferView _indexBufferView;
+        gfx::IndexBufferView _indexBufferView;
 
     public:
         void operator()(

@@ -7,7 +7,7 @@
 #include "../Pass/ExecutionPassContext.hpp"
 #include "../Pass/ResolvePassContext.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     enum class IterationResultBits {
         eNone = 0x0,
         eInvalidateState = 0x1 << 0,

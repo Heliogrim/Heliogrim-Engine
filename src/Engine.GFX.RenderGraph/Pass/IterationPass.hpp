@@ -5,7 +5,7 @@
 #include "../Node/RuntimeNode.hpp"
 #include "../Visitor/Visitor.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class IterationPass :
         public RenderGraphPass {
     public:

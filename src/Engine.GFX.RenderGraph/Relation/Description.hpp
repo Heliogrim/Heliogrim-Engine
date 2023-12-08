@@ -1,7 +1,7 @@
 #pragma once
 #include <Engine.Reflect/Inherit/InheritBase.hpp>
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     enum class DescriptionValueMatchingMode : u8 {
         eIgnored = 0b0000'0000,
         eCovariant = 0b0000'0001,

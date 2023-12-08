@@ -5,7 +5,7 @@
 
 #include "Description.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class ModelDescription final :
         public InheritMeta<ModelDescription, Description> {
     public:

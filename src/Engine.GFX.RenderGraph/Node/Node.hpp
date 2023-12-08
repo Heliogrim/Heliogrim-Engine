@@ -3,7 +3,7 @@
 #include "Auxiliary.hpp"
 #include "../__fwd.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class Node {
     public:
         using this_type = Node;

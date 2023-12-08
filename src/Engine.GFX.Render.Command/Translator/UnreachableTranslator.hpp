@@ -1,7 +1,7 @@
 #pragma once
 #include "../RenderCommandTranslator.hpp"
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class __declspec(novtable) UnreachableCmdTl :
         public RenderCommandTranslator {
     public:

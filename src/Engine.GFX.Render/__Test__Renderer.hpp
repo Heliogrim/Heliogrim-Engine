@@ -3,7 +3,7 @@
 
 #include "Renderer.hpp"
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class TestRenderer :
         public Renderer {
     public:
@@ -11,8 +11,8 @@ namespace hg::engine::gfx::render {
 
     public:
         TestRenderer(
-            mref<nmpt<cache::GlobalCacheCtrl>> globalCache_,
-            mref<nmpt<memory::GlobalPooledAllocator>> globalGfxAllocator_
+            mref<nmpt<gfx::cache::GlobalCacheCtrl>> globalCache_,
+            mref<nmpt<gfx::memory::GlobalPooledAllocator>> globalGfxAllocator_
         ) noexcept;
 
         ~TestRenderer() noexcept override;

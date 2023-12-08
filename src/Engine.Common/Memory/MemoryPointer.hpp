@@ -374,6 +374,14 @@ namespace hg {
             return *(storage.template load<Tx_>());
         }
 
+        [[nodiscard]] auto get() const noexcept {
+            return storage.template load<Ty_>();
+        }
+
+        [[nodiscard]] auto get() noexcept {
+            return storage.template load<Ty_>();
+        }
+
     public:
         template <typename Ptx_ = Ty_*> requires _STD is_nothrow_convertible_v<_STD remove_cvref_t<Ptx_>, Ty_*>
         [[nodiscard]] _STD _Compressed_pair<allocator_type, Ty_*> exchange(Ptx_&& next_) {

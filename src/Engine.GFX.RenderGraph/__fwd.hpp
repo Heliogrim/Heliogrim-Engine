@@ -1,10 +1,10 @@
 #pragma once
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class SubPass;
 }
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class CompileGraph;
     class RuntimeGraph;
     /**/

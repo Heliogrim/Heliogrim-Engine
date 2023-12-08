@@ -2,15 +2,12 @@
 
 #include <fstream>
 #include <map>
+#include <Engine.Accel.Pipeline/Stage/StageModule.hpp>
 #include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-#include <Engine.GFX.Acc/AccelerationEffect.hpp>
-#include <Engine.GFX.Acc.Compile/Spec/EffectSpecification.hpp>
-#include <Engine.GFX.Acc/Stage/Stage.hpp>
-#include <Engine.GFX.Acc/Stage/TransferToken.hpp>
 #include <Engine.GFX.Loader/Material/MaterialResource.hpp>
 #include <Engine.GFX.Material/Material.hpp>
 #include <Engine.GFX.Material/MaterialPrototype.hpp>
@@ -39,18 +36,16 @@
 #include "Relation/SceneViewDescription.hpp"
 #include "Relation/TextureDescription.hpp"
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg::engine::gfx;
 using namespace hg;
-
-using AccToken = engine::gfx::acc::TransferToken;
 
 /**/
 
 auto make_test_graph() -> uptr<graph::CompileGraph>;
 
 static _STD map<string, smr<graph::Description>> static_desc_map {};
-static _STD map<string, smr<acc::Symbol>> static_symbol_map {};
+static _STD map<string, smr<graph::Symbol>> static_symbol_map {};
 
 void hg::test_graph_process() {
 
@@ -168,64 +163,58 @@ void setup_descriptions(ref<_STD map<string, smr<graph::Description>>> map_) {
 
 void setup_symbols(
     cref<_STD map<string, smr<graph::Description>>> desc_,
-    ref<_STD map<string, smr<acc::Symbol>>> map_
+    ref<_STD map<string, smr<graph::Symbol>>> map_
 ) {
 
-    map_["sceneCamera"] = make_smr<acc::Symbol>(
-        acc::Symbol {
-            .scope = acc::SymbolScope {
-                .type = acc::SymbolScopeType::eGlobal,
+    map_["sceneCamera"] = make_smr<graph::Symbol>(
+        graph::Symbol {
+            .flags = graph::SymbolFlagBits::eUndefined,
+            .scope = graph::SymbolScope {
+                .type = graph::SymbolScopeType::eGlobal,
                 .layer = ""
             },
             .name = "scene::camera",
-            .description = desc_.at("camera"),
-            .flags = acc::SymbolFlagBits::eUndefined,
-            .token = AccToken {}
+            .description = desc_.at("camera")
         }
     );
 
     /**/
 
-    map_["brdf::albedo"] = make_smr<acc::Symbol>(
-        acc::SymbolScope { acc::SymbolScopeType::eGlobal, "" },
+    map_["brdf::albedo"] = make_smr<graph::Symbol>(
+        graph::SymbolFlagBits::eUndefined,
+        graph::SymbolScope { graph::SymbolScopeType::eGlobal, "" },
         "brdf::albedo",
-        desc_.at("linearColorBuffer"),
-        acc::SymbolFlagBits::eUndefined,
-        AccToken {}
+        desc_.at("linearColorBuffer")
     );
-    map_["brdf::arm"] = make_smr<acc::Symbol>(
-        acc::SymbolScope { acc::SymbolScopeType::eGlobal, "" },
+    map_["brdf::arm"] = make_smr<graph::Symbol>(
+        graph::SymbolFlagBits::eUndefined,
+        graph::SymbolScope { graph::SymbolScopeType::eGlobal, "" },
         "brdf::arm",
-        desc_.at("linearColorBuffer"),
-        acc::SymbolFlagBits::eUndefined,
-        AccToken {}
+        desc_.at("linearColorBuffer")
     );
 
     // eR16G16Sfloat
-    map_["brdf::lut"] = make_smr<acc::Symbol>(
-        acc::SymbolScope { acc::SymbolScopeType::eGlobal, "" },
+    map_["brdf::lut"] = make_smr<graph::Symbol>(
+        graph::SymbolFlagBits::eUndefined,
+        graph::SymbolScope { graph::SymbolScopeType::eGlobal, "" },
         "brdf::lut",
-        desc_.at("v2hfloatTextureBuffer"),
-        acc::SymbolFlagBits::eUndefined,
-        AccToken {}
+        desc_.at("v2hfloatTextureBuffer")
     );
-    map_["brdf::prefilter"] = make_smr<acc::Symbol>(
-        acc::SymbolScope { acc::SymbolScopeType::eGlobal, "" },
+    map_["brdf::prefilter"] = make_smr<graph::Symbol>(
+        graph::SymbolFlagBits::eUndefined,
+        graph::SymbolScope { graph::SymbolScopeType::eGlobal, "" },
         "brdf::prefilter",
-        desc_.at("v4hfloatTextureBuffer"),
-        acc::SymbolFlagBits::eUndefined,
-        AccToken {}
+        desc_.at("v4hfloatTextureBuffer")
     );
-    map_["brdf::irradiance"] = make_smr<acc::Symbol>(
-        acc::SymbolScope { acc::SymbolScopeType::eGlobal, "" },
+    map_["brdf::irradiance"] = make_smr<graph::Symbol>(
+        graph::SymbolFlagBits::eUndefined,
+        graph::SymbolScope { graph::SymbolScopeType::eGlobal, "" },
         "brdf::irradiance",
-        desc_.at("v4floatTextureBuffer"),
-        acc::SymbolFlagBits::eUndefined,
-        AccToken {}
+        desc_.at("v4floatTextureBuffer")
     );
 }
 
-void setup_graph_expectation(cref<uptr<graph::CompileGraph>> graph_, mref<smr<const acc::Symbol>> ocs_) {
+void setup_graph_expectation(cref<uptr<graph::CompileGraph>> graph_, mref<smr<const graph::Symbol>> ocs_) {
     graph_->addExpectedProvision(graph::Provision { _STD move(ocs_) });
 }
 
@@ -247,81 +236,25 @@ inline _STD vector<char> read_shader_file(const char* file_) {
     return spirv;
 }
 
-auto make_accel_vertex_l0_stage() -> uptr<acc::Stage> {
+auto make_accel_vertex_l0_stage() -> uptr<engine::accel::Stage> {
 
-    auto flag = acc::StageFlagBits::eVertex;
-    auto inputs = Vector<acc::StageInput> {};
-    auto outputs = Vector<acc::StageOutput> {};
+    auto flag = engine::accel::StageFlagBits::eVertex;
 
     /**/
 
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("geometry/position"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec3,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("geometry/uvm"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec3,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("viewProj"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eF32Mat4x4,
-            .rate = acc::DataInputRate::ePerPassInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("model"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eF32Mat4x4,
-            .rate = acc::DataInputRate::ePerInstantiation
-        }
-    );
-
-    outputs.push_back(
-        acc::StageOutput {
-            .token = AccToken::from("uvm"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec4,
-            .rate = {}
-        }
+    auto stage = make_uptr<engine::accel::Stage>(
+        _STD move(flag)
     );
 
     /**/
 
-    auto stage = make_uptr<acc::Stage>(
-        _STD move(flag),
-        _STD move(inputs),
-        _STD move(outputs)
-    );
-
-    /**/
-
-    auto inter = make_smr<acc::lang::Intermediate>();
-
-    auto il = make_uptr<acc::lang::IL>();
+    auto inter = make_smr<engine::accel::lang::Intermediate>();
 
     auto code = read_shader_file(R"(R:\Development\C++\Vulkan API\Game\resources\shader\depthpass_static.vs)");
     auto snippet = string { code.begin(), code.end() };
 
-    il->_dialect = acc::lang::ILDialect::eVulkanGlsl;
-    il->_snippets.push_back(_STD move(snippet));
-
-    inter->setIl(_STD move(il));
-
-    auto ir = make_uptr<acc::lang::IR>();
-    inter->setIr(_STD move(ir));
+    inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
+    inter->lang.text.emplace_back(_STD move(snippet));
 
     stage->setIntermediate(_STD move(inter));
 
@@ -330,88 +263,25 @@ auto make_accel_vertex_l0_stage() -> uptr<acc::Stage> {
     return stage;
 }
 
-auto make_accel_vertex_l1_stage() -> uptr<acc::Stage> {
+auto make_accel_vertex_l1_stage() -> uptr<engine::accel::Stage> {
 
-    auto flag = acc::StageFlagBits::eVertex;
-    auto inputs = Vector<acc::StageInput> {};
-    auto outputs = Vector<acc::StageOutput> {};
+    auto flag = engine::accel::StageFlagBits::eVertex;
 
     /**/
 
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("geometry/position"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec3,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("geometry/uvm"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec3,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("geometry/normal"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec3,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-
-    outputs.push_back(
-        acc::StageOutput {
-            .token = AccToken::from("position"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec4,
-            .rate = {}
-        }
-    );
-    outputs.push_back(
-        acc::StageOutput {
-            .token = AccToken::from("normal"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec4,
-            .rate = {}
-        }
-    );
-    outputs.push_back(
-        acc::StageOutput {
-            .token = AccToken::from("uvm"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec4,
-            .rate = {}
-        }
+    auto stage = make_uptr<engine::accel::Stage>(
+        _STD move(flag)
     );
 
     /**/
 
-    auto stage = make_uptr<acc::Stage>(
-        _STD move(flag),
-        _STD move(inputs),
-        _STD move(outputs)
-    );
-
-    /**/
-
-    auto inter = make_smr<acc::lang::Intermediate>();
-
-    auto il = make_uptr<acc::lang::IL>();
+    auto inter = make_smr<engine::accel::lang::Intermediate>();
 
     auto code = read_shader_file(R"(R:\Development\C++\Vulkan API\Game\resources\shader\mainpass_static.vs)");
     auto snippet = string { code.begin(), code.end() };
 
-    il->_dialect = acc::lang::ILDialect::eVulkanGlsl;
-    il->_snippets.push_back(_STD move(snippet));
-
-    inter->setIl(_STD move(il));
-
-    auto ir = make_uptr<acc::lang::IR>();
-    inter->setIr(_STD move(ir));
+    inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
+    inter->lang.text.emplace_back(_STD move(snippet));
 
     stage->setIntermediate(_STD move(inter));
 
@@ -420,55 +290,25 @@ auto make_accel_vertex_l1_stage() -> uptr<acc::Stage> {
     return stage;
 }
 
-auto make_accel_vertex_l2_stage() -> uptr<acc::Stage> {
+auto make_accel_vertex_l2_stage() -> uptr<engine::accel::Stage> {
 
-    auto flag = acc::StageFlagBits::eVertex;
-    auto inputs = Vector<acc::StageInput> {};
-    auto outputs = Vector<acc::StageOutput> {};
+    auto flag = engine::accel::StageFlagBits::eVertex;
 
     /**/
 
-    outputs.push_back(
-        acc::StageOutput {
-            .token = AccToken::from("uv"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec2,
-            .rate = {}
-        }
-    );
-    outputs.push_back(
-        acc::StageOutput {
-            .token = AccToken::from("color"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec3,
-            .rate = {}
-        }
+    auto stage = make_uptr<engine::accel::Stage>(
+        _STD move(flag)
     );
 
     /**/
 
-    auto stage = make_uptr<acc::Stage>(
-        _STD move(flag),
-        _STD move(inputs),
-        _STD move(outputs)
-    );
-
-    /**/
-
-    auto inter = make_smr<acc::lang::Intermediate>();
-
-    auto il = make_uptr<acc::lang::IL>();
+    auto inter = make_smr<engine::accel::lang::Intermediate>();
 
     auto code = read_shader_file(R"(R:\Development\C++\Vulkan API\Game\resources\shader\finalpass.vs)");
     auto snippet = string { code.begin(), code.end() };
 
-    il->_dialect = acc::lang::ILDialect::eVulkanGlsl;
-    il->_snippets.push_back(_STD move(snippet));
-
-    inter->setIl(_STD move(il));
-
-    auto ir = make_uptr<acc::lang::IR>();
-    inter->setIr(_STD move(ir));
+    inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
+    inter->lang.text.emplace_back(_STD move(snippet));
 
     stage->setIntermediate(_STD move(inter));
 
@@ -477,75 +317,26 @@ auto make_accel_vertex_l2_stage() -> uptr<acc::Stage> {
     return stage;
 }
 
-auto make_accel_fragment_l0_stage() -> uptr<acc::Stage> {
+auto make_accel_fragment_l0_stage() -> uptr<engine::accel::Stage> {
 
-    auto stageModule = make_smr<acc::StageModule>();
-    auto flag = acc::StageFlagBits::eFragment;
-    auto inputs = Vector<acc::StageInput> {};
-    auto outputs = Vector<acc::StageOutput> {};
+    auto stageModule = make_smr<engine::accel::StageModule>();
+    auto flag = engine::accel::StageFlagBits::eFragment;
 
     /**/
 
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("uvm"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec4,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("marker"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInstantiation
-        }
-    );
-
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("dpmm"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eStorage,
-            .rate = acc::DataInputRate::ePerInstantiation
-        }
-    );
-
-    outputs.push_back(
-        acc::StageOutput {
-            .token = AccToken::from("data"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eU32,
-            .rate = {}
-        }
+    auto stage = make_uptr<engine::accel::Stage>(
+        _STD move(flag)
     );
 
     /**/
 
-    auto stage = make_uptr<acc::Stage>(
-        _STD move(flag),
-        _STD move(inputs),
-        _STD move(outputs)
-    );
-
-    /**/
-
-    auto inter = make_smr<acc::lang::Intermediate>();
-
-    auto il = make_uptr<acc::lang::IL>();
+    auto inter = make_smr<engine::accel::lang::Intermediate>();
 
     auto code = read_shader_file(R"(R:\Development\C++\Vulkan API\Game\resources\shader\depthpass_static.frag)");
     auto snippet = string { code.begin(), code.end() };
 
-    il->_dialect = acc::lang::ILDialect::eVulkanGlsl;
-    il->_snippets.push_back(_STD move(snippet));
-
-    inter->setIl(_STD move(il));
-
-    auto ir = make_uptr<acc::lang::IR>();
-    inter->setIr(_STD move(ir));
+    inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
+    inter->lang.text.emplace_back(_STD move(snippet));
 
     stage->setIntermediate(_STD move(inter));
 
@@ -554,146 +345,26 @@ auto make_accel_fragment_l0_stage() -> uptr<acc::Stage> {
     return stage;
 }
 
-auto make_accel_fragment_l1_stage() -> uptr<acc::Stage> {
+auto make_accel_fragment_l1_stage() -> uptr<engine::accel::Stage> {
 
-    auto stageModule = make_smr<acc::StageModule>();
-    auto flag = acc::StageFlagBits::eFragment;
-    auto inputs = Vector<acc::StageInput> {};
-    auto outputs = Vector<acc::StageOutput> {};
+    auto stageModule = make_smr<engine::accel::StageModule>();
+    auto flag = engine::accel::StageFlagBits::eFragment;
 
     /**/
 
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("position"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec4,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("normal"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec4,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("uvm"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec3,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("material"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eUniform,
-            .rate = acc::DataInputRate::ePerInstantiation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("albedo"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("normal"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("roughness"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("metalness"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("ao"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-
-    outputs.push_back(
-        acc::StageOutput {
-            .token = AccToken::from("albedo"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eU8Vec4,
-            .rate = {}
-        }
-    );
-    outputs.push_back(
-        acc::StageOutput {
-            .token = AccToken::from("normal"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec3,
-            .rate = {}
-        }
-    );
-    outputs.push_back(
-        acc::StageOutput {
-            .token = AccToken::from("position"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec4,
-            .rate = {}
-        }
-    );
-    outputs.push_back(
-        acc::StageOutput {
-            .token = AccToken::from("arm"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eU8Vec4,
-            .rate = {}
-        }
+    auto stage = make_uptr<engine::accel::Stage>(
+        _STD move(flag)
     );
 
     /**/
 
-    auto stage = make_uptr<acc::Stage>(
-        _STD move(flag),
-        _STD move(inputs),
-        _STD move(outputs)
-    );
-
-    /**/
-
-    auto inter = make_smr<acc::lang::Intermediate>();
-
-    auto il = make_uptr<acc::lang::IL>();
+    auto inter = make_smr<engine::accel::lang::Intermediate>();
 
     auto code = read_shader_file(R"(R:\Development\C++\Vulkan API\Game\resources\shader\mainpass_static.frag)");
     auto snippet = string { code.begin(), code.end() };
 
-    il->_dialect = acc::lang::ILDialect::eVulkanGlsl;
-    il->_snippets.push_back(_STD move(snippet));
-
-    inter->setIl(_STD move(il));
-
-    auto ir = make_uptr<acc::lang::IR>();
-    inter->setIr(_STD move(ir));
+    inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
+    inter->lang.text.emplace_back(_STD move(snippet));
 
     stage->setIntermediate(_STD move(inter));
 
@@ -702,138 +373,26 @@ auto make_accel_fragment_l1_stage() -> uptr<acc::Stage> {
     return stage;
 }
 
-auto make_accel_fragment_l2_stage() -> uptr<acc::Stage> {
+auto make_accel_fragment_l2_stage() -> uptr<engine::accel::Stage> {
 
-    auto stageModule = make_smr<acc::StageModule>();
-    auto flag = acc::StageFlagBits::eFragment;
-    auto inputs = Vector<acc::StageInput> {};
-    auto outputs = Vector<acc::StageOutput> {};
+    auto stageModule = make_smr<engine::accel::StageModule>();
+    auto flag = engine::accel::StageFlagBits::eFragment;
 
     /**/
 
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("uv"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec2,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("color"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eF32Vec3,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("camera"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eUniform,
-            .rate = acc::DataInputRate::ePerInstantiation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("albedo"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("normal"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("position"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("arm"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("depth"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("brdf-lut"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("prefilter"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-    inputs.push_back(
-        acc::StageInput {
-            .token = AccToken::from("irradiance"),
-            .transferType = acc::TransferType::eBinding,
-            .dataType = acc::TransferDataType::eSampler,
-            .rate = acc::DataInputRate::ePerInvocation
-        }
-    );
-
-    outputs.push_back(
-        acc::StageOutput {
-            .token = AccToken::from("color"),
-            .transferType = acc::TransferType::eForward,
-            .dataType = acc::TransferDataType::eU8Vec4,
-            .rate = {}
-        }
+    auto stage = make_uptr<engine::accel::Stage>(
+        _STD move(flag)
     );
 
     /**/
 
-    auto stage = make_uptr<acc::Stage>(
-        _STD move(flag),
-        _STD move(inputs),
-        _STD move(outputs)
-    );
-
-    /**/
-
-    auto inter = make_smr<acc::lang::Intermediate>();
-
-    auto il = make_uptr<acc::lang::IL>();
+    auto inter = make_smr<engine::accel::lang::Intermediate>();
 
     auto code = read_shader_file(R"(R:\Development\C++\Vulkan API\Game\resources\shader\finalpass.frag)");
     auto snippet = string { code.begin(), code.end() };
 
-    il->_dialect = acc::lang::ILDialect::eVulkanGlsl;
-    il->_snippets.push_back(_STD move(snippet));
-
-    inter->setIl(_STD move(il));
-
-    auto ir = make_uptr<acc::lang::IR>();
-    inter->setIr(_STD move(ir));
+    inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
+    inter->lang.text.emplace_back(_STD move(snippet));
 
     stage->setIntermediate(_STD move(inter));
 
@@ -842,46 +401,14 @@ auto make_accel_fragment_l2_stage() -> uptr<acc::Stage> {
     return stage;
 }
 
-auto make_accel_l0_effect() -> uptr<acc::AccelerationEffect> {
+auto make_accel_l0_effect() -> uptr<engine::accel::AccelerationEffect> {
 
-    Vector<smr<acc::Stage>> stages {};
-    Vector<smr<const acc::Symbol>> imports {};
-    Vector<smr<const acc::Symbol>> exports {};
+    Vector<smr<engine::accel::Stage>> stages {};
 
     /**/
 
     stages.push_back(make_smr(make_accel_vertex_l0_stage()));
     stages.push_back(make_smr(make_accel_fragment_l0_stage()));
-
-    imports.push_back(
-        make_smr<acc::Symbol>(
-            acc::Symbol {
-                .scope = acc::SymbolScope {
-                    .type = acc::SymbolScopeType::eGlobal,
-                    .layer = ""
-                },
-                .name = "camera",
-                .description = static_desc_map.at("camera"),
-                .flags = acc::SymbolFlagBits::eUndefined,
-                .token = AccToken::from("viewProj")
-            }
-        )
-    );
-
-    imports.push_back(
-        make_smr<acc::Symbol>(
-            acc::Symbol {
-                .scope = acc::SymbolScope {
-                    .type = acc::SymbolScopeType::eLocal,
-                    .layer = ""
-                },
-                .name = "camera",
-                .description = static_desc_map.at(""),
-                .flags = acc::SymbolFlagBits::eUndefined,
-                .token = AccToken::from("viewProj")
-            }
-        )
-    );
 
     /**/
 
@@ -889,22 +416,18 @@ auto make_accel_l0_effect() -> uptr<acc::AccelerationEffect> {
     GuidGenerate(guid);
     string name = encodeGuid4228(guid);
 
-    auto effect = make_uptr<acc::AccelerationEffect>(
+    auto effect = make_uptr<engine::accel::AccelerationEffect>(
         _STD move(guid),
         _STD move(name),
-        _STD move(stages),
-        _STD move(imports),
-        _STD move(exports)
+        _STD move(stages)
     );
 
     return effect;
 }
 
-auto make_accel_l1_effect() -> uptr<acc::AccelerationEffect> {
+auto make_accel_l1_effect() -> uptr<engine::accel::AccelerationEffect> {
 
-    Vector<smr<acc::Stage>> stages {};
-    Vector<smr<const acc::Symbol>> imports {};
-    Vector<smr<const acc::Symbol>> exports {};
+    Vector<smr<engine::accel::Stage>> stages {};
 
     /**/
 
@@ -917,22 +440,18 @@ auto make_accel_l1_effect() -> uptr<acc::AccelerationEffect> {
     GuidGenerate(guid);
     string name = encodeGuid4228(guid);
 
-    auto effect = make_uptr<acc::AccelerationEffect>(
+    auto effect = make_uptr<engine::accel::AccelerationEffect>(
         _STD move(guid),
         _STD move(name),
-        _STD move(stages),
-        _STD move(imports),
-        _STD move(exports)
+        _STD move(stages)
     );
 
     return effect;
 }
 
-auto make_accel_l2_effect() -> uptr<acc::AccelerationEffect> {
+auto make_accel_l2_effect() -> uptr<engine::accel::AccelerationEffect> {
 
-    Vector<smr<acc::Stage>> stages {};
-    Vector<smr<const acc::Symbol>> imports {};
-    Vector<smr<const acc::Symbol>> exports {};
+    Vector<smr<engine::accel::Stage>> stages {};
 
     /**/
 
@@ -945,12 +464,10 @@ auto make_accel_l2_effect() -> uptr<acc::AccelerationEffect> {
     GuidGenerate(guid);
     string name = encodeGuid4228(guid);
 
-    auto effect = make_uptr<acc::AccelerationEffect>(
+    auto effect = make_uptr<engine::accel::AccelerationEffect>(
         _STD move(guid),
         _STD move(name),
-        _STD move(stages),
-        _STD move(imports),
-        _STD move(exports)
+        _STD move(stages)
     );
 
     return effect;
@@ -958,7 +475,7 @@ auto make_accel_l2_effect() -> uptr<acc::AccelerationEffect> {
 
 auto make_material_prototype() -> uptr<material::MaterialPrototype> {
 
-    Set<smr<acc::AccelerationEffect>> effects {};
+    Set<smr<engine::accel::AccelerationEffect>> effects {};
     effects.insert(make_smr(make_accel_l0_effect()));
     effects.insert(make_smr(make_accel_l1_effect()));
     effects.insert(make_smr(make_accel_l2_effect()));
@@ -1018,13 +535,13 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
     // Renderer :: isolatedSymbols() -> List < Symbol >
     // e.g. List < Color Symbol, ... > + List < Depth Symbol, ... >
 
-    Vector<smr<acc::Symbol>> exposedSymbols {};
-    Vector<smr<acc::Symbol>> isolatedSymbols {};
+    Vector<smr<graph::Symbol>> exposedSymbols {};
+    Vector<smr<graph::Symbol>> isolatedSymbols {};
 
     _STD map<string, smr<graph::Description>> descriptions {};
     setup_descriptions(descriptions);
 
-    std::map<string, smr<acc::Symbol>> symbols {};
+    std::map<string, smr<graph::Symbol>> symbols {};
     setup_symbols(descriptions, symbols);
 
     /**/

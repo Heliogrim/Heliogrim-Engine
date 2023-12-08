@@ -8,7 +8,7 @@
 #include "../Node/RuntimeNode.hpp"
 #include "../Component/RuntimeComponent.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class GraphNodeAllocator {
     public:
         using memory_resource_type = _STD pmr::memory_resource;

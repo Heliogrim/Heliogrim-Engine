@@ -2,7 +2,7 @@
 
 #include <Engine.Scene/IRenderScene.hpp>
 
-using namespace hg::engine::gfx::render::graph;
+using namespace hg::engine::render::graph;
 using namespace hg;
 
 SceneWalker::SceneWalker(
@@ -58,7 +58,7 @@ bool SceneWalker::operator()([[maybe_unused]] u32 batch_, const scene_node_type 
     return (*this)(node_);
 }
 
-ref<SceneWalker::this_type> SceneWalker::operator()(cref<scene::SceneView> sceneView_) {
+ref<SceneWalker::this_type> SceneWalker::operator()(cref<gfx::scene::SceneView> sceneView_) {
 
     #ifdef _DEBUG
     if (not _hook) {
@@ -83,7 +83,7 @@ ref<SceneWalker::this_type> SceneWalker::operator()(cref<scene::SceneView> scene
     return *this;
 }
 
-ref<SceneWalker::this_type> SceneWalker::operator()(cref<scene::SceneView> sceneView_, u32 maxBatches_) {
+ref<SceneWalker::this_type> SceneWalker::operator()(cref<gfx::scene::SceneView> sceneView_, u32 maxBatches_) {
 
     if (maxBatches_ <= 1uL) {
         return (*this)(sceneView_);

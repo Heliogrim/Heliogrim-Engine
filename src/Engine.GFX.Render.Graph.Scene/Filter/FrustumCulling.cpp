@@ -3,10 +3,10 @@
 #include <Engine.GFX/Scene/SceneNodeModel.hpp>
 #include <Engine.Scene/Node/SceneNode.hpp>
 
-using namespace hg::engine::gfx::render::graph;
+using namespace hg::engine::render::graph;
 using namespace hg;
 
-void FrustumCullingFilter::update(cref<scene::SceneView> sceneView_) noexcept {
+void FrustumCullingFilter::update(cref<gfx::scene::SceneView> sceneView_) noexcept {
     _sceneView = &sceneView_;
     _frustum.update(sceneView_.getViewMatrix() * sceneView_.getProjectionMatrix());
 }

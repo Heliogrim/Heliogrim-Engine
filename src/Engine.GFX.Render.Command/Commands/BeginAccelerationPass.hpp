@@ -2,7 +2,7 @@
 #include "../RenderCommand.hpp"
 #include "Structs.hpp"
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class BeginAccelerationPassRCmd :
         public RenderCommand {
     public:

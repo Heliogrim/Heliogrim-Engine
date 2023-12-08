@@ -8,5 +8,8 @@ namespace hg {
     using string = _STD string;
     using string_view = _STD string_view;
 
+    using String = string;
+    using StringView = string_view;
+
     using namespace ::std::literals::string_view_literals;
 }
