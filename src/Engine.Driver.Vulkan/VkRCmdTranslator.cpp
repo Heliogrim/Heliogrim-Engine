@@ -1,21 +1,32 @@
 #include "VkRCmdTranslator.hpp"
 
-#include <Engine.Core/Engine.hpp>
 #include <Engine.Accel.Pass/VkGraphicsPass.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.Core/Engine.hpp>
 #include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.GFX.Render.Command/RenderCommandIterator.hpp>
 #include <Engine.GFX/Graphics.hpp>
+#include <Engine.GFX.Render.Command/Commands/AttachResource.hpp>
 #include <Engine.GFX.Render.Command/Commands/BeginAccelerationPass.hpp>
 #include <Engine.GFX.Render.Command/Commands/BindIndexBuffer.hpp>
 #include <Engine.GFX.Render.Command/Commands/BindPipeline.hpp>
+#include <Engine.GFX.Render.Command/Commands/BindTexture.hpp>
+#include <Engine.GFX.Render.Command/Commands/BindUniformBuffer.hpp>
 #include <Engine.GFX.Render.Command/Commands/BindVertexBuffer.hpp>
 #include <Engine.GFX.Render.Command/Commands/DrawDispatch.hpp>
 #include <Engine.GFX.Render.Command/Commands/DrawDispatchIndirect.hpp>
+#include <Engine.GFX.Render.Command/Commands/Lambda.hpp>
+#include <Engine.GFX/Buffer/StorageBufferView.hpp>
+#include <Engine.GFX/Buffer/UniformBufferView.hpp>
+#include <Engine.GFX/Texture/SampledTextureView.hpp>
+#include <Engine.GFX/Texture/TextureView.hpp>
+#include <Engine.GFX/Texture/VirtualTextureView.hpp>
 #include <Engine.Reflect/Cast.hpp>
 
+#include "VkResourceTable.hpp"
+
 using namespace hg::driver::vk;
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg::engine::accel;
 using namespace hg;
 
@@ -28,20 +39,25 @@ ptr<VkNativeBatch> VkRCmdTranslator::operator()(const ptr<const cmd::RenderComma
 
     auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
     auto ecpool = device->graphicsQueue()->pool();
+
     AccelCommandBuffer eccmd = ecpool->make();
+    VkResourceTable rt {};
+
     /**/
 
-    auto* state = new VkState(driver::vk::VkScopedCmdMgr { 0u, eccmd });
+    auto* state = new VkState(VkScopedCmdMgr { 0u, eccmd });
     auto iter = cmd::RenderCommandIterator { commands_->root().get() };
 
     while (iter.valid()) {
         (*iter++)(state, this);
     }
 
+    rt.store(_STD move(state->srt));
     delete state;
 
     /**/
     batch->add(make_uptr<AccelCommandBuffer>(_STD move(eccmd)));
+    batch->add(make_uptr<VkResourceTable>(_STD move(rt)));
     /**/
 
     return batch;
@@ -105,7 +121,9 @@ void VkRCmdTranslator::translate(const ptr<State> state_, ptr<const cmd::EndRCmd
 
 void VkRCmdTranslator::translate(const ptr<State> state_, const ptr<const cmd::BindPipelineRCmd> cmd_) noexcept {
 
-    auto active = static_cast<VkState*>(state_)->cmd.active();
+    auto* const state = static_cast<VkState*>(state_);
+
+    auto active = state->cmd.active();
     assert(active.has_value());
 
     // TODO: assert(active->getFeatureSet() & cmd_->featureSet);
@@ -113,6 +131,7 @@ void VkRCmdTranslator::translate(const ptr<State> state_, const ptr<const cmd::B
     const auto graphicsPipeline = Cast<VkGraphicsPipeline>(cmd_->pipeline.get());
     assert(graphicsPipeline);
 
+    state->srt.replaceActivePipeline(graphicsPipeline);
     active->bindPipeline(graphicsPipeline);
 }
 
@@ -142,7 +161,21 @@ void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindStaticMes
 
 void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindStorageBufferRCmd> cmd_) noexcept {}
 
-void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindTextureRCmd> cmd_) noexcept {}
+void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindTextureRCmd> cmd_) noexcept {
+
+    const auto active = static_cast<VkState*>(state_)->cmd.active();
+    assert(active.has_value());
+
+    static_cast<VkState*>(state_)->srt.bind(cmd_->_symbolId, cmd_->_sampledTexture);
+}
+
+void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindUniformBufferRCmd> cmd_) noexcept {
+
+    const auto active = static_cast<VkState*>(state_)->cmd.active();
+    assert(active.has_value());
+
+    static_cast<VkState*>(state_)->srt.bind(cmd_->_symbolId, cmd_->_uniformView);
+}
 
 void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::DrawMeshRCmd> cmd_) noexcept {}
 
@@ -152,6 +185,21 @@ void VkRCmdTranslator::translate(const ptr<State> state_, const ptr<const cmd::D
 
     auto active = static_cast<VkState*>(state_)->cmd.active();
     assert(active.has_value());
+
+    /* Ensure Resources */
+
+    auto& srt = static_cast<VkState*>(state_)->srt;
+
+    const auto activePipe = srt.getActivePipeline();
+    assert(activePipe);
+
+    Vector<_::VkDescriptorSet> descriptorSets {};
+    const auto result = srt.commit(activePipe->getBindingLayout(), descriptorSets);
+    assert(result);
+
+    active->bindDescriptor(reinterpret_cast<ref<Vector<::vk::DescriptorSet>>>(descriptorSets));
+
+    /**/
 
     if (cmd_->_indexedPrimitive) {
 
@@ -201,4 +249,19 @@ void VkRCmdTranslator::translate(
     }
 }
 
-void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::LambdaRCmd> cmd_) noexcept {}
+void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::LambdaRCmd> cmd_) noexcept {
+
+    auto active = static_cast<VkState*>(state_)->cmd.active();
+    assert(active.has_value());
+
+    (cmd_->fn)(active.value());
+}
+
+void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::AttachResourceRCmd> cmd_) noexcept {
+
+    auto active = static_cast<VkState*>(state_)->cmd.active();
+    assert(active.has_value());
+
+    static_cast<VkState*>(state_)->srt.attach(cmd_->attached());
+
+}

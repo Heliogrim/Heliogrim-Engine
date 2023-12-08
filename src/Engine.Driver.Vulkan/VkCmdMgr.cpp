@@ -62,7 +62,7 @@ void VkCmdMgr::submit() {
 
     assert(not active.empty());
 
-    auto buffer = active.back();
+    auto buffer = _STD move(active.back());
     active.pop_back();
 
     pending.push_back(_STD move(buffer));

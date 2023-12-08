@@ -3,17 +3,22 @@
 #include <Engine.GFX.Render.Command/NativeBatch.hpp>
 
 namespace hg::driver::vk {
+    class VkResourceTable;
+}
+
+namespace hg::driver::vk {
     class VkNativeBatch final :
-        public engine::gfx::render::cmd::NativeBatch {
+        public engine::render::cmd::NativeBatch {
     public:
         using this_type = VkNativeBatch;
 
     public:
-        constexpr VkNativeBatch() noexcept = default;
+        VkNativeBatch() noexcept;
 
-        constexpr ~VkNativeBatch() noexcept override = default;
+        ~VkNativeBatch() noexcept override;
 
     private:
+        InlineAutoArray<uptr<VkResourceTable>> _rtable;
         InlineAutoArray<uptr<engine::accel::AccelCommandBuffer>, 2uLL> _batched;
 
     public:
@@ -28,11 +33,13 @@ namespace hg::driver::vk {
 
     public:
         bool enumerateNativeQueues(
-            ref<InlineAutoArray<ptr<engine::gfx::render::cmd::NativeQueue>, 2>> queues_
+            ref<InlineAutoArray<ptr<engine::render::cmd::NativeQueue>, 2>> queues_
         ) const noexcept override;
 
     public:
         void add(mref<uptr<engine::accel::AccelCommandBuffer>> cmd_) noexcept;
+
+        void add(mref<uptr<VkResourceTable>> rt_) noexcept;
 
     private:
         void enumerateWaitSignals(

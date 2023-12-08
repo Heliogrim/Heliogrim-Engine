@@ -36,6 +36,15 @@
     <ClInclude Include="..\..\src\Engine.Driver.Vulkan\VkScopedCmdMgr.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Driver.Vulkan\VkResourceTable.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Driver.Vulkan\VkScopedResourceTable.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Driver.Vulkan\VkDescriptor.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Driver.Vulkan\VkCmdMgr.cpp">
@@ -48,6 +57,15 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Driver.Vulkan\VkScopedCmdMgr.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Driver.Vulkan\VkScopedResourceTable.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Driver.Vulkan\VkResourceTable.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Driver.Vulkan\VkDescriptor.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,0 +1,278 @@
+#include "VkScopedResourceTable.hpp"
+
+#include <ranges>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.GFX/Graphics.hpp>
+#include <Engine.GFX/vkinc.hpp>
+#include <Engine.GFX.RenderGraph/Node/Runtime/Helper/VkDescriptorWriter.hpp>
+
+using namespace hg::driver::vk;
+using namespace hg;
+
+nmpt<const engine::accel::AccelerationPipeline> VkScopedResourceTable::getActivePipeline() const noexcept {
+    return _activePipeline;
+}
+
+void VkScopedResourceTable::replaceActivePipeline(nmpt<const engine::accel::AccelerationPipeline> pipeline_) noexcept {
+    _activePipeline = pipeline_;
+}
+
+ref<VkScopedResourceTable::this_type> VkScopedResourceTable::replaceWith(cref<ResourceTable> table_) noexcept {
+    table.clear();
+    table.insert(table_.table.begin(), table_.table.end());
+    return *this;
+}
+
+ref<VkScopedResourceTable::this_type> VkScopedResourceTable::replaceWith(mref<ResourceTable> table_) noexcept {
+    table.clear();
+    table = _STD move(table_.table);
+    return *this;
+}
+
+void VkScopedResourceTable::attach(mref<Holder> obj_) {
+    // TODO: _mayOwned.emplace_back(_STD move(obj_));
+    _owned.emplace_back(_STD move(obj_));
+}
+
+void VkScopedResourceTable::detach(cref<Holder> obj_) {
+    _STD unreachable();
+}
+
+Vector<driver::vk::VkDescriptorPoolSize> VkScopedResourceTable::nextAllocSizes() const noexcept {
+    return {};
+}
+
+bool VkScopedResourceTable::allocateAndCommit(
+    mref<Vector<VkDescriptorPoolSize>> allocationLayout_,
+    cref<engine::accel::BindLayout> commitLayout_,
+    ref<Vector<_::VkDescriptorSet>> descriptorSets_
+) noexcept {
+
+    const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+
+    /* Aggregate binding groups contributing to one layout each */
+
+    Vector<::vk::DescriptorSetLayout> dsl {};
+    dsl.reserve(commitLayout_.groups.size());
+
+    for (const auto& group : commitLayout_.groups) {
+
+        assert(group.drvAux);
+        auto* sl = static_cast<_::VkDescriptorSetLayout>(group.drvAux);
+
+        dsl.emplace_back(reinterpret_cast<VkDescriptorSetLayout>(sl));
+
+        /**/
+
+        for (const auto& element : group.elements) {
+
+            ::vk::DescriptorType vkdt {};
+
+            switch (element.type) {
+                case engine::accel::BindType::eTexture: {
+                    vkdt = ::vk::DescriptorType::eCombinedImageSampler;
+                    break;
+                }
+                case engine::accel::BindType::eStorageBuffer: {
+                    vkdt = ::vk::DescriptorType::eStorageBuffer;
+                    break;
+                }
+                case engine::accel::BindType::eUniformBuffer: {
+                    vkdt = ::vk::DescriptorType::eUniformBuffer;
+                    break;
+                }
+            }
+
+            assert(static_cast<u32>(vkdt) > 0);
+
+            auto iter = _STD ranges::find(
+                allocationLayout_,
+                vkdt,
+                [](const auto& size_) {
+                    return size_.type;
+                }
+            );
+
+            if (iter != allocationLayout_.end()) {
+                ++iter->capacity;
+            } else {
+                allocationLayout_.emplace_back(vkdt, 1uL);
+            }
+        }
+    }
+
+    /* Allocate required pool */
+
+    auto pool = VkDescriptorPool {};
+
+    const ::vk::DescriptorPoolCreateInfo dpci {
+        ::vk::DescriptorPoolCreateFlagBits::eUpdateAfterBind,
+        static_cast<u32>(allocationLayout_.size()),
+        static_cast<u32>(allocationLayout_.size()),
+        reinterpret_cast<const ::vk::DescriptorPoolSize*>(allocationLayout_.data())
+    };
+
+    pool.vkPool = device->vkDevice().createDescriptorPool(dpci);
+    pool.pooled = _STD move(allocationLayout_);
+
+    assert(pool.vkPool);
+    _commitPools.emplace_back(_STD move(pool));
+    _committedSets.emplace_back();
+
+    /* Select and ensure pool availability and remaining size */
+
+    size_t poolIdx = _commitPools.size() - 1uLL;
+    auto& targetPool = *(_commitPools.begin() + poolIdx);
+    const ::vk::DescriptorSetAllocateInfo dsai {
+        targetPool.vkPool, static_cast<u32>(dsl.size()), dsl.data()
+    };
+
+    /* Allocate descriptor sets into target container */
+
+    descriptorSets_.resize(dsl.size());
+    const auto result = device->vkDevice().allocateDescriptorSets(
+        &dsai,
+        reinterpret_cast<ptr<::vk::DescriptorSet>>(descriptorSets_.data())
+    );
+
+    if (result != ::vk::Result::eSuccess) {
+        __debugbreak();
+        return false;
+    }
+
+    /* Store allocated descriptor for resource tracking */
+
+    auto& cms = *(_committedSets.begin() + poolIdx);
+    cms.insert_range(cms.end(), descriptorSets_);
+
+    /* Update allocated descriptors with stored resources */
+
+    updateSets(commitLayout_, descriptorSets_);
+
+    return true;
+}
+
+void VkScopedResourceTable::updateSets(
+    cref<engine::accel::BindLayout> layout_,
+    ref<Vector<_::VkDescriptorSet>> descriptorSets_
+) {
+
+    using DescriptorWriter = engine::render::graph::VkDescriptorWriter;
+
+    const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice();
+
+    for (auto [group, set] : _STD ranges::views::zip(layout_.groups, descriptorSets_)) {
+
+        DescriptorWriter writer { reinterpret_cast<::VkDescriptorSet>(set) };
+
+        u32 idx = 0;
+        for (const engine::accel::BindElement& element : group.elements) {
+
+            switch (element.type) {
+                case engine::accel::BindType::eUniformBuffer: {
+
+                    const auto& resource = table.at(element.symbol->symbolId);
+                    assert(resource.isUniformBufferView());
+
+                    writer.storeUniform(idx, resource.asUniformBufferView());
+                    break;
+                }
+                case engine::accel::BindType::eStorageBuffer: {
+
+                    const auto& resource = table.at(element.symbol->symbolId);
+                    assert(resource.isStorageBufferView());
+
+                    writer.storeStorage(idx, resource.asStorageBufferView());
+                    break;
+                }
+                case engine::accel::BindType::eTexture: {
+
+                    const auto& resource = table.at(element.symbol->symbolId);
+                    assert(resource.isTextureView());
+
+                    writer.storeTexture(idx, resource.asTextureView());
+                    break;
+                }
+            }
+
+            ++idx;
+        }
+
+        writer.update(device);
+    }
+
+}
+
+bool VkScopedResourceTable::commit(
+    cref<engine::accel::BindLayout> layout_,
+    ref<Vector<_::VkDescriptorSet>> descriptorSets_
+) noexcept {
+
+    const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+
+    /* Assure descriptor requirement */
+    if (layout_.groups.empty()) {
+        return true;
+    }
+
+    /* Ensure available pools */
+
+    if (_commitPools.empty()) {
+        return allocateAndCommit(nextAllocSizes(), layout_, descriptorSets_);
+    }
+
+    /* Aggregate binding groups contributing to one layout each */
+
+    Vector<::vk::DescriptorSetLayout> dsl {};
+    dsl.reserve(layout_.groups.size());
+
+    for (const auto& group : layout_.groups) {
+
+        assert(group.drvAux);
+        auto* sl = static_cast<_::VkDescriptorSetLayout>(group.drvAux);
+
+        dsl.emplace_back(reinterpret_cast<VkDescriptorSetLayout>(sl));
+    }
+
+    /* Select and ensure try use remaining size */
+
+    const size_t poolIdx = _commitPools.size() - 1uLL;
+    auto& pool = *(_commitPools.begin() + poolIdx);
+    const ::vk::DescriptorSetAllocateInfo dsai {
+        pool.vkPool, static_cast<u32>(dsl.size()), dsl.data()
+    };
+
+    /* Allocate descriptor sets into target container */
+
+    descriptorSets_.resize(dsl.size());
+    const auto result = device->vkDevice().allocateDescriptorSets(
+        &dsai,
+        reinterpret_cast<ptr<::vk::DescriptorSet>>(descriptorSets_.data())
+    );
+
+    // assert(result == ::vk::Result::eSuccess);
+    // assert(result == ::vk::Result::eErrorOutOfHostMemory);/* Non-Recoverable */
+    // assert(result == ::vk::Result::eErrorOutOfDeviceMemory);/* Non-Recoverable */
+    // assert(result == ::vk::Result::eErrorFragmentation);/* Not-Expected */
+    // assert(result == ::vk::Result::eErrorOutOfPoolMemory);
+
+    if (result == ::vk::Result::eErrorOutOfPoolMemory) {
+        return allocateAndCommit(nextAllocSizes(), layout_, descriptorSets_);
+    }
+
+    if (result != ::vk::Result::eSuccess) {
+        __debugbreak();
+        return false;
+    }
+
+    /* Store allocated descriptor for resource tracking */
+
+    auto& cms = *(_committedSets.begin() + poolIdx);
+    cms.insert_range(cms.end(), descriptorSets_);
+
+    /* Update allocated descriptors with stored resources */
+
+    updateSets(layout_, descriptorSets_);
+
+    return true;
+}

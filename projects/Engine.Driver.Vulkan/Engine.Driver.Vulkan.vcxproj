@@ -17,17 +17,23 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Driver.Vulkan\Structs.hpp" />
     <ClInclude Include="..\..\src\Engine.Driver.Vulkan\VkCmdMgr.hpp" />
+    <ClInclude Include="..\..\src\Engine.Driver.Vulkan\VkDescriptor.hpp" />
     <ClInclude Include="..\..\src\Engine.Driver.Vulkan\VkNativeBatch.hpp" />
     <ClInclude Include="..\..\src\Engine.Driver.Vulkan\VkNativeQueue.hpp" />
     <ClInclude Include="..\..\src\Engine.Driver.Vulkan\VkRCmdTranslator.hpp" />
+    <ClInclude Include="..\..\src\Engine.Driver.Vulkan\VkResourceTable.hpp" />
     <ClInclude Include="..\..\src\Engine.Driver.Vulkan\VkScopedCmdMgr.hpp" />
+    <ClInclude Include="..\..\src\Engine.Driver.Vulkan\VkScopedResourceTable.hpp" />
     <ClInclude Include="..\..\src\Engine.Driver.Vulkan\__fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Driver.Vulkan\VkCmdMgr.cpp" />
+    <ClCompile Include="..\..\src\Engine.Driver.Vulkan\VkDescriptor.cpp" />
     <ClCompile Include="..\..\src\Engine.Driver.Vulkan\VkNativeBatch.cpp" />
     <ClCompile Include="..\..\src\Engine.Driver.Vulkan\VkRCmdTranslator.cpp" />
+    <ClCompile Include="..\..\src\Engine.Driver.Vulkan\VkResourceTable.cpp" />
     <ClCompile Include="..\..\src\Engine.Driver.Vulkan\VkScopedCmdMgr.cpp" />
+    <ClCompile Include="..\..\src\Engine.Driver.Vulkan\VkScopedResourceTable.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

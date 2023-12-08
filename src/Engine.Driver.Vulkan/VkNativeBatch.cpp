@@ -4,9 +4,20 @@
 #include <Engine.GFX/Command/CommandQueue.hpp>
 
 #include "VkNativeQueue.hpp"
+#include "VkResourceTable.hpp"
 
 using namespace hg::driver::vk;
 using namespace hg;
+
+VkNativeBatch::VkNativeBatch() noexcept :
+    NativeBatch(),
+    _rtable(),
+    _batched(),
+    _tmpWaits(),
+    _tmpWaitFlags(),
+    _tmpSignals() {}
+
+VkNativeBatch::~VkNativeBatch() noexcept = default;
 
 bool VkNativeBatch::ready() const noexcept {
     return _STD ranges::all_of(
@@ -28,7 +39,7 @@ bool VkNativeBatch::isFaf() const noexcept {
 
 void VkNativeBatch::commit() {
 
-    InlineAutoArray<ptr<engine::gfx::render::cmd::NativeQueue>, 2> queues {};
+    InlineAutoArray<ptr<engine::render::cmd::NativeQueue>, 2> queues {};
     enumerateNativeQueues(queues);
 
     if (queues.empty()) {
@@ -73,9 +84,9 @@ void VkNativeBatch::commit() {
     ::VkSubmitInfo si {
         VK_STRUCTURE_TYPE_SUBMIT_INFO,
         nullptr,
-        signals.size() - readyCount, signals.data() + readyCount, stages.data(),
+        static_cast<u32>(signals.size() - readyCount), signals.data() + readyCount, stages.data(),
         static_cast<u32>(roots.size()), roots.data(),
-        readyCount, signals.data()
+        static_cast<u32>(readyCount), signals.data()
     };
 
     const auto result = ::vkQueueSubmit(vkQueue, 1uL, &si, fence);
@@ -106,7 +117,7 @@ void VkNativeBatch::commitAndDispose() {
             /**/
 
             // Warning: Temporay
-            pool->release(*acb_);
+            acb_->release();
         }
     );
 
@@ -121,7 +132,7 @@ void VkNativeBatch::commitAndDispose() {
 }
 
 bool VkNativeBatch::enumerateNativeQueues(
-    ref<InlineAutoArray<ptr<engine::gfx::render::cmd::NativeQueue>, 2>> queues_
+    ref<InlineAutoArray<ptr<engine::render::cmd::NativeQueue>, 2>> queues_
 ) const noexcept {
 
     _STD ranges::for_each(
@@ -145,6 +156,10 @@ bool VkNativeBatch::enumerateNativeQueues(
 
 void VkNativeBatch::add(mref<uptr<engine::accel::AccelCommandBuffer>> cmd_) noexcept {
     _batched.emplace_back(_STD move(cmd_));
+}
+
+void VkNativeBatch::add(mref<uptr<VkResourceTable>> rt_) noexcept {
+    _rtable.emplace_back(_STD move(rt_));
 }
 
 void VkNativeBatch::enumerateWaitSignals(
