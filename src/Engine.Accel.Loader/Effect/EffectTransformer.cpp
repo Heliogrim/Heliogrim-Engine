@@ -36,7 +36,7 @@ EffectTransformer::response_type::type EffectTransformer::operator()(
 void dummy_initialize_effect(Guid guid_, ref<smr<const engine::accel::AccelEffect>> effect_) {
 
     if (
-        auto se = engine::gfx::render::makeSkyboxEffect();
+        auto se = engine::render::makeSkyboxEffect();
         guid_ == se->getGuid()
     ) {
         effect_ = _STD move(se);

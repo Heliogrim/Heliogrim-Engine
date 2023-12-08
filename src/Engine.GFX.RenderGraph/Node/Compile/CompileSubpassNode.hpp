@@ -4,7 +4,7 @@
 #include "../Runtime/SubpassNode.hpp"
 #include "Engine.GFX.RenderGraph/Node/Runtime/SubPassNode.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class CompileSubPassNode :
         public CompileNode {
     public:

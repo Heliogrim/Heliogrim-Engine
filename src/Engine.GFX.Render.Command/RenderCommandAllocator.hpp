@@ -3,7 +3,7 @@
 
 #include "RenderCommandAllocatorBase.hpp"
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class RenderCommandAllocator :
         public RenderCommandAllocatorBase {
     public:

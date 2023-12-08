@@ -2,7 +2,7 @@
 
 #include "../Visitor/Visitor.hpp"
 
-using namespace hg::engine::gfx::render::graph;
+using namespace hg::engine::render::graph;
 using namespace hg;
 
 Node::Node(mref<smr<Auxiliary>> auxiliary_) noexcept :

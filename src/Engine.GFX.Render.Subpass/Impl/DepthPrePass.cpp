@@ -23,7 +23,7 @@
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg::engine::accel;
 using namespace hg::engine::gfx;
 using namespace hg;

@@ -18,8 +18,8 @@ namespace hg::engine::accel {
         ) const noexcept override;
 
         [[nodiscard]] tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> buildGraphicsPass(
-            cref<Vector<smr<const gfx::render::graph::Symbol>>> outputSymbols_,
-            cref<Vector<smr<const gfx::render::graph::Symbol>>> inputSymbols_
+            cref<Vector<smr<const render::graph::Symbol>>> outputSymbols_,
+            cref<Vector<smr<const render::graph::Symbol>>> inputSymbols_
         ) const noexcept override;
 
         [[nodiscard]] tl::expected<smr<const RaytracingPass>, AccelerationPassFactoryError> buildRaytracingPass(
@@ -27,8 +27,8 @@ namespace hg::engine::accel {
         ) const noexcept override;
 
         [[nodiscard]] tl::expected<smr<const RaytracingPass>, AccelerationPassFactoryError> buildRaytracingPass(
-            cref<Vector<smr<const gfx::render::graph::Symbol>>> outputSymbols_,
-            cref<Vector<smr<const gfx::render::graph::Symbol>>> inputSymbols_
+            cref<Vector<smr<const render::graph::Symbol>>> outputSymbols_,
+            cref<Vector<smr<const render::graph::Symbol>>> inputSymbols_
         ) const noexcept override;
 
         [[nodiscard]] tl::expected<smr<const MeshPass>, AccelerationPassFactoryError> buildMeshPass(
@@ -36,8 +36,8 @@ namespace hg::engine::accel {
         ) const noexcept override;
 
         [[nodiscard]] tl::expected<smr<const MeshPass>, AccelerationPassFactoryError> buildMeshPass(
-            cref<Vector<smr<const gfx::render::graph::Symbol>>> outputSymbols_,
-            cref<Vector<smr<const gfx::render::graph::Symbol>>> inputSymbols_
+            cref<Vector<smr<const render::graph::Symbol>>> outputSymbols_,
+            cref<Vector<smr<const render::graph::Symbol>>> inputSymbols_
         ) const noexcept override;
     };
 }

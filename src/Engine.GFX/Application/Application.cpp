@@ -12,7 +12,9 @@ using namespace hg;
 
 Vector<const char*> Application::_validation = {
     #ifdef _DEBUG
-    "VK_LAYER_KHRONOS_validation"
+    "VK_LAYER_KHRONOS_validation",
+    "VK_LAYER_KHRONOS_synchronization2",
+    "VK_LAYER_KHRONOS_shader_object"
     #endif
 };
 
@@ -33,7 +35,7 @@ void Application::setup() {
     vkEnumerateInstanceLayerProperties(&count, layers);
 
     auto vl = std::vector<VkLayerProperties>(count);
-    for (uint32_t i = 0; i < count; i ++)
+    for (uint32_t i = 0; i < count; i++)
         vl[i] = layers[i];
 
     free(layers);
@@ -45,7 +47,7 @@ void Application::setup() {
     vkEnumerateInstanceExtensionProperties(NULL, &count, props);
 
     std::vector<VkExtensionProperties> ve { count };
-    for (uint32_t i = 0; i < count; i ++)
+    for (uint32_t i = 0; i < count; i++)
         ve[i] = props[i];
 
     free(props);
@@ -118,6 +120,10 @@ std::vector<const char*> Application::getExtensions() {
 }
 
 vk::Instance* Application::operator->() {
+    return &_instance;
+}
+
+const ptr<const vk::Instance> Application::operator->() const noexcept {
     return &_instance;
 }
 

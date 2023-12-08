@@ -5,7 +5,7 @@
 
 #include "Component.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class BarrierComponent final :
         public InheritMeta<BarrierComponent, Component> {
     public:

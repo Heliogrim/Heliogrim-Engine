@@ -6,14 +6,14 @@
 #include "../RenderCommand.hpp"
 #include "__fwd.hpp"
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class BindStaticMeshRCmd :
         public RenderCommand {
     public:
         using this_type = BindStaticMeshRCmd;
 
     public:
-        constexpr BindStaticMeshRCmd(mref<const nmpt<const Mesh>> staticMesh_) noexcept :
+        constexpr BindStaticMeshRCmd(mref<const nmpt<const gfx::Mesh>> staticMesh_) noexcept :
             RenderCommand(),
             _staticMesh(_STD move(staticMesh_)) {}
 
@@ -21,7 +21,7 @@ namespace hg::engine::gfx::render::cmd {
 
     private:
     public:
-        const nmpt<const Mesh> _staticMesh;
+        const nmpt<const gfx::Mesh> _staticMesh;
 
     public:
         void operator()(

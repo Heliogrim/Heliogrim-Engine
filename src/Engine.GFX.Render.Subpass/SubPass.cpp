@@ -1,6 +1,6 @@
 #include "SubPass.hpp"
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg;
 
 void SubPass::setup(ref<graph::ScopedSymbolContext> symCtx_) noexcept {

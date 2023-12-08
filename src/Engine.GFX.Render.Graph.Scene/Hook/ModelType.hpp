@@ -5,7 +5,7 @@
 
 #include "../SceneHookFilter.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     enum class ModelTypeFilterMode : bool {
         eWhitelist = false,
         eBlacklist = true

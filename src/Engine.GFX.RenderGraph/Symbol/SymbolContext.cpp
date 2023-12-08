@@ -5,7 +5,7 @@
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Logging/Logger.hpp>
 
-using namespace hg::engine::gfx::render::graph;
+using namespace hg::engine::render::graph;
 using namespace hg;
 
 SymbolContext::SymbolContext() noexcept = default;

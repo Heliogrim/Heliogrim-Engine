@@ -3,7 +3,7 @@
 #include <Engine.Common/Math/Convertion.hpp>
 #include <Heliogrim/StaticGeometryComponent.hpp>
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg::engine::gfx;
 using namespace hg;
 

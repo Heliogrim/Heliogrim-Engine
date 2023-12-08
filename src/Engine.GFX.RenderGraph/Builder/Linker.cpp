@@ -6,8 +6,8 @@
 #include "FLinkVisitor.hpp"
 #include "../Node/Node.hpp"
 
-using namespace hg::engine::gfx::render::graph;
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render::graph;
+using namespace hg::engine::render;
 using namespace hg;
 
 void graph::LinkNodes(mref<nmpt<Node>> predecessor_, mref<smr<Node>> successor_, LinkMode mode_) {

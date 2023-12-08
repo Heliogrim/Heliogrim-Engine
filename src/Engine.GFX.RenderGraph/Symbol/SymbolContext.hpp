@@ -8,7 +8,7 @@
 #include "SymbolizedResource.hpp"
 #include "Symbol.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class SymbolContext {
     public:
         using this_type = SymbolContext;

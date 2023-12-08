@@ -8,7 +8,7 @@
 #include "Engine.GFX.RenderGraph/Node/RuntimeNode.hpp"
 #include "Engine.GFX.RenderGraph/Visitor/Visitor.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class ExecutionPass final :
         public RenderGraphPass {
     public:

@@ -3,7 +3,7 @@
 #include <memory_resource>
 #include <Engine.Common/Make.hpp>
 
-using namespace hg::engine::gfx::render::cmd;
+using namespace hg::engine::render::cmd;
 using namespace hg;
 
 RenderCommandAllocator::RenderCommandAllocator() noexcept = default;

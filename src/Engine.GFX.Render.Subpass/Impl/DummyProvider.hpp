@@ -7,11 +7,11 @@
 
 #include "../Mesh/MeshSubPass.hpp"
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class DummyProvider :
         public SubPass {
     private:
-        smr<Texture> _depthTexture;
+        smr<gfx::Texture> _depthTexture;
 
         struct Resources {
             graph::Observed<graph::SymbolizedResource> outDepthTexture;

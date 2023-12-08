@@ -5,7 +5,7 @@
 #include <Engine.GFX/Scene/SceneNodeModel.hpp>
 #include <Engine.Scene/Node/SceneNode.hpp>
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class __declspec(novtable) SceneWalkerFilter :
         public InheritBase<SceneWalkerFilter> {
     public:
@@ -25,7 +25,7 @@ namespace hg::engine::gfx::render::graph {
         [[nodiscard]] virtual checksum_type checksum() const noexcept = 0;
 
     public:
-        virtual void update(cref<scene::SceneView> sceneView_) noexcept = 0;
+        virtual void update(cref<gfx::scene::SceneView> sceneView_) noexcept = 0;
 
         [[nodiscard]] virtual bool operator()(const scene_node_type node_) const noexcept = 0;
     };

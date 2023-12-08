@@ -13,7 +13,7 @@
 
 #include "RenderPass.hpp"
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg;
 
 Renderer::Renderer(
@@ -21,8 +21,8 @@ Renderer::Renderer(
     mref<string> name_,
     mref<uptr<graph::CompileGraph>> compileGraph_,
     mref<smr<graph::InjectGraphRegistry>> injectionRegistry_,
-    mref<nmpt<cache::GlobalCacheCtrl>> globalCache_,
-    mref<nmpt<memory::GlobalPooledAllocator>> globalGfxAllocator_
+    mref<nmpt<gfx::cache::GlobalCacheCtrl>> globalCache_,
+    mref<nmpt<gfx::memory::GlobalPooledAllocator>> globalGfxAllocator_
 ) noexcept :
     _guid(_STD move(guid_)),
     _name(_STD move(name_)),
@@ -55,10 +55,10 @@ uptr<RenderPass> Renderer::allocate() const {
     auto pass = make_uptr<RenderPass>(
         this,
         makeDefaultRuntimeGraph(),
-        make_smr<cache::LocalCacheCtrl>(
-            make_uptr<cache::LocalResourceCache>(_globalCache)
+        make_smr<gfx::cache::LocalCacheCtrl>(
+            make_uptr<gfx::cache::LocalResourceCache>(_globalCache)
         ),
-        make_smr<memory::LocalPooledAllocator>(_globalGfxAlloc)
+        make_smr<gfx::memory::LocalPooledAllocator>(_globalGfxAlloc)
     );
 
     // Note: We cannot to an implicit update ~> allocation due to missing external bound resources

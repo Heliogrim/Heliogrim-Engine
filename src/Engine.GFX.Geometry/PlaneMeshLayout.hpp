@@ -6,7 +6,7 @@ namespace hg::engine::gfx {
     [[nodiscard]] extern smr<render::graph::MeshDescription> GetPlaneMeshLayout();
 }
 
-inline hg::smr<hg::engine::gfx::render::graph::MeshDescription> hg::engine::gfx::GetPlaneMeshLayout() {
+inline hg::smr<hg::engine::render::graph::MeshDescription> hg::engine::gfx::GetPlaneMeshLayout() {
     static smr<render::graph::MeshDescription> planeMeshLayout {};
     return planeMeshLayout;
 }

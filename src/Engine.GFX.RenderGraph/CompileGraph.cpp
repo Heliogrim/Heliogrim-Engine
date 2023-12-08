@@ -3,8 +3,7 @@
 #include <Engine.Common/Collection/DenseSet.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-using namespace hg::engine::gfx::render::graph;
-using namespace hg::engine::gfx;
+using namespace hg::engine::render::graph;
 using namespace hg;
 
 [[nodiscard]] static _STD pair<smr<AnchorNode>, smr<AnchorNode>> generateMinimalGraph() {

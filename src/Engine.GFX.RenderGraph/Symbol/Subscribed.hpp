@@ -3,11 +3,11 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class SymbolizedResource;
 }
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     template <class Type_ = SymbolizedResource> requires (not _STD is_void_v<Type_>)
     struct ALIGNED(Subscribed, sizeof(ptr<Type_>)) {
     public:

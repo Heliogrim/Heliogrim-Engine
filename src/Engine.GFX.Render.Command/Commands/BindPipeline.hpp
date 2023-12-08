@@ -4,7 +4,7 @@
 #include "Engine.GFX.Render.Command/RenderCommand.hpp"
 #include "Engine.GFX.Render.Command/RenderResource.hpp"
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     enum class BindPipelineFeatureSet {
         eCompute,
         eGraphics

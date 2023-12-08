@@ -5,7 +5,7 @@
 
 #include "../RuntimeNode.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class SelectorNode final :
         public RuntimeNode {
     public:

@@ -4,7 +4,7 @@
 
 #include "LinkMode.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class BLinkVisitor final :
         public Visitor {
     public:

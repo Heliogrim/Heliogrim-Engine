@@ -5,7 +5,7 @@
 
 #include "Component.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class AnchorComponent final :
         public InheritMeta<AnchorComponent, Component> {
     public:

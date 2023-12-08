@@ -3,10 +3,10 @@
 
 #include <Engine.Common/Make.hpp>
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg;
 
-smr<const graph::Symbol> engine::gfx::render::makeSceneViewSymbol() {
+smr<const graph::Symbol> engine::render::makeSceneViewSymbol() {
 
     static auto obj = make_smr<graph::Symbol>(
         graph::SymbolFlagBits::eUndefined,

@@ -1,7 +1,7 @@
 #pragma once
 #include "ConvergeNode.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class BinNode final :
         public ConvergeNode {
     public:

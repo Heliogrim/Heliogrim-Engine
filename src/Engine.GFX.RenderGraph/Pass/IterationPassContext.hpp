@@ -1,7 +1,7 @@
 #pragma once
 #include "../Symbol/SymbolContext.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class IterationPassContext {
     public:
         using this_type = IterationPassContext;

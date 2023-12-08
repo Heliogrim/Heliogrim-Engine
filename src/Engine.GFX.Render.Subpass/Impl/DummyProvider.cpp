@@ -7,7 +7,7 @@
 #include <Engine.GFX/Texture/TextureFactory.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg::engine::gfx;
 using namespace hg;
 

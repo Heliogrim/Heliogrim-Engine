@@ -4,7 +4,7 @@
 #include <Engine.GFX/Cache/LocalCacheCtrl.hpp>
 #include <Engine.GFX/Memory/LocalPooledAllocator.hpp>
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class RenderPassState final {
     public:
         using this_type = RenderPassState;
@@ -14,12 +14,12 @@ namespace hg::engine::gfx::render {
 
     public:
         /* Global Resources */
-        smr<cache::LocalCacheCtrl> _gfxCache;
-        smr<memory::LocalPooledAllocator> _gfxAllocator;
+        smr<gfx::cache::LocalCacheCtrl> _gfxCache;
+        smr<gfx::memory::LocalPooledAllocator> _gfxAllocator;
 
     public:
         /* Scene Resources */
-        smr<const scene::SceneView> _sceneView;
+        smr<const gfx::scene::SceneView> _sceneView;
 
     public:
         /* Scoped / Local Resources */

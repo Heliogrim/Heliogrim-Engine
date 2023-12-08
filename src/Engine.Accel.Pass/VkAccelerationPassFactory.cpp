@@ -29,8 +29,8 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
 }
 
 tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerationPassFactory::buildGraphicsPass(
-    cref<Vector<smr<const gfx::render::graph::Symbol>>> outputSymbols_,
-    cref<Vector<smr<const gfx::render::graph::Symbol>>> inputSymbols_
+    cref<Vector<smr<const render::graph::Symbol>>> outputSymbols_,
+    cref<Vector<smr<const render::graph::Symbol>>> inputSymbols_
 ) const noexcept {
 
     auto result = make_smr<VkGraphicsPass>();
@@ -45,13 +45,13 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
     u32 attachIndex = 0uL;
     for (const auto& symbol : outputSymbols_) {
 
-        assert(IsType<gfx::render::graph::TextureDescription>(*symbol->description));
-        const auto* const td = Cast<gfx::render::graph::TextureDescription>(symbol->description.get());
+        assert(IsType<render::graph::TextureDescription>(*symbol->description));
+        const auto* const td = Cast<render::graph::TextureDescription>(symbol->description.get());
 
         /**/
 
-        smr<const gfx::render::graph::Symbol> inputSymbol = nullptr;
-        const gfx::render::graph::TextureDescription* itd = nullptr;
+        smr<const render::graph::Symbol> inputSymbol = nullptr;
+        const render::graph::TextureDescription* itd = nullptr;
 
         {
             const auto inputIt = _STD ranges::find_if(
@@ -63,7 +63,7 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
 
             if (inputIt != inputSymbols_.end()) {
                 inputSymbol = clone(*inputIt);
-                itd = Cast<gfx::render::graph::TextureDescription>(inputSymbol->description.get());
+                itd = Cast<render::graph::TextureDescription>(inputSymbol->description.get());
             }
         }
 
@@ -86,7 +86,7 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
             hasDepthStencil = true;
         } else {
             targetLayout = vk::ImageLayout::eColorAttachmentOptimal;
-            targetLayout = vk::ImageLayout::ePresentSrcKHR;
+            //targetLayout = vk::ImageLayout::ePresentSrcKHR;
             // Warning: targetLayout = vk::ImageLayout::eAttachmentOptimal;
         }
 
@@ -134,8 +134,8 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
 
     for (const auto& symbol : inputSymbols_) {
 
-        assert(IsType<gfx::render::graph::TextureDescription>(*symbol->description));
-        const auto* const td = Cast<gfx::render::graph::TextureDescription>(symbol->description.get());
+        assert(IsType<render::graph::TextureDescription>(*symbol->description));
+        const auto* const td = Cast<render::graph::TextureDescription>(symbol->description.get());
 
         /**/
 
@@ -349,8 +349,8 @@ tl::expected<smr<const RaytracingPass>, AccelerationPassFactoryError> VkAccelera
 }
 
 tl::expected<smr<const RaytracingPass>, AccelerationPassFactoryError> VkAccelerationPassFactory::buildRaytracingPass(
-    cref<Vector<smr<const gfx::render::graph::Symbol>>> outputSymbols_,
-    cref<Vector<smr<const gfx::render::graph::Symbol>>> inputSymbols_
+    cref<Vector<smr<const render::graph::Symbol>>> outputSymbols_,
+    cref<Vector<smr<const render::graph::Symbol>>> inputSymbols_
 ) const noexcept {
     return tl::make_unexpected(AccelerationPassFactoryError {});
 }
@@ -362,8 +362,8 @@ tl::expected<smr<const MeshPass>, AccelerationPassFactoryError> VkAccelerationPa
 }
 
 tl::expected<smr<const MeshPass>, AccelerationPassFactoryError> VkAccelerationPassFactory::buildMeshPass(
-    cref<Vector<smr<const gfx::render::graph::Symbol>>> outputSymbols_,
-    cref<Vector<smr<const gfx::render::graph::Symbol>>> inputSymbols_
+    cref<Vector<smr<const render::graph::Symbol>>> outputSymbols_,
+    cref<Vector<smr<const render::graph::Symbol>>> inputSymbols_
 ) const noexcept {
     return tl::make_unexpected(AccelerationPassFactoryError {});
 }

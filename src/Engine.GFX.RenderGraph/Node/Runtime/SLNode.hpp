@@ -1,7 +1,7 @@
 #pragma once
 #include "../RuntimeNode.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class __declspec(novtable) SLNode :
         public RuntimeNode {
     public:

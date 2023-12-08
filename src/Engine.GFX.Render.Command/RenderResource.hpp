@@ -4,7 +4,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.Reflect/Inherit/ClassMetaBase.hpp>
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     //template <typename Type_> requires _STD derived_from<Type_, ClassMetaBase>
     template <typename Type_>
     using RCmdRef = IRc<Type_>;

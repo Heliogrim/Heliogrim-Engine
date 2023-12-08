@@ -3,7 +3,7 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.GFX.RenderGraph/Visitor/Visitor.hpp>
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class CompileVisitor final :
         public Visitor {
     public:

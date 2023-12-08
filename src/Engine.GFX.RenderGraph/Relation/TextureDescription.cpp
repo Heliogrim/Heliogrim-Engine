@@ -5,7 +5,8 @@
 #include <Engine.GFX/Texture/VirtualTexture.hpp>
 #include <Engine.GFX/Texture/VirtualTextureView.hpp>
 
-using namespace hg::engine::gfx::render::graph;
+using namespace hg::engine::render::graph;
+using namespace hg::engine::gfx;
 using namespace hg;
 
 TextureDescription::TextureDescription() noexcept :

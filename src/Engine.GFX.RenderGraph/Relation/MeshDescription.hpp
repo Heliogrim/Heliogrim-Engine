@@ -7,7 +7,7 @@
 
 #include "Description.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class MeshDescription :
         public InheritMeta<MeshDescription, Description> {
     public:
@@ -45,30 +45,30 @@ namespace hg::engine::gfx::render::graph {
         struct MeshDataLayout {
             MeshDataLayoutAttribute position {
                 MeshDataLayoutAttributeId::ePosition,
-                offsetof(vertex, position),
-                sizeof(vertex::position),
+                offsetof(gfx::vertex, position),
+                sizeof(gfx::vertex::position),
                 accel::TransferDataType::eF32Vec3
             };
             MeshDataLayoutAttribute normal {
                 MeshDataLayoutAttributeId::eNormal,
-                offsetof(vertex, normal),
-                sizeof(vertex::normal),
+                offsetof(gfx::vertex, normal),
+                sizeof(gfx::vertex::normal),
                 accel::TransferDataType::eF32Vec3
             };
             MeshDataLayoutAttribute uv {
                 MeshDataLayoutAttributeId::eUv,
-                offsetof(vertex, uvm),
-                sizeof(vertex::uvm),
+                offsetof(gfx::vertex, uvm),
+                sizeof(gfx::vertex::uvm),
                 accel::TransferDataType::eF32Vec3
             };
             MeshDataLayoutAttribute color {
                 MeshDataLayoutAttributeId::eColor,
-                offsetof(vertex, color),
-                sizeof(vertex::color),
+                offsetof(gfx::vertex, color),
+                sizeof(gfx::vertex::color),
                 accel::TransferDataType::eU8Vec3
             };
             /**/
-            u64 stride = sizeof(vertex);
+            u64 stride = sizeof(gfx::vertex);
         };
 
     private:

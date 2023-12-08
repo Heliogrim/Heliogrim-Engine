@@ -7,7 +7,7 @@
 #include "Component.hpp"
 #include "../Relation/Provision.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class ProviderComponent :
         public InheritMeta<ProviderComponent, Component> {
     public:

@@ -5,7 +5,7 @@
 
 #include "../Memory/GraphNodeAllocator.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class CompilePassContext {
     public:
         using this_type = CompilePassContext;
@@ -21,6 +21,6 @@ namespace hg::engine::gfx::render::graph {
     public:
         [[nodiscard]] nmpt<const GraphNodeAllocator> getGraphNodeAllocator() const noexcept;
 
-        [[nodiscard]] nmpt<const scene::SceneView> getSceneView() const noexcept;
+        [[nodiscard]] nmpt<const gfx::scene::SceneView> getSceneView() const noexcept;
     };
 }

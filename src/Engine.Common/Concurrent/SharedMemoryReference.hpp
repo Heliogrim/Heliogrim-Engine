@@ -255,11 +255,13 @@ namespace hg {
     public:
         constexpr SharedMemoryReferenceCtrlBlock() noexcept :
             VirtualBase(),
-            _packed(0) {}
+            _packed(0) { }
 
-        SharedMemoryReferenceCtrlBlock(_In_ mref<ptr<vty>> payload_) :
+        template <typename Type_ = vty> requires _STD is_same_v<Type_, vty>
+        SharedMemoryReferenceCtrlBlock(_In_ mref<ptr<Type_>> payload_) :
             VirtualBase(),
             _packed(0) {
+            static_assert(sizeof(ivty) > 0, "Prevent handling of incomplete types.");
             this_type::store(_STD move(payload_));
         }
 
@@ -304,6 +306,10 @@ namespace hg {
 
         void destroy(mref<ptr<void>> obj_) override {
             delete static_cast<ptr<ivty>>(obj_);
+        }
+
+        [[nodiscard]] constexpr ptr<VirtualBase> vdb() noexcept {
+            return this;
         }
 
     public:
@@ -378,8 +384,10 @@ namespace hg {
                 // if (expect & packed_ref_mask)
                 if ((expect & packed_ref_mask) == 0 && maskedPtr) {
                     auto* ctrlp = reinterpret_cast<ptr<ivty>>(packed >> packed_shift);
-                    this->destroy(_STD move(ctrlp));
 
+                    // Prevent final override polymorphic optimization
+                    //  ~> otherwise will break virtual deleter overload
+                    vdb()->destroy(_STD move(ctrlp));
                     delete_this();
                 }
             }

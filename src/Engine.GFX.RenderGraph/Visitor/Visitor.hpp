@@ -3,7 +3,7 @@
 
 #include "../__fwd.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class __declspec(novtable) Visitor {
     public:
         using this_type = Visitor;

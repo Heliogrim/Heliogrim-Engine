@@ -4,10 +4,10 @@
 
 #include "../Descriptions/ColorBuffer.hpp"
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg;
 
-smr<const graph::Symbol> engine::gfx::render::makeSceneColorSymbol() {
+smr<const graph::Symbol> engine::render::makeSceneColorSymbol() {
     static auto obj = make_smr<graph::Symbol>(
         graph::SymbolFlagBits::eUndefined,
         graph::SymbolScope {

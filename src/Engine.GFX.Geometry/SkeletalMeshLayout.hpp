@@ -6,7 +6,7 @@ namespace hg::engine::gfx {
     [[nodiscard]] extern smr<render::graph::MeshDescription> GetSkeletalMeshLayout();
 }
 
-inline hg::smr<hg::engine::gfx::render::graph::MeshDescription> hg::engine::gfx::GetSkeletalMeshLayout() {
+inline hg::smr<hg::engine::render::graph::MeshDescription> hg::engine::gfx::GetSkeletalMeshLayout() {
     static smr<render::graph::MeshDescription> skeletalMeshLayout {};
     return skeletalMeshLayout;
 }

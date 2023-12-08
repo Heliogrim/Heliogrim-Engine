@@ -3,14 +3,14 @@
 #include <Engine.GFX/Scene/SceneNodeModel.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class __declspec(novtable) SceneHookFilter :
         public InheritBase<SceneHookFilter> {
     public:
         using this_type = SceneHookFilter;
 
         using checksum_type = u64;
-        using scene_model_type = SceneNodeModel;
+        using scene_model_type = gfx::SceneNodeModel;
 
     public:
         constexpr SceneHookFilter() noexcept = default;

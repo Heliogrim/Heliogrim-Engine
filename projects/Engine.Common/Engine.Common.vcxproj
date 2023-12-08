@@ -104,6 +104,7 @@
     <ClInclude Include="..\..\src\Engine.Common\stdafx.h" />
     <ClInclude Include="..\..\src\Engine.Common\Stream.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\String.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\String\Text.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Types.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Wrapper.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\__macro.hpp" />

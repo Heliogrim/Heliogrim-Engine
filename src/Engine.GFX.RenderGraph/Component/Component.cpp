@@ -1,6 +1,6 @@
 #include "Component.hpp"
 
-using namespace hg::engine::gfx::render::graph;
+using namespace hg::engine::render::graph;
 using namespace hg;
 
 void Component::mount(nmpt<const Node> target_) {}

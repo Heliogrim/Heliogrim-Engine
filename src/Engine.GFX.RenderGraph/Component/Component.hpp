@@ -5,7 +5,7 @@
 
 #include "../__fwd.hpp"
 
-namespace hg::engine::gfx::render::graph {
+namespace hg::engine::render::graph {
     class Component :
         public InheritBase<Component> {
     public:

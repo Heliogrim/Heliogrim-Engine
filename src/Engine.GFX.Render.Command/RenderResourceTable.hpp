@@ -3,7 +3,7 @@
 
 #include "RenderResource.hpp"
 
-namespace hg::engine::gfx::render {
+namespace hg::engine::render {
     class RenderResourceTable {
     public:
         using this_type = RenderResourceTable;

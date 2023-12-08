@@ -163,12 +163,12 @@ namespace hg::engine {
         /**
          *
          */
-        _STD map<string, smr<gfx::render::Renderer>> _cachedRenderer;
+        _STD map<string, smr<render::Renderer>> _cachedRenderer;
 
     public:
-        [[nodiscard]] smr<gfx::render::Renderer> getRenderer(cref<string> key_) const;
+        [[nodiscard]] smr<render::Renderer> getRenderer(cref<string> key_) const;
 
-        [[nodiscard]] smr<gfx::render::Renderer> getRenderer(
+        [[nodiscard]] smr<render::Renderer> getRenderer(
             cref<string> key_,
             _STD nothrow_t
         ) const noexcept;

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace hg::engine::gfx::render::cmd {
+namespace hg::engine::render::cmd {
     class NativeQueue {
     public:
         using this_type = NativeQueue;

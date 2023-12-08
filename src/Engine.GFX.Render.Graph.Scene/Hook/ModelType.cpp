@@ -1,6 +1,6 @@
 #include "ModelType.hpp"
 
-using namespace hg::engine::gfx::render::graph;
+using namespace hg::engine::render::graph;
 using namespace hg;
 
 bool ModelTypeFilter::operator()(const ptr<scene_model_type> model_) const noexcept {
