@@ -1,5 +1,6 @@
 #include "SkyBoxPass.hpp"
 
+#include <ranges>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.GFX/Graphics.hpp>
@@ -15,12 +16,19 @@
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
+#include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.Reflect/ExactType.hpp>
 #include <Engine.Scene/IRenderScene.hpp>
+#include <Engine.GFX/Buffer/StorageBufferView.hpp>
+#include <Engine.GFX/Texture/TextureView.hpp>
+#include <Engine.GFX/Texture/VirtualTextureView.hpp>
+#include <Engine.GFX.Render.Command/Resource/ResourceView.hpp>
+#include <Engine.GFX/Texture/TextureFactory.hpp>
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg::engine::accel;
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -44,6 +52,14 @@ void SkyBoxPass::destroy() noexcept {
     auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
 
     device->vkDevice().destroySemaphore(_STD exchange(_tmpSignal, nullptr));
+
+    if (_cameraBuffer.memory) {
+        _cameraBuffer.unmap();
+    }
+    _cameraBuffer.destroy();
+
+    _sampler->destroy();
+    _sampler.reset();
 
     _framebuffer->destroy();
     _framebuffer.reset();
@@ -72,7 +88,7 @@ void SkyBoxPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     SkyboxModel* model = nullptr;
     auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
-    auto sceneView = sceneViewRes->load<smr<const scene::SceneView>>();
+    auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
 
     auto scene = sceneView->getScene()->renderGraph();
     scene->traversal(
@@ -105,14 +121,16 @@ void SkyBoxPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     auto guard = material->acquire(resource::ResourceUsageFlag::eRead);
 
     auto proto = guard->getPrototype();
-    assert(proto->getAccelerationEffects().size() == 1uLL);
+    assert(proto->getMaterialEffects().size() == 1uLL);
 
-    auto recompile = _materialEffect.effect != proto->getAccelerationEffects().front().effect;
+    auto recompile = _materialEffect.effect != proto->getMaterialEffects().front().effect;
     if (recompile) {
+        _material = clone(material);
+
         _compiled.pipeline.reset();
         _compiled.flag = EffectCompileResultFlag::eUnknown;
 
-        _materialEffect = clone(proto->getAccelerationEffects().front());
+        _materialEffect = clone(proto->getMaterialEffects().front());
     }
 }
 
@@ -167,7 +185,67 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
         _framebuffer->setup();
 
         _tmpSignal = _framebuffer->device()->vkDevice().createSemaphore({});
+    }
 
+    /**/
+
+    if (_sampler == nullptr) {
+
+        _sampler = make_uptr<TextureSampler>();
+        _sampler->setup(_framebuffer->device());
+    }
+
+    /**/
+
+    if (_cameraBuffer.buffer == nullptr) {
+
+        const auto& device = _framebuffer->device();
+
+        vk::BufferCreateInfo bci {
+            vk::BufferCreateFlags {}, sizeof(math::mat4) * 3, vk::BufferUsageFlagBits::eUniformBuffer,
+            vk::SharingMode::eExclusive, 0uL, nullptr
+        };
+        _cameraBuffer.buffer = device->vkDevice().createBuffer(bci);
+        _cameraBuffer.device = device->vkDevice();
+
+        const auto allocResult = memory::allocate(
+            device->allocator(),
+            device,
+            _cameraBuffer.buffer,
+            MemoryProperties { MemoryProperty::eHostVisible },
+            _cameraBuffer.memory
+        );
+
+        assert(_cameraBuffer.buffer);
+        assert(_cameraBuffer.memory);
+
+        _cameraBuffer.size = _cameraBuffer.memory->size;
+        _cameraBuffer.usageFlags = vk::BufferUsageFlagBits::eUniformBuffer;
+
+        _cameraBuffer.bind();
+        _cameraBuffer.map();
+    }
+
+    auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
+    auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
+
+    struct TmpStruct {
+        math::mat4 mvp;
+        math::mat4 proj;
+        math::mat4 view;
+    };
+
+    auto tmp = TmpStruct {
+        sceneView->getProjectionMatrix() * sceneView->getViewMatrix(),
+        sceneView->getProjectionMatrix(),
+        sceneView->getViewMatrix()
+    };
+
+    _cameraBuffer.write<TmpStruct>(&tmp, 1uL);
+
+    if (_cameraBufferView == nullptr) {
+        _cameraBufferView = make_uptr<UniformBufferView>();
+        _cameraBufferView->storeBuffer(&_cameraBuffer);
     }
 
     /**/
@@ -178,6 +256,64 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     cmd.beginSubPass({});
 
     cmd.bindGraphicsPipeline(clone(_compiled.pipeline).into<GraphicsPipeline>());
+
+    const auto* const gpipe = static_cast<const ptr<const GraphicsPipeline>>(_compiled.pipeline.get());
+    const auto& alias = _compiled.alias;
+
+    for (const auto& group : gpipe->getBindingLayout().groups) {
+        for (const auto& element : group.elements) {
+
+            const auto symbolId = element.symbol->symbolId;
+            const auto aliasId = alias.aliasOrValue(symbolId);
+
+            static auto viewSym = lang::SymbolId::from("view");
+            if (aliasId == viewSym) {
+                cmd.bindUniform(clone(symbolId), _cameraBufferView.get());
+                continue;
+            }
+
+            static auto matSym = lang::SymbolId::from(/*"skybox"*/"mat-static-0");
+            if (aliasId == matSym) {
+
+                const auto iter = _STD ranges::find(
+                    _materialEffect.pattern->st.pairs,
+                    aliasId,
+                    [](const auto& pair_) {
+                        return pair_.second;
+                    }
+                );
+
+                if (iter == _materialEffect.pattern->st.pairs.end()) {
+                    assert(false);
+                }
+
+                const auto materialGuard = _material->acquire(resource::ResourceUsageFlag::eRead);
+                const auto texture = materialGuard->getParam<smr<TextureResource>>(iter->first);
+                const auto textureGuard = texture->acquire(resource::ResourceUsageFlag::eRead);
+
+                if (auto textureView = Cast<TextureView>(textureGuard.imm()->get())) {
+                    cmd.bindTexture(clone(symbolId), textureView, _sampler.get());
+
+                } else if (auto virtualTextureView = Cast<VirtualTextureView>(textureGuard.imm()->get())) {
+
+                    if (virtualTextureView->vkImageView() == nullptr) {
+                        TextureFactory::get()->buildView(*virtualTextureView, TextureViewBuildOptions {});
+                    }
+
+                    cmd.bindTexture(clone(symbolId), virtualTextureView, _sampler.get());
+
+                } else {
+                    assert(false);
+                }
+
+                continue;
+            }
+
+            __debugbreak();
+        }
+
+    }
+
     cmd.drawDispatch(1uL, 0uL, 36uL, 0uL);
 
     cmd.endSubPass();
@@ -199,6 +335,10 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
         }
         batch->_tmpSignals.push_back(_tmpSignal);
 
+        sceneColorRes->barriers.clear();
+        sceneColorRes->barriers.push_back(_tmpSignal.operator VkSemaphore());
+
+        /*
         batch->_tmpWaits.insert_range(
             batch->_tmpWaits.end(),
             reinterpret_cast<Vector<VkSemaphore>&>(sceneDepthRes->barriers)
@@ -208,6 +348,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                 VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT
             );
         }
+         */
     }
 
     batch->commitAndDispose();
