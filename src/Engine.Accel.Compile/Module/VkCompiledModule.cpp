@@ -9,8 +9,8 @@ using namespace hg::engine::accel;
 using namespace hg;
 
 VkCompiledModule::VkCompiledModule(mref<_::VkShaderModule> shaderModule_, mref<MappedBindings> bindings_) noexcept :
-    bindings(_STD move(bindings)),
-    shaderModule(_STD move(shaderModule)) {}
+    bindings(_STD move(bindings_)),
+    shaderModule(_STD move(shaderModule_)) {}
 
 VkCompiledModule::~VkCompiledModule() {
 

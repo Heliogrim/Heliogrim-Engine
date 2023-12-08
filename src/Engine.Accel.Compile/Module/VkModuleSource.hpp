@@ -20,7 +20,7 @@ namespace hg::engine::accel {
             const auto iter = _STD ranges::find_if(
                 inbound,
                 [&inbound_](const auto& pair_) {
-                    return inbound_ == pair_.first || inbound_->name == pair_.first->name;
+                    return inbound_ == pair_.first || inbound_->symbolId == pair_.first->symbolId;
                 }
             );
             assert(iter != inbound.end());
@@ -29,7 +29,7 @@ namespace hg::engine::accel {
             return _STD ranges::find_if(
                 inbound,
                 [&inbound_](const auto& pair_) {
-                    return inbound_ == pair_.first || inbound_->name == pair_.first->name;
+                    return inbound_ == pair_.first || inbound_->symbolId == pair_.first->symbolId;
                 }
             )->second;
             #endif
@@ -42,7 +42,7 @@ namespace hg::engine::accel {
                 assert(pair.first != nullptr);
                 const auto& symbol = pair.first;
 
-                if (symbol->name == outbound_->name) {
+                if (symbol->symbolId == outbound_->symbolId) {
                     assert(symbol->var.data->type == outbound_->var.data->type);
                     return symbol;
                 }
@@ -60,7 +60,7 @@ namespace hg::engine::accel {
             const auto iter = _STD ranges::find_if(
                 outbound,
                 [&outbound_](const auto& pair_) {
-                    return outbound_ == pair_.first || outbound_->name == pair_.first->name;
+                    return outbound_ == pair_.first || outbound_->symbolId == pair_.first->symbolId;
                 }
             );
             assert(iter != outbound.end());
@@ -69,7 +69,7 @@ namespace hg::engine::accel {
             return _STD ranges::find_if(
                 outbound,
                 [&outbound_](const auto& pair_) {
-                    return outbound_ == pair_.first || outbound_->name == pair_.first->name;
+                    return outbound_ == pair_.first || outbound_->symbolId == pair_.first->symbolId;
                 }
             )->second;
             #endif
@@ -82,7 +82,7 @@ namespace hg::engine::accel {
                 assert(pair.first != nullptr);
                 const auto& symbol = pair.first;
 
-                if (symbol->name == inbound_->name) {
+                if (symbol->symbolId == inbound_->symbolId) {
                     assert(symbol->var.data->type == inbound_->var.data->type);
                     return symbol;
                 }

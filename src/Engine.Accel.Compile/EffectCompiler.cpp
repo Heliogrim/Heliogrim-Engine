@@ -30,7 +30,11 @@ EffectCompileResult EffectCompiler::compile(
     mref<EffectCompileRequest> request_
 ) const {
 
+    /* Assure request data to be present */
     /* Discover all tokens and resource dependencies */
+
+    assert(not request_.effect.empty());
+    assert(not request_.profile.empty());
 
     if (not request_.spec->targetSymbols().empty()) {
 
@@ -40,6 +44,20 @@ EffectCompileResult EffectCompiler::compile(
 
         for (const auto& requested : request_.spec->targetSymbols()) {
             assert(_STD ranges::contains(exports, requested, [](const auto& stageOut_){ return stageOut_.symbol; }));
+        }
+    }
+
+    // Warning: Move into stage composer
+    // Warning: Temporary Solution
+    EffectCompileResultAlias aliasing {};
+
+    {
+        Vector<nmpt<const lang::Symbol>> symbols {};
+        request_.effect->enumerateImportSymbols(reinterpret_cast<ref<Vector<StageInput>>>(symbols));
+        request_.effect->enumerateExportSymbols(reinterpret_cast<ref<Vector<StageOutput>>>(symbols));
+
+        for (const auto& symbol : symbols) {
+            aliasing.mapping.emplace_back(symbol->symbolId, symbol->symbolId);
         }
     }
 
@@ -114,6 +132,7 @@ EffectCompileResult EffectCompiler::compile(
 
     return {
         .flag = EffectCompileResultFlag::eCompiled,
+        .alias = _STD move(aliasing),
         .pipeline = _passCompiler->compile(
             request_.spec,
             _STD move(pass),

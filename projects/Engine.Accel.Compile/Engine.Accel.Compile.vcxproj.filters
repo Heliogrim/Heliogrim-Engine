@@ -43,6 +43,9 @@
     <Filter Include="Quelldateien\Module">
       <UniqueIdentifier>{3d4b344f-be7a-4ee7-80d7-cbc684dedecc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Profile">
+      <UniqueIdentifier>{cfdeb2a9-9dd0-47f1-b6a9-fa90d7e73c0c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Accel.Compile\DxEffectCompiler.cpp">
@@ -72,7 +75,7 @@
     <ClCompile Include="..\..\src\Engine.Accel.Compile\Pass\VkPassBuilder.cpp">
       <Filter>Quelldateien\Pass</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Accel.Compile\Pass\VkPassCompiler.cpp">
+    <ClCompile Include="..\..\src\Engine.Accel.Compile\Pass\VkPipelineCompiler.cpp">
       <Filter>Quelldateien\Pass</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Accel.Compile\Spec\GraphicsPassSpecification.cpp">
@@ -98,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Accel.Compile\Module\VkModuleCompiler.cpp">
       <Filter>Quelldateien\Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Accel.Compile\Profile\EffectProfile.cpp">
+      <Filter>Quelldateien\Profile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -218,8 +224,11 @@
     <ClInclude Include="..\..\src\Engine.Accel.Compile\Pass\VkPassBuilder.hpp">
       <Filter>Headerdateien\Pass</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Accel.Compile\Pass\VkPassCompiler.hpp">
+    <ClInclude Include="..\..\src\Engine.Accel.Compile\Pass\VkPipelineCompiler.hpp">
       <Filter>Headerdateien\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Accel.Compile\Profile\ProfileUsagePattern.hpp">
+      <Filter>Headerdateien\Profile</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

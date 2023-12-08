@@ -165,8 +165,9 @@ uptr<ModuleSource> VkModuleBuilder::build(
 
             if (matched == nullptr) {
                 IM_CORE_ERRORF(
-                    "Failed to link forward linkage of `{}` between stages.",
-                    sib.symbol->name
+                    "Failed to link forward linkage of `{}({})` between stages.",
+                    sib.symbol->symbolId.value,
+                    sib.symbol->symbolId.hash
                 );
                 continue;
             }
@@ -251,12 +252,9 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
             annotation = annotation->next.get();
         }
 
-        *nextAnnotation = make_uptr<lang::Annotation>(
-            lang::Annotation {
-                lang::AnnotationType::eVkBindLocation,
-                lang::VkBindLocationAnnotation { location.set, location.location },
-                nullptr
-            }
+        *nextAnnotation = make_uptr<lang::VkBindLocationAnnotation>(
+            location.set,
+            location.location
         );
 
     }
@@ -278,12 +276,9 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
             annotation = annotation->next.get();
         }
 
-        *nextAnnotation = make_uptr<lang::Annotation>(
-            lang::Annotation {
-                lang::AnnotationType::eVkBindLocation,
-                lang::VkBindLocationAnnotation { location.set, location.location },
-                nullptr
-            }
+        *nextAnnotation = make_uptr<lang::VkBindLocationAnnotation>(
+            location.set,
+            location.location
         );
 
     }
@@ -294,6 +289,11 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
 
     auto emitter = lang::GlslEmitter {};
     emitter(stage_->getIntermediate()->rep, lang::Dialect::eVulkanGlsl460, module_->code);
+    // Warning: Temporary Fix
+    module_->code.dialect = stage_->getIntermediate()->lang.dialect;
+    for (const auto& textBlock : stage_->getIntermediate()->lang.text) {
+        module_->code.text.emplace_back(textBlock);
+    }
 
     /**/
 

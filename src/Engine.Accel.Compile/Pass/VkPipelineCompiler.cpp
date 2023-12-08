@@ -1,4 +1,4 @@
-#include "VkPassCompiler.hpp"
+#include "VkPipelineCompiler.hpp"
 
 #include <ranges>
 #include <variant>
@@ -29,11 +29,11 @@
 using namespace hg::engine::accel;
 using namespace hg;
 
-VkPassCompiler::VkPassCompiler() = default;
+VkPipelineCompiler::VkPipelineCompiler() = default;
 
-VkPassCompiler::~VkPassCompiler() = default;
+VkPipelineCompiler::~VkPipelineCompiler() = default;
 
-Vector<smr<StageDerivat>> VkPassCompiler::hydrateStages(
+Vector<smr<StageDerivat>> VkPipelineCompiler::hydrateStages(
     mref<Vector<smr<StageDerivat>>> stages_,
     mref<Vector<uptr<VkCompiledModule>>> modules_
 ) const {
@@ -56,7 +56,7 @@ Vector<smr<StageDerivat>> VkPassCompiler::hydrateStages(
     return _STD move(stages_);
 }
 
-void VkPassCompiler::resolveBindLayouts(
+void VkPipelineCompiler::resolveBindLayouts(
     const non_owning_rptr<const AccelerationPipeline> pass_,
     ref<Vector<_::VkDescriptorSetLayout>> layouts_
 ) const {
@@ -80,22 +80,41 @@ void VkPassCompiler::resolveBindLayouts(
                 nullptr
             };
 
-            // TODO: Query element type
-            bool isTexture = false;
-            bool isStorage = false;
-            bool isUniform = false;
+            const auto& var = *element.symbol->var.data;
 
-            if (isTexture) {
-                vkDslb.descriptorType = vk::DescriptorType::eCombinedImageSampler;
-                break;
-            } else if (isStorage) {
-                vkDslb.descriptorType = vk::DescriptorType::eStorageBuffer;
-                break;
-            } else if (isUniform) {
-                vkDslb.descriptorType = vk::DescriptorType::eUniformBuffer;
-                break;
-            } else {
-                __debugbreak();
+            bool uniform = false;
+            auto* cur = var.annotation.get();
+            while (cur != nullptr) {
+                if (cur->type == lang::AnnotationType::eUniform) {
+                    uniform = true;
+                    break;
+                }
+                cur = cur->next.get();
+            }
+
+            switch (var.type.category) {
+                case lang::TypeCategory::eTexture: {
+
+                    if (uniform) {
+                        vkDslb.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+                    } else {
+                        // Warning: Unsure
+                        vkDslb.descriptorType = vk::DescriptorType::eStorageImage;
+                    }
+
+                    break;
+                }
+                case lang::TypeCategory::eScalar:
+                case lang::TypeCategory::eObject: {
+
+                    if (uniform) {
+                        vkDslb.descriptorType = vk::DescriptorType::eUniformBuffer;
+                    } else {
+                        vkDslb.descriptorType = vk::DescriptorType::eStorageBuffer;
+                    }
+
+                    break;
+                }
             }
 
             vkBindings.push_back(_STD move(vkDslb));
@@ -104,6 +123,7 @@ void VkPassCompiler::resolveBindLayouts(
         dslci.setBindings(vkBindings);
         const auto vkLayout = device->vkDevice().createDescriptorSetLayout(dslci);
 
+        const_cast<BindGroup&>(bindGroup).drvAux = vkLayout.operator VkDescriptorSetLayout();
         layouts_.push_back(reinterpret_cast<_::VkDescriptorSetLayout>(vkLayout.operator VkDescriptorSetLayout()));
 
         /**/
@@ -113,7 +133,7 @@ void VkPassCompiler::resolveBindLayouts(
 
 }
 
-bool VkPassCompiler::hasDepthBinding(cref<smr<StageDerivat>> stage_) const noexcept {
+bool VkPipelineCompiler::hasDepthBinding(cref<smr<StageDerivat>> stage_) const noexcept {
 
     if (stage_.empty()) {
         return false;
@@ -123,7 +143,8 @@ bool VkPassCompiler::hasDepthBinding(cref<smr<StageDerivat>> stage_) const noexc
     stage_->enumerateStageInputs(tmpIn);
 
     for (const auto& in : tmpIn) {
-        if (in.symbol->name == "depth") {
+        // Error:
+        if (in.symbol->symbolId.value == "depth") {
             return true;
         }
     }
@@ -132,7 +153,8 @@ bool VkPassCompiler::hasDepthBinding(cref<smr<StageDerivat>> stage_) const noexc
     stage_->enumerateStageOutputs(tmpOut);
 
     for (const auto& out : tmpOut) {
-        if (out.symbol->name == "depth") {
+        // Error:
+        if (out.symbol->symbolId.value == "depth") {
             return true;
         }
     }
@@ -140,7 +162,7 @@ bool VkPassCompiler::hasDepthBinding(cref<smr<StageDerivat>> stage_) const noexc
     return false;
 }
 
-bool VkPassCompiler::hasStencilBinding(cref<smr<StageDerivat>> stage_) const noexcept {
+bool VkPipelineCompiler::hasStencilBinding(cref<smr<StageDerivat>> stage_) const noexcept {
 
     if (stage_.empty()) {
         return false;
@@ -150,7 +172,8 @@ bool VkPassCompiler::hasStencilBinding(cref<smr<StageDerivat>> stage_) const noe
     stage_->enumerateStageInputs(tmpIn);
 
     for (const auto& in : tmpIn) {
-        if (in.symbol->name == "stencil") {
+        // Error:
+        if (in.symbol->symbolId.value == "stencil") {
             return true;
         }
     }
@@ -159,7 +182,8 @@ bool VkPassCompiler::hasStencilBinding(cref<smr<StageDerivat>> stage_) const noe
     stage_->enumerateStageOutputs(tmpOut);
 
     for (const auto& out : tmpOut) {
-        if (out.symbol->name == "stencil") {
+        // Error:
+        if (out.symbol->symbolId.value == "stencil") {
             return true;
         }
     }
@@ -168,7 +192,7 @@ bool VkPassCompiler::hasStencilBinding(cref<smr<StageDerivat>> stage_) const noe
 }
 
 template <typename Type_, typename SpecificationType_>
-smr<const AccelerationPipeline> VkPassCompiler::compileTypeSpec(
+smr<const AccelerationPipeline> VkPipelineCompiler::compileTypeSpec(
     mref<smr<AccelerationPipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_,
     SpecificationType_ specification_
@@ -178,7 +202,7 @@ smr<const AccelerationPipeline> VkPassCompiler::compileTypeSpec(
     return linkVk(_STD move(specification_), _STD move(pass));
 }
 
-smr<const AccelerationPipeline> VkPassCompiler::compile(
+smr<const AccelerationPipeline> VkPipelineCompiler::compile(
     cref<smr<const EffectSpecification>> specifications_,
     mref<smr<AccelerationPipeline>> source_,
     mref<Vector<smr<StageDerivat>>> stages_,
@@ -229,14 +253,14 @@ smr<const AccelerationPipeline> VkPassCompiler::compile(
 
 #pragma region Vk Compute Pipeline
 
-smr<VkComputePipeline> VkPassCompiler::linkStages(
+smr<VkComputePipeline> VkPipelineCompiler::linkStages(
     mref<smr<VkComputePipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_
 ) const {
     return _STD move(pass_);
 }
 
-smr<VkComputePipeline> VkPassCompiler::linkVk(
+smr<VkComputePipeline> VkPipelineCompiler::linkVk(
     mref<struct ComputePassSpecification> specification_,
     mref<smr<VkComputePipeline>> pass_
 ) const {
@@ -247,7 +271,7 @@ smr<VkComputePipeline> VkPassCompiler::linkVk(
 
 #pragma region Vk Programmable Pipeline
 
-smr<VkGraphicsPipeline> VkPassCompiler::linkStages(
+smr<VkGraphicsPipeline> VkPipelineCompiler::linkStages(
     mref<smr<VkGraphicsPipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_
 ) const {
@@ -261,7 +285,7 @@ smr<VkGraphicsPipeline> VkPassCompiler::linkStages(
     return _STD move(pass_);
 }
 
-smr<VkGraphicsPipeline> VkPassCompiler::linkVk(
+smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
     mref<GraphicsPassSpecification> specification_,
     mref<smr<VkGraphicsPipeline>> pass_
 ) const {
@@ -320,7 +344,8 @@ smr<VkGraphicsPipeline> VkPassCompiler::linkVk(
         // TODO: Validate that forward output bindings have correct type ( forward -> texture vs binding -> storage/uniform/texture )
 
         assert(out.symbol != nullptr);
-        assert(out.symbol->name != "depth");
+        // Error:
+        assert(out.symbol->symbolId.value != "depth");
         assert(out.symbol->var.type == lang::SymbolType::eVariableSymbol);
         assert(out.symbol->var.data->type == lang::Type {});
         assert(out.symbol->var.data->annotation);
@@ -497,10 +522,22 @@ smr<VkGraphicsPipeline> VkPassCompiler::linkVk(
         // TODO:    we can assume that the reported data layout of the IR of the vertex stage derivat is similar
         // TODO:    to the targeted input dataset. ~> no need for the graph resource symbol & description
 
-        const auto* const symbolDescription = ptr<gfx::render::graph::Description>();
-        if (symbolDescription->getMetaClass()->is<gfx::render::graph::MeshDescription>()) {
+        lang::Annotation* cur = in.symbol->var.data->annotation.get();
+        while (cur != nullptr) {
+            if (cur->type == lang::AnnotationType::eForwardLinkage) {
+                break;
+            }
+            cur = cur->next.get();
+        }
 
-            const auto& desc = static_cast<cref<gfx::render::graph::MeshDescription>>(*symbolDescription);
+        if (cur == nullptr || cur->type != lang::AnnotationType::eForwardLinkage) {
+            continue;
+        }
+
+        const auto* const symbolDescription = ptr<render::graph::Description>();
+        if (symbolDescription->getMetaClass()->is<render::graph::MeshDescription>()) {
+
+            const auto& desc = static_cast<cref<render::graph::MeshDescription>>(*symbolDescription);
 
             /**/
 
@@ -515,11 +552,11 @@ smr<VkGraphicsPipeline> VkPassCompiler::linkVk(
             /**/
 
             const auto define = [&vertexAttributes, nativeModule, invariantBindIndex](
-                const gfx::render::graph::MeshDescription::MeshDataLayoutAttribute& attribute_,
+                const render::graph::MeshDescription::MeshDataLayoutAttribute& attribute_,
                 mref<string> token_
             ) {
                 const lang::Symbol search {
-                    _STD move(token_),
+                    lang::SymbolId::from(_STD move(token_)),
                     lang::VariableSymbol { .type = lang::SymbolType::eVariableSymbol, .data = nullptr }
                 };
                 const auto inbound = nativeModule->bindings.matchOutbound(&search);
@@ -612,7 +649,7 @@ smr<VkGraphicsPipeline> VkPassCompiler::linkVk(
                 stageBits = vk::ShaderStageFlagBits::eCompute;
                 break;
             }
-            default: { }
+            default: {}
         }
 
         // TODO: Transform / Translate Acceleration Module to VkPipeline Shader Stage
@@ -684,14 +721,14 @@ smr<VkGraphicsPipeline> VkPassCompiler::linkVk(
 
 #pragma region Vk Mesh Pipeline
 
-smr<VkMeshPipeline> VkPassCompiler::linkStages(
+smr<VkMeshPipeline> VkPipelineCompiler::linkStages(
     mref<smr<VkMeshPipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_
 ) const {
     return _STD move(pass_);
 }
 
-smr<VkMeshPipeline> VkPassCompiler::linkVk(
+smr<VkMeshPipeline> VkPipelineCompiler::linkVk(
     mref<struct MeshPassSpecification> specification_,
     mref<smr<VkMeshPipeline>> pass_
 ) const {
@@ -702,14 +739,14 @@ smr<VkMeshPipeline> VkPassCompiler::linkVk(
 
 #pragma region Vk Raytracing Pipeline
 
-smr<VkRaytracingPipeline> VkPassCompiler::linkStages(
+smr<VkRaytracingPipeline> VkPipelineCompiler::linkStages(
     mref<smr<VkRaytracingPipeline>> pass_,
     mref<Vector<smr<StageDerivat>>> stages_
 ) const {
     return _STD move(pass_);
 }
 
-smr<VkRaytracingPipeline> VkPassCompiler::linkVk(
+smr<VkRaytracingPipeline> VkPipelineCompiler::linkVk(
     mref<struct RaytracingPassSpecification> specification_,
     mref<smr<VkRaytracingPipeline>> pass_
 ) const {

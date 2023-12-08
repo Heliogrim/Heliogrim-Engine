@@ -26,7 +26,8 @@
     <ClCompile Include="..\..\src\Engine.Accel.Compile\Pass\DxPassCompiler.cpp" />
     <ClCompile Include="..\..\src\Engine.Accel.Compile\Pass\PassCompiler.cpp" />
     <ClCompile Include="..\..\src\Engine.Accel.Compile\Pass\VkPassBuilder.cpp" />
-    <ClCompile Include="..\..\src\Engine.Accel.Compile\Pass\VkPassCompiler.cpp" />
+    <ClCompile Include="..\..\src\Engine.Accel.Compile\Pass\VkPipelineCompiler.cpp" />
+    <ClCompile Include="..\..\src\Engine.Accel.Compile\Profile\EffectProfile.cpp" />
     <ClCompile Include="..\..\src\Engine.Accel.Compile\Spec\GraphicsPassSpecification.cpp" />
     <ClCompile Include="..\..\src\Engine.Accel.Compile\Spec\SimpleEffectSpecification.cpp" />
     <ClCompile Include="..\..\src\Engine.Accel.Compile\Stage\StageComposer.cpp" />
@@ -62,9 +63,10 @@
     <ClInclude Include="..\..\src\Engine.Accel.Compile\Pass\PassBuilder.hpp" />
     <ClInclude Include="..\..\src\Engine.Accel.Compile\Pass\PassCompiler.hpp" />
     <ClInclude Include="..\..\src\Engine.Accel.Compile\Pass\VkPassBuilder.hpp" />
-    <ClInclude Include="..\..\src\Engine.Accel.Compile\Pass\VkPassCompiler.hpp" />
+    <ClInclude Include="..\..\src\Engine.Accel.Compile\Pass\VkPipelineCompiler.hpp" />
     <ClInclude Include="..\..\src\Engine.Accel.Compile\Profile\EffectProfile.hpp" />
     <ClInclude Include="..\..\src\Engine.Accel.Compile\Profile\ProfileDefinition.hpp" />
+    <ClInclude Include="..\..\src\Engine.Accel.Compile\Profile\ProfileUsagePattern.hpp" />
     <ClInclude Include="..\..\src\Engine.Accel.Compile\Spec\ComputePassSpecification.hpp" />
     <ClInclude Include="..\..\src\Engine.Accel.Compile\Spec\EffectSpecification.hpp" />
     <ClInclude Include="..\..\src\Engine.Accel.Compile\Spec\GraphicsPassSpecification.hpp" />

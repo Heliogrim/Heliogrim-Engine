@@ -5,15 +5,15 @@
 #include "PassCompiler.hpp"
 
 namespace hg::engine::accel {
-    class VkPassCompiler final :
+    class VkPipelineCompiler final :
         public PassCompiler {
     public:
-        using this_type = VkPassCompiler;
+        using this_type = VkPipelineCompiler;
 
     public:
-        VkPassCompiler();
+        VkPipelineCompiler();
 
-        ~VkPassCompiler() override;
+        ~VkPipelineCompiler() override;
 
     private:
         smr<class VkComputePipeline> linkStages(

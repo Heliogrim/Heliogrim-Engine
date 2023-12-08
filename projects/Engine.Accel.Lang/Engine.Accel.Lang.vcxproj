@@ -18,6 +18,7 @@
     <ClCompile Include="..\..\src\Engine.Accel.Lang\Emitter\GlslEmitter.cpp" />
     <ClCompile Include="..\..\src\Engine.Accel.Lang\Intermediate.cpp" />
     <ClCompile Include="..\..\src\Engine.Accel.Lang\Representation.cpp" />
+    <ClCompile Include="..\..\src\Engine.Accel.Lang\Rep\Variable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.Accel.Lang\Dialect.hpp" />

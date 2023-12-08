@@ -46,7 +46,7 @@ void AccelerationEffect::enumerateImportSymbols(ref<Vector<StageInput>> imports_
                 tmpBeg,
                 tmpEnd,
                 [&out](const auto& stageIn) {
-                    if (out.symbol == stageIn.symbol || out.symbol->name == stageIn.symbol->name) {
+                    if (out.symbol == stageIn.symbol || out.symbol->symbolId == stageIn.symbol->symbolId) {
                         return true;
                     }
                     return false;
@@ -87,7 +87,7 @@ void AccelerationEffect::enumerateExportSymbols(ref<Vector<StageOutput>> exports
                 tmpBeg,
                 tmpEnd,
                 [&in](const auto& stageOut) {
-                    if (in.symbol == stageOut.symbol || in.symbol->name == stageOut.symbol->name) {
+                    if (in.symbol == stageOut.symbol || in.symbol->symbolId == stageOut.symbol->symbolId) {
                         return true;
                     }
                     return false;
@@ -123,7 +123,7 @@ Optional<StageInput> AccelerationEffect::getFirstInputFor(cref<lang::Symbol> sym
         stage->enumerateStageInputs(tmp);
 
         for (const auto& stageIn : tmp) {
-            if (stageIn.symbol->name == symbol_.name) {
+            if (stageIn.symbol->symbolId == symbol_.symbolId) {
                 return tl::make_optional(stageIn);
             }
         }
@@ -141,7 +141,7 @@ Optional<StageOutput> AccelerationEffect::getLastOutputFor(cref<lang::Symbol> sy
         stage->enumerateStageOutputs(tmp);
 
         for (const auto& stageOut : tmp) {
-            if (stageOut.symbol->name == symbol_.name) {
+            if (stageOut.symbol->symbolId == symbol_.symbolId) {
                 return tl::make_optional(stageOut);
             }
         }
