@@ -5,6 +5,7 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX/Device/Device.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "VkCompiledModule.hpp"
 #include "VkModuleSource.hpp"
@@ -30,12 +31,14 @@ uptr<CompiledModule> VkModuleCompiler::compile(
 
     /* Fetch source code and transpile into spirv */
 
-    const auto& sourceCode = source->code.text.front();
-    auto byteCode = _spirvCompiler.compile(*source, sourceCode);
+    assert(not source->code.text.empty());
+    auto byteCode = _spirvCompiler.compile(*source, source->code.text);
 
     /**/
 
     if (byteCode.empty()) {
+        IM_CORE_ERROR("Failed to compile spirv module from source code.");
+        __debugbreak();
         return {};
     }
 

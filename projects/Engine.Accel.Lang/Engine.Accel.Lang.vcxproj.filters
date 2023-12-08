@@ -25,6 +25,9 @@
     <Filter Include="Quelldateien\Emitter">
       <UniqueIdentifier>{76c510ef-6ac0-4565-86d5-3dd78a1e71e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Rep">
+      <UniqueIdentifier>{5c4d2070-b04a-4a9f-8865-ea40ce4b5f24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Accel.Lang\Intermediate.cpp">
@@ -35,6 +38,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.Accel.Lang\Emitter\GlslEmitter.cpp">
       <Filter>Quelldateien\Emitter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.Accel.Lang\Rep\Variable.cpp">
+      <Filter>Quelldateien\Rep</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

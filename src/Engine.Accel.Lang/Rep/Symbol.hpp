@@ -1,11 +1,15 @@
 #pragma once
 #include <Engine.Common/String.hpp>
+#include <Engine.Common/Collection/AssociativeKey.hpp>
+#include <Engine.Common/Hash/Fnv-1a.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "Function.hpp"
 #include "Variable.hpp"
 
 namespace hg::engine::accel::lang {
+    using SymbolId = AssocKey<String, hasher::fnv1a<String>>;
+
     enum class SymbolType : bool {
         eFunctionSymbol = false,
         eVariableSymbol = true
@@ -33,19 +37,19 @@ namespace hg::engine::accel::lang {
 
     public:
         constexpr Symbol() noexcept :
-            name(),
+            symbolId(),
             var() {}
 
-        Symbol(mref<string> name_, mref<VariableSymbol> var_) :
-            name(_STD move(name_)),
+        Symbol(mref<SymbolId> symbolId_, mref<VariableSymbol> var_) :
+            symbolId(_STD move(symbolId_)),
             var(_STD move(var_)) {}
 
-        Symbol(mref<string> name_, mref<FunctionSymbol> fn_) :
-            name(_STD move(name_)),
+        Symbol(mref<SymbolId> symbolId_, mref<FunctionSymbol> fn_) :
+            symbolId(_STD move(symbolId_)),
             fn(_STD move(fn_)) {}
 
         Symbol(cref<this_type> other_) noexcept :
-            name(other_.name) {
+            symbolId(other_.symbolId) {
             if (other_.var.type == SymbolType::eVariableSymbol) {
                 var.type = SymbolType::eVariableSymbol;
                 var.data = other_.var.data;
@@ -56,7 +60,7 @@ namespace hg::engine::accel::lang {
         }
 
         Symbol(mref<this_type> other_) noexcept :
-            name(_STD move(other_.name)) {
+            symbolId(_STD move(other_.symbolId)) {
             if (other_.var.type == SymbolType::eVariableSymbol) {
                 var.type = SymbolType::eVariableSymbol;
                 var.data = _STD move(other_.var.data);
@@ -69,7 +73,7 @@ namespace hg::engine::accel::lang {
         ~Symbol() = default;
 
     public:
-        string name;
+        SymbolId symbolId;
 
         union {
             FunctionSymbol fn;
@@ -80,10 +84,9 @@ namespace hg::engine::accel::lang {
 
 namespace std {
     template <>
-    struct hash<::hg::engine::accel::lang::Symbol> :
-        public std::hash<string> {
+    struct hash<::hg::engine::accel::lang::Symbol> {
         [[nodiscard]] size_t operator()(const ::hg::engine::accel::lang::Symbol& obj_) const noexcept {
-            return static_cast<const std::hash<string>&>(*this)(obj_.name);
+            return obj_.symbolId.hash;
         }
     };
 }

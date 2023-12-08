@@ -22,7 +22,7 @@ void Intermediate::enumerateOutboundSymbols(ref<Vector<nmpt<const Symbol>>> outb
             [&outVar](const auto& entry_) {
 
                 // Warning: Check for pointer equality...
-                return entry_->var.type == SymbolType::eFunctionSymbol && entry_->var.data.get() == outVar.get();
+                return entry_->var.type == SymbolType::eVariableSymbol && entry_->var.data.get() == outVar.get();
 
                 // TODO: Check masking...
             }
@@ -33,16 +33,25 @@ void Intermediate::enumerateOutboundSymbols(ref<Vector<nmpt<const Symbol>>> outb
             continue;
         }
 
+        assert(outVar->annotation != nullptr);
+
+        auto cur = outVar->annotation.get();
+        while (cur != nullptr) {
+            if (cur->type == AnnotationType::eSymbolId) {
+                break;
+            }
+            cur = cur->next.get();
+        }
+
+        assert(cur != nullptr);
+
         auto next = make_uptr<Symbol>(
-            "",
+            SymbolId::from(static_cast<ptr<SymbolIdAnnotation>>(cur)->symbolId),
             VariableSymbol {
                 .type = SymbolType::eVariableSymbol,
                 .data = outVar.get()
             }
         );
-
-        // TODO: Should not happen | Found outbound which is not in symbol table
-        __debugbreak();
 
         outbound_.emplace_back(next.get());
         const_cast<ref<DenseSet<uptr<Symbol>>>>(rep.symbolTable).emplace(_STD move(next));
@@ -58,7 +67,7 @@ void Intermediate::enumerateInboundSymbols(ref<Vector<nmpt<const Symbol>>> inbou
             [&inVar](const auto& entry_) {
 
                 // Warning: Check for pointer equality...
-                return entry_->var.type == SymbolType::eFunctionSymbol && entry_->var.data.get() == inVar.get();
+                return entry_->var.type == SymbolType::eVariableSymbol && entry_->var.data.get() == inVar.get();
 
                 // TODO: Check masking...
             }
@@ -69,16 +78,25 @@ void Intermediate::enumerateInboundSymbols(ref<Vector<nmpt<const Symbol>>> inbou
             continue;
         }
 
+        assert(inVar->annotation != nullptr);
+
+        auto cur = inVar->annotation.get();
+        while (cur != nullptr) {
+            if (cur->type == AnnotationType::eSymbolId) {
+                break;
+            }
+            cur = cur->next.get();
+        }
+
+        assert(cur != nullptr);
+
         auto next = make_uptr<Symbol>(
-            "",
+            SymbolId::from(static_cast<ptr<SymbolIdAnnotation>>(cur)->symbolId),
             VariableSymbol {
                 .type = SymbolType::eVariableSymbol,
                 .data = inVar.get()
             }
         );
-
-        // TODO: Should not happen | Found inbound which is not in symbol table
-        __debugbreak();
 
         inbound_.emplace_back(next.get());
         const_cast<ref<DenseSet<uptr<Symbol>>>>(rep.symbolTable).emplace(_STD move(next));

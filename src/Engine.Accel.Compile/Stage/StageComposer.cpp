@@ -63,9 +63,15 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 
     /**/
 
-    BindLayout layout {};
-
     Vector<nmpt<const lang::Symbol>> symbols {};
+    for (const auto& derivat : derivats) {
+        derivat->getIntermediate()->enumerateInboundSymbols(symbols);
+        derivat->getIntermediate()->enumerateOutboundSymbols(symbols);
+    }
+
+    /**/
+
+    BindLayout layout {};
     for (const auto& symbol : symbols) {
 
         BindElement element {
@@ -76,26 +82,36 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 
         const auto storeType = [](ref<BindElement> dst_) {
 
+            const auto var = dst_.symbol->var.data;
             const auto type = dst_.symbol->var.data->type;
 
-            bool isTexture = false;
-            bool isStorage = false;
-            bool isUniform = false;
-            bool isConstant = false;
+            if (type.category == lang::TypeCategory::eTexture) {
 
-            if (/*TransferDataType::eConstant*/isConstant) {
-                // TODO:
-                __debugbreak();
-            } else if (isTexture) {
-                //dst_.type = AccelerationBindingType::eTexture;
-            } else if (isStorage) {
-                //dst_.type = AccelerationBindingType::eStorageBuffer;
-            } else if (isUniform) {
-                //dst_.type = AccelerationBindingType::eUniformBuffer;
-            } else {
-                // TODO:
-                __debugbreak();
+                var->annotation;
+                dst_.type = BindType::eTexture;
+
+            } else if (type.category == lang::TypeCategory::eObject) {
+
+                auto annotation = var->annotation.get();
+                while (annotation != nullptr) {
+                    if (
+                        annotation->type == lang::AnnotationType::eStorage ||
+                        annotation->type == lang::AnnotationType::eUniform
+                    ) {
+                        break;
+                    }
+                    annotation = annotation->next.get();
+                }
+
+                if (annotation != nullptr && annotation->type == lang::AnnotationType::eStorage) {
+                    dst_.type = BindType::eStorageBuffer;
+                } else {
+                    dst_.type = BindType::eUniformBuffer;
+                }
+
             }
+
+            // TODO: Handle Constants
         };
 
         /**/
