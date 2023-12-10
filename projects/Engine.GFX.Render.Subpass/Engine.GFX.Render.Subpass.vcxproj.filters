@@ -45,6 +45,9 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\SkyBoxPass.cpp">
       <Filter>Quelldateien\Impl</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpEndPass.cpp">
+      <Filter>Quelldateien\Impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\SubPass.hpp">
@@ -78,6 +81,9 @@
       <Filter>Headerdateien\Impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\SkyBoxPass.hpp">
+      <Filter>Headerdateien\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpEndPass.hpp">
       <Filter>Headerdateien\Impl</Filter>
     </ClInclude>
   </ItemGroup>

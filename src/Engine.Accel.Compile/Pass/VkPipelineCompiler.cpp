@@ -133,11 +133,13 @@ void VkPipelineCompiler::resolveBindLayouts(
 
 }
 
-bool VkPipelineCompiler::hasDepthBinding(cref<smr<StageDerivat>> stage_) const noexcept {
+DepthStencilBinds VkPipelineCompiler::hasDepthBinding(cref<smr<StageDerivat>> stage_) const noexcept {
 
     if (stage_.empty()) {
         return false;
     }
+
+    DepthStencilBinds result {};
 
     Vector<StageInput> tmpIn {};
     stage_->enumerateStageInputs(tmpIn);
@@ -145,7 +147,8 @@ bool VkPipelineCompiler::hasDepthBinding(cref<smr<StageDerivat>> stage_) const n
     for (const auto& in : tmpIn) {
         // Error:
         if (in.symbol->symbolId.value == "depth") {
-            return true;
+            result.depthLoad = true;
+            break;
         }
     }
 
@@ -155,18 +158,21 @@ bool VkPipelineCompiler::hasDepthBinding(cref<smr<StageDerivat>> stage_) const n
     for (const auto& out : tmpOut) {
         // Error:
         if (out.symbol->symbolId.value == "depth") {
-            return true;
+            result.depthStore = true;
+            break;
         }
     }
 
-    return false;
+    return result;
 }
 
-bool VkPipelineCompiler::hasStencilBinding(cref<smr<StageDerivat>> stage_) const noexcept {
+DepthStencilBinds VkPipelineCompiler::hasStencilBinding(cref<smr<StageDerivat>> stage_) const noexcept {
 
     if (stage_.empty()) {
         return false;
     }
+
+    DepthStencilBinds result {};
 
     Vector<StageInput> tmpIn {};
     stage_->enumerateStageInputs(tmpIn);
@@ -174,7 +180,8 @@ bool VkPipelineCompiler::hasStencilBinding(cref<smr<StageDerivat>> stage_) const
     for (const auto& in : tmpIn) {
         // Error:
         if (in.symbol->symbolId.value == "stencil") {
-            return true;
+            result.stencilLoad = true;
+            break;
         }
     }
 
@@ -184,11 +191,12 @@ bool VkPipelineCompiler::hasStencilBinding(cref<smr<StageDerivat>> stage_) const
     for (const auto& out : tmpOut) {
         // Error:
         if (out.symbol->symbolId.value == "stencil") {
-            return true;
+            result.stencilStore = true;
+            break;
         }
     }
 
-    return false;
+    return result;
 }
 
 template <typename Type_, typename SpecificationType_>
@@ -345,9 +353,16 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 
         assert(out.symbol != nullptr);
         // Error:
-        assert(out.symbol->symbolId.value != "depth");
+        if (out.symbol->symbolId.value == "depth") {
+            continue;
+        }
+
         assert(out.symbol->var.type == lang::SymbolType::eVariableSymbol);
-        assert(out.symbol->var.data->type == lang::Type {});
+
+        if (out.symbol->var.data->type != lang::Type {}) {
+            assert(out.symbol->var.data->type.category == lang::TypeCategory::eTexture);
+        }
+
         assert(out.symbol->var.data->annotation);
 
         bool shouldColorBlendState = true;
@@ -386,29 +401,23 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
         const auto& back = pass_->getStageDerivates().back();
         assert(back->getFlagBits() == StageFlagBits::eFragment);
 
-        bool hasDepthIn, hasDepthOut = hasDepthBinding(back);
-        hasDepthIn = hasDepthOut;
+        const auto depthBind = hasDepthBinding(back);
 
-        pdssci.depthTestEnable = (hasDepthIn || hasDepthOut) &&
+        pdssci.depthTestEnable = (depthBind.depthLoad || depthBind.depthStore) &&
             specification_.depthCompareOp != DepthCompareOp::eAlways;
-        pdssci.depthWriteEnable = hasDepthOut && specification_.depthCompareOp != DepthCompareOp::eNever;
+        pdssci.depthWriteEnable = depthBind.depthStore && specification_.depthCompareOp != DepthCompareOp::eNever;
         pdssci.depthCompareOp = reinterpret_cast<vk::CompareOp&>(specification_.depthCompareOp);
 
         pdssci.depthBoundsTestEnable = VK_FALSE;
         pdssci.minDepthBounds = 0.F;
         pdssci.maxDepthBounds = 1.F;
 
-        bool hasStencil = false;
-
-        {
-            const auto& back = pass_->getStageDerivates().back();
-            hasStencil = hasStencilBinding(back);
-        }
+        const auto stencilBind = hasStencilBinding(back);
 
         constexpr bool isFrontFaceCulled = false;
         constexpr bool isBackFaceCulled = false;
 
-        pdssci.stencilTestEnable = hasStencil;
+        pdssci.stencilTestEnable = stencilBind.stencilLoad || stencilBind.stencilStore;
         pdssci.front = vk::StencilOpState {
             isFrontFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilFailOp),
             isFrontFaceCulled ? vk::StencilOp::eKeep : api::stencilOp(specification_.stencilPassOp),
@@ -435,8 +444,8 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 
     prsci.polygonMode = vk::PolygonMode::eFill;
     //prsci.cullMode = vk::CullModeFlagBits::eBack;
-    prsci.cullMode = vk::CullModeFlagBits::eNone;
-    prsci.frontFace = vk::FrontFace::eClockwise;
+    prsci.cullMode = vk::CullModeFlagBits::eBack;
+    prsci.frontFace = vk::FrontFace::eCounterClockwise;
 
     prsci.depthClampEnable = VK_TRUE;
     prsci.depthBiasEnable = VK_FALSE;

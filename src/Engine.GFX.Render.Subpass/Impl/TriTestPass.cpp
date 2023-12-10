@@ -308,7 +308,7 @@ smr<const GraphicsPass> build_test_pass() {
             makeSceneColorSymbol()
         },
         {
-            makeSceneDepthSymbol()
+            makeSceneColorSymbol(), makeSceneDepthSymbol()
         }
     ).value();
 

@@ -6,7 +6,7 @@
 #include "Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp"
 #include "Engine.GFX.Render.Predefined/Symbols/SkyboxTexture.hpp"
 
-using namespace hg::engine::gfx::render;
+using namespace hg::engine::render;
 using namespace hg;
 
 #include <filesystem>
@@ -55,6 +55,30 @@ smr<AccelerationEffect> build_test_effect() {
         //     }
         // }
     );
+    vertexStage->setIntermediate(make_smr<lang::Intermediate>());
+
+    auto tmpVar = make_uptr<lang::Variable>();
+    tmpVar->type = lang::Type { .category = lang::TypeCategory::eObject, .objectType = lang::ObjectType::eUnknown };
+    tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eExternalLinkage>>();
+    tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eUniform>>(
+        _STD move(tmpVar->annotation)
+    );
+    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("view", _STD move(tmpVar->annotation));
+    auto tmpSym = make_uptr<lang::Symbol>(
+        lang::SymbolId::from("view"),
+        lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
+    );
+    vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+    vertexStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+
+    tmpVar = make_uptr<lang::Variable>();
+    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("uv");
+    tmpSym = make_uptr<lang::Symbol>(
+        lang::SymbolId::from("uv"),
+        lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
+    );
+    vertexStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
+    vertexStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
 
     auto fragmentStage = make_smr<Stage>(
         StageFlagBits::eFragment
@@ -75,6 +99,50 @@ smr<AccelerationEffect> build_test_effect() {
         //     }
         // }
     );
+    fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
+
+    tmpVar = make_uptr<lang::Variable>();
+    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("uv");
+    tmpSym = make_uptr<lang::Symbol>(
+        lang::SymbolId::from("uv"),
+        lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
+    );
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+
+    tmpVar = make_uptr<lang::Variable>();
+    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("depth");
+    tmpSym = make_uptr<lang::Symbol>(
+        lang::SymbolId::from("depth"),
+        lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
+    );
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+
+    tmpVar = make_uptr<lang::Variable>();
+    tmpVar->type = lang::Type {
+        .category = lang::TypeCategory::eTexture, .textureType = lang::TextureType::eTexture2d
+    };
+    tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eExternalLinkage>>();
+    tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eUniform>>(
+        _STD move(tmpVar->annotation)
+    );
+    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("mat-static-0", _STD move(tmpVar->annotation));
+    tmpSym = make_uptr<lang::Symbol>(
+        lang::SymbolId::from(/*"skybox"*/"mat-static-0"),
+        lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
+    );
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+
+    tmpVar = make_uptr<lang::Variable>();
+    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("color");
+    tmpSym = make_uptr<lang::Symbol>(
+        lang::SymbolId::from("color"),
+        lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
+    );
+    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
 
     /**/
 
@@ -110,6 +178,6 @@ smr<AccelerationEffect> build_test_effect() {
 
 /**/
 
-smr<const AccelerationEffect> engine::gfx::render::makeSkyboxEffect() {
+smr<const AccelerationEffect> engine::render::makeSkyboxEffect() {
     return build_test_effect();
 }

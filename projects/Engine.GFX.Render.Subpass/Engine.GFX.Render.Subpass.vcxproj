@@ -18,6 +18,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\DepthPrePass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\DummyProvider.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\SkyBoxPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpEndPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TriTestPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\Visualize.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\SubPass.cpp" />
@@ -26,6 +27,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\DepthPrePass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\DummyProvider.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\SkyBoxPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpEndPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TriTestPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\Visualize.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\__tmp_helper.hpp" />

@@ -221,6 +221,16 @@ smr<AccelerationEffect> build_test_effect() {
 
     /**/
 
+    uptr<lang::Variable> tmpVar {};
+
+    tmpVar = make_uptr<lang::Variable>();
+    tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>();
+    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("depth", _STD move(tmpVar->annotation));
+
+    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
+
+    /**/
+
     Guid guid;
     GuidGenerate(guid);
 

@@ -1,28 +1,25 @@
 #pragma once
-#include <Engine.GFX/Framebuffer/Framebuffer.hpp>
-#include <Engine.GFX.RenderGraph/Symbol/Observed.hpp>
+
 #include <Engine.GFX.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/SymbolizedResource.hpp>
-#include <Engine.GFX/Texture/Texture.hpp>
 
-#include "../Mesh/MeshSubPass.hpp"
+#include "../SubPass.hpp"
 
 namespace hg::engine::render {
-    class DummyProvider :
+    class TmpEndPass :
         public SubPass {
     private:
-        smr<gfx::Texture> _depthTexture;
         void* _tmpSignal;
 
         struct Resources {
-            graph::Observed<graph::SymbolizedResource> outDepthTexture;
+            graph::Subscribed<graph::SymbolizedResource> inOutSceneColor;
         } _resources;
 
     public:
         void destroy() noexcept override;
 
     public:
-        void declareOutputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept override;
+        void declareTransforms(ref<graph::ScopedSymbolContext> symCtx_) noexcept override;
 
     public:
         void iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept override;

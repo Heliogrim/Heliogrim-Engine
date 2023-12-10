@@ -9,7 +9,9 @@
 #include <Engine.GFX.Render.Subpass/Impl/DepthPrePass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/DummyProvider.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/SkyBoxPass.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/TmpEndPass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/TriTestPass.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/Visualize.hpp>
 #include <Engine.GFX.RenderGraph/CompileGraph.hpp>
 #include <Engine.GFX.RenderGraph/Builder/Builder.hpp>
 #include <Engine.GFX.RenderGraph/Node/Compile/CompileSubPassNode.hpp>
@@ -60,6 +62,8 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
     auto depthPrePass = make_smr<graph::CompileSubPassNode>();
     auto subpass = make_smr<graph::CompileSubPassNode>();
     auto skyBoxPass = make_smr<graph::CompileSubPassNode>();
+    auto visualizePass = make_smr<graph::CompileSubPassNode>();
+    auto endPass = make_smr<graph::CompileSubPassNode>();
     auto afterBarrier = make_smr<graph::BarrierNode>();
 
     /**/
@@ -94,6 +98,22 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
         }
     );
 
+    visualizePass->setSubPassBuilder(
+        [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
+            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<Visualize>>();
+            // acceleration->addOutput(makeSceneColorSymbol());
+            return node;
+        }
+    );
+
+    endPass->setSubPassBuilder(
+        [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
+            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<TmpEndPass>>();
+            // acceleration->addOutput(makeSceneColorSymbol());
+            return node;
+        }
+    );
+
     /**/
 
     nmpt<graph::Node> nextCursor = beforeBarrier.get();
@@ -105,11 +125,17 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
     cursor = _STD exchange(nextCursor, depthPrePass.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(depthPrePass));
 
+    cursor = _STD exchange(nextCursor, skyBoxPass.get());
+    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(skyBoxPass));
+
     cursor = _STD exchange(nextCursor, subpass.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(subpass));
 
-    cursor = _STD exchange(nextCursor, skyBoxPass.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(skyBoxPass));
+    //cursor = _STD exchange(nextCursor, visualizePass.get());
+    //graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(visualizePass));
+
+    cursor = _STD exchange(nextCursor, endPass.get());
+    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(endPass));
 
     cursor = _STD exchange(nextCursor, afterBarrier.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(afterBarrier));
@@ -126,7 +152,7 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
 
 static string read_shader_file(string name_) {
 
-    const auto root = R"(R:\Development\C++\Vulkan API\Game\resources\shader\)";
+    const auto root = R"(C:\dev\Heliogrim\resources\shader\)";
     std::filesystem::path file { root };
     file.append(name_);
 
