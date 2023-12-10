@@ -28,6 +28,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Component\RuntimeComponent.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Debug\DebugVisitor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Memory\GraphNodeAllocator.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Auxiliary.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\CompileNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileBinNode.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.RenderGraph\Node\Compile\CompileSubPassNode.hpp" />

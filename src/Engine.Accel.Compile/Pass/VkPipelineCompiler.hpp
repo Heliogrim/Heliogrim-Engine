@@ -5,6 +5,24 @@
 #include "PassCompiler.hpp"
 
 namespace hg::engine::accel {
+    struct DepthStencilBinds {
+        u8 depthLoad : 1 = 0;
+        u8 depthStore : 1 = 0;
+        u8 stencilLoad : 1 = 0;
+        u8 stencilStore : 1 = 0;
+
+        constexpr DepthStencilBinds() noexcept = default;
+
+        constexpr DepthStencilBinds(const bool val_) {
+            depthLoad = val_;
+            depthStore = val_;
+            stencilLoad = val_;
+            stencilStore = val_;
+        }
+    };
+
+    /**/
+
     class VkPipelineCompiler final :
         public PassCompiler {
     public:
@@ -67,9 +85,9 @@ namespace hg::engine::accel {
             _Inout_ ref<Vector<_::VkDescriptorSetLayout>> layouts_
         ) const;
 
-        [[nodiscard]] bool hasDepthBinding(cref<smr<StageDerivat>> stage_) const noexcept;
+        [[nodiscard]] DepthStencilBinds hasDepthBinding(cref<smr<StageDerivat>> stage_) const noexcept;
 
-        [[nodiscard]] bool hasStencilBinding(cref<smr<StageDerivat>> stage_) const noexcept;
+        [[nodiscard]] DepthStencilBinds hasStencilBinding(cref<smr<StageDerivat>> stage_) const noexcept;
 
         template <typename Type_, typename SpecificationType_>
         [[nodiscard]] smr<const AccelerationPipeline> compileTypeSpec(
