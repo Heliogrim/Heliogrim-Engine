@@ -14,6 +14,11 @@
 using namespace hg::engine::render;
 using namespace hg;
 
+TmpEndPass::TmpEndPass(const vk::ImageLayout targetLayout_) :
+    SubPass(),
+    _targetLayout(targetLayout_),
+    _tmpSignal() {}
+
 void TmpEndPass::destroy() noexcept {
     SubPass::destroy();
 
@@ -45,7 +50,7 @@ void TmpEndPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     cmd::RenderCommandBuffer cmd {};
     cmd.begin();
     cmd.lambda(
-        [sceneColorTex](ref<accel::AccelCommandBuffer> cmd_) {
+        [sceneColorTex, this](ref<accel::AccelCommandBuffer> cmd_) {
 
             const auto* const texture = Cast<gfx::Texture>(sceneColorTex.get());
 
@@ -53,7 +58,7 @@ void TmpEndPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                 vk::AccessFlags(),
                 vk::AccessFlags(),
                 vk::ImageLayout::eColorAttachmentOptimal,
-                vk::ImageLayout::ePresentSrcKHR,
+                _targetLayout,
                 VK_QUEUE_FAMILY_IGNORED,
                 VK_QUEUE_FAMILY_IGNORED,
                 texture->buffer().image(),

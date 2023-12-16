@@ -17,7 +17,12 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\DepthPrePass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\DummyProvider.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\MatTestPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\PostProcessPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\SkyBoxPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfIrradPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfLutPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfPrefPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpEndPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TriTestPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\Visualize.cpp" />
@@ -26,7 +31,12 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\DepthPrePass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\DummyProvider.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\MatTestPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\PostProcessPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\SkyBoxPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfIrradPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfLutPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfPrefPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpEndPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TriTestPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\Visualize.hpp" />
