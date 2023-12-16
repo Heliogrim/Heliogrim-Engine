@@ -17,6 +17,7 @@
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
@@ -27,6 +28,8 @@
 #include <Engine.GFX/Texture/VirtualTextureView.hpp>
 #include <Engine.GFX.Render.Command/Resource/ResourceView.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
+#include <Heliogrim/Actor.hpp>
+#include <Heliogrim/Actors/CameraActor.hpp>
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
@@ -165,7 +168,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     if (_framebuffer.empty()) {
 
-        const Vector outputSymbols { makeSceneColorSymbol(), makeSceneDepthSymbol() };
+        const Vector outputSymbols { makeSceneColorSymbol() };
         _framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
 
         for (const auto& output : outputSymbols) {
@@ -227,7 +230,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     }
 
     auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
-    auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
+    auto sceneView = sceneViewRes->load<smr<gfx::scene::SceneView>>();
 
     struct TmpStruct {
         math::mat4 mvp;
@@ -240,6 +243,8 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
         sceneView->getProjectionMatrix(),
         sceneView->getViewMatrix()
     };
+
+    //tmp.proj = math::perspective(glm::radians(45.F), 16.F / 9.F, 0.1F, 1000.F);
 
     _cameraBuffer.write<TmpStruct>(&tmp, 1uL);
 
@@ -362,7 +367,7 @@ smr<const GraphicsPass> build_test_pass() {
     constexpr auto passFactory = VkAccelerationPassFactory {};
     auto graphicsPass = passFactory.buildGraphicsPass(
         { makeSceneColorSymbol() },
-        { makeSceneColorSymbol(), makeSceneDepthSymbol() }
+        { makeSceneColorSymbol() }
     ).value();
 
     return graphicsPass;

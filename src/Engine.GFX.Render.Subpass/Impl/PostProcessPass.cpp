@@ -1,20 +1,22 @@
-#include "Visualize.hpp"
+#include "PostProcessPass.hpp"
 
+#include <Engine.Accel.Command/CommandBuffer.hpp>
+#include <Engine.Accel.Compile/EffectCompileResult.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
 #include <Engine.Accel.Compile/Spec/SimpleEffectSpecification.hpp>
 #include <Engine.Accel.Pass/VkAccelerationPassFactory.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp>
-#include <Engine.GFX.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/ScopedSymbolContext.hpp>
+#include <Engine.GFX/Texture/Texture.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
-#include <Engine.GFX/Texture/TextureView.hpp>
+#include <Engine.GFX/Texture/TextureFactory.hpp>
 
 #include "__tmp_helper.hpp"
 
@@ -34,11 +36,15 @@ using namespace hg;
 
 /**/
 
-void Visualize::destroy() noexcept {
+void PostProcessPass::destroy() noexcept {
     SubPass::destroy();
 
     auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
     device->vkDevice().destroySemaphore(_STD exchange(_tmpSignal, nullptr));
+
+    _colorView.reset();
+    _colorTexture->destroy();
+    _colorTexture.reset();
 
     _sampler->destroy();
     _sampler.reset();
@@ -51,14 +57,14 @@ void Visualize::destroy() noexcept {
     _effect.reset();
 }
 
-void Visualize::declareTransforms(ref<graph::ScopedSymbolContext> symCtx_) noexcept {
+void PostProcessPass::declareTransforms(ref<graph::ScopedSymbolContext> symCtx_) noexcept {
     SubPass::declareTransforms(symCtx_);
 
     symCtx_.registerImportSymbol(makeSceneColorSymbol(), &_resources.inOutSceneColor);
     symCtx_.registerExportSymbol(makeSceneColorSymbol(), &_resources.inOutSceneColor);
 }
 
-void Visualize::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
+void PostProcessPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     if (_effect.empty()) {
         _effect = build_test_effect();
@@ -69,13 +75,13 @@ void Visualize::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     }
 }
 
-void Visualize::resolve() noexcept {
+void PostProcessPass::resolve() noexcept {
     if (_effect && _compiled.flag == accel::EffectCompileResultFlag::eUnknown) {
         _compiled = build_test_pipeline(clone(_effect), clone(_pass));
     }
 }
 
-void Visualize::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
+void PostProcessPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     assert(_effect);
     assert(_compiled.pipeline);
@@ -83,18 +89,45 @@ void Visualize::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     /**/
 
     auto sceneColorRes = symCtx_.getExportSymbol(makeSceneColorSymbol());
-    auto sceneDepthRes = symCtx_.getImportSymbol(makeSceneDepthSymbol());
-
     const auto& sceneColorTex = sceneColorRes->load<smr<const TextureLikeObject>>();
-    const auto& sceneDepthTex = sceneDepthRes->load<smr<const TextureLikeObject>>();
 
     if (not _framebuffer.empty() && (_framebuffer->attachments().front() != sceneColorTex)) {
+
+        _colorView.reset();
+        _colorTexture->destroy();
+        _colorTexture.reset();
+
         _framebuffer->device()->vkDevice().destroySemaphore(_tmpSignal);
         _framebuffer->destroy();
         _framebuffer.reset();
     }
 
     if (_framebuffer.empty()) {
+
+        const auto* const origin = Cast<Texture>(sceneColorTex.get());
+
+        auto* tf = TextureFactory::get();
+        const auto payload = TextureBuildPayload {
+            .extent = origin->extent(),
+            .format = origin->format(),
+            .mipLevels = origin->mipLevels(),
+            .type = origin->type(),
+            .vkAspect = origin->buffer()._vkAspect,
+            .vkUsage = vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
+            .vkMemoryFlags = vk::MemoryPropertyFlagBits::eDeviceLocal,
+            .vkSharing = vk::SharingMode::eExclusive
+        };
+        _colorTexture = make_uptr<gfx::Texture>(tf->build(payload));
+        tf->buildView(*_colorTexture);
+
+        _colorView = _colorTexture->makeView(
+            math::uivec2 { _colorTexture->layer() },
+            math::uExtent3D { _colorTexture->width(), _colorTexture->height(), _colorTexture->depth() },
+            { 0uL, _colorTexture->mipLevels() }
+        );
+        _colorView->owner()->buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+
+        /**/
 
         _framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
 
@@ -120,43 +153,127 @@ void Visualize::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     cmd.begin();
 
     cmd.lambda(
-        [sceneDepthTex](ref<accel::AccelCommandBuffer> cmd_) {
+        [sceneColorTex, colorTexture = _colorTexture.get()](ref<AccelCommandBuffer> cmd_) {
+            const auto* const texture = Cast<gfx::Texture>(sceneColorTex.get());
 
-            const auto* const texture = Cast<gfx::Texture>(sceneDepthTex.get());
-
-            const auto barrier = vk::ImageMemoryBarrier {
-                vk::AccessFlags(),
-                vk::AccessFlags(),
-                vk::ImageLayout::eDepthStencilAttachmentOptimal,
-                vk::ImageLayout::eDepthStencilReadOnlyOptimal,
-                VK_QUEUE_FAMILY_IGNORED,
-                VK_QUEUE_FAMILY_IGNORED,
-                texture->buffer().image(),
-                vk::ImageSubresourceRange {
-                    vk::ImageAspectFlagBits::eDepth,
-                    0uL,
-                    texture->mipLevels(),
-                    0uL,
-                    1uL
+            _STD array<vk::ImageMemoryBarrier, 2> barriers = {
+                vk::ImageMemoryBarrier {
+                    vk::AccessFlags(),
+                    vk::AccessFlags(),
+                    vk::ImageLayout::eColorAttachmentOptimal,
+                    vk::ImageLayout::eTransferSrcOptimal,
+                    VK_QUEUE_FAMILY_IGNORED,
+                    VK_QUEUE_FAMILY_IGNORED,
+                    texture->buffer().image(),
+                    vk::ImageSubresourceRange {
+                        vk::ImageAspectFlagBits::eColor,
+                        0uL,
+                        texture->mipLevels(),
+                        0uL,
+                        1uL
+                    }
+                },
+                vk::ImageMemoryBarrier {
+                    vk::AccessFlags(),
+                    vk::AccessFlags(),
+                    vk::ImageLayout::eUndefined,
+                    vk::ImageLayout::eTransferDstOptimal,
+                    VK_QUEUE_FAMILY_IGNORED,
+                    VK_QUEUE_FAMILY_IGNORED,
+                    colorTexture->buffer().image(),
+                    vk::ImageSubresourceRange {
+                        vk::ImageAspectFlagBits::eColor,
+                        0uL,
+                        colorTexture->mipLevels(),
+                        0uL,
+                        1uL
+                    }
                 }
             };
 
             cmd_.vkCommandBuffer().pipelineBarrier(
-                vk::PipelineStageFlagBits::eLateFragmentTests,
-                vk::PipelineStageFlagBits::eTopOfPipe,
+                vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                vk::PipelineStageFlagBits::eTransfer,
                 vk::DependencyFlags(),
                 0uL,
                 nullptr,
                 0uL,
                 nullptr,
-                1uL,
-                &barrier
+                static_cast<u32>(barriers.size()),
+                barriers.data()
+            );
+
+            const vk::ImageCopy copyRegion {
+                vk::ImageSubresourceLayers {
+                    vk::ImageAspectFlagBits::eColor, 0uL, 0uL, 1uL
+                },
+                vk::Offset3D { 0L, 0L, 0L },
+                vk::ImageSubresourceLayers {
+                    vk::ImageAspectFlagBits::eColor, 0uL, 0uL, 1uL
+                },
+                vk::Offset3D { 0L, 0L, 0L },
+                vk::Extent3D { texture->width(), texture->height(), texture->depth() }
+            };
+            cmd_.vkCommandBuffer().copyImage(
+                texture->buffer().image(),
+                vk::ImageLayout::eTransferSrcOptimal,
+                colorTexture->buffer().image(),
+                vk::ImageLayout::eTransferDstOptimal,
+                1,
+                &copyRegion
+            );
+
+            _STD array<vk::ImageMemoryBarrier, 2> inverse = {
+                vk::ImageMemoryBarrier {
+                    vk::AccessFlags(),
+                    vk::AccessFlags(),
+                    vk::ImageLayout::eTransferSrcOptimal,
+                    vk::ImageLayout::eColorAttachmentOptimal,
+                    VK_QUEUE_FAMILY_IGNORED,
+                    VK_QUEUE_FAMILY_IGNORED,
+                    texture->buffer().image(),
+                    vk::ImageSubresourceRange {
+                        vk::ImageAspectFlagBits::eColor,
+                        0uL,
+                        texture->mipLevels(),
+                        0uL,
+                        1uL
+                    }
+                },
+                vk::ImageMemoryBarrier {
+                    vk::AccessFlags(),
+                    vk::AccessFlags(),
+                    vk::ImageLayout::eTransferDstOptimal,
+                    vk::ImageLayout::eShaderReadOnlyOptimal,
+                    VK_QUEUE_FAMILY_IGNORED,
+                    VK_QUEUE_FAMILY_IGNORED,
+                    colorTexture->buffer().image(),
+                    vk::ImageSubresourceRange {
+                        vk::ImageAspectFlagBits::eColor,
+                        0uL,
+                        colorTexture->mipLevels(),
+                        0uL,
+                        1uL
+                    }
+                }
+            };
+
+            cmd_.vkCommandBuffer().pipelineBarrier(
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                vk::DependencyFlags(),
+                0uL,
+                nullptr,
+                0uL,
+                nullptr,
+                static_cast<u32>(inverse.size()),
+                inverse.data()
             );
         }
     );
 
     cmd.beginAccelPass({ _pass.get(), _framebuffer.get() });
-    cmd.beginSubPass({});
+    cmd.beginSubPass();
 
     cmd.bindGraphicsPipeline(clone(_compiled.pipeline).into<GraphicsPipeline>());
 
@@ -169,72 +286,20 @@ void Visualize::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
             const auto symbolId = element.symbol->symbolId;
             const auto aliasId = alias.aliasOrValue(symbolId);
 
-            static auto matSym = lang::SymbolId::from(/*"sampled"*/"vis-tex-0");
+            static auto matSym = lang::SymbolId::from(/*"sampled"*/"color-tex-0");
             if (aliasId == matSym) {
-
-                auto* const depthTex = Cast<Texture>(sceneDepthRes->load<smr<TextureLikeObject>>().get());
-                assert(depthTex);
-
-                if (!_visTexView || _visTexView->owner() != depthTex) {
-                    _visTexView = depthTex->makeView(
-                        math::uivec2 { depthTex->layer() },
-                        math::uExtent3D { depthTex->width(), depthTex->height(), depthTex->depth() },
-                        { 0uL, depthTex->mipLevels() }
-                    );
-                    _visTexView->owner()->buffer()._vkLayout = vk::ImageLayout::eDepthStencilReadOnlyOptimal;
-                }
-
-                cmd.bindTexture(clone(symbolId), _visTexView.get(), _sampler.get());
-
+                cmd.bindTexture(clone(symbolId), _colorView.get(), _sampler.get());
                 continue;
             }
 
             __debugbreak();
         }
-
     }
 
     cmd.drawDispatch(1uL, 0uL, 6uL, 0uL);
 
     cmd.endSubPass();
     cmd.endAccelPass();
-
-    cmd.lambda(
-        [sceneDepthTex](ref<accel::AccelCommandBuffer> cmd_) {
-
-            const auto* const texture = Cast<gfx::Texture>(sceneDepthTex.get());
-
-            const auto barrier = vk::ImageMemoryBarrier {
-                vk::AccessFlags(),
-                vk::AccessFlags(),
-                vk::ImageLayout::eDepthStencilReadOnlyOptimal,
-                vk::ImageLayout::eDepthStencilAttachmentOptimal,
-                VK_QUEUE_FAMILY_IGNORED,
-                VK_QUEUE_FAMILY_IGNORED,
-                texture->buffer().image(),
-                vk::ImageSubresourceRange {
-                    vk::ImageAspectFlagBits::eDepth,
-                    0uL,
-                    texture->mipLevels(),
-                    0uL,
-                    1uL
-                }
-            };
-
-            cmd_.vkCommandBuffer().pipelineBarrier(
-                vk::PipelineStageFlagBits::eColorAttachmentOutput,
-                vk::PipelineStageFlagBits::eTopOfPipe,
-                vk::DependencyFlags(),
-                0uL,
-                nullptr,
-                0uL,
-                nullptr,
-                1uL,
-                &barrier
-            );
-        }
-    );
-
     cmd.end();
 
     /**/
@@ -258,17 +323,6 @@ void Visualize::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     batch->commitAndDispose();
     delete batch;
-
-    /**/
-
-    if (_selected.empty()) {
-        return;
-    }
-
-    if (_available.empty() || not _available.contains(makeSceneDepthSymbol())) {
-        return;
-    }
-
 }
 
 /**/
@@ -278,8 +332,8 @@ smr<AccelerationEffect> build_test_effect() {
     auto vertexStage = make_smr<Stage>(StageFlagBits::eVertex);
     auto fragmentStage = make_smr<Stage>(StageFlagBits::eFragment);
 
-    const auto vertexShaderCode = read_shader_file("__test__visualize.vs");
-    const auto fragmentShaderCode = read_shader_file("__test__visualize.fs");
+    const auto vertexShaderCode = read_shader_file("__test__pp.vs");
+    const auto fragmentShaderCode = read_shader_file("__test__pp.fs");
 
     vertexStage->setIntermediate(make_smr<lang::Intermediate>());
     vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
@@ -299,13 +353,13 @@ smr<AccelerationEffect> build_test_effect() {
     tmpVar = make_uptr<Variable>();
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(tmpVar->annotation));
-    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("vis-tex-0", _STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("color-tex-0", _STD move(tmpVar->annotation));
     tmpVar->type = Type {
         .category = TypeCategory::eTexture, .textureType = lang::TextureType::eTexture2d
     };
 
     tmpSym = make_uptr<Symbol>(
-        SymbolId::from("vis-tex-0"),
+        SymbolId::from("color-tex-0"),
         VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
     );
 
@@ -326,12 +380,12 @@ smr<AccelerationEffect> build_test_effect() {
     Guid guid {};
     guid.data = uint128_t {
         "__Test__Proxy"_typeId.data,
-        "VisualizeEffect"_typeId.data
+        "PostProcessEffect"_typeId.data
     };
 
     return make_smr<AccelerationEffect>(
         _STD move(guid),
-        "test-visualize-effect",
+        "test-pp-effect",
         Vector { _STD move(vertexStage), _STD move(fragmentStage) }
     );
 }
@@ -353,7 +407,7 @@ EffectCompileResult build_test_pipeline(
 ) {
 
     auto profile = make_smr<EffectProfile>(
-        "Test-Visualize-Profile",
+        "Test-PostProcess-Profile",
         Vector<ProfileDefinition> {}
     );
 

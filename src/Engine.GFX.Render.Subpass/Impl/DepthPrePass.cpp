@@ -148,7 +148,7 @@ void DepthPrePass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     cmd.beginSubPass({});
 
     cmd.bindGraphicsPipeline(clone(_compiled.pipeline).into<GraphicsPipeline>());
-    cmd.drawDispatch(1uL, 0uL, 3uL, 0uL);
+    //cmd.drawDispatch(1uL, 0uL, 3uL, 0uL);
 
     cmd.endSubPass();
     cmd.endAccelPass();

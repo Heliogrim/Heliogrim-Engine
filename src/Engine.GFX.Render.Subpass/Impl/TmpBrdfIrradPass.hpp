@@ -1,30 +1,28 @@
 #pragma once
-
+#include <Engine.GFX/Framebuffer/Framebuffer.hpp>
+#include <Engine.GFX.RenderGraph/Symbol/Observed.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/SymbolizedResource.hpp>
-#include <Engine.GFX/vkinc.hpp>
+#include <Engine.GFX/Texture/Texture.hpp>
 
-#include "../SubPass.hpp"
+#include "../Mesh/MeshSubPass.hpp"
 
 namespace hg::engine::render {
-    class TmpEndPass :
+    class TmpBrdfIrradPass :
         public SubPass {
-    public:
-        TmpEndPass(vk::ImageLayout targetLayout_);
-
     private:
-        vk::ImageLayout _targetLayout;
+        smr<gfx::Texture> _brdfIrrad;
         void* _tmpSignal;
 
         struct Resources {
-            graph::Subscribed<graph::SymbolizedResource> inOutSceneColor;
+            graph::Observed<graph::SymbolizedResource> outBrdfIrradTexture;
         } _resources;
 
     public:
         void destroy() noexcept override;
 
     public:
-        void declareTransforms(ref<graph::ScopedSymbolContext> symCtx_) noexcept override;
+        void declareOutputs(ref<graph::ScopedSymbolContext> symCtx_) noexcept override;
 
     public:
         void iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept override;

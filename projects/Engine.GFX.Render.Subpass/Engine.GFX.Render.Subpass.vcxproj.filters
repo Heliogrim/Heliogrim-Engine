@@ -48,6 +48,21 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpEndPass.cpp">
       <Filter>Quelldateien\Impl</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\PostProcessPass.cpp">
+      <Filter>Quelldateien\Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\MatTestPass.cpp">
+      <Filter>Quelldateien\Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfLutPass.cpp">
+      <Filter>Quelldateien\Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfIrradPass.cpp">
+      <Filter>Quelldateien\Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfPrefPass.cpp">
+      <Filter>Quelldateien\Impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\SubPass.hpp">
@@ -84,6 +99,21 @@
       <Filter>Headerdateien\Impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpEndPass.hpp">
+      <Filter>Headerdateien\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\PostProcessPass.hpp">
+      <Filter>Headerdateien\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\MatTestPass.hpp">
+      <Filter>Headerdateien\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfLutPass.hpp">
+      <Filter>Headerdateien\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfPrefPass.hpp">
+      <Filter>Headerdateien\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfIrradPass.hpp">
       <Filter>Headerdateien\Impl</Filter>
     </ClInclude>
   </ItemGroup>

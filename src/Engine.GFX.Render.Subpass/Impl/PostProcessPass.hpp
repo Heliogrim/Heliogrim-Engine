@@ -1,20 +1,28 @@
 #pragma once
 
+#include <Engine.Accel.Compile/EffectCompileResult.hpp>
+#include <Engine.Accel.Effect/AccelerationEffect.hpp>
+#include <Engine.Accel.Pass/GraphicsPass.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/Subscribed.hpp>
 #include <Engine.GFX.RenderGraph/Symbol/SymbolizedResource.hpp>
-#include <Engine.GFX/vkinc.hpp>
+#include <Engine.GFX/Framebuffer/Framebuffer.hpp>
+#include <Engine.GFX/Texture/TextureSampler.hpp>
+#include <Engine.GFX/Texture/TextureView.hpp>
 
 #include "../SubPass.hpp"
 
 namespace hg::engine::render {
-    class TmpEndPass :
+    class PostProcessPass :
         public SubPass {
-    public:
-        TmpEndPass(vk::ImageLayout targetLayout_);
-
     private:
-        vk::ImageLayout _targetLayout;
-        void* _tmpSignal;
+        smr<const accel::AccelerationEffect> _effect;
+        smr<const accel::GraphicsPass> _pass;
+        accel::EffectCompileResult _compiled;
+        smr<gfx::Framebuffer> _framebuffer;
+        uptr<gfx::TextureSampler> _sampler;
+        uptr<gfx::Texture> _colorTexture;
+        uptr<gfx::TextureView> _colorView;
+        vk::Semaphore _tmpSignal;
 
         struct Resources {
             graph::Subscribed<graph::SymbolizedResource> inOutSceneColor;
