@@ -107,7 +107,7 @@ bool VkScopedResourceTable::allocateAndCommit(
 
     const ::vk::DescriptorPoolCreateInfo dpci {
         ::vk::DescriptorPoolCreateFlagBits::eUpdateAfterBind,
-        static_cast<u32>(allocationLayout_.size()),
+        /* Warning: We have to determine the max set count */static_cast<u32>(commitLayout_.groups.size()),
         static_cast<u32>(allocationLayout_.size()),
         reinterpret_cast<const ::vk::DescriptorPoolSize*>(allocationLayout_.data())
     };
