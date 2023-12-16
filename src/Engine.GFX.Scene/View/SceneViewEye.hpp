@@ -43,9 +43,9 @@ namespace hg::engine::gfx::scene {
         void getInvViewMatrix(_Inout_ ref<math::mat4> matrix_) const noexcept;
 
     public:
-        [[nodiscard]] math::vec4 worldToView(const math::vec4 worldPosition_);
+        [[nodiscard]] math::vec4 worldToView(const math::vec4 worldPosition_) const;
 
-        [[nodiscard]] math::vec4 viewToWorld(const math::vec4 viewPosition_);
+        [[nodiscard]] math::vec4 viewToWorld(const math::vec4 viewPosition_) const;
 
     public:
         /**
@@ -58,7 +58,7 @@ namespace hg::engine::gfx::scene {
          *
          * @returns A vector in normalized space `[0.0 ... 1.0]` when  succeeded, otherwise {-1, -1}
          */
-        [[nodiscard]] math::vec2 worldToScreen(cref<math::vec4> worldPosition_);
+        [[nodiscard]] math::vec2 worldToScreen(cref<math::vec4> worldPosition_) const;
 
         /**
          * Calculate the trace origin and direction un-projected from ui position to world space
@@ -74,7 +74,7 @@ namespace hg::engine::gfx::scene {
             cref<math::vec2> screenPosition_,
             _Out_ ref<math::vec3> worldOrigin_,
             _Out_ ref<math::vec3> worldDirection_
-        );
+        ) const;
 
     public:
         [[deprecated]] void vkSetFlipY(bool flip_);
