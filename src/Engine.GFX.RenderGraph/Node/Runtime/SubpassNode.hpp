@@ -31,8 +31,9 @@ namespace hg::engine::render::graph {
     public:
         SubPassNode() noexcept = default;
 
-        SubPassNode(mref<subpass_type> subpass_) noexcept :
-            _subpass(_STD move(subpass_)) {
+        template <typename... Args_>
+        SubPassNode(Args_&&... args_) noexcept :
+            _subpass(_STD forward<Args_>(args_)...) {
             // TODO: _subpass.setup();
         }
 
