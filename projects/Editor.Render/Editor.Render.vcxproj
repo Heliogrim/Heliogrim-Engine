@@ -15,18 +15,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Editor.GFX\Graphics.hpp" />
-    <ClInclude Include="..\..\src\Editor.GFX\Renderer\EdRevRenderer.hpp" />
+    <ClCompile Include="..\..\src\Editor.Render\Renderer\EditorRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Editor.GFX\Graphics.cpp" />
-    <ClCompile Include="..\..\src\Editor.GFX\Renderer\EdRevRenderer.cpp" />
+    <ClInclude Include="..\..\src\Editor.Render\Renderer\EditorRenderer.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{312443aa-53a2-43d9-b8a2-33f44808c432}</ProjectGuid>
-    <RootNamespace>EditorGFX</RootNamespace>
+    <ProjectGuid>{62701c25-6e78-425e-bae5-73922ce3c731}</ProjectGuid>
+    <RootNamespace>Editor_Render</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

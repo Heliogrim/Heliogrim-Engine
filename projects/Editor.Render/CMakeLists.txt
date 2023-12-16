@@ -1,5 +1,5 @@
 # Target Name
-set(target Editor.GFX)
+set(target Editor.Render)
 
 # Linker
 set(link_libraries ${PROJECT_NAME}::Heliogrim)

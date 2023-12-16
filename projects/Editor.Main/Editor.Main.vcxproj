@@ -119,8 +119,8 @@
     <ProjectReference Include="..\Editor.GFX.Graphs\Editor.GFX.Graphs.vcxproj">
       <Project>{245a4b15-84d6-4504-a766-c1eaa11f4829}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Editor.GFX\Editor.GFX.vcxproj">
-      <Project>{312443aa-53a2-43d9-b8a2-33f44808c432}</Project>
+    <ProjectReference Include="..\Editor.Render\Editor.Render.vcxproj">
+      <Project>{62701c25-6e78-425e-bae5-73922ce3c731}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Editor.UI\Editor.UI.vcxproj">
       <Project>{88b1a2bc-57f1-4969-918a-221f15decb23}</Project>
