@@ -5,6 +5,7 @@
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/__tmp_helper.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "../Profile/EffectProfile.hpp"
@@ -18,8 +19,6 @@ static void preprocessStageDerivat(
     cref<smr<const class EffectProfile>> profile_,
     _Inout_ smr<StageDerivat> derivat_
 );
-
-static string read_shader_file(string name_);
 
 /**/
 
@@ -90,6 +89,8 @@ Vector<smr<StageDerivat>> StageComposer::compose(
                 var->annotation;
                 dst_.type = BindType::eTexture;
 
+                return true;
+
             } else if (type.category == lang::TypeCategory::eObject) {
 
                 auto annotation = var->annotation.get();
@@ -108,10 +109,10 @@ Vector<smr<StageDerivat>> StageComposer::compose(
                 } else {
                     dst_.type = BindType::eUniformBuffer;
                 }
-
+                return true;
             }
-
             // TODO: Handle Constants
+            return false;
         };
 
         /**/
@@ -135,6 +136,37 @@ Vector<smr<StageDerivat>> StageComposer::compose(
         if (not hasExternalLinkage) {
             continue;
         }
+
+        const auto isPushConstant = [](cref<BindElement> el_) -> bool {
+
+            const auto var = el_.symbol->var.data;
+            auto annotation = var->annotation.get();
+            while (annotation != nullptr) {
+                if (annotation->type == lang::AnnotationType::eConstant) {
+                    return true;
+                }
+                annotation = annotation->next.get();
+            }
+
+            return false;
+        };
+
+        if (isPushConstant(element)) {
+
+            u32 offset = 0uL;
+            if (not layout.constants.empty()) {
+                offset = layout.constants.back().offset + layout.constants.back().size;
+            }
+
+            layout.constants.emplace_back(
+                offset,
+                /* sizeof(...) */
+                static_cast<u32>(sizeof(float)) * 2uL * 2uL
+            );
+            continue;
+        }
+
+        /**/
 
         storeType(element);
 
@@ -170,7 +202,7 @@ static void preprocessStageDerivat(
     smr<StageDerivat> derivat_
 ) {
 
-    static string shaderMacros = read_shader_file("__macros__.glsl");
+    static string shaderMacros = engine::render::read_shader_file("__macros__.glsl");
 
     std::stringstream ss {};
     ss << "#version 450 core\n";
@@ -254,34 +286,4 @@ static void preprocessStageDerivat(
     _STD reverse(il.begin(), il.end());
 
     derivat_->setIntermediate(_STD move(intermediate));
-}
-
-#include <filesystem>
-#include <fstream>
-
-static string read_shader_file(string name_) {
-
-    const auto root = R"(R:\Development\C++\Vulkan API\Game\resources\shader\)";
-    std::filesystem::path file { root };
-    file.append(name_);
-
-    if (not std::filesystem::exists(file)) {
-        __debugbreak();
-        return {};
-    }
-
-    auto ifs = _STD ifstream(file, std::ios_base::in | std::ios_base::binary);
-
-    ifs.seekg(0, _STD ios::end);
-    const auto fsize = ifs.tellg();
-    ifs.seekg(0, _STD ios::beg);
-
-    string tmp {};
-    tmp.resize(fsize);
-
-    ifs.read(tmp.data(), fsize);
-    assert(!ifs.bad());
-
-    ifs.close();
-    return tmp;
 }

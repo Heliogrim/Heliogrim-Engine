@@ -12,6 +12,7 @@ namespace hg::engine::accel::lang {
         eWriteonly,
         eUniform,
         eStorage,
+        eConstant,
         /**/
         eForwardLinkage,
         eExternalLinkage,
@@ -84,15 +85,18 @@ namespace hg::engine::accel::lang {
         constexpr VkBindLocationAnnotation(
             const s32 vkSet_,
             const s32 vkLocation_,
+            const s32 vkOffset_ = -1L,
             mref<uptr<Annotation>> next_ = nullptr
         ) noexcept :
             AnnotationBase(AnnotationType::eVkBindLocation, _STD move(next_)),
             vkSet(vkSet_),
-            vkLocation(vkLocation_) {}
+            vkLocation(vkLocation_),
+            vkOffset(vkOffset_) {}
 
         ~VkBindLocationAnnotation() override = default;
 
         s32 vkSet;
         s32 vkLocation;
+        s32 vkOffset;
     };
 }

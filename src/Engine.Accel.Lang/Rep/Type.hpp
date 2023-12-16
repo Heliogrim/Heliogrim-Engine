@@ -20,7 +20,15 @@ namespace hg::engine::accel::lang {
         eS64 = 0x0B,
         eF16 = 0x0F,
         eF32 = 0x10,
-        eF64 = 0x11
+        eF64 = 0x11,
+        /**/
+        // Warning: Unsure
+        /**/
+        eU8Vec2 = 0xA1,
+        eU8Vec3 = 0xA2,
+        eU8Vec4 = 0xA3,
+        eF32Vec3 = 0xA4,
+        eF32Vec4 = 0xA5,
     };
 
     enum class TextureType : u8 {
