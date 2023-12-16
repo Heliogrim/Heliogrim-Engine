@@ -17,6 +17,8 @@
 #include "Heliogrim.Default/Assets/Fonts/CascadiaCode.hpp"
 #include "Heliogrim.Default/Assets/GfxMaterials/DefaultMaterial.hpp"
 #include "Heliogrim.Default/Assets/GfxMaterials/DefaultMaterial2.hpp"
+#include "Heliogrim.Default/Assets/GfxMaterials/DefaultBrdfMaterial.hpp"
+#include "Heliogrim.Default/Assets/GfxMaterials/DefaultBrdfMaterialPrototype.hpp"
 #include "Heliogrim.Default/Assets/GfxMaterials/DefaultSkyboxPrototype.hpp"
 #include "Heliogrim.Default/Assets/GfxMaterials/DefaultSkybox.hpp"
 #include "Heliogrim.Default/Assets/Images/Brand.hpp"
@@ -396,6 +398,9 @@ static void initMaterialDefaults() {
         tmp->setAssetName("Default Material 2"sv);
         delete tmp;
     }
+
+    delete(new(material::DefaultBrdfMaterialPrototype));
+    delete(new(material::DefaultBrdfMaterial));
 }
 
 static void initSkyboxDefaults() {
