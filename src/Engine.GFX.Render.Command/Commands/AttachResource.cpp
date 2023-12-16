@@ -10,25 +10,13 @@ using namespace hg::engine::render::cmd;
 using namespace hg;
 
 AttachResourceRCmd::AttachResourceRCmd(
-    nmpt<const gfx::TextureView> textureView_,
+    nmpt<const gfx::TextureLikeObject> texture_,
     nmpt<const gfx::TextureSampler> sampler_
 ) noexcept :
     RenderCommand(),
     _attached(
         make_smr<gfx::SampledTextureView>(
-            _STD move(textureView_),
-            _STD move(sampler_)
-        )
-    ) {}
-
-AttachResourceRCmd::AttachResourceRCmd(
-    nmpt<const gfx::VirtualTextureView> textureView_,
-    nmpt<const gfx::TextureSampler> sampler_
-) noexcept :
-    RenderCommand(),
-    _attached(
-        make_smr<gfx::SampledTextureView>(
-            _STD move(textureView_),
+            _STD move(texture_),
             _STD move(sampler_)
         )
     ) {}

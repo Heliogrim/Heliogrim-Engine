@@ -7,9 +7,8 @@
 
 namespace hg::engine::gfx {
     class SampledTextureView;
-    class VirtualTextureView;
+    class TextureLikeObject;
     class TextureSampler;
-    class TextureView;
 }
 
 namespace hg::engine::render::cmd {
@@ -17,12 +16,7 @@ namespace hg::engine::render::cmd {
         public RenderCommand {
     public:
         AttachResourceRCmd(
-            nmpt<const gfx::TextureView> textureView_,
-            nmpt<const gfx::TextureSampler> sampler_
-        ) noexcept;
-
-        AttachResourceRCmd(
-            nmpt<const gfx::VirtualTextureView> textureView_,
+            nmpt<const gfx::TextureLikeObject> texture_,
             nmpt<const gfx::TextureSampler> sampler_
         ) noexcept;
 
