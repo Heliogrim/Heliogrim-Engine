@@ -6,3 +6,7 @@ using namespace hg;
 nmpt<BufferLikeObject> StorageBufferView::object() const noexcept {
     return _blo;
 }
+
+void StorageBufferView::storeBuffer(mref<nmpt<BufferLikeObject>> object_) noexcept {
+    _blo = _STD move(object_);
+}

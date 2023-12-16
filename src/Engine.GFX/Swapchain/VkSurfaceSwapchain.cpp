@@ -90,6 +90,10 @@ void VkSurfaceSwapchain::setup(cref<sptr<Device>> device_) {
         sci.imageUsage |= vk::ImageUsageFlagBits::eTransferDst;
     }
 
+    if (capabilities.supportedUsageFlags & vk::ImageUsageFlagBits::eSampled) {
+        sci.imageUsage |= vk::ImageUsageFlagBits::eSampled;
+    }
+
     _vkSwapchain = _device->vkDevice().createSwapchainKHR(sci);
     assert(_vkSwapchain);
 
