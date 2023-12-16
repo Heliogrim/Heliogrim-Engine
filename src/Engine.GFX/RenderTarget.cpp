@@ -305,12 +305,6 @@ void RenderTarget::update() {
     if (_onTheFlight && _swapSignal) {
         renderPass->clearTargetWaitSignals(makeSceneColorSymbol());
         renderPass->addTargetWaitSignal(makeSceneColorSymbol(), _swapSignal);
-
-        /**/
-
-        auto tmp = renderPass->_state.rootSymbolContext().getExportSymbol(makeSceneColorSymbol());
-        tmp->barriers.clear();
-        tmp->barriers.push_back(_swapSignal.operator VkSemaphore());
     }
 
     if (_onTheFlight) {

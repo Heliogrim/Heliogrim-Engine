@@ -15,5 +15,7 @@ namespace hg::engine::gfx {
 
     public:
         [[nodiscard]] nmpt<BufferLikeObject> object() const noexcept;
+
+        void storeBuffer(mref<nmpt<BufferLikeObject>> object_) noexcept;
     };
 }
