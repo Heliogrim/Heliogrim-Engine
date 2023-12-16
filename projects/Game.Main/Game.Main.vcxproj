@@ -140,9 +140,6 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     <ProjectReference Include="..\Editor.Action\Editor.Action.vcxproj">
       <Project>{6733136c-88db-487a-943e-d52a1190e9cd}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Editor.GFX\Editor.GFX.vcxproj">
-      <Project>{312443aa-53a2-43d9-b8a2-33f44808c432}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\Editor.Main\Editor.Main.vcxproj">
       <Project>{acc2d3d1-ebdd-439a-9325-81bf04642027}</Project>
     </ProjectReference>

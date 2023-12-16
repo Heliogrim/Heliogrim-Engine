@@ -250,6 +250,9 @@
     <ProjectReference Include="..\Engine.Reflect\Engine.Reflect.vcxproj">
       <Project>{9058623e-8475-4683-8131-0845fa5aa877}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.Reflow.Render\Engine.Reflow.Render.vcxproj">
+      <Project>{372b68d8-e285-4f6d-ac27-f4041eca9488}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Reflow.Schedule\Engine.Reflow.Schedule.vcxproj">
       <Project>{a5edebe9-f7fb-4b23-8415-58b4013a45d6}</Project>
     </ProjectReference>
