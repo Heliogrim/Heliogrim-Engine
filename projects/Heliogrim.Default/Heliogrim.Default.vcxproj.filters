@@ -489,6 +489,12 @@
     <ClInclude Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultSkyboxPrototype.hpp">
       <Filter>Headerdateien\Assets\GfxMaterials</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultBrdfMaterial.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultBrdfMaterialPrototype.hpp">
+      <Filter>Headerdateien\Assets\GfxMaterials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Heliogrim.Default\Assets\Textures\DefaultAlpha.cpp">
@@ -708,6 +714,12 @@
       <Filter>Quelldateien\Assets\GfxMaterials</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultSkyboxPrototype.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultBrdfMaterial.cpp">
+      <Filter>Quelldateien\Assets\GfxMaterials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Heliogrim.Default\Assets\GfxMaterials\DefaultBrdfMaterialPrototype.cpp">
       <Filter>Quelldateien\Assets\GfxMaterials</Filter>
     </ClCompile>
   </ItemGroup>

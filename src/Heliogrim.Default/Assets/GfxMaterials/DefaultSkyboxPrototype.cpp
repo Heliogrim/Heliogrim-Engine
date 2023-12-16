@@ -23,7 +23,7 @@ DefaultSkyboxPrototype::DefaultSkyboxPrototype() :
         return;
     }
 
-    auto predefined = engine::gfx::render::makeSkyboxEffect();
+    auto predefined = engine::render::makeSkyboxEffect();
 
     asset->_effects.emplace_back(predefined->getGuid().data);
     engine::Engine::getEngine()->getAssets()->getFactory()->createAccelEffectAsset(predefined->getGuid().data);
@@ -34,7 +34,8 @@ DefaultSkyboxPrototype::DefaultSkyboxPrototype() :
 
     asset->_params.push_back(
         engine::assets::GfxMaterialPrototype::TmpParam {
-            .uniqueName = "Texture",
+            .identifier = engine::gfx::material::ParameterIdentifier { 0u },
+            .name = "Texture",
             .dataType = engine::accel::TransferDataType::eSampler,
             .defaultValue = asset_guid { texture::DefaultSkybox::unstable_auto_guid() }
         }
