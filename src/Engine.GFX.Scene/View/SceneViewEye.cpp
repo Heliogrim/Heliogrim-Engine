@@ -92,11 +92,11 @@ void SceneViewEye::getInvViewMatrix(ref<math::mat4> matrix_) const noexcept {
     matrix_ = _view.inverse();
 }
 
-math::vec4 SceneViewEye::worldToView(const math::vec4 worldPosition_) {
+math::vec4 SceneViewEye::worldToView(const math::vec4 worldPosition_) const {
     return _projection * _view /* * math::mat4::make_identity() */ * worldPosition_;
 }
 
-math::vec4 SceneViewEye::viewToWorld(const math::vec4 viewPosition_) {
+math::vec4 SceneViewEye::viewToWorld(const math::vec4 viewPosition_) const {
 
     math::mat4 ip { math::mat4::make_identity() };
     math::mat4 iv { math::mat4::make_identity() };
@@ -107,7 +107,7 @@ math::vec4 SceneViewEye::viewToWorld(const math::vec4 viewPosition_) {
     return iv * ip * viewPosition_;
 }
 
-math::vec2 SceneViewEye::worldToScreen(cref<math::vec4> worldPosition_) {
+math::vec2 SceneViewEye::worldToScreen(cref<math::vec4> worldPosition_) const {
 
     // Affine projection of world position to view space
     const math::vec4 viewSpace = worldToView(worldPosition_);
@@ -133,7 +133,7 @@ void SceneViewEye::screenToWorld(
     cref<math::vec2> screenPosition_,
     ref<math::vec3> worldOrigin_,
     ref<math::vec3> worldDirection_
-) {
+) const {
     const math::vec2 screen {
         (screenPosition_.x - 0.5F) * 2.F,
         (screenPosition_.y - 0.5F) * 2.F// @see vulkan specs at SceneViewEye::worldToScreen
