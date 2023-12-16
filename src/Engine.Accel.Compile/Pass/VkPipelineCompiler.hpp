@@ -4,6 +4,10 @@
 
 #include "PassCompiler.hpp"
 
+namespace vk {
+    struct PushConstantRange;
+}
+
 namespace hg::engine::accel {
     struct DepthStencilBinds {
         u8 depthLoad : 1 = 0;
@@ -83,6 +87,11 @@ namespace hg::engine::accel {
         void resolveBindLayouts(
             const non_owning_rptr<const AccelerationPipeline> pass_,
             _Inout_ ref<Vector<_::VkDescriptorSetLayout>> layouts_
+        ) const;
+
+        void resolvePushConstants(
+            const non_owning_rptr<const AccelerationPipeline> pass_,
+            _Inout_ ref<Vector<vk::PushConstantRange>> ranges_
         ) const;
 
         [[nodiscard]] DepthStencilBinds hasDepthBinding(cref<smr<StageDerivat>> stage_) const noexcept;

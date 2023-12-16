@@ -20,7 +20,13 @@ namespace hg::engine::accel {
         ptr<void> drvAux;
     };
 
+    struct PushConstant {
+        u32 offset;
+        u32 size;
+    };
+
     struct BindLayout {
         Vector<BindGroup> groups;
+        Vector<PushConstant> constants;
     };
 }

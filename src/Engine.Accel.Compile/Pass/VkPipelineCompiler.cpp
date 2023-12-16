@@ -16,7 +16,8 @@
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
-#include <Engine.GFX.RenderGraph/Relation/MeshDescription.hpp>
+#include <Engine.GFX/Geometry/UIVertex.hpp>
+#include <Engine.GFX/Geometry/Vertex.hpp>
 #include <Engine.Logging/Logger.hpp>
 #include <Engine.Reflect/IsType.hpp>
 #include <Engine.Reflect/Cast.hpp>
@@ -131,6 +132,15 @@ void VkPipelineCompiler::resolveBindLayouts(
         dsetLocation = 0;
     }
 
+}
+
+void VkPipelineCompiler::resolvePushConstants(
+    const non_owning_rptr<const AccelerationPipeline> pass_,
+    ref<Vector<vk::PushConstantRange>> ranges_
+) const {
+    for (const auto& constant : pass_->getBindingLayout().constants) {
+        ranges_.emplace_back(vk::ShaderStageFlagBits::eVertex, constant.offset, constant.size);
+    }
 }
 
 DepthStencilBinds VkPipelineCompiler::hasDepthBinding(cref<smr<StageDerivat>> stage_) const noexcept {
@@ -347,6 +357,7 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
     Vector<StageOutput> lastStageOut {};
     outStage->enumerateStageOutputs(lastStageOut);
 
+    u32 blendStateIdx = 0;
     for (const auto& out : lastStageOut) {
 
         // TODO: Validate that forward output bindings have correct type ( forward -> texture vs binding -> storage/uniform/texture )
@@ -379,6 +390,14 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
             vk::BlendFactor::eOne, vk::BlendFactor::eZero, vk::BlendOp::eAdd,
             ccf
         };
+
+        if (
+            specification_.blendState.size() > blendStateIdx &&
+            not specification_.blendState[blendStateIdx].defaulted
+        ) {
+            blend = specification_.blendState[blendStateIdx].vkState;
+        }
+
         colorBlendStates.push_back(blend);
 
         // description.token;
@@ -444,7 +463,7 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 
     prsci.polygonMode = vk::PolygonMode::eFill;
     //prsci.cullMode = vk::CullModeFlagBits::eBack;
-    prsci.cullMode = vk::CullModeFlagBits::eBack;
+    prsci.cullMode = vk::CullModeFlagBits::eNone;
     prsci.frontFace = vk::FrontFace::eCounterClockwise;
 
     prsci.depthClampEnable = VK_TRUE;
@@ -519,17 +538,16 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
     Vector<StageInput> firstStageIn {};
     vertexStage->enumerateStageInputs(firstStageIn);
 
-    s32 invariantBindIndex = -1L;
     for (const auto& in : firstStageIn) {
 
         assert(in.symbol != nullptr);
         assert(in.symbol->var.type == lang::SymbolType::eVariableSymbol);
         assert(in.symbol->var.data->annotation);
 
-        // TODO: Rework
-        // TODO: Due to the fact that we compile the stage derivates with the target profile and specification
-        // TODO:    we can assume that the reported data layout of the IR of the vertex stage derivat is similar
-        // TODO:    to the targeted input dataset. ~> no need for the graph resource symbol & description
+        // Note: Rework
+        // Due to the fact that we compile the stage derivates with the target profile and specification
+        //    we can assume that the reported data layout of the IR of the vertex stage derivat is similar
+        //    to the targeted input dataset. ~> no need for the graph resource symbol & description
 
         lang::Annotation* cur = in.symbol->var.data->annotation.get();
         while (cur != nullptr) {
@@ -543,64 +561,79 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
             continue;
         }
 
-        const auto* const symbolDescription = ptr<render::graph::Description>();
-        if (symbolDescription->getMetaClass()->is<render::graph::MeshDescription>()) {
+        const auto& var = *in.symbol->var.data;
+        assert(var.type.category == lang::TypeCategory::eScalar);
 
-            const auto& desc = static_cast<cref<render::graph::MeshDescription>>(*symbolDescription);
+        auto format = vk::Format::eUndefined;
+        switch (var.type.scalarType) {
+            case lang::ScalarType::eU8Vec2: {
+                format = vk::Format::eR8G8Unorm;
+                break;
+            }
+            case lang::ScalarType::eU8Vec3: {
+                format = vk::Format::eR8G8B8Unorm;
+                break;
+            }
+            case lang::ScalarType::eU8Vec4: {
+                format = vk::Format::eR8G8B8A8Unorm;
+                break;
+            }
+            case lang::ScalarType::eF32Vec3: {
+                format = vk::Format::eR32G32B32Sfloat;
+                break;
+            }
+            case lang::ScalarType::eF32Vec4: {
+                format = vk::Format::eR32G32B32A32Sfloat;
+                break;
+            }
+            default: {
+                assert(false);
+            }
+        }
 
-            /**/
+        u32 index = ~0uL;
+        u32 location = ~0uL;
+        u32 offset = ~0uL;
 
-            vk::VertexInputBindingDescription vibd {
-                static_cast<u32>(++invariantBindIndex),
-                static_cast<u32>(desc.getMeshDataLayout().stride),
-                vk::VertexInputRate::eVertex
-            };
+        cur = in.symbol->var.data->annotation.get();
+        while (cur != nullptr) {
+            if (cur->type == lang::AnnotationType::eVkBindLocation) {
 
-            vertexBindings.push_back(_STD move(vibd));
+                const auto* const vkBindAn = static_cast<ptr<lang::VkBindLocationAnnotation>>(cur);
+                assert(vkBindAn->vkSet < 0L);
 
-            /**/
+                index = (-1L * vkBindAn->vkSet) - 1L;
 
-            const auto define = [&vertexAttributes, nativeModule, invariantBindIndex](
-                const render::graph::MeshDescription::MeshDataLayoutAttribute& attribute_,
-                mref<string> token_
-            ) {
-                const lang::Symbol search {
-                    lang::SymbolId::from(_STD move(token_)),
-                    lang::VariableSymbol { .type = lang::SymbolType::eVariableSymbol, .data = nullptr }
-                };
-                const auto inbound = nativeModule->bindings.matchOutbound(&search);
-                const auto location = nativeModule->bindings.inboundLocation(inbound);
+                location = static_cast<u32>(vkBindAn->vkLocation);
+                offset = static_cast<u32>(vkBindAn->vkOffset);
+                break;
+            }
+            cur = cur->next.get();
+        }
 
-                if (/* Check forwarding */location.set >= 0) {
-                    return;
-                }
+        assert(location != ~0uL);
+        assert(offset != ~0uL);
+        assert(index != ~0uL);
 
-                if (/* Check emitted */location.location < 0) {
-                    return;
-                }
+        vertexAttributes.emplace_back(location, index, format, offset);
 
-                // TODO: Check for data type and convert to vk::Format
-                auto format = vk::Format::eUndefined;
-                if (inbound->var.data->type == lang::Type {}) {
-                    format = vk::Format::eUndefined;
-                }
+        if (not vertexBindings.empty()) {
+            continue;
+        }
 
-                vk::VertexInputAttributeDescription viad {
-                    static_cast<u32>(location.location),
-                    static_cast<u32>(invariantBindIndex),
-                    format,
-                    static_cast<u32>(attribute_.offset)
-                };
+        // Warning: We need to take care of the vertex stride, otherwise we won't be able to use the vertex assembly
+        vertexBindings.emplace_back(0uL, sizeof(gfx::vertex), vk::VertexInputRate::eVertex);
+    }
 
-                vertexAttributes.push_back(_STD move(viad));
-            };
-
-            define(desc.getMeshDataLayout().position, "geometry.position");
-            define(desc.getMeshDataLayout().normal, "geometry.normal");
-            define(desc.getMeshDataLayout().uv, "geometry.uv");
-            define(desc.getMeshDataLayout().color, "geometry.color");
+    // Warning: Temporary Hack
+    {
+        if (vertexAttributes.size() >= 2 && vertexAttributes[1].format == vk::Format::eR8G8B8A8Unorm) {
+            vertexBindings.front().stride = sizeof(gfx::uivertex);
+        } else if (not vertexBindings.empty()) {
+            vertexBindings.front().stride = sizeof(gfx::vertex);
         }
     }
+    // Warning:
 
     pvisci.vertexBindingDescriptionCount = static_cast<u32>(vertexBindings.size());
     pvisci.pVertexBindingDescriptions = vertexBindings.data();
@@ -692,6 +725,7 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
     plci.pSetLayouts = setLayouts.data();
 
     Vector<vk::PushConstantRange> pushConstants {};
+    resolvePushConstants(pass_.get(), pushConstants);
 
     plci.pushConstantRangeCount = static_cast<u32>(pushConstants.size());
     plci.pPushConstantRanges = pushConstants.data();
