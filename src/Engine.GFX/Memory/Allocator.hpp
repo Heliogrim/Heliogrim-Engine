@@ -19,9 +19,9 @@ namespace hg::engine::gfx::memory {
         [[nodiscard]] virtual AllocationResult allocate(
             cref<MemoryLayout> layout_,
             const u64 size_,
-            _Out_ ref<ptr<AllocatedMemory>> dst_
+            _Out_ ref<uptr<AllocatedMemory>> dst_
         ) = 0;
 
-        virtual void free(mref<ptr<AllocatedMemory>> mem_) = 0;
+        virtual void free(mref<uptr<AllocatedMemory>> mem_) = 0;
     };
 }

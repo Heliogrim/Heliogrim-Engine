@@ -77,21 +77,19 @@ void VirtualTexture::tidy() {
     for (auto& page : _pages) {
 
         // Unhook paged memory
-        _memory->undefinePage(page->memory());
+        _memory->undefinePage(page->release());
 
-        delete page;
-        page = nullptr;
+        page.reset();
     }
 
     _pages.clear();
 
-    for (auto& page : _opaquePages) {
+    for (auto&& page : _opaquePages) {
 
         // Unhook paged memory
-        _memory->undefinePage(page->memory());
+        _memory->undefinePage(page->release());
 
-        delete page;
-        page = nullptr;
+        page.reset();
     }
 
     _opaquePages.clear();
@@ -132,7 +130,7 @@ void VirtualTexture::tidy() {
     }
 }
 
-non_owning_rptr<VirtualTexturePage> VirtualTexture::makePage(
+nmpt<VirtualTexturePage> VirtualTexture::makePage(
     u32 layer_,
     u32 mipLevel_,
     math::uivec3 tileOffset_,
@@ -156,7 +154,7 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makePage(
     /**
      *
      */
-    VirtualMemoryPage* memory { nullptr };
+    nmpt<VirtualMemoryPage> memory {};
 
     const auto formatSize { formatDataSize(_format) };
     assert(formatSize > 0);
@@ -172,7 +170,7 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makePage(
     /**
      *
      */
-    auto* page {
+    auto page = uptr<VirtualTexturePage>(
         new VirtualTexturePage(
             memory,
             layer_,
@@ -180,13 +178,14 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makePage(
             tileExtent_,
             mipLevel_
         )
-    };
+    );
 
-    _pages.push_back(page);
-    return page;
+    auto* const result = page.get();
+    _pages.emplace_back(_STD move(page));
+    return result;
 }
 
-non_owning_rptr<VirtualTexturePage> VirtualTexture::makeOpaquePage(u32 layer_) {
+nmpt<VirtualTexturePage> VirtualTexture::makeOpaquePage(u32 layer_) {
 
     #ifdef _DEBUG
     assert(_layers >= layer_);
@@ -202,7 +201,7 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makeOpaquePage(u32 layer_) {
     /**
      *
      */
-    VirtualMemoryPage* memory { nullptr };
+    nmpt<VirtualMemoryPage> memory {};
     const auto memorySize { _mipTailSize };
     const auto memoryOffset { _mipTailOffset };
 
@@ -212,19 +211,20 @@ non_owning_rptr<VirtualTexturePage> VirtualTexture::makeOpaquePage(u32 layer_) {
     /**
      *
      */
-    auto* page {
+    auto page = uptr<VirtualTexturePage>(
         new VirtualTexturePage(
             memory,
             layer_,
             math::uivec3 {},
             extent,
             _mipTailFirstLod,
-            VirtualTexturePageFlag::eOpaqueTail
+            VirtualTexturePageFlags { VirtualTexturePageFlag::eOpaqueTail }
         )
-    };
+    );
 
-    _opaquePages.push_back(page);
-    return page;
+    auto* const result = page.get();
+    _opaquePages.emplace_back(_STD move(page));
+    return result;
 }
 
 // Warning: TODO: Rewrite !?!
@@ -241,10 +241,10 @@ void VirtualTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math:
     /**
      * Collect pages of targeted region
      */
-    Vector<Vector<non_owning_rptr<VirtualTexturePage>>> tiledPages {};
+    Vector<Vector<nmpt<VirtualTexturePage>>> tiledPages {};
     tiledPages.resize(maxTiledMipLevel);
 
-    for (auto* const entry : _pages) {
+    for (const auto& entry : _pages) {
 
         if (entry->layer() != layer_) {
             continue;
@@ -254,7 +254,7 @@ void VirtualTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math:
             continue;
         }
 
-        tiledPages[entry->mipLevel()].push_back(entry);
+        tiledPages[entry->mipLevel()].emplace_back(entry.get());
     }
 
     /**
@@ -300,7 +300,7 @@ void VirtualTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math:
                             _granularity.z,
                     };
 
-                    auto* page { makePage(layer_, mip, tileOffset, tileExtent) };
+                    auto page { makePage(layer_, mip, tileOffset, tileExtent) };
                     tiledPages[mip].push_back(page);
                 }
             }
@@ -312,7 +312,7 @@ void VirtualTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math:
      */
     bool hasOpaque { false };
 
-    for (auto* entry : _opaquePages) {
+    for (const auto& entry : _opaquePages) {
         if (entry->layer() == layer_) {
             hasOpaque = true;
             break;
@@ -329,10 +329,10 @@ void VirtualTexture::selectPages(
     math::uivec2 mipLevels_,
     math::uivec3 offset_,
     math::uivec3 extent_,
-    ref<Vector<non_owning_rptr<VirtualTexturePage>>> pages_
+    ref<Vector<nmpt<VirtualTexturePage>>> pages_
 ) {
 
-    for (auto* const entry : _pages) {
+    for (const auto& entry : _pages) {
 
         if (layers_.min > entry->layer() || entry->layer() > layers_.max) {
             continue;
@@ -345,14 +345,14 @@ void VirtualTexture::selectPages(
         // TODO: Validate offset
         // TODO: Validate extent
 
-        pages_.push_back(entry);
+        pages_.emplace_back(entry.get());
     }
 
     /**
      * Handle mip levels which intersect the mip tail
      */
     if (mipLevels_.max > _mipTailFirstLod) {
-        for (auto* const entry : _opaquePages) {
+        for (const auto& entry : _opaquePages) {
 
             if (layers_.min > entry->layer() || entry->layer() > layers_.max) {
                 continue;
@@ -362,7 +362,7 @@ void VirtualTexture::selectPages(
              * While intersecting the the mip tail we can't split the resulting pages into subresource
              *  -> No possibility for extended mip, offset or extent checks
              */
-            pages_.push_back(entry);
+            pages_.emplace_back(entry.get());
         }
     }
 }
@@ -390,7 +390,7 @@ uptr<VirtualTextureView> VirtualTexture::makeView(math::uivec2 layers_, math::ui
         assureTiledPages(layer, mipLevels, {}, _extent);
     }
 
-    Vector<non_owning_rptr<VirtualTexturePage>> pages {};
+    Vector<nmpt<VirtualTexturePage>> pages {};
     selectPages({ layers_.min, layers_.max + 1ui32 }, mipLevels, {}, _extent, pages);
 
     /**
@@ -398,7 +398,7 @@ uptr<VirtualTextureView> VirtualTexture::makeView(math::uivec2 layers_, math::ui
      */
     _STD ranges::sort(
         pages,
-        [](non_owning_rptr<VirtualTexturePage> left_, non_owning_rptr<VirtualTexturePage> right_) {
+        [](nmpt<VirtualTexturePage> left_, nmpt<VirtualTexturePage> right_) {
             return left_->mipLevel() < right_->mipLevel();
         }
     );
@@ -492,7 +492,7 @@ cref<vk::Image> VirtualTexture::vkImage() const noexcept {
     return _vkImage;
 }
 
-bool VirtualTexture::load(non_owning_rptr<VirtualTexturePage> page_) {
+bool VirtualTexture::load(nmpt<VirtualTexturePage> page_) {
 
     /**
      * Track Changes
@@ -509,7 +509,7 @@ bool VirtualTexture::load(non_owning_rptr<VirtualTexturePage> page_) {
     return page_->load();
 }
 
-bool VirtualTexture::unload(non_owning_rptr<VirtualTexturePage> page_) {
+bool VirtualTexture::unload(nmpt<VirtualTexturePage> page_) {
 
     /**
      * Track Changes
@@ -537,8 +537,12 @@ void VirtualTexture::unsafe_scan_changes() {
     /**
      *
      */
-    _changedPages.insert(_pages.begin(), _pages.end());
-    _changedOpaquePages.insert(_opaquePages.begin(), _opaquePages.end());
+    for (const auto& page : _pages) {
+        _changedPages.emplace(page.get());
+    }
+    for (const auto& opaquePage : _opaquePages) {
+        _changedOpaquePages.emplace(opaquePage.get());
+    }
 }
 
 void VirtualTexture::updateBindingData() {

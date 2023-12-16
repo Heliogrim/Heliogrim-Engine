@@ -23,9 +23,9 @@ namespace hg::engine::gfx::memory {
         [[nodiscard]] AllocationResult allocate(
             cref<MemoryLayout> layout_,
             const u64 size_,
-            ref<ptr<AllocatedMemory>> dst_
+            ref<uptr<AllocatedMemory>> dst_
         ) override;
 
-        void free(mref<ptr<AllocatedMemory>> mem_) override;
+        void free(mref<uptr<AllocatedMemory>> mem_) override;
     };
 }

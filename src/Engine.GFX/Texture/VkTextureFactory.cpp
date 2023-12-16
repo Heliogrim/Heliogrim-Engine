@@ -79,7 +79,7 @@ ptr<TextureFactory> VkTextureFactory::make(cref<sptr<Device>> device_) {
 VkTextureFactory::VkTextureFactory(cref<sptr<Device>> device_) :
     TextureFactory(device_) {}
 
-VkTextureFactory::~VkTextureFactory() noexcept { }
+VkTextureFactory::~VkTextureFactory() noexcept {}
 
 Texture VkTextureFactory::build(const TextureBuildPayload& payload_) const {
 
@@ -271,7 +271,7 @@ ref<VirtualTextureView> VkTextureFactory::buildView(
 
     SCOPED_STOPWATCH
 
-    const auto* const owner = texture_.owner();
+    auto owner = texture_.owner();
 
     /**
      * Prepare

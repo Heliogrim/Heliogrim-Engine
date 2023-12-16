@@ -4,14 +4,16 @@
 #include <cassert>
 #endif
 
+#include <Engine.Common/Memory/MemoryPointer.hpp>
+
 #include "Allocator.hpp"
 
 using namespace hg::engine::gfx::memory;
 using namespace hg;
 
 AllocatedMemory::AllocatedMemory(
-    ptr<Allocator> allocator_,
-    ptr<AllocatedMemory> parent_,
+    nmpt<Allocator> allocator_,
+    nmpt<AllocatedMemory> parent_,
     cref<MemoryLayout> layout_,
     cref<u64> size_,
     cref<u64> offset_,
@@ -113,7 +115,7 @@ bool AllocatedMemory::write(const ptr<const void> data_, const u64 size_) {
     return true;
 }
 
-void AllocatedMemory::free(mref<ptr<AllocatedMemory>> memory_) {
+void AllocatedMemory::free(mref<uptr<AllocatedMemory>> memory_) {
 
     if (memory_->mapping) {
         memory_->unmap();
@@ -123,5 +125,5 @@ void AllocatedMemory::free(mref<ptr<AllocatedMemory>> memory_) {
         return memory_->allocator->free(_STD move(memory_));
     }
 
-    return delete _STD move(memory_);
+    memory_.reset();
 }

@@ -734,11 +734,11 @@ void transformer::convertKtx10Gli(
     /**
     * Update virtual binding data
     */
-    const auto* tex { dst_->owner() };
-    const_cast<VirtualTexture*>(tex)->updateBindingData();
+    auto tex { dst_->owner() };
+    const_cast<VirtualTexture*>(tex.get())->updateBindingData();
     #pragma warning(push)
     #pragma warning(disable: 4996)
-    const_cast<VirtualTexture*>(tex)->enqueueBindingSync(device_->graphicsQueue());
+    const_cast<VirtualTexture*>(tex.get())->enqueueBindingSync(device_->graphicsQueue());
     #pragma warning(pop)
 
     /**
@@ -989,7 +989,7 @@ void transformer::convertKtx20(
     /**/
 
     // Warning: Temporary
-    for (auto* page : dst_->pages()) {
+    for (auto& page : dst_->pages()) {
 
         if (IS_LOCKED_SEGMENT) {
             // TODO: Lock effected memory and texture pages!!!
@@ -1003,11 +1003,11 @@ void transformer::convertKtx20(
     /**
     * Update virtual binding data
     */
-    const auto* tex { dst_->owner() };
-    const_cast<VirtualTexture*>(tex)->updateBindingData();
+    const auto tex { dst_->owner() };
+    const_cast<VirtualTexture*>(tex.get())->updateBindingData();
     #pragma warning(push)
     #pragma warning(disable: 4996)
-    const_cast<VirtualTexture*>(tex)->enqueueBindingSync(device_->graphicsQueue());
+    const_cast<VirtualTexture*>(tex.get())->enqueueBindingSync(device_->graphicsQueue());
     #pragma warning(pop)
 
     /**
@@ -1165,7 +1165,7 @@ void transformer::convertKtx20Partial(
                 dst_->pages().end(),
                 options_.mip,
                 _STD ranges::less {},
-                [](non_owning_rptr<VirtualTexturePage> entry_) {
+                [](const auto& entry_) {
                     return entry_->mipLevel();
                 }
             )
@@ -1226,7 +1226,7 @@ void transformer::convertKtx20Partial(
             for (u32 ix { 0ui32 }; ix < ext.x; ++ix) {
 
                 u32 idx { mipOff + oi + ix };
-                auto* page { dst_->pages()[idx] };
+                auto page { dst_->pages()[idx] };
 
                 bool effected { false };
                 if (page->mipLevel() != options_.mip) {
@@ -1345,11 +1345,11 @@ void transformer::convertKtx20Partial(
 
     // TODO: !!! Move dirty flagging and update tracking into virtual texture itself !!!
     if (changedMemory) {
-        const auto* tex { dst_->owner() };
-        const_cast<VirtualTexture*>(tex)->updateBindingData();
+        auto tex { dst_->owner() };
+        const_cast<VirtualTexture*>(tex.get())->updateBindingData();
         #pragma warning(push)
         #pragma warning(disable: 4996)
-        const_cast<VirtualTexture*>(tex)->enqueueBindingSync(device_->transferQueue());
+        const_cast<VirtualTexture*>(tex.get())->enqueueBindingSync(device_->transferQueue());
         #pragma warning(pop)
     }
 
@@ -1697,7 +1697,7 @@ void transformer::unloadPartialTmp(
             dst_->pages(),
             options_.mip,
             _STD ranges::less {},
-            [](non_owning_rptr<VirtualTexturePage> entry_) {
+            [](const auto& entry_) {
                 return entry_->mipLevel();
             }
         )
@@ -1712,7 +1712,7 @@ void transformer::unloadPartialTmp(
         ++iter
     ) {
 
-        auto* page { *iter };
+        auto page { *iter };
 
         if (page->layer() != options_.layer) {
             continue;
@@ -1751,11 +1751,11 @@ void transformer::unloadPartialTmp(
     *
     */
     if (changedMemory) {
-        const auto* tex { dst_->owner() };
-        const_cast<VirtualTexture*>(tex)->updateBindingData();
+        auto tex { dst_->owner() };
+        const_cast<VirtualTexture*>(tex.get())->updateBindingData();
         #pragma warning(push)
         #pragma warning(disable: 4996)
-        const_cast<VirtualTexture*>(tex)->enqueueBindingSync(device_->transferQueue());
+        const_cast<VirtualTexture*>(tex.get())->enqueueBindingSync(device_->transferQueue());
         #pragma warning(pop)
     }
 }

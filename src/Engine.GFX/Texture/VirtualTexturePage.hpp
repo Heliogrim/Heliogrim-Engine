@@ -19,7 +19,7 @@ namespace hg::engine::gfx {
 
     protected:
         VirtualTexturePage(
-            non_owning_rptr<VirtualMemoryPage> memory_,
+            nmpt<VirtualMemoryPage> memory_,
             u32 layer_,
             math::uivec3 offset_,
             math::uivec3 extent_,
@@ -43,7 +43,10 @@ namespace hg::engine::gfx {
         [[nodiscard]] const VirtualTexturePageFlags flags() const noexcept;
 
     private:
-        non_owning_rptr<VirtualMemoryPage> _memory;
+        nmpt<VirtualMemoryPage> _memory;
+
+    private:
+        [[nodiscard]] nmpt<VirtualMemoryPage> release() noexcept;
 
     public:
         /**
@@ -54,7 +57,7 @@ namespace hg::engine::gfx {
          *
          * @returns A non owning pointer to the const VirtualMemoryPage.
          */
-        [[nodiscard]] const non_owning_rptr<VirtualMemoryPage> memory() const noexcept;
+        [[nodiscard]] nmpt<VirtualMemoryPage> memory() const noexcept;
 
         /**
          * Check whether this is currently residential

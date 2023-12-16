@@ -23,7 +23,7 @@ void LocalPooledAllocator::tidy() {
 AllocationResult LocalPooledAllocator::allocate(
     cref<MemoryLayout> layout_,
     const u64 size_,
-    ref<ptr<AllocatedMemory>> dst_
+    ref<uptr<AllocatedMemory>> dst_
 ) {
 
     if (_cache.allocate(layout_, size_, dst_) == AllocationResult::eSuccess) {
@@ -34,7 +34,7 @@ AllocationResult LocalPooledAllocator::allocate(
     return _global->allocate(layout_, size_, dst_);
 }
 
-void LocalPooledAllocator::free(mref<ptr<AllocatedMemory>> mem_) {
+void LocalPooledAllocator::free(mref<uptr<AllocatedMemory>> mem_) {
 
     if (_cache.free(_STD move(mem_))) {
         return;
@@ -51,7 +51,7 @@ AllocationResult engine::gfx::memory::allocate(
     cref<sptr<Device>> device_,
     cref<vk::Buffer> buffer_,
     cref<MemoryProperties> props_,
-    ref<ptr<AllocatedMemory>> dst_
+    ref<uptr<AllocatedMemory>> dst_
 ) {
 
     const auto req { device_->vkDevice().getBufferMemoryRequirements(buffer_) };
@@ -69,7 +69,7 @@ AllocationResult engine::gfx::memory::allocate(
     cref<sptr<Device>> device_,
     vk::Image image_,
     cref<MemoryProperties> props_,
-    ref<ptr<AllocatedMemory>> dst_
+    ref<uptr<AllocatedMemory>> dst_
 ) {
 
     const auto req { device_->vkDevice().getImageMemoryRequirements(image_) };

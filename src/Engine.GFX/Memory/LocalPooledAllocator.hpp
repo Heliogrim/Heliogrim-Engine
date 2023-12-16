@@ -31,10 +31,10 @@ namespace hg::engine::gfx::memory {
         [[nodiscard]] AllocationResult allocate(
             cref<MemoryLayout> layout_,
             const u64 size_,
-            _Out_ ref<ptr<AllocatedMemory>> dst_
+            _Out_ ref<uptr<AllocatedMemory>> dst_
         ) override;
 
-        void free(mref<ptr<AllocatedMemory>> mem_) override;
+        void free(mref<uptr<AllocatedMemory>> mem_) override;
     };
 }
 
@@ -54,7 +54,7 @@ namespace hg::engine::gfx::memory {
         cref<sptr<Device>> device_,
         cref<vk::Buffer> buffer_,
         cref<MemoryProperties> props_,
-        ref<ptr<AllocatedMemory>> dst_
+        ref<uptr<AllocatedMemory>> dst_
     );
 
     [[nodiscard]] AllocationResult allocate(
@@ -62,6 +62,6 @@ namespace hg::engine::gfx::memory {
         cref<sptr<Device>> device_,
         vk::Image image_,
         cref<MemoryProperties> props_,
-        ref<ptr<AllocatedMemory>> dst_
+        ref<uptr<AllocatedMemory>> dst_
     );
 }

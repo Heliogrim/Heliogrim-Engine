@@ -34,5 +34,7 @@ namespace hg::engine::gfx::loader {
             const non_owning_rptr<pool::GlobalResourcePool> pool_,
             mref<sptr<FontSourceLoader>> sourceLoader_
         );
+
+        ~FontLoader() override = default;
     };
 }

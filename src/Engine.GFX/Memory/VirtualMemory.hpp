@@ -11,7 +11,7 @@ namespace hg::engine::gfx {
 
     public:
         VirtualMemory(
-            const ptr<memory::GlobalPooledAllocator> allocator_,
+            nmpt<memory::GlobalPooledAllocator> allocator_,
             cref<memory::MemoryLayout> layout_,
             const u64 size_
         );
@@ -19,10 +19,10 @@ namespace hg::engine::gfx {
         ~VirtualMemory();
 
     private:
-        ptr<memory::GlobalPooledAllocator> _allocator;
+        nmpt<memory::GlobalPooledAllocator> _allocator;
 
     public:
-        [[nodiscard]] ptr<memory::GlobalPooledAllocator> allocator() const noexcept;
+        [[nodiscard]] nmpt<memory::GlobalPooledAllocator> allocator() const noexcept;
 
     private:
         memory::MemoryLayout _layout;
@@ -31,12 +31,12 @@ namespace hg::engine::gfx {
         [[nodiscard]] cref<memory::MemoryLayout> layout() const noexcept;
 
     private:
-        Vector<ptr<VirtualMemoryPage>> _pages;
+        Vector<uptr<VirtualMemoryPage>> _pages;
 
     public:
-        [[nodiscard]] non_owning_rptr<VirtualMemoryPage> definePage(const u64 offset_, const u64 size_);
+        [[nodiscard]] nmpt<VirtualMemoryPage> definePage(const u64 offset_, const u64 size_);
 
-        void undefinePage(const non_owning_rptr<VirtualMemoryPage> page_);
+        void undefinePage(mref<nmpt<VirtualMemoryPage>> page_);
 
     private:
         u64 _size;

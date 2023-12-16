@@ -4,6 +4,7 @@
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Math/__default.inl>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "TextureLikeObject.hpp"
 #include "__fwd.hpp"
@@ -27,8 +28,8 @@ namespace hg::engine::gfx {
 
     protected:
         VirtualTextureView(
-            non_owning_rptr<VirtualTexture> owner_,
-            mref<Vector<non_owning_rptr<VirtualTexturePage>>> pages_,
+            nmpt<VirtualTexture> owner_,
+            mref<Vector<nmpt<VirtualTexturePage>>> pages_,
             math::uivec2 layers_,
             math::uivec3 extent_,
             TextureFormat format_,
@@ -50,19 +51,19 @@ namespace hg::engine::gfx {
         ref<this_type> operator=(mref<this_type>) noexcept = delete;
 
     private:
-        non_owning_rptr<VirtualTexture> _owner;
+        nmpt<VirtualTexture> _owner;
 
     public:
-        [[nodiscard]] const non_owning_rptr<const VirtualTexture> owner() const noexcept;
+        [[nodiscard]] const nmpt<const VirtualTexture> owner() const noexcept;
 
-        [[nodiscard]] const non_owning_rptr<VirtualTexture> owner() noexcept;
+        [[nodiscard]] const nmpt<VirtualTexture> owner() noexcept;
 
     private:
-        Vector<non_owning_rptr<VirtualTexturePage>> _pages;
+        Vector<nmpt<VirtualTexturePage>> _pages;
 
     public:
         // TODO: Should be protected / private ...
-        [[nodiscard]] cref<Vector<non_owning_rptr<VirtualTexturePage>>> pages() const noexcept;
+        [[nodiscard]] cref<Vector<nmpt<VirtualTexturePage>>> pages() const noexcept;
 
     private:
         math::uivec2 _layers;

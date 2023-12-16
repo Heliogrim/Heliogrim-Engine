@@ -8,7 +8,7 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 VirtualMemoryPage::VirtualMemoryPage(
-    const non_owning_rptr<VirtualMemory> owner_,
+    const nmpt<VirtualMemory> owner_,
     const u64 offset_,
     const u64 size_
 ) :
@@ -25,7 +25,7 @@ VirtualMemoryPage::~VirtualMemoryPage() {
     }
 }
 
-const non_owning_rptr<VirtualMemory> VirtualMemoryPage::owner() const noexcept {
+const nmpt<VirtualMemory> VirtualMemoryPage::owner() const noexcept {
     return _owner;
 }
 
@@ -41,8 +41,8 @@ VirtualMemoryPageState VirtualMemoryPage::state() const noexcept {
     return VirtualMemoryPageState { _state };
 }
 
-const ptr<memory::AllocatedMemory> VirtualMemoryPage::allocated() const noexcept {
-    return _memory;
+nmpt<memory::AllocatedMemory> VirtualMemoryPage::allocated() const noexcept {
+    return _memory.get();
 }
 
 memory::AllocationResult VirtualMemoryPage::load() {

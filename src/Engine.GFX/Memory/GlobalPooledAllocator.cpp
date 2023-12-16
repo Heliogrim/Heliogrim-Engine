@@ -36,7 +36,7 @@ bool GlobalPooledAllocator::shouldPool(cref<MemoryLayout> layout_, const u64 siz
 AllocationResult GlobalPooledAllocator::allocate(
     cref<MemoryLayout> layout_,
     const u64 size_,
-    ref<ptr<AllocatedMemory>> dst_
+    ref<uptr<AllocatedMemory>> dst_
 ) {
 
     const auto cacheResult { _cache.allocate(layout_, size_, dst_) };
@@ -104,14 +104,14 @@ void GlobalPooledAllocator::augmentPool(ptr<MemoryPool> pool_, const u64 size_) 
 
     const auto poolSize { nextPoolSize(pool_, size_) };
 
-    ptr<AllocatedMemory> mem { nullptr };
+    uptr<AllocatedMemory> mem { nullptr };
     const auto allocRes { _alloc->allocate(pool_->layout(), poolSize, mem) };
 
     assert(allocRes == AllocationResult::eSuccess);
     pool_->push(_STD move(mem));
 }
 
-void GlobalPooledAllocator::free(mref<ptr<AllocatedMemory>> mem_) {
+void GlobalPooledAllocator::free(mref<uptr<AllocatedMemory>> mem_) {
 
     if (_cache.free(_STD move(mem_))) {
         return;
@@ -168,7 +168,7 @@ AllocationResult engine::gfx::memory::allocate(
     cref<sptr<Device>> device_,
     cref<vk::Buffer> buffer_,
     cref<MemoryProperties> props_,
-    ref<ptr<AllocatedMemory>> dst_
+    ref<uptr<AllocatedMemory>> dst_
 ) {
 
     const auto req { device_->vkDevice().getBufferMemoryRequirements(buffer_) };
@@ -186,7 +186,7 @@ AllocationResult engine::gfx::memory::allocate(
     cref<sptr<Device>> device_,
     vk::Image image_,
     cref<MemoryProperties> props_,
-    ref<ptr<AllocatedMemory>> dst_
+    ref<uptr<AllocatedMemory>> dst_
 ) {
 
     const auto req { device_->vkDevice().getImageMemoryRequirements(image_) };
