@@ -21,5 +21,8 @@ namespace hg::engine::reflow {
         void update(const ptr<scene::Scene> scene_) override;
 
         void destroy(const ptr<scene::Scene> scene_) override;
+
+    public:
+        [[nodiscard]] ref<class Window> getWindow() const noexcept;
     };
 }

@@ -200,6 +200,9 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
     }
 
     if (result) {
+
+        image->buffer()._vkLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+
         cmd_->drawImageAsync(
             math::vec2 { offset.x, offset.y },
             _uvs[0],
@@ -370,7 +373,7 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
             );
             break;
         }
-        default: { }
+        default: {}
     }
 
     return response;
