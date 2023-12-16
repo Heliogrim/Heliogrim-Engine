@@ -10,11 +10,13 @@
 #include <Engine.GFX.Render.Command/Commands/BeginAccelerationPass.hpp>
 #include <Engine.GFX.Render.Command/Commands/BindIndexBuffer.hpp>
 #include <Engine.GFX.Render.Command/Commands/BindPipeline.hpp>
+#include <Engine.GFX.Render.Command/Commands/BindStorageBuffer.hpp>
 #include <Engine.GFX.Render.Command/Commands/BindTexture.hpp>
 #include <Engine.GFX.Render.Command/Commands/BindUniformBuffer.hpp>
 #include <Engine.GFX.Render.Command/Commands/BindVertexBuffer.hpp>
 #include <Engine.GFX.Render.Command/Commands/DrawDispatch.hpp>
 #include <Engine.GFX.Render.Command/Commands/DrawDispatchIndirect.hpp>
+#include <Engine.GFX.Render.Command/Commands/DrawMesh.hpp>
 #include <Engine.GFX.Render.Command/Commands/Lambda.hpp>
 #include <Engine.GFX/Buffer/StorageBufferView.hpp>
 #include <Engine.GFX/Buffer/UniformBufferView.hpp>
@@ -159,7 +161,13 @@ void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindSkeletalM
 
 void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindStaticMeshRCmd> cmd_) noexcept {}
 
-void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindStorageBufferRCmd> cmd_) noexcept {}
+void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindStorageBufferRCmd> cmd_) noexcept {
+
+    const auto active = static_cast<VkState*>(state_)->cmd.active();
+    assert(active.has_value());
+
+    static_cast<VkState*>(state_)->srt.bind(cmd_->_symbolId, cmd_->_storageView);
+}
 
 void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindTextureRCmd> cmd_) noexcept {
 
@@ -177,7 +185,48 @@ void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindUniformBu
     static_cast<VkState*>(state_)->srt.bind(cmd_->_symbolId, cmd_->_uniformView);
 }
 
-void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::DrawMeshRCmd> cmd_) noexcept {}
+void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::DrawMeshRCmd> cmd_) noexcept {
+
+    auto active = static_cast<VkState*>(state_)->cmd.active();
+    assert(active.has_value());
+
+    /* Ensure Resources */
+
+    auto& srt = static_cast<VkState*>(state_)->srt;
+
+    const auto activePipe = srt.getActivePipeline();
+    assert(activePipe);
+
+    Vector<_::VkDescriptorSet> descriptorSets {};
+    const auto result = srt.commit(activePipe->getBindingLayout(), descriptorSets);
+    assert(result);
+
+    active->bindDescriptor(reinterpret_cast<ref<Vector<::vk::DescriptorSet>>>(descriptorSets));
+
+    /**/
+
+    constexpr static auto assumeTriangleTopology = 3uL;
+
+    if (cmd_->_indexedPrimitive) {
+
+        active->drawIndexed(
+            cmd_->_instanceCount,
+            cmd_->_instanceOffset,
+            cmd_->_primitiveCount * assumeTriangleTopology,
+            cmd_->_primitiveOffset * assumeTriangleTopology,
+            0uL
+        );
+
+    } else {
+
+        active->draw(
+            cmd_->_instanceCount,
+            cmd_->_instanceOffset,
+            cmd_->_primitiveCount * assumeTriangleTopology,
+            cmd_->_primitiveOffset * assumeTriangleTopology
+        );
+    }
+}
 
 void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::DrawSkeletalMeshRCmd> cmd_) noexcept {}
 
