@@ -69,18 +69,18 @@ namespace hg::engine::gfx {
         uptr<VirtualMemory> _memory;
 
     private:
-        Vector<ptr<VirtualTexturePage>> _pages;
-        Vector<ptr<VirtualTexturePage>> _opaquePages;
+        Vector<uptr<VirtualTexturePage>> _pages;
+        Vector<uptr<VirtualTexturePage>> _opaquePages;
 
     private:
-        non_owning_rptr<VirtualTexturePage> makePage(
+        nmpt<VirtualTexturePage> makePage(
             u32 layer_,
             u32 mipLevel_,
             math::uivec3 tileOffset_,
             math::uivec3 tileExtent_
         );
 
-        non_owning_rptr<VirtualTexturePage> makeOpaquePage(u32 layer_);
+        nmpt<VirtualTexturePage> makeOpaquePage(u32 layer_);
 
         void assureTiledPages(
             u32 layer_,
@@ -94,7 +94,7 @@ namespace hg::engine::gfx {
             math::uivec2 mipLevels_,
             math::uivec3 offset_,
             math::uivec3 extent_,
-            _Inout_ ref<Vector<non_owning_rptr<VirtualTexturePage>>> pages_
+            _Inout_ ref<Vector<nmpt<VirtualTexturePage>>> pages_
         );
 
     public:
@@ -202,13 +202,13 @@ namespace hg::engine::gfx {
         vk::ImageView _vkImageView;
 
     private:
-        CompactSet<ptr<VirtualTexturePage>> _changedPages;
-        CompactSet<ptr<VirtualTexturePage>> _changedOpaquePages;
+        CompactSet<nmpt<VirtualTexturePage>> _changedPages;
+        CompactSet<nmpt<VirtualTexturePage>> _changedOpaquePages;
 
     public:
-        bool load(non_owning_rptr<VirtualTexturePage> page_);
+        bool load(nmpt<VirtualTexturePage> page_);
 
-        bool unload(non_owning_rptr<VirtualTexturePage> page_);
+        bool unload(nmpt<VirtualTexturePage> page_);
 
     private:
         Vector<vk::SparseImageMemoryBind> _bindings;

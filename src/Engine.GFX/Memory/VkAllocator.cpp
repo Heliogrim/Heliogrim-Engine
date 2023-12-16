@@ -18,7 +18,7 @@ VkAllocator::~VkAllocator() noexcept = default;
 AllocationResult VkAllocator::allocate(
     cref<MemoryLayout> layout_,
     const u64 size_,
-    ref<ptr<AllocatedMemory>> dst_
+    ref<uptr<AllocatedMemory>> dst_
 ) {
 
     const vk::MemoryAllocateInfo mai {
@@ -56,7 +56,7 @@ AllocationResult VkAllocator::allocate(
         }
     }
 
-    dst_ = new AllocatedMemory {
+    dst_ = make_uptr<AllocatedMemory>(
         this,
         nullptr,
         layout_,
@@ -64,17 +64,15 @@ AllocationResult VkAllocator::allocate(
         0ui64,
         _device->vkDevice(),
         vk::DeviceMemory { mem }
-    };
+    );
 
     return AllocationResult::eSuccess;
 }
 
-void VkAllocator::free(mref<ptr<AllocatedMemory>> mem_) {
+void VkAllocator::free(mref<uptr<AllocatedMemory>> mem_) {
     _device->vkDevice().freeMemory(mem_->vkMemory);
     mem_->vkMemory = nullptr;
-
-    delete mem_;
-    mem_ = nullptr;
+    mem_.reset();
 }
 
 cref<sptr<Device>> VkAllocator::device() const noexcept {

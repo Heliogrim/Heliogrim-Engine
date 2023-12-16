@@ -40,7 +40,7 @@ namespace hg::engine::gfx {
         }
 
     public:
-        ptr<memory::AllocatedMemory> memory;
+        uptr<memory::AllocatedMemory> memory;
 
     public:
         vk::Buffer buffer;

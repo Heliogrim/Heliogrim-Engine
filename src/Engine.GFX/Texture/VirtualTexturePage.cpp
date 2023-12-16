@@ -2,12 +2,13 @@
 
 #include "../Memory/AllocatedMemory.hpp"
 #include "../Memory/AllocationResult.hpp"
+#include "Engine.GFX/Memory/VirtualMemory.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;
 
 VirtualTexturePage::VirtualTexturePage(
-    non_owning_rptr<VirtualMemoryPage> memory_,
+    nmpt<VirtualMemoryPage> memory_,
     u32 layer_,
     math::uivec3 offset_,
     math::uivec3 extent_,
@@ -22,14 +23,19 @@ VirtualTexturePage::VirtualTexturePage(
     _mipLevel(mipLevel_) {}
 
 VirtualTexturePage::~VirtualTexturePage() noexcept {
-    delete _memory;
+    // delete _memory;
+    assert(_memory == nullptr);
 }
 
 const VirtualTexturePageFlags VirtualTexturePage::flags() const noexcept {
     return _flags;
 }
 
-const non_owning_rptr<VirtualMemoryPage> VirtualTexturePage::memory() const noexcept {
+nmpt<VirtualMemoryPage> VirtualTexturePage::release() noexcept {
+    return _STD exchange(_memory, nullptr);
+}
+
+nmpt<VirtualMemoryPage> VirtualTexturePage::memory() const noexcept {
     return _memory;
 }
 

@@ -8,15 +8,15 @@
 namespace hg::engine::gfx {
     class VirtualBufferPage final {
     public:
-        VirtualBufferPage(const ptr<VirtualMemoryPage> memory_, const u64 resourceSize_, const u64 resourceOffset_);
+        VirtualBufferPage(nmpt<VirtualMemoryPage> memory_, const u64 resourceSize_, const u64 resourceOffset_);
 
         ~VirtualBufferPage();
 
     private:
-        ptr<VirtualMemoryPage> _memory;
+        nmpt<VirtualMemoryPage> _memory;
 
     public:
-        [[nodiscard]] const ptr<VirtualMemoryPage> memory() const noexcept;
+        [[nodiscard]] nmpt<VirtualMemoryPage> memory() const noexcept;
 
         [[nodiscard]] bool residential() const noexcept;
 

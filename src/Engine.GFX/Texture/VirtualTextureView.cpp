@@ -6,8 +6,8 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 VirtualTextureView::VirtualTextureView(
-    const non_owning_rptr<VirtualTexture> owner_,
-    mref<Vector<non_owning_rptr<VirtualTexturePage>>> pages_,
+    nmpt<VirtualTexture> owner_,
+    mref<Vector<nmpt<VirtualTexturePage>>> pages_,
     const math::uivec2 layers_,
     const math::uivec3 extent_,
     const TextureFormat format_,
@@ -24,15 +24,15 @@ VirtualTextureView::VirtualTextureView(
 
 VirtualTextureView::~VirtualTextureView() = default;
 
-const non_owning_rptr<const VirtualTexture> VirtualTextureView::owner() const noexcept {
+const nmpt<const VirtualTexture> VirtualTextureView::owner() const noexcept {
     return _owner;
 }
 
-const non_owning_rptr<VirtualTexture> VirtualTextureView::owner() noexcept {
+const nmpt<VirtualTexture> VirtualTextureView::owner() noexcept {
     return _owner;
 }
 
-cref<Vector<non_owning_rptr<VirtualTexturePage>>> VirtualTextureView::pages() const noexcept {
+cref<Vector<nmpt<VirtualTexturePage>>> VirtualTextureView::pages() const noexcept {
     return _pages;
 }
 

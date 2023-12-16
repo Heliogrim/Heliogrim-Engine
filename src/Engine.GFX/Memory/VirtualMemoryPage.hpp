@@ -1,6 +1,7 @@
 #pragma once
 #include <Engine.Common/Types.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "../Memory/__fwd.hpp"
 #include "VirtualMemoryPageState.hpp"
@@ -15,15 +16,15 @@ namespace hg::engine::gfx {
         using this_type = VirtualMemoryPage;
 
     public:
-        VirtualMemoryPage(const non_owning_rptr<VirtualMemory> owner_, const u64 offset_, const u64 size_);
+        VirtualMemoryPage(const nmpt<VirtualMemory> owner_, const u64 offset_, const u64 size_);
 
         ~VirtualMemoryPage();
 
     private:
-        const non_owning_rptr<VirtualMemory> _owner;
+        const nmpt<VirtualMemory> _owner;
 
     public:
-        [[nodiscard]] const non_owning_rptr<VirtualMemory> owner() const noexcept;
+        [[nodiscard]] const nmpt<VirtualMemory> owner() const noexcept;
 
     private:
         u64 _offset;
@@ -45,10 +46,10 @@ namespace hg::engine::gfx {
 
         //private:
     public:
-        ptr<memory::AllocatedMemory> _memory;
+        uptr<memory::AllocatedMemory> _memory;
 
     public:
-        [[nodiscard]] const ptr<memory::AllocatedMemory> allocated() const noexcept;
+        [[nodiscard]] nmpt<memory::AllocatedMemory> allocated() const noexcept;
 
     public:
         [[nodiscard]] memory::AllocationResult load();

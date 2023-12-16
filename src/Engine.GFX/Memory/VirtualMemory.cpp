@@ -10,7 +10,7 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 VirtualMemory::VirtualMemory(
-    const ptr<memory::GlobalPooledAllocator> allocator_,
+    nmpt<memory::GlobalPooledAllocator> allocator_,
     cref<memory::MemoryLayout> layout_,
     const u64 size_
 ) :
@@ -20,12 +20,12 @@ VirtualMemory::VirtualMemory(
 
 VirtualMemory::~VirtualMemory() {
     // TODO:
-    for (auto* page : _pages) {
-        delete page;
+    for (auto&& page : _pages) {
+        page.reset();
     }
 }
 
-ptr<memory::GlobalPooledAllocator> VirtualMemory::allocator() const noexcept {
+nmpt<memory::GlobalPooledAllocator> VirtualMemory::allocator() const noexcept {
     return _allocator;
 }
 
@@ -33,19 +33,26 @@ cref<memory::MemoryLayout> VirtualMemory::layout() const noexcept {
     return _layout;
 }
 
-non_owning_rptr<VirtualMemoryPage> VirtualMemory::definePage(const u64 offset_, const u64 size_) {
+nmpt<VirtualMemoryPage> VirtualMemory::definePage(const u64 offset_, const u64 size_) {
 
     // TODO: replace naïve implementation
-    auto* page { make_ptr<VirtualMemoryPage>(this, offset_, size_) };
-    _pages.push_back(page);
+    auto page = make_uptr<VirtualMemoryPage>(this, offset_, size_);
+    auto result = page.get();
 
-    return page;
+    _pages.emplace_back(_STD move(page));
+    return result;
 }
 
-void VirtualMemory::undefinePage(const non_owning_rptr<VirtualMemoryPage> page_) {
+void VirtualMemory::undefinePage(mref<nmpt<VirtualMemoryPage>> page_) {
 
     // TODO: replace naïve implementation
-    auto last = _STD ranges::remove(_pages, page_);
+    auto last = _STD ranges::remove(
+        _pages,
+        page_,
+        [](const uptr<VirtualMemoryPage>& vmp_) {
+            return nmpt<VirtualMemoryPage> { vmp_.get() };
+        }
+    );
     _pages.erase(last.begin(), last.end());
 }
 

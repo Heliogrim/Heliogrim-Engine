@@ -28,7 +28,7 @@ non_owning_rptr<MemoryPool> MemoryCache::getOrCreatePool(cref<MemoryLayout> layo
 
     const auto it { _pools.find(layout_) };
     if (it != _pools.end()) {
-        return it->second;;
+        return it->second;
     }
 
     auto* pool { make_ptr<MemoryPool>(layout_) };
@@ -39,7 +39,7 @@ non_owning_rptr<MemoryPool> MemoryCache::getOrCreatePool(cref<MemoryLayout> layo
     return pool;
 }
 
-AllocationResult MemoryCache::allocate(cref<MemoryLayout> layout_, const u64 size_, ref<ptr<AllocatedMemory>> dst_) {
+AllocationResult MemoryCache::allocate(cref<MemoryLayout> layout_, const u64 size_, ref<uptr<AllocatedMemory>> dst_) {
     const auto it { _pools.find(layout_) };
     if (it == _pools.end()) {
         return AllocationResult::eFailed;
@@ -48,7 +48,7 @@ AllocationResult MemoryCache::allocate(cref<MemoryLayout> layout_, const u64 siz
     return it->second->allocate(size_, dst_);
 }
 
-bool MemoryCache::free(mref<ptr<AllocatedMemory>> mem_) {
+bool MemoryCache::free(mref<uptr<AllocatedMemory>> mem_) {
 
     const auto layout { mem_->layout };
     const auto it { _pools.find(layout) };

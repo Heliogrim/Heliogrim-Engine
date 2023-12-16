@@ -7,7 +7,7 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 VirtualBufferPage::VirtualBufferPage(
-    const ptr<VirtualMemoryPage> memory_,
+    nmpt<VirtualMemoryPage> memory_,
     const u64 resourceSize_,
     const u64 resourceOffset_
 ) :
@@ -17,7 +17,7 @@ VirtualBufferPage::VirtualBufferPage(
 
 VirtualBufferPage::~VirtualBufferPage() = default;
 
-const ptr<VirtualMemoryPage> VirtualBufferPage::memory() const noexcept {
+nmpt<VirtualMemoryPage> VirtualBufferPage::memory() const noexcept {
     return _memory;
 }
 

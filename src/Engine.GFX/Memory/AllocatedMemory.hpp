@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Memory/MemoryPointer.hpp>
+
 #include "__fwd.hpp"
 #include "MemoryLayout.hpp"
 
@@ -9,8 +11,8 @@
 namespace hg::engine::gfx::memory {
     struct AllocatedMemory {
         AllocatedMemory(
-            ptr<Allocator> allocator_,
-            ptr<AllocatedMemory> parent_,
+            nmpt<Allocator> allocator_,
+            nmpt<AllocatedMemory> parent_,
             cref<MemoryLayout> layout_,
             cref<u64> size_,
             cref<u64> offset_,
@@ -31,8 +33,8 @@ namespace hg::engine::gfx::memory {
         ref<AllocatedMemory> operator=(mref<AllocatedMemory> other_) noexcept;
 
         //
-        ptr<Allocator> allocator;
-        ptr<AllocatedMemory> parent;
+        nmpt<Allocator> allocator;
+        nmpt<AllocatedMemory> parent;
 
         //
         MemoryLayout layout;
@@ -57,6 +59,6 @@ namespace hg::engine::gfx::memory {
         bool write(const ptr<const void> data_, const u64 size_);
 
         //
-        static void free(mref<ptr<AllocatedMemory>> memory_);
+        static void free(mref<uptr<AllocatedMemory>> memory_);
     };
 }

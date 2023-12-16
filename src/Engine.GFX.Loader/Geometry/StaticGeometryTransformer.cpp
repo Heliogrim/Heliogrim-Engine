@@ -244,9 +244,9 @@ static smr<StaticGeometryResource> loadWithAssimp(
             constexpr auto shift = 7ui64;
             constexpr auto mask = 0b0111'1111ui64;
 
-            const auto aligned = ((pageSize >> shift) << shift) + ((pageSize & mask) ? + 1ui64 << shift : 0ui64);
+            const auto aligned = ((pageSize >> shift) << shift) + ((pageSize & mask) ? +1ui64 << shift : 0ui64);
 
-            auto* const memory = indexBuffer->pages()[page]->memory()->allocated();
+            auto memory = indexBuffer->pages()[page]->memory()->allocated();
             const auto patchSize = _STD min(aligned, memory->size);
 
             /**/
@@ -281,9 +281,9 @@ static smr<StaticGeometryResource> loadWithAssimp(
             constexpr auto shift = 7ui64;
             constexpr auto mask = 0b0111'1111ui64;
 
-            const auto aligned = ((pageSize >> shift) << shift) + ((pageSize & mask) ? + 1ui64 << shift : 0ui64);
+            const auto aligned = ((pageSize >> shift) << shift) + ((pageSize & mask) ? +1ui64 << shift : 0ui64);
 
-            auto* const memory = vertexBuffer->pages()[page]->memory()->allocated();
+            auto memory = vertexBuffer->pages()[page]->memory()->allocated();
             const auto patchSize = _STD min(aligned, memory->size);
 
             /**/
