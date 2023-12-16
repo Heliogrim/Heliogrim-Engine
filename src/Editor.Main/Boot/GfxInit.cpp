@@ -37,8 +37,8 @@ void editor::boot::initGfx() {
 
     /**/
 
-    //testLoad(engine->getGraphics()->getCurrentDevice());
-    //buildTestUI(engine->getGraphics()->getCurrentDevice(), window.get());
+    testLoad(engine->getGraphics()->getCurrentDevice());
+    buildTestUI(engine->getGraphics()->getCurrentDevice(), window.get());
 
     /**/
 
