@@ -4,6 +4,7 @@
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Accel.Pipeline/ComputePipeline.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
+#include <Engine.GFX/Texture/SampledTextureView.hpp>
 
 #include "RenderCommandIterator.hpp"
 #include "Commands/AttachResource.hpp"
@@ -239,6 +240,10 @@ void RenderCommandBuffer::bindTexture(
     mref<accel::lang::SymbolId> symbolId_,
     const nmpt<const gfx::SampledTextureView> sampledTextureView_
 ) noexcept {
+
+    assert(sampledTextureView_->object());
+    assert(sampledTextureView_->samplerObject());
+
     const auto result = alloc().allocateCommand<BindTextureRCmd>(
         _STD move(symbolId_),
         _STD move(sampledTextureView_)
@@ -248,34 +253,15 @@ void RenderCommandBuffer::bindTexture(
 
 void RenderCommandBuffer::bindTexture(
     mref<accel::lang::SymbolId> symbolId_,
-    const nmpt<const gfx::TextureView> textureView_,
+    const nmpt<const gfx::TextureLikeObject> texture_,
     const nmpt<const gfx::TextureSampler> sampler_
 ) noexcept {
 
-    const auto preserve = alloc().allocateCommand<AttachResourceRCmd>(
-        textureView_,
-        sampler_
-    );
-    link(_last, preserve.value());
-
-    auto sampledTexture = (preserve.value())->asTextureView();
-    assert(sampledTexture);
-
-    const auto result = alloc().allocateCommand<BindTextureRCmd>(
-        _STD move(symbolId_),
-        _STD move(sampledTexture)
-    );
-    link(_last, result.value());
-}
-
-void RenderCommandBuffer::bindTexture(
-    mref<accel::lang::SymbolId> symbolId_,
-    const nmpt<const gfx::VirtualTextureView> textureView_,
-    const nmpt<const gfx::TextureSampler> sampler_
-) noexcept {
+    assert(texture_);
+    assert(sampler_);
 
     const auto preserve = alloc().allocateCommand<AttachResourceRCmd>(
-        textureView_,
+        texture_,
         sampler_
     );
     link(_last, preserve.value());

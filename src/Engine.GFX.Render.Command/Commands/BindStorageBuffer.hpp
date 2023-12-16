@@ -24,6 +24,7 @@ namespace hg::engine::render::cmd {
         constexpr ~BindStorageBufferRCmd() noexcept override = default;
 
     private:
+    public:
         const accel::lang::SymbolId _symbolId;
         const nmpt<const gfx::StorageBufferView> _storageView;
 

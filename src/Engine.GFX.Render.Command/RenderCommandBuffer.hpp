@@ -47,7 +47,7 @@ namespace hg::engine::render::cmd {
 
         void beginAccelPass(mref<BeginAccelerationPassStruct>) noexcept override;
 
-        void beginSubPass(mref<BeginSubPassStruct>) noexcept override;
+        void beginSubPass(mref<BeginSubPassStruct>  = {}) noexcept override;
 
         void nextSubPass() noexcept override;
 
@@ -106,13 +106,7 @@ namespace hg::engine::render::cmd {
 
         void bindTexture(
             mref<accel::lang::SymbolId> symbolId_,
-            const nmpt<const gfx::TextureView> textureView_,
-            const nmpt<const gfx::TextureSampler> sampler_
-        ) noexcept override;
-
-        void bindTexture(
-            mref<accel::lang::SymbolId> symbolId_,
-            const nmpt<const gfx::VirtualTextureView> textureView_,
+            const nmpt<const gfx::TextureLikeObject> texture_,
             const nmpt<const gfx::TextureSampler> sampler_
         ) noexcept override;
 

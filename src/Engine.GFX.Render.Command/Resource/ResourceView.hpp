@@ -29,6 +29,11 @@ namespace hg::engine::render {
         constexpr ~ResourceView() noexcept = default;
 
     public:
+        ref<this_type> operator=(cref<this_type> other_) noexcept = default;
+
+        ref<this_type> operator=(mref<this_type> other_) noexcept = default;
+
+    public:
         nmpt<const ClassMetaBase> view;
 
     public:

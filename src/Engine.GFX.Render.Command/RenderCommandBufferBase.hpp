@@ -26,10 +26,6 @@ namespace hg::engine::gfx {
     class TextureSampler;
 }
 
-namespace hg::engine::gfx::acc {
-    class AccelerationEffect;
-}
-
 namespace hg::engine::gfx::material {
     class Material;
 }
@@ -50,7 +46,7 @@ namespace hg::engine::render::cmd {
 
         virtual void beginAccelPass(mref<BeginAccelerationPassStruct>) noexcept = 0;
 
-        virtual void beginSubPass(mref<BeginSubPassStruct>) noexcept = 0;
+        virtual void beginSubPass(mref<BeginSubPassStruct>  = {}) noexcept = 0;
 
         virtual void nextSubPass() noexcept = 0;
 
@@ -95,13 +91,7 @@ namespace hg::engine::render::cmd {
 
         virtual void bindTexture(
             mref<accel::lang::SymbolId> symbolId_,
-            const nmpt<const gfx::TextureView> textureView_,
-            const nmpt<const gfx::TextureSampler> sampler_
-        ) noexcept = 0;
-
-        virtual void bindTexture(
-            mref<accel::lang::SymbolId> symbolId_,
-            const nmpt<const gfx::VirtualTextureView> textureView_,
+            const nmpt<const gfx::TextureLikeObject> texture_,
             const nmpt<const gfx::TextureSampler> sampler_
         ) noexcept = 0;
 
