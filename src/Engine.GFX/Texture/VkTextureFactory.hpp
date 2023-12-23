@@ -47,7 +47,9 @@ namespace hg::engine::gfx {
          *
          * @returns A Texture.
          */
-        [[nodiscard]] Texture build(const TextureBuildPayload& payload_) const override;
+        [[nodiscard]] Texture build(
+            const TextureBuildPayload& payload_
+        ) const override;
 
         /**
          * Builds internal Texture View
@@ -60,7 +62,10 @@ namespace hg::engine::gfx {
          *
          * @returns A reference to a Texture.
          */
-        Texture& buildView(Texture& texture_, TextureViewBuildOptions options_ = {}) const override;
+        Texture& buildView(
+            Texture& texture_,
+            TextureViewBuildOptions options_ = {}
+        ) const override;
 
         ref<VirtualTexture> buildView(
             ref<VirtualTexture> texture_,
@@ -82,6 +87,8 @@ namespace hg::engine::gfx {
          *
          * @returns A Texture.
          */
-        [[nodiscard]] ptr<VirtualTexture> buildVirtual(const VirtualTextureBuildPayload& payload_) const override;
+        [[nodiscard]] ptr<VirtualTexture> buildVirtual(
+            const VirtualTextureBuildPayload& payload_
+        ) const override;
     };
 }

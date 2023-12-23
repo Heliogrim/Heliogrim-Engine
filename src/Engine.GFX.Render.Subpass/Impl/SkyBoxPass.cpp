@@ -95,7 +95,7 @@ void SkyBoxPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     auto scene = sceneView->getScene()->renderGraph();
     scene->traversal(
-        [&model](const ptr<engine::scene::SceneGraph<SceneNodeModel>::node_type> node_) -> bool {
+        [&model](const ptr<engine::scene::SceneGraph<gfx::scene::SceneModel>::node_type> node_) -> bool {
 
             auto size = node_->exclusiveSize();
             for (decltype(size) i = 0; i < size; ++i) {

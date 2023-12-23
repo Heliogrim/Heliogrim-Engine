@@ -5,8 +5,8 @@
 /**
  * Forward Declaration
  */
-namespace hg::engine::gfx {
-    class SceneNodeModel;
+namespace hg::engine::gfx::scene {
+    class SceneModel;
 }
 
 namespace hg::engine::scene {
@@ -15,5 +15,5 @@ namespace hg::engine::scene {
      */
 
     //
-    using RenderGraph = SceneGraph<gfx::SceneNodeModel>;
+    using RenderSceneGraph = SceneGraph<gfx::scene::SceneModel>;
 }

@@ -12,6 +12,7 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 VirtualBuffer::VirtualBuffer() noexcept :
+    _bufferSize(0uLL),
     _memory(nullptr),
     _pages(),
     _vkBuffer(),
@@ -20,9 +21,11 @@ VirtualBuffer::VirtualBuffer() noexcept :
 
 VirtualBuffer::VirtualBuffer(
     mref<uptr<VirtualMemory>> memory_,
+    u64 bufferSize_,
     cref<vk::Buffer> buffer_,
     cref<vk::BufferUsageFlags> usageFlags_
 ) noexcept :
+    _bufferSize(bufferSize_),
     _memory(_STD move(memory_)),
     _pages(),
     _vkBuffer(buffer_),
@@ -30,6 +33,7 @@ VirtualBuffer::VirtualBuffer(
     _changed(false) {}
 
 VirtualBuffer::VirtualBuffer(mref<this_type> other_) noexcept :
+    _bufferSize(_STD exchange(other_._bufferSize, 0uLL)),
     _memory(_STD move(other_._memory)),
     _pages(_STD move(other_._pages)),
     _vkBuffer(_STD exchange(other_._vkBuffer, {})),
@@ -48,6 +52,7 @@ ref<VirtualBuffer::this_type> VirtualBuffer::operator=(mref<this_type> other_) n
          * Might be equal to `_STD swap(*this, other_)`
          */
 
+        _bufferSize = _STD exchange(other_._bufferSize, _bufferSize);
         _memory.swap(other_._memory);
         _pages = _STD exchange(other_._pages, _pages);
         _vkBuffer = _STD exchange(other_._vkBuffer, _vkBuffer);
@@ -67,6 +72,7 @@ void VirtualBuffer::tidy() {
     if (_vkBuffer) {
         // TODO: Check whether virtual buffer should get a reference to the device
         Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice().destroyBuffer(_vkBuffer);
+        _bufferSize = 0uLL;
     }
 
     /**
@@ -95,10 +101,14 @@ const ptr<VirtualMemory> VirtualBuffer::memory() noexcept {
 }
 
 u64 VirtualBuffer::size() const noexcept {
+    return _bufferSize;
+}
+
+u64 VirtualBuffer::memorySize() const noexcept {
     return _memory->size();
 }
 
-u64 VirtualBuffer::residentialSize() const noexcept {
+u64 VirtualBuffer::memoryResidentialSize() const noexcept {
     return _memory->allocatedSize();
 }
 

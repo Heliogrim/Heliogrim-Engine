@@ -25,6 +25,7 @@ namespace hg::engine::gfx {
 
         VirtualBuffer(
             mref<uptr<VirtualMemory>> memory_,
+            u64 bufferSize_,
             cref<vk::Buffer> buffer_,
             cref<vk::BufferUsageFlags> usageFlags_
         ) noexcept;
@@ -47,6 +48,7 @@ namespace hg::engine::gfx {
         void tidy();
 
     private:
+        u64 _bufferSize;
         uptr<VirtualMemory> _memory;
 
     public:
@@ -60,7 +62,9 @@ namespace hg::engine::gfx {
     public:
         [[nodiscard]] u64 size() const noexcept;
 
-        [[nodiscard]] u64 residentialSize() const noexcept;
+        [[nodiscard]] u64 memorySize() const noexcept;
+
+        [[nodiscard]] u64 memoryResidentialSize() const noexcept;
 
     private:
         vk::Buffer _vkBuffer;

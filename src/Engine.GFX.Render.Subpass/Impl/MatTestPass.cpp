@@ -14,7 +14,6 @@
 #include <Engine.GFX.RenderGraph/Symbol/ScopedSymbolContext.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.GFX/Buffer/Buffer.hpp>
-#include <Engine.GFX/Scene/StaticGeometryModel.hpp>
 #include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/ExactType.hpp>
@@ -28,11 +27,13 @@
 #include <Engine.GFX.Render.Predefined/Symbols/BrdfLut.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/BrdfPrefilter.hpp>
 #include <Engine.GFX/Cache/GlobalCacheCtrl.hpp>
+#include <Engine.GFX/Pool/SceneResourcePool.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Gfx/Texture/TextureView.hpp>
 #include <Engine.GFX/Texture/VirtualTexturePage.hpp>
 #include <Engine.Gfx/Texture/VirtualTextureView.hpp>
+#include <Engine.GFX.Scene.Model/StaticGeometryModel.hpp>
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
@@ -60,8 +61,7 @@ void MatTestPass::destroy() noexcept {
     }
     _cameraBuffer.destroy();
 
-    _instanceBufferView.reset();
-    _instanceBuffer.destroy();
+    _staticInstanceView.reset();
 
     _sampler->destroy();
     _sampler.reset();
@@ -90,7 +90,7 @@ void MatTestPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
         _pass = build_test_pass();
     }
 
-    Vector<ptr<StaticGeometryModel>> models {};
+    Vector<ptr<gfx::scene::StaticGeometryModel>> models {};
     models.reserve(_materials.size());
 
     auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
@@ -98,14 +98,14 @@ void MatTestPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     auto scene = sceneView->getScene()->renderGraph();
     scene->traversal(
-        [&models](const ptr<scene::SceneGraph<SceneNodeModel>::node_type> node_) -> bool {
+        [&models](const ptr<scene::SceneGraph<gfx::scene::SceneModel>::node_type> node_) -> bool {
 
             auto size = node_->exclusiveSize();
             for (decltype(size) i = 0; i < size; ++i) {
 
                 auto el = node_->elements()[i];
-                if (ExactType<StaticGeometryModel>(*el)) {
-                    models.emplace_back(static_cast<StaticGeometryModel*>(el));
+                if (ExactType<gfx::scene::StaticGeometryModel>(*el)) {
+                    models.emplace_back(static_cast<gfx::scene::StaticGeometryModel*>(el));
                 }
 
             }
@@ -122,50 +122,8 @@ void MatTestPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     /**/
 
-    if (_instanceBuffer.size < sizeof(math::mat4) * models.size()) {
-
-        auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
-        _instanceBuffer.device = device->vkDevice();
-        _instanceBuffer.destroy();
-
-        vk::BufferCreateInfo bci {
-            vk::BufferCreateFlags {},
-            sizeof(math::mat4) * models.size() + sizeof(math::mat4),
-            vk::BufferUsageFlagBits::eStorageBuffer,
-            vk::SharingMode::eExclusive,
-            0uL, nullptr
-        };
-        _instanceBuffer.buffer = device->vkDevice().createBuffer(bci);
-
-        const auto allocResult = memory::allocate(
-            device->allocator(),
-            device,
-            _instanceBuffer.buffer,
-            MemoryProperties { MemoryProperty::eHostVisible },
-            _instanceBuffer.memory
-        );
-
-        assert(_instanceBuffer.buffer);
-        assert(_instanceBuffer.memory);
-
-        _instanceBuffer.size = bci.size;
-        _instanceBuffer.usageFlags = vk::BufferUsageFlagBits::eStorageBuffer;
-
-        _instanceBuffer.bind();
-
-        /**/
-
-        _instanceBufferView.reset();
-
-        _instanceBufferView = make_uptr<StorageBufferView>();
-        _instanceBufferView->storeBuffer(&_instanceBuffer);
-    }
-
-    /**/
-
     _materials.reserve(models.size());
     _instances.reserve(models.size());
-    _instanceBuffer.map();
 
     _materials.clear();
     _instances.clear();
@@ -188,39 +146,12 @@ void MatTestPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
         }
 
         _materials.emplace_back(material);
-
-        /**/
-
-        const auto modelToWorld = model->owner()->getWorldTransform();
-
-        math::mat4 modelTranslate = math::mat4::make_identity().translate(
-            modelToWorld.location().operator math::vec3()
-        );
-
-        math::mat4 modelRotate = math::mat4::make_identity();
-        modelRotate.rotate(modelToWorld.rotator().pitch(), math::vec3_right);
-        modelRotate.rotate(modelToWorld.rotator().yaw(), math::vec3_up);
-        modelRotate.rotate(modelToWorld.rotator().roll(), math::vec3_forward);
-
-        math::mat4 modelScale = math::mat4::make_identity().unchecked_scale(modelToWorld.scale());
-
-        math::mat4 modelMatrix = modelRotate * modelTranslate * modelScale;
-
-        memcpy(
-            static_cast<char*>(_instanceBuffer.memory->mapping) + idx * sizeof(math::mat4),
-            &modelMatrix,
-            sizeof(modelMatrix)
-        );
-
-        _instances.emplace_back(clone(model->geometryResource()));
+        _instances.emplace_back(model);
 
         /**/
 
         ++idx;
     }
-
-    _instanceBuffer.flushAligned();
-    _instanceBuffer.unmap();
 }
 
 void MatTestPass::resolve() noexcept {
@@ -339,6 +270,15 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     /**/
 
+    if (_staticInstanceView == nullptr) {
+        _staticInstanceView = make_uptr<gfx::StorageBufferView>();
+    }
+
+    const auto& staticInstancePool = sceneView->getScene()->getSceneResourcePool()->staticInstancePool;
+    _staticInstanceView->storeBuffer(staticInstancePool.getPoolView());
+
+    /**/
+
     cmd::RenderCommandBuffer cmd {};
     cmd.begin();
     cmd.beginAccelPass({ _pass.get(), _framebuffer.get() });
@@ -351,7 +291,8 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     for (size_t idx = 0; idx < _instances.size(); ++idx) {
 
-        auto& modelResource = _instances[idx];
+        auto& model = _instances[idx];
+        auto& modelResource = model->geometryResource();
         auto& materialResource = _materials[idx];
 
         auto modelGuard = modelResource->acquire(resource::ResourceUsageFlag::eRead);
@@ -439,7 +380,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
                 static auto modelSym = lang::SymbolId::from("model");
                 if (aliasId == modelSym) {
-                    cmd.bindStorage(clone(symbolId), _instanceBufferView.get());
+                    cmd.bindStorage(clone(symbolId), _staticInstanceView.get());
                     continue;
                 }
 
@@ -505,7 +446,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
             }
         }
 
-        cmd.drawStaticMeshIdx(1uL, idx, indexBuffer->size() / sizeof(u32) / 3uLL, 0uL);
+        cmd.drawStaticMeshIdx(1uL, model->_sceneInstanceIndex, indexBuffer->size() / sizeof(u32) / 3uLL, 0uL);
     }
 
     cmd.endSubPass();

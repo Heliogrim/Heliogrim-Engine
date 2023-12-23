@@ -20,7 +20,8 @@ VirtualTextureView::VirtualTextureView(
     _extent(extent_),
     _format(format_),
     _mipLevels(mipLevels_),
-    _type(type_) {}
+    _type(type_),
+    _vkImageView(nullptr) {}
 
 VirtualTextureView::~VirtualTextureView() = default;
 

@@ -1,19 +1,23 @@
 #include "RevScene.hpp"
 
 #include <Engine.Common/Make.hpp>
-#include <Heliogrim/SceneComponent.hpp>
+#include <Engine.Core/Engine.hpp>
+#include <Engine.GFX/Pool/SceneResourcePool.hpp>
 #include <Engine.GFX/Scene/SceneTag.hpp>
-#include <Engine.GFX/Scene/SceneNodeModel.hpp>
+#include <Engine.GFX.Scene.Model/SceneModel.hpp>
+#include <Engine.GFX/Graphics.hpp>
+#include <Heliogrim/SceneComponent.hpp>
 
 using namespace hg::engine::scene;
 
-RenderGraph makeRenderGraph() {
+RenderSceneGraph makeRenderGraph() {
 
-    auto nodeStorage { hg::make_sptr<RenderGraph::node_storage_type>() };
-    auto elementStorage { hg::make_sptr<RenderGraph::element_storage_type>() };
+    auto nodeStorage { hg::make_sptr<RenderSceneGraph::node_storage_type>() };
+    auto elementStorage { hg::make_sptr<RenderSceneGraph::element_storage_type>() };
 
     auto root {
-        SceneNodeFactory<RenderGraph::node_storage_type, RenderGraph::element_storage_type, RenderGraph::traits> {
+        SceneNodeFactory<RenderSceneGraph::node_storage_type, RenderSceneGraph::element_storage_type,
+            RenderSceneGraph::traits> {
             nodeStorage.get(),
             elementStorage.get()
         }.assembleRoot()
@@ -29,9 +33,14 @@ RenderGraph makeRenderGraph() {
 RevScene::RevScene() noexcept :
     InheritMeta(),
     _renderGraph(makeRenderGraph()),
-    _cached() {}
+    _resourcePool(make_uptr<gfx::SceneResourcePool>(Engine::getEngine()->getGraphics()->getCurrentDevice())),
+    _cached() {
+    _resourcePool->setup();
+}
 
-RevScene::~RevScene() = default;
+RevScene::~RevScene() {
+    _resourcePool->destroy();
+}
 
 void RevScene::update() {
     Scene::update();
@@ -43,7 +52,7 @@ void RevScene::update() {
      *
      * Update each element in scene graph or fetch for destruction
      */
-    Vector<ptr<gfx::SceneNodeModel>> markedForDestruction {};
+    Vector<ptr<gfx::scene::SceneModel>> markedForDestruction {};
     graph.traversal(
         [scene = this, &markedForDestruction](auto* node_) {
 
@@ -122,13 +131,17 @@ void RevScene::update() {
             /**
              *
              */
-            graph.push(static_cast<const ptr<gfx::SceneNodeModel>>(entry.second));
+            graph.push(static_cast<const ptr<gfx::scene::SceneModel>>(entry.second));
         }
     }
 }
 
-const hg::ptr<RenderGraph> RevScene::renderGraph() noexcept {
+const hg::ptr<RenderSceneGraph> RevScene::renderGraph() noexcept {
     return &_renderGraph;
+}
+
+hg::nmpt<hg::engine::gfx::SceneResourcePool> RevScene::getSceneResourcePool() const noexcept {
+    return _resourcePool.get();
 }
 
 bool RevScene::addNode(const ptr<SceneComponent> node_) {
@@ -168,7 +181,8 @@ bool RevScene::addNodeCached(const ptr<SceneComponent> node_) noexcept {
      */
     node_->addSceneNodeModel(model);
 
-    _cached.push_back(_STD make_pair(gfx::GfxSceneTag {}, model));
+    auto* gfxModel = static_cast<ptr<gfx::scene::SceneModel>>(model);
+    _cached.emplace_back(gfx::GfxSceneTag {}, gfxModel);
     return true;
 }
 
