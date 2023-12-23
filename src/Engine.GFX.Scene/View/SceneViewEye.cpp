@@ -69,7 +69,7 @@ void SceneViewEye::updateView(cref<math::Location> origin_, cref<math::Rotator> 
 }
 
 void SceneViewEye::updateView(cref<math::Location> origin_, cref<math::quaternion> rotation_) {
-    updateView(origin_, math::as<math::quaternion, math::Rotator>(rotation_));
+    updateView(origin_, math::as<math::Rotator>(rotation_));
 }
 
 cref<math::Location> SceneViewEye::getOrigin() const noexcept {

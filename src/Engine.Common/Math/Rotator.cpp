@@ -13,7 +13,7 @@ Rotator::Rotator(const value_type pitch_, const value_type yaw_, const value_typ
     math_type(pitch_, yaw_, roll_) {}
 
 Rotator::Rotator(mref<math::quaternion> quatern_) noexcept :
-    math_type(math::as<math::quaternion, math::Rotator>(_STD move(quatern_))) {}
+    math_type(math::as<math::Rotator>(_STD move(quatern_))) {}
 
 Rotator::Rotator(mref<this_type> other_) noexcept :
     math_type(_STD move(other_)) {}
@@ -154,11 +154,11 @@ Rotator::this_type Rotator::outerToInner(cref<this_type> subject_, cref<this_typ
     auto prev = outer_.quaternion();
     prev._quat = glm::inverse(prev._quat);
 
-    return math::as<math::quaternion, Rotator>(prev * subject_.quaternion());
+    return math::as<Rotator>(prev * subject_.quaternion());
 }
 
 Rotator::this_type Rotator::innerToOuter(cref<this_type> subject_, cref<this_type> outer_) noexcept {
-    return math::as<math::quaternion, Rotator>(outer_.quaternion() * subject_.quaternion());
+    return math::as<Rotator>(outer_.quaternion() * subject_.quaternion());
 }
 
 Rotator::this_type Rotator::operator-(cref<this_type> other_) const noexcept {
