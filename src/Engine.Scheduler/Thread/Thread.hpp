@@ -1,9 +1,6 @@
 #pragma once
 
-#ifdef _DEBUG
-#include <assert.h>
-#endif
-
+#include <cassert>
 #include <functional>
 #include <thread>
 #include <Engine.Common/String.hpp>

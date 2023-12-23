@@ -1,9 +1,6 @@
 #pragma once
 
-#ifdef _DEBUG
 #include <cassert>
-#endif
-
 #include <Engine.Common/Wrapper.hpp>
 
 #include "Asset.hpp"

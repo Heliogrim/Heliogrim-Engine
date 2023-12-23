@@ -8,14 +8,12 @@
 #include <ucontext.h>
 #endif
 
-#ifdef _DEBUG
-#include <assert.h>
-#endif
+#include <cassert>
 
 using namespace hg::engine::scheduler::fiber;
 using namespace hg;
 
-void Fiber::create(ptr<Fiber> self_, void (* proc_)(void*), void* param_) {
+void Fiber::create(ptr<Fiber> self_, void (*proc_)(void*), void* param_) {
 
     #ifdef ENV_MSVC
     auto ctx {

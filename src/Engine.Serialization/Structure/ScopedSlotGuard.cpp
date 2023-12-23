@@ -1,7 +1,8 @@
 #include "ScopedSlotGuard.hpp"
 
-#ifdef _DEBUG
 #include <cassert>
+
+#ifdef _DEBUG
 #include <Engine.Logging/Logger.hpp>
 #include "StructureSlotTypeTraits.hpp"
 #endif

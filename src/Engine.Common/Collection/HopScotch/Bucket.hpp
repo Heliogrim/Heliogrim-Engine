@@ -1,8 +1,6 @@
 #pragma once
 
-#ifdef _DEBUG
-#include <assert.h>
-#endif
+#include <cassert>
 
 #include "Hash.hpp"
 #include "../../Types.hpp"

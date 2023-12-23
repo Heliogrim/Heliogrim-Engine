@@ -1,16 +1,13 @@
 #pragma once
 
-#ifdef _DEBUG
-#include <cassert>
-#endif
-
 #include <atomic>
+#include <cassert>
 #include <concepts>
 #include <type_traits>
 
-#include "../__macro.hpp"
-#include "../Wrapper.hpp"
 #include "../Cast.hpp"
+#include "../Wrapper.hpp"
+#include "../__macro.hpp"
 
 namespace hg {
     namespace {

@@ -199,6 +199,7 @@ namespace hg::engine::resource {
             using type_base = typename loader_type::type_base;
 
             const auto loader = selectLoader(AssetType_::typeId, nullptr);
+            assert(loader != nullptr);
 
             // Internal Cast
             return static_cast<const ptr<type_base>>(
@@ -226,6 +227,7 @@ namespace hg::engine::resource {
             using type_base = typename loader_type::type_base;
 
             const auto loader = selectLoader(AssetType_::typeId, nullptr);
+            assert(loader != nullptr);
 
             // Internal Cast
             return static_cast<const ptr<type_base>>(

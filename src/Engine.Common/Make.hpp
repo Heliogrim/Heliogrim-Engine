@@ -35,9 +35,6 @@ namespace hg {
 
     /* Shared Pointer (STD) */
 
-    template <class Ty, class... Args>
-    sptr<Ty> make_sptr(Args&&... args_);
-
     template <class Ty_, class... Args_> requires _STD is_constructible_v<Ty_, Args_...>
     sptr<Ty_> make_sptr(Args_&&... args_) {
         return _STD make_shared<Ty_>(_STD forward<Args_>(args_)...);
