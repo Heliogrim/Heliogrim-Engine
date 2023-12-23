@@ -18,19 +18,22 @@ namespace hg::engine::scene {
     public:
         RevScene() noexcept;
 
-        ~RevScene() override final;
+        ~RevScene() final;
 
     public:
         void update() override final;
 
     private:
-        RenderGraph _renderGraph;
+        RenderSceneGraph _renderGraph;
+        uptr<gfx::SceneResourcePool> _resourcePool;
 
     public:
-        [[nodiscard]] const ptr<RenderGraph> renderGraph() noexcept override;
+        [[nodiscard]] const ptr<RenderSceneGraph> renderGraph() noexcept override;
+
+        [[nodiscard]] nmpt<gfx::SceneResourcePool> getSceneResourcePool() const noexcept override;
 
     private:
-        using cache_type = _STD pair<SceneTag, ptr<SceneNodeModel>>;
+        using cache_type = _STD pair<SceneTag, ptr<gfx::scene::SceneModel>>;
 
         Vector<cache_type> _cached;
 

@@ -182,10 +182,10 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
     {
         const auto indexSize = sizeof(u32) * indices.size();
-        indexBuffer = pool_->allocateIndexBuffer({ { indexSize } });
+        indexBuffer = pool_->allocateIndexBuffer({ indexSize });
 
         const auto vertexSize = sizeof(vertex) * vertices.size();
-        vertexBuffer = pool_->allocateVertexBuffer({ { vertexSize } });
+        vertexBuffer = pool_->allocateVertexBuffer({ vertexSize });
     }
 
     /**/

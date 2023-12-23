@@ -8,19 +8,16 @@
 #include "../Texture/VirtualTexture.hpp"
 
 /**/
+#include "RangePooled.hpp"
 #include "../Texture/TextureFactory.hpp"
 
 namespace hg::engine::gfx::pool {
     struct IndexBufferAllocation {
-        Vector<u64> pageSizes;
+        u64 size;
     };
 
     struct VertexBufferAllocation {
-        Vector<u64> pageSizes;
-    };
-
-    struct MaterialBufferAllocation {
-        non_owning_rptr<const void> material;
+        u64 size;
     };
 
     typedef VirtualTextureBuildPayload VirtualTextureAllocation;
@@ -55,12 +52,14 @@ namespace hg::engine::gfx::pool {
         /**
          * Vertex Buffer
          */
+        RangePooled<void> _globalVertexBuffer;
         Vector<uptr<VirtualBuffer>> _vertexBuffers;
 
     private:
         /**
          * Index Buffer
          */
+        RangePooled<void> _globalIndexBuffer;
         Vector<uptr<VirtualBuffer>> _indexBuffers;
 
     private:
@@ -76,13 +75,6 @@ namespace hg::engine::gfx::pool {
 
         Vector<uptr<VirtualTexture>> _textureAtlas;
 
-    private:
-        /**
-         * Material Buffer
-         */
-        Vector<_STD uint_fast16_t> _materialForward;
-        Vector<uptr<VirtualBuffer>> _materialBuffer;
-
     public:
         [[nodiscard]] _Success_(return != nullptr) uptr<VirtualBufferView> allocateIndexBuffer(
             _In_ mref<IndexBufferAllocation> allocation_
@@ -90,10 +82,6 @@ namespace hg::engine::gfx::pool {
 
         [[nodiscard]] _Success_(return != nullptr) uptr<VirtualBufferView> allocateVertexBuffer(
             _In_ mref<VertexBufferAllocation> allocation_
-        );
-
-        [[nodiscard]] _Success_(return != nullptr) uptr<VirtualBufferView> allocateVirtualBuffer(
-            _In_ mref<MaterialBufferAllocation> allocation_
         );
 
         [[nodiscard]] _Success_(return != nullptr) uptr<VirtualTextureView> allocateVirtualTexture(

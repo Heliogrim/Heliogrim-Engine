@@ -205,7 +205,9 @@ namespace hg::engine::gfx {
          *
          * @returns A Texture.
          */
-        [[nodiscard]] virtual Texture build(const TextureBuildPayload& payload_) const = 0;
+        [[nodiscard]] virtual Texture build(
+            const TextureBuildPayload& payload_
+        ) const = 0;
 
         /**
          * Builds internal Texture View
@@ -218,7 +220,10 @@ namespace hg::engine::gfx {
          *
          * @returns A reference to a Texture.
          */
-        virtual Texture& buildView(Texture& texture_, TextureViewBuildOptions options_ = {}) const = 0;
+        virtual Texture& buildView(
+            Texture& texture_,
+            TextureViewBuildOptions options_ = {}
+        ) const = 0;
 
         virtual ref<VirtualTexture> buildView(
             ref<VirtualTexture> texture_,
@@ -240,6 +245,8 @@ namespace hg::engine::gfx {
          *
          * @returns A Texture.
          */
-        [[nodiscard]] virtual ptr<VirtualTexture> buildVirtual(const VirtualTextureBuildPayload& payload_) const = 0;
+        [[nodiscard]] virtual ptr<VirtualTexture> buildVirtual(
+            const VirtualTextureBuildPayload& payload_
+        ) const = 0;
     };
 }
