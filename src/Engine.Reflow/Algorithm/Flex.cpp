@@ -1,5 +1,7 @@
 #include "Flex.hpp"
 
+#include <Engine.Common/Math/Coordinates.hpp>
+
 #include "../Widget/Widget.hpp"
 #include "../ReflowState.hpp"
 #include "../Children.hpp"
@@ -40,19 +42,20 @@ static math::vec2 getLineGrowAvail(ref<FlexLine> line_) noexcept {
 static math::vec2 expandLineOriented(
     cref<math::vec2> lineSize_,
     FlexLineOrientation orientation_,
-    cref<math::vec2> addition_
+    cref<math::vec2> addition_,
+    cref<math::vec2> gap_
 ) {
 
     if (orientation_ == FlexLineOrientation::eHorizontal) {
         return math::vec2 {
-            lineSize_.x + addition_.x,
+            lineSize_.x + addition_.x + gap_.x,
             MAX(lineSize_.y, addition_.y)
         };
     }
 
     return math::vec2 {
         MAX(lineSize_.x, addition_.x),
-        lineSize_.y + addition_.y
+        lineSize_.y + addition_.y + gap_.y
     };
 }
 
@@ -157,9 +160,9 @@ static void solveLine(
     /**/
 
     if (isFirst) {
-        line_.size = expandLineOriented(line_.size, orientation_, item_.baseSize);
+        line_.size = expandLineOriented(line_.size, orientation_, item_.baseSize, math::vec2_zero);
     } else {
-        line_.size = expandLineOriented(line_.size, orientation_, gap_ + item_.baseSize);
+        line_.size = expandLineOriented(line_.size, orientation_, item_.baseSize, gap_);
     }
 
     /**/
@@ -215,9 +218,9 @@ static void solveLine(
             advanceOffset(orientation_, item.flexSize + gap_, offset);
 
             if (i == 0) {
-                size = expandLineOriented(size, orientation_, item.flexSize);
+                size = expandLineOriented(size, orientation_, item.flexSize, math::vec2_zero);
             } else {
-                size = expandLineOriented(size, orientation_, gap_ + item.flexSize);
+                size = expandLineOriented(size, orientation_, item.flexSize, gap_);
             }
         }
 
@@ -279,9 +282,9 @@ static void solveLine(
             advanceOffset(orientation_, item.flexSize + gap_, offset);
 
             if (i == 0) {
-                size = expandLineOriented(size, orientation_, item.flexSize);
+                size = expandLineOriented(size, orientation_, item.flexSize, math::vec2_zero);
             } else {
-                size = expandLineOriented(size, orientation_, gap_ + item.flexSize);
+                size = expandLineOriented(size, orientation_, item.flexSize, gap_);
             }
         }
 
@@ -396,7 +399,7 @@ static void arrangeMainAxis(
             offset += justifyBefore;
         }
 
-        line_.items[i].offset = arrangeCrossAxis(box_, lineLimit_, line_.items[i], offset);
+        line_.items[i].offset = arrangeCrossAxis(box_, /*lineLimit_*/line_.size, line_.items[i], offset);
         advanceOffset(box_.orientation, line_.items[i].flexSize, offset);
 
         if (i == lastItem) {
