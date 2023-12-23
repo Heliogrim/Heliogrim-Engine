@@ -126,7 +126,6 @@ call "$(SolutionDir)resources\shader\compile_shaders.cmd"</Command>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <Profile>true</Profile>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <AdditionalOptions>/PROFILE %(AdditionalOptions)</AdditionalOptions>

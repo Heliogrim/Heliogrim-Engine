@@ -1,6 +1,5 @@
 #include "FrustumCulling.hpp"
 
-#include <Engine.GFX/Scene/SceneNodeModel.hpp>
 #include <Engine.Scene/Node/SceneNode.hpp>
 
 using namespace hg::engine::render::graph;

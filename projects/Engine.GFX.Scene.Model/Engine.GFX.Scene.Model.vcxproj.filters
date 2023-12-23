@@ -29,5 +29,11 @@
     <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\GeometryModel.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\SceneModel.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\StaticGeometryModel.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

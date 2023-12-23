@@ -214,6 +214,9 @@
     <ProjectReference Include="..\Engine.GFX.Render\Engine.GFX.Render.vcxproj">
       <Project>{6df62a4b-0bf2-4346-b238-33ffe71b699b}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.GFX.Scene.Model\Engine.GFX.Scene.Model.vcxproj">
+      <Project>{85a1bbb9-4de0-46ec-baf1-cdfefc9157e8}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.GFX.Scene\Engine.GFX.Scene.vcxproj">
       <Project>{8fec3eae-4526-4991-a3a8-f9d562efbcba}</Project>
     </ProjectReference>

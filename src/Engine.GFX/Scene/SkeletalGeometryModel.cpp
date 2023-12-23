@@ -19,19 +19,19 @@ const ptr<StaticGeometryComponent> SkeletalGeometryModel::owner() const noexcept
     return static_cast<const ptr<StaticGeometryComponent>>(_owner);
 }
 
-void SkeletalGeometryModel::create(const ptr<scene::Scene> scene_) {
+void SkeletalGeometryModel::create(const ptr<engine::scene::Scene> scene_) {
 
     auto* const origin = owner();
 
 }
 
-void SkeletalGeometryModel::update(const ptr<scene::Scene> scene_) {
+void SkeletalGeometryModel::update(const ptr<engine::scene::Scene> scene_) {
 
     auto* const origin = owner();
 
 }
 
-void SkeletalGeometryModel::destroy(const ptr<scene::Scene> scene_) {
+void SkeletalGeometryModel::destroy(const ptr<engine::scene::Scene> scene_) {
 
     auto* const origin = owner();
 
@@ -41,7 +41,7 @@ void SkeletalGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) con
 
     const auto worldTransform = _owner->getWorldTransform();
     const auto pos = math::mat4::make_identity().translate(worldTransform.location().operator math::vec3());
-    const auto rotation = math::as<math::quaternion, math::mat4>(worldTransform.rotator().quaternion());
+    const auto rotation = math::as<math::mat4>(worldTransform.rotator().quaternion());
     const auto scale = math::mat4::make_identity().unchecked_scale(worldTransform.scale());
 
     #if FALSE

@@ -3,9 +3,9 @@
 #include <Heliogrim/UIComponent.hpp>
 #include <Heliogrim/Components/CameraComponent.hpp>
 #include <Engine.GFX/Scene/SceneTag.hpp>
-#include <Engine.GFX/Scene/StaticGeometryModel.hpp>
 #include <Engine.GFX/Scene/SkyboxModel.hpp>
 #include <Engine.GFX/Scene/CameraModel.hpp>
+#include <Engine.GFX.Scene.Model/StaticGeometryModel.hpp>
 #include <Engine.Reflow/Scene/UISceneModel.hpp>
 #include <Engine.Scene/RevScene.hpp>
 

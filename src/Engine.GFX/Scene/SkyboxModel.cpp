@@ -20,7 +20,7 @@ SkyboxModel::~SkyboxModel() {
 
 void SkyboxModel::tidy() {}
 
-void SkyboxModel::create(const ptr<scene::Scene> scene_) {
+void SkyboxModel::create(const ptr<engine::scene::Scene> scene_) {
 
     auto* origin { static_cast<ptr<SkyboxComponent>>(_owner) };
 
@@ -40,9 +40,9 @@ void SkyboxModel::create(const ptr<scene::Scene> scene_) {
     _overrideMaterials.push_back(materialResource.into<MaterialResource>());
 }
 
-void SkyboxModel::update(const ptr<scene::Scene> scene_) {}
+void SkyboxModel::update(const ptr<engine::scene::Scene> scene_) {}
 
-void SkyboxModel::destroy(const ptr<scene::Scene> scene_) {}
+void SkyboxModel::destroy(const ptr<engine::scene::Scene> scene_) {}
 
 void SkyboxModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {}
 

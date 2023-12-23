@@ -1,8 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
-
-#include "SceneNodeModel.hpp"
+#include <Engine.GFX.Scene.Model/SceneModel.hpp>
 
 namespace hg::engine::gfx::scene {
     class SceneView;
@@ -10,7 +9,7 @@ namespace hg::engine::gfx::scene {
 
 namespace hg::engine::gfx {
     class CameraModel final :
-        public InheritMeta<CameraModel, SceneNodeModel> {
+        public InheritMeta<CameraModel, scene::SceneModel> {
     public:
         using this_type = CameraModel;
 

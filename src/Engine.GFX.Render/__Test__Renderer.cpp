@@ -4,19 +4,23 @@
 #include <Engine.Accel.Effect/AccelerationEffect.hpp>
 #include <Engine.Accel.Effect/Stage/Stage.hpp>
 #include <Engine.Accel.Effect/Stage/StageFlags.hpp>
-#include <Engine.GFX.Render.Command/RenderCommandBufferBase.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneColor.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/DepthPrePass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/DummyProvider.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/MatTestPass.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/PostProcessPass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/SkyBoxPass.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/TmpBrdfLutPass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/TmpEndPass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/TriTestPass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/Visualize.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/__tmp_helper.hpp>
 #include <Engine.GFX.RenderGraph/CompileGraph.hpp>
 #include <Engine.GFX.RenderGraph/Builder/Builder.hpp>
 #include <Engine.GFX.RenderGraph/Node/Compile/CompileSubPassNode.hpp>
 #include <Engine.GFX.RenderGraph/Node/Runtime/BarrierNode.hpp>
 #include <Engine.GFX.RenderGraph/Pass/CompilePassContext.hpp>
+#include <Engine.Reflow.Render/ReflowPass.hpp>
 
 using namespace hg::engine::render;
 using namespace hg;
@@ -52,21 +56,30 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
 
     nmpt<graph::Node> cursor { begin };
 
-    smr<void> payload {};
-    auto test = new smr<void>(_STD move(payload));
-
     /**/
 
     auto beforeBarrier = make_smr<graph::BarrierNode>();
+    auto brdfLutGen = make_smr<graph::CompileSubPassNode>();
     auto dummyProvider = make_smr<graph::CompileSubPassNode>();
     auto depthPrePass = make_smr<graph::CompileSubPassNode>();
     auto subpass = make_smr<graph::CompileSubPassNode>();
     auto skyBoxPass = make_smr<graph::CompileSubPassNode>();
+    auto matPass = make_smr<graph::CompileSubPassNode>();
+    auto ppPass = make_smr<graph::CompileSubPassNode>();
     auto visualizePass = make_smr<graph::CompileSubPassNode>();
     auto endPass = make_smr<graph::CompileSubPassNode>();
     auto afterBarrier = make_smr<graph::BarrierNode>();
 
+    auto uiPass = make_smr<graph::CompileSubPassNode>();
+
     /**/
+
+    brdfLutGen->setSubPassBuilder(
+        [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
+            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<TmpBrdfLutPass>>();
+            return node;
+        }
+    );
 
     dummyProvider->setSubPassBuilder(
         [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
@@ -98,6 +111,22 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
         }
     );
 
+    matPass->setSubPassBuilder(
+        [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
+            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<MatTestPass>>();
+            // acceleration->addOutput(makeSceneColorSymbol());
+            return node;
+        }
+    );
+
+    ppPass->setSubPassBuilder(
+        [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
+            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<PostProcessPass>>();
+            // acceleration->addOutput(makeSceneColorSymbol());
+            return node;
+        }
+    );
+
     visualizePass->setSubPassBuilder(
         [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
             auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<Visualize>>();
@@ -108,7 +137,15 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
 
     endPass->setSubPassBuilder(
         [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
-            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<TmpEndPass>>();
+            auto node = ctx_.getGraphNodeAllocator()
+                            ->allocate<graph::SubPassNode<TmpEndPass>>(vk::ImageLayout::eShaderReadOnlyOptimal);
+            return node;
+        }
+    );
+
+    uiPass->setSubPassBuilder(
+        [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
+            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<reflow::render::ReflowPass>>();
             // acceleration->addOutput(makeSceneColorSymbol());
             return node;
         }
@@ -119,6 +156,9 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
     nmpt<graph::Node> nextCursor = beforeBarrier.get();
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(beforeBarrier));
 
+    cursor = _STD exchange(nextCursor, brdfLutGen.get());
+    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(brdfLutGen));
+
     cursor = _STD exchange(nextCursor, dummyProvider.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(dummyProvider));
 
@@ -128,11 +168,20 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
     cursor = _STD exchange(nextCursor, skyBoxPass.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(skyBoxPass));
 
-    cursor = _STD exchange(nextCursor, subpass.get());
-    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(subpass));
+    //cursor = _STD exchange(nextCursor, subpass.get());
+    //graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(subpass));
+
+    cursor = _STD exchange(nextCursor, matPass.get());
+    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(matPass));
+
+    //cursor = _STD exchange(nextCursor, ppPass.get());
+    //graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(ppPass));
 
     //cursor = _STD exchange(nextCursor, visualizePass.get());
     //graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(visualizePass));
+
+    //cursor = _STD exchange(nextCursor, uiPass.get());
+    //graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(uiPass));
 
     cursor = _STD exchange(nextCursor, endPass.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(endPass));
@@ -146,36 +195,6 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
 }
 
 /**/
-
-#include <filesystem>
-#include <fstream>
-
-static string read_shader_file(string name_) {
-
-    const auto root = R"(C:\dev\Heliogrim\resources\shader\)";
-    std::filesystem::path file { root };
-    file.append(name_);
-
-    if (not std::filesystem::exists(file)) {
-        __debugbreak();
-        return {};
-    }
-
-    auto ifs = _STD ifstream(file, std::ios_base::in | std::ios_base::binary);
-
-    ifs.seekg(0, _STD ios::end);
-    const auto fsize = ifs.tellg();
-    ifs.seekg(0, _STD ios::beg);
-
-    string tmp {};
-    tmp.resize(fsize);
-
-    ifs.read(tmp.data(), fsize);
-    assert(!ifs.bad());
-
-    ifs.close();
-    return tmp;
-}
 
 smr<engine::accel::AccelerationEffect> build_test_effect() {
 
@@ -225,8 +244,4 @@ smr<engine::accel::AccelerationEffect> build_test_effect() {
         // Vector<smr<const Symbol>> {},
         // Vector<smr<const Symbol>> { makeSceneColorSymbol() }
     );
-}
-
-smr<engine::accel::GraphicsPipeline> build_test_pipeline() {
-    return nullptr;
 }

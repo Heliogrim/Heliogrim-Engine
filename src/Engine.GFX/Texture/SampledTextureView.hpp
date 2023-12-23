@@ -15,7 +15,10 @@ namespace hg::engine::gfx {
         SampledTextureView(mref<nmpt<const TextureLikeObject>> tlo_, mref<nmpt<const TextureSampler>> so_) noexcept;
 
         template <typename Type_> requires _STD is_constructible_v<nmpt<const TextureLikeObject>, Type_>
-        SampledTextureView(Type_&& obj_, mref<nmpt<const TextureSampler>> so_) noexcept :
+        SampledTextureView(
+            Type_&& obj_,
+            mref<nmpt<const TextureSampler>> so_
+        ) noexcept :
             SampledTextureView(nmpt<const TextureLikeObject>(_STD forward<Type_>(obj_)), _STD move(so_)) {}
 
         SampledTextureView(cref<this_type> other_) noexcept = default;

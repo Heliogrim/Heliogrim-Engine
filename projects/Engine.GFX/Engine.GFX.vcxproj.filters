@@ -22,14 +22,8 @@
     <Filter Include="Headerdateien\Geometry">
       <UniqueIdentifier>{96bd00ef-35de-42b2-acbc-33df681168fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Handle">
-      <UniqueIdentifier>{ba26f054-9928-49ec-945b-75db9d5e7a72}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\Library">
       <UniqueIdentifier>{8c32f7ed-07ae-47e0-b2d9-c570f9eab5b3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headerdateien\Material">
-      <UniqueIdentifier>{6d166ae2-2939-4d35-88c7-91f3d8f87203}</UniqueIdentifier>
     </Filter>
     <Filter Include="Headerdateien\Skybox">
       <UniqueIdentifier>{e5100701-7526-4012-84d9-8e2c47c484b7}</UniqueIdentifier>
@@ -136,9 +130,6 @@
     <Filter Include="Quelldateien\Cache">
       <UniqueIdentifier>{6f24cd1e-03b6-4b9b-8801-33c3add2403e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\Performance">
-      <UniqueIdentifier>{259d905f-fc81-4fa0-a355-47773a272938}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\Importer">
       <UniqueIdentifier>{aff54484-1f05-4ac8-a451-0d191109256b}</UniqueIdentifier>
     </Filter>
@@ -177,18 +168,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Geometry\Sphere.hpp">
       <Filter>Headerdateien\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Handle\HandledObject.hpp">
-      <Filter>Headerdateien\Handle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Handle\MaterialHandler.hpp">
-      <Filter>Headerdateien\Handle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Handle\ModelHandler.hpp">
-      <Filter>Headerdateien\Handle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Handle\TextureHandler.hpp">
-      <Filter>Headerdateien\Handle</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Library\ObjStagedBuffer.hpp">
       <Filter>Headerdateien\Library</Filter>
     </ClInclude>
@@ -203,9 +182,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Library\Types.hpp">
       <Filter>Headerdateien\Library</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Material\Material.hpp">
-      <Filter>Headerdateien\Material</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Texture\Texture.hpp">
       <Filter>Headerdateien\Texture</Filter>
@@ -231,7 +207,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\__macro.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Light\LightAtlas.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX\Light\Light.hpp">
       <Filter>Headerdateien\Light</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Geometry\Vertex.hpp">
@@ -272,12 +248,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.hpp">
       <Filter>Headerdateien\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMapFlags.hpp">
-      <Filter>Headerdateien\Material</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMeta.hpp">
-      <Filter>Headerdateien\Material</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\ModelState.hpp">
       <Filter>Headerdateien</Filter>
@@ -337,12 +307,6 @@
       <Filter>Headerdateien\Importer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneTag.hpp">
-      <Filter>Headerdateien\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.hpp">
-      <Filter>Headerdateien\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\StaticGeometryModel.hpp">
       <Filter>Headerdateien\Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.hpp">
@@ -435,9 +399,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Cache\ModelBatch.hpp">
       <Filter>Headerdateien\Cache</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Performance\RenderTokens.hpp">
-      <Filter>Headerdateien\Performance</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Cache\GlobalResourceCache.hpp">
       <Filter>Headerdateien\Cache</Filter>
     </ClInclude>
@@ -462,9 +423,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Cache\CacheStaticGeometrySubject.hpp">
       <Filter>Headerdateien\Cache</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\GeometryModel.hpp">
-      <Filter>Headerdateien\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Cache\LocalCacheCtrl.hpp">
       <Filter>Headerdateien\Cache</Filter>
     </ClInclude>
@@ -476,9 +434,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\__fwd.hpp">
       <Filter>Headerdateien\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMetaDto.hpp">
-      <Filter>Headerdateien\Material</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SkyboxModel.hpp">
       <Filter>Headerdateien\Scene</Filter>
@@ -554,6 +509,18 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Texture\SampledTextureView.hpp">
       <Filter>Headerdateien\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Pool\SceneResourcePool.hpp">
+      <Filter>Headerdateien\Pool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Pool\InstancePooled.hpp">
+      <Filter>Headerdateien\Pool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Pool\RangePooled.hpp">
+      <Filter>Headerdateien\Pool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Aabb.hpp">
+      <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -644,12 +611,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Geometry\Sphere.cpp">
       <Filter>Quelldateien\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Scene\StaticGeometryModel.cpp">
-      <Filter>Quelldateien\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.cpp">
-      <Filter>Quelldateien\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Memory\VirtualMemory.cpp">
       <Filter>Quelldateien\Memory</Filter>
     </ClCompile>
@@ -713,9 +674,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Cache\GlobalCacheCtrl.cpp">
       <Filter>Quelldateien\Cache</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Scene\GeometryModel.cpp">
-      <Filter>Quelldateien\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Cache\LocalCacheCtrl.cpp">
       <Filter>Quelldateien\Cache</Filter>
     </ClCompile>
@@ -772,6 +730,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\StorageBufferView.cpp">
       <Filter>Quelldateien\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Pool\SceneResourcePool.cpp">
+      <Filter>Quelldateien\Pool</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
