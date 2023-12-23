@@ -137,6 +137,8 @@ sptr<SceneHierarchyPanel> SceneHierarchyPanel::make(const non_owning_rptr<SceneH
     /**/
 
     auto content { make_sptr<VScrollBox>() };
+    content->attr.height.setValue(ReflowUnitType::eRelative, 1.F);
+    content->attr.width.setValue(ReflowUnitType::eRelative, 1.F);
 
     panel->_content = content;
     panel->addChild(content);

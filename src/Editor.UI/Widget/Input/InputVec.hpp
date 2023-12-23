@@ -89,6 +89,10 @@ namespace hg::editor::ui {
 
                     style.padding.setValue(engine::reflow::Padding { 4.F, 2.F });
                     style.flexShrink.setValue(1.F);
+
+                    style.style.setValue(
+                        engine::reflow::PanelStyle { .backgroundColor = engine::color { 40.F, 44.F, 52.F, 255.F } }
+                    );
                 }
 
                 theme->applyText(_inputs[i]->_text);

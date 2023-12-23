@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Reflow/Style/PanelStyle.hpp>
 #include <Engine.Reflow/Widget/Button.hpp>
 #include <Engine.Reflow/Widget/Image.hpp>
@@ -63,6 +64,9 @@ void AssetBrowserPanel::changeCwd(cref<fs::Url> nextCwd_) {
 
     _browserCwd = nextCwd_;
     assert(not _browserCwd.hasScheme());
+
+    const auto scrollBox = getItemContainer()->parent();
+    static_cast<ptr<VScrollBox>>(scrollBox.get())->scrollTo(math::vec2_zero, math::vec2_zero);
 
     buildNav();
     buildItems();
