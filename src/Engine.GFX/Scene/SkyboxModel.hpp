@@ -1,12 +1,11 @@
 #pragma once
 #include <Engine.Assets/Types/Geometry/StaticGeometry.hpp>
+#include <Engine.GFX.Scene.Model/GeometryModel.hpp>
 #include <Engine.Resource/Manage/Resource.hpp>
-
-#include "GeometryModel.hpp"
 
 namespace hg::engine::gfx {
     class SkyboxModel final :
-        public InheritMeta<SkyboxModel, GeometryModel> {
+        public InheritMeta<SkyboxModel, scene::GeometryModel> {
     public:
         using this_type = SkyboxModel;
         using underlying_type = SceneNodeModel;

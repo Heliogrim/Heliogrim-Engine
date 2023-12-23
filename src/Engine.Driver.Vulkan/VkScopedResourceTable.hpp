@@ -47,8 +47,8 @@ namespace hg::driver::vk {
         [[nodiscard]] ref<this_type> replaceWith(mref<ResourceTable> table_) noexcept;
 
     private:
-        InlineAutoArray<VkDescriptorPool> _commitPools;
-        InlineAutoArray<Vector<_::VkDescriptorSet>> _committedSets;
+        Vector<VkDescriptorPool> _commitPools;
+        Vector<Vector<_::VkDescriptorSet>> _committedSets;
 
     private:
         [[nodiscard]] Vector<VkDescriptorPoolSize> nextAllocSizes() const noexcept;

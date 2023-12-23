@@ -137,13 +137,11 @@
     <ClCompile Include="..\..\src\Engine.GFX\Memory\VirtualMemoryPage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Memory\VkAllocator.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pool\GlobalResourcePool.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Pool\SceneResourcePool.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\RenderTarget.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\CameraModel.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Scene\GeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SkyboxModel.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Scene\StaticGeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Surface\Surface.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Surface\SurfaceManager.cpp" />
@@ -164,6 +162,7 @@
     <ClCompile Include="..\..\src\Engine.GFX\Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Engine.GFX\Aabb.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\API\VkTranslate.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\API\__vkFwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Application\Application.hpp" />
@@ -215,10 +214,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\GraphicPassModelProcessor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\GraphicPass\ProcessedModelBatch.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Graphics.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Handle\HandledObject.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Handle\MaterialHandler.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Handle\ModelHandler.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Handle\TextureHandler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Importer\ImageFileTypes.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Importer\ImageImporter.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Importer\ModelFileTypes.hpp" />
@@ -231,11 +226,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Library\RenderCache.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Library\RenderObject.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Library\Types.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Light\LightAtlas.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Material\Material.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMapFlags.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMeta.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Material\MaterialMetaDto.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Light\Light.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Memory\AllocatedMemory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Memory\Allocator.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Memory\AllocationResult.hpp" />
@@ -253,8 +244,10 @@
     <ClInclude Include="..\..\src\Engine.GFX\Memory\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\MeshPipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\ModelState.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Performance\RenderTokens.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pool\GlobalResourcePool.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Pool\InstancePooled.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Pool\RangePooled.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Pool\SceneResourcePool.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Pool\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\PrimitiveTopology.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RasterCullFace.hpp" />
@@ -265,13 +258,10 @@
     <ClInclude Include="..\..\src\Engine.GFX\RenderEnqueueResult.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RenderTarget.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\CameraModel.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\GeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\LandscapeGeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SkyboxModel.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneNodeModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneTag.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\StaticGeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Skybox\Skybox.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Surface\Surface.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Surface\SurfaceManager.hpp" />

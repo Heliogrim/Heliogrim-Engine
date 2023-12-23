@@ -39,6 +39,17 @@ namespace hg::engine::reflow {
             _value = _STD forward<Type_>(value_);
         }
 
+        template <typename Type_ = ValueType_, typename... Args_> requires
+            _STD is_aggregate_v<Type_> ||
+            (_STD is_constructible_v<Type_, Args_...> && _STD is_move_assignable_v<Type_>)
+        void setValue(Args_&&... args_) {
+            if constexpr (_STD is_aggregate_v<Type_>) {
+                _value = { _STD forward<Args_>(args_)... };
+            } else {
+                _value = Type_(_STD forward<Args_>(args_)...);
+            }
+        }
+
     public:
         [[nodiscard]] const ptr<const ValueType_> operator->() const {
             return &_value;

@@ -3,7 +3,6 @@
 #include "Engine.GFX/Geometry/Vertex.hpp"
 #include "Engine.GFX/Memory/AllocationResult.hpp"
 #include "../Texture/TextureFactory.hpp"
-#include "../Material/MaterialMetaDto.hpp"
 
 #include <Engine.GFX.Loader/Texture/Traits.hpp>
 #include <Engine.GFX.Loader/Geometry/Traits.hpp>

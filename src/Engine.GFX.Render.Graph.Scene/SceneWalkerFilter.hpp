@@ -1,8 +1,8 @@
 #pragma once
 #include <bitset>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.GFX.Scene.Model/SceneModel.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
-#include <Engine.GFX/Scene/SceneNodeModel.hpp>
 #include <Engine.Scene/Node/SceneNode.hpp>
 
 namespace hg::engine::render::graph {
@@ -13,7 +13,7 @@ namespace hg::engine::render::graph {
 
         using checksum_type = u64;
 
-        using scene_model_type = gfx::SceneNodeModel;
+        using scene_model_type = gfx::scene::SceneModel;
         using scene_node_type = ptr<::hg::engine::scene::SceneNode<scene_model_type>>;
 
     public:

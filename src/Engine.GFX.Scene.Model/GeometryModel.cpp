@@ -3,7 +3,8 @@
 using namespace hg::engine::gfx::scene;
 using namespace hg;
 
-GeometryModel::GeometryModel(const ptr<SceneComponent> owner_) {}
+GeometryModel::GeometryModel(const ptr<SceneComponent> owner_) :
+    InheritMeta(owner_) {}
 
 bool GeometryModel::hasOverrideMaterials() const noexcept {
     return not _overrideMaterials.empty();

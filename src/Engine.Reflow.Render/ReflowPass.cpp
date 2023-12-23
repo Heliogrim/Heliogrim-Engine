@@ -137,7 +137,7 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 
         auto scene = sceneView->getScene()->renderGraph();
         scene->traversal(
-            [&uiModel](const ptr<scene::SceneGraph<gfx::SceneNodeModel>::node_type> node_) -> bool {
+            [&uiModel](const ptr<scene::SceneGraph<gfx::scene::SceneModel>::node_type> node_) -> bool {
 
                 auto size = node_->exclusiveSize();
                 for (decltype(size) i = 0; i < size; ++i) {

@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
-#include <Engine.GFX/Scene/GeometryModel.hpp>
+#include <Engine.GFX.Scene.Model/GeometryModel.hpp>
 
 #include "../SubPass.hpp"
 #include "MeshCaptureInterface.hpp"
@@ -14,7 +14,7 @@ namespace hg::engine::render {
     public:
         using this_type = MeshSubPass;
 
-        using model_type = gfx::GeometryModel;
+        using model_type = gfx::scene::GeometryModel;
         using capture_type = MeshCaptureInterface;
 
     public:

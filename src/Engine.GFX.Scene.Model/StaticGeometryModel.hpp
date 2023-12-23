@@ -34,6 +34,10 @@ namespace hg::engine::gfx::scene {
         void capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept override;
 
     private:
+    public:
+        u32 _sceneInstanceIndex;
+
+    private:
         ptr<assets::StaticGeometry> _staticGeometryAsset = nullptr;
         smr<StaticGeometryResource> _staticGeometryResource;
 

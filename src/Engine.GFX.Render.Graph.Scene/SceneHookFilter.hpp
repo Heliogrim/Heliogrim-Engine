@@ -1,6 +1,6 @@
 #pragma once
 #include <bitset>
-#include <Engine.GFX/Scene/SceneNodeModel.hpp>
+#include <Engine.GFX.Scene.Model/SceneModel.hpp>
 #include <Engine.Reflect/Inherit/InheritMeta.hpp>
 
 namespace hg::engine::render::graph {
@@ -10,7 +10,7 @@ namespace hg::engine::render::graph {
         using this_type = SceneHookFilter;
 
         using checksum_type = u64;
-        using scene_model_type = gfx::SceneNodeModel;
+        using scene_model_type = gfx::scene::SceneModel;
 
     public:
         constexpr SceneHookFilter() noexcept = default;

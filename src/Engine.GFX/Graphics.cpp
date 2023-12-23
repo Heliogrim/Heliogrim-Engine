@@ -176,6 +176,7 @@ void Graphics::setup() {
     _cacheCtrl = make_uptr<cache::GlobalCacheCtrl>(_STD move(globalCache));
 
     _pool = make_uptr<pool::GlobalResourcePool>(_device);
+    _pool->setup();
 
     VkTextureFactory::make(_device);
 
@@ -266,6 +267,8 @@ void Graphics::destroy() {
      */
     TextureFactory::destroy();
     _cacheCtrl.reset();
+
+    _pool->destroy();
     _pool.reset();
 
     /**

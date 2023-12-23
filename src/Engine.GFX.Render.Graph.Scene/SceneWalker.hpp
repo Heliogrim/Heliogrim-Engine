@@ -2,7 +2,6 @@
 #include <functional>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
-#include <Engine.GFX/Scene/SceneNodeModel.hpp>
 #include <Engine.Scene/Node/SceneNode.hpp>
 
 #include "SceneHookFilter.hpp"
@@ -13,7 +12,7 @@ namespace hg::engine::render::graph {
     public:
         using this_type = SceneWalker;
 
-        using scene_model_type = gfx::SceneNodeModel;
+        using scene_model_type = gfx::scene::SceneModel;
         using scene_node_type = ptr<::hg::engine::scene::SceneNode<scene_model_type>>;
 
     public:

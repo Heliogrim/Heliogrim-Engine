@@ -61,8 +61,12 @@ namespace hg {
     };
 
     template <typename TargetType_, typename... InheritTypes_>
-    constexpr const __restricted_ptr<const typename TypedMetaClass<TargetType_, reflect::__type_list<InheritTypes_...>>
-        ::this_type> TypedMetaClass<TargetType_, reflect::__type_list<InheritTypes_...>>::get() noexcept {
+    constexpr const __restricted_ptr<
+        const typename TypedMetaClass<
+            TargetType_, reflect::__type_list<InheritTypes_...>
+        >::this_type> TypedMetaClass<
+        TargetType_, reflect::__type_list<InheritTypes_...>
+    >::get() noexcept {
         return &typed_meta_holder<TargetType_, reflect::__type_list<InheritTypes_...>>::instance;
     }
 }
