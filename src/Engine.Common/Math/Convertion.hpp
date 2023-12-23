@@ -11,7 +11,7 @@
 #include "Rotator.hpp"
 
 namespace hg::math {
-    template <class From_, class To_>
+    template <class To_, class From_>
     inline static To_ as(cref<From_> from_) noexcept;
 
     template <>
@@ -49,7 +49,7 @@ namespace hg::math {
 
     template <>
     inline static mat4 as(cref<quaternion> from_) noexcept {
-        return mat4 { as<quaternion, mat3>(from_) };
+        return mat4 { as<mat3, quaternion>(from_) };
     }
 
     template <>

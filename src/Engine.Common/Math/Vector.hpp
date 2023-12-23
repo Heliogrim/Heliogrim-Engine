@@ -76,7 +76,7 @@ namespace hg::math {
          */
         constexpr vec2_t() noexcept :
             x(0),
-            y(0) { }
+            y(0) {}
 
         /**
          * Constructor
@@ -101,7 +101,7 @@ namespace hg::math {
          */
         constexpr vec2_t(const value_type& x_, const value_type& y_) noexcept :
             x(x_),
-            y(y_) { }
+            y(y_) {}
 
         /**
          * Constructor
@@ -126,7 +126,7 @@ namespace hg::math {
          */
         constexpr vec2_t(const vec3_t<T>& xyz_) noexcept :
             x(xyz_.x),
-            y(xyz_.y) { }
+            y(xyz_.y) {}
 
         /**
          * Constructor
@@ -138,7 +138,7 @@ namespace hg::math {
          */
         constexpr vec2_t(const vec4_t<T>& xyzw_) noexcept :
             x(xyzw_.x),
-            y(xyzw_.y) { }
+            y(xyzw_.y) {}
 
         template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
         constexpr vec2_t(const vec3_t<Ty_> xy_) noexcept :
@@ -188,7 +188,7 @@ namespace hg::math {
          *
          * @returns A T.
          */
-        value_type length() const {
+        constexpr value_type length() const {
             return static_cast<value_type>(std::sqrt(x * x + y * y));
         }
 
@@ -202,7 +202,7 @@ namespace hg::math {
          *
          * @returns A T.
          */
-        value_type dot(const_reference_type other_) const {
+        constexpr value_type dot(const_reference_type other_) const {
             const type tmp((*this) * other_);
             return tmp.x + tmp.y;
         }
@@ -217,7 +217,7 @@ namespace hg::math {
          *
          * @returns A mathGenericType.
          */
-        [[nodiscard]] mathGenericType distance(const_reference_type other_) const {
+        [[nodiscard]] constexpr mathGenericType distance(const_reference_type other_) const {
             return static_cast<mathGenericType>(std::sqrt(
                 (x - other_.x) * (x - other_.x) + (y - other_.y) * (y - other_.y)
             ));
@@ -233,7 +233,7 @@ namespace hg::math {
          *
          * @returns A vec2&lt;T&gt;
          */
-        type scale(const value_type& scale_) {
+        constexpr type scale(const value_type& scale_) {
             x *= scale_;
             y *= scale_;
             return *this;
@@ -247,7 +247,7 @@ namespace hg::math {
          *
          * @returns A vec2&lt;T&gt;
          */
-        type normalize() {
+        constexpr type normalize() {
             const value_type l = length();
             scale(1 / l);
             return *this;
@@ -261,7 +261,7 @@ namespace hg::math {
          *
          * @returns whether vector is zero.
          */
-        [[nodiscard]] bool zero() const {
+        [[nodiscard]] constexpr bool zero() const {
             // TODO: Unsafe possible float point equality operation
             return x == 0 && y == 0;
         }
@@ -276,7 +276,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator*=(const value_type& scalar_) {
+        constexpr type operator*=(const value_type& scalar_) {
             return scale(scalar_);
         }
 
@@ -290,7 +290,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator/=(const value_type& scalar_) {
+        constexpr type operator/=(const value_type& scalar_) {
             return scale(1 / scalar_);
         }
 
@@ -304,7 +304,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        reference_type operator+=(const_reference_type other_) {
+        constexpr reference_type operator+=(const_reference_type other_) {
             x += other_.x;
             y += other_.y;
             return *this;
@@ -320,7 +320,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        reference_type operator-=(const_reference_type other_) {
+        constexpr reference_type operator-=(const_reference_type other_) {
             x -= other_.x;
             y -= other_.y;
             return *this;
@@ -336,7 +336,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator+(const_reference_type other_) const {
+        constexpr type operator+(const_reference_type other_) const {
             return type(x + other_.x, y + other_.y);
         }
 
@@ -350,7 +350,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator-(const_reference_type other_) const {
+        constexpr type operator-(const_reference_type other_) const {
             return type(x - other_.x, y - other_.y);
         }
 
@@ -362,7 +362,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator-() const {
+        constexpr type operator-() const {
             return type(-x, -y);
         }
 
@@ -376,7 +376,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator*(const_reference_type other_) const {
+        constexpr type operator*(const_reference_type other_) const {
             return type(x * other_.x, y * other_.y);
         }
 
@@ -390,7 +390,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator*(const value_type& scalar_) const {
+        constexpr type operator*(const value_type& scalar_) const {
             return type(x * scalar_, y * scalar_);
         }
 
@@ -404,7 +404,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator/(const_reference_type other_) const {
+        constexpr type operator/(const_reference_type other_) const {
             return type(x / other_.x, y / other_.y);
         }
 
@@ -418,7 +418,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator/(const value_type& scalar_) const {
+        constexpr type operator/(const value_type& scalar_) const {
             return type(x / scalar_, y / scalar_);
         }
 
@@ -432,7 +432,7 @@ namespace hg::math {
          *
          * @returns True if the parameters are considered equivalent.
          */
-        bool operator==(const_reference_type other_) const {
+        constexpr bool operator==(const_reference_type other_) const {
             return (x == other_.x && y == other_.y);
         }
 
@@ -446,7 +446,7 @@ namespace hg::math {
          *
          * @returns True if the parameters are not considered equivalent.
          */
-        bool operator!=(const_reference_type other_) const {
+        constexpr bool operator!=(const_reference_type other_) const {
             return !(x == other_.x && y == other_.y);
         }
 
@@ -460,7 +460,7 @@ namespace hg::math {
          *
          * @returns The indexed value.
          */
-        value_type operator[](const size_t index_) const {
+        constexpr value_type operator[](const size_t index_) const {
             return (&x)[index_];
         }
 
@@ -474,7 +474,7 @@ namespace hg::math {
          *
          * @returns The indexed value.
          */
-        value_type& operator[](const size_t index_) {
+        constexpr value_type& operator[](const size_t index_) {
             return (&x)[index_];
         }
 
@@ -556,7 +556,7 @@ namespace hg::math {
         constexpr vec3_t() noexcept :
             x(0),
             y(0),
-            z(0) { }
+            z(0) {}
 
         /**
          * Constructor
@@ -584,7 +584,7 @@ namespace hg::math {
         constexpr vec3_t(const value_type& x_, const value_type& y_, const value_type& z_) noexcept :
             x(x_),
             y(y_),
-            z(z_) { }
+            z(z_) {}
 
         /**
          * Constructor
@@ -613,7 +613,7 @@ namespace hg::math {
         constexpr vec3_t(typename vec2_t<value_type>::const_reference_type xy_, const value_type& z_) noexcept :
             x(xy_.x),
             y(xy_.y),
-            z(z_) { }
+            z(z_) {}
 
         /**
          * Constructor
@@ -626,7 +626,7 @@ namespace hg::math {
         constexpr vec3_t(const vec4_t<value_type>& xyzw_) noexcept :
             x(xyzw_.x),
             y(xyzw_.y),
-            z(xyzw_.z) { }
+            z(xyzw_.z) {}
 
         /**
          * Cast Constructor
@@ -731,7 +731,7 @@ namespace hg::math {
          *
          * @returns A T.
          */
-        value_type length() const {
+        constexpr value_type length() const {
             return static_cast<value_type>(std::sqrt(x * x + y * y + z * z));
         }
 
@@ -743,7 +743,7 @@ namespace hg::math {
          *
          * @returns A value_type.
          */
-        value_type sqrLength() const {
+        constexpr value_type sqrLength() const {
             return static_cast<value_type>(x * x + y * y + z * z);
         }
 
@@ -757,7 +757,7 @@ namespace hg::math {
          *
          * @returns A T.
          */
-        value_type dot(const_reference_type other_) const {
+        constexpr value_type dot(const_reference_type other_) const {
             const type tmp { *this * other_ };
             return tmp.x + tmp.y + tmp.z;
         }
@@ -772,7 +772,7 @@ namespace hg::math {
          *
          * @returns A mathGenericType.
          */
-        [[nodiscard]] mathGenericType distance(const_reference_type other_) const {
+        [[nodiscard]] constexpr mathGenericType distance(const_reference_type other_) const {
             return static_cast<mathGenericType>(std::sqrt(
                 (x - other_.x) * (x - other_.x) + (y - other_.y) * (y - other_.y) + (z - other_.z) * (z - other_.z)
             ));
@@ -788,7 +788,7 @@ namespace hg::math {
          *
          * @returns A vec3&lt;T&gt;
          */
-        type scale(const value_type& scale_) {
+        constexpr reference_type scale(const value_type& scale_) {
             x *= scale_;
             y *= scale_;
             z *= scale_;
@@ -803,7 +803,7 @@ namespace hg::math {
          *
          * @returns A vec3&lt;T&gt;
          */
-        type normalize() {
+        constexpr reference_type normalize() {
             DEBUG_STATIC_ASSERT(std::numeric_limits<value_type>::is_iec559, "'normalize' accepts only floating point")
 
             const value_type l = length();
@@ -819,7 +819,7 @@ namespace hg::math {
          *
          * @returns A vec3_t&lt;T&gt;
          */
-        type normalized() const {
+        constexpr type normalized() const {
             DEBUG_STATIC_ASSERT(std::numeric_limits<value_type>::is_iec559, "'normalized' accepts only floating point")
 
             const value_type fac = (1 / length());
@@ -836,7 +836,7 @@ namespace hg::math {
          *
          * @returns A reference to a vec3_t&lt;T&gt;
          */
-        type cross(const_reference_type other_) {
+        constexpr reference_type cross(const_reference_type other_) {
             DEBUG_STATIC_ASSERT(std::numeric_limits<value_type>::is_iec559, "'cross' accepts only floating point")
 
             const value_type x = this->x;
@@ -860,7 +860,7 @@ namespace hg::math {
          *
          * @returns A vec3_t&lt;T&gt;
          */
-        type crossed(const_reference_type other_) const {
+        constexpr type crossed(const_reference_type other_) const {
             DEBUG_STATIC_ASSERT(std::numeric_limits<value_type>::is_iec559, "'crossed' accepts only floating point")
 
             return type(
@@ -878,7 +878,7 @@ namespace hg::math {
          *
          * @returns whether vector is zero.
          */
-        [[nodiscard]] bool zero() const {
+        [[nodiscard]] constexpr bool zero() const {
             // TODO: Unsafe possible float point equality operation
             return x == 0 && y == 0 && z == 0;
         }
@@ -893,7 +893,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator*=(const value_type& scalar_) {
+        constexpr reference_type operator*=(const value_type& scalar_) {
             return scale(scalar_);
         }
 
@@ -907,7 +907,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator/=(const value_type& scalar_) {
+        constexpr reference_type operator/=(const value_type& scalar_) {
             return scale(1 / scalar_);
         }
 
@@ -921,7 +921,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator+(const_reference_type other_) const {
+        constexpr type operator+(const_reference_type other_) const {
             return type(x + other_.x, y + other_.y, z + other_.z);
         }
 
@@ -935,7 +935,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator+=(const_reference_type other_) {
+        constexpr reference_type operator+=(const_reference_type other_) {
             x += other_.x;
             y += other_.y;
             z += other_.z;
@@ -943,7 +943,7 @@ namespace hg::math {
         }
 
         template <typename Ty_> requires _STD is_integral_v<Ty_> || _STD is_floating_point_v<Ty_>
-        type& operator+=(const vec2_t<Ty_>& xy_) {
+        constexpr reference_type operator+=(const vec2_t<Ty_>& xy_) {
             x += (value_type)xy_.x;
             y += (value_type)xy_.y;
             return *this;
@@ -959,7 +959,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator-(const_reference_type other_) const {
+        constexpr type operator-(const_reference_type other_) const {
             return vec3_t<T>(x - other_.x, y - other_.y, z - other_.z);
         }
 
@@ -971,7 +971,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator-() const {
+        constexpr type operator-() const {
             return type(-x, -y, -z);
         }
 
@@ -985,7 +985,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator-=(const_reference_type other_) {
+        constexpr reference_type operator-=(const_reference_type other_) {
             x -= other_.x;
             y -= other_.y;
             z -= other_.z;
@@ -1002,7 +1002,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator*(const_reference_type other_) const {
+        constexpr type operator*(const_reference_type other_) const {
             return vec3_t<T>(x * other_.x, y * other_.y, z * other_.z);
         }
 
@@ -1016,7 +1016,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator*(const value_type& scalar_) const {
+        constexpr type operator*(const value_type& scalar_) const {
             return type(x * scalar_, y * scalar_, z * scalar_);
         }
 
@@ -1030,7 +1030,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator/(const_reference_type other_) const {
+        constexpr type operator/(const_reference_type other_) const {
             return type(x / other_.x, y / other_.y, z / other_.z);
         }
 
@@ -1044,7 +1044,7 @@ namespace hg::math {
          *
          * @returns The result of the operation.
          */
-        type operator/(const value_type& scalar_) const {
+        constexpr type operator/(const value_type& scalar_) const {
             return type(x / scalar_, y / scalar_, z / scalar_);
         }
 
@@ -1077,7 +1077,7 @@ namespace hg::math {
         }
 
         template <typename NumericType_ = T, _STD enable_if_t<!_STD is_floating_point_v<NumericType_>, bool>  = true>
-        type operator>>(const NumericType_& shift_) const {
+        constexpr type operator>>(const NumericType_& shift_) const {
             return type {
                 x >> shift_,
                 y >> shift_,
@@ -1095,7 +1095,7 @@ namespace hg::math {
          *
          * @returns The indexed value.
          */
-        value_type operator[](const size_t index_) const {
+        constexpr value_type operator[](const size_t index_) const {
             return (&x)[index_];
         }
 
@@ -1109,7 +1109,7 @@ namespace hg::math {
          *
          * @returns The indexed value.
          */
-        value_type& operator[](const size_t index_) {
+        constexpr value_type& operator[](const size_t index_) {
             return (&x)[index_];
         }
 
@@ -1182,7 +1182,7 @@ namespace hg::math {
             x(0),
             y(0),
             z(0),
-            w(0) { }
+            w(0) {}
 
         /**
          * Constructor
@@ -1204,7 +1204,7 @@ namespace hg::math {
             x(x_),
             y(y_),
             z(z_),
-            w(w_) { }
+            w(w_) {}
 
         /**
          * Constructor
@@ -1218,7 +1218,7 @@ namespace hg::math {
             x(scalar_),
             y(scalar_),
             z(scalar_),
-            w(scalar_) { }
+            w(scalar_) {}
 
         /**
          * Constructor
@@ -1251,7 +1251,7 @@ namespace hg::math {
             x(xy_.x),
             y(xy_.y),
             z(zw_.x),
-            w(zw_.y) { }
+            w(zw_.y) {}
 
         /**
          * Constructor
@@ -1266,7 +1266,7 @@ namespace hg::math {
             x(xyz_.x),
             y(xyz_.y),
             z(xyz_.z),
-            w(w_) { }
+            w(w_) {}
 
         /**
          * Cast Constructor
@@ -1808,7 +1808,10 @@ namespace hg::math {
      * @returns A vector with the maximum values per component.
      */
     template <typename T>
-    vec2_t<T> compMax(typename vec2_t<T>::const_reference_type vec0_, typename vec2_t<T>::const_reference_type vec1_) {
+    constexpr vec2_t<T> compMax(
+        typename vec2_t<T>::const_reference_type vec0_,
+        typename vec2_t<T>::const_reference_type vec1_
+    ) {
         return vec2_t<T> {
             MAX(vec0_.x, vec1_.x),
             MAX(vec0_.y, vec1_.y)
@@ -1827,7 +1830,10 @@ namespace hg::math {
      * @returns A vector with the maximum values per component.
      */
     template <typename T>
-    vec3_t<T> compMax(typename vec3_t<T>::const_reference_type vec0_, typename vec3_t<T>::const_reference_type vec1_) {
+    constexpr vec3_t<T> compMax(
+        typename vec3_t<T>::const_reference_type vec0_,
+        typename vec3_t<T>::const_reference_type vec1_
+    ) {
         return vec3_t<T> {
             MAX(vec0_.x, vec1_.x),
             MAX(vec0_.y, vec1_.y),
@@ -1847,7 +1853,10 @@ namespace hg::math {
      * @returns A vector with the maximum values per component.
      */
     template <typename T>
-    vec2_t<T> compMin(typename vec2_t<T>::const_reference_type vec0_, typename vec2_t<T>::const_reference_type vec1_) {
+    constexpr vec2_t<T> compMin(
+        typename vec2_t<T>::const_reference_type vec0_,
+        typename vec2_t<T>::const_reference_type vec1_
+    ) {
         return vec2_t<T> {
             MIN(vec0_.x, vec1_.x),
             MIN(vec0_.y, vec1_.y)
@@ -1866,7 +1875,10 @@ namespace hg::math {
      * @returns A vector with the maximum values per component.
      */
     template <typename T>
-    vec3_t<T> compMin(typename vec3_t<T>::const_reference_type vec0_, typename vec3_t<T>::const_reference_type vec1_) {
+    constexpr vec3_t<T> compMin(
+        typename vec3_t<T>::const_reference_type vec0_,
+        typename vec3_t<T>::const_reference_type vec1_
+    ) {
         return vec3_t<T> {
             MIN(vec0_.x, vec1_.x),
             MIN(vec0_.y, vec1_.y),
