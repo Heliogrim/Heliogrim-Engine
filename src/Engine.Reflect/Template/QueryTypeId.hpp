@@ -20,14 +20,14 @@ namespace hg::reflect {
 
     template <typename Type_>
     struct query_type_id_impl<Type_, false> {
-        using result = decltype([]() {
+        using result = decltype([]() constexpr {
             return ctid<Type_>();
         });
     };
 
     template <typename Type_>
     struct query_type_id_impl<Type_, true> {
-        using result = decltype([]() {
+        using result = decltype([]() constexpr {
             return Type_::typeId;
         });
     };
