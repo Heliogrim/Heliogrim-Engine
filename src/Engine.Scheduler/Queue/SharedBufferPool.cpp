@@ -1,8 +1,6 @@
 #include "SharedBufferPool.hpp"
 
-#ifdef _DEBUG
 #include <cassert>
-#endif
 
 using namespace hg::engine::scheduler;
 using namespace hg;

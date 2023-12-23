@@ -1,9 +1,6 @@
 #include "AllocatedMemory.hpp"
 
-#ifdef _DEBUG
 #include <cassert>
-#endif
-
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "Allocator.hpp"

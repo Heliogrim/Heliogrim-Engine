@@ -1,6 +1,6 @@
 #include "Watcher.hpp"
 
-#include <assert.h>
+#include <cassert>
 #include <filesystem>
 #include <thread>
 

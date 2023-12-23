@@ -1,10 +1,8 @@
 #pragma once
-#ifdef _DEBUG
-#include <assert.h>
-#endif
 
-#include <Engine.Common/__macro.hpp>
+#include <cassert>
 #include <Engine.Common/Types.hpp>
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Concurrent/Collection/RingBuffer.hpp>
 #include <Engine.Common/Memory/allocator.hpp>
 

@@ -1,11 +1,8 @@
 #include "FiberLaunchPad.hpp"
 
-#include <Engine.Common/__macro.hpp>
-#include <Windows.h>
-
-#ifdef _DEBUG
 #include <cassert>
-#endif
+#include <Windows.h>
+#include <Engine.Common/__macro.hpp>
 
 using namespace hg::engine::scheduler::fiber;
 using namespace hg;

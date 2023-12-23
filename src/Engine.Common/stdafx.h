@@ -8,9 +8,7 @@
 #include <stddef.h>
 #include <type_traits>
 
-#ifdef _DEBUG
-#include <assert.h>
-#endif
+#include <cassert>
 
 #if _WIN32 || _WIN64
 #include <windows.h>
