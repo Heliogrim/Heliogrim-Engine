@@ -15,7 +15,7 @@
       <PreprocessorDefinitions>_RELEASE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>assimp-vc142-mt.lib;vulkan-1.lib;SDL2.lib;ogg.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;c4core.lib;ryml.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mt.lib;GenericCodeGen.lib;glslang.lib;glslang-default-resource-limits.lib;MachineIndependent.lib;OGLCompiler.lib;OSDependent.lib;SPIRV.lib;SPVRemapper.lib;vulkan-1.lib;SDL2.lib;ogg.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;c4core.lib;ryml.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib;$(VULKAN_SDK)\Third-Party\Bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <OptimizeReferences>true</OptimizeReferences>
