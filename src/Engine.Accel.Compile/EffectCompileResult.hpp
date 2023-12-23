@@ -11,9 +11,9 @@ namespace hg::engine::accel {
         [[nodiscard]] constexpr lang::SymbolId aliasOrValue(cref<lang::SymbolId> value_) const noexcept {
             const auto iter = _STD ranges::find(
                 mapping,
-                value_,
+                value_.hash,
                 [](const auto& pair_) {
-                    return pair_.first;
+                    return pair_.first.hash;
                 }
             );
             return iter != mapping.end() ? iter->second : value_;
