@@ -166,32 +166,18 @@
 #define __restrict RESTRICT
 #endif
 
-// Structs, Classes, Interfaces, Abstracts...
-#ifndef cppinterface
+// Function Helper
 
-#define cppstruct struct
-#define cppclass class
-
-#if defined(ENV_MSVC) && not (defined cppinterface)
-#define cppinterface class __declspec(novtable)
-#endif
-
-#if defined(ENV_GCC) && not (defined cppinterface)
-#define cppinterface class __attribute__ ((novtable))
-#endif
-
-#if not defined(cppinterface)
-// Fallback
-#define cppinterface class
-#endif
-
-#define cppabstract cppinterface
+#if not defined(Fn)
+#define Fn(fn_) [](auto&&... fnArgs_) { return fn_(_STD forward<decltype(fnArgs_)>(fnArgs_)...); }
 #endif
 
 // Profiling
 #ifdef _PROFILING
-#define SCOPED_STOPWATCH_V(var_) hg::profiling::ScopedStopwatch var_ {__FUNCSIG__};
-#define SCOPED_STOPWATCH SCOPED_STOPWATCH_V(DOUBLE(__stopwatch__, __LINE__))
+//#define SCOPED_STOPWATCH_V(var_) hg::profiling::ScopedStopwatch var_ {__FUNCSIG__};
+//#define SCOPED_STOPWATCH SCOPED_STOPWATCH_V(DOUBLE(__stopwatch__, __LINE__))
+#define SCOPED_STOPWATCH_V(var_)
+#define SCOPED_STOPWATCH
 #else
 #define SCOPED_STOPWATCH_V(var_)
 #define SCOPED_STOPWATCH
