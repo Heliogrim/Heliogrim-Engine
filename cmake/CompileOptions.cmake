@@ -41,6 +41,7 @@ set(DEFAULT_INCLUDE_DIRECTORIES
 	"${lib_dir}/glm"
 	"${lib_dir}/ryml"
 	"${lib_dir}/SDL2"
+    "${lib_dir}/spdlog"
 	"${lib_dir}/tsl"
 	"${lib_dir}/vorbis")
 
@@ -69,6 +70,7 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
             ${DEFAULT_LIBRARIES}
             "${lib_dir}/bin/freetype2/${CMAKE_BUILD_TYPE}/freetyped.lib"
             "${lib_dir}/bin/assimp/${CMAKE_BUILD_TYPE}/assimp-vc142-mtd.lib"
+            "${lib_dir}/bin/spdlog/${CMAKE_BUILD_TYPE}/spdlogd.lib"
             #
             "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/GenericCodeGend.lib"
             "${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/glslang-default-resource-limitsd.lib"
@@ -82,9 +84,10 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
 
 else ()
     set(DEFAULT_LIBRARIES
-            ${DEFAULT_LIBRARIES}
+        ${DEFAULT_LIBRARIES}
 		"${lib_dir}/bin/freetype2/${CMAKE_BUILD_TYPE}/freetype.lib"
 		"${lib_dir}/bin/assimp/${CMAKE_BUILD_TYPE}/assimp-vc142-mt.lib"
+        "${lib_dir}/bin/spdlog/${CMAKE_BUILD_TYPE}/spdlog.lib"
 		#
 		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/GenericCodeGen.lib"
 		"${lib_dir}/bin/glslang/${CMAKE_BUILD_TYPE}/glslang-default-resource-limits.lib"

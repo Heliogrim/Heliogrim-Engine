@@ -1,6 +1,7 @@
 #include "Engine.hpp"
 
 #include <cassert>
+#include <Engine.Logging/Logger.hpp>
 
 #include "EngineState.hpp"
 
@@ -12,10 +13,12 @@ non_owning_rptr<Engine> Engine::_cached = nullptr;
 
 Engine::Engine() {
     Engine::_cached = this;
+    Logger::setup();
 }
 
 Engine::~Engine() {
     tidy();
+    Logger::destroy();
     Engine::_cached = nullptr;
 }
 
