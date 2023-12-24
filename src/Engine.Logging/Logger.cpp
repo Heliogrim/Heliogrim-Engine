@@ -1,5 +1,7 @@
 #include "Logger.hpp"
 
+#include <Engine.Common/Make.hpp>
+
 #if TRUE
 #include <Engine.Common/__macro.hpp>
 #include <ctime>
@@ -9,18 +11,18 @@
 #include <Windows.h>
 #endif
 
+#define SPDLOG_USE_STD_FORMAT
+#include <filesystem>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
 using namespace hg;
-
-Logger::Logger() noexcept = default;
-
-Logger::Logger(mref<Logger> logger_) noexcept = default;
-
-Logger::~Logger() noexcept = default;
 
 #if TRUE
 
 namespace hg {
     extern _STD chrono::high_resolution_clock::time_point processStartTime = _STD chrono::high_resolution_clock::now();
+    extern _STD chrono::system_clock::time_point processStartPoint = _STD chrono::system_clock::now();
 }
 
 namespace hg::debug {
@@ -29,38 +31,61 @@ namespace hg::debug {
 
 #endif
 
+/**/
+
+extern uptr<Logger> staticLogger = nullptr;
+
+/**/
+
+Logger::Logger() noexcept = default;
+
+Logger::Logger(mref<Logger> logger_) noexcept = default;
+
+Logger::~Logger() noexcept = default;
+
+void Logger::setup() {
+    staticLogger = uptr<Logger> { new Logger() };
+
+    _STD string logfile = _STD format("{}.log", processStartPoint);
+    _STD ranges::replace(logfile, ':', '-');
+    _STD ranges::replace(logfile, ' ', '_');
+
+    auto cwd { _STD filesystem::current_path() };
+    cwd.append(logfile);
+
+    staticLogger->_native = spdlog::basic_logger_mt("LogFile", cwd.string());
+}
+
+void Logger::destroy() {
+
+    if (staticLogger != nullptr) {
+        spdlog::drop_all();
+    }
+
+    staticLogger.reset();
+}
+
 void Logger::log(LogLevel level_, mref<string> msg_) {
 
-    _STD unique_lock<_STD recursive_mutex> lck { ::hg::debug::outMtx };
-
-    auto& stream { _STD cout };
+    auto* const native = static_cast<const ptr<spdlog::logger>>(staticLogger->_native.get());
     switch (level_) {
         case LogLevel::eDebug: {
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-            stream << "[DEBUG] ";
+            native->debug(_STD move(msg_));
             break;
         }
         case LogLevel::eError: {
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-            stream << "[ERROR] ";
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+            native->error(_STD move(msg_));
             break;
         }
         case LogLevel::eWarn: {
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
-            stream << "[WARN] ";
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+            native->warn(_STD move(msg_));
             break;
         }
         case LogLevel::eInfo:
         default: {
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-            stream << "[INFO] ";
+            native->info(_STD move(msg_));
         }
     }
-
-    stream << _STD move(msg_);
-    stream << _STD endl;
 }
 
 void Logger::debug(mref<string> msg_) {

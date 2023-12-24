@@ -24,6 +24,14 @@ namespace hg {
     public:
         ~Logger() noexcept;
 
+    private:
+        sptr<void> _native;
+
+    public:
+        static void setup();
+
+        static void destroy();
+
     public:
         static void log(LogLevel level_, mref<string> msg_);
 
