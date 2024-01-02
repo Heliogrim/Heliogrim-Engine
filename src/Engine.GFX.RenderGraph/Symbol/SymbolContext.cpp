@@ -95,7 +95,7 @@ bool SymbolContext::registerExposeSymbol(
 
     if (iter == _register.end()) {
         _register.emplace_back(_STD make_pair(clone(symbol_), decltype(_register)::value_type::second_type {}));
-        iter = _register.rbegin().base();
+        iter = --_register.end();
     }
 
     iter->second.push_back({ observation_ });

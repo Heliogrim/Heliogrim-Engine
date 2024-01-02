@@ -100,8 +100,11 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\SelectorNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Node\Runtime\SLNode.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\CompilePassContext.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\ExecutionPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\ExecutionPassContext.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\IterationPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\IterationPassContext.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\ResolvePass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\ResolvePassContext.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\Description.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\MeshDescription.cpp" />

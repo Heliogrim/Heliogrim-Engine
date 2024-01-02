@@ -1,4 +1,7 @@
 #pragma once
+
+#include <Engine.Common/Collection/Queue.hpp>
+
 #include "RenderGraphPass.hpp"
 #include "ResolvePassContext.hpp"
 #include "../Visitor/Visitor.hpp"
@@ -30,21 +33,22 @@ namespace hg::engine::render::graph {
             using this_type = VolatileResolveVisitor;
 
         public:
-            constexpr VolatileResolveVisitor(const ptr<ResolvePass> owner_) noexcept :
-                _owner(owner_) {}
+            VolatileResolveVisitor(const ptr<ResolvePass> owner_) noexcept;
 
-            constexpr ~VolatileResolveVisitor() noexcept = default;
+            ~VolatileResolveVisitor() noexcept override;
 
         private:
             const ptr<ResolvePass> _owner;
 
+        private:
+            Queue<nmpt<Node>> _backlog;
+
+            void step();
+
+            void unroll();
+
         public:
-            void operator()(cref<Node> node_) override {
-                const auto invalidation = const_cast<ref<RuntimeNode>>(static_cast<cref<RuntimeNode>>(node_)).resolve(
-                    _owner->_context
-                );
-                node_.traverse(*this);
-            }
+            void operator()(cref<Node> node_) override;
 
             void operator()(cref<CompileNode> node_) override {
                 assert(false);
