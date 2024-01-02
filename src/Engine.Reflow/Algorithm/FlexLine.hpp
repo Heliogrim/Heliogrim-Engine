@@ -43,7 +43,7 @@ namespace hg::engine::reflow::algorithm {
         math::vec2 offset;
         math::vec2 size;
 
-        float flexFactor;
+        float flexFactor = 1.F;
 
         Vector<FlexLineItem> items;
     };
