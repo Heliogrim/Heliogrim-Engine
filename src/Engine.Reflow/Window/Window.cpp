@@ -82,7 +82,13 @@ non_owning_rptr<PopupLayer> Window::pushPopLayer(cref<sptr<Popup>> popup_) {
         )
     };
 
+    /**/
+
     _popupLayers.push_back(_STD move(layer));
+    _children.emplace_back(popup_);
+
+    /**/
+
     return _popupLayers.back().get();
 }
 
@@ -93,9 +99,27 @@ void Window::dropPopLayer(const non_owning_rptr<PopupLayer> layer_) {
     }
 
     if (layer_ == nullptr) {
+
+        const auto last = _STD move(_popupLayers.back());
         _popupLayers.pop_back();
+
+        _STD erase_if(
+            _children,
+            [key = last->getContent().get()](const auto& entry_) {
+                return entry_.get() == key;
+            }
+        );
         return;
     }
+
+    /**/
+
+    _STD erase_if(
+        _children,
+        [key = layer_->getContent().get()](const auto& entry_) {
+            return entry_.get() == key;
+        }
+    );
 
     const auto where {
         _STD ranges::remove(
@@ -144,6 +168,10 @@ void Window::render(const ptr<ReflowCommandBuffer> cmd_) {
     for (const auto& child : _children) {
         child->render(cmd_);
     }
+
+    for (const auto& layer : _popupLayers) {
+        layer->getContent()->render(cmd_);
+    }
 }
 
 math::vec2 Window::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
@@ -159,6 +187,14 @@ void Window::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
     // TODO: Implement
     for (const auto& child : *children()) {
 
+        const auto state = state_.getStateOf(child);
+        state->layoutOffset = ctx_.localOffset;
+        state->layoutSize = ctx_.localSize;
+    }
+
+    for (const auto& layer : _popupLayers) {
+
+        const auto child = layer->getContent();
         const auto state = state_.getStateOf(child);
         state->layoutOffset = ctx_.localOffset;
         state->layoutSize = ctx_.localSize;
