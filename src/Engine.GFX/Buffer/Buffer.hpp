@@ -40,14 +40,14 @@ namespace hg::engine::gfx {
         }
 
     public:
-        uptr<memory::AllocatedMemory> memory;
+        uptr<memory::AllocatedMemory> memory = nullptr;
 
     public:
-        vk::Buffer buffer;
-        vk::Device device;
+        vk::Buffer buffer = nullptr;
+        vk::Device device = nullptr;
         u64 size = 0;
 
-        vk::BufferUsageFlags usageFlags;
+        vk::BufferUsageFlags usageFlags = vk::BufferUsageFlags {};
 
         /**
          * Binds
@@ -149,12 +149,27 @@ namespace hg::engine::gfx {
     template <typename Ty>
     class TypeBuffer : public Buffer {
     public:
+        using this_type = TypeBuffer;
+
+    public:
         using value_type = TypeBuffer<Ty>;
         using reference_type = TypeBuffer<Ty>&;
         using const_reference_type = const TypeBuffer<Ty>&;
 
         [[nodiscard]] u32 count() const {
             return size / sizeof(Ty);
+        }
+
+    public:
+        ref<this_type> operator=(mref<this_type> other_) noexcept = default;
+
+        ref<this_type> operator=(mref<Buffer> other_) noexcept {
+
+            static_assert(sizeof(this_type) == sizeof(Buffer));
+            static_assert(alignof(this_type) == alignof(Buffer));
+
+            static_cast<ref<Buffer>>(*this) = _STD move(other_);
+            return *this;
         }
     };
 

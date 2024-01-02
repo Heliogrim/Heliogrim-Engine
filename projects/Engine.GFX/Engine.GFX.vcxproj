@@ -93,11 +93,13 @@
     <ClCompile Include="..\..\src\Engine.GFX\API\VkTranslate.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Application\Application.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\Buffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\BufferFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\StorageBufferView.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\UniformBufferView.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBufferPage.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBufferView.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\VkBufferFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\GlobalCacheCtrl.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\GlobalResourceCache.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\LocalCacheCtrl.cpp" />
@@ -167,6 +169,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\API\__vkFwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Application\Application.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\Buffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\BufferFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\BufferLikeObject.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\BufferObject.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\IndexBufferView.hpp" />
@@ -176,6 +179,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBufferPage.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBufferView.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\VkBufferFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\CacheCtrlSubject.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\CacheResult.hpp" />

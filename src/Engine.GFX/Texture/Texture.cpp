@@ -18,7 +18,7 @@ Texture::Texture(value_type&& other_) noexcept :
     _format(_STD exchange(other_._format, TextureFormat::eUndefined)),
     _mipLevels(_STD exchange(other_._mipLevels, 0)),
     _type(_STD exchange(other_._type, TextureType::eUndefined)),
-    _view(_STD exchange(other_._view, {})) { }
+    _view(_STD exchange(other_._view, {})) {}
 
 Texture::~Texture() noexcept {
     destroy();
@@ -64,18 +64,19 @@ hg::uptr<TextureView> Texture::makeView(math::uivec2 layers_, math::uExtent3D ex
         MIN(_mipLevels, mipLevels_.max)
     };
 
+    const auto maxLayer = layer();
     const math::uivec2 layers {
-        MAX(_extent.z, layers_.min),
-        MIN(_extent.z, layers_.max)
+        MAX(0uL, layers_.min),
+        MIN(maxLayer, layers_.max)
     };
 
     const math::uExtent3D extent {
         MIN(_extent.x - extent_.offsetX, extent_.width),
         MIN(_extent.y - extent_.offsetY, extent_.height),
-        MIN(/*_extent.z*/1 - extent_.offsetZ, extent_.depth),
+        MIN(_extent.z - extent_.offsetZ, extent_.depth),
         MIN(_extent.x, extent_.offsetX),
         MIN(_extent.y, extent_.offsetY),
-        MIN(/*_extent.z*/1, extent_.offsetZ)
+        MIN(_extent.z, extent_.offsetZ)
     };
 
     /**/

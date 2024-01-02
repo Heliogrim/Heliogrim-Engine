@@ -75,7 +75,8 @@ namespace hg::engine::gfx {
         /**
          * Extent
          */
-        math::uivec3 _extent;
+        math::uivec2 _extent;
+        u32 _layer;
 
     public:
         /**
@@ -84,9 +85,9 @@ namespace hg::engine::gfx {
          * @author Julius
          * @date 31.01.2021
          *
-         * @returns A cref&lt;math::uivec3&gt;
+         * @returns A cref&lt;math::uivec2&gt;
          */
-        [[nodiscard]] cref<math::uivec3> extent() const noexcept;
+        [[nodiscard]] cref<math::uivec2> extent() const noexcept;
 
         /**
          * Gets the width
@@ -108,6 +109,8 @@ namespace hg::engine::gfx {
          */
         [[nodiscard]] u32 height() const noexcept;
 
+        [[nodiscard]] u32 layer() const noexcept;
+
         /**
          * Sets an extent
          *
@@ -116,7 +119,9 @@ namespace hg::engine::gfx {
          *
          * @param  extent_ The extent.
          */
-        void setExtent(cref<math::uivec3> extent_) noexcept;
+        void setExtent(cref<math::uivec2> extent_) noexcept;
+
+        void setLayer(u32 layer_) noexcept;
 
     private:
         /**
