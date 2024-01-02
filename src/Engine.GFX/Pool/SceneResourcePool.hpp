@@ -5,8 +5,8 @@
 
 #include "InstancePooled.hpp"
 #include "../Device/Device.hpp"
-#include "Engine.GFX/Aabb.hpp"
-#include "Engine.GFX/Light/Light.hpp"
+#include "../Aabb.hpp"
+#include "../Light/Light.hpp"
 
 namespace hg::engine::gfx {
     class SceneResourcePool {
@@ -40,6 +40,12 @@ namespace hg::engine::gfx {
     public:
         InstancePooled<math::mat4> staticInstancePool;
         InstancePooled<Aabb3d> staticAabbPool;
+
+    private:
+    public:
+        GlslSceneLightInfo sceneLightInfo;
+
+        TypeBuffer<GlslSceneLightInfo> sceneLightInfoBuffer;
         InstancePooled<GlslLight> lightSourcePool;
     };
 }

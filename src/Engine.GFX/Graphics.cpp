@@ -18,6 +18,7 @@
 #include <Engine.Scheduler/Pipeline/CompositePipeline.hpp>
 
 #include "RenderTarget.hpp"
+#include "Buffer/VkBufferFactory.hpp"
 #include "Cache/GlobalCacheCtrl.hpp"
 #include "Cache/GlobalResourceCache.hpp"
 #include "Command/CommandBatch.hpp"
@@ -178,6 +179,7 @@ void Graphics::setup() {
     _pool = make_uptr<pool::GlobalResourcePool>(_device);
     _pool->setup();
 
+    VkBufferFactory::make(_device);
     VkTextureFactory::make(_device);
 
     /**
@@ -266,6 +268,7 @@ void Graphics::destroy() {
      *
      */
     TextureFactory::destroy();
+    BufferFactory::destroy();
     _cacheCtrl.reset();
 
     _pool->destroy();

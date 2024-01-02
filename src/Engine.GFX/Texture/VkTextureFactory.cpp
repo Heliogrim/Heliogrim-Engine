@@ -456,13 +456,23 @@ ptr<VirtualTexture> VkTextureFactory::buildVirtual(const VirtualTextureBuildPayl
     u32 simReqCount { 16ui32 };
     _STD array<vk::SparseImageMemoryRequirements, 16> simReqs {};
     _device->vkDevice().getImageSparseMemoryRequirements(image, &simReqCount, simReqs.data());
-
     assert(simReqCount);
+
+    vk::PhysicalDeviceImageFormatInfo2 pdif {
+        api::vkTranslateFormat(payload_.format),
+        vkTranslate(payload_.type),
+        vk::ImageTiling::eOptimal,
+        payload_.vkUsage, create
+    };
+    const auto queryDeviceSupport = _device->vkPhysicalDevice().getImageFormatProperties2(pdif);
+    assert(queryDeviceSupport.imageFormatProperties.maxMipLevels);
 
     // Select requested sparse image requirements
     const ptr<vk::SparseImageMemoryRequirements> simReq {
         &simReqs[0]
     };
+
+    assert(simReq->formatProperties.imageGranularity.width > 0);
 
     /**
      * Get suitable virtual memory instance

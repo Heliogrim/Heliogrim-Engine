@@ -16,6 +16,8 @@ namespace hg::engine::gfx {
         nmpt<VirtualMemoryPage> _memory;
 
     public:
+        [[nodiscard]] nmpt<VirtualMemoryPage> release() noexcept;
+
         [[nodiscard]] nmpt<VirtualMemoryPage> memory() const noexcept;
 
         [[nodiscard]] bool residential() const noexcept;

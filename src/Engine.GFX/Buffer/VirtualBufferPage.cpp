@@ -17,6 +17,10 @@ VirtualBufferPage::VirtualBufferPage(
 
 VirtualBufferPage::~VirtualBufferPage() = default;
 
+nmpt<VirtualMemoryPage> VirtualBufferPage::release() noexcept {
+    return _STD exchange(_memory, nullptr);
+}
+
 nmpt<VirtualMemoryPage> VirtualBufferPage::memory() const noexcept {
     return _memory;
 }

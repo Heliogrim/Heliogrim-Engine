@@ -522,6 +522,12 @@
     <ClInclude Include="..\..\src\Engine.GFX\Aabb.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\BufferFactory.hpp">
+      <Filter>Headerdateien\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\VkBufferFactory.hpp">
+      <Filter>Headerdateien\Buffer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp">
@@ -733,6 +739,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Pool\SceneResourcePool.cpp">
       <Filter>Quelldateien\Pool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\BufferFactory.cpp">
+      <Filter>Quelldateien\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\VkBufferFactory.cpp">
+      <Filter>Quelldateien\Buffer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

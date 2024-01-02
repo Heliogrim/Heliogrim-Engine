@@ -11,11 +11,11 @@ namespace hg::engine::gfx {
         using this_type = UniformBufferView;
 
     private:
-        nmpt<BufferLikeObject> _blo;
+        nmpt<const BufferLikeObject> _blo;
 
     public:
-        [[nodiscard]] nmpt<BufferLikeObject> object() const noexcept;
+        [[nodiscard]] nmpt<const BufferLikeObject> object() const noexcept;
 
-        void storeBuffer(mref<nmpt<BufferLikeObject>> object_) noexcept;
+        void storeBuffer(mref<nmpt<const BufferLikeObject>> object_) noexcept;
     };
 }

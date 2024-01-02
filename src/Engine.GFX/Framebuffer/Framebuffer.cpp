@@ -14,14 +14,20 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 Framebuffer::Framebuffer(cref<sptr<Device>> device_) :
-    _device(device_) { }
+    _attachments(),
+    _extent(),
+    _layer(1uL),
+    _device(device_),
+    _renderPass(nullptr),
+    _vkFramebuffer(nullptr) {}
 
 Framebuffer::Framebuffer(mref<Framebuffer> other_) noexcept :
     _attachments(_STD move(other_._attachments)),
-    _extent(_STD exchange(other_._extent, math::uivec3 {})),
+    _extent(_STD exchange(other_._extent, math::uivec2 {})),
+    _layer(_STD exchange(other_._layer, 0uL)),
     _device(_STD move(other_._device)),
     _renderPass(_STD move(other_._renderPass)),
-    _vkFramebuffer(_STD exchange(other_._vkFramebuffer, nullptr)) { }
+    _vkFramebuffer(_STD exchange(other_._vkFramebuffer, nullptr)) {}
 
 Framebuffer::~Framebuffer() noexcept {
     if (_vkFramebuffer) {
@@ -82,7 +88,7 @@ void Framebuffer::setup() {
         attachments.data(),
         _extent.x,
         _extent.y,
-        _extent.z/* TODO: MIN(attachments.size(), _extent.z) */
+        _layer
     };
 
     /**
@@ -99,7 +105,7 @@ cref<Vector<smr<TextureLikeObject>>> Framebuffer::attachments() const noexcept {
     return _attachments;
 }
 
-cref<math::uivec3> Framebuffer::extent() const noexcept {
+cref<math::uivec2> Framebuffer::extent() const noexcept {
     return _extent;
 }
 
@@ -111,8 +117,16 @@ u32 Framebuffer::height() const noexcept {
     return _extent.y;
 }
 
-void Framebuffer::setExtent(cref<math::uivec3> extent_) noexcept {
+u32 Framebuffer::layer() const noexcept {
+    return _layer;
+}
+
+void Framebuffer::setExtent(cref<math::uivec2> extent_) noexcept {
     _extent = extent_;
+}
+
+void Framebuffer::setLayer(const u32 layer_) noexcept {
+    _layer = layer_;
 }
 
 cref<sptr<Device>> Framebuffer::device() const noexcept {

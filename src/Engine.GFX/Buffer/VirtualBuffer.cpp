@@ -79,9 +79,8 @@ void VirtualBuffer::tidy() {
      * Cleanup Pages
      */
     for (auto& entry : _pages) {
-        // Unhook paged memory
-        _memory->undefinePage(entry->memory());
-
+        /* Memory Pages are getting freed by follow-up memory destructor */
+        entry->release();
         delete entry;
         entry = nullptr;
     }

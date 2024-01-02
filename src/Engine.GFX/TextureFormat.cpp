@@ -47,6 +47,9 @@ s64 engine::gfx::formatDataSize(const TextureFormat format_) noexcept {
         case TextureFormat::eR16Sfloat: {
             return 2i64;
         }
+        case TextureFormat::eR8G8B8Unorm: {
+            return 3L;
+        }
         case TextureFormat::eR32Uint:
         case TextureFormat::eR32Sfloat:
         case TextureFormat::eR16G16Uint:

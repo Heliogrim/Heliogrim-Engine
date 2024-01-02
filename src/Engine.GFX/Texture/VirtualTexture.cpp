@@ -75,20 +75,16 @@ void VirtualTexture::tidy() {
      * Delete every virtual texture page and implicitly pages virtual memory before backing memory
      */
     for (auto& page : _pages) {
-
-        // Unhook paged memory
-        _memory->undefinePage(page->release());
-
+        /* Memory Pages are getting freed by follow-up memory destructor */
+        page->release();
         page.reset();
     }
 
     _pages.clear();
 
     for (auto&& page : _opaquePages) {
-
-        // Unhook paged memory
-        _memory->undefinePage(page->release());
-
+        /* Memory Pages are getting freed by follow-up memory destructor */
+        page->release();
         page.reset();
     }
 
@@ -139,6 +135,7 @@ nmpt<VirtualTexturePage> VirtualTexture::makePage(
 
     assert(
         _format == TextureFormat::eR8Unorm ||
+        _format == TextureFormat::eR8G8B8Unorm ||
         _format == TextureFormat::eR8G8B8A8Unorm ||
         _format == TextureFormat::eR8G8B8A8Srgb ||
         _format == TextureFormat::eR16G16B16A16Sfloat ||
