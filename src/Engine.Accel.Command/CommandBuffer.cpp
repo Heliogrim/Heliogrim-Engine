@@ -34,19 +34,31 @@ void AccelCommandBuffer::bindRenderPass(mref<BindRenderPassStruct> bindRenderPas
 
     const auto& graphicsPass = static_cast<cref<VkGraphicsPass>>(bindRenderPass_.graphicsPass);
 
-    Vector<vk::ClearValue> clearValues {};
-    clearValues.reserve(graphicsPass._references.size());
+    /**/
 
-    for (const auto& reference : graphicsPass._references) {
-        if (
-            reference.layout == vk::ImageLayout::eDepthAttachmentOptimal ||
-            reference.layout == vk::ImageLayout::eDepthStencilAttachmentOptimal
-        ) {
-            clearValues.push_back(vk::ClearDepthStencilValue { 1.F, 0uL });
-        } else {
-            clearValues.push_back(vk::ClearColorValue { 0.F, 0.F, 0.F, 1.F });
+    ptr<const Vector<vk::ClearValue>> clearValues = &bindRenderPass_.clearValues;
+
+    Vector<vk::ClearValue> tmpClearValues {};
+    if (bindRenderPass_.clearValues.empty()) {
+
+        tmpClearValues.reserve(graphicsPass._references.size());
+        clearValues = &tmpClearValues;
+
+        for (const auto& reference : graphicsPass._references) {
+            if (
+                reference.layout == vk::ImageLayout::eDepthAttachmentOptimal ||
+                reference.layout == vk::ImageLayout::eDepthStencilAttachmentOptimal
+            ) {
+                tmpClearValues.emplace_back(vk::ClearDepthStencilValue { 1.F, 0uL });
+            } else {
+                tmpClearValues.emplace_back(vk::ClearColorValue { 0.F, 0.F, 0.F, 1.F });
+            }
         }
     }
+
+    assert(clearValues->size() == graphicsPass._references.size());
+
+    /**/
 
     auto renderArea = vk::Rect2D {
         vk::Offset2D {}, vk::Extent2D { bindRenderPass_.framebuffer.width(), bindRenderPass_.framebuffer.height() }
@@ -55,8 +67,8 @@ void AccelCommandBuffer::bindRenderPass(mref<BindRenderPassStruct> bindRenderPas
         reinterpret_cast<VkRenderPass>(graphicsPass._vkGraphicsPass),
         bindRenderPass_.framebuffer.vkFramebuffer(),
         renderArea,
-        static_cast<u32>(clearValues.size()),
-        clearValues.data()
+        static_cast<u32>(clearValues->size()),
+        clearValues->data()
     };
 
     _vkCmd.beginRenderPass(rpbi, vk::SubpassContents::eInline);
