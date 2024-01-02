@@ -290,7 +290,7 @@ namespace hg {
 
     public:
         constexpr MemoryPointer() noexcept :
-            storage() { }
+            storage() {}
 
         template <typename Tx_ = Ty_> requires
             _STD is_nothrow_convertible_v<Tx_*, Ty_*>
@@ -442,7 +442,7 @@ namespace hg {
 
     public:
         constexpr NonOwningMemoryPointer() noexcept :
-            storage() { }
+            storage() {}
 
         constexpr NonOwningMemoryPointer(nullptr_t) noexcept :
             storage(nullptr) {}
@@ -574,7 +574,7 @@ namespace hg {
             return storage.template load<Ty_>() == nullptr;
         }
 
-        [[nodiscard]] constexpr operator bool() const noexcept {
+        [[nodiscard]] explicit constexpr operator bool() const noexcept {
             return storage.template load<Ty_>() != nullptr;
         }
 
@@ -587,6 +587,14 @@ namespace hg {
             return storage.template load<Ty_>() != nullptr;
         }
 
+        [[nodiscard]] constexpr bool operator==(cref<this_type> other_) const noexcept {
+            return storage.template load<Ty_>() == other_.storage.template load<Ty_>();
+        }
+
+        [[nodiscard]] constexpr bool operator!=(cref<this_type> other_) const noexcept {
+            return storage.template load<Ty_>() != other_.storage.template load<Ty_>();
+        }
+
     public:
         storage_type storage;
     };
@@ -597,8 +605,10 @@ namespace std {
     struct hash<::hg::NonOwningMemoryPointer<Type_>> :
         public ::std::hash<typename ::hg::NonOwningMemoryPointer<Type_>::storage_type::mem_type> {
         [[nodiscard]] size_t operator()(const ::hg::NonOwningMemoryPointer<Type_>& value_) const noexcept {
-            return static_cast<const _STD hash<typename::hg::NonOwningMemoryPointer<Type_>::storage_type::mem_type>&>(*
-                this)(value_.get());
+            return static_cast<
+                const _STD hash<typename::hg::NonOwningMemoryPointer<Type_>::storage_type::mem_type>&>(*this)(
+                value_.get()
+            );
         }
     };
 }
