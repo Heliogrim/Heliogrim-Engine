@@ -15,7 +15,7 @@ namespace hg::driver::vk {
         using base_type = engine::render::cmd::RenderCommandTranslator;
 
     public:
-        [[nodiscard]] ptr<VkNativeBatch> operator()(
+        [[nodiscard]] uptr<engine::render::cmd::NativeBatch> operator()(
             const ptr<const engine::render::cmd::RenderCommandBuffer> commands_
         ) noexcept override;
 
