@@ -24,6 +24,18 @@
     <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\SceneModel.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\LightModel.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\DirectionalLightModel.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\SpotLightModel.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\PointLightModel.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\GeometryModel.cpp">
@@ -33,6 +45,18 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\StaticGeometryModel.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\LightModel.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\SpotLightModel.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\PointLightModel.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\DirectionalLightModel.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
