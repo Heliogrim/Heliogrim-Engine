@@ -2,12 +2,15 @@
 #include <regex>
 #include <sstream>
 #include <Engine.Assets/AssetFactory.hpp>
+#include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Serialization/Archive/Archive.hpp>
 #include <Engine.Serialization/Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Logging/Logger.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "ModelImporter.hpp"
 #include "../API/VkTranslate.hpp"
@@ -45,9 +48,9 @@ static FbxImporter::import_result_type makeImportResult(mref<FbxImporter::import
     return result;
 }
 
-FbxImporter::FbxImporter() { }
+FbxImporter::FbxImporter() {}
 
-FbxImporter::~FbxImporter() { }
+FbxImporter::~FbxImporter() {}
 
 bool FbxImporter::canImport(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const noexcept {
 
@@ -105,17 +108,18 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
 
-    _STD filesystem::create_directories(storePath.parent_path());
-    _STD filesystem::copy(sourcePath, storePath);
-
-    /**/
-
     const auto data = assimpGetImportData(file_);
     if (data.indexCount == 0 && data.vertexCount == 0) {
         return makeImportResult({ nullptr });
     }
 
     const auto srcPath = _STD filesystem::relative(storePath, rootCwd);
+
+    /**/
+
+    IM_CORE_LOGF("Copying file to {:}", storePath.string());
+    _STD filesystem::create_directories(storePath.parent_path());
+    _STD filesystem::copy(sourcePath, storePath);
 
     /**/
 
@@ -136,6 +140,12 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 
     auto* geom = static_cast<ptr<StaticGeometry>>(asset);
     geom->setAssetName(sourceName);
+
+    IM_CORE_LOGF(
+        "Created new static geometry asset `{}` -> `{}`",
+        asset->getAssetName(),
+        encodeGuid4228(asset->get_guid())
+    );
 
     /**/
 
@@ -173,13 +183,15 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
     /**/
 
     linker->store(
-        resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, _STD move(archGuid) },
+        resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, clone(archGuid) },
         _STD move(memBuffer)
     );
 
     /**/
 
     package->unsafeWrite();
+
+    IM_CORE_LOGF("Wrote new package file with archive `{}` for asset.", encodeGuid4228(archGuid));
 
     /**/
 
