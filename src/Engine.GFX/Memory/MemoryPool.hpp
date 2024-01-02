@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Set.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
@@ -32,7 +33,7 @@ namespace hg::engine::gfx::memory {
         [[nodiscard]] cref<MemoryLayout> layout() const noexcept;
 
     private:
-        CompactSet<uptr<AllocatedMemory>> _pooling;
+        DenseMap<ptr<AllocatedMemory>, uptr<AllocatedMemory>> _pooling;
         Vector<uptr<AllocatedMemory>> _memory;
 
         u64 _totalMemory;
@@ -54,13 +55,25 @@ namespace hg::engine::gfx::memory {
         void push(mref<uptr<AllocatedMemory>> memory_);
 
     private:
+        [[nodiscard]] bool treeMerge(
+            cref<decltype(_memory)::iterator> begin_,
+            cref<decltype(_memory)::iterator> end_,
+            _Inout_ ref<uptr<AllocatedMemory>> memory_
+        );
+
         void treeSplice(mref<uptr<AllocatedMemory>> memory_, const u64 targetSize_);
+
+        void storeSubAllocate(mref<uptr<AllocatedMemory>> memory_);
+
+        void releaseSubAllocation(cref<uptr<AllocatedMemory>> memory_) const;
 
         [[nodiscard]] AllocationResult allocate(
             const u64 size_,
             const bool bestFit_,
             _Out_ ref<uptr<AllocatedMemory>> dst_
         );
+
+        bool free(mref<uptr<AllocatedMemory>> mem_, bool cascade_);
 
     public:
         [[nodiscard]] AllocationResult allocate(const u64 size_, _Out_ ref<uptr<AllocatedMemory>> dst_);
