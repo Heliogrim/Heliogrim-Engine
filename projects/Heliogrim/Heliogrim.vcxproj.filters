@@ -204,6 +204,21 @@
     <ClInclude Include="..\..\src\Heliogrim\GfxMatProtoAsset.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Heliogrim\Components\DirectionalLightComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Heliogrim\Components\SpotLightComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Heliogrim\Components\PointLightComponent.hpp">
+      <Filter>Headerdateien\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Heliogrim\Actors\PointLightActor.hpp">
+      <Filter>Headerdateien\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Heliogrim\Actors\DirectionalLightActor.hpp">
+      <Filter>Headerdateien\Actors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Heliogrim\AudioFormat.cpp">
@@ -331,6 +346,24 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Heliogrim\GfxMatProtoAsset.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Heliogrim\Components\PointLightComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Heliogrim\Components\SpotLightComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Heliogrim\Components\DirectionalLightComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Heliogrim\Components\LightComponent.cpp">
+      <Filter>Quelldateien\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Heliogrim\Actors\PointLightActor.cpp">
+      <Filter>Quelldateien\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Heliogrim\Actors\DirectionalLightActor.cpp">
+      <Filter>Quelldateien\Actors</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

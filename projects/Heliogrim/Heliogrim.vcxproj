@@ -19,6 +19,8 @@
     <ClInclude Include="..\..\src\Heliogrim\ActorComponent.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\ActorInitializer.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\Actors\CameraActor.hpp" />
+    <ClInclude Include="..\..\src\Heliogrim\Actors\DirectionalLightActor.hpp" />
+    <ClInclude Include="..\..\src\Heliogrim\Actors\PointLightActor.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\CachedActorPointer.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\Asset.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\AssetAutoGuid.hpp" />
@@ -27,6 +29,9 @@
     <ClInclude Include="..\..\src\Heliogrim\AudioFormat.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\CollisionComponent.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\Components\CameraComponent.hpp" />
+    <ClInclude Include="..\..\src\Heliogrim\Components\DirectionalLightComponent.hpp" />
+    <ClInclude Include="..\..\src\Heliogrim\Components\PointLightComponent.hpp" />
+    <ClInclude Include="..\..\src\Heliogrim\Components\SpotLightComponent.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\GfxMatProtoAsset.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\HeliogrimStatic.hpp" />
     <ClInclude Include="..\..\src\Heliogrim\FontAsset.hpp" />
@@ -75,10 +80,16 @@
     <ClCompile Include="..\..\src\Heliogrim\ActorComponent.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\ActorInitializer.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\Actors\CameraActor.cpp" />
+    <ClCompile Include="..\..\src\Heliogrim\Actors\DirectionalLightActor.cpp" />
+    <ClCompile Include="..\..\src\Heliogrim\Actors\PointLightActor.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\Asset.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\AssetDatabase.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\AudioFormat.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\Components\CameraComponent.cpp" />
+    <ClCompile Include="..\..\src\Heliogrim\Components\DirectionalLightComponent.cpp" />
+    <ClCompile Include="..\..\src\Heliogrim\Components\LightComponent.cpp" />
+    <ClCompile Include="..\..\src\Heliogrim\Components\PointLightComponent.cpp" />
+    <ClCompile Include="..\..\src\Heliogrim\Components\SpotLightComponent.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\GfxMatProtoAsset.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\Heliogrim.cpp" />
     <ClCompile Include="..\..\src\Heliogrim\FontAsset.cpp" />
