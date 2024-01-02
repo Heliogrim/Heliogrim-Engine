@@ -7,5 +7,10 @@ namespace hg::engine::accel {
         cref<GraphicsPass> graphicsPass;
         cref<gfx::Framebuffer> framebuffer;
         bool subrecording = false;
+
+        /**/
+
+        // TODO: Rework
+        cref<Vector<vk::ClearValue>> clearValues {};
     };
 }
