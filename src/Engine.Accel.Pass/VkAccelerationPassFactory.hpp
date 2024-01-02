@@ -22,6 +22,14 @@ namespace hg::engine::accel {
             cref<Vector<smr<const render::graph::Symbol>>> inputSymbols_
         ) const noexcept override;
 
+        [[nodiscard]] tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> buildGraphicsPass(
+            cref<Vector<smr<const render::graph::Symbol>>> outputSymbols_,
+            cref<Vector<smr<const render::graph::Symbol>>> inputSymbols_,
+            mref<Vector<vk::SubpassDependency>> subpassDependencies_,
+            u32 viewMask_,
+            u32 correlationMask_
+        ) const noexcept override;
+
         [[nodiscard]] tl::expected<smr<const RaytracingPass>, AccelerationPassFactoryError> buildRaytracingPass(
             mref<smr<const RaytracingPipeline>> pipeline_
         ) const noexcept override;
