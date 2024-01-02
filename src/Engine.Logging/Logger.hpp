@@ -33,7 +33,7 @@ namespace hg {
         static void destroy();
 
     public:
-        static void log(LogLevel level_, mref<string> msg_);
+        static void log(LogLevel level_, mref<string> msg_, bool flush_ = false);
 
     public:
         static void debug(mref<string> msg_);
