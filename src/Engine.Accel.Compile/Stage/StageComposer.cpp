@@ -62,129 +62,133 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 
     /**/
 
+    BindLayout layout {};
     Vector<nmpt<const lang::Symbol>> symbols {};
+
     for (const auto& derivat : derivats) {
+
+        symbols.clear();
         derivat->getIntermediate()->enumerateInboundSymbols(symbols);
         derivat->getIntermediate()->enumerateOutboundSymbols(symbols);
-    }
-
-    /**/
-
-    BindLayout layout {};
-    for (const auto& symbol : symbols) {
-
-        BindElement element {
-            symbol
-        };
 
         /**/
 
-        const auto storeType = [](ref<BindElement> dst_) {
+        for (const auto& symbol : symbols) {
 
-            const auto var = dst_.symbol->var.data;
-            const auto type = dst_.symbol->var.data->type;
+            BindElement element {
+                symbol
+            };
 
-            if (type.category == lang::TypeCategory::eTexture) {
+            /**/
 
-                var->annotation;
-                dst_.type = BindType::eTexture;
+            const auto storeType = [](ref<BindElement> dst_) {
 
-                return true;
+                const auto var = dst_.symbol->var.data;
+                const auto type = dst_.symbol->var.data->type;
 
-            } else if (type.category == lang::TypeCategory::eObject) {
+                if (type.category == lang::TypeCategory::eTexture) {
 
-                auto annotation = var->annotation.get();
-                while (annotation != nullptr) {
-                    if (
-                        annotation->type == lang::AnnotationType::eStorage ||
-                        annotation->type == lang::AnnotationType::eUniform
-                    ) {
-                        break;
-                    }
-                    annotation = annotation->next.get();
-                }
+                    var->annotation;
+                    dst_.type = BindType::eTexture;
 
-                if (annotation != nullptr && annotation->type == lang::AnnotationType::eStorage) {
-                    dst_.type = BindType::eStorageBuffer;
-                } else {
-                    dst_.type = BindType::eUniformBuffer;
-                }
-                return true;
-            }
-            // TODO: Handle Constants
-            return false;
-        };
-
-        /**/
-
-        assert(symbol->var.type == lang::SymbolType::eVariableSymbol);
-        assert(symbol->var.data->annotation);
-
-        bool hasExternalLinkage = false;
-
-        auto* annotation = symbol->var.data->annotation.get();
-        while (annotation != nullptr) {
-            if (annotation->type == lang::AnnotationType::eExternalLinkage) {
-                hasExternalLinkage = true;
-                break;
-            }
-            annotation = annotation->next.get();
-        }
-
-        /**/
-
-        if (not hasExternalLinkage) {
-            continue;
-        }
-
-        const auto isPushConstant = [](cref<BindElement> el_) -> bool {
-
-            const auto var = el_.symbol->var.data;
-            auto annotation = var->annotation.get();
-            while (annotation != nullptr) {
-                if (annotation->type == lang::AnnotationType::eConstant) {
                     return true;
+
+                } else if (type.category == lang::TypeCategory::eObject) {
+
+                    auto annotation = var->annotation.get();
+                    while (annotation != nullptr) {
+                        if (
+                            annotation->type == lang::AnnotationType::eStorage ||
+                            annotation->type == lang::AnnotationType::eUniform
+                        ) {
+                            break;
+                        }
+                        annotation = annotation->next.get();
+                    }
+
+                    if (annotation != nullptr && annotation->type == lang::AnnotationType::eStorage) {
+                        dst_.type = BindType::eStorageBuffer;
+                    } else {
+                        dst_.type = BindType::eUniformBuffer;
+                    }
+                    return true;
+                }
+                // TODO: Handle Constants
+                return false;
+            };
+
+            /**/
+
+            assert(symbol->var.type == lang::SymbolType::eVariableSymbol);
+            assert(symbol->var.data->annotation);
+
+            bool hasExternalLinkage = false;
+
+            auto* annotation = symbol->var.data->annotation.get();
+            while (annotation != nullptr) {
+                if (annotation->type == lang::AnnotationType::eExternalLinkage) {
+                    hasExternalLinkage = true;
+                    break;
                 }
                 annotation = annotation->next.get();
             }
 
-            return false;
-        };
+            /**/
 
-        if (isPushConstant(element)) {
-
-            u32 offset = 0uL;
-            if (not layout.constants.empty()) {
-                offset = layout.constants.back().offset + layout.constants.back().size;
+            if (not hasExternalLinkage) {
+                continue;
             }
 
-            layout.constants.emplace_back(
-                offset,
-                /* sizeof(...) */
-                static_cast<u32>(sizeof(float)) * 2uL * 2uL
-            );
-            continue;
-        }
+            const auto isPushConstant = [](cref<BindElement> el_) -> bool {
 
-        /**/
+                const auto var = el_.symbol->var.data;
+                auto annotation = var->annotation.get();
+                while (annotation != nullptr) {
+                    if (annotation->type == lang::AnnotationType::eConstant) {
+                        return true;
+                    }
+                    annotation = annotation->next.get();
+                }
 
-        storeType(element);
+                return false;
+            };
 
-        /**/
+            if (isPushConstant(element)) {
 
-        bool grouped = false;
-        for (auto& candidate : layout.groups) {
-            if (/* candidate.compatible(element) */false) {
-                candidate.elements.push_back(_STD move(element));
-                grouped = true;
-                break;
+                u32 offset = 0uL;
+                if (not layout.constants.empty()) {
+                    offset = layout.constants.back().offset + layout.constants.back().size;
+                }
+
+                layout.constants.emplace_back(
+                    derivat->getFlagBits(),
+                    offset,
+                    /* sizeof(...) */
+                    static_cast<u32>(sizeof(float)) * 2uL * 2uL
+                );
+                continue;
             }
-        }
 
-        if (not grouped) {
-            auto group = BindGroup {};
-            group.elements.push_back(_STD move(element));
-            layout.groups.push_back(_STD move(group));
+            /**/
+
+            storeType(element);
+
+            /**/
+
+            bool grouped = false;
+            for (auto& candidate : layout.groups) {
+                if (/* candidate.compatible(element) */false) {
+                    candidate.elements.push_back(_STD move(element));
+                    grouped = true;
+                    break;
+                }
+            }
+
+            if (not grouped) {
+                auto group = BindGroup {};
+                group.elements.push_back(_STD move(element));
+                layout.groups.push_back(_STD move(group));
+            }
         }
     }
 

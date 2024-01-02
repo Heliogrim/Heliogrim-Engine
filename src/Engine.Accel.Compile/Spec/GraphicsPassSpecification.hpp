@@ -31,6 +31,10 @@ namespace hg::engine::accel {
 
         PrimitiveTopology primitiveTopology;
 
+        FaceCulling faceCulling = FaceCulling::eNone;
+        FaceMode faceMode = FaceMode::eFill;
+        FaceWinding faceWinding = FaceWinding::eCcw;
+
         /**/
 
         // TODO: Remove, because this is just vk requirement

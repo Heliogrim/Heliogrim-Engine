@@ -53,13 +53,15 @@ void AccelerationEffect::enumerateImportSymbols(ref<Vector<StageInput>> imports_
                 }
             );
 
-            tmpBeg = result.begin();
-            tmpEnd = result.end();
+            tmpBeg = tmpIn.begin();
+            tmpEnd = result.begin();
         }
+
+        tmpIn.erase(tmpEnd, tmpIn.end());
 
         /**/
 
-        imports_.insert(imports_.end(), tmpBeg, tmpEnd);
+        imports_.insert_range(imports_.end(), tmpIn);
         tmpIn.clear();
         tmpOut.clear();
 

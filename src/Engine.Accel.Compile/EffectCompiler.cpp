@@ -43,7 +43,11 @@ EffectCompileResult EffectCompiler::compile(
         request_.effect->enumerateExportSymbols(exports);
 
         for (const auto& requested : request_.spec->targetSymbols()) {
-            assert(_STD ranges::contains(exports, requested, [](const auto& stageOut_){ return stageOut_.symbol; }));
+            assert(
+                _STD ranges::contains(exports, requested.get(), [](cref<StageOutput> stageOut_){
+                    return stageOut_.symbol.get();
+                    })
+            );
         }
     }
 
