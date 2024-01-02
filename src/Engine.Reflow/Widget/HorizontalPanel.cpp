@@ -111,6 +111,10 @@ math::vec2 HorizontalPanel::prefetchDesiredSize(cref<ReflowState> state_, float 
 
     for (const auto& child : *children()) {
 
+        if (child->position() == ReflowPosition::eAbsolute) {
+            continue;
+        }
+
         const auto* const childState = state_.getStateOf(child);
 
         childAggregate += child->getDesiredSize();
@@ -215,4 +219,24 @@ void HorizontalPanel::applyLayout(ref<ReflowState> state_, mref<LayoutContext> c
             widgetState->layoutSize -= maxDiff;
         }
     }
+
+    /**/
+
+    // Warning: Hotfix
+    for (const auto& child : _children) {
+        if (child->position() == ReflowPosition::eAbsolute) {
+
+            const auto widgetState = state_.getStateOf(child);
+            widgetState->layoutOffset = ctx_.localOffset;
+            widgetState->layoutSize = widgetState->cachedPreservedSize;
+        }
+    }
+}
+
+float HorizontalPanel::shrinkFactor() const noexcept {
+    return attr.flexShrink.getValue();
+}
+
+float HorizontalPanel::growFactor() const noexcept {
+    return attr.flexGrow.getValue();
 }

@@ -295,7 +295,7 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
 
             rtf.setLocation(
                 math::Location(
-                    rtf.location().operator math::fvec3() + rlwd.normalize() * factor
+                    rtf.location().fvec3() + rlwd.normalize() * factor
                 )
             );
             break;
@@ -309,7 +309,7 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
 
             rtf.setLocation(
                 math::Location(
-                    rtf.location().operator math::fvec3() + rrwd.normalize() * factor
+                    rtf.location().fvec3() + rrwd.normalize() * factor
                 )
             );
             break;
@@ -326,7 +326,7 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
 
             rtf.setLocation(
                 math::Location(
-                    rtf.location().operator math::fvec3() + rbwd.normalize() * factor
+                    rtf.location().fvec3() + rbwd.normalize() * factor
                 )
             );
             break;
@@ -343,7 +343,7 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
 
             rtf.setLocation(
                 math::Location(
-                    rtf.location().operator math::fvec3() + rfwd.normalize() * factor
+                    rtf.location().fvec3() + rfwd.normalize() * factor
                 )
             );
             break;
@@ -355,7 +355,7 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
 
             tf.setLocation(
                 math::Location(
-                    tf.location().operator math::fvec3() + math::vec3_down * factor
+                    tf.location().fvec3() + math::vec3_down * factor
                 )
             );
             break;
@@ -368,7 +368,7 @@ EventResponse Viewport::onKeyDown(cref<KeyboardEvent> event_) {
 
             tf.setLocation(
                 math::Location(
-                    tf.location().operator math::fvec3() + math::vec3_up * factor
+                    tf.location().fvec3() + math::vec3_up * factor
                 )
             );
             break;

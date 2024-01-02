@@ -52,7 +52,7 @@ math::vec2 Form::prefetchDesiredSize(cref<ReflowState> state_, float scale_) con
 }
 
 math::vec2 Form::computeDesiredSize(cref<ReflowPassState> passState_) const {
-    return _children.getChild()->getDesiredSize();
+    return _children.getChild()->computeDesiredSize(passState_);
 }
 
 void Form::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
