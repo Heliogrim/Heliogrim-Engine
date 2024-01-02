@@ -80,7 +80,7 @@ math::vec2 InputIntegral::prefetchDesiredSize(cref<ReflowState> state_, float sc
 }
 
 math::vec2 InputIntegral::computeDesiredSize(cref<ReflowPassState> passState_) const {
-    return _children.getChild()->getDesiredSize();
+    return _children.getChild()->computeDesiredSize(passState_);
 }
 
 void InputIntegral::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {

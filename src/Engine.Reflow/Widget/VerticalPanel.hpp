@@ -69,5 +69,10 @@ namespace hg::engine::reflow {
         math::vec2 computeDesiredSize(cref<ReflowPassState> passState_) const override;
 
         void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override;
+
+    public:
+        [[nodiscard]] float shrinkFactor() const noexcept override;
+
+        [[nodiscard]] float growFactor() const noexcept override;
     };
 }

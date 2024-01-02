@@ -118,7 +118,7 @@ math::vec2 InputFloat::prefetchDesiredSize(cref<ReflowState> state_, float scale
 }
 
 math::vec2 InputFloat::computeDesiredSize(cref<ReflowPassState> passState_) const {
-    return _children.getChild()->getDesiredSize();
+    return _children.getChild()->computeDesiredSize(passState_);
 }
 
 void InputFloat::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
@@ -155,10 +155,10 @@ EventResponse InputFloat::onKeyDown(cref<KeyboardEvent> event_) {
     }
 
     if (
-        not (event_._key >= 0x30 && event_._key <= 0x39) &&
-        not (event_._key >= 0x2C && event_._key <= 0x2E) &&
-        not (event_._key != '-') &&
-        not (event_._key == '\b' || event_._key == '\r' || event_._key == '\x1B')
+        not(event_._key >= 0x30 && event_._key <= 0x39) &&
+        not(event_._key >= 0x2C && event_._key <= 0x2E) &&
+        not(event_._key != '-') &&
+        not(event_._key == '\b' || event_._key == '\r' || event_._key == '\x1B')
     ) {
         return EventResponse::eConsumed;
     }

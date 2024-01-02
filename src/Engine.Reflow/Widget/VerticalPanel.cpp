@@ -218,3 +218,11 @@ void VerticalPanel::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx
         }
     }
 }
+
+float VerticalPanel::shrinkFactor() const noexcept {
+    return attr.flexShrink.getValue();
+}
+
+float VerticalPanel::growFactor() const noexcept {
+    return attr.flexGrow.getValue();
+}

@@ -202,7 +202,7 @@ EventResponse VScrollBox::onWheel(cref<WheelEvent> event_) {
     const auto diff { event_._value * (/* _overflow /  */scrollInvSpeed) };
     const auto normalized { diff / _overflow };
 
-    _scrollValue += normalized;
+    _scrollValue -= normalized;
     _scrollValue.x = math::clamp(_scrollValue.x, 0.F, 1.F);
     _scrollValue.y = math::clamp(_scrollValue.y, 0.F, 1.F);
 
