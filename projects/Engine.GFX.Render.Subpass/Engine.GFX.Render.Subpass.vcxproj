@@ -23,6 +23,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfIrradPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfLutPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfPrefPass.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpDirectionalShadowPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpEndPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TriTestPass.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\Visualize.cpp" />
@@ -37,6 +38,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfIrradPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfLutPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfPrefPass.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpDirectionalShadowPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpEndPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TriTestPass.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\Visualize.hpp" />

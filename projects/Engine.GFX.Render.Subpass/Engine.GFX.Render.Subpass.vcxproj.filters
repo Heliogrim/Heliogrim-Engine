@@ -63,6 +63,9 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfPrefPass.cpp">
       <Filter>Quelldateien\Impl</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpDirectionalShadowPass.cpp">
+      <Filter>Quelldateien\Impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\SubPass.hpp">
@@ -114,6 +117,9 @@
       <Filter>Headerdateien\Impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpBrdfIrradPass.hpp">
+      <Filter>Headerdateien\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Subpass\Impl\TmpDirectionalShadowPass.hpp">
       <Filter>Headerdateien\Impl</Filter>
     </ClInclude>
   </ItemGroup>

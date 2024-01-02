@@ -18,7 +18,7 @@ namespace hg::engine::render {
     public:
         using this_type = LightSubPass;
 
-        using model_type = LightModel;
+        using model_type = gfx::LightModel;
         using capture_type = LightCaptureInterface;
 
     public:

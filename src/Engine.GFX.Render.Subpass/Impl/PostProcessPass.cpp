@@ -305,7 +305,8 @@ void PostProcessPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
     /**/
 
     auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
-    auto batch = (*translator)(&cmd);
+    auto nativeBatch = (*translator)(&cmd);
+    const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
 
     {
         batch->_tmpWaits.insert_range(
@@ -321,8 +322,8 @@ void PostProcessPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
         sceneColorRes->barriers.emplace_back(_tmpSignal.operator VkSemaphore());
     }
 
-    batch->commitAndDispose();
-    delete batch;
+    nativeBatch->commitAndDispose();
+    nativeBatch.reset();
 }
 
 /**/
@@ -424,6 +425,9 @@ EffectCompileResult build_test_pipeline(
             0uL,
             0uL,
             PrimitiveTopology::eTriangleList,
+            FaceCulling::eNone,
+            FaceMode::eFill,
+            FaceWinding::eCcw,
             pass_.get()
         )
     );

@@ -19,22 +19,32 @@ namespace hg::engine::render {
     class MatTestPass :
         public MeshSubPass {
     private:
-        gfx::material::MaterialEffect _materialEffect;
+        struct Payload {
+            gfx::material::MaterialEffect effect;
+            accel::EffectCompileResult compiled;
+            Vector<smr<engine::gfx::MaterialResource>> materials;
+            Vector<ptr<gfx::scene::StaticGeometryModel>> models;
+        };
 
-        Vector<smr<gfx::MaterialResource>> _materials;
-        Vector<ptr<gfx::scene::StaticGeometryModel>> _instances;
+        DenseMap<smr<const accel::AccelerationEffect>, Payload> _batches;
 
         smr<const accel::GraphicsPass> _pass;
-        accel::EffectCompileResult _compiled;
         uptr<gfx::TextureSampler> _sampler;
+
         uptr<gfx::StorageBufferView> _staticInstanceView;
+        uptr<gfx::UniformBufferView> _sceneLightInfoView;
+        uptr<gfx::StorageBufferView> _sceneLightView;
+
         gfx::Buffer _cameraBuffer;
         uptr<gfx::UniformBufferView> _cameraBufferView;
+
         uptr<gfx::TextureView> _brdfLutView;
         uptr<gfx::TextureView> _brdfPrefView;
         uptr<gfx::TextureView> _brdfIrradView;
         smr<gfx::Framebuffer> _framebuffer;
         vk::Semaphore _tmpSignal;
+
+        uptr<gfx::TextureView> _shadowDirView;
 
         struct Resources {
             graph::Subscribed<graph::SymbolizedResource> inOutSceneColor;

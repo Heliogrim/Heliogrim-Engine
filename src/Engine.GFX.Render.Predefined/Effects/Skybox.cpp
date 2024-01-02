@@ -44,6 +44,9 @@ static smr<AccelerationEffect> build_test_effect() {
 
     tmpVar = make_uptr<lang::Variable>();
     tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("uv");
+    tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>(
+        _STD move(tmpVar->annotation)
+    );
     tmpSym = make_uptr<lang::Symbol>(
         lang::SymbolId::from("uv"),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
@@ -74,6 +77,9 @@ static smr<AccelerationEffect> build_test_effect() {
 
     tmpVar = make_uptr<lang::Variable>();
     tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("uv");
+    tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>(
+        _STD move(tmpVar->annotation)
+    );
     tmpSym = make_uptr<lang::Symbol>(
         lang::SymbolId::from("uv"),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
@@ -108,6 +114,9 @@ static smr<AccelerationEffect> build_test_effect() {
 
     tmpVar = make_uptr<lang::Variable>();
     tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("color");
+    tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>(
+        _STD move(tmpVar->annotation)
+    );
     tmpSym = make_uptr<lang::Symbol>(
         lang::SymbolId::from("color"),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
