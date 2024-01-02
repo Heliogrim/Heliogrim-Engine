@@ -1,4 +1,6 @@
 #pragma once
+#include <Engine.Common/Collection/Queue.hpp>
+
 #include "RenderGraphPass.hpp"
 
 #include "IterationPassContext.hpp"
@@ -31,18 +33,19 @@ namespace hg::engine::render::graph {
             const ptr<IterationPass> _owner;
 
         public:
-            constexpr VolatileIterationVisitor(const ptr<IterationPass> owner_) noexcept:
-                _owner(owner_) {}
+            VolatileIterationVisitor(const ptr<IterationPass> owner_) noexcept;
 
-            constexpr ~VolatileIterationVisitor() noexcept = default;
+            ~VolatileIterationVisitor() noexcept override;
+
+        private:
+            Queue<nmpt<Node>> _backlog;
+
+            void step();
+
+            void unroll();
 
         public:
-            void operator()(cref<Node> node_) override {
-                const auto invalidation = const_cast<ref<RuntimeNode>>(static_cast<cref<RuntimeNode>>(node_)).iterate(
-                    _owner->_context
-                );
-                node_.traverse(*this);
-            }
+            void operator()(cref<Node> node_) override;
 
             void operator()(cref<CompileNode> node_) override {
                 assert(false);

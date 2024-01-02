@@ -395,5 +395,14 @@
     <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Relation\SceneCameraDescription.cpp">
       <Filter>Quelldateien\Relation</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\ExecutionPass.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\ResolvePass.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.RenderGraph\Pass\IterationPass.cpp">
+      <Filter>Quelldateien\Pass</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
