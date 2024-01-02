@@ -135,6 +135,9 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Effects\UIBase.cpp">
       <Filter>Quelldateien\Effects</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DirectionalShadow.cpp">
+      <Filter>Quelldateien\Symbols</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\BrdfLut.hpp">
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Effects\UIMsdf.hpp">
       <Filter>Headerdateien\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DirectionalShadow.hpp">
+      <Filter>Headerdateien\Symbols</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
