@@ -4,12 +4,14 @@
 #include <Engine.Assets/AssetFactory.hpp>
 #include <Engine.Assets/Types/Image.hpp>
 #include <Engine.Assets/Types/Texture/TextureAsset.hpp>
+#include <Engine.Common/GuidFormat.hpp>
 #include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Serialization/Archive/Archive.hpp>
 #include <Engine.Serialization/Archive/BufferArchive.hpp>
 #include <Engine.Serialization/Archive/LayoutArchive.hpp>
 #include <Engine.Serialization/Layout/DataLayout.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "ImageImporter.hpp"
 #include "../API/VkTranslate.hpp"
@@ -169,6 +171,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
 
+    IM_CORE_LOGF("Copying file to {:}", storePath.string());
     _STD filesystem::create_directories(storePath.parent_path());
     _STD filesystem::copy(sourcePath, storePath);
 
@@ -190,6 +193,12 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     const auto imgSrcPath { _STD filesystem::relative(storePath, rootCwd) };
     img->setAssetName(sourceName);
     img->addSource(fs::Url { "file"sv, imgSrcPath.string() });
+
+    IM_CORE_LOGF(
+        "Created new image asset `{}` -> `{}`",
+        imgAsset->getAssetName(),
+        encodeGuid4228(imgAsset->get_guid())
+    );
 
     /**/
 
@@ -238,6 +247,12 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     } else if (header.faceCount > 1ui32) {
         tex->setTextureType(TextureType::e2dArray);
     }
+
+    IM_CORE_LOGF(
+        "Created new texture asset `{}` -> `{}`",
+        texAsset->getAssetName(),
+        encodeGuid4228(texAsset->get_guid())
+    );
 
     /**/
 
