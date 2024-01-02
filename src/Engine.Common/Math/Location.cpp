@@ -54,6 +54,6 @@ bool Location::operator!=(cref<this_type> other_) const noexcept {
     return math_type::operator!=(other_);
 }
 
-Location::operator vec3_t<float>() const noexcept {
+cref<fvec3> Location::fvec3() const noexcept {
     return *this;
 }

@@ -43,6 +43,6 @@ namespace hg::math {
         [[nodiscard]] bool operator!=(cref<this_type> other_) const noexcept;
 
     public:
-        [[nodiscard]] operator fvec3() const noexcept;
+        cref<fvec3> fvec3() const noexcept;
     };
 }

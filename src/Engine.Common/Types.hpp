@@ -14,8 +14,15 @@ namespace hg {
     typedef unsigned int u32;
     typedef unsigned long long u64;
 
-    typedef unsigned long uL;
-    typedef unsigned long long uLL;
+    /**/
+
+    typedef float f32;
+    typedef double f64;
+
+    /**/
+
+    typedef u64 size_t;
+    typedef u64 align_t;
 
     /**/
 
@@ -41,7 +48,7 @@ namespace hg {
     constexpr u64 u64_max = 0xFFFFFFFFFFFFFFFFui64;
 
     template <typename Numeric>
-    struct limits { };
+    struct limits {};
 
     template <>
     struct limits<s8> {
