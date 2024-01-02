@@ -62,11 +62,11 @@ void StaticGeometryModel::create(const ptr<::hg::engine::scene::Scene> scene_) {
     /**/
 
     const auto worldTransform = _owner->getWorldTransform();
-    const auto trans { math::mat4::make_identity().translate(worldTransform.location().operator math::fvec3()) };
+    const auto trans { math::mat4::make_identity().translate(worldTransform.location().fvec3()) };
     const auto rotation = math::as<math::mat4>(worldTransform.rotator().quaternion());
     const auto scale { math::mat4::make_identity().unchecked_scale(worldTransform.scale()) };
 
-    const auto transform = rotation * trans * scale;
+    const auto transform = trans * rotation * scale;
 
     const auto page = result.dataView->pages().front();
     auto allocated = page->memory()->allocated();
@@ -77,7 +77,7 @@ void StaticGeometryModel::create(const ptr<::hg::engine::scene::Scene> scene_) {
     allocated->unmap();
 }
 
-static bool isDirty = false;
+static bool isDirty = true;
 
 void StaticGeometryModel::update(const ptr<::hg::engine::scene::Scene> scene_) {
 
@@ -135,11 +135,11 @@ void StaticGeometryModel::update(const ptr<::hg::engine::scene::Scene> scene_) {
         auto srp = rscene->getSceneResourcePool();
 
         const auto worldTransform = _owner->getWorldTransform();
-        const auto trans { math::mat4::make_identity().translate(worldTransform.location().operator math::fvec3()) };
+        const auto trans { math::mat4::make_identity().translate(worldTransform.location().fvec3()) };
         const auto rotation = math::as<math::mat4>(worldTransform.rotator().quaternion());
         const auto scale { math::mat4::make_identity().unchecked_scale(worldTransform.scale()) };
 
-        const auto transform = rotation * trans * scale;
+        const auto transform = trans * rotation * scale;
         const auto dataView = srp->staticInstancePool.getDataView(_sceneInstanceIndex);
 
         const auto page = dataView->pages().front();
@@ -170,7 +170,7 @@ void StaticGeometryModel::destroy(const ptr<::hg::engine::scene::Scene> scene_) 
 void StaticGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {
 
     const auto worldTransform = _owner->getWorldTransform();
-    const auto trans { math::mat4::make_identity().translate(worldTransform.location().operator math::fvec3()) };
+    const auto trans { math::mat4::make_identity().translate(worldTransform.location().fvec3()) };
     const auto rotation = math::as<math::mat4>(worldTransform.rotator().quaternion());
     const auto scale { math::mat4::make_identity().unchecked_scale(worldTransform.scale()) };
 
