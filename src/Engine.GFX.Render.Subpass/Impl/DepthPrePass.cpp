@@ -157,7 +157,8 @@ void DepthPrePass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     /**/
 
     auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
-    auto batch = (*translator)(&cmd);
+    auto nativeBatch = (*translator)(&cmd);
+    const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
 
     if (not rSceneDepth->barriers.empty()) {
 
@@ -180,7 +181,7 @@ void DepthPrePass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     }
 
     batch->commitAndDispose();
-    delete batch;
+    nativeBatch.reset();
 }
 
 /**/

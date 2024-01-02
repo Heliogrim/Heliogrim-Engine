@@ -99,6 +99,34 @@ static smr<AccelerationEffect> build_test_effect() {
     /**/
 
     tmpVar = make_uptr<Variable>();
+    tmpVar->type = Type { .category = TypeCategory::eScalar, .scalarType = ScalarType::eU32 };
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("light-info", _STD move(tmpVar->annotation));
+    tmpSym = make_uptr<Symbol>(
+        SymbolId::from("light-info"),
+        VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
+    );
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+
+    /**/
+
+    tmpVar = make_uptr<Variable>();
+    tmpVar->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown };
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eStorage>>(_STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("lights", _STD move(tmpVar->annotation));
+    tmpSym = make_uptr<Symbol>(
+        SymbolId::from("lights"),
+        VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
+    );
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+
+    /**/
+
+    tmpVar = make_uptr<Variable>();
     tmpVar->type = Type { .category = TypeCategory::eTexture, .textureType = TextureType::eTexture2d };
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(tmpVar->annotation));
@@ -112,43 +140,33 @@ static smr<AccelerationEffect> build_test_effect() {
 
     /**/
 
-    // tmpVar = make_uptr<Variable>();
-    // tmpVar->type = Type { .category = TypeCategory::eTexture, .textureType = TextureType::eTextureCube };
-    // tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-    // tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(tmpVar->annotation));
-    // tmpVar->annotation = make_uptr<SymbolIdAnnotation>("brdf-prefilter", _STD move(tmpVar->annotation));
-    // tmpVar->annotation = make_uptr<VkBindLocationAnnotation>(
-    //     2L,
-    //     1L,
-    //     0L,
-    //     _STD move(tmpVar->annotation)
-    // );
-    // tmpSym = make_uptr<Symbol>(
-    //     SymbolId::from("brdf-prefilter"),
-    //     VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
-    // );
-    // fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
-    // fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    tmpVar = make_uptr<Variable>();
+    tmpVar->type = Type { .category = TypeCategory::eTexture, .textureType = TextureType::eTextureCube };
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("brdf-pref", _STD move(tmpVar->annotation));
+    tmpSym = make_uptr<Symbol>(
+        SymbolId::from("brdf-pref"),
+        VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
+    );
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
 
     /**/
 
-    // tmpVar = make_uptr<Variable>();
-    // tmpVar->type = Type { .category = TypeCategory::eTexture, .textureType = TextureType::eTextureCube };
-    // tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-    // tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(tmpVar->annotation));
-    // tmpVar->annotation = make_uptr<SymbolIdAnnotation>("brdf-irradiance", _STD move(tmpVar->annotation));
-    // tmpVar->annotation = make_uptr<VkBindLocationAnnotation>(
-    //     2L,
-    //     2L,
-    //     0L,
-    //     _STD move(tmpVar->annotation)
-    // );
-    // tmpSym = make_uptr<Symbol>(
-    //     SymbolId::from("brdf-irradiance"),
-    //     VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
-    // );
-    // fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
-    // fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    tmpVar = make_uptr<Variable>();
+    tmpVar->type = Type { .category = TypeCategory::eTexture, .textureType = TextureType::eTextureCube };
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("brdf-irrad", _STD move(tmpVar->annotation));
+    tmpSym = make_uptr<Symbol>(
+        SymbolId::from("brdf-irrad"),
+        VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
+    );
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+
+    /**/
 
     /**/
 
@@ -191,6 +209,24 @@ static smr<AccelerationEffect> build_test_effect() {
     );
     fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
     fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+
+    /**/
+
+    /**/
+
+    tmpVar = make_uptr<Variable>();
+    tmpVar->type = Type { .category = TypeCategory::eTexture, .textureType = TextureType::eTexture2d };
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("shadow-dir", _STD move(tmpVar->annotation));
+    tmpSym = make_uptr<Symbol>(
+        SymbolId::from("shadow-dir"),
+        VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
+    );
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+
+    /**/
 
     /**/
 

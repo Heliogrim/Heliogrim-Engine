@@ -232,7 +232,8 @@ void TmpBrdfLutPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept 
     /**/
 
     auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
-    auto* batch = (*translator)(&cmd);
+    auto nativeBatch = (*translator)(&cmd);
+    const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
 
     {
         batch->_tmpWaits.insert_range(
@@ -249,7 +250,7 @@ void TmpBrdfLutPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept 
     }
 
     batch->commitAndDispose();
-    delete batch;
+    nativeBatch.reset();
 
     /**/
 

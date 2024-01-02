@@ -16,20 +16,14 @@
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
-#include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
-#include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.Reflect/ExactType.hpp>
 #include <Engine.Scene/IRenderScene.hpp>
-#include <Engine.GFX/Buffer/StorageBufferView.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
 #include <Engine.GFX/Texture/VirtualTextureView.hpp>
-#include <Engine.GFX.Render.Command/Resource/ResourceView.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
-#include <Heliogrim/Actor.hpp>
-#include <Heliogrim/Actors/CameraActor.hpp>
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
@@ -159,7 +153,10 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     if (
         not _framebuffer.empty() &&
-        (_framebuffer->attachments().front() != sceneColorTex || _framebuffer->attachments().back() != sceneDepthRes)
+        (
+            _framebuffer->attachments().front() != sceneColorTex ||
+            static_cast<ptr<void>>(_framebuffer->attachments().back().get()) != sceneDepthRes.get()
+        )
     ) {
         _framebuffer->device()->vkDevice().destroySemaphore(_tmpSignal);
         _framebuffer->destroy();
@@ -296,6 +293,8 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                 const auto texture = materialGuard->getParam<smr<TextureResource>>(iter->first);
                 const auto textureGuard = texture->acquire(resource::ResourceUsageFlag::eRead);
 
+                /**/
+
                 if (auto textureView = Cast<TextureView>(textureGuard.imm()->get())) {
                     cmd.bindTexture(clone(symbolId), textureView, _sampler.get());
 
@@ -328,7 +327,8 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     /**/
 
     auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
-    auto batch = (*translator)(&cmd);
+    auto nativeBatch = (*translator)(&cmd);
+    const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
 
     {
         batch->_tmpWaits.insert_range(
@@ -357,7 +357,7 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
     }
 
     batch->commitAndDispose();
-    delete batch;
+    nativeBatch.reset();
 }
 
 /**/

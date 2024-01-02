@@ -48,7 +48,7 @@ smr<Node> AnchorNode::getNext() const noexcept {
 }
 
 bool AnchorNode::hasPrev() const noexcept {
-    return _prev;
+    return static_cast<bool>(_prev);
 }
 
 void AnchorNode::setPrev(mref<nmpt<const Node>> prev_) {

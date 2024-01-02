@@ -429,7 +429,8 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
     /**/
 
     const auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
-    auto batch = (*translator)(&cmd);
+    auto nativeBatch = (*translator)(&cmd);
+    const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
 
     {
         batch->_tmpWaits.insert_range(
@@ -458,7 +459,7 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
     }
 
     batch->commitAndDispose();
-    delete batch;
+    nativeBatch.reset();
 }
 
 void render::ReflowPass::ensureDefaultImage() {
@@ -658,6 +659,9 @@ engine::accel::EffectCompileResult build_test_base_pipeline(mref<smr<const engin
                 .stencilCompareMask = 0uL,
                 .stencilWriteMask = 0uL,
                 .primitiveTopology = engine::accel::PrimitiveTopology::eTriangleList,
+                .faceCulling = engine::accel::FaceCulling::eFront,
+                .faceMode = engine::accel::FaceMode::eFill,
+                .faceWinding = engine::accel::FaceWinding::eCcw,
                 .pass = pass_.get(),
                 .blendState = {
                     engine::accel::BlendState {
