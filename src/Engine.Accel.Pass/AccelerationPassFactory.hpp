@@ -6,6 +6,11 @@
 
 #include "__fwd.hpp"
 
+// TODO: Rework
+namespace vk {
+    struct SubpassDependency;
+}
+
 namespace hg::engine::accel {
     class AccelerationPassFactoryError final : public _STD exception {};
 
@@ -26,6 +31,14 @@ namespace hg::engine::accel {
         [[nodiscard]] virtual tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> buildGraphicsPass(
             cref<Vector<smr<const render::graph::Symbol>>> outputSymbols_,
             cref<Vector<smr<const render::graph::Symbol>>> inputSymbols_ = {}
+        ) const noexcept = 0;
+
+        [[nodiscard]] virtual tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> buildGraphicsPass(
+            cref<Vector<smr<const render::graph::Symbol>>> outputSymbols_,
+            cref<Vector<smr<const render::graph::Symbol>>> inputSymbols_,
+            mref<Vector<vk::SubpassDependency>> subpassDependencies_,
+            u32 viewMask_ = 0x0uL,
+            u32 correlationMask_ = 0x0uL
         ) const noexcept = 0;
 
         [[nodiscard]] virtual tl::expected<smr<const RaytracingPass>, AccelerationPassFactoryError> buildRaytracingPass(

@@ -32,6 +32,16 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
     cref<Vector<smr<const render::graph::Symbol>>> outputSymbols_,
     cref<Vector<smr<const render::graph::Symbol>>> inputSymbols_
 ) const noexcept {
+    return buildGraphicsPass(outputSymbols_, inputSymbols_, {}, 0uL, 0uL);
+}
+
+tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerationPassFactory::buildGraphicsPass(
+    cref<Vector<smr<const render::graph::Symbol>>> outputSymbols_,
+    cref<Vector<smr<const render::graph::Symbol>>> inputSymbols_,
+    mref<Vector<vk::SubpassDependency>> subpassDependencies_,
+    u32 viewMask_,
+    u32 correlationMask_
+) const noexcept {
 
     auto result = make_smr<VkGraphicsPass>();
 
@@ -271,9 +281,9 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
                 vk::SubpassDependency {
                     VK_SUBPASS_EXTERNAL,
                     0,
-                    vk::PipelineStageFlagBits::eBottomOfPipe,
-                    vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
-                    vk::AccessFlagBits::eMemoryRead,
+                    vk::PipelineStageFlagBits::eFragmentShader,
+                    vk::PipelineStageFlagBits::eEarlyFragmentTests,
+                    vk::AccessFlagBits::eShaderRead,
                     isReadOnly ?
                         vk::AccessFlagBits::eDepthStencilAttachmentRead :
                         vk::AccessFlagBits::eDepthStencilAttachmentRead |
@@ -286,19 +296,26 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
                 vk::SubpassDependency {
                     0,
                     VK_SUBPASS_EXTERNAL,
-                    vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
-                    vk::PipelineStageFlagBits::eTopOfPipe,
+                    vk::PipelineStageFlagBits::eLateFragmentTests,
+                    vk::PipelineStageFlagBits::eFragmentShader,
                     isReadOnly ?
                         vk::AccessFlagBits::eDepthStencilAttachmentRead :
                         vk::AccessFlagBits::eDepthStencilAttachmentRead |
                         vk::AccessFlagBits::eDepthStencilAttachmentWrite,
-                    vk::AccessFlagBits::eMemoryRead,
+                    vk::AccessFlagBits::eShaderRead,
                     vk::DependencyFlagBits::eByRegion
                 }
             );
 
         }
 
+    }
+
+    if (not subpassDependencies_.empty()) {
+        result->_dependencies.insert_range(
+            result->_dependencies.end(),
+            subpassDependencies_
+        );
     }
 
     /**/
@@ -312,6 +329,13 @@ tl::expected<smr<const GraphicsPass>, AccelerationPassFactoryError> VkAccelerati
         static_cast<u32>(result->_dependencies.size()),
         result->_dependencies.data()
     };
+
+    /**/
+
+    if (viewMask_ != 0uL || correlationMask_ != 0uL) {
+        result->_viewMasks.emplace_back(viewMask_);
+        result->_correlationMasks.emplace_back(correlationMask_);
+    }
 
     vk::RenderPassMultiviewCreateInfo mvi {};
     if (not result->_viewMasks.empty()) {
