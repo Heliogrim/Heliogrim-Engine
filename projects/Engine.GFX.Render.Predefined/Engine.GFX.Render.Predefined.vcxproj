@@ -39,6 +39,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\BrdfPrefilter.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredNormal.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredPosition.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DirectionalShadow.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneCamera.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneColor.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneDepth.cpp" />
@@ -75,6 +76,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\BrdfPrefilter.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredNormal.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DeferredPosition.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\DirectionalShadow.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneCamera.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneColor.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Predefined\Symbols\SceneDepth.hpp" />
