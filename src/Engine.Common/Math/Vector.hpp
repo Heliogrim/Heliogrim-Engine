@@ -4,6 +4,7 @@
 
 #include "../__macro.hpp"
 #include "../Types.hpp"
+#include "../Wrapper.hpp"
 #include "MathDefaultDefine.hpp"
 #include "Hash.hpp"
 
@@ -542,6 +543,7 @@ namespace hg::math {
         typedef T value_type;
         /** Defines an alias representing the type */
         typedef vec3_t<value_type> type;
+        using this_type = vec3_t<value_type>;
         /** Defines an alias representing type of the reference */
         typedef type& reference_type;
         /** Defines an alias representing type of the constant reference */
@@ -690,6 +692,11 @@ namespace hg::math {
          */
         type setX(const value_type& x_) {
             x = x_;
+            return *this;
+        }
+
+        ref<this_type> setX(auto&& x_) {
+            x = _STD forward<decltype(x_)>(x_);
             return *this;
         }
 
