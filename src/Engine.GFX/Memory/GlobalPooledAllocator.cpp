@@ -140,12 +140,14 @@ AllocationResult engine::gfx::memory::allocate(
 
     auto size { req.size };
 
-    // Warning: Check for flush intent
-    if (
-        buffer_.usageFlags & vk::BufferUsageFlagBits::eTransferSrc &&
+    const auto atomicNonCoherent = (
+        (buffer_.usageFlags & vk::BufferUsageFlagBits::eTransferSrc) &&
         !(props_ & MemoryProperty::eHostCoherent) &&
-        props_ & MemoryProperty::eHostVisible
-    ) {
+        (props_ & MemoryProperty::eHostVisible)
+    );
+
+    // Warning: Check for flush intent
+    if (atomicNonCoherent) {
 
         // vkPhysicalDeviceLimits::nonCoherentAtomSize <-> Required for flushing
         constexpr auto align { 0x80ui64 };
@@ -158,6 +160,12 @@ AllocationResult engine::gfx::memory::allocate(
         };
 
         size = aligned;
+
+    } else if (size < req.alignment) {
+
+        // Forcefully override if size of lower than base alignment
+        size = MAX(req.size, req.alignment);
+
     }
 
     return alloc_->allocate(layout, size, buffer_.memory);

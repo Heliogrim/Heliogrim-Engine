@@ -1,7 +1,9 @@
 ﻿#include "MemoryPool.hpp"
 
 #include <cassert>
+#include <ranges>
 #include <Engine.Common/Make.hpp>
+#include <Engine.Logging/Logger.hpp>
 
 #include "AllocatedMemory.hpp"
 #include "AllocationResult.hpp"
@@ -23,23 +25,25 @@ MemoryPool::~MemoryPool() {
 
 void MemoryPool::tidy() {
 
-    for (auto&& entry : _memory) {
+    while (not _memory.empty()) {
+        auto entry = _STD move(_memory.back());
+        _memory.pop_back();
 
-        if (entry->parent && poolContains(entry->parent)) {
-            //
-            entry->allocator = nullptr;
-            entry->parent = nullptr;
-            //
-            entry->vkMemory = nullptr;
+        if (
+            entry->parent &&
+            poolContains(entry->parent) &&
+            free(_STD move(entry))
+        ) {
+            __noop();
+        } else {
+            AllocatedMemory::free(_STD move(entry));
         }
-
-        AllocatedMemory::free(_STD move(entry));
     }
 
     _memory.clear();
     _memory.shrink_to_fit();
 
-    for (const uptr<AllocatedMemory>& entry : _pooling) {
+    for (const uptr<AllocatedMemory>& entry : _pooling | _STD ranges::views::values) {
 
         if (entry->parent && poolContains(entry->parent)) {
             //
@@ -80,8 +84,86 @@ u32 MemoryPool::freeAllocCount() const noexcept {
 }
 
 void MemoryPool::push(mref<uptr<AllocatedMemory>> memory_) {
+
+    assert(memory_->parent == nullptr && memory_->allocator != nullptr);
+
     _totalMemory += memory_->size;
-    _memory.emplace_back(_STD move(memory_));
+
+    auto ube = _STD ranges::upper_bound(
+        _memory,
+        memory_->size,
+        _STD greater_equal<u64>(),
+        [](const auto& entry_) {
+            return entry_->size;
+        }
+    );
+    _memory.insert(ube, _STD move(memory_));
+}
+
+bool MemoryPool::treeMerge(
+    cref<decltype(_memory)::iterator> begin_,
+    cref<decltype(_memory)::iterator> end_,
+    ref<uptr<AllocatedMemory>> memory_
+) {
+
+    /* Pre-sort memory within same size region based on offset */
+
+    _STD ranges::sort(
+        begin_,
+        end_,
+        _STD less<u64>(),
+        [](const auto& entry_) {
+            return entry_->offset;
+        }
+    );
+
+    /**/
+
+    for (auto it = begin_; it != end_; ++it) {
+
+        const auto diff = _STD abs(static_cast<s64>((*it)->offset) - static_cast<s64>(memory_->offset));
+        if (diff > memory_->size) {
+
+            if ((*it)->offset > memory_->offset) {
+                return false;
+            }
+
+            continue;
+        }
+
+        /* Found coalescing neighbor candidate */
+
+        if ((*it)->parent == memory_->parent && (*it)->size + memory_->size == memory_->parent->size) {
+
+            assert((*it)->offset == memory_->parent->offset || memory_->offset == memory_->parent->offset);
+
+            auto parentIt = _pooling.find(memory_->parent.get());
+            auto hold = _STD move(parentIt->second);
+
+            releaseSubAllocation(*it);
+            releaseSubAllocation(memory_);
+
+            _pooling.erase(parentIt);
+            _memory.erase(it);
+            memory_.reset();
+
+            /* Recursive call to free tree-spliced memory */
+
+            const auto result = free(_STD move(hold), true);
+            if (not result && hold->allocator) {
+                memory::AllocatedMemory::free(_STD move(hold));
+
+                if (_pooling.empty() && _memory.empty()) {
+                    _totalAlloc.store(0);
+                    _totalMemory = 0uLL;
+                    _totalUsedMemory.store(0);
+                }
+            }
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void MemoryPool::treeSplice(mref<uptr<AllocatedMemory>> memory_, const u64 targetSize_) {
@@ -89,40 +171,19 @@ void MemoryPool::treeSplice(mref<uptr<AllocatedMemory>> memory_, const u64 targe
     uptr<AllocatedMemory> next { _STD move(memory_) };
     while (next->size > targetSize_) {
 
-        #if FALSE
-        const auto size { next->size >> 2ui64 };
-        const auto baseOffset { next->offset };
-
-        const ptr<AllocatedMemory> sparse[] {
-            make_ptr<AllocatedMemory>(next->allocator, next, _layout, size,
-                baseOffset, next->vkDevice, next->vkMemory, nullptr),
-            make_ptr<AllocatedMemory>(next->allocator, next, _layout, size,
-                baseOffset + size, next->vkDevice, next->vkMemory, nullptr),
-            make_ptr<AllocatedMemory>(next->allocator, next, _layout, size,
-                baseOffset + size + size, next->vkDevice, next->vkMemory, nullptr),
-            make_ptr<AllocatedMemory>(next->allocator, next, _layout, size,
-                baseOffset + size + size + size, next->vkDevice, next->vkMemory, nullptr)
-        };
-
-        _memory.push_back(sparse[0]);
-        _memory.push_back(sparse[1]);
-        _memory.push_back(sparse[2]);
-
-        next = sparse[3];
-        #endif
-
         const auto size { next->size >> 1ui64 };
         const auto baseOffset { next->offset };
 
-        // Prevent to much splitting under target size
+        // Prevent too much splitting under target size
         if (size < targetSize_) {
             break;
         }
 
         nmpt<AllocatedMemory> parent = next.get();
-        _pooling.insert(_STD move(next));
+        assert(not _pooling.contains(next.get()));
+        _pooling.insert(_STD make_pair(next.get(), _STD move(next)));
 
-        _memory.push_back(
+        storeSubAllocate(
             make_uptr<AllocatedMemory>(
                 parent->allocator,
                 parent,
@@ -147,37 +208,52 @@ void MemoryPool::treeSplice(mref<uptr<AllocatedMemory>> memory_, const u64 targe
         );
     }
 
-    _memory.emplace_back(_STD move(next));
+    storeSubAllocate(_STD move(next));
+}
 
-    _STD ranges::sort(
+void MemoryPool::storeSubAllocate(mref<uptr<AllocatedMemory>> memory_) {
+
+    assert(memory_->allocator != nullptr && memory_->parent != nullptr);
+
+    const auto lbe = _STD ranges::lower_bound(
         _memory,
-        _STD less<u64>(),
+        memory_->size,
+        _STD greater_equal<u64>(),
         [](const auto& entry_) {
             return entry_->size;
         }
     );
+    _memory.insert(lbe, _STD move(memory_));
+}
+
+void MemoryPool::releaseSubAllocation(cref<uptr<AllocatedMemory>> memory_) const {
+
+    assert(memory_->parent && memory_->allocator != nullptr);
+
+    memory_->allocator = nullptr;
+    memory_->parent = nullptr;
+    memory_->vkMemory = nullptr;
 }
 
 AllocationResult MemoryPool::allocate(const u64 size_, const bool bestFit_, ref<uptr<AllocatedMemory>> dst_) {
 
     auto lbe = _STD ranges::lower_bound(
-        _memory,
+        _memory.rbegin(),
+        _memory.rend(),
         size_,
-        [](u64 left_, u64 right_) {
-            return left_ < right_;
-        },
+        _STD less<u64>(),
         [](const auto& entry_) {
             return entry_->size;
         }
     );
 
-    if (lbe >= _memory.end()) {
+    if (lbe == _memory.rend()) {
         return AllocationResult::eOutOfMemory;
     }
 
     if ((*lbe)->size == size_ || (bestFit_ && (*lbe)->size >= size_)) {
         auto mem = _STD move(*lbe);
-        _memory.erase(lbe);
+        _memory.erase(lbe.base() - 1LL);
 
         /**
          * Update metrics
@@ -193,7 +269,7 @@ AllocationResult MemoryPool::allocate(const u64 size_, const bool bestFit_, ref<
     }
 
     auto mem = _STD move(*lbe);
-    _memory.erase(lbe);
+    _memory.erase(lbe.base() - 1LL);
 
     assert(mem != nullptr);
 
@@ -201,28 +277,31 @@ AllocationResult MemoryPool::allocate(const u64 size_, const bool bestFit_, ref<
     return allocate(size_, true, dst_);
 }
 
-AllocationResult MemoryPool::allocate(const u64 size_, ref<uptr<AllocatedMemory>> dst_) {
-    return allocate(size_, false, dst_);
-}
-
-bool MemoryPool::free(mref<uptr<AllocatedMemory>> mem_) {
-
-    if (mem_->parent && not poolContains(mem_->parent)) {
+bool MemoryPool::free(mref<uptr<AllocatedMemory>> mem_, bool cascade_) {
+    if (not mem_->parent) {
         return false;
     }
 
-    // Warning: Hotfix
-    mem_->allocator = nullptr;
+    if (not poolContains(mem_->parent)) {
+        return false;
+    }
 
     /**
      * Store memory or restore predecessor memory block if possible
      */
-    const auto* const memptr = mem_.get();
-    _memory.emplace_back(_STD move(mem_));
-
-    _STD ranges::sort(
+    auto lbe = _STD ranges::lower_bound(
         _memory,
-        _STD less<u64>(),
+        mem_->size,
+        _STD greater_equal<u64>(),
+        [](const auto& entry_) {
+            return entry_->size;
+        }
+    );
+
+    auto ube = _STD ranges::upper_bound(
+        _memory,
+        mem_->size,
+        _STD greater_equal<u64>(),
         [](const auto& entry_) {
             return entry_->size;
         }
@@ -231,18 +310,63 @@ bool MemoryPool::free(mref<uptr<AllocatedMemory>> mem_) {
     /**
      * Update metrics
      */
-    _totalUsedMemory -= memptr->size;
+    _totalUsedMemory -= mem_->size;
     --_totalAlloc;
+
+    /**/
+
+    /* Warning: After successful treeMerge call the iterators are invalid to use */
+
+    if (
+        mem_->parent &&
+        lbe != ube &&
+        _STD ranges::distance(ube, lbe) > 0LL &&
+        treeMerge(ube, lbe, mem_)
+    ) {
+        __noop();
+    } else {
+        _memory.insert(ube, _STD move(mem_));
+    }
 
     return true;
 }
 
+AllocationResult MemoryPool::allocate(const u64 size_, ref<uptr<AllocatedMemory>> dst_) {
+    return allocate(size_, false, dst_);
+}
+
+bool MemoryPool::free(mref<uptr<AllocatedMemory>> mem_) {
+
+    const auto result = free(_STD move(mem_), true);
+
+    if (_pooling.empty() && _memory.empty()) {
+        _totalAlloc.store(0);
+        _totalMemory = 0uLL;
+        _totalUsedMemory.store(0);
+    }
+
+    return result;
+}
+
 bool MemoryPool::poolContains(nmpt<AllocatedMemory> allocated_) const noexcept {
-    return _STD ranges::contains(
-        _pooling,
-        allocated_,
-        [](const auto& owned_) {
-            return nmpt<AllocatedMemory> { owned_.get() };
+
+    #ifdef _DEBUG
+    if (not _pooling.contains(allocated_.get())) {
+        if (_STD ranges::contains(
+            _memory,
+            allocated_.get(),
+            [](const auto& e_) {
+                return e_.get();
+            }
+        )) {
+            __debugbreak();
+            IM_CORE_ERRORF(
+                "Encountered double-free on allocated memory from pool with parent ({:x})",
+                reinterpret_cast<ptrdiff_t>(allocated_.get())
+            );
         }
-    );
+    }
+    #endif
+
+    return _pooling.contains(allocated_.get());
 }
