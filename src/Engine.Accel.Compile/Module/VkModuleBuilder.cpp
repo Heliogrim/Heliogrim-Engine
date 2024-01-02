@@ -15,6 +15,22 @@
 using namespace hg::engine::accel;
 using namespace hg;
 
+/**/
+
+[[nodiscard]] static bool isPushBlock(cref<lang::Symbol> symbol_) noexcept {
+
+    auto anno = symbol_.var.data->annotation.get();
+    while (anno != nullptr) {
+        if (anno->type == lang::AnnotationType::eConstant) {
+            return true;
+        }
+        anno = anno->next.get();
+    }
+    return false;
+}
+
+/**/
+
 VkModuleBuilder::~VkModuleBuilder() noexcept = default;
 
 bool VkModuleBuilder::isFirstStage(
@@ -241,6 +257,15 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
     for (const auto& input : stageInputs) {
 
         assert(input.symbol->var.type == lang::SymbolType::eVariableSymbol);
+
+        if (isPushBlock(*input.symbol)) {
+            continue;
+        }
+
+        // Warning: Rework
+        if (input.symbol->symbolId.value == "depth") {
+            continue;
+        }
 
         const auto location = module_->bindings.inboundLocation(input.symbol);
 

@@ -139,7 +139,16 @@ void VkPipelineCompiler::resolvePushConstants(
     ref<Vector<vk::PushConstantRange>> ranges_
 ) const {
     for (const auto& constant : pass_->getBindingLayout().constants) {
-        ranges_.emplace_back(vk::ShaderStageFlagBits::eVertex, constant.offset, constant.size);
+
+        vk::ShaderStageFlags vkShaderStages {};
+        if (constant.stages & StageFlagBits::eVertex) {
+            vkShaderStages |= vk::ShaderStageFlagBits::eVertex;
+        }
+        if (constant.stages & StageFlagBits::eFragment) {
+            vkShaderStages |= vk::ShaderStageFlagBits::eFragment;
+        }
+
+        ranges_.emplace_back(vkShaderStages, constant.offset, constant.size);
     }
 }
 
@@ -425,7 +434,7 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
         pdssci.depthTestEnable = (depthBind.depthLoad || depthBind.depthStore) &&
             specification_.depthCompareOp != DepthCompareOp::eAlways;
         pdssci.depthWriteEnable = depthBind.depthStore && specification_.depthCompareOp != DepthCompareOp::eNever;
-        pdssci.depthCompareOp = reinterpret_cast<vk::CompareOp&>(specification_.depthCompareOp);
+        pdssci.depthCompareOp = api::depthCompareOp(specification_.depthCompareOp);
 
         pdssci.depthBoundsTestEnable = VK_FALSE;
         pdssci.minDepthBounds = 0.F;
@@ -461,10 +470,9 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 
     prsci.rasterizerDiscardEnable = FALSE;
 
-    prsci.polygonMode = vk::PolygonMode::eFill;
-    //prsci.cullMode = vk::CullModeFlagBits::eBack;
-    prsci.cullMode = vk::CullModeFlagBits::eNone;
-    prsci.frontFace = vk::FrontFace::eCounterClockwise;
+    prsci.polygonMode = api::polygonMode(specification_.faceMode);
+    prsci.cullMode = api::cullMode(specification_.faceCulling);
+    prsci.frontFace = api::frontFace(specification_.faceWinding);
 
     prsci.depthClampEnable = VK_TRUE;
     prsci.depthBiasEnable = VK_FALSE;
@@ -487,7 +495,7 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
     /**/
 
     piasci.primitiveRestartEnable = VK_FALSE;
-    piasci.topology = reinterpret_cast<const vk::PrimitiveTopology&>(specification_.primitiveTopology);
+    piasci.topology = api::topology(specification_.primitiveTopology);
 
     /**/
 

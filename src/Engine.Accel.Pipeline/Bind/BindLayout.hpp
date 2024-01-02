@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Accel.Effect/Stage/StageFlags.hpp>
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
@@ -21,6 +22,7 @@ namespace hg::engine::accel {
     };
 
     struct PushConstant {
+        StageFlags stages;
         u32 offset;
         u32 size;
     };
