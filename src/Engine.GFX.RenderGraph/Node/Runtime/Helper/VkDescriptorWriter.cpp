@@ -21,11 +21,48 @@ using namespace hg;
 
 VkDescriptorWriter::VkDescriptorWriter(cref<vk::DescriptorSet> vkSet_) :
     _vkSet(vkSet_),
+    _addressPatched(false),
     _descriptorBufferInfos(),
     _descriptorImageInfos(),
     _writes() {}
 
-void VkDescriptorWriter::update(cref<vk::Device> device_) const {
+ptrdiff_t VkDescriptorWriter::emplaceBufferInfo(mref<vk::DescriptorBufferInfo> info_) {
+    _descriptorBufferInfos.emplace_back(_STD move(info_));
+    return _descriptorBufferInfos.size() - 1uLL;
+}
+
+ptrdiff_t VkDescriptorWriter::emplaceImageInfo(mref<vk::DescriptorImageInfo> info_) {
+    _descriptorImageInfos.emplace_back(_STD move(info_));
+    return _descriptorImageInfos.size() - 1uLL;
+}
+
+void VkDescriptorWriter::patchInfoAddress() {
+
+    for (auto& write : _writes) {
+
+        switch (write.descriptorType) {
+            case vk::DescriptorType::eInlineUniformBlock:
+            case vk::DescriptorType::eStorageBuffer:
+            case vk::DescriptorType::eUniformBuffer: {
+                write.pBufferInfo = _descriptorBufferInfos.data() + reinterpret_cast<ptrdiff_t>(write.pBufferInfo);
+                break;
+            }
+            case vk::DescriptorType::eCombinedImageSampler:
+            case vk::DescriptorType::eSampledImage: {
+                write.pImageInfo = _descriptorImageInfos.data() + reinterpret_cast<ptrdiff_t>(write.pImageInfo);
+            }
+        }
+    }
+
+    _addressPatched = true;
+}
+
+void VkDescriptorWriter::update(cref<vk::Device> device_) {
+
+    if (not _addressPatched) {
+        patchInfoAddress();
+    }
+
     device_.updateDescriptorSets(
         static_cast<u32>(_writes.size()),
         _writes.data(),
@@ -36,10 +73,12 @@ void VkDescriptorWriter::update(cref<vk::Device> device_) const {
 
 void VkDescriptorWriter::storeUniform(index_type idx_, cref<Buffer> buffer_) {
 
-    auto info = make_uptr<vk::DescriptorBufferInfo>(
-        buffer_.buffer,
-        0uLL,
-        buffer_.size
+    const auto marker = emplaceBufferInfo(
+        {
+            buffer_.buffer,
+            0uLL,
+            buffer_.size
+        }
     );
 
     _writes.emplace_back(
@@ -49,19 +88,19 @@ void VkDescriptorWriter::storeUniform(index_type idx_, cref<Buffer> buffer_) {
         1,
         vk::DescriptorType::eUniformBuffer,
         nullptr,
-        info.get(),
+        reinterpret_cast<ptr<vk::DescriptorBufferInfo>>(marker),
         nullptr
-
     );
-    _descriptorBufferInfos.push_back(_STD move(info));
 }
 
 void VkDescriptorWriter::storeUniform(index_type idx_, cref<VirtualBuffer> buffer_) {
 
-    auto info = make_uptr<vk::DescriptorBufferInfo>(
-        buffer_.vkBuffer(),
-        0uLL,
-        buffer_.size()
+    const auto marker = emplaceBufferInfo(
+        {
+            buffer_.vkBuffer(),
+            0uLL,
+            buffer_.size()
+        }
     );
 
     _writes.emplace_back(
@@ -71,19 +110,20 @@ void VkDescriptorWriter::storeUniform(index_type idx_, cref<VirtualBuffer> buffe
         1,
         vk::DescriptorType::eUniformBuffer,
         nullptr,
-        info.get(),
+        reinterpret_cast<ptr<vk::DescriptorBufferInfo>>(marker),
         nullptr
 
     );
-    _descriptorBufferInfos.push_back(_STD move(info));
 }
 
 void VkDescriptorWriter::storeUniform(index_type idx_, cref<VirtualBufferView> view_) {
 
-    auto info = make_uptr<vk::DescriptorBufferInfo>(
-        view_.owner()->vkBuffer(),
-        view_.offset(),
-        view_.size()
+    const auto marker = emplaceBufferInfo(
+        {
+            view_.owner()->vkBuffer(),
+            view_.offset(),
+            view_.size()
+        }
     );
 
     _writes.emplace_back(
@@ -91,13 +131,12 @@ void VkDescriptorWriter::storeUniform(index_type idx_, cref<VirtualBufferView> v
         idx_,
         0,
         1,
-        vk::DescriptorType::eStorageBuffer,
+        vk::DescriptorType::eUniformBuffer,
         nullptr,
-        info.get(),
+        reinterpret_cast<ptr<vk::DescriptorBufferInfo>>(marker),
         nullptr
 
     );
-    _descriptorBufferInfos.push_back(_STD move(info));
 }
 
 void VkDescriptorWriter::storeUniform(index_type idx_, nmpt<const gfx::UniformBufferView> view_) {
@@ -107,12 +146,12 @@ void VkDescriptorWriter::storeUniform(index_type idx_, nmpt<const gfx::UniformBu
         obj.get(),
         [this, idx_](const ptr<const Buffer> buffer_) {
 
-            _descriptorBufferInfos.emplace_back(
-                make_uptr<vk::DescriptorBufferInfo>(
+            const auto marker = emplaceBufferInfo(
+                {
                     buffer_->buffer,
                     0uLL,
                     buffer_->size
-                )
+                }
             );
 
             return vk::WriteDescriptorSet {
@@ -122,18 +161,18 @@ void VkDescriptorWriter::storeUniform(index_type idx_, nmpt<const gfx::UniformBu
                 1uL,
                 vk::DescriptorType::eUniformBuffer,
                 nullptr,
-                _descriptorBufferInfos.back().get(),
+                reinterpret_cast<ptr<vk::DescriptorBufferInfo>>(marker),
                 nullptr
             };
         },
         [this, idx_](const ptr<const VirtualBuffer> buffer_) {
 
-            _descriptorBufferInfos.emplace_back(
-                make_uptr<vk::DescriptorBufferInfo>(
+            const auto marker = emplaceBufferInfo(
+                {
                     buffer_->vkBuffer(),
                     0uL,
                     buffer_->size()
-                )
+                }
             );
 
             return vk::WriteDescriptorSet {
@@ -143,18 +182,18 @@ void VkDescriptorWriter::storeUniform(index_type idx_, nmpt<const gfx::UniformBu
                 1uL,
                 vk::DescriptorType::eUniformBuffer,
                 nullptr,
-                _descriptorBufferInfos.back().get(),
+                reinterpret_cast<ptr<vk::DescriptorBufferInfo>>(marker),
                 nullptr
             };
         },
         [this, idx_](const ptr<const VirtualBufferView> view_) {
 
-            _descriptorBufferInfos.emplace_back(
-                make_uptr<vk::DescriptorBufferInfo>(
+            const auto marker = emplaceBufferInfo(
+                {
                     view_->owner()->vkBuffer(),
                     view_->offset(),
                     view_->size()
-                )
+                }
             );
 
             return vk::WriteDescriptorSet {
@@ -164,7 +203,7 @@ void VkDescriptorWriter::storeUniform(index_type idx_, nmpt<const gfx::UniformBu
                 1uL,
                 vk::DescriptorType::eUniformBuffer,
                 nullptr,
-                _descriptorBufferInfos.back().get(),
+                reinterpret_cast<ptr<vk::DescriptorBufferInfo>>(marker),
                 nullptr
             };
         }
@@ -175,10 +214,12 @@ void VkDescriptorWriter::storeUniform(index_type idx_, nmpt<const gfx::UniformBu
 
 void VkDescriptorWriter::storeStorage(index_type idx_, cref<Buffer> buffer_) {
 
-    auto info = make_uptr<vk::DescriptorBufferInfo>(
-        buffer_.buffer,
-        0uLL,
-        buffer_.size
+    const auto marker = emplaceBufferInfo(
+        {
+            buffer_.buffer,
+            0uLL,
+            buffer_.size
+        }
     );
 
     _writes.emplace_back(
@@ -188,19 +229,20 @@ void VkDescriptorWriter::storeStorage(index_type idx_, cref<Buffer> buffer_) {
         1,
         vk::DescriptorType::eStorageBuffer,
         nullptr,
-        info.get(),
+        reinterpret_cast<ptr<vk::DescriptorBufferInfo>>(marker),
         nullptr
 
     );
-    _descriptorBufferInfos.push_back(_STD move(info));
 }
 
 void VkDescriptorWriter::storeStorage(index_type idx_, cref<VirtualBuffer> buffer_) {
 
-    auto info = make_uptr<vk::DescriptorBufferInfo>(
-        buffer_.vkBuffer(),
-        0uLL,
-        buffer_.size()
+    const auto marker = emplaceBufferInfo(
+        {
+            buffer_.vkBuffer(),
+            0uL,
+            buffer_.size()
+        }
     );
 
     _writes.emplace_back(
@@ -210,19 +252,19 @@ void VkDescriptorWriter::storeStorage(index_type idx_, cref<VirtualBuffer> buffe
         1,
         vk::DescriptorType::eStorageBuffer,
         nullptr,
-        info.get(),
+        reinterpret_cast<ptr<vk::DescriptorBufferInfo>>(marker),
         nullptr
-
     );
-    _descriptorBufferInfos.push_back(_STD move(info));
 }
 
 void VkDescriptorWriter::storeStorage(index_type idx_, cref<VirtualBufferView> view_) {
 
-    auto info = make_uptr<vk::DescriptorBufferInfo>(
-        view_.owner()->vkBuffer(),
-        view_.offset(),
-        view_.size()
+    const auto marker = emplaceBufferInfo(
+        {
+            view_.owner()->vkBuffer(),
+            view_.offset(),
+            view_.size()
+        }
     );
 
     _writes.emplace_back(
@@ -230,13 +272,11 @@ void VkDescriptorWriter::storeStorage(index_type idx_, cref<VirtualBufferView> v
         idx_,
         0,
         1,
-        vk::DescriptorType::eUniformBuffer,
+        vk::DescriptorType::eStorageBuffer,
         nullptr,
-        info.get(),
+        reinterpret_cast<ptr<vk::DescriptorBufferInfo>>(marker),
         nullptr
-
     );
-    _descriptorBufferInfos.push_back(_STD move(info));
 }
 
 void VkDescriptorWriter::storeStorage(index_type idx_, nmpt<const gfx::StorageBufferView> view_) {
@@ -246,12 +286,12 @@ void VkDescriptorWriter::storeStorage(index_type idx_, nmpt<const gfx::StorageBu
         obj.get(),
         [this, idx_](const ptr<const Buffer> buffer_) {
 
-            _descriptorBufferInfos.emplace_back(
-                make_uptr<vk::DescriptorBufferInfo>(
+            const auto marker = emplaceBufferInfo(
+                {
                     buffer_->buffer,
                     0uLL,
                     buffer_->size
-                )
+                }
             );
 
             return vk::WriteDescriptorSet {
@@ -261,18 +301,18 @@ void VkDescriptorWriter::storeStorage(index_type idx_, nmpt<const gfx::StorageBu
                 1uL,
                 vk::DescriptorType::eStorageBuffer,
                 nullptr,
-                _descriptorBufferInfos.back().get(),
+                reinterpret_cast<ptr<vk::DescriptorBufferInfo>>(marker),
                 nullptr
             };
         },
         [this, idx_](const ptr<const VirtualBuffer> buffer_) {
 
-            _descriptorBufferInfos.emplace_back(
-                make_uptr<vk::DescriptorBufferInfo>(
+            const auto marker = emplaceBufferInfo(
+                {
                     buffer_->vkBuffer(),
                     0uL,
                     buffer_->size()
-                )
+                }
             );
 
             return vk::WriteDescriptorSet {
@@ -282,18 +322,18 @@ void VkDescriptorWriter::storeStorage(index_type idx_, nmpt<const gfx::StorageBu
                 1uL,
                 vk::DescriptorType::eStorageBuffer,
                 nullptr,
-                _descriptorBufferInfos.back().get(),
+                reinterpret_cast<ptr<vk::DescriptorBufferInfo>>(marker),
                 nullptr
             };
         },
         [this, idx_](const ptr<const VirtualBufferView> view_) {
 
-            _descriptorBufferInfos.emplace_back(
-                make_uptr<vk::DescriptorBufferInfo>(
+            const auto marker = emplaceBufferInfo(
+                {
                     view_->owner()->vkBuffer(),
                     view_->offset(),
                     view_->size()
-                )
+                }
             );
 
             return vk::WriteDescriptorSet {
@@ -303,7 +343,7 @@ void VkDescriptorWriter::storeStorage(index_type idx_, nmpt<const gfx::StorageBu
                 1uL,
                 vk::DescriptorType::eStorageBuffer,
                 nullptr,
-                _descriptorBufferInfos.back().get(),
+                reinterpret_cast<ptr<vk::DescriptorBufferInfo>>(marker),
                 nullptr
             };
         }
@@ -322,13 +362,13 @@ void VkDescriptorWriter::storeTexture(
         obj.get(),
         [this, idx_, view_](const ptr<const Texture> texture_) {
 
-            _descriptorImageInfos.emplace_back(
-                make_uptr<vk::DescriptorImageInfo>(
+            const auto marker = emplaceImageInfo(
+                {
                     view_->samplerObject()->vkSampler(),
                     texture_->vkView(),
                     // Warning: Unsecure / Error prone
                     texture_->buffer()._vkLayout
-                )
+                }
             );
 
             return vk::WriteDescriptorSet {
@@ -337,20 +377,20 @@ void VkDescriptorWriter::storeTexture(
                 0uL,
                 1uL,
                 vk::DescriptorType::eCombinedImageSampler,
-                _descriptorImageInfos.back().get(),
+                reinterpret_cast<ptr<vk::DescriptorImageInfo>>(marker),
                 nullptr,
                 nullptr
             };
         },
         [this, idx_, view_](const ptr<const TextureView> texture_) {
 
-            _descriptorImageInfos.emplace_back(
-                make_uptr<vk::DescriptorImageInfo>(
+            const auto marker = emplaceImageInfo(
+                {
                     view_->samplerObject()->vkSampler(),
                     texture_->owner()->vkView(),
                     // Warning: Unsecure / Error prone
                     texture_->owner()->buffer()._vkLayout
-                )
+                }
             );
 
             return vk::WriteDescriptorSet {
@@ -359,20 +399,20 @@ void VkDescriptorWriter::storeTexture(
                 0uL,
                 1uL,
                 vk::DescriptorType::eCombinedImageSampler,
-                _descriptorImageInfos.back().get(),
+                reinterpret_cast<ptr<vk::DescriptorImageInfo>>(marker),
                 nullptr,
                 nullptr
             };
         },
         [this, idx_, view_](const ptr<const VirtualTexture> texture_) {
 
-            _descriptorImageInfos.emplace_back(
-                make_uptr<vk::DescriptorImageInfo>(
+            const auto marker = emplaceImageInfo(
+                {
                     view_->samplerObject()->vkSampler(),
                     texture_->_vkImageView,
                     // Warning: Unsecure / Error prone
                     vk::ImageLayout::eUndefined
-                )
+                }
             );
 
             return vk::WriteDescriptorSet {
@@ -381,20 +421,20 @@ void VkDescriptorWriter::storeTexture(
                 0uL,
                 1uL,
                 vk::DescriptorType::eCombinedImageSampler,
-                _descriptorImageInfos.back().get(),
+                reinterpret_cast<ptr<vk::DescriptorImageInfo>>(marker),
                 nullptr,
                 nullptr
             };
         },
         [this, idx_, view_](const ptr<const VirtualTextureView> texture_) {
 
-            _descriptorImageInfos.emplace_back(
-                make_uptr<vk::DescriptorImageInfo>(
+            const auto marker = emplaceImageInfo(
+                {
                     view_->samplerObject()->vkSampler(),
                     reinterpret_cast<::VkImageView>(texture_->vkImageView()),
                     // Warning: Unsecure / Error prone
                     vk::ImageLayout::eShaderReadOnlyOptimal
-                )
+                }
             );
 
             return vk::WriteDescriptorSet {
@@ -403,7 +443,7 @@ void VkDescriptorWriter::storeTexture(
                 0uL,
                 1uL,
                 vk::DescriptorType::eCombinedImageSampler,
-                _descriptorImageInfos.back().get(),
+                reinterpret_cast<ptr<vk::DescriptorImageInfo>>(marker),
                 nullptr,
                 nullptr
             };
@@ -424,7 +464,7 @@ void VkDescriptorWriter::storeAs(
     cref<vk::ImageLayout> layout_
 ) {
 
-    auto info = make_uptr<vk::DescriptorImageInfo>(sampler_, texture_.vkView(), layout_);
+    const auto marker = emplaceImageInfo({ sampler_, texture_.vkView(), layout_ });
 
     _writes.emplace_back(
         _vkSet,
@@ -432,11 +472,10 @@ void VkDescriptorWriter::storeAs(
         0,
         1,
         vk::DescriptorType::eCombinedImageSampler,
-        info.get(),
+        reinterpret_cast<ptr<vk::DescriptorImageInfo>>(marker),
         nullptr,
         nullptr
     );
-    _descriptorImageInfos.push_back(_STD move(info));
 }
 
 void VkDescriptorWriter::store(index_type idx_, const ptr<const VirtualTexture> texture_, cref<vk::Sampler> sampler_) {
@@ -450,7 +489,7 @@ void VkDescriptorWriter::storeAs(
     cref<vk::ImageLayout> layout_
 ) {
 
-    auto info = make_uptr<vk::DescriptorImageInfo>(sampler_, texture_->_vkImageView, layout_);
+    const auto marker = emplaceImageInfo({ sampler_, texture_->_vkImageView, layout_ });
 
     _writes.emplace_back(
         _vkSet,
@@ -458,11 +497,10 @@ void VkDescriptorWriter::storeAs(
         0,
         1,
         vk::DescriptorType::eCombinedImageSampler,
-        info.get(),
+        reinterpret_cast<ptr<vk::DescriptorImageInfo>>(marker),
         nullptr,
         nullptr
     );
-    _descriptorImageInfos.push_back(_STD move(info));
 }
 
 void VkDescriptorWriter::store(
@@ -470,10 +508,12 @@ void VkDescriptorWriter::store(
     const ptr<const VirtualTextureView> texture_,
     cref<vk::Sampler> sampler_
 ) {
-    auto info = make_uptr<vk::DescriptorImageInfo>(
-        sampler_,
-        reinterpret_cast<VkImageView>(texture_->vkImageView()),
-        vk::ImageLayout::eShaderReadOnlyOptimal
+    const auto marker = emplaceImageInfo(
+        {
+            sampler_,
+            reinterpret_cast<VkImageView>(texture_->vkImageView()),
+            vk::ImageLayout::eShaderReadOnlyOptimal
+        }
     );
 
     _writes.emplace_back(
@@ -482,9 +522,8 @@ void VkDescriptorWriter::store(
         0,
         1,
         vk::DescriptorType::eCombinedImageSampler,
-        info.get(),
+        reinterpret_cast<ptr<vk::DescriptorImageInfo>>(marker),
         nullptr,
         nullptr
     );
-    _descriptorImageInfos.push_back(_STD move(info));
 }

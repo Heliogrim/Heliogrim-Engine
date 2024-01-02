@@ -30,12 +30,20 @@ namespace hg::engine::render::graph {
     private:
         vk::DescriptorSet _vkSet;
 
-        Vector<uptr<vk::DescriptorBufferInfo>> _descriptorBufferInfos;
-        Vector<uptr<vk::DescriptorImageInfo>> _descriptorImageInfos;
+        bool _addressPatched;
+        Vector<vk::DescriptorBufferInfo> _descriptorBufferInfos;
+        Vector<vk::DescriptorImageInfo> _descriptorImageInfos;
         Vector<vk::WriteDescriptorSet> _writes;
 
+    private:
+        ptrdiff_t emplaceBufferInfo(mref<vk::DescriptorBufferInfo> info_);
+
+        ptrdiff_t emplaceImageInfo(mref<vk::DescriptorImageInfo> info_);
+
+        void patchInfoAddress();
+
     public:
-        void update(cref<vk::Device> device_) const;
+        void update(cref<vk::Device> device_);
 
     public:
         void storeUniform(index_type idx_, cref<gfx::Buffer> buffer_);
