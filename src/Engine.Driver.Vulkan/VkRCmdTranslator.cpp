@@ -32,12 +32,12 @@ using namespace hg::engine::render;
 using namespace hg::engine::accel;
 using namespace hg;
 
-ptr<VkNativeBatch> VkRCmdTranslator::operator()(const ptr<const cmd::RenderCommandBuffer> commands_) noexcept {
+uptr<cmd::NativeBatch> VkRCmdTranslator::operator()(const ptr<const cmd::RenderCommandBuffer> commands_) noexcept {
 
     assert(commands_->root());
 
     /**/
-    auto batch = new VkNativeBatch();
+    auto batch = make_uptr<VkNativeBatch>();
 
     auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
     auto ecpool = device->graphicsQueue()->pool();
@@ -88,7 +88,8 @@ void VkRCmdTranslator::translate(
         {
             .graphicsPass = *graphicsPass,
             .framebuffer = cmd_->data.framebuffer.load(),
-            .subrecording = false
+            .subrecording = false,
+            .clearValues = cmd_->data.clearValues
         }
     );
 }
