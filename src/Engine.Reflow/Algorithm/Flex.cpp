@@ -112,11 +112,15 @@ static FlexLine solvePreserve(
     preserve.items.reserve(widgets_->size());
     for (const auto& widget : *widgets_) {
 
+        if (widget->position() == ReflowPosition::eAbsolute) {
+            continue;
+        }
+
         constexpr auto inf = math::vec2 { _STD numeric_limits<float>::infinity() };
         constexpr auto zero = math::vec2 { 0.F };
 
         const auto widgetState = reflowState_.getStateOf(widget);
-        preserve.items.push_back(
+        preserve.items.emplace_back(
             FlexLineItem {
                 .widget = widget,
                 .maxSize = inf,
@@ -172,10 +176,15 @@ static void solveLine(
         (lineLimit_.y >= 0.F && line_.size.y > lineLimit_.y)
     ) {
 
+        /* Restore previous unbound line size */
+
+        const auto inverse = 1.0F - line_.flexFactor;
+        const auto unbound = line_.size + line_.size * inverse;
+
         /* Calculate size over limit to compensate */
 
         const math::vec2 calcLimit = math::compMax<float>(lineLimit_, math::vec2 { 0.F });
-        const math::vec2 overLimit = line_.size - calcLimit;
+        const math::vec2 overLimit = unbound - calcLimit;
 
         /* Aggregate the shrinkable size and determine the apply factor */
 
