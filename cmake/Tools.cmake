@@ -1,7 +1,7 @@
 
 macro(list_directories retval cwd)
 
-    file(GLOB sub-dir LIST_DIRECTORIES true ${cwd}/*)
+    file(GLOB sub-dir LIST_DIRECTORIES true CONFIGURE_DEPENDS ${cwd}/*)
     set(list_of "")
 
     foreach (dir ${sub-dir})
