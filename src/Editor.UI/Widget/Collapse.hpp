@@ -85,9 +85,9 @@ namespace hg::editor::ui {
     public:
         [[nodiscard]] const ptr<const engine::reflow::Children> children() const override;
 
-        [[nodiscard]] cref<sptr<CollapseHeader>> getHeader() noexcept;
+        [[nodiscard]] sptr<CollapseHeader> getHeader() noexcept;
 
-        [[nodiscard]] cref<sptr<Widget>> getContent() const noexcept;
+        [[nodiscard]] sptr<Widget> getContent() const noexcept;
 
         void setContent(cref<sptr<Widget>> widget_);
 

@@ -119,11 +119,11 @@ const ptr<const engine::reflow::Children> Collapse::children() const {
     return &_children;
 }
 
-cref<sptr<CollapseHeader>> Collapse::getHeader() noexcept {
+sptr<CollapseHeader> Collapse::getHeader() noexcept {
     return _STD static_pointer_cast<CollapseHeader, Widget>(_children.getChild<0>());
 }
 
-cref<sptr<Widget>> Collapse::getContent() const noexcept {
+sptr<Widget> Collapse::getContent() const noexcept {
     return _children.getChild<1>();
 }
 
