@@ -11,10 +11,21 @@ namespace hg::engine::accel {
         ::vk::PipelineColorBlendAttachmentState vkState;
     };
 
+    struct DepthBias {
+        f32 depthBiasConst = -1.F;
+        f32 depthBiasSlope = -1.F;
+        f32 depthBiasClamp = -1.F;
+
+        [[nodiscard]] explicit operator bool() const noexcept {
+            return depthBiasConst != -1.F || depthBiasSlope != -1.F || depthBiasClamp != -1.F;
+        }
+    };
+
     struct GraphicsPassSpecification {
         /**/
 
         DepthCompareOp depthCompareOp;
+        DepthBias depthBias = {};
 
         /**/
 
