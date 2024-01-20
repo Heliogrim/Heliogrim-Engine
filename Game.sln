@@ -246,6 +246,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Reflow.Render", "pro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor.Render", "projects\Editor.Render\Editor.Render.vcxproj", "{62701C25-6E78-425E-BAE5-73922CE3C731}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine.Render.Scene", "projects\Engine.Render.Scene\Engine.Render.Scene.vcxproj", "{95C6B2CB-ABE2-4D02-988A-4EB32F77D591}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -696,6 +698,12 @@ Global
 		{62701C25-6E78-425E-BAE5-73922CE3C731}.Profile|x64.Build.0 = Profile|x64
 		{62701C25-6E78-425E-BAE5-73922CE3C731}.Release|x64.ActiveCfg = Release|x64
 		{62701C25-6E78-425E-BAE5-73922CE3C731}.Release|x64.Build.0 = Release|x64
+		{95C6B2CB-ABE2-4D02-988A-4EB32F77D591}.Debug|x64.ActiveCfg = Debug|x64
+		{95C6B2CB-ABE2-4D02-988A-4EB32F77D591}.Debug|x64.Build.0 = Debug|x64
+		{95C6B2CB-ABE2-4D02-988A-4EB32F77D591}.Profile|x64.ActiveCfg = Profile|x64
+		{95C6B2CB-ABE2-4D02-988A-4EB32F77D591}.Profile|x64.Build.0 = Profile|x64
+		{95C6B2CB-ABE2-4D02-988A-4EB32F77D591}.Release|x64.ActiveCfg = Release|x64
+		{95C6B2CB-ABE2-4D02-988A-4EB32F77D591}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -786,6 +794,7 @@ Global
 		{85A1BBB9-4DE0-46EC-BAF1-CDFEFC9157E8} = {95A51D0F-5438-4BDB-AD9D-AFB6E36EAE8C}
 		{372B68D8-E285-4F6D-AC27-F4041ECA9488} = {95A51D0F-5438-4BDB-AD9D-AFB6E36EAE8C}
 		{62701C25-6E78-425E-BAE5-73922CE3C731} = {91C8E24A-47B1-45BA-9359-AAF445955F73}
+		{95C6B2CB-ABE2-4D02-988A-4EB32F77D591} = {95A51D0F-5438-4BDB-AD9D-AFB6E36EAE8C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {045F3307-C3BE-45A8-88A0-BB88AD5695BE}
