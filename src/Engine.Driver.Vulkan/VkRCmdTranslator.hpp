@@ -123,6 +123,11 @@ namespace hg::driver::vk {
 
         void translate(
             ptr<State> state_,
+            ptr<const engine::render::cmd::BindTextureSamplerRCmd> cmd_
+        ) noexcept override;
+
+        void translate(
+            ptr<State> state_,
             ptr<const engine::render::cmd::BindUniformBufferRCmd>
         ) noexcept override;
 

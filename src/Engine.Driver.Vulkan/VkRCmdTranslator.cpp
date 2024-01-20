@@ -12,6 +12,7 @@
 #include <Engine.GFX.Render.Command/Commands/BindPipeline.hpp>
 #include <Engine.GFX.Render.Command/Commands/BindStorageBuffer.hpp>
 #include <Engine.GFX.Render.Command/Commands/BindTexture.hpp>
+#include <Engine.GFX.Render.Command/Commands/BindTextureSampler.hpp>
 #include <Engine.GFX.Render.Command/Commands/BindUniformBuffer.hpp>
 #include <Engine.GFX.Render.Command/Commands/BindVertexBuffer.hpp>
 #include <Engine.GFX.Render.Command/Commands/DrawDispatch.hpp>
@@ -20,9 +21,9 @@
 #include <Engine.GFX.Render.Command/Commands/Lambda.hpp>
 #include <Engine.GFX/Buffer/StorageBufferView.hpp>
 #include <Engine.GFX/Buffer/UniformBufferView.hpp>
-#include <Engine.GFX/Texture/SampledTextureView.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
-#include <Engine.GFX/Texture/VirtualTextureView.hpp>
+#include <Engine.GFX/Texture/SparseTextureView.hpp>
+#include <Engine.GFX/Texture/TextureSampler.hpp>
 #include <Engine.Reflect/Cast.hpp>
 
 #include "VkResourceTable.hpp"
@@ -39,8 +40,8 @@ uptr<cmd::NativeBatch> VkRCmdTranslator::operator()(const ptr<const cmd::RenderC
     /**/
     auto batch = make_uptr<VkNativeBatch>();
 
-    auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
-    auto ecpool = device->graphicsQueue()->pool();
+    const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+    auto* const ecpool = device->graphicsQueue()->pool();
 
     AccelCommandBuffer eccmd = ecpool->make();
     VkResourceTable rt {};
@@ -81,7 +82,7 @@ void VkRCmdTranslator::translate(
     auto active = static_cast<VkState*>(state_)->cmd.active();
     assert(active.has_value());
 
-    const auto graphicsPass = Cast<VkGraphicsPass>(cmd_->data.pass.get());
+    const auto* const graphicsPass = Cast<VkGraphicsPass>(cmd_->data.pass.get());
     assert(graphicsPass);
 
     active->bindRenderPass(
@@ -131,7 +132,7 @@ void VkRCmdTranslator::translate(const ptr<State> state_, const ptr<const cmd::B
 
     // TODO: assert(active->getFeatureSet() & cmd_->featureSet);
 
-    const auto graphicsPipeline = Cast<VkGraphicsPipeline>(cmd_->pipeline.get());
+    const auto* const graphicsPipeline = Cast<VkGraphicsPipeline>(cmd_->pipeline.get());
     assert(graphicsPipeline);
 
     state->srt.replaceActivePipeline(graphicsPipeline);
@@ -175,7 +176,18 @@ void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindTextureRC
     const auto active = static_cast<VkState*>(state_)->cmd.active();
     assert(active.has_value());
 
-    static_cast<VkState*>(state_)->srt.bind(cmd_->_symbolId, cmd_->_sampledTexture);
+    static_cast<VkState*>(state_)->srt.bind(cmd_->_symbolId, cmd_->_textureView);
+}
+
+void VkRCmdTranslator::translate(
+    ptr<State> state_,
+    ptr<const cmd::BindTextureSamplerRCmd> cmd_
+) noexcept {
+
+    const auto active = static_cast<VkState*>(state_)->cmd.active();
+    assert(active.has_value());
+
+    static_cast<VkState*>(state_)->srt.bind(cmd_->_symbolId, cmd_->_textureSampler);
 }
 
 void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::BindUniformBufferRCmd> cmd_) noexcept {
@@ -198,11 +210,21 @@ void VkRCmdTranslator::translate(ptr<State> state_, ptr<const cmd::DrawMeshRCmd>
     const auto activePipe = srt.getActivePipeline();
     assert(activePipe);
 
-    Vector<_::VkDescriptorSet> descriptorSets {};
-    const auto result = srt.commit(activePipe->getBindingLayout(), descriptorSets);
-    assert(result);
+    /* Conditional Update */
 
-    active->bindDescriptor(reinterpret_cast<ref<Vector<::vk::DescriptorSet>>>(descriptorSets));
+    if (srt.isDirty()) {
+
+        const auto isEffectivelyDirty = srt.isEffectivelyDirty(activePipe->getBindingLayout());
+
+        if (isEffectivelyDirty) {
+            Vector<_::VkDescriptorSet> descriptorSets {};
+            const auto result = srt.commit(descriptorSets);
+            assert(result);
+
+            active->bindDescriptor(reinterpret_cast<ref<Vector<::vk::DescriptorSet>>>(descriptorSets));
+        }
+
+    }
 
     /**/
 
@@ -243,11 +265,18 @@ void VkRCmdTranslator::translate(const ptr<State> state_, const ptr<const cmd::D
     const auto activePipe = srt.getActivePipeline();
     assert(activePipe);
 
-    Vector<_::VkDescriptorSet> descriptorSets {};
-    const auto result = srt.commit(activePipe->getBindingLayout(), descriptorSets);
-    assert(result);
+    /* Conditional Update */
 
-    active->bindDescriptor(reinterpret_cast<ref<Vector<::vk::DescriptorSet>>>(descriptorSets));
+    const bool dirtyBindings = true;
+    const bool dirtyEffectiveBindings = true;
+
+    if (dirtyEffectiveBindings) {
+        Vector<_::VkDescriptorSet> descriptorSets {};
+        const auto result = srt.commit(descriptorSets);
+        assert(result);
+
+        active->bindDescriptor(reinterpret_cast<ref<Vector<::vk::DescriptorSet>>>(descriptorSets));
+    }
 
     /**/
 

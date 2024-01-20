@@ -16,18 +16,24 @@ namespace hg::driver::vk {
     public:
         using this_type = VkScopedResourceTable;
 
-    public:
-        VkScopedResourceTable() noexcept = default;
+        using SymbolId = ::hg::engine::accel::lang::SymbolId;
+        using Resource = ::hg::engine::render::Resource;
 
-        ~VkScopedResourceTable() noexcept = default;
+    public:
+        VkScopedResourceTable() noexcept;
+
+        ~VkScopedResourceTable() noexcept override;
 
     private:
+        DenseMap<SymbolId, Resource> table;
         nmpt<const engine::accel::AccelerationPipeline> _activePipeline;
 
     public:
         [[nodiscard]] nmpt<const engine::accel::AccelerationPipeline> getActivePipeline() const noexcept;
 
         void replaceActivePipeline(nmpt<const engine::accel::AccelerationPipeline> pipeline_) noexcept;
+
+        void bind(cref<SymbolId> symbolId_, mref<Resource> resource_) override;
 
     public:
         using Holder = smr<void>;
@@ -50,6 +56,9 @@ namespace hg::driver::vk {
         Vector<VkDescriptorPool> _commitPools;
         Vector<Vector<_::VkDescriptorSet>> _committedSets;
 
+        uint64_t _dynamicBindVersion;
+        uint64_t _dynamicCommitVersion;
+
     private:
         [[nodiscard]] Vector<VkDescriptorPoolSize> nextAllocSizes() const noexcept;
 
@@ -65,14 +74,22 @@ namespace hg::driver::vk {
         );
 
     public:
+        [[nodiscard]] bool isDirty() const noexcept;
+
+        [[nodiscard]] bool isEffectivelyDirty(cref<engine::accel::BindLayout> layout_) const noexcept;
+
         /**
          * @details
          *
          * @returns true if the binding layout was exhaustively committed.
          */
         [[nodiscard]] bool commit(
-            _In_ cref<engine::accel::BindLayout> layout_,
             _Out_ ref<Vector<_::VkDescriptorSet>> descriptorSets_
         ) noexcept;
+
+        [[nodiscard]] bool commit(
+            _In_ cref<engine::accel::BindLayout> layout_,
+            _Out_ ref<Vector<_::VkDescriptorSet>> descriptorSets_
+        ) noexcept = delete;
     };
 }

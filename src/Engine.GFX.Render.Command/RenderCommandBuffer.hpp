@@ -101,13 +101,12 @@ namespace hg::engine::render::cmd {
 
         void bindTexture(
             mref<accel::lang::SymbolId> symbolId_,
-            const nmpt<const gfx::SampledTextureView> sampledTextureView_
+            mref<nmpt<const gfx::TextureLikeObject>> texture_
         ) noexcept override;
 
-        void bindTexture(
+        void bindTextureSampler(
             mref<accel::lang::SymbolId> symbolId_,
-            const nmpt<const gfx::TextureLikeObject> texture_,
-            const nmpt<const gfx::TextureSampler> sampler_
+            mref<nmpt<const gfx::TextureSampler>> sampler_
         ) noexcept override;
 
         void bindUniform(
@@ -116,29 +115,37 @@ namespace hg::engine::render::cmd {
         ) noexcept override;
 
         void bind(
-            mref<engine::render::ResourceTable> table_
+            mref<smr<engine::render::ResourceTable>> table_
         ) noexcept override;
 
         void bind(
-            _STD initializer_list<_STD pair<accel::lang::SymbolId, ResourceView>> list_
+            _STD initializer_list<_STD pair<accel::lang::SymbolId, Resource>> list_
         ) noexcept {
-            engine::render::ResourceTable tmp {};
-            tmp.table.insert(list_);
-            bind(_STD move(tmp));
+
+            __debugbreak();
+            return;
+
+            auto* tmp = static_cast<ptr<engine::render::ResourceTable>>(nullptr);
+            //tmp->bind(list_);
+            //bind(_STD move(tmp));
         }
 
         template <typename... Types_>
         void bind(_STD pair<accel::lang::SymbolId, Types_>&&... args_) noexcept {
-            engine::render::ResourceTable tmp {};
 
-            (tmp.table.insert(
-                _STD make_pair<accel::lang::SymbolId, ResourceView>(
-                    _STD move(args_.first),
-                    ResourceView(_STD move(args_.second))
-                )
-            ), ...);
+            __debugbreak();
+            return;
 
-            bind(_STD move(tmp));
+            auto* tmp = static_cast<ptr<engine::render::ResourceTable>>(nullptr);
+
+            //(tmp->bind(
+            //    _STD make_pair<accel::lang::SymbolId, Resource>(
+            //        _STD move(args_.first),
+            //        Resource(_STD move(args_.second))
+            //    )
+            //), ...);
+
+            //bind(_STD move(tmp));
         }
 
     public:

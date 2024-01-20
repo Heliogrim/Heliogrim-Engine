@@ -26,6 +26,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStaticMesh.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStorageBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindTexture.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindTextureSampler.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindUniformBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindVertexBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatch.hpp" />
@@ -53,7 +54,7 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\RenderResourceTable.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Resource\Pipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Resource\ResourceTable.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Resource\ResourceView.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Resource\Resource.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Translator\UnreachableTranslator.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +69,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStaticMesh.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindStorageBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindTexture.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindTextureSampler.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindUniformBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindVertexBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\DrawDispatch.cpp" />
@@ -82,7 +84,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\RenderCommandAllocator.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\RenderCommandBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Resource\ResourceTable.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Resource\ResourceView.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Resource\Resource.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\test.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

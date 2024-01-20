@@ -4,7 +4,6 @@
 #include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Accel.Pipeline/ComputePipeline.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
-#include <Engine.GFX/Texture/SampledTextureView.hpp>
 
 #include "RenderCommandIterator.hpp"
 #include "Commands/AttachResource.hpp"
@@ -18,6 +17,7 @@
 #include "Commands/BindStaticMesh.hpp"
 #include "Commands/BindStorageBuffer.hpp"
 #include "Commands/BindTexture.hpp"
+#include "Commands/BindTextureSampler.hpp"
 #include "Commands/BindUniformBuffer.hpp"
 #include "Commands/BindVertexBuffer.hpp"
 #include "Commands/DrawDispatch.hpp"
@@ -238,40 +238,28 @@ void RenderCommandBuffer::bindStorage(
 
 void RenderCommandBuffer::bindTexture(
     mref<accel::lang::SymbolId> symbolId_,
-    const nmpt<const gfx::SampledTextureView> sampledTextureView_
+    mref<nmpt<const gfx::TextureLikeObject>> texture_
 ) noexcept {
 
-    assert(sampledTextureView_->object());
-    assert(sampledTextureView_->samplerObject());
+    assert(texture_);
 
     const auto result = alloc().allocateCommand<BindTextureRCmd>(
-        _STD move(symbolId_),
-        _STD move(sampledTextureView_)
+        std::move(symbolId_),
+        std::move(texture_)
     );
     link(_last, result.value());
 }
 
-void RenderCommandBuffer::bindTexture(
+void RenderCommandBuffer::bindTextureSampler(
     mref<accel::lang::SymbolId> symbolId_,
-    const nmpt<const gfx::TextureLikeObject> texture_,
-    const nmpt<const gfx::TextureSampler> sampler_
+    mref<nmpt<const gfx::TextureSampler>> sampler_
 ) noexcept {
 
-    assert(texture_);
     assert(sampler_);
 
-    const auto preserve = alloc().allocateCommand<AttachResourceRCmd>(
-        texture_,
-        sampler_
-    );
-    link(_last, preserve.value());
-
-    auto sampledTexture = (preserve.value())->asTextureView();
-    assert(sampledTexture);
-
-    const auto result = alloc().allocateCommand<BindTextureRCmd>(
-        _STD move(symbolId_),
-        _STD move(sampledTexture)
+    const auto result = alloc().allocateCommand<BindTextureSamplerRCmd>(
+        std::move(symbolId_),
+        std::move(sampler_)
     );
     link(_last, result.value());
 }
@@ -287,7 +275,7 @@ void RenderCommandBuffer::bindUniform(
     link(_last, result.value());
 }
 
-void RenderCommandBuffer::bind(mref<engine::render::ResourceTable> table_) noexcept {
+void RenderCommandBuffer::bind(mref<smr<engine::render::ResourceTable>> table_) noexcept {
     const auto result = alloc().allocateCommand<BindResourceTableRCmd>(
         _STD move(table_)
     );

@@ -18,10 +18,10 @@ namespace hg::engine::render::cmd {
     public:
         template <typename Fn_>
         LambdaRCmd(Fn_&& fn_) noexcept :
-            fn(_STD forward<Fn_>(fn_)) {}
+            fn(std::forward<Fn_>(fn_)) {}
 
         LambdaRCmd(mref<_STD function<signature>> fn_) noexcept :
-            fn(_STD move(fn_)) {}
+            fn(std::move(fn_)) {}
 
     private:
     public:

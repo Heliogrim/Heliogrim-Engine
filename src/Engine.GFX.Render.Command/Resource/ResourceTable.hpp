@@ -2,19 +2,20 @@
 #include <Engine.Accel.Lang/Rep/Symbol.hpp>
 #include <Engine.Common/Collection/DenseMap.hpp>
 
-#include "ResourceView.hpp"
+#include "Resource.hpp"
 
 namespace hg::engine::render {
-    class ResourceTable {
+    class __declspec(novtable) ResourceTable {
     public:
         using this_type = ResourceTable;
 
         using SymbolId = ::hg::engine::accel::lang::SymbolId;
+        using Resource = ::hg::engine::render::Resource;
 
     public:
-        DenseMap<SymbolId, ResourceView> table;
+        virtual ~ResourceTable() noexcept = default;
 
     public:
-        void bind(cref<SymbolId> symbolId_, mref<ResourceView> view_);
+        virtual void bind(cref<SymbolId> symbolId_, mref<Resource> resource_) = 0;
     };
 }

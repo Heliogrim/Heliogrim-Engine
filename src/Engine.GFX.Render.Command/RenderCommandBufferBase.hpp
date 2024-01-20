@@ -19,8 +19,7 @@ namespace hg::engine::gfx {
     class VertexBufferView;
     class StorageBufferView;
     class UniformBufferView;
-    class TextureView;
-    class VirtualTextureView;
+    class SparseTextureView;
     struct MaterialIdentifier;
     using MeshDescription = ::hg::engine::render::graph::MeshDescription;
     class TextureSampler;
@@ -86,13 +85,12 @@ namespace hg::engine::render::cmd {
 
         virtual void bindTexture(
             mref<accel::lang::SymbolId> symbolId_,
-            const nmpt<const gfx::SampledTextureView> sampledTextureView_
+            mref<nmpt<const gfx::TextureLikeObject>> texture_
         ) noexcept = 0;
 
-        virtual void bindTexture(
+        virtual void bindTextureSampler(
             mref<accel::lang::SymbolId> symbolId_,
-            const nmpt<const gfx::TextureLikeObject> texture_,
-            const nmpt<const gfx::TextureSampler> sampler_
+            mref<nmpt<const gfx::TextureSampler>> sampler_
         ) noexcept = 0;
 
         virtual void bindUniform(
@@ -101,7 +99,7 @@ namespace hg::engine::render::cmd {
         ) noexcept = 0;
 
         virtual void bind(
-            mref<engine::render::ResourceTable> table_
+            mref<smr<engine::render::ResourceTable>> table_
         ) noexcept = 0;
 
     public:

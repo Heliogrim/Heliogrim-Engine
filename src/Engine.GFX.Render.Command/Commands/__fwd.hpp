@@ -19,6 +19,7 @@ namespace hg::engine::render::cmd {
     class BindStaticMeshRCmd;
     class BindStorageBufferRCmd;
     class BindTextureRCmd;
+    class BindTextureSamplerRCmd;
     class BindUniformBufferRCmd;
     class BindVertexBufferRCmd;
     /**/

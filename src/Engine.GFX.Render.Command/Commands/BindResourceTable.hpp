@@ -13,7 +13,7 @@ namespace hg::engine::render::cmd {
         using this_type = BindResourceTableRCmd;
 
     public:
-        BindResourceTableRCmd(mref<ResourceTable> table_) noexcept :
+        BindResourceTableRCmd(mref<smr<const ResourceTable>> table_) noexcept :
             RenderCommand(),
             _table(_STD move(table_)) {}
 
@@ -21,7 +21,7 @@ namespace hg::engine::render::cmd {
 
     private:
     public:
-        ResourceTable _table;
+        smr<const ResourceTable> _table;
 
     public:
         void operator()(
