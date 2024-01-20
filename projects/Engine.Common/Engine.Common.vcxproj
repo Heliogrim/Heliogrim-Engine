@@ -56,7 +56,11 @@
     <ClInclude Include="..\..\src\Engine.Common\Inc.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Integral128.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Make.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Managed\AtomicRefCounted.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Managed\AtomicRefCountedIntrusive.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Managed\Rc.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Managed\RefCounted.hpp" />
+    <ClInclude Include="..\..\src\Engine.Common\Managed\RefCountedIntrusive.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Managed\SharedFromThis.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Bezier.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Math\Bounding.hpp" />
