@@ -15,35 +15,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Engine.Scene\Graph\MutableSceneGraph.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Graph\SceneGraph.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\NodeTypeRegistry.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\LoosySceneNode.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\NaturalSceneNode.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNode.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeElement.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeFactory.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeHead.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeHeadContainer.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeId.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodePath.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeSubBase.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeVersion.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\ShadowSceneNode.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SpartialSceneNode.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\Traits.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\__fwd.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\PreviewScene.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\IRenderScene.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\RenderGraph.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\RevScene.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Scene.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Node\SceneNodeConsumer.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\SceneFactory.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\SceneNodeModel.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\SceneTag.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\SceneTraits.hpp" />
-    <ClInclude Include="..\..\src\Engine.Scene\Storage\SceneElementStorage.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\SceneBase.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\SceneBroadcastFlags.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\ScenePostProcessFlags.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\SceneSystem.hpp" />
+    <ClInclude Include="..\..\src\Engine.Scene\SceneUpdateFlags.hpp" />
     <ClInclude Include="..\..\src\Engine.Scene\Storage\SceneNodeStorage.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -52,16 +29,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Engine.Scene\NodeTypeRegistry.cpp" />
-    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeHead.cpp" />
-    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeHeadContainer.cpp" />
-    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodePath.cpp" />
-    <ClCompile Include="..\..\src\Engine.Scene\Node\SceneNodeVersion.cpp" />
-    <ClCompile Include="..\..\src\Engine.Scene\RevScene.cpp" />
-    <ClCompile Include="..\..\src\Engine.Scene\Scene.cpp" />
-    <ClCompile Include="..\..\src\Engine.Scene\SceneFactory.cpp" />
-    <ClCompile Include="..\..\src\Engine.Scene\SceneNodeModel.cpp" />
-    <ClCompile Include="..\..\src\Engine.Scene\Storage\SceneNodeStorage.cpp" />
+    <ClCompile Include="..\..\src\Engine.Scene\SceneBase.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
