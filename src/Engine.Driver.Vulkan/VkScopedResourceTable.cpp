@@ -1,6 +1,7 @@
 #include "VkScopedResourceTable.hpp"
 
 #include <ranges>
+#include <Engine.Accel.Pipeline/AccelerationPipeline.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.GFX/vkinc.hpp>
@@ -9,23 +10,64 @@
 using namespace hg::driver::vk;
 using namespace hg;
 
+VkScopedResourceTable::VkScopedResourceTable() noexcept :
+    ResourceTable(),
+    _activePipeline(),
+    _mayOwned(),
+    _owned(),
+    _commitPools(),
+    _committedSets(),
+    _dynamicBindVersion(0uLL),
+    _dynamicCommitVersion(0uLL) {}
+
+VkScopedResourceTable::~VkScopedResourceTable() noexcept = default;
+
 nmpt<const engine::accel::AccelerationPipeline> VkScopedResourceTable::getActivePipeline() const noexcept {
     return _activePipeline;
 }
 
 void VkScopedResourceTable::replaceActivePipeline(nmpt<const engine::accel::AccelerationPipeline> pipeline_) noexcept {
     _activePipeline = pipeline_;
+    ++_dynamicBindVersion;
+}
+
+void VkScopedResourceTable::bind(cref<SymbolId> symbolId_, mref<Resource> resource_) {
+
+    auto iter = table.find(symbolId_);
+    bool changed = true;
+
+    if (iter != table.end()) {
+        changed = not iter->second.equivalent(resource_);
+        iter->second = std::move(resource_);
+
+    } else {
+        table.emplace(symbolId_, std::move(resource_));
+    }
+
+    if (changed) {
+        ++_dynamicBindVersion;
+    }
 }
 
 ref<VkScopedResourceTable::this_type> VkScopedResourceTable::replaceWith(cref<ResourceTable> table_) noexcept {
+
+    const auto& other = static_cast<cref<VkScopedResourceTable>>(table_);
+
     table.clear();
-    table.insert(table_.table.begin(), table_.table.end());
+    table.insert(other.table.begin(), other.table.end());
+    ++_dynamicBindVersion;
+
     return *this;
 }
 
 ref<VkScopedResourceTable::this_type> VkScopedResourceTable::replaceWith(mref<ResourceTable> table_) noexcept {
+
+    auto&& other = static_cast<mref<VkScopedResourceTable>>(table_);
+
     table.clear();
-    table = _STD move(table_.table);
+    table = _STD move(other.table);
+    ++_dynamicBindVersion;
+
     return *this;
 }
 
@@ -69,8 +111,12 @@ bool VkScopedResourceTable::allocateAndCommit(
             ::vk::DescriptorType vkdt {};
 
             switch (element.type) {
+                case engine::accel::BindType::eTextureSampler: {
+                    vkdt = ::vk::DescriptorType::eSampler;
+                    break;
+                }
                 case engine::accel::BindType::eTexture: {
-                    vkdt = ::vk::DescriptorType::eCombinedImageSampler;
+                    vkdt = ::vk::DescriptorType::eSampledImage;
                     break;
                 }
                 case engine::accel::BindType::eStorageBuffer: {
@@ -83,7 +129,7 @@ bool VkScopedResourceTable::allocateAndCommit(
                 }
             }
 
-            assert(static_cast<u32>(vkdt) > 0);
+            assert(static_cast<u32>(vkdt) >= 0uL && static_cast<u32>(vkdt) < 32uL);
 
             auto iter = _STD ranges::find(
                 allocationLayout_,
@@ -121,7 +167,7 @@ bool VkScopedResourceTable::allocateAndCommit(
 
     /* Select and ensure pool availability and remaining size */
 
-    size_t poolIdx = _commitPools.size() - 1uLL;
+    const auto poolIdx = _commitPools.size() - 1uLL;
     auto& targetPool = *(_commitPools.begin() + poolIdx);
     const ::vk::DescriptorSetAllocateInfo dsai {
         targetPool.vkPool, static_cast<u32>(dsl.size()), dsl.data()
@@ -188,9 +234,17 @@ void VkScopedResourceTable::updateSets(
                 case engine::accel::BindType::eTexture: {
 
                     const auto& resource = table.at(element.symbol->symbolId);
-                    assert(resource.isTextureView());
+                    assert(resource.isTexture());
 
-                    writer.storeTexture(idx, resource.asTextureView());
+                    writer.storeTexture(idx, resource.asTexture());
+                    break;
+                }
+                case engine::accel::BindType::eTextureSampler: {
+
+                    const auto& resource = table.at(element.symbol->symbolId);
+                    assert(resource.isSampler());
+
+                    writer.storeTextureSampler(idx, resource.asSampler());
                     break;
                 }
             }
@@ -203,30 +257,43 @@ void VkScopedResourceTable::updateSets(
 
 }
 
+bool VkScopedResourceTable::isDirty() const noexcept {
+    return _dynamicBindVersion > _dynamicCommitVersion;
+}
+
+bool VkScopedResourceTable::isEffectivelyDirty(cref<engine::accel::BindLayout> layout_) const noexcept {
+    // TODO:
+    return isDirty();
+}
+
 bool VkScopedResourceTable::commit(
-    cref<engine::accel::BindLayout> layout_,
     ref<Vector<_::VkDescriptorSet>> descriptorSets_
 ) noexcept {
 
+    /* Layout is directly associated with dirty tracking of active pipeline */
+    _dynamicCommitVersion = _dynamicBindVersion;
+    /**/
+
     const auto device = engine::Engine::getEngine()->getGraphics()->getCurrentDevice();
+    const auto& layout = _activePipeline->getBindingLayout();
 
     /* Assure descriptor requirement */
-    if (layout_.groups.empty()) {
+    if (layout.groups.empty()) {
         return true;
     }
 
     /* Ensure available pools */
 
     if (_commitPools.empty()) {
-        return allocateAndCommit(nextAllocSizes(), layout_, descriptorSets_);
+        return allocateAndCommit(nextAllocSizes(), layout, descriptorSets_);
     }
 
     /* Aggregate binding groups contributing to one layout each */
 
     Vector<::vk::DescriptorSetLayout> dsl {};
-    dsl.reserve(layout_.groups.size());
+    dsl.reserve(layout.groups.size());
 
-    for (const auto& group : layout_.groups) {
+    for (const auto& group : layout.groups) {
 
         assert(group.drvAux);
         auto* sl = static_cast<_::VkDescriptorSetLayout>(group.drvAux);
@@ -257,7 +324,7 @@ bool VkScopedResourceTable::commit(
     // assert(result == ::vk::Result::eErrorOutOfPoolMemory);
 
     if (result == ::vk::Result::eErrorOutOfPoolMemory) {
-        return allocateAndCommit(nextAllocSizes(), layout_, descriptorSets_);
+        return allocateAndCommit(nextAllocSizes(), layout, descriptorSets_);
     }
 
     if (result != ::vk::Result::eSuccess) {
@@ -272,7 +339,7 @@ bool VkScopedResourceTable::commit(
 
     /* Update allocated descriptors with stored resources */
 
-    updateSets(layout_, descriptorSets_);
+    updateSets(layout, descriptorSets_);
 
     return true;
 }

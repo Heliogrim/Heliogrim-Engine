@@ -31,25 +31,25 @@ namespace hg::engine::render::cmd {
     public:
         template <typename CommandType_, typename... Args_> requires
             IsRenderCommand<CommandType_> &&
-            _STD is_constructible_v<CommandType_, Args_...>
+            std::is_constructible_v<CommandType_, Args_...>
         [[nodiscard]] tl::expected<const ptr<CommandType_>, AllocationError> allocateCommand(
             Args_&&... args_
         ) {
             if (const auto ar = allocateUnique(sizeof(CommandType_))) {
-                return new(ar)CommandType_(_STD forward<Args_>(args_)...);
+                return new(ar)CommandType_(std::forward<Args_>(args_)...);
             }
             return tl::make_unexpected(AllocationError {});
         }
 
         template <typename CommandType_> requires
-            IsRenderCommand<_STD remove_cvref_t<CommandType_>> &&
-            (_STD is_move_constructible_v<_STD remove_cvref_t<CommandType_>>)
-        [[nodiscard]] tl::expected<const ptr<_STD remove_cvref_t<CommandType_>>, AllocationError> allocateCommand(
+            IsRenderCommand<std::remove_cvref_t<CommandType_>> &&
+            (std::is_move_constructible_v<std::remove_cvref_t<CommandType_>>)
+        [[nodiscard]] tl::expected<const ptr<std::remove_cvref_t<CommandType_>>, AllocationError> allocateCommand(
             CommandType_&& command_
         ) {
             const auto ar = allocateUnique(sizeof(CommandType_));
             if (ar) {
-                return new(ar)CommandType_(_STD forward<CommandType_>(command_));
+                return new(ar)CommandType_(std::forward<CommandType_>(command_));
             }
             return tl::make_unexpected(AllocationError {});
         }

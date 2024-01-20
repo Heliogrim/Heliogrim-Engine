@@ -7,26 +7,27 @@
 namespace hg::engine::gfx {
     class UniformBufferView;
     class StorageBufferView;
-    class SampledTextureView;
+    class TextureLikeObject;
+    class TextureSampler;
 }
 
 namespace hg::engine::render {
-    class ResourceView {
+    class Resource {
     public:
-        using this_type = ResourceView;
+        using this_type = Resource;
 
     public:
-        constexpr ResourceView() noexcept = default;
+        constexpr Resource() noexcept = default;
 
         template <typename Type_> requires _STD is_constructible_v<nmpt<const ClassMetaBase>, Type_>
-        constexpr ResourceView(Type_&& view_) noexcept :
+        constexpr Resource(Type_&& view_) noexcept :
             view(_STD forward<Type_>(view_)) {}
 
-        constexpr ResourceView(cref<this_type> other_) noexcept = default;
+        constexpr Resource(cref<this_type> other_) noexcept = default;
 
-        constexpr ResourceView(mref<this_type> other_) noexcept = default;
+        constexpr Resource(mref<this_type> other_) noexcept = default;
 
-        constexpr ~ResourceView() noexcept = default;
+        constexpr ~Resource() noexcept = default;
 
     public:
         ref<this_type> operator=(cref<this_type> other_) noexcept = default;
@@ -37,6 +38,10 @@ namespace hg::engine::render {
         nmpt<const ClassMetaBase> view;
 
     public:
+        [[nodiscard]] constexpr bool equivalent(cref<this_type> other_) const noexcept {
+            return view == other_.view;
+        }
+
         [[nodiscard]] bool isUniformBufferView() const noexcept;
 
         nmpt<const gfx::UniformBufferView> asUniformBufferView() const noexcept;
@@ -45,8 +50,12 @@ namespace hg::engine::render {
 
         [[nodiscard]] nmpt<const gfx::StorageBufferView> asStorageBufferView() const noexcept;
 
-        [[nodiscard]] bool isTextureView() const noexcept;
+        [[nodiscard]] bool isTexture() const noexcept;
 
-        [[nodiscard]] nmpt<const gfx::SampledTextureView> asTextureView() const noexcept;
+        [[nodiscard]] nmpt<const gfx::TextureLikeObject> asTexture() const noexcept;
+
+        [[nodiscard]] bool isSampler() const noexcept;
+
+        [[nodiscard]] nmpt<const gfx::TextureSampler> asSampler() const noexcept;
     };
 }

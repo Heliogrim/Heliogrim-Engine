@@ -141,13 +141,16 @@
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Resource\ResourceTable.hpp">
       <Filter>Headerdateien\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Resource\ResourceView.hpp">
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Resource\Resource.hpp">
       <Filter>Headerdateien\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindUniformBuffer.hpp">
       <Filter>Headerdateien\Commands</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\AttachResource.hpp">
+      <Filter>Headerdateien\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX.Render.Command\Commands\BindTextureSampler.hpp">
       <Filter>Headerdateien\Commands</Filter>
     </ClInclude>
   </ItemGroup>
@@ -221,7 +224,7 @@
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Resource\ResourceTable.cpp">
       <Filter>Quelldateien\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Resource\ResourceView.cpp">
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Resource\Resource.cpp">
       <Filter>Quelldateien\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindResourceTable.cpp">
@@ -231,6 +234,9 @@
       <Filter>Quelldateien\Commands</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindUniformBuffer.cpp">
+      <Filter>Quelldateien\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine.GFX.Render.Command\Commands\BindTextureSampler.cpp">
       <Filter>Quelldateien\Commands</Filter>
     </ClCompile>
   </ItemGroup>

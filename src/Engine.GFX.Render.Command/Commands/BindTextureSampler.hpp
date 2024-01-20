@@ -6,27 +6,27 @@
 #include "../RenderCommand.hpp"
 
 namespace hg::engine::gfx {
-    class TextureLikeObject;
+    class TextureSampler;
 }
 
 namespace hg::engine::render::cmd {
-    class BindTextureRCmd :
+    class BindTextureSamplerRCmd :
         public RenderCommand {
     public:
-        constexpr BindTextureRCmd(
+        constexpr BindTextureSamplerRCmd(
             mref<accel::lang::SymbolId> symbolId_,
-            mref<nmpt<const gfx::TextureLikeObject>> textureView_
+            mref<nmpt<const gfx::TextureSampler>> textureSampler_
         ) noexcept :
             RenderCommand(),
             _symbolId(std::move(symbolId_)),
-            _textureView(std::move(textureView_)) {}
+            _textureSampler(std::move(textureSampler_)) {}
 
-        constexpr ~BindTextureRCmd() noexcept override = default;
+        constexpr ~BindTextureSamplerRCmd() noexcept override = default;
 
     private:
     public:
         accel::lang::SymbolId _symbolId;
-        const nmpt<const gfx::TextureLikeObject> _textureView;
+        const nmpt<const gfx::TextureSampler> _textureSampler;
 
     public:
         void operator()(

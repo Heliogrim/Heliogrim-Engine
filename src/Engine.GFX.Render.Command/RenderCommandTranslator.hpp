@@ -61,6 +61,8 @@ namespace hg::engine::render::cmd {
 
         virtual void translate(_Inout_ ptr<State>, _In_ ptr<const BindTextureRCmd>) noexcept = 0;
 
+        virtual void translate(_Inout_ ptr<State>, _In_ ptr<const BindTextureSamplerRCmd>) noexcept = 0;
+
         virtual void translate(_Inout_ ptr<State>, _In_ ptr<const BindUniformBufferRCmd>) noexcept = 0;
 
         /**/
