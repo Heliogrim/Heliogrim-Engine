@@ -112,4 +112,60 @@ namespace hg::math {
             attitude
         };
     }
+
+    template <>
+    static fquaternion as(cref<math::fmat3> from_) noexcept {
+
+        const auto fourXSquaredMinus1 = from_[0][0] - from_[1][1] - from_[2][2];
+        const auto fourYSquaredMinus1 = from_[1][1] - from_[0][0] - from_[2][2];
+        const auto fourZSquaredMinus1 = from_[2][2] - from_[0][0] - from_[1][1];
+        const auto fourWSquaredMinus1 = from_[0][0] + from_[1][1] + from_[2][2];
+
+        u8 biggestIndex = 0u;
+        auto fourBiggestSquaredMinus1 = fourWSquaredMinus1;
+        if (fourXSquaredMinus1 > fourBiggestSquaredMinus1) {
+            fourBiggestSquaredMinus1 = fourXSquaredMinus1;
+            biggestIndex = 1u;
+        }
+        if (fourYSquaredMinus1 > fourBiggestSquaredMinus1) {
+            fourBiggestSquaredMinus1 = fourYSquaredMinus1;
+            biggestIndex = 2u;
+        }
+        if (fourZSquaredMinus1 > fourBiggestSquaredMinus1) {
+            fourBiggestSquaredMinus1 = fourZSquaredMinus1;
+            biggestIndex = 3u;
+        }
+
+        const auto biggestVal = sqrt(fourBiggestSquaredMinus1 + 1.F) * .5F;
+        const auto mult = .25F / biggestVal;
+
+        switch (biggestIndex) {
+            case 0u: return {
+                    biggestVal,
+                    (from_[1][2] - from_[2][1]) * mult,
+                    (from_[2][0] - from_[0][2]) * mult,
+                    (from_[0][1] - from_[1][0]) * mult
+                };
+            case 1u: return {
+                    (from_[1][2] - from_[2][1]) * mult,
+                    biggestVal,
+                    (from_[0][1] + from_[1][0]) * mult,
+                    (from_[2][0] + from_[0][2]) * mult
+                };
+            case 2u: return {
+                    (from_[2][0] - from_[0][2]) * mult,
+                    (from_[0][1] + from_[1][0]) * mult,
+                    biggestVal,
+                    (from_[1][2] + from_[2][1]) * mult
+                };
+            case 3u: return {
+                    (from_[0][1] - from_[1][0]) * mult,
+                    (from_[2][0] + from_[0][2]) * mult,
+                    (from_[1][2] + from_[2][1]) * mult,
+                    biggestVal
+                };
+            default:
+                _STD unreachable();
+        }
+    }
 }
