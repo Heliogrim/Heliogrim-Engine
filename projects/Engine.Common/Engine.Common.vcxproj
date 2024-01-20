@@ -25,12 +25,6 @@
     <ClInclude Include="..\..\src\Engine.Common\Collection\DenseSet.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\Deque.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\FlatHashMap.hpp" />
-    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Bucket.hpp" />
-    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\GrowthPolicy.hpp" />
-    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Hash.hpp" />
-    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\HopScotch.hpp" />
-    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Map.hpp" />
-    <ClInclude Include="..\..\src\Engine.Common\Collection\HopScotch\Set.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\InlineArray.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\InlineAutoArray.hpp" />
     <ClInclude Include="..\..\src\Engine.Common\Collection\InlineVector.hpp" />
