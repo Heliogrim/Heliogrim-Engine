@@ -142,6 +142,17 @@ namespace hg {
             return expected;
         }
 
+        template <typename Ptx_ = Ty_*> requires std::is_convertible_v<Ptx_, Ty_*>
+        [[nodiscard]] std::pair<bool, Ty_*> compare_exchange(const ptr<Ty_> expect_, Ptx_&& next_) {
+            Ty_* expect = expect_;
+            const auto success = mem.compare_exchange_strong(
+                expect_,
+                std::forward<Ptx_>(next_),
+                std::memory_order::acq_rel
+            );
+            return std::make_pair(success, expect);
+        }
+
     public:
         mem_type mem;
     };
@@ -297,6 +308,9 @@ namespace hg {
         constexpr MemoryPointer(Tx_* value_) noexcept :
             storage(value_) {}
 
+        constexpr MemoryPointer(std::nullptr_t) noexcept :
+            storage(nullptr) {}
+
         /* Weak protection against shared ownership for raw pointers */
         constexpr MemoryPointer(cref<this_type>) = delete;
 
@@ -313,6 +327,11 @@ namespace hg {
             if (_STD addressof(other_) != this) {
                 storage = _STD move(other_.storage);
             }
+            return *this;
+        }
+
+        ref<this_type> operator=(nullptr_t) {
+            storage.template exchange<nullptr_t>(nullptr);
             return *this;
         }
 
@@ -392,6 +411,14 @@ namespace hg {
             );
         }
 
+        template <typename Ptx_ = Ty_*> requires _STD is_nothrow_convertible_v<_STD remove_cvref_t<Ptx_>, Ty_*>
+        [[nodiscard]] std::pair<bool, Ty_*> compare_exchange(
+            Ty_* expect_,
+            Ptx_&& next_
+        ) {
+            return storage.compare_exchange(std::forward<Ty_*>(expect_), std::forward<Ptx_>(next_));
+        }
+
     public:
         template <typename Tx_ = Ty_> requires (not similar_to<Tx_, void>) && _STD is_same_v<Tx_, Ty_>
         [[nodiscard]] cref<_STD remove_const_t<Tx_>> operator*() const noexcept {
@@ -425,6 +452,23 @@ namespace hg {
         }
 
     public:
+        [[nodiscard]] constexpr bool operator==(nullptr_t) const noexcept {
+            return storage.template load<Ty_>() == nullptr;
+        }
+
+        [[nodiscard]] constexpr bool operator!=(nullptr_t) const noexcept {
+            return storage.template load<Ty_>() != nullptr;
+        }
+
+        [[nodiscard]] constexpr bool operator==(cref<this_type> other_) const noexcept {
+            return storage.template load<Ty_>() == other_.storage.template load<Ty_>();
+        }
+
+        [[nodiscard]] constexpr bool operator!=(cref<this_type> other_) const noexcept {
+            return storage.template load<Ty_>() != other_.storage.template load<Ty_>();
+        }
+
+    public:
         storage_type storage;
     };
 
@@ -435,6 +479,7 @@ namespace hg {
     public:
         using this_type = NonOwningMemoryPointer<Ty_, StorageType_>;
 
+        using value_type = Ty_;
         using storage_type = StorageType_;
 
         using address_type = _STD ptrdiff_t;
