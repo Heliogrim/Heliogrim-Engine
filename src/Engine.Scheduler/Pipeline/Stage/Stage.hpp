@@ -11,7 +11,7 @@ namespace hg::engine::scheduler {
         using this_type = Stage;
 
     public:
-        Stage(cref<StageIdentifier> identifier_, const s8 slot_) noexcept;
+        Stage(mref<StageIdentifier> identifier_, const s8 slot_) noexcept;
 
         Stage(cref<this_type>) = delete;
 

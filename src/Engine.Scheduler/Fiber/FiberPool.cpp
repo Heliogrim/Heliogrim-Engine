@@ -102,7 +102,7 @@ ptr<Fiber> FiberPool::acquireNew() noexcept {
     /**
      *
      */
-    if (fiber->handle == NULL) {
+    if (fiber->handle == nullptr) {
         fiber->destroy();
         delete fiber;
         fiber = nullptr;

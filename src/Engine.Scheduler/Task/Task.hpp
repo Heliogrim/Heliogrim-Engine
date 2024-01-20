@@ -51,10 +51,10 @@ namespace hg::engine::scheduler::task {
          */
         ~TaskDelegate() = default;
 
-    private:
+    public:
         ref<TaskDelegate> operator=(cref<TaskDelegate>) = delete;
 
-        ref<TaskDelegate> operator=(mref<TaskDelegate>) noexcept = delete;
+        ref<TaskDelegate> operator=(mref<TaskDelegate>) = delete;
 
     public:
         /**

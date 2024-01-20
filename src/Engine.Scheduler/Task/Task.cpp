@@ -98,7 +98,7 @@ void TaskDelegate::delegate() const {
             }
             break;
         }
-            [[unlikely]] default: { }
+            [[unlikely]] default: {}
     }
 }
 
@@ -144,7 +144,7 @@ const non_owning_rptr<const TaskDelegate> engine::scheduler::task::make_task(
     const TaskMask mask_
 ) {
     return static_cast<const non_owning_rptr<const TaskDelegate>>(
-        new Task(_STD forward<Task::function_type>(fnc_), mask_)
+        new Task(_STD forward<decltype(fnc_)>(fnc_), mask_)
     );
 }
 
@@ -166,7 +166,7 @@ const non_owning_rptr<const TaskDelegate> engine::scheduler::task::make_repetiti
     const TaskMask mask_
 ) {
     return static_cast<const non_owning_rptr<const TaskDelegate>>(
-        new RepetitiveTask(_STD forward<RepetitiveTask::function_type>(fnc_), mask_)
+        new RepetitiveTask(_STD forward<decltype(fnc_)>(fnc_), mask_)
     );
 }
 
@@ -189,6 +189,6 @@ const non_owning_rptr<const TaskDelegate> engine::scheduler::task::make_batch_ta
     const TaskMask mask_
 ) {
     return static_cast<const non_owning_rptr<const TaskDelegate>>(
-        new BatchTask(_STD forward<BatchTask::function_type>(fnc_), mask_)
+        new BatchTask(_STD forward<decltype(fnc_)>(fnc_), mask_)
     );
 }
