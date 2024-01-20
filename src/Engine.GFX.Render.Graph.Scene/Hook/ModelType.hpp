@@ -45,6 +45,6 @@ namespace hg::engine::render::graph {
         }
 
     public:
-        [[nodiscard]] bool operator()(const ptr<scene_model_type> model_) const noexcept override;
+        [[nodiscard]] bool operator()(const ptr<RenderSceneSystemModel> model_) const noexcept override;
     };
 }

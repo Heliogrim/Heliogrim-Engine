@@ -2,18 +2,18 @@
 #include <functional>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
-#include <Engine.Scene/Node/SceneNode.hpp>
 
 #include "SceneHookFilter.hpp"
 #include "SceneWalkerFilter.hpp"
+
+namespace hg::engine::render {
+    class RenderSceneSystemModel;
+}
 
 namespace hg::engine::render::graph {
     class SceneWalker {
     public:
         using this_type = SceneWalker;
-
-        using scene_model_type = gfx::scene::SceneModel;
-        using scene_node_type = ptr<::hg::engine::scene::SceneNode<scene_model_type>>;
 
     public:
         SceneWalker() noexcept = default;
@@ -38,7 +38,7 @@ namespace hg::engine::render::graph {
         Vector<uptr<SceneWalkerFilter>> _walkFilter;
         Vector<uptr<SceneHookFilter>> _hookFilter;
 
-        _STD function<void(const ptr<const scene_model_type> model_)> _hook;
+        _STD function<void(const ptr<const RenderSceneSystemModel> model_)> _hook;
 
     public:
         void addWalkerFilter(mref<uptr<SceneWalkerFilter>> walkerFilter_);
@@ -49,15 +49,15 @@ namespace hg::engine::render::graph {
 
         template <typename Fn_>
         void setHook(Fn_&& fn_) {
-            setHook(decltype(_hook) { _STD forward<Fn_>(fn_) });
+            setHook(decltype(_hook) { std::forward<Fn_>(fn_) });
         }
 
     protected:
-        void stream(_STD span<ptr<scene_model_type>> models_) const noexcept;
+        void stream(_STD span<ptr<RenderSceneSystemModel>> models_) const noexcept;
 
-        [[nodiscard]] bool operator()(const scene_node_type node_) const;
+        [[nodiscard]] bool operator()(const void* node_) const;
 
-        [[nodiscard]] bool operator()(u32 batch_, const scene_node_type node_) const;
+        [[nodiscard]] bool operator()(u32 batch_, const void* node_) const;
 
     public:
         ref<this_type> operator()(cref<gfx::scene::SceneView> sceneView_);

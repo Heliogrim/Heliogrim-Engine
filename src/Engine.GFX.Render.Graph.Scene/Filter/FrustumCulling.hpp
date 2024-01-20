@@ -27,7 +27,7 @@ namespace hg::engine::render::graph {
             constexpr auto selfTypeId = reflect::typeId<this_type>();
             checksum_type combined { selfTypeId.data };
 
-            const auto sceneHash = reinterpret_cast<checksum_type>(_sceneView->getScene());
+            const auto sceneHash = reinterpret_cast<checksum_type>(_sceneView->getRenderSceneSystem().get());
 
             // TODO: Hash view- and projection-matrix
             const auto viewHash = _sceneView->getViewMatrix();
@@ -41,6 +41,6 @@ namespace hg::engine::render::graph {
     public:
         void update(cref<gfx::scene::SceneView> sceneView_) noexcept override;
 
-        [[nodiscard]] bool operator()(scene_node_type node_) const noexcept override;
+        [[nodiscard]] bool operator()(const void* node_) const noexcept override;
     };
 }
