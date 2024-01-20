@@ -3,9 +3,9 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "../Memory/VirtualMemory.hpp"
-#include "../Buffer/VirtualBuffer.hpp"
+#include "../Buffer/SparseBuffer.hpp"
 #include "../Memory/GlobalPooledAllocator.hpp"
-#include "../Buffer/VirtualBufferView.hpp"
+#include "../Buffer/SparseBufferView.hpp"
 #include "Engine.GFX/Command/CommandBuffer.hpp"
 #include "Engine.GFX/Command/CommandPool.hpp"
 #include "Engine.GFX/Command/CommandQueue.hpp"
@@ -63,7 +63,7 @@ namespace hg::engine::gfx {
             };
 
             auto memory = make_uptr<VirtualMemory>(_allocator, layout, req.size);
-            auto buffer = make_uptr<VirtualBuffer>(_STD move(memory), reservedSize, vkBuffer, bci.usage);
+            auto buffer = make_uptr<SparseBuffer>(_STD move(memory), reservedSize, vkBuffer, bci.usage);
 
             const auto requiredPages = (reservedSize / req.alignment) + ((reservedSize % req.alignment) ? 1uLL : 0uLL);
 
@@ -99,7 +99,7 @@ namespace hg::engine::gfx {
         nmpt<memory::GlobalPooledAllocator> _allocator;
 
     private:
-        uptr<VirtualBuffer> _buffer;
+        uptr<SparseBuffer> _buffer;
 
         u32 _monotonicIndex;
         Vector<u32> _releasedList;
@@ -136,7 +136,7 @@ namespace hg::engine::gfx {
             };
 
             auto memory = make_uptr<VirtualMemory>(_allocator, layout, req.size);
-            auto buffer = make_uptr<VirtualBuffer>(_STD move(memory), nextSizeAligned, vkBuffer, bci.usage);
+            auto buffer = make_uptr<SparseBuffer>(_STD move(memory), nextSizeAligned, vkBuffer, bci.usage);
 
             const auto requiredPages = (nextSizeAligned / req.alignment) + ((nextSizeAligned % req.alignment) ?
                                                                                 1uLL :
@@ -223,7 +223,7 @@ namespace hg::engine::gfx {
     public:
         struct AcquireResult {
             u32 instanceIndex;
-            uptr<VirtualBufferView> dataView;
+            uptr<SparseBufferView> dataView;
         };
 
         [[nodiscard]] AcquireResult acquire() {
@@ -280,11 +280,11 @@ namespace hg::engine::gfx {
         }
 
     public:
-        [[nodiscard]] uptr<VirtualBufferView> getDataView(const u32 instanceIndex_) const {
+        [[nodiscard]] uptr<SparseBufferView> getDataView(const u32 instanceIndex_) const {
             return _buffer->makeView(instanceIndex_ * stride, stride);
         }
 
-        [[nodiscard]] nmpt<VirtualBuffer> getPoolView() const {
+        [[nodiscard]] nmpt<SparseBuffer> getPoolView() const {
             return _buffer.get();
         }
     };

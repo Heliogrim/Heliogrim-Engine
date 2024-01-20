@@ -1,7 +1,7 @@
 #include "GlobalResourcePool.hpp"
 
-#include "../Buffer/VirtualBufferView.hpp"
-#include "../Texture/VirtualTextureView.hpp"
+#include "../Buffer/SparseBufferView.hpp"
+#include "../Texture/SparseTextureView.hpp"
 #include "../Texture/TextureFactory.hpp"
 #include "Engine.GFX/Geometry/Vertex.hpp"
 
@@ -75,7 +75,7 @@ cref<sptr<engine::gfx::Device>> GlobalResourcePool::device() const noexcept {
     return _device;
 }
 
-uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateIndexBuffer(
+uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
     mref<IndexBufferAllocation> allocation_
 ) {
 
@@ -131,7 +131,7 @@ uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateIndexBuffer(
      * Gather virtual buffer instance
      */
     auto vb {
-        make_uptr<VirtualBuffer>(
+        make_uptr<SparseBuffer>(
             _STD move(memory),
             allocation_.size,
             buffer,
@@ -188,7 +188,7 @@ uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateIndexBuffer(
     return ptr->makeView(/*offset*/0ui64, /*size*/allocation_.size);
 }
 
-uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateVertexBuffer(
+uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
     mref<VertexBufferAllocation> allocation_
 ) {
 
@@ -244,7 +244,7 @@ uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateVertexBuffer(
      * Gather virtual buffer instance
      */
     auto vb {
-        make_uptr<VirtualBuffer>(
+        make_uptr<SparseBuffer>(
             _STD move(memory),
             allocation_.size,
             buffer,
@@ -301,8 +301,8 @@ uptr<engine::gfx::VirtualBufferView> GlobalResourcePool::allocateVertexBuffer(
     return ptr->makeView(/*offset*/0ui64, /*size*/allocation_.size);
 }
 
-uptr<engine::gfx::VirtualTextureView> GlobalResourcePool::allocateVirtualTexture(
-    mref<VirtualTextureAllocation> allocation_
+uptr<engine::gfx::SparseTextureView> GlobalResourcePool::allocateSparseTexture(
+    mref<SparseTextureAllocation> allocation_
 ) {
     u32 layers { 1ui32 };
 
@@ -321,7 +321,7 @@ uptr<engine::gfx::VirtualTextureView> GlobalResourcePool::allocateVirtualTexture
     /**
      * Try find a suitable texture atlas
      */
-    ptr<VirtualTexture> atlas { nullptr };
+    ptr<SparseTexture> atlas { nullptr };
 
     for (const auto& candidate : _textureAtlas) {
 
@@ -366,7 +366,7 @@ uptr<engine::gfx::VirtualTextureView> GlobalResourcePool::allocateVirtualTexture
             }
         );
 
-        auto uatlas { _STD unique_ptr<VirtualTexture>(atlas) };
+        auto uatlas { _STD unique_ptr<SparseTexture>(atlas) };
         _textureAtlas.push_back(_STD move(uatlas));
     }
 

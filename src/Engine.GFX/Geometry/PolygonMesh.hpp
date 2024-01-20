@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Mesh.hpp"
-#include "../Buffer/VirtualBufferView.hpp"
+#include "../Buffer/SparseBufferView.hpp"
 
 namespace hg::engine::gfx {
     class PolygonMesh :
         public Mesh {
     public:
-        using vertex_buffer_type = uptr<VirtualBufferView>;
-        using index_buffer_type = uptr<VirtualBufferView>;
+        using vertex_buffer_type = uptr<SparseBufferView>;
+        using index_buffer_type = uptr<SparseBufferView>;
 
     public:
         /**

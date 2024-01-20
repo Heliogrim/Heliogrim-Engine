@@ -7,6 +7,11 @@
 #include "../Device/Device.hpp"
 #include "../Aabb.hpp"
 #include "../Light/Light.hpp"
+#include "../Light/Shadow.hpp"
+
+namespace hg::engine::render {
+    class RenderSceneSystem;
+}
 
 namespace hg::engine::gfx {
     class SceneResourcePool {
@@ -29,12 +34,12 @@ namespace hg::engine::gfx {
 
     private:
         sptr<Device> _device;
-        nmpt<engine::scene::Scene> _scene;
+        nmpt<render::RenderSceneSystem> _system;
 
     public:
         [[nodiscard]] sptr<Device> device() const noexcept;
 
-        [[nodiscard]] nmpt<engine::scene::Scene> scene() const noexcept;
+        [[nodiscard]] nmpt<render::RenderSceneSystem> system() const noexcept;
 
     private:
     public:
@@ -47,5 +52,10 @@ namespace hg::engine::gfx {
 
         TypeBuffer<GlslSceneLightInfo> sceneLightInfoBuffer;
         InstancePooled<GlslLight> lightSourcePool;
+
+        GlslDirectionalShadowInfo sceneShadowInfo;
+
+        TypeBuffer<GlslDirectionalShadowInfo> sceneShadowInfoBuffer;
+        InstancePooled<GlslDirectionalShadow> shadowSourcePool;
     };
 }

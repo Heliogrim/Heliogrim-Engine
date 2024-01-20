@@ -3,7 +3,7 @@
 #include <Engine.Common/Concurrent/SpinLock.hpp>
 #include "CommandPool.hpp"
 #include "../Buffer/Buffer.hpp"
-#include "../Buffer/VirtualBuffer.hpp"
+#include "../Buffer/SparseBuffer.hpp"
 #include "../Texture/TextureBuffer.hpp"
 
 namespace hg::engine::gfx {
@@ -76,9 +76,9 @@ namespace hg::engine::gfx {
          * @param  buffer_ The buffer to bind.
          * @param  offset_ The offset into the buffer.
          */
-        void bindIndexBuffer(const ptr<const VirtualBuffer> buffer_, u64 offset_);
+        void bindIndexBuffer(const ptr<const SparseBuffer> buffer_, u64 offset_);
 
-        void bindIndexBuffer(const ptr<const VirtualBufferView> bufferView_);
+        void bindIndexBuffer(const ptr<const SparseBufferView> bufferView_);
 
         void bindIndexBuffer(cref<IndexBufferView> indexBufferView_);
 
@@ -125,9 +125,9 @@ namespace hg::engine::gfx {
          * @param   buffer_ The buffer to bind.
          * @param   offset_ The offset into the buffer.
          */
-        void bindVertexBuffer(const u32 binding_, const ptr<const VirtualBuffer> buffer_, u64 offset_);
+        void bindVertexBuffer(const u32 binding_, const ptr<const SparseBuffer> buffer_, u64 offset_);
 
-        void bindVertexBuffer(const u32 binding_, const ptr<const VirtualBufferView> bufferView_);
+        void bindVertexBuffer(const u32 binding_, const ptr<const SparseBufferView> bufferView_);
 
         void bindVertexBuffer(const u32 index_, cref<VertexBufferView> vertexBufferView_);
 
