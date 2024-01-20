@@ -243,7 +243,8 @@ MaterialPrototypeTransformer::response_type::type MaterialPrototypeTransformer::
         for (const auto& import : imports) {
 
             // Warning:
-            if (import.symbol->symbolId.value == "view") {
+            constexpr auto viewId = accel::lang::SymbolId::from("view"sv);
+            if (import.symbol->symbolId == viewId) {
                 usagePattern->ctx.pairs.emplace_back(render::makeSceneViewDescription(), import.symbol->symbolId);
             }
 

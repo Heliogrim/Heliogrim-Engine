@@ -29,7 +29,7 @@ void SelectorNode::traverse(ref<Visitor> visitor_) const {
     constexpr mask_type off {};
     mask_type vmask {};
 
-    for (auto& child : _next) {
+    for (const auto& child : _next) {
         if ((vmask & child.mask) != off) {
             child.node->accept(visitor_);
         }

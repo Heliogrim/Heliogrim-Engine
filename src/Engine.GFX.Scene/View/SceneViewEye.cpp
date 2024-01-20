@@ -30,12 +30,8 @@ void SceneViewEye::updateView(cref<math::Location> origin_, cref<math::Rotator> 
 
     math::mat4 rotationMatrix { math::mat4::make_identity() };
 
-    #if FALSE
-    rotationMatrix.rotate(rotation_.pitch() * (_vkFlipY ? -1.F : 1.F), math::vec3_right);
-    #else
+    //rotationMatrix.rotate(rotation_.pitch() * (_vkFlipY ? -1.F : 1.F), math::vec3_right);
     rotationMatrix.rotate(rotation_.pitch(), math::vec3_right);
-    #endif
-
     rotationMatrix.rotate(rotation_.yaw(), math::vec3_up);
     rotationMatrix.rotate(rotation_.roll(), math::vec3_forward);
 
@@ -45,11 +41,9 @@ void SceneViewEye::updateView(cref<math::Location> origin_, cref<math::Rotator> 
 
     auto translation = origin_.fvec3();
 
-    #if FALSE
     if (_vkFlipY) {
-        translation.y *= -1.F;
+        //translation.y *= -1.F;
     }
-    #endif
 
     const auto translationMatrix = math::mat4::make_identity().translate(translation);
 

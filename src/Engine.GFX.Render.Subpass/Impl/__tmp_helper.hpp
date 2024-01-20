@@ -8,7 +8,7 @@
 namespace hg::engine::render {
     inline static string read_shader_file(string name_) {
 
-        const auto root = R"(X:\Dev\C++\Heliogrim\resources\shader\)";
+        const auto* const root = R"(X:\Dev\C++\Heliogrim\resources\shader\)";
         std::filesystem::path file { root };
         file.append(name_);
 

@@ -32,15 +32,15 @@ std::string FileResource::getFile(const Files file_) {
 
 std::string FileResource::getFileEnding(const DataType& type_) {
     switch (type_) {
-        case eMaterial: return std::string("mat");
-        case eDae: return std::string("dae");
-        case eFbx: return std::string("fbx");
-        case eKtx: return std::string("ktx");
-        case eObj: return std::string("obj");
-        case eFlac: return std::string("flac");
-        case eOgg: return std::string("ogg");
-        case eWav: return std::string("wav");
-        default: return std::string("dat");
+        case eMaterial: return std::string { "mat" };
+        case eDae: return std::string { "dae" };
+        case eFbx: return std::string { "fbx" };
+        case eKtx: return std::string { "ktx" };
+        case eObj: return std::string { "obj" };
+        case eFlac: return std::string { "flac" };
+        case eOgg: return std::string { "ogg" };
+        case eWav: return std::string { "wav" };
+        default: return std::string { "dat" };
     }
 }
 

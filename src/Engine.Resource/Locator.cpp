@@ -21,7 +21,7 @@ ptr<Source> Locator::get(cref<asset_guid> guid_) const noexcept {
 
 ptr<Source> Locator::insert(cref<asset_guid> guid_, ptr<Source> source_) noexcept {
     const auto entry = static_cast<const map_type>(_mapping).find({ guid_ });
-    const auto prev = entry != _mapping.cend() ? entry->second : nullptr;
+    auto* const prev = entry != _mapping.cend() ? entry->second : nullptr;
     _mapping.insert_or_assign(guid_, source_);
     return prev;
 }

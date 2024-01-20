@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Engine.GFX/Swapchain/__fwd.hpp>
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Heliogrim/World.hpp>
 
 #include "Widget.hpp"
 #include "../Children.hpp"
@@ -8,6 +9,12 @@
 
 namespace hg {
     class CameraActor;
+}
+
+namespace hg::engine::gfx {
+    class Swapchain;
+    class VkSwapchain;
+    class RenderTarget;
 }
 
 namespace hg::engine::reflow {
@@ -39,37 +46,47 @@ namespace hg::engine::reflow {
         void tidy();
 
     private:
-        uptr<gfx::VkSwapchain> _swapchain;
+        smr<gfx::VkSwapchain> _swapChain;
+        nmpt<gfx::RenderTarget> _renderTarget;
+
+        StringView _renderer;
         ptr<CameraActor> _cameraActor;
+        World _cameraWorld;
 
     public:
-        [[nodiscard]] const non_owning_rptr<gfx::Swapchain> getSwapchain() const noexcept;
+        [[nodiscard]] smr<gfx::Swapchain> getSwapchain() const noexcept;
+
+        [[nodiscard]] bool hasMountedRenderTarget() const noexcept;
 
         [[nodiscard]] const non_owning_rptr<CameraActor> getCameraActor() const noexcept;
 
-        void setCameraActor(const ptr<CameraActor> actor_);
+        void setViewportTarget(StringView renderer_, World world_, ptr<CameraActor> camera_);
 
     private:
         _STD array<math::vec2, 4> _uvs;
 
         math::uivec2 _viewSize;
-        Vector<_STD function<void(const ptr<gfx::VkSwapchain>)>> _viewListen;
+        Vector<_STD function<void(mref<smr<gfx::VkSwapchain>>, mref<smr<gfx::VkSwapchain>>)>> _viewListen;
 
     private:
         [[nodiscard]] math::uivec2 actualViewExtent() const noexcept;
 
         [[nodiscard]] bool viewHasChanged() const noexcept;
 
-        void handleViewListener(const ptr<gfx::VkSwapchain> next_);
+        void handleViewListener(cref<smr<gfx::VkSwapchain>> prev_, cref<smr<gfx::VkSwapchain>> next_);
 
-        uptr<gfx::VkSwapchain> buildNextView(cref<math::uivec2> extent_) const;
+        [[nodiscard]] smr<gfx::VkSwapchain> buildNextView(cref<math::uivec2> extent_) const;
+
+        void remountRenderTarget();
 
     public:
         void rebuildView();
 
         void resizeView(cref<math::uivec2> extent_);
 
-        void addResizeListener(mref<_STD function<void(const ptr<gfx::VkSwapchain>)>> fnc_);
+        void addResizeListener(
+            mref<_STD function<void(mref<smr<gfx::VkSwapchain>>, mref<smr<gfx::VkSwapchain>>)>> fnc_
+        );
 
         void removeResizeListener();
 

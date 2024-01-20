@@ -10,13 +10,14 @@ namespace hg::engine::gfx {
     class StorageBufferView;
     class UniformBufferView;
     class Buffer;
-    class VirtualBuffer;
-    class VirtualBufferView;
+    class SparseBuffer;
+    class SparseBufferView;
     class Texture;
     class TextureView;
-    class VirtualTexture;
-    class VirtualTextureView;
-    class SampledTextureView;
+    class SparseTexture;
+    class SparseTextureView;
+    class TextureLikeObject;
+    class TextureSampler;
 }
 
 namespace hg::engine::render::graph {
@@ -33,12 +34,15 @@ namespace hg::engine::render::graph {
         bool _addressPatched;
         Vector<vk::DescriptorBufferInfo> _descriptorBufferInfos;
         Vector<vk::DescriptorImageInfo> _descriptorImageInfos;
+        Vector<vk::DescriptorImageInfo> _descriptorSamplerInfos;
         Vector<vk::WriteDescriptorSet> _writes;
 
     private:
         ptrdiff_t emplaceBufferInfo(mref<vk::DescriptorBufferInfo> info_);
 
         ptrdiff_t emplaceImageInfo(mref<vk::DescriptorImageInfo> info_);
+
+        ptrdiff_t emplaceSamplerInfo(mref<vk::DescriptorImageInfo> info_);
 
         void patchInfoAddress();
 
@@ -48,23 +52,25 @@ namespace hg::engine::render::graph {
     public:
         void storeUniform(index_type idx_, cref<gfx::Buffer> buffer_);
 
-        void storeUniform(index_type idx_, cref<gfx::VirtualBuffer> buffer_);
+        void storeUniform(index_type idx_, cref<gfx::SparseBuffer> buffer_);
 
-        void storeUniform(index_type idx_, cref<gfx::VirtualBufferView> view_);
+        void storeUniform(index_type idx_, cref<gfx::SparseBufferView> view_);
 
         void storeUniform(index_type idx_, nmpt<const gfx::UniformBufferView> view_);
 
     public:
         void storeStorage(index_type idx_, cref<gfx::Buffer> buffer_);
 
-        void storeStorage(index_type idx_, cref<gfx::VirtualBuffer> buffer_);
+        void storeStorage(index_type idx_, cref<gfx::SparseBuffer> buffer_);
 
-        void storeStorage(index_type idx_, cref<gfx::VirtualBufferView> view_);
+        void storeStorage(index_type idx_, cref<gfx::SparseBufferView> view_);
 
         void storeStorage(index_type idx_, nmpt<const gfx::StorageBufferView> view_);
 
     public:
-        void storeTexture(index_type idx_, nmpt<const gfx::SampledTextureView> view_);
+        void storeTexture(index_type idx_, nmpt<const gfx::TextureLikeObject> texture_);
+
+        void storeTextureSampler(index_type idx_, nmpt<const gfx::TextureSampler> sampler_);
 
     public:
         void store(index_type idx_, cref<gfx::Texture> texture_, cref<vk::Sampler> sampler_);
@@ -77,15 +83,15 @@ namespace hg::engine::render::graph {
         );
 
     public:
-        void store(index_type idx_, const ptr<const gfx::VirtualTexture> texture_, cref<vk::Sampler> sampler_);
+        void store(index_type idx_, const ptr<const gfx::SparseTexture> texture_, cref<vk::Sampler> sampler_);
 
         void storeAs(
             index_type idx_,
-            const ptr<const gfx::VirtualTexture> texture_,
+            const ptr<const gfx::SparseTexture> texture_,
             cref<vk::Sampler> sampler_,
             cref<vk::ImageLayout> layout_
         );
 
-        void store(index_type idx_, const ptr<const gfx::VirtualTextureView> texture_, cref<vk::Sampler> sampler_);
+        void store(index_type idx_, const ptr<const gfx::SparseTextureView> texture_, cref<vk::Sampler> sampler_);
     };
 }

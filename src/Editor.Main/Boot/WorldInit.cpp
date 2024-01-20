@@ -1,12 +1,15 @@
 #include "WorldInit.hpp"
 
 #include <Editor.Core/EditorEngine.hpp>
+#include <Editor.Scene/SceneFactory.hpp>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/World.hpp>
 #include <Engine.Core/WorldContext.hpp>
 #include <Engine.Scene/SceneFactory.hpp>
 #include <Heliogrim/StaticGeometryComponent.hpp>
+#include <Heliogrim/Actors/PointLightActor.hpp>
+#include <Heliogrim/Components/DirectionalLightComponent.hpp>
 #include <Heliogrim.Default/Assets/GfxMaterials/DefaultBrdfMaterial.hpp>
 
 using namespace hg::editor::boot;
@@ -22,7 +25,9 @@ void editor::boot::initEditorWorld() {
 
     /**/
 
-    auto scene { scene::SceneFactory::createDefaultScene() };
+    auto scene = SceneFactory::createEditorScene();
+    scene->prepare();
+
     const auto world { make_sptr<core::World>(_STD move(scene)) };
 
     engine->addWorld(world);
@@ -36,7 +41,9 @@ void editor::boot::initPrimaryWorld() {
 
     /**/
 
-    auto scene { scene::SceneFactory::createDefaultScene() };
+    auto scene = SceneFactory::createGameScene();
+    scene->prepare();
+
     const auto world { make_sptr<core::World>(_STD move(scene)) };
 
     engine->addWorld(world);

@@ -155,35 +155,35 @@ namespace hg::engine::assets::system {
         template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique &&
             (!IndexTrait<IndexType_>::multiple)
         void store(const non_owning_rptr<Asset> asset_) {
-            using trait_type = IndexTrait<IndexType_>;
+            using index_trait_type = IndexTrait<IndexType_>;
 
             #ifdef _DEBUG
-            const auto result = _table.insert_or_assign(trait_type::project(asset_), asset_);
+            const auto result = _table.insert_or_assign(index_trait_type::project(asset_), asset_);
             assert(result.second);
             #else
-            _table.insert_or_assign(trait_type::project(asset_), asset_);
+            _table.insert_or_assign(index_trait_type::project(asset_), asset_);
             #endif
         }
 
         template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique &&
             IndexTrait<IndexType_>::multiple
         void store(const non_owning_rptr<Asset> asset_) {
-            using trait_type = IndexTrait<IndexType_>;
+            using index_trait_type = IndexTrait<IndexType_>;
 
             #ifdef _DEBUG
-            const auto result = _table.insert_or_assign(trait_type::project(asset_), asset_);
+            const auto result = _table.insert_or_assign(index_trait_type::project(asset_), asset_);
             assert(result.second);
             #else
-            _table.insert_or_assign(trait_type::project(asset_), asset_);
+            _table.insert_or_assign(index_trait_type::project(asset_), asset_);
             #endif
         }
 
         template <typename IndexType_ = Index_> requires (!IndexTrait<IndexType_>::unique) &&
             IndexTrait<IndexType_>::multiple
         void store(const non_owning_rptr<Asset> asset_) {
-            using trait_type = IndexTrait<IndexType_>;
+            using index_trait_type = IndexTrait<IndexType_>;
 
-            auto iter = _table.find(trait_type::project(asset_));
+            auto iter = _table.find(index_trait_type::project(asset_));
             if (iter != _table.end()) {
 
                 // TODO: Check whether already present ?!?
@@ -192,7 +192,7 @@ namespace hg::engine::assets::system {
             }
 
             _table.insert_or_assign(
-                trait_type::project(asset_),
+                index_trait_type::project(asset_),
                 Vector<non_owning_rptr<Asset>>({ asset_ })
             );
         }
@@ -209,23 +209,23 @@ namespace hg::engine::assets::system {
         template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique &&
             (!IndexTrait<IndexType_>::multiple)
         void remove(const non_owning_rptr<Asset> asset_) {
-            using trait_type = IndexTrait<IndexType_>;
-            _table.erase(trait_type::project(asset_));
+            using index_trait_type = IndexTrait<IndexType_>;
+            _table.erase(index_trait_type::project(asset_));
         }
 
         template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique &&
             IndexTrait<IndexType_>::multiple
         void remove(const non_owning_rptr<Asset> asset_) {
-            using trait_type = IndexTrait<IndexType_>;
-            _table.erase(trait_type::project(asset_));
+            using index_trait_type = IndexTrait<IndexType_>;
+            _table.erase(index_trait_type::project(asset_));
         }
 
         template <typename IndexType_ = Index_> requires (!IndexTrait<IndexType_>::unique) &&
             IndexTrait<IndexType_>::multiple
         void remove(const non_owning_rptr<Asset> asset_) {
-            using trait_type = IndexTrait<IndexType_>;
+            using index_trait_type = IndexTrait<IndexType_>;
 
-            auto iter = _table.find(trait_type::project(asset_));
+            auto iter = _table.find(index_trait_type::project(asset_));
             if (iter == _table.end()) {
                 return;
             }
@@ -234,7 +234,7 @@ namespace hg::engine::assets::system {
             iter->second.erase(subRange.end(), iter->second.end());
 
             if (iter->second.empty()) {
-                //_table.erase(trait_type::project(asset_));
+                //_table.erase(index_trait_type::project(asset_));
                 _table.erase(iter);
             }
         }
@@ -242,7 +242,7 @@ namespace hg::engine::assets::system {
     public:
         void remove(const non_owning_rptr<Asset> asset_) override {
             remove<index_type>(asset_);
-        };
+        }
 
         /**
          * Query Operations
@@ -319,7 +319,7 @@ namespace hg::engine::assets::system {
             _Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
         ) const {
 
-            using trait_type = IndexTrait<IndexType_>;
+            using index_trait_type = IndexTrait<IndexType_>;
 
             // TODO: Optimize
 
@@ -327,9 +327,9 @@ namespace hg::engine::assets::system {
             auto iter = _table.begin();
             for (; iter != end; ++iter) {
 
-                //auto projected = trait_type::project(*iter);
+                //auto projected = index_trait_type::project(*iter);
                 auto projected = iter->first;
-                const auto compared = trait_type::template compare(index_, projected, options_);
+                const auto compared = index_trait_type::template compare(index_, projected, options_);
 
                 if (compared < 0) {
                     continue;
@@ -375,7 +375,7 @@ namespace hg::engine::assets::system {
             _Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
         ) const {
 
-            using trait_type = IndexTrait<IndexType_>;
+            using index_trait_type = IndexTrait<IndexType_>;
 
             // TODO: Optimize
 
@@ -383,9 +383,9 @@ namespace hg::engine::assets::system {
             auto iter = _table.begin();
             for (; iter != end; ++iter) {
 
-                //auto projected = trait_type::project(*iter);
+                //auto projected = index_trait_type::project(*iter);
                 auto projected = iter->first;
-                const auto compared = trait_type::template compare(index_, projected, options_);
+                const auto compared = index_trait_type::template compare(index_, projected, options_);
 
                 if (compared < 0) {
                     continue;

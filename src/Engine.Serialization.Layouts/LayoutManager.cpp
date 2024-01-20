@@ -111,15 +111,15 @@ void LayoutManager::setup() {
 
 void LayoutManager::tidy() {
 
-    for (auto& pair : _classMapping) {
+    for (const auto& pair : _classMapping) {
         pair.second->tidy();
     }
 
-    for (auto& pair : _typeMapping) {
+    for (const auto& pair : _typeMapping) {
         pair.second->tidy();
     }
 
-    for (auto& pair : _symbolMapping) {
+    for (const auto& pair : _symbolMapping) {
         pair.second->tidy();
     }
 

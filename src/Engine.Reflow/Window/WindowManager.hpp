@@ -7,8 +7,12 @@
 #include "__fwd.hpp"
 #include "../Event/EventDispatcher.hpp"
 
+namespace hg::engine::render {
+    class RenderSceneSystem;
+}
+
 namespace hg::engine::scene {
-    class IRenderScene;
+    class SceneBase;
 }
 
 namespace hg::engine::reflow::schedule {
@@ -55,7 +59,7 @@ namespace hg::engine::reflow {
     private:
         sptr<Window> resolveWindow(cref<math::ivec2> position_) const noexcept;
 
-        [[nodiscard]] non_owning_rptr<scene::IRenderScene> resolveScene(cref<sptr<Window>> window_);
+        [[nodiscard]] nmpt<render::RenderSceneSystem> resolveRenderSystem(cref<sptr<Window>> window_);
 
         void handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::ivec2> nextSize_) const;
 
@@ -72,7 +76,8 @@ namespace hg::engine::reflow {
             string_view title_,
             cref<math::ivec2> size_,
             const wptr<Window> parent_,
-            const non_owning_rptr<scene::IRenderScene> scene_ = nullptr
+            string_view renderer_,
+            nmpt<scene::SceneBase> renderableScene_
         );
     };
 }

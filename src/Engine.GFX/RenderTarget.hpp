@@ -1,8 +1,11 @@
 #pragma once
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
+#include <Engine.Common/Concurrent/Future.hpp>
+#include <Engine.Common/Concurrent/Promise.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.GFX.Render/Renderer.hpp>
+#include <tl/expected.hpp>
 
 #include "RenderEnqueueResult.hpp"
 #include "vkinc.hpp"
@@ -24,7 +27,11 @@ namespace hg::engine::gfx {
         using this_type = RenderTarget;
 
     public:
-        RenderTarget();
+        RenderTarget(mref<sptr<Device>> device_, nmpt<const render::Renderer> renderer_);
+
+        RenderTarget(mref<this_type>) = delete;
+
+        RenderTarget(cref<this_type>) = delete;
 
         ~RenderTarget();
 
@@ -32,51 +39,45 @@ namespace hg::engine::gfx {
         void tidy();
 
     private:
-        /**
-         * External device bound to this render target
-         *
-         * @warning Every sub-component of this render target must be compatible or derived from bound device
-         */
         sptr<Device> _device;
+        nmpt<const render::Renderer> _renderer;
 
     public:
-        sptr<Device> use(cref<sptr<Device>> device_);
+        [[nodiscard]] sptr<Device> device() const noexcept;
 
-        [[nodiscard]] cref<sptr<Device>> device() const noexcept;
+        [[nodiscard]] nmpt<const render::Renderer> getRenderer() const noexcept;
 
     private:
-        /**
-         * External renderer used to render to this target
-         */
-        nmpt<const render::Renderer> _renderer;
+        smr<const scene::SceneView> _sceneView;
         Vector<uptr<render::RenderPass>> _renderPasses;
 
+        uptr<::hg::concurrent::Promise<nmpt<const scene::SceneView>>> _chainSceneView;
+        u8 _chainSceneViewMask;
+
     public:
-        nmpt<const render::Renderer> use(mref<nmpt<const render::Renderer>> renderer_);
+        [[nodiscard]] ::hg::concurrent::Future<nmpt<const scene::SceneView>> transitionToSceneView(
+            mref<smr<const scene::SceneView>> sceneView_
+        );
+
+        [[nodiscard]] smr<const scene::SceneView> getSceneView() const noexcept;
 
     private:
-        /**
-         * External swapchain used to control next rendering and asynchronous dispatches
-         *
-         * @warning If used in combination with surface, Swapchain must be compatible or derived by Surface
-         */
-        non_owning_rptr<Swapchain> _swapchain;
+        smr<Swapchain> _swapchain;
+        nmpt<Surface> _surface;
+
+        uptr<::hg::concurrent::Promise<std::pair<nmpt<Swapchain>, nmpt<Surface>>>> _chainSwapChain;
+        u8 _chainSwapChainMask;
 
     public:
-        non_owning_rptr<Swapchain> use(cref<non_owning_rptr<Swapchain>> swapchain_);
+        [[nodiscard]] tl::expected<::hg::concurrent::Future<std::pair<nmpt<Swapchain>, nmpt<Surface>>>,
+            std::runtime_error> transitionToTarget(
+            mref<smr<Swapchain>> swapchain_,
+            nmpt<Surface> surface_
+        );
 
-        [[nodiscard]] u32 supportedFramesAhead() const noexcept;
+        [[nodiscard]] smr<Swapchain> getSwapChain() const noexcept;
 
-    private:
-        /**
-         * External surface used to present/display results
-         *
-         * @see _swapchain
-         */
-        non_owning_rptr<Surface> _surface;
-
-    public:
-        non_owning_rptr<Surface> use(cref<non_owning_rptr<Surface>> surface_);
+        [[nodiscard]] u8 supportedFramesAhead() const noexcept;
 
     private:
         /**
@@ -97,10 +98,10 @@ namespace hg::engine::gfx {
          */
         bool _enforceCpuGpuSync;
         bool _onTheFlight;
-        u32 _syncIdx;
+        u8 _syncIdx;
 
     private:
-        u32 _swapIdx;
+        u8 _swapIdx;
         vk::Semaphore _swapSignal;
 
     private:
@@ -128,17 +129,13 @@ namespace hg::engine::gfx {
         bool setActive(const bool active_);
 
     public:
-        /**
-         *
-         * @blocking
-         */
-        void buildPasses(mref<smr<const scene::SceneView>> sceneView_);
+        void setup();
 
         /**
-         *
+         * 
          * @blocking
          */
-        [[nodiscard]] bool rebuildPasses(cref<non_owning_rptr<Swapchain>> nextSwapChain_);
+        void transitionImmediately();
 
     public:
         /**

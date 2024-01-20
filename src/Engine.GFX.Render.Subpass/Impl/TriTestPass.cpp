@@ -154,7 +154,7 @@ void TriTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
     auto nativeBatch = (*translator)(&cmd);
-    const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
+    auto* const batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
 
     {
         batch->_tmpWaits.insert_range(
@@ -252,7 +252,7 @@ smr<AccelerationEffect> build_test_effect() {
     tmpVar = make_uptr<lang::Variable>();
     tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>();
     tmpSym = make_uptr<lang::Symbol>(
-        lang::SymbolId::from("color"),
+        lang::SymbolId::from("color"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
 

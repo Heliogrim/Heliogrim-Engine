@@ -3,8 +3,8 @@
 #include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Common/Collection/Array.hpp>
-#include <Engine.GFX/Buffer/VirtualBufferPage.hpp>
-#include <Engine.GFX/Buffer/VirtualBufferView.hpp>
+#include <Engine.GFX/Buffer/SparseBufferPage.hpp>
+#include <Engine.GFX/Buffer/SparseBufferView.hpp>
 #include <Engine.GFX/Geometry/Vertex.hpp>
 #include <Engine.GFX/Memory/AllocationResult.hpp>
 #include <Engine.GFX/Memory/AllocatedMemory.hpp>
@@ -87,6 +87,8 @@ static smr<StaticGeometryResource> loadWithAssimp(
     const char* pHint = "";
     if (request_->sources().front().path().string().ends_with(R"(.obj)")) {
         pHint = "obj";
+    } else if (request_->sources().front().path().string().ends_with(R"(.gltf)")) {
+        pHint = "gltf";
     }
 
     auto* const scene = importer.ReadFileFromMemory(buffer.data(), size, ppFlags, pHint);
@@ -172,8 +174,8 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
     /**/
 
-    uptr<VirtualBufferView> indexBuffer {};
-    uptr<VirtualBufferView> vertexBuffer {};
+    uptr<SparseBufferView> indexBuffer {};
+    uptr<SparseBufferView> vertexBuffer {};
 
     Buffer indexStage {};
     Buffer vertexStage {};

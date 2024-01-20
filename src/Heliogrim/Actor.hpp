@@ -107,7 +107,7 @@ namespace hg {
 
     private:
         template <typename Fnc_>
-        void eachComponent(mref<Fnc_> fnc_) const {
+        void eachComponent(Fnc_&& fnc_) const {
             /**
              *
              */

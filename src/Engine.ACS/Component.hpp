@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Meta/TypeId.hpp>
 
 namespace hg::engine::acs {
@@ -63,7 +64,7 @@ namespace hg::engine::acs {
          *
          * @param ref_ The reference to a valid component.
          */
-        component_handle(const internal_ref_type ref_) :
+        component_handle(cref<internal_type> ref_) :
             ref(&ref_) {}
 
         /**

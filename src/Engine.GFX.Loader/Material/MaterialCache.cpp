@@ -25,7 +25,6 @@ MaterialCache::response_type::type MaterialCache::operator()(
     auto prevResponse = next_(_STD move(request_), _STD move(options_));
 
     if (not prevResponse.empty()) {
-        const asset_guid guid = request_->get_guid();
         _cacheCtrl->cache()->store(guid, smr<MaterialResource> { prevResponse }.into<resource::ResourceBase>());
     }
 

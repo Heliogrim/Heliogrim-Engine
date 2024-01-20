@@ -48,7 +48,7 @@ namespace hg::engine::resource {
          * @author Julius
          * @date 10.09.2021
          */
-        ~ParallelSource() noexcept = default;
+        ~ParallelSource() noexcept override = default;
 
     public:
         /**

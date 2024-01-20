@@ -27,7 +27,7 @@ void PackageManager::tidy() {
 
     for (const auto& entry : _packages) {
 
-        auto& package = entry.second;
+        const auto& package = entry.second;
         if (package.refs() > 1) {
             IM_CORE_ERRORF(
                 "Failed to cleanup PackageManager with package `{}` cause it is still shared `{}` times.",
@@ -66,7 +66,7 @@ bool PackageManager::isPackageSource(const non_owning_rptr<Source> source_) cons
 
     _::byte buffer[sizeof(PackageHeader)];
 
-    streamsize read;
+    streamsize read = -1LL;
     source_->get(0, sizeof(PackageHeader), buffer, read);
 
     if (read < sizeof(PackageHeader)) {

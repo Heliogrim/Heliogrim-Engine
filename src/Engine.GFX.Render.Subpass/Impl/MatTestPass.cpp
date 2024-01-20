@@ -1,5 +1,6 @@
 #include "MatTestPass.hpp"
 
+#include <ranges>
 #include <Engine.Accel.Command/CommandBuffer.hpp>
 #include <Engine.Accel.Compile/VkEffectCompiler.hpp>
 #include <Engine.Accel.Compile/Profile/EffectProfile.hpp>
@@ -17,8 +18,6 @@
 #include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/ExactType.hpp>
-#include <Engine.Scene/IRenderScene.hpp>
-#include <Engine.Scene/Graph/SceneGraph.hpp>
 #include <Heliogrim/SceneComponent.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
 #include <Engine.Assets/Types/Texture/TextureAsset.hpp>
@@ -33,9 +32,10 @@
 #include <Engine.GFX/Texture/TextureFactory.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Gfx/Texture/TextureView.hpp>
-#include <Engine.GFX/Texture/VirtualTexturePage.hpp>
-#include <Engine.Gfx/Texture/VirtualTextureView.hpp>
+#include <Engine.GFX/Texture/SparseTexturePage.hpp>
+#include <Engine.Gfx/Texture/SparseTextureView.hpp>
 #include <Engine.GFX.Scene.Model/StaticGeometryModel.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
@@ -51,6 +51,18 @@ using namespace hg;
 
 /**/
 
+constexpr static Array possibleSampler = {
+    lang::SymbolId::from("brdf-lut-sampler"sv),
+    lang::SymbolId::from("brdf-pref-sampler"sv),
+    lang::SymbolId::from("brdf-irrad-sampler"sv),
+    lang::SymbolId::from("shadow-dir-sampler"sv),
+    lang::SymbolId::from("mat-static-0-sampler"sv),
+    lang::SymbolId::from("mat-static-1-sampler"sv),
+    lang::SymbolId::from("mat-static-2-sampler"sv)
+};
+
+/**/
+
 void MatTestPass::destroy() noexcept {
     MeshSubPass::destroy();
 
@@ -63,11 +75,15 @@ void MatTestPass::destroy() noexcept {
     }
     _cameraBuffer.destroy();
 
+    _sceneShadowView.reset();
     _sceneLightInfoView.reset();
     _sceneLightView.reset();
     _staticInstanceView.reset();
 
     _shadowDirView.reset();
+
+    _depthSampler->destroy();
+    _depthSampler.reset();
 
     _sampler->destroy();
     _sampler.reset();
@@ -98,36 +114,6 @@ void MatTestPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
         _pass = build_test_pass();
     }
 
-    Vector<ptr<gfx::scene::StaticGeometryModel>> models {};
-    models.reserve(128uLL);
-
-    auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
-    auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
-
-    auto scene = sceneView->getScene()->renderGraph();
-    scene->traversal(
-        [&models](const ptr<scene::SceneGraph<gfx::scene::SceneModel>::node_type> node_) -> bool {
-
-            auto size = node_->exclusiveSize();
-            for (decltype(size) i = 0; i < size; ++i) {
-
-                auto el = node_->elements()[i];
-                if (ExactType<gfx::scene::StaticGeometryModel>(*el)) {
-                    models.emplace_back(static_cast<gfx::scene::StaticGeometryModel*>(el));
-                }
-
-            }
-            return true;
-        }
-    );
-
-    /**/
-
-    if (models.empty()) {
-        _batches.clear();
-        return;
-    }
-
     /**/
 
     for (auto& batch : _STD ranges::views::values(_batches)) {
@@ -135,42 +121,51 @@ void MatTestPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
         batch.models.clear();
     }
 
+    /**/
+
+    auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
+    auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
+
     size_t idx = 0;
-    for (auto* model : models) {
 
-        auto material = model->material(0uL);
-        auto guard = material->acquire(resource::ResourceUsageFlag::eRead);
+    const auto sys = sceneView->getRenderSceneSystem();
+    sys->getRegistry().forEach<gfx::scene::StaticGeometryModel>(
+        [this, &idx](const gfx::scene::StaticGeometryModel& model_) {
 
-        auto proto = guard->getPrototype();
-        assert(proto->getMaterialEffects().size() == 1uLL);
+            auto material = model_.material(0uL);
+            auto guard = material->acquire(resource::ResourceUsageFlag::eRead);
 
-        auto batchIt = _batches.find(proto->getMaterialEffects().front().effect);
-        if (batchIt == _batches.end()) {
+            auto proto = guard->getPrototype();
+            assert(proto->getMaterialEffects().size() == 1uLL);
 
-            const auto result = _batches.emplace(
-                proto->getMaterialEffects().front().effect,
-                Payload {
-                    .effect = proto->getMaterialEffects().front(),
-                    .compiled = {},
-                    .materials = {},
-                    .models = {}
-                }
-            );
-            assert(result.second);
+            auto batchIt = _batches.find(proto->getMaterialEffects().front().effect);
+            if (batchIt == _batches.end()) {
 
-            batchIt = result.first;
+                const auto result = _batches.emplace(
+                    proto->getMaterialEffects().front().effect,
+                    Payload {
+                        .effect = proto->getMaterialEffects().front(),
+                        .compiled = {},
+                        .materials = {},
+                        .models = {}
+                    }
+                );
+                assert(result.second);
 
+                batchIt = result.first;
+
+            }
+
+            auto& payload = batchIt->second;
+
+            payload.materials.emplace_back(material);
+            payload.models.emplace_back(std::addressof(model_));
+
+            /**/
+
+            ++idx;
         }
-
-        auto& payload = batchIt->second;
-
-        payload.materials.emplace_back(material);
-        payload.models.emplace_back(model);
-
-        /**/
-
-        ++idx;
-    }
+    );
 }
 
 void MatTestPass::resolve() noexcept {
@@ -241,6 +236,17 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
         _sampler->setup(_framebuffer->device());
     }
 
+    if (_depthSampler == nullptr) {
+        _depthSampler = make_uptr<TextureSampler>();
+        _depthSampler->magnification() = vk::Filter::eLinear;
+        _depthSampler->minification() = vk::Filter::eLinear;
+        _depthSampler->borderColor() = vk::BorderColor::eFloatOpaqueWhite;
+        _depthSampler->addressModeU() = vk::SamplerAddressMode::eClampToEdge;
+        _depthSampler->addressModeV() = vk::SamplerAddressMode::eClampToEdge;
+        _depthSampler->addressModeW() = vk::SamplerAddressMode::eClampToEdge;
+        _depthSampler->setup(_framebuffer->device());
+    }
+
     /**/
 
     if (_cameraBuffer.buffer == nullptr) {
@@ -299,7 +305,10 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
         _staticInstanceView = make_uptr<gfx::StorageBufferView>();
     }
 
-    const auto& staticInstancePool = sceneView->getScene()->getSceneResourcePool()->staticInstancePool;
+    const auto sceneSystem = sceneView->getRenderSceneSystem();
+    const auto scenePool = sceneSystem->getSceneResourcePool();
+
+    const auto& staticInstancePool = scenePool->staticInstancePool;
     _staticInstanceView->storeBuffer(staticInstancePool.getPoolView());
 
     /**/
@@ -312,11 +321,20 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
         _sceneLightView = make_uptr<StorageBufferView>();
     }
 
-    const auto& sceneLightInfoBuffer = sceneView->getScene()->getSceneResourcePool()->sceneLightInfoBuffer;
-    const auto& sceneLightPool = sceneView->getScene()->getSceneResourcePool()->lightSourcePool;
+    const auto& sceneLightInfoBuffer = scenePool->sceneLightInfoBuffer;
+    const auto& sceneLightPool = scenePool->lightSourcePool;
 
     _sceneLightInfoView->storeBuffer(&sceneLightInfoBuffer);
     _sceneLightView->storeBuffer(sceneLightPool.getPoolView());
+
+    /**/
+
+    if (_sceneShadowView == nullptr) {
+        _sceneShadowView = make_uptr<StorageBufferView>();
+    }
+
+    const auto& sceneShadowPool = scenePool->shadowSourcePool;
+    _sceneShadowView->storeBuffer(sceneShadowPool.getPoolView());
 
     /**/
 
@@ -338,8 +356,8 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
         for (size_t idx = 0; idx < batch.models.size(); ++idx) {
 
             auto& model = batch.models[idx];
-            auto& modelResource = model->geometryResource();
-            auto& materialResource = batch.materials[idx];
+            const auto& modelResource = model->geometryResource();
+            const auto& materialResource = batch.materials[idx];
 
             auto modelGuard = modelResource->acquire(resource::ResourceUsageFlag::eRead);
             auto materialGuard = materialResource->acquire(resource::ResourceUsageFlag::eRead);
@@ -372,27 +390,27 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
                         const auto texture = materialGuard->getParam<smr<TextureResource>>(iter->first);
                         auto textureGuard = texture->acquire(resource::ResourceUsageFlag::eRead);
-                        const auto assetName = Cast<assets::TextureAsset>(texture->getAssociation());
+                        const auto* const assetName = Cast<assets::TextureAsset>(texture->getAssociation());
 
-                        if (auto textureView = Cast<TextureView>(textureGuard.imm()->get())) {
-                            cmd.bindTexture(clone(symbolId), textureView, _sampler.get());
+                        if (auto* textureView = Cast<TextureView>(textureGuard.imm()->get())) {
+                            cmd.bindTexture(clone(symbolId), textureView);
 
-                        } else if (auto virtualTextureView = Cast<VirtualTextureView>(textureGuard.imm()->get())) {
+                        } else if (auto* sparseTextureView = Cast<SparseTextureView>(textureGuard.imm()->get())) {
 
-                            if (virtualTextureView->vkImageView() == nullptr) {
-                                TextureFactory::get()->buildView(*virtualTextureView, {});
+                            if (sparseTextureView->vkImageView() == nullptr) {
+                                TextureFactory::get()->buildView(*sparseTextureView, {});
                             }
 
                             /**/
-                            if (virtualTextureView->pages().front()->memory()->state() !=
+                            if (sparseTextureView->pages().front()->memory()->state() !=
                                 VirtualMemoryPageState::eLoaded) {
 
                                 textureGuard.release();
 
                                 auto* cc = Engine::getEngine()->getGraphics()->cacheCtrl();
                                 for (
-                                    u32 mipLevel = virtualTextureView->minMipLevel();
-                                    mipLevel < virtualTextureView->maxMipLevel();
+                                    u32 mipLevel = sparseTextureView->minMipLevel();
+                                    mipLevel < sparseTextureView->maxMipLevel();
                                     ++mipLevel
                                 ) {
                                     cc->markLoadedAsUsed(
@@ -402,8 +420,8 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                                             .mip = mipLevel,
                                             .offset = math::uivec3 {},
                                             .extent = math::uivec3 {
-                                                virtualTextureView->width(), virtualTextureView->height(),
-                                                virtualTextureView->depth()
+                                                sparseTextureView->width(), sparseTextureView->height(),
+                                                sparseTextureView->depth()
                                             }
                                         }
                                     );
@@ -411,7 +429,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                             }
                             /**/
 
-                            cmd.bindTexture(clone(symbolId), virtualTextureView, _sampler.get());
+                            cmd.bindTexture(clone(symbolId), sparseTextureView);
 
                         } else {
                             assert(false);
@@ -420,32 +438,32 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                         continue;
                     }
 
-                    static auto viewSym = lang::SymbolId::from("view");
+                    constexpr auto viewSym = lang::SymbolId::from("view"_cs);
                     if (aliasId == viewSym) {
                         cmd.bindUniform(clone(symbolId), _cameraBufferView.get());
                         continue;
                     }
 
-                    static auto modelSym = lang::SymbolId::from("model");
+                    constexpr auto modelSym = lang::SymbolId::from("model"_cs);
                     if (aliasId == modelSym) {
                         cmd.bindStorage(clone(symbolId), _staticInstanceView.get());
                         continue;
                     }
 
-                    static auto lightInfoSym = lang::SymbolId::from("light-info");
+                    constexpr auto lightInfoSym = lang::SymbolId::from("light-info"_cs);
                     if (aliasId == lightInfoSym) {
                         cmd.bindUniform(clone(symbolId), _sceneLightInfoView.get());
                         continue;
                     }
 
-                    static auto lightsSym = lang::SymbolId::from("lights");
+                    constexpr auto lightsSym = lang::SymbolId::from("lights"_cs);
                     if (aliasId == lightsSym) {
                         cmd.bindStorage(clone(symbolId), _sceneLightView.get());
                         continue;
                     }
 
                     // TODO: Take care of brdf helper objects for test case: `brdf-lut`, `brdf-prefilter`, `brdf-irradiance`
-                    static auto brdfLutSym = lang::SymbolId::from("brdf-lut");
+                    constexpr auto brdfLutSym = lang::SymbolId::from("brdf-lut"_cs);
                     if (aliasId == brdfLutSym) {
 
                         const auto res = symCtx_.getImportSymbol(makeBrdfLutSymbol());
@@ -460,11 +478,11 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                             );
                         }
 
-                        cmd.bindTexture(clone(symbolId), _brdfLutView.get(), _sampler.get());
+                        cmd.bindTexture(clone(symbolId), _brdfLutView.get());
                         continue;
                     }
 
-                    static auto brdfPrefSym = lang::SymbolId::from("brdf-pref");
+                    constexpr auto brdfPrefSym = lang::SymbolId::from("brdf-pref"_cs);
                     if (aliasId == brdfPrefSym) {
 
                         const auto res = symCtx_.getImportSymbol(makeBrdfPrefilterSymbol());
@@ -479,11 +497,11 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                             );
                         }
 
-                        cmd.bindTexture(clone(symbolId), _brdfPrefView.get(), _sampler.get());
+                        cmd.bindTexture(clone(symbolId), _brdfPrefView.get());
                         continue;
                     }
 
-                    static auto brdfIrradSym = lang::SymbolId::from("brdf-irrad");
+                    constexpr auto brdfIrradSym = lang::SymbolId::from("brdf-irrad"_cs);
                     if (aliasId == brdfIrradSym) {
 
                         const auto res = symCtx_.getImportSymbol(makeBrdfIrradianceSymbol());
@@ -498,11 +516,17 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                             );
                         }
 
-                        cmd.bindTexture(clone(symbolId), _brdfIrradView.get(), _sampler.get());
+                        cmd.bindTexture(clone(symbolId), _brdfIrradView.get());
                         continue;
                     }
 
-                    static auto shadowDirSym = lang::SymbolId::from("shadow-dir");
+                    constexpr auto shadowSym = lang::SymbolId::from("shadows"_cs);
+                    if (aliasId == shadowSym) {
+                        cmd.bindStorage(clone(symbolId), _sceneShadowView.get());
+                        continue;
+                    }
+
+                    constexpr auto shadowDirSym = lang::SymbolId::from("shadow-dir"_cs);
                     if (aliasId == shadowDirSym) {
 
                         const auto res = symCtx_.getImportSymbol(makeDirectionalShadowSymbol());
@@ -517,11 +541,23 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                             );
                         }
 
-                        cmd.bindTexture(clone(symbolId), _shadowDirView.get(), _sampler.get());
+                        cmd.bindTexture(clone(symbolId), _shadowDirView.get());
                         continue;
                     }
 
-                    __debugbreak();
+                    /**/
+
+                    if (std::ranges::any_of(
+                        possibleSampler,
+                        [&aliasId](const auto& sym_) {
+                            return aliasId == sym_;
+                        }
+                    )) {
+                        cmd.bindTextureSampler(clone(symbolId), _sampler.get());
+                        continue;
+                    }
+
+                    std::unreachable();
                 }
             }
 
@@ -538,7 +574,7 @@ void MatTestPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
     auto nativeBatch = (*translator)(&cmd);
-    const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
+    auto* const batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
 
     {
         {

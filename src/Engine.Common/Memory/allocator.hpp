@@ -52,7 +52,7 @@ namespace hg::engine::memory {
          * @tparam UnionTy Type of the union ty.
          */
         template <typename UnionTy>
-        aligned_allocator(const aligned_allocator<UnionTy, Align>&) noexcept {};
+        aligned_allocator(const aligned_allocator<UnionTy, Align>&) noexcept {}
 
         /**
          * Destructor

@@ -26,7 +26,7 @@ Path::Path(cref<hg::string> str_) :
 Path::Path(string_view view_) :
     _value(view_) {}
 
-ref<Path::this_type> Path::operator=(mref<this_type> other_) {
+ref<Path::this_type> Path::operator=(mref<this_type> other_) noexcept {
     if (_STD addressof(other_) != this) {
         _value = _STD move(other_._value);
     }

@@ -12,7 +12,7 @@ Indexer::~Indexer() noexcept {
 }
 
 void Indexer::tidy() {
-    for (auto entry : _watcher) {
+    for (auto* const entry : _watcher) {
         delete entry;
     }
 }
@@ -88,7 +88,7 @@ void Indexer::scan() {
 
 void Indexer::watch(cref<fs::File> root_) {
 
-    auto watcher = new Watcher {
+    auto* watcher = new Watcher {
         root_
     };
 

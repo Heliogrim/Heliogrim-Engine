@@ -29,40 +29,56 @@ RenderSceneManager::RenderSceneManager() = default;
 
 RenderSceneManager::~RenderSceneManager() = default;
 
-void RenderSceneManager::registerScene(const ptr<RenderScene> renderScene_) {
+void RenderSceneManager::registerScene(const ptr<engine::scene::SceneBase> renderableScene_) {
     _CTRL_GATE(_ctrl);
-    _renderScenes.insert(renderScene_);
+    _renderScenes.insert(renderableScene_);
     __gate_lock.unlock();
 
-    injectSceneHooks(renderScene_);
+    injectSceneHooks(renderableScene_);
 }
 
-bool RenderSceneManager::unregisterScene(const ptr<RenderScene> renderScene_) {
+bool RenderSceneManager::unregisterScene(const ptr<engine::scene::SceneBase> renderableScene_) {
     _CTRL_GATE(_ctrl);
-    return _renderScenes.erase(renderScene_) != 0;
+    return _renderScenes.erase(renderableScene_) != 0;
 }
 
-void RenderSceneManager::addPrimaryTarget(cref<sptr<RenderTarget>> renderTarget_) {
-    _primaryTargets.insert(renderTarget_);
+void RenderSceneManager::addPrimaryTarget(mref<smr<RenderTarget>> renderTarget_) {
+    _primaryTargets.insert(clone(renderTarget_));
+    _mappedRenderTargets.emplace(renderTarget_->getSwapChain(), std::move(renderTarget_));
 }
 
-void RenderSceneManager::dropPrimaryTarget(const sptr<RenderTarget> renderTarget_) {
+void RenderSceneManager::dropPrimaryTarget(cref<smr<RenderTarget>> renderTarget_) {
+    _mappedRenderTargets.erase(renderTarget_->getSwapChain());
     _primaryTargets.erase(renderTarget_);
 }
 
-void RenderSceneManager::addSecondaryTarget(cref<sptr<RenderTarget>> renderTarget_) {
-    _secondaryTargets.insert(renderTarget_);
+void RenderSceneManager::transitionToSceneView(mref<smr<Swapchain>> targetKey_, mref<smr<SceneView>> nextView_) {
+    const auto iter = _mappedRenderTargets.find(targetKey_);
+    assert(iter != _mappedRenderTargets.end());
+    [[maybe_unused]] const auto transition = iter->second->transitionToSceneView(std::move(nextView_));
 }
 
-void RenderSceneManager::dropSecondaryTarget(const sptr<RenderTarget> renderTarget_) {
-    _secondaryTargets.erase(renderTarget_);
+void RenderSceneManager::transitionToTarget(
+    mref<smr<Swapchain>> from_,
+    mref<smr<Swapchain>> toSwapChain_,
+    nmpt<Surface> toSurface_
+) {
+    auto iter = _mappedRenderTargets.find(from_);
+    assert(iter != _mappedRenderTargets.end());
+
+    const auto transition = iter->second->transitionToTarget(clone(toSwapChain_), std::move(toSurface_));
+    assert(transition.has_value());
+
+    auto renderTarget = std::move(iter->second);
+    _mappedRenderTargets.erase(iter);
+    _mappedRenderTargets.emplace(toSwapChain_, std::move(renderTarget));
 }
 
-void RenderSceneManager::selectInvokeTargets(ref<CompactSet<sptr<RenderTarget>>> targets_) const noexcept {
+void RenderSceneManager::selectInvokeTargets(ref<CompactSet<smr<RenderTarget>>> targets_) const noexcept {
     targets_.reserve(_primaryTargets.size());
     for (const auto& entry : _primaryTargets) {
         if (entry->active() && entry->ready()) {
-            targets_.insert(entry);
+            targets_.emplace(clone(entry));
         }
     }
 }

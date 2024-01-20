@@ -135,6 +135,7 @@
     <ClCompile Include="..\..\src\Editor.UI\Modules\ObjectEditor.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Modules\ObjectEditor\ActorValueMapper.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Modules\ObjectEditor\GeometryComponentValueMapper.cpp" />
+    <ClCompile Include="..\..\src\Editor.UI\Modules\ObjectEditor\LightComponentValueMapper.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Modules\SceneHierarchy.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Modules\SceneHierarchy\SceneGenerator.cpp" />
     <ClCompile Include="..\..\src\Editor.UI\Modules\SceneHierarchy\SceneResolver.cpp" />

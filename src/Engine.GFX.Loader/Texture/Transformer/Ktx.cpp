@@ -8,8 +8,8 @@
 #include <Engine.GFX/Command/CommandBuffer.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
 #include <Engine.GFX/Device/Device.hpp>
-#include <Engine.GFX/Texture/VirtualTextureView.hpp>
-#include <Engine.GFX/Texture/VirtualTexturePage.hpp>
+#include <Engine.GFX/Texture/SparseTextureView.hpp>
+#include <Engine.GFX/Texture/SparseTexturePage.hpp>
 #include "Engine.Filesystem/Url.hpp"
 
 using namespace hg::engine::gfx::loader::transformer;
@@ -160,7 +160,7 @@ namespace hg::external::ktx {
 void transformer::convertKtx(
     const non_owning_rptr<const assets::TextureAsset> asset_,
     cref<smr<resource::Source>> src_,
-    const non_owning_rptr<VirtualTextureView> dst_,
+    const non_owning_rptr<SparseTextureView> dst_,
     cref<sptr<Device>> device_,
     const TextureLoadOptions options_
 ) {
@@ -211,7 +211,7 @@ void transformer::convertKtx(
 void transformer::convertKtxPartial(
     const non_owning_rptr<const assets::TextureAsset> asset_,
     cref<smr<resource::Source>> src_,
-    const non_owning_rptr<VirtualTextureView> dst_,
+    const non_owning_rptr<SparseTextureView> dst_,
     cref<sptr<Device>> device_,
     const TextureStreamOptions options_
 ) {
@@ -524,7 +524,7 @@ static Buffer createStageBuffer(cref<sptr<Device>> device_, const u64 byteSize_)
 void transformer::convertKtx10Gli(
     const non_owning_rptr<const engine::assets::TextureAsset> asset_,
     cref<smr<engine::resource::Source>> src_,
-    const non_owning_rptr<VirtualTextureView> dst_,
+    const non_owning_rptr<SparseTextureView> dst_,
     cref<sptr<Device>> device_,
     const TextureLoadOptions options_
 ) {
@@ -553,9 +553,9 @@ void transformer::convertKtx10Gli(
     };
 
     const auto lvlZeroForm = glitex.format();
-    vk::Format format;
-    vk::ImageAspectFlags aspect;
-    vk::ImageCreateFlags create = vk::ImageCreateFlags();
+    auto format = vk::Format::eUndefined;
+    auto aspect = vk::ImageAspectFlags {};
+    auto create = vk::ImageCreateFlags();
     vk::ImageUsageFlags usage = vk::ImageUsageFlagBits::eTransferSrc |
         vk::ImageUsageFlagBits::eTransferDst |
         vk::ImageUsageFlagBits::eSampled;
@@ -719,7 +719,7 @@ void transformer::convertKtx10Gli(
     /**
      * Ensure virtual memory is residential
      */
-    for (auto& page : dst_->pages()) {
+    for (const auto& page : dst_->pages()) {
 
         if (IS_LOCKED_SEGMENT) {
             // TODO: Lock effected memory and texture pages!
@@ -735,16 +735,16 @@ void transformer::convertKtx10Gli(
     * Update virtual binding data
     */
     auto tex { dst_->owner() };
-    const_cast<VirtualTexture*>(tex.get())->updateBindingData();
+    const_cast<SparseTexture*>(tex.get())->updateBindingData();
     #pragma warning(push)
     #pragma warning(disable: 4996)
-    const_cast<VirtualTexture*>(tex.get())->enqueueBindingSync(device_->graphicsQueue());
+    const_cast<SparseTexture*>(tex.get())->enqueueBindingSync(device_->graphicsQueue());
     #pragma warning(pop)
 
     /**
      * Capture commands to copy data to image
      */
-    auto pool = device_->transferQueue()->pool();
+    auto* const pool = device_->transferQueue()->pool();
     pool->lck().acquire();
     CommandBuffer cmd = pool->make();
     cmd.begin();
@@ -848,7 +848,7 @@ void transformer::convertKtx10Gli(
 void transformer::convertKtx20(
     const non_owning_rptr<const engine::assets::TextureAsset> asset_,
     cref<smr<engine::resource::Source>> src_,
-    const non_owning_rptr<VirtualTextureView> dst_,
+    const non_owning_rptr<SparseTextureView> dst_,
     cref<sptr<Device>> device_,
     const TextureLoadOptions options_
 ) {
@@ -858,7 +858,7 @@ void transformer::convertKtx20(
         /**
         * Transform and data transfer
         */
-        auto pool = device_->transferQueue()->pool();
+        auto* const pool = device_->transferQueue()->pool();
         pool->lck().acquire();
         CommandBuffer cmd = pool->make();
         cmd.begin();
@@ -989,7 +989,7 @@ void transformer::convertKtx20(
     /**/
 
     // Warning: Temporary
-    for (auto& page : dst_->pages()) {
+    for (const auto& page : dst_->pages()) {
 
         if (IS_LOCKED_SEGMENT) {
             // TODO: Lock effected memory and texture pages!!!
@@ -1004,16 +1004,16 @@ void transformer::convertKtx20(
     * Update virtual binding data
     */
     const auto tex { dst_->owner() };
-    const_cast<VirtualTexture*>(tex.get())->updateBindingData();
+    const_cast<SparseTexture*>(tex.get())->updateBindingData();
     #pragma warning(push)
     #pragma warning(disable: 4996)
-    const_cast<VirtualTexture*>(tex.get())->enqueueBindingSync(device_->graphicsQueue());
+    const_cast<SparseTexture*>(tex.get())->enqueueBindingSync(device_->graphicsQueue());
     #pragma warning(pop)
 
     /**
     * Transform and data transfer
     */
-    auto pool = device_->transferQueue()->pool();
+    auto* const pool = device_->transferQueue()->pool();
     pool->lck().acquire();
     CommandBuffer cmd = pool->make();
     cmd.begin();
@@ -1110,7 +1110,7 @@ void transformer::convertKtx20(
 void transformer::convertKtx20Partial(
     const non_owning_rptr<const engine::assets::TextureAsset> asset_,
     cref<smr<engine::resource::Source>> src_,
-    const non_owning_rptr<VirtualTextureView> dst_,
+    const non_owning_rptr<SparseTextureView> dst_,
     cref<sptr<Device>> device_,
     const TextureStreamOptions options_
 ) {
@@ -1183,7 +1183,7 @@ void transformer::convertKtx20Partial(
         mipOff = dst_->pages().size() - 1;
     }
 
-    if (dst_->pages()[mipOff]->flags() & VirtualTexturePageFlag::eOpaqueTail) {
+    if (dst_->pages()[mipOff]->flags() & SparseTexturePageFlag::eOpaqueTail) {
 
         changedMemory = dst_->pages()[mipOff]->memory()->state() != VirtualMemoryPageState::eLoaded;
 
@@ -1303,7 +1303,7 @@ void transformer::convertKtx20Partial(
     #endif
 
         bool effected{ false };
-        if (page->flags() & VirtualTexturePageFlag::eOpaqueTail) {
+        if (page->flags() & SparseTexturePageFlag::eOpaqueTail) {
             effected = page->mipLevel() <= options_.mip;
 
         }
@@ -1346,10 +1346,10 @@ void transformer::convertKtx20Partial(
     // TODO: !!! Move dirty flagging and update tracking into virtual texture itself !!!
     if (changedMemory) {
         auto tex { dst_->owner() };
-        const_cast<VirtualTexture*>(tex.get())->updateBindingData();
+        const_cast<SparseTexture*>(tex.get())->updateBindingData();
         #pragma warning(push)
         #pragma warning(disable: 4996)
-        const_cast<VirtualTexture*>(tex.get())->enqueueBindingSync(device_->transferQueue());
+        const_cast<SparseTexture*>(tex.get())->enqueueBindingSync(device_->transferQueue());
         #pragma warning(pop)
     }
 
@@ -1597,7 +1597,7 @@ void transformer::convertKtx20Partial(
     /**
     * Copy Data to Image
     */
-    auto pool = device_->transferQueue()->pool();
+    auto* const pool = device_->transferQueue()->pool();
     pool->lck().acquire();
     CommandBuffer cmd = pool->make();
     cmd.begin();
@@ -1686,7 +1686,7 @@ void transformer::convertKtx20Partial(
 void transformer::unloadPartialTmp(
     const non_owning_rptr<const engine::assets::TextureAsset> asset_,
     cref<smr<engine::resource::Source>> src_,
-    const non_owning_rptr<VirtualTextureView> dst_,
+    const non_owning_rptr<SparseTextureView> dst_,
     cref<sptr<Device>> device_,
     const TextureStreamOptions options_
 ) {
@@ -1719,7 +1719,7 @@ void transformer::unloadPartialTmp(
         }
 
         bool effected { false };
-        if (page->flags() & VirtualTexturePageFlag::eOpaqueTail) {
+        if (page->flags() & SparseTexturePageFlag::eOpaqueTail) {
             // TODO: effected = page->mipLevel() <= options_->mip;
 
         } else {
@@ -1752,10 +1752,10 @@ void transformer::unloadPartialTmp(
     */
     if (changedMemory) {
         auto tex { dst_->owner() };
-        const_cast<VirtualTexture*>(tex.get())->updateBindingData();
+        const_cast<SparseTexture*>(tex.get())->updateBindingData();
         #pragma warning(push)
         #pragma warning(disable: 4996)
-        const_cast<VirtualTexture*>(tex.get())->enqueueBindingSync(device_->transferQueue());
+        const_cast<SparseTexture*>(tex.get())->enqueueBindingSync(device_->transferQueue());
         #pragma warning(pop)
     }
 }

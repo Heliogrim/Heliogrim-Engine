@@ -53,10 +53,13 @@ u32 Font::nextFontSize(const u32 size_) const noexcept {
 
     for (const auto& size : _sizes) {
         const u32 diff { size > size_ ? size - size_ : size_ - size };
-        if (diff < sizeDiff) {
-            nextSize = size;
-            sizeDiff = diff;
+
+        if (diff > sizeDiff) {
+            return nextSize;
         }
+
+        nextSize = size;
+        sizeDiff = diff;
     }
 
     return nextSize;

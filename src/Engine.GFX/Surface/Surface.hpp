@@ -106,11 +106,11 @@ namespace hg::engine::gfx {
         vk::SurfaceKHR createApiSurface();
 
     private:
-        sptr<Swapchain> _swapchain;
+        smr<Swapchain> _swapchain;
 
     public:
-        [[nodiscard]] cref<sptr<Swapchain>> swapchain() const noexcept;
+        [[nodiscard]] cref<smr<Swapchain>> swapchain() const noexcept;
 
-        bool setSwapchain(cref<sptr<Swapchain>> swapchain_) noexcept;
+        bool setSwapchain(mref<smr<Swapchain>> swapchain_) noexcept;
     };
 }

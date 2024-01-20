@@ -5,6 +5,9 @@
 #include <Engine.Common/Make.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Event/SignalShutdownEvent.hpp>
+#include <Engine.Render.Scene.Model/CameraModel.hpp>
+#include <Heliogrim/Components/DirectionalLightComponent.hpp>
+#include <Heliogrim/Components/PointLightComponent.hpp>
 
 #include "Editor.Core/EditorEngine.hpp"
 #include "Editor.Core/HeliogrimEditor.hpp"
@@ -21,9 +24,8 @@
 #include "Engine.Core/WorldContext.hpp"
 #include "Engine.Event/GlobalEventEmitter.hpp"
 #include "Engine.GFX/RenderTarget.hpp"
-#include "Engine.GFX/Scene/CameraModel.hpp"
 #include "Engine.GFX/Swapchain/VkSwapchain.hpp"
-#include "Engine.GFX/Texture/VirtualTextureView.hpp"
+#include "Engine.GFX/Texture/SparseTextureView.hpp"
 #include "Engine.GFX.Scene/RenderSceneManager.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
 #include "Engine.Reflow/Widget/Button.hpp"
@@ -33,6 +35,7 @@
 #include "Engine.Reflow/Widget/Viewport.hpp"
 #include "Engine.Reflow/Widget/HorizontalPanel.hpp"
 #include "Engine.Reflow/Widget/VerticalPanel.hpp"
+#include "Engine.Reflow/Widget/Overlay.hpp"
 
 #include "Engine.Reflow/Window/WindowManager.hpp"
 #include "Engine.Scene/Scene.hpp"
@@ -40,6 +43,8 @@
 #include "Engine.ACS/Pool.hpp"
 #include "Engine.ACS/Storage.hpp"
 #include "Engine.Assets.System/IAssetRegistry.hpp"
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
+#include <Engine.GFX.Scene/View/SceneView.hpp>
 
 #if TRUE
 #include "Engine.GFX/Command/CommandBuffer.hpp"
@@ -122,7 +127,7 @@ void testLoad(cref<sptr<engine::gfx::Device>> device_) {
 
         assert(asset != nullptr);
 
-        auto request = static_cast<ptr<engine::assets::TextureAsset>>(asset);
+        auto* request = static_cast<ptr<engine::assets::TextureAsset>>(asset);
         testTexture = engine::Engine::getEngine()->getResources()->loader().load<
             engine::assets::TextureAsset, engine::gfx::TextureResource
         >(_STD move(request), engine::gfx::loader::TextureLoadOptions {});
@@ -494,12 +499,12 @@ void buildTestUI(
     /**/
 
     {
-        auto session = static_cast<ptr<engine::core::Session>>(GetSession().unwrap().get());
-        auto registry = session->getState()->getRegistry();
+        auto* session = static_cast<ptr<engine::core::Session>>(GetSession().unwrap().get());
+        auto* registry = session->getState()->getRegistry();
 
         Vector<ptr<Actor>> actors {};
 
-        const auto pool = registry->getOrCreateActorPool<Actor>();
+        auto* const pool = registry->getOrCreateActorPool<Actor>();
         const auto& storage = pool->__get_storage();
 
         const auto end = storage.cend();
@@ -561,6 +566,14 @@ void storeActorMapping() {
     testObjectEditor->storeObjectMapper(
         ::hg::StaticGeometryComponent::typeId,
         make_uptr<ObjectValueMapper<::hg::StaticGeometryComponent>>()
+    );
+    testObjectEditor->storeObjectMapper(
+        ::hg::PointLightComponent::typeId,
+        make_uptr<ObjectValueMapper<::hg::PointLightComponent>>()
+    );
+    testObjectEditor->storeObjectMapper(
+        ::hg::DirectionalLightComponent::typeId,
+        make_uptr<ObjectValueMapper<::hg::DirectionalLightComponent>>()
     );
 }
 
@@ -715,7 +728,7 @@ void configureMainViewport(
     const auto* const gfx { editor::EditorEngine::getEngine()->getGraphics() };
     const auto* const coreSession = editor::EditorEngine::getEngine()->getPrimaryGameSession();
     const auto coreWorld { coreSession->getWorldContext()->getCurrentWorld() };
-    const auto scene { coreWorld->getScene() };
+    const auto* const scene { coreWorld->getScene() };
 
     //RegisterActorClass<CameraActor>();
     coreSession->getState()->getRegistry()->getOrCreateActorPool<CameraActor>();
@@ -726,99 +739,93 @@ void configureMainViewport(
 
     {
         cref<math::Transform> tf = camera->getRootComponent()->getWorldTransform();
-        const_cast<ref<math::Transform>>(tf).setLocation(math::Location { 0.F, 1.8F, 0.F });
+        const_cast<ref<math::Transform>>(tf).setLocation(math::Location { 0.F, 0.F, -5.F });
+        //const_cast<ref<math::Transform>>(tf).setLocation(math::Location { 0.F, 1.8F, 0.F });
     }
-
     world.addActor(camera);
-    scene->update();
 
-    viewport->setCameraActor(camera);
+    /**/
+
+    viewport->setViewportTarget("Test-Renderer"sv, world, camera);
     viewport->rebuildView();
 
-    const auto target { make_sptr<engine::gfx::RenderTarget>() };
-    target->use(gfx->getCurrentDevice());
-    target->use(gfx->getRenderer("3DRenderer").get());
-    target->use(viewport->getSwapchain());
+    /**/
 
-    // Error: Will break, because viewport has no swapchain if dimension is zero
-
-    const auto* const cc { camera->getCameraComponent() };
-    const auto* const cm { *cc->getSceneNodeModels().begin() };
-    target->buildPasses(static_cast<const ptr<const engine::gfx::CameraModel>>(cm)->getSceneView());
-
-    // TODO: Should be Secondary Target
-    gfx->getSceneManager()->addPrimaryTarget(target);
+    /**/
 
     viewport->addResizeListener(
-        [target = wptr<engine::gfx::RenderTarget>(target)](const non_owning_rptr<engine::gfx::VkSwapchain> next_) {
-            if (target.expired()) {
+        [instance = viewport.get()](mref<smr<engine::gfx::Swapchain>> prev_, mref<smr<engine::gfx::Swapchain>> next_) {
+
+            if (not instance->hasMountedRenderTarget()) {
                 return;
             }
 
-            target.lock()->rebuildPasses(next_);
+            auto* const manager = engine::Engine::getEngine()->getGraphics()->getSceneManager();
+            manager->transitionToTarget(std::move(prev_), std::move(next_), nullptr);
         }
     );
 
     /**/
 
-    #if FALSE
     auto viewportOverlay = make_sptr<Overlay>();
-    auto viewOverBox = make_sptr<HorizontalPanel>(BoundStyleSheet::make(StyleSheet {
-        .width = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .height = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-        .wrap = { true, ReflowWrap::eNoWrap },
-        .reflowSpacing = { true, ReflowSpacing::eSpaceBetween },
-        .color = { true, color::Dark::transparent },
-    }));
+    auto viewOverBox = make_sptr<HorizontalPanel>();
+    {
+        auto& attr = viewOverBox->attr;
+        attr.width.setValue(ReflowUnitType::eAuto, 0.F);
+        attr.height.setValue(ReflowUnitType::eAuto, 0.F);
+        attr.style.setValue(
+            {
+                .backgroundColor = engine::color { 1.F, 1.F, 1.F, 0.F }
+            }
+        );
+    }
 
     viewportWrapper->addChild(viewportOverlay);
     viewportOverlay->setContent(viewOverBox);
 
     {
-        auto alignHelper = make_sptr<HorizontalPanel>(BoundStyleSheet::make(StyleSheet {
-            .reflowShrink = { true, 1.F },
-            .color = { true, color::Dark::transparent },
-        }));
-        viewOverBox->addChild(alignHelper);
+        auto statsWrapper = make_sptr<VerticalPanel>();
+        {
+            auto& attr = statsWrapper->attr;
+            attr.width.setValue(ReflowUnitType::eAuto, 0.F);
+            attr.height.setValue(ReflowUnitType::eAuto, 0.F);
+            attr.style.setValue(
+                {
+                    .backgroundColor = engine::color { 1.F, 1.F, 1.F, 0.F }
+                }
+            );
+        }
 
-        /**/
-
-        auto statsWrapper = make_sptr<VerticalPanel>(BoundStyleSheet::make(StyleSheet {
-            .maxWidth = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .maxHeight = { true, ReflowUnit { ReflowUnitType::eRelative, 1.F } },
-            .padding = { true, Padding { 8.F, 16.F } },
-            .color = { true, engine::color { 0.F, 0.F, 0.F, 0.2F } },
-        }));
         viewOverBox->addChild(statsWrapper);
 
         /**/
 
-        const StyleSheet stxtStyle {
-            .minWidth = { true, ReflowUnit { ReflowUnitType::eAbsolute, 156.F } },
-            .color = { true, color::Dark::white },
-            .font = { true, defaultFont },
-            .fontSize = { true, 16.F },
-            .textAlign = { true, TextAlign::eRightTop }
-        };
-
-        auto sceneName = make_sptr<Text>(BoundStyleSheet::make(stxtStyle));
+        auto sceneName = make_sptr<Text>();
+        sceneName->attr.font.setValue(defaultFont);
+        sceneName->attr.fontSize.setValue(16.F);
+        sceneName->attr.color.setValue(engine::color { 229.F, 190.F, 1.F, 255.F });
         sceneName->setText("Test Scene");
 
         statsWrapper->addChild(sceneName);
 
-        auto sceneCalcTime = make_sptr<Text>(BoundStyleSheet::make(stxtStyle));
+        auto sceneCalcTime = make_sptr<Text>();
+        sceneCalcTime->attr.font.setValue(defaultFont);
+        sceneCalcTime->attr.fontSize.setValue(16.F);
+        sceneCalcTime->attr.color.setValue(engine::color { 229.F, 190.F, 1.F, 255.F });
         sceneCalcTime->setText("15.42 ms");
 
         testFrameTime = sceneCalcTime;
         statsWrapper->addChild(sceneCalcTime);
 
-        auto sceneFrames = make_sptr<Text>(BoundStyleSheet::make(stxtStyle));
+        auto sceneFrames = make_sptr<Text>();
+        sceneFrames->attr.font.setValue(defaultFont);
+        sceneFrames->attr.fontSize.setValue(16.F);
+        sceneFrames->attr.color.setValue(engine::color { 229.F, 190.F, 1.F, 255.F });
         sceneFrames->setText("63 FPS");
 
         testFrameDisplay = sceneFrames;
         statsWrapper->addChild(sceneFrames);
     }
-    #endif
 
 }
 

@@ -24,7 +24,7 @@ namespace hg::engine::res::types {
         template <typename T>
         static void write(const T& src_, std::ostream& dst_) {
             dst_.write(reinterpret_cast<const char*>(&src_), sizeof(T));
-        };
+        }
 
         /**
          * Reads the given source
@@ -41,7 +41,7 @@ namespace hg::engine::res::types {
             T dst;
             src_.read(reinterpret_cast<char*>(&dst), sizeof(T));
             return dst;
-        };
+        }
 
         /**
          * Writes a n
@@ -54,7 +54,7 @@ namespace hg::engine::res::types {
         template <typename T>
         static void writeN(const T* src_, const uint32_t size_, std::ostream& dst_) {
             EXCEPTION_UNSUPPORTED_METHOD
-        };
+        }
 
         /**
          * Reads a n

@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
 #include <Engine.Scheduler/Pipeline/Stage/PipelineStage.hpp>
 
 namespace hg::engine::gfx {
@@ -27,6 +28,6 @@ namespace hg::engine::gfx::schedule {
     private:
         void tickTargets();
 
-        void invokeRenderTarget(cref<sptr<RenderTarget>> target_) const;
+        void invokeRenderTarget(cref<smr<RenderTarget>> target_) const;
     };
 }

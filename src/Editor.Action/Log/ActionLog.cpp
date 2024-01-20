@@ -70,7 +70,7 @@ void ActionLog::dropActionState() {
         return;
     }
 
-    ptr<ActionSaveState> state { reinterpret_cast<ptr<ActionSaveState>>(stored) };
+    auto* state = reinterpret_cast<ptr<ActionSaveState>>(stored);
     // TODO: Cleanup state / serialized effected data
     delete state;
 }
@@ -81,7 +81,7 @@ bool ActionLog::revertActionState(cref<sptr<Action>> action_) {
         return false;
     }
 
-    ptr<ActionSaveState> state { reinterpret_cast<ptr<ActionSaveState>>(stored) };
+    auto* state = reinterpret_cast<ptr<ActionSaveState>>(stored);
     // TODO: Restore state / serialized data to revert effects
     delete state;
 

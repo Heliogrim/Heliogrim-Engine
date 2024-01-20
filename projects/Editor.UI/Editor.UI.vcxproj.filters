@@ -266,5 +266,8 @@
     <ClCompile Include="..\..\src\Editor.UI\Theme\DarkTheme.cpp">
       <Filter>Quelldateien\Theme</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Editor.UI\Modules\ObjectEditor\LightComponentValueMapper.cpp">
+      <Filter>Quelldateien\Modules\ObjectEditor</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

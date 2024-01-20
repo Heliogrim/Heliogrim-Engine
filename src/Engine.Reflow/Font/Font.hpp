@@ -2,12 +2,12 @@
 
 #include <Engine.Common/String.hpp>
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.GFX/Texture/__fwd.hpp>
 
 #include "FontGlyph.hpp"
 #include "GlyphCode.hpp"
-#include "Engine.Common/Collection/RobinMap.hpp"
 
 namespace hg::engine::reflow {
     class Font {
@@ -47,7 +47,7 @@ namespace hg::engine::reflow {
 
         //private:
     public:
-        RobinMap<u32, ptr<FontGlyph>> _glyphs;
+        DenseMap<u32, ptr<FontGlyph>> _glyphs;
         u32 _glyphCount;
 
         //private:

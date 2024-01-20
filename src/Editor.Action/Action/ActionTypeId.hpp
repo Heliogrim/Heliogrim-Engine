@@ -33,7 +33,7 @@ namespace std {
             hg::cref<hg::action_type_id> left_,
             hg::cref<hg::action_type_id> right_
         ) const noexcept {
-            auto& self { static_cast<const _STD less<hg::type_id>&>(*this) };
+            const auto& self { static_cast<const _STD less<hg::type_id>&>(*this) };
             return self(left_, right_);
         }
     };
@@ -45,7 +45,7 @@ namespace std {
             hg::cref<hg::action_type_id> left_,
             hg::cref<hg::action_type_id> right_
         ) const noexcept {
-            auto& self { static_cast<const _STD equal_to<hg::type_id>&>(*this) };
+            const auto& self { static_cast<const _STD equal_to<hg::type_id>&>(*this) };
             return self(left_, right_);
         }
     };

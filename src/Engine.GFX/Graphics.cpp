@@ -26,8 +26,6 @@
 #include "Engine.Core/World.hpp"
 #include "Engine.Event/GlobalEventEmitter.hpp"
 #include "Engine.Resource/ResourceManager.hpp"
-#include "Engine.Scene/IRenderScene.hpp"
-#include "Engine.Scene/RevScene.hpp"
 #include "Engine.Scene/Scene.hpp"
 #include "Importer/ImageFileTypes.hpp"
 #include "Importer/ImageImporter.hpp"
@@ -39,9 +37,11 @@
 #include "Texture/VkTextureFactory.hpp"
 
 /* Development Testing */
-#include <Engine.GFX.RenderGraph/test.hpp>
+#include <Editor.Render/Renderer/EditorRenderer.hpp>
 #include <Engine.Accel.Compile/test.h>
 #include <Engine.GFX.Render/__Test__Renderer.hpp>
+#include <Engine.GFX.RenderGraph/test.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 /**/
 
 using namespace hg::engine::gfx;
@@ -71,7 +71,6 @@ void Graphics::hookEngineState() {
         [this](cref<core::WorldAddedEvent> event_) {
 
             auto* const scene { event_.getWorld()->getScene() };
-            const auto* const sceneClass { scene->getMetaClass() };
 
             /*
             if (not sceneClass->isType<scene::IRenderScene>()) {
@@ -79,11 +78,11 @@ void Graphics::hookEngineState() {
             }
              */
 
-            if (not sceneClass->exact<scene::RevScene>()) {
+            if (not scene->hasSceneSystem(render::RenderSceneSystem::getStaticMetaClass())) {
                 return;
             }
 
-            _sceneManager->registerScene(static_cast<const ptr<scene::RevScene>>(scene));
+            _sceneManager->registerScene(scene);
         }
     );
     _hooks.push_back({ core::WorldAddedEvent::typeId.data, owae });
@@ -100,12 +99,12 @@ void Graphics::hookEngineState() {
             }
              */
 
-            if (not sceneClass->exact<scene::RevScene>()) {
+            if (not scene->hasSceneSystem(render::RenderSceneSystem::getStaticMetaClass())) {
                 return;
             }
 
-            _sceneManager->unregisterScene(static_cast<const ptr<scene::RevScene>>(scene));
-            cleanupTargetsByScene(static_cast<const ptr<scene::RevScene>>(scene));
+            _sceneManager->unregisterScene(scene);
+            cleanupTargetsByScene(scene);
         }
     );
     _hooks.push_back({ core::WorldRemoveEvent::typeId.data, owre });
@@ -210,6 +209,11 @@ void Graphics::setup() {
         _cachedRenderer.insert_or_assign("Test-Renderer", _STD move(renderer));
     }
 
+    {
+        auto renderer = make_smr<editor::render::EditorRenderer>(_cacheCtrl.get(), _device->allocator());
+        _cachedRenderer.insert_or_assign("Editor-Renderer", _STD move(renderer));
+    }
+
     /**
      * Scheduling Pipelines
      */
@@ -303,12 +307,12 @@ const non_owning_rptr<gfx::cache::GlobalCacheCtrl> Graphics::cacheCtrl() const n
     return _cacheCtrl.get();
 }
 
-smr<render::Renderer> Graphics::getRenderer(cref<string> key_) const {
-    return _cachedRenderer.at(key_);
+smr<render::Renderer> Graphics::getRenderer(StringView key_) const {
+    return _cachedRenderer.at(String { key_ });
 }
 
-smr<render::Renderer> Graphics::getRenderer(cref<string> key_, std::nothrow_t) const noexcept {
-    const auto it { _cachedRenderer.find(key_) };
+smr<render::Renderer> Graphics::getRenderer(StringView key_, std::nothrow_t) const noexcept {
+    const auto it { _cachedRenderer.find(String { key_ }) };
     return it != _cachedRenderer.end() ? it->second : nullptr;
 }
 
@@ -324,12 +328,12 @@ const non_owning_rptr<gfx::scene::RenderSceneManager> Graphics::getSceneManager(
     return _sceneManager;
 }
 
-void Graphics::cleanupTargetsByScene(const non_owning_rptr<scene::IRenderScene> scene_) {
+void Graphics::cleanupTargetsByScene(const ptr<engine::scene::SceneBase> renderableScene_) {
 
-    CompactArray<sptr<RenderTarget>> targets {};
+    CompactArray<smr<RenderTarget>> targets {};
     _sceneManager->selectPrimaryTargets(
         targets,
-        [scene_](cref<sptr<RenderTarget>> target_) {
+        [renderableScene_](cref<smr<RenderTarget>> target_) {
             // TODO: Check whether we want this with a query to the render targets to check whether
             // TODO:    the render target is effected by scene changes ( deletion )
             // return target_->hasScene(scene_);
@@ -340,24 +344,6 @@ void Graphics::cleanupTargetsByScene(const non_owning_rptr<scene::IRenderScene> 
     for (auto&& target : targets) {
         target->setActive(false);
         _sceneManager->dropPrimaryTarget(target);
-    }
-
-    /**/
-
-    targets.clear();
-    _sceneManager->selectSecondaryTargets(
-        targets,
-        [scene_](cref<sptr<RenderTarget>> target_) {
-            // TODO: Check whether we want this with a query to the render targets to check whether
-            // TODO:    the render target is effected by scene changes ( deletion )
-            // return target_->hasScene(scene_);
-            return true;
-        }
-    );
-
-    for (auto&& target : targets) {
-        target->setActive(false);
-        _sceneManager->dropSecondaryTarget(target);
     }
 }
 

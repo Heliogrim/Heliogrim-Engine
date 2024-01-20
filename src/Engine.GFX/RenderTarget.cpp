@@ -17,12 +17,17 @@ using namespace hg::engine::render;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-RenderTarget::RenderTarget() :
-    _device(nullptr),
-    _renderer(nullptr),
+RenderTarget::RenderTarget(mref<sptr<Device>> device_, const nmpt<const render::Renderer> renderer_) :
+    _device(std::move(device_)),
+    _renderer(renderer_),
+    _sceneView(),
     _renderPasses(),
+    _chainSceneView(nullptr),
+    _chainSceneViewMask(0u),
     _swapchain(nullptr),
     _surface(nullptr),
+    _chainSwapChain(nullptr),
+    _chainSwapChainMask(0u),
     _otfImage(),
     _otfFinish(),
     _otfCpuGpu(),
@@ -81,51 +86,104 @@ void RenderTarget::tidy() {
     _otfCpuGpu.clear();
 }
 
-sptr<Device> RenderTarget::use(cref<sptr<Device>> device_) {
-    return _STD exchange(_device, device_);
-}
-
-cref<sptr<Device>> RenderTarget::device() const noexcept {
+sptr<Device> RenderTarget::device() const noexcept {
     return _device;
 }
 
-nmpt<const Renderer> RenderTarget::use(mref<nmpt<const render::Renderer>> renderer_) {
-    return _STD exchange(_renderer, renderer_);
+nmpt<const Renderer> RenderTarget::getRenderer() const noexcept {
+    return _renderer;
 }
 
-non_owning_rptr<Swapchain> RenderTarget::use(cref<non_owning_rptr<Swapchain>> swapchain_) {
+concurrent::Future<nmpt<const scene::SceneView>> RenderTarget::transitionToSceneView(
+    mref<smr<const scene::SceneView>> sceneView_
+) {
 
-    assert(swapchain_ != nullptr);
+    assert(_chainSceneView == nullptr);
+    assert(_sceneView.get() != sceneView_.get());
 
-    const auto req = _onTheFlight ? 1ui32 : 2ui32;
-    if (swapchain_->imageCount() < req) {
+    _chainSceneViewMask = 0u;
+    for (u8 i = static_cast<u8>(_renderPasses.size()); i > 0u; --i) {
+        _chainSceneViewMask |= (0x1u << (i - 1u));
+    }
+
+    _chainSceneView = make_uptr<concurrent::Promise<nmpt<const scene::SceneView>>>(
+        concurrent::Promise<nmpt<const scene::SceneView>>(
+            // Warning: We are explicitly expanding the lifetime of the previous object
+            [prev = clone(_sceneView)] {
+                return prev.get();
+            }
+        )
+    );
+
+    /**/
+
+    _sceneView = std::move(sceneView_);
+    return _chainSceneView->get();
+}
+
+smr<const scene::SceneView> RenderTarget::getSceneView() const noexcept {
+    return clone(_sceneView);
+}
+
+tl::expected<concurrent::Future<std::pair<nmpt<Swapchain>, nmpt<Surface>>>, std::runtime_error>
+RenderTarget::transitionToTarget(
+    mref<smr<Swapchain>> swapchain_,
+    nmpt<Surface> surface_
+) {
+
+    assert(_chainSwapChain == nullptr);
+    assert(_swapchain != swapchain_);
+
+    const auto reqImg = _onTheFlight ? 1uL : 2uL;
+    if (swapchain_->imageCount() < reqImg) {
         IM_CORE_WARNF(
             "Tried to use render target with unsupported swapchain. (min. Img. `{}`, provided `{}`)",
-            req,
+            reqImg,
             swapchain_->imageCount()
         );
-        return swapchain_;
+        return tl::make_unexpected(std::runtime_error("Failed to transition with unsupported swapchain."));
     }
 
-    return _STD exchange(_swapchain, swapchain_);
+    /**/
+
+    _chainSwapChainMask = 0u;
+    for (u8 i = static_cast<u8>(_renderPasses.size()); i > 0u; --i) {
+        _chainSwapChainMask |= (0x1u << (i - 1u));
+    }
+
+    _chainSwapChain = make_uptr<concurrent::Promise<std::pair<nmpt<Swapchain>, nmpt<Surface>>>>(
+        concurrent::Promise<std::pair<nmpt<Swapchain>, nmpt<Surface>>>(
+            // Warning: We are explicitly expanding the lifetime of the previous object
+            [prevSwapChain = clone(_swapchain), prevSurface = _surface] {
+                return std::make_pair(prevSwapChain.get(), prevSurface);
+            }
+        )
+    );
+
+    /**/
+
+    _swapchain = std::move(swapchain_);
+    _surface = surface_;
+
+    return _chainSwapChain->get();
 }
 
-u32 RenderTarget::supportedFramesAhead() const noexcept {
+smr<Swapchain> RenderTarget::getSwapChain() const noexcept {
+    return clone(_swapchain);
+}
+
+u8 RenderTarget::supportedFramesAhead() const noexcept {
     if (_onTheFlight) {
         // Use 2 Sync Sets -> (1 Current + 1 Ahead) | (1 Previous + 1 Current)
-        return 1ui32;
+        return 1u;
     }
 
-    return 0ui32;
-}
-
-non_owning_rptr<Surface> RenderTarget::use(cref<non_owning_rptr<Surface>> surface_) {
-    return _STD exchange(_surface, surface_);
+    return 0u;
 }
 
 void RenderTarget::nextSync() {
     // Fast flip-flip idx
-    _syncIdx = 1ui32 - _syncIdx;
+    _syncIdx = 1u - _syncIdx;
 }
 
 bool RenderTarget::ready() const noexcept {
@@ -142,47 +200,28 @@ bool RenderTarget::setActive(const bool active_) {
     return changed;
 }
 
-void RenderTarget::buildPasses(mref<smr<const scene::SceneView>> sceneView_) {
+void RenderTarget::setup() {
 
     assert(_device);
     assert(_renderer);
+    assert(_sceneView);
     assert(_swapchain);
 
-    const auto req { _onTheFlight ? 2ui32 : 1ui32 };
+    assert(_renderPasses.empty());
 
     /**/
 
-    if (_renderer) {
-        _renderPasses.reserve(req);
-
-        for (u32 i = 0; i < req; ++i) {
-
-            // TODO: Use contextual allocation
-            _renderPasses.push_back(_renderer->allocate());
-            auto& renderPass = *_renderPasses.back();
-
-            // Store Scene View
-            renderPass.changeSceneView(clone(sceneView_));
-
-            // Store Render Targets
-            // renderPass.bindTarget(<<symbol>>, <<texture>>);
-            const auto bindResult = renderPass.bindTarget(makeSceneColorSymbol(), clone(_swapchain->at(i)));
-            assert(bindResult);
-        }
-    }
-
-    /**/
+    const auto otfCount = _onTheFlight ? 2u : 1u;
 
     if (_onTheFlight) {
-
-        _otfImage.resize(req);
+        _otfImage.resize(otfCount);
         //_otfFinish.resize(req);
-        _otfCpuGpu.resize(req);
+        _otfCpuGpu.resize(otfCount);
 
         const vk::SemaphoreCreateInfo sci {};
         const vk::FenceCreateInfo fci { vk::FenceCreateFlagBits::eSignaled };
 
-        for (u32 i { 0ui32 }; i < req; ++i) {
+        for (auto i = 0u; i < otfCount; ++i) {
 
             _otfImage[i] = _device->vkDevice().createSemaphore(sci);
             //_otfFinish[i] = _device->vkDevice().createSemaphore(sci);
@@ -192,23 +231,50 @@ void RenderTarget::buildPasses(mref<smr<const scene::SceneView>> sceneView_) {
             //assert(_otfFinish[i]);
             assert(_otfCpuGpu[i]);
         }
+    }
 
+    /**/
+
+    _renderPasses.reserve(otfCount);
+
+    for (auto i = 0u; i < otfCount; ++i) {
+
+        // TODO: Use contextual allocation
+        _renderPasses.emplace_back(_renderer->allocate());
+        auto& renderPass = *_renderPasses.back();
+
+        // Store Scene View
+        renderPass.changeSceneView(clone(_sceneView));
+
+        // Store Render Targets
+        // renderPass.bindTarget(<<symbol>>, <<texture>>);
+        const auto bindResult = renderPass.bindTarget(makeSceneColorSymbol(), clone(_swapchain->at(i)));
+        assert(bindResult);
+    }
+
+    /**/
+
+    if (_chainSceneView) {
+        (*_chainSceneView)();
+        _chainSceneView.reset();
+    }
+
+    if (_chainSwapChain) {
+        (*_chainSwapChain)();
+        _chainSwapChain.reset();
     }
 }
 
-bool RenderTarget::rebuildPasses(cref<non_owning_rptr<Swapchain>> nextSwapChain_) {
+void RenderTarget::transitionImmediately() {
 
-    /**
-     *
-     */
-    const auto req { _onTheFlight ? 2ui32 : 1ui32 };
+    const auto otfCount = _onTheFlight ? 2u : 1u;
 
     /**
      * Block render passes
      */
     if (_enforceCpuGpuSync) {
 
-        for (u32 i = 0; i < req; ++i) {
+        for (auto i = 0u; i < otfCount; ++i) {
 
             auto cpuGpuSync { _renderPasses[i]->unsafeSync() };
             if (cpuGpuSync) {
@@ -221,33 +287,38 @@ bool RenderTarget::rebuildPasses(cref<non_owning_rptr<Swapchain>> nextSwapChain_
 
     /**/
 
-    const auto prevSwapChain = use(nextSwapChain_);
-    if (prevSwapChain == nextSwapChain_ /* failed */) {
-        return false;
-    }
-
-    /**
-     *
-     */
-    for (u32 i = 0; i < req; ++i) {
+    for (auto i = 0u; i < otfCount; ++i) {
 
         auto renderPass = _STD move(_renderPasses[i]);
 
-        // Update Scene View
-        // renderPass->changeSceneView(sceneView_); // Not needed, cause same scene view
+        // Conditional Update Scene View
+        if (_chainSceneView != nullptr) {
+            renderPass->changeSceneView(clone(_sceneView));
+        }
 
-        // Update Render Targets
-        // renderPass.bindTarget(<<symbol>>, <<texture>>);
-        const auto previous = renderPass->unbindTarget(makeSceneColorSymbol());
-        const auto bindResult = renderPass->bindTarget(makeSceneColorSymbol(), clone(_swapchain->at(i)));
-        assert(bindResult);
+        // Conditional Update Render Targets
+        if (_chainSwapChain != nullptr) {
+            // renderPass.bindTarget(<<symbol>>, <<texture>>);
+            const auto previous = renderPass->unbindTarget(makeSceneColorSymbol());
+            const auto bindResult = renderPass->bindTarget(makeSceneColorSymbol(), clone(_swapchain->at(i)));
+            assert(bindResult);
+        }
 
         _renderPasses[i] = _renderer->reallocate(_STD move(renderPass)).first;
         assert(_renderPasses[i]);
     }
 
     /**/
-    return true;
+
+    if (_chainSceneView) {
+        (*_chainSceneView)();
+        _chainSceneView.reset();
+    }
+
+    if (_chainSwapChain) {
+        (*_chainSwapChain)();
+        _chainSwapChain.reset();
+    }
 }
 
 nmpt<RenderPass> RenderTarget::next() {
@@ -266,11 +337,11 @@ nmpt<RenderPass> RenderTarget::next() {
     /**
      * Next Swapchain Image
      */
-    s64 nextIdx { ~0ui32 };
+    s64 nextIdx = -1;
     smr<Texture> nextImage {};
     vk::Semaphore nextSignal {};
 
-    const auto nextResult { _swapchain->acquireNext(nextIdx, nextImage, nextSignal) };
+    const auto nextResult = _swapchain->acquireNext(nextIdx, nextImage, nextSignal);
 
     /**
      * Ensure swapchain complies our expectations
@@ -290,12 +361,30 @@ nmpt<RenderPass> RenderTarget::next() {
     }
 
     _swapSignal = nextSignal;
-    _swapIdx = nextIdx;
+    _swapIdx = static_cast<u8>(nextIdx);
 
-    /**
-     *
-     */
-    return _renderPasses[nextIdx].get();
+    /**/
+
+    auto* const renderPass = _renderPasses[nextIdx].get();
+
+    // Conditional Scene View Update
+    if (_chainSceneViewMask & (1u << nextIdx)) {
+        renderPass->changeSceneView(clone(_sceneView));
+        _chainSceneViewMask &= ~(1u << nextIdx);
+    }
+
+    // Conditional Target Update
+    if (_chainSwapChainMask & (1u << nextIdx)) {
+        // renderPass.bindTarget(<<symbol>>, <<texture>>);
+        const auto previous = renderPass->unbindTarget(makeSceneColorSymbol());
+        const auto bindResult = renderPass->bindTarget(makeSceneColorSymbol(), clone(_swapchain->at(nextIdx)));
+        assert(bindResult);
+        _chainSwapChainMask &= ~(1u << nextIdx);
+    }
+
+    /**/
+
+    return renderPass;
 }
 
 void RenderTarget::update() {
@@ -317,6 +406,18 @@ void RenderTarget::update() {
     auto updated = _renderer->update(_STD move(renderPass));
     (*updated)();
     _renderPasses[_syncIdx] = _STD move(updated);
+
+    /**/
+
+    if (_chainSceneView && _chainSceneViewMask == 0u) {
+        (*_chainSceneView)();
+        _chainSceneView.reset();
+    }
+
+    if (_chainSwapChain && _chainSwapChainMask == 0u) {
+        (*_chainSwapChain)();
+        _chainSwapChain.reset();
+    }
 }
 
 RenderEnqueueResult RenderTarget::finish(

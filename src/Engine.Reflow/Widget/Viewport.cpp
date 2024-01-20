@@ -12,6 +12,13 @@
 #include <Engine.Core/Engine.hpp>
 #endif
 
+#include <Engine.Core/World.hpp>
+#include <Engine.GFX.Scene/RenderSceneManager.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Render.Scene.Model/CameraModel.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
+#include <Engine.Scene/SceneBase.hpp>
+
 #include "../Layout/Style.hpp"
 
 using namespace hg::engine::reflow;
@@ -29,8 +36,10 @@ Viewport::Viewport() :
             .maxHeight = { this, { ReflowUnitType::eAuto, 0.F } }
         }
     ),
-    _swapchain(nullptr),
+    _swapChain(nullptr),
     _cameraActor(nullptr),
+    _renderer(),
+    _renderTarget(nullptr),
     _uvs(
         {
             math::vec2 { 0.F, 0.F },
@@ -51,9 +60,9 @@ string Viewport::getTag() const noexcept {
 }
 
 void Viewport::tidy() {
-    if (_swapchain) {
-        _swapchain->destroy();
-        _swapchain.reset();
+    if (_swapChain) {
+        _swapChain->destroy();
+        _swapChain.reset();
     }
 
     /**/
@@ -62,16 +71,22 @@ void Viewport::tidy() {
     _viewListen.shrink_to_fit();
 }
 
-const non_owning_rptr<engine::gfx::Swapchain> Viewport::getSwapchain() const noexcept {
-    return _swapchain.get();
+smr<engine::gfx::Swapchain> Viewport::getSwapchain() const noexcept {
+    return clone(_swapChain);
+}
+
+bool Viewport::hasMountedRenderTarget() const noexcept {
+    return _renderTarget != nullptr;
 }
 
 const non_owning_rptr<CameraActor> Viewport::getCameraActor() const noexcept {
     return _cameraActor;
 }
 
-void Viewport::setCameraActor(const ptr<CameraActor> actor_) {
-    _cameraActor = actor_;
+void Viewport::setViewportTarget(StringView renderer_, World world_, ptr<CameraActor> camera_) {
+    _renderer = std::move(renderer_);
+    _cameraWorld = std::move(world_);
+    _cameraActor = camera_;
 }
 
 math::uivec2 Viewport::actualViewExtent() const noexcept {
@@ -86,17 +101,17 @@ math::uivec2 Viewport::actualViewExtent() const noexcept {
 }
 
 bool Viewport::viewHasChanged() const noexcept {
-    if (!_swapchain) {
+    if (!_swapChain) {
         return true;
     }
 
     const auto size = math::compMax<u32>(actualViewExtent(), math::uivec2 { 1ui32 });
-    return _swapchain->extent() != size;
+    return _swapChain->extent() != size;
 }
 
-uptr<engine::gfx::VkSwapchain> Viewport::buildNextView(cref<math::uivec2> extent_) const {
+smr<engine::gfx::VkSwapchain> Viewport::buildNextView(cref<math::uivec2> extent_) const {
 
-    auto next = make_uptr<gfx::VkSwapchain>();
+    auto next = make_smr<gfx::VkSwapchain>();
 
     next->setExtent(extent_);
     next->setFormat(gfx::TextureFormat::eB8G8R8A8Unorm);
@@ -106,6 +121,49 @@ uptr<engine::gfx::VkSwapchain> Viewport::buildNextView(cref<math::uivec2> extent
     next->setup(device);
 
     return next;
+}
+
+void Viewport::remountRenderTarget() {
+
+    // Warning: Temporary Internal Linking
+
+    const auto* const gfx = Engine::getEngine()->getGraphics();
+    auto* const manager = gfx->getSceneManager();
+
+    const auto renderer = gfx->getRenderer(_renderer, std::nothrow);
+    const auto* const coreWorld = static_cast<::hg::engine::core::World*>(_cameraWorld.unwrap().get());
+    const auto* const coreScene = coreWorld->getScene();
+
+    auto view = smr<const hg::engine::gfx::scene::SceneView> { nullptr };
+
+    const auto renderSystem = coreScene->getSceneSystem<render::RenderSceneSystem>();
+    renderSystem->getRegistry().forEach<render::CameraModel>(
+        [owner = _cameraActor->getCameraComponent(), &view](const auto& model_) {
+            if (model_.owner() == owner) {
+                view = model_.getSceneView();
+            }
+        }
+    );
+
+    /**/
+
+    if (view.empty()) {
+        return;
+    }
+
+    /**/
+
+    auto renderTarget = make_smr<gfx::RenderTarget>(gfx->getCurrentDevice(), renderer.get());
+    [[maybe_unused]] const auto targetTransition = renderTarget->transitionToTarget(clone(_swapChain), nullptr);
+    [[maybe_unused]] const auto sceneViewTransition = renderTarget->transitionToSceneView(std::move(view));
+
+    renderTarget->setup();
+    renderTarget->setActive(true);
+
+    /**/
+
+    _renderTarget = renderTarget.get();
+    manager->addPrimaryTarget(std::move(renderTarget));
 }
 
 void Viewport::rebuildView() {
@@ -134,19 +192,13 @@ void Viewport::rebuildView() {
 
     /**/
 
-    handleViewListener(next.get());
-
-    /**/
-
-    if (_swapchain) {
-        _swapchain->destroy();
-    }
-    _swapchain = _STD move(next);
+    handleViewListener(_swapChain, next);
+    _swapChain = _STD move(next);
 }
 
-void Viewport::handleViewListener(const ptr<gfx::VkSwapchain> next_) {
+void Viewport::handleViewListener(cref<smr<gfx::VkSwapchain>> prev_, cref<smr<gfx::VkSwapchain>> next_) {
     for (const auto& fnc : _viewListen) {
-        fnc(next_);
+        fnc(clone(prev_), clone(next_));
     }
 }
 
@@ -154,7 +206,9 @@ void Viewport::resizeView(cref<math::uivec2> extent_) {
     _viewSize = extent_;
 }
 
-void Viewport::addResizeListener(mref<std::function<void(const ptr<gfx::VkSwapchain>)>> fnc_) {
+void Viewport::addResizeListener(
+    mref<std::function<void(mref<smr<gfx::VkSwapchain>>, mref<smr<gfx::VkSwapchain>>)>> fnc_
+) {
     _viewListen.push_back(_STD move(fnc_));
 }
 
@@ -177,12 +231,16 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
 
         /*
         if (gfx->_renderTarget->ready()) {
-            gfx->_renderTarget->rebuildPasses(_swapchain.get());
+            gfx->_renderTarget->rebuildPasses(_swapChain.get());
         } else {
-            gfx->_renderTarget->use(_swapchain.get());
+            gfx->_renderTarget->use(_swapChain.get());
             gfx->_renderTarget->buildPasses(_camera.get());
         }
          */
+    }
+
+    if (_renderTarget == nullptr) {
+        remountRenderTarget();
     }
 
     /**/
@@ -194,7 +252,7 @@ void Viewport::render(const ptr<ReflowCommandBuffer> cmd_) {
     vk::Semaphore imageSignal {};
     Vector<vk::Semaphore> imageWaits {};
 
-    const auto result { _swapchain->consumeNext(image, imageSignal, imageWaits) };
+    const auto result { _swapChain->consumeNext(image, imageSignal, imageWaits) };
     if (!result) {
         IM_CORE_ERROR("Skipping viewport draw due to missing next swapchain frame.");
     }

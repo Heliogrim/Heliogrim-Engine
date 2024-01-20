@@ -9,7 +9,6 @@
 #include <Engine.Core/WorldContext.hpp>
 #include <Engine.GFX/Graphics.hpp>
 #include <Engine.Reflow/Window/WindowManager.hpp>
-#include <Engine.Scene/RevScene.hpp>
 
 #include "Engine.GFX.Glow.UI/TestUI.hpp"
 
@@ -32,7 +31,8 @@ void editor::boot::initGfx() {
         "Heliogrim Editor"sv,
         math::ivec2 { 1280, 720 },
         {},
-        static_cast<ptr<scene::RevScene>>(editorWorld->getScene())
+        "Editor-Renderer"sv,
+        editorWorld->getScene()
     );
 
     /**/

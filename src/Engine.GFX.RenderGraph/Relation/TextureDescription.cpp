@@ -2,8 +2,8 @@
 
 #include <Engine.GFX/Texture/Texture.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
-#include <Engine.GFX/Texture/VirtualTexture.hpp>
-#include <Engine.GFX/Texture/VirtualTextureView.hpp>
+#include <Engine.GFX/Texture/SparseTexture.hpp>
+#include <Engine.GFX/Texture/SparseTextureView.hpp>
 
 using namespace hg::engine::render::graph;
 using namespace hg::engine::gfx;
@@ -125,7 +125,7 @@ bool TextureDescription::isValidObject(const nmpt<TextureView> textureView_) con
     return valid;
 }
 
-bool TextureDescription::isValidObject(const nmpt<VirtualTexture> texture_) const noexcept {
+bool TextureDescription::isValidObject(const nmpt<SparseTexture> texture_) const noexcept {
 
     bool valid = true;
     if (_textureType.mode == DescriptionValueMatchingMode::eInvariant) {
@@ -154,7 +154,7 @@ bool TextureDescription::isValidObject(const nmpt<VirtualTexture> texture_) cons
     return valid;
 }
 
-bool TextureDescription::isValidObject(const nmpt<VirtualTextureView> textureView_) const noexcept {
+bool TextureDescription::isValidObject(const nmpt<SparseTextureView> textureView_) const noexcept {
 
     bool valid = true;
     if (_textureType.mode == DescriptionValueMatchingMode::eInvariant) {
