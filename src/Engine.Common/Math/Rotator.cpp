@@ -229,7 +229,3 @@ Rotator Rotator::fromEulerRaw(cref<fvec3> euler_) noexcept {
 quaternion Rotator::quaternion() const noexcept {
     return quaternion::euler(*this);
 }
-
-Rotator::operator fvec3() const noexcept {
-    return *this;
-}
