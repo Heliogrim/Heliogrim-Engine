@@ -8,10 +8,11 @@ using namespace hg;
 
 SceneResourcePool::SceneResourcePool(cref<sptr<Device>> device_) :
     _device(device_),
-    _scene(nullptr),
+    _system(nullptr),
     staticInstancePool(device_),
     staticAabbPool(_device),
-    lightSourcePool(_device) {}
+    lightSourcePool(_device),
+    shadowSourcePool(_device) {}
 
 SceneResourcePool::~SceneResourcePool() = default;
 
@@ -34,9 +35,24 @@ void SceneResourcePool::setup() {
         }
     );
     lightSourcePool.setup(32uL);
+
+    sceneShadowInfo = { 0uL };
+    sceneShadowInfoBuffer = bufferFactory->build(
+        {
+            sizeof(GlslDirectionalShadowInfo),
+            alignof(GlslDirectionalShadowInfo),
+            MemoryProperty::eHostVisible,
+            vk::BufferCreateFlags {},
+            vk::BufferUsageFlagBits::eUniformBuffer
+        }
+    );
+    shadowSourcePool.setup(32uL);
 }
 
 void SceneResourcePool::destroy() {
+    shadowSourcePool.destroy();
+    sceneShadowInfoBuffer.destroy();
+
     lightSourcePool.destroy();
     sceneLightInfoBuffer.destroy();
 
@@ -48,6 +64,6 @@ sptr<Device> SceneResourcePool::device() const noexcept {
     return _device;
 }
 
-nmpt<engine::scene::Scene> SceneResourcePool::scene() const noexcept {
-    return _scene;
+nmpt<engine::render::RenderSceneSystem> SceneResourcePool::system() const noexcept {
+    return _system;
 }

@@ -1,6 +1,6 @@
 #include "PolygonMesh.hpp"
 
-#include "../Buffer/VirtualBufferView.hpp"
+#include "../Buffer/SparseBufferView.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;

@@ -7,8 +7,8 @@
 
 #include "Engine.GFX/Texture/Texture.hpp"
 #include "Engine.GFX/Texture/TextureView.hpp"
-#include "Engine.GFX/Texture/VirtualTexture.hpp"
-#include "Engine.GFX/Texture/VirtualTextureView.hpp"
+#include "Engine.GFX/Texture/SparseTexture.hpp"
+#include "Engine.GFX/Texture/SparseTextureView.hpp"
 
 using namespace hg::engine::gfx;
 using namespace hg;
@@ -67,12 +67,15 @@ void Framebuffer::setup() {
                 return obj_->vkView();
             },
             [](const ptr<TextureView> obj_) {
+                if (obj_->_vkImageView != nullptr) {
+                    return vk::ImageView { reinterpret_cast<VkImageView>(obj_->_vkImageView) };
+                }
                 return obj_->owner()->vkView();
             },
-            [](const ptr<VirtualTexture> obj_) {
+            [](const ptr<SparseTexture> obj_) {
                 return obj_->_vkImageView;
             },
-            [](const ptr<VirtualTextureView> obj_) {
+            [](const ptr<SparseTextureView> obj_) {
                 return reinterpret_cast<VkImageView>(obj_->vkImageView());
             }
         );

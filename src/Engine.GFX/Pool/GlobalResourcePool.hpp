@@ -4,8 +4,8 @@
 
 #include "__fwd.hpp"
 #include "../Device/Device.hpp"
-#include "../Buffer/VirtualBuffer.hpp"
-#include "../Texture/VirtualTexture.hpp"
+#include "../Buffer/SparseBuffer.hpp"
+#include "../Texture/SparseTexture.hpp"
 
 /**/
 #include "RangePooled.hpp"
@@ -20,7 +20,7 @@ namespace hg::engine::gfx::pool {
         u64 size;
     };
 
-    typedef VirtualTextureBuildPayload VirtualTextureAllocation;
+    typedef SparseTextureBuildPayload SparseTextureAllocation;
 
     /**/
 
@@ -53,14 +53,14 @@ namespace hg::engine::gfx::pool {
          * Vertex Buffer
          */
         RangePooled<void> _globalVertexBuffer;
-        Vector<uptr<VirtualBuffer>> _vertexBuffers;
+        Vector<uptr<SparseBuffer>> _vertexBuffers;
 
     private:
         /**
          * Index Buffer
          */
         RangePooled<void> _globalIndexBuffer;
-        Vector<uptr<VirtualBuffer>> _indexBuffers;
+        Vector<uptr<SparseBuffer>> _indexBuffers;
 
     private:
         /**
@@ -73,19 +73,19 @@ namespace hg::engine::gfx::pool {
         math::uivec2 _atlasMaxSpatialExtent;
         math::uivec2 _atlasMinSpatialExtent;
 
-        Vector<uptr<VirtualTexture>> _textureAtlas;
+        Vector<uptr<SparseTexture>> _textureAtlas;
 
     public:
-        [[nodiscard]] _Success_(return != nullptr) uptr<VirtualBufferView> allocateIndexBuffer(
+        [[nodiscard]] _Success_(return != nullptr) uptr<SparseBufferView> allocateIndexBuffer(
             _In_ mref<IndexBufferAllocation> allocation_
         );
 
-        [[nodiscard]] _Success_(return != nullptr) uptr<VirtualBufferView> allocateVertexBuffer(
+        [[nodiscard]] _Success_(return != nullptr) uptr<SparseBufferView> allocateVertexBuffer(
             _In_ mref<VertexBufferAllocation> allocation_
         );
 
-        [[nodiscard]] _Success_(return != nullptr) uptr<VirtualTextureView> allocateVirtualTexture(
-            _In_ mref<VirtualTextureAllocation> allocation_
+        [[nodiscard]] _Success_(return != nullptr) uptr<SparseTextureView> allocateSparseTexture(
+            _In_ mref<SparseTextureAllocation> allocation_
         );
     };
 }

@@ -3,9 +3,9 @@
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "../Memory/VirtualMemory.hpp"
-#include "../Buffer/VirtualBuffer.hpp"
+#include "../Buffer/SparseBuffer.hpp"
 #include "../Memory/GlobalPooledAllocator.hpp"
-#include "../Buffer/VirtualBufferView.hpp"
+#include "../Buffer/SparseBufferView.hpp"
 #include "Engine.GFX/Command/CommandBuffer.hpp"
 #include "Engine.GFX/Command/CommandPool.hpp"
 #include "Engine.GFX/Command/CommandQueue.hpp"
@@ -62,7 +62,7 @@ namespace hg::engine::gfx {
             };
 
             auto memory = make_uptr<VirtualMemory>(_allocator, layout, req.size);
-            auto buffer = make_uptr<VirtualBuffer>(_STD move(memory), reserved_, vkBuffer, bci.usage);
+            auto buffer = make_uptr<SparseBuffer>(_STD move(memory), reserved_, vkBuffer, bci.usage);
 
             buffer->updateBindingData();
 
@@ -90,7 +90,7 @@ namespace hg::engine::gfx {
         nmpt<memory::GlobalPooledAllocator> _allocator;
 
     private:
-        uptr<VirtualBuffer> _buffer;
+        uptr<SparseBuffer> _buffer;
 
         u64 _monotonicOffset;
         Vector<_STD pair<u64, u64>> _releasedList;
@@ -125,7 +125,7 @@ namespace hg::engine::gfx {
             };
 
             auto memory = make_uptr<VirtualMemory>(_allocator, layout, req.size);
-            auto buffer = make_uptr<VirtualBuffer>(_STD move(memory), nextSize, vkBuffer, bci.usage);
+            auto buffer = make_uptr<SparseBuffer>(_STD move(memory), nextSize, vkBuffer, bci.usage);
 
             const auto requiredPages = (nextSize / req.alignment) + ((nextSize % req.alignment) ? 1uLL : 0uLL);
 
@@ -207,7 +207,7 @@ namespace hg::engine::gfx {
         }
 
     public:
-        [[nodiscard]] uptr<VirtualBufferView> acquire(u64 requestSize_) {
+        [[nodiscard]] uptr<SparseBufferView> acquire(u64 requestSize_) {
 
             auto mark = _releasedList.begin();
             for (auto it = _releasedList.begin(); it != _releasedList.end(); ++it) {
@@ -264,7 +264,7 @@ namespace hg::engine::gfx {
             return _buffer->makeView(range.first, requestSize_);
         }
 
-        void release(mref<uptr<VirtualBufferView>> view_) {
+        void release(mref<uptr<SparseBufferView>> view_) {
             _releasedList.emplace_back(view_->offset(), view_->offset() + view_->size());
             view_.reset();
         }

@@ -3,7 +3,7 @@
 #include "CommandPool.hpp"
 #include "CommandQueue.hpp"
 #include "../Framebuffer/Framebuffer.hpp"
-#include "../Buffer/VirtualBufferView.hpp"
+#include "../Buffer/SparseBufferView.hpp"
 #include "../Buffer/IndexBufferView.hpp"
 #include "../Buffer/VertexBufferView.hpp"
 
@@ -98,7 +98,7 @@ void CommandBuffer::bindIndexBuffer(const IndexBuffer& buffer_, u64 offset_) {
     );
 }
 
-void CommandBuffer::bindIndexBuffer(const ptr<const VirtualBuffer> buffer_, u64 offset_) {
+void CommandBuffer::bindIndexBuffer(const ptr<const SparseBuffer> buffer_, u64 offset_) {
     _vkCmd.bindIndexBuffer(
         buffer_->vkBuffer(),
         offset_,
@@ -106,7 +106,7 @@ void CommandBuffer::bindIndexBuffer(const ptr<const VirtualBuffer> buffer_, u64 
     );
 }
 
-void CommandBuffer::bindIndexBuffer(const ptr<const VirtualBufferView> bufferView_) {
+void CommandBuffer::bindIndexBuffer(const ptr<const SparseBufferView> bufferView_) {
     _vkCmd.bindIndexBuffer(
         bufferView_->owner()->vkBuffer(),
         bufferView_->offset(),
@@ -140,11 +140,11 @@ void CommandBuffer::bindVertexBuffer(const u32 binding_, const VertexBuffer& buf
     );
 }
 
-void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const VirtualBuffer> buffer_, u64 offset_) {
+void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const SparseBuffer> buffer_, u64 offset_) {
     _vkCmd.bindVertexBuffers(binding_, 1ui32, &buffer_->vkBuffer(), &offset_);
 }
 
-void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const VirtualBufferView> bufferView_) {
+void CommandBuffer::bindVertexBuffer(const u32 binding_, const ptr<const SparseBufferView> bufferView_) {
     const auto loff = bufferView_->offset();
     _vkCmd.bindVertexBuffers(binding_, 1uL, &bufferView_->owner()->vkBuffer(), &loff);
 }
