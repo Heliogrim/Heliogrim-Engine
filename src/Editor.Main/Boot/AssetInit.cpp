@@ -350,7 +350,7 @@ static void initDirectoryIcons() {
 
     factory->createImageAsset(
         image::FolderImages::unstable_auto_guid(),
-        R"(resources\imports\ktx2\folder-images.ktx2)"
+        R"(resources\imports\ktx\folder-images.ktx)"
     );
 
     factory->createImageAsset(

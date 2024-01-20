@@ -70,7 +70,7 @@ void MatTestPass::destroy() noexcept {
     device->vkDevice().destroySemaphore(_STD exchange(_tmpSignal, nullptr));
 
     _cameraBufferView.reset();
-    if (_cameraBuffer.memory->mapping) {
+    if (_cameraBuffer.memory && _cameraBuffer.memory->mapping) {
         _cameraBuffer.unmap();
     }
     _cameraBuffer.destroy();
@@ -82,14 +82,20 @@ void MatTestPass::destroy() noexcept {
 
     _shadowDirView.reset();
 
-    _depthSampler->destroy();
-    _depthSampler.reset();
+    if (_depthSampler) {
+        _depthSampler->destroy();
+        _depthSampler.reset();
+    }
 
-    _sampler->destroy();
-    _sampler.reset();
+    if (_sampler) {
+        _sampler->destroy();
+        _sampler.reset();
+    }
 
-    _framebuffer->destroy();
-    _framebuffer.reset();
+    if (_framebuffer) {
+        _framebuffer->destroy();
+        _framebuffer.reset();
+    }
 
     for (auto&& entry : _batches) {
         entry.second.compiled.pipeline.reset();

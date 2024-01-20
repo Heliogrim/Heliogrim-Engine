@@ -54,9 +54,6 @@
     <ClCompile Include="..\..\src\Engine.Accel.Compile\EffectCompiler.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Engine.Accel.Compile\test.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Engine.Accel.Compile\VkApi.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -117,9 +114,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Accel.Compile\EffectCompileResult.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Engine.Accel.Compile\test.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Engine.Accel.Compile\VkApi.hpp">

@@ -38,7 +38,7 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
     tmpVar->annotation = make_uptr<SymbolIdAnnotation>("block", _STD move(tmpVar->annotation));
 
     auto tmpSym = make_uptr<Symbol>(
-        SymbolId::from("block"),
+        SymbolId::from("block"sv),
         VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
     );
 
@@ -99,7 +99,7 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
     tmpVar->annotation = make_uptr<SymbolIdAnnotation>("ui-image", _STD move(tmpVar->annotation));
 
     tmpSym = make_uptr<Symbol>(
-        SymbolId::from("ui-image"),
+        SymbolId::from("ui-image"sv),
         VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
     );
 
@@ -114,7 +114,7 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
         tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
         tmpVar->annotation = make_uptr<SymbolIdAnnotation>("ui-image-sampler", _STD move(tmpVar->annotation));
         tmpSym = make_uptr<Symbol>(
-            SymbolId::from("ui-image-sampler"),
+            SymbolId::from("ui-image-sampler"sv),
             VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
         );
         fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
@@ -129,7 +129,7 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
     tmpVar->annotation = make_uptr<SymbolIdAnnotation>("color", _STD move(tmpVar->annotation));
 
     tmpSym = make_uptr<Symbol>(
-        SymbolId::from("color"),
+        SymbolId::from("color"sv),
         VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
     );
 

@@ -2,9 +2,8 @@
 #include <Heliogrim/Actor.hpp>
 
 namespace hg::game::actors {
-
     class EditorCamera :
-        public Actor {
+        public InheritMeta<EditorCamera, Actor> {
     public:
         using this_type = EditorCamera;
 
@@ -17,7 +16,6 @@ namespace hg::game::actors {
          *
          * @see Actor::Actor
          */
-        EditorCamera();
+        EditorCamera() = default;
     };
-
 }

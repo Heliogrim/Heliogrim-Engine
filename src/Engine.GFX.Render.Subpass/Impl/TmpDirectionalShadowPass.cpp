@@ -124,8 +124,10 @@ void TmpDirectionalShadowPass::destroy() noexcept {
     device->vkDevice().destroySemaphore(_STD exchange(_tmpSemaphore, nullptr));
 
     for (auto&& cascadeFramebuffer : _framebuffer) {
-        cascadeFramebuffer->destroy();
-        cascadeFramebuffer.reset();
+        if (not cascadeFramebuffer.empty()) {
+            cascadeFramebuffer->destroy();
+            cascadeFramebuffer.reset();
+        }
     }
 
     for (auto&& cascadeView : _dirShadowCascades) {
