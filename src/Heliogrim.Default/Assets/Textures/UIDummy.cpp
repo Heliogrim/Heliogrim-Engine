@@ -15,4 +15,4 @@ texture::UIDummy::UIDummy() :
         TextureFormat::eR8G8B8A8Unorm,
         1ui32,
         engine::gfx::TextureType::e2d
-    ) { }
+    ) {}
