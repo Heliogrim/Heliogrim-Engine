@@ -183,7 +183,7 @@ uptr<ModuleSource> VkModuleBuilder::build(
                 IM_CORE_ERRORF(
                     "Failed to link forward linkage of `{}({})` between stages.",
                     sib.symbol->symbolId.value,
-                    sib.symbol->symbolId.hash
+                    sib.symbol->symbolName
                 );
                 continue;
             }
@@ -263,7 +263,8 @@ uptr<VkModuleSource> VkModuleBuilder::transpile(
         }
 
         // Warning: Rework
-        if (input.symbol->symbolId.value == "depth") {
+        constexpr auto depthId = lang::SymbolId::from("depth"sv);
+        if (input.symbol->symbolId == depthId) {
             continue;
         }
 

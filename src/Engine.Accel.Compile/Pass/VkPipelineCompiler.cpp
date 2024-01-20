@@ -97,7 +97,7 @@ void VkPipelineCompiler::resolveBindLayouts(
                 case lang::TypeCategory::eTexture: {
 
                     if (uniform) {
-                        vkDslb.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+                        vkDslb.descriptorType = vk::DescriptorType::eSampledImage;
                     } else {
                         // Warning: Unsure
                         vkDslb.descriptorType = vk::DescriptorType::eStorageImage;
@@ -105,8 +105,22 @@ void VkPipelineCompiler::resolveBindLayouts(
 
                     break;
                 }
-                case lang::TypeCategory::eScalar:
                 case lang::TypeCategory::eObject: {
+
+                    if (var.type.objectType == lang::ObjectType::eSampler) {
+                        vkDslb.descriptorType = vk::DescriptorType::eSampler;
+                        break;
+                    }
+
+                    if (uniform) {
+                        vkDslb.descriptorType = vk::DescriptorType::eUniformBuffer;
+                    } else {
+                        vkDslb.descriptorType = vk::DescriptorType::eStorageBuffer;
+                    }
+
+                    break;
+                }
+                case lang::TypeCategory::eScalar: {
 
                     if (uniform) {
                         vkDslb.descriptorType = vk::DescriptorType::eUniformBuffer;
@@ -165,7 +179,8 @@ DepthStencilBinds VkPipelineCompiler::hasDepthBinding(cref<smr<StageDerivat>> st
 
     for (const auto& in : tmpIn) {
         // Error:
-        if (in.symbol->symbolId.value == "depth") {
+        constexpr auto depthId = lang::SymbolId::from("depth"sv);
+        if (in.symbol->symbolId == depthId) {
             result.depthLoad = true;
             break;
         }
@@ -176,7 +191,8 @@ DepthStencilBinds VkPipelineCompiler::hasDepthBinding(cref<smr<StageDerivat>> st
 
     for (const auto& out : tmpOut) {
         // Error:
-        if (out.symbol->symbolId.value == "depth") {
+        constexpr auto depthId = lang::SymbolId::from("depth"sv);
+        if (out.symbol->symbolId == depthId) {
             result.depthStore = true;
             break;
         }
@@ -198,7 +214,8 @@ DepthStencilBinds VkPipelineCompiler::hasStencilBinding(cref<smr<StageDerivat>> 
 
     for (const auto& in : tmpIn) {
         // Error:
-        if (in.symbol->symbolId.value == "stencil") {
+        constexpr auto stencilId = lang::SymbolId::from("stencil"sv);
+        if (in.symbol->symbolId == stencilId) {
             result.stencilLoad = true;
             break;
         }
@@ -209,7 +226,8 @@ DepthStencilBinds VkPipelineCompiler::hasStencilBinding(cref<smr<StageDerivat>> 
 
     for (const auto& out : tmpOut) {
         // Error:
-        if (out.symbol->symbolId.value == "stencil") {
+        constexpr auto stencilId = lang::SymbolId::from("stencil"sv);
+        if (out.symbol->symbolId == stencilId) {
             result.stencilStore = true;
             break;
         }
@@ -373,7 +391,8 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
 
         assert(out.symbol != nullptr);
         // Error:
-        if (out.symbol->symbolId.value == "depth") {
+        constexpr auto depthId = lang::SymbolId::from("depth"sv);
+        if (out.symbol->symbolId == depthId) {
             continue;
         }
 
@@ -436,7 +455,7 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
         pdssci.depthWriteEnable = depthBind.depthStore && specification_.depthCompareOp != DepthCompareOp::eNever;
         pdssci.depthCompareOp = api::depthCompareOp(specification_.depthCompareOp);
 
-        pdssci.depthBoundsTestEnable = VK_FALSE;
+        pdssci.depthBoundsTestEnable = VK_TRUE;
         pdssci.minDepthBounds = 0.F;
         pdssci.maxDepthBounds = 1.F;
 
@@ -469,22 +488,29 @@ smr<VkGraphicsPipeline> VkPipelineCompiler::linkVk(
     /**/
 
     prsci.rasterizerDiscardEnable = FALSE;
+    prsci.lineWidth = 1.F;
+    prsci.depthClampEnable = VK_TRUE;
 
     prsci.polygonMode = api::polygonMode(specification_.faceMode);
     prsci.cullMode = api::cullMode(specification_.faceCulling);
     prsci.frontFace = api::frontFace(specification_.faceWinding);
 
-    prsci.depthClampEnable = VK_TRUE;
-    prsci.depthBiasEnable = VK_FALSE;
-    prsci.depthBiasConstantFactor = 0.F;
-    prsci.depthBiasClamp = 0.F;
-    prsci.depthBiasSlopeFactor = 0.F;
+    if (specification_.depthBias) {
+        prsci.depthBiasEnable = VK_TRUE;
+        prsci.depthBiasConstantFactor = specification_.depthBias.depthBiasConst;
+        prsci.depthBiasSlopeFactor = specification_.depthBias.depthBiasSlope;
+        prsci.depthBiasClamp = specification_.depthBias.depthBiasClamp;
 
-    prsci.lineWidth = 1.F;
+    } else {
+        prsci.depthBiasEnable = VK_FALSE;
+        prsci.depthBiasConstantFactor = 0.F;
+        prsci.depthBiasClamp = 0.F;
+        prsci.depthBiasSlopeFactor = 0.F;
+    }
 
     /**/
 
-    Array dynamicStates {
+    Array<vk::DynamicState, 2uLL> dynamicStates {
         vk::DynamicState::eScissor,
         vk::DynamicState::eViewport
     };
