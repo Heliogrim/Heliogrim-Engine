@@ -175,7 +175,7 @@ namespace hg::editor::ui {
             const ptr<const sptr<input_widget_type>> inputs_,
             ptr<vector_value_base_type> dst_
         ) const {
-            dst_[Index_ - 1] = inputs_[Index_ - 1]->value();
+            dst_[Index_ - 1] = static_cast<vector_value_base_type>(inputs_[Index_ - 1]->value());
             unwindInputs<Index_ - 1>(inputs_, dst_);
         }
 
