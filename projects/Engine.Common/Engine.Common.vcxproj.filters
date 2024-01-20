@@ -330,6 +330,18 @@
     <ClInclude Include="..\..\src\Engine.Common\String\Text.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Managed\RefCounted.hpp">
+      <Filter>Headerdateien\Managed</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Managed\RefCountedIntrusive.hpp">
+      <Filter>Headerdateien\Managed</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Managed\AtomicRefCounted.hpp">
+      <Filter>Headerdateien\Managed</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine.Common\Managed\AtomicRefCountedIntrusive.hpp">
+      <Filter>Headerdateien\Managed</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.Common\stdafx.cpp">
