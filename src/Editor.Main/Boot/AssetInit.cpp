@@ -25,128 +25,28 @@
 #include "Heliogrim.Default/Assets/Images/DefaultMetalness.hpp"
 #include "Heliogrim.Default/Assets/Images/DefaultRoughness.hpp"
 #include "Heliogrim.Default/Assets/Images/Directory.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderAnimation.hpp"
 #include "Heliogrim.Default/Assets/Images/FolderAudio.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderConfig.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderContent.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderCore.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderDatabase.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderDebug.hpp"
 #include "Heliogrim.Default/Assets/Images/FolderEnvironment.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderError.hpp"
 #include "Heliogrim.Default/Assets/Images/FolderFont.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderGenerator.hpp"
 #include "Heliogrim.Default/Assets/Images/FolderImages.hpp"
 #include "Heliogrim.Default/Assets/Images/FolderImport.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderLib.hpp"
 #include "Heliogrim.Default/Assets/Images/FolderLog.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderMeta.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderPackages.hpp"
 #include "Heliogrim.Default/Assets/Images/FolderResource.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderScripts.hpp"
 #include "Heliogrim.Default/Assets/Images/FolderShader.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderShared.hpp"
-#include "Heliogrim.Default/Assets/Images/FolderTemplate.hpp"
 #include "Heliogrim.Default/Assets/Images/FolderVideo.hpp"
-#include "Heliogrim.Default/Assets/Images/Icon3d.hpp"
-#include "Heliogrim.Default/Assets/Images/IconArchitecture.hpp"
-#include "Heliogrim.Default/Assets/Images/IconAudio.hpp"
-#include "Heliogrim.Default/Assets/Images/IconC.hpp"
-#include "Heliogrim.Default/Assets/Images/IconCMake.hpp"
-#include "Heliogrim.Default/Assets/Images/IconCommand.hpp"
-#include "Heliogrim.Default/Assets/Images/IconConsole.hpp"
-#include "Heliogrim.Default/Assets/Images/IconContributing.hpp"
-#include "Heliogrim.Default/Assets/Images/IconCpp.hpp"
-#include "Heliogrim.Default/Assets/Images/IconCSharp.hpp"
-#include "Heliogrim.Default/Assets/Images/IconDatabase.hpp"
-#include "Heliogrim.Default/Assets/Images/IconDiff.hpp"
-#include "Heliogrim.Default/Assets/Images/IconDocument.hpp"
-#include "Heliogrim.Default/Assets/Images/IconFavicon.hpp"
-#include "Heliogrim.Default/Assets/Images/IconFont.hpp"
-#include "Heliogrim.Default/Assets/Images/IconGit.hpp"
-#include "Heliogrim.Default/Assets/Images/IconH.hpp"
-#include "Heliogrim.Default/Assets/Images/IconHpp.hpp"
-#include "Heliogrim.Default/Assets/Images/IconI18n.hpp"
-#include "Heliogrim.Default/Assets/Images/IconImage.hpp"
-#include "Heliogrim.Default/Assets/Images/IconJson.hpp"
-#include "Heliogrim.Default/Assets/Images/IconLib.hpp"
-#include "Heliogrim.Default/Assets/Images/IconLog.hpp"
-#include "Heliogrim.Default/Assets/Images/IconLua.hpp"
-#include "Heliogrim.Default/Assets/Images/IconPdf.hpp"
-#include "Heliogrim.Default/Assets/Images/IconPipeline.hpp"
-#include "Heliogrim.Default/Assets/Images/IconReadme.hpp"
-#include "Heliogrim.Default/Assets/Images/IconSearch.hpp"
-#include "Heliogrim.Default/Assets/Images/IconSettings.hpp"
-#include "Heliogrim.Default/Assets/Images/IconShader.hpp"
-#include "Heliogrim.Default/Assets/Images/IconTemplate.hpp"
-#include "Heliogrim.Default/Assets/Images/IconTodo.hpp"
-#include "Heliogrim.Default/Assets/Images/IconTree.hpp"
-#include "Heliogrim.Default/Assets/Images/IconUrl.hpp"
-#include "Heliogrim.Default/Assets/Images/IconVideo.hpp"
-#include "Heliogrim.Default/Assets/Images/IconZip.hpp"
 #include "Heliogrim.Default/Assets/Textures/DefaultDiffuse.hpp"
 #include "Heliogrim.Default/Assets/Textures/DefaultNormal.hpp"
 #include "Heliogrim.Default/Assets/Textures/DefaultRoughness.hpp"
 #include "Heliogrim.Default/Assets/Textures/Directory.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderAnimation.hpp"
 #include "Heliogrim.Default/Assets/Textures/FolderAudio.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderConfig.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderContent.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderCore.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderDatabase.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderDebug.hpp"
 #include "Heliogrim.Default/Assets/Textures/FolderEnvironment.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderError.hpp"
 #include "Heliogrim.Default/Assets/Textures/FolderFont.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderGenerator.hpp"
 #include "Heliogrim.Default/Assets/Textures/FolderImages.hpp"
 #include "Heliogrim.Default/Assets/Textures/FolderImport.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderLib.hpp"
 #include "Heliogrim.Default/Assets/Textures/FolderLog.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderMeta.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderPackages.hpp"
 #include "Heliogrim.Default/Assets/Textures/FolderResource.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderScripts.hpp"
 #include "Heliogrim.Default/Assets/Textures/FolderShader.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderShared.hpp"
-#include "Heliogrim.Default/Assets/Textures/FolderTemplate.hpp"
 #include "Heliogrim.Default/Assets/Textures/FolderVideo.hpp"
-#include "Heliogrim.Default/Assets/Textures/Icon3d.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconArchitecture.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconAudio.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconC.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconCMake.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconCommand.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconConsole.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconContributing.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconCpp.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconCSharp.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconDatabase.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconDiff.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconDocument.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconFavicon.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconFont.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconGit.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconH.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconHpp.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconI18n.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconImage.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconJson.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconLib.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconLog.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconLua.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconPdf.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconPipeline.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconReadme.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconSearch.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconSettings.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconShader.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconTemplate.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconTodo.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconTree.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconUrl.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconVideo.hpp"
-#include "Heliogrim.Default/Assets/Textures/IconZip.hpp"
 #include "Engine.Assets/AssetFactory.hpp"
 #include "Engine.Assets/Assets.hpp"
 #include "Engine.Assets/Types/Image.hpp"
@@ -215,7 +115,7 @@ void dispatchLoad(cref<path> path_) {
                 return;
             }
 
-            auto length { end - start };
+            const auto length = end - start;
             if (length < minLength) {
                 // Can't even read asset guid or type id, so no viable data
                 return;
@@ -434,38 +334,8 @@ static void initDirectoryIcons() {
     );
 
     factory->createImageAsset(
-        image::FolderAnimation::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-animation.ktx)"
-    );
-
-    factory->createImageAsset(
         image::FolderAudio::unstable_auto_guid(),
         R"(resources\imports\ktx\folder-audio.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::FolderConfig::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-config.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::FolderContent::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-content.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::FolderCore::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-core.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::FolderDatabase::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-database.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::FolderDebug::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-debug.ktx)"
     );
 
     factory->createImageAsset(
@@ -474,18 +344,8 @@ static void initDirectoryIcons() {
     );
 
     factory->createImageAsset(
-        image::FolderError::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-error.ktx)"
-    );
-
-    factory->createImageAsset(
         image::FolderFont::unstable_auto_guid(),
         R"(resources\imports\ktx\folder-font.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::FolderGenerator::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-generator.ktx)"
     );
 
     factory->createImageAsset(
@@ -499,23 +359,8 @@ static void initDirectoryIcons() {
     );
 
     factory->createImageAsset(
-        image::FolderLib::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-lib.ktx)"
-    );
-
-    factory->createImageAsset(
         image::FolderLog::unstable_auto_guid(),
         R"(resources\imports\ktx\folder-log.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::FolderMeta::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-meta.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::FolderPackages::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-packages.ktx)"
     );
 
     factory->createImageAsset(
@@ -524,23 +369,8 @@ static void initDirectoryIcons() {
     );
 
     factory->createImageAsset(
-        image::FolderScripts::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-scripts.ktx)"
-    );
-
-    factory->createImageAsset(
         image::FolderShader::unstable_auto_guid(),
         R"(resources\imports\ktx\folder-shader.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::FolderShared::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-shared.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::FolderTemplate::unstable_auto_guid(),
-        R"(resources\imports\ktx\folder-template.ktx)"
     );
 
     factory->createImageAsset(
@@ -551,28 +381,14 @@ static void initDirectoryIcons() {
     /**/
 
     delete(new(texture::Directory));
-    delete(new(texture::FolderAnimation));
     delete(new(texture::FolderAudio));
-    delete(new(texture::FolderConfig));
-    delete(new(texture::FolderContent));
-    delete(new(texture::FolderCore));
-    delete(new(texture::FolderDatabase));
-    delete(new(texture::FolderDebug));
     delete(new(texture::FolderEnvironment));
-    delete(new(texture::FolderError));
     delete(new(texture::FolderFont));
-    delete(new(texture::FolderGenerator));
     delete(new(texture::FolderImages));
     delete(new(texture::FolderImport));
-    delete(new(texture::FolderLib));
     delete(new(texture::FolderLog));
-    delete(new(texture::FolderMeta));
-    delete(new(texture::FolderPackages));
     delete(new(texture::FolderResource));
-    delete(new(texture::FolderScripts));
     delete(new(texture::FolderShader));
-    delete(new(texture::FolderShared));
-    delete(new(texture::FolderTemplate));
     delete(new(texture::FolderVideo));
 }
 
@@ -585,243 +401,6 @@ static void initFileIcons() {
         image::Brand::unstable_auto_guid(),
         R"(resources\imports\ktx\brand.ktx)"
     );
-
-    factory->createImageAsset(
-        image::Icon3d::unstable_auto_guid(),
-        R"(resources\imports\ktx\3d.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconArchitecture::unstable_auto_guid(),
-        R"(resources\imports\ktx\architecture.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconAudio::unstable_auto_guid(),
-        R"(resources\imports\ktx\audio.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconC::unstable_auto_guid(),
-        R"(resources\imports\ktx\c.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconCMake::unstable_auto_guid(),
-        R"(resources\imports\ktx\cmake.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconCommand::unstable_auto_guid(),
-        R"(resources\imports\ktx\command.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconConsole::unstable_auto_guid(),
-        R"(resources\imports\ktx\console.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconContributing::unstable_auto_guid(),
-        R"(resources\imports\ktx\contributing.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconCpp::unstable_auto_guid(),
-        R"(resources\imports\ktx\cpp.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconCSharp::unstable_auto_guid(),
-        R"(resources\imports\ktx\csharp.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconDatabase::unstable_auto_guid(),
-        R"(resources\imports\ktx\database.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconDiff::unstable_auto_guid(),
-        R"(resources\imports\ktx\diff.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconDocument::unstable_auto_guid(),
-        R"(resources\imports\ktx\document.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconFavicon::unstable_auto_guid(),
-        R"(resources\imports\ktx\favicon.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconFont::unstable_auto_guid(),
-        R"(resources\imports\ktx\font.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconGit::unstable_auto_guid(),
-        R"(resources\imports\ktx\git.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconH::unstable_auto_guid(),
-        R"(resources\imports\ktx\h.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconHpp::unstable_auto_guid(),
-        R"(resources\imports\ktx\hpp.ktx)"
-    );
-
-    factory->createImageAsset(
-        image::IconI18n::unstable_auto_guid(),
-        R"(resources\imports\ktx\i18n.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconImage::unstable_auto_guid(),
-        R"(resources\imports\ktx\image.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconJson::unstable_auto_guid(),
-        R"(resources\imports\ktx\json.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconLib::unstable_auto_guid(),
-        R"(resources\imports\ktx\lib.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconLog::unstable_auto_guid(),
-        R"(resources\imports\ktx\log.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconLua::unstable_auto_guid(),
-        R"(resources\imports\ktx\lua.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconPdf::unstable_auto_guid(),
-        R"(resources\imports\ktx\pdf.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconPipeline::unstable_auto_guid(),
-        R"(resources\imports\ktx\pipeline.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconReadme::unstable_auto_guid(),
-        R"(resources\imports\ktx\readme.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconSearch::unstable_auto_guid(),
-        R"(resources\imports\ktx\search.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconSettings::unstable_auto_guid(),
-        R"(resources\imports\ktx\settings.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconShader::unstable_auto_guid(),
-        R"(resources\imports\ktx\shader.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconTemplate::unstable_auto_guid(),
-        R"(resources\imports\ktx\template.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconTodo::unstable_auto_guid(),
-        R"(resources\imports\ktx\todo.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconTree::unstable_auto_guid(),
-        R"(resources\imports\ktx\tree.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconUrl::unstable_auto_guid(),
-        R"(resources\imports\ktx\url.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconVideo::unstable_auto_guid(),
-        R"(resources\imports\ktx\video.ktx)"
-
-    );
-
-    factory->createImageAsset(
-        image::IconZip::unstable_auto_guid(),
-        R"(resources\imports\ktx\zip.ktx)"
-
-    );
-
-    /**/
-
-    delete(new(texture::Icon3d));
-    delete(new(texture::IconArchitecture));
-    delete(new(texture::IconAudio));
-    delete(new(texture::IconC));
-    delete(new(texture::IconCMake));
-    delete(new(texture::IconCommand));
-    delete(new(texture::IconConsole));
-    delete(new(texture::IconContributing));
-    delete(new(texture::IconCpp));
-    delete(new(texture::IconCSharp));
-    delete(new(texture::IconDatabase));
-    delete(new(texture::IconDiff));
-    delete(new(texture::IconDocument));
-    delete(new(texture::IconFavicon));
-    delete(new(texture::IconFont));
-    delete(new(texture::IconGit));
-    delete(new(texture::IconH));
-    delete(new(texture::IconHpp));
-    delete(new(texture::IconI18n));
-    delete(new(texture::IconImage));
-    delete(new(texture::IconJson));
-    delete(new(texture::IconLib));
-    delete(new(texture::IconLog));
-    delete(new(texture::IconLua));
-    delete(new(texture::IconPdf));
-    delete(new(texture::IconPipeline));
-    delete(new(texture::IconReadme));
-    delete(new(texture::IconSearch));
-    delete(new(texture::IconSettings));
-    delete(new(texture::IconShader));
-    delete(new(texture::IconTemplate));
-    delete(new(texture::IconTodo));
-    delete(new(texture::IconTree));
-    delete(new(texture::IconUrl));
-    delete(new(texture::IconVideo));
-    delete(new(texture::IconZip));
 }
 
 static void initFontDefaults() {
@@ -872,6 +451,10 @@ void editor::boot::initAssets() {
     /**/
 
     const auto root { _STD filesystem::current_path().append(R"(..\..\resources\assets)") };
+    if (not std::filesystem::exists(root)) {
+        std::filesystem::create_directories(root);
+    }
+
     Vector<path> backlog {};
 
     backlog.push_back(root);
@@ -1148,4 +731,6 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
             break;
         }
     }
+
+    return true;
 }
