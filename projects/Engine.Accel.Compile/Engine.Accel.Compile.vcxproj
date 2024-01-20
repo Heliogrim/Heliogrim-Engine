@@ -31,7 +31,6 @@
     <ClCompile Include="..\..\src\Engine.Accel.Compile\Spec\GraphicsPassSpecification.cpp" />
     <ClCompile Include="..\..\src\Engine.Accel.Compile\Spec\SimpleEffectSpecification.cpp" />
     <ClCompile Include="..\..\src\Engine.Accel.Compile\Stage\StageComposer.cpp" />
-    <ClCompile Include="..\..\src\Engine.Accel.Compile\test.cpp" />
     <ClCompile Include="..\..\src\Engine.Accel.Compile\VkApi.cpp" />
     <ClCompile Include="..\..\src\Engine.Accel.Compile\VkEffectCompiler.cpp" />
   </ItemGroup>
@@ -74,7 +73,6 @@
     <ClInclude Include="..\..\src\Engine.Accel.Compile\Spec\RaytracingPassSpecification.hpp" />
     <ClInclude Include="..\..\src\Engine.Accel.Compile\Spec\SimpleEffectSpecification.hpp" />
     <ClInclude Include="..\..\src\Engine.Accel.Compile\Stage\StageComposer.hpp" />
-    <ClInclude Include="..\..\src\Engine.Accel.Compile\test.h" />
     <ClInclude Include="..\..\src\Engine.Accel.Compile\VkApi.hpp" />
     <ClInclude Include="..\..\src\Engine.Accel.Compile\VkEffectCompiler.hpp" />
   </ItemGroup>

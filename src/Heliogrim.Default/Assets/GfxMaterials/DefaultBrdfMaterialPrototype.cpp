@@ -58,6 +58,7 @@ DefaultBrdfMaterialPrototype::DefaultBrdfMaterialPrototype() :
             .identifier = engine::gfx::material::ParameterIdentifier { 2u },
             .name = "Arm",
             .dataType = engine::accel::TransferDataType::eSampler,
+            // Warning: This will actually break, because we change from roughness only to arm texture!
             //.defaultValue = asset_guid { texture::DefaultRoughness::unstable_auto_guid() }
             .defaultValue = asset_guid { decodeGuid4228("3532173099-19939-16567-8852593991083949459"sv).data }
         }
