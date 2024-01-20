@@ -42,4 +42,10 @@ namespace hg {
         const char* _cs;
         _STD size_t _length;
     };
+
+    /**/
+
+    constexpr CompileString operator""_cs(const char* str_, const _STD size_t count_) {
+        return CompileString { str_, count_ };
+    }
 }

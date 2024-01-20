@@ -203,20 +203,20 @@ namespace hg {
         }
 
     public:
-        [[nodiscard]] constexpr auto find(const key_type& key_) const noexcept {
+        [[nodiscard]] constexpr auto find([[maybe_unused]] const key_type& key_) const noexcept {
             return typename table_type::ConstIterator {};
         }
 
-        [[nodiscard]] constexpr bool contains(const key_type& key_) const noexcept {
+        [[nodiscard]] constexpr bool contains([[maybe_unused]] const key_type& key_) const noexcept {
             return false;
         }
 
-        [[nodiscard]] constexpr size_t count(const key_type& key_) const noexcept {
+        [[nodiscard]] constexpr size_t count([[maybe_unused]] const key_type& key_) const noexcept {
             return 0;
         }
 
     public:
-        [[nodiscard]] constexpr auto operator[](const key_type& key_) const noexcept {
+        [[nodiscard]] constexpr auto operator[]([[maybe_unused]] const key_type& key_) const noexcept {
             return typename table_type::ConstIterator {};
         }
     };

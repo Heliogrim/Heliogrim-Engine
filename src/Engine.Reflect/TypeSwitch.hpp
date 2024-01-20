@@ -68,7 +68,7 @@ namespace hg {
         using check_type = _STD remove_pointer_t<typename decompose<Fn_>::subject_type>;
 
         if (value_->getMetaClass()->typeId().data == reflect::typeId<_STD remove_const_t<check_type>>().data) {
-            return fn_(static_cast<check_type*>(value_));
+            return std::forward<Fn_>(fn_)(static_cast<check_type*>(value_));
         }
         return switchTypeImpl<Value_, ReturnType_, Rest_...>(
             value_,
@@ -89,7 +89,7 @@ namespace hg {
         using check_type = _STD remove_pointer_t<typename decompose<Fn_>::subject_type>;
 
         if (value_->getMetaClass()->typeId().data == reflect::typeId<_STD remove_const_t<check_type>>().data) {
-            return fn_(static_cast<check_type*>(value_));
+            return std::forward<Fn_>(fn_)(static_cast<check_type*>(value_));
         }
 
         return ReturnType_ {};
@@ -108,7 +108,7 @@ namespace hg {
         using check_type = _STD remove_pointer_t<typename decompose<Fn_>::subject_type>;
 
         if (value_->getMetaClass()->typeId().data == reflect::typeId<_STD remove_const_t<check_type>>().data) {
-            return fn_(static_cast<check_type*>(value_));
+            return std::forward<Fn_>(fn_)(static_cast<check_type*>(value_));
         }
     }
 
@@ -119,8 +119,8 @@ namespace hg {
 
         return switchTypeImpl<Ty_, return_type, Fn_, Rfn_...>(
             value_,
-            _STD forward<Fn_>(fn_),
-            _STD forward<Rfn_>(rest_)...
+            std::forward<Fn_>(fn_),
+            std::forward<Rfn_>(rest_)...
         );
     }
 
@@ -131,8 +131,8 @@ namespace hg {
 
         return switchTypeImpl<const Ty_, return_type, Fn_, Rfn_...>(
             value_,
-            _STD forward<Fn_>(fn_),
-            _STD forward<Rfn_>(rest_)...
+            std::forward<Fn_>(fn_),
+            std::forward<Rfn_>(rest_)...
         );
     }
 
