@@ -66,7 +66,7 @@ void VkNativeBatch::commit() {
     /**/
 
     assert(queues.size() == 1uLL);
-    auto queue = static_cast<ptr<VkNativeQueue>>(queues.front());
+    auto* const queue = static_cast<ptr<VkNativeQueue>>(queues.front());
 
     const auto vkDevice = /* ::vk::Device {} */static_cast<ptr<engine::gfx::CommandQueue>>(queue)->device()->vkDevice();
     const auto vkQueue = /* ::VkQueue {} */static_cast<ptr<engine::gfx::CommandQueue>>(queue)->vkQueue();
@@ -81,7 +81,7 @@ void VkNativeBatch::commit() {
 
     enumerateWaitSignals(signals, stages);
 
-    ::VkSubmitInfo si {
+    const ::VkSubmitInfo si {
         VK_STRUCTURE_TYPE_SUBMIT_INFO,
         nullptr,
         static_cast<u32>(signals.size() - readyCount), signals.data() + readyCount, stages.data(),

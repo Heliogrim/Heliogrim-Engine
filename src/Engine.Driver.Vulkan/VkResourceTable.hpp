@@ -25,6 +25,11 @@ namespace hg::driver::vk {
 
         ~VkResourceTable() noexcept;
 
+    public:
+        ref<this_type> operator=(cref<this_type>) = delete;
+
+        ref<this_type> operator=(mref<this_type> other_) noexcept = default;
+
     private:
         using Holder = smr<void>;
         Vector<Holder> _owned;
