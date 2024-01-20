@@ -1,8 +1,8 @@
-#include "VirtualBuffer.hpp"
+#include "SparseBuffer.hpp"
 
 #include "../Memory/VirtualMemory.hpp"
 #include "../Command/CommandQueue.hpp"
-#include "VirtualBufferView.hpp"
+#include "SparseBufferView.hpp"
 
 // TODO: Remove
 #include "Engine.GFX/Graphics.hpp"
@@ -11,7 +11,7 @@
 using namespace hg::engine::gfx;
 using namespace hg;
 
-VirtualBuffer::VirtualBuffer() noexcept :
+SparseBuffer::SparseBuffer() noexcept :
     _bufferSize(0uLL),
     _memory(nullptr),
     _pages(),
@@ -19,7 +19,7 @@ VirtualBuffer::VirtualBuffer() noexcept :
     _vkBufferUsageFlags(),
     _changed(false) {}
 
-VirtualBuffer::VirtualBuffer(
+SparseBuffer::SparseBuffer(
     mref<uptr<VirtualMemory>> memory_,
     u64 bufferSize_,
     cref<vk::Buffer> buffer_,
@@ -32,7 +32,7 @@ VirtualBuffer::VirtualBuffer(
     _vkBufferUsageFlags(usageFlags_),
     _changed(false) {}
 
-VirtualBuffer::VirtualBuffer(mref<this_type> other_) noexcept :
+SparseBuffer::SparseBuffer(mref<this_type> other_) noexcept :
     _bufferSize(_STD exchange(other_._bufferSize, 0uLL)),
     _memory(_STD move(other_._memory)),
     _pages(_STD move(other_._pages)),
@@ -42,11 +42,11 @@ VirtualBuffer::VirtualBuffer(mref<this_type> other_) noexcept :
     _bindings(_STD move(other_._bindings)),
     _bindData(_STD exchange(other_._bindData, {})) {}
 
-VirtualBuffer::~VirtualBuffer() {
+SparseBuffer::~SparseBuffer() {
     tidy();
 }
 
-ref<VirtualBuffer::this_type> VirtualBuffer::operator=(mref<this_type> other_) noexcept {
+ref<SparseBuffer::this_type> SparseBuffer::operator=(mref<this_type> other_) noexcept {
     if (_STD addressof(other_) != this) {
         /**
          * Might be equal to `_STD swap(*this, other_)`
@@ -65,7 +65,7 @@ ref<VirtualBuffer::this_type> VirtualBuffer::operator=(mref<this_type> other_) n
     return *this;
 }
 
-void VirtualBuffer::tidy() {
+void SparseBuffer::tidy() {
     /**
      * Destroy Buffer before backing memory or pages
      */
@@ -91,35 +91,35 @@ void VirtualBuffer::tidy() {
     _memory.reset();
 }
 
-const ptr<const VirtualMemory> VirtualBuffer::memory() const noexcept {
+const ptr<const VirtualMemory> SparseBuffer::memory() const noexcept {
     return _memory.get();
 }
 
-const ptr<VirtualMemory> VirtualBuffer::memory() noexcept {
+const ptr<VirtualMemory> SparseBuffer::memory() noexcept {
     return _memory.get();
 }
 
-u64 VirtualBuffer::size() const noexcept {
+u64 SparseBuffer::size() const noexcept {
     return _bufferSize;
 }
 
-u64 VirtualBuffer::memorySize() const noexcept {
+u64 SparseBuffer::memorySize() const noexcept {
     return _memory->size();
 }
 
-u64 VirtualBuffer::memoryResidentialSize() const noexcept {
+u64 SparseBuffer::memoryResidentialSize() const noexcept {
     return _memory->allocatedSize();
 }
 
-cref<vk::Buffer> VirtualBuffer::vkBuffer() const noexcept {
+cref<vk::Buffer> SparseBuffer::vkBuffer() const noexcept {
     return _vkBuffer;
 }
 
-cref<vk::BufferUsageFlags> VirtualBuffer::vkBufferUsageFlags() const noexcept {
+cref<vk::BufferUsageFlags> SparseBuffer::vkBufferUsageFlags() const noexcept {
     return _vkBufferUsageFlags;
 }
 
-non_owning_rptr<VirtualBufferPage> VirtualBuffer::addPage(const u64 size_, const u64 offset_) {
+non_owning_rptr<SparseBufferPage> SparseBuffer::addPage(const u64 size_, const u64 offset_) {
     #ifdef _DEBUG
     for (const auto& entry : _pages) {
         if (entry->resourceOffset() >= (offset_ + size_)) {
@@ -137,7 +137,7 @@ non_owning_rptr<VirtualBufferPage> VirtualBuffer::addPage(const u64 size_, const
     const auto memPage = _memory->definePage(0ui64, size_);
     assert(memPage);
 
-    const auto page = new VirtualBufferPage {
+    const auto page = new SparseBufferPage {
         memPage,
         size_,
         offset_
@@ -147,16 +147,16 @@ non_owning_rptr<VirtualBufferPage> VirtualBuffer::addPage(const u64 size_, const
     return page;
 }
 
-cref<Vector<ptr<VirtualBufferPage>>> VirtualBuffer::pages() const noexcept {
+cref<Vector<ptr<SparseBufferPage>>> SparseBuffer::pages() const noexcept {
     return _pages;
 }
 
-void VirtualBuffer::assureTiledPages(const u64 offset_, const u64 size_) {}
+void SparseBuffer::assureTiledPages(const u64 offset_, const u64 size_) {}
 
-void VirtualBuffer::selectPages(
+void SparseBuffer::selectPages(
     const u64 offset_,
     const u64 size_,
-    ref<Vector<non_owning_rptr<VirtualBufferPage>>> pages_
+    ref<Vector<non_owning_rptr<SparseBufferPage>>> pages_
 ) {
     const u64 lowerBound { offset_ };
     const u64 upperBound { offset_ + size_ };
@@ -172,10 +172,10 @@ void VirtualBuffer::selectPages(
     }
 }
 
-uptr<VirtualBufferView> VirtualBuffer::makeView(const u64 offset_, const u64 size_) {
+uptr<SparseBufferView> SparseBuffer::makeView(const u64 offset_, const u64 size_) {
     assureTiledPages(offset_, size_);
 
-    Vector<non_owning_rptr<VirtualBufferPage>> pages {};
+    Vector<non_owning_rptr<SparseBufferPage>> pages {};
     selectPages(offset_, size_, pages);
 
     /**
@@ -183,7 +183,7 @@ uptr<VirtualBufferView> VirtualBuffer::makeView(const u64 offset_, const u64 siz
      */
     _STD ranges::sort(
         pages,
-        [](non_owning_rptr<VirtualBufferPage> left_, non_owning_rptr<VirtualBufferPage> right_) {
+        [](non_owning_rptr<SparseBufferPage> left_, non_owning_rptr<SparseBufferPage> right_) {
             return left_->resourceOffset() < right_->resourceOffset();
         }
     );
@@ -192,7 +192,7 @@ uptr<VirtualBufferView> VirtualBuffer::makeView(const u64 offset_, const u64 siz
      *
      */
     const auto view {
-        new VirtualBufferView(
+        new SparseBufferView(
             this,
             _STD move(pages),
             offset_,
@@ -200,11 +200,11 @@ uptr<VirtualBufferView> VirtualBuffer::makeView(const u64 offset_, const u64 siz
         )
     };
 
-    return _STD unique_ptr<VirtualBufferView>(view);
+    return _STD unique_ptr<SparseBufferView>(view);
 }
 
-void VirtualBuffer::updateBindingData() {
-    cref<Vector<ptr<VirtualBufferPage>>> updates { _pages };
+void SparseBuffer::updateBindingData() {
+    cref<Vector<ptr<SparseBufferPage>>> updates { _pages };
     for (const auto& page : updates) {
         _bindings.push_back(page->vkSparseMemoryBind());
     }
@@ -219,7 +219,7 @@ void VirtualBuffer::updateBindingData() {
     };
 }
 
-void VirtualBuffer::enqueueBinding(const ptr<CommandQueue> queue_) {
+void SparseBuffer::enqueueBinding(const ptr<CommandQueue> queue_) {
     vk::BindSparseInfo bsi {
         0,
         nullptr,
@@ -242,7 +242,7 @@ void VirtualBuffer::enqueueBinding(const ptr<CommandQueue> queue_) {
     #endif
 }
 
-void VirtualBuffer::enqueueBinding(
+void SparseBuffer::enqueueBinding(
     const ptr<CommandQueue> queue_,
     cref<Vector<vk::Semaphore>> waits_,
     cref<Vector<vk::Semaphore>> signals_
@@ -269,7 +269,7 @@ void VirtualBuffer::enqueueBinding(
     #endif
 }
 
-void VirtualBuffer::enqueueBindingSync(const ptr<CommandQueue> queue_) {
+void SparseBuffer::enqueueBindingSync(const ptr<CommandQueue> queue_) {
     vk::BindSparseInfo bsi {
         0,
         nullptr,

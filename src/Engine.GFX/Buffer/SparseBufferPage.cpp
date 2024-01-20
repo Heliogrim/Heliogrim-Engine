@@ -1,4 +1,4 @@
-#include "VirtualBufferPage.hpp"
+#include "SparseBufferPage.hpp"
 
 #include "../Memory/AllocatedMemory.hpp"
 #include "Engine.GFX/Memory/AllocationResult.hpp"
@@ -6,7 +6,7 @@
 using namespace hg::engine::gfx;
 using namespace hg;
 
-VirtualBufferPage::VirtualBufferPage(
+SparseBufferPage::SparseBufferPage(
     nmpt<VirtualMemoryPage> memory_,
     const u64 resourceSize_,
     const u64 resourceOffset_
@@ -15,21 +15,21 @@ VirtualBufferPage::VirtualBufferPage(
     _resourceSize(resourceSize_),
     _resourceOffset(resourceOffset_) {}
 
-VirtualBufferPage::~VirtualBufferPage() = default;
+SparseBufferPage::~SparseBufferPage() = default;
 
-nmpt<VirtualMemoryPage> VirtualBufferPage::release() noexcept {
+nmpt<VirtualMemoryPage> SparseBufferPage::release() noexcept {
     return _STD exchange(_memory, nullptr);
 }
 
-nmpt<VirtualMemoryPage> VirtualBufferPage::memory() const noexcept {
+nmpt<VirtualMemoryPage> SparseBufferPage::memory() const noexcept {
     return _memory;
 }
 
-bool VirtualBufferPage::residential() const noexcept {
+bool SparseBufferPage::residential() const noexcept {
     return _memory->state() == VirtualMemoryPageState::eLoaded;
 }
 
-bool VirtualBufferPage::load() {
+bool SparseBufferPage::load() {
 
     const auto result { _memory->load() };
     if (result != memory::AllocationResult::eSuccess) {
@@ -39,13 +39,13 @@ bool VirtualBufferPage::load() {
     return _memory->state() == VirtualMemoryPageState::eLoaded;
 }
 
-bool VirtualBufferPage::unload() {
+bool SparseBufferPage::unload() {
 
     _memory->unload();
     return _memory->state() == VirtualMemoryPageState::eUnloaded;
 }
 
-vk::SparseMemoryBind VirtualBufferPage::vkSparseMemoryBind() const noexcept {
+vk::SparseMemoryBind SparseBufferPage::vkSparseMemoryBind() const noexcept {
 
     const bool isMemoryBacking { _memory->state() == VirtualMemoryPageState::eLoaded };
 
@@ -58,10 +58,10 @@ vk::SparseMemoryBind VirtualBufferPage::vkSparseMemoryBind() const noexcept {
     };
 }
 
-u64 VirtualBufferPage::resourceSize() const noexcept {
+u64 SparseBufferPage::resourceSize() const noexcept {
     return _resourceSize;
 }
 
-u64 VirtualBufferPage::resourceOffset() const noexcept {
+u64 SparseBufferPage::resourceOffset() const noexcept {
     return _resourceOffset;
 }

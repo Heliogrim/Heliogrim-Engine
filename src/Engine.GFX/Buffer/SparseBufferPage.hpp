@@ -6,11 +6,11 @@
 #include "../Memory/VirtualMemoryPage.hpp"
 
 namespace hg::engine::gfx {
-    class VirtualBufferPage final {
+    class SparseBufferPage final {
     public:
-        VirtualBufferPage(nmpt<VirtualMemoryPage> memory_, const u64 resourceSize_, const u64 resourceOffset_);
+        SparseBufferPage(nmpt<VirtualMemoryPage> memory_, const u64 resourceSize_, const u64 resourceOffset_);
 
-        ~VirtualBufferPage();
+        ~SparseBufferPage();
 
     private:
         nmpt<VirtualMemoryPage> _memory;

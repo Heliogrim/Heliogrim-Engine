@@ -14,7 +14,8 @@ TextureView::TextureView(
     _owner(owner_),
     _layers(layers_),
     _extent(extent_),
-    _mipLevels(mipLevels_) {}
+    _mipLevels(mipLevels_),
+    _vkImageView(nullptr) {}
 
 TextureView::~TextureView() = default;
 
@@ -44,6 +45,10 @@ math::uExtent3D::off_type TextureView::offsetY() const noexcept {
 
 math::uExtent3D::off_type TextureView::offsetZ() const noexcept {
     return _extent.offsetZ;
+}
+
+math::uivec3 TextureView::extent() const noexcept {
+    return math::uivec3 { _extent.width, _extent.height, _extent.depth };
 }
 
 math::uExtent3D::value_type TextureView::width() const noexcept {

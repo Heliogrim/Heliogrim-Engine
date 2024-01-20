@@ -4,27 +4,27 @@
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Math/__default.inl>
 
-#include "VirtualTexturePageFlag.hpp"
+#include "SparseTexturePageFlag.hpp"
 #include "__fwd.hpp"
 #include "../Device/Device.hpp"
 #include "../Memory/VirtualMemoryPage.hpp"
 
 namespace hg::engine::gfx {
-    class VirtualTexturePage final {
+    class SparseTexturePage final {
     public:
-        friend class VirtualTexture;
+        friend class SparseTexture;
 
     public:
-        using this_type = VirtualTexturePage;
+        using this_type = SparseTexturePage;
 
     protected:
-        VirtualTexturePage(
+        SparseTexturePage(
             nmpt<VirtualMemoryPage> memory_,
             u32 layer_,
             math::uivec3 offset_,
             math::uivec3 extent_,
             u32 mipLevel_,
-            const VirtualTexturePageFlags flags_ = {}
+            const SparseTexturePageFlags flags_ = {}
         );
 
     public:
@@ -34,13 +34,13 @@ namespace hg::engine::gfx {
          * @author Julius
          * @date 20.11.2020
          */
-        ~VirtualTexturePage() noexcept;
+        ~SparseTexturePage() noexcept;
 
     private:
-        VirtualTexturePageFlags _flags;
+        SparseTexturePageFlags _flags;
 
     public:
-        [[nodiscard]] const VirtualTexturePageFlags flags() const noexcept;
+        [[nodiscard]] const SparseTexturePageFlags flags() const noexcept;
 
     private:
         nmpt<VirtualMemoryPage> _memory;

@@ -4,7 +4,7 @@
 
 #include "BufferObject.hpp"
 #include "../Device/Device.hpp"
-#include "VirtualBufferPage.hpp"
+#include "SparseBufferPage.hpp"
 #include "__fwd.hpp"
 
 namespace hg::engine::gfx {
@@ -15,26 +15,26 @@ namespace hg::engine::gfx {
      *  TODO: Software solution for sparse set requires indirection buffer to handle sequences
      */
 
-    class VirtualBuffer :
-        public InheritMeta<VirtualBuffer, BufferObject> {
+    class SparseBuffer :
+        public InheritMeta<SparseBuffer, BufferObject> {
     public:
-        using this_type = VirtualBuffer;
+        using this_type = SparseBuffer;
 
     public:
-        VirtualBuffer() noexcept;
+        SparseBuffer() noexcept;
 
-        VirtualBuffer(
+        SparseBuffer(
             mref<uptr<VirtualMemory>> memory_,
             u64 bufferSize_,
             cref<vk::Buffer> buffer_,
             cref<vk::BufferUsageFlags> usageFlags_
         ) noexcept;
 
-        VirtualBuffer(cref<this_type>) = delete;
+        SparseBuffer(cref<this_type>) = delete;
 
-        VirtualBuffer(mref<this_type> other_) noexcept;
+        SparseBuffer(mref<this_type> other_) noexcept;
 
-        ~VirtualBuffer() override;
+        ~SparseBuffer() override;
 
     public:
         ref<this_type> operator=(cref<this_type>) = delete;
@@ -57,7 +57,7 @@ namespace hg::engine::gfx {
         [[nodiscard]] const non_owning_rptr<VirtualMemory> memory() noexcept;
 
     private:
-        Vector<ptr<VirtualBufferPage>> _pages;
+        Vector<ptr<SparseBufferPage>> _pages;
 
     public:
         [[nodiscard]] u64 size() const noexcept;
@@ -91,9 +91,9 @@ namespace hg::engine::gfx {
          *
          * @returns A pointer to the newly created virtual buffer page or nullptr.
          */
-        non_owning_rptr<VirtualBufferPage> addPage(const u64 size_, const u64 offset_);
+        non_owning_rptr<SparseBufferPage> addPage(const u64 size_, const u64 offset_);
 
-        [[nodiscard]] cref<Vector<ptr<VirtualBufferPage>>> pages() const noexcept;
+        [[nodiscard]] cref<Vector<ptr<SparseBufferPage>>> pages() const noexcept;
 
     private:
         void assureTiledPages(
@@ -104,7 +104,7 @@ namespace hg::engine::gfx {
         void selectPages(
             const u64 offset_,
             const u64 size_,
-            _Inout_ ref<Vector<non_owning_rptr<VirtualBufferPage>>> pages_
+            _Inout_ ref<Vector<non_owning_rptr<SparseBufferPage>>> pages_
         );
 
     public:
@@ -116,7 +116,7 @@ namespace hg::engine::gfx {
          *
          * @returns A unique pointer to the created view
          */
-        [[nodiscard]] uptr<VirtualBufferView> makeView(
+        [[nodiscard]] uptr<SparseBufferView> makeView(
             const u64 offset_,
             const u64 size_
         );

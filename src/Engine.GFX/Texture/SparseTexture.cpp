@@ -1,11 +1,11 @@
-#include "VirtualTexture.hpp"
+#include "SparseTexture.hpp"
 
 #include <ranges>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Common/Exception/NotImplementedException.hpp>
 
-#include "VirtualTexturePage.hpp"
-#include "VirtualTextureView.hpp"
+#include "SparseTexturePage.hpp"
+#include "SparseTextureView.hpp"
 
 // TODO: Remove
 #include "Engine.GFX/Graphics.hpp"
@@ -14,7 +14,7 @@
 using namespace hg::engine::gfx;
 using namespace hg;
 
-VirtualTexture::VirtualTexture(
+SparseTexture::SparseTexture(
     mref<uptr<VirtualMemory>> memory_,
     const u32 layers_,
     const math::uivec3 extent_,
@@ -31,7 +31,7 @@ VirtualTexture::VirtualTexture(
     _type(type_),
     _vkImage(vkImage_) {}
 
-VirtualTexture::VirtualTexture(
+SparseTexture::SparseTexture(
     mref<uptr<VirtualMemory>> memory_,
     u32 layers_,
     math::uivec3 extent_,
@@ -58,11 +58,11 @@ VirtualTexture::VirtualTexture(
     _mipTailStride(mipTailStride_),
     _vkImage(vkImage_) {}
 
-VirtualTexture::~VirtualTexture() {
+SparseTexture::~SparseTexture() {
     tidy();
 }
 
-void VirtualTexture::tidy() {
+void SparseTexture::tidy() {
 
     /**
      * Destroy Image before backing memory or pages
@@ -126,7 +126,7 @@ void VirtualTexture::tidy() {
     }
 }
 
-nmpt<VirtualTexturePage> VirtualTexture::makePage(
+nmpt<SparseTexturePage> SparseTexture::makePage(
     u32 layer_,
     u32 mipLevel_,
     math::uivec3 tileOffset_,
@@ -167,8 +167,8 @@ nmpt<VirtualTexturePage> VirtualTexture::makePage(
     /**
      *
      */
-    auto page = uptr<VirtualTexturePage>(
-        new VirtualTexturePage(
+    auto page = uptr<SparseTexturePage>(
+        new SparseTexturePage(
             memory,
             layer_,
             tileOffset_,
@@ -182,7 +182,7 @@ nmpt<VirtualTexturePage> VirtualTexture::makePage(
     return result;
 }
 
-nmpt<VirtualTexturePage> VirtualTexture::makeOpaquePage(u32 layer_) {
+nmpt<SparseTexturePage> SparseTexture::makeOpaquePage(u32 layer_) {
 
     #ifdef _DEBUG
     assert(_layers >= layer_);
@@ -208,14 +208,14 @@ nmpt<VirtualTexturePage> VirtualTexture::makeOpaquePage(u32 layer_) {
     /**
      *
      */
-    auto page = uptr<VirtualTexturePage>(
-        new VirtualTexturePage(
+    auto page = uptr<SparseTexturePage>(
+        new SparseTexturePage(
             memory,
             layer_,
             math::uivec3 {},
             extent,
             _mipTailFirstLod,
-            VirtualTexturePageFlags { VirtualTexturePageFlag::eOpaqueTail }
+            SparseTexturePageFlags { SparseTexturePageFlag::eOpaqueTail }
         )
     );
 
@@ -225,7 +225,7 @@ nmpt<VirtualTexturePage> VirtualTexture::makeOpaquePage(u32 layer_) {
 }
 
 // Warning: TODO: Rewrite !?!
-void VirtualTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math::uivec3 offset_, math::uivec3 extent_) {
+void SparseTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math::uivec3 offset_, math::uivec3 extent_) {
 
     assert(offset_.zero());
     assert(extent_ == _extent);
@@ -238,7 +238,7 @@ void VirtualTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math:
     /**
      * Collect pages of targeted region
      */
-    Vector<Vector<nmpt<VirtualTexturePage>>> tiledPages {};
+    Vector<Vector<nmpt<SparseTexturePage>>> tiledPages {};
     tiledPages.resize(maxTiledMipLevel);
 
     for (const auto& entry : _pages) {
@@ -321,12 +321,12 @@ void VirtualTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math:
     }
 }
 
-void VirtualTexture::selectPages(
+void SparseTexture::selectPages(
     math::uivec2 layers_,
     math::uivec2 mipLevels_,
     math::uivec3 offset_,
     math::uivec3 extent_,
-    ref<Vector<nmpt<VirtualTexturePage>>> pages_
+    ref<Vector<nmpt<SparseTexturePage>>> pages_
 ) {
 
     for (const auto& entry : _pages) {
@@ -364,7 +364,7 @@ void VirtualTexture::selectPages(
     }
 }
 
-uptr<VirtualTextureView> VirtualTexture::makeView(math::uivec2 layers_, math::uivec2 mipLevels_) {
+uptr<SparseTextureView> SparseTexture::makeView(math::uivec2 layers_, math::uivec2 mipLevels_) {
 
     math::uivec2 mipLevels {
         _mipLevels.min > mipLevels_.min ? _mipLevels.min : mipLevels_.min,
@@ -387,7 +387,7 @@ uptr<VirtualTextureView> VirtualTexture::makeView(math::uivec2 layers_, math::ui
         assureTiledPages(layer, mipLevels, {}, _extent);
     }
 
-    Vector<nmpt<VirtualTexturePage>> pages {};
+    Vector<nmpt<SparseTexturePage>> pages {};
     selectPages({ layers_.min, layers_.max + 1ui32 }, mipLevels, {}, _extent, pages);
 
     /**
@@ -395,7 +395,7 @@ uptr<VirtualTextureView> VirtualTexture::makeView(math::uivec2 layers_, math::ui
      */
     _STD ranges::sort(
         pages,
-        [](nmpt<VirtualTexturePage> left_, nmpt<VirtualTexturePage> right_) {
+        [](nmpt<SparseTexturePage> left_, nmpt<SparseTexturePage> right_) {
             return left_->mipLevel() < right_->mipLevel();
         }
     );
@@ -404,7 +404,7 @@ uptr<VirtualTextureView> VirtualTexture::makeView(math::uivec2 layers_, math::ui
      *
      */
     const auto view {
-        new VirtualTextureView(
+        new SparseTextureView(
             this,
             _STD move(pages),
             layers_,
@@ -415,10 +415,10 @@ uptr<VirtualTextureView> VirtualTexture::makeView(math::uivec2 layers_, math::ui
         )
     };
 
-    return _STD unique_ptr<VirtualTextureView>(view);
+    return _STD unique_ptr<SparseTextureView>(view);
 }
 
-uptr<VirtualTextureView> VirtualTexture::makeSpatialView(
+uptr<SparseTextureView> SparseTexture::makeSpatialView(
     math::uivec2 offset_,
     math::uivec2 extent_,
     math::uivec2 mipLevels_
@@ -429,72 +429,72 @@ uptr<VirtualTextureView> VirtualTexture::makeSpatialView(
     throw NotImplementedException();
 }
 
-u32 VirtualTexture::layers() const noexcept {
+u32 SparseTexture::layers() const noexcept {
     return _layers;
 }
 
-math::uivec3::value_type VirtualTexture::width() const noexcept {
+math::uivec3::value_type SparseTexture::width() const noexcept {
     return _extent.x;
 }
 
-math::uivec3::value_type VirtualTexture::height() const noexcept {
+math::uivec3::value_type SparseTexture::height() const noexcept {
     return _extent.y;
 }
 
-math::uivec3::value_type VirtualTexture::depth() const noexcept {
+math::uivec3::value_type SparseTexture::depth() const noexcept {
     return _extent.z;
 }
 
-TextureFormat VirtualTexture::format() const noexcept {
+TextureFormat SparseTexture::format() const noexcept {
     return _format;
 }
 
-math::uivec2::value_type VirtualTexture::minMipLevel() const noexcept {
+math::uivec2::value_type SparseTexture::minMipLevel() const noexcept {
     return _mipLevels.min;
 }
 
-math::uivec2::value_type VirtualTexture::mipLevels() const noexcept {
+math::uivec2::value_type SparseTexture::mipLevels() const noexcept {
     return (_mipLevels.max - _mipLevels.min) + 1ui32;
 }
 
-math::uivec2::value_type VirtualTexture::maxMipLevel() const noexcept {
+math::uivec2::value_type SparseTexture::maxMipLevel() const noexcept {
     return _mipLevels.max;
 }
 
-TextureType VirtualTexture::type() const noexcept {
+TextureType SparseTexture::type() const noexcept {
     return _type;
 }
 
-const decltype(VirtualTexture::_granularity) VirtualTexture::granularity() const noexcept {
+const decltype(SparseTexture::_granularity) SparseTexture::granularity() const noexcept {
     return _granularity;
 }
 
-const decltype(VirtualTexture::_mipTailFirstLod) VirtualTexture::mipTailFirstLod() const noexcept {
+const decltype(SparseTexture::_mipTailFirstLod) SparseTexture::mipTailFirstLod() const noexcept {
     return _mipTailFirstLod;
 }
 
-const decltype(VirtualTexture::_mipTailSize) VirtualTexture::mipTailSize() const noexcept {
+const decltype(SparseTexture::_mipTailSize) SparseTexture::mipTailSize() const noexcept {
     return _mipTailSize;
 }
 
-const decltype(VirtualTexture::_mipTailOffset) VirtualTexture::mipTailOffset() const noexcept {
+const decltype(SparseTexture::_mipTailOffset) SparseTexture::mipTailOffset() const noexcept {
     return _mipTailOffset;
 }
 
-const decltype(VirtualTexture::_mipTailStride) VirtualTexture::mipTailStride() const noexcept {
+const decltype(SparseTexture::_mipTailStride) SparseTexture::mipTailStride() const noexcept {
     return _mipTailStride;
 }
 
-cref<vk::Image> VirtualTexture::vkImage() const noexcept {
+cref<vk::Image> SparseTexture::vkImage() const noexcept {
     return _vkImage;
 }
 
-bool VirtualTexture::load(nmpt<VirtualTexturePage> page_) {
+bool SparseTexture::load(nmpt<SparseTexturePage> page_) {
 
     /**
      * Track Changes
      */
-    if (page_->flags() & VirtualTexturePageFlag::eOpaqueTail) {
+    if (page_->flags() & SparseTexturePageFlag::eOpaqueTail) {
         _changedOpaquePages.insert(page_);
     } else {
         _changedPages.insert(page_);
@@ -506,12 +506,12 @@ bool VirtualTexture::load(nmpt<VirtualTexturePage> page_) {
     return page_->load();
 }
 
-bool VirtualTexture::unload(nmpt<VirtualTexturePage> page_) {
+bool SparseTexture::unload(nmpt<SparseTexturePage> page_) {
 
     /**
      * Track Changes
      */
-    if (page_->flags() & VirtualTexturePageFlag::eOpaqueTail) {
+    if (page_->flags() & SparseTexturePageFlag::eOpaqueTail) {
         _changedOpaquePages.insert(page_);
     } else {
         _changedPages.insert(page_);
@@ -523,7 +523,7 @@ bool VirtualTexture::unload(nmpt<VirtualTexturePage> page_) {
     return page_->unload();
 }
 
-void VirtualTexture::unsafe_scan_changes() {
+void SparseTexture::unsafe_scan_changes() {
 
     /**
      *
@@ -542,7 +542,7 @@ void VirtualTexture::unsafe_scan_changes() {
     }
 }
 
-void VirtualTexture::updateBindingData() {
+void SparseTexture::updateBindingData() {
 
     _opaqueBindings.clear();
     _bindings.clear();
@@ -585,7 +585,7 @@ void VirtualTexture::updateBindingData() {
     _changedOpaquePages.clear();
 }
 
-void VirtualTexture::enqueueBindingSync(const ptr<CommandQueue> queue_) {
+void SparseTexture::enqueueBindingSync(const ptr<CommandQueue> queue_) {
 
     vk::BindSparseInfo bsi {
         0,

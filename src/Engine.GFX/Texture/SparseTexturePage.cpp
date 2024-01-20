@@ -1,4 +1,4 @@
-#include "VirtualTexturePage.hpp"
+#include "SparseTexturePage.hpp"
 
 #include "../Memory/AllocatedMemory.hpp"
 #include "../Memory/AllocationResult.hpp"
@@ -7,13 +7,13 @@
 using namespace hg::engine::gfx;
 using namespace hg;
 
-VirtualTexturePage::VirtualTexturePage(
+SparseTexturePage::SparseTexturePage(
     nmpt<VirtualMemoryPage> memory_,
     u32 layer_,
     math::uivec3 offset_,
     math::uivec3 extent_,
     u32 mipLevel_,
-    const VirtualTexturePageFlags flags_
+    const SparseTexturePageFlags flags_
 ) :
     _flags(flags_),
     _memory(memory_),
@@ -22,28 +22,28 @@ VirtualTexturePage::VirtualTexturePage(
     _extent(extent_),
     _mipLevel(mipLevel_) {}
 
-VirtualTexturePage::~VirtualTexturePage() noexcept {
+SparseTexturePage::~SparseTexturePage() noexcept {
     // delete _memory;
     assert(_memory == nullptr);
 }
 
-const VirtualTexturePageFlags VirtualTexturePage::flags() const noexcept {
+const SparseTexturePageFlags SparseTexturePage::flags() const noexcept {
     return _flags;
 }
 
-nmpt<VirtualMemoryPage> VirtualTexturePage::release() noexcept {
+nmpt<VirtualMemoryPage> SparseTexturePage::release() noexcept {
     return _STD exchange(_memory, nullptr);
 }
 
-nmpt<VirtualMemoryPage> VirtualTexturePage::memory() const noexcept {
+nmpt<VirtualMemoryPage> SparseTexturePage::memory() const noexcept {
     return _memory;
 }
 
-bool VirtualTexturePage::residential() const noexcept {
+bool SparseTexturePage::residential() const noexcept {
     return false;
 }
 
-bool VirtualTexturePage::load() {
+bool SparseTexturePage::load() {
 
     const auto result { _memory->load() };
     if (result != memory::AllocationResult::eSuccess) {
@@ -53,28 +53,28 @@ bool VirtualTexturePage::load() {
     return _memory->state() == VirtualMemoryPageState::eLoaded;
 }
 
-bool VirtualTexturePage::unload() {
+bool SparseTexturePage::unload() {
     _memory->unload();
     return _memory->state() == VirtualMemoryPageState::eUnloaded;
 }
 
-u32 VirtualTexturePage::layer() const noexcept {
+u32 SparseTexturePage::layer() const noexcept {
     return _layer;
 }
 
-cref<math::uivec3> VirtualTexturePage::offset() const noexcept {
+cref<math::uivec3> SparseTexturePage::offset() const noexcept {
     return _offset;
 }
 
-cref<math::uivec3> VirtualTexturePage::extent() const noexcept {
+cref<math::uivec3> SparseTexturePage::extent() const noexcept {
     return _extent;
 }
 
-u32 VirtualTexturePage::mipLevel() const noexcept {
+u32 SparseTexturePage::mipLevel() const noexcept {
     return _mipLevel;
 }
 
-vk::SparseImageMemoryBind VirtualTexturePage::vkSparseImageMemoryBind() const noexcept {
+vk::SparseImageMemoryBind SparseTexturePage::vkSparseImageMemoryBind() const noexcept {
 
     const bool isMemoryBacking { _memory->state() == VirtualMemoryPageState::eLoaded };
 
@@ -92,7 +92,7 @@ vk::SparseImageMemoryBind VirtualTexturePage::vkSparseImageMemoryBind() const no
     };
 }
 
-vk::SparseMemoryBind VirtualTexturePage::vkSparseMemoryBind() const noexcept {
+vk::SparseMemoryBind SparseTexturePage::vkSparseMemoryBind() const noexcept {
 
     const bool isMemoryBacking { _memory->state() == VirtualMemoryPageState::eLoaded };
 

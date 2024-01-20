@@ -96,9 +96,9 @@
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\BufferFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\StorageBufferView.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\UniformBufferView.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBuffer.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBufferPage.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Buffer\VirtualBufferView.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\SparseBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\SparseBufferPage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Buffer\SparseBufferView.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Buffer\VkBufferFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\GlobalCacheCtrl.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Cache\GlobalResourceCache.cpp" />
@@ -151,15 +151,14 @@
     <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSurfaceSwapchain.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\TextureFormat.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Texture\SampledTextureView.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureSampler.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Texture\Texture.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureBuffer.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Texture\TextureView.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Texture\VirtualTexture.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Texture\VirtualTexturePage.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Texture\VirtualTextureView.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\SparseTexture.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\SparseTexturePage.cpp" />
+    <ClCompile Include="..\..\src\Engine.GFX\Texture\SparseTextureView.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Viewport.cpp" />
   </ItemGroup>
@@ -176,9 +175,9 @@
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\StorageBufferView.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\UniformBufferView.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VertexBufferView.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBuffer.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBufferPage.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Buffer\VirtualBufferView.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\SparseBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\SparseBufferPage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Buffer\SparseBufferView.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VkBufferFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Cache\CacheCtrlSubject.hpp" />
@@ -274,7 +273,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\VkSwapchain.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Swapchain\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\TextureFormat.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Texture\SampledTextureView.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\Texture.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureBuffer.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureFactory.hpp" />
@@ -284,10 +282,10 @@
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureType.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\TextureView.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\Utility.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTexture.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTexturePage.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTexturePageFlag.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Texture\VirtualTextureView.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\SparseTexture.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\SparseTexturePage.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\SparseTexturePageFlag.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Texture\SparseTextureView.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\VkTextureFactory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Texture\__fwd.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Viewport.hpp" />
