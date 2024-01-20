@@ -76,7 +76,16 @@ namespace hg::driver::vk {
     public:
         constexpr VkNativeQueue() noexcept = default;
 
+        VkNativeQueue(mref<this_type>) = delete;
+
+        VkNativeQueue(cref<this_type>) = delete;
+
         constexpr ~VkNativeQueue() noexcept = default;
+
+    public:
+        ref<this_type> operator=(mref<this_type>) = delete;
+
+        ref<this_type> operator=(cref<this_type>) = delete;
 
     public:
         [[nodiscard]] VkQueueMask::index_type getQueueIndex() const noexcept;

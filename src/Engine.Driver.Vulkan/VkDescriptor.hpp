@@ -27,6 +27,11 @@ namespace hg::driver::vk {
         ~VkDescriptorPool() noexcept;
 
     public:
+        ref<this_type> operator=(mref<this_type>) noexcept = default;
+
+        ref<this_type> operator=(cref<this_type>) = delete;
+
+    public:
         Vector<VkDescriptorPoolSize> pooled;
         ::VkDescriptorPool vkPool;
     };
