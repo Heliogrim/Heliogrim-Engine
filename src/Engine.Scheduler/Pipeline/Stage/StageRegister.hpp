@@ -12,6 +12,9 @@ namespace hg::engine::scheduler {
         using this_type = StageRegister;
 
     public:
+        virtual ~StageRegister() = default;
+
+    public:
         [[nodiscard]] virtual const non_owning_rptr<const Stage> registerStage(mref<uptr<PipelineStage>> stage_) = 0;
 
         [[nodiscard]] virtual const non_owning_rptr<const Stage> getStage(cref<string> identifier_) const noexcept = 0;

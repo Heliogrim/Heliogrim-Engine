@@ -19,7 +19,7 @@ namespace hg::engine::scheduler {
         using task_type = ::hg::engine::scheduler::task::TaskDelegate;
 
     protected:
-        StagePipeline(cref<identifier_type> identifier_) noexcept;
+        StagePipeline(mref<identifier_type> identifier_) noexcept;
 
     public:
         virtual ~StagePipeline() noexcept;

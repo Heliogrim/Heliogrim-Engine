@@ -3,9 +3,9 @@
 using namespace hg::engine::scheduler;
 using namespace hg;
 
-Stage::Stage(cref<string> identifier_, const s8 slot_) noexcept :
+Stage::Stage(mref<string> identifier_, const s8 slot_) noexcept :
     _refCount(1ui16),
-    _identifier(identifier_),
+    _identifier(std::move(identifier_)),
     _slot(slot_) {}
 
 void Stage::incRef() noexcept {

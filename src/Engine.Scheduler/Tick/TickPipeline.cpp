@@ -14,11 +14,11 @@ TickPipeline::~TickPipeline() noexcept = default;
 
 void TickPipeline::mount(const non_owning_rptr<StageRegister> register_) {
 
-    const auto beginStage = register_->registerStage(
+    const auto* const beginStage = register_->registerStage(
         make_uptr<EmptyPipelineStage>(PipelineStage::identifier_type::from(TickBegin), this)
     );
     //const auto eventStage = register_->registerStage(TickEvent);
-    const auto endStage = register_->registerStage(
+    const auto* const endStage = register_->registerStage(
         make_uptr<EmptyPipelineStage>(PipelineStage::identifier_type::from(TickEnd), this)
     );
 

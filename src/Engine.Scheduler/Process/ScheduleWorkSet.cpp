@@ -11,5 +11,5 @@ task::TaskMask ScheduleWorkSet::getTaskMask() const noexcept {
 }
 
 bool ScheduleWorkSet::contains(const task::TaskMask mask_) const noexcept {
-    return mask_ & mask_;
+    return _mask & mask_;
 }

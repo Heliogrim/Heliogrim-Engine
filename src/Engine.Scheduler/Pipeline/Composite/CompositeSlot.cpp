@@ -143,7 +143,7 @@ void CompositeSlot::submit() {
         // Attention: Currently using a dummy to guarantee progress
         _signals.fetch_add(1ui16, _STD memory_order_relaxed);
 
-        auto dummy = task::make_task([] {});
+        const auto* dummy = task::make_task([] {});
         const_cast<ptr<task::TaskDelegate>>(dummy)->ctrl() = static_cast<ptr<TaskCtrl>>(this);
         _schedule->push(_STD move(dummy));
         return;

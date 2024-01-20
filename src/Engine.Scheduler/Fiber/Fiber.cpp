@@ -16,7 +16,7 @@ using namespace hg;
 void Fiber::create(ptr<Fiber> self_, void (*proc_)(void*), void* param_) {
 
     #ifdef ENV_MSVC
-    auto ctx {
+    auto* ctx {
         ::CreateFiber(
             default_fiber_stack_size(),
             proc_,

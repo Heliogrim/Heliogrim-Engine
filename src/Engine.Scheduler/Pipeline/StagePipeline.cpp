@@ -3,8 +3,8 @@
 using namespace hg::engine::scheduler;
 using namespace hg;
 
-StagePipeline::StagePipeline(cref<identifier_type> identifier_) noexcept :
-    _identifier(identifier_) {}
+StagePipeline::StagePipeline(mref<identifier_type> identifier_) noexcept :
+    _identifier(std::move(identifier_)) {}
 
 StagePipeline::~StagePipeline() noexcept = default;
 

@@ -3,6 +3,7 @@
 #include <ranges>
 #include <Engine.Common/Make.hpp>
 #include <Engine.Logging/Logger.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
 
 #include "Composite/StageDependency.hpp"
 #include "Stage/PipelineStage.hpp"
@@ -105,7 +106,7 @@ const non_owning_rptr<const Stage> CompositePipeline::registerStage(mref<uptr<Pi
 
     const auto result = _stages.insert_or_assign(
         identifier.value,
-        make_uptr<Stage>(identifier.value, slotIdx)
+        make_uptr<Stage>(clone(identifier.value), slotIdx)
     );
 
     return result.first->second.get();
@@ -374,7 +375,7 @@ bool CompositePipeline::defineCompositeStage(
 
         /**/
 
-        for (auto* const requirement : dependency.required) {
+        for (const auto* const requirement : dependency.required) {
 
             auto* const compStage = getCompositeStage(requirement);
             if (compStage == nullptr) {
@@ -458,7 +459,7 @@ bool CompositePipeline::resolveCanInsertStage(
 
     /* Check internal orders */
 
-    for (auto* const order : internalOrders_) {
+    for (const auto* const order : internalOrders_) {
 
         const auto stageMark = _STD ranges::find(*order, stage_);
         if (stageMark == order->end()) {
@@ -517,7 +518,7 @@ void CompositePipeline::resolve() {
     u64 iteration = 0;
     while (stages.size() != sorted.size() && iteration <= maxIteration) {
 
-        for (auto* const stage : stages) {
+        for (const auto* const stage : stages) {
 
             if (sorted.contains(stage)) {
                 continue;
@@ -737,7 +738,7 @@ void CompositePipeline::prepareSlots() {
         const auto* const stage = slot->getCompositeStage();
         const auto dispatcher = slot->getStaticDispatcher();
 
-        for (auto* const binding : stage->pipelineStages) {
+        for (const auto* const binding : stage->pipelineStages) {
             const_cast<ptr<PipelineStage>>(binding)->staticDispatch(&dispatcher);
         }
     }

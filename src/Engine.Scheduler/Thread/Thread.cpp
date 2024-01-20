@@ -102,7 +102,7 @@ affinity_mask Thread::setAffinity(affinity_mask mask_) {
 }
 
 bool Thread::setPriority(priority priority_) {
-    DEBUG_ASSERT(_handle, "Thread has no valid 'handle_'");
+    DEBUG_ASSERT(_handle, "Thread has no valid 'handle_'")
     return set_priority(_handle->native_handle(), priority_);
 }
 
