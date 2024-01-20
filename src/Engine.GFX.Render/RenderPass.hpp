@@ -78,12 +78,12 @@ namespace hg::engine::render {
 
         [[nodiscard]] bool bindTarget(
             mref<smr<const graph::Symbol>> target_,
-            mref<smr<gfx::VirtualTexture>> texture_
+            mref<smr<gfx::SparseTexture>> texture_
         );
 
         [[nodiscard]] bool bindTarget(
             mref<smr<const graph::Symbol>> target_,
-            mref<smr<gfx::VirtualTextureView>> textureView_
+            mref<smr<gfx::SparseTextureView>> textureView_
         );
 
         _Success_(return != nullptr) smr<void> unbindTarget(mref<smr<const graph::Symbol>> target_) noexcept;

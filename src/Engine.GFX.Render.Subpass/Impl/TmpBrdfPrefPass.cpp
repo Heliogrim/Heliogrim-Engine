@@ -25,9 +25,8 @@
 #include <Engine.GFX/Buffer/UniformBufferView.hpp>
 #include <Engine.GFX/Scene/SkyboxModel.hpp>
 #include <Engine.Reflect/ExactType.hpp>
-#include <Engine.Scene/IRenderScene.hpp>
-#include <Engine.Scene/Graph/SceneGraph.hpp>
-#include <Engine.GFX/Texture/VirtualTextureView.hpp>
+#include <Engine.GFX/Texture/SparseTextureView.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
@@ -73,26 +72,14 @@ void TmpBrdfPrefPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept
 
     /**/
 
-    SkyboxModel* model = nullptr;
+    ptr<const SkyboxModel> model = nullptr;
     auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
     auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
 
-    auto scene = sceneView->getScene()->renderGraph();
-    scene->traversal(
-        [&model](const ptr<scene::SceneGraph<gfx::scene::SceneModel>::node_type> node_) -> bool {
-
-            auto size = node_->exclusiveSize();
-            for (decltype(size) i = 0; i < size; ++i) {
-
-                auto el = node_->elements()[i];
-                if (ExactType<SkyboxModel>(*el)) {
-                    model = static_cast<SkyboxModel*>(el);
-                    return false;
-                }
-
-            }
-
-            return model == nullptr;
+    const auto sys = sceneView->getRenderSceneSystem();
+    sys->getRegistry().forEach<SkyboxModel>(
+        [&model](const auto& model_) {
+            model = std::addressof(model_);
         }
     );
 
@@ -115,13 +102,6 @@ void TmpBrdfPrefPass::resolve() noexcept {
 
 void TmpBrdfPrefPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
-    assert(_effect);
-    assert(_compiled.pipeline);
-
-    if (_skyboxMaterial.empty() || not _brdfPref.empty()) {
-        return;
-    }
-
     if (_tmpSignal == nullptr) {
         const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
         _tmpSignal = device->vkDevice().createSemaphore({});
@@ -129,28 +109,31 @@ void TmpBrdfPrefPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
 
     /**/
 
-    const auto* const factory = TextureFactory::get();
-    auto brdfPref = factory->build(
-        {
-            math::uivec3 { 512uL, 512uL, 1uL },
-            TextureFormat::eR16G16B16A16Sfloat,
-            MAX(static_cast<u32>(_STD floorf(_STD log2f(512.F))) + 1uL, 1uL),
-            TextureType::eCube,
-            vk::ImageAspectFlagBits::eColor,
-            vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
-            vk::MemoryPropertyFlagBits::eDeviceLocal,
-            vk::SharingMode::eExclusive
-        }
-    );
-    factory->buildView(
-        brdfPref,
-        {
-            .layers = { 0L, 1L }, .type = TextureType::eCube,
-            .mipLevels = { 0L, static_cast<s32>(brdfPref.mipLevels()) }
-        }
-    );
+    if (_brdfPref.empty()) {
 
-    _brdfPref = make_smr<Texture>(_STD move(brdfPref));
+        const auto* const factory = TextureFactory::get();
+        auto brdfPref = factory->build(
+            {
+                math::uivec3 { 512uL, 512uL, 1uL },
+                TextureFormat::eR16G16B16A16Sfloat,
+                MAX(static_cast<u32>(_STD floorf(_STD log2f(512.F))) + 1uL, 1uL),
+                TextureType::eCube,
+                vk::ImageAspectFlagBits::eColor,
+                vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
+                vk::MemoryPropertyFlagBits::eDeviceLocal,
+                vk::SharingMode::eExclusive
+            }
+        );
+        factory->buildView(
+            brdfPref,
+            {
+                .layers = { 0L, 1L }, .type = TextureType::eCube,
+                .mipLevels = { 0L, static_cast<s32>(brdfPref.mipLevels()) }
+            }
+        );
+
+        _brdfPref = make_smr<Texture>(_STD move(brdfPref));
+    }
 
     /**/
 
@@ -183,6 +166,16 @@ void TmpBrdfPrefPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
         makeBrdfPrefilterSymbol(),
         _resources.outBrdfPrefTexture.obj()
     );
+
+    /**/
+
+    assert(_effect);
+    assert(_compiled.pipeline);
+
+    if (_skyboxMaterial.empty() || _stored) {
+        return;
+    }
+    _stored = true;
 
     /**/
 
@@ -343,14 +336,15 @@ void TmpBrdfPrefPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
         const auto texture = guard->getParam<smr<TextureResource>>(material::ParameterIdentifier { 0 });
         const auto textureGuard = texture->acquire(resource::ResourceUsageFlag::eRead);
 
-        if (auto tmpTex = Cast<VirtualTextureView>(textureGuard->get())) {
+        if (auto tmpTex = Cast<SparseTextureView>(textureGuard->get())) {
             if (tmpTex->vkImageView() == nullptr) {
                 textureFactory->buildView(*tmpTex);
             }
         }
 
-        cmd.bindUniform(lang::SymbolId::from("view-matrix"), &viewMatrixView);
-        cmd.bindTexture(lang::SymbolId::from("skybox"), textureGuard->get(), &tmpSkySampler);
+        cmd.bindUniform(lang::SymbolId::from("view-matrix"sv), &viewMatrixView);
+        cmd.bindTexture(lang::SymbolId::from("skybox"sv), textureGuard->get());
+        cmd.bindTextureSampler(lang::SymbolId::from("skybox-sampler"sv), &tmpSkySampler);
 
         cmd.drawDispatch(1uL, 0uL, 36uL, 0uL);
 
@@ -562,7 +556,7 @@ smr<AccelerationEffect> build_test_effect() {
         var->annotation = make_uptr<SymbolIdAnnotation>("view-matrix", _STD move(var->annotation));
         var->annotation = make_uptr<VkBindLocationAnnotation>(0L, 0L, 0L, _STD move(var->annotation));
 
-        sym->symbolId = SymbolId::from("view-matrix");
+        sym->symbolId = SymbolId::from("view-matrix"sv);
         sym->var.type = SymbolType::eVariableSymbol;
         sym->var.data = var.get();
 
@@ -583,12 +577,27 @@ smr<AccelerationEffect> build_test_effect() {
         var->annotation = make_uptr<SymbolIdAnnotation>("skybox", _STD move(var->annotation));
         var->annotation = make_uptr<VkBindLocationAnnotation>(1L, 0L, 0L, _STD move(var->annotation));
 
-        sym->symbolId = SymbolId::from("skybox");
+        sym->symbolId = SymbolId::from("skybox"sv);
         sym->var.type = SymbolType::eVariableSymbol;
         sym->var.data = var.get();
 
         fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(var));
         fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(sym));
+    }
+
+    {
+        auto tmpVar = make_uptr<Variable>();
+        tmpVar->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eSampler };
+        tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
+        tmpVar->annotation = make_uptr<SymbolIdAnnotation>("skybox-sampler", _STD move(tmpVar->annotation));
+
+        auto tmpSym = make_uptr<Symbol>(
+            SymbolId::from("skybox-sampler"sv),
+            VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
+        );
+
+        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+        fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
     }
 
     {
@@ -603,7 +612,7 @@ smr<AccelerationEffect> build_test_effect() {
         var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(_STD move(var->annotation));
         var->annotation = make_uptr<SymbolIdAnnotation>("block", _STD move(var->annotation));
 
-        sym->symbolId = SymbolId::from("block");
+        sym->symbolId = SymbolId::from("block"sv);
         sym->var.type = SymbolType::eVariableSymbol;
         sym->var.data = var.get();
 
@@ -626,7 +635,7 @@ smr<AccelerationEffect> build_test_effect() {
         _STD move(tmpVar->annotation)
     );
 
-    tmpSym->symbolId = SymbolId::from("color");
+    tmpSym->symbolId = SymbolId::from("color"sv);
     tmpSym->var.type = SymbolType::eVariableSymbol;
     tmpSym->var.data = tmpVar.get();
 

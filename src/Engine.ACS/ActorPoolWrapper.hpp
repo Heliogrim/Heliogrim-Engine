@@ -7,6 +7,9 @@
 namespace hg::engine::acs {
     class __declspec(novtable) ActorPoolWrapperBase {
     public:
+        virtual ~ActorPoolWrapperBase() = default;
+
+    public:
         virtual void insert(cref<actor_guid> key_, cref<ActorInitializer> initializer_) = 0;
 
         virtual ptr<Actor> get(cref<actor_guid> key_) = 0;
@@ -23,6 +26,8 @@ namespace hg::engine::acs {
     public:
         ActorPoolWrapper(const ptr<pool_type> actual_) noexcept :
             _actual(actual_) {}
+
+        ~ActorPoolWrapper() override = default;
 
     private:
         ptr<pool_type> _actual;

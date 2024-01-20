@@ -28,7 +28,7 @@ namespace hg::engine::serialization {
         defineSlice<Vector<asset_guid>>(offsetof(TextureAsset, _images), guidLayout);
 
         #if USE_SPAN_LAYOUT
-    defineSpan(offsetof(Texture, _extent), sizeof(TextureAsset::_extent));
+        defineSpan(offsetof(Texture, _extent), sizeof(TextureAsset::_extent));
         #else
         defineValue<LayoutDefineValueType::eUInt32>(offsetof(TextureAsset, _extent.x));
         defineValue<LayoutDefineValueType::eUInt32>(offsetof(TextureAsset, _extent.y));

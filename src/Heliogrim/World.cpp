@@ -1,7 +1,7 @@
 #include "World.hpp"
 
 #include <Engine.Common/Concurrent/Promise.hpp>
-#include <Engine.Scene/SceneFactory.hpp>
+#include <Engine.Common/Exception/NotImplementedException.hpp>
 #include <Engine.Core/Event/WorldAddedEvent.hpp>
 #include <Engine.Core/Event/WorldChangeEvent.hpp>
 #include <Engine.Core/Event/WorldRemoveEvent.hpp>
@@ -9,6 +9,7 @@
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/WorldContext.hpp>
 #include <Engine.Core/World.hpp>
+#include <Engine.Scene.Game/GameScene.hpp>
 #include <Engine.Scene/Scene.hpp>
 
 #include "Scene.hpp"
@@ -40,8 +41,8 @@ bool World::removeLevel(const ptr<Level> level_) {
 bool World::addActor(const ptr<Actor> actor_) {
     const auto* const world { static_cast<ptr<engine::core::World>>(_internal.get()) };
     auto* const scene { world->getScene() };
-    auto* const ctx { scene->registerContext() };
-    actor_->registerComponents(ctx);
+    const auto ctx = scene->registerContext();
+    actor_->registerComponents(ctx.get());
 
     /**
      *
@@ -52,7 +53,7 @@ bool World::addActor(const ptr<Actor> actor_) {
 bool World::removeActor(const ptr<Actor> actor_) {
     const auto* const world { static_cast<ptr<engine::core::World>>(_internal.get()) };
     auto* const scene { world->getScene() };
-    auto* const ctx { scene->registerContext() };
+    const auto ctx = scene->registerContext();
     // actor_->unregisterComponents(ctx);
 
     /**
@@ -65,8 +66,10 @@ Future<World> hg::CreateWorld() noexcept {
     auto prom {
         hg::concurrent::promise<World>(
             []() {
-                auto scene { ::hg::engine::scene::SceneFactory::createDefaultScene() };
-                const auto world { make_sptr<engine::core::World>(_STD move(scene)) };
+                auto defaultScene = make_uptr<engine::scene::GameScene>();
+                defaultScene->prepare();
+
+                const auto world { make_sptr<engine::core::World>(_STD move(defaultScene)) };
 
                 engine::Engine::getEngine()->addWorld(world);
 

@@ -36,7 +36,7 @@ static smr<AccelerationEffect> build_test_effect() {
     );
     tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("view", _STD move(tmpVar->annotation));
     auto tmpSym = make_uptr<lang::Symbol>(
-        lang::SymbolId::from("view"),
+        lang::SymbolId::from("view"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
     vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
@@ -48,7 +48,7 @@ static smr<AccelerationEffect> build_test_effect() {
         _STD move(tmpVar->annotation)
     );
     tmpSym = make_uptr<lang::Symbol>(
-        lang::SymbolId::from("uv"),
+        lang::SymbolId::from("uv"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
     vertexStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
@@ -81,7 +81,7 @@ static smr<AccelerationEffect> build_test_effect() {
         _STD move(tmpVar->annotation)
     );
     tmpSym = make_uptr<lang::Symbol>(
-        lang::SymbolId::from("uv"),
+        lang::SymbolId::from("uv"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
     fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
@@ -90,7 +90,7 @@ static smr<AccelerationEffect> build_test_effect() {
     tmpVar = make_uptr<lang::Variable>();
     tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("depth");
     tmpSym = make_uptr<lang::Symbol>(
-        lang::SymbolId::from("depth"),
+        lang::SymbolId::from("depth"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
     fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
@@ -106,11 +106,29 @@ static smr<AccelerationEffect> build_test_effect() {
     );
     tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("mat-static-0", _STD move(tmpVar->annotation));
     tmpSym = make_uptr<lang::Symbol>(
-        lang::SymbolId::from(/*"skybox"*/"mat-static-0"),
+        lang::SymbolId::from(/*"skybox"*/"mat-static-0"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
     fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
     fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+
+    /**/
+
+    {
+        using namespace ::hg::engine::accel::lang;
+        auto tmpVar = make_uptr<Variable>();
+        tmpVar->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eSampler };
+        tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
+        tmpVar->annotation = make_uptr<SymbolIdAnnotation>("mat-static-0-sampler", _STD move(tmpVar->annotation));
+        tmpSym = make_uptr<Symbol>(
+            SymbolId::from("mat-static-0-sampler"sv),
+            VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
+        );
+        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+        fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    }
+
+    /**/
 
     tmpVar = make_uptr<lang::Variable>();
     tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("color");
@@ -118,7 +136,7 @@ static smr<AccelerationEffect> build_test_effect() {
         _STD move(tmpVar->annotation)
     );
     tmpSym = make_uptr<lang::Symbol>(
-        lang::SymbolId::from("color"),
+        lang::SymbolId::from("color"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
     fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));

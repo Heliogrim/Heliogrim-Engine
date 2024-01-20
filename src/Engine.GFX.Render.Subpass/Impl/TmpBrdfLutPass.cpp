@@ -70,13 +70,6 @@ void TmpBrdfLutPass::resolve() noexcept {
 
 void TmpBrdfLutPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
-    assert(_effect);
-    assert(_compiled.pipeline);
-
-    if (not _brdfLut.empty()) {
-        return;
-    }
-
     if (_tmpSignal == nullptr) {
         const auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
         _tmpSignal = device->vkDevice().createSemaphore({});
@@ -84,19 +77,21 @@ void TmpBrdfLutPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept 
 
     /**/
 
-    const auto* const factory = TextureFactory::get();
-    auto brdfLut = factory->build(
-        {
-            math::uivec3 { 512uL, 512uL, 1uL }, TextureFormat::eR16G16Sfloat, 1uL, TextureType::e2d,
-            vk::ImageAspectFlagBits::eColor,
-            vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
-            vk::MemoryPropertyFlagBits::eDeviceLocal,
-            vk::SharingMode::eExclusive
-        }
-    );
-    factory->buildView(brdfLut, { .layers = { 0L, 1L }, .type = TextureType::e2d, .mipLevels = { 0L, 1L } });
+    if (_brdfLut.empty()) {
+        const auto* const factory = TextureFactory::get();
+        auto brdfLut = factory->build(
+            {
+                math::uivec3 { 512uL, 512uL, 1uL }, TextureFormat::eR16G16Sfloat, 1uL, TextureType::e2d,
+                vk::ImageAspectFlagBits::eColor,
+                vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
+                vk::MemoryPropertyFlagBits::eDeviceLocal,
+                vk::SharingMode::eExclusive
+            }
+        );
+        factory->buildView(brdfLut, { .layers = { 0L, 1L }, .type = TextureType::e2d, .mipLevels = { 0L, 1L } });
 
-    _brdfLut = make_smr<Texture>(_STD move(brdfLut));
+        _brdfLut = make_smr<Texture>(_STD move(brdfLut));
+    }
 
     /**/
 
@@ -128,6 +123,15 @@ void TmpBrdfLutPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept 
         makeBrdfLutSymbol(),
         _resources.outBrdfLutTexture.obj()
     );
+
+    /**/
+
+    assert(_effect);
+    assert(_compiled.pipeline);
+
+    if (not _framebuffer.empty()) {
+        return;
+    }
 
     /**/
 
@@ -297,7 +301,7 @@ smr<AccelerationEffect> build_test_effect() {
         _STD move(tmpVar->annotation)
     );
 
-    tmpSym->symbolId = lang::SymbolId::from("color");
+    tmpSym->symbolId = lang::SymbolId::from("color"sv);
     tmpSym->var.type = lang::SymbolType::eVariableSymbol;
     tmpSym->var.data = tmpVar.get();
 

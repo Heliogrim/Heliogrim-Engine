@@ -34,8 +34,8 @@ void PackageLinker::restoreLinks() {
 
     PackageIndexEntry index {};
 
-    const streamoff begin = _package->header().indexOffset;
-    const streamoff end = begin + _package->header().indexSize;
+    const streamoff begin = static_cast<streamoff>(_package->header().indexOffset);
+    const streamoff end = begin + static_cast<streamoff>(_package->header().indexSize);
     streampos pos = begin;
 
     auto* const source = _package->_source.get();
@@ -60,7 +60,7 @@ void PackageLinker::restoreLinks() {
         /**/
 
         ArchiveHeader header {};
-        source->get(index.offset, sizeof(ArchiveHeader), &header, readBytes);
+        source->get(static_cast<streamoff>(index.offset), sizeof(ArchiveHeader), &header, readBytes);
 
         /**/
 
@@ -84,7 +84,7 @@ bool PackageLinker::store(mref<ArchiveHeader> header_, mref<uptr<serialization::
 
     if (not _links.empty()) {
         const auto lastIndex = _links.back().index;
-        nextOffset = lastIndex.offset + lastIndex.size;
+        nextOffset = static_cast<streamoff>(lastIndex.offset + lastIndex.size);
     }
 
     /* Write Archive Header to Package */

@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Memory/MemoryPointer.hpp>
 #include <Engine.GFX/Pool/GlobalResourcePool.hpp>
-#include <Engine.GFX/Texture/VirtualTextureView.hpp>
+#include <Engine.GFX/Texture/SparseTextureView.hpp>
 #include <Engine.GFX/Texture/TextureLikeObject.hpp>
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.Resource/Manage/UniqueResource.hpp>
@@ -24,8 +24,8 @@ smr<TextureResource> TextureTransformer::transpose(
 ) const {
 
     const non_owning_rptr<const assets::TextureAsset> asset = request_;
-    auto view = _pool->allocateVirtualTexture(
-        pool::VirtualTextureAllocation {
+    auto view = _pool->allocateSparseTexture(
+        pool::SparseTextureAllocation {
             .layers = 1ui32,
             .extent = asset->getExtent(),
             .format = asset->getTextureFormat(),
@@ -65,7 +65,7 @@ void TextureTransformer::partialTranspose(
 
     const auto guard = to_->acquire(resource::ResourceUsageFlag::eWrite);
     auto& loaded = guard.mut()->load();
-    auto* const view = Cast<VirtualTextureView>(&loaded);
+    auto* const view = Cast<SparseTextureView>(&loaded);
 
     assert(view);
 
@@ -79,7 +79,7 @@ TextureTransformer::response_type::type TextureTransformer::operator()(
     mref<request_type::options> options_,
     cref<next_type> next_
 ) const {
-    auto asset = static_cast<non_owning_rptr<const assets::Asset>>(request_);
+    const auto* asset = static_cast<non_owning_rptr<const assets::Asset>>(request_);
     auto src = next_(_STD move(asset), next_type::next_request_type::options {});
 
     /**/
@@ -93,7 +93,7 @@ engine::resource::loader::CacheStreamResponse<engine::assets::TextureAsset>::typ
     cref<next_type> next_
 ) const {
 
-    auto asset = static_cast<non_owning_rptr<const assets::Asset>>(request_->getAssociation());
+    const auto* asset = static_cast<non_owning_rptr<const assets::Asset>>(request_->getAssociation());
     auto src = next_(_STD move(asset), next_type::next_request_type::options {});
 
     /**/

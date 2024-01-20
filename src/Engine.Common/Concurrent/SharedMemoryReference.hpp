@@ -142,6 +142,7 @@ namespace hg {
     public:
         template <class Fty_> requires IsSmrBiPointerCompatible<PayloadType_, Fty_>
         [[nodiscard]] SharedMemoryReference<Fty_> into() {
+            static_assert(sizeof(Fty_) > 0uLL, "Requires complete type for casting.");
             return SharedMemoryReference<Fty_> { _STD move(*this) };
         }
 
@@ -252,7 +253,7 @@ namespace hg {
     public:
         constexpr SharedMemoryReferenceCtrlBlock() noexcept :
             VirtualBase(),
-            _packed(0) { }
+            _packed(0) {}
 
         template <typename Type_ = vty> requires _STD is_same_v<Type_, vty>
         SharedMemoryReferenceCtrlBlock(_In_ mref<ptr<Type_>> payload_) :
@@ -371,7 +372,7 @@ namespace hg {
                             _STD memory_order_release,
                             _STD memory_order_relaxed
                         )
-                    ) { }
+                    ) {}
 
                 }
 

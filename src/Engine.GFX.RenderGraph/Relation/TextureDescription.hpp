@@ -77,8 +77,8 @@ namespace hg::engine::render::graph {
 
         [[nodiscard]] bool isValidObject(const nmpt<gfx::TextureView> textureView_) const noexcept;
 
-        [[nodiscard]] bool isValidObject(const nmpt<gfx::VirtualTexture> texture_) const noexcept;
+        [[nodiscard]] bool isValidObject(const nmpt<gfx::SparseTexture> texture_) const noexcept;
 
-        [[nodiscard]] bool isValidObject(const nmpt<gfx::VirtualTextureView> textureView_) const noexcept;
+        [[nodiscard]] bool isValidObject(const nmpt<gfx::SparseTextureView> textureView_) const noexcept;
     };
 }

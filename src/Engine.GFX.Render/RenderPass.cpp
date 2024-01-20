@@ -10,8 +10,8 @@
 #include <Engine.Reflect/Cast.hpp>
 #include <Engine.GFX/Texture/Texture.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
-#include <Engine.GFX/Texture/VirtualTexture.hpp>
-#include <Engine.GFX/Texture/VirtualTextureView.hpp>
+#include <Engine.GFX/Texture/SparseTexture.hpp>
+#include <Engine.GFX/Texture/SparseTextureView.hpp>
 #include <Engine.Logging/Logger.hpp>
 
 using namespace hg::engine::render;
@@ -68,7 +68,9 @@ RenderPassResult RenderPass::operator()() {
     return RenderPassResult::eSuccess;
 }
 
-smr<const engine::gfx::scene::SceneView> RenderPass::changeSceneView(mref<smr<const gfx::scene::SceneView>> nextSceneView_) {
+smr<const engine::gfx::scene::SceneView> RenderPass::changeSceneView(
+    mref<smr<const gfx::scene::SceneView>> nextSceneView_
+) {
 
     const auto symbol = makeSceneViewSymbol();
 
@@ -166,7 +168,7 @@ bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx
     return true;
 }
 
-bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx::VirtualTexture>> texture_) {
+bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx::SparseTexture>> texture_) {
 
     const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
     if (not textureDescription) {
@@ -190,7 +192,7 @@ bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx
     return true;
 }
 
-bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx::VirtualTextureView>> textureView_) {
+bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx::SparseTextureView>> textureView_) {
 
     const auto* const textureDescription = Cast<graph::TextureDescription>(target_->description.get());
     if (not textureDescription) {
@@ -405,7 +407,7 @@ void RenderPass::enumerateTargetReadySignals(
 
         const auto resource = _state.rootSymbolContext().getExportSymbol(_STD move(targetSymbol_));
         for (auto* const barrier : resource->barriers) {
-            signals_.push_back(static_cast<VkSemaphore>(barrier));
+            signals_.emplace_back(static_cast<VkSemaphore>(barrier));
         }
 
         return;
@@ -417,7 +419,7 @@ void RenderPass::enumerateTargetReadySignals(
 
         auto resource = _state.rootSymbolContext().getExportSymbol(clone(symbol));
         for (auto* const barrier : resource->barriers) {
-            signals_.push_back(static_cast<VkSemaphore>(barrier));
+            signals_.emplace_back(static_cast<VkSemaphore>(barrier));
         }
     }
 

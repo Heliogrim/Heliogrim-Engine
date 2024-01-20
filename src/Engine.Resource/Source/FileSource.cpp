@@ -39,7 +39,7 @@ FileSource::reference_type FileSource::operator=(mref<value_type> other_) noexce
 bool FileSource::open(int flags_) {
     #if ENV_WIN
 
-    if (not (flags_ & GENERIC_WRITE) && not _file.exists()) {
+    if (not(flags_ & GENERIC_WRITE) && not _file.exists()) {
         return false;
     }
 
@@ -47,10 +47,10 @@ bool FileSource::open(int flags_) {
         _file.path().c_str(),
         flags_,
         NULL,
-        NULL,
+        nullptr,
         OPEN_ALWAYS,
         FILE_ATTRIBUTE_NORMAL,
-        NULL
+        nullptr
     );
 
     if (_fptr == INVALID_HANDLE_VALUE) {

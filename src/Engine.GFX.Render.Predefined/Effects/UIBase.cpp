@@ -108,6 +108,21 @@ smr<const AccelerationEffect> engine::render::makeUiBaseEffect() {
 
     /**/
 
+    {
+        auto tmpVar = make_uptr<Variable>();
+        tmpVar->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eSampler };
+        tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
+        tmpVar->annotation = make_uptr<SymbolIdAnnotation>("ui-image-sampler", _STD move(tmpVar->annotation));
+        tmpSym = make_uptr<Symbol>(
+            SymbolId::from("ui-image-sampler"),
+            VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
+        );
+        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+        fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    }
+
+    /**/
+
     tmpVar = make_uptr<Variable>();
     tmpVar->type = Type { .category = TypeCategory::eTexture, .textureType = TextureType::eTexture2d };
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();

@@ -30,7 +30,7 @@ SimpleImportAction::SimpleImportAction(cref<fs::Url> source_, cref<fs::Url> targ
     _finished(),
     _failed() {}
 
-SimpleImportAction::~SimpleImportAction() {}
+SimpleImportAction::~SimpleImportAction() = default;
 
 fs::Url SimpleImportAction::getSourceUrl() const noexcept {
     return _source;
@@ -110,7 +110,7 @@ void SimpleImportAction::apply() {
             non_owning_rptr<engine::assets::StaticGeometry>
         >(::hg::engine::gfx::ModelFileType::Fbx, file);
 
-        const auto data { result.get() };
+        auto* const data { result.get() };
 
         if (data == nullptr) {
             _failed = true;

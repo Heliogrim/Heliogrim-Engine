@@ -20,7 +20,7 @@
  * Forward Declaration
  */
 namespace hg::engine::scene {
-    class IRenderScene;
+    class SceneBase;
 }
 
 namespace hg::engine::gfx {
@@ -166,11 +166,11 @@ namespace hg::engine {
         _STD map<string, smr<render::Renderer>> _cachedRenderer;
 
     public:
-        [[nodiscard]] smr<render::Renderer> getRenderer(cref<string> key_) const;
+        [[nodiscard]] smr<render::Renderer> getRenderer(StringView key_) const;
 
         [[nodiscard]] smr<render::Renderer> getRenderer(
-            cref<string> key_,
-            _STD nothrow_t
+            StringView key_,
+            std::nothrow_t
         ) const noexcept;
 
         [[nodiscard]] bool hasRenderer(cref<string> key_);
@@ -186,7 +186,7 @@ namespace hg::engine {
         [[nodiscard]] const non_owning_rptr<gfx::scene::RenderSceneManager> getSceneManager() const noexcept;
 
     private:
-        void cleanupTargetsByScene(const non_owning_rptr<scene::IRenderScene> scene_);
+        void cleanupTargetsByScene(const ptr<engine::scene::SceneBase> renderableScene_);
 
     private:
         uptr<gfx::SurfaceManager> _surfaceManager;

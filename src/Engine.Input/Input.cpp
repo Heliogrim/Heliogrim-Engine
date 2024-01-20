@@ -121,13 +121,13 @@ bool Input::tryBufferEvent(const event_type_id eventType_, mref<uptr<Event>> eve
         return false;
     }
 
-    _buffered.push_back({ eventType_, _STD move(event_) });
+    _buffered.emplace_back(eventType_, _STD move(event_));
     return true;
 }
 
 void Input::bufferEvent(const event_type_id eventType_, mref<uptr<Event>> event_) {
     _STD unique_lock<_STD mutex> lck { _bufferMtx };
-    _buffered.push_back({ eventType_, _STD move(event_) });
+    _buffered.emplace_back(eventType_, _STD move(event_));
 }
 
 const ptr<input::DragDropSender> Input::dragDropSender() const noexcept {

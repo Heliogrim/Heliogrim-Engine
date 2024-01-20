@@ -745,4 +745,7 @@ namespace hg::concurrent {
     private:
         mutable typename promise_state<void, void>::shared_type _state;
     };
+
+    template <typename Type_>
+    using Promise = promise<Type_>;
 }

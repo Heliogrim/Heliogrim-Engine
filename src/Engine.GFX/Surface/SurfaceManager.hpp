@@ -2,6 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/StableUnorderedMap.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 namespace hg::engine::platform {
     class NativeWindow;
@@ -38,13 +39,13 @@ namespace hg::engine::gfx {
          *
          * @returns A pointer to the bound surface, otherwise nullptr.
          */
-        [[nodiscard]] non_owning_rptr<Surface> getSurface(const non_owning_rptr<platform::NativeWindow> window_);
+        [[nodiscard]] nmpt<Surface> getSurface(const non_owning_rptr<platform::NativeWindow> window_);
 
         /**
          *
          * @returns A pointer to the newly create surface, otherwise nullptr.
          */
-        [[nodiscard]] non_owning_rptr<Surface> makeSurface(mref<uptr<platform::NativeWindow>> window_);
+        [[nodiscard]] nmpt<Surface> makeSurface(mref<uptr<platform::NativeWindow>> window_);
 
     private:
         bool destroySurface(mref<uptr<Surface>> surface_);
@@ -52,6 +53,6 @@ namespace hg::engine::gfx {
     public:
         bool destroySurface(const non_owning_rptr<platform::NativeWindow> window_);
 
-        bool destroySurface(mref<non_owning_rptr<Surface>> surface_);
+        bool destroySurface(mref<nmpt<Surface>> surface_);
     };
 }

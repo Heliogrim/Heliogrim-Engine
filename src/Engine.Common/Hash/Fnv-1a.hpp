@@ -39,7 +39,7 @@ namespace hg::hash {
         return fnv1a_86(src_.data(), src_.length());
     }
 
-    [[nodiscard]] inline u64 fnv1a(cref<string> src_) noexcept {
+    [[nodiscard]] constexpr u64 fnv1a(cref<string> src_) noexcept {
         return fnv1a_86(src_.data(), src_.length());
     }
 }

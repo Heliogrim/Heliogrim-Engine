@@ -33,6 +33,6 @@ namespace hg::editor {
         [[nodiscard]] bool isFinished() const noexcept override;
 
     public:
-        [[nodiscard]] operator ptr<await_signal_sub_type>() const noexcept;
+        [[nodiscard]] operator ptr<await_signal_sub_type>() const noexcept override;
     };
 }

@@ -32,7 +32,7 @@ FontTransformer::response_type::type FontTransformer::operator()(
     cref<next_type> next_
 ) const {
 
-    auto asset = static_cast<non_owning_rptr<const assets::Asset>>(request_);
+    auto* asset = static_cast<non_owning_rptr<const assets::Asset>>(request_);
     auto src = next_(_STD move(asset), next_type::next_request_type::options {});
 
     /**/

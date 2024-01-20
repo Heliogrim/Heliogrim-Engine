@@ -60,7 +60,7 @@ bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
             NULL,
             path.c_str(),
             path.size(),
-            NULL,
+            nullptr,
             0
         );
 
@@ -100,8 +100,8 @@ bool Win32DragDropObject::storeFiles(cref<Vector<string>> paths_) {
 
     STGMEDIUM medium {
         TYMED_HGLOBAL,
-        { NULL },
-        NULL
+        { nullptr },
+        nullptr
     };
 
     /**/
@@ -147,7 +147,7 @@ bool Win32DragDropObject::storeText(cref<string> text_) {
         NULL,
         text_.c_str(),
         text_.size(),
-        NULL,
+        nullptr,
         0
     );
 
@@ -178,8 +178,8 @@ bool Win32DragDropObject::storeText(cref<string> text_) {
 
     STGMEDIUM medium {
         TYMED_HGLOBAL,
-        { NULL },
-        NULL
+        { nullptr },
+        nullptr
     };
 
     /**/
@@ -245,7 +245,7 @@ HGLOBAL Win32DragDropObject::makeHGlobalCopy(HGLOBAL src_) {
     const auto length { GlobalSize(src_) };
     const PVOID pSrc { GlobalLock(src_) };
 
-    const auto dst { GlobalAlloc(GMEM_MOVEABLE, length) };
+    auto* const dst { GlobalAlloc(GMEM_MOVEABLE, length) };
     const PVOID pDst { GlobalLock(dst) };
 
     memcpy(pDst, pSrc, length);
@@ -263,7 +263,7 @@ HRESULT Win32DragDropObject::GetData(FORMATETC* pformatetcIn, STGMEDIUM* pmedium
     }
 
     pmedium->tymed = _formats[formatIdx].tymed;
-    pmedium->pUnkForRelease = NULL;
+    pmedium->pUnkForRelease = nullptr;
 
     switch (_formats[formatIdx].tymed) {
         case TYMED_HGLOBAL: {
@@ -294,7 +294,7 @@ HRESULT Win32DragDropObject::SetData(FORMATETC* pformatetc, STGMEDIUM* pmedium, 
 }
 
 HRESULT Win32DragDropObject::GetCanonicalFormatEtc(FORMATETC* pformatectIn, FORMATETC* pformatetcOut) {
-    pformatetcOut->ptd = NULL;
+    pformatetcOut->ptd = nullptr;
     return E_NOTIMPL;
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine.Common/Wrapper.hpp>
+#include <Engine.Common/Memory/MemoryPointer.hpp>
 
 #include "SceneViewEye.hpp"
 
@@ -8,8 +9,8 @@ namespace hg {
     class Actor;
 }
 
-namespace hg::engine::scene {
-    class IRenderScene;
+namespace hg::engine::render {
+    class RenderSceneSystem;
 }
 
 namespace hg::engine::gfx::scene {
@@ -18,28 +19,21 @@ namespace hg::engine::gfx::scene {
     public:
         using this_type = SceneView;
 
-        using RenderScene = ::hg::engine::scene::IRenderScene;
-
     public:
-        SceneView(const non_owning_rptr<Actor> actor_, const non_owning_rptr<RenderScene> scene_);
+        SceneView(nmpt<Actor> actor_, nmpt<render::RenderSceneSystem> system_);
 
         ~SceneView();
 
     private:
-        non_owning_rptr<Actor> _actor;
+        nmpt<Actor> _actor;
+        nmpt<render::RenderSceneSystem> _renderSceneSystem;
 
     public:
-        [[nodiscard]] non_owning_rptr<Actor> getViewActor() const noexcept;
+        [[nodiscard]] nmpt<Actor> getViewActor() const noexcept;
 
-    private:
-        non_owning_rptr<RenderScene> _scene;
-
-    public:
-        [[nodiscard]] non_owning_rptr<RenderScene> getScene() const noexcept;
+        [[nodiscard]] nmpt<render::RenderSceneSystem> getRenderSceneSystem() const noexcept;
 
     public:
-        [[nodiscard]] operator ref<SceneViewEye>() noexcept;
-
-        [[nodiscard]] operator cref<SceneViewEye>() const noexcept;
+        [[nodiscard]] cref<SceneViewEye> getSceneViewEye() const noexcept;
     };
 }

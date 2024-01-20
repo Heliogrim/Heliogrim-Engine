@@ -23,17 +23,19 @@ namespace hg::engine::render {
             gfx::material::MaterialEffect effect;
             accel::EffectCompileResult compiled;
             Vector<smr<engine::gfx::MaterialResource>> materials;
-            Vector<ptr<gfx::scene::StaticGeometryModel>> models;
+            Vector<ptr<const gfx::scene::StaticGeometryModel>> models;
         };
 
         DenseMap<smr<const accel::AccelerationEffect>, Payload> _batches;
 
         smr<const accel::GraphicsPass> _pass;
         uptr<gfx::TextureSampler> _sampler;
+        uptr<gfx::TextureSampler> _depthSampler;
 
         uptr<gfx::StorageBufferView> _staticInstanceView;
         uptr<gfx::UniformBufferView> _sceneLightInfoView;
         uptr<gfx::StorageBufferView> _sceneLightView;
+        uptr<gfx::StorageBufferView> _sceneShadowView;
 
         gfx::Buffer _cameraBuffer;
         uptr<gfx::UniformBufferView> _cameraBufferView;

@@ -46,7 +46,7 @@ void reportStats(float fps_, float time_);
 #endif
 
 void RenderTickStage::tickTargets() {
-    CompactSet<sptr<RenderTarget>> targets {};
+    CompactSet<smr<RenderTarget>> targets {};
     Engine::getEngine()->getGraphics()->getSceneManager()->selectInvokeTargets(targets);
 
     for (const auto& target : targets) {
@@ -88,7 +88,7 @@ void RenderTickStage::tickTargets() {
     reportStats(static_cast<float>(1000'000'000.0 / avg), static_cast<float>(diff));
 }
 
-void RenderTickStage::invokeRenderTarget(cref<sptr<RenderTarget>> target_) const {
+void RenderTickStage::invokeRenderTarget(cref<smr<RenderTarget>> target_) const {
     SCOPED_STOPWATCH
 
     /**

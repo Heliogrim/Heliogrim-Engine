@@ -6,11 +6,15 @@
 #include <Engine.Core/Engine.hpp>
 #include <Engine.Core/Session.hpp>
 #include <Engine.Core/SessionState.hpp>
+#include <Engine.Core/World.hpp>
 #include <Engine.Core/WorldContext.hpp>
+#include <Engine.Reflect/IsType.hpp>
+#include <Engine.Scene/SceneBase.hpp>
 
 #include "IComponentRegisterContext.hpp"
 
 #include "ActorComponent.hpp"
+#include "SceneComponent.hpp"
 #include "Session.hpp"
 #include "World.hpp"
 
@@ -255,6 +259,8 @@ Future<ptr<Actor>> hg::SpawnActor(
 
 Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Session> session_) noexcept {
     const auto* const session { static_cast<ptr<engine::core::Session>>(session_.unwrap().get()) };
+
+    auto* const scene = session->getWorldContext()->getCurrentWorld()->getScene();
     auto* const registry { session->getState()->getRegistry() };
 
     const auto guid { actor_->guid() };
@@ -262,6 +268,11 @@ Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Session> session_) noexce
     // Warning: Multiple unsafe paths!!!
     for (const auto* const component : actor_->getComponents()) {
         assert(component->getTypeId().data);
+
+        if (IsType<SceneComponent>(*component)) {
+            scene->remove(static_cast<const ptr<const SceneComponent>>(component));
+        }
+
         registry->releaseActorComponent(guid, component->getTypeId());
     }
 

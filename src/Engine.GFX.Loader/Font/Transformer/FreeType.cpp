@@ -64,7 +64,7 @@ void transformer::convertFreeType(
         const auto expCoverSqrf = _STD sqrtf(expCoverSize);
 
         u32 nextDim { 0x1 };
-        while (nextDim < expCoverSqrf) {
+        while (nextDim < static_cast<u32>(expCoverSqrf)) {
             nextDim <<= 1;
         }
 
@@ -134,7 +134,7 @@ void transformer::convertFreeType(
 
     /**/
 
-    auto pool = device_->graphicsQueue()->pool();
+    auto* const pool = device_->graphicsQueue()->pool();
     pool->lck().acquire();
     auto cmd { pool->make() };
 
@@ -154,7 +154,7 @@ void transformer::convertFreeType(
             font->atlas()->buffer().image(),
             vk::ImageSubresourceRange {
                 vk::ImageAspectFlagBits::eColor,
-                0, _STD max(atlas.mipLevels(), 1ui32), 0, atlas.layer()
+                0, _STD max(font->atlas()->mipLevels(), 1ui32), 0, font->atlas()->layer()
             }
         }
     );
@@ -210,7 +210,7 @@ void transformer::convertFreeType(
         nullptr,
         0,
         nullptr,
-        postTrans.size(),
+        static_cast<u32>(postTrans.size()),
         postTrans.data()
     );
 

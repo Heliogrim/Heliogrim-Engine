@@ -229,6 +229,7 @@
     <ClInclude Include="..\..\src\Engine.GFX\Library\RenderObject.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Library\Types.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Light\Light.hpp" />
+    <ClInclude Include="..\..\src\Engine.GFX\Light\Shadow.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Memory\AllocatedMemory.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Memory\Allocator.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Memory\AllocationResult.hpp" />
@@ -259,10 +260,8 @@
     <ClInclude Include="..\..\src\Engine.GFX\RayTracePipeline.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RenderEnqueueResult.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\RenderTarget.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\CameraModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\LandscapeGeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SkyboxModel.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneTag.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Skybox\Skybox.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX\Surface\Surface.hpp" />

@@ -6,5 +6,5 @@
 
 namespace hg {
     template <class Ty, size_t Size>
-    using Array = _STD array<Ty, Size>;
+    using Array = std::array<Ty, Size>;
 }

@@ -51,11 +51,11 @@ namespace hg::editor::gfx::graph::nodes {
     public:
         void regenerate() override {
 
-            const auto typeParam = getParameter("type"sv);
+            auto* const typeParam = getParameter("type"sv);
             const auto valueType = static_cast<ptr<ValueTypeNodeParameter>>(typeParam)->getValueType();
 
-            const auto storeParam = getParameter("constant"sv);
-            const auto stored = static_cast<ptr<ConstantNodeParameter>>(storeParam);
+            auto* const storeParam = getParameter("constant"sv);
+            auto* const stored = static_cast<ptr<ConstantNodeParameter>>(storeParam);
 
             if (stored->getValueType() != valueType) {
                 // TODO: Cast stored value to new value type

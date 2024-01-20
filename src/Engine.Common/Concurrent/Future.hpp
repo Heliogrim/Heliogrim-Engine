@@ -150,7 +150,7 @@ namespace hg::concurrent {
              * @author Julius
              * @date 20.08.2020
              */
-            ~future_state() { }
+            ~future_state() {}
 
             /**
              * Set the returned state and notify all waiters
@@ -324,7 +324,9 @@ namespace hg::concurrent {
          * @date 20.08.2020
          *       
          */
-        [[maybe_unused]] void retrieve() const noexcept { }
+        [[maybe_unused]] void retrieve() const noexcept {
+            std::unreachable();
+        }
 
         /**
          * Will wait until the future returned, returns the value and invalidates the state
@@ -366,4 +368,7 @@ namespace hg::concurrent {
     private:
         state_type _state;
     };
+
+    template <typename Type_>
+    using Future = ::hg::concurrent::future<Type_>;
 }

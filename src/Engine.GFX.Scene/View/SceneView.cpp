@@ -3,25 +3,21 @@
 using namespace hg::engine::gfx::scene;
 using namespace hg;
 
-SceneView::SceneView(const non_owning_rptr<Actor> actor_, const non_owning_rptr<RenderScene> scene_) :
+SceneView::SceneView(const nmpt<Actor> actor_, const nmpt<render::RenderSceneSystem> system_) :
     SceneViewEye(),
     _actor(actor_),
-    _scene(scene_) {}
+    _renderSceneSystem(system_) {}
 
 SceneView::~SceneView() = default;
 
-non_owning_rptr<Actor> SceneView::getViewActor() const noexcept {
+nmpt<Actor> SceneView::getViewActor() const noexcept {
     return _actor;
 }
 
-non_owning_rptr<SceneView::RenderScene> SceneView::getScene() const noexcept {
-    return _scene;
+nmpt<engine::render::RenderSceneSystem> SceneView::getRenderSceneSystem() const noexcept {
+    return _renderSceneSystem;
 }
 
-SceneView::operator ref<SceneViewEye>() noexcept {
-    return *this;
-}
-
-SceneView::operator cref<SceneViewEye>() const noexcept {
+cref<SceneViewEye> SceneView::getSceneViewEye() const noexcept {
     return *this;
 }

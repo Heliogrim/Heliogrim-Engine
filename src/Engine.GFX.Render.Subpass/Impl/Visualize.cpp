@@ -169,7 +169,7 @@ void Visualize::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
             const auto symbolId = element.symbol->symbolId;
             const auto aliasId = alias.aliasOrValue(symbolId);
 
-            static auto matSym = lang::SymbolId::from(/*"sampled"*/"vis-tex-0");
+            static auto matSym = lang::SymbolId::from(/*"sampled"*/"vis-tex-0"sv);
             if (aliasId == matSym) {
 
                 auto* const depthTex = Cast<Texture>(sceneDepthRes->load<smr<TextureLikeObject>>().get());
@@ -184,7 +184,7 @@ void Visualize::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                     _visTexView->owner()->buffer()._vkLayout = vk::ImageLayout::eDepthStencilReadOnlyOptimal;
                 }
 
-                cmd.bindTexture(clone(symbolId), _visTexView.get(), _sampler.get());
+                cmd.bindTexture(clone(symbolId), _visTexView.get());
 
                 continue;
             }
@@ -241,7 +241,7 @@ void Visualize::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     auto translator = make_uptr<driver::vk::VkRCmdTranslator>();
     auto nativeBatch = (*translator)(&cmd);
-    const auto batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
+    auto* const batch = static_cast<ptr<driver::vk::VkNativeBatch>>(nativeBatch.get());
 
     {
         batch->_tmpWaits.insert_range(
@@ -306,7 +306,7 @@ smr<AccelerationEffect> build_test_effect() {
     };
 
     tmpSym = make_uptr<Symbol>(
-        SymbolId::from("vis-tex-0"),
+        SymbolId::from("vis-tex-0"sv),
         VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
     );
 
@@ -364,6 +364,7 @@ EffectCompileResult build_test_pipeline(
     spec->setPassSpec(
         make_uptr<GraphicsPassSpecification>(
             DepthCompareOp::eNever,
+            DepthBias {},
             StencilCompareOp::eNever,
             StencilOp::eKeep,
             StencilOp::eKeep,

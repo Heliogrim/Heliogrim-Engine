@@ -273,11 +273,23 @@
     <ProjectReference Include="..\Engine.Reflow\Engine.Reflow.vcxproj">
       <Project>{a4bf2bd3-c9ab-4566-b684-569e77d54e48}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine.Render.Scene.Model\Engine.Render.Scene.Model.vcxproj">
+      <Project>{2e4df34b-610e-4689-abe4-2e9cefb81e7e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Render.Scene\Engine.Render.Scene.vcxproj">
+      <Project>{95c6b2cb-abe2-4d02-988a-4eb32f77d591}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine.Resource.Package\Engine.Resource.Package.vcxproj">
       <Project>{3922e176-b912-4e38-b342-bc3cf890ea4a}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Resource\Engine.Resource.vcxproj">
       <Project>{b0e77d6c-45d7-4254-8630-d10fdf6ca290}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Scene.Game\Engine.Scene.Game.vcxproj">
+      <Project>{4f38b525-4c4e-42b7-b283-420210973816}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine.Scene.Preview\Engine.Scene.Preview.vcxproj">
+      <Project>{2a2b7efd-7910-498d-b15a-5c1c2e69492a}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Engine.Scene\Engine.Scene.vcxproj">
       <Project>{114192e3-04b1-4ae7-86f5-1d055f7526d4}</Project>

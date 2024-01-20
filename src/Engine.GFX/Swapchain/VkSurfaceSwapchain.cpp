@@ -23,7 +23,7 @@ void pretransform(cref<sptr<Device>> device_, cref<Vector<SwapchainImage>> textu
  *
  */
 
-VkSurfaceSwapchain::VkSurfaceSwapchain(const non_owning_rptr<Surface> owner_) :
+VkSurfaceSwapchain::VkSurfaceSwapchain(const nmpt<Surface> owner_) :
     Swapchain(),
     _signals(),
     _vkSwapchain(),

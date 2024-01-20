@@ -30,17 +30,16 @@ namespace hg::engine::render {
         smr<gfx::material::MaterialEffect> _effect;
         smr<const accel::GraphicsPass> _pass;
         accel::EffectCompileResult _compiled;
-        smr<gfx::Framebuffer> _framebuffer;
         vk::Semaphore _tmpSemaphore;
 
-        Vector<nmpt<const gfx::scene::StaticGeometryModel>> _batchGeometry;
-        gfx::Buffer _lightViewBuffer;
-
         uptr<gfx::StorageBufferView> _staticInstanceView;
-        uptr<gfx::UniformBufferView> _lightView;
+        uptr<gfx::StorageBufferView> _sceneLightView;
+        uptr<gfx::StorageBufferView> _sceneShadowView;
 
         nmpt<const gfx::scene::DirectionalLightModel> _dirLightModel;
         smr<gfx::Texture> _dirShadowMap;
+        smr<gfx::TextureView> _dirShadowCascades[4];
+        smr<gfx::Framebuffer> _framebuffer[4];
 
         struct Resources {
             graph::Subscribed<graph::SymbolizedResource> inSceneView;

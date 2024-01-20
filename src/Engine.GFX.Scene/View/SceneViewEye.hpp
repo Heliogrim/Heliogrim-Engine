@@ -77,7 +77,7 @@ namespace hg::engine::gfx::scene {
         ) const;
 
     public:
-        [[deprecated]] void vkSetFlipY(bool flip_);
+        void vkSetFlipY(bool flip_);
 
         [[nodiscard]] cref<math::Location> getVkLocation() const noexcept;
     };

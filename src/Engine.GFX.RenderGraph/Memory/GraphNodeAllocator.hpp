@@ -26,13 +26,13 @@ namespace hg::engine::render::graph {
         template <IsRuntimeNode RtNodeType_, typename... Args_>
         [[nodiscard]] uptr<RtNodeType_> allocate(Args_&&... args_) const {
             auto mem = _resource->allocate(sizeof(RtNodeType_), alignof(RtNodeType_));
-            return uptr<RtNodeType_>(new(mem) RtNodeType_(_STD forward<Args_>(args_)...));
+            return uptr<RtNodeType_>(new(mem) RtNodeType_(std::forward<Args_>(args_)...));
         }
 
         template <IsRuntimeComponent RtComponentType_, typename... Args_>
         [[nodiscard]] uptr<RtComponentType_> allocate(Args_&&... args_) const {
             auto mem = _resource->allocate(sizeof(RtComponentType_), alignof(RtComponentType_));
-            return uptr<RtComponentType_>(new(mem) RtComponentType_(_STD forward<Args_>(args_)...));
+            return uptr<RtComponentType_>(new(mem) RtComponentType_(std::forward<Args_>(args_)...));
         }
     };
 }

@@ -125,11 +125,11 @@ vk::SurfaceKHR Surface::createApiSurface() {
     #endif
 }
 
-cref<sptr<Swapchain>> Surface::swapchain() const noexcept {
+cref<smr<Swapchain>> Surface::swapchain() const noexcept {
     return _swapchain;
 }
 
-bool Surface::setSwapchain(cref<sptr<Swapchain>> swapchain_) noexcept {
-    _swapchain = swapchain_;
+bool Surface::setSwapchain(mref<smr<Swapchain>> swapchain_) noexcept {
+    _swapchain = std::move(swapchain_);
     return true;
 }

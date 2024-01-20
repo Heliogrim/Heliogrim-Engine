@@ -21,6 +21,7 @@ namespace hg::engine::render {
         accel::EffectCompileResult _compiled;
 
         smr<gfx::MaterialResource> _skyboxMaterial;
+        bool _stored = false;
 
         struct Resources {
             graph::Observed<graph::SymbolizedResource> outBrdfIrradTexture;

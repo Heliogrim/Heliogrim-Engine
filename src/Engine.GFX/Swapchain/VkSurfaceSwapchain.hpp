@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.Common/Memory/MemoryPointer.hpp>
+
 #include "Swapchain.hpp"
 
 namespace hg::engine::gfx {
@@ -10,7 +12,7 @@ namespace hg::engine::gfx {
         using underlying_type = Swapchain;
 
     public:
-        VkSurfaceSwapchain(const non_owning_rptr<Surface> owner_);
+        VkSurfaceSwapchain(nmpt<Surface> owner_);
 
         ~VkSurfaceSwapchain() override;
 
@@ -40,7 +42,7 @@ namespace hg::engine::gfx {
         Vector<vk::Semaphore> _signals;
         vk::SwapchainKHR _vkSwapchain;
 
-        non_owning_rptr<Surface> _surface;
+        nmpt<Surface> _surface;
 
     private:
         [[nodiscard]] vk::Semaphore nextSignal();

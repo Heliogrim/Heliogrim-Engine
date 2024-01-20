@@ -20,10 +20,10 @@
 #include <Engine.GFX.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.Reflect/ExactType.hpp>
-#include <Engine.Scene/IRenderScene.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
-#include <Engine.GFX/Texture/VirtualTextureView.hpp>
+#include <Engine.GFX/Texture/SparseTextureView.hpp>
 #include <Engine.GFX/Texture/TextureFactory.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
@@ -83,26 +83,14 @@ void SkyBoxPass::iterate(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
     /**/
 
-    SkyboxModel* model = nullptr;
+    ptr<const SkyboxModel> model = nullptr;
     auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
     auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
 
-    auto scene = sceneView->getScene()->renderGraph();
-    scene->traversal(
-        [&model](const ptr<engine::scene::SceneGraph<gfx::scene::SceneModel>::node_type> node_) -> bool {
-
-            auto size = node_->exclusiveSize();
-            for (decltype(size) i = 0; i < size; ++i) {
-
-                auto el = node_->elements()[i];
-                if (ExactType<SkyboxModel>(*el)) {
-                    model = static_cast<SkyboxModel*>(el);
-                    return false;
-                }
-
-            }
-
-            return model == nullptr;
+    const auto sys = sceneView->getRenderSceneSystem();
+    sys->getRegistry().forEach<SkyboxModel>(
+        [&model](const auto& model_) {
+            model = std::addressof(model_);
         }
     );
 
@@ -268,13 +256,13 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
             const auto symbolId = element.symbol->symbolId;
             const auto aliasId = alias.aliasOrValue(symbolId);
 
-            static auto viewSym = lang::SymbolId::from("view");
+            static auto viewSym = lang::SymbolId::from("view"sv);
             if (aliasId == viewSym) {
                 cmd.bindUniform(clone(symbolId), _cameraBufferView.get());
                 continue;
             }
 
-            static auto matSym = lang::SymbolId::from(/*"skybox"*/"mat-static-0");
+            static auto matSym = lang::SymbolId::from(/*"skybox"*/"mat-static-0"sv);
             if (aliasId == matSym) {
 
                 const auto iter = _STD ranges::find(
@@ -296,20 +284,26 @@ void SkyBoxPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
                 /**/
 
                 if (auto textureView = Cast<TextureView>(textureGuard.imm()->get())) {
-                    cmd.bindTexture(clone(symbolId), textureView, _sampler.get());
+                    cmd.bindTexture(clone(symbolId), textureView);
 
-                } else if (auto virtualTextureView = Cast<VirtualTextureView>(textureGuard.imm()->get())) {
+                } else if (auto sparseTextureView = Cast<SparseTextureView>(textureGuard.imm()->get())) {
 
-                    if (virtualTextureView->vkImageView() == nullptr) {
-                        TextureFactory::get()->buildView(*virtualTextureView, TextureViewBuildOptions {});
+                    if (sparseTextureView->vkImageView() == nullptr) {
+                        TextureFactory::get()->buildView(*sparseTextureView, TextureViewBuildOptions {});
                     }
 
-                    cmd.bindTexture(clone(symbolId), virtualTextureView, _sampler.get());
+                    cmd.bindTexture(clone(symbolId), sparseTextureView);
 
                 } else {
                     assert(false);
                 }
 
+                continue;
+            }
+
+            static auto mat0SamplerSym = lang::SymbolId::from(/*"skybox"*/"mat-static-0-sampler"sv);
+            if (aliasId == mat0SamplerSym) {
+                cmd.bindTextureSampler(clone(symbolId), _sampler.get());
                 continue;
             }
 

@@ -3,7 +3,7 @@
 #include <Engine.Common/Wrapper.hpp>
 
 namespace hg::engine::scene {
-    class Scene;
+    class SceneBase;
 }
 
 namespace hg::engine::core {
@@ -11,10 +11,8 @@ namespace hg::engine::core {
     public:
         using this_type = World;
 
-        using Scene = ::hg::engine::scene::Scene;
-
     public:
-        World(mref<uptr<Scene>> scene_);
+        World(mref<uptr<scene::SceneBase>> scene_);
 
         World(cref<this_type>) = delete;
 
@@ -23,9 +21,9 @@ namespace hg::engine::core {
         ~World();
 
     private:
-        uptr<Scene> _scene;
+        uptr<scene::SceneBase> _scene;
 
     public:
-        [[nodiscard]] const non_owning_rptr<Scene> getScene() const noexcept;
+        [[nodiscard]] const non_owning_rptr<scene::SceneBase> getScene() const noexcept;
     };
 }

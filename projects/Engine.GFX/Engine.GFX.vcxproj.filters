@@ -306,9 +306,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Importer\ModelImporter.hpp">
       <Filter>Headerdateien\Importer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\SceneTag.hpp">
-      <Filter>Headerdateien\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.hpp">
       <Filter>Headerdateien\Scene</Filter>
     </ClInclude>
@@ -522,6 +519,9 @@
     <ClInclude Include="..\..\src\Engine.GFX\Buffer\VkBufferFactory.hpp">
       <Filter>Headerdateien\Buffer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Engine.GFX\Light\Shadow.hpp">
+      <Filter>Headerdateien\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp">
@@ -706,9 +706,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Surface\SurfaceManager.cpp">
       <Filter>Quelldateien\Surface</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX\Scene\CameraModel.cpp">
-      <Filter>Quelldateien\Scene</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX\Pool\GlobalResourcePool.cpp">
       <Filter>Quelldateien\Pool</Filter>

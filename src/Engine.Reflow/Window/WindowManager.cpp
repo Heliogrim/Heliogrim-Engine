@@ -1,21 +1,24 @@
 #include "WindowManager.hpp"
 
-#include <Heliogrim/Inbuilt.hpp>
-#include <Heliogrim/Future.hpp>
 #include <Engine.Core/Engine.hpp>
 #include <Engine.GFX/RenderTarget.hpp>
 #include <Engine.GFX/Surface/Surface.hpp>
-#include <Engine.Logging/Logger.hpp>
+#include <Engine.GFX.Scene/RenderSceneManager.hpp>
+#include <Engine.GFX/Graphics.hpp>
+#include <Engine.GFX.Scene/View/SceneView.hpp>
+#include <Engine.GFX/Surface/SurfaceManager.hpp>
+#include <Engine.GFX/Swapchain/VkSurfaceSwapchain.hpp>
 #include <Engine.Input/Input.hpp>
+#include <Engine.Logging/Logger.hpp>
+#include <Engine.Pedantic/Clone/Clone.hpp>
+#include <Engine.Platform/Platform.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
+#include <Engine.Scene/SceneBase.hpp>
+#include <Heliogrim/Future.hpp>
+#include <Heliogrim/Inbuilt.hpp>
 
 #include "BoundWindow.hpp"
 #include "Window.hpp"
-#include "Engine.GFX/Graphics.hpp"
-#include "Engine.GFX.Scene/View/SceneView.hpp"
-#include "Engine.GFX/Surface/SurfaceManager.hpp"
-#include "Engine.GFX/Swapchain/VkSurfaceSwapchain.hpp"
-#include "Engine.GFX.Scene/RenderSceneManager.hpp"
-#include "Engine.Platform/Platform.hpp"
 
 using namespace hg::engine::reflow;
 using namespace hg;
@@ -146,13 +149,12 @@ sptr<Window> WindowManager::resolveWindow(cref<math::ivec2> position_) const noe
     return nullptr;
 }
 
-non_owning_rptr<engine::scene::IRenderScene> WindowManager::resolveScene(cref<sptr<Window>> window_) {
+nmpt<engine::render::RenderSceneSystem> WindowManager::resolveRenderSystem(cref<sptr<Window>> window_) {
 
-    const auto iter = _STD find_if(
-        _windows.begin(),
-        _windows.end(),
+    const auto iter = std::ranges::find_if(
+        _windows,
         [window_](cref<uptr<BoundWindow>> entry_) {
-            return entry_.get()->window == window_;
+            return entry_->window == window_;
         }
     );
 
@@ -160,7 +162,7 @@ non_owning_rptr<engine::scene::IRenderScene> WindowManager::resolveScene(cref<sp
         return nullptr;
     }
 
-    return iter->get()->sceneView->getScene();
+    return iter->get()->renderTarget->getSceneView()->getRenderSceneSystem();
 }
 
 void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::ivec2> nextSize_) const {
@@ -169,26 +171,20 @@ void WindowManager::handleWindowResize(const ptr<BoundWindow> wnd_, cref<math::i
 
     /**/
 
-    const auto nextSwapchain = make_sptr<gfx::VkSurfaceSwapchain>(wnd_->surface);
+    auto nextSwapchain = make_smr<gfx::VkSurfaceSwapchain>(wnd_->surface);
     nextSwapchain->setup(gfx->getCurrentDevice());
 
     const auto prevSwapchain = wnd_->surface->swapchain();
-    wnd_->surface->setSwapchain(nextSwapchain);
+    wnd_->surface->setSwapchain(clone(nextSwapchain));
+
+    const auto nextWindowExtent = nextSwapchain->extent();
 
     /**/
 
-    wnd_->renderTarget->rebuildPasses(nextSwapchain.get());
-    wnd_->window->setClientSize(math::vec2 { nextSwapchain->extent() });
+    const auto targetTransition = wnd_->renderTarget->transitionToTarget(std::move(nextSwapchain), wnd_->surface);
+    assert(targetTransition.has_value());
 
-    /**/
-
-    #ifdef _DEBUG
-    if (prevSwapchain.use_count() > 1) {
-        IM_DEBUG_LOG("Destroying swapchain which is still referenced multiple times.");
-    }
-    #endif
-
-    prevSwapchain->destroy();
+    wnd_->window->setClientSize(math::vec2 { nextWindowExtent });
 }
 
 void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
@@ -232,7 +228,6 @@ void WindowManager::destroyWindow(mref<sptr<Window>> window_) {
     bound->renderTarget->setActive(false);
     gfx->getSceneManager()->dropPrimaryTarget(bound->renderTarget);
 
-    bound->sceneView.reset();
     bound->renderTarget.reset();
     gfx->getSurfaceManager()->destroySurface(_STD move(bound->surface));
 
@@ -251,11 +246,20 @@ sptr<Window> WindowManager::requestWindow(
     string_view title_,
     cref<math::ivec2> size_,
     const wptr<Window> parent_,
-    const non_owning_rptr<scene::IRenderScene> scene_
+    string_view renderer_,
+    nmpt<scene::SceneBase> renderableScene_
 ) {
 
-    auto* const scene { scene_ == nullptr ? resolveScene(parent_.lock()) : scene_ };
-    if (not scene) {
+    nmpt<engine::render::RenderSceneSystem> renderSystem = nullptr;
+
+    if (renderableScene_ != nullptr) {
+        renderSystem = renderableScene_->getSceneSystem<render::RenderSceneSystem>();
+
+    } else {
+        renderSystem = resolveRenderSystem(parent_.lock());
+    }
+
+    if (renderSystem == nullptr) {
         IM_CORE_ERROR("Tried to create new window without providing any resolvable scene.");
         return nullptr;
     }
@@ -276,37 +280,49 @@ sptr<Window> WindowManager::requestWindow(
     auto surface = gfx->getSurfaceManager()->makeSurface(_STD move(window));
     surface->setup();
 
-    const auto swapchain = make_sptr<gfx::VkSurfaceSwapchain>(surface);
+    auto swapchain = make_smr<gfx::VkSurfaceSwapchain>(surface);
     swapchain->setup(gfx->getCurrentDevice());
 
-    surface->setSwapchain(swapchain);
+    surface->setSwapchain(clone(swapchain));
+    const auto surfaceExtent = swapchain->extent();
 
     /**/
 
-    auto sceneView { make_smr<gfx::scene::SceneView>(nullptr, scene) };
+    auto device = gfx->getCurrentDevice();
+    auto renderer = gfx->getRenderer(renderer_, std::nothrow);
+
+    if (renderer.empty()) {
+
+        swapchain->destroy();
+        surface->destroy();
+        await(Future { platform->destroyNativeWindow(std::move(window)) });
+
+        IM_CORE_ERROR("Requested new window with invalid renderer.");
+        return nullptr;
+    }
+
+    auto sceneView = make_smr<gfx::scene::SceneView>(nullptr, renderSystem);
 
     /**/
 
-    auto target = make_sptr<gfx::RenderTarget>();
-    target->use(gfx->getCurrentDevice());
-    target->use(swapchain.get());
-    target->use(surface);
-    target->use(gfx->getRenderer("Test-Renderer").get());
+    auto renderTarget = make_smr<gfx::RenderTarget>(std::move(device), renderer.get());
+
+    [[maybe_unused]] auto sceneViewTransition = renderTarget->transitionToSceneView(std::move(sceneView));
+    [[maybe_unused]] auto targetTransition = renderTarget->transitionToTarget(std::move(swapchain), surface);
+
+    renderTarget->setup();
+    renderTarget->setActive(true);
 
     /**/
 
-    target->buildPasses(sceneView);
-    target->setActive(true);
-
-    gfx->getSceneManager()->addPrimaryTarget(target);
+    gfx->getSceneManager()->addPrimaryTarget(clone(renderTarget));
 
     /**/
 
     auto wnd { make_sptr<Window>() };
     auto bound {
         make_uptr<BoundWindow>(
-            target,
-            _STD move(sceneView),
+            std::move(renderTarget),
             surface,
             wnd,
             ~0
@@ -321,11 +337,11 @@ sptr<Window> WindowManager::requestWindow(
         }
     );
 
-    wnd->setClientSize(math::vec2 { swapchain->extent() });
+    wnd->setClientSize(math::vec2 { surfaceExtent });
 
     /**/
 
-    _windows.push_back(_STD move(bound));
+    _windows.emplace_back(_STD move(bound));
     return wnd;
 }
 

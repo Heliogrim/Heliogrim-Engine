@@ -513,6 +513,8 @@ void ReflowCommandBuffer::drawText(
         const float gw { static_cast<float>(glyph->_size.x) * charScale.x };
         const float gh { static_cast<float>(glyph->_size.y) * charScale.y };
 
+        // TODO: Resize vertices and indices, than switch from constructor to assignment
+
         _runningVertices.push_back(
             uivertex {
                 math::vec2 {

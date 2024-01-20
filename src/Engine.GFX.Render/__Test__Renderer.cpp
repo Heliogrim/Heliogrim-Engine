@@ -10,7 +10,10 @@
 #include <Engine.GFX.Render.Subpass/Impl/MatTestPass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/PostProcessPass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/SkyBoxPass.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/TmpBrdfIrradPass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/TmpBrdfLutPass.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/TmpBrdfPrefPass.hpp>
+#include <Engine.GFX.Render.Subpass/Impl/TmpDirectionalShadowPass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/TmpEndPass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/TriTestPass.hpp>
 #include <Engine.GFX.Render.Subpass/Impl/Visualize.hpp>
@@ -60,10 +63,13 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
 
     auto beforeBarrier = make_smr<graph::BarrierNode>();
     auto brdfLutGen = make_smr<graph::CompileSubPassNode>();
+    auto brdfPrefGen = make_smr<graph::CompileSubPassNode>();
+    auto brdfIrradGen = make_smr<graph::CompileSubPassNode>();
     auto dummyProvider = make_smr<graph::CompileSubPassNode>();
     auto depthPrePass = make_smr<graph::CompileSubPassNode>();
     auto subpass = make_smr<graph::CompileSubPassNode>();
     auto skyBoxPass = make_smr<graph::CompileSubPassNode>();
+    auto dirShadowPass = make_smr<graph::CompileSubPassNode>();
     auto matPass = make_smr<graph::CompileSubPassNode>();
     auto ppPass = make_smr<graph::CompileSubPassNode>();
     auto visualizePass = make_smr<graph::CompileSubPassNode>();
@@ -77,6 +83,20 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
     brdfLutGen->setSubPassBuilder(
         [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
             auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<TmpBrdfLutPass>>();
+            return node;
+        }
+    );
+
+    brdfPrefGen->setSubPassBuilder(
+        [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
+            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<TmpBrdfPrefPass>>();
+            return node;
+        }
+    );
+
+    brdfIrradGen->setSubPassBuilder(
+        [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
+            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<TmpBrdfIrradPass>>();
             return node;
         }
     );
@@ -107,6 +127,13 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
         [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
             auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<SkyBoxPass>>();
             // acceleration->addOutput(makeSceneColorSymbol());
+            return node;
+        }
+    );
+
+    dirShadowPass->setSubPassBuilder(
+        [](cref<graph::CompilePassContext> ctx_) -> uptr<graph::SubPassNodeBase> {
+            auto node = ctx_.getGraphNodeAllocator()->allocate<graph::SubPassNode<TmpDirectionalShadowPass>>();
             return node;
         }
     );
@@ -159,6 +186,12 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
     cursor = _STD exchange(nextCursor, brdfLutGen.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(brdfLutGen));
 
+    cursor = _STD exchange(nextCursor, brdfPrefGen.get());
+    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(brdfPrefGen));
+
+    cursor = _STD exchange(nextCursor, brdfIrradGen.get());
+    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(brdfIrradGen));
+
     cursor = _STD exchange(nextCursor, dummyProvider.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(dummyProvider));
 
@@ -170,6 +203,9 @@ uptr<graph::CompileGraph> TestRenderer::makeCompileGraph() noexcept {
 
     //cursor = _STD exchange(nextCursor, subpass.get());
     //graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(subpass));
+
+    cursor = _STD exchange(nextCursor, dirShadowPass.get());
+    graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(dirShadowPass));
 
     cursor = _STD exchange(nextCursor, matPass.get());
     graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(matPass));

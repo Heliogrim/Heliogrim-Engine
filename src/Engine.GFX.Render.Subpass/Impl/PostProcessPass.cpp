@@ -286,9 +286,9 @@ void PostProcessPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept
             const auto symbolId = element.symbol->symbolId;
             const auto aliasId = alias.aliasOrValue(symbolId);
 
-            static auto matSym = lang::SymbolId::from(/*"sampled"*/"color-tex-0");
+            static auto matSym = lang::SymbolId::from(/*"sampled"*/"color-tex-0"sv);
             if (aliasId == matSym) {
-                cmd.bindTexture(clone(symbolId), _colorView.get(), _sampler.get());
+                cmd.bindTexture(clone(symbolId), _colorView.get());
                 continue;
             }
 
@@ -360,12 +360,29 @@ smr<AccelerationEffect> build_test_effect() {
     };
 
     tmpSym = make_uptr<Symbol>(
-        SymbolId::from("color-tex-0"),
+        SymbolId::from("color-tex-0"sv),
         VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
     );
 
     fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
     fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+
+    /**/
+
+    {
+        auto tmpVar = make_uptr<Variable>();
+        tmpVar->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eSampler };
+        tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
+        tmpVar->annotation = make_uptr<SymbolIdAnnotation>("color-tex-0-sampler", _STD move(tmpVar->annotation));
+        tmpSym = make_uptr<Symbol>(
+            SymbolId::from("color-tex-0-sampler"sv),
+            VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
+        );
+        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
+        fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    }
+
+    /**/
 
     tmpVar = make_uptr<Variable>();
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
@@ -418,6 +435,7 @@ EffectCompileResult build_test_pipeline(
     spec->setPassSpec(
         make_uptr<GraphicsPassSpecification>(
             DepthCompareOp::eNever,
+            DepthBias {},
             StencilCompareOp::eNever,
             StencilOp::eKeep,
             StencilOp::eKeep,

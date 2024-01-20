@@ -33,7 +33,7 @@ void SurfaceManager::tidy() {
     _surfaces.clear();
 }
 
-non_owning_rptr<Surface> SurfaceManager::getSurface(const non_owning_rptr<platform::NativeWindow> window_) {
+nmpt<Surface> SurfaceManager::getSurface(const non_owning_rptr<platform::NativeWindow> window_) {
     const auto iter { _surfaces.find(window_) };
     if (iter != _surfaces.end()) {
         return iter->second.get();
@@ -41,7 +41,7 @@ non_owning_rptr<Surface> SurfaceManager::getSurface(const non_owning_rptr<platfo
     return nullptr;
 }
 
-non_owning_rptr<Surface> SurfaceManager::makeSurface(mref<uptr<platform::NativeWindow>> window_) {
+nmpt<Surface> SurfaceManager::makeSurface(mref<uptr<platform::NativeWindow>> window_) {
 
     if (_surfaces.contains(window_.get())) {
         return nullptr;
@@ -97,13 +97,13 @@ bool SurfaceManager::destroySurface(const non_owning_rptr<platform::NativeWindow
     return result;
 }
 
-bool SurfaceManager::destroySurface(mref<non_owning_rptr<Surface>> surface_) {
+bool SurfaceManager::destroySurface(mref<nmpt<Surface>> surface_) {
 
     const auto iter {
         _STD ranges::find_if(
             _surfaces,
             [surface_](const auto& entry_) {
-                return entry_.second.get() == surface_;
+                return entry_.second.get() == surface_.get();
             }
         )
     };

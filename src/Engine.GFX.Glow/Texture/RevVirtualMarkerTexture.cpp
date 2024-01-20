@@ -78,7 +78,7 @@ void RevVirtualMarkerTexture::generateMarkers() {
     /**
      * Transform and data transfer
      */
-    auto pool = device->transferQueue()->pool();
+    auto* const pool = device->transferQueue()->pool();
     pool->lck().acquire();
     CommandBuffer cmd = pool->make();
 
@@ -518,7 +518,7 @@ Vector<u16> RevVirtualMarkerTexture::tileBitToIndex(const ptr<const u32> bitmask
     const ptr<const uint8_t> oct {
         static_cast<const ptr<const uint8_t>>(static_cast<const ptr<const void>>(bitmask_))
     };
-    if (not *oct) {
+    if (not*oct) {
         return indices;
     }
     /**/

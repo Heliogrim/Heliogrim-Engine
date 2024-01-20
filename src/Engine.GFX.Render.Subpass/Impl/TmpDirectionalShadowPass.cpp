@@ -16,14 +16,19 @@
 #include <Engine.GFX.Render.Command/RenderCommandBuffer.hpp>
 #include <Engine.Pedantic/Clone/Clone.hpp>
 #include <Engine.Reflect/ExactType.hpp>
-#include <Engine.Scene/IRenderScene.hpp>
 #include <Engine.Accel.Pipeline/GraphicsPipeline.hpp>
+#include <Engine.Accel.Pipeline/VkGraphicsPipeline.hpp>
+#include <Engine.Common/Math/Convertion.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneDepth.hpp>
 #include <Engine.GFX.RenderGraph/Relation/TextureDescription.hpp>
 #include <Engine.GFX/Buffer/BufferFactory.hpp>
 #include <Engine.GFX/Pool/SceneResourcePool.hpp>
+#include <Engine.GFX/Texture/SparseTextureView.hpp>
+#include <Engine.GFX/Texture/TextureView.hpp>
+#include <Engine.Reflect/Cast.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 
 using namespace hg::engine::render;
 using namespace hg::engine::accel;
@@ -58,10 +63,10 @@ void TmpDirectionalShadowPass::setup(ref<graph::ScopedSymbolContext> symCtx_) no
     _dirShadowMap = make_smr<Texture>(
         textureFactory->build(
             {
-                .extent = math::uivec3 { 512uL, 512uL, 1uL },
+                .extent = math::uivec3 { 2048uL, 2048uL, /*1uL*/cascadeCount },
                 .format = TextureFormat::eD32Sfloat,
                 .mipLevels = 1uL,
-                .type = TextureType::e2d,
+                .type = TextureType::e2dArray,
                 .vkAspect = vk::ImageAspectFlagBits::eDepth,
                 .vkUsage = vk::ImageUsageFlagBits::eDepthStencilAttachment | vk::ImageUsageFlagBits::eSampled,
                 .vkMemoryFlags = vk::MemoryPropertyFlagBits::eDeviceLocal,
@@ -71,6 +76,23 @@ void TmpDirectionalShadowPass::setup(ref<graph::ScopedSymbolContext> symCtx_) no
     );
     _dirShadowMap->buffer()._vkLayout = vk::ImageLayout::eDepthReadOnlyOptimal;
     textureFactory->buildView(*_dirShadowMap, {});
+
+    for (auto cascade = 0u; cascade < cascadeCount; ++cascade) {
+
+        _dirShadowCascades[cascade] = make_smr<TextureView>(
+            _dirShadowMap->makeView(
+                math::uivec2 { cascade, cascade },
+                math::uExtent3D {
+                    _dirShadowMap->width(), _dirShadowMap->height(), _dirShadowMap->depth(), 0uL, 0uL, 0uL
+                },
+                math::uivec2 { 0uL, 1uL }
+            ).release()
+        );
+        textureFactory->buildView(
+            *_dirShadowCascades[cascade],
+            { math::uivec2 { cascade, cascade }, TextureType::e2dArray, math::ivec2 { 0uL, 1uL } }
+        );
+    }
 
     /**/
 
@@ -101,13 +123,19 @@ void TmpDirectionalShadowPass::destroy() noexcept {
 
     device->vkDevice().destroySemaphore(_STD exchange(_tmpSemaphore, nullptr));
 
-    _framebuffer->destroy();
-    _framebuffer.reset();
+    for (auto&& cascadeFramebuffer : _framebuffer) {
+        cascadeFramebuffer->destroy();
+        cascadeFramebuffer.reset();
+    }
 
-    _dirShadowMap->destroy();
+    for (auto&& cascadeView : _dirShadowCascades) {
+        cascadeView.reset();
+    }
     _dirShadowMap.reset();
 
-    _lightViewBuffer.destroy();
+    _sceneLightView.reset();
+    _sceneShadowView.reset();
+    _staticInstanceView.reset();
 
     _compiled.pipeline.reset();
     _pass.reset();
@@ -138,28 +166,13 @@ void TmpDirectionalShadowPass::iterate(cref<graph::ScopedSymbolContext> symCtx_)
 
     /**/
 
-    _batchGeometry.clear();
-    _batchGeometry.reserve(128uLL);
-
     auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
     auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
 
-    auto scene = sceneView->getScene()->renderGraph();
-    scene->traversal(
-        [this](const ptr<scene::SceneGraph<gfx::scene::SceneModel>::node_type> node_) -> bool {
-            auto size = node_->exclusiveSize();
-            for (decltype(size) i = 0; i < size; ++i) {
-
-                const auto* const el = node_->elements()[i];
-                if (ExactType<gfx::scene::StaticGeometryModel>(*el)) {
-                    _batchGeometry.emplace_back(static_cast<const ptr<const gfx::scene::StaticGeometryModel>>(el));
-
-                } else if (ExactType<gfx::scene::DirectionalLightModel>(*el)) {
-                    _dirLightModel = static_cast<const ptr<const gfx::scene::DirectionalLightModel>>(el);
-                }
-
-            }
-            return true;
+    const auto sys = sceneView->getRenderSceneSystem();
+    sys->getRegistry().forEach<gfx::scene::DirectionalLightModel>(
+        [this](const auto& model_) {
+            _dirLightModel = std::addressof(model_);
         }
     );
 }
@@ -172,6 +185,14 @@ void TmpDirectionalShadowPass::resolve() noexcept {
 
 void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
 
+    const_cast<ref<graph::ScopedSymbolContext>>(symCtx_).eraseExposedSymbol(makeDirectionalShadowSymbol());
+    const_cast<ref<graph::ScopedSymbolContext>>(symCtx_).exposeSymbol(
+        makeDirectionalShadowSymbol(),
+        _resources.outDirShadows.obj()
+    );
+
+    /**/
+
     if (_dirLightModel == nullptr) {
         return;
     }
@@ -181,57 +202,150 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
 
     /**/
 
-    const_cast<ref<graph::ScopedSymbolContext>>(symCtx_).eraseExposedSymbol(makeDirectionalShadowSymbol());
-    const_cast<ref<graph::ScopedSymbolContext>>(symCtx_).exposeSymbol(
-        makeDirectionalShadowSymbol(),
-        _resources.outDirShadows.obj()
-    );
-
-    /**/
-
     auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
     auto sceneView = sceneViewRes->load<smr<gfx::scene::SceneView>>();
 
     /**/
 
-    if (_lightViewBuffer.buffer == nullptr) {
-
-        auto bufferFactory = BufferFactory::get();
-
-        auto buffer = bufferFactory->build(
-            {
-                sizeof(math::mat4),
-                alignof(float),
-                MemoryProperty::eHostVisible,
-                vk::BufferCreateFlags {},
-                vk::BufferUsageFlagBits::eUniformBuffer,
-                vk::SharingMode::eExclusive
-            }
-        );
-
-        _lightViewBuffer = _STD move(buffer);
+    if (_sceneShadowView == nullptr) {
+        _sceneShadowView = make_uptr<StorageBufferView>();
     }
 
-    static float distance = 15.F;
-    const auto origin = sceneView->getOrigin();
-    const auto lightDirection = _dirLightModel->getLightDirection() + math::fvec3(0.000001, 0.F, 0.000001);
-    const auto castOrigin = origin.fvec3() + lightDirection * -1.F * distance;
+    const auto sceneSystem = sceneView->getRenderSceneSystem();
+    const auto scenePool = sceneSystem->getSceneResourcePool();
+    const auto& shadowSourcePool = scenePool->shadowSourcePool;
 
-    auto projection = math::perspective(glm::radians(45.F), 1.F, 0.001F, _STD sqrtf(2.0) * distance);
-    projection[1][1] *= -1.F;
+    _sceneShadowView->storeBuffer(shadowSourcePool.getPoolView());
 
-    const auto view = math::lookAt(
-        castOrigin,
-        origin.fvec3(),
-        math::vec3_up
-    );
+    /**/
 
-    const auto vp = projection * view;
-    _lightViewBuffer.write<math::mat4>(&vp, 1uL);
+    {
+        static float lambda = 0.95F;
 
-    if (_lightView == nullptr) {
-        _lightView = make_uptr<UniformBufferView>();
-        _lightView->storeBuffer(&_lightViewBuffer);
+        /**/
+
+        constexpr float ZNEAR = 0.5F;
+        constexpr float ZFAR = 48.F;
+        const auto clipRange = _STD abs(ZFAR - ZNEAR);
+
+        const auto minZ = ZNEAR;
+        const auto maxZ = ZNEAR + clipRange;
+        const auto ratio = maxZ / minZ;
+
+        f32 splits[cascadeCount] {};
+
+        for (auto i = 0u; i < cascadeCount; ++i) {
+
+            const auto p = (i + 1u) / static_cast<f32>(cascadeCount);
+            const auto log = minZ * _STD powf(ratio, p);
+            const auto uniform = minZ + clipRange * p;
+            const auto d = lambda * (log - uniform) + uniform;
+
+            splits[i] = (d - ZNEAR) / clipRange;
+        }
+
+        /**/
+
+        auto camProj = sceneView->getProjectionMatrix();
+        camProj[2][2] *= -1.F;
+        const auto invCamVp = (sceneView->getProjectionMatrix() * sceneView->getViewMatrix()).inverse();
+
+        /**/
+
+        GlslDirectionalShadow storeShadow {
+            {
+                math::mat4::make_identity(), math::mat4::make_identity(),
+                math::mat4::make_identity(), math::mat4::make_identity()
+            },
+            { 0.F, 0.F, 0.F, 0.F }
+        };
+
+        /**/
+
+        auto splitDist = splits[0u];
+        auto prevSplitDist = 0.F;
+
+        for (auto c = 0u; c < cascadeCount; ++c) {
+
+            math::vec3 orthoFrustum[8] = {
+                math::vec3 { -1.F, 1.F, 0.F },
+                math::vec3 { 1.F, 1.F, 0.F },
+                math::vec3 { 1.F, -1.F, 0.F },
+                math::vec3 { -1.F, -1.F, 0.F },
+                math::vec3 { -1.F, 1.F, 1.F },
+                math::vec3 { 1.F, 1.F, 1.F },
+                math::vec3 { 1.F, -1.F, 1.F },
+                math::vec3 { -1.F, -1.F, 1.F }
+            };
+
+            for (auto i = 0u; i < 8u; ++i) {
+                const auto invCorner = invCamVp * math::vec4(orthoFrustum[i], 1.F);
+                orthoFrustum[i] = invCorner / invCorner.w;
+            }
+
+            for (auto i = 0u; i < 4u; ++i) {
+                const auto dist = orthoFrustum[i + 4u] - orthoFrustum[i];
+                orthoFrustum[i + 4u] = orthoFrustum[i] + (dist * splitDist);
+                orthoFrustum[i] = orthoFrustum[i] + (dist * prevSplitDist);
+            }
+
+            math::vec3 orthoCenter {};
+            for (auto i = 0u; i < 8u; ++i) {
+                orthoCenter += (orthoFrustum[i] / 8.F);
+            }
+
+            auto radius = 0.F;
+            for (auto i = 0u; i < 8u; ++i) {
+                const auto dist = (orthoFrustum[i] - orthoCenter).length();
+                radius = MAX(radius, dist);
+            }
+            radius = _STD ceilf(radius * 16.F) / 16.F;
+
+            const auto maxExt = math::fvec3 { radius };
+            const auto minExt = -maxExt;
+
+            /**/
+
+            //const auto origin = sceneView->getOrigin();
+            const auto origin = math::Location { 2.24934125F, 8.69429016F, 6.70459509F };
+            //const auto lightDirection = (-origin.fvec3()).normalized();
+
+            //const auto lightDirection = math::fvec3 { -0.218508005F, -0.707106829F, -0.672498584F }.normalized();
+            const auto lightDirection = _dirLightModel->getLightDirection();
+
+            //const auto castOrigin = origin.fvec3() + lightDirection * (-1.F * -1.F) * distance;
+            const auto castOrigin = orthoCenter - lightDirection * -minExt.z;
+            // const auto castTarget = origin;
+            const auto castTarget = orthoCenter;
+
+            //auto projection = math::perspective(glm::radians(45.F), 1.F, .5F, distance);
+            auto projection = math::ortho(minExt.x, maxExt.x, minExt.y, maxExt.y, 0.F, maxExt.z - minExt.z);
+            const auto view = math::lookAt(
+                castOrigin,
+                castTarget,
+                (lightDirection - math::vec3_down).zero() ? math::vec3_right : math::vec3_up
+            );
+
+            /**/
+
+            storeShadow.shadowViewProj[c] = projection * view;
+            storeShadow.cascadeDepth[c] = (ZNEAR + splitDist * clipRange) * -1.F;
+
+            prevSplitDist = splitDist;
+            splitDist = splits[MIN(c + 1u, cascadeCount - 1u)];
+        }
+
+        /**/
+
+        auto dataView = shadowSourcePool.getDataView(_dirLightModel->_sceneShadowIndex);
+        auto* const page = dataView->pages().front();
+        auto allocated = page->memory()->allocated();
+
+        allocated->map(allocated->size);
+        const auto innerOffset = dataView->offset() - page->resourceOffset();
+        memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &storeShadow, sizeof(storeShadow));
+        allocated->flush(VK_WHOLE_SIZE);
+        allocated->unmap();
     }
 
     /**/
@@ -240,23 +354,30 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
         _staticInstanceView = make_uptr<gfx::StorageBufferView>();
     }
 
-    const auto& staticInstancePool = sceneView->getScene()->getSceneResourcePool()->staticInstancePool;
+    const auto& staticInstancePool = scenePool->staticInstancePool;
     _staticInstanceView->storeBuffer(staticInstancePool.getPoolView());
 
     /**/
 
-    if (_framebuffer.empty()) {
+    if (_framebuffer[0].empty()) {
 
-        _framebuffer = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+        for (auto i = 0u; i < cascadeCount; ++i) {
 
-        _framebuffer->addAttachment(clone(_dirShadowMap));
-        _framebuffer->setExtent(_dirShadowMap->extent());
-        _framebuffer->setLayer(1uL);
+            _framebuffer[i] = make_smr<Framebuffer>(Engine::getEngine()->getGraphics()->getCurrentDevice());
+            auto& fb = *_framebuffer[i];
 
-        _framebuffer->setRenderPass(clone(_pass));
-        _framebuffer->setup();
+            fb.addAttachment(clone(_dirShadowCascades[i]).into<TextureLikeObject>());
+            fb.setExtent(_dirShadowCascades[i]->extent());
+            fb.setLayer(1uL);
 
-        _tmpSemaphore = _framebuffer->device()->vkDevice().createSemaphore({});
+            fb.setRenderPass(clone(_pass));
+            fb.setup();
+        }
+
+    }
+
+    if (_tmpSemaphore == nullptr) {
+        _tmpSemaphore = _framebuffer[0]->device()->vkDevice().createSemaphore({});
     }
 
     /**/
@@ -298,73 +419,96 @@ void TmpDirectionalShadowPass::execute(cref<graph::ScopedSymbolContext> symCtx_)
         }
     );
 
-    cmd.beginAccelPass({ _pass.get(), _framebuffer.get(), { vk::ClearDepthStencilValue { 1.F, 0uL } } });
-    cmd.beginSubPass();
+    for (auto cascade = 0u; cascade < cascadeCount; ++cascade) {
 
-    auto gpipe = clone(_compiled.pipeline).into<GraphicsPipeline>();
-    for (const auto& group : gpipe->getBindingLayout().groups) {
-        for (const auto& element : group.elements) {
+        cmd.beginAccelPass({ _pass.get(), _framebuffer[cascade].get(), { vk::ClearDepthStencilValue { 1.F, 0uL } } });
+        cmd.beginSubPass();
 
-            const auto symbolId = element.symbol->symbolId;
-            const auto aliasId = _compiled.alias.aliasOrValue(symbolId);
+        auto gpipe = clone(_compiled.pipeline).into<GraphicsPipeline>();
+        for (const auto& group : gpipe->getBindingLayout().groups) {
+            for (const auto& element : group.elements) {
 
-            const auto iter = _STD ranges::find(
-                _effect->pattern->st.pairs,
-                aliasId,
-                [](const auto& pair_) {
-                    return pair_.second;
+                const auto symbolId = element.symbol->symbolId;
+                const auto aliasId = _compiled.alias.aliasOrValue(symbolId);
+
+                const auto iter = _STD ranges::find(
+                    _effect->pattern->st.pairs,
+                    aliasId,
+                    [](const auto& pair_) {
+                        return pair_.second;
+                    }
+                );
+
+                if (iter != _effect->pattern->st.pairs.end()) {
+                    assert(false);
                 }
-            );
 
-            if (iter != _effect->pattern->st.pairs.end()) {
-                assert(false);
+                static auto viewSym = lang::SymbolId::from("view"sv);
+                if (aliasId == viewSym) {
+                    cmd.bindStorage(clone(symbolId), _sceneShadowView.get());
+                    continue;
+                }
+
+                static auto modelSym = lang::SymbolId::from("model"sv);
+                if (aliasId == modelSym) {
+                    cmd.bindStorage(clone(symbolId), _staticInstanceView.get());
+                    continue;
+                }
+
+                __debugbreak();
             }
 
-            static auto viewSym = lang::SymbolId::from("view");
-            if (aliasId == viewSym) {
-                cmd.bindUniform(clone(symbolId), _lightView.get());
-                continue;
-            }
-
-            static auto modelSym = lang::SymbolId::from("model");
-            if (aliasId == modelSym) {
-                cmd.bindStorage(clone(symbolId), _staticInstanceView.get());
-                continue;
-            }
-
-            __debugbreak();
         }
 
-    }
-
-    cmd.bindGraphicsPipeline(_STD move(gpipe));
-
-    for (const auto& batch : _batchGeometry) {
-
-        const auto& model = batch;
-        const auto& modelResource = model->geometryResource();
-        const auto modelGuard = modelResource->acquire(resource::ResourceUsageFlag::eRead);
-
-        const auto& indexBuffer = modelGuard->indices();
-        const auto& vertexBuffer = modelGuard->vertices();
+        cmd.bindGraphicsPipeline(clone(gpipe));
 
         cmd.lambda(
-            [&indexBuffer, &vertexBuffer](ref<AccelCommandBuffer> cmd_) {
-                cmd_.bindIndexBuffer(indexBuffer.get());
-                cmd_.bindVertexBuffer(0uL, vertexBuffer.get());
+            [cascade, gpipe](ref<AccelCommandBuffer> cmd_) {
+                struct PushBlock {
+                    u32 cascade;
+                };
+
+                auto block = PushBlock { .cascade = cascade };
+                cmd_.vkCommandBuffer().pushConstants(
+                    reinterpret_cast<VkPipelineLayout>(Cast<VkGraphicsPipeline>(gpipe.get())->_vkPipeLayout),
+                    vk::ShaderStageFlagBits::eVertex,
+                    0uL,
+                    sizeof(PushBlock),
+                    &block
+                );
             }
         );
 
-        cmd.drawStaticMesh(
-            1uL,
-            model->_sceneInstanceIndex,
-            indexBuffer->size() / sizeof(u32) / 3uLL,
-            0uL
-        );
-    }
+        const auto sys = sceneView->getRenderSceneSystem();
+        sys->getRegistry().forEach<gfx::scene::StaticGeometryModel>(
+            [&cmd](const gfx::scene::StaticGeometryModel& model_) {
 
-    cmd.endSubPass();
-    cmd.endAccelPass();
+                const auto& modelResource = model_.geometryResource();
+                const auto modelGuard = modelResource->acquire(resource::ResourceUsageFlag::eRead);
+
+                const auto& indexBuffer = modelGuard->indices();
+                const auto& vertexBuffer = modelGuard->vertices();
+
+                cmd.lambda(
+                    [&indexBuffer, &vertexBuffer](ref<AccelCommandBuffer> cmd_) {
+                        cmd_.bindIndexBuffer(indexBuffer.get());
+                        cmd_.bindVertexBuffer(0uL, vertexBuffer.get());
+                    }
+                );
+
+                cmd.drawStaticMesh(
+                    1uL,
+                    model_._sceneInstanceIndex,
+                    indexBuffer->size() / sizeof(u32) / 3uLL,
+                    0uL
+                );
+            }
+        );
+
+        cmd.endSubPass();
+        cmd.endAccelPass();
+
+    }
 
     cmd.lambda(
         [_dirShadowMap = clone(_dirShadowMap)](ref<AccelCommandBuffer> cmd_) -> void {
@@ -471,7 +615,7 @@ smr<material::MaterialEffect> build_test_effect() {
         );
 
         auto sym = make_uptr<Symbol>(
-            SymbolId::from("vertex-position"),
+            SymbolId::from("vertex-position"sv),
             VariableSymbol { SymbolType::eVariableSymbol, var.get() }
         );
 
@@ -485,11 +629,11 @@ smr<material::MaterialEffect> build_test_effect() {
         auto var = make_uptr<Variable>();
         var->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown };
         var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(var->annotation));
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eStorage>>(_STD move(var->annotation));
         var->annotation = make_uptr<SymbolIdAnnotation>("view", _STD move(var->annotation));
 
         auto sym = make_uptr<Symbol>(
-            SymbolId::from("view"),
+            SymbolId::from("view"sv),
             VariableSymbol { SymbolType::eVariableSymbol, var.get() }
         );
 
@@ -507,9 +651,29 @@ smr<material::MaterialEffect> build_test_effect() {
         var->annotation = make_uptr<SymbolIdAnnotation>("model", _STD move(var->annotation));
 
         auto sym = make_uptr<Symbol>(
-            SymbolId::from("model"),
+            SymbolId::from("model"sv),
             VariableSymbol { SymbolType::eVariableSymbol, var.get() }
         );
+
+        vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(var));
+        vertexStage->getIntermediate()->rep.symbolTable.insert(_STD move(sym));
+    }
+
+    /**/
+
+    {
+        auto var = make_uptr<Variable>();
+        auto sym = make_uptr<Symbol>();
+
+        var->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eUnknown };
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eConstant>>(_STD move(var->annotation));
+        var->annotation = make_uptr<SimpleAnnotation<AnnotationType::eReadonly>>(_STD move(var->annotation));
+        var->annotation = make_uptr<SymbolIdAnnotation>("block", _STD move(var->annotation));
+
+        sym->symbolId = SymbolId::from("block"sv);
+        sym->var.type = SymbolType::eVariableSymbol;
+        sym->var.data = var.get();
 
         vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(var));
         vertexStage->getIntermediate()->rep.symbolTable.insert(_STD move(sym));
@@ -524,7 +688,7 @@ smr<material::MaterialEffect> build_test_effect() {
         var->annotation = make_uptr<SymbolIdAnnotation>("depth", _STD move(var->annotation));
 
         auto sym = make_uptr<Symbol>(
-            SymbolId::from("depth"),
+            SymbolId::from("depth"sv),
             VariableSymbol { SymbolType::eVariableSymbol, var.get() }
         );
 
@@ -575,10 +739,19 @@ EffectCompileResult build_test_pipeline(
 
     /**/
 
+    //constexpr static f32 depthBiasConstant = 1.1F;
+    //constexpr static f32 depthBiasSlope = 1.25F;
+    //constexpr static f32 depthBiasClamp = 0.F;
+
     auto spec = make_smr<SimpleEffectSpecification>();
     spec->setPassSpec(
         make_uptr<GraphicsPassSpecification>(
             DepthCompareOp::eLessEqual,
+            DepthBias {
+                //depthBiasConstant,
+                //depthBiasSlope,
+                //depthBiasClamp
+            },
             StencilCompareOp::eNever,
             StencilOp::eKeep,
             StencilOp::eKeep,

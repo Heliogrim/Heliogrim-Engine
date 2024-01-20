@@ -34,7 +34,9 @@ void ActorUpdateStage::staticDispatch(const non_owning_rptr<const scheduler::Sta
 
                     /**/
 
-                    world->getScene()->update();
+                    world->getScene()->broadcast({});
+                    world->getScene()->update({});
+                    world->getScene()->postprocess({});
                 }
 
                 return true;

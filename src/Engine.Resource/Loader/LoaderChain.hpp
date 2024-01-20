@@ -142,32 +142,32 @@ namespace hg::engine::resource::loader {
         /* Stage Invoker Helper */
 
         template <typename Stage_, typename Result_, typename... Args_>
-        [[nodiscard]] FORCE_INLINE static Result_ invoke_stage(cref<_STD decay_t<Stage_>> stage_, Args_&&... args_) {
-            return stage_(_STD forward<Args_>(args_)...);
+        [[nodiscard]] FORCE_INLINE static Result_ invoke_stage(cref<std::decay_t<Stage_>> stage_, Args_&&... args_) {
+            return stage_(std::forward<Args_>(args_)...);
         }
 
         template <typename Stage_, typename Result_, typename... Args_>
         [[nodiscard]] FORCE_INLINE static Result_ invoke_stage(
-            cref<uptr<_STD decay_t<Stage_>>> stage_,
+            cref<uptr<std::decay_t<Stage_>>> stage_,
             Args_&&... args_
         ) {
-            return invoke_stage<Stage_, Result_, Args_...>(*stage_, _STD forward<Args_>(args_)...);
+            return invoke_stage<Stage_, Result_, Args_...>(*stage_, std::forward<Args_>(args_)...);
         }
 
         template <typename Stage_, typename Result_, typename... Args_>
         [[nodiscard]] FORCE_INLINE static Result_ invoke_stage(
-            cref<sptr<_STD decay_t<Stage_>>> stage_,
+            cref<sptr<std::decay_t<Stage_>>> stage_,
             Args_&&... args_
         ) {
-            return invoke_stage<Stage_, Result_, Args_...>(*stage_, _STD forward<Args_>(args_)...);
+            return invoke_stage<Stage_, Result_, Args_...>(*stage_, std::forward<Args_>(args_)...);
         }
 
         template <typename Stage_, typename Result_, typename... Args_>
         [[nodiscard]] FORCE_INLINE static Result_ invoke_stage(
-            cref<smr<_STD decay_t<Stage_>>> stage_,
+            cref<smr<std::decay_t<Stage_>>> stage_,
             Args_&&... args_
         ) {
-            return invoke_stage<Stage_, Result_, Args_...>(*stage_, _STD forward<Args_>(args_)...);
+            return invoke_stage<Stage_, Result_, Args_...>(*stage_, std::forward<Args_>(args_)...);
         }
 
         /* Chain Link Implementations */
@@ -235,7 +235,7 @@ namespace hg::engine::resource::loader {
                     _STD move(request_),
                     _STD move(options_)
                 );
-            };
+            }
 
             [[nodiscard]] typename next_stream_response_type::type operator()(
                 _In_ mref<typename next_stream_request_type::type> request_,
@@ -246,7 +246,7 @@ namespace hg::engine::resource::loader {
                     _STD move(request_),
                     _STD move(options_)
                 );
-            };
+            }
         };
 
         /**/
@@ -287,7 +287,7 @@ namespace hg::engine::resource::loader {
                     _STD move(options_),
                     nextLink
                 );
-            };
+            }
         };
 
         template <typename FwdType_>
@@ -326,7 +326,7 @@ namespace hg::engine::resource::loader {
                     _STD move(options_),
                     nextLink
                 );
-            };
+            }
 
             [[nodiscard]] typename next_stream_response_type::type operator()(
                 _In_ mref<typename next_stream_request_type::type> request_,
@@ -338,7 +338,7 @@ namespace hg::engine::resource::loader {
                     _STD move(options_),
                     nextLink
                 );
-            };
+            }
         };
 
         /**/

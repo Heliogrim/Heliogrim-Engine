@@ -133,7 +133,7 @@ void ObjectValueMapper<StaticGeometryComponent>::update(
     const ptr<void> obj_
 ) {
 
-    const ref<StaticGeometryComponent> sgc { *static_cast<ptr<StaticGeometryComponent>>(obj_) };
+    auto& sgc = *static_cast<ptr<StaticGeometryComponent>>(obj_);
     const auto& mat { sgc.getWorldTransform() };
     const auto& children { *parent_->children() };
 
@@ -143,7 +143,7 @@ void ObjectValueMapper<StaticGeometryComponent>::update(
         const auto wrapper = _STD static_pointer_cast<VerticalPanel, Widget>(transform->getContent());
 
         _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->setValue(
-            mat.location().operator math::fvec3()
+            mat.location().fvec3()
         );
         _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->setValue(mat.rotator().euler());
         _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->setValue(mat.scale());
@@ -170,12 +170,12 @@ void ObjectValueMapper<StaticGeometryComponent>::update(
 
     const auto* const staticMeshCollapse = static_cast<ptr<Collapse>>(children[2].get());
     const auto staticMeshWrap = _STD static_pointer_cast<VerticalPanel, Widget>(staticMeshCollapse->getContent());
-    const auto staticMesh { static_cast<ptr<InputAsset>>(staticMeshWrap->children()->front().get()) };
+    auto* const staticMesh { static_cast<ptr<InputAsset>>(staticMeshWrap->children()->front().get()) };
 
     staticMesh->addAcceptedType(engine::assets::StaticGeometry::typeId);
     staticMesh->setValue(sgc.getStaticGeometryGuid());
 
-    staticMesh->_callback = [sgc = &sgc](asset_guid value_) {
+    staticMesh->_callback = [sgc = &sgc](const asset_guid value_) {
 
         auto next = Heliogrim::assets()[value_];
 

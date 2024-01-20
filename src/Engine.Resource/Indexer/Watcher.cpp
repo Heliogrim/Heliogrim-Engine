@@ -28,7 +28,7 @@ void Watcher::tidy() {
          * Close Handle
          */
         // FindCloseChangeNotification(_handle);
-        _handle = NULL;
+        _handle = nullptr;
     }
 
 }

@@ -150,10 +150,10 @@ static Vector<string> handleFileDrop(ptr<IDataObject> data_, cref<FORMATETC> for
                             NULL,
                             ss.view().data(),
                             ss.view().size(),
-                            NULL,
+                            nullptr,
                             0,
-                            NULL,
-                            NULL
+                            nullptr,
+                            nullptr
                         );
 
                         _STD string fileName(dstSize, (NULL));
@@ -164,8 +164,8 @@ static Vector<string> handleFileDrop(ptr<IDataObject> data_, cref<FORMATETC> for
                             ss.view().size(),
                             fileName.data(),
                             dstSize,
-                            NULL,
-                            NULL
+                            nullptr,
+                            nullptr
                         );
 
                         files.push_back(fileName);
@@ -208,10 +208,10 @@ static string handleTextDrop(ptr<IDataObject> data_, cref<FORMATETC> format_, re
                 NULL,
                 input,
                 -1,
-                NULL,
+                nullptr,
                 0,
-                NULL,
-                NULL
+                nullptr,
+                nullptr
             );
 
             text.clear();
@@ -224,8 +224,8 @@ static string handleTextDrop(ptr<IDataObject> data_, cref<FORMATETC> format_, re
                 -1,
                 text.data(),
                 dstSize,
-                NULL,
-                NULL
+                nullptr,
+                nullptr
             );
 
             text.pop_back();

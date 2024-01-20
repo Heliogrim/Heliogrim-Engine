@@ -28,14 +28,12 @@
 #include <Engine.Assets/Types/Texture/TextureAsset.hpp>
 #include <Engine.Driver.Vulkan/VkRCmdTranslator.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
-#include <Engine.GFX/Texture/VirtualTextureView.hpp>
+#include <Engine.GFX/Texture/SparseTextureView.hpp>
 #include <Engine.GFX.Render.Predefined/Effects/UIBase.hpp>
 #include <Engine.GFX.Render.Predefined/Symbols/SceneView.hpp>
 #include <Engine.GFX.Scene/View/SceneView.hpp>
 #include <Engine.Reflect/ExactType.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Scene/IRenderScene.hpp>
-#include <Engine.Scene/Graph/SceneGraph.hpp>
 #include <Heliogrim.Default/Assets/Textures/UIDummy.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
 #include <Engine.Assets/Types/Texture/TextureAsset.hpp>
@@ -43,6 +41,7 @@
 #include <Engine.GFX/Texture/TextureFactory.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
 #include <Engine.Reflect/TypeSwitch.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Heliogrim.Default/Assets/Images/UIDummy.hpp>
 
 using namespace hg::engine::reflow;
@@ -129,28 +128,16 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 
     /**/
 
-    const auto* uiModel = static_cast<const ptr<const UISceneModel>>(nullptr);
+    ptr<const UISceneModel> uiModel = nullptr;
 
     {
         auto sceneViewRes = symCtx_.getImportSymbol(makeSceneViewSymbol());
         auto sceneView = sceneViewRes->load<smr<const gfx::scene::SceneView>>();
 
-        auto scene = sceneView->getScene()->renderGraph();
-        scene->traversal(
-            [&uiModel](const ptr<scene::SceneGraph<gfx::scene::SceneModel>::node_type> node_) -> bool {
-
-                auto size = node_->exclusiveSize();
-                for (decltype(size) i = 0; i < size; ++i) {
-
-                    auto el = node_->elements()[i];
-                    if (ExactType<UISceneModel>(*el)) {
-                        uiModel = static_cast<UISceneModel*>(el);
-                        return false;
-                    }
-
-                }
-
-                return uiModel == nullptr;
+        const auto sys = sceneView->getRenderSceneSystem();
+        sys->getRegistry().forEach<UISceneModel>(
+            [&uiModel](const auto& model_) {
+                uiModel = std::addressof(model_);
             }
         );
     }
@@ -246,15 +233,12 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
     }
 
     const auto defaultImageGuard = _defaultImage->acquire(resource::ResourceUsageFlag::eRead);
-    const auto* const defaultImage = Cast<gfx::VirtualTextureView>(defaultImageGuard->get());
+    const auto* const defaultImage = Cast<gfx::SparseTextureView>(defaultImageGuard->get());
 
     // UIDummy
 
-    cmd.bindTexture(
-        accel::lang::SymbolId::from("ui-image"),
-        defaultImage,
-        _uiImageSampler.get()
-    );
+    cmd.bindTexture(accel::lang::SymbolId::from("ui-image"sv), defaultImage);
+    cmd.bindTextureSampler(accel::lang::SymbolId::from("ui-image-sampler"sv), _uiImageSampler.get());
 
     /**/
 
@@ -357,12 +341,12 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
                             gfx::TextureFactory::get()->buildView(*view_->owner());
                         }
                     },
-                    [](const ptr<gfx::VirtualTexture> texture_) {
+                    [](const ptr<gfx::SparseTexture> texture_) {
                         if (not texture_->_vkImageView) {
                             gfx::TextureFactory::get()->buildView(*texture_);
                         }
                     },
-                    [](const ptr<gfx::VirtualTextureView> view_) {
+                    [](const ptr<gfx::SparseTextureView> view_) {
                         if (not view_->vkImageView()) {
                             gfx::TextureFactory::get()->buildView(*view_);
                         }
@@ -372,18 +356,16 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
                 /**/
 
                 cmd.bindTexture(
-                    accel::lang::SymbolId::from("ui-image"),
-                    uiCmd._images[imgIdx].get(),
-                    _uiImageSampler.get()
+                    accel::lang::SymbolId::from("ui-image"sv),
+                    uiCmd._images[imgIdx].get()
                 );
 
             } else {
 
                 /* Not in scope -> Bind default image */
                 cmd.bindTexture(
-                    accel::lang::SymbolId::from("ui-image"),
-                    defaultImage,
-                    _uiImageSampler.get()
+                    accel::lang::SymbolId::from("ui-image"sv),
+                    defaultImage
                 );
             }
 
@@ -405,9 +387,8 @@ void render::ReflowPass::execute(cref<engine::render::graph::ScopedSymbolContext
 
             /* Rebind default image for tail stride */
             cmd.bindTexture(
-                accel::lang::SymbolId::from("ui-image"),
-                defaultImage,
-                _uiImageSampler.get()
+                accel::lang::SymbolId::from("ui-image"sv),
+                defaultImage
             );
 
             cmd.lambda(
@@ -491,7 +472,7 @@ void render::ReflowPass::ensureDefaultImage() {
     );
 
     auto guard = resource->acquire(resource::ResourceUsageFlag::eAll);
-    auto* const image = Cast<gfx::VirtualTextureView>(guard->get());
+    auto* const image = Cast<gfx::SparseTextureView>(guard->get());
     assert(image);
 
     if (not image->vkImageView()) {

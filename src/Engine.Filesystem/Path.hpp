@@ -37,7 +37,7 @@ namespace hg::engine::fs {
         _STD filesystem::path _value;
 
     public:
-        ref<this_type> operator=(mref<this_type> other_);
+        ref<this_type> operator=(mref<this_type> other_) noexcept;
 
         ref<this_type> operator=(cref<this_type> other_);
 
