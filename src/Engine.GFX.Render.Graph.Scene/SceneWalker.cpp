@@ -1,7 +1,5 @@
 #include "SceneWalker.hpp"
 
-#include <Engine.Scene/IRenderScene.hpp>
-
 using namespace hg::engine::render::graph;
 using namespace hg;
 
@@ -17,7 +15,7 @@ void SceneWalker::setHook(mref<decltype(_hook)> hook_) {
     _hook = _STD move(hook_);
 }
 
-void SceneWalker::stream(_STD span<ptr<scene_model_type>> models_) const noexcept {
+void SceneWalker::stream(std::span<ptr<RenderSceneSystemModel>> models_) const noexcept {
 
     for (const auto& model : models_) {
 
@@ -31,7 +29,8 @@ void SceneWalker::stream(_STD span<ptr<scene_model_type>> models_) const noexcep
     }
 }
 
-bool SceneWalker::operator()(const scene_node_type node_) const {
+
+bool SceneWalker::operator()(const void* node_) const {
 
     #ifdef _DEBUG
     if (not _hook) {
@@ -50,11 +49,11 @@ bool SceneWalker::operator()(const scene_node_type node_) const {
         return false;
     }
 
-    stream({ node_->elements(), node_->exclusiveSize() });
+    //stream({ node_->elements(), node_->exclusiveSize() });
     return true;
 }
 
-bool SceneWalker::operator()([[maybe_unused]] u32 batch_, const scene_node_type node_) const {
+bool SceneWalker::operator()([[maybe_unused]] u32 batch_, const void* node_) const {
     return (*this)(node_);
 }
 
@@ -75,11 +74,11 @@ ref<SceneWalker::this_type> SceneWalker::operator()(cref<gfx::scene::SceneView> 
 
     /**/
 
-    sceneView_.getScene()->renderGraph()->traversal(
-        [this](auto&&... args_) {
-            return this->operator()(_STD forward<decltype(args_)>(args_)...);
-        }
-    );
+    //sceneView_.getScene()->renderGraph()->traversal(
+    //    [this](auto&&... args_) {
+    //        return this->operator()(_STD forward<decltype(args_)>(args_)...);
+    //    }
+    //);
     return *this;
 }
 
@@ -104,12 +103,12 @@ ref<SceneWalker::this_type> SceneWalker::operator()(cref<gfx::scene::SceneView> 
 
     /**/
 
-    sceneView_.getScene()->renderGraph()->traversalBatched(
-        maxBatches_,
-        [this](auto&&... args_) {
-            return this->operator()(_STD forward<decltype(args_)>(args_)...);
-        }
-    );
+    //sceneView_.getScene()->renderGraph()->traversalBatched(
+    //    maxBatches_,
+    //    [this](auto&&... args_) {
+    //        return this->operator()(_STD forward<decltype(args_)>(args_)...);
+    //    }
+    //);
     return *this;
 }
 
