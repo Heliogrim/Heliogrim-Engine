@@ -4,7 +4,8 @@
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.GFX/Light/Light.hpp>
 #include <Engine.GFX/Pool/SceneResourcePool.hpp>
-#include <Engine.Scene/RevScene.hpp>
+#include <Engine.Reflect/Cast.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Heliogrim/Components/PointLightComponent.hpp>
 
 using namespace hg::engine::gfx::scene;
@@ -16,15 +17,14 @@ PointLightModel::PointLightModel(const ptr<SceneComponent> owner_) :
 
 PointLightModel::~PointLightModel() {}
 
-void PointLightModel::create(const ptr<engine::scene::Scene> scene_) {
+void PointLightModel::create(const ptr<render::RenderSceneSystem> system_) {
 
-    const auto* const origin = static_cast<ptr<PointLightComponent>>(_owner);
+    auto origin = Cast<PointLightComponent>(owner());
 
     /**/
 
-    const auto* const rscene = static_cast<const ptr<engine::scene::RevScene>>(scene_);
+    const auto srp = system_->getSceneResourcePool();
 
-    auto srp = rscene->getSceneResourcePool();
     const auto result = srp->lightSourcePool.acquire();
     _sceneLightIndex = result.instanceIndex;
 
@@ -57,12 +57,11 @@ void PointLightModel::create(const ptr<engine::scene::Scene> scene_) {
 
 }
 
-void PointLightModel::update(const ptr<engine::scene::Scene> scene_) {
+void PointLightModel::update(const ptr<render::RenderSceneSystem> system_) {
 
-    const auto* const origin = static_cast<ptr<PointLightComponent>>(_owner);
+    auto origin = Cast<PointLightComponent>(owner());
 
-    const auto* const rscene = static_cast<const ptr<engine::scene::RevScene>>(scene_);
-    auto srp = rscene->getSceneResourcePool();
+    const auto srp = system_->getSceneResourcePool();
 
     /**/
 
@@ -85,11 +84,9 @@ void PointLightModel::update(const ptr<engine::scene::Scene> scene_) {
     allocated->unmap();
 }
 
-void PointLightModel::destroy(const ptr<engine::scene::Scene> scene_) {
+void PointLightModel::destroy(const ptr<render::RenderSceneSystem> system_) {
 
-    const auto* const rscene = static_cast<const ptr<engine::scene::RevScene>>(scene_);
-
-    auto srp = rscene->getSceneResourcePool();
+    const auto srp = system_->getSceneResourcePool();
     srp->lightSourcePool.release(_sceneLightIndex);
 }
 

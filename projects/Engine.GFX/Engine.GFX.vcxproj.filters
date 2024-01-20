@@ -468,9 +468,6 @@
     <ClInclude Include="..\..\src\Engine.GFX\Surface\SurfaceManager.hpp">
       <Filter>Headerdateien\Surface</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX\Scene\CameraModel.hpp">
-      <Filter>Headerdateien\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX\Pool\__fwd.hpp">
       <Filter>Headerdateien\Pool</Filter>
     </ClInclude>

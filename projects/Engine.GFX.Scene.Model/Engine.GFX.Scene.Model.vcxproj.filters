@@ -21,9 +21,6 @@
     <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\GeometryModel.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\SceneModel.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\LightModel.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -39,9 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\GeometryModel.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\SceneModel.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\StaticGeometryModel.cpp">

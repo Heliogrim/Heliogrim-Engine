@@ -19,7 +19,6 @@
     <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\GeometryModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\LightModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\PointLightModel.hpp" />
-    <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\SceneModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\SpotLightModel.hpp" />
     <ClInclude Include="..\..\src\Engine.GFX.Scene.Model\StaticGeometryModel.hpp" />
   </ItemGroup>
@@ -28,7 +27,6 @@
     <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\GeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\LightModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\PointLightModel.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\SceneModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\SpotLightModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX.Scene.Model\StaticGeometryModel.cpp" />
   </ItemGroup>

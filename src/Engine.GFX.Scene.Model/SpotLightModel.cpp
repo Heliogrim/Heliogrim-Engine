@@ -3,7 +3,8 @@
 #include <Engine.Common/Math/Convertion.hpp>
 #include <Engine.GFX/Light/Light.hpp>
 #include <Engine.GFX/Pool/SceneResourcePool.hpp>
-#include <Engine.Scene/RevScene.hpp>
+#include <Engine.Reflect/Cast.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Heliogrim/Components/SpotLightComponent.hpp>
 
 using namespace hg::engine::gfx::scene;
@@ -15,15 +16,14 @@ SpotLightModel::SpotLightModel(const ptr<SceneComponent> owner_) :
 
 SpotLightModel::~SpotLightModel() = default;
 
-void SpotLightModel::create(const ptr<engine::scene::Scene> scene_) {
+void SpotLightModel::create(const ptr<render::RenderSceneSystem> system_) {
 
-    const auto* const origin = static_cast<ptr<SpotLightComponent>>(_owner);
+    auto origin = Cast<SpotLightComponent>(owner());
 
     /**/
 
-    auto rscene = static_cast<const ptr<engine::scene::RevScene>>(scene_);
+    const auto srp = system_->getSceneResourcePool();
 
-    auto srp = rscene->getSceneResourcePool();
     auto result = srp->lightSourcePool.acquire();
     _sceneLightIndex = result.instanceIndex;
 
@@ -60,13 +60,11 @@ void SpotLightModel::create(const ptr<engine::scene::Scene> scene_) {
 
 }
 
-void SpotLightModel::update(const ptr<engine::scene::Scene> scene_) {}
+void SpotLightModel::update(const ptr<render::RenderSceneSystem> system_) {}
 
-void SpotLightModel::destroy(const ptr<engine::scene::Scene> scene_) {
+void SpotLightModel::destroy(const ptr<render::RenderSceneSystem> system_) {
 
-    const auto* const rscene = static_cast<const ptr<engine::scene::RevScene>>(scene_);
-
-    auto srp = rscene->getSceneResourcePool();
+    const auto srp = system_->getSceneResourcePool();
     srp->lightSourcePool.release(_sceneLightIndex);
 }
 

@@ -1,8 +1,10 @@
 #include "DirectionalLightModel.hpp"
 
+#include <Engine.Common/Collection/Array.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.GFX/Pool/SceneResourcePool.hpp>
-#include <Engine.Scene/RevScene.hpp>
+#include <Engine.Reflect/Cast.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Heliogrim/Components/DirectionalLightComponent.hpp>
 
 using namespace hg::engine::gfx::scene;
@@ -10,54 +12,85 @@ using namespace hg;
 
 DirectionalLightModel::DirectionalLightModel(const ptr<SceneComponent> owner_) :
     InheritMeta(owner_),
-    _sceneLightIndex() {}
+    _sceneLightIndex(),
+    _sceneShadowIndex(~0) {}
 
 DirectionalLightModel::~DirectionalLightModel() = default;
 
 math::fvec3 DirectionalLightModel::getLightDirection() const noexcept {
-    const auto* const origin = static_cast<ptr<DirectionalLightComponent>>(_owner);
-    return origin->_direction.rotated(math::vec3_down);
+    auto origin = Cast<DirectionalLightComponent>(owner());
+    return origin->_direction.rotated(math::vec3_down).normalized();
 }
 
-void DirectionalLightModel::create(const ptr<engine::scene::Scene> scene_) {
+void DirectionalLightModel::create(const ptr<render::RenderSceneSystem> system_) {
 
-    const auto* const origin = static_cast<ptr<DirectionalLightComponent>>(_owner);
-
-    /**/
-
-    auto rscene = static_cast<const ptr<engine::scene::RevScene>>(scene_);
-
-    auto srp = rscene->getSceneResourcePool();
-    auto result = srp->lightSourcePool.acquire();
-    _sceneLightIndex = result.instanceIndex;
+    auto origin = Cast<DirectionalLightComponent>(owner());
 
     /**/
 
-    const GlslLight storeLight {
-        math::fvec4 { origin->_luminance, 0.F },
-        math::fvec4 { math::vec3_zero, 0.F },
-        math::fvec4 { origin->_direction.rotated(math::vec3_down), 0.F },
-        0.F
-    };
+    const auto srp = system_->getSceneResourcePool();
 
     /**/
 
-    const auto page = result.dataView->pages().front();
-    auto allocated = page->memory()->allocated();
+    {
+        auto result = srp->lightSourcePool.acquire();
+        _sceneLightIndex = result.instanceIndex;
 
-    allocated->map(allocated->size);
-    const auto innerOffset = result.dataView->offset() - page->resourceOffset();
-    memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &storeLight, sizeof(storeLight));
-    allocated->unmap();
+        /**/
+
+        const GlslLight storeLight {
+            math::fvec4 { origin->_luminance, 0.F },
+            math::fvec4 { math::vec3_zero, 0.F },
+            math::fvec4 { origin->_direction.rotated(math::vec3_down), 0.F },
+            0.F
+        };
+
+        /**/
+
+        const auto page = result.dataView->pages().front();
+        auto allocated = page->memory()->allocated();
+
+        allocated->map(allocated->size);
+        const auto innerOffset = result.dataView->offset() - page->resourceOffset();
+        memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &storeLight, sizeof(storeLight));
+        allocated->unmap();
+    }
+
+    /**/
+
+    {
+        auto result = srp->shadowSourcePool.acquire();
+        _sceneShadowIndex = result.instanceIndex;
+
+        /**/
+
+        const GlslDirectionalShadow storeShadow {
+            {
+                math::mat4::make_identity(),
+                math::mat4::make_identity(),
+                math::mat4::make_identity(),
+                math::mat4::make_identity()
+            }
+        };
+
+        /**/
+
+        const auto page = result.dataView->pages().front();
+        auto allocated = page->memory()->allocated();
+
+        allocated->map(allocated->size);
+        const auto innerOffset = result.dataView->offset() - page->resourceOffset();
+        memcpy(static_cast<ptr<char>>(allocated->mapping) + innerOffset, &storeShadow, sizeof(storeShadow));
+        allocated->unmap();
+    }
 
 }
 
-void DirectionalLightModel::update(const ptr<engine::scene::Scene> scene_) {
+void DirectionalLightModel::update(const ptr<render::RenderSceneSystem> system_) {
 
-    const auto* const origin = static_cast<ptr<DirectionalLightComponent>>(_owner);
+    auto origin = Cast<DirectionalLightComponent>(owner());
 
-    const auto* const rscene = static_cast<const ptr<engine::scene::RevScene>>(scene_);
-    auto srp = rscene->getSceneResourcePool();
+    const auto srp = system_->getSceneResourcePool();
 
     /**/
 
@@ -80,11 +113,9 @@ void DirectionalLightModel::update(const ptr<engine::scene::Scene> scene_) {
     allocated->unmap();
 }
 
-void DirectionalLightModel::destroy(const ptr<engine::scene::Scene> scene_) {
+void DirectionalLightModel::destroy(const ptr<render::RenderSceneSystem> system_) {
 
-    auto rscene = static_cast<const ptr<engine::scene::RevScene>>(scene_);
-
-    auto srp = rscene->getSceneResourcePool();
+    const auto srp = system_->getSceneResourcePool();
     srp->lightSourcePool.release(_sceneLightIndex);
 }
 

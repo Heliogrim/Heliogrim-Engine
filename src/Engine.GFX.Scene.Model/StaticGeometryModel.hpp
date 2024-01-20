@@ -11,24 +11,28 @@ namespace hg::engine::gfx::scene {
         public InheritMeta<StaticGeometryModel, GeometryModel> {
     public:
         using this_type = StaticGeometryModel;
-        using underlying_type = SceneNodeModel;
 
         inline constexpr static type_id typeId { "StaticGeometryModel"_typeId };
 
     public:
         StaticGeometryModel(const ptr<SceneComponent> owner_);
 
+        StaticGeometryModel(mref<this_type>) noexcept = default;
+
         ~StaticGeometryModel() override;
+
+    public:
+        ref<this_type> operator=(mref<this_type>) noexcept = default;
 
     private:
         void tidy();
 
     public:
-        void create(const ptr<::hg::engine::scene::Scene> scene_) override;
+        void create(const ptr<render::RenderSceneSystem> system_) override;
 
-        void update(const ptr<::hg::engine::scene::Scene> scene_) override;
+        void update(const ptr<render::RenderSceneSystem> system_) override;
 
-        void destroy(const ptr<::hg::engine::scene::Scene> scene_) override;
+        void destroy(const ptr<render::RenderSceneSystem> system_) override;
 
     public:
         void capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept override;

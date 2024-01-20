@@ -15,27 +15,11 @@ SkeletalGeometryModel::SkeletalGeometryModel(const ptr<SceneComponent> owner_) :
 
 SkeletalGeometryModel::~SkeletalGeometryModel() = default;
 
-const ptr<StaticGeometryComponent> SkeletalGeometryModel::owner() const noexcept {
-    return static_cast<const ptr<StaticGeometryComponent>>(_owner);
-}
+void SkeletalGeometryModel::create(const ptr<render::RenderSceneSystem> system_) {}
 
-void SkeletalGeometryModel::create(const ptr<engine::scene::Scene> scene_) {
+void SkeletalGeometryModel::update(const ptr<render::RenderSceneSystem> system_) {}
 
-    auto* const origin = owner();
-
-}
-
-void SkeletalGeometryModel::update(const ptr<engine::scene::Scene> scene_) {
-
-    auto* const origin = owner();
-
-}
-
-void SkeletalGeometryModel::destroy(const ptr<engine::scene::Scene> scene_) {
-
-    auto* const origin = owner();
-
-}
+void SkeletalGeometryModel::destroy(const ptr<render::RenderSceneSystem> system_) {}
 
 void SkeletalGeometryModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {
 
