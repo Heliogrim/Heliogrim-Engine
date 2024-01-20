@@ -67,7 +67,7 @@ namespace hg::math {
          * @date 16.01.2020
          */
         constexpr quaternion_t() noexcept :
-            _quat() { }
+            _quat() {}
 
         /**
          * Constructor
@@ -81,11 +81,11 @@ namespace hg::math {
          * @param  w_ (Optional) The w.
          */
         constexpr quaternion_t(value_type x_, value_type y_ = 0, value_type z_ = 0, value_type w_ = 0) noexcept :
-            _quat(w_, x_, y_, z_) { }
+            _quat(w_, x_, y_, z_) {}
 
         /**
          * \brief 
-         * \tparam Ty 
+         * \tparam Ty
          * \param x_ 
          * \param y_ 
          * \param z_ 
@@ -93,7 +93,7 @@ namespace hg::math {
          */
         template <typename Ty, typename = _STD enable_if_t<_STD is_convertible<Ty, T>::value>>
         quaternion_t(Ty x_ = 0, Ty y_ = 0, Ty z_ = 0, Ty w_ = 0) :
-            _quat(static_cast<T>(w_), static_cast<T>(x_), static_cast<T>(y_), static_cast<T>(z_)) { }
+            _quat(static_cast<T>(w_), static_cast<T>(x_), static_cast<T>(y_), static_cast<T>(z_)) {}
 
         /**
          * Destructor

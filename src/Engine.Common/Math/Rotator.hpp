@@ -114,8 +114,5 @@ namespace hg::math {
 
     public:
         [[nodiscard]] quaternion quaternion() const noexcept;
-
-    public:
-        [[nodiscard]] operator fvec3() const noexcept;
     };
 }

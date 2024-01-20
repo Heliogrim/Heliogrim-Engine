@@ -8,10 +8,10 @@
 
 namespace hg::math {
     template <typename T, std::size_t R, std::size_t C>
-    class mat_t { };
+    class mat_t {};
 
     template <typename T, std::size_t R>
-    class matq_t : public mat_t<T, R, R> { };
+    class matq_t : public mat_t<T, R, R> {};
 
     template <typename T>
     class matq2_t :
@@ -28,7 +28,7 @@ namespace hg::math {
         * @param r1_ The 1.
         */
         matq2_t(const row_type& r0_, const row_type& r1_) :
-            value { r0_, r1_ } { }
+            value { r0_, r1_ } {}
 
         /**
         * Constructor
@@ -36,11 +36,11 @@ namespace hg::math {
         * @param scalar_ The scalar.
         */
         matq2_t(const T& scalar_) :
-            matq2_t(row_type(scalar_), row_type(scalar_)) { }
+            matq2_t(row_type(scalar_), row_type(scalar_)) {}
 
         /** Default constructor */
         matq2_t() :
-            matq2_t(static_cast<T>(0)) { }
+            matq2_t(static_cast<T>(0)) {}
 
         /**
         * Array indexer operator
@@ -73,7 +73,7 @@ namespace hg::math {
          * @param r2_ The 2.
          */
         matq3_t(const row_type& r0_, const row_type& r1_, const row_type& r2_) :
-            value { r0_, r1_, r2_ } { }
+            value { r0_, r1_, r2_ } {}
 
         /**
          * Constructor
@@ -81,11 +81,11 @@ namespace hg::math {
          * @param scalar_ The scalar.
          */
         matq3_t(const T& scalar_) :
-            matq3_t(row_type(scalar_), row_type(scalar_), row_type(scalar_)) { }
+            matq3_t(row_type(scalar_), row_type(scalar_), row_type(scalar_)) {}
 
         /** Default constructor */
         matq3_t() :
-            matq3_t(static_cast<T>(0)) { }
+            matq3_t(static_cast<T>(0)) {}
 
         /**
          * Array indexer operator
@@ -164,7 +164,7 @@ namespace hg::math {
                 { v10_, v11_, v12_, v13_ },
                 { v20_, v21_, v22_, v23_ },
                 { v30_, v31_, v32_, v33_ }
-            } { }
+            } {}
 
         /**
          * Constructor
@@ -175,7 +175,7 @@ namespace hg::math {
          * @param r3_ The 3.
          */
         constexpr matq4_t(const row_type& r0_, const row_type& r1_, const row_type& r2_, const row_type& r3_) :
-            value { r0_, r1_, r2_, r3_ } { }
+            value { r0_, r1_, r2_, r3_ } {}
 
         /**
          * Constructor
@@ -188,11 +188,11 @@ namespace hg::math {
                 row_type(0, scalar_, 0, 0),
                 row_type(0, 0, scalar_, 0),
                 row_type(0, 0, 0, scalar_)
-            } { }
+            } {}
 
         /** Default constructor */
         constexpr matq4_t() :
-            matq4_t(0) { }
+            matq4_t(0) {}
 
         /**
          * Constructor
@@ -461,7 +461,7 @@ namespace hg::math {
          * \param right_ 
          * \return 
          */
-        matq4_t<T>& operator*=(const matq4_t<T>& right_) { }
+        matq4_t<T>& operator*=(const matq4_t<T>& right_) {}
 
         /**
          * Division assignment operator
@@ -552,7 +552,11 @@ namespace hg::math {
     }
 
     template <typename T>
-    [[maybe_unused]] static matq4_t<T> lookAt(const vec3_t<T> eye_, const vec3_t<T>& center_, const vec3_t<T>& up_) {
+    [[maybe_unused]] static matq4_t<T> lookAt(
+        const vec3_t<T> eye_,
+        const vec3_t<T>& center_,
+        const vec3_t<T>& up_
+    ) {
         const vec3_t<T> f { (center_ - eye_).normalize() };
         const vec3_t<T> s { (f.crossed(up_)).normalize() };
         const vec3_t<T> u { s.crossed(f) };
@@ -589,10 +593,16 @@ namespace hg::math {
         matq4_t<T> res = matq4_t<T>(1);
         res[0][0] = static_cast<T>(2) / (r_ - l_);
         res[1][1] = static_cast<T>(2) / (t_ - b_);
-        res[2][2] = static_cast<T>(2) / (zfar_ - znear_);
         res[3][0] = -(r_ + l_) / (r_ - l_);
         res[3][1] = -(t_ + b_) / (t_ - b_);
+
+        #if CLIP_SPACE_ZERO_TO_ONE || TRUE
+        res[2][2] = -static_cast<T>(1) / (zfar_ - znear_);
+        res[3][2] = -znear_ / (zfar_ - znear_);
+        #else
+        res[2][2] = static_cast<T>(2) / (zfar_ - znear_);
         res[3][2] = -(zfar_ + znear_) / (zfar_ - znear_);
+        #endif
 
         return res;
     }
@@ -602,9 +612,14 @@ namespace hg::math {
         matq4_t<T> res = matq4_t<T>(1);
         res[0][0] = static_cast<T>(2) / (r_ - l_);
         res[1][1] = static_cast<T>(2) / (t_ - b_);
-        res[2][2] = static_cast<T>(1);
         res[3][0] = -(r_ + l_) / (r_ - l_);
         res[3][1] = -(t_ + b_) / (t_ - b_);
+
+        #if CLIP_SPACE_ZERO_TO_ONE || TRUE
+        res[2][2] = -static_cast<T>(1);
+        #else
+        res[2][2] = static_cast<T>(1);
+        #endif
 
         return res;
     }
@@ -621,7 +636,7 @@ namespace hg::math {
         res[0][0] = static_cast<mat4::value_type>(1) / (aspect_ * ht);
         res[1][1] = static_cast<mat4::value_type>(1) / (ht);
         res[2][2] = zfar_ / (znear_ - zfar_);
-        res[2][3] = - static_cast<mat4::value_type>(1);
+        res[2][3] = -static_cast<mat4::value_type>(1);
         res[3][2] = -(zfar_ * znear_) / (zfar_ - znear_);
 
         return res;
