@@ -7,6 +7,7 @@ set(
 	${PROJECT_NAME}::Engine.ACS
 	${PROJECT_NAME}::Engine.Accel
 	${PROJECT_NAME}::Engine.Accel.Command
+	${PROJECT_NAME}::Engine.Accel.Compile
 	${PROJECT_NAME}::Engine.Accel.Effect
 	${PROJECT_NAME}::Engine.Accel.Lang
 	${PROJECT_NAME}::Engine.Accel.Loader
@@ -36,6 +37,7 @@ set(
 	${PROJECT_NAME}::Engine.GFX.RenderGraph
 	${PROJECT_NAME}::Engine.GFX.RenderGraph.Compile
 	${PROJECT_NAME}::Engine.GFX.Scene
+	${PROJECT_NAME}::Engine.GFX.Scene.Model
 	${PROJECT_NAME}::Engine.GFX.Schedule
 	${PROJECT_NAME}::Engine.Input
 	${PROJECT_NAME}::Engine.Input.Schedule
@@ -47,10 +49,15 @@ set(
 	${PROJECT_NAME}::Engine.Platform
 	${PROJECT_NAME}::Engine.Reflect
 	${PROJECT_NAME}::Engine.Reflow
+	${PROJECT_NAME}::Engine.Reflow.Render
 	${PROJECT_NAME}::Engine.Reflow.Schedule
+	${PROJECT_NAME}::Engine.Render.Scene
+	${PROJECT_NAME}::Engine.Render.Scene.Model
 	${PROJECT_NAME}::Engine.Resource
 	${PROJECT_NAME}::Engine.Resource.Package
 	${PROJECT_NAME}::Engine.Scene
+	${PROJECT_NAME}::Engine.Scene.Game
+	${PROJECT_NAME}::Engine.Scene.Preview
 	${PROJECT_NAME}::Engine.Scheduler
 	${PROJECT_NAME}::Engine.Serialization
 	${PROJECT_NAME}::Engine.Serialization.Layouts
