@@ -6,7 +6,7 @@ namespace hg::engine::gfx {
     /**/
     class Texture;
     class TextureView;
-    class VirtualTexture;
-    class VirtualTexturePage;
-    class VirtualTextureView;
+    class SparseTexture;
+    class SparseTexturePage;
+    class SparseTextureView;
 }

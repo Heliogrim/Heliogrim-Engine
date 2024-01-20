@@ -6,6 +6,7 @@
 
 #include "__fwd.hpp"
 #include "TextureLikeObject.hpp"
+#include "../API/__vkFwd.hpp"
 
 namespace hg::engine::gfx {
     class TextureView final :
@@ -63,6 +64,8 @@ namespace hg::engine::gfx {
 
         [[nodiscard]] math::uExtent3D::off_type offsetZ() const noexcept;
 
+        [[nodiscard]] math::uivec3 extent() const noexcept;
+
         [[nodiscard]] math::uExtent3D::value_type width() const noexcept;
 
         [[nodiscard]] math::uExtent3D::value_type height() const noexcept;
@@ -83,5 +86,9 @@ namespace hg::engine::gfx {
         [[nodiscard]] math::uivec2::value_type mipLevels() const noexcept;
 
         [[nodiscard]] math::uivec2::value_type maxMipLevel() const noexcept;
+
+    private:
+    public:
+        _::VkImageView _vkImageView;
     };
 }

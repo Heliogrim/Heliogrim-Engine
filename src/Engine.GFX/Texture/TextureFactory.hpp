@@ -2,7 +2,7 @@
 
 #include <Engine.Common/Wrapper.hpp>
 #include "Texture.hpp"
-#include "VirtualTexture.hpp"
+#include "SparseTexture.hpp"
 #include "../Device/Device.hpp"
 
 namespace hg::engine::gfx {
@@ -47,7 +47,7 @@ namespace hg::engine::gfx {
         operator bool() const;
     };
 
-    struct VirtualTextureBuildPayload {
+    struct SparseTextureBuildPayload {
         /**
          * Number of layers
          */
@@ -225,13 +225,18 @@ namespace hg::engine::gfx {
             TextureViewBuildOptions options_ = {}
         ) const = 0;
 
-        virtual ref<VirtualTexture> buildView(
-            ref<VirtualTexture> texture_,
+        virtual ref<TextureView> buildView(
+            ref<TextureView> texture_,
             TextureViewBuildOptions options_ = {}
         ) const = 0;
 
-        virtual ref<VirtualTextureView> buildView(
-            ref<VirtualTextureView> texture_,
+        virtual ref<SparseTexture> buildView(
+            ref<SparseTexture> texture_,
+            TextureViewBuildOptions options_ = {}
+        ) const = 0;
+
+        virtual ref<SparseTextureView> buildView(
+            ref<SparseTextureView> texture_,
             TextureViewBuildOptions options_ = {}
         ) const = 0;
 
@@ -245,8 +250,8 @@ namespace hg::engine::gfx {
          *
          * @returns A Texture.
          */
-        [[nodiscard]] virtual ptr<VirtualTexture> buildVirtual(
-            const VirtualTextureBuildPayload& payload_
+        [[nodiscard]] virtual ptr<SparseTexture> buildVirtual(
+            const SparseTextureBuildPayload& payload_
         ) const = 0;
     };
 }

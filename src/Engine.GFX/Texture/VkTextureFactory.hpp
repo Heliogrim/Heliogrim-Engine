@@ -67,13 +67,18 @@ namespace hg::engine::gfx {
             TextureViewBuildOptions options_ = {}
         ) const override;
 
-        ref<VirtualTexture> buildView(
-            ref<VirtualTexture> texture_,
+        ref<TextureView> buildView(
+            ref<TextureView> texture_,
             TextureViewBuildOptions options_
         ) const override;
 
-        ref<VirtualTextureView> buildView(
-            ref<VirtualTextureView> texture_,
+        ref<SparseTexture> buildView(
+            ref<SparseTexture> texture_,
+            TextureViewBuildOptions options_
+        ) const override;
+
+        ref<SparseTextureView> buildView(
+            ref<SparseTextureView> texture_,
             TextureViewBuildOptions options_
         ) const override;
 
@@ -87,8 +92,8 @@ namespace hg::engine::gfx {
          *
          * @returns A Texture.
          */
-        [[nodiscard]] ptr<VirtualTexture> buildVirtual(
-            const VirtualTextureBuildPayload& payload_
+        [[nodiscard]] ptr<SparseTexture> buildVirtual(
+            const SparseTextureBuildPayload& payload_
         ) const override;
     };
 }

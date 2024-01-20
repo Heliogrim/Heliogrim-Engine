@@ -14,16 +14,16 @@ namespace hg::engine::gfx::loader {
 }
 
 namespace hg::engine::gfx {
-    class VirtualTexture final :
-        public InheritMeta<VirtualTexture, TextureObject> {
+    class SparseTexture final :
+        public InheritMeta<SparseTexture, TextureObject> {
     public:
         friend class ::hg::engine::gfx::loader::TextureLoader;
 
     public:
-        using this_type = VirtualTexture;
+        using this_type = SparseTexture;
 
     public:
-        VirtualTexture(
+        SparseTexture(
             mref<uptr<VirtualMemory>> memory_,
             u32 layers_,
             math::uivec3 extent_,
@@ -34,7 +34,7 @@ namespace hg::engine::gfx {
             vk::Image vkImage_
         );
 
-        VirtualTexture(
+        SparseTexture(
             mref<uptr<VirtualMemory>> memory_,
             u32 layers_,
             math::uivec3 extent_,
@@ -51,11 +51,11 @@ namespace hg::engine::gfx {
             u32 mipTailStride_
         );
 
-        VirtualTexture(cref<this_type>) = delete;
+        SparseTexture(cref<this_type>) = delete;
 
-        VirtualTexture(mref<this_type>) noexcept = delete;
+        SparseTexture(mref<this_type>) noexcept = delete;
 
-        ~VirtualTexture() override;
+        ~SparseTexture() override;
 
     public:
         ref<this_type> operator=(cref<this_type>) = delete;
@@ -69,18 +69,18 @@ namespace hg::engine::gfx {
         uptr<VirtualMemory> _memory;
 
     private:
-        Vector<uptr<VirtualTexturePage>> _pages;
-        Vector<uptr<VirtualTexturePage>> _opaquePages;
+        Vector<uptr<SparseTexturePage>> _pages;
+        Vector<uptr<SparseTexturePage>> _opaquePages;
 
     private:
-        nmpt<VirtualTexturePage> makePage(
+        nmpt<SparseTexturePage> makePage(
             u32 layer_,
             u32 mipLevel_,
             math::uivec3 tileOffset_,
             math::uivec3 tileExtent_
         );
 
-        nmpt<VirtualTexturePage> makeOpaquePage(u32 layer_);
+        nmpt<SparseTexturePage> makeOpaquePage(u32 layer_);
 
         void assureTiledPages(
             u32 layer_,
@@ -94,7 +94,7 @@ namespace hg::engine::gfx {
             math::uivec2 mipLevels_,
             math::uivec3 offset_,
             math::uivec3 extent_,
-            _Inout_ ref<Vector<nmpt<VirtualTexturePage>>> pages_
+            _Inout_ ref<Vector<nmpt<SparseTexturePage>>> pages_
         );
 
     public:
@@ -109,7 +109,7 @@ namespace hg::engine::gfx {
          *
          * @returns A unique pointer to the created view.
          */
-        [[nodiscard]] uptr<VirtualTextureView> makeView(
+        [[nodiscard]] uptr<SparseTextureView> makeView(
             math::uivec2 layers_,
             math::uivec2 mipLevels_
         );
@@ -125,7 +125,7 @@ namespace hg::engine::gfx {
          *
          * @returns A unique pointer to the created view.
          */
-        [[nodiscard]] uptr<VirtualTextureView> makeSpatialView(
+        [[nodiscard]] uptr<SparseTextureView> makeSpatialView(
             math::uivec2 offset_,
             math::uivec2 extent_,
             math::uivec2 mipLevels_
@@ -202,13 +202,13 @@ namespace hg::engine::gfx {
         vk::ImageView _vkImageView;
 
     private:
-        CompactSet<nmpt<VirtualTexturePage>> _changedPages;
-        CompactSet<nmpt<VirtualTexturePage>> _changedOpaquePages;
+        CompactSet<nmpt<SparseTexturePage>> _changedPages;
+        CompactSet<nmpt<SparseTexturePage>> _changedOpaquePages;
 
     public:
-        bool load(nmpt<VirtualTexturePage> page_);
+        bool load(nmpt<SparseTexturePage> page_);
 
-        bool unload(nmpt<VirtualTexturePage> page_);
+        bool unload(nmpt<SparseTexturePage> page_);
 
     private:
         Vector<vk::SparseImageMemoryBind> _bindings;

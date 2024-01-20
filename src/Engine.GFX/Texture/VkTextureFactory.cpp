@@ -4,7 +4,8 @@
 #include <Engine.Common/Profiling/Stopwatch.hpp>
 #endif
 
-#include "VirtualTextureView.hpp"
+#include "TextureView.hpp"
+#include "SparseTextureView.hpp"
 #include "../API/VkTranslate.hpp"
 
 using namespace hg::engine::gfx;
@@ -218,8 +219,49 @@ Texture& VkTextureFactory::buildView(Texture& texture_, TextureViewBuildOptions 
     return texture_;
 }
 
-ref<VirtualTexture> VkTextureFactory::buildView(
-    ref<VirtualTexture> texture_,
+ref<TextureView> VkTextureFactory::buildView(ref<TextureView> texture_, TextureViewBuildOptions options_) const {
+
+    /**
+     * Prepare
+     */
+    const bool spanRSw { texture_.owner()->format() == TextureFormat::eR8Unorm };
+
+    const vk::ComponentMapping cm {
+        vk::ComponentSwizzle::eR,
+        spanRSw ? vk::ComponentSwizzle::eR : vk::ComponentSwizzle::eG,
+        spanRSw ? vk::ComponentSwizzle::eR : vk::ComponentSwizzle::eB,
+        spanRSw ? vk::ComponentSwizzle::eR : vk::ComponentSwizzle::eA
+    };
+
+    const vk::ImageSubresourceRange isr {
+        texture_.owner()->buffer()._vkAspect,
+        0,
+        texture_.mipLevels(),
+        texture_.baseLayer(),
+        texture_.layers()
+    };
+
+    const vk::ImageViewCreateInfo ivci {
+        vk::ImageViewCreateFlags(),
+        texture_.owner()->buffer().image(),
+        vkTranslateView(options_.type == TextureType::eUndefined ? texture_.owner()->type() : options_.type),
+        api::vkTranslateFormat(texture_.owner()->format()),
+        cm,
+        isr
+    };
+
+    /**
+     * Create
+     */
+    const vk::ImageView view = _device->vkDevice().createImageView(ivci);
+    assert(view);
+
+    texture_._vkImageView = reinterpret_cast<_::VkImageView>(view.operator VkImageView());
+    return texture_;
+}
+
+ref<SparseTexture> VkTextureFactory::buildView(
+    ref<SparseTexture> texture_,
     TextureViewBuildOptions options_
 ) const {
 
@@ -264,8 +306,8 @@ ref<VirtualTexture> VkTextureFactory::buildView(
     return texture_;
 }
 
-ref<VirtualTextureView> VkTextureFactory::buildView(
-    ref<VirtualTextureView> texture_,
+ref<SparseTextureView> VkTextureFactory::buildView(
+    ref<SparseTextureView> texture_,
     TextureViewBuildOptions options_
 ) const {
 
@@ -385,7 +427,7 @@ ref<VirtualTextureView> VkTextureFactory::buildView(
     return texture_;
 }
 
-ptr<VirtualTexture> VkTextureFactory::buildVirtual(const VirtualTextureBuildPayload& payload_) const {
+ptr<SparseTexture> VkTextureFactory::buildVirtual(const SparseTextureBuildPayload& payload_) const {
 
     SCOPED_STOPWATCH
 
@@ -493,7 +535,7 @@ ptr<VirtualTexture> VkTextureFactory::buildVirtual(const VirtualTextureBuildPayl
      *
      */
     auto* texture {
-        make_ptr<VirtualTexture>(
+        make_ptr<SparseTexture>(
             _STD move(memory),
             layers,
             payload_.extent,

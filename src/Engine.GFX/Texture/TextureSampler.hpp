@@ -1,11 +1,14 @@
 #pragma once
 
 #include <Engine.Common/Types.hpp>
+#include <Engine.Reflect/Inherit/InheritBase.hpp>
+
 #include "../Device/Device.hpp"
 #include "../vkinc.hpp"
 
 namespace hg::engine::gfx {
-    class TextureSampler {
+    class TextureSampler :
+        public InheritBase<TextureSampler> {
     public:
         /**
          * Default constructor

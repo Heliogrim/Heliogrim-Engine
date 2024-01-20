@@ -17,19 +17,19 @@ namespace hg::engine::gfx::loader {
 }
 
 namespace hg::engine::gfx {
-    class VirtualTextureView final :
-        public InheritMeta<VirtualTextureView, TextureLikeObject> {
+    class SparseTextureView final :
+        public InheritMeta<SparseTextureView, TextureLikeObject> {
     public:
-        friend class VirtualTexture;
+        friend class SparseTexture;
         friend class ::hg::engine::gfx::loader::TextureLoader;
 
     public:
-        using this_type = VirtualTextureView;
+        using this_type = SparseTextureView;
 
     protected:
-        VirtualTextureView(
-            nmpt<VirtualTexture> owner_,
-            mref<Vector<nmpt<VirtualTexturePage>>> pages_,
+        SparseTextureView(
+            nmpt<SparseTexture> owner_,
+            mref<Vector<nmpt<SparseTexturePage>>> pages_,
             math::uivec2 layers_,
             math::uivec3 extent_,
             TextureFormat format_,
@@ -38,12 +38,12 @@ namespace hg::engine::gfx {
         );
 
     public:
-        VirtualTextureView(cref<this_type>) = delete;
+        SparseTextureView(cref<this_type>) = delete;
 
-        VirtualTextureView(mref<this_type>) noexcept = delete;
+        SparseTextureView(mref<this_type>) noexcept = delete;
 
     public:
-        ~VirtualTextureView() override;
+        ~SparseTextureView() override;
 
     public:
         ref<this_type> operator=(cref<this_type>) = delete;
@@ -51,19 +51,19 @@ namespace hg::engine::gfx {
         ref<this_type> operator=(mref<this_type>) noexcept = delete;
 
     private:
-        nmpt<VirtualTexture> _owner;
+        nmpt<SparseTexture> _owner;
 
     public:
-        [[nodiscard]] const nmpt<const VirtualTexture> owner() const noexcept;
+        [[nodiscard]] const nmpt<const SparseTexture> owner() const noexcept;
 
-        [[nodiscard]] const nmpt<VirtualTexture> owner() noexcept;
+        [[nodiscard]] const nmpt<SparseTexture> owner() noexcept;
 
     private:
-        Vector<nmpt<VirtualTexturePage>> _pages;
+        Vector<nmpt<SparseTexturePage>> _pages;
 
     public:
         // TODO: Should be protected / private ...
-        [[nodiscard]] cref<Vector<nmpt<VirtualTexturePage>>> pages() const noexcept;
+        [[nodiscard]] cref<Vector<nmpt<SparseTexturePage>>> pages() const noexcept;
 
     private:
         math::uivec2 _layers;
