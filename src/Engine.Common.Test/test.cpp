@@ -6,6 +6,8 @@
 #include <Engine.Common/Math/Transformation.hpp>
 #include <Engine.Common/Math/Vector.hpp>
 #include <Engine.Common/Memory/MemoryPointer.hpp>
+#include <Engine.Common/Concurrent/SharedMemoryReference.hpp>
+#include <Engine.Common/Managed/Rc.hpp>
 
 using namespace hg;
 
@@ -211,6 +213,121 @@ namespace Common {
             ASSERT_TRUE(nmp2);
 
             mp0.destroy();
+        }
+    }
+
+    namespace Managed {
+        TEST(RefCounted, Create) {
+
+            struct Payload {};
+            auto obj = Rc<Payload>::create();
+            auto cpy = obj;
+            auto mvt = std::move(obj);
+
+            EXPECT_EQ(mvt.ref_count(), 2);
+        }
+
+        TEST(RefCounted, Release) {
+
+            struct Payload {};
+            auto obj = Rc<Payload>::create();
+            auto cpy = obj;
+
+            EXPECT_EQ(obj.ref_count(), 2);
+            EXPECT_EQ(obj.release().get(), nullptr);
+
+            cpy.reset();
+            EXPECT_EQ(obj.ref_count(), 1);
+
+            auto val = obj.release();
+            EXPECT_NE(val.get(), nullptr);
+            val.destroy();
+
+            EXPECT_EQ(obj.ref_count(), 0);
+        }
+
+        TEST(RefCountedIntrusive, Create) {
+
+            struct Payload : public RcFromThis<Payload> {};
+
+            auto obj = Rci<Payload>::create();
+            auto cpy = obj;
+            auto mvt = std::move(obj);
+
+            EXPECT_EQ(mvt.ref_count(), 2);
+        }
+
+        TEST(RefCountedIntrusive, Release) {
+
+            struct Payload : public RcFromThis<Payload> {};
+
+            auto obj = Rci<Payload>::create();
+            auto cpy = obj;
+
+            EXPECT_EQ(obj.ref_count(), 2);
+            EXPECT_EQ(obj.release().get(), nullptr);
+
+            cpy.reset();
+            EXPECT_EQ(obj.ref_count(), 1);
+
+            auto val = obj.release();
+            EXPECT_NE(val.get(), nullptr);
+            val.destroy();
+
+            EXPECT_EQ(obj.ref_count(), 0);
+        }
+
+        TEST(RefCountedIntrusive, ReplicatedIntrusive) {
+
+            struct Payload : public RcFromThis<Payload> {};
+
+            auto obj = Rci<Payload>::create();
+            auto cpy = obj;
+
+            EXPECT_EQ(obj.ref_count(), 2);
+
+            auto self_copy = obj->rci_from_this();
+
+            EXPECT_EQ(obj.ref_count(), 3);
+
+            auto leveled_self_copy = self_copy->rci_from_this();
+
+            EXPECT_EQ(obj.ref_count(), 4);
+
+            cpy.reset();
+            self_copy.reset();
+
+            EXPECT_EQ(obj.ref_count(), 2);
+        }
+
+        TEST(AtomicRefCounted, Create) {
+
+            struct Payload {};
+            //auto obj = Arc::create<Payload>();
+        }
+
+        TEST(AtomicRefCountedIntrusive, Create) {
+
+            struct Payload : public ArcFromThis<Payload> {};
+            auto obj = Arci<Payload>::create();
+        }
+
+        TEST(AtomicRefCountedIntrusive, ReplicatedIntrusive) {
+
+            struct Payload : public ArcFromThis<Payload> {};
+
+            auto obj = Arci<Payload>::create();
+            auto cpy = obj;
+
+            EXPECT_EQ(obj.ref_count(), 2);
+
+            auto self_copy = obj->arci_from_this<>();
+
+            EXPECT_EQ(obj.ref_count(), 3);
+
+            auto leveled_self_copy = self_copy->arci_from_this();
+
+            EXPECT_EQ(obj.ref_count(), 4);
         }
     }
 
@@ -735,6 +852,15 @@ namespace Common {
             }
 
             EXPECT_EQ(c, 0xF);
+        }
+
+        TEST(InlineAutoArray, Nested) {
+
+            using inner_type = InlineAutoArray<smr<size_t>, 1>;
+            using outer_type = InlineAutoArray<inner_type, 1>;
+
+            outer_type tmp {};
+            tmp.emplace_back(inner_type {});
         }
     }
 }
