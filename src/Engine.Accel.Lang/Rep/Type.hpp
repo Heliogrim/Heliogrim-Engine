@@ -42,7 +42,8 @@ namespace hg::engine::accel::lang {
     };
 
     enum class ObjectType : u8 {
-        eUnknown = 0x0
+        eUnknown = 0x0,
+        eSampler = 0x1
     };
 
     struct Type {
