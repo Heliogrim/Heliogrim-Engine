@@ -14,10 +14,10 @@ using namespace hg;
 
 using SignalShutdownEvent = ::hg::engine::core::SignalShutdownEvent;
 
-int main() {
+int main_impl() {
     #ifdef _PROFILING
-    profiling::Profiler::make().startSession("main");
-    SCOPED_STOPWATCH_V(__main__stopwatch)
+    //profiling::Profiler::make().startSession("main");
+    //SCOPED_STOPWATCH_V(__main__stopwatch)
     #endif
 
     /**
@@ -73,7 +73,22 @@ int main() {
     Heliogrim::destroy();
 
     #ifdef _PROFILING
-    __main__stopwatch.stop();
-    profiling::Profiler::destroy();
+    //__main__stopwatch.stop();
+    //profiling::Profiler::destroy();
     #endif
+    return 0;
 }
+
+int main() {
+    return main_impl();
+}
+
+#if defined(_MSC_VER)
+
+#include <Windows.h>
+
+int WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, char*, int nsCmd_) {
+    return main_impl();
+}
+
+#endif
