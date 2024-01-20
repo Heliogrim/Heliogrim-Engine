@@ -93,6 +93,14 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 
                     return true;
 
+                } else if (type.category == lang::TypeCategory::eObject && type.objectType ==
+                    lang::ObjectType::eSampler) {
+
+                    var->annotation;
+                    dst_.type = BindType::eTextureSampler;
+
+                    return true;
+
                 } else if (type.category == lang::TypeCategory::eObject) {
 
                     auto annotation = var->annotation.get();

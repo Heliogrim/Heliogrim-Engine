@@ -9,14 +9,12 @@ namespace hg::engine::accel {
         Vector<_STD pair<lang::SymbolId, lang::SymbolId>> mapping;
 
         [[nodiscard]] constexpr lang::SymbolId aliasOrValue(cref<lang::SymbolId> value_) const noexcept {
-            const auto iter = _STD ranges::find(
-                mapping,
-                value_.hash,
-                [](const auto& pair_) {
-                    return pair_.first.hash;
+            for (const auto& pair : mapping) {
+                if (pair.first == value_) {
+                    return pair.second;
                 }
-            );
-            return iter != mapping.end() ? iter->second : value_;
+            }
+            return value_;
         }
     };
 

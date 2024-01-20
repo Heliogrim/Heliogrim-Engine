@@ -8,7 +8,8 @@ namespace hg::engine::accel {
     enum class BindType {
         eUniformBuffer,
         eStorageBuffer,
-        eTexture
+        eTexture,
+        eTextureSampler
     };
 
     struct BindElement {

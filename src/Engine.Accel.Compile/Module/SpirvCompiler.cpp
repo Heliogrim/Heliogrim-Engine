@@ -76,7 +76,7 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<InlineAuto
 
     for (const auto& textBlock : source_) {
         codeSnippets.push_back(textBlock.data.data());
-        codeSnippetLength.push_back(textBlock.data.size());
+        codeSnippetLength.push_back(static_cast<s32>(textBlock.data.size()));
     }
 
     glslShader->setStringsWithLengths(
