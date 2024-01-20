@@ -39,6 +39,8 @@ namespace hg::engine::accel::lang {
             }
         }
 
+        constexpr Annotation(mref<this_type>) noexcept = default;
+
         virtual ~Annotation() = default;
 
     public:
@@ -50,8 +52,16 @@ namespace hg::engine::accel::lang {
 
     template <AnnotationType Type_>
     struct SimpleAnnotation final : public Annotation {
+        using this_type = SimpleAnnotation<Type_>;
+
         constexpr SimpleAnnotation(mref<uptr<Annotation>> next_ = nullptr) noexcept :
             Annotation(Type_, _STD move(next_)) {}
+
+        SimpleAnnotation(cref<this_type> other_) :
+            Annotation(other_) {}
+
+        constexpr SimpleAnnotation(mref<this_type> other_) noexcept :
+            Annotation(std::move(other_)) {}
 
         constexpr ~SimpleAnnotation() noexcept = default;
 
@@ -62,8 +72,16 @@ namespace hg::engine::accel::lang {
 
     template <typename Derived_>
     struct __declspec(novtable) AnnotationBase : public Annotation {
+        using this_type = AnnotationBase<Derived_>;
+
         constexpr AnnotationBase(AnnotationType type_, mref<uptr<Annotation>> next_) noexcept:
             Annotation(type_, _STD move(next_)) {}
+
+        AnnotationBase(cref<this_type> other_) :
+            Annotation(other_) {}
+
+        constexpr AnnotationBase(mref<this_type> other_) noexcept :
+            Annotation(std::move(other_)) {}
 
         [[nodiscard]] ptr<Annotation> createCopy() const final {
             static_assert(_STD derived_from<Derived_, AnnotationBase>);
@@ -72,9 +90,15 @@ namespace hg::engine::accel::lang {
     };
 
     struct SymbolIdAnnotation final : public AnnotationBase<SymbolIdAnnotation> {
+        using this_type = SymbolIdAnnotation;
+
         constexpr SymbolIdAnnotation(mref<string> symbolId_, mref<uptr<Annotation>> next_ = nullptr) noexcept:
             AnnotationBase(AnnotationType::eSymbolId, _STD move(next_)),
             symbolId(_STD move(symbolId_)) {}
+
+        SymbolIdAnnotation(cref<this_type> other_) :
+            AnnotationBase(other_),
+            symbolId(other_.symbolId) {}
 
         ~SymbolIdAnnotation() override = default;
 
@@ -82,6 +106,8 @@ namespace hg::engine::accel::lang {
     };
 
     struct VkBindLocationAnnotation final : public AnnotationBase<VkBindLocationAnnotation> {
+        using this_type = VkBindLocationAnnotation;
+
         constexpr VkBindLocationAnnotation(
             const s32 vkSet_,
             const s32 vkLocation_,
@@ -92,6 +118,18 @@ namespace hg::engine::accel::lang {
             vkSet(vkSet_),
             vkLocation(vkLocation_),
             vkOffset(vkOffset_) {}
+
+        VkBindLocationAnnotation(cref<this_type> other_) :
+            AnnotationBase(other_),
+            vkSet(other_.vkSet),
+            vkLocation(other_.vkLocation),
+            vkOffset(other_.vkOffset) {}
+
+        constexpr VkBindLocationAnnotation(mref<this_type> other_) noexcept :
+            AnnotationBase(std::move(other_)),
+            vkSet(std::exchange(other_.vkSet, ~0)),
+            vkLocation(std::exchange(other_.vkLocation, ~0)),
+            vkOffset(std::exchange(other_.vkOffset, ~0)) {}
 
         ~VkBindLocationAnnotation() override = default;
 
