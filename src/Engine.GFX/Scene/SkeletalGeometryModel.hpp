@@ -17,14 +17,11 @@ namespace hg::engine::gfx {
         ~SkeletalGeometryModel() override;
 
     public:
-        [[nodiscard]] const ptr<StaticGeometryComponent> owner() const noexcept;
+        void create(const ptr<render::RenderSceneSystem> system_) override;
 
-    public:
-        void create(const ptr<engine::scene::Scene> scene_) override final;
+        void update(const ptr<render::RenderSceneSystem> system_) override;
 
-        void update(const ptr<engine::scene::Scene> scene_) override final;
-
-        void destroy(const ptr<engine::scene::Scene> scene_) override final;
+        void destroy(const ptr<render::RenderSceneSystem> system_) override;
 
     public:
         void capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept override;

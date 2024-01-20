@@ -2,21 +2,24 @@
 #include <Engine.Common/Collection/CompactArray.hpp>
 #include <Engine.GFX.Loader/Material/MaterialResource.hpp>
 #include <Engine.GFX.Render.Subpass/Mesh/MeshCaptureInterface.hpp>
-
-#include "SceneModel.hpp"
+#include <Engine.Render.Scene/RenderSceneSystemModel.hpp>
 
 namespace hg::engine::gfx::scene {
     class GeometryModel :
-        public InheritMeta<GeometryModel, SceneModel> {
+        public InheritMeta<GeometryModel, render::RenderSceneSystemModel> {
     public:
         using this_type = GeometryModel;
-        using underlying_type = SceneModel;
 
     protected:
         GeometryModel(const ptr<SceneComponent> owner_);
 
     public:
+        GeometryModel(mref<this_type>) noexcept = default;
+
         ~GeometryModel() override = default;
+
+    public:
+        ref<this_type> operator=(mref<this_type>) noexcept = default;
 
     protected:
         CompactArray<smr<MaterialResource>> _overrideMaterials;

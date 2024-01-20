@@ -8,24 +8,28 @@ namespace hg::engine::gfx {
         public InheritMeta<SkyboxModel, scene::GeometryModel> {
     public:
         using this_type = SkyboxModel;
-        using underlying_type = SceneNodeModel;
 
         inline constexpr static type_id typeId { "SkyboxModel"_typeId };
 
     public:
         SkyboxModel(const ptr<SceneComponent> owner_);
 
+        SkyboxModel(mref<this_type>) noexcept = default;
+
         ~SkyboxModel() override final;
+
+    public:
+        ref<this_type> operator=(mref<this_type>) noexcept = default;
 
     private:
         void tidy();
 
     public:
-        void create(const ptr<::hg::engine::scene::Scene> scene_) override final;
+        void create(const ptr<render::RenderSceneSystem> system_) override;
 
-        void update(const ptr<::hg::engine::scene::Scene> scene_) override final;
+        void update(const ptr<render::RenderSceneSystem> system_) override;
 
-        void destroy(const ptr<::hg::engine::scene::Scene> scene_) override final;
+        void destroy(const ptr<render::RenderSceneSystem> system_) override;
 
     public:
         void capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept override;

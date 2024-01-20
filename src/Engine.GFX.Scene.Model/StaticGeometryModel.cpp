@@ -7,15 +7,17 @@
 #include <Engine.GFX.Loader/Geometry/Traits.hpp>
 #include <Engine.GFX.Loader/Material/Traits.hpp>
 #include <Engine.GFX/Pool/SceneResourcePool.hpp>
+#include <Engine.Reflect/Cast.hpp>
+#include <Engine.Render.Scene/RenderSceneSystem.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Scene/RevScene.hpp>
 #include <Heliogrim/StaticGeometryComponent.hpp>
 
 using namespace hg::engine::gfx::scene;
 using namespace hg;
 
 StaticGeometryModel::StaticGeometryModel(const ptr<SceneComponent> owner_) :
-    InheritMeta(owner_) {}
+    InheritMeta(owner_),
+    _sceneInstanceIndex(~0uL) {}
 
 StaticGeometryModel::~StaticGeometryModel() {
     tidy();
@@ -23,14 +25,14 @@ StaticGeometryModel::~StaticGeometryModel() {
 
 void StaticGeometryModel::tidy() {}
 
-void StaticGeometryModel::create(const ptr<::hg::engine::scene::Scene> scene_) {
+void StaticGeometryModel::create(const ptr<render::RenderSceneSystem> system_) {
 
-    auto* origin { static_cast<ptr<StaticGeometryComponent>>(_owner) };
+    auto origin = Cast<StaticGeometryComponent>(owner());
+    const auto srp = system_->getSceneResourcePool();
 
     /**
      *
      */
-    _boundary = origin->getBoundaries();
     _staticGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(origin->getStaticGeometryAsset().internal());
     _staticGeometryResource = Engine::getEngine()->getResources()->loader().
                                                    load(_staticGeometryAsset, nullptr).
@@ -51,9 +53,6 @@ void StaticGeometryModel::create(const ptr<::hg::engine::scene::Scene> scene_) {
 
     /**/
 
-    auto rscene = static_cast<const ptr<engine::scene::RevScene>>(scene_);
-
-    auto srp = rscene->getSceneResourcePool();
     auto result = srp->staticInstancePool.acquire();
     _sceneInstanceIndex = result.instanceIndex;
 
@@ -79,9 +78,10 @@ void StaticGeometryModel::create(const ptr<::hg::engine::scene::Scene> scene_) {
 
 static bool isDirty = true;
 
-void StaticGeometryModel::update(const ptr<::hg::engine::scene::Scene> scene_) {
+void StaticGeometryModel::update(const ptr<render::RenderSceneSystem> system_) {
 
-    auto* origin = static_cast<ptr<StaticGeometryComponent>>(_owner);
+    auto origin = Cast<StaticGeometryComponent>(owner());
+    const auto srp = system_->getSceneResourcePool();
 
     /* Geometry Changes */
 
@@ -131,9 +131,6 @@ void StaticGeometryModel::update(const ptr<::hg::engine::scene::Scene> scene_) {
 
     if (isDirty) {
 
-        auto rscene = static_cast<const ptr<engine::scene::RevScene>>(scene_);
-        auto srp = rscene->getSceneResourcePool();
-
         const auto worldTransform = _owner->getWorldTransform();
         const auto trans { math::mat4::make_identity().translate(worldTransform.location().fvec3()) };
         const auto rotation = math::as<math::mat4>(worldTransform.rotator().quaternion());
@@ -156,11 +153,10 @@ void StaticGeometryModel::update(const ptr<::hg::engine::scene::Scene> scene_) {
     }
 }
 
-void StaticGeometryModel::destroy(const ptr<::hg::engine::scene::Scene> scene_) {
+void StaticGeometryModel::destroy(const ptr<render::RenderSceneSystem> system_) {
 
-    auto rscene = static_cast<const ptr<engine::scene::RevScene>>(scene_);
-
-    auto srp = rscene->getSceneResourcePool();
+    auto origin = Cast<StaticGeometryComponent>(owner());
+    const auto srp = system_->getSceneResourcePool();
 
     srp->staticAabbPool.release(_sceneInstanceIndex);
     srp->staticInstancePool.release(_sceneInstanceIndex);

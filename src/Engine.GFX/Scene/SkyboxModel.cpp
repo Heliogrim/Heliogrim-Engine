@@ -3,8 +3,8 @@
 #include <Heliogrim/SkyboxComponent.hpp>
 #include <Engine.Common/Math/Coordinates.hpp>
 #include <Engine.Resource/ResourceManager.hpp>
-#include <Engine.Scene/RevScene.hpp>
 #include <Engine.Core/Engine.hpp>
+#include <Engine.Reflect/Cast.hpp>
 
 #include "Engine.Assets/Types/Material/GfxMaterial.hpp"
 
@@ -20,14 +20,14 @@ SkyboxModel::~SkyboxModel() {
 
 void SkyboxModel::tidy() {}
 
-void SkyboxModel::create(const ptr<engine::scene::Scene> scene_) {
+void SkyboxModel::create(const ptr<render::RenderSceneSystem> system_) {
 
-    auto* origin { static_cast<ptr<SkyboxComponent>>(_owner) };
+    auto origin = Cast<SkyboxComponent>(owner());
 
     /**
      *
      */
-    _boundary = origin->getBoundaries();
+    //_boundary = origin->getBoundaries();
     _skyboxGeometryAsset = static_cast<ptr<assets::StaticGeometry>>(origin->getSkyboxGeometryAsset().internal());
     _skyboxGeometryResource = Engine::getEngine()->getResources()->loader().load(_skyboxGeometryAsset, nullptr);
 
@@ -40,9 +40,9 @@ void SkyboxModel::create(const ptr<engine::scene::Scene> scene_) {
     _overrideMaterials.push_back(materialResource.into<MaterialResource>());
 }
 
-void SkyboxModel::update(const ptr<engine::scene::Scene> scene_) {}
+void SkyboxModel::update(const ptr<render::RenderSceneSystem> system_) {}
 
-void SkyboxModel::destroy(const ptr<engine::scene::Scene> scene_) {}
+void SkyboxModel::destroy(const ptr<render::RenderSceneSystem> system_) {}
 
 void SkyboxModel::capture(nmpt<render::MeshCaptureInterface> mci_) const noexcept {}
 

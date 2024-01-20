@@ -141,7 +141,6 @@
     <ClCompile Include="..\..\src\Engine.GFX\Pool\GlobalResourcePool.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Pool\SceneResourcePool.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\RenderTarget.cpp" />
-    <ClCompile Include="..\..\src\Engine.GFX\Scene\CameraModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SkeletalGeometryModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Scene\SkyboxModel.cpp" />
     <ClCompile Include="..\..\src\Engine.GFX\Skybox\Skybox.cpp" />
