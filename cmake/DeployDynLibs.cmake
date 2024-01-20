@@ -18,7 +18,7 @@ function(add_deploy_to_target target)
     endif ()
 
     get_library_path(proj_lib_dir)
-    file(GLOB_RECURSE deployable ${proj_lib_dir}/bin/**/${CMAKE_BUILD_TYPE}/*.dll)
+    file(GLOB_RECURSE deployable CONFIGURE_DEPENDS ${proj_lib_dir}/bin/**/${CMAKE_BUILD_TYPE}/*.dll)
     list(LENGTH deployable deployable_size)
 
     if (deployable_size LESS_EQUAL 0)
