@@ -1,7 +1,7 @@
 #include "ReflowCommandBuffer.hpp"
 
-#include <Engine.GFX/Texture/TextureLikeObject.hpp>
 #include <Engine.GFX/Texture/Texture.hpp>
+#include <Engine.GFX/Texture/TextureLikeObject.hpp>
 #include <Engine.GFX/Texture/TextureView.hpp>
 
 using namespace hg::engine::reflow;
@@ -449,35 +449,17 @@ void ReflowCommandBuffer::drawText(
     /**
      *
      */
-    float accw { 0.F };
-    for (const auto& letter : text_) {
-        const auto& glyph { font_.glyph(static_cast<u32>(letter), fss) };
-
-        // TODO: Cleanup <=> Command Invocation should not be required to validate draw command
-        if (glyph == nullptr) {
-            continue;
-        }
-
-        accw += glyph->_advance * charScale.x;
-    }
-
-    /**
-     *
-     */
     const u32 baseIdx { static_cast<u32>(_runningIndexes.size()) };
     const u32 baseVtx { static_cast<u32>(_runningVertices.size()) };
 
     const u32 reqIdx { static_cast<u32>(text_.size()) * 6ui32 };
     const u32 reqVtx { static_cast<u32>(text_.size()) * 4ui32 };
 
-    _runningIndexes.reserve(baseIdx + reqIdx);
-    _runningVertices.reserve(baseVtx + reqVtx);
+    //_runningIndexes.reserve(baseIdx + reqIdx);
+    //_runningVertices.reserve(baseVtx + reqVtx);
 
-    /**
-     *
-     */
-    _imageIndices.push_back({ baseIdx, baseIdx + reqIdx });
-    _images.emplace_back(font_.atlas().get());
+    _runningIndexes.resize(baseIdx + reqIdx);
+    _runningVertices.resize(baseVtx + reqVtx);
 
     /**
      *
@@ -488,6 +470,11 @@ void ReflowCommandBuffer::drawText(
     fwd.x = _STD floorf(fwd.x);
     fwd.y = _STD floorf(fwd.y);
 
+    /**/
+
+    u32 cii = baseIdx;
+    u32 cvi = baseVtx;
+
     for (const auto& letter : text_) {
 
         /**/
@@ -499,14 +486,17 @@ void ReflowCommandBuffer::drawText(
         }
 
         /**/
-        const u32 cbv { static_cast<u32>(_runningVertices.size()) };
 
-        _runningIndexes.push_back(cbv + cqi[0]);
-        _runningIndexes.push_back(cbv + cqi[1]);
-        _runningIndexes.push_back(cbv + cqi[2]);
-        _runningIndexes.push_back(cbv + cqi[3]);
-        _runningIndexes.push_back(cbv + cqi[4]);
-        _runningIndexes.push_back(cbv + cqi[5]);
+        _runningIndexes[cii + 0] = (cvi + cqi[0]);
+        _runningIndexes[cii + 1] = (cvi + cqi[1]);
+        _runningIndexes[cii + 2] = (cvi + cqi[2]);
+        _runningIndexes[cii + 3] = (cvi + cqi[3]);
+        _runningIndexes[cii + 4] = (cvi + cqi[4]);
+        _runningIndexes[cii + 5] = (cvi + cqi[5]);
+
+        cii += 6uL;
+
+        /**/
 
         const float gx { fwd.x + (static_cast<float>(glyph->_bearing.x) * charScale.x) };
         const float gy { fwd.y + fontSize_ - (static_cast<float>(glyph->_bearing.y) * charScale.y) };
@@ -515,70 +505,75 @@ void ReflowCommandBuffer::drawText(
 
         // TODO: Resize vertices and indices, than switch from constructor to assignment
 
-        _runningVertices.push_back(
-            uivertex {
-                math::vec2 {
-                    gx,
-                    gy
-                },
-                math::vec4_t<u8> {
-                    static_cast<u8>(color_.r),
-                    static_cast<u8>(color_.g),
-                    static_cast<u8>(color_.b),
-                    static_cast<u8>(color_.a)
-                },
-                math::vec3 { glyph->_minSt, 0.F }
-            }
-        );
-        _runningVertices.push_back(
-            uivertex {
-                math::vec2 {
-                    gx + gw,
-                    gy
-                },
-                math::vec4_t<u8> {
-                    static_cast<u8>(color_.r),
-                    static_cast<u8>(color_.g),
-                    static_cast<u8>(color_.b),
-                    static_cast<u8>(color_.a)
-                },
-                math::vec3 { glyph->_maxSt.s, glyph->_minSt.t, 0.F }
-            }
-        );
-        _runningVertices.push_back(
-            uivertex {
-                math::vec2 {
-                    gx + gw,
-                    gy + gh
-                },
-                math::vec4_t<u8> {
-                    static_cast<u8>(color_.r),
-                    static_cast<u8>(color_.g),
-                    static_cast<u8>(color_.b),
-                    static_cast<u8>(color_.a)
-                },
-                math::vec3 { glyph->_maxSt, 0.F }
-            }
-        );
-        _runningVertices.push_back(
-            uivertex {
-                math::vec2 {
-                    gx,
-                    gy + gh
-                },
-                math::vec4_t<u8> {
-                    static_cast<u8>(color_.r),
-                    static_cast<u8>(color_.g),
-                    static_cast<u8>(color_.b),
-                    static_cast<u8>(color_.a)
-                },
-                math::vec3 { glyph->_minSt.s, glyph->_maxSt.t, 0.F }
-            }
-        );
+        _runningVertices[cvi + 0] = uivertex {
+            math::vec2 {
+                gx,
+                gy
+            },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 { glyph->_minSt, 0.F }
+        };
+        _runningVertices[cvi + 1] = uivertex {
+            math::vec2 {
+                gx + gw,
+                gy
+            },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 { glyph->_maxSt.s, glyph->_minSt.t, 0.F }
+        };
+        _runningVertices[cvi + 2] = uivertex {
+            math::vec2 {
+                gx + gw,
+                gy + gh
+            },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 { glyph->_maxSt, 0.F }
+        };
+        _runningVertices[cvi + 3] = uivertex {
+            math::vec2 {
+                gx,
+                gy + gh
+            },
+            math::vec4_t<u8> {
+                static_cast<u8>(color_.r),
+                static_cast<u8>(color_.g),
+                static_cast<u8>(color_.b),
+                static_cast<u8>(color_.a)
+            },
+            math::vec3 { glyph->_minSt.s, glyph->_maxSt.t, 0.F }
+        };
+
+        cvi += 4uL;
 
         /**/
+
         fwd.x += glyph->_advance * charScale.x;
     }
+
+    /**/
+
+    _runningIndexes.erase(_runningIndexes.end() - ((baseIdx + reqIdx) - cii), _runningIndexes.end());
+    _runningVertices.erase(_runningVertices.end() - ((baseVtx + reqVtx) - cvi), _runningVertices.end());
+
+    /**/
+
+    _imageIndices.emplace_back(baseIdx, cii);
+    _images.emplace_back(font_.atlas().get());
 }
 
 void ReflowCommandBuffer::drawImage(
