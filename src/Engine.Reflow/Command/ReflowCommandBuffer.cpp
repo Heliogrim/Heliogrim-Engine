@@ -271,69 +271,63 @@ void ReflowCommandBuffer::drawQuad(math::vec2 p0_, math::vec2 p1_, math::vec2 p2
      *
      */
     constexpr u32 cqi[] { 0ui32, 1ui32, 2ui32, 2ui32, 3ui32, 0ui32 };
-    _runningIndexes.reserve(_runningIndexes.size() + (sizeof(cqi) / sizeof(u32)));
 
-    const u32 baseIdx { static_cast<u32>(_runningVertices.size()) };
-    _runningVertices.reserve(baseIdx + 4ui32);
+    const u32 baseVdx = static_cast<u32>(_runningVertices.size());
+    const u32 baseIdx = static_cast<u32>(_runningIndexes.size());
+
+    _runningIndexes.resize(baseIdx + (sizeof(cqi) / sizeof(u32)));
+    _runningVertices.resize(baseVdx + 4ui32);
 
     /**
      *
      */
-    _runningIndexes.push_back(baseIdx + cqi[0]);
-    _runningIndexes.push_back(baseIdx + cqi[1]);
-    _runningIndexes.push_back(baseIdx + cqi[2]);
-    _runningIndexes.push_back(baseIdx + cqi[3]);
-    _runningIndexes.push_back(baseIdx + cqi[4]);
-    _runningIndexes.push_back(baseIdx + cqi[5]);
+    _runningIndexes[baseIdx + 0uL] = (baseVdx + cqi[0]);
+    _runningIndexes[baseIdx + 1uL] = (baseVdx + cqi[1]);
+    _runningIndexes[baseIdx + 2uL] = (baseVdx + cqi[2]);
+    _runningIndexes[baseIdx + 3uL] = (baseVdx + cqi[3]);
+    _runningIndexes[baseIdx + 4uL] = (baseVdx + cqi[4]);
+    _runningIndexes[baseIdx + 5uL] = (baseVdx + cqi[5]);
 
-    _runningVertices.push_back(
-        uivertex {
-            math::vec2 { p0_ },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 {}
-        }
-    );
-    _runningVertices.push_back(
-        uivertex {
-            math::vec2 { p1_ },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 {}
-        }
-    );
-    _runningVertices.push_back(
-        uivertex {
-            math::vec2 { p2_ },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 {}
-        }
-    );
-    _runningVertices.push_back(
-        uivertex {
-            math::vec2 { p3_ },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 {}
-        }
-    );
+    _runningVertices[baseVdx + 0uL] = uivertex {
+        math::vec2 { p0_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 {}
+    };
+    _runningVertices[baseVdx + 1uL] = uivertex {
+        math::vec2 { p1_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 {}
+    };
+    _runningVertices[baseVdx + 2uL] = uivertex {
+        math::vec2 { p2_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 {}
+    };
+    _runningVertices[baseVdx + 3uL] = uivertex {
+        math::vec2 { p3_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 {}
+    };
 }
 
 void ReflowCommandBuffer::drawQuadLine(
@@ -623,75 +617,68 @@ void ReflowCommandBuffer::drawImageAsync(
      *
      */
     constexpr u32 cqi[] { 0ui32, 1ui32, 2ui32, 2ui32, 3ui32, 0ui32 };
-    const u32 baseIdx { static_cast<u32>(_runningIndexes.size()) };
-    _runningIndexes.reserve(_runningIndexes.size() + (sizeof(cqi) / sizeof(u32)));
 
-    const u32 baseVtx { static_cast<u32>(_runningVertices.size()) };
-    _runningVertices.reserve(baseVtx + 4ui32);
+    const u32 baseVdx = static_cast<u32>(_runningVertices.size());
+    const u32 baseIdx = static_cast<u32>(_runningIndexes.size());
 
-    /**
-     *
-     */
-    _runningIndexes.push_back(baseVtx + cqi[0]);
-    _runningIndexes.push_back(baseVtx + cqi[1]);
-    _runningIndexes.push_back(baseVtx + cqi[2]);
-    _runningIndexes.push_back(baseVtx + cqi[3]);
-    _runningIndexes.push_back(baseVtx + cqi[4]);
-    _runningIndexes.push_back(baseVtx + cqi[5]);
-
-    _runningVertices.push_back(
-        uivertex {
-            math::vec2 { p0_ },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 { uv0_, 0.F }
-        }
-    );
-    _runningVertices.push_back(
-        uivertex {
-            math::vec2 { p1_ },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 { uv1_, 0.F }
-        }
-    );
-    _runningVertices.push_back(
-        uivertex {
-            math::vec2 { p2_ },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 { uv2_, 0.F }
-        }
-    );
-    _runningVertices.push_back(
-        uivertex {
-            math::vec2 { p3_ },
-            math::vec4_t<u8> {
-                static_cast<u8>(color_.r),
-                static_cast<u8>(color_.g),
-                static_cast<u8>(color_.b),
-                static_cast<u8>(color_.a)
-            },
-            math::vec3 { uv3_, 0.F }
-        }
-    );
+    _runningIndexes.resize(baseIdx + (sizeof(cqi) / sizeof(u32)));
+    _runningVertices.resize(baseVdx + 4ui32);
 
     /**
      *
      */
-    _imageIndices.push_back({ baseIdx, baseIdx + 6 });
+    _runningIndexes[baseIdx + 0uL] = (baseVdx + cqi[0]);
+    _runningIndexes[baseIdx + 1uL] = (baseVdx + cqi[1]);
+    _runningIndexes[baseIdx + 2uL] = (baseVdx + cqi[2]);
+    _runningIndexes[baseIdx + 3uL] = (baseVdx + cqi[3]);
+    _runningIndexes[baseIdx + 4uL] = (baseVdx + cqi[4]);
+    _runningIndexes[baseIdx + 5uL] = (baseVdx + cqi[5]);
+
+    _runningVertices[baseVdx + 0uL] = uivertex {
+        math::vec2 { p0_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 { uv0_, 0.F }
+    };
+    _runningVertices[baseVdx + 1uL] = uivertex {
+        math::vec2 { p1_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 { uv1_, 0.F }
+    };
+    _runningVertices[baseVdx + 2uL] = uivertex {
+        math::vec2 { p2_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 { uv2_, 0.F }
+    };
+    _runningVertices[baseVdx + 3uL] = uivertex {
+        math::vec2 { p3_ },
+        math::vec4_t<u8> {
+            static_cast<u8>(color_.r),
+            static_cast<u8>(color_.g),
+            static_cast<u8>(color_.b),
+            static_cast<u8>(color_.a)
+        },
+        math::vec3 { uv3_, 0.F }
+    };
+
+    /**
+     *
+     */
+    _imageIndices.emplace_back(baseIdx, baseIdx + 6uL);
     _images.push_back(_STD move(image_));
 
     if (wait_) {
