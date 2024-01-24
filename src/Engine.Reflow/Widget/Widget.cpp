@@ -126,7 +126,7 @@ EventResponse Widget::onKeyUp(cref<KeyboardEvent> event_) {
 }
 
 void Widget::setParent(mref<sptr<Widget>> parent_) {
-    _parent = _STD move(parent_);
+    _parent = std::move(parent_);
 }
 
 void Widget::setParent(cref<sptr<Widget>> parent_) {

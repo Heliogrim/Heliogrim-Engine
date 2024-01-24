@@ -93,7 +93,7 @@ namespace hg::profiling {
     protected:
         string _name;
         bool _stopped;
-        _STD chrono::high_resolution_clock::time_point _timestamp;
+        std::chrono::high_resolution_clock::time_point _timestamp;
 
     public:
         /**

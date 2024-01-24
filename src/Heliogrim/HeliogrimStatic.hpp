@@ -22,8 +22,8 @@ namespace hg {
 
     public:
         template <class EngineType_> requires
-            _STD is_default_constructible_v<EngineType_> &&
-            _STD derived_from<EngineType_, engine::Engine>
+            std::is_default_constructible_v<EngineType_> &&
+            std::derived_from<EngineType_, engine::Engine>
         static void useEngine() {
             _staticInitializer = HeliogrimStatic::useEngineHelper<EngineType_>;
         }
@@ -53,9 +53,9 @@ namespace hg {
         }
 
         template <class EngineType_> requires
-            _STD is_default_constructible_v<EngineType_> &&
-            _STD is_convertible_v<ptr<_STD decay_t<EngineType_>>, ptr<engine::Engine>> &&
-            _STD derived_from<EngineType_, engine::Engine>
+            std::is_default_constructible_v<EngineType_> &&
+            std::is_convertible_v<ptr<std::decay_t<EngineType_>>, ptr<engine::Engine>> &&
+            std::derived_from<EngineType_, engine::Engine>
         static void useSessionGetter(
             const const_bound_tuple_fnc<EngineType_, const non_owning_rptr<engine::core::Session>> fnc_
         ) {

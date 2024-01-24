@@ -31,7 +31,7 @@ namespace hg::engine::gfx::loader {
             _In_ mref<request_type::options> options_,
             _In_ cref<next_type> next_
         ) const override {
-            return next_(_STD move(request_), _STD move(options_));
+            return next_(std::move(request_), std::move(options_));
         }
 
         [[nodiscard]] stream_response_type::type operator()(
@@ -40,7 +40,7 @@ namespace hg::engine::gfx::loader {
             _In_ cref<next_type> next_
         ) const override {
             // TODO:
-            return next_(_STD move(request_), _STD move(options_));
+            return next_(std::move(request_), std::move(options_));
         }
     };
 }

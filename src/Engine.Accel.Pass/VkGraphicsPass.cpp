@@ -19,7 +19,7 @@ void VkGraphicsPass::tidy() {
     }
 
     const auto* const device = Engine::getEngine()->getGraphics()->getCurrentDevice().get();
-    device->vkDevice().destroyRenderPass(reinterpret_cast<VkRenderPass>(_STD exchange(_vkGraphicsPass, nullptr)));
+    device->vkDevice().destroyRenderPass(reinterpret_cast<VkRenderPass>(std::exchange(_vkGraphicsPass, nullptr)));
 
     // Will be done implicitly by destructor
     // _attachments.clear();

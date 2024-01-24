@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef _STD
-#define _STD ::std::
-#endif
-
 #ifndef FALSE
 #define FALSE 0
 #endif
@@ -111,6 +107,24 @@
 #define DEBUG_STATIC_ASSERT(var_, msg_)
 #endif
 
+// Warnings
+#if __clang__
+#define START_SUPPRESS_WARNINGS \
+    _Pragma("clang diagnostic push") \
+    _Pragma("clang diagnostic ignored \"-Wall\"") \
+    _Pragma("clang diagnostic ignored \"-Weverything\"")
+#define STOP_SUPPRESS_WARNINGS \
+    _Pragma("clang diagnostic pop")
+#elif defined(_MSC_VER)
+#define START_SUPPRESS_WARNINGS \
+    __pragma(warning(push))
+#define STOP_SUPPRESS_WARNINGS \
+    __pragma(warning(pop))
+#else
+#define START_SUPPRESS_WARNINGS
+#define STOP_SUPPRESS_WARNINGS
+#endif
+
 // Alignment
 #ifdef __GNUC__
 #define ALIGNED(struct_, alignment_) struct_ __attribute__ ((aligned (alignment_)))
@@ -169,7 +183,7 @@
 // Function Helper
 
 #if not defined(Fn)
-#define Fn(fn_) [](auto&&... fnArgs_) { return fn_(_STD forward<decltype(fnArgs_)>(fnArgs_)...); }
+#define Fn(fn_) [](auto&&... fnArgs_) { return fn_(std::forward<decltype(fnArgs_)>(fnArgs_)...); }
 #endif
 
 // Profiling

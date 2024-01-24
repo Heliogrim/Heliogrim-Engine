@@ -63,7 +63,7 @@ void RenderTarget::tidy() {
     }
 
     for (auto&& renderPass : _renderPasses) {
-        _renderer->free(_STD move(renderPass));
+        _renderer->free(std::move(renderPass));
     }
     _renderPasses.clear();
 
@@ -289,7 +289,7 @@ void RenderTarget::transitionImmediately() {
 
     for (auto i = 0u; i < otfCount; ++i) {
 
-        auto renderPass = _STD move(_renderPasses[i]);
+        auto renderPass = std::move(_renderPasses[i]);
 
         // Conditional Update Scene View
         if (_chainSceneView != nullptr) {
@@ -304,7 +304,7 @@ void RenderTarget::transitionImmediately() {
             assert(bindResult);
         }
 
-        _renderPasses[i] = _renderer->reallocate(_STD move(renderPass)).first;
+        _renderPasses[i] = _renderer->reallocate(std::move(renderPass)).first;
         assert(_renderPasses[i]);
     }
 
@@ -403,9 +403,9 @@ void RenderTarget::update() {
         */
     }
 
-    auto updated = _renderer->update(_STD move(renderPass));
+    auto updated = _renderer->update(std::move(renderPass));
     (*updated)();
-    _renderPasses[_syncIdx] = _STD move(updated);
+    _renderPasses[_syncIdx] = std::move(updated);
 
     /**/
 

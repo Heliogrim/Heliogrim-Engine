@@ -14,7 +14,7 @@ namespace hg {
         using this_type = Logger;
 
         template <typename... Types_>
-        using format_type = const _STD format_string<Types_...>;
+        using format_type = const std::format_string<Types_...>;
 
     private:
         Logger() noexcept;
@@ -40,28 +40,28 @@ namespace hg {
 
         template <typename... Args_>
         static FORCE_INLINE void debug(format_type<Args_...> format_, Args_&&... args_) {
-            Logger::debug(_STD format(format_, _STD forward<Args_>(args_)...));
+            Logger::debug(std::format(format_, std::forward<Args_>(args_)...));
         }
 
         static void info(mref<string> msg_);
 
         template <typename... Args_>
         static FORCE_INLINE void info(format_type<Args_...> format_, Args_&&... args_) {
-            Logger::info(_STD format(format_, _STD forward<Args_>(args_)...));
+            Logger::info(std::format(format_, std::forward<Args_>(args_)...));
         }
 
         static void warn(mref<string> msg_);
 
         template <typename... Args_>
         static FORCE_INLINE void warn(format_type<Args_...> format_, Args_&&... args_) {
-            Logger::warn(_STD format(format_, _STD forward<Args_>(args_)...));
+            Logger::warn(std::format(format_, std::forward<Args_>(args_)...));
         }
 
         static void error(mref<string> msg_);
 
         template <typename... Args_>
         static FORCE_INLINE void error(format_type<Args_...> format_, Args_&&... args_) {
-            Logger::error(_STD format(format_, _STD forward<Args_>(args_)...));
+            Logger::error(std::format(format_, std::forward<Args_>(args_)...));
         }
     };
 }

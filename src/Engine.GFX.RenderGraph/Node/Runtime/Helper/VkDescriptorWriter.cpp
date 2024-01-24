@@ -27,17 +27,17 @@ VkDescriptorWriter::VkDescriptorWriter(cref<vk::DescriptorSet> vkSet_) :
     _writes() {}
 
 ptrdiff_t VkDescriptorWriter::emplaceBufferInfo(mref<vk::DescriptorBufferInfo> info_) {
-    _descriptorBufferInfos.emplace_back(_STD move(info_));
+    _descriptorBufferInfos.emplace_back(std::move(info_));
     return _descriptorBufferInfos.size() - 1uLL;
 }
 
 ptrdiff_t VkDescriptorWriter::emplaceImageInfo(mref<vk::DescriptorImageInfo> info_) {
-    _descriptorImageInfos.emplace_back(_STD move(info_));
+    _descriptorImageInfos.emplace_back(std::move(info_));
     return _descriptorImageInfos.size() - 1uLL;
 }
 
 ptrdiff_t VkDescriptorWriter::emplaceSamplerInfo(mref<vk::DescriptorImageInfo> info_) {
-    _descriptorSamplerInfos.emplace_back(_STD move(info_));
+    _descriptorSamplerInfos.emplace_back(std::move(info_));
     return _descriptorSamplerInfos.size() - 1uLL;
 }
 

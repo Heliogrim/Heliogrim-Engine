@@ -78,7 +78,7 @@ void VkSwapchain::setup(cref<sptr<Device>> device_) {
         factory->buildView(instance);
 
         /**/
-        _images[i].image = make_smr<Texture>(_STD move(instance));
+        _images[i].image = make_smr<Texture>(std::move(instance));
 
         /**/
         assert(_images[i].image);
@@ -151,7 +151,7 @@ vk::Result VkSwapchain::presentNext(u64 idx_) {
     ref<SwapchainImage> image { _images[idx_] };
 
     u64 tmp { idx_ };
-    if (!_pQueue.try_push(_STD move(tmp))) {
+    if (!_pQueue.try_push(std::move(tmp))) {
         return vk::Result::eErrorUnknown;
     }
 
@@ -173,7 +173,7 @@ vk::Result VkSwapchain::presentNext(u64 idx_, cref<Vector<vk::Semaphore>> waits_
     /**/
 
     u64 tmp { idx_ };
-    if (!_pQueue.try_push(_STD move(tmp))) {
+    if (!_pQueue.try_push(std::move(tmp))) {
         return vk::Result::eErrorUnknown;
     }
 
@@ -209,12 +209,12 @@ bool VkSwapchain::consumeNext(
      * Rebind
      */
     #ifdef _DEBUG
-    if (not _rQueue.try_push(_STD move(pidx))) {
+    if (not _rQueue.try_push(std::move(pidx))) {
         // Warning: We must ensure that image index is pushed to ready queue to prevent resource leak
         __debugbreak();
     }
     #else
-    while (not _rQueue.try_push(_STD move(pidx))) {
+    while (not _rQueue.try_push(std::move(pidx))) {
         scheduler::fiber::self::yield();
     }
     #endif

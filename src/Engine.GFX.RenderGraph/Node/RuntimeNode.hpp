@@ -32,5 +32,5 @@ namespace hg::engine::render::graph {
     };
 
     template <typename NodeType_>
-    concept IsRuntimeNode = _STD derived_from<NodeType_, RuntimeNode>;
+    concept IsRuntimeNode = std::derived_from<NodeType_, RuntimeNode>;
 }

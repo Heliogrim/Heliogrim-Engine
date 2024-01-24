@@ -104,7 +104,7 @@ bool EditorEngine::init() {
     setupCorePipelines();
 
     /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
-    _STD atomic_uint_fast8_t setupCounter { 0ui8 };
+    std::atomic_uint_fast8_t setupCounter { 0ui8 };
 
     scheduler::exec(
         [this, &setupCounter] {
@@ -156,7 +156,7 @@ bool EditorEngine::init() {
 
     /**/
     scheduler::waitUntilAtomic(setupCounter, 6ui8);
-    setupCounter.store(0ui8, _STD memory_order_relaxed);
+    setupCounter.store(0ui8, std::memory_order_relaxed);
 
     scheduler::exec(
         [this, &setupCounter] {
@@ -195,12 +195,12 @@ bool EditorEngine::start() {
     }
 
     /**/
-    _STD atomic_flag next {};
+    std::atomic_flag next {};
     scheduler::exec(
         [this, &next] {
             _scheduler->getCompositePipeline()->start();
 
-            next.test_and_set(_STD memory_order_relaxed);
+            next.test_and_set(std::memory_order_relaxed);
             next.notify_one();
         }
     );
@@ -259,7 +259,7 @@ bool EditorEngine::stop() {
     }
 
     /**/
-    _STD atomic_flag next {};
+    std::atomic_flag next {};
     scheduler::exec(
         [this, &next] {
             _physics->stop();
@@ -321,7 +321,7 @@ bool EditorEngine::stop() {
         [this, &next] {
             _scheduler->getCompositePipeline()->stop();
 
-            next.test_and_set(_STD memory_order_relaxed);
+            next.test_and_set(std::memory_order_relaxed);
             next.notify_one();
         }
     );
@@ -336,7 +336,7 @@ bool EditorEngine::shutdown() {
         return false;
     }
 
-    _STD atomic_flag subModuleFlag {};
+    std::atomic_flag subModuleFlag {};
     scheduler::exec(
         [this, &subModuleFlag] {
 
@@ -345,7 +345,7 @@ bool EditorEngine::shutdown() {
                 (*iter)->destroy();
             }
 
-            subModuleFlag.test_and_set(_STD memory_order_relaxed);
+            subModuleFlag.test_and_set(std::memory_order_relaxed);
             subModuleFlag.notify_one();
         }
     );
@@ -353,7 +353,7 @@ bool EditorEngine::shutdown() {
     scheduler::waitOnAtomic(subModuleFlag, false);
 
     /* Core modules should always interact with a guaranteed fiber context and non-sequential execution */
-    _STD atomic_uint_fast8_t moduleCount { 0ui8 };
+    std::atomic_uint_fast8_t moduleCount { 0ui8 };
 
     scheduler::exec(
         [this, &moduleCount] {
@@ -501,5 +501,5 @@ const non_owning_rptr<engine::core::Session> EditorEngine::getPrimaryGameSession
 
 void EditorEngine::setupCorePipelines() {
     auto corePipeline = make_uptr<schedule::CorePipeline>();
-    _scheduler->getCompositePipeline()->addPipeline(_STD move(corePipeline));
+    _scheduler->getCompositePipeline()->addPipeline(std::move(corePipeline));
 }

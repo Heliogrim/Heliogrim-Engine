@@ -15,7 +15,7 @@ namespace hg {
 
     public:
         Future(_Inout_ mref<underlying_type> other_) noexcept :
-            underlying_type(_STD move(other_)) {}
+            underlying_type(std::move(other_)) {}
 
     public:
         /**
@@ -39,7 +39,7 @@ namespace hg {
          * @returns A reference to the value to move from
          */
         [[nodiscard]] Type_&& get() const {
-            return _STD forward<Type_>(underlying_type::retrieve());
+            return std::forward<Type_>(underlying_type::retrieve());
         }
 
     public:

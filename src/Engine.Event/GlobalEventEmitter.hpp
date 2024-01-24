@@ -12,7 +12,7 @@ namespace hg {
         template <IsStatelessEvent EventType_>
         struct GlobalStatelessEventExecutor :
             public StatelessEventExecutor<EventType_> {
-            FORCE_INLINE void operator()(cref<_STD function<void(cref<EventType_>)>> fnc_, cref<EventType_> event_) {
+            FORCE_INLINE void operator()(cref<std::function<void(cref<EventType_>)>> fnc_, cref<EventType_> event_) {
                 hg::engine::Scheduler::get().exec(hg::engine::scheduler::task::make_task([&]() {
                     fnc_(event_);
                 }));
@@ -28,7 +28,7 @@ namespace hg {
         using reference_type = ref<value_type>;
         using const_reference_type = cref<value_type>;
 
-        using emitter_mtx_value_type = _STD recursive_mutex;
+        using emitter_mtx_value_type = std::recursive_mutex;
         using emitter_mtx_type = emitter_mtx_value_type;
 
         template <IsStatefulEvent EventType_>
@@ -140,7 +140,7 @@ namespace hg {
             static_cast<ptr<stateful_emitter_type<EventType_>>>(it->second)->emit(event_);
         }
 
-        template <IsStatefulEvent EventType_> requires _STD is_trivially_default_constructible_v<EventType_>
+        template <IsStatefulEvent EventType_> requires std::is_trivially_default_constructible_v<EventType_>
         void emit() const {
 
             const auto it = _emitter.find(EventType_::typeId);
@@ -151,7 +151,7 @@ namespace hg {
             static_cast<ptr<stateful_emitter_type<EventType_>>>(it->second)->emit(EventType_ {});
         }
 
-        template <IsStatefulEvent EventType_, typename Arg0_, typename... Args_> requires _STD is_constructible_v<
+        template <IsStatefulEvent EventType_, typename Arg0_, typename... Args_> requires std::is_constructible_v<
             EventType_, Arg0_, Args_...>
         void emit(Arg0_&& arg0_, Args_&&... args_) const {
 
@@ -162,8 +162,8 @@ namespace hg {
 
             static_cast<ptr<stateful_emitter_type<EventType_>>>(it->second)->emit(
                 EventType_ {
-                    _STD forward<Arg0_>(arg0_),
-                    _STD forward<Args_>(args_)...
+                    std::forward<Arg0_>(arg0_),
+                    std::forward<Args_>(args_)...
                 }
             );
         }
@@ -179,7 +179,7 @@ namespace hg {
             static_cast<ptr<stateless_emitter_type<EventType_>>>(it->second)->emit(event_);
         }
 
-        template <IsStatelessEvent EventType_> requires _STD is_trivially_default_constructible_v<EventType_>
+        template <IsStatelessEvent EventType_> requires std::is_trivially_default_constructible_v<EventType_>
         void emit() const {
 
             const auto it = _emitter.find(EventType_::typeId);
@@ -190,7 +190,7 @@ namespace hg {
             static_cast<ptr<stateless_emitter_type<EventType_>>>(it->second)->emit(EventType_ {});
         }
 
-        template <IsStatelessEvent EventType_, typename Arg0_, typename... Args_> requires _STD is_constructible_v<
+        template <IsStatelessEvent EventType_, typename Arg0_, typename... Args_> requires std::is_constructible_v<
             EventType_, Arg0_, Args_...>
         void emit(Arg0_&& arg0_, Args_&&... args_) const {
 
@@ -201,8 +201,8 @@ namespace hg {
 
             static_cast<ptr<stateless_emitter_type<EventType_>>>(it->second)->emit(
                 EventType_ {
-                    _STD forward<Arg0_>(arg0_),
-                    _STD forward<Args_>(args_)...
+                    std::forward<Arg0_>(arg0_),
+                    std::forward<Args_>(args_)...
                 }
             );
         }
@@ -225,14 +225,14 @@ namespace hg {
 
             auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
-                auto result = _emitter.insert(_STD make_pair(EventType_::typeId, makeEmitter<EventType_>()));
+                auto result = _emitter.insert(std::make_pair(EventType_::typeId, makeEmitter<EventType_>()));
                 DEBUG_ASSERT(result.second, "Insert should be successful")
 
                 it = result.first;
             }
 
             return static_cast<ptr<stateful_emitter_type<EventType_>>>(it->second)->on(
-                _STD forward<typename stateful_emitter_type<EventType_>::function_type>(fnc_)
+                std::forward<typename stateful_emitter_type<EventType_>::function_type>(fnc_)
             );
         }
 
@@ -243,14 +243,14 @@ namespace hg {
 
             auto it = _emitter.find(EventType_::typeId);
             if (it == _emitter.end()) {
-                auto result = _emitter.insert(_STD make_pair(EventType_::typeId, makeEmitter<EventType_>()));
+                auto result = _emitter.insert(std::make_pair(EventType_::typeId, makeEmitter<EventType_>()));
                 DEBUG_ASSERT(result.second, "Insert should be successful")
 
                 it = result.first;
             }
 
             return static_cast<ptr<stateless_emitter_type<EventType_>>>(it->second)->on(
-                _STD forward<typename stateless_emitter_type<EventType_>::function_type>(fnc_)
+                std::forward<typename stateless_emitter_type<EventType_>::function_type>(fnc_)
             );
         }
 

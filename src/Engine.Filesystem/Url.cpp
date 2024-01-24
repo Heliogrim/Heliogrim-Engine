@@ -9,11 +9,11 @@ Url::Url() :
 
 Url::Url(mref<Path> path_) :
     _scheme(),
-    _path(_STD move(path_)) {}
+    _path(std::move(path_)) {}
 
 Url::Url(string_view scheme_, mref<Path> path_) :
     _scheme(scheme_),
-    _path(_STD move(path_)) {}
+    _path(std::move(path_)) {}
 
 Url::~Url() = default;
 
@@ -39,7 +39,7 @@ cref<Path> Url::path() const noexcept {
 }
 
 ref<Url::this_type> Url::setPath(mref<Path> path_) {
-    _path = _STD move(path_);
+    _path = std::move(path_);
     return *this;
 }
 

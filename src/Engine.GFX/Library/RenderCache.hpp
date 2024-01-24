@@ -116,7 +116,7 @@ namespace clockwork::__internal::gfx::types {
             using container_type = CacheContainer<Type>;
             using reference_type = __CacheReference<Type>;
 
-            static_assert(_STD is_base_of<clockwork::__internal::gfx::types::CacheUsable, BufferType>::value);
+            static_assert(std::is_base_of<clockwork::__internal::gfx::types::CacheUsable, BufferType>::value);
 
             /**
              * Default constructor
@@ -124,8 +124,8 @@ namespace clockwork::__internal::gfx::types {
              * @author Julius
              * @date 25.06.2020
              */
-            template <class PseudoBufferType = BufferType, typename = _STD enable_if_t<_STD is_default_constructible_v<
-                PseudoBufferType> && _STD is_same_v<PseudoBufferType, BufferType>>>
+            template <class PseudoBufferType = BufferType, typename = std::enable_if_t<std::is_default_constructible_v<
+                PseudoBufferType> && std::is_same_v<PseudoBufferType, BufferType>>>
             Cache(const __Device& device_) :
                 _device(device_),
                 _buffer(new BufferType()),
@@ -192,7 +192,7 @@ namespace clockwork::__internal::gfx::types {
             /**
              * Register
              */
-            _STD set<reference_type, _STD less<reference_type>> _register;
+            std::set<reference_type, std::less<reference_type>> _register;
 
         private:
             /**

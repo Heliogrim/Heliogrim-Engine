@@ -24,13 +24,13 @@ namespace hg {
         constexpr CompileTableNode() noexcept = default;
 
         template <template <typename, typename> typename Type_> requires
-            _STD is_same_v<Type_<Key_, Value_>, mapping>
+            std::is_same_v<Type_<Key_, Value_>, mapping>
         constexpr CompileTableNode(const Type_<Key_, Value_> data_) noexcept :
             data(data_) {}
 
         template <template <typename, typename> typename Type_> requires
-            (not _STD is_same_v<Type_<Key_, Value_>, mapping>) &&
-            _STD is_nothrow_convertible_v<Type_<Key_, Value_>, mapping>
+            (not std::is_same_v<Type_<Key_, Value_>, mapping>) &&
+            std::is_nothrow_convertible_v<Type_<Key_, Value_>, mapping>
         constexpr CompileTableNode(const Type_<Key_, Value_> data_) noexcept :
             data { data_ } {}
 
@@ -38,7 +38,7 @@ namespace hg {
             data(other_.data) {}
 
         constexpr CompileTableNode(this_type&& other_) noexcept :
-            data(_STD move(other_.data)) {}
+            data(std::move(other_.data)) {}
 
         constexpr ~CompileTableNode() noexcept = default;
 
@@ -47,15 +47,15 @@ namespace hg {
 
     public:
         constexpr this_type& operator=(const this_type& other_) noexcept {
-            if (_STD addressof(other_) != this) {
+            if (std::addressof(other_) != this) {
                 data = other_.data;
             }
             return *this;
         }
 
         constexpr this_type& operator=(this_type&& other_) noexcept {
-            if (_STD addressof(other_) != this) {
-                data = _STD move(other_.data);
+            if (std::addressof(other_) != this) {
+                data = std::move(other_.data);
             }
             return *this;
         }
@@ -97,26 +97,26 @@ namespace hg {
 
     private:
         template <size_t... Idx_>
-        constexpr CompileTable(const node_type (&entries_)[Size_], _STD index_sequence<Idx_...>) noexcept :
+        constexpr CompileTable(const node_type (&entries_)[Size_], std::index_sequence<Idx_...>) noexcept :
             _data { { entries_[Idx_] }... } {
-            static_assert(sizeof...(Idx_), "Size of index sequence has to match the element count.");
-            //compile_sort(_STD begin(_data), _STD end(_data), Comparator_ {});
+            static_assert(sizeof...(Idx_) == Size_, "Size of index sequence has to match the element count.");
+            //compile_sort(std::begin(_data), std::end(_data), Comparator_ {});
         }
 
-        template <typename Type_, size_t... Idx_> requires _STD is_nothrow_convertible_v<Type_, NodeType_>
-        constexpr CompileTable(const Type_ (&values_)[Size_], _STD index_sequence<Idx_...>) noexcept :
+        template <typename Type_, size_t... Idx_> requires std::is_nothrow_convertible_v<Type_, NodeType_>
+        constexpr CompileTable(const Type_ (&values_)[Size_], std::index_sequence<Idx_...>) noexcept :
             _data { (node_type { values_[Idx_] })... } {
-            static_assert(sizeof...(Idx_), "Size of index sequence has to match the element count.");
+            static_assert(sizeof...(Idx_) == Size_, "Size of index sequence has to match the element count.");
             compile_sort(begin(), end(), Comparator_ {});
         }
 
     public:
         constexpr CompileTable(const node_type (&entries_)[Size_]) noexcept :
-            CompileTable(entries_, _STD make_index_sequence<Size_>()) {}
+            CompileTable(entries_, std::make_index_sequence<Size_>()) {}
 
-        template <typename Type_> requires _STD is_nothrow_convertible_v<Type_, NodeType_>
+        template <typename Type_> requires std::is_nothrow_convertible_v<Type_, NodeType_>
         constexpr CompileTable(const Type_ (&values_)[Size_]) noexcept :
-            CompileTable(values_, _STD make_index_sequence<Size_>()) {}
+            CompileTable(values_, std::make_index_sequence<Size_>()) {}
 
     private:
         node_type _data[Size_];
@@ -130,10 +130,10 @@ namespace hg {
             using this_type = Iterator;
 
             #ifdef __cpp_lib_concepts
-            using iterator_concept = _STD random_access_iterator_tag;
+            using iterator_concept = std::random_access_iterator_tag;
             #endif
 
-            using iterator_category = _STD random_access_iterator_tag;
+            using iterator_category = std::random_access_iterator_tag;
 
             using value_type = node_type;
             using reference = node_type&;
@@ -142,8 +142,8 @@ namespace hg {
             using pointer = node_type*;
             using const_pointer = const node_type*;
 
-            using size_type = _STD size_t;
-            using difference_type = _STD ptrdiff_t;
+            using size_type = std::size_t;
+            using difference_type = std::ptrdiff_t;
 
         public:
             constexpr Iterator() noexcept = default;
@@ -162,14 +162,14 @@ namespace hg {
 
         public:
             constexpr this_type& operator=(const this_type& other_) noexcept {
-                if (_STD addressof(other_) != this) {
+                if (std::addressof(other_) != this) {
                     _cursor = other_._cursor;
                 }
                 return *this;
             }
 
             constexpr this_type& operator=(this_type&& other_) noexcept {
-                if (_STD addressof(other_) != this) {
+                if (std::addressof(other_) != this) {
                     _cursor = other_._cursor;
                 }
                 return *this;
@@ -260,11 +260,11 @@ namespace hg {
 
             [[nodiscard]] constexpr bool operator!=(const ConstIterator& other_) const noexcept;
 
-            [[nodiscard]] constexpr _STD strong_ordering operator<=>(const this_type& other_) const noexcept {
-                return _STD _Unfancy(_cursor) <=> _STD _Unfancy(other_._cursor);
+            [[nodiscard]] constexpr std::strong_ordering operator<=>(const this_type& other_) const noexcept {
+                return std::_Unfancy(_cursor) <=> std::_Unfancy(other_._cursor);
             }
 
-            [[nodiscard]] constexpr _STD strong_ordering operator<=>(const ConstIterator& other_) const noexcept;
+            [[nodiscard]] constexpr std::strong_ordering operator<=>(const ConstIterator& other_) const noexcept;
         };
 
         class ConstIterator {
@@ -272,10 +272,10 @@ namespace hg {
             using this_type = ConstIterator;
 
             #ifdef __cpp_lib_concepts
-            using iterator_concept = _STD random_access_iterator_tag;
+            using iterator_concept = std::random_access_iterator_tag;
             #endif
 
-            using iterator_category = _STD random_access_iterator_tag;
+            using iterator_category = std::random_access_iterator_tag;
 
             using value_type = node_type;
             using reference = node_type&;
@@ -284,8 +284,8 @@ namespace hg {
             using pointer = node_type*;
             using const_pointer = const node_type*;
 
-            using size_type = _STD size_t;
-            using difference_type = _STD ptrdiff_t;
+            using size_type = std::size_t;
+            using difference_type = std::ptrdiff_t;
 
         public:
             constexpr ConstIterator() noexcept = default;
@@ -304,14 +304,14 @@ namespace hg {
 
         public:
             constexpr this_type& operator=(const this_type& other_) noexcept {
-                if (_STD addressof(other_) != this) {
+                if (std::addressof(other_) != this) {
                     _cursor = other_._cursor;
                 }
                 return *this;
             }
 
             constexpr this_type& operator=(this_type&& other_) noexcept {
-                if (_STD addressof(other_) != this) {
+                if (std::addressof(other_) != this) {
                     _cursor = other_._cursor;
                 }
                 return *this;
@@ -402,11 +402,11 @@ namespace hg {
 
             [[nodiscard]] constexpr bool operator!=(const Iterator& other_) const noexcept;
 
-            [[nodiscard]] constexpr _STD strong_ordering operator<=>(const this_type& other_) const noexcept {
-                return _STD _Unfancy(_cursor) <=> _STD _Unfancy(other_._cursor);
+            [[nodiscard]] constexpr std::strong_ordering operator<=>(const this_type& other_) const noexcept {
+                return std::_Unfancy(_cursor) <=> std::_Unfancy(other_._cursor);
             }
 
-            [[nodiscard]] constexpr _STD strong_ordering operator<=>(const Iterator& other_) const noexcept;
+            [[nodiscard]] constexpr std::strong_ordering operator<=>(const Iterator& other_) const noexcept;
         };
 
     public:
@@ -444,7 +444,7 @@ namespace hg {
     }
 
     template <typename NodeType_, size_t Size_, typename Comparator_>
-    constexpr _STD strong_ordering CompileTable<NodeType_, Size_, Comparator_>::Iterator::operator<=>(
+    constexpr std::strong_ordering CompileTable<NodeType_, Size_, Comparator_>::Iterator::operator<=>(
         const ConstIterator& other_
     ) const noexcept {
         return _cursor <=> &(*other_);
@@ -465,7 +465,7 @@ namespace hg {
     }
 
     template <typename NodeType_, size_t Size_, typename Comparator_>
-    constexpr _STD strong_ordering CompileTable<NodeType_, Size_, Comparator_>::ConstIterator::operator<=>(
+    constexpr std::strong_ordering CompileTable<NodeType_, Size_, Comparator_>::ConstIterator::operator<=>(
         const Iterator& other_
     ) const noexcept {
         return _cursor <=> &(*other_);

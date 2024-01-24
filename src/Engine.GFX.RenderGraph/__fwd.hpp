@@ -38,7 +38,7 @@ namespace hg::engine::render::graph {
     /**/
     class ProviderNode;
     class SubPassNodeBase;
-    template <typename SubPassType_> requires _STD derived_from<SubPassType_, SubPass>
+    template <typename SubPassType_> requires std::derived_from<SubPassType_, SubPass>
     class SubPassNode;
     /**/
     class CompileNode;

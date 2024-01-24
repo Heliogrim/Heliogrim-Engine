@@ -8,10 +8,10 @@
 
 namespace hg::engine::gfx {
     class KtxImporter :
-        public res::Importer<_STD pair<non_owning_rptr<assets::TextureAsset>, non_owning_rptr<assets::Image>>, ptr<void>> {
+        public res::Importer<std::pair<non_owning_rptr<assets::TextureAsset>, non_owning_rptr<assets::Image>>, ptr<void>> {
     public:
         using this_type = KtxImporter;
-        using importer_type = res::Importer<_STD pair<non_owning_rptr<assets::TextureAsset>, non_owning_rptr<assets::Image>>,
+        using importer_type = res::Importer<std::pair<non_owning_rptr<assets::TextureAsset>, non_owning_rptr<assets::Image>>,
             ptr<void>>;
 
         using importer_type::import_result_type;

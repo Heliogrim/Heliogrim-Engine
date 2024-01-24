@@ -31,7 +31,7 @@ namespace hg::engine::render::graph {
             return mask != other_.mask;
         }
 
-        [[nodiscard]] constexpr _STD strong_ordering operator<=>(const ActiveMipBitMask& other_) const noexcept {
+        [[nodiscard]] constexpr std::strong_ordering operator<=>(const ActiveMipBitMask& other_) const noexcept {
             return mask <=> other_.mask;
         }
     };

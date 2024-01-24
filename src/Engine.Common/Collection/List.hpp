@@ -5,6 +5,6 @@
 #include <list>
 
 namespace hg {
-    template <class Type_, class Allocator_ = _STD allocator<Type_>>
-    using list = _STD list<Type_, Allocator_>;
+    template <class Type_, class Allocator_ = std::allocator<Type_>>
+    using list = std::list<Type_, Allocator_>;
 }

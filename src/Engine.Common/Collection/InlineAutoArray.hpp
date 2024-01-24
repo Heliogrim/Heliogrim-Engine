@@ -8,24 +8,28 @@
 
 namespace hg {
     /*
-    template <typename Type_, size_t Capacity_, typename Allocator_ = _STD allocator<Type_>>
+    template <typename Type_, size_t Capacity_, typename Allocator_ = std::allocator<Type_>>
     using InlineAutoArray = InlineArray<Type_, Capacity_>;
      */
-    template <class Type_, size_t Capacity_, typename Allocator_> requires (sizeof(Type_) > 0)
+    template <class Type_, size_t Capacity_ = 1uLL, typename Allocator_ = std::allocator<Type_>> requires
+        (sizeof(Type_) > 0)
     class InlineAutoArray;
 
     template <class Type_, typename Allocator_> requires (sizeof(Type_) > 0)
     class InlineAutoArray<Type_, 0, Allocator_> {
-        static_assert(
-            not _STD is_void_v<_STD void_t<Type_>>,
-            "Did you mean to use AutoArray<Type_, ...> or Vector<Type_, ...> ?"
-        );
+        /* Warning: Don't add `constexpr` otherwise compiling will fail regardless of specialization */
+        InlineAutoArray() {
+            static_assert(
+                not std::is_void_v<std::void_t<Type_>>,
+                "Did you mean to use AutoArray<Type_, ...> or Vector<Type_, ...> ?"
+            );
+        }
     };
 
     template <
         class Type_,
-        size_t Capacity_ = 1,
-        typename Allocator_ = _STD allocator<Type_>> requires (sizeof(Type_) > 0)
+        size_t Capacity_,
+        typename Allocator_> requires (sizeof(Type_) > 0)
     class InlineAutoArray {
     public:
         using this_type = InlineAutoArray<Type_, Capacity_, Allocator_>;
@@ -43,7 +47,7 @@ namespace hg {
 
         // TODO: rebind_allocator
         using allocator_type = Allocator_;
-        using allocator_traits = _STD allocator_traits<allocator_type>;
+        using allocator_traits = std::allocator_traits<allocator_type>;
 
     public:
         constexpr InlineAutoArray() noexcept :
@@ -56,8 +60,8 @@ namespace hg {
 
         template <typename InitialType_ = Type_> requires
             (Capacity_ == 1uLL) &&
-            _STD is_nothrow_move_constructible_v<Type_> &&
-            _STD is_constructible_v<Type_, InitialType_>
+            std::is_nothrow_move_constructible_v<Type_> &&
+            std::is_constructible_v<Type_, InitialType_>
         constexpr InlineAutoArray(InitialType_&& value_) noexcept :
             _alloc(),
             _traits(),
@@ -65,12 +69,12 @@ namespace hg {
             _inlineEnd(inline_begin()),
             _externalStorage(nullptr),
             _externalEnd(nullptr) {
-            inline_emplace_back(_STD forward<InitialType_>(value_));
+            inline_emplace_back(std::forward<InitialType_>(value_));
         }
 
         template <typename... InitialType_> requires
             (Capacity_ >= sizeof...(InitialType_)) &&
-            _STD is_nothrow_move_constructible_v<Type_>
+            std::is_nothrow_move_constructible_v<Type_>
         constexpr InlineAutoArray(InitialType_&&... values_) noexcept :
             _alloc(),
             _traits(),
@@ -78,23 +82,23 @@ namespace hg {
             _inlineEnd(inline_begin()),
             _externalStorage(nullptr),
             _externalEnd(nullptr) {
-            ((inline_emplace_back(_STD forward<InitialType_>(values_))), ...);
+            ((inline_emplace_back(std::forward<InitialType_>(values_))), ...);
         }
 
         template <typename OtherType_ = this_type> requires
-            _STD is_same_v<OtherType_, this_type> &&
-            _STD is_nothrow_move_constructible_v<Type_>
+            std::is_same_v<OtherType_, this_type> &&
+            std::is_nothrow_move_constructible_v<Type_>
         constexpr InlineAutoArray(mref<OtherType_> other_) noexcept :
-            _alloc(_STD move(other_._alloc)),
-            _traits(_STD move(other_._traits)),
+            _alloc(std::move(other_._alloc)),
+            _traits(std::move(other_._traits)),
             _inlineStorage(),
             _inlineEnd(inline_begin()),
-            _externalStorage(_STD exchange(other_._externalStorage, nullptr)),
-            _externalEnd(_STD exchange(other_._externalEnd, nullptr)) {
+            _externalStorage(std::exchange(other_._externalStorage, nullptr)),
+            _externalEnd(std::exchange(other_._externalEnd, nullptr)) {
             for (auto* iIt = other_.inline_begin(); iIt < other_._inlineEnd; ++iIt) {
-                inline_emplace_back(_STD move(*iIt));
+                inline_emplace_back(std::move(*iIt));
             }
-            _STD _Destroy_range(other_.inline_begin(), other_._inlineEnd, _alloc);
+            std::_Destroy_range(other_.inline_begin(), other_._inlineEnd, _alloc);
             other_._inlineEnd = other_.inline_begin();
         }
 
@@ -125,13 +129,13 @@ namespace hg {
         public:
             using this_type = InlineAutoArray<Type_, Capacity_, Allocator_>::IteratorImpl<Const_>;
 
-            using iterator_category = _STD random_access_iterator_tag;
+            using iterator_category = std::random_access_iterator_tag;
             using difference_type = InlineAutoArray<Type_, Capacity_, Allocator_>::difference_type;
             using size_type = InlineAutoArray<Type_, Capacity_, Allocator_>::size_type;
 
-            using value_type = _STD conditional_t<Const_, const Type_, Type_>;
-            using pointer = _STD conditional_t<Const_, ptr<const Type_>, ptr<Type_>>;
-            using reference = _STD conditional_t<Const_, cref<Type_>, ref<Type_>>;
+            using value_type = std::conditional_t<Const_, const Type_, Type_>;
+            using pointer = std::conditional_t<Const_, ptr<const Type_>, ptr<Type_>>;
+            using reference = std::conditional_t<Const_, cref<Type_>, ref<Type_>>;
 
             static constexpr bool is_const = Const_;
 
@@ -268,10 +272,10 @@ namespace hg {
                     _idx != other_._idx;
             }
 
-            [[nodiscard]] constexpr _STD strong_ordering operator<=>(cref<this_type> other_) const noexcept {
+            [[nodiscard]] constexpr std::strong_ordering operator<=>(cref<this_type> other_) const noexcept {
 
                 if (_inlineBase < other_._inlineBase || _externalBase < other_._externalBase) {
-                    return _STD strong_ordering::less;
+                    return std::strong_ordering::less;
                 }
 
                 return _idx <=> other_._idx;
@@ -286,13 +290,13 @@ namespace hg {
 
             /* Destroy inline allocated objects */
 
-            _STD _Destroy_range(inline_begin(), _inlineEnd, _alloc);
+            std::_Destroy_range(inline_begin(), _inlineEnd, _alloc);
             _inlineEnd = inline_begin();
 
             /* Destroy external allocated objects */
 
-            _STD _Destroy_range(external_begin(), _externalEnd, _alloc);
-            _traits.deallocate(_alloc, _externalStorage, _STD distance(external_begin(), _externalEnd));
+            std::_Destroy_range(external_begin(), _externalEnd, _alloc);
+            _traits.deallocate(_alloc, _externalStorage, std::distance(external_begin(), _externalEnd));
 
             _externalStorage = _externalEnd = nullptr;
         }
@@ -332,7 +336,7 @@ namespace hg {
             _traits.template construct<Type_, decltype(args_)...>(
                 _alloc,
                 _inlineEnd,
-                _STD forward<decltype(args_)>(args_)...
+                std::forward<decltype(args_)>(args_)...
             );
             return ++_inlineEnd;
         }
@@ -347,9 +351,9 @@ namespace hg {
             auto it = inline_begin() + where_ + 1;
             const auto end = _inlineEnd;
 
-            if constexpr (_STD is_nothrow_move_assignable_v<Type_> || not _STD is_copy_assignable_v<Type_>) {
+            if constexpr (std::is_nothrow_move_assignable_v<Type_> || not std::is_copy_assignable_v<Type_>) {
                 for (; it != end; ++it) {
-                    *(it - 1) = _STD move(*it);
+                    *(it - 1) = std::move(*it);
                 }
             } else {
                 for (; it != end; ++it) {
@@ -363,7 +367,7 @@ namespace hg {
         constexpr void _Xchange_external(const ptr<Type_> newPt_, const size_type newSize_) {
 
             if (external_begin()) {
-                _STD _Destroy_range(external_begin(), _externalEnd, _alloc);
+                std::_Destroy_range(external_begin(), _externalEnd, _alloc);
                 _alloc.deallocate(_externalStorage, external_size());
             }
 
@@ -379,14 +383,14 @@ namespace hg {
             auto newPt = _traits.allocate(_alloc, newSize);
 
             if (external_begin()) {
-                if constexpr (_STD is_nothrow_move_constructible_v<Type_> || not _STD is_copy_constructible_v<Type_>) {
-                    _STD _Uninitialized_move(external_begin(), _externalEnd, newPt, _alloc);
+                if constexpr (std::is_nothrow_move_constructible_v<Type_> || not std::is_copy_constructible_v<Type_>) {
+                    std::_Uninitialized_move(external_begin(), _externalEnd, newPt, _alloc);
                 } else {
-                    _STD _Uninitialized_copy(external_begin(), _externalEnd, newPt, _alloc);
+                    std::_Uninitialized_copy(external_begin(), _externalEnd, newPt, _alloc);
                 }
             }
 
-            _traits.construct(_alloc, newPt + oldSize, _STD forward<decltype(args_)>(args_)...);
+            _traits.construct(_alloc, newPt + oldSize, std::forward<decltype(args_)>(args_)...);
             _Xchange_external(newPt, newSize);
         }
 
@@ -405,10 +409,10 @@ namespace hg {
             const auto oldLast = _externalEnd - 1;
             auto newPt = _traits.allocate(_alloc, newSize);
 
-            if constexpr (_STD is_nothrow_move_constructible_v<Type_> || not _STD is_copy_constructible_v<Type_>) {
-                _STD _Uninitialized_move(external_begin(), oldLast, newPt, _alloc);
+            if constexpr (std::is_nothrow_move_constructible_v<Type_> || not std::is_copy_constructible_v<Type_>) {
+                std::_Uninitialized_move(external_begin(), oldLast, newPt, _alloc);
             } else {
-                _STD _Uninitialized_copy(external_begin(), oldLast, newPt, _alloc);
+                std::_Uninitialized_copy(external_begin(), oldLast, newPt, _alloc);
             }
 
             //_traits.destroy(_alloc, oldLast);
@@ -439,12 +443,12 @@ namespace hg {
             const auto prevBegin = external_begin();
             auto newPt = _traits.allocate(_alloc, newSize);
 
-            if constexpr (_STD is_nothrow_move_constructible_v<Type_> || not _STD is_copy_constructible_v<Type_>) {
-                _STD _Uninitialized_move(prevBegin, prevBegin + where_, newPt, _alloc);
-                _STD _Uninitialized_move(prevBegin + where_ + 1, _externalEnd, newPt, _alloc);
+            if constexpr (std::is_nothrow_move_constructible_v<Type_> || not std::is_copy_constructible_v<Type_>) {
+                std::_Uninitialized_move(prevBegin, prevBegin + where_, newPt, _alloc);
+                std::_Uninitialized_move(prevBegin + where_ + 1, _externalEnd, newPt, _alloc);
             } else {
-                _STD _Uninitialized_copy(prevBegin, prevBegin + where_, newPt, _alloc);
-                _STD _Uninitialized_copy(prevBegin + where_ + 1, _externalEnd, newPt, _alloc);
+                std::_Uninitialized_copy(prevBegin, prevBegin + where_, newPt, _alloc);
+                std::_Uninitialized_copy(prevBegin + where_ + 1, _externalEnd, newPt, _alloc);
             }
 
             //_traits.destroy(_alloc, oldLast);
@@ -508,13 +512,13 @@ namespace hg {
         }
 
     public:
-        constexpr void emplace_back(auto&&... val_) requires _STD is_constructible_v<Type_, decltype(val_)...> {
+        constexpr void emplace_back(auto&&... val_) requires std::is_constructible_v<Type_, decltype(val_)...> {
 
-            if (inline_emplace_back(_STD forward<decltype(val_)>(val_)...)) {
+            if (inline_emplace_back(std::forward<decltype(val_)>(val_)...)) {
                 return;
             }
 
-            external_realloc_emplace(_STD forward<decltype(val_)>(val_)...);
+            external_realloc_emplace(std::forward<decltype(val_)>(val_)...);
         }
 
         constexpr void pop_back() {

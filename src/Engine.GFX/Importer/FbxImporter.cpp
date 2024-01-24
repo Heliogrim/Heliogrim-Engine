@@ -37,7 +37,7 @@ static FbxAssimpImportData assimpGetImportData(cref<fs::File> file_);
 static FbxImporter::import_result_type makeImportResult(mref<FbxImporter::import_type> value_) {
 
     ::hg::concurrent::promise<FbxImporter::import_type> prom {
-        [value = _STD move(value_)]() {
+        [value = std::move(value_)]() {
             return value;
         }
     };
@@ -71,9 +71,9 @@ FbxImporter::descriptor_type FbxImporter::descriptor() const noexcept {
 
 FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const {
 
-    const auto rootCwd { _STD filesystem::current_path().append(R"(..\..)") };
-    const auto rootAssetPath { _STD filesystem::path(R"(resources\assets\geometry)") };
-    const auto rootImportPath { _STD filesystem::path(R"(resources\imports)") };
+    const auto rootCwd { std::filesystem::current_path().append(R"(..\..)") };
+    const auto rootAssetPath { std::filesystem::path(R"(resources\assets\geometry)") };
+    const auto rootImportPath { std::filesystem::path(R"(resources\imports)") };
 
     /**/
 
@@ -88,12 +88,12 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
     const auto targetSubDir { sourceName };
-    const auto targetDirPath { _STD filesystem::path(targetUrl.path()).append(targetSubDir) };
+    const auto targetDirPath { std::filesystem::path(targetUrl.path()).append(targetSubDir) };
 
-    const auto subRelativePath { _STD filesystem::relative(targetDirPath, rootAssetPath) };
+    const auto subRelativePath { std::filesystem::relative(targetDirPath, rootAssetPath) };
 
     const auto storePath {
-        _STD filesystem::path { rootCwd }
+        std::filesystem::path { rootCwd }
         .append(rootImportPath.string())
         .append(R"(fbx)")
         .append(subRelativePath.string())
@@ -102,7 +102,7 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
 
-    if (/* _STD filesystem::exists(targetDirPath) || */_STD filesystem::exists(storePath)) {
+    if (/* std::filesystem::exists(targetDirPath) || */std::filesystem::exists(storePath)) {
         return makeImportResult({ nullptr });
     }
 
@@ -113,13 +113,13 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
         return makeImportResult({ nullptr });
     }
 
-    const auto srcPath = _STD filesystem::relative(storePath, rootCwd);
+    const auto srcPath = std::filesystem::relative(storePath, rootCwd);
 
     /**/
 
     IM_CORE_LOGF("Copying file to {:}", storePath.string());
-    _STD filesystem::create_directories(storePath.parent_path());
-    _STD filesystem::copy(sourcePath, storePath);
+    std::filesystem::create_directories(storePath.parent_path());
+    std::filesystem::copy(sourcePath, storePath);
 
     /**/
 
@@ -154,7 +154,7 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 
     {
         auto root = arch.insertRootSlot();
-        access::Structure<StaticGeometry>::serialize(geom, _STD move(root));
+        access::Structure<StaticGeometry>::serialize(geom, std::move(root));
     }
 
     /**/
@@ -164,27 +164,27 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
 
-    const auto packagePath = _STD filesystem::path(rootCwd).append(targetDirPath.string()).append(sourceName).concat(
+    const auto packagePath = std::filesystem::path(rootCwd).append(targetDirPath.string()).append(sourceName).concat(
         R"(.impackage)"
     );
 
-    if (not _STD filesystem::exists(packagePath.parent_path())) {
-        _STD filesystem::create_directories(packagePath.parent_path());
+    if (not std::filesystem::exists(packagePath.parent_path())) {
+        std::filesystem::create_directories(packagePath.parent_path());
     }
 
     /**/
 
     hg::fs::File packageFile { packagePath };
-    auto source = make_uptr<resource::FileSource>(_STD move(packageFile));
+    auto source = make_uptr<resource::FileSource>(std::move(packageFile));
 
-    auto package = resource::PackageFactory::createEmptyPackage(_STD move(source));
+    auto package = resource::PackageFactory::createEmptyPackage(std::move(source));
     auto* const linker = package->getLinker();
 
     /**/
 
     linker->store(
         resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, clone(archGuid) },
-        _STD move(memBuffer)
+        std::move(memBuffer)
     );
 
     /**/
@@ -195,7 +195,7 @@ FbxImporter::import_result_type FbxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
 
-    return makeImportResult(_STD move(geom));
+    return makeImportResult(std::move(geom));
 }
 
 #include <assimp/Importer.hpp>

@@ -16,5 +16,5 @@ MaterialPrototypeLoader::MaterialPrototypeLoader(
         MaterialPrototypeCache(cache_),
         MaterialPrototypeFeedback(),
         MaterialPrototypeTransformer(pool_),
-        _STD move(sourceLoader_)
+        std::move(sourceLoader_)
     ) {}

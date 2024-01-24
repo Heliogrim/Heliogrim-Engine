@@ -56,12 +56,12 @@ void CompScheduler::setup(u32 workers_) {
     u32 allCount { workers_ };
 
     if (workers_ > 4) {
-        critCount = static_cast<u32>(_STD log2(workers_));
+        critCount = static_cast<u32>(std::log2(workers_));
         allCount -= critCount;
     }
 
     if (workers_ > 8) {
-        ioCount = static_cast<u32>(_STD log(workers_) / _STD log(8));
+        ioCount = static_cast<u32>(std::log(workers_) / std::log(8));
         ioCount = MIN(ioCount, (workers_ / 2) - 1);
 
         allCount -= ioCount;
@@ -108,7 +108,7 @@ void CompScheduler::setup(u32 workers_) {
 void CompScheduler::finalize() {
 
     auto tickPipeline = make_uptr<TickPipeline>();
-    _pipeline->addPipeline(_STD move(tickPipeline));
+    _pipeline->addPipeline(std::move(tickPipeline));
 
     /**/
 
@@ -170,12 +170,12 @@ void CompScheduler::destroy() {
 }
 
 void CompScheduler::delay(mref<task_handle_type> task_, const u32 ticks_) {
-    exec(_STD move(task_));
+    exec(std::move(task_));
 }
 
 void CompScheduler::exec(mref<task_handle_type> task_) {
 
-    [[maybe_unused]] const auto result = _schedule->push(_STD move(task_));
+    [[maybe_unused]] const auto result = _schedule->push(std::move(task_));
 
     #ifdef _DEBUG
     if (not result) {
@@ -193,7 +193,7 @@ bool CompScheduler::execOnStage(
     mref<task_handle_type> task_,
     const non_owning_rptr<const scheduler::Stage> stage_
 ) {
-    _pipeline->pushTask(stage_, _STD move(task_));
+    _pipeline->pushTask(stage_, std::move(task_));
     return true;
 }
 
@@ -203,7 +203,7 @@ bool CompScheduler::execOnStages(
     const non_owning_rptr<const scheduler::Stage> end_
 ) {
     // TODO: Should get special behaviour <> Currently fast-forward
-    _pipeline->pushTask(begin_, _STD move(task_));
+    _pipeline->pushTask(begin_, std::move(task_));
     return true;
 }
 

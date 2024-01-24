@@ -14,9 +14,9 @@ namespace hg::engine::acs {
         using assign_key_type = KeyType;
         using assign_value_type = PooledType;
 
-        using assign_hasher = _STD hash<assign_key_type>;
+        using assign_hasher = std::hash<assign_key_type>;
 
-        using size_type = _STD size_t;
+        using size_type = std::size_t;
         using hash_type = typename storage_type::hash_type;
 
         using value_type = Pool<KeyType, PooledType, InvalidKey>;
@@ -24,8 +24,8 @@ namespace hg::engine::acs {
         using const_reference_type = const Pool<KeyType, PooledType, InvalidKey>&;
         using ptr_type = Pool<KeyType, PooledType, InvalidKey>*;
 
-        using each_lambda_const = _STD function<void(const assign_key_type&, const assign_value_type&)>;
-        using each_lambda = _STD function<void(const assign_key_type&, assign_value_type&)>;
+        using each_lambda_const = std::function<void(const assign_key_type&, const assign_value_type&)>;
+        using each_lambda = std::function<void(const assign_key_type&, assign_value_type&)>;
 
         /**
          * Gets the size
@@ -143,7 +143,7 @@ namespace hg::engine::acs {
          *
          * @param  key_ The key.
          */
-        template <_STD same_as<PooledType> Type_ = PooledType> requires _STD is_default_constructible_v<Type_>
+        template <std::same_as<PooledType> Type_ = PooledType> requires std::is_default_constructible_v<Type_>
         void insert(const KeyType& key_) {
             _storage.emplace(key_);
         }
@@ -157,9 +157,9 @@ namespace hg::engine::acs {
          * @param 		   key_ The key.
          * @param [in,out] value_ The value to insert.
          */
-        template <_STD same_as<PooledType> Type_ = PooledType> requires _STD is_move_constructible_v<Type_>
+        template <std::same_as<PooledType> Type_ = PooledType> requires std::is_move_constructible_v<Type_>
         void insert(const KeyType& key_, PooledType&& value_) {
-            _storage.emplace(key_, _STD forward<PooledType>(value_));
+            _storage.emplace(key_, std::forward<PooledType>(value_));
         }
 
         /**
@@ -173,11 +173,11 @@ namespace hg::engine::acs {
          *
          * @returns A reference to a PooledType.
          */
-        template <_STD same_as<PooledType> Type_ = PooledType> requires
-            _STD is_move_constructible_v<Type_> &&
-            _STD is_move_assignable_v<Type_>
+        template <std::same_as<PooledType> Type_ = PooledType> requires
+            std::is_move_constructible_v<Type_> &&
+            std::is_move_assignable_v<Type_>
         PooledType& insert_or_assign(const KeyType& key_, PooledType&& value_) {
-            return _storage.insert_or_assign(key_, _STD forward<PooledType>(value_));
+            return _storage.insert_or_assign(key_, std::forward<PooledType>(value_));
         }
 
         /**
@@ -193,10 +193,10 @@ namespace hg::engine::acs {
          *
          * @returns A pointer to the keyed target element and expression whether it was newly constructed
          */
-        template <_STD same_as<PooledType> Type_ = PooledType, typename... Args_> requires
-            _STD is_constructible_v<Type_, Args_...>
+        template <std::same_as<PooledType> Type_ = PooledType, typename... Args_> requires
+            std::is_constructible_v<Type_, Args_...>
         std::pair<ptr<PooledType>, bool> emplace(cref<KeyType> key_, Args_&&... args_) {
-            return _storage.emplace(key_, _STD forward<Args_>(args_)...);
+            return _storage.emplace(key_, std::forward<Args_>(args_)...);
         }
 
     public:

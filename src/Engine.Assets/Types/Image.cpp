@@ -13,7 +13,7 @@ Image::Image(cref<asset_guid> guid_) :
 
 Image::Image(cref<asset_guid> guid_, mref<Vector<fs::Url>> sources_) :
     InheritMeta(guid_, Image::typeId),
-    _sources(_STD move(sources_)) {}
+    _sources(std::move(sources_)) {}
 
 cref<Vector<fs::Url>> Image::sources() const noexcept {
     return _sources;
@@ -24,7 +24,7 @@ void Image::addSource(cref<fs::Url> sourceUrl_) {
 }
 
 void Image::removeSource(cref<fs::Url> sourceUrl_) {
-    const auto where = _STD ranges::remove(
+    const auto where = std::ranges::remove(
         _sources.begin(),
         _sources.end(),
         sourceUrl_.path(),

@@ -14,23 +14,23 @@ namespace hg::engine::resource {
         };
 
         struct kv_hasher :
-            private _STD hash<asset_guid> {
-            [[nodiscard]] _STD size_t operator()(cref<key_value_pair> value_) const {
-                return static_cast<cref<_STD hash<asset_guid>>>(*this)(value_.guid);
+            private std::hash<asset_guid> {
+            [[nodiscard]] std::size_t operator()(cref<key_value_pair> value_) const {
+                return static_cast<cref<std::hash<asset_guid>>>(*this)(value_.guid);
             }
         };
 
         struct kv_equal :
-            private _STD equal_to<asset_guid> {
+            private std::equal_to<asset_guid> {
             [[nodiscard]] bool operator()(cref<key_value_pair> left_, cref<key_value_pair> right_) const {
-                return static_cast<cref<_STD equal_to<asset_guid>>>(*this)(left_.guid, right_.guid);
+                return static_cast<cref<std::equal_to<asset_guid>>>(*this)(left_.guid, right_.guid);
             }
         };
 
         struct kv_less :
-            private _STD less<asset_guid> {
+            private std::less<asset_guid> {
             [[nodiscard]] bool operator()(cref<key_value_pair> left_, cref<key_value_pair> right_) const {
-                return static_cast<cref<_STD less<asset_guid>>>(*this)(left_.guid, right_.guid);
+                return static_cast<cref<std::less<asset_guid>>>(*this)(left_.guid, right_.guid);
             }
         };
     }
@@ -100,7 +100,7 @@ namespace hg::engine::resource {
         reference_type operator=(mref<value_type> other_) noexcept;
 
     private:
-        using map_type = _STD map<asset_guid, ptr<Source>>;
+        using map_type = std::map<asset_guid, ptr<Source>>;
 
         map_type _mapping;
 

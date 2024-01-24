@@ -63,10 +63,10 @@ namespace hg::engine::reflow {
         void setViewportTarget(StringView renderer_, World world_, ptr<CameraActor> camera_);
 
     private:
-        _STD array<math::vec2, 4> _uvs;
+        std::array<math::vec2, 4> _uvs;
 
         math::uivec2 _viewSize;
-        Vector<_STD function<void(mref<smr<gfx::VkSwapchain>>, mref<smr<gfx::VkSwapchain>>)>> _viewListen;
+        Vector<std::function<void(mref<smr<gfx::VkSwapchain>>, mref<smr<gfx::VkSwapchain>>)>> _viewListen;
 
     private:
         [[nodiscard]] math::uivec2 actualViewExtent() const noexcept;
@@ -85,7 +85,7 @@ namespace hg::engine::reflow {
         void resizeView(cref<math::uivec2> extent_);
 
         void addResizeListener(
-            mref<_STD function<void(mref<smr<gfx::VkSwapchain>>, mref<smr<gfx::VkSwapchain>>)>> fnc_
+            mref<std::function<void(mref<smr<gfx::VkSwapchain>>, mref<smr<gfx::VkSwapchain>>)>> fnc_
         );
 
         void removeResizeListener();

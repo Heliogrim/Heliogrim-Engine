@@ -8,10 +8,10 @@
 #include <Engine.Common/__macro.hpp>
 
 namespace hg::engine::scheduler::thread {
-    using thread_id = _STD conditional_t<sizeof(_STD thread::id) == sizeof(u64), u64, u32>;
+    using thread_id = std::conditional_t<sizeof(std::thread::id) == sizeof(u64), u64, u32>;
     typedef u64 affinity_mask;
 
-    typedef _STD thread* thread_handle;
+    typedef std::thread* thread_handle;
 
     enum priority: u8 {
         eTimeCritical = 127u,

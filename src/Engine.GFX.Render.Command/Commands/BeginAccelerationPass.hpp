@@ -7,7 +7,7 @@ namespace hg::engine::render::cmd {
         public RenderCommand {
     public:
         constexpr BeginAccelerationPassRCmd(BeginAccelerationPassStruct data_) noexcept :
-            data(_STD move(data_)) {}
+            data(std::move(data_)) {}
 
         constexpr ~BeginAccelerationPassRCmd() noexcept override = default;
 

@@ -40,7 +40,7 @@ bool AnchorNode::hasNext() const noexcept {
 }
 
 void AnchorNode::setNext(mref<smr<Node>> next_) {
-    _next = _STD move(next_);
+    _next = std::move(next_);
 }
 
 smr<Node> AnchorNode::getNext() const noexcept {
@@ -52,7 +52,7 @@ bool AnchorNode::hasPrev() const noexcept {
 }
 
 void AnchorNode::setPrev(mref<nmpt<const Node>> prev_) {
-    _prev = _STD move(prev_);
+    _prev = std::move(prev_);
 }
 
 nmpt<const Node> AnchorNode::getPrev() const noexcept {
@@ -64,7 +64,7 @@ nmpt<const AnchorComponent> AnchorNode::getAnchorComponent() const noexcept {
 }
 
 nmpt<AnchorComponent> AnchorNode::getAnchorComponent() {
-    const auto it = _STD ranges::find_if(
+    const auto it = std::ranges::find_if(
         _auxiliary->components(),
         [](const ptr<Component> component_) {
             return component_->getMetaClass()->exact<AnchorComponent>();

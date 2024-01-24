@@ -6,9 +6,9 @@
 using namespace hg::engine::render::graph;
 using namespace hg;
 
-[[nodiscard]] static _STD pair<smr<AnchorNode>, smr<AnchorNode>> generateMinimalGraph() {
+[[nodiscard]] static std::pair<smr<AnchorNode>, smr<AnchorNode>> generateMinimalGraph() {
 
-    auto pair = _STD make_pair(
+    auto pair = std::make_pair(
         make_smr<AnchorNode>(),
         make_smr<AnchorNode>()
     );
@@ -19,13 +19,13 @@ using namespace hg;
 
 CompileGraph::CompileGraph() {
     auto pair = generateMinimalGraph();
-    _begin = _STD move(pair.first);
-    _end = _STD move(pair.second);
+    _begin = std::move(pair.first);
+    _end = std::move(pair.second);
 }
 
 CompileGraph::CompileGraph(mref<smr<AnchorNode>> begin_, mref<smr<AnchorNode>> end_) noexcept :
-    _begin(_STD move(begin_)),
-    _end(_STD move(end_)) {}
+    _begin(std::move(begin_)),
+    _end(std::move(end_)) {}
 
 nmpt<const AnchorNode> CompileGraph::begin() const noexcept {
     return _begin.get();
@@ -54,25 +54,25 @@ void CompileGraph::reverse(ref<Visitor> visitor_) {
 }
 
 bool CompileGraph::addExpectedProvision(mref<Provision> expected_) {
-    const auto result = _expectedProvision.insert(_STD move(expected_));
+    const auto result = _expectedProvision.insert(std::move(expected_));
     return result.second;
 }
 
 bool CompileGraph::addExpectedRequirement(mref<Requirement> expected_) {
-    const auto result = _expectedRequirement.insert(_STD move(expected_));
+    const auto result = _expectedRequirement.insert(std::move(expected_));
     return result.second;
 }
 
-_STD span<const Provision> CompileGraph::expectedProvision() const noexcept {
-    return _STD span(
+std::span<const Provision> CompileGraph::expectedProvision() const noexcept {
+    return std::span(
         _expectedProvision.begin(),
-        _STD distance(_expectedProvision.begin(), _expectedProvision.end())
+        std::distance(_expectedProvision.begin(), _expectedProvision.end())
     );
 }
 
-_STD span<const Requirement> CompileGraph::expectedRequirement() const noexcept {
-    return _STD span(
+std::span<const Requirement> CompileGraph::expectedRequirement() const noexcept {
+    return std::span(
         _expectedRequirement.begin(),
-        _STD distance(_expectedRequirement.begin(), _expectedRequirement.end())
+        std::distance(_expectedRequirement.begin(), _expectedRequirement.end())
     );
 }

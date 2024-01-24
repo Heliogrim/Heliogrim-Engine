@@ -16,7 +16,7 @@ void Builder::insertNode(
     mref<smr<Node>> node_,
     nmpt<RuntimeGraph> graph_
 ) {
-    return insertSubGraph(_STD move(from_), _STD move(to_), clone(node_), _STD move(node_), _STD move(graph_));
+    return insertSubGraph(std::move(from_), std::move(to_), clone(node_), std::move(node_), std::move(graph_));
 }
 
 uptr<CompileGraph> Builder::insertNode(
@@ -25,7 +25,7 @@ uptr<CompileGraph> Builder::insertNode(
     nmpt<const Node> to_,
     mref<smr<Node>> node_
 ) {
-    return insertSubGraph(_STD move(graph_), _STD move(from_), _STD move(to_), clone(node_), _STD move(node_));
+    return insertSubGraph(std::move(graph_), std::move(from_), std::move(to_), clone(node_), std::move(node_));
 }
 
 void Builder::insertSubGraph(
@@ -38,13 +38,13 @@ void Builder::insertSubGraph(
 
     BuilderVisitor visitor {
         [from_](cref<Node> node_) {
-            return _STD addressof(node_) == from_.get();
+            return std::addressof(node_) == from_.get();
         },
         [to_](cref<Node> node_) {
-            return _STD addressof(node_) == to_.get();
+            return std::addressof(node_) == to_.get();
         },
-        _STD move(begin_),
-        _STD move(end_)
+        std::move(begin_),
+        std::move(end_)
     };
 
     graph_->update(visitor);
@@ -60,13 +60,13 @@ uptr<CompileGraph> Builder::insertSubGraph(
 
     BuilderVisitor visitor {
         [from_](cref<Node> node_) {
-            return _STD addressof(node_) == from_.get();
+            return std::addressof(node_) == from_.get();
         },
         [to_](cref<Node> node_) {
-            return _STD addressof(node_) == to_.get();
+            return std::addressof(node_) == to_.get();
         },
-        _STD move(begin_),
-        _STD move(end_)
+        std::move(begin_),
+        std::move(end_)
     };
 
     graph_->update(visitor);

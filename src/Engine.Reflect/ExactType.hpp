@@ -10,7 +10,7 @@ namespace hg {
 
     template <typename Type_> requires (ClassHasMeta<Type_>)
     struct ExactTypeFn<Type_> {
-        template <typename Arg_> requires ClassHasMeta<_STD remove_cvref_t<Arg_>>
+        template <typename Arg_> requires ClassHasMeta<std::remove_cvref_t<Arg_>>
         [[nodiscard]] constexpr bool operator()(Arg_&& arg_) const noexcept {
             return std::forward<Arg_>(arg_).getMetaClass()->template exact<Type_>();
         }

@@ -11,7 +11,7 @@ DragDropEvent::DragDropEvent(
     StatelessEvent(),
     _pointer(pointer_),
     _type(type_),
-    _data(_STD move(data_)) {}
+    _data(std::move(data_)) {}
 
 DragDropEvent::DragDropEvent(cref<this_type> other_) noexcept :
     StatelessEvent(),
@@ -33,13 +33,13 @@ DragDropEvent::DragDropEvent(cref<this_type> other_) noexcept :
 DragDropEvent::DragDropEvent(mref<this_type> other_) noexcept :
     StatelessEvent(),
     _pointer(other_._pointer),
-    _type(_STD exchange(other_._type, DragDropEventType::eNone)) {
+    _type(std::exchange(other_._type, DragDropEventType::eNone)) {
 
     if (_type == DragDropObjectType::eFileType && other_._data.files) {
-        _data.files = _STD exchange(other_._data.files, nullptr);
+        _data.files = std::exchange(other_._data.files, nullptr);
 
     } else if (_type == DragDropObjectType::eTextType && other_._data.text) {
-        _data.text = _STD exchange(other_._data.text, nullptr);
+        _data.text = std::exchange(other_._data.text, nullptr);
     }
 }
 

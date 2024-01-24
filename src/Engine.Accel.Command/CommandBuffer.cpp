@@ -10,10 +10,10 @@ using namespace hg::engine::gfx;
 using namespace hg;
 
 AccelCommandBuffer::AccelCommandBuffer(mref<CommandBuffer> commandBuffer_) noexcept :
-    CommandBuffer(_STD move(commandBuffer_)) {}
+    CommandBuffer(std::move(commandBuffer_)) {}
 
 AccelCommandBuffer::AccelCommandBuffer(mref<this_type> other_) noexcept :
-    CommandBuffer(_STD move(other_)) {}
+    CommandBuffer(std::move(other_)) {}
 
 AccelCommandBuffer::~AccelCommandBuffer() noexcept {
     if (_vkCmd) {

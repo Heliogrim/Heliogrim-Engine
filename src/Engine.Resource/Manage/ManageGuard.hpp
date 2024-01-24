@@ -23,11 +23,11 @@ namespace hg::engine::resource {
 
         ManageGuard(const ptr<resource_type> resource_, const ResourceUsageFlags flags_);
 
-        ManageGuard(const ptr<resource_type> resource_, const ResourceUsageFlags flags_, const _STD adopt_lock_t);
+        ManageGuard(const ptr<resource_type> resource_, const ResourceUsageFlags flags_, const std::adopt_lock_t);
 
         ManageGuard(
             const ptr<resource_type> resource_,
-            const _STD defer_lock_t
+            const std::defer_lock_t
         );
 
     public:
@@ -49,8 +49,8 @@ namespace hg::engine::resource {
 
     private:
         void swap(ref<this_type> other_) noexcept {
-            _STD swap(_resource, other_._resource);
-            _STD swap(_ownedFlags, other_._ownedFlags);
+            std::swap(_resource, other_._resource);
+            std::swap(_ownedFlags, other_._ownedFlags);
         }
 
     public:
@@ -68,7 +68,7 @@ namespace hg::engine::resource {
 
         const ptr<resource_type> reset(const ptr<resource_type> next_);
 
-        const ptr<resource_type> reset(_STD nullptr_t);
+        const ptr<resource_type> reset(std::nullptr_t);
 
     public:
         /**

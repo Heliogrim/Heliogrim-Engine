@@ -91,7 +91,7 @@ namespace hg {
         using this_type = Task;
         using underlying_type = TaskBase;
 
-        using function_type = _STD function<void()>;
+        using function_type = std::function<void()>;
 
     public:
         /**
@@ -173,7 +173,7 @@ namespace hg {
         using this_type = RepetitiveTask;
         using underlying_type = TaskBase;
 
-        using function_type = _STD function<bool()>;
+        using function_type = std::function<bool()>;
 
     public:
         /**
@@ -255,7 +255,7 @@ namespace hg {
         using this_type = TickTask;
         using underlying_type = TaskBase;
 
-        using function_type = _STD function<void()>;
+        using function_type = std::function<void()>;
 
     public:
         /**

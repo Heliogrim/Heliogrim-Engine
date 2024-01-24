@@ -17,11 +17,11 @@ namespace hg::engine::render {
             return {};
         }
 
-        auto ifs = _STD ifstream(file, std::ios_base::in | std::ios_base::binary);
+        auto ifs = std::ifstream(file, std::ios_base::in | std::ios_base::binary);
 
-        ifs.seekg(0, _STD ios::end);
+        ifs.seekg(0, std::ios::end);
         const auto fsize = ifs.tellg();
-        ifs.seekg(0, _STD ios::beg);
+        ifs.seekg(0, std::ios::beg);
 
         string tmp {};
         tmp.resize(fsize);

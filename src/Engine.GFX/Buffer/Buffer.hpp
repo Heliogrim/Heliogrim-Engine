@@ -19,8 +19,8 @@ namespace hg::engine::gfx {
         constexpr Buffer() noexcept = default;
 
         Buffer(mref<this_type> other_) noexcept :
-            memory(_STD exchange(other_.memory, nullptr)),
-            buffer(_STD exchange(other_.buffer, nullptr)),
+            memory(std::exchange(other_.memory, nullptr)),
+            buffer(std::exchange(other_.buffer, nullptr)),
             device(other_.device),
             size(other_.size),
             usageFlags(other_.usageFlags) {}
@@ -29,9 +29,9 @@ namespace hg::engine::gfx {
 
     public:
         ref<this_type> operator=(mref<this_type> other_) noexcept {
-            if (this != _STD addressof(other_)) {
-                memory = _STD exchange(other_.memory, nullptr);
-                buffer = _STD exchange(other_.buffer, nullptr);
+            if (this != std::addressof(other_)) {
+                memory = std::exchange(other_.memory, nullptr);
+                buffer = std::exchange(other_.buffer, nullptr);
                 device = other_.device;
                 size = other_.size;
                 usageFlags = other_.usageFlags;
@@ -168,7 +168,7 @@ namespace hg::engine::gfx {
             static_assert(sizeof(this_type) == sizeof(Buffer));
             static_assert(alignof(this_type) == alignof(Buffer));
 
-            static_cast<ref<Buffer>>(*this) = _STD move(other_);
+            static_cast<ref<Buffer>>(*this) = std::move(other_);
             return *this;
         }
     };

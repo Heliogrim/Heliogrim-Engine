@@ -15,7 +15,7 @@ SparseTextureView::SparseTextureView(
     const TextureType type_
 ) :
     _owner(owner_),
-    _pages(_STD move(pages_)),
+    _pages(std::move(pages_)),
     _layers(layers_),
     _extent(extent_),
     _format(format_),
@@ -86,5 +86,5 @@ _::VkImageView SparseTextureView::vkImageView() const noexcept {
 }
 
 _::VkImageView SparseTextureView::vkImageView(mref<_::VkImageView> nextView_) noexcept {
-    return _STD exchange(_vkImageView, nextView_);
+    return std::exchange(_vkImageView, nextView_);
 }

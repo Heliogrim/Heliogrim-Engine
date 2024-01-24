@@ -93,15 +93,15 @@ namespace hg::engine::acs {
             return cbegin()[index_];
         }
 
-        void each(const _STD function<void(const Component&)>& fnc_) const {
+        void each(const std::function<void(const Component&)>& fnc_) const {
             for (const auto entry : *this) {
                 fnc_(entry);
             }
         }
 
-        void map(const _STD function<Component&&(Component&&)>& fnc_) {
+        void map(const std::function<Component&&(Component&&)>& fnc_) {
             for (auto&& entry : *this) {
-                entry = _STD move(fnc_(_STD move(entry)));
+                entry = std::move(fnc_(std::move(entry)));
             }
         }
 
@@ -184,15 +184,15 @@ namespace hg::engine::acs {
             return cbegin()[index_];
         }
 
-        void each(const _STD function<void(const Component&)>& fnc_) const {
+        void each(const std::function<void(const Component&)>& fnc_) const {
             for (const auto entry : *this) {
                 fnc_(entry);
             }
         }
 
-        void map(const _STD function<Component&&(Component&&)>& fnc_) {
+        void map(const std::function<Component&&(Component&&)>& fnc_) {
             for (auto&& entry : *this) {
-                entry = _STD move(fnc_(_STD move(entry)));
+                entry = std::move(fnc_(std::move(entry)));
             }
         }
 

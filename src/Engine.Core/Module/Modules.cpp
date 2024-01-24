@@ -51,7 +51,7 @@ cref<Deque<uptr<SubModule>>> Modules::getSubModules() const noexcept {
 
 DependencyValidationResult Modules::addSubModule(mref<uptr<SubModule>> subModule_) {
 
-    const auto where = _STD ranges::find(
+    const auto where = std::ranges::find(
         _subModules,
         subModule_->moduleKey(),
         [](cref<uptr<SubModule>> module_) {
@@ -74,7 +74,7 @@ DependencyValidationResult Modules::addSubModule(mref<uptr<SubModule>> subModule
     /**/
 
     if (_subModules.empty()) {
-        _subModules.push_back(_STD move(subModule_));
+        _subModules.push_back(std::move(subModule_));
         return DependencyValidationResult::eSuccess;
     }
 
@@ -88,7 +88,7 @@ DependencyValidationResult Modules::addSubModule(mref<uptr<SubModule>> subModule
      */
     for (const auto& dependency : subModule_->dependencies()) {
 
-        const auto where = _STD ranges::find(
+        const auto where = std::ranges::find(
             _subModules,
             dependency.key,
             [](cref<uptr<SubModule>> module_) {
@@ -117,7 +117,7 @@ DependencyValidationResult Modules::addSubModule(mref<uptr<SubModule>> subModule
 
         const auto& deps = stored->dependencies();
 
-        const auto where = _STD ranges::find(
+        const auto where = std::ranges::find(
             deps,
             subModule_->moduleKey(),
             [](cref<SubModuleDependency> entry_) {
@@ -159,16 +159,16 @@ DependencyValidationResult Modules::addSubModule(mref<uptr<SubModule>> subModule
      * Insert module at suitable position
      */
     if (pos != _subModules.end()) {
-        _subModules.insert(++pos, _STD move(subModule_));
+        _subModules.insert(++pos, std::move(subModule_));
     } else {
-        _subModules.push_front(_STD move(subModule_));
+        _subModules.push_front(std::move(subModule_));
     }
 
     return DependencyValidationResult::eSuccess;
 }
 
 const non_owning_rptr<SubModule> Modules::getSubModule(cref<DependencyKey> moduleKey_) const noexcept {
-    const auto iter = _STD ranges::find_if(
+    const auto iter = std::ranges::find_if(
         _subModules,
         [moduleKey_](const uptr<SubModule>& module_) {
             return module_->moduleKey() == moduleKey_;
@@ -184,7 +184,7 @@ const non_owning_rptr<SubModule> Modules::getSubModule(cref<DependencyKey> modul
 
 bool Modules::removeSubModule(const non_owning_rptr<SubModule> subModule_) {
 
-    const auto rem = _STD ranges::remove(
+    const auto rem = std::ranges::remove(
         _subModules,
         subModule_,
         [](cref<uptr<SubModule>> module_) {

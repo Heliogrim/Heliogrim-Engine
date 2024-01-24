@@ -27,8 +27,8 @@ namespace hg::engine::serialization {
         cref<DataLayoutBase> _layout;
 
     public:
-        void load(ref<Archive> archive_, _STD span<u8, _STD dynamic_extent> dst_) const;
+        void load(ref<Archive> archive_, std::span<u8, std::dynamic_extent> dst_) const;
 
-        void store(ref<Archive> archive_, _STD span<u8, _STD dynamic_extent> src_) const;
+        void store(ref<Archive> archive_, std::span<u8, std::dynamic_extent> src_) const;
     };
 }

@@ -30,7 +30,7 @@ void HierarchyResolver<sptr<SceneViewEntry>>::operator()(
         auto next { make_sptr<SceneViewEntry>() };
         next->storeTarget<ActorComponent>(root);
 
-        resolved_.push_back(_STD move(next));
+        resolved_.push_back(std::move(next));
         return;
     }
 
@@ -56,7 +56,7 @@ void HierarchyResolver<sptr<SceneViewEntry>>::operator()(
             auto next { make_sptr<SceneViewEntry>() };
             next->storeTarget<ActorComponent>(entry);
 
-            resolved_.push_back(_STD move(next));
+            resolved_.push_back(std::move(next));
         }
 
         // return;

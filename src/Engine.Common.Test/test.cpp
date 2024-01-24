@@ -20,7 +20,7 @@ namespace Common {
         struct TestPayload01 {
             u64 v0;
             s64 v1;
-            _STD string v2;
+            std::string v2;
         };
 
         TEST(MemoryPointer, IntegralTyped) {
@@ -58,7 +58,7 @@ namespace Common {
 
             ASSERT_TRUE(mp0);
 
-            mpt mp1 { _STD move(mp0) };
+            mpt mp1 { std::move(mp0) };
 
             ASSERT_FALSE(mp0);
             ASSERT_TRUE(mp1);
@@ -68,7 +68,7 @@ namespace Common {
             // Required to prevent optimization
             ASSERT_FALSE(mp2);
 
-            mp2 = _STD move(mp1);
+            mp2 = std::move(mp1);
 
             ASSERT_FALSE(mp1);
             ASSERT_TRUE(mp2);
@@ -111,7 +111,7 @@ namespace Common {
             ASSERT_TRUE(nmp0);
             ASSERT_TRUE(nmp2);
 
-            nmp2 = _STD move(nmp0);
+            nmp2 = std::move(nmp0);
 
             ASSERT_FALSE(nmp0);
             ASSERT_TRUE(nmp2);
@@ -154,7 +154,7 @@ namespace Common {
 
             ASSERT_TRUE(mp0);
 
-            mpt mp1 { _STD move(mp0) };
+            mpt mp1 { std::move(mp0) };
 
             ASSERT_FALSE(mp0);
             ASSERT_TRUE(mp1);
@@ -164,7 +164,7 @@ namespace Common {
             // Required to prevent optimization
             ASSERT_FALSE(mp2);
 
-            mp2 = _STD move(mp1);
+            mp2 = std::move(mp1);
 
             ASSERT_FALSE(mp1);
             ASSERT_TRUE(mp2);
@@ -207,7 +207,7 @@ namespace Common {
             ASSERT_TRUE(nmp0);
             ASSERT_TRUE(nmp2);
 
-            nmp2 = _STD move(nmp0);
+            nmp2 = std::move(nmp0);
 
             ASSERT_FALSE(nmp0);
             ASSERT_TRUE(nmp2);
@@ -343,13 +343,13 @@ namespace Common {
                     new(this_) type(*static_cast<ptr<type>>(other_));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    new(this_) type(_STD move(*static_cast<ptr<type>>(other_)));
+                    new(this_) type(std::move(*static_cast<ptr<type>>(other_)));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
                     *static_cast<ptr<type>>(this_) = *static_cast<ptr<type>>(other_);
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    *static_cast<ptr<type>>(this_) = _STD move(*static_cast<ptr<type>>(other_));
+                    *static_cast<ptr<type>>(this_) = std::move(*static_cast<ptr<type>>(other_));
                 },
             };
 
@@ -360,7 +360,7 @@ namespace Common {
 
         TEST(ProxyVector, SmartPointerTyped) {
             //
-            using type = _STD shared_ptr<u64>;
+            using type = std::shared_ptr<u64>;
 
             ProxyVector<>::proxy_holder_type proxy {
                 sizeof(type),
@@ -371,13 +371,13 @@ namespace Common {
                     new(this_) type(*static_cast<ptr<type>>(other_));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    new(this_) type(_STD move(*static_cast<ptr<type>>(other_)));
+                    new(this_) type(std::move(*static_cast<ptr<type>>(other_)));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
                     static_cast<ptr<type>>(this_)->operator=(*static_cast<ptr<type>>(other_));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    static_cast<ptr<type>>(this_)->operator=(_STD move(*static_cast<ptr<type>>(other_)));
+                    static_cast<ptr<type>>(this_)->operator=(std::move(*static_cast<ptr<type>>(other_)));
                 },
             };
 
@@ -402,13 +402,13 @@ namespace Common {
                     new(this_) type(*static_cast<ptr<type>>(other_));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    new(this_) type(_STD move(*static_cast<ptr<type>>(other_)));
+                    new(this_) type(std::move(*static_cast<ptr<type>>(other_)));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
                     static_cast<ptr<type>>(this_)->operator=(*static_cast<ptr<type>>(other_));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    static_cast<ptr<type>>(this_)->operator=(_STD move(*static_cast<ptr<type>>(other_)));
+                    static_cast<ptr<type>>(this_)->operator=(std::move(*static_cast<ptr<type>>(other_)));
                 }
             };
 
@@ -428,13 +428,13 @@ namespace Common {
                     new(this_) type(*static_cast<ptr<type>>(other_));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    new(this_) type(_STD move(*static_cast<ptr<type>>(other_)));
+                    new(this_) type(std::move(*static_cast<ptr<type>>(other_)));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
                     *static_cast<ptr<type>>(this_) = *static_cast<ptr<type>>(other_);
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    *static_cast<ptr<type>>(this_) = _STD move(*static_cast<ptr<type>>(other_));
+                    *static_cast<ptr<type>>(this_) = std::move(*static_cast<ptr<type>>(other_));
                 },
             };
 
@@ -487,13 +487,13 @@ namespace Common {
                     new(this_) type(*static_cast<ptr<type>>(other_));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    new(this_) type(_STD move(*static_cast<ptr<type>>(other_)));
+                    new(this_) type(std::move(*static_cast<ptr<type>>(other_)));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
                     static_cast<ptr<type>>(this_)->operator=(*static_cast<ptr<type>>(other_));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    static_cast<ptr<type>>(this_)->operator=(_STD move(*static_cast<ptr<type>>(other_)));
+                    static_cast<ptr<type>>(this_)->operator=(std::move(*static_cast<ptr<type>>(other_)));
                 },
             };
 
@@ -517,13 +517,13 @@ namespace Common {
                     new(this_) type(*static_cast<ptr<type>>(other_));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    new(this_) type(_STD move(*static_cast<ptr<type>>(other_)));
+                    new(this_) type(std::move(*static_cast<ptr<type>>(other_)));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
                     *static_cast<ptr<type>>(this_) = *static_cast<ptr<type>>(other_);
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    *static_cast<ptr<type>>(this_) = _STD move(*static_cast<ptr<type>>(other_));
+                    *static_cast<ptr<type>>(this_) = std::move(*static_cast<ptr<type>>(other_));
                 },
             };
 
@@ -594,13 +594,13 @@ namespace Common {
                     new(this_) type(*static_cast<ptr<type>>(other_));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    new(this_) type(_STD move(*static_cast<ptr<type>>(other_)));
+                    new(this_) type(std::move(*static_cast<ptr<type>>(other_)));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
                     *static_cast<ptr<type>>(this_) = *static_cast<ptr<type>>(other_);
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    *static_cast<ptr<type>>(this_) = _STD move(*static_cast<ptr<type>>(other_));
+                    *static_cast<ptr<type>>(this_) = std::move(*static_cast<ptr<type>>(other_));
                 },
             };
 
@@ -611,7 +611,7 @@ namespace Common {
             EXPECT_EQ(srcVec1.size(), 3);
 
             // Move Construct
-            auto tv0 { _STD move(srcVec0) };
+            auto tv0 { std::move(srcVec0) };
 
             EXPECT_FALSE(tv0.empty());
             EXPECT_EQ(tv0.size(), 4);
@@ -624,7 +624,7 @@ namespace Common {
             EXPECT_EQ(tv0.operator[]<type>(3), 4);
 
             // Move Assign ( internal swap )
-            tv0 = _STD move(srcVec1);
+            tv0 = std::move(srcVec1);
 
             EXPECT_FALSE(tv0.empty());
             EXPECT_EQ(tv0.size(), 3);
@@ -647,13 +647,13 @@ namespace Common {
                     new(this_) type(*static_cast<ptr<type>>(other_));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    new(this_) type(_STD move(*static_cast<ptr<type>>(other_)));
+                    new(this_) type(std::move(*static_cast<ptr<type>>(other_)));
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
                     *static_cast<ptr<type>>(this_) = *static_cast<ptr<type>>(other_);
                 },
                 [](ptr<void> this_, ptr<void> other_) noexcept {
-                    *static_cast<ptr<type>>(this_) = _STD move(*static_cast<ptr<type>>(other_));
+                    *static_cast<ptr<type>>(this_) = std::move(*static_cast<ptr<type>>(other_));
                 },
             };
 

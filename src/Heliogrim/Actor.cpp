@@ -98,7 +98,7 @@ void Actor::registerComponents(const ptr<IComponentRegisterContext> context_) {
          */
         auto prevIter = components.find(parent);
         if (prevIter != components.end()) {
-            iter = _STD move(prevIter);
+            iter = std::move(prevIter);
             continue;
         }
 
@@ -111,7 +111,7 @@ void Actor::registerComponents(const ptr<IComponentRegisterContext> context_) {
          *
          */
         auto nextIter { components.erase(iter) };
-        iter = _STD move(nextIter != components.end() ? nextIter : components.begin());
+        iter = std::move(nextIter != components.end() ? nextIter : components.begin());
     }
 }
 
@@ -136,7 +136,7 @@ ptr<Actor> hg::CreateActor(cref<World> activeWorld_) {
         }
     );
 
-    if (where == _STD ranges::end(ctxs)) [[unlikely]]
+    if (where == std::ranges::end(ctxs)) [[unlikely]]
     {
         return nullptr;
     }
@@ -145,7 +145,7 @@ ptr<Actor> hg::CreateActor(cref<World> activeWorld_) {
     auto* const registry { session->getState()->getRegistry() };
 
     managed<void> dummy {};
-    managed<void> alias { _STD move(dummy), session };
+    managed<void> alias { std::move(dummy), session };
 
     auto* actor { registry->createActor(ActorInitializer { alias }) };
     return actor;
@@ -167,7 +167,7 @@ Future<ptr<Actor>> hg::CreateActor(cref<Session> session_, async_t) {
     auto f { p.get() };
     p();
 
-    return Future { _STD move(f) };
+    return Future { std::move(f) };
 }
 
 Future<ptr<Actor>> hg::CreateActor(cref<World> activeWorld_, async_t) {
@@ -183,7 +183,7 @@ Future<ptr<Actor>> hg::CreateActor(cref<World> activeWorld_, async_t) {
         }
     );
 
-    auto* const session { where == _STD ranges::end(ctxs) ? nullptr : (*where)->getOwner() };
+    auto* const session { where == std::ranges::end(ctxs) ? nullptr : (*where)->getOwner() };
     concurrent::promise<ptr<Actor>> p {
         [session]() -> ptr<Actor> {
             if (session) [[likely]]
@@ -191,7 +191,7 @@ Future<ptr<Actor>> hg::CreateActor(cref<World> activeWorld_, async_t) {
                 auto* registry { session->getState()->getRegistry() };
 
                 managed<void> dummy {};
-                managed<void> alias { _STD move(dummy), session };
+                managed<void> alias { std::move(dummy), session };
 
                 auto* actor { registry->createActor(ActorInitializer { alias }) };
                 return actor;
@@ -204,7 +204,7 @@ Future<ptr<Actor>> hg::CreateActor(cref<World> activeWorld_, async_t) {
     auto f { p.get() };
     p();
 
-    return Future { _STD move(f) };
+    return Future { std::move(f) };
 }
 
 ptr<Actor> hg::CreateActor(const ptr<const ActorClass> class_, cref<Session> session_) noexcept {
@@ -277,7 +277,7 @@ Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Session> session_) noexce
     }
 
     /**/
-    registry->destroyActor(_STD move(actor_));
+    registry->destroyActor(std::move(actor_));
 
     /**/
     concurrent::promise<bool> p {
@@ -289,7 +289,7 @@ Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<Session> session_) noexce
     auto f = p.get();
     p();
 
-    return Future { _STD move(f) };
+    return Future { std::move(f) };
 }
 
 Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<World> activeWorld_) noexcept {
@@ -305,12 +305,12 @@ Future<bool> hg::Destroy(mref<ptr<Actor>> actor_, cref<World> activeWorld_) noex
         }
     );
 
-    auto* coreSession { where == _STD ranges::end(ctxs) ? nullptr : (*where)->getOwner() };
+    auto* coreSession { where == std::ranges::end(ctxs) ? nullptr : (*where)->getOwner() };
 
     managed<void> dummy {};
     const Session session {
-        managed<void> { _STD move(dummy), coreSession }
+        managed<void> { std::move(dummy), coreSession }
     };
 
-    return Destroy(_STD move(actor_), session);
+    return Destroy(std::move(actor_), session);
 }

@@ -11,7 +11,7 @@ namespace hg::engine::render::graph {
     public:
         using this_type = SelectorNode;
 
-        using mask_type = _STD bitset<16>;
+        using mask_type = std::bitset<16>;
 
     public:
         SelectorNode() noexcept;

@@ -10,7 +10,7 @@ namespace hg::engine::fs {
     public:
         using this_type = Path;
 
-        using std_fs_path = _STD filesystem::path;
+        using std_fs_path = std::filesystem::path;
 
         static constexpr const char* separator = "/";
 
@@ -34,7 +34,7 @@ namespace hg::engine::fs {
         ~Path() = default;
 
     private:
-        _STD filesystem::path _value;
+        std::filesystem::path _value;
 
     public:
         ref<this_type> operator=(mref<this_type> other_) noexcept;
@@ -82,7 +82,7 @@ namespace hg::engine::fs {
             return equals(check_);
         }
 
-        [[nodiscard]] _STD strong_ordering compareLexical(cref<this_type> other_) const;
+        [[nodiscard]] std::strong_ordering compareLexical(cref<this_type> other_) const;
 
     public:
         [[nodiscard]] bool operator==(cref<this_type> other_) const;
@@ -90,7 +90,7 @@ namespace hg::engine::fs {
         [[nodiscard]] bool operator!=(cref<this_type> other_) const;
 
         template <class Type_ = Path>
-        [[nodiscard]] _STD strong_ordering operator<=>(cref<Type_> other_) const {
+        [[nodiscard]] std::strong_ordering operator<=>(cref<Type_> other_) const {
             return compareLexical(other_);
         }
 

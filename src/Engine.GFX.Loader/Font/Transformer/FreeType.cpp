@@ -18,7 +18,7 @@ using namespace hg::engine::gfx::loader;
 using namespace hg::engine::gfx;
 using namespace hg;
 
-_STD atomic_uint_fast8_t ftRefCount {};
+std::atomic_uint_fast8_t ftRefCount {};
 FT_Library freeTypeLibrary {};
 FT_Face cascadiaMonoFace {};
 
@@ -61,7 +61,7 @@ void transformer::convertFreeType(
 
         const auto coverSize = repExt.x * repExt.y;
         const auto expCoverSize = static_cast<float>(coverSize) * 1.2F;
-        const auto expCoverSqrf = _STD sqrtf(expCoverSize);
+        const auto expCoverSqrf = std::sqrtf(expCoverSize);
 
         u32 nextDim { 0x1 };
         while (nextDim < static_cast<u32>(expCoverSqrf)) {
@@ -118,7 +118,7 @@ void transformer::convertFreeType(
 
     auto* const font = dst_;
     font->_name = "Cascadia Mono"sv;
-    font->_atlas = make_sptr<Texture>(_STD move(atlas));
+    font->_atlas = make_sptr<Texture>(std::move(atlas));
     font->_extent = reqExt;
     font->_fontSize = 16ui32;
     font->_glyphCount = 0;
@@ -154,7 +154,7 @@ void transformer::convertFreeType(
             font->atlas()->buffer().image(),
             vk::ImageSubresourceRange {
                 vk::ImageAspectFlagBits::eColor,
-                0, _STD max(font->atlas()->mipLevels(), 1ui32), 0, font->atlas()->layer()
+                0, std::max(font->atlas()->mipLevels(), 1ui32), 0, font->atlas()->layer()
             }
         }
     );
@@ -197,7 +197,7 @@ void transformer::convertFreeType(
             font->atlas()->buffer().image(),
             vk::ImageSubresourceRange {
                 vk::ImageAspectFlagBits::eColor,
-                0, _STD max(atlas.mipLevels(), 1ui32), 0, atlas.layer()
+                0, std::max(atlas.mipLevels(), 1ui32), 0, atlas.layer()
             }
         }
     );
@@ -241,10 +241,10 @@ void transformer::prepareFreeType() {
 
     /**/
 
-    const _STD filesystem::path srcFile = R"(\resources\imports\ttf\CascadiaMono.ttf)";
-    const auto cwd = _STD filesystem::current_path();
+    const std::filesystem::path srcFile = R"(\resources\imports\ttf\CascadiaMono.ttf)";
+    const auto cwd = std::filesystem::current_path();
 
-    const auto srcPath = _STD filesystem::path { cwd.string() + srcFile.string() };
+    const auto srcPath = std::filesystem::path { cwd.string() + srcFile.string() };
 
     /**/
 
@@ -405,7 +405,7 @@ void storeFontToTexture(
     math::uivec2 step { 0, report_.y };
     math::uivec2 fwd { 0 };
 
-    u32 curSize { _STD numeric_limits<u32>::max() };
+    u32 curSize { std::numeric_limits<u32>::max() };
     for (u32 i { 0 }; i < options_.fontSizes.size(); ++i) {
 
         u32 nextSize { 0ui32 };

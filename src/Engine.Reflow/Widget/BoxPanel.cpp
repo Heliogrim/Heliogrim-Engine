@@ -27,7 +27,7 @@ BoxPanel::BoxPanel() :
 BoxPanel::~BoxPanel() = default;
 
 string BoxPanel::getTag() const noexcept {
-    return _STD format(R"(BoxPanel <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(BoxPanel <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 ref<BoxPanel::Attributes> BoxPanel::attributes() noexcept {

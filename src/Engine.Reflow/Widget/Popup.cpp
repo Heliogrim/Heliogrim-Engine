@@ -25,7 +25,7 @@ sptr<Widget> Popup::root() const {
         return nullptr;
     }
 
-    return _STD static_pointer_cast<Widget, Window>(_layer->getWindow());
+    return std::static_pointer_cast<Widget, Window>(_layer->getWindow());
 }
 
 ReflowPosition Popup::position() const noexcept {

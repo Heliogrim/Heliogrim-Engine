@@ -84,9 +84,9 @@ namespace hg::math {
 
         ref<this_type> setLocation(mref<Location> location_) noexcept;
 
-        template <typename... Args_> requires _STD is_constructible_v<Location, Args_...>
+        template <typename... Args_> requires std::is_constructible_v<Location, Args_...>
         ref<this_type> setLocation(Args_&&... args_) noexcept {
-            return setLocation({ _STD forward<Args_>(args_)... });
+            return setLocation({ std::forward<Args_>(args_)... });
         }
 
         [[nodiscard]] cref<Rotator> rotator() const noexcept;

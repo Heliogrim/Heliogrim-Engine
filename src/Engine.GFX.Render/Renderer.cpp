@@ -24,12 +24,12 @@ Renderer::Renderer(
     mref<nmpt<gfx::cache::GlobalCacheCtrl>> globalCache_,
     mref<nmpt<gfx::memory::GlobalPooledAllocator>> globalGfxAllocator_
 ) noexcept :
-    _guid(_STD move(guid_)),
-    _name(_STD move(name_)),
-    _compileGraph(make_smr<>(_STD move(compileGraph_))),
-    _injectReg(_STD move(injectionRegistry_)),
-    _globalCache(_STD move(globalCache_)),
-    _globalGfxAlloc(_STD move(globalGfxAllocator_)) {}
+    _guid(std::move(guid_)),
+    _name(std::move(name_)),
+    _compileGraph(make_smr<>(std::move(compileGraph_))),
+    _injectReg(std::move(injectionRegistry_)),
+    _globalCache(std::move(globalCache_)),
+    _globalGfxAlloc(std::move(globalGfxAllocator_)) {}
 
 uptr<graph::RuntimeGraph> Renderer::makeDefaultRuntimeGraph() const {
 
@@ -45,7 +45,7 @@ uptr<graph::RuntimeGraph> Renderer::makeDefaultRuntimeGraph() const {
     constexpr graph::RenderGraphCompiler rgc {};
     return rgc(
         graph::CompileRequest {
-            _compileGraph, _STD move(defaultTargetSymbols)
+            _compileGraph, std::move(defaultTargetSymbols)
         }
     );
 }
@@ -65,10 +65,10 @@ uptr<RenderPass> Renderer::allocate() const {
     return pass;
 }
 
-_STD pair<uptr<RenderPass>, bool> Renderer::reallocate(mref<uptr<RenderPass>> pass_) const {
+std::pair<uptr<RenderPass>, bool> Renderer::reallocate(mref<uptr<RenderPass>> pass_) const {
     // Error: Will throw if used with initialized render pass due to missing external bound resources
     auto* const pass = pass_.get();
-    return _STD make_pair(_STD move(pass_), pass->realloc());
+    return std::make_pair(std::move(pass_), pass->realloc());
 }
 
 void Renderer::free(mref<uptr<RenderPass>> pass_) const {
@@ -97,10 +97,10 @@ uptr<RenderPass> Renderer::updateIncremental(mref<uptr<RenderPass>> pass_) const
     // TODO: Check when to reallocate structured state objects
 
     /* Reallocate the pass to propagate changes */
-    auto result = reallocate(_STD move(pass_));
-    return _STD move(result.first);
+    auto result = reallocate(std::move(pass_));
+    return std::move(result.first);
 }
 
 uptr<RenderPass> Renderer::update(mref<uptr<RenderPass>> pass_) const {
-    return updateIncremental(_STD move(pass_));
+    return updateIncremental(std::move(pass_));
 }

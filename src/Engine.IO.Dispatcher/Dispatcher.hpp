@@ -30,10 +30,10 @@ namespace hg::engine::io {
         ~Dispatcher() = default;
 
     public:
-        void operator()(_In_ mref<_STD function<void()>> fnc_, sync_t) const;
+        void operator()(_In_ mref<std::function<void()>> fnc_, sync_t) const;
 
         [[nodiscard]] smr<scheduler::fiber::await_signal_type> operator()(
-            _In_ mref<_STD function<void()>> fnc_,
+            _In_ mref<std::function<void()>> fnc_,
             async_t
         ) const;
     };

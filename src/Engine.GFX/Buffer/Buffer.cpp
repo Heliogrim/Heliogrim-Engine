@@ -17,7 +17,7 @@ void Buffer::destroy() {
     }
 
     if (memory) {
-        memory::AllocatedMemory::free(_STD move(memory));
+        memory::AllocatedMemory::free(std::move(memory));
         memory = nullptr;
     }
 }

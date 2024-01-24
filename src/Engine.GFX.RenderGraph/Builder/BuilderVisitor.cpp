@@ -30,13 +30,13 @@ BuilderVisitor::BuilderVisitor(
     mref<smr<Node>> end_,
     BuilderPredicateMode predicateMode_
 ) noexcept :
-    _predicateMode(_STD move(predicateMode_)),
-    _from(_STD move(from_)),
-    _to(_STD move(to_)),
+    _predicateMode(std::move(predicateMode_)),
+    _from(std::move(from_)),
+    _to(std::move(to_)),
     _fromNode(),
     _toNode(nullptr),
-    _begin(_STD move(begin_)),
-    _end(_STD move(end_)),
+    _begin(std::move(begin_)),
+    _end(std::move(end_)),
     _current(),
     _successor() {}
 
@@ -58,7 +58,7 @@ template <class NodeType_>
 void BuilderVisitor::simple_splice_insert(cref<NodeType_> node_) {
 
     if (_fromNode == nullptr && _from(node_)) {
-        _fromNode = _STD addressof(node_);
+        _fromNode = std::addressof(node_);
     }
 
     if (_toNode.empty() && _to(*node_.getNext())) {
@@ -70,7 +70,7 @@ void BuilderVisitor::simple_splice_insert(cref<NodeType_> node_) {
     }
 
     if (_begin) {
-        if (_fromNode.get() == _STD addressof(node_)) {
+        if (_fromNode.get() == std::addressof(node_)) {
 
             /**
              * Backward Link :: Begin -> From
@@ -88,7 +88,7 @@ void BuilderVisitor::simple_splice_insert(cref<NodeType_> node_) {
              *      [ ... ]
              */
 
-            LinkNodes(const_cast<Node*>(_fromNode.get()), _STD move(_begin));
+            LinkNodes(const_cast<Node*>(_fromNode.get()), std::move(_begin));
 
         } else {
             _fromNode->accept(*this);
@@ -97,7 +97,7 @@ void BuilderVisitor::simple_splice_insert(cref<NodeType_> node_) {
 
     if (_end) {
 
-        assert(_toNode.get() != _STD addressof(node_));
+        assert(_toNode.get() != std::addressof(node_));
 
         // TODO: If we would like to guarantee no cuts
         //assert(_toNode.get() == node_.getNext().get());
@@ -118,7 +118,7 @@ void BuilderVisitor::simple_splice_insert(cref<NodeType_> node_) {
          *      [ ... ]
          */
 
-        LinkNodes(_end.get(), _STD move(_toNode));
+        LinkNodes(_end.get(), std::move(_toNode));
         _end.reset();
     }
 }
@@ -138,7 +138,7 @@ void BuilderVisitor::operator()(cref<ConvergeNode> node_) {
 void BuilderVisitor::operator()(cref<DivergeNode> node_) {
 
     if (_fromNode == nullptr && _from(node_)) {
-        _fromNode = _STD addressof(node_);
+        _fromNode = std::addressof(node_);
     }
 
     if (_toNode.empty()) {
@@ -157,10 +157,10 @@ void BuilderVisitor::operator()(cref<DivergeNode> node_) {
     auto& current = const_cast<ref<DivergeNode>>(node_);
 
     if (_begin) {
-        if (_fromNode.get() == _STD addressof(current)) {
+        if (_fromNode.get() == std::addressof(current)) {
 
             current.removeNext(_toNode);
-            LinkNodes(const_cast<Node*>(_fromNode.get()), _STD move(_begin));
+            LinkNodes(const_cast<Node*>(_fromNode.get()), std::move(_begin));
 
         } else {
             _fromNode->accept(*this);
@@ -169,12 +169,12 @@ void BuilderVisitor::operator()(cref<DivergeNode> node_) {
 
     if (_end) {
 
-        assert(_toNode.get() != _STD addressof(current));
+        assert(_toNode.get() != std::addressof(current));
 
         // TODO: If we would like to guarantee no cuts
         //assert(_toNode.get() == node_.getNext().get());
 
-        LinkNodes(_end.get(), _STD move(_toNode));
+        LinkNodes(_end.get(), std::move(_toNode));
         _end.reset();
     }
 }
@@ -182,7 +182,7 @@ void BuilderVisitor::operator()(cref<DivergeNode> node_) {
 void BuilderVisitor::operator()(cref<SelectorNode> node_) {
 
     if (_fromNode == nullptr && _from(node_)) {
-        _fromNode = _STD addressof(node_);
+        _fromNode = std::addressof(node_);
     }
 
     if (_toNode.empty()) {
@@ -201,12 +201,12 @@ void BuilderVisitor::operator()(cref<SelectorNode> node_) {
     auto& current = const_cast<ref<SelectorNode>>(node_);
 
     if (_begin) {
-        if (_fromNode.get() == _STD addressof(current)) {
+        if (_fromNode.get() == std::addressof(current)) {
 
             // TODO: Check how we want to provide the active masking
 
             current.removeNext(_toNode);
-            LinkNodes(const_cast<Node*>(_fromNode.get()), _STD move(_begin));
+            LinkNodes(const_cast<Node*>(_fromNode.get()), std::move(_begin));
 
         } else {
             _fromNode->accept(*this);
@@ -215,12 +215,12 @@ void BuilderVisitor::operator()(cref<SelectorNode> node_) {
 
     if (_end) {
 
-        assert(_toNode.get() != _STD addressof(current));
+        assert(_toNode.get() != std::addressof(current));
 
         // TODO: If we would like to guarantee no cuts
         //assert(_toNode.get() == node_.getNext().get());
 
-        LinkNodes(_end.get(), _STD move(_toNode));
+        LinkNodes(_end.get(), std::move(_toNode));
         _end.reset();
     }
 }

@@ -11,7 +11,7 @@ using namespace hg::engine::serialization;
 using namespace hg;
 
 StringScopedSlot::StringScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
-    TypeScopedSlot(_STD move(scopedState_), make_sptr<StringSlot>(_STD move(state_))) {}
+    TypeScopedSlot(std::move(scopedState_), make_sptr<StringSlot>(std::move(state_))) {}
 
 StringScopedSlot::~StringScopedSlot() = default;
 

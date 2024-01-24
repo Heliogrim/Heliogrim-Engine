@@ -23,7 +23,7 @@ SparseTexture::SparseTexture(
     const TextureType type_,
     vk::Image vkImage_
 ) :
-    _memory(_STD move(memory_)),
+    _memory(std::move(memory_)),
     _layers(layers_),
     _extent(extent_),
     _format(format_),
@@ -45,7 +45,7 @@ SparseTexture::SparseTexture(
     u32 mipTailOffset_,
     u32 mipTailStride_
 ) :
-    _memory(_STD move(memory_)),
+    _memory(std::move(memory_)),
     _layers(layers_),
     _extent(extent_),
     _format(format_),
@@ -178,7 +178,7 @@ nmpt<SparseTexturePage> SparseTexture::makePage(
     );
 
     auto* const result = page.get();
-    _pages.emplace_back(_STD move(page));
+    _pages.emplace_back(std::move(page));
     return result;
 }
 
@@ -220,7 +220,7 @@ nmpt<SparseTexturePage> SparseTexture::makeOpaquePage(u32 layer_) {
     );
 
     auto* const result = page.get();
-    _opaquePages.emplace_back(_STD move(page));
+    _opaquePages.emplace_back(std::move(page));
     return result;
 }
 
@@ -233,7 +233,7 @@ void SparseTexture::assureTiledPages(u32 layer_, math::uivec2 mipLevels_, math::
     /**
      * Sanitize request values
      */
-    const u32 maxTiledMipLevel { _STD min(mipLevels_.max + 1ui32, _mipTailFirstLod) };
+    const u32 maxTiledMipLevel { std::min(mipLevels_.max + 1ui32, _mipTailFirstLod) };
 
     /**
      * Collect pages of targeted region
@@ -393,7 +393,7 @@ uptr<SparseTextureView> SparseTexture::makeView(math::uivec2 layers_, math::uive
     /**
      * Take the time to sort the pages by it's mip level (virtual backing)
      */
-    _STD ranges::sort(
+    std::ranges::sort(
         pages,
         [](nmpt<SparseTexturePage> left_, nmpt<SparseTexturePage> right_) {
             return left_->mipLevel() < right_->mipLevel();
@@ -406,7 +406,7 @@ uptr<SparseTextureView> SparseTexture::makeView(math::uivec2 layers_, math::uive
     const auto view {
         new SparseTextureView(
             this,
-            _STD move(pages),
+            std::move(pages),
             layers_,
             _extent,
             _format,
@@ -415,7 +415,7 @@ uptr<SparseTextureView> SparseTexture::makeView(math::uivec2 layers_, math::uive
         )
     };
 
-    return _STD unique_ptr<SparseTextureView>(view);
+    return std::unique_ptr<SparseTextureView>(view);
 }
 
 uptr<SparseTextureView> SparseTexture::makeSpatialView(

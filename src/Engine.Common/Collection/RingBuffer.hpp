@@ -86,7 +86,7 @@ namespace hg {
              * Head [3] < Tail [31] && Head [3] >= n[0] => Pass
              */
             if (h > t || (h < t && (h >= n || n > t))) {
-                value_ = _STD move(_container[n]);
+                value_ = std::move(_container[n]);
                 _tail = n;
                 return true;
             }

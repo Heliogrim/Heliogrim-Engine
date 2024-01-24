@@ -6,6 +6,13 @@ namespace hg {
     class InheritBase :
         public ClassMetaBase {
     public:
+        template <typename>
+        friend class InheritBase;
+
+        template <typename, typename, typename...>
+        friend class InheritMeta;
+
+    public:
         using this_type = InheritBase<Derived_>;
 
         using __inherit_types = reflect::__type_list<ClassMetaBase>;
@@ -17,6 +24,11 @@ namespace hg {
         constexpr InheritBase() :
             ClassMetaBase() {
             ClassMetaBase::_meta = __inherit_gen;
+        }
+
+    private:
+        [[nodiscard]] constexpr const __restricted_ptr<const MetaClass> getMetaClassBase() const noexcept {
+            return ClassMetaBase::getMetaClass();
         }
 
     public:

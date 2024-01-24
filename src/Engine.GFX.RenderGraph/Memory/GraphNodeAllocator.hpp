@@ -11,11 +11,11 @@
 namespace hg::engine::render::graph {
     class GraphNodeAllocator {
     public:
-        using memory_resource_type = _STD pmr::memory_resource;
+        using memory_resource_type = std::pmr::memory_resource;
 
     public:
         GraphNodeAllocator(mref<uptr<memory_resource_type>> resource_) noexcept :
-            _resource(_STD move(resource_)) {}
+            _resource(std::move(resource_)) {}
 
         ~GraphNodeAllocator() noexcept = default;
 

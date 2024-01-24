@@ -29,7 +29,7 @@ Button::Button() :
 Button::~Button() = default;
 
 string Button::getTag() const noexcept {
-    return _STD format(R"(Button <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(Button <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 ref<Button::Attributes> Button::attributes() noexcept {
@@ -50,7 +50,7 @@ void Button::render(const ptr<ReflowCommandBuffer> cmd_) {
 }
 
 decltype(Button::_emitter)::handle_type Button::addOnClick(mref<decltype(_emitter)::function_type> fnc_) {
-    return _emitter.on(_STD move(fnc_));
+    return _emitter.on(std::move(fnc_));
 }
 
 void Button::removeOnClick(decltype(_emitter)::handle_type handle_) {

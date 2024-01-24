@@ -145,30 +145,30 @@ void ObjectValueMapper<PointLightComponent>::update(
     auto* const transform { static_cast<ptr<Collapse>>(children[1].get()) };
 
     {
-        const auto wrapper = _STD static_pointer_cast<VerticalPanel, Widget>(transform->getContent());
+        const auto wrapper = std::static_pointer_cast<VerticalPanel, Widget>(transform->getContent());
 
-        _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->setValue(mat.location().fvec3());
-        _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->setValue(mat.rotator().euler());
-        _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->setValue(mat.scale());
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->setValue(mat.location().fvec3());
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->setValue(mat.rotator().euler());
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->setValue(mat.scale());
 
-        _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->_callback = [sgc = &sgc](
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->_callback = [sgc = &sgc](
             math::vec3 value_
         ) {
-                const_cast<ref<Transform>>(sgc->getWorldTransform()).setLocation(math::Location(_STD move(value_)));
+                const_cast<ref<Transform>>(sgc->getWorldTransform()).setLocation(math::Location(std::move(value_)));
             };
 
-        _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->_callback = [sgc = &sgc](
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->_callback = [sgc = &sgc](
             math::vec3 value_
         ) {
                 const_cast<ref<Transform>>(sgc->getWorldTransform()).setRotator(
-                    math::Rotator::fromEuler(_STD move(value_))
+                    math::Rotator::fromEuler(std::move(value_))
                 );
             };
 
-        _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->_callback = [sgc = &sgc
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->_callback = [sgc = &sgc
             ](math::vec3 value_) {
 
-                const_cast<ref<Transform>>(sgc->getWorldTransform()).setScale(_STD move(value_));
+                const_cast<ref<Transform>>(sgc->getWorldTransform()).setScale(std::move(value_));
             };
     }
 
@@ -177,10 +177,10 @@ void ObjectValueMapper<PointLightComponent>::update(
     auto* const lightCollapse { static_cast<ptr<Collapse>>(children[2].get()) };
 
     {
-        const auto wrapper = _STD static_pointer_cast<VerticalPanel, Widget>(lightCollapse->getContent());
+        const auto wrapper = std::static_pointer_cast<VerticalPanel, Widget>(lightCollapse->getContent());
 
-        auto* const luminance = _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0)).get();
-        auto* const limit = _STD static_pointer_cast<InputFloat, Widget>(wrapper->children()->at(1)).get();
+        auto* const luminance = std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0)).get();
+        auto* const limit = std::static_pointer_cast<InputFloat, Widget>(wrapper->children()->at(1)).get();
 
         luminance->setValue(sgc._luminance);
         limit->setValue(sgc._distanceLimit);
@@ -310,30 +310,30 @@ void ObjectValueMapper<DirectionalLightComponent>::update(
     auto* const transform { static_cast<ptr<Collapse>>(children[1].get()) };
 
     {
-        const auto wrapper = _STD static_pointer_cast<VerticalPanel, Widget>(transform->getContent());
+        const auto wrapper = std::static_pointer_cast<VerticalPanel, Widget>(transform->getContent());
 
-        _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->setValue(mat.location().fvec3());
-        _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->setValue(mat.rotator().euler());
-        _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->setValue(mat.scale());
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->setValue(mat.location().fvec3());
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->setValue(mat.rotator().euler());
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->setValue(mat.scale());
 
-        _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->_callback = [sgc = &dlc](
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0))->_callback = [sgc = &dlc](
             math::vec3 value_
         ) {
-                const_cast<ref<Transform>>(sgc->getWorldTransform()).setLocation(math::Location(_STD move(value_)));
+                const_cast<ref<Transform>>(sgc->getWorldTransform()).setLocation(math::Location(std::move(value_)));
             };
 
-        _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->_callback = [sgc = &dlc](
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1))->_callback = [sgc = &dlc](
             math::vec3 value_
         ) {
                 const_cast<ref<Transform>>(sgc->getWorldTransform()).setRotator(
-                    math::Rotator::fromEuler(_STD move(value_))
+                    math::Rotator::fromEuler(std::move(value_))
                 );
             };
 
-        _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->_callback = [sgc = &dlc
+        std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(2))->_callback = [sgc = &dlc
             ](math::vec3 value_) {
 
-                const_cast<ref<Transform>>(sgc->getWorldTransform()).setScale(_STD move(value_));
+                const_cast<ref<Transform>>(sgc->getWorldTransform()).setScale(std::move(value_));
             };
     }
 
@@ -342,10 +342,10 @@ void ObjectValueMapper<DirectionalLightComponent>::update(
     auto* const lightCollapse { static_cast<ptr<Collapse>>(children[2].get()) };
 
     {
-        const auto wrapper = _STD static_pointer_cast<VerticalPanel, Widget>(lightCollapse->getContent());
+        const auto wrapper = std::static_pointer_cast<VerticalPanel, Widget>(lightCollapse->getContent());
 
-        auto* const luminance = _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0)).get();
-        auto* const direction = _STD static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1)).get();
+        auto* const luminance = std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(0)).get();
+        auto* const direction = std::static_pointer_cast<InputVec3, Widget>(wrapper->children()->at(1)).get();
 
         luminance->setValue(dlc._luminance);
 

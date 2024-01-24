@@ -11,13 +11,13 @@
 namespace hg::engine::accel {
     struct MappedBindings {
     public:
-        Vector<_STD pair<nmpt<const lang::Symbol>, VkBindingLocation>> inbound;
-        Vector<_STD pair<nmpt<const lang::Symbol>, VkBindingLocation>> outbound;
+        Vector<std::pair<nmpt<const lang::Symbol>, VkBindingLocation>> inbound;
+        Vector<std::pair<nmpt<const lang::Symbol>, VkBindingLocation>> outbound;
 
     public:
         [[nodiscard]] cref<VkBindingLocation> inboundLocation(cref<nmpt<const lang::Symbol>> inbound_) const noexcept {
             #ifdef _DEBUG
-            const auto iter = _STD ranges::find_if(
+            const auto iter = std::ranges::find_if(
                 inbound,
                 [&inbound_](const auto& pair_) {
                     return inbound_ == pair_.first || inbound_->symbolId == pair_.first->symbolId;
@@ -26,7 +26,7 @@ namespace hg::engine::accel {
             assert(iter != inbound.end());
             return iter->second;
             #else
-            return _STD ranges::find_if(
+            return std::ranges::find_if(
                 inbound,
                 [&inbound_](const auto& pair_) {
                     return inbound_ == pair_.first || inbound_->symbolId == pair_.first->symbolId;
@@ -57,7 +57,7 @@ namespace hg::engine::accel {
             cref<nmpt<const lang::Symbol>> outbound_
         ) const noexcept {
             #ifdef _DEBUG
-            const auto iter = _STD ranges::find_if(
+            const auto iter = std::ranges::find_if(
                 outbound,
                 [&outbound_](const auto& pair_) {
                     return outbound_ == pair_.first || outbound_->symbolId == pair_.first->symbolId;
@@ -66,7 +66,7 @@ namespace hg::engine::accel {
             assert(iter != outbound.end());
             return iter->second;
             #else
-            return _STD ranges::find_if(
+            return std::ranges::find_if(
                 outbound,
                 [&outbound_](const auto& pair_) {
                     return outbound_ == pair_.first || outbound_->symbolId == pair_.first->symbolId;

@@ -18,9 +18,9 @@ namespace hg::engine::scene {
      *
      * @returns A ptr&lt;Ty&gt;
      */
-    template <typename Ty, typename Alloc_ = _STD allocator<Ty>>
+    template <typename Ty, typename Alloc_ = std::allocator<Ty>>
     FORCE_INLINE constexpr ptr<Ty> construct_inplace(ptr<void> dst_, Alloc_ allocator_ = Alloc_ {}) {
-        using allocator_trait = _STD allocator_traits<Alloc_>;
+        using allocator_trait = std::allocator_traits<Alloc_>;
         allocator_trait::construct(allocator_, static_cast<ptr<Ty>>(dst_));
         return static_cast<ptr<Ty>>(dst_);
     }
@@ -36,10 +36,10 @@ namespace hg::engine::scene {
      *
      * @returns A ptr&lt;Ty&gt;
      */
-    template <typename Ty, typename Alloc_ = _STD allocator<Ty>>
+    template <typename Ty, typename Alloc_ = std::allocator<Ty>>
     FORCE_INLINE constexpr ptr<Ty> construct_inplace(ptr<void> dst_, cref<Ty> src_, Alloc_ allocator_ = Alloc_ {}) {
-        using allocator_trait = _STD allocator_traits<Alloc_>;
-        allocator_trait::construct(allocator_, static_cast<ptr<Ty>>(dst_), _STD forward<cref<Ty>>(src_));
+        using allocator_trait = std::allocator_traits<Alloc_>;
+        allocator_trait::construct(allocator_, static_cast<ptr<Ty>>(dst_), std::forward<cref<Ty>>(src_));
         return static_cast<ptr<Ty>>(dst_);
     }
 
@@ -54,10 +54,10 @@ namespace hg::engine::scene {
      *
      * @returns A ptr&lt;Ty&gt;
      */
-    template <typename Ty, typename Alloc_ = _STD allocator<Ty>>
+    template <typename Ty, typename Alloc_ = std::allocator<Ty>>
     FORCE_INLINE constexpr ptr<Ty> construct_inplace(ptr<void> dst_, mref<Ty> src_, Alloc_ allocator_ = Alloc_ {}) {
-        using allocator_trait = _STD allocator_traits<Alloc_>;
-        allocator_trait::construct(allocator_, static_cast<ptr<Ty>>(dst_), _STD forward<Ty>(src_));
+        using allocator_trait = std::allocator_traits<Alloc_>;
+        allocator_trait::construct(allocator_, static_cast<ptr<Ty>>(dst_), std::forward<Ty>(src_));
         return static_cast<ptr<Ty>>(dst_);
     }
 
@@ -69,12 +69,12 @@ namespace hg::engine::scene {
      * @param  dst_ Destination for the.
      * @param  allocator_ (Optional) The allocator.
      */
-    template <typename Ty, typename Alloc_ = _STD allocator<Ty>>
+    template <typename Ty, typename Alloc_ = std::allocator<Ty>>
     FORCE_INLINE constexpr void destruct_inplace(
         ptr<Ty> dst_,
         Alloc_ allocator_ = Alloc_ {}
-    ) noexcept(_STD is_nothrow_destructible_v<Ty>) {
-        using allocator_trait = _STD allocator_traits<Alloc_>;
+    ) noexcept(std::is_nothrow_destructible_v<Ty>) {
+        using allocator_trait = std::allocator_traits<Alloc_>;
         allocator_trait::destroy(allocator_, dst_);
     }
 
@@ -113,12 +113,12 @@ namespace hg::engine::scene {
         using index_type = IndexType;
 
         using key_type = KeyType;
-        using key_allocator_type = _STD allocator<key_type>;
-        using key_allocator_traits = _STD allocator_traits<key_allocator_type>;
+        using key_allocator_type = std::allocator<key_type>;
+        using key_allocator_traits = std::allocator_traits<key_allocator_type>;
 
         using value_type = ValueType;
-        using value_allocator_type = _STD allocator<value_type>;
-        using value_allocator_traits = _STD allocator_traits<value_allocator_type>;
+        using value_allocator_type = std::allocator<value_type>;
+        using value_allocator_traits = std::allocator_traits<value_allocator_type>;
 
     public:
         inline constexpr static size_t key_size = sizeof(key_type);
@@ -159,10 +159,10 @@ namespace hg::engine::scene {
          * @param  other_ The other.
          */
         scene_node_storage_page(mref<this_type> other_) noexcept :
-            _mem(_STD exchange(other_._mem, nullptr)),
-            _keys(_STD exchange(other_._keys, nullptr)),
-            _values(_STD exchange(other_._values, nullptr)),
-            _seq(_STD move(other_._seq)) { }
+            _mem(std::exchange(other_._mem, nullptr)),
+            _keys(std::exchange(other_._keys, nullptr)),
+            _values(std::exchange(other_._values, nullptr)),
+            _seq(std::move(other_._seq)) { }
 
         /**
          * Destructor
@@ -320,7 +320,7 @@ namespace hg::engine::scene {
              *
              * @returns A pair&lt;value_type,value_type&gt;
              */
-            [[nodiscard]] _STD pair<value_type, value_type> split(cref<index_type> exclude_) const noexcept {
+            [[nodiscard]] std::pair<value_type, value_type> split(cref<index_type> exclude_) const noexcept {
                 return {
                     { first, exclude_ - 1u },
                     { exclude_ + 1u, last }
@@ -500,7 +500,7 @@ namespace hg::engine::scene {
          *
          * @returns A pair&lt;cref&lt;key_type&gt;,cref&lt;value_type&gt;&gt;
          */
-        [[nodiscard]] _STD pair<cref<key_type>, cref<value_type>> get(cref<index_type> idx_) const {
+        [[nodiscard]] std::pair<cref<key_type>, cref<value_type>> get(cref<index_type> idx_) const {
             return {
                 _keys[idx_],
                 _values[idx_]
@@ -517,7 +517,7 @@ namespace hg::engine::scene {
          *
          * @returns A pair&lt;cref&lt;key_type&gt;,ref&lt;value_type&gt;&gt;
          */
-        [[nodiscard]] _STD pair<cref<key_type>, ref<value_type>> get(cref<index_type> idx_) {
+        [[nodiscard]] std::pair<cref<key_type>, ref<value_type>> get(cref<index_type> idx_) {
             return {
                 _keys[idx_],
                 _values[idx_]
@@ -595,20 +595,20 @@ namespace hg::engine::scene {
             cref<index_type> idx_,
             cref<key_type> key_,
             IN mref<value_type> value_
-        ) noexcept (_STD is_nothrow_move_assignable_v<value_type>) {
+        ) noexcept (std::is_nothrow_move_assignable_v<value_type>) {
 
-            if constexpr (_STD is_nothrow_move_assignable_v<key_type>) {
-                _keys[idx_] = _STD move(key_);
+            if constexpr (std::is_nothrow_move_assignable_v<key_type>) {
+                _keys[idx_] = std::move(key_);
             } else {
                 destruct_inplace<key_type, key_allocator_type>(&_keys[idx_]);
-                construct_inplace<key_type, key_allocator_type>(&_keys[idx_], _STD move(key_));
+                construct_inplace<key_type, key_allocator_type>(&_keys[idx_], std::move(key_));
             }
 
-            if constexpr (_STD is_nothrow_move_assignable_v<value_type>) {
-                _values[idx_] = _STD move(value_);
+            if constexpr (std::is_nothrow_move_assignable_v<value_type>) {
+                _values[idx_] = std::move(value_);
             } else {
                 destruct_inplace<value_type, value_allocator_type>(&_values[idx_]);
-                construct_inplace<value_type, value_allocator_type>(&_values[idx_], _STD forward<value_type>(value_));
+                construct_inplace<value_type, value_allocator_type>(&_values[idx_], std::forward<value_type>(value_));
             }
         }
 
@@ -660,7 +660,7 @@ namespace hg::engine::scene {
             /**
              * Find sequence containing idx_
              */
-            auto sit = _STD find_if(
+            auto sit = std::find_if(
                 _seq.rbegin(),
                 _seq.rend(),
                 [&idx_](typename sequence::const_reference_type sequence_) {
@@ -716,10 +716,10 @@ namespace hg::engine::scene {
                 /**
                  * Push new sub-sequences to collection
                  */
-                _seq.push_back(_STD move(sub.first));
-                _seq.push_back(_STD move(sub.last));
+                _seq.push_back(std::move(sub.first));
+                _seq.push_back(std::move(sub.last));
 
-                _STD sort(_seq.beg(), _seq.end(), sequence_comparator_type {});
+                std::sort(_seq.beg(), _seq.end(), sequence_comparator_type {});
             }
         }
 
@@ -737,9 +737,9 @@ namespace hg::engine::scene {
             cref<index_type> idx_,
             cref<key_type> key_,
             IN mref<value_type> value_
-        ) noexcept(_STD is_nothrow_move_constructible_v<value_type>) {
+        ) noexcept(std::is_nothrow_move_constructible_v<value_type>) {
             construct_inplace<key_type, key_allocator_type>(&_keys[idx_], key_);
-            construct_inplace<value_type, value_allocator_type>(&_values[idx_], _STD forward<value_type>(value_));
+            construct_inplace<value_type, value_allocator_type>(&_values[idx_], std::forward<value_type>(value_));
         }
 
     public:
@@ -757,7 +757,7 @@ namespace hg::engine::scene {
             cref<index_type> idx_,
             cref<key_type> key_,
             IN mref<value_type> value_
-        ) noexcept(_STD is_nothrow_move_assignable_v<value_type>) {
+        ) noexcept(std::is_nothrow_move_assignable_v<value_type>) {
             /**
              * Check whether key exists
              */
@@ -765,7 +765,7 @@ namespace hg::engine::scene {
                 /**
                  * If index in range, override stored element
                  */
-                replace(idx_, key_, _STD forward<value_type>(value_));
+                replace(idx_, key_, std::forward<value_type>(value_));
             } else {
                 /**
                  * Reserve Slot from sequence
@@ -775,7 +775,7 @@ namespace hg::engine::scene {
                 /**
                  * Place the new key-value pair to local storage
                  */
-                place(idx_, key_, _STD forward<value_type>(value_));
+                place(idx_, key_, std::forward<value_type>(value_));
             }
         }
 
@@ -795,7 +795,7 @@ namespace hg::engine::scene {
             IN cref<key_type> key_,
             IN mref<value_type> value_,
             OUT ref<index_type> idx_
-        ) noexcept (_STD is_nothrow_move_assignable_v<value_type>) {
+        ) noexcept (std::is_nothrow_move_assignable_v<value_type>) {
             /**
              * Get empty slot
              */
@@ -811,7 +811,7 @@ namespace hg::engine::scene {
             /**
              * Place key and value to local storage
              */
-            place(idx_, key_, _STD forward<value_type>(value_));
+            place(idx_, key_, std::forward<value_type>(value_));
 
             /**
              * Return succeeded operation
@@ -832,7 +832,7 @@ namespace hg::engine::scene {
             /**
              * Find upper bound sequence where index can be merged
              */
-            auto uit = _STD find_if(
+            auto uit = std::find_if(
                 _seq.rbegin(),
                 _seq.rend(),
                 [&idx_](typename sequence::const_reference_type sequence_) {
@@ -845,14 +845,14 @@ namespace hg::engine::scene {
              */
             if (uit == _seq.end()) {
                 uit = _seq.emplace(_seq.end(), { idx_, idx_ });
-                _STD sort(_seq.begin(), _seq.end(), sequence_comparator_type {});
+                std::sort(_seq.begin(), _seq.end(), sequence_comparator_type {});
                 return;
             }
 
             /**
              * Find lower bound sequence where index can be merged
              */
-            auto lit = _STD find_if(
+            auto lit = std::find_if(
                 _seq.begin(),
                 _seq.end(),
                 [&idx_](typename sequence::const_reference_type sequence_) {
@@ -893,10 +893,10 @@ namespace hg::engine::scene {
                 /**
                  * Push new combined sequence to sequence collection
                  */
-                _seq.push_back(_STD move(uitv));
+                _seq.push_back(std::move(uitv));
             }
 
-            _STD sort(_seq.begin(), _seq.end(), sequence_comparator_type {});
+            std::sort(_seq.begin(), _seq.end(), sequence_comparator_type {});
         }
 
     public:
@@ -908,7 +908,7 @@ namespace hg::engine::scene {
          *
          * @param  idx_ Zero-based index of the.
          */
-        void erase(cref<index_type> idx_) noexcept(_STD is_nothrow_destructible_v<value_type>) {
+        void erase(cref<index_type> idx_) noexcept(std::is_nothrow_destructible_v<value_type>) {
             /**
              * Destroy key-value pair
              */
@@ -925,13 +925,13 @@ namespace hg::engine::scene {
         template <typename ValueType_, bool Const_>
         class page_seg_iterator_base {
         public:
-            using iterator_category = _STD contiguous_iterator_tag;
+            using iterator_category = std::contiguous_iterator_tag;
 
             using this_type = page_seg_iterator_base<ValueType_, Const_>;
             using reference_type = ref<this_type>;
             using const_reference_type = cref<this_type>;
 
-            using value_type = _STD conditional_t<Const_, ValueType_, const ValueType_>;
+            using value_type = std::conditional_t<Const_, ValueType_, const ValueType_>;
             using value_ptr_type = ptr<value_type>;
 
             using index_type = IndexType;
@@ -947,7 +947,7 @@ namespace hg::engine::scene {
                 _pos(other_._pos) {}
 
             page_seg_iterator_base(mref<this_type> other_) noexcept :
-                _pos(_STD exchange(other_._pos, nullptr)) {}
+                _pos(std::exchange(other_._pos, nullptr)) {}
 
             page_seg_iterator_base(value_ptr_type pos_) noexcept :
                 _pos(pos_) {}
@@ -961,7 +961,7 @@ namespace hg::engine::scene {
 
             reference_type operator=(mref<this_type> other_) noexcept {
                 if (this != &other_) {
-                    _pos = _STD exchange(other_._pos, nullptr);
+                    _pos = std::exchange(other_._pos, nullptr);
                 }
 
                 return *this;
@@ -1100,20 +1100,20 @@ namespace hg::engine::scene {
         template <bool Const_>
         class page_key_value_iterator final {
         public:
-            using iterator_category = _STD contiguous_iterator_tag;
+            using iterator_category = std::contiguous_iterator_tag;
 
             using this_type = page_key_value_iterator<Const_>;
             using reference_type = ref<this_type>;
             using const_reference_type = cref<this_type>;
 
-            using key_type = _STD conditional_t<Const_, KeyType, const KeyType>;
+            using key_type = std::conditional_t<Const_, KeyType, const KeyType>;
             using key_ptr_type = ptr<key_type>;
 
-            using value_type = _STD conditional_t<Const_, ValueType, const ValueType>;
+            using value_type = std::conditional_t<Const_, ValueType, const ValueType>;
             using value_ptr_type = ptr<value_type>;
 
-            using key_value_type = _STD pair<key_ptr_type, value_ptr_type>;
-            using const_key_value_type = _STD pair<const key_ptr_type, const value_ptr_type>;
+            using key_value_type = std::pair<key_ptr_type, value_ptr_type>;
+            using const_key_value_type = std::pair<const key_ptr_type, const value_ptr_type>;
 
             using index_type = IndexType;
 
@@ -1131,8 +1131,8 @@ namespace hg::engine::scene {
                 _value_pos(other_._value_pos) {}
 
             page_key_value_iterator(mref<this_type> other_) noexcept :
-                _key_pos(_STD exchange(other_._key_pos, nullptr)),
-                _value_pos(_STD exchange(other_._value_pos, nullptr)) {}
+                _key_pos(std::exchange(other_._key_pos, nullptr)),
+                _value_pos(std::exchange(other_._value_pos, nullptr)) {}
 
             page_key_value_iterator(key_ptr_type key_pos_, value_ptr_type value_pos_) noexcept :
                 _key_pos(key_pos_),
@@ -1147,8 +1147,8 @@ namespace hg::engine::scene {
 
             reference_type operator=(mref<this_type> other_) noexcept {
                 if (this != &other_) {
-                    _key_pos = _STD exchange(other_._key_pos, nullptr);
-                    _value_pos = _STD exchange(other_._value_pos, nullptr);
+                    _key_pos = std::exchange(other_._key_pos, nullptr);
+                    _value_pos = std::exchange(other_._value_pos, nullptr);
                 }
 
                 return *this;
@@ -1280,7 +1280,7 @@ namespace hg::engine::scene {
             }
 
         public:
-            [[nodiscard]] _STD size_t diff(const_reference_type other_) const noexcept {
+            [[nodiscard]] std::size_t diff(const_reference_type other_) const noexcept {
                 return MAX(_key_pos, other_._key_pos) - MIN(_key_pos, other_._key_pos);
             }
 
@@ -1460,7 +1460,7 @@ namespace hg::engine::scene {
         using storage_page_type = scene_node_storage_page<ValueType, KeyType, value_index_type>;
 
     public:
-        using storage_map_container = _STD map<KeyType, index_type>;
+        using storage_map_container = std::map<KeyType, index_type>;
 
     private:
         Vector<storage_page_type> _pages;
@@ -1513,8 +1513,8 @@ namespace hg::engine::scene {
          * @param  other_ The other.
          */
         scene_node_storage(mref<this_type> other_) noexcept :
-            _pages(_STD move(other_._pages)),
-            _mapping(_STD move(other_._mapping)) {}
+            _pages(std::move(other_._pages)),
+            _mapping(std::move(other_._mapping)) {}
 
         /**
          * Destructor
@@ -1547,8 +1547,8 @@ namespace hg::engine::scene {
          */
         ref<this_type> operator=(mref<this_type> other_) noexcept {
             if (this != &other_) {
-                _pages = _STD move(other_._pages);
-                _mapping = _STD move(other_._mapping);
+                _pages = std::move(other_._pages);
+                _mapping = std::move(other_._mapping);
             }
 
             return *this;
@@ -1559,11 +1559,11 @@ namespace hg::engine::scene {
             cref<KeyType> key_,
             mref<ValueType> value_
         ) noexcept(
-            _STD is_nothrow_move_constructible_v<ValueType>
+            std::is_nothrow_move_constructible_v<ValueType>
         ) {
             // TODO: Replace
             // Warning: Using reverse iterator will speed up linear insertion but slow down reusage or pages
-            auto possiblePage = _STD find_if(
+            auto possiblePage = std::find_if(
                 _pages.rbegin(),
                 _pages.rend(),
                 [](cref<storage_page_type> page_) {
@@ -1584,7 +1584,7 @@ namespace hg::engine::scene {
                 /**
                  * Recursive retry
                  */
-                return pages_insert_pair(key_, _STD forward<ValueType>(value_));
+                return pages_insert_pair(key_, std::forward<ValueType>(value_));
             }
 
             /**
@@ -1596,9 +1596,9 @@ namespace hg::engine::scene {
              * Emplace data to page
              */
             value_index_type vidx;
-            [[maybe_unused]] const bool succeeded = page.insert(key_, _STD forward<ValueType>(value_), vidx);
+            [[maybe_unused]] const bool succeeded = page.insert(key_, std::forward<ValueType>(value_), vidx);
 
-            const page_index_type pidx = _STD distance(_pages.begin(), possiblePage.base()) - 1;
+            const page_index_type pidx = std::distance(_pages.begin(), possiblePage.base()) - 1;
 
             /**
              * Compose masked index_type
@@ -1607,8 +1607,8 @@ namespace hg::engine::scene {
         }
 
     public:
-        template <typename ValueType_ = ValueType, _STD enable_if_t<_STD is_default_constructible_v<ValueType_>>>
-        [[nodiscard]] _STD pair<ptr<ValueType>, bool> insert(cref<KeyType> key_) {
+        template <typename ValueType_ = ValueType, std::enable_if_t<std::is_default_constructible_v<ValueType_>>>
+        [[nodiscard]] std::pair<ptr<ValueType>, bool> insert(cref<KeyType> key_) {
             auto ir = _mapping.insert({ key_, 0 });
 
             auto& skip = *(ir.first);
@@ -1639,10 +1639,10 @@ namespace hg::engine::scene {
                 pptr = _pages[unmask_page_index(skip.second)].value_at(unmask_value_index(skip.second));
             }
 
-            return _STD make_pair(pptr, ir.second);
+            return std::make_pair(pptr, ir.second);
         }
 
-        [[nodiscard]] _STD pair<ptr<ValueType>, bool> insert(cref<KeyType> key_, mref<ValueType> value_) {
+        [[nodiscard]] std::pair<ptr<ValueType>, bool> insert(cref<KeyType> key_, mref<ValueType> value_) {
             auto ir = _mapping.insert({ key_, 0 });
 
             auto& skip = *(ir.first);
@@ -1660,7 +1660,7 @@ namespace hg::engine::scene {
                 /**
                  * If emplace succeeded, move construct element in page compressed storage
                  */
-                const index_type pidx = pages_insert_pair(key_, _STD forward<ValueType>(value_));
+                const index_type pidx = pages_insert_pair(key_, std::forward<ValueType>(value_));
 
                 /**
                  * Store pidx to mapping entry
@@ -1673,7 +1673,7 @@ namespace hg::engine::scene {
                 pptr = _pages[unmask_page_index(skip.second)].value_at(unmask_value_index(skip.second));
             }
 
-            return _STD make_pair(pptr, ir.second);
+            return std::make_pair(pptr, ir.second);
         }
 
         [[nodiscard]] ref<ValueType> insert_or_assign(cref<KeyType> key_, mref<ValueType> value_) {
@@ -1694,7 +1694,7 @@ namespace hg::engine::scene {
                 /**
                  * Replace existing key-value pair
                  */
-                page.replace(unmask_value_index(skip.second), key_, _STD forward<ValueType>(value_));
+                page.replace(unmask_value_index(skip.second), key_, std::forward<ValueType>(value_));
 
                 /**
                  * Get reference to stored element
@@ -1704,7 +1704,7 @@ namespace hg::engine::scene {
                 /**
                  * If emplace succeeded, move construct element in page compressed storage
                  */
-                const index_type pidx = page_insert_pair(key_, _STD forward<ValueType>(value_));
+                const index_type pidx = page_insert_pair(key_, std::forward<ValueType>(value_));
 
                 /**
                  * Store pidx to mapping entry
@@ -1766,7 +1766,7 @@ namespace hg::engine::scene {
          * @author Julius
          * @date 16.08.2021
          *
-         * @exception _STD Thrown when a Standard error condition occurs.
+         * @exception std::Thrown when a Standard error condition occurs.
          *
          * @param  key_ The key.
          */
@@ -1777,7 +1777,7 @@ namespace hg::engine::scene {
              * If key_ does not exist, throw
              */
             if (it == _mapping.end()) {
-                throw _STD out_of_range(
+                throw std::out_of_range(
                     "Can not erase element from storage, while key_ does not exist in hybrid structure"
                 );
             }
@@ -1807,11 +1807,11 @@ namespace hg::engine::scene {
             using key_type = KeyType;
             using value_type = ValueType;
 
-            using storage_page_type = _STD conditional_t<Const, const storage_page_type, storage_page_type>;
+            using storage_page_type = std::conditional_t<Const, const storage_page_type, storage_page_type>;
             using storage_page_iterator_type = typename storage_page_type::page_key_value_iterator;
 
         public:
-            using iterator_category = _STD forward_iterator_tag;
+            using iterator_category = std::forward_iterator_tag;
         };
 
     public:

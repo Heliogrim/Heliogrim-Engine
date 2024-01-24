@@ -28,8 +28,8 @@ namespace hg::editor::ui {
         using vector_type = VectorType_;
         using vector_value_base_type = typename vector_type::value_type;
 
-        using input_widget_type = _STD conditional_t<
-            _STD is_integral_v<vector_value_base_type>,
+        using input_widget_type = std::conditional_t<
+            std::is_integral_v<vector_value_base_type>,
             engine::reflow::InputIntegral,
             engine::reflow::InputFloat
         >;
@@ -47,7 +47,7 @@ namespace hg::editor::ui {
 
     public:
         [[nodiscard]] string getTag() const noexcept override {
-            return _STD format(R"(InputVec[{}] <{:#x}>)", vector_dim, reinterpret_cast<u64>(this));
+            return std::format(R"(InputVec[{}] <{:#x}>)", vector_dim, reinterpret_cast<u64>(this));
         }
 
     public:
@@ -210,7 +210,7 @@ namespace hg::editor::ui {
 
     private:
     public:
-        _STD function<void(input_type)> _callback = nullptr;
+        std::function<void(input_type)> _callback = nullptr;
 
         void onInternalChange() {
 

@@ -14,7 +14,7 @@ SingleChildren::SingleChildren() {
 }
 
 sptr<Widget> SingleChildren::setChild(cref<sptr<Widget>> nextChild_) {
-    return _STD exchange(front(), nextChild_);
+    return std::exchange(front(), nextChild_);
 }
 
 sptr<Widget> SingleChildren::getChild() const noexcept {

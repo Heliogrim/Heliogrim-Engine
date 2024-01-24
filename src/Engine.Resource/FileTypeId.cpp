@@ -46,7 +46,7 @@ void FileTypeRegister::destroy() {
 
 FileTypeId FileTypeRegister::getByTypeId(cref<type_id> id_) const noexcept {
 
-    const auto found = _STD ranges::find_if(
+    const auto found = std::ranges::find_if(
         _list.begin(),
         _list.end(),
         [&id_](const auto& entry_) {
@@ -67,7 +67,7 @@ FileTypeId FileTypeRegister::getByExt(string ext_) const noexcept {
 
 FileTypeId FileTypeRegister::getByExt(string_view ext_) const noexcept {
 
-    const auto found = _STD ranges::find_if(
+    const auto found = std::ranges::find_if(
         _list.begin(),
         _list.end(),
         [&ext_](const auto& entry_) {

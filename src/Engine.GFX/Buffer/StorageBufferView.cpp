@@ -8,5 +8,5 @@ nmpt<BufferLikeObject> StorageBufferView::object() const noexcept {
 }
 
 void StorageBufferView::storeBuffer(mref<nmpt<BufferLikeObject>> object_) noexcept {
-    _blo = _STD move(object_);
+    _blo = std::move(object_);
 }

@@ -26,18 +26,18 @@ namespace hg::engine::scheduler::task {
 
         [[nodiscard]] bool empty() const noexcept;
 
-        bool try_push(mref<_STD function<void()>> fnc_);
+        bool try_push(mref<std::function<void()>> fnc_);
 
     private:
-        bool pop(OUT ref<_STD function<void()>> fnc_);
+        bool pop(OUT ref<std::function<void()>> fnc_);
 
     public:
-        bool waitPop(OUT ref<_STD function<void()>> fnc_);
+        bool waitPop(OUT ref<std::function<void()>> fnc_);
 
     private:
-        _STD mutex _mtx;
-        _STD condition_variable _sig;
-        _STD atomic_flag _mode;
+        std::mutex _mtx;
+        std::condition_variable _sig;
+        std::atomic_flag _mode;
 
     private:
         concurrent::RingBuffer<std::function<void()>> _buffer;

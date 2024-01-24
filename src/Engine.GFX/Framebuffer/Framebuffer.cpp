@@ -22,12 +22,12 @@ Framebuffer::Framebuffer(cref<sptr<Device>> device_) :
     _vkFramebuffer(nullptr) {}
 
 Framebuffer::Framebuffer(mref<Framebuffer> other_) noexcept :
-    _attachments(_STD move(other_._attachments)),
-    _extent(_STD exchange(other_._extent, math::uivec2 {})),
-    _layer(_STD exchange(other_._layer, 0uL)),
-    _device(_STD move(other_._device)),
-    _renderPass(_STD move(other_._renderPass)),
-    _vkFramebuffer(_STD exchange(other_._vkFramebuffer, nullptr)) {}
+    _attachments(std::move(other_._attachments)),
+    _extent(std::exchange(other_._extent, math::uivec2 {})),
+    _layer(std::exchange(other_._layer, 0uL)),
+    _device(std::move(other_._device)),
+    _renderPass(std::move(other_._renderPass)),
+    _vkFramebuffer(std::exchange(other_._vkFramebuffer, nullptr)) {}
 
 Framebuffer::~Framebuffer() noexcept {
     if (_vkFramebuffer) {
@@ -101,7 +101,7 @@ void Framebuffer::setup() {
 }
 
 void Framebuffer::addAttachment(mref<smr<TextureLikeObject>> textureLikeObject_) {
-    _attachments.push_back(_STD move(textureLikeObject_));
+    _attachments.push_back(std::move(textureLikeObject_));
 }
 
 cref<Vector<smr<TextureLikeObject>>> Framebuffer::attachments() const noexcept {
@@ -141,7 +141,7 @@ cref<smr<const engine::accel::AccelerationPass>> Framebuffer::renderPass() const
 }
 
 void Framebuffer::setRenderPass(mref<smr<const engine::accel::AccelerationPass>> renderPass_) {
-    _renderPass = _STD move(renderPass_);
+    _renderPass = std::move(renderPass_);
 }
 
 const vk::Framebuffer& Framebuffer::vkFramebuffer() const noexcept {

@@ -50,13 +50,13 @@ engine::reflow::EventResponse BoardNode::onMouseMove(cref<engine::reflow::MouseM
 void BoardNode::addInputSlot(mref<sptr<BoardNodeSlot>> slot_) {
 
     auto inputs = _inputBox.lock();
-    inputs->addChild(_STD move(slot_));
+    inputs->addChild(std::move(slot_));
 }
 
 void BoardNode::addOutputSlot(mref<sptr<BoardNodeSlot>> slot_) {
 
     auto outputs = _outputBox.lock();
-    outputs->addChild(_STD move(slot_));
+    outputs->addChild(std::move(slot_));
 }
 
 cref<math::vec2> BoardNode::getBoardPosition() const noexcept {

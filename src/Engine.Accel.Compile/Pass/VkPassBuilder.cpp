@@ -21,6 +21,6 @@ smr<AccelerationPipeline> VkPassBuilder::build(
 ) const noexcept {
     //assert(specifications_.getGraphicsSpec().renderPass);
     return make_smr<VkGraphicsPipeline>(
-        new VkGraphicsPipeline(_STD move(effect_))
+        new VkGraphicsPipeline(std::move(effect_))
     );
 }

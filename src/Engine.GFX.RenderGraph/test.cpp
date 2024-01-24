@@ -44,8 +44,8 @@ using namespace hg;
 
 auto make_test_graph() -> uptr<graph::CompileGraph>;
 
-static _STD map<string, smr<graph::Description>> static_desc_map {};
-static _STD map<string, smr<graph::Symbol>> static_symbol_map {};
+static std::map<string, smr<graph::Description>> static_desc_map {};
+static std::map<string, smr<graph::Symbol>> static_symbol_map {};
 
 void hg::test_graph_process() {
 
@@ -67,7 +67,7 @@ void hg::test_graph_process() {
 
     IM_CORE_LOG("Building render pipeline from runtime graph...");
     //const render::pipeline::BaseBuilder baseBuilder {};
-    //auto pipe = baseBuilder(_STD move(runtimeGraph));
+    //auto pipe = baseBuilder(std::move(runtimeGraph));
 
     /* Iterative Update */
 
@@ -84,14 +84,14 @@ void hg::test_graph_process() {
     //    /**/
     //
     //    IM_CORE_LOG("Iterative update of render pipeline with next runtime graph...");
-    //    pipe = streamBuilder(_STD move(pipe), _STD move(nextRuntimeGraph));
+    //    pipe = streamBuilder(std::move(pipe), std::move(nextRuntimeGraph));
     //
     //    IM_CORE_LOG("Executing updated render pipeline...");
     //    pipe->operator()(nullptr);
     //}
 }
 
-void setup_descriptions(ref<_STD map<string, smr<graph::Description>>> map_) {
+void setup_descriptions(ref<std::map<string, smr<graph::Description>>> map_) {
 
     map_["camera"] = make_smr<>(new graph::SceneViewDescription()).into<graph::Description>();
     map_["depthBuffer"] = make_smr<graph::TextureDescription>(
@@ -162,8 +162,8 @@ void setup_descriptions(ref<_STD map<string, smr<graph::Description>>> map_) {
 }
 
 void setup_symbols(
-    cref<_STD map<string, smr<graph::Description>>> desc_,
-    ref<_STD map<string, smr<graph::Symbol>>> map_
+    cref<std::map<string, smr<graph::Description>>> desc_,
+    ref<std::map<string, smr<graph::Symbol>>> map_
 ) {
 
     map_["sceneCamera"] = make_smr<graph::Symbol>(
@@ -215,21 +215,21 @@ void setup_symbols(
 }
 
 void setup_graph_expectation(cref<uptr<graph::CompileGraph>> graph_, mref<smr<const graph::Symbol>> ocs_) {
-    graph_->addExpectedProvision(graph::Provision { _STD move(ocs_) });
+    graph_->addExpectedProvision(graph::Provision { std::move(ocs_) });
 }
 
-inline _STD vector<char> read_shader_file(const char* file_) {
-    _STD vector<char> spirv {};
+inline std::vector<char> read_shader_file(const char* file_) {
+    std::vector<char> spirv {};
 
-    _STD ifstream in {};
-    in.open(file_, _STD ios::ate | _STD ios::in | _STD ios::binary);
+    std::ifstream in {};
+    in.open(file_, std::ios::ate | std::ios::in | std::ios::binary);
 
     assert(in.is_open());
 
     const size_t size = in.tellg();
     spirv.resize(size, 0);
 
-    in.seekg(0, _STD ios::beg);
+    in.seekg(0, std::ios::beg);
     in.read(spirv.data(), size);
 
     in.close();
@@ -243,7 +243,7 @@ auto make_accel_vertex_l0_stage() -> uptr<engine::accel::Stage> {
     /**/
 
     auto stage = make_uptr<engine::accel::Stage>(
-        _STD move(flag)
+        std::move(flag)
     );
 
     /**/
@@ -254,9 +254,9 @@ auto make_accel_vertex_l0_stage() -> uptr<engine::accel::Stage> {
     auto snippet = string { code.begin(), code.end() };
 
     inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
-    inter->lang.text.emplace_back(_STD move(snippet));
+    inter->lang.text.emplace_back(std::move(snippet));
 
-    stage->setIntermediate(_STD move(inter));
+    stage->setIntermediate(std::move(inter));
 
     /**/
 
@@ -270,7 +270,7 @@ auto make_accel_vertex_l1_stage() -> uptr<engine::accel::Stage> {
     /**/
 
     auto stage = make_uptr<engine::accel::Stage>(
-        _STD move(flag)
+        std::move(flag)
     );
 
     /**/
@@ -281,9 +281,9 @@ auto make_accel_vertex_l1_stage() -> uptr<engine::accel::Stage> {
     auto snippet = string { code.begin(), code.end() };
 
     inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
-    inter->lang.text.emplace_back(_STD move(snippet));
+    inter->lang.text.emplace_back(std::move(snippet));
 
-    stage->setIntermediate(_STD move(inter));
+    stage->setIntermediate(std::move(inter));
 
     /**/
 
@@ -297,7 +297,7 @@ auto make_accel_vertex_l2_stage() -> uptr<engine::accel::Stage> {
     /**/
 
     auto stage = make_uptr<engine::accel::Stage>(
-        _STD move(flag)
+        std::move(flag)
     );
 
     /**/
@@ -308,9 +308,9 @@ auto make_accel_vertex_l2_stage() -> uptr<engine::accel::Stage> {
     auto snippet = string { code.begin(), code.end() };
 
     inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
-    inter->lang.text.emplace_back(_STD move(snippet));
+    inter->lang.text.emplace_back(std::move(snippet));
 
-    stage->setIntermediate(_STD move(inter));
+    stage->setIntermediate(std::move(inter));
 
     /**/
 
@@ -325,7 +325,7 @@ auto make_accel_fragment_l0_stage() -> uptr<engine::accel::Stage> {
     /**/
 
     auto stage = make_uptr<engine::accel::Stage>(
-        _STD move(flag)
+        std::move(flag)
     );
 
     /**/
@@ -336,9 +336,9 @@ auto make_accel_fragment_l0_stage() -> uptr<engine::accel::Stage> {
     auto snippet = string { code.begin(), code.end() };
 
     inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
-    inter->lang.text.emplace_back(_STD move(snippet));
+    inter->lang.text.emplace_back(std::move(snippet));
 
-    stage->setIntermediate(_STD move(inter));
+    stage->setIntermediate(std::move(inter));
 
     /**/
 
@@ -353,7 +353,7 @@ auto make_accel_fragment_l1_stage() -> uptr<engine::accel::Stage> {
     /**/
 
     auto stage = make_uptr<engine::accel::Stage>(
-        _STD move(flag)
+        std::move(flag)
     );
 
     /**/
@@ -364,9 +364,9 @@ auto make_accel_fragment_l1_stage() -> uptr<engine::accel::Stage> {
     auto snippet = string { code.begin(), code.end() };
 
     inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
-    inter->lang.text.emplace_back(_STD move(snippet));
+    inter->lang.text.emplace_back(std::move(snippet));
 
-    stage->setIntermediate(_STD move(inter));
+    stage->setIntermediate(std::move(inter));
 
     /**/
 
@@ -381,7 +381,7 @@ auto make_accel_fragment_l2_stage() -> uptr<engine::accel::Stage> {
     /**/
 
     auto stage = make_uptr<engine::accel::Stage>(
-        _STD move(flag)
+        std::move(flag)
     );
 
     /**/
@@ -392,9 +392,9 @@ auto make_accel_fragment_l2_stage() -> uptr<engine::accel::Stage> {
     auto snippet = string { code.begin(), code.end() };
 
     inter->lang.dialect = engine::accel::lang::Dialect::eVulkanGlsl460;
-    inter->lang.text.emplace_back(_STD move(snippet));
+    inter->lang.text.emplace_back(std::move(snippet));
 
-    stage->setIntermediate(_STD move(inter));
+    stage->setIntermediate(std::move(inter));
 
     /**/
 
@@ -417,9 +417,9 @@ auto make_accel_l0_effect() -> uptr<engine::accel::AccelerationEffect> {
     string name = encodeGuid4228(guid);
 
     auto effect = make_uptr<engine::accel::AccelerationEffect>(
-        _STD move(guid),
-        _STD move(name),
-        _STD move(stages)
+        std::move(guid),
+        std::move(name),
+        std::move(stages)
     );
 
     return effect;
@@ -441,9 +441,9 @@ auto make_accel_l1_effect() -> uptr<engine::accel::AccelerationEffect> {
     string name = encodeGuid4228(guid);
 
     auto effect = make_uptr<engine::accel::AccelerationEffect>(
-        _STD move(guid),
-        _STD move(name),
-        _STD move(stages)
+        std::move(guid),
+        std::move(name),
+        std::move(stages)
     );
 
     return effect;
@@ -465,9 +465,9 @@ auto make_accel_l2_effect() -> uptr<engine::accel::AccelerationEffect> {
     string name = encodeGuid4228(guid);
 
     auto effect = make_uptr<engine::accel::AccelerationEffect>(
-        _STD move(guid),
-        _STD move(name),
-        _STD move(stages)
+        std::move(guid),
+        std::move(name),
+        std::move(stages)
     );
 
     return effect;
@@ -487,8 +487,8 @@ auto make_material_prototype() -> uptr<material::MaterialPrototype> {
     string name = encodeGuid4228(guid);
 
     auto proto = make_uptr<material::MaterialPrototype>(
-        _STD move(guid),
-        _STD move(name),
+        std::move(guid),
+        std::move(name),
         InlineAutoArray<material::MaterialEffect> {},
         Vector<material::MaterialPrototypeParameter> {}
     );
@@ -506,8 +506,8 @@ auto make_material() -> smr<MaterialResource> {
     GuidGenerate(guid);
 
     return make_smr<engine::resource::UniqueResource<material::Material>>(
-        _STD move(guid),
-        _STD move(proto),
+        std::move(guid),
+        std::move(proto),
         Vector<material::MaterialParameter> {}
     ).into<MaterialResource>();
 }
@@ -538,7 +538,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
     Vector<smr<graph::Symbol>> exposedSymbols {};
     Vector<smr<graph::Symbol>> isolatedSymbols {};
 
-    _STD map<string, smr<graph::Description>> descriptions {};
+    std::map<string, smr<graph::Description>> descriptions {};
     setup_descriptions(descriptions);
 
     std::map<string, smr<graph::Symbol>> symbols {};
@@ -561,7 +561,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         );
 
         cursor = provider.get();
-        graph = graph::Builder::insertNode(_STD move(graph), begin, end, _STD move(provider));
+        graph = graph::Builder::insertNode(std::move(graph), begin, end, std::move(provider));
     }
 
     {
@@ -570,7 +570,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         comp->setBarrierName("Depth Barrier");
 
         auto it = barrier.get();
-        graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
+        graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(barrier));
 
         /**/
 
@@ -583,7 +583,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         // TODO: subpassComp->addExpectedProvision(graph::Provision { symbols.at("sceneDepth") });
 
         cursor = node.get();
-        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(node));
+        graph = graph::Builder::insertNode(std::move(graph), it, end, std::move(node));
     }
 
     {
@@ -592,7 +592,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         comp->setBarrierName("BRDF Helper Barrier");
 
         graph::Node* it = barrier.get();
-        graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
+        graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(barrier));
 
         /**/
 
@@ -618,7 +618,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
             auto prevIt = it;
             it = node.get();
 
-            graph = graph::Builder::insertNode(_STD move(graph), prevIt, end, _STD move(node));
+            graph = graph::Builder::insertNode(std::move(graph), prevIt, end, std::move(node));
         }
 
         /**/
@@ -647,7 +647,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
             auto prevIt = it;
             it = node.get();
 
-            graph = graph::Builder::insertNode(_STD move(graph), prevIt, end, _STD move(node));
+            graph = graph::Builder::insertNode(std::move(graph), prevIt, end, std::move(node));
         }
 
         /**/
@@ -677,7 +677,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
             auto prevIt = it;
             it = node.get();
 
-            graph = graph::Builder::insertNode(_STD move(graph), prevIt, end, _STD move(node));
+            graph = graph::Builder::insertNode(std::move(graph), prevIt, end, std::move(node));
         }
     }
 
@@ -687,7 +687,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         comp->setBarrierName("Material Barrier");
 
         auto it = barrier.get();
-        graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
+        graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(barrier));
 
         /**/
 
@@ -711,7 +711,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         /**/
 
         cursor = node.get();
-        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(node));
+        graph = graph::Builder::insertNode(std::move(graph), it, end, std::move(node));
     }
 
     {
@@ -720,7 +720,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         comp->setBarrierName("Lighting Barrier");
 
         auto it = barrier.get();
-        graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
+        graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(barrier));
 
         /**/
 
@@ -743,7 +743,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
          */
 
         cursor = node.get();
-        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(node));
+        graph = graph::Builder::insertNode(std::move(graph), it, end, std::move(node));
     }
 
     {
@@ -752,7 +752,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         comp->setBarrierName("Compositing Barrier");
 
         auto it = barrier.get();
-        graph = graph::Builder::insertNode(_STD move(graph), cursor, end, _STD move(barrier));
+        graph = graph::Builder::insertNode(std::move(graph), cursor, end, std::move(barrier));
 
         /**/
 
@@ -766,7 +766,7 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
         // TODO: subpassComp->addExpectedProvision(graph::Provision { symbols.at("sceneColor") });
 
         cursor = node.get();
-        graph = graph::Builder::insertNode(_STD move(graph), it, end, _STD move(node));
+        graph = graph::Builder::insertNode(std::move(graph), it, end, std::move(node));
     }
 
     /**/
@@ -777,8 +777,8 @@ auto make_test_graph() -> uptr<graph::CompileGraph> {
     }
 
     /**/
-    static_desc_map = _STD move(descriptions);
-    static_symbol_map = _STD move(symbols);
+    static_desc_map = std::move(descriptions);
+    static_symbol_map = std::move(symbols);
     /**/
 
     return graph;

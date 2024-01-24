@@ -26,8 +26,8 @@ bool SignaledQueue::try_push(mref<std::function<void()>> fnc_) {
         return false;
     }
 
-    _STD unique_lock<decltype(_mtx)> lck { _mtx };
-    const auto pushed = _buffer.try_push(_STD forward<_STD function<void()>>(fnc_));
+    std::unique_lock<decltype(_mtx)> lck { _mtx };
+    const auto pushed = _buffer.try_push(std::forward<std::function<void()>>(fnc_));
 
     lck.unlock();
     signal();
@@ -35,13 +35,13 @@ bool SignaledQueue::try_push(mref<std::function<void()>> fnc_) {
     return pushed;
 }
 
-bool SignaledQueue::pop(ref<_STD function<void()>> fnc_) {
+bool SignaledQueue::pop(ref<std::function<void()>> fnc_) {
     return _buffer.try_pop(fnc_);
 }
 
-bool SignaledQueue::waitPop(OUT ref<_STD function<void()>> fnc_) {
+bool SignaledQueue::waitPop(OUT ref<std::function<void()>> fnc_) {
 
-    _STD unique_lock<decltype(_mtx)> lck { _mtx };
+    std::unique_lock<decltype(_mtx)> lck { _mtx };
     _sig.wait(
         lck,
         [&]() {

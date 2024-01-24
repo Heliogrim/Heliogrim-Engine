@@ -23,9 +23,9 @@ RenderPass::RenderPass(
     mref<smr<gfx::cache::LocalCacheCtrl>> localGeneralCache_,
     mref<smr<gfx::memory::LocalPooledAllocator>> localDeviceAllocator_
 ) noexcept :
-    _renderer(_STD move(renderer_)),
-    _state(_STD move(localGeneralCache_), _STD move(localDeviceAllocator_)),
-    _graph(_STD move(runtimeGraph_)) {}
+    _renderer(std::move(renderer_)),
+    _state(std::move(localGeneralCache_), std::move(localDeviceAllocator_)),
+    _graph(std::move(runtimeGraph_)) {}
 
 RenderPass::~RenderPass() noexcept = default;
 
@@ -84,7 +84,7 @@ smr<const engine::gfx::scene::SceneView> RenderPass::changeSceneView(
         stored->store<smr<const gfx::scene::SceneView>, graph::SceneViewDescription>(clone(nextSceneView_));
     }
 
-    return _STD exchange(_state._sceneView, _STD move(nextSceneView_));
+    return std::exchange(_state._sceneView, std::move(nextSceneView_));
 }
 
 smr<const engine::gfx::scene::SceneView> RenderPass::unbindSceneView() {
@@ -116,8 +116,8 @@ void RenderPass::unsafeBindTarget(mref<smr<const graph::Symbol>> target_, mref<s
 
     _state._boundTargets.insert_or_assign(clone(target_), clone(resource_));
 
-    auto storage = _state.rootSymbolContext().exportSymbol(_STD move(target_));
-    storage->create(_STD move(resource_));
+    auto storage = _state.rootSymbolContext().exportSymbol(std::move(target_));
+    storage->create(std::move(resource_));
 }
 
 bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx::Texture>> texture_) {
@@ -138,7 +138,7 @@ bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx
 
     _state._boundTargets.insert_or_assign(clone(target_), clone(texture_));
 
-    auto storage = _state.rootSymbolContext().exportSymbol(_STD move(target_));
+    auto storage = _state.rootSymbolContext().exportSymbol(std::move(target_));
     storage->create(texture_.into<gfx::TextureLikeObject>());
 
     return true;
@@ -162,7 +162,7 @@ bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx
 
     _state._boundTargets.insert_or_assign(clone(target_), clone(textureView_));
 
-    auto storage = _state.rootSymbolContext().exportSymbol(_STD move(target_));
+    auto storage = _state.rootSymbolContext().exportSymbol(std::move(target_));
     storage->create(textureView_.into<gfx::TextureLikeObject>());
 
     return true;
@@ -186,7 +186,7 @@ bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx
 
     _state._boundTargets.insert_or_assign(clone(target_), clone(texture_));
 
-    auto storage = _state.rootSymbolContext().exportSymbol(_STD move(target_));
+    auto storage = _state.rootSymbolContext().exportSymbol(std::move(target_));
     storage->create(texture_.into<gfx::TextureLikeObject>());
 
     return true;
@@ -210,7 +210,7 @@ bool RenderPass::bindTarget(mref<smr<const graph::Symbol>> target_, mref<smr<gfx
 
     _state._boundTargets.insert_or_assign(clone(target_), clone(textureView_));
 
-    auto storage = _state.rootSymbolContext().exportSymbol(_STD move(target_));
+    auto storage = _state.rootSymbolContext().exportSymbol(std::move(target_));
     storage->create(textureView_.into<gfx::TextureLikeObject>());
 
     return true;
@@ -223,17 +223,17 @@ smr<void> RenderPass::unbindTarget(mref<smr<const graph::Symbol>> target_) noexc
         return nullptr;
     }
 
-    auto stored = _STD move(iter->second);
+    auto stored = std::move(iter->second);
     _state._boundTargets.erase(iter);
 
-    auto storage = _state.rootSymbolContext().getExportSymbol(_STD move(target_));
+    auto storage = _state.rootSymbolContext().getExportSymbol(std::move(target_));
 
     // TODO: ensure( storage->valid<>() );
     auto result = storage->load<smr<void>>() == stored;
     assert(result);
 
     storage->destroy<smr<void>>();
-    result = _state.rootSymbolContext().eraseExportSymbol(_STD move(storage));
+    result = _state.rootSymbolContext().eraseExportSymbol(std::move(storage));
     assert(result);
 
     return stored;
@@ -271,7 +271,7 @@ bool RenderPass::storeSync(mref<vk::Fence> fence_) {
     /**
      * Prepare
      */
-    auto* fence { new vk::Fence(_STD move(fence_)) };
+    auto* fence { new vk::Fence(std::move(fence_)) };
     auto value { reinterpret_cast<ptrdiff_t>(fence) };
 
     /**
@@ -314,7 +314,7 @@ bool RenderPass::await() const noexcept {
 }
 
 bool RenderPass::isReset() const noexcept {
-    return _reset.test(_STD memory_order::consume);
+    return _reset.test(std::memory_order::consume);
 }
 
 void RenderPass::reset() {
@@ -343,7 +343,7 @@ void RenderPass::reset() {
 }
 
 void RenderPass::markAsTouched() {
-    _reset.clear(_STD memory_order::release);
+    _reset.clear(std::memory_order::release);
 }
 
 bool RenderPass::addTargetWaitSignal(
@@ -391,7 +391,7 @@ void RenderPass::enumerateTargetWaitSignals(
 ) noexcept {
 
     // Warning: This is just temporary
-    enumerateTargetReadySignals(signals_, _STD move(targetSymbol_));
+    enumerateTargetReadySignals(signals_, std::move(targetSymbol_));
 }
 
 void RenderPass::enumerateTargetReadySignals(
@@ -405,7 +405,7 @@ void RenderPass::enumerateTargetReadySignals(
             return;
         }
 
-        const auto resource = _state.rootSymbolContext().getExportSymbol(_STD move(targetSymbol_));
+        const auto resource = _state.rootSymbolContext().getExportSymbol(std::move(targetSymbol_));
         for (auto* const barrier : resource->barriers) {
             signals_.emplace_back(static_cast<VkSemaphore>(barrier));
         }

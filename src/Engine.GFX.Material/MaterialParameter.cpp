@@ -4,7 +4,7 @@ using namespace hg::engine::gfx::material;
 using namespace hg;
 
 MaterialParameter::MaterialParameter(mref<uptr<MaterialParameterStorageBase>> storage_) noexcept :
-    _storage(_STD move(storage_)) {}
+    _storage(std::move(storage_)) {}
 
 MaterialParameter::~MaterialParameter() = default;
 

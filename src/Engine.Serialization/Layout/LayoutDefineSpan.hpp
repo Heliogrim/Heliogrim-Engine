@@ -17,13 +17,13 @@ namespace hg::engine::serialization::layout {
         static ref<serialization::Archive> loadImpl(
             ref<serialization::Archive> archive_,
             cref<LayoutDefine> define_,
-            cref<_STD span<u8, _STD dynamic_extent>> dst_
+            cref<std::span<u8, std::dynamic_extent>> dst_
         );
 
         static ref<serialization::Archive> storeImpl(
             ref<serialization::Archive> archive_,
             cref<LayoutDefine> define_,
-            cref<_STD span<u8, _STD dynamic_extent>> src_
+            cref<std::span<u8, std::dynamic_extent>> src_
         );
     };
 }

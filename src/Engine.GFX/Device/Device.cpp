@@ -205,8 +205,8 @@ void Device::setup() {
      * Setup Allocator
      */
     const auto vulkanLayerAlloc { make_sptr<memory::VkAllocator>(shared_from_this()) };
-    auto fwdVulkanLayerAlloc { _STD static_pointer_cast<memory::Allocator, memory::VkAllocator>(vulkanLayerAlloc) };
-    _alloc = make_uptr<memory::GlobalPooledAllocator>(_STD move(fwdVulkanLayerAlloc));
+    auto fwdVulkanLayerAlloc { std::static_pointer_cast<memory::Allocator, memory::VkAllocator>(vulkanLayerAlloc) };
+    _alloc = make_uptr<memory::GlobalPooledAllocator>(std::move(fwdVulkanLayerAlloc));
 
     /**
      * Setup Queues

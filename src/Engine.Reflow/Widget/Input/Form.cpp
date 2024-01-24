@@ -35,7 +35,7 @@ void Form::submitForm() {
 void Form::clearForm() {}
 
 decltype(Form::_submitEmitter)::handle_type Form::onSubmit(mref<decltype(_submitEmitter)::function_type> fnc_) {
-    return _submitEmitter.on(_STD move(fnc_));
+    return _submitEmitter.on(std::move(fnc_));
 }
 
 void Form::render(const ptr<ReflowCommandBuffer> cmd_) {

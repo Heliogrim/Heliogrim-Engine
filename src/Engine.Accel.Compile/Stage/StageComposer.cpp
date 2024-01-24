@@ -27,7 +27,7 @@ non_owning_rptr<const Tokenizer> StageComposer::getTokenizer() const noexcept {
 }
 
 void StageComposer::setTokenizer(mref<non_owning_rptr<const Tokenizer>> tokenizer_) {
-    _tokenizer = _STD move(tokenizer_);
+    _tokenizer = std::move(tokenizer_);
 }
 
 Vector<smr<StageDerivat>> StageComposer::compose(
@@ -52,7 +52,7 @@ Vector<smr<StageDerivat>> StageComposer::compose(
                 stage.get(),
                 Vector<smr<Stage>> { stage },
                 smr<StageModule> { nullptr },
-                _STD move(flagBits)
+                std::move(flagBits)
             )
         );
 
@@ -186,7 +186,7 @@ Vector<smr<StageDerivat>> StageComposer::compose(
             bool grouped = false;
             for (auto& candidate : layout.groups) {
                 if (/* candidate.compatible(element) */false) {
-                    candidate.elements.push_back(_STD move(element));
+                    candidate.elements.push_back(std::move(element));
                     grouped = true;
                     break;
                 }
@@ -194,15 +194,15 @@ Vector<smr<StageDerivat>> StageComposer::compose(
 
             if (not grouped) {
                 auto group = BindGroup {};
-                group.elements.push_back(_STD move(element));
-                layout.groups.push_back(_STD move(group));
+                group.elements.push_back(std::move(element));
+                layout.groups.push_back(std::move(group));
             }
         }
     }
 
     /**/
 
-    targetPass_->setBindingLayout(_STD move(layout));
+    targetPass_->setBindingLayout(std::move(layout));
     return derivats;
 }
 
@@ -256,7 +256,7 @@ static void preprocessStageDerivat(
     auto intermediate = make_smr<lang::Intermediate>(*stage_->getIntermediate());
 
     auto& il = intermediate->lang.text;
-    _STD reverse(il.begin(), il.end());
+    std::reverse(il.begin(), il.end());
 
     /* Store injections and external definitions in reverse order */
     il.emplace_back(shaderMacros);
@@ -269,19 +269,19 @@ static void preprocessStageDerivat(
         }
     }
 
-    for (const auto& module : profile_->_modules | _STD views::reverse) {
+    for (const auto& module : profile_->_modules | std::views::reverse) {
 
         // TODO: Merge intermediate representations
         intermediate->rep;
         module.rep;
 
         // Temporary alternative
-        for (const auto block : module.lang.text | _STD views::reverse) {
+        for (const auto block : module.lang.text | std::views::reverse) {
             il.emplace_back(block);
         }
     }
 
-    il.emplace_back(_STD move(preamble));
+    il.emplace_back(std::move(preamble));
     /**/
 
     /*
@@ -295,7 +295,7 @@ static void preprocessStageDerivat(
      * | Shader Body            |
      *
      */
-    _STD reverse(il.begin(), il.end());
+    std::reverse(il.begin(), il.end());
 
-    derivat_->setIntermediate(_STD move(intermediate));
+    derivat_->setIntermediate(std::move(intermediate));
 }

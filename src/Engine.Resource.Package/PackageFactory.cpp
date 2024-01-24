@@ -17,13 +17,13 @@ uptr<Package> PackageFactory::createEmptyPackage(mref<uptr<Source>> source_) {
     GuidGenerate(guid);
 
     return make_uptr<Package>(
-        _STD move(source_),
+        std::move(source_),
         PackageHeader {
             .magicBytes = { 0x49, 0x4D, 0x50, 0x41, 0x43, 0x4B }/*PackageMagicBytes */,
             .magicVersion = PackageMagicVersion[0],
             .endianness = PackageEndianness::eBigEndian,
             .version = 0x1,
-            .guidData = _STD move(guid.data),
+            .guidData = std::move(guid.data),
             .compression = PackageCompression::eNone
         },
         PackageFooter {
@@ -44,11 +44,11 @@ uptr<Package> PackageFactory::createFromSource(mref<uptr<Source>> source_) {
     auto succeeded = source_->get(0, sizeof(PackageHeader), reinterpret_cast<ptr<u8>>(&storedHeader), readBytes);
 
     if (storedHeader.magicVersion != PackageMagicVersion[0]) {
-        throw _STD runtime_error("");
+        throw std::runtime_error("");
     }
 
     if (memcmp(storedHeader.magicBytes, PackageMagicBytes, sizeof(PackageMagicBytes)) != 0) {
-        throw _STD runtime_error("");
+        throw std::runtime_error("");
     }
 
     /**/
@@ -60,11 +60,11 @@ uptr<Package> PackageFactory::createFromSource(mref<uptr<Source>> source_) {
     succeeded = source_->get(offset, sizeof(PackageFooter), reinterpret_cast<ptr<u8>>(&storedFooter), readBytes);
 
     if (storedFooter.magicVersion != PackageMagicVersion[0]) {
-        throw _STD runtime_error("");
+        throw std::runtime_error("");
     }
 
     if (memcmp(storedFooter.magicBytes, PackageMagicBytes, sizeof(PackageMagicBytes)) != 0) {
-        throw _STD runtime_error("");
+        throw std::runtime_error("");
     }
 
     /**/
@@ -74,8 +74,8 @@ uptr<Package> PackageFactory::createFromSource(mref<uptr<Source>> source_) {
     /**/
 
     return make_uptr<Package>(
-        _STD move(source_),
-        _STD move(storedHeader),
-        _STD move(storedFooter)
+        std::move(source_),
+        std::move(storedHeader),
+        std::move(storedFooter)
     );
 }

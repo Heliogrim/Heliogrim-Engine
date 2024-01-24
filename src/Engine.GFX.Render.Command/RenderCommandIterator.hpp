@@ -10,8 +10,8 @@ namespace hg::engine::render::cmd {
     public:
         using this_type = RenderCommandIterator;
 
-        using iterator_concept = _STD forward_iterator_tag;
-        using iterator_tag = _STD forward_iterator_tag;
+        using iterator_concept = std::forward_iterator_tag;
+        using iterator_tag = std::forward_iterator_tag;
 
         using size_type = size_t;
         using difference_type = ptrdiff_t;

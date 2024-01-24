@@ -1,14 +1,17 @@
 #pragma once
 
+#include <Engine.Common/__macro.hpp>
 #include <Engine.Common/Wrapper.hpp>
 
+START_SUPPRESS_WARNINGS
 #include <ankerl/unordered_dense.h>
+STOP_SUPPRESS_WARNINGS
 
 namespace hg {
     template <
         class Type_,
         class Hash_ = ankerl::unordered_dense::v4_1_2::hash<Type_>,
-        class Equal_ = _STD equal_to<Type_>,
-        class Allocator_ = _STD allocator<Type_>>
+        class Equal_ = std::equal_to<Type_>,
+        class Allocator_ = std::allocator<Type_>>
     using DenseSet = ankerl::unordered_dense::set<Type_, Hash_, Equal_, Allocator_>;
 }

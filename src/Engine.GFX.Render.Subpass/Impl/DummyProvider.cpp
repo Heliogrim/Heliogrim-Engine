@@ -21,7 +21,7 @@ void DummyProvider::destroy() noexcept {
     SubPass::destroy();
 
     auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
-    device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(_STD exchange(_tmpSignal, nullptr)));
+    device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(std::exchange(_tmpSignal, nullptr)));
 
     _resources.outDepthTexture->destroy<smr<TextureLikeObject>, graph::TextureDescription>();
 
@@ -132,7 +132,7 @@ void DummyProvider::execute(cref<graph::ScopedSymbolContext> symCtx_) noexcept {
         );
         factory->buildView(sceneDepthTex, { .layers = { 0L, 1L }, .type = TextureType::e2d, .mipLevels = { 0L, 1L } });
 
-        _depthTexture = make_smr<Texture>(_STD move(sceneDepthTex));
+        _depthTexture = make_smr<Texture>(std::move(sceneDepthTex));
 
         if (_resources.outDepthTexture->empty()) {
 

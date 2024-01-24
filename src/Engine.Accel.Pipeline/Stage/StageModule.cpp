@@ -4,7 +4,7 @@ using namespace hg::engine::accel;
 using namespace hg;
 
 StageModule::StageModule(mref<uptr<NativeModule>> native_) noexcept :
-    _native(_STD move(native_)) {}
+    _native(std::move(native_)) {}
 
 StageModule::~StageModule() = default;
 

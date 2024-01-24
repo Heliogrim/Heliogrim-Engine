@@ -76,14 +76,14 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
 
     cref<Vector<material::MaterialPrototypeParameter>> protoParams = protoGuard->instance->getParameters();
 
-    for (auto [protoParam, dstParam] : _STD views::zip(
+    for (auto [protoParam, dstParam] : std::views::zip(
              protoParams,
              material.getParameters()
          )) {
 
         auto& dst = const_cast<material::MaterialParameter&>(dstParam);
 
-        auto matParamIt = _STD find_if(
+        auto matParamIt = std::find_if(
             request_->_params.begin(),
             request_->_params.end(),
             [&protoParam](cref<assets::GfxMaterial::TmpParam> candidate_) {
@@ -195,7 +195,7 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
                     break;
                 }
                 default: {
-                    throw _STD runtime_error("Unexpected.");
+                    throw std::runtime_error("Unexpected.");
                 }
 
             }
@@ -214,126 +214,126 @@ MaterialTransformer::response_type::type MaterialTransformer::operator()(
             case accel::TransferDataType::eStorage: break;
             case accel::TransferDataType::eSampler: {
 
-                assert(_STD holds_alternative<asset_guid>(matParam.value));
+                assert(std::holds_alternative<asset_guid>(matParam.value));
 
-                auto textureGuid = _STD get<asset_guid>(matParam.value);
-                auto resolved = resolveTexture(_STD move(textureGuid), registry, &loader);
+                auto textureGuid = std::get<asset_guid>(matParam.value);
+                auto resolved = resolveTexture(std::move(textureGuid), registry, &loader);
 
-                dst.set(_STD move(resolved));
+                dst.set(std::move(resolved));
                 break;
             }
             case accel::TransferDataType::eU8: {
-                assert(_STD holds_alternative<u8>(matParam.value));
-                dst.set(_STD get<u8>(matParam.value));
+                assert(std::holds_alternative<u8>(matParam.value));
+                dst.set(std::get<u8>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU16: {
-                assert(_STD holds_alternative<u16>(matParam.value));
-                dst.set(_STD get<u16>(matParam.value));
+                assert(std::holds_alternative<u16>(matParam.value));
+                dst.set(std::get<u16>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU32: {
-                assert(_STD holds_alternative<u32>(matParam.value));
-                dst.set(_STD get<u32>(matParam.value));
+                assert(std::holds_alternative<u32>(matParam.value));
+                dst.set(std::get<u32>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU64: {
-                assert(_STD holds_alternative<u64>(matParam.value));
-                dst.set(_STD get<u64>(matParam.value));
+                assert(std::holds_alternative<u64>(matParam.value));
+                dst.set(std::get<u64>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eF32: {
-                assert(_STD holds_alternative<float>(matParam.value));
-                dst.set(_STD get<float>(matParam.value));
+                assert(std::holds_alternative<float>(matParam.value));
+                dst.set(std::get<float>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU8Vec2: {
-                assert(_STD holds_alternative<math::vec2_t<u8>>(matParam.value));
-                dst.set(_STD get<math::vec2_t<u8>>(matParam.value));
+                assert(std::holds_alternative<math::vec2_t<u8>>(matParam.value));
+                dst.set(std::get<math::vec2_t<u8>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU16Vec2: {
-                assert(_STD holds_alternative<math::vec2_t<u16>>(matParam.value));
-                dst.set(_STD get<math::vec2_t<u16>>(matParam.value));
+                assert(std::holds_alternative<math::vec2_t<u16>>(matParam.value));
+                dst.set(std::get<math::vec2_t<u16>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU32Vec2: {
-                assert(_STD holds_alternative<math::vec2_t<u32>>(matParam.value));
-                dst.set(_STD get<math::vec2_t<u32>>(matParam.value));
+                assert(std::holds_alternative<math::vec2_t<u32>>(matParam.value));
+                dst.set(std::get<math::vec2_t<u32>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU64Vec2: {
-                assert(_STD holds_alternative<math::vec2_t<u64>>(matParam.value));
-                dst.set(_STD get<math::vec2_t<u64>>(matParam.value));
+                assert(std::holds_alternative<math::vec2_t<u64>>(matParam.value));
+                dst.set(std::get<math::vec2_t<u64>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eF32Vec2: {
-                assert(_STD holds_alternative<math::vec2_t<float>>(matParam.value));
-                dst.set(_STD get<math::vec2_t<float>>(matParam.value));
+                assert(std::holds_alternative<math::vec2_t<float>>(matParam.value));
+                dst.set(std::get<math::vec2_t<float>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU8Vec3: {
-                assert(_STD holds_alternative<math::vec3_t<u8>>(matParam.value));
-                dst.set(_STD get<math::vec3_t<u8>>(matParam.value));
+                assert(std::holds_alternative<math::vec3_t<u8>>(matParam.value));
+                dst.set(std::get<math::vec3_t<u8>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU16Vec3: {
-                assert(_STD holds_alternative<math::vec3_t<u16>>(matParam.value));
-                dst.set(_STD get<math::vec3_t<u16>>(matParam.value));
+                assert(std::holds_alternative<math::vec3_t<u16>>(matParam.value));
+                dst.set(std::get<math::vec3_t<u16>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU32Vec3: {
-                assert(_STD holds_alternative<math::vec3_t<u32>>(matParam.value));
-                dst.set(_STD get<math::vec3_t<u32>>(matParam.value));
+                assert(std::holds_alternative<math::vec3_t<u32>>(matParam.value));
+                dst.set(std::get<math::vec3_t<u32>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU64Vec3: {
-                assert(_STD holds_alternative<math::vec3_t<u64>>(matParam.value));
-                dst.set(_STD get<math::vec3_t<u64>>(matParam.value));
+                assert(std::holds_alternative<math::vec3_t<u64>>(matParam.value));
+                dst.set(std::get<math::vec3_t<u64>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eF32Vec3: {
-                assert(_STD holds_alternative<math::vec3_t<float>>(matParam.value));
-                dst.set(_STD get<math::vec3_t<float>>(matParam.value));
+                assert(std::holds_alternative<math::vec3_t<float>>(matParam.value));
+                dst.set(std::get<math::vec3_t<float>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU8Vec4: {
-                assert(_STD holds_alternative<math::vec4_t<u8>>(matParam.value));
-                dst.set(_STD get<math::vec4_t<u8>>(matParam.value));
+                assert(std::holds_alternative<math::vec4_t<u8>>(matParam.value));
+                dst.set(std::get<math::vec4_t<u8>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU16Vec4: {
-                assert(_STD holds_alternative<math::vec4_t<u16>>(matParam.value));
-                dst.set(_STD get<math::vec4_t<u16>>(matParam.value));
+                assert(std::holds_alternative<math::vec4_t<u16>>(matParam.value));
+                dst.set(std::get<math::vec4_t<u16>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU32Vec4: {
-                assert(_STD holds_alternative<math::vec4_t<u32>>(matParam.value));
-                dst.set(_STD get<math::vec4_t<u32>>(matParam.value));
+                assert(std::holds_alternative<math::vec4_t<u32>>(matParam.value));
+                dst.set(std::get<math::vec4_t<u32>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eU64Vec4: {
-                assert(_STD holds_alternative<math::vec4_t<u64>>(matParam.value));
-                dst.set(_STD get<math::vec4_t<u64>>(matParam.value));
+                assert(std::holds_alternative<math::vec4_t<u64>>(matParam.value));
+                dst.set(std::get<math::vec4_t<u64>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eF32Vec4: {
-                assert(_STD holds_alternative<math::vec4_t<u32>>(matParam.value));
-                dst.set(_STD get<math::vec4_t<u32>>(matParam.value));
+                assert(std::holds_alternative<math::vec4_t<u32>>(matParam.value));
+                dst.set(std::get<math::vec4_t<u32>>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eF32Mat3x3: {
-                assert(_STD holds_alternative<math::matq3_t<float>>(matParam.value));
-                dst.set(_STD get<u8>(matParam.value));
+                assert(std::holds_alternative<math::matq3_t<float>>(matParam.value));
+                dst.set(std::get<u8>(matParam.value));
                 break;
             }
             case accel::TransferDataType::eF32Mat4x4: {
-                assert(_STD holds_alternative<math::matq4_t<float>>(matParam.value));
-                dst.set(_STD get<math::matq4_t<float>>(matParam.value));
+                assert(std::holds_alternative<math::matq4_t<float>>(matParam.value));
+                dst.set(std::get<math::matq4_t<float>>(matParam.value));
                 break;
             }
             default: {
-                throw _STD runtime_error("Unexpected.");
+                throw std::runtime_error("Unexpected.");
             }
         }
 
@@ -373,7 +373,7 @@ smr<engine::gfx::TextureResource> resolveTexture(
     //auto* textureAsset = Cast<engine::assets::Texture, engine::assets::Asset, false>(asset);
     auto* textureAsset = static_cast<ptr<engine::assets::TextureAsset>>(asset);
     auto texture = loader_->loadImmediately<engine::assets::TextureAsset, TextureResource>(
-        _STD move(textureAsset),
+        std::move(textureAsset),
         TextureLoadOptions {
             textureAsset->getExtent().x >= 8192 ?
                 TextureLoadDataFlagBits::eLazyDataLoading :
@@ -403,7 +403,7 @@ smr<MaterialPrototypeResource> resolvePrototype(
     //auto* matProtAsset = Cast<engine::assets::GfxMaterialPrototype, engine::assets::Asset, false>(asset);
     auto* matProtAsset = static_cast<ptr<engine::assets::GfxMaterialPrototype>>(asset);
     auto prototype = loader_->loadImmediately<engine::assets::GfxMaterialPrototype, MaterialPrototypeResource>(
-        _STD move(matProtAsset),
+        std::move(matProtAsset),
         {}
     );
 

@@ -25,7 +25,7 @@ void editor::boot::initEditorWorld() {
     auto scene = SceneFactory::createEditorScene();
     scene->prepare();
 
-    const auto world { make_sptr<core::World>(_STD move(scene)) };
+    const auto world { make_sptr<core::World>(std::move(scene)) };
 
     engine->addWorld(world);
     editor->getWorldContext()->setCurrentWorld(world);
@@ -41,7 +41,7 @@ void editor::boot::initPrimaryWorld() {
     auto scene = SceneFactory::createGameScene();
     scene->prepare();
 
-    const auto world { make_sptr<core::World>(_STD move(scene)) };
+    const auto world { make_sptr<core::World>(std::move(scene)) };
 
     engine->addWorld(world);
     primary->getWorldContext()->setCurrentWorld(world);

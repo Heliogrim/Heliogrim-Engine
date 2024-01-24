@@ -127,7 +127,7 @@ namespace hg::engine {
          */
 
     private:
-        _STD atomic_uint_fast8_t _engineState;
+        std::atomic_uint_fast8_t _engineState;
 
     protected:
         bool setEngineState(core::EngineState state_);

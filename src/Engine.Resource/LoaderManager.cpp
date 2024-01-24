@@ -36,7 +36,7 @@ bool LoaderManager::registerLoader(cref<asset_type_id> typeId_, cref<sptr<loader
 
 bool LoaderManager::unregisterLoader(mref<sptr<loader::LoaderBase>> loader_) noexcept {
 
-    const auto iter = _STD ranges::find_if(
+    const auto iter = std::ranges::find_if(
         _loader,
         [loader_](const auto& pair_) {
             return pair_.second == loader_;

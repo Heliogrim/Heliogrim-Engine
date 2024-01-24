@@ -54,7 +54,7 @@ namespace hg::engine::gfx::material {
         bool setParam(string_view name_, Type_&& value_);
 
         template <typename Type_>
-        _STD optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type> getParam(
+        std::optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type> getParam(
             ParameterIdentifier identifier_,
             nothrow_t
         ) const noexcept;
@@ -65,7 +65,7 @@ namespace hg::engine::gfx::material {
         ) const;
 
         template <typename Type_>
-        _STD optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type> getParam(
+        std::optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type> getParam(
             string_view name_,
             nothrow_t
         ) const noexcept;
@@ -83,7 +83,7 @@ namespace hg::engine::gfx::material {
     bool Material::setParam(string_view name_, Type_&& value_) {
 
         const auto& mpp = _prototype->getParameters();
-        const auto iter = _STD ranges::find(
+        const auto iter = std::ranges::find(
             mpp,
             name_,
             [](cref<MaterialPrototypeParameter> param_) {
@@ -95,11 +95,11 @@ namespace hg::engine::gfx::material {
             return false;
         }
 
-        const auto diff = _STD distance(mpp.begin(), iter);
+        const auto diff = std::distance(mpp.begin(), iter);
         const auto it = _parameters.begin() + diff;
 
         if (it->getStorageClass()->template isExactType<MaterialParameterStorage<Type_>>()) {
-            it->template set<Type_>(_STD forward<Type_>(value_));
+            it->template set<Type_>(std::forward<Type_>(value_));
             return true;
         }
 
@@ -107,12 +107,12 @@ namespace hg::engine::gfx::material {
     }
 
     template <typename Type_>
-    _STD optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type> Material::getParam(
+    std::optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type> Material::getParam(
         ParameterIdentifier identifier_,
         nothrow_t
     ) const noexcept {
 
-        using result_type = _STD optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type>;
+        using result_type = std::optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type>;
 
         if (identifier_.data >= _parameters.size()) {
             return result_type {};
@@ -130,15 +130,15 @@ namespace hg::engine::gfx::material {
     }
 
     template <typename Type_>
-    _STD optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type> Material::getParam(
+    std::optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type> Material::getParam(
         string_view name_,
         nothrow_t
     ) const noexcept {
 
-        using result_type = _STD optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type>;
+        using result_type = std::optional<typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type>;
 
         const auto& mpp = _prototype->getParameters();
-        const auto iter = _STD ranges::find(
+        const auto iter = std::ranges::find(
             mpp,
             name_,
             [](cref<MaterialPrototypeParameter> param_) {
@@ -150,7 +150,7 @@ namespace hg::engine::gfx::material {
             return result_type {};
         }
 
-        const auto diff = _STD distance(mpp.begin(), iter);
+        const auto diff = std::distance(mpp.begin(), iter);
         const auto it = _parameters.begin() + diff;
 
         return result_type { it->template get<Type_>() };
@@ -160,7 +160,7 @@ namespace hg::engine::gfx::material {
     typename MaterialParameter::mpts_t<Type_>::trait_type::cref_type Material::getParam(string_view name_) const {
 
         const auto& mpp = _prototype->getParameters();
-        const auto iter = _STD ranges::find(
+        const auto iter = std::ranges::find(
             mpp,
             name_,
             [](cref<MaterialPrototypeParameter> param_) {
@@ -168,7 +168,7 @@ namespace hg::engine::gfx::material {
             }
         );
 
-        const auto diff = _STD distance(mpp.begin(), iter);
+        const auto diff = std::distance(mpp.begin(), iter);
         const auto it = _parameters.begin() + diff;
 
         return it->template get<Type_>();

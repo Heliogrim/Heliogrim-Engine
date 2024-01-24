@@ -131,7 +131,7 @@ Task::Task(
     const TaskMask mask_
 ) noexcept :
     TaskDelegate(TaskType::eTask, mask_),
-    _fnc(_STD move(fnc_)) {}
+    _fnc(std::move(fnc_)) {}
 
 Task::~Task() noexcept = default;
 
@@ -144,7 +144,7 @@ const non_owning_rptr<const TaskDelegate> engine::scheduler::task::make_task(
     const TaskMask mask_
 ) {
     return static_cast<const non_owning_rptr<const TaskDelegate>>(
-        new Task(_STD forward<decltype(fnc_)>(fnc_), mask_)
+        new Task(std::forward<decltype(fnc_)>(fnc_), mask_)
     );
 }
 
@@ -153,7 +153,7 @@ RepetitiveTask::RepetitiveTask(
     const TaskMask mask_
 ) noexcept :
     TaskDelegate(TaskType::eRepetitive, mask_),
-    _fnc(_STD move(fnc_)) {}
+    _fnc(std::move(fnc_)) {}
 
 RepetitiveTask::~RepetitiveTask() noexcept = default;
 
@@ -166,7 +166,7 @@ const non_owning_rptr<const TaskDelegate> engine::scheduler::task::make_repetiti
     const TaskMask mask_
 ) {
     return static_cast<const non_owning_rptr<const TaskDelegate>>(
-        new RepetitiveTask(_STD forward<decltype(fnc_)>(fnc_), mask_)
+        new RepetitiveTask(std::forward<decltype(fnc_)>(fnc_), mask_)
     );
 }
 
@@ -175,7 +175,7 @@ BatchTask::BatchTask(
     const TaskMask mask_
 ) noexcept :
     TaskDelegate(TaskType::eBatch, mask_),
-    _fnc(_STD move(fnc_)) {}
+    _fnc(std::move(fnc_)) {}
 
 BatchTask::~BatchTask() noexcept = default;
 
@@ -189,6 +189,6 @@ const non_owning_rptr<const TaskDelegate> engine::scheduler::task::make_batch_ta
     const TaskMask mask_
 ) {
     return static_cast<const non_owning_rptr<const TaskDelegate>>(
-        new BatchTask(_STD forward<decltype(fnc_)>(fnc_), mask_)
+        new BatchTask(std::forward<decltype(fnc_)>(fnc_), mask_)
     );
 }

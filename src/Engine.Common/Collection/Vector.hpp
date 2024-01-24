@@ -6,6 +6,6 @@
 #include "../Types.hpp"
 
 namespace hg {
-    template <typename Type_, typename Allocator_ = _STD allocator<Type_>>
-    using Vector = _STD vector<Type_, Allocator_>;
+    template <typename Type_, typename Allocator_ = std::allocator<Type_>>
+    using Vector = std::vector<Type_, Allocator_>;
 }

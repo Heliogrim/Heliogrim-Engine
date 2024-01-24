@@ -32,27 +32,27 @@ static smr<AccelerationEffect> build_test_effect() {
     tmpVar->type = lang::Type { .category = lang::TypeCategory::eObject, .objectType = lang::ObjectType::eUnknown };
     tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eExternalLinkage>>();
     tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eUniform>>(
-        _STD move(tmpVar->annotation)
+        std::move(tmpVar->annotation)
     );
-    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("view", _STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("view", std::move(tmpVar->annotation));
     auto tmpSym = make_uptr<lang::Symbol>(
         lang::SymbolId::from("view"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
-    vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
-    vertexStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    vertexStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
+    vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
     tmpVar = make_uptr<lang::Variable>();
     tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("uv");
     tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>(
-        _STD move(tmpVar->annotation)
+        std::move(tmpVar->annotation)
     );
     tmpSym = make_uptr<lang::Symbol>(
         lang::SymbolId::from("uv"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
-    vertexStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
-    vertexStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    vertexStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
+    vertexStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
     auto fragmentStage = make_smr<Stage>(
         StageFlagBits::eFragment
@@ -78,14 +78,14 @@ static smr<AccelerationEffect> build_test_effect() {
     tmpVar = make_uptr<lang::Variable>();
     tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("uv");
     tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>(
-        _STD move(tmpVar->annotation)
+        std::move(tmpVar->annotation)
     );
     tmpSym = make_uptr<lang::Symbol>(
         lang::SymbolId::from("uv"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
-    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
-    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
     tmpVar = make_uptr<lang::Variable>();
     tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("depth");
@@ -93,8 +93,8 @@ static smr<AccelerationEffect> build_test_effect() {
         lang::SymbolId::from("depth"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
-    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
-    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
     tmpVar = make_uptr<lang::Variable>();
     tmpVar->type = lang::Type {
@@ -102,15 +102,15 @@ static smr<AccelerationEffect> build_test_effect() {
     };
     tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eExternalLinkage>>();
     tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eUniform>>(
-        _STD move(tmpVar->annotation)
+        std::move(tmpVar->annotation)
     );
-    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("mat-static-0", _STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("mat-static-0", std::move(tmpVar->annotation));
     tmpSym = make_uptr<lang::Symbol>(
         lang::SymbolId::from(/*"skybox"*/"mat-static-0"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
-    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
-    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
     /**/
 
@@ -119,13 +119,13 @@ static smr<AccelerationEffect> build_test_effect() {
         auto tmpVar = make_uptr<Variable>();
         tmpVar->type = Type { .category = TypeCategory::eObject, .objectType = ObjectType::eSampler };
         tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-        tmpVar->annotation = make_uptr<SymbolIdAnnotation>("mat-static-0-sampler", _STD move(tmpVar->annotation));
+        tmpVar->annotation = make_uptr<SymbolIdAnnotation>("mat-static-0-sampler", std::move(tmpVar->annotation));
         tmpSym = make_uptr<Symbol>(
             SymbolId::from("mat-static-0-sampler"sv),
             VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
         );
-        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
-        fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+        fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
+        fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
     }
 
     /**/
@@ -133,26 +133,26 @@ static smr<AccelerationEffect> build_test_effect() {
     tmpVar = make_uptr<lang::Variable>();
     tmpVar->annotation = make_uptr<lang::SymbolIdAnnotation>("color");
     tmpVar->annotation = make_uptr<lang::SimpleAnnotation<lang::AnnotationType::eForwardLinkage>>(
-        _STD move(tmpVar->annotation)
+        std::move(tmpVar->annotation)
     );
     tmpSym = make_uptr<lang::Symbol>(
         lang::SymbolId::from("color"sv),
         lang::VariableSymbol { lang::SymbolType::eVariableSymbol, tmpVar.get() }
     );
-    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
-    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
     /**/
 
     const auto vertexShaderCode = read_shader_file("__test__sky.vs");
 
     vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-    vertexStage->getIntermediate()->lang.text.emplace_back(_STD move(vertexShaderCode));
+    vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
     const auto fragmentShaderCode = read_shader_file("__test__sky.fs");
 
     fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-    fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
+    fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
 
     /**/
 
@@ -164,9 +164,9 @@ static smr<AccelerationEffect> build_test_effect() {
     };
 
     return make_smr<AccelerationEffect>(
-        _STD move(guid),
+        std::move(guid),
         "test-sky-effect",
-        Vector<smr<Stage>> { _STD move(vertexStage), _STD move(fragmentStage) }
+        Vector<smr<Stage>> { std::move(vertexStage), std::move(fragmentStage) }
     );
     // Vector<smr<const Symbol>> { makeSceneCameraSymbol(), makeSkyboxTextureSymbol(), /*makeSceneDepthSymbol()*/ },
     // Vector<smr<const Symbol>> { makeSceneColorSymbol() }

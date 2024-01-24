@@ -19,7 +19,7 @@ ForwardRenderCommandBuffer::ForwardRenderCommandBuffer() noexcept :
     RenderCommandBuffer() {}
 
 ForwardRenderCommandBuffer::ForwardRenderCommandBuffer(mref<this_type> other_) noexcept :
-    RenderCommandBuffer(_STD move(other_)) {}
+    RenderCommandBuffer(std::move(other_)) {}
 
 GraphicsPipelineRComRef ForwardRenderCommandBuffer::createGraphicsPipelineImmediately(
     mref<smr<const accel::AccelerationEffect>> effect_,

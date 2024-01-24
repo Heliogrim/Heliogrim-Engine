@@ -13,9 +13,9 @@ namespace hg::__internal::types {
          * \brief 
          * \param stream_ 
          */
-        basic_istream(const _STD basic_istream<Type, Traits>&& stream_) :
-            _stream(static_cast<_STD basic_istream<Type, Traits>*>(malloc(sizeof(stream_)))) {
-            memcpy(_stream, &(_STD move(stream_)), sizeof(stream_));
+        basic_istream(const std::basic_istream<Type, Traits>&& stream_) :
+            _stream(static_cast<std::basic_istream<Type, Traits>*>(malloc(sizeof(stream_)))) {
+            memcpy(_stream, &(std::move(stream_)), sizeof(stream_));
         }
 
         /**
@@ -40,7 +40,7 @@ namespace hg::__internal::types {
          * \param off_ 
          * \param dir_ 
          */
-        constexpr void seek(off_type off_, _STD ios_base::seekdir dir_) {
+        constexpr void seek(off_type off_, std::ios_base::seekdir dir_) {
             _stream->seekg(off_, dir_);
         }
 
@@ -70,13 +70,13 @@ namespace hg::__internal::types {
          */
         basic_istream<Type, Traits>& operator=(basic_istream<Type, Traits>&& other_) noexcept {
             if (this != &other_) {
-                _stream = _STD exchange(other_._stream, nullptr);
+                _stream = std::exchange(other_._stream, nullptr);
             }
             return *this;
         }
 
     private:
-        _STD basic_istream<Type, Traits>* _stream = nullptr;
+        std::basic_istream<Type, Traits>* _stream = nullptr;
     };
 
     template <typename Type, typename Traits>
@@ -90,9 +90,9 @@ namespace hg::__internal::types {
          * \brief 
          * \param stream_ 
          */
-        basic_ostream(const _STD basic_ostream<Type, Traits>&& stream_) :
-            _stream(static_cast<_STD basic_ostream<Type, Traits>*>(malloc(sizeof(stream_)))) {
-            memcpy(_stream, &(_STD move(stream_)), sizeof(stream_));
+        basic_ostream(const std::basic_ostream<Type, Traits>&& stream_) :
+            _stream(static_cast<std::basic_ostream<Type, Traits>*>(malloc(sizeof(stream_)))) {
+            memcpy(_stream, &(std::move(stream_)), sizeof(stream_));
         }
 
         /**
@@ -121,13 +121,13 @@ namespace hg::__internal::types {
          */
         basic_ostream<Type, Traits>& operator=(basic_ostream<Type, Traits>&& other_) noexcept {
             if (this != &other_) {
-                _stream = _STD exchange(other_._stream, nullptr);
+                _stream = std::exchange(other_._stream, nullptr);
             }
             return *this;
         }
 
     private:
-        _STD basic_ostream<Type, Traits>* _stream = nullptr;
+        std::basic_ostream<Type, Traits>* _stream = nullptr;
     };
 
     template <typename Type, typename Traits>
@@ -175,7 +175,7 @@ namespace hg::__internal::types {
          * \param off_ 
          * \param dir_ 
          */
-        constexpr void seek(off_type off_, _STD ios_base::seekdir dir_) {
+        constexpr void seek(off_type off_, std::ios_base::seekdir dir_) {
             _stream->seekg(off_, dir_);
         }
 
@@ -193,16 +193,16 @@ namespace hg::__internal::types {
          */
         basic_iostream<Type, Traits>& operator=(basic_iostream<Type, Traits>&& other_) noexcept {
             if (this != &other_) {
-                _stream = _STD exchange(other_._stream, nullptr);
+                _stream = std::exchange(other_._stream, nullptr);
             }
             return *this;
         }
 
     private:
-        _STD basic_iostream<Type, Traits>* _stream = nullptr;
+        std::basic_iostream<Type, Traits>* _stream = nullptr;
     };
 
-    using istream = basic_istream<char, _STD char_traits<char>>;
-    using ostream = basic_ostream<char, _STD char_traits<char>>;
-    using iostream = basic_iostream<char, _STD char_traits<char>>;
+    using istream = basic_istream<char, std::char_traits<char>>;
+    using ostream = basic_ostream<char, std::char_traits<char>>;
+    using iostream = basic_iostream<char, std::char_traits<char>>;
 }

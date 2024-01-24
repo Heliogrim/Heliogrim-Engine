@@ -56,16 +56,16 @@ void RenderTickStage::tickTargets() {
     /**
      * Debug Metrics
      */
-    static concurrent::RingBuffer<_STD chrono::nanoseconds> timeBuffer { 17 };
+    static concurrent::RingBuffer<std::chrono::nanoseconds> timeBuffer { 17 };
 
     static auto lastFrame = std::chrono::high_resolution_clock::now();
-    const auto now = _STD chrono::high_resolution_clock::now();
+    const auto now = std::chrono::high_resolution_clock::now();
 
-    auto duration { _STD chrono::duration_cast<_STD chrono::nanoseconds>(now - lastFrame) };
-    timeBuffer.try_push(_STD move(duration));
+    auto duration { std::chrono::duration_cast<std::chrono::nanoseconds>(now - lastFrame) };
+    timeBuffer.try_push(std::move(duration));
 
     if (timeBuffer.full()) {
-        _STD chrono::nanoseconds tmp {};
+        std::chrono::nanoseconds tmp {};
         timeBuffer.try_pop(tmp);
     }
 
@@ -73,7 +73,7 @@ void RenderTickStage::tickTargets() {
 
     /**/
 
-    _STD chrono::nanoseconds accValue {};
+    std::chrono::nanoseconds accValue {};
     u32 accCount { 0ui32 };
     for (const auto& entry : timeBuffer.unsafe_container()) {
         if (entry.count() > 0) {

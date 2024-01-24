@@ -10,9 +10,9 @@ SourceBaseArchive::SourceBaseArchive(
     mref<streamoff> srcOff_,
     mref<streamsize> srcSize_
 ) :
-    _source(_STD move(source_)),
-    _srcOff(_STD move(srcOff_)),
-    _srcSize(_STD move(srcSize_)),
+    _source(std::move(source_)),
+    _srcOff(std::move(srcOff_)),
+    _srcSize(std::move(srcSize_)),
     _pos(0) {}
 
 SourceBaseArchive::~SourceBaseArchive() noexcept = default;
@@ -20,7 +20,7 @@ SourceBaseArchive::~SourceBaseArchive() noexcept = default;
 fs::Url SourceBaseArchive::getArchiveUrl() const noexcept {
     return fs::Url {
         fs::Path {
-            _STD format(
+            std::format(
                 "SourceArchive<<{:#016x}>>",
                 reinterpret_cast<ptrdiff_t>(_source.get())
             )

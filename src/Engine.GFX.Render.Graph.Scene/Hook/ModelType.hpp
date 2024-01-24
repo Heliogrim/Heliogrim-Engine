@@ -25,7 +25,7 @@ namespace hg::engine::render::graph {
         ) noexcept :
             InheritMeta(),
             _filterMode(filterMode_),
-            _typeMetaClasses(_STD move(typeMetaClasses_)) {}
+            _typeMetaClasses(std::move(typeMetaClasses_)) {}
 
     private:
         ModelTypeFilterMode _filterMode;

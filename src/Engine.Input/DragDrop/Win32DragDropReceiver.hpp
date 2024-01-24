@@ -29,7 +29,7 @@ namespace hg::engine::input {
         ptr<IDataObject> _data;
         bool _valid;
 
-        _STD atomic_uint_fast32_t _useCount;
+        std::atomic_uint_fast32_t _useCount;
 
     public:
         HRESULT QueryInterface(const IID& riid, void** ppvObject) override;

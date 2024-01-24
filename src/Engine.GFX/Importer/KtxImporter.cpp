@@ -99,7 +99,7 @@ KtxImporter::descriptor_type KtxImporter::descriptor() const noexcept {
 static KtxImporter::import_result_type makeImportResult(mref<KtxImporter::import_type> value_) {
 
     ::hg::concurrent::promise<KtxImporter::import_type> prom {
-        [value = _STD move(value_)]() {
+        [value = std::move(value_)]() {
             return value;
         }
     };
@@ -117,25 +117,25 @@ static string normalizeDirName(cref<string> value_) {
     // cobblestone_large_01_nor_8k
     // cobblestone_large_01_rough_8k
 
-    const _STD regex formatReg { R"(^(.*)(_(png|jpg|exr|tif|ktx|ktx2|hdr)+)+)" };
+    const std::regex formatReg { R"(^(.*)(_(png|jpg|exr|tif|ktx|ktx2|hdr)+)+)" };
     // :: cobblestone_large_01_nor_8k_png -> cobblestone_large_01_nor_8k
-    const _STD regex sizeReg { R"(^(.*)(_[1|2|4|8|16|24|32]+k)+)" };
+    const std::regex sizeReg { R"(^(.*)(_[1|2|4|8|16|24|32]+k)+)" };
     // :: cobblestone_large_01_nor_8k -> cobblestone_large_01_nor
-    const _STD regex typeReg { R"(^(.*)(_[nor|rough|dif|diff|arm|spec|metal]+)+)" };
+    const std::regex typeReg { R"(^(.*)(_[nor|rough|dif|diff|arm|spec|metal]+)+)" };
     // :: cobblestone_large_01_nor -> cobblestone_large_01
 
-    string tmp0 = _STD regex_replace(value_, formatReg, "$1");
-    string tmp1 = _STD regex_replace(tmp0, sizeReg, "$1");
-    tmp0 = _STD regex_replace(tmp1, typeReg, "$1");
+    string tmp0 = std::regex_replace(value_, formatReg, "$1");
+    string tmp1 = std::regex_replace(tmp0, sizeReg, "$1");
+    tmp0 = std::regex_replace(tmp1, typeReg, "$1");
 
     return tmp0;
 }
 
 KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId_, cref<hg::fs::File> file_) const {
 
-    const auto rootCwd { _STD filesystem::current_path().append(R"(..\..)") };
-    const auto rootAssetPath { _STD filesystem::path(R"(resources\assets\texture)") };
-    const auto rootImportPath { _STD filesystem::path(R"(resources\imports)") };
+    const auto rootCwd { std::filesystem::current_path().append(R"(..\..)") };
+    const auto rootAssetPath { std::filesystem::path(R"(resources\assets\texture)") };
+    const auto rootImportPath { std::filesystem::path(R"(resources\imports)") };
 
     /**/
 
@@ -151,12 +151,12 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
     const auto targetSubDir { normalizeDirName(sourceName) };
-    const auto targetDirPath { _STD filesystem::path(targetUrl.path()).append(targetSubDir) };
+    const auto targetDirPath { std::filesystem::path(targetUrl.path()).append(targetSubDir) };
 
-    const auto subRelativePath { _STD filesystem::relative(targetDirPath, rootAssetPath) };
+    const auto subRelativePath { std::filesystem::relative(targetDirPath, rootAssetPath) };
 
     const auto storePath {
-        _STD filesystem::path { rootCwd }
+        std::filesystem::path { rootCwd }
         .append(rootImportPath.string())
         .append(isKtx2 ? R"(ktx2)" : R"(ktx)")
         .append(subRelativePath.string())
@@ -165,15 +165,15 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
 
-    if (/* _STD filesystem::exists(targetDirPath) || */_STD filesystem::exists(storePath)) {
+    if (/* std::filesystem::exists(targetDirPath) || */std::filesystem::exists(storePath)) {
         return makeImportResult({ nullptr, nullptr });
     }
 
     /**/
 
     IM_CORE_LOGF("Copying file to {:}", storePath.string());
-    _STD filesystem::create_directories(storePath.parent_path());
-    _STD filesystem::copy(sourcePath, storePath);
+    std::filesystem::create_directories(storePath.parent_path());
+    std::filesystem::copy(sourcePath, storePath);
 
     /**/
 
@@ -190,7 +190,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
 
-    const auto imgSrcPath { _STD filesystem::relative(storePath, rootCwd) };
+    const auto imgSrcPath { std::filesystem::relative(storePath, rootCwd) };
     img->setAssetName(sourceName);
     img->addSource(fs::Url { "file"sv, imgSrcPath.string() });
 
@@ -202,14 +202,14 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     /**/
 
-    _STD ifstream ifs { sourcePath, _STD ios::in | _STD ios::binary };
+    std::ifstream ifs { sourcePath, std::ios::in | std::ios::binary };
     assert(ifs);
 
-    ifs.seekg(0, _STD ios::beg);
+    ifs.seekg(0, std::ios::beg);
     const auto beg { ifs.tellg() };
 
     constexpr auto mem_block_size { 4096ui64 };
-    _STD vector<char> raw(mem_block_size);
+    std::vector<char> raw(mem_block_size);
 
     ifs.read(raw.data(), mem_block_size);
     const auto end { ifs.tellg() };
@@ -231,13 +231,13 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     tex->setExtent(
         {
             static_cast<u32>(header.pixelWidth),
-            _STD max(static_cast<u32>(header.pixelHeight), 1ui32),
-            _STD max(static_cast<u32>(header.pixelDepth), 1ui32)
+            std::max(static_cast<u32>(header.pixelHeight), 1ui32),
+            std::max(static_cast<u32>(header.pixelDepth), 1ui32)
         }
     );
 
     tex->setTextureFormat(api::vkTranslateFormat(*reinterpret_cast<const vk::Format*>(&header.vkFormat)));
-    tex->setMipLevelCount(_STD max(header.levelCount, 1ui32));
+    tex->setMipLevelCount(std::max(header.levelCount, 1ui32));
 
     // TODO: Replace with actual/correct type resolving for textures
     if (header.faceCount <= 1ui32) {
@@ -267,7 +267,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     {
         auto root = imgArch.insertRootSlot();
-        access::Structure<Image>::serialize(img, _STD move(root));
+        access::Structure<Image>::serialize(img, std::move(root));
     }
 
     Guid imgArchGuid {};
@@ -280,7 +280,7 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
 
     {
         auto root = texArch.insertRootSlot();
-        access::Structure<TextureAsset>::serialize(tex, _STD move(root));
+        access::Structure<TextureAsset>::serialize(tex, std::move(root));
     }
 
     Guid texArchGuid {};
@@ -289,31 +289,31 @@ KtxImporter::import_result_type KtxImporter::import(cref<res::FileTypeId> typeId
     /* Generate Target Path */
 
     const auto packagePath {
-        _STD filesystem::path { rootCwd }.append(targetDirPath.string()).append(sourceName).concat(R"(.impackage)")
+        std::filesystem::path { rootCwd }.append(targetDirPath.string()).append(sourceName).concat(R"(.impackage)")
     };
 
-    if (not _STD filesystem::exists(packagePath.parent_path())) {
-        _STD filesystem::create_directories(packagePath.parent_path());
+    if (not std::filesystem::exists(packagePath.parent_path())) {
+        std::filesystem::create_directories(packagePath.parent_path());
     }
 
     /* Generate Package */
 
     hg::fs::File packageFile { packagePath };
-    auto source = make_uptr<resource::FileSource>(_STD move(packageFile));
+    auto source = make_uptr<resource::FileSource>(std::move(packageFile));
 
-    auto package = resource::PackageFactory::createEmptyPackage(_STD move(source));
+    auto package = resource::PackageFactory::createEmptyPackage(std::move(source));
     auto* const linker = package->getLinker();
 
     /* Store Data to Package */
 
     linker->store(
-        resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, _STD move(imgArchGuid) },
-        _STD move(imgBuffer)
+        resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, std::move(imgArchGuid) },
+        std::move(imgBuffer)
     );
 
     linker->store(
-        resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, _STD move(texArchGuid) },
-        _STD move(texBuffer)
+        resource::ArchiveHeader { resource::ArchiveHeaderType::eSerializedStructure, std::move(texArchGuid) },
+        std::move(texBuffer)
     );
 
     /* Flush/Write the package */

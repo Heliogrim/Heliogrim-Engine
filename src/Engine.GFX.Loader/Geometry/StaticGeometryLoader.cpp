@@ -16,5 +16,5 @@ StaticGeometryLoader::StaticGeometryLoader(
         StaticGeometryCache(cache_),
         StaticGeometryFeedback(),
         StaticGeometryTransformer(pool_),
-        _STD move(sourceLoader_)
+        std::move(sourceLoader_)
     ) {}

@@ -6,7 +6,7 @@ using namespace hg::engine::resource;
 using namespace hg;
 
 NetworkSource::reference_type NetworkSource::operator=(mref<value_type> other_) noexcept {
-    if (this != _STD addressof(other_)) {
+    if (this != std::addressof(other_)) {
         throw NotImplementedException {};
     }
 

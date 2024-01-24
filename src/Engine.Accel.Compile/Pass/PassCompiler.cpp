@@ -8,5 +8,5 @@ non_owning_rptr<const Tokenizer> PassCompiler::getTokenizer() const noexcept {
 }
 
 void PassCompiler::setTokenizer(mref<non_owning_rptr<const Tokenizer>> tokenizer_) {
-    _tokenizer = _STD move(tokenizer_);
+    _tokenizer = std::move(tokenizer_);
 }

@@ -69,7 +69,7 @@ static void configureViewport(cref<sptr<HorizontalPanel>> parent_) {
 
 sptr<ProjectViewportPanel> ProjectViewportPanel::make() {
 
-    auto panel { _STD shared_ptr<ProjectViewportPanel>(new ProjectViewportPanel()) };
+    auto panel { std::shared_ptr<ProjectViewportPanel>(new ProjectViewportPanel()) };
 
     auto ctrls = make_sptr<HorizontalPanel>();
     ctrls->attr.width.setValue({ ReflowUnitType::eRelative, 1.F });

@@ -6,7 +6,7 @@
 namespace hg::engine::accel {
     struct EffectCompileResultAlias {
         // Maps pipeline derivat symbols to source symbols
-        Vector<_STD pair<lang::SymbolId, lang::SymbolId>> mapping;
+        Vector<std::pair<lang::SymbolId, lang::SymbolId>> mapping;
 
         [[nodiscard]] constexpr lang::SymbolId aliasOrValue(cref<lang::SymbolId> value_) const noexcept {
             for (const auto& pair : mapping) {

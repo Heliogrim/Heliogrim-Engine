@@ -100,7 +100,7 @@ namespace hg::engine::scheduler {
      * @returns A concurrent::future&lt;Ty&gt;
      */
     template <typename Ty>
-    hg::concurrent::future<Ty> async(_In_ mref<_STD function<Ty()>> fnc_) {
+    hg::concurrent::future<Ty> async(_In_ mref<std::function<Ty()>> fnc_) {
         hg::concurrent::promise<Ty> p { fnc_ };
         hg::concurrent::future<Ty> f = p.get();
 
@@ -119,7 +119,7 @@ namespace hg::engine::scheduler {
      * @returns A concurrent::future&lt;Ty&gt;
      */
     template <typename Ty>
-    hg::concurrent::future<Ty> async(_In_ mref<_STD function<Ty()>> fnc_, hg::u32 ticks_) {
+    hg::concurrent::future<Ty> async(_In_ mref<std::function<Ty()>> fnc_, hg::u32 ticks_) {
         hg::concurrent::promise<Ty> p { fnc_ };
         hg::concurrent::future<Ty> f = p.get();
 

@@ -20,7 +20,7 @@ InputText::InputText() :
 InputText::~InputText() = default;
 
 string InputText::getTag() const noexcept {
-    return _STD format(R"(InputText <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(InputText <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 void InputText::setPlaceholder(cref<string> placeholder_) {
@@ -94,7 +94,7 @@ EventResponse InputText::onKeyDown(cref<KeyboardEvent> event_) {
         const auto window { root() };
         const FocusEvent focusEvent { window };
 
-        WindowManager::get()->dispatch<FocusEvent>(_STD static_pointer_cast<Window, Widget>(window), focusEvent);
+        WindowManager::get()->dispatch<FocusEvent>(std::static_pointer_cast<Window, Widget>(window), focusEvent);
         return EventResponse::eConsumed;
 
     } else if (event_._key < 0x20 || event_._key > 0x7E) {

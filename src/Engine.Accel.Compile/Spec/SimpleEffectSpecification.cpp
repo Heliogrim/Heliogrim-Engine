@@ -7,7 +7,7 @@ using namespace hg;
 
 SimpleEffectSpecification::SimpleEffectSpecification(mref<Vector<smr<const lang::Symbol>>> targetSymbols_) noexcept :
     EffectSpecification(),
-    _targetSymbols(_STD move(targetSymbols_)) {}
+    _targetSymbols(std::move(targetSymbols_)) {}
 
 cref<Vector<smr<const lang::Symbol>>> SimpleEffectSpecification::targetSymbols() const noexcept {
     return _targetSymbols;

@@ -22,11 +22,11 @@ namespace hg::engine::scheduler {
 namespace std {
     template <>
     struct hash<::hg::engine::scheduler::CompositeDependency> :
-        _STD hash<::hg::ptr<void>> {
+        std::hash<::hg::ptr<void>> {
         [[nodiscard]] size_t operator()(
             ::hg::cref<::hg::engine::scheduler::CompositeDependency> value_
         ) const noexcept {
-            return static_cast<::hg::cref<_STD hash<::hg::ptr<void>>>>(*this)(value_.stage);
+            return static_cast<::hg::cref<std::hash<::hg::ptr<void>>>>(*this)(value_.stage);
         }
     };
 }

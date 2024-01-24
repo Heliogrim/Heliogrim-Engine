@@ -64,7 +64,7 @@ namespace hg {
      * Subsection: Dispatching
      */
 
-    using execute_function_type = _STD function<void()>;
+    using execute_function_type = std::function<void()>;
     using execute_function_pointer_type = nular_fnc<void>;
 
     /**

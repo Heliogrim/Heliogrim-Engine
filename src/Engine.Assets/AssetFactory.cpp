@@ -34,13 +34,13 @@ void engine::assets::storeDefaultNameAndUrl(non_owning_rptr<Asset> asset_, strin
 
     #ifdef _DEBUG
     if (not source_.empty() && asset_->getAssetName().empty()) {
-        asset_->setAssetName(_STD filesystem::path(source_).filename().string());
+        asset_->setAssetName(std::filesystem::path(source_).filename().string());
     }
     #endif
 
     if (asset_->getVirtualUrl().empty()) {
 
-        _STD filesystem::path pseudo {};
+        std::filesystem::path pseudo {};
 
         switch (asset_->getTypeId().data) {
             case assets::Image::typeId.data: {
@@ -71,7 +71,7 @@ void engine::assets::storeDefaultNameAndUrl(non_owning_rptr<Asset> asset_, strin
 
         if (not asset_->getAssetName().empty()) {
 
-            _STD stringstream ss {};
+            std::stringstream ss {};
             ss << asset_->getAssetName();
             ss << " :: ";
             ss << asset_->get_guid().pre;
@@ -86,7 +86,7 @@ void engine::assets::storeDefaultNameAndUrl(non_owning_rptr<Asset> asset_, strin
 
         } else {
 
-            _STD stringstream ss {};
+            std::stringstream ss {};
             ss << asset_->get_guid().pre;
             ss << "-";
             ss << asset_->get_guid().c0;
@@ -116,7 +116,7 @@ AssetFactory::~AssetFactory() noexcept = default;
 
 fs::Url AssetFactory::resolveAsSource(cref<string> url_) const noexcept {
 
-    auto cwd { _STD filesystem::current_path() };
+    auto cwd { std::filesystem::current_path() };
     cwd.append(url_);
 
     return fs::Url { "file"sv, cwd.generic_string() };
@@ -171,7 +171,7 @@ ptr<Font> AssetFactory::createFontAsset(cref<asset_guid> guid_, cref<string> url
         sources.push_back(src);
     }
 
-    auto* instance = new Font(guid_, _STD move(sources));
+    auto* instance = new Font(guid_, std::move(sources));
 
     storeDefaultNameAndUrl(instance, url_);
     _registry->insert({ instance });
@@ -190,7 +190,7 @@ ptr<AccelEffect> AssetFactory::createAccelEffectAsset(cref<asset_guid> guid_) co
 ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(mref<asset_guid> prototypeGuid_) const {
 
     auto guid = generate_asset_guid();
-    return createGfxMaterialAsset(guid, _STD move(prototypeGuid_));
+    return createGfxMaterialAsset(guid, std::move(prototypeGuid_));
 }
 
 ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(
@@ -198,7 +198,7 @@ ptr<GfxMaterial> AssetFactory::createGfxMaterialAsset(
     mref<asset_guid> prototypeGuid_
 ) const {
 
-    auto* instance = new GfxMaterial(guid_, _STD move(prototypeGuid_));
+    auto* instance = new GfxMaterial(guid_, std::move(prototypeGuid_));
 
     storeDefaultNameAndUrl(instance, {});
     _registry->insert({ instance });
@@ -238,7 +238,7 @@ ptr<Image> AssetFactory::createImageAsset(cref<asset_guid> guid_, cref<string> u
         sources.push_back(src);
     }
 
-    auto* instance = new Image(guid_, _STD move(sources));
+    auto* instance = new Image(guid_, std::move(sources));
 
     storeDefaultNameAndUrl(instance, string { src.path() });
     _registry->insert({ instance });
@@ -284,7 +284,7 @@ ptr<StaticGeometry> AssetFactory::createStaticGeometryAsset(
 
     auto* instance = new StaticGeometry(
         guid_,
-        _STD move(sources),
+        std::move(sources),
         vertexCount_,
         indexCount_
     );
@@ -329,7 +329,7 @@ ptr<TextureAsset> AssetFactory::createTextureAsset(
     auto* instance = new TextureAsset(
         guid_,
         baseImage_,
-        _STD forward<Vector<asset_guid>>(images_),
+        std::forward<Vector<asset_guid>>(images_),
         extent_,
         format_,
         mipLevel_,
@@ -345,7 +345,7 @@ ptr<TextureAsset> AssetFactory::createTextureAsset(
         // Important: Move from asset factory to another place, cause factory is just instantiation, and not database management
         __debugbreak();
         #else
-        throw _STD runtime_error("Failed to insert texture asset into database.");
+        throw std::runtime_error("Failed to insert texture asset into database.");
         #endif
     }
 

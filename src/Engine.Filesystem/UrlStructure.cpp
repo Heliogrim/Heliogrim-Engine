@@ -23,5 +23,5 @@ void access::Structure<Url>::deserialize(const ptr<Url> self_, mref<RecordScoped
 
     string tmp {};
     slot.getSlot<string>("path") >> tmp;
-    self_->setPath(_STD move(tmp));
+    self_->setPath(std::move(tmp));
 }

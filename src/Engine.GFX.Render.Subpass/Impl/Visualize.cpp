@@ -38,7 +38,7 @@ void Visualize::destroy() noexcept {
     SubPass::destroy();
 
     auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
-    device->vkDevice().destroySemaphore(_STD exchange(_tmpSignal, nullptr));
+    device->vkDevice().destroySemaphore(std::exchange(_tmpSignal, nullptr));
 
     _sampler->destroy();
     _sampler.reset();
@@ -284,11 +284,11 @@ smr<AccelerationEffect> build_test_effect() {
 
     vertexStage->setIntermediate(make_smr<lang::Intermediate>());
     vertexStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-    vertexStage->getIntermediate()->lang.text.emplace_back(_STD move(vertexShaderCode));
+    vertexStage->getIntermediate()->lang.text.emplace_back(std::move(vertexShaderCode));
 
     fragmentStage->setIntermediate(make_smr<lang::Intermediate>());
     fragmentStage->getIntermediate()->lang.dialect = lang::Dialect::eVulkanGlsl460;
-    fragmentStage->getIntermediate()->lang.text.emplace_back(_STD move(fragmentShaderCode));
+    fragmentStage->getIntermediate()->lang.text.emplace_back(std::move(fragmentShaderCode));
 
     /**/
 
@@ -299,8 +299,8 @@ smr<AccelerationEffect> build_test_effect() {
 
     tmpVar = make_uptr<Variable>();
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eExternalLinkage>>();
-    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(_STD move(tmpVar->annotation));
-    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("vis-tex-0", _STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eUniform>>(std::move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("vis-tex-0", std::move(tmpVar->annotation));
     tmpVar->type = Type {
         .category = TypeCategory::eTexture, .textureType = lang::TextureType::eTexture2d
     };
@@ -310,17 +310,17 @@ smr<AccelerationEffect> build_test_effect() {
         VariableSymbol { SymbolType::eVariableSymbol, tmpVar.get() }
     );
 
-    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(_STD move(tmpVar));
-    fragmentStage->getIntermediate()->rep.symbolTable.insert(_STD move(tmpSym));
+    fragmentStage->getIntermediate()->rep.globalScope.inbound.emplace_back(std::move(tmpVar));
+    fragmentStage->getIntermediate()->rep.symbolTable.insert(std::move(tmpSym));
 
     tmpVar = make_uptr<Variable>();
     tmpVar->annotation = make_uptr<SimpleAnnotation<AnnotationType::eForwardLinkage>>();
-    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("color", _STD move(tmpVar->annotation));
+    tmpVar->annotation = make_uptr<SymbolIdAnnotation>("color", std::move(tmpVar->annotation));
     tmpVar->type = Type {
         .category = TypeCategory::eTexture, .textureType = lang::TextureType::eTexture2d
     };
 
-    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(_STD move(tmpVar));
+    fragmentStage->getIntermediate()->rep.globalScope.outbound.emplace_back(std::move(tmpVar));
 
     /**/
 
@@ -331,9 +331,9 @@ smr<AccelerationEffect> build_test_effect() {
     };
 
     return make_smr<AccelerationEffect>(
-        _STD move(guid),
+        std::move(guid),
         "test-visualize-effect",
-        Vector { _STD move(vertexStage), _STD move(fragmentStage) }
+        Vector { std::move(vertexStage), std::move(fragmentStage) }
     );
 }
 
@@ -384,9 +384,9 @@ EffectCompileResult build_test_pipeline(
     const auto compiler = makeVkAccCompiler();
     auto result = compiler->compile(
         {
-            _STD move(effect_),
-            _STD move(profile),
-            _STD move(spec)
+            std::move(effect_),
+            std::move(profile),
+            std::move(spec)
         }
     );
     return result;

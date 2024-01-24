@@ -76,7 +76,7 @@ using namespace hg::editor::boot;
 using namespace hg::engine;
 using namespace hg;
 
-using path = _STD filesystem::path;
+using path = std::filesystem::path;
 
 namespace hg::engine::serialization {
     class RecordScopedSlot;
@@ -100,8 +100,8 @@ void dispatchLoad(cref<path> path_) {
 
             constexpr auto minLength = sizeof(asset_guid) + sizeof(asset_type_id);
 
-            _STD ifstream ifs { file, _STD ios::in | _STD ios::binary };
-            ifs.seekg(0, _STD ios::beg);
+            std::ifstream ifs { file, std::ios::in | std::ios::binary };
+            ifs.seekg(0, std::ios::beg);
 
             serialization::BufferArchive archive {};
             archive.resize(minLength, 0ui8);
@@ -150,10 +150,10 @@ void dispatchLoad(cref<path> path_) {
 
             /**/
 
-            ifs.seekg(0, _STD ios::end);
+            ifs.seekg(0, std::ios::end);
             end = ifs.tellg();
 
-            ifs.seekg(0, _STD ios::beg);
+            ifs.seekg(0, std::ios::beg);
             start = ifs.tellg();
 
             archive.seek(0);
@@ -171,7 +171,7 @@ void dispatchLoad(cref<path> path_) {
 
             // Warning: Unsafe operation, should be capsulated within io system
             auto* obj { layout->reflect().instantiate() };
-            const _STD span<u8, _STD dynamic_extent> view {
+            const std::span<u8, std::dynamic_extent> view {
                 reinterpret_cast<ptr<u8>>(obj),
                 static_cast<u64>(layout->size())
             };
@@ -200,8 +200,8 @@ void tryDispatchLoad(cref<path> path_) {
     if (pm->isPackageFile(file)) {
 
         // TODO: Load Package from file
-        auto source = make_uptr<resource::FileSource>(_STD move(file));
-        auto package = resource::PackageFactory::createFromSource(_STD move(source));
+        auto source = make_uptr<resource::FileSource>(std::move(file));
+        auto package = resource::PackageFactory::createFromSource(std::move(source));
 
         /**/
 
@@ -209,7 +209,7 @@ void tryDispatchLoad(cref<path> path_) {
 
         /**/
 
-        pm->addPackage(_STD move(managed));
+        pm->addPackage(std::move(managed));
 
     } else if (extension.ends_with(".ima") || extension.ends_with(".imasset")) {
 
@@ -220,7 +220,7 @@ void tryDispatchLoad(cref<path> path_) {
 void indexLoadable(cref<path> path_, ref<Vector<path>> backlog_) {
 
     const auto directory {
-        _STD filesystem::directory_iterator { path_, _STD filesystem::directory_options::follow_directory_symlink }
+        std::filesystem::directory_iterator { path_, std::filesystem::directory_options::follow_directory_symlink }
     };
 
     for (const auto& entry : directory) {
@@ -450,7 +450,7 @@ void editor::boot::initAssets() {
 
     /**/
 
-    const auto root { _STD filesystem::current_path().append(R"(..\..\resources\assets)") };
+    const auto root { std::filesystem::current_path().append(R"(..\..\resources\assets)") };
     if (not std::filesystem::exists(root)) {
         std::filesystem::create_directories(root);
     }
@@ -622,7 +622,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
             /**/
 
             auto* image = new assets::Image();
-            serialization::access::Structure<assets::Image>::deserialize(image, _STD move(record_));
+            serialization::access::Structure<assets::Image>::deserialize(image, std::move(record_));
 
             engine::assets::storeDefaultNameAndUrl(image, {});
             const auto succeeded = registry->insert({ image });
@@ -662,7 +662,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
             /**/
 
             auto* texture = new assets::TextureAsset();
-            serialization::access::Structure<assets::TextureAsset>::deserialize(texture, _STD move(record_));
+            serialization::access::Structure<assets::TextureAsset>::deserialize(texture, std::move(record_));
 
             engine::assets::storeDefaultNameAndUrl(texture, {});
             const auto succeeded = registry->insert({ texture });
@@ -702,7 +702,7 @@ bool tryLoadArchivedAsset(mref<serialization::RecordScopedSlot> record_) {
             /**/
 
             auto* geom = new assets::StaticGeometry();
-            serialization::access::Structure<assets::StaticGeometry>::deserialize(geom, _STD move(record_));
+            serialization::access::Structure<assets::StaticGeometry>::deserialize(geom, std::move(record_));
 
             engine::assets::storeDefaultNameAndUrl(geom, {});
             const auto succeeded = registry->insert({ geom });

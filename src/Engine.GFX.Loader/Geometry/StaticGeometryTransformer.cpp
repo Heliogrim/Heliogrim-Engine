@@ -40,11 +40,11 @@ StaticGeometryTransformer::response_type::type StaticGeometryTransformer::operat
 ) const {
 
     auto asset = static_cast<non_owning_rptr<const assets::Asset>>(request_);
-    auto src = next_(_STD move(asset), next_type::next_request_type::options {});
+    auto src = next_(std::move(asset), next_type::next_request_type::options {});
 
     /**/
 
-    return loadWithAssimp(_STD move(request_), _STD move(src), _pool, _STD move(options_));
+    return loadWithAssimp(std::move(request_), std::move(src), _pool, std::move(options_));
 }
 
 /* Assimp Implementation */
@@ -241,7 +241,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
         for (u32 page = 0; page < required; ++page) {
 
-            const auto pageSize = _STD min(indexSize - (page * alignment), alignment);
+            const auto pageSize = std::min(indexSize - (page * alignment), alignment);
 
             constexpr auto shift = 7ui64;
             constexpr auto mask = 0b0111'1111ui64;
@@ -249,7 +249,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
             const auto aligned = ((pageSize >> shift) << shift) + ((pageSize & mask) ? +1ui64 << shift : 0ui64);
 
             auto memory = indexBuffer->pages()[page]->memory()->allocated();
-            const auto patchSize = _STD min(aligned, memory->size);
+            const auto patchSize = std::min(aligned, memory->size);
 
             /**/
 
@@ -278,7 +278,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
         for (u32 page = 0; page < required; ++page) {
 
-            const auto pageSize = _STD min(vertexSize - (page * alignment), alignment);
+            const auto pageSize = std::min(vertexSize - (page * alignment), alignment);
 
             constexpr auto shift = 7ui64;
             constexpr auto mask = 0b0111'1111ui64;
@@ -286,7 +286,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
             const auto aligned = ((pageSize >> shift) << shift) + ((pageSize & mask) ? +1ui64 << shift : 0ui64);
 
             auto memory = vertexBuffer->pages()[page]->memory()->allocated();
-            const auto patchSize = _STD min(aligned, memory->size);
+            const auto patchSize = std::min(aligned, memory->size);
 
             /**/
 
@@ -340,7 +340,7 @@ static smr<StaticGeometryResource> loadWithAssimp(
 
     using derived_type = ::hg::engine::resource::UniqueResource<StaticGeometryResource::value_type>;
     auto dst = make_smr<StaticGeometryResource, derived_type>(
-        new derived_type(_STD move(vertexBuffer), _STD move(indexBuffer))
+        new derived_type(std::move(vertexBuffer), std::move(indexBuffer))
     );
     dst->setAssociation(request_);
 

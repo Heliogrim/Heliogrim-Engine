@@ -26,44 +26,44 @@ static asset_guid projectAssetGuid(const non_owning_rptr<const Asset> asset_) no
     return asset_->get_guid();
 }
 
-static _STD strong_ordering comparatorAssetGuid(asset_guid left_, asset_guid right_) noexcept {
-    return _STD compare_three_way {}.operator()(left_, right_);
+static std::strong_ordering comparatorAssetGuid(asset_guid left_, asset_guid right_) noexcept {
+    return std::compare_three_way {}.operator()(left_, right_);
 }
 
 static asset_type_id projectAssetType(const non_owning_rptr<const Asset> asset_) noexcept {
     return asset_->getTypeId();
 }
 
-static _STD strong_ordering comparatorAssetType(asset_type_id left_, asset_type_id right_) noexcept {
-    return _STD compare_three_way {}.operator()(left_.data, right_.data);
+static std::strong_ordering comparatorAssetType(asset_type_id left_, asset_type_id right_) noexcept {
+    return std::compare_three_way {}.operator()(left_.data, right_.data);
 }
 
 static string projectAssetUrl(const non_owning_rptr<const Asset> asset_) noexcept {
     return string { asset_->getVirtualUrl() };
 }
 
-static _STD strong_ordering comparatorAssetUrl(
+static std::strong_ordering comparatorAssetUrl(
     string left_,
     string right_,
     FindPathOptions options_
 ) noexcept {
 
-    const auto index = fs::Path(_STD move(left_));
-    auto check = fs::Path(_STD move(right_));
+    const auto index = fs::Path(std::move(left_));
+    auto check = fs::Path(std::move(right_));
 
     if (not index.contains(check)) {
         return index <=> check;
     }
 
     if (options_.recursive) {
-        return _STD strong_ordering::equivalent;
+        return std::strong_ordering::equivalent;
     }
 
     if (index == check.pop()) {
-        return _STD strong_ordering::equivalent;
+        return std::strong_ordering::equivalent;
     }
 
-    return _STD strong_ordering::greater;
+    return std::strong_ordering::greater;
 }
 
 struct IndexAssetUrlRelation {
@@ -71,8 +71,8 @@ struct IndexAssetUrlRelation {
 
         /* left_ < right_ => ? */
 
-        const _STD filesystem::path base = left_;
-        const _STD filesystem::path test = right_;
+        const std::filesystem::path base = left_;
+        const std::filesystem::path test = right_;
 
         return base < test;
     }
@@ -117,9 +117,9 @@ void AssetRegistry::setup() {
     _indexGuid = guidIndex.get();
     _indexUrl = urlIndex.get();
 
-    addIndexTable(_STD move(guidIndex));
-    addIndexTable(_STD move(typeIndex));
-    addIndexTable(_STD move(urlIndex));
+    addIndexTable(std::move(guidIndex));
+    addIndexTable(std::move(typeIndex));
+    addIndexTable(std::move(urlIndex));
 
     /**/
 
@@ -149,19 +149,19 @@ void AssetRegistry::addRepository(mref<uptr<system::AssetRepository>> repository
 
     _SCTRL_GATE(_mtx);
 
-    _repositories.push_back(_STD move(repository_));
+    _repositories.push_back(std::move(repository_));
     rebuildIndexes();
 }
 
 bool AssetRegistry::removeRepository(
-    mref<_STD function<bool(const non_owning_rptr<system::AssetRepository> repository_)>> selector_
+    mref<std::function<bool(const non_owning_rptr<system::AssetRepository> repository_)>> selector_
 ) {
 
     _SCTRL_GATE(_mtx);
 
-    const auto sub = _STD ranges::remove_if(
+    const auto sub = std::ranges::remove_if(
         _repositories,
-        _STD move(selector_),
+        std::move(selector_),
         [](cref<uptr<system::AssetRepository>> repository_) {
             return repository_.get();
         }
@@ -270,7 +270,7 @@ bool AssetRegistry::insert(mref<system::AssetDescriptor> descriptor_) {
     // Warning: Unsafe
     auto* const repository = selectRepository(descriptor_);
     auto* const stored = static_cast<ptr<system::InMemAssetRepository>>(repository)->storeAsset(
-        _STD move(descriptor_.asset)
+        std::move(descriptor_.asset)
     );
 
     /**/
@@ -349,7 +349,7 @@ bool AssetRegistry::addIndexTable(mref<uptr<system::IndexTableBase>> table_) {
         }
     }
 
-    _indexes.push_back(_STD move(table_));
+    _indexes.push_back(std::move(table_));
     return true;
 }
 
@@ -406,7 +406,7 @@ void AssetRegistry::clearIndexes() {
 
 bool AssetRegistry::dropIndexTable(mref<non_owning_rptr<const system::IndexTableBase>> indexTable_) {
 
-    const auto iter = _STD ranges::find(
+    const auto iter = std::ranges::find(
         _indexes,
         indexTable_,
         [](cref<uptr<IndexTableBase>> entry_) {

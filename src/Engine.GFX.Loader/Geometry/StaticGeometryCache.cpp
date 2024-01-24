@@ -22,7 +22,7 @@ StaticGeometryCache::response_type::type StaticGeometryCache::operator()(
         return (smr<resource::ResourceBase> { query.value() }).into<StaticGeometryResource>();
     }
 
-    auto prevResponse = next_(_STD move(request_), _STD move(options_));
+    auto prevResponse = next_(std::move(request_), std::move(options_));
 
     if (not prevResponse.empty()) {
         _cacheCtrl->cache()->store(guid, smr<StaticGeometryResource> { prevResponse }.into<resource::ResourceBase>());

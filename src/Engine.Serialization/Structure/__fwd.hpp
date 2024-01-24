@@ -16,8 +16,8 @@ namespace hg::engine::serialization {
     /**/
 
     template <typename Type_>
-    concept IsIntegralSlotType = _STD is_integral_v<Type_> ||
-        (_STD is_enum_v<Type_> && _STD is_integral_v<_STD underlying_type_t<Type_>>);
+    concept IsIntegralSlotType = std::is_integral_v<Type_> ||
+        (std::is_enum_v<Type_> && std::is_integral_v<std::underlying_type_t<Type_>>);
 
     /**/
 
@@ -26,7 +26,7 @@ namespace hg::engine::serialization {
     template <IsIntegralSlotType IntegralType_>
     class IntegralScopedSlot;
 
-    template <_STD floating_point IntegralType_>
+    template <std::floating_point IntegralType_>
     class FloatScopedSlot;
 
     template <typename ValueType_, template <typename...> typename SliceType_>

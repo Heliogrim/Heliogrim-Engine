@@ -22,7 +22,7 @@ MaterialPrototypeCache::response_type::type MaterialPrototypeCache::operator()(
         return (smr<resource::ResourceBase> { query.value() }).into<MaterialPrototypeResource>();
     }
 
-    auto prevResponse = next_(_STD move(request_), _STD move(options_));
+    auto prevResponse = next_(std::move(request_), std::move(options_));
 
     if (not prevResponse.empty()) {
         _cacheCtrl->cache()->store(

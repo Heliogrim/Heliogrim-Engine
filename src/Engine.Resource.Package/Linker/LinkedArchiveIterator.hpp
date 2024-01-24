@@ -15,30 +15,30 @@ namespace hg::engine::resource {
     public:
         using this_type = LinkedArchiveIterator<Const_>;
 
-        using value_type = _STD conditional_t<Const_, const LinkedArchive, LinkedArchive>;
-        using reference_type = _STD conditional_t<Const_, cref<LinkedArchive>, ref<LinkedArchive>>;
+        using value_type = std::conditional_t<Const_, const LinkedArchive, LinkedArchive>;
+        using reference_type = std::conditional_t<Const_, cref<LinkedArchive>, ref<LinkedArchive>>;
         using const_reference_type = cref<value_type>;
         using pointer_type = ptr<value_type>;
 
-        using archive_type = _STD conditional_t<
+        using archive_type = std::conditional_t<
             Const_,
             serialization::SourceReadonlyArchive,
             serialization::SourceBaseArchive
         >;
-        using header_type = _STD conditional_t<Const_, const ArchiveHeader, ArchiveHeader>;
-        using linker_type = _STD conditional_t<Const_, const PackageLinker, PackageLinker>;
+        using header_type = std::conditional_t<Const_, const ArchiveHeader, ArchiveHeader>;
+        using linker_type = std::conditional_t<Const_, const PackageLinker, PackageLinker>;
 
         // Iterator Traits
-        using difference_type = _STD ptrdiff_t;
-        using size_type = _STD size_t;
+        using difference_type = std::ptrdiff_t;
+        using size_type = std::size_t;
         using pointer = pointer_type;
         using reference = reference_type;
 
         #ifdef __cpp_lib_concepts
-        using iterator_concept = _STD random_access_iterator_tag;
+        using iterator_concept = std::random_access_iterator_tag;
         #endif
 
-        using iterator_category = _STD random_access_iterator_tag;
+        using iterator_category = std::random_access_iterator_tag;
 
         //
         constexpr static inline bool IsConst = Const_;
@@ -59,8 +59,8 @@ namespace hg::engine::resource {
             _cursor(other_._cursor) {}
 
         LinkedArchiveIterator(mref<this_type> other_) noexcept :
-            _linker(_STD exchange(other_._linker, nullptr)),
-            _cursor(_STD exchange(other_._cursor, nullptr)) {}
+            _linker(std::exchange(other_._linker, nullptr)),
+            _cursor(std::exchange(other_._cursor, nullptr)) {}
 
         ~LinkedArchiveIterator() noexcept = default;
 
@@ -165,8 +165,8 @@ namespace hg::engine::resource {
             return _cursor >= other_._cursor;
         }
 
-        [[nodiscard]] _STD strong_ordering operator<=>(cref<this_type> other_) const noexcept {
-            return _STD _Unfancy(_cursor) <=> _STD _Unfancy(other_._cursor);
+        [[nodiscard]] std::strong_ordering operator<=>(cref<this_type> other_) const noexcept {
+            return std::_Unfancy(_cursor) <=> std::_Unfancy(other_._cursor);
         }
     };
 
@@ -189,7 +189,7 @@ namespace hg::engine::resource {
     }
 
     template <bool ConstLeft_, bool ConstRight_>
-    [[nodiscard]] _STD strong_ordering operator<=>(
+    [[nodiscard]] std::strong_ordering operator<=>(
         cref<LinkedArchiveIterator<ConstLeft_>> left_,
         cref<LinkedArchiveIterator<ConstRight_>> right_
     ) noexcept {

@@ -7,7 +7,7 @@
 #include "../Wrapper.hpp"
 
 namespace hg {
-    template <class Type_, size_t Capacity_ = 1, typename Allocator_ = _STD allocator<Type_>>
+    template <class Type_, size_t Capacity_ = 1, typename Allocator_ = std::allocator<Type_>>
     class InlineVector {
     public:
         using this_type = InlineVector<Type_, Capacity_, Allocator_>;
@@ -21,7 +21,7 @@ namespace hg {
         using difference_type = ptrdiff_t;
 
         using allocator_type = Allocator_;
-        using allocator_traits = _STD allocator_traits<allocator_type>;
+        using allocator_traits = std::allocator_traits<allocator_type>;
 
     public:
         constexpr InlineVector() noexcept;
@@ -46,12 +46,12 @@ namespace hg {
 
             /* Destroy inline allocated objects */
 
-            _STD _Destroy_range(inline_begin(), _inlineEnd, _alloc);
+            std::_Destroy_range(inline_begin(), _inlineEnd, _alloc);
 
             /* Destroy external allocated objects */
 
-            _STD _Destroy_range(external_begin(), _externalLast, _alloc);
-            _traits.deallocate(_alloc, _externalStorage, _STD distance(external_begin(), _externalEnd));
+            std::_Destroy_range(external_begin(), _externalLast, _alloc);
+            _traits.deallocate(_alloc, _externalStorage, std::distance(external_begin(), _externalEnd));
 
             _externalStorage = _externalEnd = nullptr;
         }
@@ -65,7 +65,7 @@ namespace hg {
         }
 
         [[nodiscard]] constexpr size_type inline_size() const noexcept {
-            return _STD distance(inline_begin(), _inlineEnd);
+            return std::distance(inline_begin(), _inlineEnd);
         }
 
         [[nodiscard]] constexpr ptr<Type_> external_begin() const noexcept {
@@ -73,11 +73,11 @@ namespace hg {
         }
 
         [[nodiscard]] constexpr size_type external_capacity() const noexcept {
-            return _STD distance(external_begin(), _externalEnd);
+            return std::distance(external_begin(), _externalEnd);
         }
 
         [[nodiscard]] constexpr size_t external_size() const noexcept {
-            return _STD distance(external_begin(), _externalLast);
+            return std::distance(external_begin(), _externalLast);
         }
 
     protected:
@@ -88,7 +88,7 @@ namespace hg {
                 return false;
             }
 
-            _traits.construct(_alloc, _inlineEnd, _STD forward<decltype(args_)>(args_)...);
+            _traits.construct(_alloc, _inlineEnd, std::forward<decltype(args_)>(args_)...);
             return ++_inlineEnd;
         }
 
@@ -98,14 +98,14 @@ namespace hg {
         }
 
         constexpr void external_emplace_back(auto&&... args_) {
-            _traits.construct(_alloc, _externalLast, _STD forward<decltype(args_)>(args_)...);
+            _traits.construct(_alloc, _externalLast, std::forward<decltype(args_)>(args_)...);
             ++_externalLast;
         }
 
         constexpr void _Xchange_external(const ptr<Type_> newPt_, const size_type newSize_, const size_type newCap_) {
 
             if (external_begin()) {
-                _STD _Destroy_range(external_begin(), _externalLast, _alloc);
+                std::_Destroy_range(external_begin(), _externalLast, _alloc);
                 _alloc.deallocate(_externalStorage);
             }
 
@@ -121,14 +121,14 @@ namespace hg {
             auto [newPt_, newCap_] = _traits.allocate_at_least(_alloc, external_capacity() + 1);
 
             if (_externalLast == _externalEnd) {
-                if constexpr (_STD is_nothrow_move_constructible_v<Type_> || not _STD is_copy_constructible_v<Type_>) {
-                    _STD _Uninitialized_move(external_begin(), _externalLast, newPt_, _alloc);
+                if constexpr (std::is_nothrow_move_constructible_v<Type_> || not std::is_copy_constructible_v<Type_>) {
+                    std::_Uninitialized_move(external_begin(), _externalLast, newPt_, _alloc);
                 } else {
-                    _STD _Uninitialized_copy(external_begin(), _externalLast, newPt_, _alloc);
+                    std::_Uninitialized_copy(external_begin(), _externalLast, newPt_, _alloc);
                 }
             }
 
-            _traits.construct(_alloc, newPt_ + oldSize, _STD forward<decltype(args_)>(args_)...);
+            _traits.construct(_alloc, newPt_ + oldSize, std::forward<decltype(args_)>(args_)...);
             _Xchange_external(newPt_, oldSize + 1, newCap_);
         }
 
@@ -195,11 +195,11 @@ namespace hg {
             }
 
             if (external_capacity() > external_size()) {
-                external_emplace_back(_STD forward<decltype(val_)>(val_)...);
+                external_emplace_back(std::forward<decltype(val_)>(val_)...);
                 return;
             }
 
-            external_realloc_emplace(_STD forward<decltype(val_)>(val_)...);
+            external_realloc_emplace(std::forward<decltype(val_)>(val_)...);
         }
 
         void pop_back() {

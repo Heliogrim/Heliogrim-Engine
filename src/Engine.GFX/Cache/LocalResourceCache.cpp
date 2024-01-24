@@ -13,16 +13,16 @@ LocalResourceCache::LocalResourceCache(const nmpt<GlobalCacheCtrl> global_) :
     _shifting({ &_caches.front(), &_caches.back() }) {}
 
 LocalResourceCache::LocalResourceCache(mref<this_type> other_) noexcept :
-    _global(_STD move(other_._global)),
-    _caches(_STD move(other_._caches)),
+    _global(std::move(other_._global)),
+    _caches(std::move(other_._caches)),
     _shifting({ &_caches.front(), &_caches.back() }) {}
 
 LocalResourceCache::~LocalResourceCache() = default;
 
 ref<LocalResourceCache::this_type> LocalResourceCache::operator=(mref<this_type> other_) noexcept {
 
-    if (_STD addressof(other_) != this) {
-        _caches = _STD move(other_._caches);
+    if (std::addressof(other_) != this) {
+        _caches = std::move(other_._caches);
 
         if (other_._shifting.front() > other_._shifting.back()) {
             _shifting.front() = &_caches.front();
@@ -54,7 +54,7 @@ void LocalResourceCache::reset(const bool fully_) {
     return reset();
 }
 
-CacheResult LocalResourceCache::fetch(cref<_STD ptrdiff_t> key_, _Out_ ref<ptr<ModelBatch>> dst_) {
+CacheResult LocalResourceCache::fetch(cref<std::ptrdiff_t> key_, _Out_ ref<ptr<ModelBatch>> dst_) {
 
     /**
      * Check if current cache has object already stored
@@ -76,8 +76,8 @@ CacheResult LocalResourceCache::fetch(cref<_STD ptrdiff_t> key_, _Out_ ref<ptr<M
     return CacheResult::eMiss;
 }
 
-void LocalResourceCache::store(cref<_STD ptrdiff_t> key_, mref<ptr<ModelBatch>> obj_) {
-    _shifting.front()->insert(key_, _STD move(obj_));
+void LocalResourceCache::store(cref<std::ptrdiff_t> key_, mref<ptr<ModelBatch>> obj_) {
+    _shifting.front()->insert(key_, std::move(obj_));
 }
 
 void LocalResourceCache::shift() {
@@ -85,7 +85,7 @@ void LocalResourceCache::shift() {
     /**
      * Swap primary and secondary
      */
-    _STD swap(_shifting.front(), _shifting.back());
+    std::swap(_shifting.front(), _shifting.back());
 
     /**
      * Erase previous state of primary cache (new secondary can be used to fetch last invocation states)

@@ -36,7 +36,7 @@ namespace hg::engine::reflow {
         } attr;
 
     private:
-        _STD array<math::vec2, 4> _uvs;
+        std::array<math::vec2, 4> _uvs;
         ptr<void> _imageResource;
 
     public:

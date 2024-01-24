@@ -20,7 +20,7 @@ namespace hg::engine::render::cmd {
             mref<smr<const accel::AccelerationPipeline>> pipeline_,
             const BindPipelineFeatureSet featureSet_
         ) noexcept :
-            pipeline(_STD move(pipeline_)),
+            pipeline(std::move(pipeline_)),
             featureSet(featureSet_) {}
 
         ~BindPipelineRCmd() noexcept override = default;

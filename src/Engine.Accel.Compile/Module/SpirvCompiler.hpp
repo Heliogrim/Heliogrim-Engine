@@ -12,7 +12,7 @@
 #include "Spirv/SpirvTargetVersion.hpp"
 
 namespace hg::engine::accel {
-    extern _STD atomic_uint_fast32_t extern_compiler_ref_count;
+    extern std::atomic_uint_fast32_t extern_compiler_ref_count;
 
     class SpirvCompiler {
     public:

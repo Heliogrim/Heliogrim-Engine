@@ -23,7 +23,7 @@ AssetRegistryBrowserProvider::data_list_type::iterator AssetRegistryBrowserProvi
     const asset_type_id typeId_
 ) const {
 
-    const auto subrange = _STD ranges::remove_if(
+    const auto subrange = std::ranges::remove_if(
         begin_,
         end_,
         [typeId_](ptr<engine::assets::Asset> entry_) {
@@ -40,7 +40,7 @@ AssetRegistryBrowserProvider::data_list_type::iterator AssetRegistryBrowserProvi
     cref<CompactSet<asset_type_id>> types_
 ) const {
 
-    const auto subrange = _STD ranges::remove_if(
+    const auto subrange = std::ranges::remove_if(
         begin_,
         end_,
         [types = &types_](ptr<engine::assets::Asset> entry_) {
@@ -68,7 +68,7 @@ void AssetRegistryBrowserProvider::mapAssetsToEntries(
             .guid = (*iter)->get_guid()
         };
 
-        entries_.push_back(_STD move(entry));
+        entries_.push_back(std::move(entry));
     }
 }
 
@@ -112,7 +112,7 @@ bool AssetRegistryBrowserProvider::retrieveDirectories(
             AssetBrowserEntry {
                 .type = AssetBrowserEntryType::eDirectory,
                 .title = check.name(),
-                .path = fs::Url { _STD move(check) }
+                .path = fs::Url { std::move(check) }
             }
         );
     }

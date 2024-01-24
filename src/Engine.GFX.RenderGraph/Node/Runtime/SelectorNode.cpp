@@ -41,16 +41,16 @@ void SelectorNode::rtraverse(ref<Visitor> visitor_) const {
 }
 
 void SelectorNode::addNext(mask_type mask, mref<smr<Node>> next_) {
-    _next.push_back(Next { mask, _STD move(next_) });
+    _next.push_back(Next { mask, std::move(next_) });
 }
 
 void SelectorNode::addNext(bool active_, mref<smr<Node>> next_) {
-    _next.push_back(Next { boolToMask(active_), _STD move(next_) });
+    _next.push_back(Next { boolToMask(active_), std::move(next_) });
 }
 
 void SelectorNode::removeNext(cref<smr<Node>> next_) {
     _next.erase(
-        _STD remove_if(
+        std::remove_if(
             _next.begin(),
             _next.end(),
             [next_](const auto& child_) {
@@ -66,7 +66,7 @@ cref<Vector<SelectorNode::Next>> SelectorNode::getNext() const noexcept {
 }
 
 void SelectorNode::setPrev(mref<nmpt<const Node>> prev_) {
-    _prev = _STD move(prev_);
+    _prev = std::move(prev_);
 }
 
 nmpt<const Node> SelectorNode::getPrev() const noexcept {

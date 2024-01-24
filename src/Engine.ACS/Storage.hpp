@@ -17,7 +17,7 @@ namespace hg::engine::acs {
 
     template <typename Ty>
     FORCE_INLINE Ty* construct_inplace(void* destination_, Ty&& source_) {
-        return new(destination_) Ty(_STD forward<Ty>(source_));
+        return new(destination_) Ty(std::forward<Ty>(source_));
     }
 
     template <typename Ty>
@@ -81,10 +81,10 @@ namespace hg::engine::acs {
          * @param [in,out] other_ The other.
          */
         hybrid_storage_page(this_type&& other_) noexcept:
-            _mem(_STD exchange(other_._mem, nullptr)),
-            _keys(_STD exchange(other_._keys, nullptr)),
-            _values(_STD exchange(other_._values, nullptr)),
-            _seq(_STD move(other_._seq)) {}
+            _mem(std::exchange(other_._mem, nullptr)),
+            _keys(std::exchange(other_._keys, nullptr)),
+            _values(std::exchange(other_._values, nullptr)),
+            _seq(std::move(other_._seq)) {}
 
         /**
          * Copy Constructor
@@ -142,7 +142,7 @@ namespace hg::engine::acs {
             /**
              * Place new key value relation to local storage
              */
-            place<Args_...>(idx_, key_, _STD forward<Args_>(args_)...);
+            place<Args_...>(idx_, key_, std::forward<Args_>(args_)...);
 
             /**
              * Return whether successful
@@ -160,7 +160,7 @@ namespace hg::engine::acs {
          *
          * @returns A pair&lt;const key_type&amp;,const value_type&amp;&gt;
          */
-        [[nodiscard]] _STD pair<const key_type&, const value_type&> get(const index_type& idx_) const {
+        [[nodiscard]] std::pair<const key_type&, const value_type&> get(const index_type& idx_) const {
             return {
                 _keys[idx_],
                 _values[idx_]
@@ -177,7 +177,7 @@ namespace hg::engine::acs {
          *
          * @returns A pair&lt;const key_type&amp;,value_type&amp;&gt;
          */
-        [[nodiscard]] _STD pair<const key_type&, value_type&> get(const index_type& idx_) {
+        [[nodiscard]] std::pair<const key_type&, value_type&> get(const index_type& idx_) {
             return {
                 _keys[idx_],
                 _values[idx_]
@@ -258,7 +258,7 @@ namespace hg::engine::acs {
                 /**
                  * If index in range, override stored element
                  */
-                replace(idx_, key_, _STD forward<value_type>(value_));
+                replace(idx_, key_, std::forward<value_type>(value_));
             } else {
                 /**
                  * reserve slot from sequence
@@ -268,7 +268,7 @@ namespace hg::engine::acs {
                 /**
                  * Place the new key and value to local storage
                  */
-                place(idx_, key_, _STD forward<value_type>(value_));
+                place(idx_, key_, std::forward<value_type>(value_));
             }
         }
 
@@ -289,7 +289,7 @@ namespace hg::engine::acs {
             /**
              * Find valid minimal sequence where index can merge
              */
-            auto fi = _STD find_if(
+            auto fi = std::find_if(
                 _seq.rbegin(),
                 _seq.rend(),
                 [&idx_](const page_sequence& entry_) {
@@ -302,14 +302,14 @@ namespace hg::engine::acs {
              */
             if (fi == _seq.rend()) {
                 _seq.push_back({ idx_, idx_ });
-                _STD sort(_seq.begin(), _seq.end(), page_sequence_range_comparator());
+                std::sort(_seq.begin(), _seq.end(), page_sequence_range_comparator());
                 return;
             }
 
             /**
              * Find valid maximal sequence where index can merge
              */
-            auto ri = _STD find_if(
+            auto ri = std::find_if(
                 _seq.begin(),
                 _seq.end(),
                 [&idx_](const page_sequence& entry_) {
@@ -344,7 +344,7 @@ namespace hg::engine::acs {
                 /**
                  * Erase the forward iterator and reverse iterator while there reference is stable
                  */
-                _STD advance(fi, 1u);
+                std::advance(fi, 1u);
                 _seq.erase(fi.base());
                 _seq.erase(ri);
 
@@ -352,7 +352,7 @@ namespace hg::engine::acs {
                  * Push the new sequence to list
                  */
                 _seq.push_back(v);
-                _STD sort(_seq.begin(), _seq.end(), page_sequence_range_comparator());
+                std::sort(_seq.begin(), _seq.end(), page_sequence_range_comparator());
             }
         }
 
@@ -374,7 +374,7 @@ namespace hg::engine::acs {
                 _ptr(&ptr_[idx_]) {}
 
             hybrid_value_iterator(IN hybrid_value_iterator&& other_) noexcept:
-                _ptr(_STD exchange(other_._ptr, nullptr)) {}
+                _ptr(std::exchange(other_._ptr, nullptr)) {}
 
             hybrid_value_iterator(IN const hybrid_value_iterator& other_) noexcept:
                 _ptr(other_._ptr) {}
@@ -438,7 +438,7 @@ namespace hg::engine::acs {
             }
 
             hybrid_value_iterator& operator=(IN hybrid_value_iterator&& other_) noexcept {
-                return (_ptr = _STD exchange(other_._ptr, nullptr)), *this;
+                return (_ptr = std::exchange(other_._ptr, nullptr)), *this;
             }
 
             hybrid_value_iterator& operator=(const hybrid_value_iterator& other_) noexcept {
@@ -481,7 +481,7 @@ namespace hg::engine::acs {
 
         public:
             using iterator_key_type = const key_type;
-            using iterator_value_type = _STD conditional_t<Const, const value_type, value_type>;
+            using iterator_value_type = std::conditional_t<Const, const value_type, value_type>;
 
             /**
              * Default constructor
@@ -533,8 +533,8 @@ namespace hg::engine::acs {
              * @param [in,out] other_ The other.
              */
             hybrid_key_value_iterator(IN hybrid_key_value_iterator&& other_) noexcept:
-                _keys(_STD exchange(other_._keys, nullptr)),
-                _values(_STD exchange(other_._values, nullptr)) {}
+                _keys(std::exchange(other_._keys, nullptr)),
+                _values(std::exchange(other_._values, nullptr)) {}
 
             /**
              * Copy Constructor
@@ -607,8 +607,8 @@ namespace hg::engine::acs {
             }
 
             hybrid_key_value_iterator& operator=(IN hybrid_key_value_iterator&& other_) noexcept {
-                _keys = _STD exchange(other_._keys, nullptr);
-                _values = _STD exchange(other_._values, nullptr);
+                _keys = std::exchange(other_._keys, nullptr);
+                _values = std::exchange(other_._values, nullptr);
                 return *this;
             }
 
@@ -630,8 +630,8 @@ namespace hg::engine::acs {
              *
              * @returns The result of the operation.
              */
-            [[nodiscard]] _STD pair<iterator_key_type&, iterator_value_type&> operator*() const {
-                return _STD pair<iterator_key_type&, iterator_value_type&> {
+            [[nodiscard]] std::pair<iterator_key_type&, iterator_value_type&> operator*() const {
+                return std::pair<iterator_key_type&, iterator_value_type&> {
                     *_keys,
                     *_values
                 };
@@ -645,8 +645,8 @@ namespace hg::engine::acs {
              *
              * @returns The result of the operation.
              */
-            [[nodiscard]] _STD pair<iterator_key_type&, iterator_value_type&> operator*() {
-                return _STD pair<iterator_key_type&, iterator_value_type&> {
+            [[nodiscard]] std::pair<iterator_key_type&, iterator_value_type&> operator*() {
+                return std::pair<iterator_key_type&, iterator_value_type&> {
                     *_keys,
                     *_values
                 };
@@ -660,8 +660,8 @@ namespace hg::engine::acs {
              *
              * @returns The dereferenced object.
              */
-            [[nodiscard]] _STD pair<iterator_key_type&, iterator_value_type&> operator->() const {
-                return _STD pair<iterator_key_type&, iterator_value_type&> {
+            [[nodiscard]] std::pair<iterator_key_type&, iterator_value_type&> operator->() const {
+                return std::pair<iterator_key_type&, iterator_value_type&> {
                     *_keys,
                     *_values
                 };
@@ -675,8 +675,8 @@ namespace hg::engine::acs {
              *
              * @returns The dereferenced object.
              */
-            [[nodiscard]] _STD pair<iterator_key_type&, iterator_value_type&> operator->() {
-                return _STD pair<iterator_key_type&, iterator_value_type&> {
+            [[nodiscard]] std::pair<iterator_key_type&, iterator_value_type&> operator->() {
+                return std::pair<iterator_key_type&, iterator_value_type&> {
                     *_keys,
                     *_values
                 };
@@ -692,7 +692,7 @@ namespace hg::engine::acs {
              *
              * @returns A size_t.
              */
-            [[nodiscard]] _STD size_t diff(const this_type& other_) const {
+            [[nodiscard]] std::size_t diff(const this_type& other_) const {
                 return MAX(_keys, other_._keys) - MIN(_keys, other_._keys);
             }
 
@@ -980,7 +980,7 @@ namespace hg::engine::acs {
              *
              * @returns A pair<page_sequence ~ lower,page_sequence ~ upper>
              */
-            [[nodiscard]] _STD pair<page_sequence, page_sequence> resect(const index_type& exclude_) const {
+            [[nodiscard]] std::pair<page_sequence, page_sequence> resect(const index_type& exclude_) const {
                 return {
                     { begin, exclude_ - 1u },
                     { exclude_ + 1u, end }
@@ -1105,7 +1105,7 @@ namespace hg::engine::acs {
             /**
              * Find sequence
              */
-            auto s = _STD find_if(
+            auto s = std::find_if(
                 _seq.rbegin(),
                 _seq.rend(),
                 [&idx_](const page_sequence& entry_) {
@@ -1157,7 +1157,7 @@ namespace hg::engine::acs {
                  */
                 _seq.push_back(ul.first);
                 _seq.push_back(ul.second);
-                _STD sort(_seq.begin(), _seq.end(), page_sequence_range_comparator());
+                std::sort(_seq.begin(), _seq.end(), page_sequence_range_comparator());
             }
         }
 
@@ -1181,7 +1181,7 @@ namespace hg::engine::acs {
             /**
              *
              */
-            new(_values + idx_) value_type(_STD forward<Args_>(args_)...);
+            new(_values + idx_) value_type(std::forward<Args_>(args_)...);
         }
 
         /**
@@ -1197,7 +1197,7 @@ namespace hg::engine::acs {
         FORCE_INLINE void replace(const index_type& idx_, const key_type& key_, IN value_type&& value_) noexcept {
             _keys[idx_] = key_;
             destruct_inplace<value_type>(&_values[idx_]);
-            construct_inplace<value_type>(&_values[idx_], _STD forward<value_type>(value_));
+            construct_inplace<value_type>(&_values[idx_], std::forward<value_type>(value_));
         }
 
         /**
@@ -1281,7 +1281,7 @@ namespace hg::engine::acs {
          * @date 30.10.2020
          */
         struct storage_kv_hasher :
-            private _STD hash<KeyType_> {
+            private std::hash<KeyType_> {
             /**
              * Function call operator
              *
@@ -1292,8 +1292,8 @@ namespace hg::engine::acs {
              *
              * @returns The result of the operation.
              */
-            [[nodiscard]] _STD size_t operator()(const storage_kv_pair& value_) const {
-                return static_cast<const _STD hash<KeyType_>&>(*this)(value_.key);
+            [[nodiscard]] std::size_t operator()(const storage_kv_pair& value_) const {
+                return static_cast<const std::hash<KeyType_>&>(*this)(value_.key);
             }
         };
 
@@ -1304,7 +1304,7 @@ namespace hg::engine::acs {
          * @date 30.10.2020
          */
         struct storage_kv_equal :
-            private _STD equal_to<KeyType_> {
+            private std::equal_to<KeyType_> {
             /**
              * Function call operator
              *
@@ -1320,7 +1320,7 @@ namespace hg::engine::acs {
                 const storage_kv_pair& left_,
                 const storage_kv_pair& right_
             ) const {
-                return static_cast<const _STD equal_to<KeyType_>&>(*this)(left_.key, right_.key);
+                return static_cast<const std::equal_to<KeyType_>&>(*this)(left_.key, right_.key);
             }
         };
 
@@ -1331,7 +1331,7 @@ namespace hg::engine::acs {
          * @date 30.10.2020
          */
         struct storage_kv_less :
-            private _STD less<KeyType_> {
+            private std::less<KeyType_> {
             /**
              * Function call operator
              *
@@ -1347,12 +1347,12 @@ namespace hg::engine::acs {
                 const storage_kv_pair& left_,
                 const storage_kv_pair& right_
             ) const {
-                return static_cast<const _STD less<KeyType_>&>(*this)(left_.key, right_.key);
+                return static_cast<const std::less<KeyType_>&>(*this)(left_.key, right_.key);
             }
         };
 
     public:
-        using mapping_container = _STD unordered_set<storage_kv_pair, storage_kv_hasher, storage_kv_equal>;
+        using mapping_container = std::unordered_set<storage_kv_pair, storage_kv_hasher, storage_kv_equal>;
         using hash_type = size_t;
 
     private:
@@ -1377,11 +1377,11 @@ namespace hg::engine::acs {
             using storage_page_iterator_type = typename storage_page_type::template hybrid_key_value_iterator<Const>;
 
             using page_collection_type = Vector<storage_page_type>;
-            using page_iterator_type = _STD conditional_t<Const, typename page_collection_type::const_iterator,
+            using page_iterator_type = std::conditional_t<Const, typename page_collection_type::const_iterator,
                 typename page_collection_type::iterator>;
 
         public:
-            using iterator_category = _STD forward_iterator_tag;
+            using iterator_category = std::forward_iterator_tag;
 
             /**
              * Default constructor
@@ -1487,7 +1487,7 @@ namespace hg::engine::acs {
              *
              * @returns The result of the operation.
              */
-            _STD pair<const key_type&, const value_type&> operator*() const {
+            std::pair<const key_type&, const value_type&> operator*() const {
                 return *_pairIterator;
             }
 
@@ -1499,7 +1499,7 @@ namespace hg::engine::acs {
              *
              * @returns The result of the operation.
              */
-            _STD pair<const key_type&, value_type&> operator*() {
+            std::pair<const key_type&, value_type&> operator*() {
                 return *_pairIterator;
             }
 
@@ -1511,7 +1511,7 @@ namespace hg::engine::acs {
              *
              * @returns The dereferenced object.
              */
-            _STD pair<const key_type&, const value_type&> operator->() const {
+            std::pair<const key_type&, const value_type&> operator->() const {
                 return *_pairIterator;
             }
 
@@ -1523,7 +1523,7 @@ namespace hg::engine::acs {
              *
              * @returns The dereferenced object.
              */
-            _STD pair<const key_type&, value_type&> operator->() {
+            std::pair<const key_type&, value_type&> operator->() {
                 return *_pairIterator;
             }
 
@@ -1697,8 +1697,8 @@ namespace hg::engine::acs {
          * @param [in,out] other_ The other.
          */
         hybrid_storage(hybrid_storage&& other_) noexcept:
-            _pages(_STD move(other_._pages)),
-            _indirection(_STD move(other_._indirection)) {}
+            _pages(std::move(other_._pages)),
+            _indirection(std::move(other_._indirection)) {}
 
         /**
          * Explicitly deleted Copy Constructor
@@ -1728,9 +1728,9 @@ namespace hg::engine::acs {
          *
          * @returns A pair of the stored type and boolean
          */
-        _STD pair<StoredType_*, bool> emplace(const KeyType_& key_) {
+        std::pair<StoredType_*, bool> emplace(const KeyType_& key_) {
 
-            _STD pair<typename mapping_container::iterator, bool> er = _indirection.emplace(
+            std::pair<typename mapping_container::iterator, bool> er = _indirection.emplace(
                 storage_kv_pair {
                     key_,
                     0
@@ -1764,7 +1764,7 @@ namespace hg::engine::acs {
                 ptr = &_pages[unmask_page_index(cidx)].get_value(unmask_value_index(cidx));
             }
 
-            return _STD make_pair(ptr, er.second);
+            return std::make_pair(ptr, er.second);
         }
 
         /**
@@ -1781,7 +1781,7 @@ namespace hg::engine::acs {
          * @returns A pair of a pointer of the stored value and a boolean
          */
         template <typename... Args_>
-        _STD pair<StoredType_*, bool> emplace(const KeyType_& key_, Args_&&... args_) {
+        std::pair<StoredType_*, bool> emplace(const KeyType_& key_, Args_&&... args_) {
 
             auto er = _indirection.emplace(
                 storage_kv_pair {
@@ -1805,7 +1805,7 @@ namespace hg::engine::acs {
                 /**
                  * If emplace succeeded, construct element inplace at page
                  */
-                const index_type cidx { pages_insert_pair<Args_...>(key_, _STD forward<Args_>(args_)...) };
+                const index_type cidx { pages_insert_pair<Args_...>(key_, std::forward<Args_>(args_)...) };
 
                 /**
                  * Store cidx to indirection entry
@@ -1818,7 +1818,7 @@ namespace hg::engine::acs {
                 stp = &_pages[unmask_page_index(cidx)].get_value(unmask_value_index(cidx));
             }
 
-            return _STD make_pair(stp, er.second);
+            return std::make_pair(stp, er.second);
         }
 
         /**
@@ -1831,7 +1831,7 @@ namespace hg::engine::acs {
          *
          * @returns A pair&lt;ComponentType&amp;,bool&gt;
          */
-        [[nodiscard]] _STD pair<StoredType_*, bool> insert(const KeyType_& key_) {
+        [[nodiscard]] std::pair<StoredType_*, bool> insert(const KeyType_& key_) {
             return emplace(key_);
         }
 
@@ -1846,8 +1846,8 @@ namespace hg::engine::acs {
          *
          * @returns A pair&lt;ComponentType&amp;,bool&gt;
          */
-        [[nodiscard]] _STD pair<StoredType_*, bool> insert(const KeyType_& key_, StoredType_&& value_) {
-            return emplace(key_, _STD forward<StoredType_>(value_));
+        [[nodiscard]] std::pair<StoredType_*, bool> insert(const KeyType_& key_, StoredType_&& value_) {
+            return emplace(key_, std::forward<StoredType_>(value_));
         }
 
         /**
@@ -1885,7 +1885,7 @@ namespace hg::engine::acs {
                 /**
                  * Replace existing value and key at storage page
                  */
-                page.replace(unmask_value_index(inp.idx), key_, _STD forward<StoredType_>(value_));
+                page.replace(unmask_value_index(inp.idx), key_, std::forward<StoredType_>(value_));
 
                 /**
                  * Get reference to existing element
@@ -1895,7 +1895,7 @@ namespace hg::engine::acs {
                 /**
                  * If emplace succeeded, insert key component pair to storage page
                  */
-                const index_type cidx = pages_insert_pair(key_, _STD forward<StoredType_>(value_));
+                const index_type cidx = pages_insert_pair(key_, std::forward<StoredType_>(value_));
 
                 /**
                  * Stored cidx to indirection entry
@@ -1917,7 +1917,7 @@ namespace hg::engine::acs {
          * @author Julius
          * @date 30.10.2020
          *
-         * @exception _STD Thrown when a Standard error condition occurs.
+         * @exception std::Thrown when a Standard error condition occurs.
          *
          * @param  key_ The key where to get the value reference from.
          *
@@ -1928,7 +1928,7 @@ namespace hg::engine::acs {
             typename mapping_container::const_iterator cit = _indirection.find(storage_kv_pair { key_, 0 });
 
             if (cit == _indirection.cend()) {
-                throw _STD out_of_range(
+                throw std::out_of_range(
                     "Can not get constant reference to component, while key_ does not link to one."
                 );
             }
@@ -1942,7 +1942,7 @@ namespace hg::engine::acs {
          * @author Julius
          * @date 30.10.2020
          *
-         * @exception _STD Thrown when a Standard error condition occurs.
+         * @exception std::Thrown when a Standard error condition occurs.
          *
          * @param  key_ The key where to get from.
          * @param  hash_ The hash.
@@ -1957,7 +1957,7 @@ namespace hg::engine::acs {
             );
 
             if (cit == _indirection.cend()) {
-                throw _STD out_of_range(
+                throw std::out_of_range(
                     "Can not get constant reference to component, while key_ does not link to one."
                 );
             }
@@ -1971,7 +1971,7 @@ namespace hg::engine::acs {
          * @author Julius
          * @date 30.10.2020
          *
-         * @exception _STD Thrown when a Standard error condition occurs.
+         * @exception std::Thrown when a Standard error condition occurs.
          *
          * @param  key_ The key where to get from.
          *
@@ -1982,7 +1982,7 @@ namespace hg::engine::acs {
             typename mapping_container::iterator cit = _indirection.find(storage_kv_pair { key_, 0 });
 
             if (cit == _indirection.end()) {
-                throw _STD out_of_range("Can not get reference to component, while key_ does not link to one.");
+                throw std::out_of_range("Can not get reference to component, while key_ does not link to one.");
             }
 
             return _pages[unmask_page_index(cit.value().idx)].get_value(unmask_value_index(cit.value().idx));
@@ -1994,7 +1994,7 @@ namespace hg::engine::acs {
          * @author Julius
          * @date 30.10.2020
          *
-         * @exception _STD Thrown when a Standard error condition occurs.
+         * @exception std::Thrown when a Standard error condition occurs.
          *
          * @param  key_ The key where to get from.
          * @param  hash_ The hash.
@@ -2007,7 +2007,7 @@ namespace hg::engine::acs {
                 find(storage_kv_pair { key_, 0 }, hash_);
 
             if (cit == _indirection.end()) {
-                throw _STD out_of_range("Can not get reference to component, while key_ does not link to one.");
+                throw std::out_of_range("Can not get reference to component, while key_ does not link to one.");
             }
 
             return _pages[unmask_page_index(cit.value().idx)].get_value(unmask_value_index(cit.value().idx));
@@ -2109,7 +2109,7 @@ namespace hg::engine::acs {
          * @author Julius
          * @date 30.10.2020
          *
-         * @exception _STD Thrown when a Standard error condition occurs.
+         * @exception std::Thrown when a Standard error condition occurs.
          *
          * @param  key_ The key where to erase.
          */
@@ -2123,7 +2123,7 @@ namespace hg::engine::acs {
              * If key_ does not exist, catch error case
              */
             if (cit == _indirection.end()) {
-                throw _STD out_of_range("Can not erase element from storage, while key does not link to one");
+                throw std::out_of_range("Can not erase element from storage, while key does not link to one");
             }
 
             /**
@@ -2328,7 +2328,7 @@ namespace hg::engine::acs {
 
             // TODO: optimize way to find storage page with empty sequence
             // TODO: optimize way reusage of pages / using reverse iterator will speed up linear insert, but slow down on reusage
-            auto s = _STD find_if(
+            auto s = std::find_if(
                 _pages.rbegin(),
                 _pages.rend(),
                 [](const storage_page_type& page_) {
@@ -2363,7 +2363,7 @@ namespace hg::engine::acs {
             index_type vidx;
             [[maybe_unused]] const bool success = page.emplace(key_, value_, vidx);
 
-            const index_type pidx = _STD distance(_pages.begin(), s.base()) - 1;
+            const index_type pidx = std::distance(_pages.begin(), s.base()) - 1;
 
             /**
              * Composite index_type
@@ -2375,7 +2375,7 @@ namespace hg::engine::acs {
 
             // TODO: optimize way to find storage page with empty sequence
             // TODO: optimize way reusage of pages / using reverse iterator will speed up linear insert, but slow down on reusage
-            auto s = _STD find_if(
+            auto s = std::find_if(
                 _pages.rbegin(),
                 _pages.rend(),
                 [](const storage_page_type& page_) {
@@ -2410,7 +2410,7 @@ namespace hg::engine::acs {
             value_index_type vidx;
             [[maybe_unused]] const bool success = page.template emplace<>(key_, vidx);
 
-            const page_index_type pidx = _STD distance(_pages.begin(), s.base()) - 1;
+            const page_index_type pidx = std::distance(_pages.begin(), s.base()) - 1;
 
             /**
              * Composite index_type
@@ -2423,7 +2423,7 @@ namespace hg::engine::acs {
 
             // TODO: optimize way to find storage page with empty sequence
             // TODO: optimize way reusage of pages / using reverse iterator will speed up linear insert, but slow down on reusage
-            auto s = _STD find_if(
+            auto s = std::find_if(
                 _pages.rbegin(),
                 _pages.rend(),
                 [](const storage_page_type& page_) {
@@ -2444,7 +2444,7 @@ namespace hg::engine::acs {
                 /**
                  * Recursive try again
                  */
-                return pages_insert_pair(key_, _STD forward<Args_>(args_)...);
+                return pages_insert_pair(key_, std::forward<Args_>(args_)...);
             }
 
             /**
@@ -2456,9 +2456,9 @@ namespace hg::engine::acs {
              * Emplace data to page
              */
             value_index_type vidx;
-            [[maybe_unused]] const bool r = page.template emplace<Args_...>(key_, _STD forward<Args_>(args_)..., vidx);
+            [[maybe_unused]] const bool r = page.template emplace<Args_...>(key_, std::forward<Args_>(args_)..., vidx);
 
-            const page_index_type pidx { static_cast<page_index_type>(_STD distance(_pages.begin(), s.base()) - 1) };
+            const page_index_type pidx { static_cast<page_index_type>(std::distance(_pages.begin(), s.base()) - 1) };
 
             /**
              * Composite index_type

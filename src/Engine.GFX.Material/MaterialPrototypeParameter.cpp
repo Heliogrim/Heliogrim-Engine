@@ -9,20 +9,20 @@ MaterialPrototypeParameter::MaterialPrototypeParameter(
     mref<accel::TransferDataType> dataType_,
     mref<uptr<MaterialParameterStorageBase>> defaultStorage_
 ) noexcept :
-    _identifier(_STD move(identifier_)),
-    _name(_STD move(name_)),
-    _dataType(_STD move(dataType_)),
-    _defaultStorage(_STD move(defaultStorage_)) {}
+    _identifier(std::move(identifier_)),
+    _name(std::move(name_)),
+    _dataType(std::move(dataType_)),
+    _defaultStorage(std::move(defaultStorage_)) {}
 
 MaterialPrototypeParameter::~MaterialPrototypeParameter() noexcept = default;
 
 ref<MaterialPrototypeParameter::this_type> MaterialPrototypeParameter::operator=(mref<this_type> other_) noexcept {
 
-    if (_STD addressof(other_) != this) {
-        _identifier = _STD exchange(other_._identifier, ParameterIdentifier { static_cast<u16>(~0u) });
-        _name = _STD move(other_._name);
-        _dataType = _STD move(other_._dataType);
-        _defaultStorage = _STD move(other_._defaultStorage);
+    if (std::addressof(other_) != this) {
+        _identifier = std::exchange(other_._identifier, ParameterIdentifier { static_cast<u16>(~0u) });
+        _name = std::move(other_._name);
+        _dataType = std::move(other_._dataType);
+        _defaultStorage = std::move(other_._defaultStorage);
     }
 
     return *this;

@@ -13,11 +13,11 @@ ContextMenu::ContextMenu() :
 ContextMenu::~ContextMenu() = default;
 
 void ContextMenu::addMenuAction(mref<sptr<Widget>> menuAction_) {
-    _STD static_pointer_cast<VerticalPanel, Widget>(getContent())->addChild(_STD move(menuAction_));
+    std::static_pointer_cast<VerticalPanel, Widget>(getContent())->addChild(std::move(menuAction_));
 }
 
 void ContextMenu::removeMenuAction(cref<sptr<Widget>> menuAction_) {
-    _STD static_pointer_cast<VerticalPanel, Widget>(getContent())->removeChild(menuAction_);
+    std::static_pointer_cast<VerticalPanel, Widget>(getContent())->removeChild(menuAction_);
 }
 
 sptr<ContextMenu> ContextMenu::make(const ptr<Widget> target_, cref<math::ivec2> position_) {

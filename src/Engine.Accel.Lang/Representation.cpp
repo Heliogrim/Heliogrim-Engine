@@ -44,7 +44,7 @@ lang::Representation::Representation(cref<this_type> other_) :
 
             Vector<uptr<Variable>>* set = nullptr;
 
-            const auto iter = _STD ranges::find(
+            const auto iter = std::ranges::find(
                 other_.globalScope.outbound,
                 symbol->var.data.get(),
                 [](const auto& outbound_) {
@@ -55,12 +55,12 @@ lang::Representation::Representation(cref<this_type> other_) :
             ptrdiff_t offset = 0;
             if (iter != other_.globalScope.outbound.end()) {
                 set = &globalScope.outbound;
-                offset = _STD distance(other_.globalScope.outbound.begin(), iter);
+                offset = std::distance(other_.globalScope.outbound.begin(), iter);
 
             }
 
             if (set == nullptr) {
-                const auto iter = _STD ranges::find(
+                const auto iter = std::ranges::find(
                     other_.globalScope.inbound,
                     symbol->var.data.get(),
                     [](const auto& inbound_) {
@@ -70,7 +70,7 @@ lang::Representation::Representation(cref<this_type> other_) :
 
                 if (iter != other_.globalScope.inbound.end()) {
                     set = &globalScope.inbound;
-                    offset = _STD distance(other_.globalScope.inbound.begin(), iter);
+                    offset = std::distance(other_.globalScope.inbound.begin(), iter);
                 }
             }
 

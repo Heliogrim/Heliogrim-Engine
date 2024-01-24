@@ -62,11 +62,11 @@ namespace hg::math {
          * @param  other_ The other.
          */
         Transformation(mref<Transformation> other_) noexcept :
-            _rotation(_STD exchange(other_._rotation, {})),
-            _matrix(_STD exchange(other_._matrix, {})),
-            _quaternion(_STD exchange(other_._quaternion, {})),
-            _position(_STD exchange(other_._position, {})),
-            _scale(_STD exchange(other_._scale, {})) {}
+            _rotation(std::exchange(other_._rotation, {})),
+            _matrix(std::exchange(other_._matrix, {})),
+            _quaternion(std::exchange(other_._quaternion, {})),
+            _position(std::exchange(other_._position, {})),
+            _scale(std::exchange(other_._scale, {})) {}
 
     public:
         /**
@@ -214,11 +214,11 @@ namespace hg::math {
          */
         reference_type operator=(mref<Transformation> other_) noexcept {
             if (this != &other_) {
-                _rotation = _STD exchange(other_._rotation, {});
-                _matrix = _STD exchange(other_._matrix, {});
-                _quaternion = _STD exchange(other_._quaternion, {});
-                _position = _STD exchange(other_._position, {});
-                _scale = _STD exchange(other_._scale, {});
+                _rotation = std::exchange(other_._rotation, {});
+                _matrix = std::exchange(other_._matrix, {});
+                _quaternion = std::exchange(other_._quaternion, {});
+                _position = std::exchange(other_._position, {});
+                _scale = std::exchange(other_._scale, {});
             }
 
             return *this;

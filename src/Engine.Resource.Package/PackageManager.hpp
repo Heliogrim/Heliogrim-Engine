@@ -35,7 +35,7 @@ namespace hg::engine::resource {
         /* Temporary Solution */
     public:
         [[nodiscard]] inline auto packages() const noexcept {
-            return _STD ranges::views::values(_packages);
+            return std::ranges::views::values(_packages);
         }
 
         /* Temporary Solution */

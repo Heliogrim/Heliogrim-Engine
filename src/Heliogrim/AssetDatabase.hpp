@@ -42,7 +42,7 @@ namespace hg {
     public:
         [[nodiscard]] AssetDatabaseResult<Asset> operator[](cref<asset_guid> guid_) const;
 
-        template <typename Type_> requires _STD is_base_of_v<Asset, Type_>
+        template <typename Type_> requires std::is_base_of_v<Asset, Type_>
         [[nodiscard]] AssetDatabaseResult<Type_> operator[](cref<asset_guid> guid_) const {
             #ifdef _DEBUG
 

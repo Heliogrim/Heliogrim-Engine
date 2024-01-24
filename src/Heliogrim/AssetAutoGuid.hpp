@@ -15,7 +15,7 @@ namespace hg {
          *
          * @returns A stable asset_guid based on the typeId
          */
-        template <typename Type_ = AssetType_> requires _STD is_same_v<Type_, AssetType_> && HasStaticType<Type_>
+        template <typename Type_ = AssetType_> requires std::is_same_v<Type_, AssetType_> && HasStaticType<Type_>
         [[nodiscard]] static constexpr asset_guid auto_guid() noexcept {
             constexpr hg::type_id stableType { Type_::typeId };
             return asset_guid {

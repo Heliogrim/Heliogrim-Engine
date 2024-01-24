@@ -13,7 +13,7 @@ using namespace hg::engine::serialization;
 using namespace hg;
 
 StructScopedSlot::StructScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
-    ScopedSlot(_STD move(scopedState_), make_sptr<StructSlot>(_STD move(state_))) {
+    ScopedSlot(std::move(scopedState_), make_sptr<StructSlot>(std::move(state_))) {
 
     if (not slot()) {
         return;
@@ -46,7 +46,7 @@ RecordScopedSlot StructScopedSlot::insertRecordSlot(cref<record_key_type> key_) 
     auto record = static_cast<ptr<StructSlot>>(slot())->insertRecord(key_);
     ScopedSlotState scopedState { ScopedSlotStateFlag::eDirty };
 
-    return RecordScopedSlot { _STD move(scopedState), _STD move(record) };
+    return RecordScopedSlot { std::move(scopedState), std::move(record) };
 }
 
 bool StructScopedSlot::hasRecordSlot(cref<record_key_type> key_) const {
@@ -58,7 +58,7 @@ RecordScopedSlot StructScopedSlot::getRecordSlot(cref<record_key_type> key_) con
     auto record = static_cast<ptr<StructSlot>>(slot())->getRecord(key_);
     ScopedSlotState scopedState { ScopedSlotStateFlag::eClean };
 
-    return RecordScopedSlot { _STD move(scopedState), _STD move(record) };
+    return RecordScopedSlot { std::move(scopedState), std::move(record) };
 }
 
 RecordScopedSlot StructScopedSlot::getRecordSlot(const size_t index_) const {

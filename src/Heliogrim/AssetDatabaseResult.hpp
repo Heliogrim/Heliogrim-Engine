@@ -15,7 +15,7 @@ namespace hg {
 
     template <typename ValueType_ = ptr<void>>
     struct AssetDatabaseResult {
-        using value_type = _STD remove_cvref_t<ValueType_>;
+        using value_type = std::remove_cvref_t<ValueType_>;
 
         constexpr explicit AssetDatabaseResult(
             cref<AssetDatabaseResultFlags> flags_,
@@ -28,8 +28,8 @@ namespace hg {
             mref<AssetDatabaseResultFlags> flags_,
             mref<value_type> value_
         ) :
-            flags(_STD move(flags_)),
-            value(_STD move(value_)) {}
+            flags(std::move(flags_)),
+            value(std::move(value_)) {}
 
         AssetDatabaseResultFlags flags;
         value_type value;
@@ -46,10 +46,10 @@ namespace hg {
             return flags & AssetDatabaseResultType::eSuccess;
         }
 
-        template <typename DstValueType_ = ptr<void>> requires _STD is_convertible_v<
+        template <typename DstValueType_ = ptr<void>> requires std::is_convertible_v<
             value_type, typename AssetDatabaseResult<DstValueType_>::value_type>
         [[nodiscard]] operator AssetDatabaseResult<DstValueType_>() const noexcept(
-            _STD is_nothrow_convertible_v<value_type, typename AssetDatabaseResult<DstValueType_>::value_type>
+            std::is_nothrow_convertible_v<value_type, typename AssetDatabaseResult<DstValueType_>::value_type>
         ) {
             return AssetDatabaseResult<DstValueType_> {
                 flags,

@@ -18,7 +18,7 @@ namespace hg::engine::render::graph {
     public:
         using this_type = BuilderVisitor;
 
-        using predicate_type = _STD function<bool(cref<Node>)>;
+        using predicate_type = std::function<bool(cref<Node>)>;
 
     public:
         BuilderVisitor(

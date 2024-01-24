@@ -19,7 +19,7 @@ void Indexer::tidy() {
 
 void Indexer::addRoot(cref<fs::File> root_) noexcept {
 
-    const auto found = _STD find_if(
+    const auto found = std::find_if(
         _roots.begin(),
         _roots.end(),
         [&root_](cref<fs::File> entry_) {
@@ -36,7 +36,7 @@ void Indexer::addRoot(cref<fs::File> root_) noexcept {
 
 bool Indexer::removeRoot(cref<fs::File> root_) noexcept {
 
-    const auto where = _STD find_if(
+    const auto where = std::find_if(
         _roots.begin(),
         _roots.end(),
         [&root_](cref<fs::File> entry_) {
@@ -129,12 +129,12 @@ void Indexer::on(cref<std::function<bool(cref<fs::File> file_)>> callback_) {
 }
 
 void Indexer::on(mref<std::function<bool(cref<fs::File> file_)>> callback_) {
-    _callbacks.push_back(_STD move(callback_));
+    _callbacks.push_back(std::move(callback_));
 }
 
 void Indexer::reindex(cref<fs::File> file_) {
 
-    if (_STD ranges::any_of(
+    if (std::ranges::any_of(
         _callbacks.begin(),
         _callbacks.end(),
         [&file_](const auto& entry) {

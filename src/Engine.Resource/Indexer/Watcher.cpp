@@ -96,10 +96,10 @@ void Watcher::notify(const bool publish_) {
         }
     }
 
-    for (const auto& entry : _STD filesystem::recursive_directory_iterator { _root.path() }) {
+    for (const auto& entry : std::filesystem::recursive_directory_iterator { _root.path() }) {
 
         const fs::File file { entry.path().string() };
-        const auto lastWrite = _STD filesystem::last_write_time(entry);
+        const auto lastWrite = std::filesystem::last_write_time(entry);
 
         /**
          * Check for new files

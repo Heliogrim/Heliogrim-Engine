@@ -21,7 +21,7 @@ namespace hg::concurrent {
             future_state() :
                 _returned(),
                 _value(
-                    _STD is_nothrow_default_constructible_v<Ty> ? new Ty() : _STD move(allocate())
+                    std::is_nothrow_default_constructible_v<Ty> ? new Ty() : std::move(allocate())
                 ) {}
 
             /**
@@ -32,7 +32,7 @@ namespace hg::concurrent {
              */
             ~future_state() {
                 _mtx.lock();
-                if constexpr (_STD is_nothrow_default_constructible_v<Ty>) {
+                if constexpr (std::is_nothrow_default_constructible_v<Ty>) {
                     delete _value;
                 } else {
                     deallocate(_value);
@@ -43,31 +43,31 @@ namespace hg::concurrent {
             /**
              * Set the returned state and notify all waiters
              *
-             * @exception _STD Thrown when a Standard error condition occurs.
+             * @exception std::Thrown when a Standard error condition occurs.
              */
             FORCE_INLINE void complete() const {
-                if (_returned.test_and_set(_STD memory_order::acq_rel))
-                    throw _STD runtime_error("Try to complete a already returned future state.");
+                if (_returned.test_and_set(std::memory_order::acq_rel))
+                    throw std::runtime_error("Try to complete a already returned future state.");
                 _cv.notify_all();
             }
 
             /**
              * Set the internal value
              *
-             * @exception _STD Thrown when a Standard error condition occurs.
+             * @exception std::Thrown when a Standard error condition occurs.
              *
              * @param  val_ The value.
              */
-            template <typename Type_ = Ty, typename = _STD enable_if_t<_STD is_nothrow_default_constructible_v<Type_> ||
-                _STD is_nothrow_move_constructible_v<Type_>>>
+            template <typename Type_ = Ty, typename = std::enable_if_t<std::is_nothrow_default_constructible_v<Type_> ||
+                std::is_nothrow_move_constructible_v<Type_>>>
             FORCE_INLINE void set(Type_&& val_) {
-                if (_returned.test_and_set(_STD memory_order::acq_rel))
-                    throw _STD runtime_error("Try to assign value to already assigned future state.");
+                if (_returned.test_and_set(std::memory_order::acq_rel))
+                    throw std::runtime_error("Try to assign value to already assigned future state.");
 
-                if constexpr (_STD is_nothrow_default_constructible_v<Type_>) {
-                    (*_value) = _STD move(val_);
+                if constexpr (std::is_nothrow_default_constructible_v<Type_>) {
+                    (*_value) = std::move(val_);
                 } else {
-                    new(_value) Type_(_STD move(val_));
+                    new(_value) Type_(std::move(val_));
                 }
 
                 _cv.notify_all();
@@ -88,7 +88,7 @@ namespace hg::concurrent {
              * @returns True if it succeeds, false if it fails.
              */
             FORCE_INLINE bool returned() const {
-                return _returned.test(_STD memory_order::relaxed);
+                return _returned.test(std::memory_order::relaxed);
             }
 
             /**
@@ -97,26 +97,26 @@ namespace hg::concurrent {
              * @returns A reference to a Ty&amp;
              */
             FORCE_INLINE Ty&& value() const {
-                return _STD forward<Ty&&>(*_value);
+                return std::forward<Ty&&>(*_value);
             }
 
             /** Waits this  */
             FORCE_INLINE void wait() const {
-                if (_returned.test(_STD memory_order::acquire))
+                if (_returned.test(std::memory_order::acquire))
                     return;
-                _STD unique_lock<_STD mutex> lck(_mtx);
+                std::unique_lock<std::mutex> lck(_mtx);
                 _cv.wait(lck);
             }
 
         public:
-            [[nodiscard]] non_owning_rptr<_STD atomic_flag> signal() const {
+            [[nodiscard]] non_owning_rptr<std::atomic_flag> signal() const {
                 return &_returned;
             }
 
         private:
-            mutable _STD condition_variable _cv;
-            mutable _STD mutex _mtx;
-            mutable _STD atomic_flag _returned;
+            mutable std::condition_variable _cv;
+            mutable std::mutex _mtx;
+            mutable std::atomic_flag _returned;
             mutable Ty* _value;
 
             /**
@@ -155,22 +155,22 @@ namespace hg::concurrent {
             /**
              * Set the returned state and notify all waiters
              *
-             * @exception _STD Thrown when a Standard error condition occurs.
+             * @exception std::Thrown when a Standard error condition occurs.
              */
             FORCE_INLINE void complete() const {
-                if (_returned.test_and_set(_STD memory_order::acq_rel))
-                    throw _STD runtime_error("Try to complete a already returned future state.");
+                if (_returned.test_and_set(std::memory_order::acq_rel))
+                    throw std::runtime_error("Try to complete a already returned future state.");
                 _cv.notify_all();
             }
 
             /**
              * Set the internal value
              *
-             * @exception _STD Thrown when a Standard error condition occurs.
+             * @exception std::Thrown when a Standard error condition occurs.
              */
             FORCE_INLINE void set() {
-                if (_returned.test_and_set(_STD memory_order::acq_rel))
-                    throw _STD runtime_error("Try to assign value to already assigned future state.");
+                if (_returned.test_and_set(std::memory_order::acq_rel))
+                    throw std::runtime_error("Try to assign value to already assigned future state.");
                 _cv.notify_all();
             }
 
@@ -180,26 +180,26 @@ namespace hg::concurrent {
              * @returns True if it succeeds, false if it fails.
              */
             FORCE_INLINE bool returned() const {
-                return _returned.test(_STD memory_order::relaxed);
+                return _returned.test(std::memory_order::relaxed);
             }
 
             /** Waits this  */
             FORCE_INLINE void wait() const {
-                if (_returned.test(_STD memory_order::acquire))
+                if (_returned.test(std::memory_order::acquire))
                     return;
-                _STD unique_lock<_STD mutex> lck(_mtx);
+                std::unique_lock<std::mutex> lck(_mtx);
                 _cv.wait(lck);
             }
 
         public:
-            [[nodiscard]] const non_owning_rptr<const _STD atomic_flag> signal() const {
+            [[nodiscard]] const non_owning_rptr<const std::atomic_flag> signal() const {
                 return &_returned;
             }
 
         private:
-            mutable _STD condition_variable _cv;
-            mutable _STD mutex _mtx;
-            mutable _STD atomic_flag _returned;
+            mutable std::condition_variable _cv;
+            mutable std::mutex _mtx;
+            mutable std::atomic_flag _returned;
         };
     }
 
@@ -209,7 +209,7 @@ namespace hg::concurrent {
     template <typename Ty>
     class future {
     public:
-        using state_type = _STD shared_ptr<future_state<Ty>>;
+        using state_type = std::shared_ptr<future_state<Ty>>;
 
         /**
          * Constructor
@@ -243,7 +243,7 @@ namespace hg::concurrent {
          * @returns A reference to a Ty&amp;
          */
         Ty&& retrieve() const {
-            return _STD move(_state->value());
+            return std::move(_state->value());
         }
 
         /**
@@ -257,7 +257,7 @@ namespace hg::concurrent {
         Ty&& get() const {
             if (!_state->returned())
                 _state->wait();
-            return _STD move(_state->value());
+            return std::move(_state->value());
         }
 
         /**
@@ -281,7 +281,7 @@ namespace hg::concurrent {
         }
 
     public:
-        [[nodiscard]] const non_owning_rptr<const _STD atomic_flag> signal() const {
+        [[nodiscard]] const non_owning_rptr<const std::atomic_flag> signal() const {
             return _state->signal();
         }
 
@@ -292,7 +292,7 @@ namespace hg::concurrent {
     template <>
     class future<void> {
     public:
-        using state_type = _STD shared_ptr<future_state<void>>;
+        using state_type = std::shared_ptr<future_state<void>>;
 
         /**
          * Constructor
@@ -361,7 +361,7 @@ namespace hg::concurrent {
         }
 
     public:
-        [[nodiscard]] const non_owning_rptr<const _STD atomic_flag> signal() const {
+        [[nodiscard]] const non_owning_rptr<const std::atomic_flag> signal() const {
             return _state->signal();
         }
 

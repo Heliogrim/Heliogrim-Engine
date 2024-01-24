@@ -102,7 +102,7 @@ void Worker::handle(void* args_) {
     auto* fiber { ConvertThreadToFiber(nullptr) };
 
     if (fiber == nullptr) {
-        throw _STD runtime_error("Could not convert this thread to fiber.");
+        throw std::runtime_error("Could not convert this thread to fiber.");
     }
 
     worker->setFiberHandle(fiber);
@@ -178,7 +178,7 @@ void Worker::handle(void* args_) {
                 /**
                  * Reschedule suspended task
                  */
-                schedule->push(_STD move(task));
+                schedule->push(std::move(task));
 
             } else {
 
@@ -191,7 +191,7 @@ void Worker::handle(void* args_) {
                 /**
                  * Release execution context
                  */
-                pool.release(_STD move(launcher.self));
+                pool.release(std::move(launcher.self));
             }
         }
 

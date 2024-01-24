@@ -11,7 +11,7 @@ namespace hg::math {
      *
      * @tparam Type_ Type of the type.
      */
-    template <_STD integral Type_>
+    template <std::integral Type_>
     struct fast_ceil2 {
         using value_type = Type_;
 

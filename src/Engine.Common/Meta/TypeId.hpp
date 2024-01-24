@@ -70,7 +70,7 @@ namespace hg {
          *
          * @returns A type_id.
          */
-        constexpr type_id fnv1a_86(const char* str_, const _STD size_t count_) {
+        constexpr type_id fnv1a_86(const char* str_, const std::size_t count_) {
             return type_id {
                 (
                     (count_ ? fnv1a_86(str_, count_ - 1).data : 2166136261u) ^ str_[count_]
@@ -90,7 +90,7 @@ namespace hg {
      *
      * @returns The result of the operation.
      */
-    constexpr type_id operator""_typeId(const char* str_, const _STD size_t count_) {
+    constexpr type_id operator""_typeId(const char* str_, const std::size_t count_) {
         return fnv1a_86(str_, count_);
     }
 
@@ -142,7 +142,7 @@ namespace std {
      */
     template <>
     struct hash<hg::type_id> {
-        [[nodiscard]] _STD size_t operator()(const hg::type_id& value_) const noexcept {
+        [[nodiscard]] std::size_t operator()(const hg::type_id& value_) const noexcept {
             // We assume that type_id was created by literal, which will result in constexpr of FNV-1a, which is already a suitable hash
             /*
             hg::u64 dst[2];

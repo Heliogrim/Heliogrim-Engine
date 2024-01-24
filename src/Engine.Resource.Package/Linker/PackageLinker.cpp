@@ -49,12 +49,12 @@ void PackageLinker::restoreLinks() {
 
         if (index.offset < sizeof(PackageHeader) || index.offset >= begin) {
             __debugbreak();
-            throw _STD runtime_error("Invalid offset stored at `PackageIndexEntry`.");
+            throw std::runtime_error("Invalid offset stored at `PackageIndexEntry`.");
         }
 
         if ((index.offset + index.size) > begin) {
             __debugbreak();
-            throw _STD runtime_error("Invalid size stored at `PackageIndexEntry`.");
+            throw std::runtime_error("Invalid size stored at `PackageIndexEntry`.");
         }
 
         /**/
@@ -66,8 +66,8 @@ void PackageLinker::restoreLinks() {
 
         _links.push_back(
             LinkedArchive {
-                _STD move(header),
-                _STD move(index)
+                std::move(header),
+                std::move(index)
             }
         );
 
@@ -111,7 +111,7 @@ bool PackageLinker::store(mref<ArchiveHeader> header_, mref<uptr<serialization::
 
     /* Write Archive to Package */
 
-    const auto archive = _STD move(archive_);
+    const auto archive = std::move(archive_);
     const auto archiveSize = archive->totalSize();
 
     archive->seek(0);
@@ -138,7 +138,7 @@ bool PackageLinker::store(mref<ArchiveHeader> header_, mref<uptr<serialization::
 
     _links.push_back(
         LinkedArchive {
-            _STD move(header_),
+            std::move(header_),
             PackageIndexEntry {
                 static_cast<u64>(nextOffset),
                 static_cast<u64>(archiveSize + headerSize)
@@ -153,7 +153,7 @@ bool PackageLinker::store(std::initializer_list<std::pair<ArchiveHeader, uptr<se
 
     bool succeeded = false;
     for (auto&& pair : archives_) {
-        //succeeded = store(_STD move(pair.first), _STD move(pair.second)) && succeeded;
+        //succeeded = store(std::move(pair.first), std::move(pair.second)) && succeeded;
     }
 
     return succeeded;
@@ -161,7 +161,7 @@ bool PackageLinker::store(std::initializer_list<std::pair<ArchiveHeader, uptr<se
 
 uptr<engine::serialization::SourceReadonlyArchive> PackageLinker::load(const Guid archiveGuid_) const noexcept {
 
-    const auto where = _STD ranges::find(
+    const auto where = std::ranges::find(
         _links,
         archiveGuid_,
         [](cref<LinkedArchive> linked_) {

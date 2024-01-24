@@ -29,7 +29,7 @@ using namespace hg;
 
 CompileVisitor::CompileVisitor(mref<nmpt<RuntimeGraph>> target_) noexcept :
     Visitor(),
-    _target(_STD move(target_)) {}
+    _target(std::move(target_)) {}
 
 void CompileVisitor::operator()(cref<Node> node_) {
     return node_.rtraverse(*this);
@@ -39,9 +39,9 @@ void CompileVisitor::operator()(cref<AnchorNode> node_) {
 
     auto allocated = make_smr<AnchorNode>();
     Builder::insertNode(
-        _STD as_const(*_target).begin(),
+        std::as_const(*_target).begin(),
         _target->begin()->getNext().get(),
-        _STD move(allocated),
+        std::move(allocated),
         _target
     );
 
@@ -52,9 +52,9 @@ void CompileVisitor::operator()(cref<BarrierNode> node_) {
 
     auto allocated = make_smr<BarrierNode>();
     Builder::insertNode(
-        _STD as_const(*_target).begin(),
+        std::as_const(*_target).begin(),
         _target->begin()->getNext().get(),
-        _STD move(allocated),
+        std::move(allocated),
         _target
     );
 
@@ -65,9 +65,9 @@ void CompileVisitor::operator()(cref<ConvergeNode> node_) {
 
     auto allocated = make_smr<ConvergeNode>();
     Builder::insertNode(
-        _STD as_const(*_target).begin(),
+        std::as_const(*_target).begin(),
         _target->begin()->getNext().get(),
-        _STD move(allocated),
+        std::move(allocated),
         _target
     );
 
@@ -78,9 +78,9 @@ void CompileVisitor::operator()(cref<DivergeNode> node_) {
 
     auto allocated = make_smr<DivergeNode>();
     Builder::insertNode(
-        _STD as_const(*_target).begin(),
+        std::as_const(*_target).begin(),
         _target->begin()->getNext().get(),
-        _STD move(allocated),
+        std::move(allocated),
         _target
     );
 
@@ -91,9 +91,9 @@ void CompileVisitor::operator()(cref<SelectorNode> node_) {
 
     auto allocated = make_smr<SelectorNode>();
     Builder::insertNode(
-        _STD as_const(*_target).begin(),
+        std::as_const(*_target).begin(),
         _target->begin()->getNext().get(),
-        _STD move(allocated),
+        std::move(allocated),
         _target
     );
 
@@ -104,9 +104,9 @@ void CompileVisitor::operator()(cref<ProviderNode> node_) {
 
     auto allocated = make_smr<ProviderNode>();
     Builder::insertNode(
-        _STD as_const(*_target).begin(),
+        std::as_const(*_target).begin(),
         _target->begin()->getNext().get(),
-        _STD move(allocated),
+        std::move(allocated),
         _target
     );
 
@@ -124,9 +124,9 @@ void CompileVisitor::operator()(cref<CompileNode> node_) {
 
     if (compiled.operator bool()) {
         Builder::insertNode(
-            _STD as_const(*_target).begin(),
+            std::as_const(*_target).begin(),
             _target->begin()->getNext().get(),
-            make_smr(_STD move(compiled)),
+            make_smr(std::move(compiled)),
             _target
         );
     }

@@ -159,7 +159,7 @@ void configureImportAs(cref<sptr<VerticalPanel>> parent_, cref<fs::Url> source_)
 
     /**/
 
-    constexpr _STD array<string_view, 3> types { "Scene"sv, "Image"sv, "Mesh"sv };
+    constexpr std::array<string_view, 3> types { "Scene"sv, "Image"sv, "Mesh"sv };
     for (const auto& entry : types) {
 
         auto uiEntry = make_sptr<AssetImportTypeItem>();
@@ -231,7 +231,7 @@ void configureSourceDomain(cref<sptr<VerticalPanel>> parent_, cref<fs::Url> sour
     sourceInput->_focusColor = color::Dark::white;
      */
 
-    const auto src { _STD filesystem::path { source_.path() } };
+    const auto src { std::filesystem::path { source_.path() } };
 
     const string esrc { src.string() };
     sourceInput->setPlaceholder(esrc);
@@ -303,10 +303,10 @@ void configureTargetDomain(cref<sptr<VerticalPanel>> parent_, cref<fs::Url> sour
     targetInput->_focusColor = color::Dark::white;
      */
 
-    const auto filename { _STD filesystem::path { source_.path() }.filename().string() };
+    const auto filename { std::filesystem::path { source_.path() }.filename().string() };
     const auto& dst { path_.path() };
 
-    _STD string edst { dst };
+    std::string edst { dst };
     edst.append(fs::Path::separator);
     edst.append(filename);
 

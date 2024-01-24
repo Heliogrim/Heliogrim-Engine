@@ -43,9 +43,9 @@ namespace hg::engine::resource::loader {
         IsRequestValueType RequestType_,
         IsResponseValueType ResponseType_ = ResourceBase,
         typename StageRefTypes_ = MetaTypeWrapperList<
-            _STD type_identity_t,
-            _STD type_identity_t,
-            _STD type_identity_t,
+            std::type_identity_t,
+            std::type_identity_t,
+            std::type_identity_t,
             sptr
         >,
         class CacheStageType_ = Cache<RequestType_, ResponseType_>,
@@ -130,10 +130,10 @@ namespace hg::engine::resource::loader {
             TransformerTx_&& transformer_,
             SourceLoaderTx_&& sourceLoader_
         ) :
-            cache(_STD forward<CacheTx_>(cache_)),
-            feedback(_STD forward<FeedbackTx_>(feedback_)),
-            transformer(_STD forward<TransformerTx_>(transformer_)),
-            sourceLoader(_STD forward<SourceLoaderTx_>(sourceLoader_)),
+            cache(std::forward<CacheTx_>(cache_)),
+            feedback(std::forward<FeedbackTx_>(feedback_)),
+            transformer(std::forward<TransformerTx_>(transformer_)),
+            sourceLoader(std::forward<SourceLoaderTx_>(sourceLoader_)),
             transformerLink(sourceLoader),
             feedbackLink(transformer, transformerLink),
             cacheLink(feedback, feedbackLink) {}
@@ -199,8 +199,8 @@ namespace hg::engine::resource::loader {
             ) const noexcept override {
                 return invoke_stage<source_loader_stage_type, typename next_response_type::type>(
                     stage,
-                    _STD move(request_),
-                    _STD move(options_)
+                    std::move(request_),
+                    std::move(options_)
                 );
             };
         };
@@ -232,8 +232,8 @@ namespace hg::engine::resource::loader {
             ) const noexcept override {
                 return invoke_stage<source_loader_stage_type, typename next_response_type::type>(
                     stage,
-                    _STD move(request_),
-                    _STD move(options_)
+                    std::move(request_),
+                    std::move(options_)
                 );
             }
 
@@ -243,8 +243,8 @@ namespace hg::engine::resource::loader {
             ) const noexcept override {
                 return invoke_stage<source_loader_stage_type, typename next_response_type::type>(
                     stage,
-                    _STD move(request_),
-                    _STD move(options_)
+                    std::move(request_),
+                    std::move(options_)
                 );
             }
         };
@@ -283,8 +283,8 @@ namespace hg::engine::resource::loader {
             ) const noexcept override {
                 return invoke_stage<transformer_stage_type, typename next_response_type::type>(
                     stage,
-                    _STD move(request_),
-                    _STD move(options_),
+                    std::move(request_),
+                    std::move(options_),
                     nextLink
                 );
             }
@@ -322,8 +322,8 @@ namespace hg::engine::resource::loader {
             ) const noexcept override {
                 return invoke_stage<transformer_stage_type, typename next_response_type::type>(
                     stage,
-                    _STD move(request_),
-                    _STD move(options_),
+                    std::move(request_),
+                    std::move(options_),
                     nextLink
                 );
             }
@@ -334,8 +334,8 @@ namespace hg::engine::resource::loader {
             ) const noexcept override {
                 return invoke_stage<transformer_stage_type, typename next_stream_response_type::type>(
                     stage,
-                    _STD move(request_),
-                    _STD move(options_),
+                    std::move(request_),
+                    std::move(options_),
                     nextLink
                 );
             }
@@ -375,8 +375,8 @@ namespace hg::engine::resource::loader {
             ) const noexcept override {
                 return invoke_stage<feedback_stage_type, typename next_response_type::type>(
                     stage,
-                    _STD move(request_),
-                    _STD move(options_),
+                    std::move(request_),
+                    std::move(options_),
                     nextLink
                 );
             }
@@ -414,8 +414,8 @@ namespace hg::engine::resource::loader {
             ) const noexcept override {
                 return invoke_stage<feedback_stage_type, typename next_response_type::type>(
                     stage,
-                    _STD move(request_),
-                    _STD move(options_),
+                    std::move(request_),
+                    std::move(options_),
                     nextLink
                 );
             }
@@ -426,8 +426,8 @@ namespace hg::engine::resource::loader {
             ) const noexcept override {
                 return invoke_stage<feedback_stage_type, typename next_stream_response_type::type>(
                     stage,
-                    _STD move(request_),
-                    _STD move(options_),
+                    std::move(request_),
+                    std::move(options_),
                     nextLink
                 );
             }
@@ -450,9 +450,9 @@ namespace hg::engine::resource::loader {
         IsRequestValueType RequestType_,
         IsResponseValueType ResponseType_ = ResourceBase,
         typename StageRefTypes_ = MetaTypeWrapperList<
-            _STD type_identity_t,
-            _STD type_identity_t,
-            _STD type_identity_t,
+            std::type_identity_t,
+            std::type_identity_t,
+            std::type_identity_t,
             sptr
         >,
         class CacheStageType_ = Cache<RequestType_, ResponseType_>,
@@ -505,10 +505,10 @@ namespace hg::engine::resource::loader {
             SourceLoaderTx_&& sourceLoader_
         ) :
             InheritMeta<this_type, base_type>(
-                _STD forward<CacheTx_>(cache_),
-                _STD forward<FeedbackTx_>(feedback_),
-                _STD forward<TransformerTx_>(transformer_),
-                _STD forward<SourceLoaderTx_>(sourceLoader_)
+                std::forward<CacheTx_>(cache_),
+                std::forward<FeedbackTx_>(feedback_),
+                std::forward<TransformerTx_>(transformer_),
+                std::forward<SourceLoaderTx_>(sourceLoader_)
             ) {}
 
         ~LoaderChain() override = default;
@@ -521,8 +521,8 @@ namespace hg::engine::resource::loader {
             return base_type::template invoke_stage<typename base_type::cache_stage_type, typename
                 traits::response::type>(
                 base_type::cache,
-                _STD move(request_),
-                _STD move(options_),
+                std::move(request_),
+                std::move(options_),
                 base_type::cacheLink
             );
         }
@@ -591,10 +591,10 @@ namespace hg::engine::resource::loader {
             SourceLoaderTx_&& sourceLoader_
         ) :
             InheritMeta<this_type, base_type>(
-                _STD forward<CacheTx_>(cache_),
-                _STD forward<FeedbackTx_>(feedback_),
-                _STD forward<TransformerTx_>(transformer_),
-                _STD forward<SourceLoaderTx_>(sourceLoader_)
+                std::forward<CacheTx_>(cache_),
+                std::forward<FeedbackTx_>(feedback_),
+                std::forward<TransformerTx_>(transformer_),
+                std::forward<SourceLoaderTx_>(sourceLoader_)
             ) {}
 
         ~LoaderChain() override = default;
@@ -607,8 +607,8 @@ namespace hg::engine::resource::loader {
             return base_type::template invoke_stage<typename base_type::cache_stage_type, typename
                 traits::response::type>(
                 base_type::cache,
-                _STD move(request_),
-                _STD move(options_),
+                std::move(request_),
+                std::move(options_),
                 base_type::cacheLink
             );
         }
@@ -620,8 +620,8 @@ namespace hg::engine::resource::loader {
             return base_type::template invoke_stage<typename base_type::cache_stage_type, typename
                 traits::stream_response::type>(
                 base_type::cache,
-                _STD move(request_),
-                _STD move(options_),
+                std::move(request_),
+                std::move(options_),
                 base_type::cacheLink
             );
         }

@@ -9,8 +9,8 @@ using namespace hg::engine::accel;
 using namespace hg;
 
 VkCompiledModule::VkCompiledModule(mref<_::VkShaderModule> shaderModule_, mref<MappedBindings> bindings_) noexcept :
-    bindings(_STD move(bindings_)),
-    shaderModule(_STD move(shaderModule_)) {}
+    bindings(std::move(bindings_)),
+    shaderModule(std::move(shaderModule_)) {}
 
 VkCompiledModule::~VkCompiledModule() {
 
@@ -20,8 +20,8 @@ VkCompiledModule::~VkCompiledModule() {
 
     Logger::warn(
         "Catched still existing vkShaderModule `{:x}` on VkCompiledModule `{:x}`.",
-        reinterpret_cast<_STD ptrdiff_t>(shaderModule),
-        reinterpret_cast<_STD ptrdiff_t>(_STD addressof(*this))
+        reinterpret_cast<std::ptrdiff_t>(shaderModule),
+        reinterpret_cast<std::ptrdiff_t>(std::addressof(*this))
     );
 
     Engine::getEngine()->getGraphics()->getCurrentDevice()->vkDevice().destroyShaderModule(

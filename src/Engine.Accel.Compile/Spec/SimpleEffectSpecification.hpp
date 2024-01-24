@@ -49,27 +49,27 @@ namespace hg::engine::accel {
     inline void SimpleEffectSpecification::setPassSpec<ComputePassSpecification>(
         mref<uptr<ComputePassSpecification>> spec_
     ) {
-        _cps = _STD move(spec_);
+        _cps = std::move(spec_);
     }
 
     template <>
     inline void SimpleEffectSpecification::setPassSpec<GraphicsPassSpecification>(
         mref<uptr<GraphicsPassSpecification>> spec_
     ) {
-        _gps = _STD move(spec_);
+        _gps = std::move(spec_);
     }
 
     template <>
     inline void SimpleEffectSpecification::setPassSpec<MeshPassSpecification>(
         mref<uptr<MeshPassSpecification>> spec_
     ) {
-        _mps = _STD move(spec_);
+        _mps = std::move(spec_);
     }
 
     template <>
     inline void SimpleEffectSpecification::setPassSpec<RaytracingPassSpecification>(
         mref<uptr<RaytracingPassSpecification>> spec_
     ) {
-        _rps = _STD move(spec_);
+        _rps = std::move(spec_);
     }
 }

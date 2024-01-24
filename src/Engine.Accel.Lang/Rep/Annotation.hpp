@@ -29,7 +29,7 @@ namespace hg::engine::accel::lang {
     public:
         constexpr Annotation(const AnnotationType type_, mref<uptr<Annotation>> next_) noexcept :
             type(type_),
-            next(_STD move(next_)) {}
+            next(std::move(next_)) {}
 
         Annotation(cref<this_type> other_) :
             type(other_.type),
@@ -55,7 +55,7 @@ namespace hg::engine::accel::lang {
         using this_type = SimpleAnnotation<Type_>;
 
         constexpr SimpleAnnotation(mref<uptr<Annotation>> next_ = nullptr) noexcept :
-            Annotation(Type_, _STD move(next_)) {}
+            Annotation(Type_, std::move(next_)) {}
 
         SimpleAnnotation(cref<this_type> other_) :
             Annotation(other_) {}
@@ -75,7 +75,7 @@ namespace hg::engine::accel::lang {
         using this_type = AnnotationBase<Derived_>;
 
         constexpr AnnotationBase(AnnotationType type_, mref<uptr<Annotation>> next_) noexcept:
-            Annotation(type_, _STD move(next_)) {}
+            Annotation(type_, std::move(next_)) {}
 
         AnnotationBase(cref<this_type> other_) :
             Annotation(other_) {}
@@ -84,7 +84,7 @@ namespace hg::engine::accel::lang {
             Annotation(std::move(other_)) {}
 
         [[nodiscard]] ptr<Annotation> createCopy() const final {
-            static_assert(_STD derived_from<Derived_, AnnotationBase>);
+            static_assert(std::derived_from<Derived_, AnnotationBase>);
             return new Derived_(*static_cast<const ptr<const Derived_>>(this));
         }
     };
@@ -93,8 +93,8 @@ namespace hg::engine::accel::lang {
         using this_type = SymbolIdAnnotation;
 
         constexpr SymbolIdAnnotation(mref<string> symbolId_, mref<uptr<Annotation>> next_ = nullptr) noexcept:
-            AnnotationBase(AnnotationType::eSymbolId, _STD move(next_)),
-            symbolId(_STD move(symbolId_)) {}
+            AnnotationBase(AnnotationType::eSymbolId, std::move(next_)),
+            symbolId(std::move(symbolId_)) {}
 
         SymbolIdAnnotation(cref<this_type> other_) :
             AnnotationBase(other_),
@@ -114,7 +114,7 @@ namespace hg::engine::accel::lang {
             const s32 vkOffset_ = -1L,
             mref<uptr<Annotation>> next_ = nullptr
         ) noexcept :
-            AnnotationBase(AnnotationType::eVkBindLocation, _STD move(next_)),
+            AnnotationBase(AnnotationType::eVkBindLocation, std::move(next_)),
             vkSet(vkSet_),
             vkLocation(vkLocation_),
             vkOffset(vkOffset_) {}

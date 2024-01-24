@@ -29,13 +29,13 @@ static void startEngine(const non_owning_rptr<engine::Engine> engine_) {
 
 void Heliogrim::instantiate() {
     if (Heliogrim::_engine) {
-        throw _STD runtime_error("Heliogrim engine already instantiated.");
+        throw std::runtime_error("Heliogrim engine already instantiated.");
     }
 
     Heliogrim::_engine = HeliogrimStatic::initialize();
 
     if (not Heliogrim::_engine) {
-        throw _STD runtime_error("Failed to initialize Heliogrim Engine.");
+        throw std::runtime_error("Failed to initialize Heliogrim Engine.");
     }
 }
 
@@ -57,7 +57,7 @@ Session Heliogrim::getSession() {
 
     managed<void> dummy {};
     return Session {
-        managed<void> { _STD move(dummy), session }
+        managed<void> { std::move(dummy), session }
     };
 }
 

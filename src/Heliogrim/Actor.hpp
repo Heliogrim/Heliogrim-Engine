@@ -36,7 +36,6 @@ namespace hg {
         public InheritBase<Actor> {
     public:
         using this_type = Actor;
-        using underlying_type = InheritBase<Actor>;
 
         inline constexpr static type_id typeId { "Actor"_typeId };
 

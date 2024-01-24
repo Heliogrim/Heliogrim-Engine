@@ -25,7 +25,7 @@ namespace hg::engine::input {
         bool storeText(cref<string> text_) override;
 
     private:
-        _STD atomic_uint_fast32_t _useCount;
+        std::atomic_uint_fast32_t _useCount;
 
         Vector<FORMATETC> _formats;
         Vector<STGMEDIUM> _mediums;

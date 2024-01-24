@@ -62,7 +62,7 @@ namespace hg::engine::gfx::material {
         template <typename Type_>
         void set(Type_&& value_) {
             assert(_defaultStorage->getMetaClass()->exact<mpts_t<Type_>>());
-            static_cast<ptr<mpts_t<Type_>>>(_defaultStorage.get())->template set<Type_>(_STD forward<Type_>(value_));
+            static_cast<ptr<mpts_t<Type_>>>(_defaultStorage.get())->template set<Type_>(std::forward<Type_>(value_));
         }
     };
 }

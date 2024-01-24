@@ -21,14 +21,14 @@ FLinkVisitor::FLinkVisitor() noexcept = default;
 FLinkVisitor::FLinkVisitor(mref<smr<Node>> link_, LinkMode mode_) noexcept :
     Visitor(),
     _linkMode(mode_),
-    _linkSuccessor(_STD move(link_)) {}
+    _linkSuccessor(std::move(link_)) {}
 
 smr<Node> FLinkVisitor::getLinkSuccessor() const {
     return clone(_linkSuccessor);
 }
 
 void FLinkVisitor::setLinkSuccessor(mref<smr<Node>> link_) {
-    _linkSuccessor = _STD move(link_);
+    _linkSuccessor = std::move(link_);
 }
 
 void FLinkVisitor::operator()(cref<Node> node_) {
@@ -36,23 +36,23 @@ void FLinkVisitor::operator()(cref<Node> node_) {
 }
 
 void FLinkVisitor::operator()(cref<AnchorNode> node_) {
-    const_cast<AnchorNode&>(node_).setNext(_STD move(_linkSuccessor));
+    const_cast<AnchorNode&>(node_).setNext(std::move(_linkSuccessor));
 }
 
 void FLinkVisitor::operator()(cref<BarrierNode> node_) {
-    const_cast<BarrierNode&>(node_).setNext(_STD move(_linkSuccessor));
+    const_cast<BarrierNode&>(node_).setNext(std::move(_linkSuccessor));
 }
 
 void FLinkVisitor::operator()(cref<ConvergeNode> node_) {
-    const_cast<ConvergeNode&>(node_).setNext(_STD move(_linkSuccessor));
+    const_cast<ConvergeNode&>(node_).setNext(std::move(_linkSuccessor));
 }
 
 void FLinkVisitor::operator()(cref<DivergeNode> node_) {
 
     if (_linkMode == LinkMode::eExclusive) {
-        const_cast<DivergeNode&>(node_).setNext({ _STD move(_linkSuccessor) });
+        const_cast<DivergeNode&>(node_).setNext({ std::move(_linkSuccessor) });
     } else {
-        const_cast<DivergeNode&>(node_).addNext(_STD move(_linkSuccessor));
+        const_cast<DivergeNode&>(node_).addNext(std::move(_linkSuccessor));
     }
 }
 
@@ -61,20 +61,20 @@ void FLinkVisitor::operator()(cref<SelectorNode> node_) {
     if (_linkMode == LinkMode::eExclusive) {
         assert(false);
     } else {
-        const_cast<SelectorNode&>(node_).addNext(true, _STD move(_linkSuccessor));
+        const_cast<SelectorNode&>(node_).addNext(true, std::move(_linkSuccessor));
     }
 }
 
 void FLinkVisitor::operator()(cref<ProviderNode> node_) {
-    const_cast<ProviderNode&>(node_).setNext(_STD move(_linkSuccessor));
+    const_cast<ProviderNode&>(node_).setNext(std::move(_linkSuccessor));
 }
 
 void FLinkVisitor::operator()(cref<SLNode> node_) {
-    const_cast<SLNode&>(node_).setNext(_STD move(_linkSuccessor));
+    const_cast<SLNode&>(node_).setNext(std::move(_linkSuccessor));
 }
 
 void FLinkVisitor::operator()(cref<SubPassNodeBase> node_) {
-    const_cast<SubPassNodeBase&>(node_).setNext(_STD move(_linkSuccessor));
+    const_cast<SubPassNodeBase&>(node_).setNext(std::move(_linkSuccessor));
 }
 
 void FLinkVisitor::operator()(cref<CompileNode> node_) {
@@ -82,5 +82,5 @@ void FLinkVisitor::operator()(cref<CompileNode> node_) {
 }
 
 void FLinkVisitor::operator()(cref<CompileSubPassNode> node_) {
-    const_cast<CompileSubPassNode&>(node_).setNext(_STD move(_linkSuccessor));
+    const_cast<CompileSubPassNode&>(node_).setNext(std::move(_linkSuccessor));
 }

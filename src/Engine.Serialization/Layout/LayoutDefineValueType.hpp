@@ -192,7 +192,7 @@ namespace hg::engine::serialization::layout {
     struct LayoutDefineValueTrait<LayoutDefineValueType::eSlice> {
         using type = void;
 
-        inline static constexpr u64 size = sizeof(_STD ptrdiff_t) * 2ui64;
+        inline static constexpr u64 size = sizeof(std::ptrdiff_t) * 2ui64;
 
         inline static constexpr bool is_inline = false;
         inline static constexpr bool is_constant_size = false;

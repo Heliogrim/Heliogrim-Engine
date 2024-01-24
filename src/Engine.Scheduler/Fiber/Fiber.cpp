@@ -92,7 +92,7 @@ void Fiber::await(mref<FiberAwaitable> awaitable_) {
     /**
      *
      */
-    awaiter = _STD move(awaitable_);
+    awaiter = std::move(awaitable_);
 
     /**
      *
@@ -137,10 +137,10 @@ void self::await(mref<FiberAwaitable> awaitable_) {
     #ifdef _DEBUG
     auto* entry = ::GetFiberData();
     DEBUG_ASSERT(entry != nullptr, "")
-    static_cast<ptr<Fiber>>(entry)->await(_STD forward<FiberAwaitable>(awaitable_));
+    static_cast<ptr<Fiber>>(entry)->await(std::forward<FiberAwaitable>(awaitable_));
 
     #else
-    static_cast<ptr<Fiber>>(::GetFiberData())->await(_STD forward<FiberAwaitable>(awaitable_));
+    static_cast<ptr<Fiber>>(::GetFiberData())->await(std::forward<FiberAwaitable>(awaitable_));
 
     #endif
 

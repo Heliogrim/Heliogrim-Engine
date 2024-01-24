@@ -11,7 +11,7 @@ RootSlot::RootSlot(cref<StructureSlotState> state_) :
     RecordSlot(state_) {}
 
 RootSlot::RootSlot(mref<StructureSlotState> state_) :
-    RecordSlot(_STD move(state_)) {}
+    RecordSlot(std::move(state_)) {}
 
 RootSlot::RootSlot(const non_owning_rptr<Archive> archive_) :
     RecordSlot(makeRootState(archive_)) {}

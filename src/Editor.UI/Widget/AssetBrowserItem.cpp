@@ -37,7 +37,7 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
 ) {
 
     sptr<AssetBrowserItem> self { sptr<AssetBrowserItem>(new AssetBrowserItem()) };
-    self->_value = _STD move(value_);
+    self->_value = std::move(value_);
 
     /**/
 
@@ -116,7 +116,7 @@ sptr<AssetBrowserItem> AssetBrowserItem::make(
     }
 
     auto iconRes = engine::Engine::getEngine()->getResources()->loader().loadImmediately<engine::assets::TextureAsset,
-        engine::gfx::TextureResource>(_STD move(iconAsset));
+        engine::gfx::TextureResource>(std::move(iconAsset));
 
     /**/
     auto item = make_sptr<VerticalPanel>();

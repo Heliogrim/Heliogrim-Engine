@@ -132,7 +132,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
      */
     auto vb {
         make_uptr<SparseBuffer>(
-            _STD move(memory),
+            std::move(memory),
             allocation_.size,
             buffer,
             ci.usage
@@ -182,7 +182,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateIndexBuffer(
      * Store and return virtual buffer
      */
     auto* ptr { vb.get() };
-    _indexBuffers.push_back(_STD move(vb));
+    _indexBuffers.push_back(std::move(vb));
 
     //return ptr->makeView(/*offset*/0ui64, /*size*/ptr->memory()->size());
     return ptr->makeView(/*offset*/0ui64, /*size*/allocation_.size);
@@ -245,7 +245,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
      */
     auto vb {
         make_uptr<SparseBuffer>(
-            _STD move(memory),
+            std::move(memory),
             allocation_.size,
             buffer,
             ci.usage
@@ -295,7 +295,7 @@ uptr<engine::gfx::SparseBufferView> GlobalResourcePool::allocateVertexBuffer(
      * Store and return virtual buffer
      */
     auto* ptr { vb.get() };
-    _vertexBuffers.push_back(_STD move(vb));
+    _vertexBuffers.push_back(std::move(vb));
 
     //return ptr->makeView(/*offset*/0ui64, /*size*/ptr->memory()->size());
     return ptr->makeView(/*offset*/0ui64, /*size*/allocation_.size);
@@ -366,8 +366,8 @@ uptr<engine::gfx::SparseTextureView> GlobalResourcePool::allocateSparseTexture(
             }
         );
 
-        auto uatlas { _STD unique_ptr<SparseTexture>(atlas) };
-        _textureAtlas.push_back(_STD move(uatlas));
+        auto uatlas { std::unique_ptr<SparseTexture>(atlas) };
+        _textureAtlas.push_back(std::move(uatlas));
     }
 
     /**/

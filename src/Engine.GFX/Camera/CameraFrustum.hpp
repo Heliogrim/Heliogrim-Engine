@@ -40,6 +40,6 @@ namespace hg::engine::gfx {
         [[nodiscard]] bool checkSpherical(const math::vec3& origin_, const float radius_) const noexcept;
 
     private:
-        _STD array<math::vec4, 6> _planes;
+        std::array<math::vec4, 6> _planes;
     };
 }

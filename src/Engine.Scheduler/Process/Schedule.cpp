@@ -21,7 +21,7 @@ void Schedule::setup() {
     for (auto&& atomic : _workSets) {
 
         auto nextSet = make_sptr<FifoWorkSet>();
-        auto workSet = atomic.exchange(_STD move(nextSet), _STD memory_order_acq_rel);
+        auto workSet = atomic.exchange(std::move(nextSet), std::memory_order_acq_rel);
 
         assert(not workSet);
     }
@@ -38,7 +38,7 @@ void Schedule::tidy() {
 
     for (auto&& atomic : _workSets) {
 
-        auto workSet = atomic.exchange(nullptr, _STD memory_order_acq_rel);
+        auto workSet = atomic.exchange(nullptr, std::memory_order_acq_rel);
         if (not workSet) {
             continue;
         }
@@ -79,8 +79,8 @@ void Schedule::transfer(const task::TaskMask src_, const task::TaskMask dst_) {
     const auto src = maskToPriority(src_);
     const auto dst = maskToPriority(dst_);
 
-    const auto srcSet = _workSets[src].load(_STD memory_order_consume);
-    const auto dstSet = _workSets[dst].load(_STD memory_order_consume);
+    const auto srcSet = _workSets[src].load(std::memory_order_consume);
+    const auto dstSet = _workSets[dst].load(std::memory_order_consume);
 
     srcSet->transfer(dstSet.get());
 }
@@ -90,7 +90,7 @@ bool Schedule::push(const non_owning_rptr<const task::TaskDelegate> task_) {
     const auto mask = task_->mask();
     const u64 priorityIdx = maskToPriority(mask);
 
-    const auto workSet = _workSets[priorityIdx].load(_STD memory_order_consume);
+    const auto workSet = _workSets[priorityIdx].load(std::memory_order_consume);
     return workSet->push(task_);
 }
 
@@ -99,7 +99,7 @@ bool Schedule::pop(const task::TaskMask mask_, ref<non_owning_rptr<const task::T
     u64 priorityIdx = maskToPriority(mask_);
     for (; priorityIdx < priority_count; ++priorityIdx) {
 
-        const auto workSet = _workSets[priorityIdx].load(_STD memory_order_consume);
+        const auto workSet = _workSets[priorityIdx].load(std::memory_order_consume);
         if (workSet->pop(mask_, task_)) {
             return true;
         }

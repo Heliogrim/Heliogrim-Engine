@@ -16,5 +16,5 @@ FontLoader::FontLoader(
         FontCache(cache_),
         FontFeedback(),
         FontTransformer(pool_),
-        _STD move(sourceLoader_)
+        std::move(sourceLoader_)
     ) {}

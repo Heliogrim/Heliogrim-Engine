@@ -22,7 +22,7 @@ MaterialCache::response_type::type MaterialCache::operator()(
         return (smr<resource::ResourceBase> { query.value() }).into<MaterialResource>();
     }
 
-    auto prevResponse = next_(_STD move(request_), _STD move(options_));
+    auto prevResponse = next_(std::move(request_), std::move(options_));
 
     if (not prevResponse.empty()) {
         _cacheCtrl->cache()->store(guid, smr<MaterialResource> { prevResponse }.into<resource::ResourceBase>());

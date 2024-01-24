@@ -29,7 +29,7 @@ namespace hg::engine::gfx::cache {
         using texture_subject_type = LocalCacheCtrlSubject<TextureResource, AssocKey<TextureSubResource>>;
         using static_geometry_subject_type = LocalCacheCtrlSubject<StaticGeometryResource, StaticGeometrySubResource>;
         using material_subject_type = LocalCacheCtrlSubject<
-            const void, _STD pair<ptr<MaterialResource>, ptr<accel::AccelerationPipeline>>
+            const void, std::pair<ptr<MaterialResource>, ptr<accel::AccelerationPipeline>>
         >;
 
     public:

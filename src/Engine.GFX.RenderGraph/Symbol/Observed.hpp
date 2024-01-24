@@ -8,41 +8,41 @@ namespace hg::engine::render::graph {
 }
 
 namespace hg::engine::render::graph {
-    template <class Type_ = SymbolizedResource, template <typename...> typename StorageType_ = _STD type_identity_t>
-        requires (not _STD is_void_v<Type_>)
+    template <class Type_ = SymbolizedResource, template <typename...> typename StorageType_ = std::type_identity_t>
+        requires (not std::is_void_v<Type_>)
     struct Observed {
     public:
         using this_type = Observed<Type_, StorageType_>;
 
         using value_type = Type_;
-        using const_value_type = _STD conditional_t<_STD is_const_v<Type_>, Type_, _STD add_const_t<Type_>>;
-        using ref_type = _STD conditional_t<_STD is_const_v<Type_>, cref<Type_>, ref<Type_>>;
+        using const_value_type = std::conditional_t<std::is_const_v<Type_>, Type_, std::add_const_t<Type_>>;
+        using ref_type = std::conditional_t<std::is_const_v<Type_>, cref<Type_>, ref<Type_>>;
         using const_ref_type = cref<Type_>;
 
         using storage_type = StorageType_<value_type>;
 
     public:
-        template <class Tx_ = storage_type> requires _STD is_default_constructible_v<Tx_>
-        constexpr Observed() noexcept(_STD is_nothrow_default_constructible_v<Tx_>) :
+        template <class Tx_ = storage_type> requires std::is_default_constructible_v<Tx_>
+        constexpr Observed() noexcept(std::is_nothrow_default_constructible_v<Tx_>) :
             _obj() {}
 
-        template <class Tx_ = storage_type> requires _STD is_move_constructible_v<Tx_>
-        constexpr Observed(mref<Tx_> subject_) noexcept(_STD is_nothrow_move_constructible_v<Tx_>) :
-            _obj(_STD move(subject_)) {}
+        template <class Tx_ = storage_type> requires std::is_move_constructible_v<Tx_>
+        constexpr Observed(mref<Tx_> subject_) noexcept(std::is_nothrow_move_constructible_v<Tx_>) :
+            _obj(std::move(subject_)) {}
 
-        template <class Tx_ = storage_type> requires _STD is_copy_constructible_v<Tx_>
-        constexpr Observed(cref<Tx_> subject_) noexcept(_STD is_nothrow_copy_constructible_v<Tx_>) :
+        template <class Tx_ = storage_type> requires std::is_copy_constructible_v<Tx_>
+        constexpr Observed(cref<Tx_> subject_) noexcept(std::is_nothrow_copy_constructible_v<Tx_>) :
             _obj(subject_) {}
 
-        template <class Tx_ = storage_type, typename... Args_> requires _STD is_constructible_v<Tx_, Args_...>
-        constexpr Observed(Args_&&... args_) noexcept(_STD is_nothrow_constructible_v<Tx_, Args_...>) :
-            _obj(_STD forward<Args_>(args_)...) {}
+        template <class Tx_ = storage_type, typename... Args_> requires std::is_constructible_v<Tx_, Args_...>
+        constexpr Observed(Args_&&... args_) noexcept(std::is_nothrow_constructible_v<Tx_, Args_...>) :
+            _obj(std::forward<Args_>(args_)...) {}
 
         Observed(mref<this_type>) = delete;
 
         Observed(cref<this_type>) = delete;
 
-        constexpr ~Observed() noexcept(_STD is_nothrow_destructible_v<storage_type>) = default;
+        constexpr ~Observed() noexcept(std::is_nothrow_destructible_v<storage_type>) = default;
 
     public:
         ref<this_type> operator=(mref<this_type>) = delete;
@@ -54,11 +54,11 @@ namespace hg::engine::render::graph {
 
     public:
         [[nodiscard]] const ptr<const_value_type> obj() const noexcept {
-            return _STD addressof(_obj);
+            return std::addressof(_obj);
         }
 
         [[nodiscard]] const ptr<value_type> obj() noexcept {
-            return _STD addressof(_obj);
+            return std::addressof(_obj);
         }
 
     public:

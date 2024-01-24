@@ -15,6 +15,6 @@ void graph::LinkNodes(mref<nmpt<Node>> predecessor_, mref<smr<Node>> successor_,
     BLinkVisitor blv { clone(predecessor_), mode_ };
     successor_->accept(blv);
 
-    FLinkVisitor flv { _STD move(successor_), mode_ };
+    FLinkVisitor flv { std::move(successor_), mode_ };
     predecessor_->accept(flv);
 }

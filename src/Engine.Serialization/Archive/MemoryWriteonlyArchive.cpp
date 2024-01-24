@@ -12,7 +12,7 @@ MemoryWriteonlyArchive::MemoryWriteonlyArchive(ref<AutoArray<u8>> bytes_) :
 fs::Url MemoryWriteonlyArchive::getArchiveUrl() const noexcept {
     return fs::Url {
         "mem"sv, fs::Path {
-            _STD format(
+            std::format(
                 "{:#016x}:{:#016x}",
                 reinterpret_cast<u64>(_bytes.data()),
                 reinterpret_cast<u64>(_bytes.data() + totalSize())
@@ -41,6 +41,6 @@ void MemoryWriteonlyArchive::serializeBytes(const ptr<void> value_, u64 size_, c
 
     }
 
-    _STD memcpy(&_bytes[_pos], value_, size_);
+    std::memcpy(&_bytes[_pos], value_, size_);
     _pos += static_cast<s64>(size_);
 }

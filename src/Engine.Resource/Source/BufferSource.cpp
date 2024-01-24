@@ -6,11 +6,11 @@ using namespace hg::engine::resource;
 using namespace hg;
 
 BufferSource::BufferSource(mref<Buffer> buffer_) :
-    _buffer(_STD move(buffer_)) {}
+    _buffer(std::move(buffer_)) {}
 
 BufferSource::reference_type BufferSource::operator=(mref<value_type> other_) noexcept {
-    if (this != _STD addressof(other_)) {
-        _buffer = _STD move(other_._buffer);
+    if (this != std::addressof(other_)) {
+        _buffer = std::move(other_._buffer);
     }
 
     return *this;

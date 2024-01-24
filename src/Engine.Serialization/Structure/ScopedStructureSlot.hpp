@@ -54,7 +54,7 @@ namespace hg::engine::serialization {
             mref<ScopedSlotState> state_,
             mref<sptr<StructureSlotBase>> slot_
         ) :
-            ScopedSlot(_STD move(state_), _STD move(slot_)) {}
+            ScopedSlot(std::move(state_), std::move(slot_)) {}
 
     public:
         ~TypeScopedSlot() override = default;

@@ -17,8 +17,8 @@ namespace hg::editor {
         ~SimpleAction() noexcept override;
 
     private:
-        _STD atomic_flag _running;
-        _STD atomic_flag _finished;
+        std::atomic_flag _running;
+        std::atomic_flag _finished;
 
     protected:
         void setRunning();

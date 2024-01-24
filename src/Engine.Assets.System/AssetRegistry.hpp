@@ -49,7 +49,7 @@ namespace hg::engine::assets {
         void addRepository(_In_ mref<uptr<system::AssetRepository>> repository_) override;
 
         bool removeRepository(
-            _In_ mref<_STD function<bool(const non_owning_rptr<system::AssetRepository> repository_)>> selector_
+            _In_ mref<std::function<bool(const non_owning_rptr<system::AssetRepository> repository_)>> selector_
         ) override;
 
         /**

@@ -8,15 +8,15 @@ using namespace hg::engine::resource;
 using namespace hg;
 
 ParallelSource::reference_type ParallelSource::operator=(mref<value_type> other_) noexcept {
-    if (this != _STD addressof(other_)) {
-        _sources = _STD move(other_._sources);
+    if (this != std::addressof(other_)) {
+        _sources = std::move(other_._sources);
     }
 
     return *this;
 }
 
 bool ParallelSource::isAsync() const noexcept {
-    return _STD ranges::any_of(
+    return std::ranges::any_of(
         _sources,
         [](const auto& entry) {
             return entry->isAsync();
@@ -25,7 +25,7 @@ bool ParallelSource::isAsync() const noexcept {
 }
 
 bool ParallelSource::isReady() const noexcept {
-    return _STD ranges::any_of(
+    return std::ranges::any_of(
         _sources,
         [](const auto& entry) {
             return entry->isReady();
@@ -34,7 +34,7 @@ bool ParallelSource::isReady() const noexcept {
 }
 
 bool ParallelSource::isReadable() const noexcept {
-    return _STD ranges::any_of(
+    return std::ranges::any_of(
         _sources,
         [](const auto& entry) {
             return entry->isReadable();
@@ -43,7 +43,7 @@ bool ParallelSource::isReadable() const noexcept {
 }
 
 bool ParallelSource::isWritable() const noexcept {
-    return _STD ranges::any_of(
+    return std::ranges::any_of(
         _sources,
         [](const auto& entry) {
             return entry->isWritable();

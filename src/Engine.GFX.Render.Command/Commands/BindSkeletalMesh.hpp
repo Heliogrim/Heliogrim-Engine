@@ -18,7 +18,7 @@ namespace hg::engine::render::cmd {
     public:
         constexpr BindSkeletalMeshRCmd(mref<const nmpt<const gfx::Mesh>> skeletalMesh_) noexcept :
             RenderCommand(),
-            _skeletalMesh(_STD move(skeletalMesh_)) {}
+            _skeletalMesh(std::move(skeletalMesh_)) {}
 
         constexpr ~BindSkeletalMeshRCmd() noexcept override = default;
 

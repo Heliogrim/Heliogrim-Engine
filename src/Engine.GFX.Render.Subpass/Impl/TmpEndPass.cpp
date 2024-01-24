@@ -23,7 +23,7 @@ void TmpEndPass::destroy() noexcept {
     SubPass::destroy();
 
     auto device = Engine::getEngine()->getGraphics()->getCurrentDevice();
-    device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(_STD exchange(_tmpSignal, nullptr)));
+    device->vkDevice().destroySemaphore(static_cast<VkSemaphore>(std::exchange(_tmpSignal, nullptr)));
 }
 
 void TmpEndPass::declareTransforms(ref<graph::ScopedSymbolContext> symCtx_) noexcept {

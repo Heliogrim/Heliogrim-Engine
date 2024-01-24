@@ -18,11 +18,11 @@ EffectCompiler::EffectCompiler(
     mref<uptr<ModuleBuilder>> moduleBuilder_,
     mref<uptr<ModuleCompiler>> moduleCompiler_
 ) noexcept :
-    _passBuilder(_STD move(passBuilder_)),
-    _passCompiler(_STD move(passCompiler_)),
-    _stageComposer(_STD move(stageComposer_)),
-    _moduleBuilder(_STD move(moduleBuilder_)),
-    _moduleCompiler(_STD move(moduleCompiler_)) {}
+    _passBuilder(std::move(passBuilder_)),
+    _passCompiler(std::move(passCompiler_)),
+    _stageComposer(std::move(stageComposer_)),
+    _moduleBuilder(std::move(moduleBuilder_)),
+    _moduleCompiler(std::move(moduleCompiler_)) {}
 
 EffectCompiler::~EffectCompiler() noexcept = default;
 
@@ -44,7 +44,7 @@ EffectCompileResult EffectCompiler::compile(
 
         for (const auto& requested : request_.spec->targetSymbols()) {
             assert(
-                _STD ranges::contains(exports, requested.get(), [](cref<StageOutput> stageOut_){
+                std::ranges::contains(exports, requested.get(), [](cref<StageOutput> stageOut_){
                     return stageOut_.symbol.get();
                     })
             );
@@ -68,7 +68,7 @@ EffectCompileResult EffectCompiler::compile(
     /* Determine target pass type and spec based on effect */
 
     smr<AccelerationPipeline> pass = _passBuilder->build(
-        _STD move(request_.effect),
+        std::move(request_.effect),
         request_.spec,
         request_.profile
     );
@@ -119,7 +119,7 @@ EffectCompileResult EffectCompiler::compile(
         // TODO: Module builder should emit a binding mapping per module source ~> compiled module to be able to query defined
         // TODO:    bindings by tokens downstream
         auto source = _moduleBuilder->build(pass, request_.spec, stageDerivat, previous);
-        sources.push_back(_STD move(source));
+        sources.push_back(std::move(source));
     }
 
     /* Compile module sources to finite acceleration modules */
@@ -128,20 +128,20 @@ EffectCompileResult EffectCompiler::compile(
 
     for (auto&& source : sources) {
 
-        auto cmodule = _moduleCompiler->compile(pass, request_.spec, _STD move(source));
-        modules.push_back(_STD move(cmodule));
+        auto cmodule = _moduleCompiler->compile(pass, request_.spec, std::move(source));
+        modules.push_back(std::move(cmodule));
     }
 
     /* Finalize acceleration stage derivates */
 
     return {
         .flag = EffectCompileResultFlag::eCompiled,
-        .alias = _STD move(aliasing),
+        .alias = std::move(aliasing),
         .pipeline = _passCompiler->compile(
             request_.spec,
-            _STD move(pass),
-            _STD move(stages),
-            _STD move(modules)
+            std::move(pass),
+            std::move(stages),
+            std::move(modules)
         )
     };
 }

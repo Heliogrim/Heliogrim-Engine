@@ -79,10 +79,10 @@ void AssetBrowserHelper::setup() {
         asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderAudio::unstable_auto_guid());
     }
 
-    _directoryIcons.push_back(_STD make_pair("audio", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
-    _directoryIcons.push_back(_STD make_pair("mp3", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
-    _directoryIcons.push_back(_STD make_pair("ogg", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
-    _directoryIcons.push_back(_STD make_pair("wav", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("audio", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("mp3", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("ogg", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("wav", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
 
     /**/
 
@@ -92,10 +92,10 @@ void AssetBrowserHelper::setup() {
         asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderImages::unstable_auto_guid());
     }
 
-    _directoryIcons.push_back(_STD make_pair("image", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
-    _directoryIcons.push_back(_STD make_pair("ktx", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
-    _directoryIcons.push_back(_STD make_pair("png", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
-    _directoryIcons.push_back(_STD make_pair("texture", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("image", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("ktx", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("png", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("texture", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
 
     /**/
 
@@ -105,7 +105,7 @@ void AssetBrowserHelper::setup() {
         asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderResource::unstable_auto_guid());
     }
 
-    _directoryIcons.push_back(_STD make_pair("resource", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("resource", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
 
     /**/
 
@@ -115,7 +115,7 @@ void AssetBrowserHelper::setup() {
         asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderImport::unstable_auto_guid());
     }
 
-    _directoryIcons.push_back(_STD make_pair("import", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("import", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
 
     /**/
 
@@ -125,7 +125,7 @@ void AssetBrowserHelper::setup() {
         asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderShader::unstable_auto_guid());
     }
 
-    _directoryIcons.push_back(_STD make_pair("shader", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("shader", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
 
     /**/
 
@@ -135,7 +135,7 @@ void AssetBrowserHelper::setup() {
         asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderLog::unstable_auto_guid());
     }
 
-    _directoryIcons.push_back(_STD make_pair("log", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("log", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
 
     /**/
 
@@ -145,13 +145,13 @@ void AssetBrowserHelper::setup() {
         asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderEnvironment::unstable_auto_guid());
     }
 
-    _directoryIcons.push_back(_STD make_pair("env", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
-    _directoryIcons.push_back(_STD make_pair("environment", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
-    _directoryIcons.push_back(_STD make_pair("scene", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
-    _directoryIcons.push_back(_STD make_pair("world", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("env", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("environment", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("scene", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("world", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
 
-    _directoryIcons.push_back(_STD make_pair("fbx", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
-    _directoryIcons.push_back(_STD make_pair("gltf", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("fbx", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("gltf", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
 
     /**/
 
@@ -161,7 +161,7 @@ void AssetBrowserHelper::setup() {
         asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderVideo::unstable_auto_guid());
     }
 
-    _directoryIcons.push_back(_STD make_pair("video", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("video", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
 
     /**/
 
@@ -171,7 +171,7 @@ void AssetBrowserHelper::setup() {
         asset = _assetRegistry->findAssetByGuid(game::assets::texture::FolderFont::unstable_auto_guid());
     }
 
-    _directoryIcons.push_back(_STD make_pair("font", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
+    _directoryIcons.push_back(std::make_pair("font", static_cast<ptr<engine::assets::TextureAsset>>(asset)));
 }
 
 ptr<engine::assets::TextureAsset>
@@ -192,12 +192,12 @@ ptr<engine::assets::TextureAsset> AssetBrowserHelper::getItemIconForDirectory(cr
     ptr<engine::assets::TextureAsset> tex { _directoryIcon };
 
     string name { name_ };
-    _STD transform(
+    std::transform(
         name.begin(),
         name.end(),
         name.begin(),
         [](const u8 c) {
-            return _STD tolower(c);
+            return std::tolower(c);
         }
     );
 
@@ -250,7 +250,7 @@ string AssetBrowserHelper::getAssetTypeName(cref<asset_type_id> typeId_) const n
             return "Undefined";
         }
         default: {
-            return _STD to_string(typeId_.data);
+            return std::to_string(typeId_.data);
         }
     }
 }

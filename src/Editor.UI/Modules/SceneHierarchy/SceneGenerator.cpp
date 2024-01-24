@@ -30,7 +30,7 @@ sptr<Widget> HierarchyGenerator<sptr<SceneViewEntry>>::operator()(
 
         const auto actorGuid = actor->guid();
         txt->setText(
-            _STD format(
+            std::format(
                 R"(Actor << {}-{}-{}-{} >>)",
                 actorGuid.pre,
                 actorGuid.c0,
@@ -56,9 +56,9 @@ sptr<Widget> HierarchyGenerator<sptr<SceneViewEntry>>::operator()(
         }
 
         if (depth <= 0ui64) {
-            txt->setText(_STD format(R"(Root Component << {} >>)", comp->getTypeId().data));
+            txt->setText(std::format(R"(Root Component << {} >>)", comp->getTypeId().data));
         } else {
-            txt->setText(_STD format(R"(Component [D{}] << {} >>)", depth, comp->getTypeId().data));
+            txt->setText(std::format(R"(Component [D{}] << {} >>)", depth, comp->getTypeId().data));
         }
 
         return txt;

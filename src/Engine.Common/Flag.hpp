@@ -7,9 +7,9 @@
 namespace hg {
     template <
         typename Ty,
-        class UTy = _STD underlying_type_t<Ty>>
+        class UTy = std::underlying_type_t<Ty>>
     struct Flag {
-        static_assert(_STD is_enum_v<Ty>, "Enumeration required.");
+        static_assert(std::is_enum_v<Ty>, "Enumeration required.");
 
         /** Type of the value */
         using value_type = UTy;
@@ -98,8 +98,7 @@ namespace hg {
          * @returns The result of the operation.
          */
         constexpr Flag& operator |=(const Ty& other_) {
-            // unwrap |= static_cast<value_type>(other_); // static_cast<...> is not constexpr
-            unwrap |= (value_type)(other_);
+            unwrap |= static_cast<value_type>(other_);
             return *this;
         }
 
@@ -202,7 +201,7 @@ namespace hg {
          */
         ref<Flag> operator=(_In_ cref<Flag> other_) noexcept {
 
-            if (_STD addressof(other_) != this) {
+            if (std::addressof(other_) != this) {
                 unwrap = other_.unwrap;
             }
 
@@ -221,7 +220,7 @@ namespace hg {
          */
         ref<Flag> operator=(_In_ mref<Flag> other_) noexcept {
 
-            if (_STD addressof(other_) != this) {
+            if (std::addressof(other_) != this) {
                 unwrap = other_.unwrap;
             }
 

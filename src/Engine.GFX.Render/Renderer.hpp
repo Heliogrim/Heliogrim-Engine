@@ -47,7 +47,7 @@ namespace hg::engine::render {
     public:
         [[nodiscard]] _Success_(return != nullptr) virtual uptr<class RenderPass> allocate() const;
 
-        [[nodiscard]] virtual _STD pair<uptr<RenderPass>, bool> reallocate(
+        [[nodiscard]] virtual std::pair<uptr<RenderPass>, bool> reallocate(
             mref<uptr<RenderPass>> pass_
         ) const;
 

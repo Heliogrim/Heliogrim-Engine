@@ -28,7 +28,7 @@ WinPlatform::~WinPlatform() = default;
 
 void WinPlatform::setupThread() {
 
-    _thread = _STD thread {
+    _thread = std::thread {
         [&, this] {
 
             SetThreadDescription(GetCurrentThread(), L"Platform Thread");
@@ -43,7 +43,7 @@ void WinPlatform::setupThread() {
             }
 
             // While exiting, make sure queue is done
-            _STD function<void()> fnc { nullptr };
+            std::function<void()> fnc { nullptr };
             while (_platformQueue.waitPop(fnc)) {
                 fnc();
             }
@@ -87,7 +87,7 @@ void WinPlatform::setup() {
     if (sdlInitRes != 0) {
         IM_CORE_ERROR("SDL could not initialize correctly.");
         IM_CORE_ERROR(SDL_GetError());
-        throw _STD runtime_error("Could not initialize SDL.");
+        throw std::runtime_error("Could not initialize SDL.");
     }
 
     /**/
@@ -137,7 +137,7 @@ hg::concurrent::future<uptr<NativeWindow>> WinPlatform::makeNativeWindow(
     };
 
     const auto future { promise.get() };
-    while (!_platformQueue.finalized() && not _platformQueue.try_push(_STD move(promise))) {
+    while (!_platformQueue.finalized() && not _platformQueue.try_push(std::move(promise))) {
         __noop();
     }
 
@@ -148,14 +148,14 @@ hg::concurrent::future<bool> WinPlatform::destroyNativeWindow(
     mref<uptr<NativeWindow>> window_
 ) {
 
-    _STD shared_ptr<NativeWindow> holder { _STD move(window_) };
+    std::shared_ptr<NativeWindow> holder { std::move(window_) };
 
     ::hg::concurrent::promise<bool> promise {
         [this, window = holder] {
 
             /**/
             Engine::getEngine()->getInput()->releaseWindow(window.get());
-            _windows.erase(_STD remove(_windows.begin(), _windows.end(), window.get()));
+            _windows.erase(std::remove(_windows.begin(), _windows.end(), window.get()));
             /**/
 
             const auto sdlWnd { static_cast<ptr<Win32Window>>(window.get())->sdl() };
@@ -166,7 +166,7 @@ hg::concurrent::future<bool> WinPlatform::destroyNativeWindow(
     };
 
     const auto future { promise.get() };
-    while (!_platformQueue.finalized() && not _platformQueue.try_push(_STD move(promise))) {
+    while (!_platformQueue.finalized() && not _platformQueue.try_push(std::move(promise))) {
         __noop();
     }
 
@@ -198,7 +198,7 @@ void WinPlatform::processInternal() {
 
                     auto* targetWnd = SDL_GetWindowFromID(event.window.windowID);
                     const auto iter {
-                        _STD find_if(
+                        std::find_if(
                             _windows.begin(),
                             _windows.end(),
                             [targetWnd](const auto& entry_) {
@@ -319,7 +319,7 @@ void WinPlatform::processInternal() {
     /**
      * Check for signaled queue
      */
-    _STD function<void()> fnc { nullptr };
+    std::function<void()> fnc { nullptr };
     while (!_platformQueue.empty()) {
         _platformQueue.waitPop(fnc);
         fnc();

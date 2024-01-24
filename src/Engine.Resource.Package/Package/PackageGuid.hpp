@@ -16,9 +16,9 @@ namespace hg::engine::resource {
 namespace std {
     template <>
     struct hash<::hg::engine::resource::PackageGuid> :
-        _STD hash<::hg::Guid> {
+        std::hash<::hg::Guid> {
         [[nodiscard]] size_t operator()(::hg::cref<::hg::engine::resource::PackageGuid> value_) const noexcept {
-            return static_cast<::hg::cref<_STD hash<::hg::Guid>>>(*this)(value_);
+            return static_cast<::hg::cref<std::hash<::hg::Guid>>>(*this)(value_);
         }
     };
 }

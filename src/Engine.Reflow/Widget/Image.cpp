@@ -39,7 +39,7 @@ Image::~Image() {
 }
 
 string Image::getTag() const noexcept {
-    return _STD format(R"(Image <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(Image <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 void Image::setImage(cref<nmpt<gfx::TextureLikeObject>> image_, ptr<void> resource_) {

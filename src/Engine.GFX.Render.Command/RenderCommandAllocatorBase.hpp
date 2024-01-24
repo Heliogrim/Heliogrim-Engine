@@ -6,7 +6,7 @@
 #include "RenderCommand.hpp"
 
 namespace hg::engine::render::cmd {
-    class AllocationError : _STD exception {};
+    class AllocationError : std::exception {};
 
     class RenderCommandAllocatorBase {
     public:

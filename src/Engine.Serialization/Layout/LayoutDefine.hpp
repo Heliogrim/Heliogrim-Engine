@@ -41,13 +41,13 @@ namespace hg::engine::serialization::layout {
         ref<serialization::Archive> (*_store)(
             ref<serialization::Archive> archive_,
             cref<LayoutDefine> define_,
-            cref<_STD span<u8, _STD dynamic_extent>> src_
+            cref<std::span<u8, std::dynamic_extent>> src_
         );
 
         ref<serialization::Archive> (*_load)(
             ref<serialization::Archive> archive_,
             cref<LayoutDefine> define_,
-            cref<_STD span<u8, _STD dynamic_extent>> dst_
+            cref<std::span<u8, std::dynamic_extent>> dst_
         );
 
     private:

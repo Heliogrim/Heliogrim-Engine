@@ -7,7 +7,7 @@ AnchorComponent::AnchorComponent() noexcept = default;
 
 AnchorComponent::AnchorComponent(mref<string> anchorName_) noexcept :
     InheritMeta(),
-    _name(_STD move(anchorName_)) {}
+    _name(std::move(anchorName_)) {}
 
 string_view AnchorComponent::getAnchorName() const noexcept {
     return _name;

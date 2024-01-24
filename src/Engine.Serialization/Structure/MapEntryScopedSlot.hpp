@@ -4,7 +4,7 @@
 #include "MapEntrySlot.hpp"
 
 namespace hg::engine::serialization {
-    template <typename KeyType_, typename ValueType_, template <typename, typename...> typename PackType_ = _STD pair>
+    template <typename KeyType_, typename ValueType_, template <typename, typename...> typename PackType_ = std::pair>
     class MapEntryScopedSlot final :
         TypeScopedSlot<PackType_<KeyType_, ValueType_>> {
     public:
@@ -16,8 +16,8 @@ namespace hg::engine::serialization {
     public:
         MapEntryScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
             TypeScopedSlot(
-                _STD move(scopedState_),
-                make_sptr<MapEntrySlot<KeyType_, ValueType_, PackType_>>(_STD move(state_))
+                std::move(scopedState_),
+                make_sptr<MapEntrySlot<KeyType_, ValueType_, PackType_>>(std::move(state_))
             ) {}
 
         ~MapEntryScopedSlot() override = default;

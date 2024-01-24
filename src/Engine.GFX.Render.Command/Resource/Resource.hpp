@@ -19,9 +19,9 @@ namespace hg::engine::render {
     public:
         constexpr Resource() noexcept = default;
 
-        template <typename Type_> requires _STD is_constructible_v<nmpt<const ClassMetaBase>, Type_>
+        template <typename Type_> requires std::is_constructible_v<nmpt<const ClassMetaBase>, Type_>
         constexpr Resource(Type_&& view_) noexcept :
-            view(_STD forward<Type_>(view_)) {}
+            view(std::forward<Type_>(view_)) {}
 
         constexpr Resource(cref<this_type> other_) noexcept = default;
 

@@ -151,7 +151,7 @@ namespace SceneModule {
             EXPECT_TRUE(node->isLeaf());
             EXPECT_TRUE(node->depth() == 0);
 
-            EXPECT_TRUE(node->push(_STD move(*child)));
+            EXPECT_TRUE(node->push(std::move(*child)));
 
             EXPECT_FALSE(node->isLeaf());
             EXPECT_TRUE(node->depth() == 1);
@@ -178,7 +178,7 @@ namespace SceneModule {
             auto child = factory->assembleShadow();
 
             //
-            node->push(_STD move(*child));
+            node->push(std::move(*child));
 
             //
             EXPECT_TRUE(node->contains(*child));
@@ -206,7 +206,7 @@ namespace SceneModule {
 
             //
             const auto nodeId = child->nodeId();
-            node->push(_STD move(*child));
+            node->push(std::move(*child));
 
             //
             EXPECT_FALSE(node->isLeaf());
@@ -248,7 +248,7 @@ namespace SceneModule {
 
             for (shared_type_trait::container_size_type idx = 0; idx < shared_type_trait::max_nodes_per_layer; ++idx) {
                 auto child = factory->assembleShadow();
-                EXPECT_TRUE(node->push(_STD move(*child)));
+                EXPECT_TRUE(node->push(std::move(*child)));
             }
 
             EXPECT_FALSE(node->isLeaf());
@@ -282,7 +282,7 @@ namespace SceneModule {
             constexpr u64 count = mnpl * mnpl + 1ui64;
             for (u64 idx = 0; idx < count; ++idx) {
                 auto child = factory->assembleShadow();
-                EXPECT_TRUE(node->push(_STD move(*child)));
+                EXPECT_TRUE(node->push(std::move(*child)));
             }
 
             EXPECT_FALSE(node->isLeaf());
@@ -318,7 +318,7 @@ namespace SceneModule {
 
             for (u64 idx = 0; idx < count; ++idx) {
                 const auto child = factory->assembleShadow();
-                node->push(_STD move(*child));
+                node->push(std::move(*child));
             }
 
             // Find scenario matching node
@@ -445,7 +445,7 @@ namespace SceneModule {
 
             for (auto idx = 1; idx < elements; ++idx) {
                 const auto node = factory->assembleShadow();
-                graph.root()->push(_STD move(*node));
+                graph.root()->push(std::move(*node));
             }
 
             EXPECT_EQ(counter, 0);

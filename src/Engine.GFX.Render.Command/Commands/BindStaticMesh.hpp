@@ -15,7 +15,7 @@ namespace hg::engine::render::cmd {
     public:
         constexpr BindStaticMeshRCmd(mref<const nmpt<const gfx::Mesh>> staticMesh_) noexcept :
             RenderCommand(),
-            _staticMesh(_STD move(staticMesh_)) {}
+            _staticMesh(std::move(staticMesh_)) {}
 
         constexpr ~BindStaticMeshRCmd() noexcept override = default;
 

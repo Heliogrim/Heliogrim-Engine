@@ -6,7 +6,7 @@ using namespace hg::engine::render::graph;
 using namespace hg;
 
 Node::Node(mref<smr<Auxiliary>> auxiliary_) noexcept :
-    _auxiliary(_STD move(auxiliary_)) {}
+    _auxiliary(std::move(auxiliary_)) {}
 
 void Node::auxAdd(mref<uptr<Component>> comp_) {
 
@@ -15,7 +15,7 @@ void Node::auxAdd(mref<uptr<Component>> comp_) {
         component->mounted(comp_.get());
     }
 
-    _auxiliary->add(_STD move(comp_));
+    _auxiliary->add(std::move(comp_));
 }
 
 void Node::auxRem(mref<nmpt<Component>> comp_) {

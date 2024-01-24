@@ -421,7 +421,7 @@ ref<SparseTextureView> VkTextureFactory::buildView(
      * Cleanup
      */
     if (prevView) {
-        _device->vkDevice().destroyImageView(vk::ImageView { _STD move(reinterpret_cast<VkImageView>(prevView)) });
+        _device->vkDevice().destroyImageView(vk::ImageView { std::move(reinterpret_cast<VkImageView>(prevView)) });
     }
 
     return texture_;
@@ -496,7 +496,7 @@ ptr<SparseTexture> VkTextureFactory::buildVirtual(const SparseTextureBuildPayloa
     const vk::MemoryRequirements mr = _device->vkDevice().getImageMemoryRequirements(image);
 
     u32 simReqCount { 16ui32 };
-    _STD array<vk::SparseImageMemoryRequirements, 16> simReqs {};
+    std::array<vk::SparseImageMemoryRequirements, 16> simReqs {};
     _device->vkDevice().getImageSparseMemoryRequirements(image, &simReqCount, simReqs.data());
     assert(simReqCount);
 
@@ -536,7 +536,7 @@ ptr<SparseTexture> VkTextureFactory::buildVirtual(const SparseTextureBuildPayloa
      */
     auto* texture {
         make_ptr<SparseTexture>(
-            _STD move(memory),
+            std::move(memory),
             layers,
             payload_.extent,
             payload_.format,

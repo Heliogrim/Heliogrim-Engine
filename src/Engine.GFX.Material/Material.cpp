@@ -17,9 +17,9 @@ Material::Material(
     mref<smr<MaterialPrototype>> prototype_,
     mref<Vector<MaterialParameter>> parameters_
 ) noexcept :
-    _guid(_STD move(guid_)),
-    _prototype(_STD move(prototype_)),
-    _parameters(_STD move(parameters_)) {}
+    _guid(std::move(guid_)),
+    _prototype(std::move(prototype_)),
+    _parameters(std::move(parameters_)) {}
 
 Material::~Material() = default;
 
@@ -39,7 +39,7 @@ bool Material::hasParam(string_view name_) const noexcept {
 
     assert(_prototype);
     const auto& mpp = _prototype->getParameters();
-    const auto mppit = _STD ranges::find(
+    const auto mppit = std::ranges::find(
         mpp,
         name_,
         [](cref<MaterialPrototypeParameter> param_) {

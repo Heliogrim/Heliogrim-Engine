@@ -5,8 +5,8 @@
 
 namespace hg {
     using cstr = const char*;
-    using string = _STD string;
-    using string_view = _STD string_view;
+    using string = std::string;
+    using string_view = std::string_view;
 
     using String = string;
     using StringView = string_view;

@@ -15,7 +15,7 @@ namespace hg::engine::scheduler {
      * @param atomic_ The variable holding the atomic value.
      * @param prev_ The value which should change.
      */
-    void waitOnAtomic(cref<_STD atomic_flag> atomic_, const bool prev_);
+    void waitOnAtomic(cref<std::atomic_flag> atomic_, const bool prev_);
 
     /**
      * Wait on a atomic variable
@@ -26,7 +26,7 @@ namespace hg::engine::scheduler {
      * @param atomic_ The variable holding the atomic value.
      * @param prev_ The value which should change.
      */
-    void waitOnAtomic(cref<_STD atomic_uint_fast8_t> atomic_, const u8 prev_);
+    void waitOnAtomic(cref<std::atomic_uint_fast8_t> atomic_, const u8 prev_);
 
     /**
      * Wait until a atomic variable matches the expectation
@@ -37,7 +37,7 @@ namespace hg::engine::scheduler {
      * @param atomic_ The variable holding the atomic value.
      * @param expect_ The value to wait for.
      */
-    void waitUntilAtomic(cref<_STD atomic_flag> atomic_, const bool expect_);
+    void waitUntilAtomic(cref<std::atomic_flag> atomic_, const bool expect_);
 
     /**
      * Wait until a atomic variable matches the expectation
@@ -48,5 +48,5 @@ namespace hg::engine::scheduler {
      * @param atomic_ The variable holding the atomic value.
      * @param expect_ The value to wait for.
      */
-    void waitUntilAtomic(cref<_STD atomic_uint_fast8_t> atomic_, const u8 expect_);
+    void waitUntilAtomic(cref<std::atomic_uint_fast8_t> atomic_, const u8 expect_);
 }

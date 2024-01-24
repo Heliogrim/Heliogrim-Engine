@@ -3,7 +3,7 @@
 #include <concepts>
 #include <Engine.Common/Wrapper.hpp>
 #include <Engine.Common/Collection/AssociativeKey.hpp>
-#include <Engine.Common/Collection/RobinMap.hpp>
+#include <Engine.Common/Collection/DenseMap.hpp>
 #include <Engine.Common/Collection/Vector.hpp>
 #include <Engine.GFX.Loader/Geometry/StaticGeometryResource.hpp>
 #include <Engine.GFX.Loader/Texture/TextureResource.hpp>
@@ -63,7 +63,7 @@ namespace hg::engine::gfx::cache {
         /**
          * Texture Atlases
          */
-        RobinMap<ptr<TextureResource>, RobinMap<AssocKey<TextureSubResource>, ptr<CacheCtrlSubject<
+        DenseMap<ptr<TextureResource>, DenseMap<AssocKey<TextureSubResource>, ptr<CacheCtrlSubject<
             TextureSubResource>>>> _textures;
 
     public:
@@ -133,7 +133,7 @@ namespace hg::engine::gfx::cache {
         /**
          * Static Geometries
          */
-        RobinMap<ptr<StaticGeometryResource>, Vector<ptr<CacheCtrlSubject<StaticGeometrySubResource>>>>
+        DenseMap<ptr<StaticGeometryResource>, Vector<ptr<CacheCtrlSubject<StaticGeometrySubResource>>>>
         _staticGeometries;
 
     public:
@@ -153,28 +153,34 @@ namespace hg::engine::gfx::cache {
         using material_pass_type = smr<const accel::AccelerationPipeline>;
 
         // TODO: We need a solution to track the usage markings for spec (1) -> material (2) -> pass (-)
-        RobinMap<
+        DenseMap<
             material_spec_type,
-            RobinMap<
+            DenseMap<
                 __restricted_ptr<MaterialResource>,
-                uptr<CacheCtrlSubject<_STD pair<material_map_type, material_pass_type>>>
-            >
+                uptr<CacheCtrlSubject<std::pair<material_map_type, material_pass_type>>>,
+                decltype([](const __restricted_ptr<MaterialResource> obj_) noexcept {
+                    return reinterpret_cast<std::uintptr_t>(obj_);
+                })
+            >,
+            decltype([](const __restricted_ptr<const void> obj_) noexcept {
+                return reinterpret_cast<std::uintptr_t>(obj_);
+            })
         > _materialPasses;
 
     public:
         void markAsUsed(
-            _In_ const __restricted_ptr<const void> spec_,
+            _In_ const material_spec_type spec_,
             _In_ mref<smr<MaterialResource>> material_,
             _In_ mref<smr<const accel::AccelerationPipeline>> accelerationPipeline_
         );
 
         void unmark(
-            _In_ const __restricted_ptr<const material_spec_type> spec_,
+            _In_ const material_spec_type spec_,
             _In_ const __restricted_ptr<MaterialResource> material_
         );
 
         [[nodiscard]] query_result_type<material_pass_type> query(
-            _In_ const __restricted_ptr<const void> spec_,
+            _In_ const material_spec_type spec_,
             _In_ const __restricted_ptr<MaterialResource> material_
         ) const noexcept;
 

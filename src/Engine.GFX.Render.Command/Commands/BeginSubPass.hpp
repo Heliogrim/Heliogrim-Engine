@@ -7,7 +7,7 @@ namespace hg::engine::render::cmd {
         public RenderCommand {
     public:
         constexpr BeginSubPassRCmd(BeginSubPassStruct data_) noexcept :
-            data(_STD move(data_)) {}
+            data(std::move(data_)) {}
 
         constexpr ~BeginSubPassRCmd() noexcept override = default;
 

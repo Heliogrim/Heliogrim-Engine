@@ -10,8 +10,8 @@ SkyboxComponent::SkyboxComponent(
 ) :
     InheritMeta(
         component_type_id { typeId },
-        _STD move(owner_),
-        _STD move(parent_)
+        std::move(owner_),
+        std::move(parent_)
     ),
     _skyboxGeometry(invalid_asset_guid),
     _skyboxMaterial(invalid_asset_guid, clone(invalid_asset_guid)) {}

@@ -27,7 +27,7 @@ SurfaceManager::~SurfaceManager() {
 void SurfaceManager::tidy() {
 
     for (auto&& pair : _surfaces) {
-        destroySurface(_STD move(pair.second));
+        destroySurface(std::move(pair.second));
     }
 
     _surfaces.clear();
@@ -47,13 +47,13 @@ nmpt<Surface> SurfaceManager::makeSurface(mref<uptr<platform::NativeWindow>> win
         return nullptr;
     }
 
-    auto surface { make_uptr<Surface>(_STD move(window_), _application) };
-    const auto result = _surfaces.insert_or_assign(surface->getNativeWindow(), _STD move(surface));
+    auto surface { make_uptr<Surface>(std::move(window_), _application) };
+    const auto result = _surfaces.insert_or_assign(surface->getNativeWindow(), std::move(surface));
 
     if (not result.second) {
         // TODO: This is invalid behaviour; Need to check what insert_or_assign does on duplicated entry
         IM_CORE_ERROR("Tried to create multiple a surfaces for a single native window");
-        destroySurface(_STD move(surface));
+        destroySurface(std::move(surface));
         return nullptr;
     }
 
@@ -89,7 +89,7 @@ bool SurfaceManager::destroySurface(const non_owning_rptr<platform::NativeWindow
         return false;
     }
 
-    const auto result { destroySurface(_STD move(iter->second)) };
+    const auto result { destroySurface(std::move(iter->second)) };
     if (result) {
         _surfaces.erase(iter);
     }
@@ -100,7 +100,7 @@ bool SurfaceManager::destroySurface(const non_owning_rptr<platform::NativeWindow
 bool SurfaceManager::destroySurface(mref<nmpt<Surface>> surface_) {
 
     const auto iter {
-        _STD ranges::find_if(
+        std::ranges::find_if(
             _surfaces,
             [surface_](const auto& entry_) {
                 return entry_.second.get() == surface_.get();
@@ -112,7 +112,7 @@ bool SurfaceManager::destroySurface(mref<nmpt<Surface>> surface_) {
         return false;
     }
 
-    const auto result { destroySurface(_STD move(iter->second)) };
+    const auto result { destroySurface(std::move(iter->second)) };
     if (result) {
         _surfaces.erase(iter);
     }

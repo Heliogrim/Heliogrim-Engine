@@ -12,7 +12,7 @@ namespace vk {
 }
 
 namespace hg::engine::accel {
-    class AccelerationPassFactoryError final : public _STD exception {};
+    class AccelerationPassFactoryError final : public std::exception {};
 
     class __declspec(novtable) AccelerationPassFactory {
     public:

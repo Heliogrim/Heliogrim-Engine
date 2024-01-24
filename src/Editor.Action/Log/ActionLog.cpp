@@ -54,7 +54,7 @@ void ActionLog::storeActionState(cref<sptr<Action>> action_) {
     while (not _saveState.compare_exchange_strong(
         expect,
         reinterpret_cast<uintptr_t>(state),
-        _STD memory_order::seq_cst
+        std::memory_order::seq_cst
     )) {
         expect = NULL;
         ::hg::yield();
@@ -66,7 +66,7 @@ void ActionLog::storeActionState(cref<sptr<Action>> action_) {
 
 void ActionLog::dropActionState() {
     uintptr_t stored { _saveState.load() };
-    if (not _saveState.compare_exchange_strong(stored, NULL, _STD memory_order::seq_cst)) {
+    if (not _saveState.compare_exchange_strong(stored, NULL, std::memory_order::seq_cst)) {
         return;
     }
 
@@ -77,7 +77,7 @@ void ActionLog::dropActionState() {
 
 bool ActionLog::revertActionState(cref<sptr<Action>> action_) {
     uintptr_t stored { _saveState.load() };
-    if (not _saveState.compare_exchange_strong(stored, NULL, _STD memory_order::seq_cst)) {
+    if (not _saveState.compare_exchange_strong(stored, NULL, std::memory_order::seq_cst)) {
         return false;
     }
 

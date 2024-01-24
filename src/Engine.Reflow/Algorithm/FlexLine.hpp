@@ -31,7 +31,7 @@ namespace hg::engine::reflow::algorithm {
         }
 
         [[nodiscard]] math::vec2 growDiff() const noexcept {
-            constexpr auto inf = _STD numeric_limits<float>::infinity();
+            constexpr auto inf = std::numeric_limits<float>::infinity();
             if (growFactor <= 0.F || maxSize.x < 0.F || maxSize.y < 0.F || maxSize.x >= inf || maxSize.y >= inf) {
                 return math::vec2 { 0.F };
             }

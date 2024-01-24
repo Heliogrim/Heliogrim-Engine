@@ -12,21 +12,21 @@ Location::Location(cref<math_type> location_) noexcept :
     math_type(location_) {}
 
 Location::Location(mref<Location> other_) noexcept :
-    math_type(_STD move(other_)) {}
+    math_type(std::move(other_)) {}
 
 Location::Location(cref<Location> other_) noexcept = default;
 
 ref<Location::this_type> Location::operator=(mref<this_type> other_) noexcept {
-    if (this != _STD addressof(other_)) {
-        math_type::x = _STD move(other_.x);
-        math_type::y = _STD move(other_.y);
-        math_type::z = _STD move(other_.z);
+    if (this != std::addressof(other_)) {
+        math_type::x = std::move(other_.x);
+        math_type::y = std::move(other_.y);
+        math_type::z = std::move(other_.z);
     }
     return *this;
 }
 
 ref<Location::this_type> Location::operator=(cref<this_type> other_) noexcept {
-    if (this != _STD addressof(other_)) {
+    if (this != std::addressof(other_)) {
         math_type::x = other_.x;
         math_type::y = other_.y;
         math_type::z = other_.z;

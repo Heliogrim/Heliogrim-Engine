@@ -15,7 +15,7 @@ Overlay::Overlay() :
 Overlay::~Overlay() = default;
 
 string Overlay::getTag() const noexcept {
-    return _STD format(R"(Overlay <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(Overlay <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 const ptr<const Children> Overlay::children() const {

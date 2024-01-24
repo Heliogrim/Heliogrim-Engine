@@ -8,10 +8,10 @@
 namespace hg::engine::reflow {
     template <typename... InputTypes_>
     class InputVector :
-        public Input<_STD tuple<_STD decay_t<InputTypes_>...>> {
+        public Input<std::tuple<std::decay_t<InputTypes_>...>> {
     public:
         using this_type = InputVector<InputTypes_...>;
-        using base_type = Input<_STD tuple<_STD decay_t<typename InputTypes_::value_type>...>>;
+        using base_type = Input<std::tuple<std::decay_t<typename InputTypes_::value_type>...>>;
 
         using base_type::input_type;
 
@@ -25,7 +25,7 @@ namespace hg::engine::reflow {
 
     public:
         [[nodiscard]] string getTag() const noexcept override {
-            return _STD format(R"(InputVector <{:#x}>)", reinterpret_cast<u64>(this));
+            return std::format(R"(InputVector <{:#x}>)", reinterpret_cast<u64>(this));
         }
 
     private:
@@ -55,7 +55,7 @@ namespace hg::engine::reflow {
             const auto& children { *_content->children() };
             for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
                 const auto& child { children[i] };
-                _STD static_pointer_cast<InputBase, Widget>(child)->enable();
+                std::static_pointer_cast<InputBase, Widget>(child)->enable();
             }
         }
 
@@ -64,7 +64,7 @@ namespace hg::engine::reflow {
             const auto& children { *_content->children() };
             for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
                 const auto& child { children[i] };
-                _STD static_pointer_cast<InputBase, Widget>(child)->disable();
+                std::static_pointer_cast<InputBase, Widget>(child)->disable();
             }
         }
 
@@ -73,7 +73,7 @@ namespace hg::engine::reflow {
             const auto& children { *_content->children() };
             for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
                 const auto& child { children[i] };
-                _STD static_pointer_cast<InputBase, Widget>(child)->markAsDirty();
+                std::static_pointer_cast<InputBase, Widget>(child)->markAsDirty();
             }
         }
 
@@ -82,7 +82,7 @@ namespace hg::engine::reflow {
             const auto& children { *_content->children() };
             for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
                 const auto& child { children[i] };
-                _STD static_pointer_cast<InputBase, Widget>(child)->markAsPristine();
+                std::static_pointer_cast<InputBase, Widget>(child)->markAsPristine();
             }
         }
 
@@ -90,7 +90,7 @@ namespace hg::engine::reflow {
             const auto& children { *_content->children() };
             for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
                 const auto& child { children[i] };
-                _STD static_pointer_cast<InputBase, Widget>(child)->markAsTouched();
+                std::static_pointer_cast<InputBase, Widget>(child)->markAsTouched();
             }
         }
 
@@ -99,7 +99,7 @@ namespace hg::engine::reflow {
             const auto& children { *_content->children() };
             for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
                 const auto& child { children[i] };
-                _STD static_pointer_cast<InputBase, Widget>(child)->markAsTouched();
+                std::static_pointer_cast<InputBase, Widget>(child)->markAsTouched();
             }
         }
 
@@ -108,7 +108,7 @@ namespace hg::engine::reflow {
             const auto& children { *_content->children() };
             for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
                 const auto& child { children[i] };
-                _STD static_pointer_cast<InputBase, Widget>(child)->reset();
+                std::static_pointer_cast<InputBase, Widget>(child)->reset();
             }
         }
 
@@ -117,7 +117,7 @@ namespace hg::engine::reflow {
             const auto& children { *_content->children() };
             for (size_t i { 1ui64 }; i < children.size(); i += 2ui64) {
                 const auto& child { children[i] };
-                _STD static_pointer_cast<InputBase, Widget>(child)->updateValueAndValidity(true, emit_);
+                std::static_pointer_cast<InputBase, Widget>(child)->updateValueAndValidity(true, emit_);
             }
         }
 

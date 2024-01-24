@@ -7,7 +7,7 @@ using namespace hg::engine::gfx::cache;
 using namespace hg;
 
 LocalCacheCtrl::LocalCacheCtrl(mref<uptr<LocalResourceCache>> cache_) noexcept :
-    _cache(_STD move(cache_)) {}
+    _cache(std::move(cache_)) {}
 
 LocalCacheCtrl::~LocalCacheCtrl() {
     tidy();
@@ -39,7 +39,7 @@ void LocalCacheCtrl::reset(const bool fully_) {
     #pragma warning(push)
     #pragma warning(disable: 4996)
     for (auto&& entry : _staticGeometries) {
-        global->unmark(entry.subject, _STD move(entry.subResource));
+        global->unmark(entry.subject, std::move(entry.subResource));
     }
     _staticGeometries.clear();
     #pragma warning(pop)
@@ -60,12 +60,12 @@ const non_owning_rptr<LocalResourceCache> LocalCacheCtrl::cache() noexcept {
 
 void LocalCacheCtrl::markLoadedAsUsed(mref<smr<TextureResource>> resource_, mref<TextureSubResource> subResource_) {
 
-    auto subKey = AssocKey<TextureSubResource>::from(_STD move(subResource_));
+    auto subKey = AssocKey<TextureSubResource>::from(std::move(subResource_));
     _textures.push_back({ resource_.get(), subKey });
 
     /**/
 
-    [[maybe_unused]] auto result = _cache->_global->markLoadedAsUsed(_STD move(resource_), subKey);
+    [[maybe_unused]] auto result = _cache->_global->markLoadedAsUsed(std::move(resource_), subKey);
 }
 
 void LocalCacheCtrl::markLoadedAsUsed(
@@ -77,11 +77,11 @@ void LocalCacheCtrl::markLoadedAsUsed(
 
     /**/
 
-    [[maybe_unused]] auto result = _cache->_global->markLoadedAsUsed(_STD move(resource_), _STD move(subResource_));
+    [[maybe_unused]] auto result = _cache->_global->markLoadedAsUsed(std::move(resource_), std::move(subResource_));
 }
 
 void LocalCacheCtrl::markAsUsed(const ptr<TextureResource> resource_, mref<TextureSubResource> subResource_) {
-    markAsUsed(resource_, AssocKey<TextureSubResource>::from(_STD move(subResource_)));
+    markAsUsed(resource_, AssocKey<TextureSubResource>::from(std::move(subResource_)));
 }
 
 void LocalCacheCtrl::markAsUsed(
@@ -102,7 +102,7 @@ void LocalCacheCtrl::markAsUsed(
     _staticGeometries.push_back({ resource_, subResource_ });
     #pragma warning(push)
     #pragma warning(disable: 4996)
-    _cache->_global->markAsUsed(resource_, _STD move(subResource_));
+    _cache->_global->markAsUsed(resource_, std::move(subResource_));
     #pragma warning(pop)
 }
 
@@ -117,7 +117,7 @@ void LocalCacheCtrl::markAsUsed(
 
     _cache->_global->markAsUsed(
         spec_,
-        _STD move(material_),
-        _STD move(accelerationPipeline_)
+        std::move(material_),
+        std::move(accelerationPipeline_)
     );
 }

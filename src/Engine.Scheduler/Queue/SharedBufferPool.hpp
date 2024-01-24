@@ -11,7 +11,7 @@ namespace hg::engine::scheduler {
         using aligned_buffer = ALIGNED(PooledBuffer, CACHE_LINE_SIZE);
 
         using size_type = uint_fast16_t;
-        using atomic_size_type = _STD atomic_uint_fast16_t;
+        using atomic_size_type = std::atomic_uint_fast16_t;
         using capacity_type = uint_fast16_t;
 
     public:
@@ -23,7 +23,7 @@ namespace hg::engine::scheduler {
         void tidy();
 
     private:
-        _STD atomic<ptr<ptr<aligned_buffer>>> _pooled;
+        std::atomic<ptr<ptr<aligned_buffer>>> _pooled;
         atomic_size_type _poolSize;
         capacity_type _poolCapacity;
 
@@ -38,7 +38,7 @@ namespace hg::engine::scheduler {
         void release(_Inout_ mref<ptr<aligned_buffer>> buffer_);
 
     private:
-        _STD atomic_flag _blocked;
+        std::atomic_flag _blocked;
 
     private:
         /**

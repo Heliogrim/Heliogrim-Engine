@@ -11,8 +11,8 @@ driver::vk::VkDescriptorPool::VkDescriptorPool() noexcept :
     vkPool(nullptr) {}
 
 driver::vk::VkDescriptorPool::VkDescriptorPool(mref<this_type> other_) noexcept :
-    pooled(_STD move(other_.pooled)),
-    vkPool(_STD exchange(other_.vkPool, nullptr)) {}
+    pooled(std::move(other_.pooled)),
+    vkPool(std::exchange(other_.vkPool, nullptr)) {}
 
 driver::vk::VkDescriptorPool::~VkDescriptorPool() noexcept {
 

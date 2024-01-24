@@ -24,7 +24,7 @@ namespace hg::editor {
         Deque<sptr<Action>> _log;
         Stack<sptr<Action>> _relog;
 
-        _STD atomic_uintptr_t _saveState;
+        std::atomic_uintptr_t _saveState;
 
     private:
         void storeLog(cref<sptr<Action>> entry_);

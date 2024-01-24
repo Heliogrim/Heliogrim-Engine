@@ -8,4 +8,4 @@ LandscapeGeometry::LandscapeGeometry(cref<asset_guid> guid_) :
 
 LandscapeGeometry::LandscapeGeometry(cref<asset_guid> guid_, mref<Vector<fs::Url>> sources_) :
     InheritMeta(guid_, typeId),
-    _sources(_STD move(sources_)) {}
+    _sources(std::move(sources_)) {}

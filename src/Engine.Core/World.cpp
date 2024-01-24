@@ -6,7 +6,7 @@ using namespace hg::engine::core;
 using namespace hg;
 
 World::World(mref<uptr<scene::SceneBase>> scene_) :
-    _scene(_STD move(scene_)) {}
+    _scene(std::move(scene_)) {}
 
 World::~World() = default;
 

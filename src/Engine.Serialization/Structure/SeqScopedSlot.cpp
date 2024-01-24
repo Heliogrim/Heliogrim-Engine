@@ -9,7 +9,7 @@ using namespace hg::engine::serialization;
 using namespace hg;
 
 SeqScopedSlot::SeqScopedSlot(mref<ScopedSlotState> scopedState_, mref<StructureSlotState> state_) :
-    ScopedSlot(_STD move(scopedState_), make_sptr<SeqSlot>(_STD move(state_))) {
+    ScopedSlot(std::move(scopedState_), make_sptr<SeqSlot>(std::move(state_))) {
 
     if (not _slot) {
         return;
@@ -42,7 +42,7 @@ RecordScopedSlot SeqScopedSlot::addRecordSlot() {
     auto record = static_cast<ptr<SeqSlot>>(slot())->addRecord();
     ScopedSlotState scopedState { ScopedSlotStateFlag::eDirty };
 
-    return RecordScopedSlot { _STD move(scopedState), _STD move(record) };
+    return RecordScopedSlot { std::move(scopedState), std::move(record) };
 
 }
 
@@ -51,7 +51,7 @@ RecordScopedSlot SeqScopedSlot::getRecordSlot(const u64 index_) const {
     auto record = static_cast<ptr<SeqSlot>>(slot())->getRecord(index_);
     ScopedSlotState scopedState { ScopedSlotStateFlag::eClean };
 
-    return RecordScopedSlot { _STD move(scopedState), _STD move(record) };
+    return RecordScopedSlot { std::move(scopedState), std::move(record) };
 }
 
 s64 SeqScopedSlot::getRecordCount() const {

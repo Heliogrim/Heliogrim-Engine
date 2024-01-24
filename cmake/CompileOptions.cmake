@@ -31,19 +31,21 @@ set(DEFAULT_PROJECT_OPTIONS
 #
 get_library_path(lib_dir)
 set(DEFAULT_INCLUDE_DIRECTORIES
-	"${Vulkan_INCLUDE_DIR}"
-	"${lib_dir}/ankerl"
-	"${lib_dir}/assimp"
-	"${lib_dir}/dr_flac"
-	"${lib_dir}/dr_wav"
-	"${lib_dir}/freetype2"
-	"${lib_dir}/gli"
-	"${lib_dir}/glm"
-	"${lib_dir}/ryml"
-	"${lib_dir}/SDL2"
+    "${Vulkan_INCLUDE_DIR}"
+    "${lib_dir}/ankerl"
+    "${lib_dir}/assimp"
+    "${lib_dir}/dr_flac"
+    "${lib_dir}/dr_wav"
+    "${lib_dir}/freetype2"
+    "${lib_dir}/gli"
+    "${lib_dir}/glm"
+    "${lib_dir}/glslang"
+    "${lib_dir}/ryml"
+    "${lib_dir}/SDL2"
     "${lib_dir}/spdlog"
-	"${lib_dir}/tsl"
-	"${lib_dir}/vorbis")
+    "${lib_dir}/tsl"
+    "${lib_dir}/tl"
+    "${lib_dir}/vorbis")
 
 set(TEST_INCLUDE_DIRECTORIES
         "${lib_dir}/gtest")
@@ -216,6 +218,11 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
             -Wuninitialized
             -Wmissing-field-initializers
 
+			-Wno-c++98-compat
+			-Wno-c++11-compat
+			-Wno-c++14-compat
+			-Wno-c++17-compat
+
             $<$<CXX_COMPILER_ID:GNU>:
             -Wmaybe-uninitialized
 
@@ -228,6 +235,11 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCH
 
             $<$<CXX_COMPILER_ID:Clang>:
             -Wpedantic
+
+            -Wno-c++98-compat-pedantic
+			-Wno-c++11-compat-pedantic
+			-Wno-c++14-compat-pedantic
+			-Wno-c++17-compat-pedantic
 
             # -Wreturn-stack-address # gives false positives
             >

@@ -25,7 +25,7 @@ bool SceneHierarchy::storeResolver(const type_id typeId_, mref<uptr<HierarchyRes
         return false;
     }
 
-    _resolver.insert_or_assign(typeId_, _STD move(resolver_));
+    _resolver.insert_or_assign(typeId_, std::move(resolver_));
     return true;
 }
 
@@ -45,7 +45,7 @@ bool SceneHierarchy::storeGenerator(const type_id typeId_, mref<uptr<HierarchyGe
         return false;
     }
 
-    _generator.insert_or_assign(typeId_, _STD move(generator_));
+    _generator.insert_or_assign(typeId_, std::move(generator_));
     return true;
 
 }

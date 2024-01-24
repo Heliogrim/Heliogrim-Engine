@@ -34,8 +34,8 @@ namespace hg::engine::scheduler {
         void release();
 
     private:
-        _STD atomic_flag _writer;
-        _STD atomic_flag _reader;
+        std::atomic_flag _writer;
+        std::atomic_flag _reader;
 
     public:
         [[nodiscard]] bool try_pop(_Out_ ref<non_owning_rptr<const task::TaskDelegate>> value_);

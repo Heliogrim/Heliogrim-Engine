@@ -28,7 +28,7 @@ namespace hg::driver::vk {
         public:
             VkState(mref<VkScopedCmdMgr> cmd_) noexcept :
                 State(),
-                cmd(_STD move(cmd_)) {}
+                cmd(std::move(cmd_)) {}
 
             ~VkState() noexcept = default;
 

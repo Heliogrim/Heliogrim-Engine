@@ -51,6 +51,6 @@ namespace clockwork::__internal::core::tick {
         /**
          * Gets the number of blocking tasks
          */
-        _STD atomic<hg::u32> _blockCount;
+        std::atomic<hg::u32> _blockCount;
     };
 }

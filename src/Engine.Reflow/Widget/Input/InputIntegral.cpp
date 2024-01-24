@@ -12,7 +12,7 @@ InputIntegral::InputIntegral() :
     _wrapper(make_sptr<HorizontalPanel>()),
     _text(make_sptr<Text>()),
     _value(R"(0)"),
-    _limits(_STD numeric_limits<s64>::min(), _STD numeric_limits<s64>::max()),
+    _limits(std::numeric_limits<s64>::min(), std::numeric_limits<s64>::max()),
     _stepSize(1i64),
     _children() {
     /**/
@@ -23,11 +23,11 @@ InputIntegral::InputIntegral() :
 InputIntegral::~InputIntegral() = default;
 
 string InputIntegral::getTag() const noexcept {
-    return _STD format(R"(InputIntegral <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(InputIntegral <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 void InputIntegral::setValue(const s64 value_) {
-    _value = _STD to_string(value_);
+    _value = std::to_string(value_);
     _text->setText(_value);
 }
 
@@ -62,7 +62,7 @@ Input<s64>::input_type InputIntegral::value() const noexcept {
         return 0;
     }
 
-    return _STD stoll(_value);
+    return std::stoll(_value);
 }
 
 const ptr<const SingleChildren> InputIntegral::children() const {
@@ -131,7 +131,7 @@ EventResponse InputIntegral::onKeyDown(cref<KeyboardEvent> event_) {
 
     } else if (event_._key >= 0x30 && event_._key <= 0x39) {
 
-        const auto maxChars { static_cast<u64>(_STD floor(_STD log10(static_cast<long double>(_limits.max)))) + 1ui64 };
+        const auto maxChars { static_cast<u64>(std::floor(std::log10(static_cast<long double>(_limits.max)))) + 1ui64 };
 
         if (_value.size() >= maxChars) {
             return EventResponse::eConsumed;
@@ -152,7 +152,7 @@ EventResponse InputIntegral::onKeyDown(cref<KeyboardEvent> event_) {
         const auto window { root() };
         const FocusEvent focusEvent { window };
 
-        WindowManager::get()->dispatch<FocusEvent>(_STD static_pointer_cast<Window, Widget>(window), focusEvent);
+        WindowManager::get()->dispatch<FocusEvent>(std::static_pointer_cast<Window, Widget>(window), focusEvent);
         return EventResponse::eConsumed;
     }
 

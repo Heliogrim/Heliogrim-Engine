@@ -401,7 +401,7 @@ void ReflowCommandBuffer::drawArc(
         float theta { fromTheta_ + static_cast<float>(seg) * dtPs };
         theta = MIN(theta, toTheta_);
 
-        const math::vec2 nd { _STD cosf(theta), _STD sinf(theta) };
+        const math::vec2 nd { std::cosf(theta), std::sinf(theta) };
 
         _runningVertices.push_back(
             uivertex {
@@ -461,8 +461,8 @@ void ReflowCommandBuffer::drawText(
     constexpr u32 cqi[] { 0ui32, 1ui32, 2ui32, 2ui32, 3ui32, 0ui32 };
 
     math::vec2 fwd { pos_ + math::vec2 { 0.F, -0.25F * static_cast<float>(fss) * charScale.y } };
-    fwd.x = _STD floorf(fwd.x);
-    fwd.y = _STD floorf(fwd.y);
+    fwd.x = std::floorf(fwd.x);
+    fwd.y = std::floorf(fwd.y);
 
     /**/
 
@@ -591,7 +591,7 @@ void ReflowCommandBuffer::drawImage(
         uv2_,
         p3_,
         uv3_,
-        _STD move(image_),
+        std::move(image_),
         nullptr,
         nullptr,
         color_
@@ -679,7 +679,7 @@ void ReflowCommandBuffer::drawImageAsync(
      *
      */
     _imageIndices.emplace_back(baseIdx, baseIdx + 6uL);
-    _images.push_back(_STD move(image_));
+    _images.push_back(std::move(image_));
 
     if (wait_) {
         _imageWait.push_back(wait_);

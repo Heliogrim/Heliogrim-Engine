@@ -56,7 +56,7 @@ Viewport::~Viewport() {
 }
 
 string Viewport::getTag() const noexcept {
-    return _STD format(R"(Viewport <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(Viewport <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 void Viewport::tidy() {
@@ -193,7 +193,7 @@ void Viewport::rebuildView() {
     /**/
 
     handleViewListener(_swapChain, next);
-    _swapChain = _STD move(next);
+    _swapChain = std::move(next);
 }
 
 void Viewport::handleViewListener(cref<smr<gfx::VkSwapchain>> prev_, cref<smr<gfx::VkSwapchain>> next_) {
@@ -209,7 +209,7 @@ void Viewport::resizeView(cref<math::uivec2> extent_) {
 void Viewport::addResizeListener(
     mref<std::function<void(mref<smr<gfx::VkSwapchain>>, mref<smr<gfx::VkSwapchain>>)>> fnc_
 ) {
-    _viewListen.push_back(_STD move(fnc_));
+    _viewListen.push_back(std::move(fnc_));
 }
 
 void Viewport::removeResizeListener() {

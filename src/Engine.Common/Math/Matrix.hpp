@@ -259,7 +259,7 @@ namespace hg::math {
          */
         matq4_t<T>& rotate(const T& angle_, const vec3_t<T> vec_) {
             auto rm = rotated(angle_, vec_);
-            *this = _STD move(rm);
+            *this = std::move(rm);
             return *this;
         }
 
@@ -273,8 +273,8 @@ namespace hg::math {
          */
         matq4_t<T> rotated(const T& angle_, const vec3_t<T> vec_) const {
             const T a = angle_;
-            const T c = _STD cos(a);
-            const T s = _STD sin(a);
+            const T c = std::cos(a);
+            const T s = std::sin(a);
 
             const vec3_t<T> axis = vec_.normalized();
             vec3_t<T> tmp = vec3_t<T>((T(1) - c) * axis);
@@ -461,7 +461,9 @@ namespace hg::math {
          * \param right_ 
          * \return 
          */
-        matq4_t<T>& operator*=(const matq4_t<T>& right_) {}
+        matq4_t<T>& operator*=(const matq4_t<T>& right_) {
+            std::unreachable();
+        }
 
         /**
          * Division assignment operator
@@ -596,7 +598,7 @@ namespace hg::math {
         res[3][0] = -(r_ + l_) / (r_ - l_);
         res[3][1] = -(t_ + b_) / (t_ - b_);
 
-        #if CLIP_SPACE_ZERO_TO_ONE || TRUE
+        #if defined(CLIP_SPACE_ZERO_TO_ONE) || TRUE
         res[2][2] = -static_cast<T>(1) / (zfar_ - znear_);
         res[3][2] = -znear_ / (zfar_ - znear_);
         #else
@@ -615,7 +617,7 @@ namespace hg::math {
         res[3][0] = -(r_ + l_) / (r_ - l_);
         res[3][1] = -(t_ + b_) / (t_ - b_);
 
-        #if CLIP_SPACE_ZERO_TO_ONE || TRUE
+        #if defined(CLIP_SPACE_ZERO_TO_ONE) || TRUE
         res[2][2] = -static_cast<T>(1);
         #else
         res[2][2] = static_cast<T>(1);

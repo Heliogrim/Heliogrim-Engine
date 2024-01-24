@@ -29,15 +29,15 @@ namespace hg::engine::gfx::cache {
         void tidy();
 
     private:
-        DenseMap<_STD ptrdiff_t, ptr<ModelBatch>> _mapping;
+        DenseMap<std::ptrdiff_t, ptr<ModelBatch>> _mapping;
 
     public:
-        [[nodiscard]] CacheResult get(cref<_STD ptrdiff_t> key_, ref<ptr<ModelBatch>> dst_);
+        [[nodiscard]] CacheResult get(cref<std::ptrdiff_t> key_, ref<ptr<ModelBatch>> dst_);
 
-        void insert(cref<_STD ptrdiff_t> key_, mref<ptr<ModelBatch>> obj_);
+        void insert(cref<std::ptrdiff_t> key_, mref<ptr<ModelBatch>> obj_);
 
-        void remove(cref<_STD ptrdiff_t> key_);
+        void remove(cref<std::ptrdiff_t> key_);
 
-        void remove(cref<_STD ptrdiff_t> key_, const bool tidy_);
+        void remove(cref<std::ptrdiff_t> key_, const bool tidy_);
     };
 }

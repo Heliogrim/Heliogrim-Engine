@@ -20,7 +20,7 @@ VkNativeBatch::VkNativeBatch() noexcept :
 VkNativeBatch::~VkNativeBatch() noexcept = default;
 
 bool VkNativeBatch::ready() const noexcept {
-    return _STD ranges::all_of(
+    return std::ranges::all_of(
         _batched,
         [](const auto& acb_) {
             return acb_->valid();
@@ -29,7 +29,7 @@ bool VkNativeBatch::ready() const noexcept {
 }
 
 bool VkNativeBatch::isFaf() const noexcept {
-    return _STD ranges::any_of(
+    return std::ranges::any_of(
         _batched,
         [](const auto& acb_) {
             return acb_->isFaf();
@@ -52,7 +52,7 @@ void VkNativeBatch::commit() {
     Vector<::VkCommandBuffer> roots {};
     roots.reserve(_batched.size());
 
-    _STD ranges::for_each(
+    std::ranges::for_each(
         _batched,
         [&roots](const auto& acb_) {
             if (acb_->root()) {
@@ -104,12 +104,12 @@ void VkNativeBatch::commitAndDispose() {
     /**/
 
     InlineAutoArray<ptr<engine::gfx::CommandPool>, 2> pools {};
-    _STD ranges::for_each(
+    std::ranges::for_each(
         _batched,
         [&pools](auto&& acb_) {
 
             auto pool = acb_->pool();
-            if (not _STD ranges::contains(pools, pool)) {
+            if (not std::ranges::contains(pools, pool)) {
                 pool->lck().acquire();
                 pools.emplace_back(pool);
             }
@@ -123,7 +123,7 @@ void VkNativeBatch::commitAndDispose() {
 
     _batched.clear();
 
-    _STD ranges::for_each(
+    std::ranges::for_each(
         pools,
         [](auto pool) {
             pool->lck().release();
@@ -135,7 +135,7 @@ bool VkNativeBatch::enumerateNativeQueues(
     ref<InlineAutoArray<ptr<engine::render::cmd::NativeQueue>, 2>> queues_
 ) const noexcept {
 
-    _STD ranges::for_each(
+    std::ranges::for_each(
         _batched,
         [&queues_](const auto& acb_) {
 
@@ -144,7 +144,7 @@ bool VkNativeBatch::enumerateNativeQueues(
             }
 
             auto queue = acb_->pool()->queue();
-            if (not _STD ranges::contains(queues_, queue)) {
+            if (not std::ranges::contains(queues_, queue)) {
                 queues_.emplace_back(queue);
             }
 
@@ -155,11 +155,11 @@ bool VkNativeBatch::enumerateNativeQueues(
 }
 
 void VkNativeBatch::add(mref<uptr<engine::accel::AccelCommandBuffer>> cmd_) noexcept {
-    _batched.emplace_back(_STD move(cmd_));
+    _batched.emplace_back(std::move(cmd_));
 }
 
 void VkNativeBatch::add(mref<uptr<VkResourceTable>> rt_) noexcept {
-    _rtable.emplace_back(_STD move(rt_));
+    _rtable.emplace_back(std::move(rt_));
 }
 
 void VkNativeBatch::enumerateWaitSignals(

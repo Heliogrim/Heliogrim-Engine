@@ -106,9 +106,9 @@ namespace hg::engine::reflow {
 
         using selected_set_type = CompactSet<data_type, data_hash_type, data_equal_type>;
 
-        using generate_fnc_type = _STD function<sptr<Widget>(cref<data_type> data_)>;
-        using selected_fnc_type = _STD function<void(cref<selected_set_type> selected_)>;
-        using resolve_fnc_type = _STD function<void(cref<data_type> item_, _Out_ ref<Vector<data_type>> children_)>;
+        using generate_fnc_type = std::function<sptr<Widget>(cref<data_type> data_)>;
+        using selected_fnc_type = std::function<void(cref<selected_set_type> selected_)>;
+        using resolve_fnc_type = std::function<void(cref<data_type> item_, _Out_ ref<Vector<data_type>> children_)>;
 
     public:
         TreeView() :
@@ -122,7 +122,7 @@ namespace hg::engine::reflow {
             _selectedFnc(nullptr),
             _selectionMode(TreeViewSelectionMode::eSingle),
             _selected(),
-            _cursor(_STD make_pair(-1, nullptr)),
+            _cursor(std::make_pair(-1, nullptr)),
             _sourceData() {}
 
         ~TreeView() override = default;
@@ -159,7 +159,7 @@ namespace hg::engine::reflow {
         }
 
         void applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) override {
-            TreeViewBase::applyLayout(state_, _STD move(ctx_));
+            TreeViewBase::applyLayout(state_, std::move(ctx_));
 
             /**/
 
@@ -194,7 +194,7 @@ namespace hg::engine::reflow {
         selected_set_type _selected;
 
     private:
-        _STD pair<s64, data_type> _cursor;
+        std::pair<s64, data_type> _cursor;
         /**
          * TODO: To handle cursor selections with multi select mode we need to introduce another cursor to track the origin
          *  TODO: If we don't track the origin, we have no orientation or distinct choice whether we want to select or deselect the next element
@@ -245,9 +245,9 @@ namespace hg::engine::reflow {
 
             /**/
 
-            // _linearizedData = _STD move(nextData);
-            // _linearizedView = _STD move(nextView);
-            _mapping = _STD move(nextMapping);
+            // _linearizedData = std::move(nextData);
+            // _linearizedView = std::move(nextView);
+            _mapping = std::move(nextMapping);
         }
 
         [[nodiscard]] bool resolveItemPacking(
@@ -548,7 +548,7 @@ namespace hg::engine::reflow {
                     continue;
                 }
 
-                const auto off { _STD distance(_linearizedData.begin(), dataIt) };
+                const auto off { std::distance(_linearizedData.begin(), dataIt) };
                 const auto& data { _linearizedView[off] };
 
                 if (data.widget.expired()) {
@@ -598,7 +598,7 @@ namespace hg::engine::reflow {
 
         void handleExternalSelection(cref<sptr<Widget>> target_, const bool adv_) {
 
-            const auto viewIt = _STD find_if(
+            const auto viewIt = std::find_if(
                 _linearizedView.begin(),
                 _linearizedView.end(),
                 [target_](cref<view_item_type> view_) {
@@ -610,7 +610,7 @@ namespace hg::engine::reflow {
                 return;
             }
 
-            const auto off { _STD distance(_linearizedView.begin(), viewIt) };
+            const auto off { std::distance(_linearizedView.begin(), viewIt) };
 
             moveCursor(off);
             handleSelection(off, adv_);
@@ -620,7 +620,7 @@ namespace hg::engine::reflow {
         void refreshCursor() {
 
             const auto dataIt {
-                _STD find_if(
+                std::find_if(
                     _linearizedData.begin(),
                     _linearizedData.end(),
                     [
@@ -637,7 +637,7 @@ namespace hg::engine::reflow {
                 return;
             }
 
-            const auto off { _STD distance(_linearizedData.begin(), dataIt) };
+            const auto off { std::distance(_linearizedData.begin(), dataIt) };
 
             _cursor.first = off;
             _cursor.second = *dataIt;
@@ -791,9 +791,9 @@ namespace hg::engine::reflow {
 
     template <typename DataItemType_>
     struct TreeDataItemEqual<DataItemType_, sptr> :
-        public _STD equal_to<DataItemType_> {
+        public std::equal_to<DataItemType_> {
         using this_type = TreeDataItemEqual<DataItemType_, sptr>;
-        using base_equal_type = _STD equal_to<DataItemType_>;
+        using base_equal_type = std::equal_to<DataItemType_>;
 
         using type = this_type;
 
@@ -816,9 +816,9 @@ namespace hg::engine::reflow {
 
     template <typename DataItemType_>
     struct TreeDataItemHash<DataItemType_, sptr> :
-        public _STD hash<DataItemType_> {
+        public std::hash<DataItemType_> {
         using this_type = TreeDataItemHash<DataItemType_, sptr>;
-        using base_hash_type = _STD hash<DataItemType_>;
+        using base_hash_type = std::hash<DataItemType_>;
 
         using type = this_type;
 

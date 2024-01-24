@@ -16,5 +16,5 @@ MaterialLoader::MaterialLoader(
         MaterialCache(cache_),
         MaterialFeedback(),
         MaterialTransformer(pool_),
-        _STD move(sourceLoader_)
+        std::move(sourceLoader_)
     ) {}

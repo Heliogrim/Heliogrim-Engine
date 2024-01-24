@@ -14,7 +14,7 @@ using namespace hg::engine::resource;
 using namespace hg;
 
 [[nodiscard]] static string to_string(cref<PackageGuid> guid_) {
-    return _STD format(R"({:08x}-{:04x}-{:04x}-{:016x})", guid_.pre, guid_.c0, guid_.c1, guid_.post);
+    return std::format(R"({:08x}-{:04x}-{:04x}-{:016x})", guid_.pre, guid_.c0, guid_.c1, guid_.post);
 }
 
 PackageManager::PackageManager() = default;
@@ -37,7 +37,7 @@ void PackageManager::tidy() {
             continue;
         }
 
-        auto dummy = _STD move(const_cast<ref<smr<PackageResource>>>(package));
+        auto dummy = std::move(const_cast<ref<smr<PackageResource>>>(package));
         dummy.reset();
     }
 
@@ -96,7 +96,7 @@ void PackageManager::addPackage(mref<smr<PackageResource>> package_) {
         return;
     }
 
-    _packages.insert_or_assign(packageGuid, _STD move(package_));
+    _packages.insert_or_assign(packageGuid, std::move(package_));
 }
 
 smr<PackageResource> PackageManager::getPackage(cref<PackageGuid> guid_) const noexcept {

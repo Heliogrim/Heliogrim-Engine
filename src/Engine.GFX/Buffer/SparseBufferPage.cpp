@@ -18,7 +18,7 @@ SparseBufferPage::SparseBufferPage(
 SparseBufferPage::~SparseBufferPage() = default;
 
 nmpt<VirtualMemoryPage> SparseBufferPage::release() noexcept {
-    return _STD exchange(_memory, nullptr);
+    return std::exchange(_memory, nullptr);
 }
 
 nmpt<VirtualMemoryPage> SparseBufferPage::memory() const noexcept {

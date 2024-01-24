@@ -24,7 +24,7 @@ FlacImporter::import_result_type FlacImporter::import(cref<res::FileTypeId> type
     const ptr<drflac> flac = drflac_open_file(file_.path().string().c_str(), {});
     if (flac == nullptr) {
         // Error opening
-        throw _STD runtime_error("Could not open file to parse flac data.");
+        throw std::runtime_error("Could not open file to parse flac data.");
     }
 
     Buffer buffer {
@@ -48,7 +48,7 @@ FlacImporter::import_result_type FlacImporter::import(cref<res::FileTypeId> type
 
     //
     auto state { make_sptr<concurrent::future_state<import_type>>() };
-    state->set(_STD move(result));
+    state->set(std::move(result));
 
     return import_result_type { state };
 }

@@ -26,12 +26,12 @@ namespace hg::engine::render::cmd {
     };
 
     template <typename Type_>
-    concept IsRenderCommand = _STD derived_from<Type_, RenderCommand> &&
-        _STD is_nothrow_destructible_v<Type_> &&
+    concept IsRenderCommand = std::derived_from<Type_, RenderCommand> &&
+        std::is_nothrow_destructible_v<Type_> &&
         requires(const Type_& obj_) {
             obj_.operator()(
-                _STD declval<ptr<RenderCommandTranslator::State>>(),
-                _STD declval<ptr<RenderCommandTranslator>>()
+                std::declval<ptr<RenderCommandTranslator::State>>(),
+                std::declval<ptr<RenderCommandTranslator>>()
             );
         };
 }

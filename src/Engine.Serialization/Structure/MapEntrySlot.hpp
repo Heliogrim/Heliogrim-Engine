@@ -4,7 +4,7 @@
 #include "SubstitutionSlot.hpp"
 
 namespace hg::engine::serialization {
-    template <typename KeyType_, typename ValueType_, template <typename, typename...> typename PackType_ = _STD pair>
+    template <typename KeyType_, typename ValueType_, template <typename, typename...> typename PackType_ = std::pair>
     class MapEntrySlot final :
         public TypedStructureSlotBase<PackType_<KeyType_, ValueType_>> {
     public:
@@ -20,7 +20,7 @@ namespace hg::engine::serialization {
 
     public:
         MapEntrySlot(mref<StructureSlotState> state_) :
-            underlying_type(_STD move(state_)) {
+            underlying_type(std::move(state_)) {
             this_type::_state.header = StructureSlotHeader::from<StructureSlotType::eMapEntry>();
         }
 
@@ -57,7 +57,7 @@ namespace hg::engine::serialization {
                 this_type::_state.root
             };
 
-            entry_key_slot_type keySlot { _STD move(keyState) };
+            entry_key_slot_type keySlot { std::move(keyState) };
 
             /**/
 
@@ -88,7 +88,7 @@ namespace hg::engine::serialization {
                 this_type::_state.root
             };
 
-            entry_value_slot_type valueSlot { _STD move(valueState) };
+            entry_value_slot_type valueSlot { std::move(valueState) };
 
             /**/
 
@@ -134,7 +134,7 @@ namespace hg::engine::serialization {
                 this_type::_state.root
             };
 
-            entry_key_slot_type keySlot { _STD move(keyState) };
+            entry_key_slot_type keySlot { std::move(keyState) };
 
             /**/
 
@@ -164,7 +164,7 @@ namespace hg::engine::serialization {
                 this_type::_state.root
             };
 
-            entry_value_slot_type valueSlot { _STD move(valueState) };
+            entry_value_slot_type valueSlot { std::move(valueState) };
 
             /**/
 

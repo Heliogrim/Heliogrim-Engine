@@ -26,7 +26,7 @@ void BarrierNode::rtraverse(ref<Visitor> visitor_) const {
 }
 
 void BarrierNode::setNext(mref<smr<Node>> next_) {
-    _next = _STD move(next_);
+    _next = std::move(next_);
 }
 
 smr<Node> BarrierNode::getNext() const noexcept {
@@ -34,7 +34,7 @@ smr<Node> BarrierNode::getNext() const noexcept {
 }
 
 void BarrierNode::setPrev(mref<nmpt<const Node>> prev_) {
-    _prev = _STD move(prev_);
+    _prev = std::move(prev_);
 }
 
 nmpt<const Node> BarrierNode::getPrev() const noexcept {
@@ -46,7 +46,7 @@ nmpt<const BarrierComponent> BarrierNode::getBarrierComponent() const noexcept {
 }
 
 nmpt<BarrierComponent> BarrierNode::getBarrierComponent() {
-    const auto it = _STD ranges::find_if(
+    const auto it = std::ranges::find_if(
         _auxiliary->components(),
         [](const ptr<Component> component_) {
             return component_->getMetaClass()->exact<BarrierComponent>();

@@ -5,12 +5,12 @@
 using namespace hg::engine::serialization;
 using namespace hg;
 
-MemoryReadonlyArchive::MemoryReadonlyArchive(ref<_STD span<u8, _STD dynamic_extent>> bytes_) :
+MemoryReadonlyArchive::MemoryReadonlyArchive(ref<std::span<u8, std::dynamic_extent>> bytes_) :
     MemoryBaseArchive(),
     _bytes(bytes_),
     _limit(-1) {}
 
-MemoryReadonlyArchive::MemoryReadonlyArchive(ref<_STD span<u8, _STD dynamic_extent>> bytes_, const s64 limit_) :
+MemoryReadonlyArchive::MemoryReadonlyArchive(ref<std::span<u8, std::dynamic_extent>> bytes_, const s64 limit_) :
     MemoryBaseArchive(),
     _bytes(bytes_),
     _limit(limit_) {}
@@ -18,7 +18,7 @@ MemoryReadonlyArchive::MemoryReadonlyArchive(ref<_STD span<u8, _STD dynamic_exte
 fs::Url MemoryReadonlyArchive::getArchiveUrl() const noexcept {
     return fs::Url {
         "mem"sv, fs::Path {
-            _STD format(
+            std::format(
                 "{:#016x}:{:#016x}",
                 reinterpret_cast<u64>(_bytes.data()),
                 reinterpret_cast<u64>(_bytes.data() + totalSize())
@@ -52,7 +52,7 @@ void MemoryReadonlyArchive::serializeBytes(const ptr<void> value_, u64 size_, co
 
     if (_pos + size_ <= _bytes.size()) {
 
-        _STD memcpy(value_, &_bytes[_pos], size_);
+        std::memcpy(value_, &_bytes[_pos], size_);
         _pos += static_cast<s64>(size_);
 
     } else [[unlikely]]

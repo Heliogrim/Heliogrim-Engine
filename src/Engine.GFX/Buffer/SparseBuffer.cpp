@@ -26,40 +26,40 @@ SparseBuffer::SparseBuffer(
     cref<vk::BufferUsageFlags> usageFlags_
 ) noexcept :
     _bufferSize(bufferSize_),
-    _memory(_STD move(memory_)),
+    _memory(std::move(memory_)),
     _pages(),
     _vkBuffer(buffer_),
     _vkBufferUsageFlags(usageFlags_),
     _changed(false) {}
 
 SparseBuffer::SparseBuffer(mref<this_type> other_) noexcept :
-    _bufferSize(_STD exchange(other_._bufferSize, 0uLL)),
-    _memory(_STD move(other_._memory)),
-    _pages(_STD move(other_._pages)),
-    _vkBuffer(_STD exchange(other_._vkBuffer, {})),
-    _vkBufferUsageFlags(_STD exchange(other_._vkBufferUsageFlags, {})),
-    _changed(_STD exchange(other_._changed, false)),
-    _bindings(_STD move(other_._bindings)),
-    _bindData(_STD exchange(other_._bindData, {})) {}
+    _bufferSize(std::exchange(other_._bufferSize, 0uLL)),
+    _memory(std::move(other_._memory)),
+    _pages(std::move(other_._pages)),
+    _vkBuffer(std::exchange(other_._vkBuffer, {})),
+    _vkBufferUsageFlags(std::exchange(other_._vkBufferUsageFlags, {})),
+    _changed(std::exchange(other_._changed, false)),
+    _bindings(std::move(other_._bindings)),
+    _bindData(std::exchange(other_._bindData, {})) {}
 
 SparseBuffer::~SparseBuffer() {
     tidy();
 }
 
 ref<SparseBuffer::this_type> SparseBuffer::operator=(mref<this_type> other_) noexcept {
-    if (_STD addressof(other_) != this) {
+    if (std::addressof(other_) != this) {
         /**
-         * Might be equal to `_STD swap(*this, other_)`
+         * Might be equal to `std::swap(*this, other_)`
          */
 
-        _bufferSize = _STD exchange(other_._bufferSize, _bufferSize);
+        _bufferSize = std::exchange(other_._bufferSize, _bufferSize);
         _memory.swap(other_._memory);
-        _pages = _STD exchange(other_._pages, _pages);
-        _vkBuffer = _STD exchange(other_._vkBuffer, _vkBuffer);
-        _vkBufferUsageFlags = _STD exchange(other_._vkBufferUsageFlags, _vkBufferUsageFlags);
-        _changed = _STD exchange(other_._changed, _changed);
-        _bindings = _STD exchange(other_._bindings, _bindings);
-        _bindData = _STD exchange(other_._bindData, _bindData);
+        _pages = std::exchange(other_._pages, _pages);
+        _vkBuffer = std::exchange(other_._vkBuffer, _vkBuffer);
+        _vkBufferUsageFlags = std::exchange(other_._vkBufferUsageFlags, _vkBufferUsageFlags);
+        _changed = std::exchange(other_._changed, _changed);
+        _bindings = std::exchange(other_._bindings, _bindings);
+        _bindData = std::exchange(other_._bindData, _bindData);
     }
 
     return *this;
@@ -181,7 +181,7 @@ uptr<SparseBufferView> SparseBuffer::makeView(const u64 offset_, const u64 size_
     /**
      * Take the time to sort the pages by it's mip level (virtual backing)
      */
-    _STD ranges::sort(
+    std::ranges::sort(
         pages,
         [](non_owning_rptr<SparseBufferPage> left_, non_owning_rptr<SparseBufferPage> right_) {
             return left_->resourceOffset() < right_->resourceOffset();
@@ -194,13 +194,13 @@ uptr<SparseBufferView> SparseBuffer::makeView(const u64 offset_, const u64 size_
     const auto view {
         new SparseBufferView(
             this,
-            _STD move(pages),
+            std::move(pages),
             offset_,
             size_
         )
     };
 
-    return _STD unique_ptr<SparseBufferView>(view);
+    return std::unique_ptr<SparseBufferView>(view);
 }
 
 void SparseBuffer::updateBindingData() {

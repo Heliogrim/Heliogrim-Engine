@@ -26,7 +26,7 @@ Board::Board() :
 Board::~Board() = default;
 
 string Board::getTag() const noexcept {
-    return _STD format(R"(Board <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(Board <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 EventResponse Board::onFocus(cref<FocusEvent> event_) {
@@ -229,7 +229,7 @@ void Board::applyLayout(ref<ReflowState> state_, mref<LayoutContext> ctx_) {
     for (const auto& child : *children()) {
 
         // Warning: Unsafe
-        const auto node = _STD static_pointer_cast<BoardNode>(child);
+        const auto node = std::static_pointer_cast<BoardNode>(child);
 
         // TODO: We need to recalc the offset per child to apply the transformation offset
         // TODO: Check whether we should care about the external layout size, cause graph should work absolute

@@ -8,13 +8,14 @@
 
 // glslang includes
 #include <sstream>
+#include <glslang/Public/ShaderLang.h>
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
 
 using namespace hg::engine::accel;
 using namespace hg;
 
-_STD atomic_uint_fast32_t hg::engine::accel::extern_compiler_ref_count { 0ui32 };
+std::atomic_uint_fast32_t hg::engine::accel::extern_compiler_ref_count { 0ui32 };
 
 /**/
 
@@ -36,7 +37,7 @@ SpirvCompiler::~SpirvCompiler() {
 
 SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<InlineAutoArray<lang::TextBlock>> source_) const {
 
-    const auto targetStage = static_cast<_STD underlying_type_t<ModuleTargetStage>>(module_.targetStage) - 1;
+    const auto targetStage = static_cast<std::underlying_type_t<ModuleTargetStage>>(module_.targetStage) - 1;
     assert(targetStage >= 0 && targetStage < EShLanguageMaskCount);
 
     EShLanguage stage { reinterpret_cast<cref<EShLanguage>>(targetStage) };
@@ -94,7 +95,7 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<InlineAuto
     //glslShader->setDebugInfo(false);
     //glslShader->setEnhancedMsgs();
 
-    _STD string preprocessed {};
+    std::string preprocessed {};
     glslang::TShader::ForbidIncluder includer {};
     glslShader->preprocess(
         GetDefaultResources(),
@@ -140,7 +141,7 @@ SpirvByteCode SpirvCompiler::compile(cref<ModuleSource> module_, cref<InlineAuto
 
         if (not spvLog.errors.empty()) {
             for (auto&& error : spvLog.errors) {
-                IM_CORE_ERROR(_STD move(error));
+                IM_CORE_ERROR(std::move(error));
             }
             __debugbreak();
             status = false;

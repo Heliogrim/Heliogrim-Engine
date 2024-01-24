@@ -76,7 +76,7 @@ void InputAsset::setup() {
     auto* previewAsset = AssetBrowserHelper::get()->getItemIconByAssetType(asset_type_id {});
 
     auto iconRes = engine::Engine::getEngine()->getResources()->loader().loadImmediately<engine::assets::TextureAsset,
-        engine::gfx::TextureResource>(_STD move(previewAsset));
+        engine::gfx::TextureResource>(std::move(previewAsset));
 
     auto previewGuard = iconRes->acquire(engine::resource::ResourceUsageFlag::eRead);
 
@@ -145,7 +145,7 @@ void InputAsset::setup() {
 }
 
 string InputAsset::getTag() const noexcept {
-    return _STD format(R"(InputAsset <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(InputAsset <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 EventResponse InputAsset::onDrop(cref<DragDropEvent> event_) {
@@ -188,7 +188,7 @@ EventResponse InputAsset::onDrop(cref<DragDropEvent> event_) {
         return EventResponse::eConsumed;
     }
 
-    if (not _STD ranges::contains(_acceptedTypes, asset->getTypeId())) {
+    if (not std::ranges::contains(_acceptedTypes, asset->getTypeId())) {
         IM_CORE_WARN("Invalid asset type.");
         return EventResponse::eConsumed;
     }
@@ -287,7 +287,7 @@ Input<asset_guid>::input_type InputAsset::value() const noexcept {
 
 void InputAsset::setValue(cref<asset_guid> assetGuid_) {
     _value = assetGuid_;
-    _input->setPlaceholder(_STD format(R"(<<{}-{}-{}-{}>>)", _value.pre, _value.c0, _value.c1, _value.post));
+    _input->setPlaceholder(std::format(R"(<<{}-{}-{}-{}>>)", _value.pre, _value.c0, _value.c1, _value.post));
 
     /**/
 
@@ -308,7 +308,7 @@ cref<Vector<asset_type_id>> InputAsset::acceptedTypes() const noexcept {
 }
 
 void InputAsset::addAcceptedType(asset_type_id typeId_) {
-    if (_STD ranges::contains(_acceptedTypes, typeId_)) {
+    if (std::ranges::contains(_acceptedTypes, typeId_)) {
         return;
     }
 
@@ -316,6 +316,6 @@ void InputAsset::addAcceptedType(asset_type_id typeId_) {
 }
 
 void InputAsset::dropAcceptedType(asset_type_id typeId_) {
-    const auto sub = _STD ranges::remove(_acceptedTypes, typeId_);
+    const auto sub = std::ranges::remove(_acceptedTypes, typeId_);
     _acceptedTypes.erase(sub.end(), _acceptedTypes.end());
 }

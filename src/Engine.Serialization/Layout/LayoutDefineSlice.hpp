@@ -59,7 +59,7 @@ namespace hg::engine::serialization::layout {
         static ref<serialization::Archive> loadImpl(
             ref<serialization::Archive> archive_,
             cref<LayoutDefine> define_,
-            cref<_STD span<u8, _STD dynamic_extent>> dst_
+            cref<std::span<u8, std::dynamic_extent>> dst_
         ) {
 
             const auto& layout { define_._sub };
@@ -77,16 +77,16 @@ namespace hg::engine::serialization::layout {
 
             // Warning: Experimental temporary speed-up solution
             if constexpr (
-                _STD _Iterator_is_contiguous<typename Type_::iterator> &&
+                std::_Iterator_is_contiguous<typename Type_::iterator> &&
                 HasReserveFnc<Type_> &&
-                _STD is_trivial_v<typename Type_::value_type>
+                std::is_trivial_v<typename Type_::value_type>
             ) {
 
                 container->resize(storedCount);
                 const auto layoutSize { static_cast<u64>(layout->size()) };
 
                 for (const auto& entry : *container) {
-                    const _STD span<u8, _STD dynamic_extent> view {
+                    const std::span<u8, std::dynamic_extent> view {
                         reinterpret_cast<ptr<u8>>(&const_cast<ref<typename Type_::value_type>>(entry)),
                         layoutSize
                     };
@@ -95,31 +95,31 @@ namespace hg::engine::serialization::layout {
 
             } else {
 
-                if constexpr (_STD _Iterator_is_contiguous<typename Type_::iterator> && HasReserveFnc<Type_>) {
+                if constexpr (std::_Iterator_is_contiguous<typename Type_::iterator> && HasReserveFnc<Type_>) {
                     container->reserve(storedCount);
-                    // TODO: If `_STD is_trivial_v<Type_::value_type>` and contiguous memory, than we can memcpy directly and assume elements as `constructed`
+                    // TODO: If `std::is_trivial_v<Type_::value_type>` and contiguous memory, than we can memcpy directly and assume elements as `constructed`
                 }
 
                 auto tmp { calloc(1ui64, /*layout->size()*/sizeof(typename Type_::value_type)) };
-                const _STD span<u8, _STD dynamic_extent> view {
+                const std::span<u8, std::dynamic_extent> view {
                     static_cast<ptr<u8>>(tmp),
                     static_cast<u64>(layout->size()/*sizeof(typename Type_::value_type)*/)
                 };
 
-                _STD insert_iterator<Type_> inserter { *container, container->end() };
+                std::insert_iterator<Type_> inserter { *container, container->end() };
 
                 for (s64 i { 0i64 }; i < storedCount; ++i) {
 
                     // Warning: Experimental temporary solution
-                    if constexpr (not _STD is_trivial_v<typename Type_::value_type>) {
+                    if constexpr (not std::is_trivial_v<typename Type_::value_type>) {
                         layout->reflect().constructInPlace(tmp);
                     }
 
                     layout->dispatch().load(archive_, view);
-                    inserter = _STD move(*static_cast<ptr<typename Type_::value_type>>(tmp));
+                    inserter = std::move(*static_cast<ptr<typename Type_::value_type>>(tmp));
 
                     // Warning: Experimental temporary solution
-                    if constexpr (not _STD is_trivial_v<typename Type_::value_type>) {
+                    if constexpr (not std::is_trivial_v<typename Type_::value_type>) {
                         layout->reflect().destroyInPlace(tmp);
                     }
                 }
@@ -138,7 +138,7 @@ namespace hg::engine::serialization::layout {
         static ref<serialization::Archive> storeImpl(
             ref<serialization::Archive> archive_,
             cref<LayoutDefine> define_,
-            cref<_STD span<u8, _STD dynamic_extent>> src_
+            cref<std::span<u8, std::dynamic_extent>> src_
         ) {
 
             const auto& layout { define_._sub };
@@ -156,9 +156,9 @@ namespace hg::engine::serialization::layout {
             auto begin { (*container).begin() };
             const auto end { (*container).end() };
 
-            for (auto iter { _STD move(begin) }; iter != end; ++iter) {
+            for (auto iter { std::move(begin) }; iter != end; ++iter) {
 
-                const _STD span<u8, _STD dynamic_extent> view {
+                const std::span<u8, std::dynamic_extent> view {
                     reinterpret_cast<ptr<u8>>(
                         const_cast<ptr<typename Type_::value_type>>(
                             &const_cast<ref<typename Type_::value_type>>(*iter)

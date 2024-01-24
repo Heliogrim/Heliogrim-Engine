@@ -101,7 +101,7 @@ sptr<SceneHierarchyPanel> SceneHierarchyPanel::make(const non_owning_rptr<SceneH
 
     const auto* const theme = Theme::get();
 
-    auto panel { _STD shared_ptr<SceneHierarchyPanel>(new SceneHierarchyPanel()) };
+    auto panel { std::shared_ptr<SceneHierarchyPanel>(new SceneHierarchyPanel()) };
     panel->attr.minHeight.setValue({ ReflowUnitType::eAbsolute, 20.F + 20.F });
 
     /**/

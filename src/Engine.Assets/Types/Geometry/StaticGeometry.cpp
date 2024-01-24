@@ -16,7 +16,7 @@ StaticGeometry::StaticGeometry(
     cref<u64> indexCount_
 ) :
     InheritMeta(guid_, typeId),
-    _sources(_STD move(sources_)),
+    _sources(std::move(sources_)),
     _vertexCount(vertexCount_),
     _indexCount(indexCount_) {}
 

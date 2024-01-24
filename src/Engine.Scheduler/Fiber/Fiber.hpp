@@ -110,7 +110,7 @@ namespace hg::engine::scheduler::fiber {
 
         template <IsAwaitable AwaitableType_>
         FORCE_INLINE void await(
-            _In_ _STD conditional_t<IsAwaitableSignal<AwaitableType_>, const ptr<AwaitableType_>, cref<AwaitableType_>>
+            _In_ std::conditional_t<IsAwaitableSignal<AwaitableType_>, const ptr<AwaitableType_>, cref<AwaitableType_>>
             awaitable_
         ) {
             if constexpr (IsAwaitableSignal<AwaitableType_>) {

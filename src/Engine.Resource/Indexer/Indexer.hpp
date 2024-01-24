@@ -109,7 +109,7 @@ namespace hg::engine::res {
         void watch();
 
     private:
-        _STD vector<_STD function<bool(cref<::hg::fs::File>)>> _callbacks;
+        std::vector<std::function<bool(cref<::hg::fs::File>)>> _callbacks;
         CompactSet<::hg::fs::File> _ack;
 
     public:

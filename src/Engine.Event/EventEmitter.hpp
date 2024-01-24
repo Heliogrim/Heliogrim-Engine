@@ -19,7 +19,7 @@ namespace hg {
 
     template <IsStatefulEvent EventType_>
     struct StatefulEventExecutor {
-        FORCE_INLINE void operator()(cref<_STD function<void(ref<EventType_>)>> fnc_, ref<EventType_> event_) const {
+        FORCE_INLINE void operator()(cref<std::function<void(ref<EventType_>)>> fnc_, ref<EventType_> event_) const {
             fnc_(event_);
         }
     };
@@ -35,32 +35,32 @@ namespace hg {
         class MtxType_,
         bool ExternalMtx_ = false,
         typename ExecutorType_ = StatefulEventExecutor<EventType_>,
-        class EmitLockType_ = _STD unique_lock<_STD remove_cvref_t<MtxType_>>,
-        class MutateLockType_ = _STD unique_lock<_STD remove_cvref_t<MtxType_>>>
+        class EmitLockType_ = std::unique_lock<std::remove_cvref_t<MtxType_>>,
+        class MutateLockType_ = std::unique_lock<std::remove_cvref_t<MtxType_>>>
     class StatefulEventEmitterBase :
         public EventEmitter,
         private ExecutorType_ {
     public:
-        using mtx_type = _STD conditional_t<ExternalMtx_,
-            ref<_STD remove_cvref_t<MtxType_>>,
-            _STD remove_cvref_t<MtxType_>
+        using mtx_type = std::conditional_t<ExternalMtx_,
+            ref<std::remove_cvref_t<MtxType_>>,
+            std::remove_cvref_t<MtxType_>
         >;
 
     public:
         /**
          * Type of the callback function to invoke
          */
-        using function_type = _STD function<void(ref<EventType_>)>;
+        using function_type = std::function<void(ref<EventType_>)>;
 
     public:
-        template <class MtxType = MtxType_, typename = _STD enable_if_t<!ExternalMtx_>>
+        template <class MtxType = MtxType_, typename = std::enable_if_t<!ExternalMtx_>>
         StatefulEventEmitterBase() :
             _lhc(0),
             _listener(),
             _mtx() {}
 
-        template <class MtxType = MtxType_, typename = _STD enable_if_t<ExternalMtx_>>
-        StatefulEventEmitterBase(ref<_STD remove_cvref_t<MtxType_>> mtx_) :
+        template <class MtxType = MtxType_, typename = std::enable_if_t<ExternalMtx_>>
+        StatefulEventEmitterBase(ref<std::remove_cvref_t<MtxType_>> mtx_) :
             _lhc(0),
             _listener(),
             _mtx(mtx_) {}
@@ -76,12 +76,12 @@ namespace hg {
          *
          * @returns An u64.
          */
-        u64 on(mref<_STD function<void(ref<EventType_>)>> fnc_) {
+        u64 on(mref<std::function<void(ref<EventType_>)>> fnc_) {
 
             MutateLockType_ lck { _mtx };
 
             const auto handle { ++_lhc };
-            _listener.insert(_STD make_pair(handle, _STD forward<function_type>(fnc_)));
+            _listener.insert(std::make_pair(handle, std::forward<function_type>(fnc_)));
 
             return handle;
         }
@@ -136,7 +136,7 @@ namespace hg {
         /**
          * Listener mapping
          */
-        _STD unordered_map<u64, function_type> _listener;
+        std::unordered_map<u64, function_type> _listener;
 
     private:
         mtx_type _mtx;
@@ -144,7 +144,7 @@ namespace hg {
 
     template <IsStatelessEvent EventType_>
     struct StatelessEventExecutor {
-        FORCE_INLINE void operator()(cref<_STD function<void(cref<EventType_>)>> fnc_, cref<EventType_> event_) const {
+        FORCE_INLINE void operator()(cref<std::function<void(cref<EventType_>)>> fnc_, cref<EventType_> event_) const {
             fnc_(event_);
         }
     };
@@ -160,8 +160,8 @@ namespace hg {
         class MtxType_,
         bool ExternalMtx_ = false,
         typename ExecutorType_ = StatelessEventExecutor<EventType_>,
-        class EmitLockType_ = _STD unique_lock<_STD remove_cvref_t<MtxType_>>,
-        class MutateLockType_ = _STD unique_lock<_STD remove_cvref_t<MtxType_>>>
+        class EmitLockType_ = std::unique_lock<std::remove_cvref_t<MtxType_>>,
+        class MutateLockType_ = std::unique_lock<std::remove_cvref_t<MtxType_>>>
     class StatelessEventEmitterBase :
         public EventEmitter,
         private ExecutorType_ {
@@ -175,20 +175,20 @@ namespace hg {
             MutateLockType_
         >;
 
-        using mtx_type = _STD conditional_t<ExternalMtx_,
-            ref<_STD remove_cvref_t<MtxType_>>,
-            _STD remove_cvref_t<MtxType_>
+        using mtx_type = std::conditional_t<ExternalMtx_,
+            ref<std::remove_cvref_t<MtxType_>>,
+            std::remove_cvref_t<MtxType_>
         >;
 
     public:
         /**
          * Type of the callback function to invoke
          */
-        using function_type = _STD function<void(cref<EventType_>)>;
+        using function_type = std::function<void(cref<EventType_>)>;
 
     public:
         /*
-        template <typename MtxType = MtxType_, typename = _STD enable_if_t<!ExternalMtx_>>
+        template <typename MtxType = MtxType_, typename = std::enable_if_t<!ExternalMtx_>>
         StatelessEventEmitterBase() :
             _lhc(0),
             _listener(),
@@ -196,8 +196,8 @@ namespace hg {
          */
 
         /*
-        template <typename MtxType = MtxType_, typename = _STD enable_if_t<ExternalMtx_>>
-        StatelessEventEmitterBase(ref<_STD remove_cvref_t<MtxType>> mtx_) :
+        template <typename MtxType = MtxType_, typename = std::enable_if_t<ExternalMtx_>>
+        StatelessEventEmitterBase(ref<std::remove_cvref_t<MtxType>> mtx_) :
             _lhc(0),
             _listener(),
             _mtx(mtx_) {}
@@ -209,7 +209,7 @@ namespace hg {
             _mtx() {}
 
         StatelessEventEmitterBase(
-            _STD conditional_t<ExternalMtx_, ref<_STD remove_cvref_t<MtxType_>>, _STD remove_cvref_t<MtxType_>> mtx_
+            std::conditional_t<ExternalMtx_, ref<std::remove_cvref_t<MtxType_>>, std::remove_cvref_t<MtxType_>> mtx_
         ) :
             _lhc(0),
             _listener(),
@@ -251,13 +251,13 @@ namespace hg {
          *
          * @returns An u64.
          */
-        u64 on(mref<_STD function<void(cref<EventType_>)>> fnc_) {
+        u64 on(mref<std::function<void(cref<EventType_>)>> fnc_) {
 
             MutateLockType_ lck { _mtx };
 
             handle_type handle { ++_lhc };
             _listener.insert(
-                _STD make_pair<handle_type, function_type>(_STD move(handle), _STD forward<function_type>(fnc_))
+                std::make_pair<handle_type, function_type>(std::move(handle), std::forward<function_type>(fnc_))
             );
 
             return handle;
@@ -309,7 +309,7 @@ namespace hg {
         /**
          * Listener mapping
          */
-        _STD unordered_map<u64, function_type> _listener;
+        std::unordered_map<u64, function_type> _listener;
 
     private:
         mtx_type _mtx;
@@ -317,9 +317,9 @@ namespace hg {
 
     /** Defines an alias representing the stateful event emitter */
     template <IsStatefulEvent EventType_>
-    using StatefulEventEmitter = StatefulEventEmitterBase<EventType_, _STD recursive_mutex>;
+    using StatefulEventEmitter = StatefulEventEmitterBase<EventType_, std::recursive_mutex>;
 
     /** Defines an alias representing the stateless event emitter */
     template <IsStatelessEvent EventType_>
-    using StatelessEventEmitter = StatelessEventEmitterBase<EventType_, _STD recursive_mutex>;
+    using StatelessEventEmitter = StatelessEventEmitterBase<EventType_, std::recursive_mutex>;
 }

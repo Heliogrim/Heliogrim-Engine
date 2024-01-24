@@ -9,13 +9,13 @@ namespace hg::engine::accel {
      */
     struct ContextUsagePattern {
         /**/
-        Vector<_STD pair<smr<const render::graph::Description>, accel::lang::SymbolId>> pairs;
+        Vector<std::pair<smr<const render::graph::Description>, accel::lang::SymbolId>> pairs;
         // i.e. pair< SceneViewDescription <-> SymbolId >
     };
 
     struct DynamicUsagePattern {
         /**/
-        Vector<_STD pair<smr<const render::graph::Description>, accel::lang::SymbolId>> pairs;
+        Vector<std::pair<smr<const render::graph::Description>, accel::lang::SymbolId>> pairs;
         // i.e. pair< MeshDescription <-> SymbolId >
     };
 

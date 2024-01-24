@@ -11,7 +11,7 @@ Menu::Menu() :
 Menu::~Menu() = default;
 
 string Menu::getTag() const noexcept {
-    return _STD format(R"(Menu <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(Menu <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 void Menu::openMenu() {

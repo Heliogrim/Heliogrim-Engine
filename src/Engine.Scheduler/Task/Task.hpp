@@ -138,7 +138,7 @@ namespace hg::engine::scheduler::task {
     class Task :
         public TaskDelegate {
     public:
-        using function_type = _STD function<void()>;
+        using function_type = std::function<void()>;
 
         /**
          * Destructor
@@ -193,7 +193,7 @@ namespace hg::engine::scheduler::task {
     class RepetitiveTask :
         public TaskDelegate {
     public:
-        using function_type = _STD function<bool()>;
+        using function_type = std::function<bool()>;
 
         /**
          * Destructor
@@ -250,7 +250,7 @@ namespace hg::engine::scheduler::task {
     class BatchTask :
         public TaskDelegate {
     public:
-        using function_type = _STD function<void(hg::u32)>;
+        using function_type = std::function<void(hg::u32)>;
 
         /**
          * Destructor

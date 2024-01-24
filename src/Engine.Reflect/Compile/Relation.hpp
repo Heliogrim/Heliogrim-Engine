@@ -14,9 +14,9 @@ namespace hg {
     template <typename Type_>
     struct CompileSwap {
         constexpr void operator()(Type_& left_, Type_& right_) const noexcept {
-            constexpr Type_ tmp { _STD move(left_) };
-            left_ = _STD move(right_);
-            right_ = _STD move(tmp);
+            constexpr Type_ tmp { std::move(left_) };
+            left_ = std::move(right_);
+            right_ = std::move(tmp);
         }
     };
 }

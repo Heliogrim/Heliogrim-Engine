@@ -80,7 +80,7 @@ namespace hg::engine::res {
 
         [[nodiscard]] static ref<FileTypeRegister> get();
 
-        [[nodiscard]] static const ptr<FileTypeRegister> get(_STD nothrow_t) noexcept;
+        [[nodiscard]] static const ptr<FileTypeRegister> get(std::nothrow_t) noexcept;
 
         static void destroy();
 
@@ -102,9 +102,9 @@ namespace hg::engine::res {
 namespace std {
     template <>
     struct hash<hg::engine::res::FileTypeId> :
-        public _STD hash<hg::type_id> {
+        public std::hash<hg::type_id> {
         [[nodiscard]] size_t operator()(const hg::engine::res::FileTypeId& value_) const noexcept {
-            return static_cast<const _STD hash<hg::type_id>*>(this)->operator()(value_.typeId);
+            return static_cast<const std::hash<hg::type_id>*>(this)->operator()(value_.typeId);
         }
     };
 }

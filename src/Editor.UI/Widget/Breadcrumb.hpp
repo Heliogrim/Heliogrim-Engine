@@ -15,7 +15,7 @@ namespace hg::editor::ui {
     public:
         using this_type = Breadcrumb;
 
-        using action_fnc_type = _STD function<void(cref<fs::Url>)>;
+        using action_fnc_type = std::function<void(cref<fs::Url>)>;
 
     protected:
         Breadcrumb();
@@ -35,7 +35,7 @@ namespace hg::editor::ui {
 
     private:
         u64 _areg;
-        Vector<_STD pair<u64, action_fnc_type>> _actions;
+        Vector<std::pair<u64, action_fnc_type>> _actions;
 
     private:
         void handleAction(cref<fs::Url> url_);

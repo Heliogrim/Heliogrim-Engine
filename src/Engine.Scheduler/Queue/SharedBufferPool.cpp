@@ -28,8 +28,8 @@ void SharedBufferPool::tidy() {
     }
      */
 
-    const size_type size = _poolSize.load(_STD memory_order_relaxed);
-    auto* pooled = _pooled.load(_STD memory_order_relaxed);
+    const size_type size = _poolSize.load(std::memory_order_relaxed);
+    auto* pooled = _pooled.load(std::memory_order_relaxed);
 
     for (size_type i = 0; i < size; ++i) {
         delete pooled[i];
@@ -52,35 +52,35 @@ ptr<SharedBufferPool::aligned_buffer> SharedBufferPool::acquire() {
     /**
      * Precheck for available reusage
      */
-    if (_poolSize.load(_STD memory_order_consume) <= 0) {
+    if (_poolSize.load(std::memory_order_consume) <= 0) {
         return new aligned_buffer { this };
     }
 
     /**
      * Acquire
      */
-    while (_blocked.test_and_set(_STD memory_order_acq_rel)) {
+    while (_blocked.test_and_set(std::memory_order_acq_rel)) {
         ;// Spinning
     }
 
     /**
      * Recheck available
      */
-    const auto size = _poolSize.load(_STD memory_order_consume);
+    const auto size = _poolSize.load(std::memory_order_consume);
 
     if (size <= 0) {
         /**
          * Release
          */
-        _blocked.clear(_STD memory_order_release);
+        _blocked.clear(std::memory_order_release);
         return acquire();
     }
 
     /**
      * Reuse stored resource
      */
-    auto* const pooled = _pooled.load(_STD memory_order_consume);
-    auto* buffer = _STD move(pooled[size - 1]);
+    auto* const pooled = _pooled.load(std::memory_order_consume);
+    auto* buffer = std::move(pooled[size - 1]);
 
     // TODO:
     pooled[size - 1] = nullptr;
@@ -89,7 +89,7 @@ ptr<SharedBufferPool::aligned_buffer> SharedBufferPool::acquire() {
     /**
      * Release
      */
-    _blocked.clear(_STD memory_order_release);
+    _blocked.clear(std::memory_order_release);
     return buffer;
 }
 
@@ -98,19 +98,19 @@ void SharedBufferPool::release(mref<ptr<aligned_buffer>> buffer_) {
     /**
      * Acquire
      */
-    while (_blocked.test_and_set(_STD memory_order_acq_rel)) {
+    while (_blocked.test_and_set(std::memory_order_acq_rel)) {
         __noop();// Spinning
     }
 
     /**
      * Check for any left capacity
      */
-    const auto used = _poolSize.load(_STD memory_order_consume);
+    const auto used = _poolSize.load(std::memory_order_consume);
 
     if (used < _poolCapacity) {
 
-        auto* const pooled = _pooled.load(_STD memory_order_consume);
-        pooled[used] = _STD move(buffer_);
+        auto* const pooled = _pooled.load(std::memory_order_consume);
+        pooled[used] = std::move(buffer_);
 
         ++_poolSize;
 
@@ -123,7 +123,7 @@ void SharedBufferPool::release(mref<ptr<aligned_buffer>> buffer_) {
         /**
          * Release
          */
-        _blocked.clear(_STD memory_order_release);
+        _blocked.clear(std::memory_order_release);
 
         return;
     }
@@ -133,9 +133,9 @@ void SharedBufferPool::release(mref<ptr<aligned_buffer>> buffer_) {
     /**
      * Release
      */
-    _blocked.clear(_STD memory_order_release);
+    _blocked.clear(std::memory_order_release);
 
-    release(_STD move(buffer_));
+    release(std::move(buffer_));
 }
 
 void SharedBufferPool::grow(const capacity_type capacity_) {
@@ -148,8 +148,8 @@ void SharedBufferPool::grow(const capacity_type capacity_) {
     /**
      * Translocate old pointers to new memory block
      */
-    const auto size = _poolSize.load(_STD memory_order_consume);
-    auto* oldPooled = _pooled.load(_STD memory_order_consume);
+    const auto size = _poolSize.load(std::memory_order_consume);
+    auto* oldPooled = _pooled.load(std::memory_order_consume);
 
     for (size_type i = 0; i < size; ++i) {
         newPooled[i] = oldPooled[i];
@@ -158,7 +158,7 @@ void SharedBufferPool::grow(const capacity_type capacity_) {
     /**
      * Swap
      */
-    _pooled.store(newPooled, _STD memory_order_release);
+    _pooled.store(newPooled, std::memory_order_release);
     _poolCapacity = capacity_;
 
     /**
@@ -176,8 +176,8 @@ bool SharedBufferPool::reserve(const size_type size_) {
     /**
      * Create requested elements
      */
-    for (size_type ci = size_; ci > 0 && _poolSize.load(_STD memory_order_relaxed) < size_; --ci) {
-        release(_STD move(new aligned_buffer { this }));
+    for (size_type ci = size_; ci > 0 && _poolSize.load(std::memory_order_relaxed) < size_; --ci) {
+        release(std::move(new aligned_buffer { this }));
     }
 
     return true;

@@ -13,7 +13,7 @@ namespace hg::engine::resource::loader {
     class LoaderBase;
 
     template <class Type_>
-    concept IsLoader = _STD derived_from<Type_, LoaderBase>;
+    concept IsLoader = std::derived_from<Type_, LoaderBase>;
 
     class __declspec(novtable) LoaderBase :
         public InheritBase<LoaderBase> {
@@ -127,29 +127,29 @@ namespace hg::engine::resource::loader {
             using options_type = typename traits::request::options;
 
             static_assert(
-                _STD derived_from<_STD remove_pointer_t<request_type>, _STD remove_pointer_t<decltype(asset_)>> ||
-                _STD is_convertible_v<decltype(asset_), request_type>
+                std::derived_from<std::remove_pointer_t<request_type>, std::remove_pointer_t<decltype(asset_)>> ||
+                std::is_convertible_v<decltype(asset_), request_type>
             );
             static_assert(
-                _STD is_void_v<_STD remove_pointer_t<decltype(options_)>> ||
-                _STD is_convertible_v<decltype(options_), ptr<options_type>>
+                std::is_void_v<std::remove_pointer_t<decltype(options_)>> ||
+                std::is_convertible_v<decltype(options_), ptr<options_type>>
             );
 
-            if constexpr (_STD derived_from<
+            if constexpr (std::derived_from<
                 typename traits::response::type,
                 smr<typename traits::response::value_type>
             >) {
                 return static_cast<const ptr<type_base>>(this)->operator()(
-                    _STD move(static_cast<request_type>(asset_)),
-                    _STD move(*static_cast<ptr<options_type>>(options_))
+                    std::move(static_cast<request_type>(asset_)),
+                    std::move(*static_cast<ptr<options_type>>(options_))
                 );
             }
 
             /*
             return make_smr(
                 static_cast<const ptr<type_base>>(this)->operator()(
-                    _STD move(static_cast<request_type>(asset_)),
-                    _STD move(*static_cast<ptr<options_type>>(options_))
+                    std::move(static_cast<request_type>(asset_)),
+                    std::move(*static_cast<ptr<options_type>>(options_))
                 )
             );
              */

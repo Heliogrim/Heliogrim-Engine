@@ -51,7 +51,7 @@ namespace hg::engine::scheduler {
         [[nodiscard]] StageDispatcher getDynamicDispatcher() const noexcept;
 
     private:
-        _STD atomic_uint_fast16_t _signals;
+        std::atomic_uint_fast16_t _signals;
 
     public:
         void onComplete(const non_owning_rptr<const task::TaskDelegate> task_) override;

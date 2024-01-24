@@ -26,7 +26,7 @@ Text::Text() :
 Text::~Text() = default;
 
 string Text::getTag() const noexcept {
-    return _STD format(R"(Text <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(Text <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 string Text::getText() const noexcept {
@@ -207,7 +207,7 @@ void Text::render(const ptr<ReflowCommandBuffer> cmd_) {
 
 math::vec2 Text::prefetchDesiredSize(cref<ReflowState> state_, float scale_) const {
 
-    math::vec2 size { _STD numeric_limits<float>::infinity() };
+    math::vec2 size { std::numeric_limits<float>::infinity() };
     if (attr.width->type == ReflowUnitType::eAbsolute) {
         size.x = attr.width->value;
     }

@@ -9,8 +9,8 @@ ScopedSlot::ScopedSlot(
     mref<ScopedSlotState> state_,
     mref<sptr<StructureSlotBase>> slot_
 ) :
-    _state(_STD move(state_)),
-    _slot(_STD move(slot_)) {}
+    _state(std::move(state_)),
+    _slot(std::move(slot_)) {}
 
 ScopedSlot::~ScopedSlot() = default;
 

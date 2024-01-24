@@ -21,7 +21,7 @@ namespace hg::engine::assets::system {
 
     private:
         IndexTableBase(mref<string> uniqueName_) :
-            _uniqueName(_STD move(uniqueName_)) {}
+            _uniqueName(std::move(uniqueName_)) {}
 
     public:
         IndexTableBase(mref<this_type>) noexcept = delete;
@@ -55,12 +55,12 @@ namespace hg::engine::assets::system {
         using index_type = Index_;
         using trait_type = IndexTrait<index_type>;
 
-        using allocator_type = _STD allocator<typename trait_type::data_type>;
-        using allocator_traits = _STD allocator_traits<allocator_type>;
+        using allocator_type = std::allocator<typename trait_type::data_type>;
+        using allocator_traits = std::allocator_traits<allocator_type>;
 
     protected:
         IndexTable(mref<string> uniqueName_) :
-            IndexTableBase(_STD move(uniqueName_)) {}
+            IndexTableBase(std::move(uniqueName_)) {}
 
     public:
         ~IndexTable() override = default;
@@ -96,7 +96,7 @@ namespace hg::engine::assets::system {
 
         template <>
         struct AutoMappingSelector<true, true> {
-            using table_type = _STD map<
+            using table_type = std::map<
                 typename trait_type::data_type,
                 non_owning_rptr<Asset>,
                 typename trait_type::relation_type
@@ -105,7 +105,7 @@ namespace hg::engine::assets::system {
 
         template <>
         struct AutoMappingSelector<false, true> {
-            using table_type = _STD map<
+            using table_type = std::map<
                 typename trait_type::data_type,
                 Vector<non_owning_rptr<Asset>>,
                 typename trait_type::relation_type
@@ -124,7 +124,7 @@ namespace hg::engine::assets::system {
 
     public:
         AutoIndexTable(mref<string> uniqueName_) :
-            IndexTable<Index_>(_STD move(uniqueName_)),
+            IndexTable<Index_>(std::move(uniqueName_)),
             _table() {
             static_assert(!trait_type::dynamic);
         }
@@ -136,11 +136,11 @@ namespace hg::engine::assets::system {
 
     public:
         [[nodiscard]] auto tableKeys() const {
-            return _STD ranges::views::keys(_table);
+            return std::ranges::views::keys(_table);
         }
 
         [[nodiscard]] auto tableValues() const {
-            return _STD ranges::views::values(_table);
+            return std::ranges::views::values(_table);
         }
 
     public:
@@ -230,7 +230,7 @@ namespace hg::engine::assets::system {
                 return;
             }
 
-            auto subRange = _STD ranges::remove(iter->second, asset_);
+            auto subRange = std::ranges::remove(iter->second, asset_);
             iter->second.erase(subRange.end(), iter->second.end());
 
             if (iter->second.empty()) {
@@ -276,7 +276,7 @@ namespace hg::engine::assets::system {
 
         template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique &&
             IndexTrait<IndexType_>::multiple &&
-            _STD is_void_v<typename IndexTrait<IndexType_>::multiple_options_type>
+            std::is_void_v<typename IndexTrait<IndexType_>::multiple_options_type>
         void get(
             cref<typename IndexTrait<IndexType_>::data_type> index_,
             _Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
@@ -312,7 +312,7 @@ namespace hg::engine::assets::system {
 
         template <typename IndexType_ = Index_> requires IndexTrait<IndexType_>::unique &&
             IndexTrait<IndexType_>::multiple &&
-            (!_STD is_void_v<typename IndexTrait<IndexType_>::multiple_options_type>)
+            (!std::is_void_v<typename IndexTrait<IndexType_>::multiple_options_type>)
         void get(
             cref<typename IndexTrait<IndexType_>::data_type> index_,
             typename IndexTrait<IndexType_>::multiple_options_type options_,
@@ -352,7 +352,7 @@ namespace hg::engine::assets::system {
 
         template <typename IndexType_ = Index_> requires (!IndexTrait<IndexType_>::unique) &&
             IndexTrait<IndexType_>::multiple &&
-            _STD is_void_v<typename IndexTrait<IndexType_>::multiple_options_type>
+            std::is_void_v<typename IndexTrait<IndexType_>::multiple_options_type>
         void get(
             cref<typename IndexTrait<IndexType_>::data_type> index_,
             _Out_ ref<Vector<non_owning_rptr<Asset>>> assets_
@@ -368,7 +368,7 @@ namespace hg::engine::assets::system {
 
         template <typename IndexType_ = Index_> requires (!IndexTrait<IndexType_>::unique) &&
             IndexTrait<IndexType_>::multiple &&
-            (!_STD is_void_v<typename IndexTrait<IndexType_>::multiple_options_type>)
+            (!std::is_void_v<typename IndexTrait<IndexType_>::multiple_options_type>)
         void get(
             cref<typename IndexTrait<IndexType_>::data_type> index_,
             typename IndexTrait<IndexType_>::multiple_options_type options_,

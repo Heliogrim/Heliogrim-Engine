@@ -24,7 +24,7 @@ bool ObjectEditor::storeObjectMapper(const type_id typeId_, mref<uptr<ObjectValu
         return false;
     }
 
-    _mapper.insert_or_assign(typeId_, _STD move(mapper_));
+    _mapper.insert_or_assign(typeId_, std::move(mapper_));
     return true;
 }
 

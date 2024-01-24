@@ -47,7 +47,7 @@ namespace hg::editor::ui {
             sptr<tree_view_type> tree {
                 _content->children()->empty() ?
                     nullptr :
-                    _STD static_pointer_cast<tree_view_type, Widget>(_content->children()->front())
+                    std::static_pointer_cast<tree_view_type, Widget>(_content->children()->front())
             };
 
             if (not tree || _resolver != resolver || _generator != generator) {

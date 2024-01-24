@@ -30,7 +30,7 @@ void ReflowEngine::tick(ref<ReflowState> state_, cref<sptr<Widget>> widget_, mre
     /**
      * Second Pass: Apply layout changes
      */
-    reapplyLayout(state_, widget_, _STD move(globalCtx_));
+    reapplyLayout(state_, widget_, std::move(globalCtx_));
 
 }
 
@@ -164,7 +164,7 @@ void reapplyLayout(ref<ReflowState> state_, cref<sptr<Widget>> root_, mref<Layou
 
         /**/
 
-        cur->applyLayout(state_, _STD move(ctx));
+        cur->applyLayout(state_, std::move(ctx));
 
         /**
          *

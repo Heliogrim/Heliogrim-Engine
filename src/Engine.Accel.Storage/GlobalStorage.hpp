@@ -18,7 +18,7 @@ namespace hg::engine::accel {
         ~GlobalStorage() noexcept override = default;
 
     private:
-        _STD set<Permutation> _permutations;
+        std::set<Permutation> _permutations;
         DenseMap<HashedState<Stage>, smr<const Stage>> _stages;
         DenseMap<HashedState<AccelerationEffect>, smr<const AccelerationEffect>> _effects;
         DenseMap<HashedState<AccelerationPipeline>, smr<const AccelerationPipeline>> _pipelines;

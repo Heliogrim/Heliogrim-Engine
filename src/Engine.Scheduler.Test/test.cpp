@@ -23,7 +23,7 @@ namespace SchedulerModule {
 
         //
         EXPECT_EQ(pool.capacity(), 0);
-        EXPECT_EQ(pool.size().load(_STD memory_order_relaxed), 0);
+        EXPECT_EQ(pool.size().load(std::memory_order_relaxed), 0);
     }
 
     TEST(SharedBufferPool, Reserve) {
@@ -32,17 +32,17 @@ namespace SchedulerModule {
 
         //
         EXPECT_EQ(pool.capacity(), 0);
-        EXPECT_EQ(pool.size().load(_STD memory_order_relaxed), 0);
+        EXPECT_EQ(pool.size().load(std::memory_order_relaxed), 0);
 
         //
         pool.reserve(32ui32);
 
         //
         EXPECT_EQ(pool.capacity(), 32);
-        EXPECT_EQ(pool.size().load(_STD memory_order_relaxed), 32);
+        EXPECT_EQ(pool.size().load(std::memory_order_relaxed), 32);
     }
 
-    void structuredRuntimeTest(_STD function<void(const ptr<engine::Scheduler>)> callback_) {
+    void structuredRuntimeTest(std::function<void(const ptr<engine::Scheduler>)> callback_) {
         //
         auto engine = make_uptr<test::TestSchedulerEngine>();
         engine->preInit();
@@ -84,7 +84,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            _STD atomic_flag signal {};
+            std::atomic_flag signal {};
             auto task {
                 task::make_task([&signal]() {
                     signal.test_and_set();
@@ -94,7 +94,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(_STD move(task));
+            scheduler_->exec(std::move(task));
 
             /**
              *
@@ -125,7 +125,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(_STD move(task));
+            scheduler_->exec(std::move(task));
 
             /**
              *
@@ -149,7 +149,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            _STD atomic_flag signal {};
+            std::atomic_flag signal {};
             auto task {
                 task::make_task(
                     [&signal]() {
@@ -164,7 +164,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(_STD move(task));
+            scheduler_->exec(std::move(task));
 
             /**
              *
@@ -188,7 +188,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            _STD atomic_flag signal {};
+            std::atomic_flag signal {};
             auto task {
                 task::make_task(
                     [&signal]() {
@@ -203,7 +203,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(_STD move(task));
+            scheduler_->exec(std::move(task));
 
             /**
              *
@@ -227,7 +227,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            _STD atomic_flag signal {};
+            std::atomic_flag signal {};
             auto task {
                 task::make_task(
                     [&signal]() {
@@ -243,7 +243,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(_STD move(task));
+            scheduler_->exec(std::move(task));
 
             /**
              *
@@ -267,7 +267,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            _STD atomic_flag signal {};
+            std::atomic_flag signal {};
             auto task {
                 task::make_task(
                     [&signal]() {
@@ -283,7 +283,7 @@ namespace SchedulerModule {
             auto carrier {
                 task::make_task(
                     [&task, &signal, &scheduler_]() {
-                        scheduler_->exec(_STD move(task));
+                        scheduler_->exec(std::move(task));
 
                         thread::self::sleepFor(5);
 
@@ -298,7 +298,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(_STD move(carrier));
+            scheduler_->exec(std::move(carrier));
 
             /**
              *
@@ -322,14 +322,14 @@ namespace SchedulerModule {
             /**
              *
              */
-            _STD atomic_uint64_t t0 { 0ui64 };
-            _STD atomic_uint64_t t1 { 0ui64 };
+            std::atomic_uint64_t t0 { 0ui64 };
+            std::atomic_uint64_t t1 { 0ui64 };
 
             auto task0 {
                 task::make_task(
                     [&t0]() {
                         thread::self::sleepFor(5);
-                        t0.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                        t0.store(std::chrono::high_resolution_clock::now().time_since_epoch().count());
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eNetworkFetchStrong,
@@ -340,7 +340,7 @@ namespace SchedulerModule {
             auto task1 {
                 task::make_task(
                     [&t1]() {
-                        t1.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                        t1.store(std::chrono::high_resolution_clock::now().time_since_epoch().count());
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eNetworkPushStrong,
@@ -351,8 +351,8 @@ namespace SchedulerModule {
             auto carrier {
                 task::make_task(
                     [&task0, &t0, &task1, &t1, &scheduler_]() {
-                        scheduler_->exec(_STD move(task0));
-                        scheduler_->exec(_STD move(task1));
+                        scheduler_->exec(std::move(task0));
+                        scheduler_->exec(std::move(task1));
 
                         thread::self::sleepFor(5);
 
@@ -368,7 +368,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(_STD move(carrier));
+            scheduler_->exec(std::move(carrier));
 
             /**
              *
@@ -392,13 +392,13 @@ namespace SchedulerModule {
             /**
              *
              */
-            _STD atomic_uint64_t t0 { 0ui64 };
-            _STD atomic_uint64_t t1 { 0ui64 };
+            std::atomic_uint64_t t0 { 0ui64 };
+            std::atomic_uint64_t t1 { 0ui64 };
 
             auto task0 {
                 task::make_task(
                     [&t0]() {
-                        t0.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                        t0.store(std::chrono::high_resolution_clock::now().time_since_epoch().count());
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eBottomStrong,
@@ -409,7 +409,7 @@ namespace SchedulerModule {
             auto task1 {
                 task::make_task(
                     [&t1]() {
-                        t1.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                        t1.store(std::chrono::high_resolution_clock::now().time_since_epoch().count());
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eTopStrong,
@@ -420,8 +420,8 @@ namespace SchedulerModule {
             auto carrier {
                 task::make_task(
                     [&task0, &task1, &scheduler_]() {
-                        scheduler_->exec(_STD move(task0));
-                        scheduler_->exec(_STD move(task1));
+                        scheduler_->exec(std::move(task0));
+                        scheduler_->exec(std::move(task1));
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::ePhysicsSimulateStrong,
@@ -432,7 +432,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(_STD move(carrier));
+            scheduler_->exec(std::move(carrier));
 
             /**
              *
@@ -456,13 +456,13 @@ namespace SchedulerModule {
             /**
              *
              */
-            _STD atomic_uint64_t t0 { 0ui64 };
-            _STD atomic_uint64_t t1 { 0ui64 };
+            std::atomic_uint64_t t0 { 0ui64 };
+            std::atomic_uint64_t t1 { 0ui64 };
 
             auto task0 {
                 task::make_task(
                     [&t0]() {
-                        t0.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                        t0.store(std::chrono::high_resolution_clock::now().time_since_epoch().count());
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eTopStrong,
@@ -473,7 +473,7 @@ namespace SchedulerModule {
             auto task1 {
                 task::make_task(
                     [&t1]() {
-                        t1.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                        t1.store(std::chrono::high_resolution_clock::now().time_since_epoch().count());
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eTopWeak,
@@ -484,8 +484,8 @@ namespace SchedulerModule {
             auto carrier {
                 task::make_task(
                     [&task0, &task1, &scheduler_]() {
-                        scheduler_->exec(_STD move(task0));
-                        scheduler_->exec(_STD move(task1));
+                        scheduler_->exec(std::move(task0));
+                        scheduler_->exec(std::move(task1));
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eTopStrong,
@@ -496,7 +496,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(_STD move(carrier));
+            scheduler_->exec(std::move(carrier));
 
             /**
              *
@@ -520,13 +520,13 @@ namespace SchedulerModule {
             /**
              *
              */
-            _STD atomic_uint64_t t0 { 0ui64 };
-            _STD atomic_uint64_t t1 { 0ui64 };
+            std::atomic_uint64_t t0 { 0ui64 };
+            std::atomic_uint64_t t1 { 0ui64 };
 
             auto task0 {
                 task::make_task(
                     [&t0]() {
-                        t0.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                        t0.store(std::chrono::high_resolution_clock::now().time_since_epoch().count());
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eTopWeak,
@@ -537,7 +537,7 @@ namespace SchedulerModule {
             auto task1 {
                 task::make_task(
                     [&t1]() {
-                        t1.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                        t1.store(std::chrono::high_resolution_clock::now().time_since_epoch().count());
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eTopStrong,
@@ -548,8 +548,8 @@ namespace SchedulerModule {
             auto carrier {
                 task::make_task(
                     [&task0, &task1, &scheduler_]() {
-                        scheduler_->exec(_STD move(task0));
-                        scheduler_->exec(_STD move(task1));
+                        scheduler_->exec(std::move(task0));
+                        scheduler_->exec(std::move(task1));
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eTopStrong,
@@ -560,7 +560,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(_STD move(carrier));
+            scheduler_->exec(std::move(carrier));
 
             /**
              *
@@ -584,13 +584,13 @@ namespace SchedulerModule {
             /**
              *
              */
-            _STD atomic_uint64_t t0 { 0ui64 };
-            _STD atomic_uint64_t t1 { 0ui64 };
+            std::atomic_uint64_t t0 { 0ui64 };
+            std::atomic_uint64_t t1 { 0ui64 };
 
             auto task0 {
                 task::make_task(
                     [&t0]() {
-                        t0.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                        t0.store(std::chrono::high_resolution_clock::now().time_since_epoch().count());
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::ePhysicsSimulateStrong,
@@ -606,7 +606,7 @@ namespace SchedulerModule {
                             thread::self::sleepFor(5);
                         }
 
-                        t1.store(_STD chrono::high_resolution_clock::now().time_since_epoch().count());
+                        t1.store(std::chrono::high_resolution_clock::now().time_since_epoch().count());
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eNetworkFetchStrong,
@@ -617,8 +617,8 @@ namespace SchedulerModule {
             auto carrier {
                 task::make_task(
                     [&task0, &task1, &scheduler_]() {
-                        scheduler_->exec(_STD move(task0));
-                        scheduler_->exec(_STD move(task1));
+                        scheduler_->exec(std::move(task0));
+                        scheduler_->exec(std::move(task1));
                     },
                     task::TaskMask::eUndefined,
                     ScheduleStageBarriers::eTopStrong,
@@ -629,7 +629,7 @@ namespace SchedulerModule {
             /**
              *
              */
-            scheduler_->exec(_STD move(carrier));
+            scheduler_->exec(std::move(carrier));
 
             /**
              *
@@ -649,21 +649,21 @@ namespace SchedulerModule {
 
     TEST(RuntimeTest, PrioritySorting) {
 
-        _STD chrono::high_resolution_clock::time_point minorTimestamp {};
-        _STD chrono::high_resolution_clock::time_point majorTimestamp {};
+        std::chrono::high_resolution_clock::time_point minorTimestamp {};
+        std::chrono::high_resolution_clock::time_point majorTimestamp {};
 
         structuredRuntimeTest([&minorTimestamp, &majorTimestamp](const ptr<engine::Scheduler> scheduler_) {
 
-            _STD atomic_uint_fast8_t done { 0 };
+            std::atomic_uint_fast8_t done { 0 };
 
             auto minorTask = engine::scheduler::task::make_task([&minorTimestamp, &done]() {
-                minorTimestamp = _STD chrono::high_resolution_clock::now();
+                minorTimestamp = std::chrono::high_resolution_clock::now();
                 ++done;
                 done.notify_one();
             }, task::TaskMask::eLower);
 
             auto majorTask = engine::scheduler::task::make_task([&majorTimestamp, &done]() {
-                majorTimestamp = _STD chrono::high_resolution_clock::now();
+                majorTimestamp = std::chrono::high_resolution_clock::now();
                 ++done;
                 done.notify_one();
             }, task::TaskMask::eHigher);
@@ -671,13 +671,13 @@ namespace SchedulerModule {
             /**/
 
             auto dispatchTask = engine::scheduler::task::make_task([&minorTask, &majorTask, &scheduler_, &done]() {
-                scheduler_->exec(_STD move(minorTask));
-                scheduler_->exec(_STD move(majorTask));
+                scheduler_->exec(std::move(minorTask));
+                scheduler_->exec(std::move(majorTask));
                 ++done;
                 done.notify_one();
             });
 
-            scheduler_->exec(_STD move(dispatchTask));
+            scheduler_->exec(std::move(dispatchTask));
 
             /**
              *
@@ -690,21 +690,21 @@ namespace SchedulerModule {
 
     TEST(RuntimeTest, PriorityShifting) {
 
-        _STD chrono::high_resolution_clock::time_point minorTimestamp {};
-        _STD chrono::high_resolution_clock::time_point majorTimestamp {};
+        std::chrono::high_resolution_clock::time_point minorTimestamp {};
+        std::chrono::high_resolution_clock::time_point majorTimestamp {};
 
         structuredRuntimeTest([&minorTimestamp, &majorTimestamp](const ptr<engine::Scheduler> scheduler_) {
 
-            _STD atomic_uint_fast8_t done { 0 };
+            std::atomic_uint_fast8_t done { 0 };
 
             auto minorTask = engine::scheduler::task::make_task([&minorTimestamp, &done]() {
-                minorTimestamp = _STD chrono::high_resolution_clock::now();
+                minorTimestamp = std::chrono::high_resolution_clock::now();
                 ++done;
                 done.notify_one();
             }, task::TaskMask::eLower);
 
             auto majorTask = engine::scheduler::task::make_task([&majorTimestamp, &done]() {
-                majorTimestamp = _STD chrono::high_resolution_clock::now();
+                majorTimestamp = std::chrono::high_resolution_clock::now();
                 ++done;
                 done.notify_one();
             }, task::TaskMask::eHigher);
@@ -717,14 +717,14 @@ namespace SchedulerModule {
 
             auto dispatchTask = engine::scheduler::task::make_task(
                 [&minorTask, &majorTask, &barrierTask, &scheduler_, &done]() {
-                    scheduler_->exec(_STD move(barrierTask));
-                    scheduler_->exec(_STD move(minorTask));
-                    scheduler_->exec(_STD move(majorTask));
+                    scheduler_->exec(std::move(barrierTask));
+                    scheduler_->exec(std::move(minorTask));
+                    scheduler_->exec(std::move(majorTask));
                     ++done;
                     done.notify_one();
                 });
 
-            scheduler_->exec(_STD move(dispatchTask));
+            scheduler_->exec(std::move(dispatchTask));
 
             /**
              *

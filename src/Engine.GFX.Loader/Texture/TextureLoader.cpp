@@ -19,5 +19,5 @@ TextureLoader::TextureLoader(
         TextureCache(cache_),
         TextureFeedback(),
         TextureTransformer(pool_),
-        _STD move(sourceLoader_)
+        std::move(sourceLoader_)
     ) {}

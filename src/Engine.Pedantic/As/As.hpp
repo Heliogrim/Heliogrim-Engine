@@ -7,7 +7,7 @@ namespace hg {
     struct as_impl;
 
     template <typename Type_>
-    concept is_aliasable = _STD false_type::value;
+    concept is_aliasable = std::false_type::value;
 
     template <typename AliasType_, typename SourceType_>
     [[nodiscard]] constexpr AliasType_ as(const SourceType_& val_) {
@@ -15,7 +15,7 @@ namespace hg {
     }
 
     template <typename AliasType_, typename SourceType_> requires
-        (not _STD is_pointer_v<AliasType_>) && (not _STD is_pointer_v<SourceType_>)
+        (not std::is_pointer_v<AliasType_>) && (not std::is_pointer_v<SourceType_>)
     struct as_impl<const AliasType_&, SourceType_> {
         [[nodiscard]] constexpr const AliasType_& operator()(const SourceType_& val_) const noexcept {
             return val_;

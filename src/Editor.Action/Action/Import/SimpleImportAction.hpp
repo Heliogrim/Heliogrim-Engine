@@ -38,8 +38,8 @@ namespace hg::editor {
         [[nodiscard]] cref<decltype(_assets)> importedAssets() const noexcept;
 
     private:
-        _STD atomic_flag _running;
-        _STD atomic_flag _finished;
+        std::atomic_flag _running;
+        std::atomic_flag _finished;
 
     protected:
         void setRunning();

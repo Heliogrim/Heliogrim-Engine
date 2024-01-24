@@ -37,7 +37,7 @@ SplitPanel::SplitPanel() :
 SplitPanel::~SplitPanel() = default;
 
 string SplitPanel::getTag() const noexcept {
-    return _STD format(R"(SplitPanel <{:#x}>)", reinterpret_cast<u64>(this));
+    return std::format(R"(SplitPanel <{:#x}>)", reinterpret_cast<u64>(this));
 }
 
 const ptr<const Children> SplitPanel::children() const {
@@ -210,7 +210,7 @@ void SplitPanel::recomputeSlotPortions(const float unnormalized_) {
     /**/
 
     // Warning: This could introduce some shift as soon as we remove elements with de-normalized proportions
-    u32 effective = (0.F - unnormalized_ > _STD numeric_limits<float>::epsilon()) ? 1 : 0;
+    u32 effective = (0.F - unnormalized_ > std::numeric_limits<float>::epsilon()) ? 1 : 0;
     float aggregate = unnormalized_;
 
     for (const auto& slot : _slots) {

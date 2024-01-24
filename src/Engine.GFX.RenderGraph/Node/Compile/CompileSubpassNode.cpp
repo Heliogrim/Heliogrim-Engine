@@ -26,7 +26,7 @@ void CompileSubPassNode::rtraverse(ref<Visitor> visitor_) const {
 }
 
 void CompileSubPassNode::setNext(mref<smr<Node>> next_) {
-    _next = _STD move(next_);
+    _next = std::move(next_);
 }
 
 smr<Node> CompileSubPassNode::getNext() const noexcept {
@@ -34,7 +34,7 @@ smr<Node> CompileSubPassNode::getNext() const noexcept {
 }
 
 void CompileSubPassNode::setPrev(mref<nmpt<const Node>> prev_) {
-    _prev = _STD move(prev_);
+    _prev = std::move(prev_);
 }
 
 nmpt<const Node> CompileSubPassNode::getPrev() const noexcept {
@@ -42,7 +42,7 @@ nmpt<const Node> CompileSubPassNode::getPrev() const noexcept {
 }
 
 void CompileSubPassNode::setSubPassBuilder(mref<decltype(_subPassBuilder)> subPassBuilder_) noexcept {
-    _subPassBuilder = _STD move(subPassBuilder_);
+    _subPassBuilder = std::move(subPassBuilder_);
 }
 
 uptr<RuntimeNode> CompileSubPassNode::compile(cref<CompilePassContext> ctx_) const noexcept {

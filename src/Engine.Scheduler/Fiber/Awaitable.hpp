@@ -16,11 +16,11 @@ namespace hg::engine::scheduler::fiber {
      *  Be aware that `std::atomic_flag` had no `const std::atomic_flag::test()` before CXX20
      *      which required implicitly a mutable object due to `std::atomic_flag::test_and_set()`
      */
-    using await_signal_type = _STD atomic_flag;
+    using await_signal_type = std::atomic_flag;
     using await_signal_sub_type = const await_signal_type;
 
     template <typename AwaitableType_>
-    concept IsAwaitableSignal = _STD is_same_v<AwaitableType_, await_signal_type> || _STD is_same_v<AwaitableType_,
+    concept IsAwaitableSignal = std::is_same_v<AwaitableType_, await_signal_type> || std::is_same_v<AwaitableType_,
         await_signal_sub_type>;
 
     template <typename AwaitableType_>

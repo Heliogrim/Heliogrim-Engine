@@ -15,7 +15,7 @@ StructSlot::StructSlot(cref<StructureSlotState> state_) :
 }
 
 StructSlot::StructSlot(mref<StructureSlotState> state_) :
-    StructureSlotBase(_STD move(state_)) {
+    StructureSlotBase(std::move(state_)) {
     _state.header = StructureSlotHeader::from<StructureSlotType::eStruct>();
 }
 
@@ -70,7 +70,7 @@ s64 StructSlot::findRecord(cref<record_key_type> key_) const {
             _state.root
         };
 
-        StringSlot identifier { _STD move(identifierState) };
+        StringSlot identifier { std::move(identifierState) };
         identifier.readHeader();
         identifier.enter();
 
@@ -135,7 +135,7 @@ sptr<RecordSlot> StructSlot::insertRecord(cref<record_key_type> key_) {
             _state.root
         };
 
-        StringSlot identifier { _STD move(identifierState) };
+        StringSlot identifier { std::move(identifierState) };
         identifier.writeHeader();
         identifier.enter();
         identifier << key_;
@@ -159,7 +159,7 @@ sptr<RecordSlot> StructSlot::insertRecord(cref<record_key_type> key_) {
         _state.root
     };
 
-    return make_sptr<RecordSlot>(_STD move(slotState));
+    return make_sptr<RecordSlot>(std::move(slotState));
 }
 
 bool StructSlot::hasRecord(cref<record_key_type> key_) {
@@ -186,5 +186,5 @@ sptr<RecordSlot> StructSlot::getRecord(cref<record_key_type> key_) {
         _state.root
     };
 
-    return make_sptr<RecordSlot>(_STD move(slotState));
+    return make_sptr<RecordSlot>(std::move(slotState));
 }

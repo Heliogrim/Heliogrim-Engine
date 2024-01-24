@@ -16,5 +16,5 @@ namespace hg::engine::render::graph {
     };
 
     template <typename ComponentType_>
-    concept IsRuntimeComponent = _STD derived_from<ComponentType_, RuntimeComponent>;
+    concept IsRuntimeComponent = std::derived_from<ComponentType_, RuntimeComponent>;
 }

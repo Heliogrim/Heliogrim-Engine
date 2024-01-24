@@ -162,8 +162,8 @@ namespace hg::engine::resource {
         ) const {
             const auto loader = selectLoader(AssetType_::typeId, nullptr);
             return static_cast<const ptr<loader::Loader<AssetType_, ResourceType_>>>(loader.get())->operator()(
-                _STD move(request_),
-                _STD move(options_)
+                std::move(request_),
+                std::move(options_)
             );
         }
 
@@ -184,8 +184,8 @@ namespace hg::engine::resource {
                 static_cast<const ptr<loader_type>>(loader.get())
             )->operator()(
                 // Use type base to dispatch correct operator() overload
-                _STD forward<typename loader_type::traits::request::type>(request_),
-                _STD forward<typename loader_type::traits::request::options>(options_)
+                std::forward<typename loader_type::traits::request::type>(request_),
+                std::forward<typename loader_type::traits::request::options>(options_)
             );
         }
 
@@ -207,8 +207,8 @@ namespace hg::engine::resource {
                 static_cast<const ptr<loader_type>>(loader.get())
             )->operator()(
                 // Use type base to dispatch correct operator() overload
-                _STD forward<typename loader_type::traits::request::type>(request_),
-                _STD forward<typename loader_type::traits::request::options>(options_)
+                std::forward<typename loader_type::traits::request::type>(request_),
+                std::forward<typename loader_type::traits::request::options>(options_)
             );
         }
 
@@ -235,8 +235,8 @@ namespace hg::engine::resource {
                 static_cast<const ptr<loader_type>>(loader.get())
             )->operator()(
                 // Use type base to dispatch correct operator() overload
-                _STD forward<typename loader_type::traits::stream_request::type>(request_),
-                _STD forward<typename loader_type::traits::stream_request::options>(options_)
+                std::forward<typename loader_type::traits::stream_request::type>(request_),
+                std::forward<typename loader_type::traits::stream_request::options>(options_)
             );
         }
     };

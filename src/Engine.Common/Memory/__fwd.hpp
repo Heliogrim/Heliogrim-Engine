@@ -3,18 +3,18 @@
 #include "../__macro.hpp"
 
 namespace hg {
-    template <typename Ty_, typename AllocType_ = _STD allocator<_STD remove_const_t<Ty_>>, bool Atomic_ = false>
+    template <typename Ty_, typename AllocType_ = std::allocator<std::remove_const_t<Ty_>>, bool Atomic_ = false>
     struct MemoryPointerStorage;
 
     template <
         typename Ty_,
-        typename AllocType_ = _STD allocator<_STD remove_const_t<Ty_>>,
+        typename AllocType_ = std::allocator<std::remove_const_t<Ty_>>,
         typename StorageType_ = MemoryPointerStorage<Ty_, AllocType_, false>>
     struct MemoryPointer;
 
     template <
         typename Ty_,
-        typename AllocType_ = _STD allocator<_STD remove_const_t<Ty_>>,
+        typename AllocType_ = std::allocator<std::remove_const_t<Ty_>>,
         typename StorageType_ = MemoryPointerStorage<Ty_, AllocType_, true>>
     using AtomicMemoryPointer = MemoryPointer<Ty_, AllocType_, StorageType_>;
 
@@ -22,12 +22,12 @@ namespace hg {
 
     template <
         typename Ty_,
-        typename StorageType_ = MemoryPointerStorage<Ty_, _STD allocator<_STD remove_const_t<Ty_>>, false>>
+        typename StorageType_ = MemoryPointerStorage<Ty_, std::allocator<std::remove_const_t<Ty_>>, false>>
     struct NonOwningMemoryPointer;
 
     template <
         typename Ty_,
-        typename StorageType_ = MemoryPointerStorage<Ty_, _STD allocator<_STD remove_const_t<Ty_>>, true>>
+        typename StorageType_ = MemoryPointerStorage<Ty_, std::allocator<std::remove_const_t<Ty_>>, true>>
     using AtomicNonOwningMemoryPointer = NonOwningMemoryPointer<Ty_, StorageType_>;
 
     template <typename Ty_>

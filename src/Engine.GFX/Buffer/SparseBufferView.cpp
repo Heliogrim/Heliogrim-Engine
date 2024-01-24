@@ -10,7 +10,7 @@ SparseBufferView::SparseBufferView(
     const u64 size_
 ):
     _owner(owner_),
-    _pages(_STD move(pages_)),
+    _pages(std::move(pages_)),
     _offset(offset_),
     _size(size_) {}
 

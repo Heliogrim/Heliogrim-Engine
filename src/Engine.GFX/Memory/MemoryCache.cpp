@@ -57,5 +57,5 @@ bool MemoryCache::free(mref<uptr<AllocatedMemory>> mem_) {
         return false;
     }
 
-    return it->second->free(_STD move(mem_));
+    return it->second->free(std::move(mem_));
 }

@@ -25,7 +25,7 @@ namespace hg {
         using remove_restricted_t = typename remove_restricted<Type_>::type;
 
         template <typename Left_, typename Right_>
-        concept unconstrained_same = _STD same_as<remove_restricted_t<Left_>, Right_>;
+        concept unconstrained_same = std::same_as<remove_restricted_t<Left_>, Right_>;
 
         template <class Type_>
         concept __DirectMetaInherit = requires(const Type_& obj_) {
@@ -35,12 +35,12 @@ namespace hg {
         template <
             class Type_,
             class RetTy_ = std::invoke_result_t<decltype(&Type_::getMetaClass)(Type_)>>
-        concept __IndirectMetaInhert = _STD derived_from<Type_, typename RetTy_::target_type>;
+        concept __IndirectMetaInhert = std::derived_from<Type_, typename RetTy_::target_type>;
     }
 
     template <class Type_>
     concept ClassHasMeta =
-        (_STD same_as<ClassMetaBase, Type_> || __DirectMetaInherit<Type_> || __IndirectMetaInhert<Type_>) &&
+        (std::same_as<ClassMetaBase, Type_> || __DirectMetaInherit<Type_> || __IndirectMetaInhert<Type_>) &&
         __HasInheritTypeList<Type_> &&
-        _STD derived_from<Type_, ClassMetaBase>;
+        std::derived_from<Type_, ClassMetaBase>;
 }

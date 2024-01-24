@@ -56,7 +56,7 @@ void SymbolContext::exposeSymbol(mref<smr<const Symbol>> symbol_, nmpt<Symbolize
     // Warning: Temporary
     assert(not _resources.contains(symbol_));
 
-    _resources.emplace(_STD move(symbol_), _STD move(resource_));
+    _resources.emplace(std::move(symbol_), std::move(resource_));
 }
 
 nmpt<SymbolizedResource> SymbolContext::exportSymbol(mref<smr<const Symbol>> symbol_) {
@@ -68,7 +68,7 @@ nmpt<SymbolizedResource> SymbolContext::exportSymbol(mref<smr<const Symbol>> sym
         false, false, clone(symbol_), nullptr
     };
 
-    _resources.emplace(_STD move(symbol_), nmpt<SymbolizedResource> { resource });
+    _resources.emplace(std::move(symbol_), nmpt<SymbolizedResource> { resource });
     return resource;
 }
 
@@ -86,7 +86,7 @@ bool SymbolContext::registerExposeSymbol(
     const ptr<Observed<SymbolizedResource>> observation_
 ) {
 
-    auto iter = _STD ranges::find_if(
+    auto iter = std::ranges::find_if(
         _register,
         [&symbol_](const auto& pair_) {
             return pair_.first == symbol_;
@@ -94,7 +94,7 @@ bool SymbolContext::registerExposeSymbol(
     );
 
     if (iter == _register.end()) {
-        _register.emplace_back(_STD make_pair(clone(symbol_), decltype(_register)::value_type::second_type {}));
+        _register.emplace_back(std::make_pair(clone(symbol_), decltype(_register)::value_type::second_type {}));
         iter = --_register.end();
     }
 
@@ -117,7 +117,7 @@ bool SymbolContext::registerImportSymbol(
 }
 
 nmpt<SymbolizedResource> SymbolContext::getExportSymbol(mref<smr<const Symbol>> symbol_) const {
-    return getImportSymbol(_STD move(symbol_));
+    return getImportSymbol(std::move(symbol_));
 }
 
 nmpt<SymbolizedResource> SymbolContext::getImportSymbol(mref<smr<const Symbol>> symbol_) const {
@@ -129,7 +129,7 @@ nmpt<SymbolizedResource> SymbolContext::getImportSymbol(mref<smr<const Symbol>> 
     /**/
 
     if (_parent != nullptr) {
-        return _parent->getImportSymbol(_STD move(symbol_));
+        return _parent->getImportSymbol(std::move(symbol_));
     }
 
     return nullptr;

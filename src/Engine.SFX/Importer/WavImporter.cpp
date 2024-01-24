@@ -30,7 +30,7 @@ WavImporter::import_result_type WavImporter::import(cref<res::FileTypeId> typeId
     drwav wav;
     if (!drwav_init_file(&wav, file_.path().string().c_str())) {
         // Error opening
-        throw _STD runtime_error("Could not open file to parse wav data.");
+        throw std::runtime_error("Could not open file to parse wav data.");
     }
 
     Buffer buffer {
@@ -53,7 +53,7 @@ WavImporter::import_result_type WavImporter::import(cref<res::FileTypeId> typeId
 
     //
     auto state { make_sptr<concurrent::future_state<import_type>>() };
-    state->set(_STD move(result));
+    state->set(std::move(result));
 
     return import_result_type { state };
 }

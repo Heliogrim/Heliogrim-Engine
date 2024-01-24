@@ -21,12 +21,12 @@ namespace hg {
         template <typename...> typename VoidTemplate_,
         template <typename...> typename Template_
     >
-    concept has_into_impl_same = (_STD is_same_v<VoidTemplate_<To_>, void>) &&
-        (not _STD is_same_v<Template_<From_>, void>) &&
+    concept has_into_impl_same = (std::is_same_v<VoidTemplate_<To_>, void>) &&
+        (not std::is_same_v<Template_<From_>, void>) &&
         requires(Template_<From_> obj_) {
             {
-                _STD declval<into_impl<Template_<To_>, Template_<From_>>>()(
-                    _STD forward<Template_<From_>>(obj_)
+                std::declval<into_impl<Template_<To_>, Template_<From_>>>()(
+                    std::forward<Template_<From_>>(obj_)
                 )
             } -> same_as<Template_<To_>>;
         };
@@ -37,12 +37,12 @@ namespace hg {
         template <typename...> typename ToTemplate_,
         template <typename...> typename FromTemplate_
     >
-    concept has_into_impl_diff = (not _STD is_same_v<ToTemplate_<To_>, void>) &&
-        (not _STD is_same_v<FromTemplate_<From_>, void>) &&
+    concept has_into_impl_diff = (not std::is_same_v<ToTemplate_<To_>, void>) &&
+        (not std::is_same_v<FromTemplate_<From_>, void>) &&
         requires(FromTemplate_<From_> obj_) {
             {
-                _STD declval<into_impl<ToTemplate_<To_>, FromTemplate_<From_>>>()(
-                    _STD forward<FromTemplate_<From_>>(obj_)
+                std::declval<into_impl<ToTemplate_<To_>, FromTemplate_<From_>>>()(
+                    std::forward<FromTemplate_<From_>>(obj_)
                 )
             } -> same_as<ToTemplate_<To_>>;
         };

@@ -20,7 +20,7 @@ VirtualMemoryPage::VirtualMemoryPage(
 
 VirtualMemoryPage::~VirtualMemoryPage() {
     if (_memory != nullptr) {
-        memory::AllocatedMemory::free(_STD move(_memory));
+        memory::AllocatedMemory::free(std::move(_memory));
         _memory = nullptr;
     }
 }
@@ -61,7 +61,7 @@ memory::AllocationResult VirtualMemoryPage::load() {
 }
 
 void VirtualMemoryPage::unload() {
-    memory::AllocatedMemory::free(_STD move(_memory));
+    memory::AllocatedMemory::free(std::move(_memory));
     _memory = nullptr;
 
     _state = VirtualMemoryPageState::eUnloaded;

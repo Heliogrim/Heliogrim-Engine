@@ -87,7 +87,7 @@ void SimpleImportAction::apply() {
 
     if (srcPath.ends_with(".ktx2")) {
         const auto result = importer.import<
-            _STD pair<ptr<::hg::engine::assets::TextureAsset>, ptr<::hg::engine::assets::Image>>
+            std::pair<ptr<::hg::engine::assets::TextureAsset>, ptr<::hg::engine::assets::Image>>
         >(::hg::engine::gfx::ImageFileType::Ktx2, file);
 
         const auto data { result.get() };

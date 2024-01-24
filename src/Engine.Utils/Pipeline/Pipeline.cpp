@@ -5,7 +5,7 @@ using namespace hg::engine::utils;
 Pipeline::Pipeline() = default;
 
 void Pipeline::addStage(const PipelineStage& stage_) {
-    _stages.push_back(_STD move(stage_));
+    _stages.push_back(std::move(stage_));
 }
 
 void Pipeline::addStage(Dispatchable& dispatchable_) {
@@ -13,7 +13,7 @@ void Pipeline::addStage(Dispatchable& dispatchable_) {
         *this,
         dispatchable_
     };
-    _stages.push_back(_STD move(stage));
+    _stages.push_back(std::move(stage));
 }
 
 void Pipeline::clearStages() {

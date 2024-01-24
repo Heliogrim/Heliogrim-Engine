@@ -152,7 +152,7 @@ namespace hg::external::ktx {
 
     [[nodiscard]] bool readHeader(_Inout_ ref<InternalContext> ctx_);
 
-    [[nodiscard]] bool readData(cref<InternalContext> ctx_, level_type level_, _Inout_ _STD span<_::byte> dst_);
+    [[nodiscard]] bool readData(cref<InternalContext> ctx_, level_type level_, _Inout_ std::span<_::byte> dst_);
 }
 
 /**/
@@ -380,7 +380,7 @@ void deduceFromFormat(cref<gli::format> format_, ref<vk::Format> vkFormat_, ref<
             break;
         }
         default: {
-            throw _STD exception("Unresolved texture format.");
+            throw std::exception("Unresolved texture format.");
         }
     }
 }
@@ -461,7 +461,7 @@ static Buffer createStageBuffer(cref<hg::external::ktx::InternalContext> ctx_, c
     for (u32 level = 0; level < ktx::getLevelCount(ctx_.header); ++level) {
 
         const auto levelSize = ktx::getDataSize(ctx_, level);
-        if (ktx::readData(ctx_, level, _STD span { cursor + offset, levelSize })) {
+        if (ktx::readData(ctx_, level, std::span { cursor + offset, levelSize })) {
             offset += levelSize;
         }
     }
@@ -640,8 +640,8 @@ void transformer::convertKtx10Gli(
      * Fetch Region per Layer
      */
 
-    const auto minMipLevel = _STD max(dst_->minMipLevel(), static_cast<u32>(glitex.base_level()));
-    const auto maxMipLevel = _STD min(dst_->maxMipLevel(), static_cast<u32>(glitex.max_level()));
+    const auto minMipLevel = std::max(dst_->minMipLevel(), static_cast<u32>(glitex.base_level()));
+    const auto maxMipLevel = std::min(dst_->maxMipLevel(), static_cast<u32>(glitex.max_level()));
 
     /**/
 
@@ -982,7 +982,7 @@ void transformer::convertKtx20(
             vk::Extent3D { levelExtent.x, levelExtent.y, levelExtent.z }
         };
 
-        regions.push_back(_STD move(copy));
+        regions.push_back(std::move(copy));
         offset += ktx::getDataSize(ctx, level);
     }
 
@@ -1160,22 +1160,22 @@ void transformer::convertKtx20Partial(
         }
 
         const auto flbe {
-            _STD ranges::lower_bound(
+            std::ranges::lower_bound(
                 dst_->pages().begin() + estSkip,
                 dst_->pages().end(),
                 options_.mip,
-                _STD ranges::less {},
+                std::ranges::less {},
                 [](const auto& entry_) {
                     return entry_->mipLevel();
                 }
             )
         };
 
-        pageIter += _STD distance(dst_->pages().begin(), flbe);
+        pageIter += std::distance(dst_->pages().begin(), flbe);
     }
     /**/
 
-    u32 mipOff { static_cast<u32>(_STD distance(dst_->pages().begin(), pageIter)) };
+    u32 mipOff { static_cast<u32>(std::distance(dst_->pages().begin(), pageIter)) };
 
     bool changedMemory { false };
 
@@ -1457,7 +1457,7 @@ void transformer::convertKtx20Partial(
             stage.mapAligned();
         }
 
-        _STD span<_::byte> bufferMemory { reinterpret_cast<ptr<_::byte>>(stage.memory->mapping), stage.memory->size };
+        std::span<_::byte> bufferMemory { reinterpret_cast<ptr<_::byte>>(stage.memory->mapping), stage.memory->size };
         const auto succeeded = ktx::readData(ctx, srcMip, bufferMemory);
 
         if (not succeeded) {
@@ -1693,10 +1693,10 @@ void transformer::unloadPartialTmp(
 
     /* (Optimization I :: Binary Search Begin) */
     const auto flbe {
-        _STD ranges::lower_bound(
+        std::ranges::lower_bound(
             dst_->pages(),
             options_.mip,
-            _STD ranges::less {},
+            std::ranges::less {},
             [](const auto& entry_) {
                 return entry_->mipLevel();
             }
@@ -1707,7 +1707,7 @@ void transformer::unloadPartialTmp(
     /* (Optimization II :: Early-Exit Iterator Loop) */
     bool changedMemory { false };
     for (
-        auto iter { dst_->pages().begin() + _STD distance(dst_->pages().begin(), flbe) };
+        auto iter { dst_->pages().begin() + std::distance(dst_->pages().begin(), flbe) };
         iter != dst_->pages().end() && (*iter)->mipLevel() == options_.mip;
         ++iter
     ) {
@@ -1896,7 +1896,7 @@ external::ktx::extent_type external::ktx::calcLevelExtent(
     level_type level_,
     TextureType textureType_
 ) {
-    return calcLevelExtent(_STD move(extent_), _STD move(level_));
+    return calcLevelExtent(std::move(extent_), std::move(level_));
 }
 
 bool external::ktx::readHeader(ref<InternalContext> ctx_) {

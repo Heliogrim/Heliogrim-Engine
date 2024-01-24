@@ -80,8 +80,8 @@ namespace hg::engine::scheduler::fiber {
         void tidy();
 
     private:
-        _STD atomic_flag _acqMtx;
-        _STD atomic_flag _relMtx;
+        std::atomic_flag _acqMtx;
+        std::atomic_flag _relMtx;
         concurrent::RingBuffer<ptr<Fiber>> _pool;
 
     public:

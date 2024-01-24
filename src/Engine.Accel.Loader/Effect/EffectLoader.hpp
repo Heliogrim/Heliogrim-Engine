@@ -16,7 +16,7 @@ namespace hg::engine::accel::loader {
     using MaterialLoaderType = resource::loader::LoaderChain<
         assets::AccelEffect,
         EffectResource,
-        resource::loader::MetaTypeWrapperList<_STD type_identity_t, _STD type_identity_t, _STD type_identity_t, sptr>,
+        resource::loader::MetaTypeWrapperList<std::type_identity_t, std::type_identity_t, std::type_identity_t, sptr>,
         EffectCache,
         EffectFeedback,
         EffectTransformer,
